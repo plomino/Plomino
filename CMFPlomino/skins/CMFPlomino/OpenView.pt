@@ -1,0 +1,31 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en"
+      lang="en"
+      metal:use-macro="here/main_template/macros/master"
+      i18n:domain="plone">
+<body>
+
+<metal:main fill-slot="main">
+    <div id="bodyContent">
+    	<table id="sortable"
+                 class="listing"
+                 summary="Content listing"
+                 i18n:attributes="summary summary_content_listing;">
+            <tr>
+            <th>&nbsp;&nbsp;</th>
+            <tal:block tal:repeat="c python:here.getColumns()">
+            	<th>&nbsp;<span tal:content="c/Title">Title</span>&nbsp;</th>
+            </tal:block>
+            </tr>
+		<tal:block tal:define="columns python:here.getColumns()" tal:repeat="doc python:here.getAllDocuments()">
+			<tr><td><a href="#" tal:attributes="href python:'../'+doc[0]+'/OpenDocument'">Go</a></td>
+				<tal:block tal:repeat="c columns">
+					<td><span tal:content="python:doc[1].evaluate(str(c.getObject().Formula))" /></td>
+				</tal:block>
+			</tr>
+		</tal:block>
+		</table>
+	</div>
+</metal:main>
+
+</body>
+</html>

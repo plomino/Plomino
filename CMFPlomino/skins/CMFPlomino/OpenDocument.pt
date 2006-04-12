@@ -1,0 +1,19 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en"
+      lang="en"
+      metal:use-macro="here/main_template/macros/master"
+      i18n:domain="plone">
+<body>
+
+<metal:main fill-slot="main">
+    <div id="bodyContent">
+    	<table>
+		<tal:block tal:define="plominoF python:here.getParentDatabase().getForm(here.getItem('Form'))" tal:repeat="f python:plominoF.getFields()">
+			<tr><td><span tal:content="f/Title" />:</td><td><span tal:content="python:here.getItem(f.Title)" /></td></tr>
+		</tal:block>
+		</table>
+	</div>
+</metal:main>
+
+</body>
+</html>
+
