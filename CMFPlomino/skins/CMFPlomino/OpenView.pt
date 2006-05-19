@@ -6,6 +6,8 @@
 
 <metal:main fill-slot="main">
     <div id="bodyContent">
+    	<h2 tal:content="here/Title">view title</h2>
+		<p tal:content="here/Description">description</p>
     	<table id="sortable"
                  class="listing"
                  summary="Content listing"

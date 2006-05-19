@@ -8,7 +8,13 @@
     <div id="bodyContent">
     	<table>
 		<tal:block tal:define="plominoF python:here.getParentDatabase().getForm(here.getItem('Form'))" tal:repeat="f python:plominoF.getFields()">
-			<tr><td><span tal:content="f/Title" />:</td><td><span tal:content="python:here.getItem(f.Title)" /></td></tr>
+			<tr><td><span tal:content="f/Title" />:</td><td>
+			<tal:block tal:define="fieldname f/Title; fieldvalue python:here.getItem(f.Title)">
+				<span metal:use-macro="here/Fields/macros/DefaultFieldRead">
+				field rendering in read mode
+				</span>
+			</tal:block>
+			</td></tr>
 		</tal:block>
 		</table>
 	</div>

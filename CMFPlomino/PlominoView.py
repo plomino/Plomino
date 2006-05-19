@@ -18,6 +18,7 @@ class PlominoView(BaseFolder):
 	schema = BaseFolderSchema + Schema(
 				(StringField('Description',widget=TextAreaWidget(label='Description')),
 				StringField('SelectionFormula',widget=TextAreaWidget(label='Selection formula')),
+				StringField('SortField',widget=TextAreaWidget(label='Field used to sort the view')),
 				StringField('FormFormula',widget=TextAreaWidget(label='Form formula'))
 				))
 	
@@ -25,7 +26,7 @@ class PlominoView(BaseFolder):
 	
 	actions = (
 		{
-		'id': 'View',
+		'id': 'view',
 		'name': 'View',
 		'action': 'string:${object_url}/OpenView',
 		'permissions': (CMFCorePermissions.View,)

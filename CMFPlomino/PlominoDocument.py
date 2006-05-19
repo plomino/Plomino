@@ -18,13 +18,13 @@ class PlominoDocument(BaseFolder):
 	
 	actions = (
 		{
-		'id': 'OpenDocument',
-		'name': 'Open',
+		'id': 'view',
+		'name': 'View',
 		'action': 'string:${object_url}/OpenDocument',
 		'permissions': (CMFCorePermissions.View,)
 		},
 		{
-		'id': 'EditDocument',
+		'id': 'edit',
 		'name': 'Edit',
 		'action': 'string:${object_url}/EditDocument',
 		'permissions': (CMFCorePermissions.View,)

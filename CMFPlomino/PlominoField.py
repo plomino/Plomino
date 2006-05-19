@@ -11,9 +11,12 @@ from Products.CMFPlomino.config import PROJECTNAME
 
 class PlominoField(BaseContent):
 	""" Plomino Form """
-	schema = BaseSchema + Schema(
-		StringField('Description',
-		widget=TextAreaWidget(label='Description')
+	FIELD_TYPES = [["TEXT", "Text"], ["INTEGER", "Integer"], ["RICHTEXT","Rich text"]]
+	
+	schema = BaseSchema + Schema((
+		StringField('Description', widget=TextAreaWidget(label='Description')),
+		StringField('FieldType',widget=SelectionWidget(label='Type'), vocabulary=FIELD_TYPES)
 		))
+		
 		
 registerType(PlominoField, PROJECTNAME)

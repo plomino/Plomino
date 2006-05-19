@@ -9,7 +9,14 @@
     <form tal:attributes="name python:here.getItem('Form')" action="saveDocument" method="POST">
     	<table>
 		<tal:block tal:define="plominoF python:here.getParentDatabase().getForm(here.getItem('Form'))" tal:repeat="f python:plominoF.getFields()">
-			<tr><td><span tal:content="f/Title" />:</td><td><input type="text" tal:attributes="name f/Title; value python:here.getItem(f.Title)" /></td></tr>
+			<tr><td>
+			<span tal:content="f/Title" /> (<span tal:content="python:f.getObject().FieldType" />):</td><td>
+			<tal:block tal:define="field f; fieldvalue python:here.getItem(f.Title)">
+				<span metal:use-macro="here/Fields/macros/FieldEdit" >
+				field rendering in edit mode
+				</span>
+			</tal:block>
+			</td></tr>
 		</tal:block>
 		</table>
 		<input type="submit" value="Submit"/>

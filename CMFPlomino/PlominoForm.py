@@ -9,7 +9,7 @@ from Products.CMFCore import CMFCorePermissions
 from AccessControl import ClassSecurityInfo
 from Products.Archetypes.utils import make_uuid
 
-from Products.CMFPlomino.config import PROJECTNAME
+from Products.CMFPlomino.config import *
 
 import PlominoDocument
 
@@ -32,14 +32,14 @@ class PlominoForm(BaseFolder):
 		
 	security = ClassSecurityInfo()
 	
-	security.declareProtected(CMFCorePermissions.View, 'createDocument')
+	security.declareProtected(CREATE_PERMISSION, 'createDocument')
 	def createDocument(self, REQUEST):
 		""" create a document using the forms submitted content """
 		db = self.getParentDatabase()
 		doc = db.createDocument()
 		doc.setTitle( doc.id )
 		doc.setItem('Form', self.getFormName())
-		
+	
 		for field in self.getFields():
 			fieldName = field.Title
 			submittedValue = REQUEST.get(fieldName)
