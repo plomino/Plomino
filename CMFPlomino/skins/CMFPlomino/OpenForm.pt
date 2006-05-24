@@ -6,9 +6,10 @@
 
 <metal:main fill-slot="main">
     <div id="bodyContent">
-		<tal:block tal:define="myF python:here.getParentDatabase().getForm(here.getItem('Form'))">
-			<span tal:content="structure python:here.openWithForm(myF)" />
-		</tal:block>
+    <form tal:attributes="name here/Title" action="createDocument" method="POST">
+		<span tal:content="structure python:here.formLayout()" />
+		<input type="submit" value="Submit"/>
+	</form>
 	</div>
 </metal:main>
 

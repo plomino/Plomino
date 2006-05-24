@@ -1,0 +1,12 @@
+<span metal:define-macro="AccessRights">
+	<h2>Your access rights</h2>
+	<span><u>Username:</u> <span tal:content="user/getUserName" /></span><br/>
+	<span><u>Roles:</u>
+	<tal:block tal:repeat="r user/getRoles">
+    	[<span tal:content="r" />]
+    </tal:block><br/>
+    Local:<tal:block tal:repeat="r python:here.get_local_roles_for_userid(user.getUserName())">
+    	[<span tal:content="r" />]
+    </tal:block>
+    </span><br/>
+</span>

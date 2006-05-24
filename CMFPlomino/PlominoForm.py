@@ -15,9 +15,9 @@ import PlominoDocument
 
 class PlominoForm(BaseFolder):
 	""" Plomino Form """
-	schema = BaseFolderSchema + Schema(
-		StringField('Description',
-		widget=TextAreaWidget(label='Description')
+	schema = BaseFolderSchema + Schema((
+		StringField('Description', widget=TextAreaWidget(label='Description')),
+		TextField('Layout', widget=RichWidget(label='Form layout'))
 		))
 	
 	content_icon = "PlominoForm.gif"
@@ -25,8 +25,8 @@ class PlominoForm(BaseFolder):
 	actions = (
 		{
 		'id': 'test',
-		'name': 'Test',
-		'action': 'string:${object_url}/form_test',
+		'name': 'Test Form',
+		'action': 'string:${object_url}/OpenForm',
 		'permissions': (CMFCorePermissions.View,)
 		},)
 		
@@ -55,5 +55,23 @@ class PlominoForm(BaseFolder):
 		
 	def getParentDatabase(self):
 		return self.getParentNode()
+	
+	security.declareProtected(CMFCorePermissions.View, 'formLayout')
+	def formLayout(self):
+		""" return the form layout in edit mode """
+		html_content = self.getField('Layout').get(self, mimetype='text/html')
+			
+		for field in self.getFields():
+			fieldName = field.Title
+			fieldValue = ''
+			fieldType = field.getObject().FieldType
+			try:
+				exec "pt = self."+fieldType+"FieldEdit"
+			except Exception:
+				pt = self.DefaultFieldEdit
+			field_render = pt(fieldname=fieldName, fieldvalue=fieldValue)
+			html_content = html_content.replace('#'+fieldName+'#', field_render)
+		
+		return html_content
 		
 registerType(PlominoForm, PROJECTNAME)

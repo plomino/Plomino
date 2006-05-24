@@ -1,0 +1,28 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en"
+      lang="en"
+      metal:use-macro="here/main_template/macros/master"
+      i18n:domain="plone">
+<body>
+
+<metal:main fill-slot="main">
+    <div id="bodyContent">
+    	<h1><tal:block replace="structure python:getattr(here, here.getIcon(1))"/><span tal:content="here/Title">database title</span></h1>
+		<p tal:content="here/Description">description</p>
+		<p tal:repeat="v python:here.getViews()">
+			<a href="#" tal:attributes="href v/getURL" tal:content="v/Title">view link</a>
+			<br/>
+		</p>
+		Roles:
+		<p tal:repeat="r python:here.getRoles()">
+			<span tal:content="r">role</span>
+			<br/>
+		</p>
+		<span metal:use-macro="here/AccessControl/macros/AccessRights" >
+			current user access rights
+		</span>
+	</div>
+</metal:main>
+
+</body>
+</html>
+

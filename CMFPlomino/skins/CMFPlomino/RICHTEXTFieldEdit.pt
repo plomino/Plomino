@@ -1,0 +1,3 @@
+<span>
+	<textarea tal:attributes="name options/fieldname"><tal:block tal:content="options/fieldvalue">my value</tal:block></textarea>
+</span>

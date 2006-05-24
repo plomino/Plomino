@@ -42,7 +42,10 @@ class PlominoDocument(BaseFolder):
 		self.items = items
 	
 	def getItem(self, name):
-		return self.items[name]
+		if(self.items.has_key(name)):
+			return self.items[name]
+		else:
+			return ''
 		
 	def getItems(self):
 		return self.items.keys()
@@ -70,5 +73,33 @@ class PlominoDocument(BaseFolder):
 			self.setItem(fieldName, submittedValue)
 		
 		REQUEST.RESPONSE.redirect('./OpenDocument')
+	
+	security.declareProtected(CMFCorePermissions.View, 'openWithForm')
+	def openWithForm(self, form):
+		""" display the document using the given form's layout """
+		html_content = form.getField('Layout').get(form, mimetype='text/html')
+		for field in form.getFields():
+			fieldName = field.Title
+			html_content = html_content.replace('#'+fieldName+'#', self.getItem(fieldName))
+		
+		return html_content
+		
+	security.declareProtected(CMFCorePermissions.View, 'editWithForm')
+	def editWithForm(self, form):
+		""" edit the document using the given form's layout """
+		html_content = form.getField('Layout').get(form, mimetype='text/html')
+			
+		for field in form.getFields():
+			fieldName = field.Title
+			fieldValue = self.getItem(fieldName)
+			fieldType = field.getObject().FieldType
+			try:
+				exec "pt = self."+fieldType+"FieldEdit"
+			except Exception:
+				pt = self.DefaultFieldEdit
+			field_render = pt(fieldname=fieldName, fieldvalue=fieldValue)
+			html_content = html_content.replace('#'+fieldName+'#', field_render)
+		
+		return html_content
 			
 registerType(PlominoDocument, PROJECTNAME)

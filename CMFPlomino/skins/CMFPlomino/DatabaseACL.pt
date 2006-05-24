@@ -6,9 +6,14 @@
 
 <metal:main fill-slot="main">
     <div id="bodyContent">
-		<tal:block tal:define="myF python:here.getParentDatabase().getForm(here.getItem('Form'))">
-			<span tal:content="structure python:here.openWithForm(myF)" />
-		</tal:block>
+    <form name="ACLForm" action="updateACL" method="POST">
+    	Roles:
+		<p tal:repeat="r python:here.getRoles()">
+			<span tal:content="r">role</span>
+			<br/>
+		</p>
+		<input type="submit" value="Set ACL"/>
+	</form>
 	</div>
 </metal:main>
 
