@@ -81,7 +81,17 @@ class PlominoDocument(BaseFolder):
 		for field in form.getFields():
 			fieldName = field.Title
 			html_content = html_content.replace('#'+fieldName+'#', self.getItem(fieldName))
-		
+			
+		for action in form.getActions():
+			actionName = action.Title
+			actionDisplay = action.getObject().ActionDisplay
+			try:
+				exec "pt = self."+actionDisplay+"Action"
+			except Exception:
+				pt = self.LINKAction
+			action_render = pt(plominoaction=action, plominotarget=self)
+			html_content = html_content.replace('#Action:'+actionName+'#', action_render)
+			
 		return html_content
 		
 	security.declareProtected(CMFCorePermissions.View, 'editWithForm')
@@ -99,7 +109,17 @@ class PlominoDocument(BaseFolder):
 				pt = self.DefaultFieldEdit
 			field_render = pt(fieldname=fieldName, fieldvalue=fieldValue)
 			html_content = html_content.replace('#'+fieldName+'#', field_render)
-		
+			
+		for action in form.getActions():
+			actionName = action.Title
+			actionDisplay = action.getObject().ActionDisplay
+			try:
+				exec "pt = self."+actionDisplay+"Action"
+			except Exception:
+				pt = self.LINKAction
+			action_render = pt(plominoaction=action, plominotarget=self)
+			html_content = html_content.replace('#Action:'+actionName+'#', action_render)
+			
 		return html_content
 			
 registerType(PlominoDocument, PROJECTNAME)

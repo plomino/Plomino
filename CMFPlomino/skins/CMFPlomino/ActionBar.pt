@@ -1,0 +1,27 @@
+<span metal:define-macro="ActionBar">
+	<table><tr>
+		<tal:block tal:repeat="a python:owner.getActions()">
+	    	<td>
+	    	<tal:block tal:define="plominoaction python:a.getObject(); plominotarget python:here">
+	    		<span metal:use-macro="here/ActionBar/macros/LinkAction" >
+					display action as a link
+				</span>
+			</tal:block>
+			</td>
+	    </tal:block>
+    </tr></table>
+</span>
+
+<span metal:define-macro="LinkAction">
+	<a tal:attributes="href python:plominoaction.executeAction(plominotarget)"
+	    			tal:content="python: plominoaction.Label" />
+</span>
+
+<span metal:define-macro="SubmitAction">
+	<input type="submit" tal:attributes="value python: plominoaction.Label" />
+</span>
+
+<span metal:define-macro="ButtonAction">
+	<input type="button" tal:attributes="onclick python:plominoaction.executeAction(plominotarget);
+								value python: plominoaction.Label" />
+</span>

@@ -6,6 +6,11 @@
 
 <metal:main fill-slot="main">
     <div id="bodyContent">
+	<tal:block tal:define="owner python:here">
+		<span metal:use-macro="here/ActionBar/macros/ActionBar" >
+			display form actions
+		</span>
+	</tal:block>
     <form tal:attributes="name here/Title" action="createDocument" method="POST">
 		<span tal:content="structure python:here.formLayout()" />
 		<input type="submit" value="Submit"/>

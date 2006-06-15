@@ -34,7 +34,7 @@ class PlominoView(BaseFolder):
 		)
 		
 	security = ClassSecurityInfo()
-	
+		
 	security.declareProtected(CMFCorePermissions.View, 'getViewName')
 	def getViewName(self):
 		return self.Title()
@@ -52,6 +52,8 @@ class PlominoView(BaseFolder):
 		
 	def getColumns(self):
 		return self.getFolderContents(contentFilter = {'portal_type' : ['PlominoColumn']})
-		
+
+	def getActions(self):
+		return self.getFolderContents(contentFilter = {'portal_type' : ['PlominoAction']})
 		
 registerType(PlominoView, PROJECTNAME)

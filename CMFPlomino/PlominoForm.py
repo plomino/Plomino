@@ -24,8 +24,8 @@ class PlominoForm(BaseFolder):
 	
 	actions = (
 		{
-		'id': 'test',
-		'name': 'Test Form',
+		'id': 'compose',
+		'name': 'Compose',
 		'action': 'string:${object_url}/OpenForm',
 		'permissions': (CMFCorePermissions.View,)
 		},)
@@ -73,5 +73,8 @@ class PlominoForm(BaseFolder):
 			html_content = html_content.replace('#'+fieldName+'#', field_render)
 		
 		return html_content
+		
+	def getActions(self):
+		return self.getFolderContents(contentFilter = {'portal_type' : ['PlominoAction']})
 		
 registerType(PlominoForm, PROJECTNAME)

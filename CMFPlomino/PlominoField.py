@@ -15,7 +15,6 @@ class PlominoField(BaseContent):
 	
 	schema = BaseSchema + Schema((
 		StringField('Description', widget=TextAreaWidget(label='Description')),
-		StringField('Label', widget=TextAreaWidget(label='Label')),
 		StringField('FieldType',widget=SelectionWidget(label='Type'), vocabulary=FIELD_TYPES)
 		))
 		

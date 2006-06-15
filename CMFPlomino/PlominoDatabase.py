@@ -64,6 +64,11 @@ class PlominoDatabase(BaseFolder):
 		""" return a PlominoForm """
 		f = self.getFolderContents(contentFilter = {'portal_type' : ['PlominoForm'], 'title' : formname})
 		return self._getOb(f[0].id)
+		
+	def getView(self, viewname):
+		""" return a PlominoView """
+		v = self.getFolderContents(contentFilter = {'portal_type' : ['PlominoView'], 'title' : viewname})
+		return self._getOb(v[0].id)
 	
 	security.declareProtected(CREATE_PERMISSION, 'createDocument')
 	def createDocument(self):
