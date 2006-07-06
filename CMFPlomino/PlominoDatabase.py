@@ -11,6 +11,8 @@ from AccessControl import ClassSecurityInfo
 
 from Products.CMFPlomino.config import *
 
+from PlominoIndex import PlominoIndex
+
 class PlominoDatabase(BaseFolder):
 	""" Plomino DB """
 	schema = BaseFolderSchema + Schema(
@@ -51,6 +53,8 @@ class PlominoDatabase(BaseFolder):
 	def __init__(self, oid, **kw):
 		BaseFolder.__init__(self, oid, **kw)
 		self.ACL_initialized=0
+		index = PlominoIndex()
+		self._setObject(index.getId(), index)
 		
 	def getForms(self):
 		""" return the database forms list """
@@ -127,11 +131,17 @@ class PlominoDatabase(BaseFolder):
 			CMFCorePermissions.View])
 		self.ACL_initialized=1
 	
+		
 	security.declareProtected(CMFCorePermissions.View, 'updateACL')
 	def updateACL(self, REQUEST):
 		""" update the ACL settings """
 		if self.ACL_initialized==0:
 			self.initializeACL()
 		REQUEST.RESPONSE.redirect('../OpenDatabase')
+		
+	security.declareProtected(CMFCorePermissions.View, 'getIndex')
+	def getIndex(self):
+		""" return the database index """
+		return self._getOb('plomino_index')
 		
 registerType(PlominoDatabase, PROJECTNAME)

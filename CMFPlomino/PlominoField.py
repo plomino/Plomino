@@ -6,8 +6,9 @@
 
 from Products.Archetypes.public import *
 from Products.CMFCore import CMFCorePermissions
+from AccessControl import ClassSecurityInfo
 
-from Products.CMFPlomino.config import PROJECTNAME
+from Products.CMFPlomino.config import *
 
 class PlominoField(BaseContent):
 	""" Plomino Form """
@@ -18,5 +19,13 @@ class PlominoField(BaseContent):
 		StringField('FieldType',widget=SelectionWidget(label='Type'), vocabulary=FIELD_TYPES)
 		))
 		
-		
+	security = ClassSecurityInfo()
+
+	security.declareProtected(DESIGN_PERMISSION, 'update')
+	def update(self, **kwargs):
+		db = self.getParentDatabase()
+		db.Description='yiya'
+		db.getIndex().createIndex(self.Title)
+		BaseContent.update(self, **kwargs)
+			
 registerType(PlominoField, PROJECTNAME)

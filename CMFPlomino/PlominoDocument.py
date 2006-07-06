@@ -121,5 +121,29 @@ class PlominoDocument(BaseFolder):
 			html_content = html_content.replace('#Action:'+actionName+'#', action_render)
 			
 		return html_content
-			
+	
+	security.declarePrivate('manage_afterAdd')
+	def manage_afterAdd(self, item, container):
+		db = self.getParentDatabase()
+		db.getIndex().catalog_object(self)
+		BaseFolder.manage_afterAdd(self, item, container)
+	
+	security.declarePrivate('manage_afterClone')
+	def manage_afterClone(self, item):
+		BaseFolder.manage_afterClone(self, item)
+        
+	security.declarePrivate('manage_beforeDelete')
+	def manage_beforeDelete(self, item, container):
+		db = self.getParentDatabase()
+		db.Description='yoyo'
+		BaseFolder.manage_beforeDelete(self, item, container)
+		
+	def __getattr__(self, name):
+		"""Overloads getattr
+		"""
+		if(self.items.has_key(name)):
+			return self.items[name]
+		else:
+			return BaseFolder.__getattr__(self, name)
+	
 registerType(PlominoDocument, PROJECTNAME)

@@ -6,6 +6,7 @@
 
 <metal:main fill-slot="main">
     <div id="bodyContent">
+    TEST=<span tal:content="here/azerty">test</span>
 		<tal:block tal:define="myF python:here.getParentDatabase().getForm(here.getItem('Form'))">
 			<tal:block tal:define="owner python:myF">
 	    		<span metal:use-macro="here/ActionBar/macros/ActionBar" >
