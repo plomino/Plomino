@@ -7,14 +7,24 @@
 from Products.Archetypes.public import *
 from Products.CMFCore import CMFCorePermissions
 from AccessControl import ClassSecurityInfo
+from Products.CMFCore.utils import getToolByName
+
+from Acquisition import *
+from ZPublisher import xmlrpc
+from zLOG import LOG, ERROR
 
 from Products.CMFPlomino.config import PROJECTNAME
 
-class PlominoDocument(BaseFolder):
+import PlominoDatabase
+import PlominoView
+        
+class PlominoDocument(Implicit, BaseFolder):
 	""" Plomino Document """
 	schema = BaseFolderSchema
 	
 	content_icon = "PlominoDocument.gif"
+	
+	__allow_access_to_unprotected_subobjects__ = 1
 	
 	actions = (
 		{
@@ -31,10 +41,11 @@ class PlominoDocument(BaseFolder):
 		},)
 		
 	security = ClassSecurityInfo()
-	
+        
 	def __init__(self, oid, **kw):
 		BaseFolder.__init__(self, oid, **kw)
 		self.items={}
+		self._parentdatabase=None
 		
 	def setItem(self, name, value):
 		items = self.items
@@ -51,8 +62,15 @@ class PlominoDocument(BaseFolder):
 		return self.items.keys()
     
 	def getParentDatabase(self):
-		return self.getParentNode()
+		if aq_parent(self) is not None:
+			return self.getParentNode()
+		else:
+			return self._parentdatabase
+		
+	def setParentDatabase(self, db):
+		self._parentdatabase = db
 	
+	security.declareProtected(CMFCorePermissions.View, 'evaluate')
 	def evaluate(self, formula):
 		try:
 			exec "result = " + formula
@@ -71,6 +89,8 @@ class PlominoDocument(BaseFolder):
 			fieldName = field.Title
 			submittedValue = REQUEST.get(fieldName)
 			self.setItem(fieldName, submittedValue)
+		
+		db.getIndex().indexDocument(self)
 		
 		REQUEST.RESPONSE.redirect('./OpenDocument')
 	
@@ -122,12 +142,6 @@ class PlominoDocument(BaseFolder):
 			
 		return html_content
 	
-	security.declarePrivate('manage_afterAdd')
-	def manage_afterAdd(self, item, container):
-		db = self.getParentDatabase()
-		db.getIndex().catalog_object(self)
-		BaseFolder.manage_afterAdd(self, item, container)
-	
 	security.declarePrivate('manage_afterClone')
 	def manage_afterClone(self, item):
 		BaseFolder.manage_afterClone(self, item)
@@ -135,15 +149,51 @@ class PlominoDocument(BaseFolder):
 	security.declarePrivate('manage_beforeDelete')
 	def manage_beforeDelete(self, item, container):
 		db = self.getParentDatabase()
-		db.Description='yoyo'
+		db.getIndex().unindexDocument(self)
 		BaseFolder.manage_beforeDelete(self, item, container)
 		
 	def __getattr__(self, name):
-		"""Overloads getattr
+		"""Overloads getattr to return item values, view selection formula evaluation
+		   and views columns values as attibutes
 		"""
-		if(self.items.has_key(name)):
-			return self.items[name]
+		if(name.startswith("PlominoViewFormula_")):
+			param = name.split('_')
+			viewname=param[1]
+			return self.isSelectedInView(viewname)
+		elif(name.startswith("PlominoViewColumn_")):
+			param = name.split('_')
+			viewname=param[1]
+			columnname=param[2]
+			return self.computeColumnValue(viewname, columnname)
 		else:
-			return BaseFolder.__getattr__(self, name)
-	
+			if(self.items.has_key(name)):
+				return self.items[name]
+			else:
+				return BaseFolder.__getattr__(self, name)
+        
+	security.declareProtected(CMFCorePermissions.View, 'isSelectedInView')
+	def isSelectedInView(self, viewname):
+		db = self.getParentDatabase()
+		v = db.getView(viewname)
+		# plominoDocument is the reserved name used in selection formulae
+		plominoDocument = self
+		try:
+			exec "result = " + v.getSelectionFormula()
+		except Exception:
+			result = False
+		return result
+		
+	security.declareProtected(CMFCorePermissions.View, 'isSelectedInView')
+	def computeColumnValue(self, viewname, columnname):
+		db = self.getParentDatabase()
+		v = db.getView(viewname)
+		# plominoDocument is the reserved name used in column formulae
+		plominoDocument = self
+		try:
+			exec "result = " + v.getColumn(columnname).getFormula()
+		except Exception:
+			result = False
+		return result
+
+		
 registerType(PlominoDocument, PROJECTNAME)

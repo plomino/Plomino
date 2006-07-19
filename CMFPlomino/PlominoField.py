@@ -11,7 +11,7 @@ from AccessControl import ClassSecurityInfo
 from Products.CMFPlomino.config import *
 
 class PlominoField(BaseContent):
-	""" Plomino Form """
+	""" Plomino Field """
 	FIELD_TYPES = [["TEXT", "Text"], ["INTEGER", "Integer"], ["RICHTEXT","Rich text"]]
 	
 	schema = BaseSchema + Schema((
@@ -21,11 +21,14 @@ class PlominoField(BaseContent):
 		
 	security = ClassSecurityInfo()
 
-	security.declareProtected(DESIGN_PERMISSION, 'update')
-	def update(self, **kwargs):
+	def at_post_edit_script(self):
 		db = self.getParentDatabase()
-		db.Description='yiya'
-		db.getIndex().createIndex(self.Title)
-		BaseContent.update(self, **kwargs)
-			
+		#db.Description= 'yi'+self.Title()+'yo'
+		db.getIndex().createIndex(self.Title())
+	
+	def at_post_create_script(self):
+		db = self.getParentDatabase()
+		db.getIndex().createIndex(self.Title())
+        
+		
 registerType(PlominoField, PROJECTNAME)

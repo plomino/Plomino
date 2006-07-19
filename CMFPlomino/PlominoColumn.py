@@ -15,5 +15,24 @@ class PlominoColumn(BaseContent):
 		StringField('Formula',
 		widget=TextAreaWidget(label='Formula')
 		))
+	
+	def getColumnName(self):
+		return self.Title()
+		
+	def getParentView(self):
+		return self.getParentNode()
+		
+	def at_post_edit_script(self):
+		v = self.getParentView()
+		v.declareColumn(self.getColumnName(), self)
+	
+	def at_post_create_script(self):
+		v = self.getParentView()
+		v.declareColumn(self.getColumnName(), self)
+		
+	def manage_beforeDelete(self, item, container):
+		v = self.getParentView()
+		v.undeclareColumn(self.getColumnName())
+		BaseFolder.manage_beforeDelete(self, item, container)
 		
 registerType(PlominoColumn, PROJECTNAME)

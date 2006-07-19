@@ -24,9 +24,12 @@
             </tal:block>
             </tr>
 		<tal:block tal:define="columns python:here.getColumns()" tal:repeat="doc python:here.getAllDocuments()">
-			<tr><td><a href="#" tal:attributes="href python:'../'+doc[0]+'/OpenDocument'">Go</a></td>
+			<tr><td><a href="#" tal:attributes="href doc/getPath">Go</a></td>
 				<tal:block tal:repeat="c columns">
-					<td><span tal:content="python:doc[1].evaluate(str(c.getObject().Formula))" /></td>
+					<td><span tal:define="cname c/Title;
+										vname here/Title;
+										cvalue python:path('doc/PlominoViewColumn_%s_%s' % (vname, cname))"
+								tal:content="cvalue" /></td>
 				</tal:block>
 			</tr>
 		</tal:block>

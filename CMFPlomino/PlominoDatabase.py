@@ -22,6 +22,8 @@ class PlominoDatabase(BaseFolder):
 	
 	content_icon = "PlominoDatabase.gif"
 	
+	__allow_access_to_unprotected_subobjects__ = 1
+	
 	security = ClassSecurityInfo()
 	
 	actions = (
@@ -55,6 +57,9 @@ class PlominoDatabase(BaseFolder):
 		self.ACL_initialized=0
 		index = PlominoIndex()
 		self._setObject(index.getId(), index)
+		design = {}
+		design['views'] = {}
+		self._design = design
 		
 	def getForms(self):
 		""" return the database forms list """
@@ -68,18 +73,28 @@ class PlominoDatabase(BaseFolder):
 		""" return a PlominoForm """
 		f = self.getFolderContents(contentFilter = {'portal_type' : ['PlominoForm'], 'title' : formname})
 		return self._getOb(f[0].id)
-		
+			
 	def getView(self, viewname):
 		""" return a PlominoView """
-		v = self.getFolderContents(contentFilter = {'portal_type' : ['PlominoView'], 'title' : viewname})
-		return self._getOb(v[0].id)
-	
+		#v = self.getFolderContents(contentFilter = {'portal_type' : ['PlominoView'], 'title' : viewname})
+		#return self._getOb(v[0].id)
+		views = self._design['views']
+		if views.has_key(viewname):
+			v = views[viewname]
+			if hasattr(v, '__of__'):
+				v = v.__of__(self)
+			return v
+		else:
+			return None
+		
 	security.declareProtected(CREATE_PERMISSION, 'createDocument')
 	def createDocument(self):
 		""" create a unique ID and invoke PlominoDocument factory """
 		newid = make_uuid()
 		self.invokeFactory( type_name='PlominoDocument', id=newid)
-		return self._getOb( newid )
+		doc = self._getOb( newid )
+		doc.setParentDatabase(self)
+		return doc
 		
 	def getRoles(self):
 		""" return the database roles list """
@@ -143,5 +158,21 @@ class PlominoDatabase(BaseFolder):
 	def getIndex(self):
 		""" return the database index """
 		return self._getOb('plomino_index')
+			
+	def declareDesign(self, design_type, design_name, design_obj):
+		""" declare a design element """
+		design = self._design
+		elements = design[design_type]
+		elements[design_name] = design_obj
+		design[design_type] = elements
+		self._design = design
+	
+	def undeclareDesign(self, design_type, design_name):
+		""" undeclare a design element """
+		design = self._design
+		elements = design[design_type]
+		del elements[design_name]
+		design[design_type] = elements
+		self._design = design
 		
 registerType(PlominoDatabase, PROJECTNAME)

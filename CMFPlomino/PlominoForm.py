@@ -45,6 +45,8 @@ class PlominoForm(BaseFolder):
 			submittedValue = REQUEST.get(fieldName)
 			doc.setItem(fieldName, submittedValue)
 		
+		db.getIndex().indexDocument(doc)
+		
 		REQUEST.RESPONSE.redirect('../'+doc.id+'/OpenDocument')
 		
 	def getFields(self):
