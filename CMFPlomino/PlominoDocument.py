@@ -10,38 +10,36 @@ from AccessControl import ClassSecurityInfo
 from Products.CMFCore.utils import getToolByName
 
 from Acquisition import *
-from ZPublisher import xmlrpc
 from zLOG import LOG, ERROR
 
-from Products.CMFPlomino.config import PROJECTNAME
+from Products.CMFPlomino.config import *
 
 import PlominoDatabase
 import PlominoView
-        
+		
 class PlominoDocument(Implicit, BaseFolder):
 	""" Plomino Document """
 	schema = BaseFolderSchema
 	
 	content_icon = "PlominoDocument.gif"
 	
-	__allow_access_to_unprotected_subobjects__ = 1
-	
 	actions = (
 		{
 		'id': 'view',
 		'name': 'View',
 		'action': 'string:${object_url}/OpenDocument',
-		'permissions': (CMFCorePermissions.View,)
 		},
 		{
 		'id': 'edit',
 		'name': 'Edit',
 		'action': 'string:${object_url}/EditDocument',
-		'permissions': (CMFCorePermissions.View,)
+		'permissions': (EDIT_PERMISSION)
 		},)
-		
+	
 	security = ClassSecurityInfo()
-        
+	
+	security.declareProtected(READ_PERMISSION, 'OpenDocument')
+	
 	def __init__(self, oid, **kw):
 		BaseFolder.__init__(self, oid, **kw)
 		self.items={}
@@ -70,37 +68,85 @@ class PlominoDocument(Implicit, BaseFolder):
 	def setParentDatabase(self, db):
 		self._parentdatabase = db
 	
-	security.declareProtected(CMFCorePermissions.View, 'evaluate')
-	def evaluate(self, formula):
-		try:
-			exec "result = " + formula
-		except Exception:
-			result = "Error"
-		return result
-
-	security.declareProtected(CMFCorePermissions.View, 'saveDocument')
+	security.declareProtected(EDIT_PERMISSION, 'saveDocument')
 	def saveDocument(self, REQUEST):
 		""" save a document using the form submitted content """
 		db = self.getParentDatabase()
 		form = db.getForm(REQUEST.get('Form'))
 		self.setItem('Form', form.getFormName())
 		
+		# for editable field, we read the submitted value in the request,
+		# for computed fields we refresh the value
 		for field in form.getFields():
-			fieldName = field.Title
-			submittedValue = REQUEST.get(fieldName)
-			self.setItem(fieldName, submittedValue)
+			f = field.getObject()
+			mode = f.getFieldMode()
+			fieldName = f.Title()
+			if mode=="EDITABLE":
+				submittedValue = REQUEST.get(fieldName)
+				self.setItem(fieldName, submittedValue)
+			elif mode=="COMPUTED":
+				# plominoDocument is the reserved name used in field formulae
+				plominoDocument = self
+				try:
+					exec "result = " + f.getFormula()
+				except Exception:
+					result = "Error"
+				self.setItem(fieldName, result)
+			else:
+				# computed for display field are not stored
+				pass
+				
+		# update the Plomino_Authors field with the current user name
+		authors = self.getItem('Plomino_Authors')
+		membershiptool = getToolByName(self, 'portal_membership')
+		name = membershiptool.getAuthenticatedMember().getUserName()
+		if authors == '':
+			authors = []
+		elif name in authors:
+			pass
+		else:
+			authors.append(name)
+		LOG('Plomino', ERROR, name)
+		self.setItem('Plomino_Authors', authors)
 		
 		db.getIndex().indexDocument(self)
-		
-		REQUEST.RESPONSE.redirect('./OpenDocument')
+		REQUEST.RESPONSE.redirect(self.absolute_url())
 	
-	security.declareProtected(CMFCorePermissions.View, 'openWithForm')
-	def openWithForm(self, form):
+	security.declareProtected(READ_PERMISSION, 'getFieldRender')
+	def getFieldRender(self, form, field, editmode):
+		mode = field.getFieldMode()
+		fieldName = field.Title()
+		if mode=="EDITABLE":
+			fieldValue = self.getItem(fieldName)
+			if editmode:
+				fieldType = field.FieldType
+				try:
+					exec "pt = self."+fieldType+"FieldEdit"
+				except Exception:
+					pt = self.DefaultFieldEdit
+				return pt(fieldname=fieldName, fieldvalue=fieldValue)
+			else:	
+				return fieldValue
+			
+		if mode=="DISPLAY" or mode=="COMPUTED":
+			# plominoDocument is the reserved name used in field formulae
+			plominoDocument = self
+			try:
+				exec "result = " + field.getFormula()
+			except Exception:
+				result = "Error"
+			return result
+	
+	security.declareProtected(READ_PERMISSION, 'openWithForm')
+	def openWithForm(self, form, editmode=False):
 		""" display the document using the given form's layout """
 		html_content = form.getField('Layout').get(form, mimetype='text/html')
+		if editmode:
+			html_content = "<input type='hidden' name='Form' value='"+form.getFormName()+"' />" + html_content
+			
 		for field in form.getFields():
 			fieldName = field.Title
-			html_content = html_content.replace('#'+fieldName+'#', self.getItem(fieldName))
+			html_content = html_content.replace('#'+fieldName+'#', self.getFieldRender(form, field.getObject(), editmode))
 			
 		for action in form.getActions():
 			actionName = action.Title
@@ -113,34 +159,10 @@ class PlominoDocument(Implicit, BaseFolder):
 			html_content = html_content.replace('#Action:'+actionName+'#', action_render)
 			
 		return html_content
-		
-	security.declareProtected(CMFCorePermissions.View, 'editWithForm')
+	
+	security.declareProtected(EDIT_PERMISSION, 'editWithForm')
 	def editWithForm(self, form):
-		""" edit the document using the given form's layout """
-		html_content = form.getField('Layout').get(form, mimetype='text/html')
-			
-		for field in form.getFields():
-			fieldName = field.Title
-			fieldValue = self.getItem(fieldName)
-			fieldType = field.getObject().FieldType
-			try:
-				exec "pt = self."+fieldType+"FieldEdit"
-			except Exception:
-				pt = self.DefaultFieldEdit
-			field_render = pt(fieldname=fieldName, fieldvalue=fieldValue)
-			html_content = html_content.replace('#'+fieldName+'#', field_render)
-			
-		for action in form.getActions():
-			actionName = action.Title
-			actionDisplay = action.getObject().ActionDisplay
-			try:
-				exec "pt = self."+actionDisplay+"Action"
-			except Exception:
-				pt = self.LINKAction
-			action_render = pt(plominoaction=action, plominotarget=self)
-			html_content = html_content.replace('#Action:'+actionName+'#', action_render)
-			
-		return html_content
+		return self.openWithForm(form, True)
 	
 	security.declarePrivate('manage_afterClone')
 	def manage_afterClone(self, item):
@@ -171,7 +193,7 @@ class PlominoDocument(Implicit, BaseFolder):
 			else:
 				return BaseFolder.__getattr__(self, name)
         
-	security.declareProtected(CMFCorePermissions.View, 'isSelectedInView')
+	security.declareProtected(READ_PERMISSION, 'isSelectedInView')
 	def isSelectedInView(self, viewname):
 		db = self.getParentDatabase()
 		v = db.getView(viewname)
@@ -183,7 +205,7 @@ class PlominoDocument(Implicit, BaseFolder):
 			result = False
 		return result
 		
-	security.declareProtected(CMFCorePermissions.View, 'isSelectedInView')
+	security.declareProtected(READ_PERMISSION, 'isSelectedInView')
 	def computeColumnValue(self, viewname, columnname):
 		db = self.getParentDatabase()
 		v = db.getView(viewname)
@@ -194,6 +216,5 @@ class PlominoDocument(Implicit, BaseFolder):
 		except Exception:
 			result = False
 		return result
-
 		
 registerType(PlominoDocument, PROJECTNAME)

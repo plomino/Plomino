@@ -10,7 +10,7 @@ from AccessControl import ClassSecurityInfo
 from Products.CMFCore.utils import getToolByName
 from Acquisition import aq_parent
 
-from Products.CMFPlomino.config import PROJECTNAME
+from Products.CMFPlomino.config import PROJECTNAME, READ_PERMISSION
 
 import PlominoDocument
 
@@ -26,14 +26,12 @@ class PlominoView(BaseFolder):
 	
 	content_icon = "PlominoView.gif"
 	
-	__allow_access_to_unprotected_subobjects__ = 1
-	
 	actions = (
 		{
 		'id': 'view',
 		'name': 'View',
 		'action': 'string:${object_url}/OpenView',
-		'permissions': (CMFCorePermissions.View,)
+		'permissions': (READ_PERMISSION)
 		},
 		)
 		
@@ -44,7 +42,6 @@ class PlominoView(BaseFolder):
 		columns = {}
 		self._columns = columns
 		
-	security.declareProtected(CMFCorePermissions.View, 'getViewName')
 	def getViewName(self):
 		return self.Title()
 		

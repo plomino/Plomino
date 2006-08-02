@@ -29,10 +29,10 @@ class PlominoAction(BaseContent):
 		""" return the action resulting url """
 		db = self.getParentDatabase()
 		if self.ActionType == "OPENFORM":
-			form = db.getForm(self.Content)
+			form = db.getForm(self.Content())
 			return form.absolute_url() + '/OpenForm'
 		elif self.ActionType == "OPENVIEW":
-			view = db.getView(self.Content)
+			view = db.getView(self.Content())
 			return view.absolute_url() + '/OpenView'
 		elif self.ActionType == "CLOSE":
 			return db.absolute_url() + '/OpenDatabase'

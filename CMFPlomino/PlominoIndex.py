@@ -39,6 +39,8 @@ class PlominoIndex(UniqueObject, ZCatalog, ActionProviderBase):
 	
 	def __init__(self):
 		ZCatalog.__init__(self, self.getId())
+		self.createIndex('Form')
+		self.createIndex('Plomino_Authors')
         
 	security = ClassSecurityInfo()
 			

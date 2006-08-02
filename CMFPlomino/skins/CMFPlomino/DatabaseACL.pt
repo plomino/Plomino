@@ -6,14 +6,59 @@
 
 <metal:main fill-slot="main">
     <div id="bodyContent">
-    <form name="ACLForm" action="updateACL" method="POST">
-    	Roles:
-		<p tal:repeat="r python:here.getRoles()">
-			<span tal:content="r">role</span>
+    <form name="RemoveEntries" action="removeACLEntries" method="POST">
+    	<table>
+		<tr><td valign="top"><b>Readers:</b></td>
+		<td><tal:block tal:repeat="u python:here.getUsersForRight('PlominoReader')">
+			<input type="checkbox" name="users" tal:attributes="value u" /><span tal:content="u">user</span>	
 			<br/>
-		</p>
-		<input type="submit" value="Set ACL"/>
+		</tal:block>
+		</td></tr>
+		<tr><td valign="top"><b>Authors:</b></td>
+		<td><tal:block tal:repeat="u python:here.getUsersForRight('PlominoAuthor')">
+			<input type="checkbox" name="users" tal:attributes="value u" /><span tal:content="u">user</span>	
+			<br/>
+		</tal:block>
+		</td></tr>
+		<tr><td valign="top"><b>Editors:</b></td>
+		<td><tal:block tal:repeat="u python:here.getUsersForRight('PlominoEditor')">
+			<input type="checkbox" name="users" tal:attributes="value u" /><span tal:content="u">user</span>	
+			<br/>
+		</tal:block>
+		</td></tr>
+		<tr><td valign="top"><b>Designers:</b></td>
+		<td><tal:block tal:repeat="u python:here.getUsersForRight('PlominoDesigner')">
+			<input type="checkbox" name="users" tal:attributes="value u" /><span tal:content="u">user</span>	
+			<br/>
+		</tal:block>
+		</td></tr>
+		<tr><td valign="top"><b>Managers:</b></td>
+		<td><tal:block tal:repeat="u python:here.getUsersForRight('PlominoManager')">
+			<input type="checkbox" name="users" tal:attributes="value u" /><span tal:content="u">user</span>	
+			<br/>
+		</tal:block>
+		</td></tr>
+		</table>
+		<input type="submit" value="Remove selected users"/>
 	</form>
+	<br/>
+	<form name="AddEntry" action="addACLEntry" method="POST">
+		Add ACL entry:<select name="newuser">
+			<tal:block tal:repeat="u here/get_valid_userids">
+				<option tal:content="u" tal:attributes="value u">user</option>
+				<br/>
+			</tal:block>
+		</select>
+		<select name="accessright">
+			<option value="PlominoReader">PlominoReader</option>
+			<option value="PlominoAuthor">PlominoAuthor</option>
+			<option value="PlominoEditor">PlominoEditor</option>
+			<option value="PlominoDesigner">PlominoDesigner</option>
+			<option value="PlominoManager">PlominoManager</option>
+		</select>
+		<input type="submit" value="Add"/>
+	</form>
+
 	</div>
 </metal:main>
 

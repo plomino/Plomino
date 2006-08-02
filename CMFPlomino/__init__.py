@@ -7,14 +7,17 @@
 from Products.Archetypes.public import process_types, listTypes
 from Products.CMFCore import utils
 from Products.CMFCore.DirectoryView import registerDirectory
+from AccessControl.Permission import registerPermissions
 
-from Products.CMFPlomino.config import PROJECTNAME, ADD_CONTENT_PERMISSION, ADD_DESIGN_PERMISSION, SKINS_DIR
+from Products.CMFPlomino.config import *
 
 def initialize(context):
 	##Import Types here to register them
 	import PlominoDatabase, PlominoForm, PlominoField, PlominoDocument, PlominoView, PlominoColumn, PlominoAction
 	
 	registerDirectory(SKINS_DIR, globals())
+	
+	registerPermissions([(ADD_DESIGN_PERMISSION, []), (ADD_CONTENT_PERMISSION, []), (READ_PERMISSION, []), (EDIT_PERMISSION, []), (CREATE_PERMISSION, []), (REMOVE_PERMISSION, []), (DESIGN_PERMISSION, []), (ACL_PERMISSION, [])])
 	
 	content_types, constructors, ftis = process_types(listTypes(PROJECTNAME), PROJECTNAME)
 	

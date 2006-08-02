@@ -12,14 +12,7 @@
 			<a href="#" tal:attributes="href v/getURL" tal:content="v/Title">view link</a>
 			<br/>
 		</p>
-		Roles:
-		<p tal:repeat="r python:here.getRoles()">
-			<span tal:content="r">role</span>
-			<br/>
-		</p>
-		<span metal:use-macro="here/AccessControl/macros/AccessRights" >
-			current user access rights
-		</span>
+
 	</div>
 </metal:main>
 
