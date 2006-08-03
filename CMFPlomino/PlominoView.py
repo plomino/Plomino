@@ -79,6 +79,15 @@ class PlominoView(BaseFolder):
 		else:
 			return None
 			
+	def evaluateViewForm(self, doc):
+		# plominoDocument is the reserved name used in form formulae
+		plominoDocument = doc
+		try:
+			exec "result = " + self.getFormFormula()
+		except Exception:
+			result = ""
+		return result
+		
 	def at_post_edit_script(self):
 		db = self.getParentDatabase()
 		db.declareDesign('views', self.getViewName(), self)

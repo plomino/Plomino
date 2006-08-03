@@ -12,6 +12,8 @@ from Products.Archetypes.utils import make_uuid
 from Products.CMFPlomino.config import *
 from zLOG import LOG, ERROR
 
+import re
+
 import PlominoDocument
 
 class PlominoForm(BaseFolder):
@@ -45,6 +47,9 @@ class PlominoForm(BaseFolder):
 	def getFields(self):
 		return self.getFolderContents(contentFilter = {'portal_type' : ['PlominoField']})
 	
+	def getHidewhenFormulas(self):
+		return self.getFolderContents(contentFilter = {'portal_type' : ['PlominoHidewhen']})
+	
 	def getFormName(self):
 		""" return the form name """
 		return self.Title()
@@ -52,34 +57,69 @@ class PlominoForm(BaseFolder):
 	def getParentDatabase(self):
 		return self.getParentNode()
 	
-	def formLayout(self):
-		""" return the form layout in edit mode """
-		html_content = self.getField('Layout').get(self, mimetype='text/html')
-		html_content = "<input type='hidden' name='Form' value='"+self.getFormName()+"' />" + html_content
-		
-		for field in self.getFields():
-			fieldName = field.Title
-			fieldValue = ''
-			f = field.getObject()
-			mode = f.getFieldMode()
-			fieldType = f.FieldType
-			if mode=='EDITABLE':
+	security.declareProtected(READ_PERMISSION, 'getFieldRender')
+	def getFieldRender(self, doc, field, editmode):
+		mode = field.getFieldMode()
+		fieldName = field.Title()
+		if mode=="EDITABLE":
+			if doc is None:
+				fieldValue = ""
+			else:
+				fieldValue = doc.getItem(fieldName)
+			if editmode:
+				fieldType = field.FieldType
 				try:
 					exec "pt = self."+fieldType+"FieldEdit"
 				except Exception:
 					pt = self.DefaultFieldEdit
-				field_render = pt(fieldname=fieldName, fieldvalue=fieldValue)
-			else:
-				# plominoDocument is the reserved name used in field formulae
-				# we set it to None, so formulae dependent from plominoDocument
-				# will return null, and other ones will be computed
-				plominoDocument = None
-				try:
-					exec "field_render = " + field.getFormula()
-				except Exception:
-					field_render = ""
-			html_content = html_content.replace('#'+fieldName+'#', field_render)
+				return pt(fieldname=fieldName, fieldvalue=fieldValue)
+			else:	
+				return fieldValue
+			
+		if mode=="DISPLAY" or mode=="COMPUTED":
+			# plominoDocument is the reserved name used in field formulae
+			plominoDocument = doc
+			try:
+				exec "result = " + field.getFormula()
+			except Exception:
+				result = "Error"
+			return result
+	
+	security.declareProtected(READ_PERMISSION, 'displayDocument')
+	def displayDocument(self, doc, editmode=False):
+		""" display the document using the form's layout """
+		html_content = self.getField('Layout').get(self, mimetype='text/html')
 		
+		# remove the hiden content
+		for hidewhen in self.getHidewhenFormulas():
+			hidewhenName = hidewhen.Title
+			# plominoDocument is the reserved name used in field formulae
+			plominoDocument = doc
+			try:
+				exec "result = " + hidewhen.getObject().getFormula()
+			except Exception:
+				#if error, we hide anyway
+				result = True
+			start = '<span class="plominoHidewhenClass">start:'+hidewhenName+'</span>'
+			end = '<span class="plominoHidewhenClass">end:'+hidewhenName+'</span>'
+			if result:	
+				regexp = start+'.+'+end
+				html_content = re.sub(regexp,'', html_content)
+			else:
+				html_content = html_content.replace(start, '')
+				html_content = html_content.replace(end, '')
+				
+		#if editmode, we had a hidden field to handle the Form item value
+		if editmode:
+			html_content = "<input type='hidden' name='Form' value='"+self.getFormName()+"' />" + html_content
+		
+		# insert the fields with proper value and rendering
+		for field in self.getFields():
+			fieldName = field.Title
+			#html_content = html_content.replace('#'+fieldName+'#', self.getFieldRender(doc, field.getObject(), editmode))
+			html_content = html_content.replace('<span class="plominoFieldClass">'+fieldName+'</span>', self.getFieldRender(doc, field.getObject(), editmode))
+			
+		# insert the actions
 		for action in self.getActions():
 			actionName = action.Title
 			actionDisplay = action.getObject().ActionDisplay
@@ -87,10 +127,15 @@ class PlominoForm(BaseFolder):
 				exec "pt = self."+actionDisplay+"Action"
 			except Exception:
 				pt = self.LINKAction
-			action_render = pt(plominoaction=action, plominotarget=self)
-			html_content = html_content.replace('#Action:'+actionName+'#', action_render)
+			action_render = pt(plominoaction=action, plominotarget=doc)
+			#html_content = html_content.replace('#Action:'+actionName+'#', action_render)
+			html_content = html_content.replace('<span class="plominoActionClass">'+actionName+'</span>', action_render)
 			
 		return html_content
+	
+	def formLayout(self):
+		""" return the form layout in edit mode (used to compose a new document) """
+		return self.displayDocument(None, True)
 		
 	def getActions(self):
 		return self.getFolderContents(contentFilter = {'portal_type' : ['PlominoAction']})

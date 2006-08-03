@@ -22,6 +22,8 @@ class PlominoAction(BaseContent):
 		TextField('Content', widget=TextAreaWidget(label='Parameter or code'))
 		))
 	
+	content_icon = "PlominoAction.gif"
+	
 	security = ClassSecurityInfo()
 
 	security.declareProtected(CMFCorePermissions.View, 'executeAction')

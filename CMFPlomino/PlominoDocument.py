@@ -7,7 +7,7 @@
 from Products.Archetypes.public import *
 from Products.CMFCore import CMFCorePermissions
 from AccessControl import ClassSecurityInfo
-from Products.CMFCore.utils import getToolByName
+from AccessControl import Unauthorized
 
 from Acquisition import *
 from zLOG import LOG, ERROR
@@ -32,7 +32,7 @@ class PlominoDocument(Implicit, BaseFolder):
 		{
 		'id': 'edit',
 		'name': 'Edit',
-		'action': 'string:${object_url}/EditDocument',
+		'action': "python:here.navigationParent(here)+'/'+here.id+'/EditDocument'",
 		'permissions': (EDIT_PERMISSION)
 		},)
 	
@@ -98,8 +98,7 @@ class PlominoDocument(Implicit, BaseFolder):
 				
 		# update the Plomino_Authors field with the current user name
 		authors = self.getItem('Plomino_Authors')
-		membershiptool = getToolByName(self, 'portal_membership')
-		name = membershiptool.getAuthenticatedMember().getUserName()
+		name = db.getCurrentUser().getUserName()
 		if authors == '':
 			authors = []
 		elif name in authors:
@@ -140,29 +139,34 @@ class PlominoDocument(Implicit, BaseFolder):
 	security.declareProtected(READ_PERMISSION, 'openWithForm')
 	def openWithForm(self, form, editmode=False):
 		""" display the document using the given form's layout """
-		html_content = form.getField('Layout').get(form, mimetype='text/html')
+		# first, check if the user has proper access rights
 		if editmode:
-			html_content = "<input type='hidden' name='Form' value='"+form.getFormName()+"' />" + html_content
-			
-		for field in form.getFields():
-			fieldName = field.Title
-			html_content = html_content.replace('#'+fieldName+'#', self.getFieldRender(form, field.getObject(), editmode))
-			
-		for action in form.getActions():
-			actionName = action.Title
-			actionDisplay = action.getObject().ActionDisplay
-			try:
-				exec "pt = self."+actionDisplay+"Action"
-			except Exception:
-				pt = self.LINKAction
-			action_render = pt(plominoaction=action, plominotarget=self)
-			html_content = html_content.replace('#Action:'+actionName+'#', action_render)
-			
+			db = self.getParentDatabase()
+			if not db.checkUserPermission(EDIT_PERMISSION):
+				raise Unauthorized, "You cannot edit documents."
+			else:
+				if 'PlominoAuthor' in db.getCurrentUserRights():
+					authors = self.getItem('Plomino_Authors')
+					name = db.getCurrentUser().getUserName()
+					if not name in authors:
+						raise Unauthorized, "You are not part of the document authors."
+		# we use the specified form's layout
+		html_content = form.displayDocument(self, editmode)
 		return html_content
 	
 	security.declareProtected(EDIT_PERMISSION, 'editWithForm')
 	def editWithForm(self, form):
 		return self.openWithForm(form, True)
+	
+	def getForm(self):
+		""" try to acquire the formname using the parent view form formula, if nothing, use the Form item """
+		if hasattr(self, 'evaluateViewForm'):
+			formname = self.evaluateViewForm(self)
+			if formname == "":
+				formname = self.getItem('Form')
+		else:
+			formname = self.getItem('Form')
+		return self.getParentDatabase().getForm(formname)
 	
 	security.declarePrivate('manage_afterClone')
 	def manage_afterClone(self, item):
@@ -176,7 +180,7 @@ class PlominoDocument(Implicit, BaseFolder):
 		
 	def __getattr__(self, name):
 		"""Overloads getattr to return item values, view selection formula evaluation
-		   and views columns values as attibutes
+		   and views columns values as attibutes (so ZCatalog can read them)
 		"""
 		if(name.startswith("PlominoViewFormula_")):
 			param = name.split('_')

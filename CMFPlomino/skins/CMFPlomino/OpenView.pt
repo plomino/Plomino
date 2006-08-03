@@ -34,9 +34,6 @@
 			</tr>
 		</tal:block>
 		</table>
-		<span metal:use-macro="here/AccessControl/macros/AccessRights" >
-			current user access rights
-		</span>
 	</div>
 </metal:main>
 

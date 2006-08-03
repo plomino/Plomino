@@ -21,7 +21,9 @@ class PlominoField(BaseContent):
 		StringField('FieldMode',widget=SelectionWidget(label='Mode'), vocabulary=FIELD_MODES, default="EDITABLE"),
 		StringField('Formula',widget=TextAreaWidget(label='Formula'))
 		))
-		
+	
+	content_icon = "PlominoField.gif"
+	
 	security = ClassSecurityInfo()
 
 	def at_post_edit_script(self):

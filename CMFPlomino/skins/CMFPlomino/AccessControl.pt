@@ -2,26 +2,10 @@
 	<h2>Your access rights</h2>
 	<span><u>Username:</u> <span tal:content="user/getUserName" /></span><br/>
 	<span><u>Roles:</u>
-	<tal:block tal:repeat="r user/getRoles">
-    	[<span tal:content="r" />]
-    </tal:block><br/>
     Local:<tal:block tal:repeat="r python:here.get_local_roles_for_userid(user.getUserName())">
     	[<span tal:content="r" />]
     </tal:block><br/>
     In context:<tal:block tal:repeat="r python:user.getRolesInContext(here)">
     	[<span tal:content="r" />]
     </tal:block><br/>
-    Test permissions:<br/>
-    READ_PERMISSION:<span tal:content="python:here.checkUserPermission('CMFPlomino: Read documents', here)" /><br/>
-    EDIT_PERMISSION:<span tal:content="python:here.checkUserPermission('CMFPlomino: Edit documents', here)" /><br/>
-    DESIGN_PERMISSION:<span tal:content="python:here.checkUserPermission('CMFPlomino: Modify Database design', here)" /><br/>
-    ACL_PERMISSION:<span tal:content="python:here.checkUserPermission('CMFPlomino: Control Database ACL', here)" /><br/>
-    ModifyPortalContent:<span tal:content="python:here.checkUserPermission('Modify portal content', here)" /><br/>
-    <br/>
-    Roles for permissions:<br/>
-    READ_PERMISSION:<span tal:content="python:here.getRolesForPermission('CMFPlomino: Read documents', here)" /><br/>
-    Modify portal content:<span tal:content="python:here.getRolesForPermission('Modify portal content', here)" /><br/>
-    <br/>Test:<span tal:content="python:here.getRolesForPermission('test', here)"/>
-    <br/>Test action perm:<span tal:content="python:here.getRolesForPermission('actions', here)"/>
-    </span><br/>
 </span>

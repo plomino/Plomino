@@ -111,14 +111,17 @@ class PlominoDatabase(BaseFolder):
 		doc.setParentDatabase(self)
 		return doc
 		
-	def getRoles(self):
-		""" return the database roles list """
-		roles = self.valid_roles()
-		return roles
-		
 	def getUsersForRight(self, role):
 		""" return the users having the given Plomino access right """
 		return self.users_with_local_role(role)
+	
+	def getCurrentUser(self):
+		membershiptool = getToolByName(self, 'portal_membership')
+		return membershiptool.getAuthenticatedMember()
+		
+	def getCurrentUserRights(self):
+		userid = self.getCurrentUser().getUserName()
+		return self.get_local_roles_for_userid(userid)
 		
 	def initializeACL(self):
 		""" create the default Plomino access rights """
@@ -171,26 +174,9 @@ class PlominoDatabase(BaseFolder):
 
 	def at_post_create_script(self):
 		self.initializeACL()
-    		
-	def getRolesForPermission(self, perm, obj):
-		if perm=='test':
-			_ident_chars = string.ascii_letters + string.digits + "_"
-			name_trans = filter(lambda c, an=_ident_chars: c not in an,
-                    map(chr, range(256)))
-			name_trans = string.maketrans(''.join(name_trans), '_' * len(name_trans))
-			perm='CMFPlomino: Read documents'
-			t = '_' + string.translate(perm, name_trans) + "_Permission"
-			return getattr(self, t)
-		if perm=='actions':
-			portal_actions=getToolByName(self,'portal_actions')
-			return portal_actions.listFilteredActionsFor(self)
-		return rolesForPermissionOn(perm, obj)
 	
-	def checkUserPermission(self, perm, context):
-		#if self.checkPermission(perm, context):
-		if checkPerm(perm, context):
-			return 1
-		return 0
+	def checkUserPermission(self, perm):
+		return checkPerm(perm, self)
     
 	security.declareProtected(ACL_PERMISSION, 'addACLEntry')
 	def addACLEntry(self, REQUEST):

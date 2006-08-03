@@ -13,7 +13,7 @@ from Products.CMFPlomino.config import *
 
 def initialize(context):
 	##Import Types here to register them
-	import PlominoDatabase, PlominoForm, PlominoField, PlominoDocument, PlominoView, PlominoColumn, PlominoAction
+	import PlominoDatabase, PlominoForm, PlominoField, PlominoDocument, PlominoView, PlominoColumn, PlominoAction, PlominoHidewhen
 	
 	registerDirectory(SKINS_DIR, globals())
 	
