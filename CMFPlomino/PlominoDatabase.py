@@ -56,7 +56,8 @@ class PlominoDatabase(BaseFolder):
 		'permissions': (ACL_PERMISSION)
 		},)
 	
-	security.declareProtected(READ_PERMISSION, 'OpenDatabase')
+	#Cannot protect OpenDatabase because initializeACL fail (because 'view' is default access to obj)
+	#security.declareProtected(READ_PERMISSION, 'OpenDatabase')
 	
 	def __init__(self, oid, **kw):
 		BaseFolder.__init__(self, oid, **kw)
