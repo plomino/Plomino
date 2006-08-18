@@ -182,9 +182,24 @@ class PlominoDocument(Implicit, BaseFolder):
 	def editWithForm(self, form):
 		return self.openWithForm(form, True)
 		
-	def send(self, recipients, title):
+	def send(self, recipients, title, formname=''):
 		host = getToolByName(self, 'MailHost')
-		host.send("hello", recipients, "ebrehault@yahoo.com", title)
+		db = self.getParentDatabase()
+		if formname=='':
+			formname = self.getItem('Form')
+		form = db.getForm(formname)
+		message = '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">'
+		message = message + "<html>"
+		message = message + self.openWithForm(form)
+		message = message + "</html>"
+		sender = db.getCurrentUser().getProperty("email")
+		mail = "From: "+sender+'\n'
+		mail = mail + "To: "+recipients+'\n'
+		mail = mail + "Subject: "+ title + '\n'
+		mail = mail + "Content-type: text/html\n\n"
+		mail = mail + message
+		#host.send(message, recipients, sender, title)
+		host.send(mail)
 	
 	def getForm(self):
 		""" try to acquire the formname using the parent view form formula, if nothing, use the Form item """
