@@ -39,7 +39,11 @@ class PlominoAction(BaseContent):
 		elif self.ActionType == "CLOSE":
 			return db.absolute_url() + '/OpenDatabase'
 		elif self.ActionType == "PYTHON":
-			return self.absolute_url() + '/runScript?target='+target.id
+			if target is None:
+				targetid="None"
+			else:
+				targetid=target.id
+			return self.absolute_url() + '/runScript?target='+targetid
 		else:
 			return '.'
 		
@@ -47,7 +51,10 @@ class PlominoAction(BaseContent):
 	def runScript(self, REQUEST):
 		""" execute the python code """
 		target = REQUEST.get('target')
-		plominoContext = self.getParentDatabase()._getOb(target)
+		if target == "None":
+			plominoContext = self.getParentDatabase()
+		else:
+			plominoContext = self.getParentDatabase()._getOb(target)
 		plominoReturnURL = plominoContext.absolute_url()
 		try:
 			formula = self.Content().replace('\r\n', '; ')

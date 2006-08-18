@@ -12,8 +12,8 @@ from Products.CMFPlomino.config import PROJECTNAME
 class PlominoColumn(BaseContent):
 	""" Plomino view column """
 	schema = BaseSchema + Schema(
-		StringField('Formula',
-		widget=TextAreaWidget(label='Formula')
+		(StringField('Formula', widget=TextAreaWidget(label='Formula')),
+		IntegerField('Position',widget=IntegerWidget(label='Position in view')),
 		))
 	
 	content_icon = "PlominoColumn.gif"

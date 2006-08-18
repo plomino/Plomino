@@ -1,0 +1,5 @@
+<tal:block tal:repeat="v options/selection">
+	<tal:block tal:define="current options/fieldvalue;l python:v.split('|')">
+		<tal:block tal:condition="python:test(current==l[1],1,0)" tal:content="python:l[0]">selected value</tal:block>
+	</tal:block>
+</tal:block>

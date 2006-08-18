@@ -13,26 +13,73 @@
 			</span>
 		</tal:block>
 		<p tal:content="here/Description">description</p>
-    	<table id="sortable"
-                 class="listing"
-                 summary="Content listing"
-                 i18n:attributes="summary summary_content_listing;">
+    	<table tal:define="columns python:here.getColumns()"
+    			id="sortable"
+                class="listing"
+                summary="Content listing"
+                i18n:attributes="summary summary_content_listing;">
             <tr>
             <th>&nbsp;&nbsp;</th>
-            <tal:block tal:repeat="c python:here.getColumns()">
+            <tal:block tal:repeat="c columns">
             	<th>&nbsp;<span tal:content="c/Title">Title</span>&nbsp;</th>
             </tal:block>
             </tr>
-		<tal:block tal:define="columns python:here.getColumns()" tal:repeat="doc python:here.getAllDocuments()">
-			<tr><td><a href="#" tal:attributes="href doc/getPath">Go</a></td>
-				<tal:block tal:repeat="c columns">
-					<td><span tal:define="cname c/Title;
-										vname here/Title;
-										cvalue python:path('doc/PlominoViewColumn_%s_%s' % (vname, cname))"
-								tal:content="cvalue" /></td>
+        <tal:block tal:condition="python:test(here.Categorized)">
+        <!-- Categorized view -->
+        	<tal:block
+        		tal:define="categories python:here.getCategorizedColumnValues(columns[0].getColumnName())"
+        		tal:repeat="cat categories">
+        		<tal:block tal:define="currentindex repeat/cat/index;
+        								expand request/expand|python:'@';
+        								expanded python:expand.find('@'+str(currentindex)+'@')>-1">
+					<tr>
+						<td class="listingBar">
+							<tal:block tal:condition="expanded">
+								<a href="#" tal:attributes="href python:request.URL+'?expand='+expand.replace('@'+str(currentindex)+'@','@')">-</a>
+							</tal:block>
+							<tal:block tal:condition="not: expanded">
+								<a href="#" tal:attributes="href python:request.URL+'?expand='+expand.replace('@','@'+str(currentindex)+'@',1)">+</a>
+							</tal:block>
+						</td>
+						<td class="listingBar" style="text-align: left; text-transform:none" tal:attributes="colspan python:len(columns)">
+							<tal:block tal:condition="python:test(cat=='')">Not categorized</tal:block>
+							<span tal:content="cat" />
+						</td>
+					</tr>
+					<tal:block tal:condition="expanded">
+						<tal:block tal:repeat="doc python:here.getCategoryViewEntries(columns[0].getColumnName(), cat)">
+							<tr><td><a href="#" tal:attributes="href doc/getPath">Go</a></td>
+								<tal:block tal:repeat="c columns">
+									<td>
+										<tal:block tal:condition="python:test(c!=columns[0])">
+											<span tal:define="cname c/Title;
+														vname here/Title;
+														cvalue python:path('doc/PlominoViewColumn_%s_%s' % (vname, cname))"
+												tal:content="cvalue" />
+										</tal:block>
+									</td>
+								</tal:block>
+							</tr>
+						</tal:block>
+					</tal:block>
 				</tal:block>
-			</tr>
-		</tal:block>
+			</tal:block>
+        </tal:block>
+        
+		<tal:block tal:condition="python:test(not(here.Categorized))">
+		<!-- Regular view -->
+			<tal:block tal:repeat="doc python:here.getAllDocuments()">
+				<tr><td><a href="#" tal:attributes="href doc/getPath">Go</a></td>
+					<tal:block tal:repeat="c columns">
+						<td><span tal:define="cname c/Title;
+											vname here/Title;
+											cvalue python:path('doc/PlominoViewColumn_%s_%s' % (vname, cname))"
+									tal:content="cvalue" /></td>
+					</tal:block>
+				</tr>
+			</tal:block>
+        </tal:block>
+        		
 		</table>
 	</div>
 </metal:main>

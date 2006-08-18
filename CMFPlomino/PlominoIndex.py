@@ -84,5 +84,8 @@ class PlominoIndex(UniqueObject, ZCatalog, ActionProviderBase):
 		
 	def dbsearch(self, request, sortindex, reverse=0):
 		return self.search(request, sortindex, reverse)
+		
+	def getKeyUniqueValues(self, key):
+		return self.uniqueValuesFor(key)
 	
 InitializeClass(PlominoIndex)

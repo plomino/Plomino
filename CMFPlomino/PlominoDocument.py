@@ -8,6 +8,9 @@ from Products.Archetypes.public import *
 from Products.CMFCore import CMFCorePermissions
 from AccessControl import ClassSecurityInfo
 from AccessControl import Unauthorized
+from time import strptime
+from DateTime import DateTime
+from Products.CMFCore.utils import getToolByName
 
 from Acquisition import *
 from zLOG import LOG, ERROR
@@ -55,7 +58,16 @@ class PlominoDocument(Implicit, BaseFolder):
 			return self.items[name]
 		else:
 			return ''
+	
+	def hasItem(self, name):
+		return self.items.has_key(name)
 		
+	def removeItem(self, name):
+		if(self.items.has_key(name)):
+			items = self.items
+			del items[name]
+			self.items = items
+			
 	def getItems(self):
 		return self.items.keys()
     
@@ -83,7 +95,19 @@ class PlominoDocument(Implicit, BaseFolder):
 			fieldName = f.Title()
 			if mode=="EDITABLE":
 				submittedValue = REQUEST.get(fieldName)
-				self.setItem(fieldName, submittedValue)
+				LOG("Plomino", ERROR, "Field="+fieldName+" Submitted="+str(submittedValue))
+				if submittedValue=='':
+					self.removeItem(fieldName)
+				else:
+					# if non-text field, convert the value
+					if f.getFieldType()=="NUMBER":
+						v = long(submittedValue)
+					elif f.getFieldType()=="DATETIME":
+						# TO BE MODIFIED: support for different date/time format
+						v = strptime(submittedValue, "%d/%m/%Y")
+					else:
+						v = submittedValue
+					self.setItem(fieldName, v)
 			elif mode=="COMPUTED":
 				# plominoDocument is the reserved name used in field formulae
 				plominoDocument = self
@@ -157,6 +181,10 @@ class PlominoDocument(Implicit, BaseFolder):
 	security.declareProtected(EDIT_PERMISSION, 'editWithForm')
 	def editWithForm(self, form):
 		return self.openWithForm(form, True)
+		
+	def send(self, recipients, title):
+		host = getToolByName(self, 'MailHost')
+		host.send("hello", recipients, "ebrehault@yahoo.com", title)
 	
 	def getForm(self):
 		""" try to acquire the formname using the parent view form formula, if nothing, use the Form item """

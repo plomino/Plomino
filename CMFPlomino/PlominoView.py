@@ -20,6 +20,7 @@ class PlominoView(BaseFolder):
 				(StringField('Description',widget=TextAreaWidget(label='Description')),
 				StringField('SelectionFormula',widget=TextAreaWidget(label='Selection formula')),
 				StringField('SortColumn',widget=TextAreaWidget(label='Column used to sort the view')),
+				BooleanField('Categorized',widget=BooleanWidget(label='Categorised on first column'), default=0),
 				BooleanField('ReverseSorting',widget=BooleanWidget(label='Reverse sorting'), default=0),
 				StringField('FormFormula',widget=TextAreaWidget(label='Form formula'))
 				))
@@ -64,7 +65,10 @@ class PlominoView(BaseFolder):
 		return index.dbsearch({'PlominoViewFormula_'+self.getViewName() : True}, sortindex, self.getReverseSorting())
 		
 	def getColumns(self):
-		return self.getFolderContents(contentFilter = {'portal_type' : ['PlominoColumn']})
+		#return self.getFolderContents(contentFilter = {'portal_type' : ['PlominoColumn']})
+		columns = [[c.Position, c] for c in self._columns.values()]
+		columns.sort()
+		return [i[1] for i in columns]
 
 	def getActions(self):
 		return self.getFolderContents(contentFilter = {'portal_type' : ['PlominoAction']})
@@ -115,5 +119,29 @@ class PlominoView(BaseFolder):
 		columns = self._columns
 		del columns[column_name]
 		self._columns = columns
+	
+	def getCategorizedColumnValues(self, column_name):
+		# return ALL existing values for the given key
+		# (selection formula is not applied)
+		# and add the empty value
+		index = self.getParentDatabase().getIndex()
+		allvalues = [v for v in index.getKeyUniqueValues('PlominoViewColumn_'+self.getViewName()+'_'+column_name)]
+		allvalues.sort()
+		return allvalues
+		
+	def getCategoryViewEntries(self, category_column_name, category_value):
+		index = self.getParentDatabase().getIndex()
+		sortindex = self.getSortColumn()
+		if sortindex=='':
+			sortindex=None
+		else:
+			sortindex='PlominoViewColumn_'+self.getViewName()+'_'+sortindex
+		return index.dbsearch(
+			{
+				'PlominoViewFormula_'+self.getViewName() : True,
+				'PlominoViewColumn_'+self.getViewName()+'_'+category_column_name : category_value
+			},
+			sortindex,
+			self.getReverseSorting())
 		
 registerType(PlominoView, PROJECTNAME)

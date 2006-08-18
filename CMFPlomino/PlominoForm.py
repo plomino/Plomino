@@ -66,15 +66,19 @@ class PlominoForm(BaseFolder):
 				fieldValue = ""
 			else:
 				fieldValue = doc.getItem(fieldName)
+				
 			if editmode:
-				fieldType = field.FieldType
-				try:
-					exec "pt = self."+fieldType+"FieldEdit"
-				except Exception:
-					pt = self.DefaultFieldEdit
-				return pt(fieldname=fieldName, fieldvalue=fieldValue)
-			else:	
-				return fieldValue
+				ptsuffix="Edit"
+			else:
+				ptsuffix="Read"
+				
+			fieldType = field.FieldType
+			try:
+				exec "pt = self."+fieldType+"Field"+ptsuffix
+			except Exception:
+				exec "pt = self.DefaultField"+ptsuffix
+				
+			return pt(fieldname=fieldName, fieldvalue=fieldValue, selection=field.getProperSelectionList())
 			
 		if mode=="DISPLAY" or mode=="COMPUTED":
 			# plominoDocument is the reserved name used in field formulae
@@ -83,7 +87,7 @@ class PlominoForm(BaseFolder):
 				exec "result = " + field.getFormula()
 			except Exception:
 				result = "Error"
-			return result
+			return str(result)
 	
 	security.declareProtected(READ_PERMISSION, 'displayDocument')
 	def displayDocument(self, doc, editmode=False):
@@ -141,9 +145,18 @@ class PlominoForm(BaseFolder):
 		return self.getFolderContents(contentFilter = {'portal_type' : ['PlominoAction']})
 		
 	def at_post_edit_script(self):
+		# declare the form in the db (useful if Title has changed)
 		db = self.getParentDatabase()
 		db.declareDesign('forms', self.getFormName(), self)
-	
+		# clean up the form layout field
+		html_content = self.getField('Layout').get(self, mimetype='text/html')
+		regexp = '<span class="plominoFieldClass"></span>'
+		html_content = re.sub(regexp,'', html_content)
+		regexp = '<span class="plominoActionClass"></span>'
+		html_content = re.sub(regexp,'', html_content)
+		regexp = '<span class="plominoHidewhenClass"></span>'
+		self.setLayout(html_content)
+		
 	def at_post_create_script(self):
 		db = self.getParentDatabase()
 		db.declareDesign('forms', self.getFormName(), self)
