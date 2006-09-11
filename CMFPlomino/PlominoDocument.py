@@ -36,13 +36,13 @@ class PlominoDocument(Implicit, BaseFolder):
 		'id': 'edit',
 		'name': 'Edit',
 		'action': "python:here.navigationParent(here)+'/'+here.id+'/EditDocument'",
-		'permissions': (EDIT_PERMISSION)
+		'permissions': (DESIGN_PERMISSION)
 		},)
 	
 	security = ClassSecurityInfo()
 	
 	security.declareProtected(READ_PERMISSION, 'OpenDocument')
-	
+
 	def __init__(self, oid, **kw):
 		BaseFolder.__init__(self, oid, **kw)
 		self.items={}
@@ -79,7 +79,18 @@ class PlominoDocument(Implicit, BaseFolder):
 		
 	def setParentDatabase(self, db):
 		self._parentdatabase = db
+		
+	def isAuthor(self):
+		return self.getParentDatabase().isCurrentUserAuthor(self)
 	
+	security.declareProtected(EDIT_PERMISSION, 'delete')
+	def delete(self, REQUEST):
+		""" delete the current doc """
+		return_url = REQUEST.get('returnurl')
+		db = self.getParentDatabase()
+		db.deleteDocument(self)
+		REQUEST.RESPONSE.redirect(return_url) 
+		
 	security.declareProtected(EDIT_PERMISSION, 'saveDocument')
 	def saveDocument(self, REQUEST):
 		""" save a document using the form submitted content """
@@ -95,19 +106,19 @@ class PlominoDocument(Implicit, BaseFolder):
 			fieldName = f.Title()
 			if mode=="EDITABLE":
 				submittedValue = REQUEST.get(fieldName)
-				LOG("Plomino", ERROR, "Field="+fieldName+" Submitted="+str(submittedValue))
-				if submittedValue=='':
-					self.removeItem(fieldName)
-				else:
-					# if non-text field, convert the value
-					if f.getFieldType()=="NUMBER":
-						v = long(submittedValue)
-					elif f.getFieldType()=="DATETIME":
-						# TO BE MODIFIED: support for different date/time format
-						v = strptime(submittedValue, "%d/%m/%Y")
+				if submittedValue is not None:
+					if submittedValue=='':
+						self.removeItem(fieldName)
 					else:
-						v = submittedValue
-					self.setItem(fieldName, v)
+						# if non-text field, convert the value
+						if f.getFieldType()=="NUMBER":
+							v = long(submittedValue)
+						elif f.getFieldType()=="DATETIME":
+							# TO BE MODIFIED: support different date/time format
+							v = strptime(submittedValue, "%d/%m/%Y")
+						else:
+							v = submittedValue
+						self.setItem(fieldName, v)
 			elif mode=="COMPUTED":
 				# plominoDocument is the reserved name used in field formulae
 				plominoDocument = self
@@ -129,9 +140,16 @@ class PlominoDocument(Implicit, BaseFolder):
 			pass
 		else:
 			authors.append(name)
-		LOG('Plomino', ERROR, name)
 		self.setItem('Plomino_Authors', authors)
 		
+		# execute the onSaveDocument code of the form
+		# plominoDocument is the reserved name used in events code
+		plominoDocument = self
+		try:
+			exec form.getOnSaveDocument()
+		except Exception:
+			pass
+			
 		db.getIndex().indexDocument(self)
 		REQUEST.RESPONSE.redirect(self.absolute_url())
 	
@@ -166,14 +184,17 @@ class PlominoDocument(Implicit, BaseFolder):
 		# first, check if the user has proper access rights
 		if editmode:
 			db = self.getParentDatabase()
-			if not db.checkUserPermission(EDIT_PERMISSION):
-				raise Unauthorized, "You cannot edit documents."
-			else:
-				if 'PlominoAuthor' in db.getCurrentUserRights():
-					authors = self.getItem('Plomino_Authors')
-					name = db.getCurrentUser().getUserName()
-					if not name in authors:
-						raise Unauthorized, "You are not part of the document authors."
+			if not db.isCurrentUserAuthor(self):
+				raise Unauthorized, "You cannot edit this document."
+		
+		# execute the onOpenDocument code of the form
+		# plominoDocument is the reserved name used in events code
+		plominoDocument = self
+		try:
+			exec form.getOnOpenDocument()
+		except Exception:
+			pass
+		
 		# we use the specified form's layout
 		html_content = form.displayDocument(self, editmode)
 		return html_content

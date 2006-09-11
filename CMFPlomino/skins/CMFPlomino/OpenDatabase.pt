@@ -12,7 +12,6 @@
 			<a href="#" tal:attributes="href v/getURL" tal:content="v/Title">view link</a>
 			<br/>
 		</p>
-
 	</div>
 </metal:main>
 

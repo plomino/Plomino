@@ -6,11 +6,8 @@
 
 from Products.Archetypes.public import *
 from Products.CMFCore import CMFCorePermissions
-from Products.CMFCore.utils import _checkPermission as checkPerm
-from AccessControl.PermissionRole import rolesForPermissionOn
 from Products.Archetypes.utils import make_uuid
 from AccessControl import ClassSecurityInfo
-from AccessControl import getSecurityManager
 from Products.CMFCore.utils import getToolByName
 
 import string
@@ -19,9 +16,11 @@ from Products.CMFPlomino.config import *
 from zLOG import LOG, ERROR
 
 from PlominoIndex import PlominoIndex
+from PlominoAccessControl import PlominoAccessControl
         
-class PlominoDatabase(BaseFolder):
+class PlominoDatabase(BaseFolder, PlominoAccessControl):
 	""" Plomino DB """
+	
 	schema = BaseFolderSchema + Schema(
 		StringField('Description',
 		widget=TextAreaWidget(label='Description')
@@ -61,13 +60,16 @@ class PlominoDatabase(BaseFolder):
 	
 	def __init__(self, oid, **kw):
 		BaseFolder.__init__(self, oid, **kw)
-		self.ACL_initialized=0
+		PlominoAccessControl.__init__(self)
 		index = PlominoIndex()
 		self._setObject(index.getId(), index)
 		design = {}
 		design['views'] = {}
 		design['forms'] = {}
 		self._design = design
+		
+	def at_post_create_script(self):
+		self.initializeACL()
 		
 	def getForms(self):
 		""" return the database forms list """
@@ -112,88 +114,15 @@ class PlominoDatabase(BaseFolder):
 		doc.setParentDatabase(self)
 		return doc
 		
-	def getUsersForRight(self, role):
-		""" return the users having the given Plomino access right """
-		return self.users_with_local_role(role)
-	
-	def getCurrentUser(self):
-		membershiptool = getToolByName(self, 'portal_membership')
-		return membershiptool.getAuthenticatedMember()
-		
-	def getCurrentUserRights(self):
-		userid = self.getCurrentUser().getUserName()
-		return self.get_local_roles_for_userid(userid)
-		
-	def initializeACL(self):
-		""" create the default Plomino access rights """
-		self._addRole("PlominoReader")
-		self.manage_role("PlominoReader", permissions=[
-			READ_PERMISSION,
-			CMFCorePermissions.View])
-		self._addRole("PlominoAuthor")
-		self.manage_role("PlominoAuthor", permissions=[
-			READ_PERMISSION,
-			EDIT_PERMISSION,
-			REMOVE_PERMISSION,
-			CREATE_PERMISSION,
-			ADD_CONTENT_PERMISSION,
-			CMFCorePermissions.View,
-			CMFCorePermissions.ModifyPortalContent])
-		self._addRole("PlominoEditor")
-		self.manage_role("PlominoEditor", permissions=[
-			READ_PERMISSION,
-			EDIT_PERMISSION,
-			REMOVE_PERMISSION,
-			CREATE_PERMISSION,
-			ADD_CONTENT_PERMISSION,
-			CMFCorePermissions.View,
-			CMFCorePermissions.ModifyPortalContent])
-		self._addRole("PlominoDesigner")
-		self.manage_role("PlominoDesigner", permissions=[
-			READ_PERMISSION,
-			EDIT_PERMISSION,
-			REMOVE_PERMISSION,
-			CREATE_PERMISSION,
-			DESIGN_PERMISSION,
-			ADD_CONTENT_PERMISSION,
-			ADD_DESIGN_PERMISSION,
-			CMFCorePermissions.View,
-			CMFCorePermissions.ModifyPortalContent])
-		self._addRole("PlominoManager")
-		self.manage_role("PlominoManager", permissions=[
-			READ_PERMISSION,
-			EDIT_PERMISSION,
-			REMOVE_PERMISSION,
-			CREATE_PERMISSION,
-			DESIGN_PERMISSION,
-			ADD_CONTENT_PERMISSION,
-			ADD_DESIGN_PERMISSION,
-			ACL_PERMISSION,
-			CMFCorePermissions.View,
-			CMFCorePermissions.ModifyPortalContent])
-		self.ACL_initialized=1
-
-	def at_post_create_script(self):
-		self.initializeACL()
-	
-	def checkUserPermission(self, perm):
-		return checkPerm(perm, self)
-    
-	security.declareProtected(ACL_PERMISSION, 'addACLEntry')
-	def addACLEntry(self, REQUEST):
-		""" add an entry in the ACL """
-		user=REQUEST.get('newuser')
-		accessright=REQUEST.get('accessright')
-		self.manage_setLocalRoles(user, [accessright])
-		REQUEST.RESPONSE.redirect('./DatabaseACL')
-
-	security.declareProtected(ACL_PERMISSION, 'removeACLEntries')
-	def removeACLEntries(self, REQUEST):
-		""" remove entries in the ACL """
-		users=REQUEST.get('users')
-		self.manage_delLocalRoles(users)
-		REQUEST.RESPONSE.redirect('./DatabaseACL')
-	
+	security.declareProtected(EDIT_PERMISSION, 'deleteDocument')
+	def deleteDocument(self, doc):
+		""" delete the document from database """
+		# first, check if the user has proper access rights
+		if not self.isCurrentUserAuthor(doc):
+			raise Unauthorized, "You cannot edit this document."
+		else:
+			self.manage_delObjects(doc.id)
+				
 	def getIndex(self):
 		""" return the database index """
 		return self._getOb('plomino_index')

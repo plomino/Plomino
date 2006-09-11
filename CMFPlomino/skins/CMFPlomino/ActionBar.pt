@@ -1,9 +1,48 @@
-<span metal:define-macro="ActionBar">
-	<table><tr>
+<span metal:define-macro="ReadDocumentActionBar">
+	<table style="font-size:80%"><tr>
+		<tal:block tal:condition="python:here.isAuthor()">
+			<td><input type="button" value="Edit"
+				tal:attributes="onclick python:'location.href=\''+here.navigationParent(here)+'/'+here.id+'/EditDocument\''"/>
+			</td>
+			<td><span metal:use-macro="here/ActionBar/macros/DeleteAction" >display delete action</span></td>
+		</tal:block>
+    	<td><span metal:use-macro="here/ActionBar/macros/CloseAction" >display close action</span></td>
 		<tal:block tal:repeat="a python:owner.getActions()">
 	    	<td>
 	    	<tal:block tal:define="plominoaction python:a.getObject(); plominotarget python:here">
-	    		<span metal:use-macro="here/ActionBar/macros/LinkAction" >
+	    		<span metal:use-macro="here/ActionBar/macros/ButtonAction" >
+					display action as a link
+				</span>
+			</tal:block>
+			</td>
+	    </tal:block>
+    </tr></table>
+</span>
+
+<span metal:define-macro="EditDocumentActionBar">
+	<table style="font-size:80%"><tr>
+		<td><span metal:use-macro="here/ActionBar/macros/CloseAction" >display close action</span></td>
+    	<td><input type="submit" value="Save"/></td>
+    	<td><span metal:use-macro="here/ActionBar/macros/DeleteAction" >display delete action</span></td>
+		<tal:block tal:repeat="a python:owner.getActions()">
+	    	<td>
+	    	<tal:block tal:define="plominoaction python:a.getObject(); plominotarget python:here">
+	    		<span metal:use-macro="here/ActionBar/macros/ButtonAction" >
+					display action as a link
+				</span>
+			</tal:block>
+			</td>
+	    </tal:block>
+    </tr></table>
+</span>
+
+<span metal:define-macro="ViewActionBar">
+	<table style="font-size:80%"><tr>
+    	<td><span metal:use-macro="here/ActionBar/macros/CloseAction" >display close action</span></td>
+		<tal:block tal:repeat="a python:owner.getActions()">
+	    	<td>
+	    	<tal:block tal:define="plominoaction python:a.getObject(); plominotarget python:here">
+	    		<span metal:use-macro="here/ActionBar/macros/ButtonAction" >
 					display action as a link
 				</span>
 			</tal:block>
@@ -22,6 +61,15 @@
 </span>
 
 <span metal:define-macro="ButtonAction">
-	<input type="button" tal:attributes="onclick python:plominoaction.executeAction(plominotarget);
+	<input type="button" tal:attributes="onclick python:'location.href=\''+plominoaction.executeAction(plominotarget)+'\'';
 								value python: plominoaction.Label" />
+</span>
+
+<span metal:define-macro="CloseAction">
+	<input type="button" value="Close"
+			tal:attributes="onclick python:'location.href=\''+here.navigationParent(here)+'\''"/>
+</span>
+<span metal:define-macro="DeleteAction">
+	<input type="button" value="Delete"
+			tal:attributes="onclick python:'location.href=\''+here.absolute_url()+'/delete?returnurl='+here.navigationParent(here)+'\''"/>
 </span>

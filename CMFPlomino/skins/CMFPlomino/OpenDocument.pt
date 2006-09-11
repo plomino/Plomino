@@ -8,7 +8,7 @@
     <div id="bodyContent">
 		<tal:block tal:define="myF python:here.getForm()">
 			<tal:block tal:define="owner python:myF">
-	    		<span metal:use-macro="here/ActionBar/macros/ActionBar" >
+	    		<span metal:use-macro="here/ActionBar/macros/ReadDocumentActionBar" >
 					display form actions
 				</span>
 			</tal:block>

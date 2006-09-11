@@ -9,6 +9,7 @@ from Products.CMFCore import CMFCorePermissions
 from AccessControl import ClassSecurityInfo
 from Products.Archetypes.utils import make_uuid
 
+from ZPublisher.HTTPResponse import HTTPResponse
 from Products.CMFPlomino.config import *
 from zLOG import LOG, ERROR
 
@@ -20,6 +21,8 @@ class PlominoForm(BaseFolder):
 	""" Plomino Form """
 	schema = BaseFolderSchema + Schema((
 		StringField('Description', widget=TextAreaWidget(label='Description')),
+		StringField('onOpenDocument', widget=TextAreaWidget(label='onOpenDocument')),
+		StringField('onSaveDocument', widget=TextAreaWidget(label='onSaveDocument')),
 		TextField('Layout', widget=RichWidget(label='Form layout'))
 		))
 	
@@ -77,7 +80,16 @@ class PlominoForm(BaseFolder):
 				exec "pt = self."+fieldType+"Field"+ptsuffix
 			except Exception:
 				exec "pt = self.DefaultField"+ptsuffix
-				
+			req = self.REQUEST
+			# NOTE: for some reasons, sometimes, REQUEST does not have a RESPONSE
+			# and it causes pt_render to fail (KeyError 'RESPONSE')
+			# why ? I don't know (If you know, tell me please (ebrehault@gmail.com), I would be
+			# happy to understand.
+			# Anyhow, here is a small fix to avoid that.
+			try:
+				rep=self.REQUEST['RESPONSE']
+			except Exception:
+				self.REQUEST['RESPONSE']=HTTPResponse()
 			return pt(fieldname=fieldName, fieldvalue=fieldValue, selection=field.getProperSelectionList())
 			
 		if mode=="DISPLAY" or mode=="COMPUTED":

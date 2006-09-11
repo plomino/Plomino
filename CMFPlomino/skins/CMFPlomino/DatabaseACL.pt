@@ -6,33 +6,35 @@
 
 <metal:main fill-slot="main">
     <div id="bodyContent">
+    <h3>Users access rights</h3>
     <form name="RemoveEntries" action="removeACLEntries" method="POST">
-    	<table>
-		<tr><td valign="top"><b>Readers:</b></td>
+    	<table class="listing">
+    	<tr><th>Access right</th><th>Users</th></tr>
+		<tr><td valign="top"><b>Readers</b></td>
 		<td><tal:block tal:repeat="u python:here.getUsersForRight('PlominoReader')">
 			<input type="checkbox" name="users" tal:attributes="value u" /><span tal:content="u">user</span>	
 			<br/>
 		</tal:block>
 		</td></tr>
-		<tr><td valign="top"><b>Authors:</b></td>
+		<tr><td valign="top"><b>Authors</b></td>
 		<td><tal:block tal:repeat="u python:here.getUsersForRight('PlominoAuthor')">
 			<input type="checkbox" name="users" tal:attributes="value u" /><span tal:content="u">user</span>	
 			<br/>
 		</tal:block>
 		</td></tr>
-		<tr><td valign="top"><b>Editors:</b></td>
+		<tr><td valign="top"><b>Editors</b></td>
 		<td><tal:block tal:repeat="u python:here.getUsersForRight('PlominoEditor')">
 			<input type="checkbox" name="users" tal:attributes="value u" /><span tal:content="u">user</span>	
 			<br/>
 		</tal:block>
 		</td></tr>
-		<tr><td valign="top"><b>Designers:</b></td>
+		<tr><td valign="top"><b>Designers</b></td>
 		<td><tal:block tal:repeat="u python:here.getUsersForRight('PlominoDesigner')">
 			<input type="checkbox" name="users" tal:attributes="value u" /><span tal:content="u">user</span>	
 			<br/>
 		</tal:block>
 		</td></tr>
-		<tr><td valign="top"><b>Managers:</b></td>
+		<tr><td valign="top"><b>Managers</b></td>
 		<td><tal:block tal:repeat="u python:here.getUsersForRight('PlominoManager')">
 			<input type="checkbox" name="users" tal:attributes="value u" /><span tal:content="u">user</span>	
 			<br/>
@@ -58,7 +60,115 @@
 		</select>
 		<input type="submit" value="Add"/>
 	</form>
-
+	<br/>
+	<h3>Generic users access rights</h3>
+	<form name="SetGenericAccess" action="setGenericAccess" method="POST">
+		<table class="listing">
+	    	<tr><th>Generic user</th><th>Current access right</th><th>Change to</th></tr>
+			<tr><td valign="top"><b>Anonymous</b></td>
+			<td><tal:block tal:content="here/AnomynousAccessRight" /></td>
+			<td>
+				<select name="anonymousaccessright">
+					<option value="NoAccess">No access</option>
+					<option value="PlominoReader">PlominoReader</option>
+					<option value="PlominoAuthor">PlominoAuthor</option>
+					<option value="PlominoEditor">PlominoEditor</option>
+					<option value="PlominoDesigner">PlominoDesigner</option>
+					<option value="PlominoManager">PlominoManager</option>
+				</select>
+			</td></tr>
+			<tr><td valign="top"><b>Authenticated</b></td>
+			<td><tal:block tal:content="here/AuthenticatedAccessRight" /></td>
+			<td>
+				<select name="authenticatedaccessright">
+					<option value="NoAccess">No access</option>
+					<option value="PlominoReader">PlominoReader</option>
+					<option value="PlominoAuthor">PlominoAuthor</option>
+					<option value="PlominoEditor">PlominoEditor</option>
+					<option value="PlominoDesigner">PlominoDesigner</option>
+					<option value="PlominoManager">PlominoManager</option>
+				</select>
+			</td></tr>
+		</table>
+		<input type="submit" value="Change"/>
+	</form>
+	<br/>
+	<h3>User roles</h3>
+	<table class="listing">
+		<tr><th>Roles</th><th>Users</th></tr>
+		<tal:block tal:repeat="r python:here.getUserRoles()">
+			<tr>
+				<td valign="top"><b><tal:block tal:content="r" /></b></td>
+				<td>
+					<tal:block tal:repeat="u python:here.getUsersForRoles(r)">
+						<span tal:content="u">user</span><br/>
+					</tal:block>
+				</td>
+			</tr>
+		</tal:block>
+	</table>
+	<form name="AddPlominoUserRole" action="addPlominoUserRole" method="POST">
+		<table><tr>
+			<td>Add new user role:</td>
+			<td><input type="text" name="newrole" /></td>
+			<td><input type="submit" value="Add"/></td></tr>
+		</table>
+	</form>
+	<form name="RemovePlominoUserRole" action="removePlominoUserRole" method="POST">
+		<table><tr>
+			<td>Remove user role:</td>
+			<td><select name="role">
+				<tal:block tal:repeat="r python:here.getUserRoles()">
+					<option tal:content="r" tal:attributes="value r">role</option>
+					<br/>
+				</tal:block>
+				</select>
+			</td>
+			<td><input type="submit" value="Remove"/></td></tr>
+		</table>
+	</form>
+	<form name="AddPlominoRoleToUser" action="addPlominoRoleToUser" method="POST">
+		<table><tr>
+			<td>Add role to user:</td><td>Role:</td>
+			<td><select name="role">
+				<tal:block tal:repeat="r python:here.getUserRoles()">
+					<option tal:content="r" tal:attributes="value r">role</option>
+					<br/>
+				</tal:block>
+				</select>
+			</td>
+			<td>User:</td>
+			<td><select name="user">
+					<tal:block tal:repeat="u here/get_valid_userids">
+						<option tal:content="u" tal:attributes="value u">user</option>
+						<br/>
+					</tal:block>
+				</select>
+			</td>
+			<td><input type="submit" value="Add"/></td></tr>
+		</table>
+	</form>
+	<form name="RemovePlominoRoleFromUser" action="removePlominoRoleFromUser" method="POST">
+		<table><tr>
+			<td>Remove role from user:</td><td>Role:</td>
+			<td><select name="role">
+				<tal:block tal:repeat="r python:here.getUserRoles()">
+					<option tal:content="r" tal:attributes="value r">role</option>
+					<br/>
+				</tal:block>
+				</select>
+			</td>
+			<td>User:</td>
+			<td><select name="user">
+					<tal:block tal:repeat="u here/get_valid_userids">
+						<option tal:content="u" tal:attributes="value u">user</option>
+						<br/>
+					</tal:block>
+				</select>
+			</td>
+			<td><input type="submit" value="Remove"/></td></tr>
+		</table>
+	</form>
 	</div>
 </metal:main>
 

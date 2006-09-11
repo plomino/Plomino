@@ -32,11 +32,12 @@ class PlominoView(BaseFolder):
 		'id': 'view',
 		'name': 'View',
 		'action': 'string:${object_url}/OpenView',
-		'permissions': (READ_PERMISSION)
 		},
 		)
 		
 	security = ClassSecurityInfo()
+	
+	security.declareProtected(READ_PERMISSION, 'OpenView')
 	
 	def __init__(self, oid, **kw):
 		BaseFolder.__init__(self, oid, **kw)
