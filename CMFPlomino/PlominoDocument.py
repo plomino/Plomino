@@ -98,8 +98,7 @@ class PlominoDocument(Implicit, BaseFolder):
 		form = db.getForm(REQUEST.get('Form'))
 		self.setItem('Form', form.getFormName())
 		
-		# for editable field, we read the submitted value in the request,
-		# for computed fields we refresh the value
+		# we first process editable fields (we read the submitted value in the request)
 		for field in form.getFields():
 			f = field.getObject()
 			mode = f.getFieldMode()
@@ -119,7 +118,14 @@ class PlominoDocument(Implicit, BaseFolder):
 						else:
 							v = submittedValue
 						self.setItem(fieldName, v)
-			elif mode=="COMPUTED":
+		
+		# then we process computed fields (refresh the value)
+		# TODO: manage computed fields dependencies
+		for field in form.getFields():
+			f = field.getObject()
+			mode = f.getFieldMode()
+			fieldName = f.Title()
+			if mode=="COMPUTED":
 				# plominoDocument is the reserved name used in field formulae
 				plominoDocument = self
 				try:
