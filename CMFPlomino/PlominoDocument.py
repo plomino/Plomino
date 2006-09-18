@@ -30,7 +30,7 @@ class PlominoDocument(Implicit, BaseFolder):
 		{
 		'id': 'view',
 		'name': 'View',
-		'action': 'string:${object_url}/OpenDocument',
+		'action': 'string:${object_url}/checkBeforeOpenDocument',
 		},
 		{
 		'id': 'edit',
@@ -43,6 +43,15 @@ class PlominoDocument(Implicit, BaseFolder):
 	
 	security.declareProtected(READ_PERMISSION, 'OpenDocument')
 
+	def checkBeforeOpenDocument(self):
+		""" check read permission and open view """
+		# NOTE: if READ_PERMISSION set on the 'view' actionb itself, it causes
+		# error 'maximum recursion depth exceeded' if user hasn't permission
+		if self.checkUserPermission(READ_PERMISSION):
+			return self.OpenDocument()
+		else:
+			raise Unauthorized, "You cannot read this content"
+			
 	def __init__(self, oid, **kw):
 		BaseFolder.__init__(self, oid, **kw)
 		self.items={}
@@ -158,31 +167,6 @@ class PlominoDocument(Implicit, BaseFolder):
 			
 		db.getIndex().indexDocument(self)
 		REQUEST.RESPONSE.redirect(self.absolute_url())
-	
-	security.declareProtected(READ_PERMISSION, 'getFieldRender')
-	def getFieldRender(self, form, field, editmode):
-		mode = field.getFieldMode()
-		fieldName = field.Title()
-		if mode=="EDITABLE":
-			fieldValue = self.getItem(fieldName)
-			if editmode:
-				fieldType = field.FieldType
-				try:
-					exec "pt = self."+fieldType+"FieldEdit"
-				except Exception:
-					pt = self.DefaultFieldEdit
-				return pt(fieldname=fieldName, fieldvalue=fieldValue)
-			else:	
-				return fieldValue
-			
-		if mode=="DISPLAY" or mode=="COMPUTED":
-			# plominoDocument is the reserved name used in field formulae
-			plominoDocument = self
-			try:
-				exec "result = " + field.getFormula()
-			except Exception:
-				result = "Error"
-			return result
 	
 	security.declareProtected(READ_PERMISSION, 'openWithForm')
 	def openWithForm(self, form, editmode=False):

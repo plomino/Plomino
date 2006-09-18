@@ -56,7 +56,7 @@ class PlominoDatabase(BaseFolder, PlominoAccessControl):
 		},)
 	
 	#Cannot protect OpenDatabase because initializeACL fail (because 'view' is default access to obj)
-	#security.declareProtected(READ_PERMISSION, 'OpenDatabase')
+	#so we test READ_PERMISSION in OpenDatabase template directly
 	
 	def __init__(self, oid, **kw):
 		BaseFolder.__init__(self, oid, **kw)

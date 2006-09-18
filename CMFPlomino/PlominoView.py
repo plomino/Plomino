@@ -7,6 +7,7 @@
 from Products.Archetypes.public import *
 from Products.CMFCore import CMFCorePermissions
 from AccessControl import ClassSecurityInfo
+from AccessControl import Unauthorized
 from Products.CMFCore.utils import getToolByName
 from Acquisition import aq_parent
 
@@ -31,7 +32,7 @@ class PlominoView(BaseFolder):
 		{
 		'id': 'view',
 		'name': 'View',
-		'action': 'string:${object_url}/OpenView',
+		'action': 'string:${object_url}/checkBeforeOpenView',
 		},
 		)
 		
@@ -39,6 +40,15 @@ class PlominoView(BaseFolder):
 	
 	security.declareProtected(READ_PERMISSION, 'OpenView')
 	
+	def checkBeforeOpenView(self):
+		""" check read permission and open view """
+		# NOTE: if READ_PERMISSION set on the 'view' actionb itself, it causes
+		# error 'maximum recursion depth exceeded' if user hasn't permission
+		if self.checkUserPermission(READ_PERMISSION):
+			return self.OpenView()
+		else:
+			raise Unauthorized, "You cannot read this content"
+		
 	def __init__(self, oid, **kw):
 		BaseFolder.__init__(self, oid, **kw)
 		columns = {}

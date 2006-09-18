@@ -8,10 +8,15 @@
     <div id="bodyContent">
     	<h1><tal:block replace="structure python:getattr(here, here.getIcon(1))"/><span tal:content="here/Title">database title</span></h1>
 		<p tal:content="here/Description">description</p>
-		<p tal:repeat="v python:here.getViews()">
-			<a href="#" tal:attributes="href v/getURL" tal:content="v/Title">view link</a>
-			<br/>
-		</p>
+		<tal:block tal:condition="python:here.hasReadPermission()">
+			<p tal:repeat="v python:here.getViews()">
+				<a href="#" tal:attributes="href v/getURL" tal:content="v/Title">view link</a>
+				<br/>
+			</p>
+		</tal:block>
+		<tal:block tal:condition="python:not(here.hasReadPermission())">
+			<p>Please log in</p>
+		</tal:block>
 	</div>
 </metal:main>
 

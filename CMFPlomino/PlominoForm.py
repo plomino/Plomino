@@ -98,17 +98,19 @@ class PlominoForm(BaseFolder):
 			try:
 				exec "result = " + field.getFormula()
 			except Exception:
-				result = "Error"
+				result = ""
 			return str(result)
 	
 	security.declareProtected(READ_PERMISSION, 'displayDocument')
 	def displayDocument(self, doc, editmode=False):
 		""" display the document using the form's layout """
 		html_content = self.getField('Layout').get(self, mimetype='text/html')
+		html_content = html_content.replace('\n', '')
 		
 		# remove the hiden content
 		for hidewhen in self.getHidewhenFormulas():
 			hidewhenName = hidewhen.Title
+			LOG("Plomino", ERROR, hidewhenName)
 			# plominoDocument is the reserved name used in field formulae
 			plominoDocument = doc
 			try:

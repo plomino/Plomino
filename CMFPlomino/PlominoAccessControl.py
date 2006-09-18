@@ -99,8 +99,11 @@ class PlominoAccessControl:
 		return membershiptool.getAuthenticatedMember()
 		
 	def getCurrentUserRights(self):
-		userid = self.getCurrentUser().getMemberId()
-		return self.get_local_roles_for_userid(userid)
+		try:
+			userid = self.getCurrentUser().getMemberId()
+			return self.get_local_roles_for_userid(userid)
+		except Exception:
+			return [self.AnomynousAccessRight]
 		
 	def getCurrentUserRoles(self):
 		userid = self.getCurrentUser().getUserName()
@@ -126,7 +129,10 @@ class PlominoAccessControl:
 			return False
 		else:
 			return True
-				
+	
+	def hasReadPermission(self):
+		return self.checkUserPermission(READ_PERMISSION)
+			
 	def initializeACL(self):
 		""" create the default Plomino access rights """
 		self._addRole("PlominoReader")
