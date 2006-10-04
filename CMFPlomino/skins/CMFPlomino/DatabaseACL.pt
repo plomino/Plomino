@@ -46,7 +46,7 @@
 	<br/>
 	<form name="AddEntry" action="addACLEntry" method="POST">
 		Add ACL entry:<select name="newuser">
-			<tal:block tal:repeat="u here/get_valid_userids">
+			<tal:block tal:repeat="u here/getPortalMembersIds">
 				<option tal:content="u" tal:attributes="value u">user</option>
 				<br/>
 			</tal:block>
@@ -139,7 +139,7 @@
 			</td>
 			<td>User:</td>
 			<td><select name="user">
-					<tal:block tal:repeat="u here/get_valid_userids">
+					<tal:block tal:repeat="u here/getPortalMembersIds">
 						<option tal:content="u" tal:attributes="value u">user</option>
 						<br/>
 					</tal:block>
@@ -160,7 +160,7 @@
 			</td>
 			<td>User:</td>
 			<td><select name="user">
-					<tal:block tal:repeat="u here/get_valid_userids">
+					<tal:block tal:repeat="u here/getPortalMembersIds">
 						<option tal:content="u" tal:attributes="value u">user</option>
 						<br/>
 					</tal:block>

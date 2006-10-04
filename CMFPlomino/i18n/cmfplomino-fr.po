@@ -1,0 +1,174 @@
+# ArchGenXML generated POT File
+# [Eric BREHAULT] <[ebrehault@gmail.com]>, 2006.
+msgid ""
+msgstr ""
+"Project-Id-Version: CMFPlomino\n"
+"POT-Creation-Date: Thu Sep 28 15:52:32 2006\n"
+"PO-Revision-Date: Thu Sep 28 15:52:32 2006\n"
+"Last-Translator: [Eric BREHAULT] <[ebrehault@gmail.com]>\n"
+"Language-Team: [Eric BREHAULT] <[ebrehault@gmail.com]>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0\n"
+"Language-Code: fr\n"
+"Language-Name: French\n"
+"Preferred-Encodings: latin1 utf-8\n"
+"Domain: CMFPlomino\n"
+
+#. Default: "How the action is shown"
+#: PlominoAction.py
+msgid "CMFPlomino_help_ActionDisplay"
+msgstr "How the action is shown"
+
+#. Default: "Select the type for this action"
+#: PlominoAction.py
+msgid "CMFPlomino_help_ActionType"
+msgstr "Select the type for this action"
+
+#. Default: "Categorised on first column"
+#: PlominoView.py
+msgid "CMFPlomino_help_Categorized"
+msgstr "Categorised on first column"
+
+#. Default: "What this action can do"
+#: PlominoAction.py
+#: PlominoField.py
+msgid "CMFPlomino_help_Description"
+msgstr "What this action can do"
+
+#. Default: "How conten will be generated"
+#: PlominoField.py
+msgid "CMFPlomino_help_FieldMode"
+msgstr "How content will be generated"
+
+#. Default: "The kind of this field"
+#: PlominoField.py
+msgid "CMFPlomino_help_FieldType"
+msgstr "The kind of this field"
+
+#. Default: "How to calculate field content"
+#: PlominoField.py
+#: PlominoColumn.py
+#: PlominoHidewhen.py
+msgid "CMFPlomino_help_Formula"
+msgstr "How to calculate field content"
+
+#. Default: "The action name"
+#: PlominoAction.py
+msgid "CMFPlomino_help_Label"
+msgstr "The action name"
+
+#. Default: "The form layout. text with 'Plominofield' style correspond to the contained field elements"
+#: PlominoForm.py
+msgid "CMFPlomino_help_FormLayout"
+msgstr "The form layout. Text with 'Plominofield' style correspond to the contained field elements"
+
+#. Default: "Position in view"
+#: PlominoColumn.py
+msgid "CMFPlomino_help_Position"
+msgstr "Position in view"
+
+#. Default: "The view selection formula is a line of Python code which should return True or False. The formula will be evaluated for each document in the database to decide if the document must be displayed in the view or not. plominoDocument is a reserved name in formulae, it returns the current Plomino document. Each document field value can be accessed directly as an attribute of the document: plominoDocument.<fieldname>"
+#: PlominoView.py
+msgid "CMFPlomino_help_SelectionFormula"
+msgstr "The view selection formula is a line of Python code which should return True or False. The formula will be evaluated for each document in the database to decide if the document must be displayed in the view or not. plominoDocument is a reserved name in formulae, it returns the current Plomino document. Each document field value can be accessed directly as an attribute of the document: plominoDocument.<fieldname>"
+
+#. Default: "Listo of values to select, one for line"
+#: PlominoField.py
+msgid "CMFPlomino_help_SelectionList"
+msgstr "List of values to select, one for line"
+
+#. Default: "Column used to sort the view"
+#: PlominoView.py
+msgid "CMFPlomino_help_SortColumn"
+msgstr "Column used to sort the view"
+
+#. Default: "Action to take when the document is opned"
+#: PlominoForm.py
+msgid "CMFPlomino_help_onOpenDocument"
+msgstr "Action to take when the document is opened"
+
+#. Default: "Action to take when saving the document"
+#: PlominoForm.py
+msgid "CMFPlomino_help_onSaveDocument"
+msgstr "Action to take when saving the document"
+
+#. Default: "Action display"
+#: PlominoAction.py
+msgid "CMFPlomino_label_ActionDisplay"
+msgstr "Action display"
+
+#. Default: "Action type"
+#: PlominoAction.py
+msgid "CMFPlomino_label_ActionType"
+msgstr "Action type"
+
+#. Default: "Categorized"
+#: PlominoView.py
+msgid "CMFPlomino_label_Categorized"
+msgstr "Categorized"
+
+#. Default: "Description"
+#: PlominoAction.py
+#: PlominoField.py
+msgid "CMFPlomino_label_Description"
+msgstr "Description"
+
+#. Default: "Field mode"
+#: PlominoField.py
+msgid "CMFPlomino_label_FieldMode"
+msgstr "Field mode"
+
+#. Default: "Field type"
+#: PlominoField.py
+msgid "CMFPlomino_label_FieldType"
+msgstr "Field type"
+
+#. Default: "Formula"
+#: PlominoField.py
+#: PlominoColumn.py
+#: PlominoHidewhen.py
+msgid "CMFPlomino_label_Formula"
+msgstr "Formula"
+
+#. Default: "Label"
+#: PlominoAction.py
+msgid "CMFPlomino_label_Label"
+msgstr "Label"
+
+#. Default: "Form layout"
+#: PlominoForm.py
+msgid "CMFPlomino_label_FormLayout"
+msgstr "Form layout"
+
+#. Default: "Position"
+#: PlominoColumn.py
+msgid "CMFPlomino_label_Position"
+msgstr "Position"
+
+#. Default: "Selection formula"
+#: PlominoView.py
+msgid "CMFPlomino_label_SelectionFormula"
+msgstr "Selection formula"
+
+#. Default: "Selection list"
+#: PlominoField.py
+msgid "CMFPlomino_label_SelectionList"
+msgstr "Selection list"
+
+#. Default: "Sort column"
+#: PlominoView.py
+msgid "CMFPlomino_label_SortColumn"
+msgstr "Sort column"
+
+#. Default: "On open document"
+#: PlominoForm.py
+msgid "CMFPlomino_label_onOpenDocument"
+msgstr "On open document"
+
+#. Default: "On save document"
+#: PlominoForm.py
+msgid "CMFPlomino_label_onSaveDocument"
+msgstr "On save document"
+

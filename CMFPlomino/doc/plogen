@@ -1,0 +1,4 @@
+python2.4 ../../../../ArchGenXML.py --cfg=plo.cfg CMFPlomino.zargo ../../CMFPlomino  >gen-log.txt 2>gen-err.txt
+
+cat *.txt
+
