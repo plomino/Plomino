@@ -67,7 +67,17 @@ schema = Schema((
         ),
         vocabulary= [["LINK", "Link"], ["SUBMIT", "Submit button"], ["BUTTON", "Button"]]
     ),
-
+    
+    TextField(
+        name='Content',
+        widget=TextAreaWidget(
+            label="Parameter or code",
+            description="Code or parameter depending on the action type",
+            label_msgid='CMFPlomino_label_Content',
+            description_msgid='CMFPlomino_help_Content',
+            i18n_domain='CMFPlomino',
+        )
+    ),
 ),
 )
 

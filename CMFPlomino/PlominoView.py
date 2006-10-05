@@ -62,6 +62,17 @@ schema = Schema((
         )
     ),
 
+    TextField(
+        name='FormFormula',
+        widget=TextAreaWidget(
+            label="Form formula",
+            description="Documents open from the view will used the following formula (they use their own form if empty)",
+            label_msgid='CMFPlomino_label_FormFormula',
+            description_msgid='CMFPlomino_help_FormFormula',
+            i18n_domain='CMFPlomino',
+        )
+    ),
+    
     BooleanField(
         name='Categorized',
         default="0",
