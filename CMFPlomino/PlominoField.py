@@ -78,7 +78,17 @@ schema = Schema((
             i18n_domain='CMFPlomino',
         )
     ),
-
+    
+    TextField(
+        name='SelectionListFormula',
+        widget=TextAreaWidget(
+            label="Selection list formula",
+            description="Formula to compute the selection list elements",
+            label_msgid='CMFPlomino_label_SelectionListFormula',
+            description_msgid='CMFPlomino_help_SelectionListFormula',
+            i18n_domain='CMFPlomino',
+        )
+    ),
 ),
 )
 
@@ -123,10 +133,23 @@ class PlominoField(BaseContent):
 
     security.declarePublic('getProperSelectionList')
     def getProperSelectionList(self):
-        """if value not specified (format: label|value), use label as value
+        """if formula available, use formula
+        if value not specified (format: label|value), use label as value
         (return label|label)
         """
-	s = self.getSelectionList()
+	#if formula available, use formula, else use manual entries
+	f = self.getSelectionListFormula()
+	if f=='':
+		s = self.getSelectionList()
+	else:
+		# plominoDocument is the reserved name used in formula
+		plominoDocument = self
+		try:
+			exec "s = "+f
+		except Exception:
+			s = ["Error"]
+	
+	# if values not specified, use labal as value
 	proper = []
 	for v in s:
 		l = v.split('|')
