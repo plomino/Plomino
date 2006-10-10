@@ -10,7 +10,7 @@
 		<p tal:content="here/Description">description</p>
 		<tal:block tal:condition="python:here.hasReadPermission()">
 			<p tal:repeat="v python:here.getViews()">
-				<a href="#" tal:attributes="href v/getURL" tal:content="v/Title">view link</a>
+				<a href="#" tal:attributes="href v/getURL" tal:define="vobj python:v.getObject()" tal:content="vobj/Label|v/Title">view link</a>
 				<br/>
 			</p>
 		</tal:block>

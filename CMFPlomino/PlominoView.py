@@ -39,7 +39,17 @@ import PlominoDocument
 ##/code-section module-header
 
 schema = Schema((
-
+    StringField(
+        name='Label',
+        widget=StringWidget(
+            label="Label",
+            description="The view label",
+            label_msgid='CMFPlomino_label_ViewLabel',
+            description_msgid='CMFPlomino_help_ViewLabel',
+            i18n_domain='CMFPlomino',
+        )
+    ),
+	
     TextField(
         name='SelectionFormula',
         widget=TextAreaWidget(
@@ -233,7 +243,7 @@ class PlominoView(ATFolder):
 	#	return c
 	#else:
 	#	return None
-	return self._getOb( column_name.lower() )
+	return self._getOb( self.normalizeId(column_name) )
 
     security.declarePublic('evaluateViewForm')
     def evaluateViewForm(self,doc):
