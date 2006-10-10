@@ -175,3 +175,36 @@ msgstr "All'apertura del documento"
 msgid "CMFPlomino_label_onSaveDocument"
 msgstr "Al salvataggio del documento"
 
+
+# added by hand due to archgenxml problem 
+
+#. Default: "Form Formula"
+#: PlominoView.py
+msgid "CMFPlomino_label_FormFormula"
+msgstr "Formula del Modulo"
+
+#. Default: "Documents open from the view will used the following formula (they use their own form if empty)"
+#: PlominoView.py
+msgid "CMFPlomino_help_FormFormula"
+msgstr "I documenti vengono aperti dalla vista che viene utilizzata nella seguente formula (se il campo è vuoto, viene utilizzata il modulo del documento"
+
+#. Default: "Reverse Sorting"
+#: PlominoView.py
+msgid "CMFPlomino_label_ReverseSorting"
+msgstr "Ordinamento inverso"
+
+#. Default: "Reverse the sort ordering"
+#: PlominoView.py
+msgid "CMFPlomino_help_ReverseSorting"
+msgstr "Inverte l'ordinamento"
+
+#. Default: "Parameter or code"
+#: PlominoAction.py
+msgid "CMFPlomino_label_Content"
+msgstr "Parametro o codice"
+
+#. Default: "Code or parameter depending on the action type"
+#: PlominoAction.py
+msgid "CMFPlomino_help_Content"
+msgstr "Codice o parametro in funzione del tipo di azione"
+

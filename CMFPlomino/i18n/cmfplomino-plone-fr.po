@@ -20,7 +20,7 @@ msgid "PlominoAction"
 msgstr "Plomino: Action"
 
 msgid "PlominoColumn"
-msgstr "Plomino: Column"
+msgstr "Plomino: Colonne"
 
 
 msgid "PlominoDatabase"
@@ -30,14 +30,14 @@ msgid "PlominoDocument"
 msgstr "Plomino: Document"
 
 msgid "PlominoField"
-msgstr "Plomino: Field"
+msgstr "Plomino: Champ"
 
 msgid "PlominoForm"
-msgstr "Plomino: Form"
+msgstr "Plomino: Masque"
 
 msgid "PlominoHidewhen"
-msgstr "Plomino: Hide when"
+msgstr "Plomino: Cacher quand"
 
 msgid "PlominoView"
-msgstr "Plomino: View"
+msgstr "Plomino: Vue"
 

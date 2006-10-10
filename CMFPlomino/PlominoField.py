@@ -132,7 +132,7 @@ class PlominoField(BaseContent):
     # Methods
 
     security.declarePublic('getProperSelectionList')
-    def getProperSelectionList(self):
+    def getProperSelectionList(self, doc):
         """if formula available, use formula
         if value not specified (format: label|value), use label as value
         (return label|label)
@@ -141,9 +141,15 @@ class PlominoField(BaseContent):
 	f = self.getSelectionListFormula()
 	if f=='':
 		s = self.getSelectionList()
+		if s=='':
+			return []
 	else:
 		# plominoDocument is the reserved name used in formula
-		plominoDocument = self
+		#if no doc provided (if OpenForm action), we use self, so the PlominoForm will be used via acquisition
+		if doc is None:
+			plominoDocument = self
+		else:
+			plominoDocument = doc
 		try:
 			exec "s = "+f
 		except Exception:
@@ -152,6 +158,7 @@ class PlominoField(BaseContent):
 	# if values not specified, use labal as value
 	proper = []
 	for v in s:
+		v = str(v)
 		l = v.split('|')
 		if len(l)==2:
 			proper.append(v)

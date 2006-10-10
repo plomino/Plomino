@@ -19,17 +19,17 @@ msgstr ""
 #. Default: "How the action is shown"
 #: PlominoAction.py
 msgid "CMFPlomino_help_ActionDisplay"
-msgstr "How the action is shown"
+msgstr "Type d'affichage de l'action"
 
 #. Default: "Select the type for this action"
 #: PlominoAction.py
 msgid "CMFPlomino_help_ActionType"
-msgstr "Select the type for this action"
+msgstr "Sélectionner le type d'action"
 
 #. Default: "Categorised on first column"
 #: PlominoView.py
 msgid "CMFPlomino_help_Categorized"
-msgstr "Categorised on first column"
+msgstr "Catégoriser sur les valeurs de la première colonne"
 
 #. Default: "What this action can do"
 #: PlominoAction.py
@@ -40,74 +40,74 @@ msgstr "What this action can do"
 #. Default: "How conten will be generated"
 #: PlominoField.py
 msgid "CMFPlomino_help_FieldMode"
-msgstr "How content will be generated"
+msgstr "Mode de calcul du champ"
 
 #. Default: "The kind of this field"
 #: PlominoField.py
 msgid "CMFPlomino_help_FieldType"
-msgstr "The kind of this field"
+msgstr "type de champ"
 
 #. Default: "How to calculate field content"
 #: PlominoField.py
 #: PlominoColumn.py
 #: PlominoHidewhen.py
 msgid "CMFPlomino_help_Formula"
-msgstr "How to calculate field content"
+msgstr "Formule de calcul du champ"
 
 #. Default: "The action name"
 #: PlominoAction.py
 msgid "CMFPlomino_help_Label"
-msgstr "The action name"
+msgstr "Libellé de l'action"
 
 #. Default: "The form layout. text with 'Plominofield' style correspond to the contained field elements"
 #: PlominoForm.py
 msgid "CMFPlomino_help_FormLayout"
-msgstr "The form layout. Text with 'Plominofield' style correspond to the contained field elements"
+msgstr "Mise en page du masque. Les styles 'PlominoXXX' permettent de signaler la position des champs, des formules 'Cacher quand...', et des actions"
 
 #. Default: "Position in view"
 #: PlominoColumn.py
 msgid "CMFPlomino_help_Position"
-msgstr "Position in view"
+msgstr "Position dans la vue"
 
 #. Default: "The view selection formula is a line of Python code which should return True or False. The formula will be evaluated for each document in the database to decide if the document must be displayed in the view or not. plominoDocument is a reserved name in formulae, it returns the current Plomino document. Each document field value can be accessed directly as an attribute of the document: plominoDocument.<fieldname>"
 #: PlominoView.py
 msgid "CMFPlomino_help_SelectionFormula"
-msgstr "The view selection formula is a line of Python code which should return True or False. The formula will be evaluated for each document in the database to decide if the document must be displayed in the view or not. plominoDocument is a reserved name in formulae, it returns the current Plomino document. Each document field value can be accessed directly as an attribute of the document: plominoDocument.<fieldname>"
+msgstr "La formule de sélection de la vue est une ligne de code Python qui doit retoruner un booléen. La formule sera évaluée pour chaque document dans la base Plomino pour établir si le document doit apparaître dans la vue ou pas. plominoDocument est un mot-clé réservé dans les formules, il retourne le document courant. Chaque valuer de champ du document peut être accédée de la même manière qu'un attribut: plominoDocument.<fieldname>"
 
 #. Default: "Listo of values to select, one for line"
 #: PlominoField.py
 msgid "CMFPlomino_help_SelectionList"
-msgstr "List of values to select, one for line"
+msgstr "Liste des valeurs sélectionnables. Une valeur par ligne"
 
 #. Default: "Column used to sort the view"
 #: PlominoView.py
 msgid "CMFPlomino_help_SortColumn"
-msgstr "Column used to sort the view"
+msgstr "Colonne utilisée pour trier la vue"
 
 #. Default: "Action to take when the document is opned"
 #: PlominoForm.py
 msgid "CMFPlomino_help_onOpenDocument"
-msgstr "Action to take when the document is opened"
+msgstr "Code à exécuter quand le document est ouvert"
 
 #. Default: "Action to take when saving the document"
 #: PlominoForm.py
 msgid "CMFPlomino_help_onSaveDocument"
-msgstr "Action to take when saving the document"
+msgstr "Code à exécuter quand le document est sauvegardé"
 
 #. Default: "Action display"
 #: PlominoAction.py
 msgid "CMFPlomino_label_ActionDisplay"
-msgstr "Action display"
+msgstr "Affichage de l'action"
 
 #. Default: "Action type"
 #: PlominoAction.py
 msgid "CMFPlomino_label_ActionType"
-msgstr "Action type"
+msgstr "Type d'action"
 
 #. Default: "Categorized"
 #: PlominoView.py
 msgid "CMFPlomino_label_Categorized"
-msgstr "Categorized"
+msgstr "Catégorisation"
 
 #. Default: "Description"
 #: PlominoAction.py
@@ -118,29 +118,29 @@ msgstr "Description"
 #. Default: "Field mode"
 #: PlominoField.py
 msgid "CMFPlomino_label_FieldMode"
-msgstr "Field mode"
+msgstr "Mode"
 
 #. Default: "Field type"
 #: PlominoField.py
 msgid "CMFPlomino_label_FieldType"
-msgstr "Field type"
+msgstr "Type de champ"
 
 #. Default: "Formula"
 #: PlominoField.py
 #: PlominoColumn.py
 #: PlominoHidewhen.py
 msgid "CMFPlomino_label_Formula"
-msgstr "Formula"
+msgstr "Formule"
 
 #. Default: "Label"
 #: PlominoAction.py
 msgid "CMFPlomino_label_Label"
-msgstr "Label"
+msgstr "Libellé"
 
 #. Default: "Form layout"
 #: PlominoForm.py
 msgid "CMFPlomino_label_FormLayout"
-msgstr "Form layout"
+msgstr "Mise en page"
 
 #. Default: "Position"
 #: PlominoColumn.py
@@ -150,17 +150,17 @@ msgstr "Position"
 #. Default: "Selection formula"
 #: PlominoView.py
 msgid "CMFPlomino_label_SelectionFormula"
-msgstr "Selection formula"
+msgstr "Formule de sélection"
 
 #. Default: "Selection list"
 #: PlominoField.py
 msgid "CMFPlomino_label_SelectionList"
-msgstr "Selection list"
+msgstr "Liste de sélection"
 
 #. Default: "Sort column"
 #: PlominoView.py
 msgid "CMFPlomino_label_SortColumn"
-msgstr "Sort column"
+msgstr "Colonne à trier"
 
 #. Default: "On open document"
 #: PlominoForm.py
@@ -171,4 +171,37 @@ msgstr "On open document"
 #: PlominoForm.py
 msgid "CMFPlomino_label_onSaveDocument"
 msgstr "On save document"
+
+
+# added by hand due to archgenxml problem 
+
+#. Default: "Form Formula"
+#: PlominoView.py
+msgid "CMFPlomino_label_FormFormula"
+msgstr "Calcul du masque"
+
+#. Default: "Documents open from the view will used the following formula (they use their own form if empty)"
+#: PlominoView.py
+msgid "CMFPlomino_help_FormFormula"
+msgstr "Les documents ouverts à partir de cette vue utiliseront le masque défini par cette formule (si vide, ils utilisent leur propre masque)"
+
+#. Default: "Reverse Sorting"
+#: PlominoView.py
+msgid "CMFPlomino_label_ReverseSorting"
+msgstr "Tri inversé"
+
+#. Default: "Reverse the sort ordering"
+#: PlominoView.py
+msgid "CMFPlomino_help_ReverseSorting"
+msgstr "Met le tri en ordre décroissant"
+
+#. Default: "Parameter or code"
+#: PlominoAction.py
+msgid "CMFPlomino_label_Content"
+msgstr "Paramètre ou code"
+
+#. Default: "Code or parameter depending on the action type"
+#: PlominoAction.py
+msgid "CMFPlomino_help_Content"
+msgstr "En fonction du type d'action, on renseigne ici le paramètre ou le code nécessaire"
 

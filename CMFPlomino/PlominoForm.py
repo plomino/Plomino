@@ -198,7 +198,7 @@ class PlominoForm(ATFolder):
 			rep=self.REQUEST['RESPONSE']
 		except Exception:
 			self.REQUEST['RESPONSE']=HTTPResponse()
-		return pt(fieldname=fieldName, fieldvalue=fieldValue, selection=field.getProperSelectionList())
+		return pt(fieldname=fieldName, fieldvalue=fieldValue, selection=field.getProperSelectionList(doc))
 
 	if mode=="DISPLAY" or mode=="COMPUTED":
 		# plominoDocument is the reserved name used in field formulae

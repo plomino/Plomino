@@ -249,6 +249,7 @@ class PlominoDocument(ATFolder):
 	name = db.getCurrentUser().getUserName()
 	if authors == '':
 		authors = []
+		authors.append(name)
 	elif name in authors:
 		pass
 	else:
