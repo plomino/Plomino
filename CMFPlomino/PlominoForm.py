@@ -64,8 +64,7 @@ schema = Schema((
 
     TextField(
         name='FormLayout',
-        allowable_content_types=('text/plain', 'text/structured', 'text/html', 'application/msword',),
-        default="<h1> xxx </h1>",
+        allowable_content_types=('text/html',),
         widget=RichWidget(
             label="Form layout",
             description="The form layout. text with 'Plominofield' style correspond to the contained field elements",
