@@ -106,6 +106,13 @@ class PlominoDatabase(ATFolder, PlominoAccessControl):
         'condition': 'python:1'
        },
 
+       {'action': "string:${object_url}/base_edit",
+        'category': "object",
+        'id': 'edit',
+        'name': 'Edit',
+        'permissions': (DESIGN_PERMISSION,),
+        'condition': 'python:1'
+       },
 
        {'action': "string:${object_url}/DatabaseACL",
         'category': "object",
@@ -149,13 +156,13 @@ class PlominoDatabase(ATFolder, PlominoAccessControl):
     def getForm(self,formname):
         """return a PlominoForm
         """
-	return self._getOb( formname )
+	return self._getOb( formname.lower() )
 
     security.declarePublic('getView')
     def getView(self,viewname):
         """return a PlominoView
         """
-	return self._getOb( viewname )
+	return self._getOb( viewname.lower() )
 
     security.declareProtected(CREATE_PERMISSION, 'createDocument')
     def createDocument(self):

@@ -21,7 +21,7 @@
             <tr>
             <th>&nbsp;&nbsp;</th>
             <tal:block tal:repeat="c columns">
-            	<th>&nbsp;<span tal:content="c/Title">Title</span>&nbsp;</th>
+            	<th>&nbsp;<span tal:content="c/Label|c/Title">Title</span>&nbsp;</th>
             </tal:block>
             </tr>
         <tal:block tal:condition="python:test(here.Categorized)">

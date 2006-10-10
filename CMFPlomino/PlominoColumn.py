@@ -32,7 +32,17 @@ from Products.CMFPlomino.config import PROJECTNAME
 ##/code-section module-header
 
 schema = Schema((
-
+    StringField(
+        name='Label',
+        widget=StringWidget(
+            label="Label",
+            description="The column label",
+            label_msgid='CMFPlomino_label_ColumnLabel',
+            description_msgid='CMFPlomino_help_ColumnLabel',
+            i18n_domain='CMFPlomino',
+        )
+    ),
+	
     TextField(
         name='Formula',
         widget=TextAreaWidget(

@@ -66,7 +66,7 @@ schema = Schema((
         name='FormFormula',
         widget=TextAreaWidget(
             label="Form formula",
-            description="Documents open from the view will used the following formula (they use their own form if empty)",
+            description="Documents open from the view will use the form defined by the following formula (they use their own form if empty)",
             label_msgid='CMFPlomino_label_FormFormula',
             description_msgid='CMFPlomino_help_FormFormula',
             i18n_domain='CMFPlomino',
@@ -233,7 +233,7 @@ class PlominoView(ATFolder):
 	#	return c
 	#else:
 	#	return None
-	return self._getOb( column_name )
+	return self._getOb( column_name.lower() )
 
     security.declarePublic('evaluateViewForm')
     def evaluateViewForm(self,doc):
