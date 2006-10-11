@@ -352,20 +352,25 @@ class PlominoDocument(ATFolder):
         evaluation and views columns values as attibutes (so ZCatalog
         can read them)
         """
+	LOG('Plomino', ERROR, "GET="+name+"=")
 	if(name.startswith("PlominoViewFormula_")):
+		LOG('Plomino', ERROR, "View formula")
 		param = name.split('_')
 		viewname=param[1]
 		return self.isSelectedInView(viewname)
 	elif(name.startswith("PlominoViewColumn_")):
+		LOG('Plomino', ERROR, "View column")
 		param = name.split('_')
 		viewname=param[1]
 		columnname=param[2]
 		return self.computeColumnValue(viewname, columnname)
 	else:
+		LOG('Plomino', ERROR, "item?")
 		if(self.items.has_key(name)):
 			return self.items[name]
 		else:
-			return BaseFolder.__getattr__(self, name)
+			LOG('Plomino', ERROR, "no")
+			return ATFolder.__getattr__(self, name)
 
     security.declareProtected("READ_PERMISSION", 'isSelectedInView')
     def isSelectedInView(self,viewname):

@@ -178,6 +178,9 @@ class PlominoField(BaseContent):
     def at_post_create_script(self):
         """Post creation
         """
+	# replace Title with its normalized equivalent (stored in id)
+	self.setTitle(self.id)
+	
 	if not self.getFieldMode()=="DISPLAY":
 		db = self.getParentDatabase()
 		db.getIndex().createIndex(self.Title())

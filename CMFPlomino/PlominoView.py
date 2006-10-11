@@ -243,7 +243,7 @@ class PlominoView(ATFolder):
 	#	return c
 	#else:
 	#	return None
-	return self._getOb( self.normalizeId(column_name) )
+	return self._getOb( column_name )
 
     security.declarePublic('evaluateViewForm')
     def evaluateViewForm(self,doc):
@@ -260,6 +260,9 @@ class PlominoView(ATFolder):
     def at_post_create_script(self):
         """post create
         """
+	# replace Title with its normalized equivalent (stored in id)
+	self.setTitle(self.id)
+	
 	db = self.getParentDatabase()
 	db.getIndex().createSelectionIndex('PlominoViewFormula_'+self.getViewName())
 

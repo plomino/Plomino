@@ -32,6 +32,7 @@ from Products.CMFCore import CMFCorePermissions
 from Products.Archetypes.utils import make_uuid
 from AccessControl import ClassSecurityInfo
 from Products.CMFCore.utils import getToolByName
+from Acquisition import *
 
 import string
 
@@ -156,13 +157,13 @@ class PlominoDatabase(ATFolder, PlominoAccessControl):
     def getForm(self,formname):
         """return a PlominoForm
         """
-	return self._getOb( self.normalizeId(formname) )
+	return self._getOb( formname )
 
     security.declarePublic('getView')
     def getView(self,viewname):
         """return a PlominoView
         """
-	return self._getOb( self.normalizeId(viewname) )
+	return self._getOb( viewname )
 
     security.declareProtected(CREATE_PERMISSION, 'createDocument')
     def createDocument(self):
@@ -188,13 +189,6 @@ class PlominoDatabase(ATFolder, PlominoAccessControl):
         """return the database index
         """
 	return self._getOb('plomino_index')
-
-    security.declarePublic('normalizeId')
-    def normalizeId(self, objId):
-        """return the normalized id
-        """
-	plone_tool = getToolByName(self, 'plone_utils', None)
-	return plone_tool.normalizeString(objId)
 
     security.declarePublic('__init__')
     def __init__(self,oid,**kw):

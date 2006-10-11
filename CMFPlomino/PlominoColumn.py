@@ -130,6 +130,9 @@ class PlominoColumn(BaseContent):
     def at_post_create_script(self):
         """post create
         """
+	# replace Title with its normalized equivalent (stored in id)
+	self.setTitle(self.id)
+	
 	v = self.getParentView()
 	v.declareColumn(self.getColumnName(), self)
 

@@ -85,6 +85,12 @@ class PlominoHidewhen(BaseContent):
     ##/code-section class-header
 
     # Methods
+    security.declarePublic('at_post_create_script')
+    def at_post_create_script(self):
+        """Post creation
+        """
+	# replace Title with its normalized equivalent (stored in id)
+	self.setTitle(self.id)
 
 
 registerType(PlominoHidewhen, PROJECTNAME)

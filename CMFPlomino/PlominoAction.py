@@ -160,6 +160,13 @@ class PlominoAction(BaseContent):
 		REQUEST.RESPONSE.redirect(plominoReturnURL)
 	except Exception, e:
 		return "Error: %s \nCode->\n%s" % (e, self.Content())
+	
+    security.declarePublic('at_post_create_script')
+    def at_post_create_script(self):
+        """Post creation
+        """
+	# replace Title with its normalized equivalent (stored in id)
+	self.setTitle(self.id)
 
 
 registerType(PlominoAction, PROJECTNAME)
