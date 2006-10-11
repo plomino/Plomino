@@ -42,7 +42,30 @@ from PlominoIndex import PlominoIndex
 ##/code-section module-header
 
 schema = Schema((
-
+    TextField(
+        name='AboutDescription',
+        allowable_content_types=('text/html',),
+        widget=RichWidget(
+            label="About this database",
+            description="Describe the database, its objectives, its targetted audience, etc...",
+            label_msgid='CMFPlomino_label_About',
+            description_msgid='CMFPlomino_help_About',
+            i18n_domain='CMFPlomino',
+        ),
+        default_output_type='text/html'
+    ),
+	TextField(
+        name='UsingDescription',
+        allowable_content_types=('text/html',),
+        widget=RichWidget(
+            label="Using this database",
+            description="Describe how to use the database",
+            label_msgid='CMFPlomino_label_Using',
+            description_msgid='CMFPlomino_help_Using',
+            i18n_domain='CMFPlomino',
+        ),
+        default_output_type='text/html'
+    ),
 ),
 )
 
@@ -123,7 +146,21 @@ class PlominoDatabase(ATFolder, PlominoAccessControl):
         'condition': 'python:1'
        },
 
-
+       {'action': "string:${object_url}/AboutDatabase",
+        'category': "object",
+        'id': 'about',
+        'name': 'About',
+        'permissions': ("View",),
+        'condition': 'python:1'
+       },
+	   
+       {'action': "string:${object_url}/UsingDatabase",
+        'category': "object",
+        'id': 'using',
+        'name': 'Using',
+        'permissions': ("View",),
+        'condition': 'python:1'
+       },
     )
 
     _at_rename_after_creation = True

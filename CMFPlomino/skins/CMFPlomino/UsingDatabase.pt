@@ -1,0 +1,16 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en"
+      lang="en"
+      metal:use-macro="here/main_template/macros/master"
+      i18n:domain="plone">
+<body>
+
+<metal:main fill-slot="main">
+    <div id="bodyContent">
+    	<h1><tal:block replace="structure python:getattr(here, here.getIcon(1))"/><span tal:content="here/Title">database title</span></h1>
+		<p tal:content="structure here/UsingDescription">UsingDescription</p>
+	</div>
+</metal:main>
+
+</body>
+</html>
+
