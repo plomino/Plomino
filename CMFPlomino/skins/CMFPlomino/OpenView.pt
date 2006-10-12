@@ -48,7 +48,10 @@
 					</tr>
 					<tal:block tal:condition="expanded">
 						<tal:block tal:repeat="doc python:here.getCategoryViewEntries(columns[0].getColumnName(), cat)">
-							<tr><td><a href="#" tal:attributes="href doc/getPath">Go</a></td>
+							<tr tal:define="oddrow repeat/doc/odd"
+								tal:attributes="class python:test(oddrow, 'even', 'odd')"
+								>
+								<td><a href="#" tal:attributes="href doc/getPath">Go</a></td>
 								<tal:block tal:repeat="c columns">
 									<td>
 										<tal:block tal:condition="python:test(c!=columns[0])">
@@ -69,11 +72,15 @@
 		<tal:block tal:condition="python:test(not(here.Categorized))">
 		<!-- Regular view -->
 			<tal:block tal:repeat="doc python:here.getAllDocuments()">
-				<tr><td><a href="#" tal:attributes="href doc/getPath">Go</a></td>
+				<tr tal:define="oddrow repeat/doc/odd"
+							tal:attributes="class python:test(oddrow, 'even', 'odd')"
+							>
+					<td><a href="#" tal:attributes="href doc/getPath">Go</a></td>
 					<tal:block tal:repeat="c columns">
 						<td><span tal:define="cname c/Title;
 											vname here/Title;
-											cvalue python:path('doc/PlominoViewColumn_%s_%s' % (vname, cname))"
+											cvalue python:path('doc/PlominoViewColumn_%s_%s' % (vname, cname));
+											"
 									tal:content="structure cvalue" /></td>
 					</tal:block>
 				</tr>

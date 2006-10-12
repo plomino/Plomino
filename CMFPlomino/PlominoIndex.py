@@ -114,21 +114,21 @@ class PlominoIndex(UniqueObject, ZCatalog, ActionProviderBase):
 	try:
 		self.addIndex(fieldname, 'FieldIndex')
 		self.addColumn(fieldname)
-		self.refreshCatalog()
 	except CatalogError:
 		# index already exists
 		pass
-
+	self.refreshCatalog()
+		
     security.declareProtected(CMFCorePermissions.View, 'createSelectionIndex')
     def createSelectionIndex(self,fieldname):
         """
         """
 	try:
 		self.addIndex(fieldname, 'FieldIndex')
-		self.refreshCatalog()
 	except CatalogError:
 		# index already exists
 		pass
+	self.refreshCatalog()
 
     security.declareProtected(CMFCorePermissions.View, 'deleteIndex')
     def deleteIndex(self,fieldname):
@@ -136,6 +136,7 @@ class PlominoIndex(UniqueObject, ZCatalog, ActionProviderBase):
         """
 	self.delIndex(fieldname)
 	self.delColumn(fieldname)
+	self.refreshCatalog()
 
     security.declareProtected(CMFCorePermissions.View, 'indexDocument')
     def indexDocument(self,doc):
