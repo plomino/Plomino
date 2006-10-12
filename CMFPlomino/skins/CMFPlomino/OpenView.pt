@@ -55,7 +55,7 @@
 											<span tal:define="cname c/Title;
 														vname here/Title;
 														cvalue python:path('doc/PlominoViewColumn_%s_%s' % (vname, cname))"
-												tal:content="cvalue" />
+												tal:content="structure cvalue" />
 										</tal:block>
 									</td>
 								</tal:block>
@@ -74,7 +74,7 @@
 						<td><span tal:define="cname c/Title;
 											vname here/Title;
 											cvalue python:path('doc/PlominoViewColumn_%s_%s' % (vname, cname))"
-									tal:content="cvalue" /></td>
+									tal:content="structure cvalue" /></td>
 					</tal:block>
 				</tr>
 			</tal:block>

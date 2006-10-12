@@ -33,7 +33,7 @@ from Products.Archetypes.utils import make_uuid
 from AccessControl import ClassSecurityInfo
 from Products.CMFCore.utils import getToolByName
 from Acquisition import *
-
+from Products.CMFPlomino.PlominoUtils import *
 import string
 
 from zLOG import LOG, ERROR

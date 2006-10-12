@@ -29,7 +29,7 @@ from Products.CMFPlomino.config import *
 from Products.Archetypes.public import *
 from Products.CMFCore import CMFCorePermissions
 from Products.Archetypes.utils import make_uuid
-
+from Products.CMFPlomino.PlominoUtils import *
 from ZPublisher.HTTPResponse import HTTPResponse
 from zLOG import LOG, ERROR
 
@@ -40,6 +40,17 @@ import PlominoDocument
 
 schema = Schema((
 
+    StringField(
+        name='DocumentTitle',
+        widget=StringWidget(
+            label="Document title formula",
+            description="Compute the document title",
+            label_msgid='CMFPlomino_label_DocumentTitle',
+            description_msgid='CMFPlomino_help_DocumentTitle',
+            i18n_domain='CMFPlomino',
+        )
+    ),
+	
     TextField(
         name='onOpenDocument',
         widget=TextAreaWidget(
@@ -138,7 +149,6 @@ class PlominoForm(ATFolder):
         """
 	db = self.getParentDatabase()
 	doc = db.createDocument()
-	doc.setTitle( doc.id )
 	doc.setItem('Form', self.getFormName())
 	doc.saveDocument(REQUEST)
 

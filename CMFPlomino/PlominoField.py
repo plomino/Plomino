@@ -26,6 +26,7 @@ from Products.CMFPlomino.config import *
 
 ##code-section module-header #fill in your manual code here
 from Products.Archetypes.public import *
+from Products.CMFPlomino.PlominoUtils import *
 from Products.CMFCore import CMFCorePermissions
 ##/code-section module-header
 

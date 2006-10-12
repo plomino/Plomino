@@ -31,7 +31,7 @@ from Products.CMFCore import CMFCorePermissions
 from AccessControl import Unauthorized
 from Products.CMFCore.utils import getToolByName
 from Acquisition import aq_parent
-
+from Products.CMFPlomino.PlominoUtils import *
 from Products.CMFPlomino.config import PROJECTNAME, READ_PERMISSION
 from zLOG import LOG, ERROR
 
@@ -61,9 +61,9 @@ schema = Schema((
         )
     ),
 
-    TextField(
+    StringField(
         name='SortColumn',
-        widget=TextAreaWidget(
+        widget=StringWidget(
             label="Sort column",
             description="Column used to sort the view",
             label_msgid='CMFPlomino_label_SortColumn',

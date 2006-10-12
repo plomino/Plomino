@@ -25,6 +25,7 @@ from Products.Archetypes.atapi import *
 from Products.ATContentTypes.content.folder import ATFolder
 from Products.CMFPlomino.config import *
 
+
 ##code-section module-header #fill in your manual code here
 from Products.Archetypes.public import *
 from Products.CMFCore import CMFCorePermissions
@@ -32,7 +33,7 @@ from AccessControl import Unauthorized
 from time import strptime
 from DateTime import DateTime
 from Products.CMFCore.utils import getToolByName
-
+from Products.CMFPlomino.PlominoUtils import *
 from Acquisition import *
 from zLOG import LOG, ERROR
 
@@ -243,7 +244,16 @@ class PlominoDocument(ATFolder):
 		else:
 			# computed for display field are not stored
 			pass
-
+			
+	# compute the document title
+	# plominoDocument is the reserved name used in field formulae
+	plominoDocument = self
+	try:
+		exec "result = " + form.getDocumentTitle()
+	except Exception:
+		result = "Document"
+	self.setTitle(result)
+	
 	# update the Plomino_Authors field with the current user name
 	authors = self.getItem('Plomino_Authors')
 	name = db.getCurrentUser().getUserName()
