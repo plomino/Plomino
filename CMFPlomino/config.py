@@ -5,7 +5,7 @@
 # Copyright (c) 2006 by ['[Eric BREHAULT]']
 # Generated: Fri Sep 29 17:50:40 2006
 # Generator: ArchGenXML Version 1.5.1-svn
-#            http://plone.org/products/archgenxml
+#			http://plone.org/products/archgenxml
 #
 # Zope Public License (ZPL)
 #
@@ -39,11 +39,11 @@ PROJECTNAME = "CMFPlomino"
 
 # Check for Plone 2.1
 try:
-    from Products.CMFPlone.migrations import v2_1
+	from Products.CMFPlone.migrations import v2_1
 except ImportError:
-    HAS_PLONE21 = False
+	HAS_PLONE21 = False
 else:
-    HAS_PLONE21 = True
+	HAS_PLONE21 = True
 
 # Permissions
 DEFAULT_ADD_CONTENT_PERMISSION = "Add portal content"
@@ -61,8 +61,8 @@ PRODUCT_DEPENDENCIES = []
 
 # You can overwrite these two in an AppConfig.py:
 # STYLESHEETS = [{'id': 'my_global_stylesheet.css'},
-#                {'id': 'my_contenttype.css',
-#                 'expression': 'python:object.getTypeInfo().getId() == "MyType"'}]
+#				{'id': 'my_contenttype.css',
+#				 'expression': 'python:object.getTypeInfo().getId() == "MyType"'}]
 # You can do the same with JAVASCRIPTS.
 STYLESHEETS = []
 JAVASCRIPTS = []
@@ -73,6 +73,6 @@ JAVASCRIPTS = []
 
 # Load custom configuration not managed by ArchGenXML
 try:
-    from Products.CMFPlomino.AppConfig import *
+	from Products.CMFPlomino.AppConfig import *
 except ImportError:
-    pass
+	pass

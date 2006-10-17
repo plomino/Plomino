@@ -5,7 +5,7 @@
 # Copyright (c) 2006 by ['[Eric BREHAULT]']
 # Generated: Fri Sep 29 17:50:39 2006
 # Generator: ArchGenXML Version 1.5.1-svn
-#            http://plone.org/products/archgenxml
+#			http://plone.org/products/archgenxml
 #
 # Zope Public License (ZPL)
 #
@@ -33,16 +33,16 @@ from Products.CMFPlomino.config import PROJECTNAME
 
 schema = Schema((
 
-    TextField(
-        name='Formula',
-        widget=TextAreaWidget(
-            label="Formula",
-            description="hide-when formula",
-            label_msgid='CMFPlomino_label_Formula',
-            description_msgid='CMFPlomino_help_Formula',
-            i18n_domain='CMFPlomino',
-        )
-    ),
+	TextField(
+		name='Formula',
+		widget=TextAreaWidget(
+			label="Formula",
+			description="hide-when formula",
+			label_msgid='CMFPlomino_label_Formula',
+			description_msgid='CMFPlomino_help_Formula',
+			i18n_domain='CMFPlomino',
+		)
+	),
 
 ),
 )
@@ -51,46 +51,46 @@ schema = Schema((
 ##/code-section after-local-schema
 
 PlominoHidewhen_schema = BaseSchema.copy() + \
-    schema.copy()
+	schema.copy()
 
 ##code-section after-schema #fill in your manual code here
 ##/code-section after-schema
 
 class PlominoHidewhen(BaseContent):
-    """Plomino hide-when formula
-    """
-    security = ClassSecurityInfo()
-    __implements__ = (getattr(BaseContent,'__implements__',()),)
+	"""Plomino hide-when formula
+	"""
+	security = ClassSecurityInfo()
+	__implements__ = (getattr(BaseContent,'__implements__',()),)
 
-    # This name appears in the 'add' box
-    archetype_name = 'PlominoHidewhen'
+	# This name appears in the 'add' box
+	archetype_name = 'PlominoHidewhen'
 
-    meta_type = 'PlominoHidewhen'
-    portal_type = 'PlominoHidewhen'
-    allowed_content_types = []
-    filter_content_types = 0
-    global_allow = 0
-    content_icon = 'PlominoHidewhen.gif'
-    immediate_view = 'base_view'
-    default_view = 'base_view'
-    suppl_views = ()
-    typeDescription = "PlominoHidewhen"
-    typeDescMsgId = 'description_edit_plominohidewhen'
+	meta_type = 'PlominoHidewhen'
+	portal_type = 'PlominoHidewhen'
+	allowed_content_types = []
+	filter_content_types = 0
+	global_allow = 0
+	content_icon = 'PlominoHidewhen.gif'
+	immediate_view = 'base_view'
+	default_view = 'base_view'
+	suppl_views = ()
+	typeDescription = "PlominoHidewhen"
+	typeDescMsgId = 'description_edit_plominohidewhen'
 
-    _at_rename_after_creation = True
+	_at_rename_after_creation = True
 
-    schema = PlominoHidewhen_schema
+	schema = PlominoHidewhen_schema
 
-    ##code-section class-header #fill in your manual code here
-    ##/code-section class-header
+	##code-section class-header #fill in your manual code here
+	##/code-section class-header
 
-    # Methods
-    security.declarePublic('at_post_create_script')
-    def at_post_create_script(self):
-        """Post creation
-        """
-	# replace Title with its normalized equivalent (stored in id)
-	self.setTitle(self.id)
+	# Methods
+	security.declarePublic('at_post_create_script')
+	def at_post_create_script(self):
+		"""Post creation
+		"""
+		# replace Title with its normalized equivalent (stored in id)
+		self.setTitle(self.id)
 
 
 registerType(PlominoHidewhen, PROJECTNAME)

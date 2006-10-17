@@ -5,7 +5,7 @@
 # Copyright (c) 2006 by ['[Eric BREHAULT]']
 # Generated: Fri Sep 29 17:50:39 2006
 # Generator: ArchGenXML Version 1.5.1-svn
-#            http://plone.org/products/archgenxml
+#			http://plone.org/products/archgenxml
 #
 # Zope Public License (ZPL)
 #

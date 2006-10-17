@@ -5,7 +5,7 @@
 # Copyright (c) 2006 by ['[Eric BREHAULT]']
 # Generated: Fri Sep 29 17:50:38 2006
 # Generator: ArchGenXML Version 1.5.1-svn
-#            http://plone.org/products/archgenxml
+#			http://plone.org/products/archgenxml
 #
 # Zope Public License (ZPL)
 #
@@ -32,38 +32,38 @@ from Products.CMFPlomino.config import PROJECTNAME
 ##/code-section module-header
 
 schema = Schema((
-    StringField(
-        name='Label',
-        widget=StringWidget(
-            label="Label",
-            description="The column label",
-            label_msgid='CMFPlomino_label_ColumnLabel',
-            description_msgid='CMFPlomino_help_ColumnLabel',
-            i18n_domain='CMFPlomino',
-        )
-    ),
+	StringField(
+		name='Label',
+		widget=StringWidget(
+			label="Label",
+			description="The column label",
+			label_msgid='CMFPlomino_label_ColumnLabel',
+			description_msgid='CMFPlomino_help_ColumnLabel',
+			i18n_domain='CMFPlomino',
+		)
+	),
 	
-    TextField(
-        name='Formula',
-        widget=TextAreaWidget(
-            label="Formula",
-            description="A column formula is a line of python which should return a value.",
-            label_msgid='CMFPlomino_label_Formula',
-            description_msgid='CMFPlomino_help_Formula',
-            i18n_domain='CMFPlomino',
-        )
-    ),
+	TextField(
+		name='Formula',
+		widget=TextAreaWidget(
+			label="Formula",
+			description="A column formula is a line of python which should return a value.",
+			label_msgid='CMFPlomino_label_Formula',
+			description_msgid='CMFPlomino_help_Formula',
+			i18n_domain='CMFPlomino',
+		)
+	),
 
-    IntegerField(
-        name='Position',
-        widget=IntegerWidget(
-            label="Position",
-            description="Position in view",
-            label_msgid='CMFPlomino_label_Position',
-            description_msgid='CMFPlomino_help_Position',
-            i18n_domain='CMFPlomino',
-        )
-    ),
+	IntegerField(
+		name='Position',
+		widget=IntegerWidget(
+			label="Position",
+			description="Position in view",
+			label_msgid='CMFPlomino_label_Position',
+			description_msgid='CMFPlomino_help_Position',
+			i18n_domain='CMFPlomino',
+		)
+	),
 
 ),
 )
@@ -72,69 +72,69 @@ schema = Schema((
 ##/code-section after-local-schema
 
 PlominoColumn_schema = BaseSchema.copy() + \
-    schema.copy()
+	schema.copy()
 
 ##code-section after-schema #fill in your manual code here
 ##/code-section after-schema
 
 class PlominoColumn(BaseContent):
-    """Plomino view column
-    """
-    security = ClassSecurityInfo()
-    __implements__ = (getattr(BaseContent,'__implements__',()),)
+	"""Plomino view column
+	"""
+	security = ClassSecurityInfo()
+	__implements__ = (getattr(BaseContent,'__implements__',()),)
 
-    # This name appears in the 'add' box
-    archetype_name = 'PlominoColumn'
+	# This name appears in the 'add' box
+	archetype_name = 'PlominoColumn'
 
-    meta_type = 'PlominoColumn'
-    portal_type = 'PlominoColumn'
-    allowed_content_types = []
-    filter_content_types = 0
-    global_allow = 0
-    content_icon = 'PlominoColumn.gif'
-    immediate_view = 'base_view'
-    default_view = 'base_view'
-    suppl_views = ()
-    typeDescription = "PlominoColumn"
-    typeDescMsgId = 'description_edit_plominocolumn'
+	meta_type = 'PlominoColumn'
+	portal_type = 'PlominoColumn'
+	allowed_content_types = []
+	filter_content_types = 0
+	global_allow = 0
+	content_icon = 'PlominoColumn.gif'
+	immediate_view = 'base_view'
+	default_view = 'base_view'
+	suppl_views = ()
+	typeDescription = "PlominoColumn"
+	typeDescMsgId = 'description_edit_plominocolumn'
 
-    _at_rename_after_creation = True
+	_at_rename_after_creation = True
 
-    schema = PlominoColumn_schema
+	schema = PlominoColumn_schema
 
-    ##code-section class-header #fill in your manual code here
-    ##/code-section class-header
+	##code-section class-header #fill in your manual code here
+	##/code-section class-header
 
-    # Methods
+	# Methods
 
-    security.declarePublic('getColumnName')
-    def getColumnName(self):
-        """get column name
-        """
-	return self.Title()
+	security.declarePublic('getColumnName')
+	def getColumnName(self):
+		"""get column name
+		"""
+		return self.Title()
 
-    security.declarePublic('getParentView')
-    def getParentView(self):
-        """get parent view
-        """
-	return self.getParentNode()
+	security.declarePublic('getParentView')
+	def getParentView(self):
+		"""get parent view
+		"""
+		return self.getParentNode()
 
-    security.declarePublic('at_post_edit_script')
-    def at_post_edit_script(self):
-        """post edit
-        """
-	v = self.getParentView()
-	v.declareColumn(self.getColumnName(), self)
+	security.declarePublic('at_post_edit_script')
+	def at_post_edit_script(self):
+		"""post edit
+		"""
+		v = self.getParentView()
+		v.declareColumn(self.getColumnName(), self)
 
-    security.declarePublic('at_post_create_script')
-    def at_post_create_script(self):
-        """post create
-        """
-	# replace Title with its normalized equivalent (stored in id)
-	self.setTitle(self.id)
-	
-	v = self.getParentView()
-	v.declareColumn(self.getColumnName(), self)
+	security.declarePublic('at_post_create_script')
+	def at_post_create_script(self):
+		"""post create
+		"""
+		# replace Title with its normalized equivalent (stored in id)
+		self.setTitle(self.id)
+		
+		v = self.getParentView()
+		v.declareColumn(self.getColumnName(), self)
 
 
 registerType(PlominoColumn, PROJECTNAME)
