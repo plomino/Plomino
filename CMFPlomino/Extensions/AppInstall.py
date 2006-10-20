@@ -22,7 +22,8 @@ def install(self):
 	navtreeProperties.manage_changeProperties(metaTypesNotToList = typesNotListed)
 	out.write("NavTree configuration: OK")
 	
+	allfieldTypes = ['PlominoDatabase', 'PlominoView', 'PlominoForm', 'PlominoField', 'PlominoDocument', 'PlominoColumn', 'PlominoAction', 'PlominoHidewhen', 'PlominoAccessControl']
 	wfTool = getToolByName(self, 'portal_workflow')
-	wfTool.setChainForPortalTypes(pt_names=fieldTypes, chain='')
+	wfTool.setChainForPortalTypes(pt_names=allfieldTypes, chain='')
 	out.write("Workflow configuration cleanup: OK")
 	return out.getvalue()
