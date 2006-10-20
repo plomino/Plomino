@@ -21,4 +21,8 @@ def install(self):
 	out.write(navtreeProperties.getProperty('metaTypesNotToList'))
 	navtreeProperties.manage_changeProperties(metaTypesNotToList = typesNotListed)
 	out.write("NavTree configuration: OK")
+	
+	wfTool = getToolByName(self, 'portal_workflow')
+	wfTool.setChainForPortalTypes(pt_names=fieldTypes, chain='')
+	out.write("Workflow configuration cleanup: OK")
 	return out.getvalue()
