@@ -132,6 +132,7 @@ class PlominoColumn(BaseContent):
 		"""
 		# replace Title with its normalized equivalent (stored in id)
 		self.setTitle(self.id)
+		self.reindexObject()
 		
 		v = self.getParentView()
 		v.declareColumn(self.getColumnName(), self)

@@ -91,6 +91,7 @@ class PlominoHidewhen(BaseContent):
 		"""
 		# replace Title with its normalized equivalent (stored in id)
 		self.setTitle(self.id)
+		self.reindexObject()
 
 
 registerType(PlominoHidewhen, PROJECTNAME)

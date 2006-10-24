@@ -288,6 +288,7 @@ class PlominoForm(ATFolder):
 		"""
 		# replace Title with its normalized equivalent (stored in id)
 		self.setTitle(self.id)
+		self.reindexObject()
 	
 	security.declarePublic('at_post_edit_script')
 	def at_post_edit_script(self):

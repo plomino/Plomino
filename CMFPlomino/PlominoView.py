@@ -249,6 +249,8 @@ class PlominoView(ATFolder):
 		"""
 		# replace Title with its normalized equivalent (stored in id)
 		self.setTitle(self.id)
+		self.reindexObject()
+		
 		
 		db = self.getParentDatabase()
 		db.getIndex().createSelectionIndex('PlominoViewFormula_'+self.getViewName())

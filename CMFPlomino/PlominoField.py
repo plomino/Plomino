@@ -181,6 +181,7 @@ class PlominoField(BaseContent):
 		"""
 		# replace Title with its normalized equivalent (stored in id)
 		self.setTitle(self.id)
+		self.reindexObject()
 		
 		if not self.getFieldMode()=="DISPLAY":
 			db = self.getParentDatabase()

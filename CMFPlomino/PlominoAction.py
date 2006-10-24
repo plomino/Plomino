@@ -166,6 +166,7 @@ class PlominoAction(BaseContent):
 		"""
 		# replace Title with its normalized equivalent (stored in id)
 		self.setTitle(self.id)
+		self.reindexObject()
 
 
 registerType(PlominoAction, PROJECTNAME)
