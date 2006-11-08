@@ -154,8 +154,7 @@ class PlominoAction(BaseContent):
 			plominoContext = self.getParentDatabase()._getOb(target)
 		plominoReturnURL = plominoContext.absolute_url()
 		try:
-			formula = self.Content().replace('\r\n', '; ')
-			exec formula
+			RunFormula(plominoContext, self.Content())
 			REQUEST.RESPONSE.redirect(plominoReturnURL)
 		except Exception, e:
 			return "Error: %s \nCode->\n%s" % (e, self.Content())

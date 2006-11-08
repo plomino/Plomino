@@ -222,7 +222,8 @@ class PlominoDocument(ATFolder):
 							v = long(submittedValue)
 						elif f.getFieldType()=="DATETIME":
 							# TO BE MODIFIED: support different date/time format
-							v = strptime(submittedValue, "%d/%m/%Y")
+							#v = strptime(submittedValue, "%d/%m/%Y")
+							v = StringToDate(submittedValue)
 						else:
 							v = submittedValue
 						self.setItem(fieldName, v)
@@ -234,10 +235,8 @@ class PlominoDocument(ATFolder):
 			mode = f.getFieldMode()
 			fieldName = f.Title()
 			if mode=="COMPUTED":
-				# plominoDocument is the reserved name used in field formulae
-				plominoDocument = self
 				try:
-					exec "result = " + f.getFormula()
+					result = RunFormula(self, f.getFormula())
 				except Exception:
 					result = "Error"
 				self.setItem(fieldName, result)
@@ -246,10 +245,8 @@ class PlominoDocument(ATFolder):
 				pass
 				
 		# compute the document title
-		# plominoDocument is the reserved name used in field formulae
-		plominoDocument = self
 		try:
-			exec "result = " + form.getDocumentTitle()
+			result = RunFormula(self, form.getDocumentTitle())
 		except Exception:
 			result = "Document"
 		self.setTitle(result)
@@ -267,10 +264,8 @@ class PlominoDocument(ATFolder):
 		self.setItem('Plomino_Authors', authors)
 
 		# execute the onSaveDocument code of the form
-		# plominoDocument is the reserved name used in events code
-		plominoDocument = self
 		try:
-			exec form.getOnSaveDocument()
+			RunFormula(self, form.getOnSaveDocument())
 		except Exception:
 			pass
 
@@ -288,10 +283,9 @@ class PlominoDocument(ATFolder):
 				raise Unauthorized, "You cannot edit this document."
 
 		# execute the onOpenDocument code of the form
-		# plominoDocument is the reserved name used in events code
-		plominoDocument = self
 		try:
-			exec form.getOnOpenDocument()
+			if form.getOnOpenDocument()=="":
+				RunFormula(self, form.getOnOpenDocument())
 		except Exception:
 			pass
 
@@ -383,10 +377,8 @@ class PlominoDocument(ATFolder):
 		"""
 		db = self.getParentDatabase()
 		v = db.getView(viewname)
-		# plominoDocument is the reserved name used in selection formulae
-		plominoDocument = self
 		try:
-			exec "result = " + v.SelectionFormula()
+			result = RunFormula(self, v.SelectionFormula())
 		except Exception:
 			result = False
 		return result
@@ -397,10 +389,8 @@ class PlominoDocument(ATFolder):
 		"""
 		db = self.getParentDatabase()
 		v = db.getView(viewname)
-		# plominoDocument is the reserved name used in column formulae
-		plominoDocument = self
 		try:
-			exec "result = " + v.getColumn(columnname).Formula()
+			result = RunFormula(self, v.getColumn(columnname).Formula())
 		except Exception:
 			result = False
 		return result

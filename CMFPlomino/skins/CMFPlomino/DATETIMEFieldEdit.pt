@@ -1,7 +1,7 @@
 <tal:block tal:define="v options/fieldvalue">
 	<tal:block tal:condition="python:test(v)">
 		<span>
-			<input type="text" tal:attributes="name options/fieldname; value python:DateTime(*v[0:6]).strftime('%d/%m/%Y')" />
+			<input type="text" tal:attributes="name options/fieldname; value python:v.strftime('%d/%m/%Y')" />
 		</span>
 	</tal:block>
 	<tal:block tal:condition="python:test(not(v))">

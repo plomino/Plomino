@@ -1,0 +1,78 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en"
+      lang="en"
+      metal:use-macro="here/main_template/macros/master"
+      i18n:domain="plone">
+<body>
+
+<metal:main fill-slot="main">
+    <div id="bodyContent">
+    	<h2 tal:content="here/Label|here/Title">view title</h2>
+    	<tal:block tal:define="owner python:here">
+    		<span metal:use-macro="here/ActionBar/macros/ViewActionBar" >
+				display view actions
+		</span>
+	</tal:block>
+	<p tal:content="here/Description">description</p>
+	<tal:block tal:define="param_from_date request/from_date|python:False;
+				param_to_date request/to_date|python:False;
+				from_date python:test(param_from_date, param_from_date, DateTime().strftime('%d/%m/%Y'));
+				to_date python:test(param_to_date, param_to_date, (DateTime()+60).strftime('%d/%m/%Y'));">
+		<form id="PlominoGantt" action="./OpenGanttView"><table><tr>
+			<td>From: <input name="from_date" type="text" tal:attributes="value from_date" /></td>
+			<td>To: <input name="to_date" type="text" tal:attributes="value to_date" /></td>
+			<td><input type="submit" value="Refresh" />
+		</tr></table></form>
+		<style>
+		.plominoGanttHeader {
+		    border-width: 1px;
+		    border-style: solid;
+		    border-color: #c0c0c0;
+		}
+		</style>
+	    	<table style="border-collapse: collapse;" cellspacing="0" tal:define="calendar python:here.getGanttCalendar(from_date, to_date)">
+	    	<tr><td></td><td></td>
+	    	<tal:block tal:repeat="y python:calendar['years']">
+		    	<td class="plominoGanttHeader" tal:attributes="colspan python:y[1]"><span tal:content="python:y[0]">year</span></td>
+	    	</tal:block>
+	    	</tr>
+	    	<tr><td></td><td></td>
+	    	<tal:block tal:repeat="m python:calendar['months']">
+		    	<td class="plominoGanttHeader" tal:attributes="colspan python:m[1]"><span tal:content="python:m[0]">month</span></td>
+	    	</tal:block>
+	    	</tr>
+	    	<tr><td></td><td></td>
+	    	<tal:block tal:repeat="d python:calendar['days']">
+		    	<td class="plominoGanttHeader" tal:attributes="style python:test(d.dow()==0 or d.dow()==6,'background-color: #e0e0e0', 'background-color: #ffffff')"><span tal:content="python:d.dd()">day</span></td>
+	    	</tal:block>
+	    	</tr>
+		    	<tal:block tal:repeat="doc python:here.getAllDocuments()">
+		    		<tal:block tal:define="vname here/Title;
+						taskname python:path('doc/PlominoViewColumn_%s_taskname' % vname);
+						startdate python:path('doc/PlominoViewColumn_%s_startdate' % vname);
+						enddate python:path('doc/PlominoViewColumn_%s_enddate' % vname)">
+					<tr>
+						<td rowspan="3"><a href="#" tal:attributes="href doc/getPath">Go</a></td>
+						<td rowspan="3" nowrap="1"><tal:block tal:content="structure python:'&nbsp;'*doc.taskpath.count('-')*3">indent</tal:block><span tal:content="structure taskname" /></td>
+						<tal:block tal:repeat="d python:calendar['days']">
+			    				<td height="33%" tal:define="bg python:test(d.dow()==0 or d.dow()==6,'#e0e0e0', '#ffffff')" tal:attributes="style python:'background-color: '+bg"></td>
+		    				</tal:block>
+					</tr>
+					<tr>
+						<tal:block tal:repeat="d python:calendar['days']">
+			    				<td height="33%" tal:define="bg python:test(d.dow()==0 or d.dow()==6,'#e0e0e0', '#ffffff')" tal:attributes="style python:test(startdate <= d and d <= enddate,'background-color: blue', 'background-color: '+bg)"></td>
+		    				</tal:block>
+					</tr>
+					<tr>
+						<tal:block tal:repeat="d python:calendar['days']">
+			    				<td height="33%" tal:define="bg python:test(d.dow()==0 or d.dow()==6,'#e0e0e0', '#ffffff')" tal:attributes="style python:'background-color: '+bg"></td>
+		    				</tal:block>
+					</tr>
+				</tal:block>
+			</tal:block>
+	    	</table>
+	</tal:block>
+	</div>
+</metal:main>
+
+</body>
+</html>

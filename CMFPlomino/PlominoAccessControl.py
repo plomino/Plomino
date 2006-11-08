@@ -27,7 +27,6 @@ from Products.CMFPlomino.config import *
 
 ##code-section module-header #fill in your manual code here
 from Products.CMFCore import CMFCorePermissions
-from Products.CMFCore.utils import _checkPermission as checkPerm
 from AccessControl.PermissionRole import rolesForPermissionOn
 from AccessControl import getSecurityManager
 from Products.CMFCore.utils import getToolByName
@@ -250,7 +249,7 @@ class PlominoAccessControl(ATFolder):
 	def checkUserPermission(self,perm):
 		"""check user's permission
 		"""
-		return checkPerm(perm, self)
+		return getSecurityManager().checkPermission(perm, self)
 
 	security.declareProtected(ACL_PERMISSION, 'addACLEntry')
 	def addACLEntry(self,REQUEST):

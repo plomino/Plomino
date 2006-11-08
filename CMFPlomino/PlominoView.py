@@ -106,6 +106,19 @@ schema = Schema((
 			i18n_domain='CMFPlomino',
 		)
 	),
+	
+	StringField(
+		name='ViewDisplayMode',
+		default="DEFAULT",
+		widget=SelectionWidget(
+			label="Display mode",
+			description="Select the dispay mode",
+			label_msgid='CMFPlomino_label_ViewDisplayMode',
+			description_msgid='CMFPlomino_help_ViewDisplayMode',
+			i18n_domain='CMFPlomino',
+		),
+		vocabulary=  [["DEFAULT", "Default"], ["GANTT", "Gantt"]]
+	),
 ),
 )
 
@@ -171,7 +184,13 @@ class PlominoView(ATFolder):
 		depth exceeded' if user hasn't permission
 		"""
 		if self.checkUserPermission(READ_PERMISSION):
-			return self.OpenView()
+			try:
+				if self.getViewDisplayMode()=="GANTT":
+					return self.OpenGanttView()
+				else:
+					return self.OpenView()
+			except Exception:
+				return self.OpenView()
 		else:
 			raise Unauthorized, "You cannot read this content"
 
@@ -234,11 +253,10 @@ class PlominoView(ATFolder):
 
 	security.declarePublic('evaluateViewForm')
 	def evaluateViewForm(self,doc):
-		"""plominoDocument is the reserved name used in form formulae
+		"""compute the form to be used to open documents
 		"""
-		plominoDocument = doc
 		try:
-			exec "result = " + self.getFormFormula()
+			result = RunFormula(doc, self.getFormFormula())
 		except Exception:
 			result = ""
 		return result
@@ -293,8 +311,43 @@ class PlominoView(ATFolder):
 			},
 			sortindex,
 			self.getReverseSorting())
-
-
+	security.declarePublic('getGanttCalendar')
+	def getGanttCalendar(self, str_from_date=None, str_to_date=None):
+		try:
+			start=StringToDate(str_from_date)
+		except Exception:
+			start=DateTime()
+		try:
+			end=StringToDate(str_to_date)
+		except Exception:
+			end=DateTime()+60
+		days=DateRange(start, end)
+		currentyear=start.year()
+		currentmonth=start.Month()
+		years=[]
+		yearlength=1
+		months=[]
+		monthlength=1
+		for d in days:
+			if not(d.year()==currentyear):
+				years.append([currentyear, yearlength])
+				currentyear=d.year()
+				yearlength=1
+			else:
+				yearlength=yearlength+1
+				
+			if not(d.Month()==currentmonth):
+				months.append([currentmonth, monthlength])
+				currentmonth=d.Month()
+				monthlength=1
+			else:
+				monthlength=monthlength+1
+		years.append([currentyear, yearlength])
+		months.append([currentmonth, monthlength])
+		
+		result={'years': years, 'months': months, 'days': days}
+		return result
+		
 registerType(PlominoView, PROJECTNAME)
 # end of class PlominoView
 

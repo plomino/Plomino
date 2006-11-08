@@ -145,18 +145,17 @@ class PlominoField(BaseContent):
 			if s=='':
 				return []
 		else:
-			# plominoDocument is the reserved name used in formula
 			#if no doc provided (if OpenForm action), we use self, so the PlominoForm will be used via acquisition
 			if doc is None:
-				plominoDocument = self
+				obj = self
 			else:
-				plominoDocument = doc
+				obj = doc
 			try:
-				exec "s = "+f
-			except Exception:
-				s = ["Error"]
+				s = RunFormula(obj, f)
+			except:
+				s = ['Error']
 		
-		# if values not specified, use labal as value
+		# if values not specified, use label as value
 		proper = []
 		for v in s:
 			v = str(v)

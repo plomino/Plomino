@@ -211,10 +211,8 @@ class PlominoForm(ATFolder):
 			return pt(fieldname=fieldName, fieldvalue=fieldValue, selection=field.getProperSelectionList(doc))
 
 		if mode=="DISPLAY" or mode=="COMPUTED":
-			# plominoDocument is the reserved name used in field formulae
-			plominoDocument = doc
 			try:
-				exec "result = " + field.getFormula()
+				result = RunFormula(doc, field.getFormula())
 			except Exception:
 				result = ""
 			return str(result)
@@ -229,10 +227,8 @@ class PlominoForm(ATFolder):
 		# remove the hidden content
 		for hidewhen in self.getHidewhenFormulas():
 			hidewhenName = hidewhen.Title
-			# plominoDocument is the reserved name used in field formulae
-			plominoDocument = doc
 			try:
-				exec "result = " + hidewhen.getObject().getFormula()
+				result = RunFormula(doc, hidewhen.getObject().getFormula())
 			except Exception:
 				#if error, we hide anyway
 				result = True

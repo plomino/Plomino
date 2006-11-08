@@ -64,7 +64,7 @@ PRODUCT_DEPENDENCIES = []
 #				{'id': 'my_contenttype.css',
 #				 'expression': 'python:object.getTypeInfo().getId() == "MyType"'}]
 # You can do the same with JAVASCRIPTS.
-STYLESHEETS = []
+STYLESHEETS = [{'id': 'plomino.css'}]
 JAVASCRIPTS = []
 
 ##code-section config-bottom #fill in your manual code here
