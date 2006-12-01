@@ -64,6 +64,18 @@ schema = Schema((
 			i18n_domain='CMFPlomino',
 		)
 	),
+	
+	BooleanField(
+		name='HiddenColumn',
+		default="0",
+		widget=BooleanWidget(
+			label="Hidden column",
+			description="The column is hidden or not in the view",
+			label_msgid='CMFPlomino_label_HiddenColumn',
+			description_msgid='CMFPlomino_help_HiddenColumn',
+			i18n_domain='CMFPlomino',
+		)
+	),
 
 ),
 )

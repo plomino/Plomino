@@ -7,7 +7,8 @@
 <metal:main fill-slot="main">
     <div id="bodyContent">
     	<h2 tal:content="here/Label|here/Title">view title</h2>
-    	<tal:block tal:define="owner python:here">
+    	<tal:block tal:condition="python:test(here.ActionBarPosition!='BOTTOM')"
+		tal:define="owner python:here">
     		<span metal:use-macro="here/ActionBar/macros/ViewActionBar" >
 				display view actions
 			</span>
@@ -21,7 +22,7 @@
             <tr>
             <th>&nbsp;&nbsp;</th>
             <tal:block tal:repeat="c columns">
-            	<th>&nbsp;<span tal:content="c/Label|c/Title">Title</span>&nbsp;</th>
+            	<th tal:condition="not: c/HiddenColumn|nothing">&nbsp;<span tal:content="c/Label|c/Title">Title</span>&nbsp;</th>
             </tal:block>
             </tr>
         <tal:block tal:condition="python:test(here.Categorized)">
@@ -53,7 +54,7 @@
 								>
 								<td><a href="#" tal:attributes="href doc/getPath">Go</a></td>
 								<tal:block tal:repeat="c columns">
-									<td>
+									<td tal:condition="not: c/HiddenColumn|nothing">
 										<tal:block tal:condition="python:test(c!=columns[0])">
 											<span tal:define="cname c/Title;
 														vname here/Title;
@@ -77,7 +78,7 @@
 							>
 					<td><a href="#" tal:attributes="href doc/getPath">Go</a></td>
 					<tal:block tal:repeat="c columns">
-						<td><span tal:define="cname c/Title;
+						<td tal:condition="not: c/HiddenColumn|nothing"><span tal:define="cname c/Title;
 											vname here/Title;
 											cvalue python:path('doc/PlominoViewColumn_%s_%s' % (vname, cname));
 											"
@@ -88,6 +89,11 @@
         </tal:block>
         		
 		</table>
+		<tal:block tal:condition="python:test(here.ActionBarPosition!='TOP')" tal:define="owner python:here">
+    		<span metal:use-macro="here/ActionBar/macros/ViewActionBar" >
+				display view actions
+			</span>
+		</tal:block>
 	</div>
 </metal:main>
 

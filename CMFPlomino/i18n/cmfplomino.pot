@@ -204,3 +204,25 @@ msgstr ""
 msgid "CMFPlomino_help_Content"
 msgstr ""
 
+#Action bar buttons
+msgid "Edit"
+msgstr ""
+
+msgid "Close"
+msgstr ""
+
+msgid "Delete"
+msgstr ""
+
+msgid "Save"
+msgstr ""
+
+#Gantt view labels
+msgid "From"
+msgstr ""
+
+msgid "To"
+msgstr ""
+
+msgid "Refresh"
+msgstr ""

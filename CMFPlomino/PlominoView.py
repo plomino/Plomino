@@ -108,16 +108,26 @@ schema = Schema((
 	),
 	
 	StringField(
-		name='ViewDisplayMode',
-		default="DEFAULT",
+		name='ViewTemplate',
+		widget=StringWidget(
+			label="View template",
+			description="Leave blank to use default",
+			label_msgid='CMFPlomino_label_ViewTemplate',
+			description_msgid='CMFPlomino_help_ViewTemplate',
+			i18n_domain='CMFPlomino',
+		)
+	),
+	StringField(
+		name='ActionBarPosition',
+		default="TOP",
 		widget=SelectionWidget(
-			label="Display mode",
-			description="Select the dispay mode",
-			label_msgid='CMFPlomino_label_ViewDisplayMode',
-			description_msgid='CMFPlomino_help_ViewDisplayMode',
+			label="Position of the action bar",
+			description="Select the position of the action bar",
+			label_msgid='CMFPlomino_label_ActionBarPosition',
+			description_msgid='CMFPlomino_help_ActionBarPosition',
 			i18n_domain='CMFPlomino',
 		),
-		vocabulary=  [["DEFAULT", "Default"], ["GANTT", "Gantt"]]
+		vocabulary=  [["TOP", "At the top of the page"], ["BOTTOM", "At the bottom of the page"], ["BOTH", "At the top and at the bottom of the page "]]
 	),
 ),
 )
@@ -184,12 +194,10 @@ class PlominoView(ATFolder):
 		depth exceeded' if user hasn't permission
 		"""
 		if self.checkUserPermission(READ_PERMISSION):
-			try:
-				if self.getViewDisplayMode()=="GANTT":
-					return self.OpenGanttView()
-				else:
-					return self.OpenView()
-			except Exception:
+			if not self.getViewTemplate()=="":
+				pt=self.resources._getOb(self.getViewTemplate())
+				return pt.__of__(self)()
+			else:
 				return self.OpenView()
 		else:
 			raise Unauthorized, "You cannot read this content"
@@ -240,11 +248,23 @@ class PlominoView(ATFolder):
 		return [i[1] for i in orderedcolumns]
 
 	security.declarePublic('getActions')
-	def getActions(self):
+	def getActions(self, target):
 		"""Get actions
 		"""
-		return self.getFolderContents(contentFilter = {'portal_type' : ['PlominoAction']})
-
+		all = self.getFolderContents(contentFilter = {'portal_type' : ['PlominoAction']})
+		
+		filtered = []
+		for a in all:
+			obj_a=a.getObject()
+			try:
+				result = RunFormula(target, obj_a.getHidewhen())
+			except Exception:
+				#if error, we hide anyway
+				result = True
+			if not result:
+				filtered.append(obj_a)
+		return filtered
+		
 	security.declarePublic('getColumn')
 	def getColumn(self,column_name):
 		"""Get a single column
@@ -287,9 +307,14 @@ class PlominoView(ATFolder):
 		alldocs = self.getAllDocuments()
 		allvalues = [getattr(doc, 'PlominoViewColumn_'+self.getViewName()+'_'+column_name) for doc in alldocs]
 		categories={}
-		for v in allvalues:
-			if not(v in categories):
-				categories[v]=1
+		for itemvalue in allvalues:
+			if type(itemvalue)==list:
+				for v in itemvalue:
+					if not(v in categories):
+						categories[v]=1
+			else:
+				if not(itemvalue in categories):
+					categories[itemvalue]=1
 		uniquevalues = categories.keys()
 		uniquevalues.sort()
 		return uniquevalues
@@ -311,42 +336,7 @@ class PlominoView(ATFolder):
 			},
 			sortindex,
 			self.getReverseSorting())
-	security.declarePublic('getGanttCalendar')
-	def getGanttCalendar(self, str_from_date=None, str_to_date=None):
-		try:
-			start=StringToDate(str_from_date)
-		except Exception:
-			start=DateTime()
-		try:
-			end=StringToDate(str_to_date)
-		except Exception:
-			end=DateTime()+60
-		days=DateRange(start, end)
-		currentyear=start.year()
-		currentmonth=start.Month()
-		years=[]
-		yearlength=1
-		months=[]
-		monthlength=1
-		for d in days:
-			if not(d.year()==currentyear):
-				years.append([currentyear, yearlength])
-				currentyear=d.year()
-				yearlength=1
-			else:
-				yearlength=yearlength+1
-				
-			if not(d.Month()==currentmonth):
-				months.append([currentmonth, monthlength])
-				currentmonth=d.Month()
-				monthlength=1
-			else:
-				monthlength=monthlength+1
-		years.append([currentyear, yearlength])
-		months.append([currentmonth, monthlength])
-		
-		result={'years': years, 'months': months, 'days': days}
-		return result
+
 		
 registerType(PlominoView, PROJECTNAME)
 # end of class PlominoView

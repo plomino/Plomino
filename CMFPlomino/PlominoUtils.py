@@ -22,19 +22,20 @@ __docformat__ = 'plaintext'
 
 from DateTime import DateTime
 from time import strptime
-
+from Products.CMFCore.utils import getToolByName
 from zLOG import LOG, ERROR
-
+import sys
 
 def DateToString(d, format='%d/%m/%Y'):
 	"""return the date as string using the given format, default is '%d/%m/%Y'
 	"""
-	return DateTime(*d[0:6]).strftime(format)
+	#return DateTime(*d[0:6]).strftime(format)
+	return d.strftime(format)
 
 def StringToDate(str_d, format='%d/%m/%Y'):
 	"""parse the string using the given format (default is '%d/%m/%Y') and return the date 
 	"""
-	dt = strptime(str_d, "%d/%m/%Y")
+	dt = strptime(str_d, format)
 	return DateTime(dt[0], dt[1], dt[2])
 
 def DateRange(d1, d2):
@@ -52,22 +53,74 @@ def RunFormula(obj, formula):
 	"""try to run formula as single line code, then try to run it as multi line indented code, and return result
 	"""
 	result = None
-	# plominoDocument and plominoContext are the reserved names used in formulas
-	plominoContext = obj
-	plominoDocument = obj
-	try:
-		exec "result = "+formula
-	except Exception:
-		formula=formula.replace('\r','')
-		lines=formula.split('\n')
-		indented_formula="def plominoFormula(plominoDocument, plominoContext):\n"
-		for l in lines:
-			indented_formula=indented_formula+'\t'+l+'\n'
+	if not(formula=="" or formula is None):
+		# plominoDocument and plominoContext are the reserved names used in formulas
+		plominoContext = obj
+		plominoDocument = obj
 		try:
-			exec indented_formula
-			result = plominoFormula(plominoDocument, plominoContext)
-		except Exception, e:
-			LOG("Plomino formula", ERROR, '\n'+indented_formula)
-			LOG("Plomino formula", ERROR, e)
-			raise
+			exec "result = "+formula
+		except Exception:
+			formula=formula.replace('\r','')
+			lines=formula.split('\n')
+			indented_formula="def plominoFormula(plominoDocument, plominoContext):\n"
+			for l in lines:
+				indented_formula=indented_formula+'\t'+l+'\n'
+			try:
+				exec indented_formula
+				result = plominoFormula(plominoDocument, plominoContext)
+			except Exception, e:
+				type, value = sys.exc_info()[:2]
+				msg="Plomino formula error: "+str(type)+": "+str(value)
+				msg=msg+"\nin code:\n"+indented_formula
+				msg=msg+"\nwith context:"+str(obj)
+				LOG("Plomino", ERROR, msg)
+				raise
 	return result
+
+def sendMail(db, recipients, title, html_message):
+	"""Send an email
+	"""
+	host = getToolByName(db, 'MailHost')
+	plone_tools = getToolByName(db, 'plone_utils')
+	message = '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">\n'
+	message = message + "<html>"
+	message = message + html_message
+	message = message + "</html>"
+	sender = db.getCurrentUser().getProperty("email")
+	mail = "From: "+sender+'\n'
+	mail = mail + "To: "+recipients+'\n'
+	mail = mail + "Subject: "+ title + '\n'
+	mail = mail + 'Content-type: text/html"\n\n'
+	mail = mail + message
+	#host.send(mail)
+	#host.send(message, mto=recipients, mfrom=sender, subject=title, encode="ISO-8859-1")
+	encoding = plone_tools.getSiteEncoding()
+	host.secureSend(message, recipients,
+		sender, subject=title,
+		subtype='html', charset=encoding,
+		debug=False, From=sender)
+	
+def userFullname(db, userid):
+	""" return user fullname if exist, else return userid, and return Unknown if user not found
+	"""
+	user=getToolByName(db.getParentPortal(), 'portal_membership').getMemberById(userid)
+	if not(user is None):
+		fullname=user.getProperty('fullname')
+		if fullname=='':
+			return userid
+		else:
+			return fullname
+	else:
+		return "Unknown"
+		
+def userInfo(db, userid):
+	""" return user object
+	"""
+	user=getToolByName(db.getParentPortal(), 'portal_membership').getMemberById(userid)
+	return user
+
+def importPlominoScript(obj, scriptname):
+	sc=obj.resources._getOb(scriptname)
+	return str(sc)
+	
+	

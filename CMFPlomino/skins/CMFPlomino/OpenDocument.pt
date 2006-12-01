@@ -7,12 +7,21 @@
 <metal:main fill-slot="main">
     <div id="bodyContent">
 		<tal:block tal:define="myF python:here.getForm()">
-			<tal:block tal:define="owner python:myF">
+			<tal:block 	
+			tal:condition="python:test(myF.ActionBarPosition!='BOTTOM')"
+			tal:define="owner python:myF">
 	    		<span metal:use-macro="here/ActionBar/macros/ReadDocumentActionBar" >
 					display form actions
 				</span>
 			</tal:block>
 			<span tal:content="structure python:here.openWithForm(myF)" />
+						<tal:block 	
+			tal:condition="python:test(myF.ActionBarPosition!='TOP')"
+			tal:define="owner python:myF">
+	    		<span metal:use-macro="here/ActionBar/macros/ReadDocumentActionBar" >
+					display form actions
+				</span>
+			</tal:block>
 		</tal:block>
 	</div>
 </metal:main>

@@ -32,7 +32,6 @@ from Products.CMFCore import CMFCorePermissions
 from AccessControl import Unauthorized
 from time import strptime
 from DateTime import DateTime
-from Products.CMFCore.utils import getToolByName
 from Products.CMFPlomino.PlominoUtils import *
 from Acquisition import *
 from zLOG import LOG, ERROR
@@ -89,10 +88,18 @@ class PlominoDocument(ATFolder):
 	   },
 
 
-	   {'action': "python:here.navigationParent(here)+'/'+here.id+'/EditDocument' ",
+	   {'action': "python:here.navigationParent(here)+'/'+here.id+'/EditDocument'",
 		'category': "object",
 		'id': 'edit',
 		'name': 'Edit',
+		'permissions': (DESIGN_PERMISSION,),
+		'condition': 'python:1'
+	   },
+	   
+	   {'action': "string:${object_url}/DocumentProperties",
+		'category': "object",
+		'id': 'metadata',
+		'name': 'Properties',
 		'permissions': (DESIGN_PERMISSION,),
 		'condition': 'python:1'
 	   },
@@ -146,6 +153,12 @@ class PlominoDocument(ATFolder):
 			return self.items[name]
 		else:
 			return ''
+	
+	security.declarePublic('getItemType')
+	def getItemClassname(self,name):
+		"""
+		"""
+		return self.getItem(name).__class__.__name__
 
 	security.declarePublic('hasItem')
 	def hasItem(self,name):
@@ -167,6 +180,20 @@ class PlominoDocument(ATFolder):
 		"""
 		"""
 		return self.items.keys()
+
+	security.declarePublic('getRenderedItem')
+	def getRenderedItem(self, itemname, form=None):
+		""" return the item value rendered according the field defined in the given form
+		(use default doc form if None)
+		"""
+		db=self.getParentDatabase()
+		if form is None:
+			form = db.getForm(self.Form)
+		field=form.getFormField(itemname)
+		if not field is None:
+			return form.getFieldRender(self, field, False)
+		else:
+			return ''
 
 	security.declarePublic('getParentDatabase')
 	def getParentDatabase(self):
@@ -190,23 +217,24 @@ class PlominoDocument(ATFolder):
 		return self.getParentDatabase().isCurrentUserAuthor(self)
 
 	security.declareProtected(EDIT_PERMISSION, 'delete')
-	def delete(self,REQUEST):
+	def delete(self,REQUEST=None):
 		"""delete the current doc
 		"""
-		return_url = REQUEST.get('returnurl')
 		db = self.getParentDatabase()
 		db.deleteDocument(self)
-		REQUEST.RESPONSE.redirect(return_url)
+		if not REQUEST is None:
+			return_url = REQUEST.get('returnurl')
+			REQUEST.RESPONSE.redirect(return_url)
 
 	security.declareProtected(EDIT_PERMISSION, 'saveDocument')
-	def saveDocument(self,REQUEST):
+	def saveDocument(self,REQUEST, creation=False):
 		"""save a document using the form submitted content
 		"""
 		db = self.getParentDatabase()
 		form = db.getForm(REQUEST.get('Form'))
 		self.setItem('Form', form.getFormName())
 
-		# we first process editable fields (we read the submitted value in the request)
+		# process editable fields (we read the submitted value in the request)
 		for field in form.getFields():
 			f = field.getObject()
 			mode = f.getFieldMode()
@@ -228,13 +256,23 @@ class PlominoDocument(ATFolder):
 							v = submittedValue
 						self.setItem(fieldName, v)
 
-		# then we process computed fields (refresh the value)
+		# refresh computed values, run onSave, reindex
+		self.save(form, creation)
+		
+		REQUEST.RESPONSE.redirect(self.absolute_url())
+
+	security.declareProtected(EDIT_PERMISSION, 'save')
+	def save(self, form, creation=False):
+		"""refresh values according form, and reindex the document
+		"""
+		# we process computed fields (refresh the value)
 		# TODO: manage computed fields dependencies
+		db=self.getParentDatabase()
 		for field in form.getFields():
 			f = field.getObject()
 			mode = f.getFieldMode()
 			fieldName = f.Title()
-			if mode=="COMPUTED":
+			if mode=="COMPUTED" or (mode=="CREATION" and creation):
 				try:
 					result = RunFormula(self, f.getFormula())
 				except Exception:
@@ -268,10 +306,10 @@ class PlominoDocument(ATFolder):
 			RunFormula(self, form.getOnSaveDocument())
 		except Exception:
 			pass
-
+			
+		# update index
 		db.getIndex().indexDocument(self)
-		REQUEST.RESPONSE.redirect(self.absolute_url())
-
+		
 	security.declareProtected(READ_PERMISSION, 'openWithForm')
 	def openWithForm(self,form,editmode=False):
 		"""display the document using the given form's layout - first,
@@ -284,7 +322,7 @@ class PlominoDocument(ATFolder):
 
 		# execute the onOpenDocument code of the form
 		try:
-			if form.getOnOpenDocument()=="":
+			if not form.getOnOpenDocument()=="":
 				RunFormula(self, form.getOnOpenDocument())
 		except Exception:
 			pass
@@ -301,25 +339,14 @@ class PlominoDocument(ATFolder):
 
 	security.declarePublic('send')
 	def send(self,recipients,title,formname=''):
+		"""Send current doc by mail
 		"""
-		"""
-		host = getToolByName(self, 'MailHost')
 		db = self.getParentDatabase()
 		if formname=='':
 			formname = self.getItem('Form')
 		form = db.getForm(formname)
-		message = '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">'
-		message = message + "<html>"
-		message = message + self.openWithForm(form)
-		message = message + "</html>"
-		sender = db.getCurrentUser().getProperty("email")
-		mail = "From: "+sender+'\n'
-		mail = mail + "To: "+recipients+'\n'
-		mail = mail + "Subject: "+ title + '\n'
-		mail = mail + "Content-type: text/html\n\n"
-		mail = mail + message
-		#host.send(message, recipients, sender, title)
-		host.send(mail)
+		message = self.openWithForm(form)
+		sendMail(db, recipients, title, message)
 
 	security.declarePublic('getForm')
 	def getForm(self):
@@ -328,7 +355,7 @@ class PlominoDocument(ATFolder):
 		"""
 		if hasattr(self, 'evaluateViewForm'):
 			formname = self.evaluateViewForm(self)
-			if formname == "":
+			if formname == "" or formname is None:
 				formname = self.getItem('Form')
 		else:
 			formname = self.getItem('Form')
@@ -340,15 +367,6 @@ class PlominoDocument(ATFolder):
 		"""
 		# changed from BaseFolder to ATFolder because now inherits fron ATFolder
 		ATFolder.manage_afterClone(self, item)
-
-	security.declarePrivate('manage_beforeDelete')
-	def manage_beforeDelete(self,item,container):
-		"""
-		"""
-		db = self.getParentDatabase()
-		db.getIndex().unindexDocument(self)
-		# changed from BaseFolder to ATFolder because now inherits fron ATFolder
-		ATFolder.manage_beforeDelete(self, item, container)
 
 	security.declarePublic('__getattr__')
 	def __getattr__(self,name):
@@ -369,7 +387,9 @@ class PlominoDocument(ATFolder):
 			if(self.items.has_key(name)):
 				return self.items[name]
 			else:
-				return ATFolder.__getattr__(self, name)
+				#return ATFolder.__getattr__(self, name)
+			#	return BaseFolder.__getattr__(self, name)
+				raise AttributeError, name
 
 	security.declareProtected("READ_PERMISSION", 'isSelectedInView')
 	def isSelectedInView(self,viewname):

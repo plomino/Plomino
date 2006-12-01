@@ -52,10 +52,21 @@ schema = Schema((
 	),
 	
 	TextField(
+		name='onCreateDocument',
+		widget=TextAreaWidget(
+			label="On create document",
+			description="Action to take when the document is created",
+			label_msgid='CMFPlomino_label_onCreateDocument',
+			description_msgid='CMFPlomino_help_onCreateDocument',
+			i18n_domain='CMFPlomino',
+		)
+	),
+	
+	TextField(
 		name='onOpenDocument',
 		widget=TextAreaWidget(
 			label="On open document",
-			description="Action to take when the document is opned",
+			description="Action to take when the document is opened",
 			label_msgid='CMFPlomino_label_onOpenDocument',
 			description_msgid='CMFPlomino_help_onOpenDocument',
 			i18n_domain='CMFPlomino',
@@ -73,6 +84,19 @@ schema = Schema((
 		)
 	),
 
+	StringField(
+		name='ActionBarPosition',
+		default="TOP",
+		widget=SelectionWidget(
+			label="Position of the action bar",
+			description="Select the position of the action bar",
+			label_msgid='CMFPlomino_label_ActionBarPosition',
+			description_msgid='CMFPlomino_help_ActionBarPosition',
+			i18n_domain='CMFPlomino',
+		),
+		vocabulary=  [["TOP", "At the top of the page"], ["BOTTOM", "At the bottom of the page"], ["BOTH", "At the top and at the bottom of the page "]]
+	),
+	
 	TextField(
 		name='FormLayout',
 		allowable_content_types=('text/html',),
@@ -150,13 +174,26 @@ class PlominoForm(ATFolder):
 		db = self.getParentDatabase()
 		doc = db.createDocument()
 		doc.setItem('Form', self.getFormName())
-		doc.saveDocument(REQUEST)
+
+		# execute the onCreateDocument code of the form
+		try:
+			RunFormula(doc, self.getOnCreateDocument())
+		except Exception:
+			pass
+			
+		doc.saveDocument(REQUEST, True)
 
 	security.declarePublic('getFields')
 	def getFields(self):
 		"""get fields
 		"""
 		return self.getFolderContents(contentFilter = {'portal_type' : ['PlominoField']})
+		
+	security.declarePublic('getFormField')
+	def getFormField(self, fieldname):
+		"""return the field
+		"""
+		return self._getOb(fieldname)
 
 	security.declarePublic('getHidewhenFormulas')
 	def getHidewhenFormulas(self):
@@ -177,48 +214,62 @@ class PlominoForm(ATFolder):
 		return self.getParentNode()
 
 	security.declareProtected(READ_PERMISSION, 'getFieldRender')
-	def getFieldRender(self,doc,field,editmode):
+	def getFieldRender(self,doc,field,editmode,creation=False):
 		"""Rendering the field
 		"""
 		mode = field.getFieldMode()
 		fieldName = field.Title()
+		
+		# compute the value
 		if mode=="EDITABLE":
 			if doc is None:
 				fieldValue = ""
 			else:
 				fieldValue = doc.getItem(fieldName)
 
-			if editmode:
-				ptsuffix="Edit"
-			else:
-				ptsuffix="Read"
-
-			fieldType = field.FieldType
-			try:
-				exec "pt = self."+fieldType+"Field"+ptsuffix
-			except Exception:
-				exec "pt = self.DefaultField"+ptsuffix
-			req = self.REQUEST
-			# NOTE: for some reasons, sometimes, REQUEST does not have a RESPONSE
-			# and it causes pt_render to fail (KeyError 'RESPONSE')
-			# why ? I don't know (If you know, tell me please (ebrehault@gmail.com), I would be
-			# happy to understand.
-			# Anyhow, here is a small fix to avoid that.
-			try:
-				rep=self.REQUEST['RESPONSE']
-			except Exception:
-				self.REQUEST['RESPONSE']=HTTPResponse()
-			return pt(fieldname=fieldName, fieldvalue=fieldValue, selection=field.getProperSelectionList(doc))
-
 		if mode=="DISPLAY" or mode=="COMPUTED":
 			try:
-				result = RunFormula(doc, field.getFormula())
+				fieldValue = RunFormula(doc, field.getFormula())
 			except Exception:
-				result = ""
-			return str(result)
+				fieldValue = ""
+		
+		if mode=="CREATION":
+			if creation:
+				# Note: on creation, there is no doc, we use self as param
+				# in formula
+				fieldValue = RunFormula(self, field.getFormula())
+			else:
+				fieldValue = doc.getItem(fieldName)
+			
+		# render according the field type
+		if mode=="EDITABLE" and editmode:
+			ptsuffix="Edit"
+		else:
+			ptsuffix="Read"
+
+		fieldType = field.FieldType
+		try:
+			exec "pt = self."+fieldType+"Field"+ptsuffix
+		except Exception:
+			exec "pt = self.DefaultField"+ptsuffix
+		req = self.REQUEST
+		# NOTE: for some reasons, sometimes, REQUEST does not have a RESPONSE
+		# and it causes pt_render to fail (KeyError 'RESPONSE')
+		# why ? I don't know (If you know, tell me please (ebrehault@gmail.com), 
+		# I would be happy to understand.
+		# Anyhow, here is a small fix to avoid that.
+		try:
+			rep=self.REQUEST['RESPONSE']
+		except Exception:
+			self.REQUEST['RESPONSE']=HTTPResponse()
+		return pt(fieldname=fieldName,
+			fieldvalue=fieldValue,
+			selection=field.getProperSelectionList(doc)
+			)
+
 
 	security.declareProtected(READ_PERMISSION, 'displayDocument')
-	def displayDocument(self,doc,editmode=False):
+	def displayDocument(self,doc,editmode=False, creation=False):
 		"""display the document using the form's layout
 		"""
 		html_content = self.getField('FormLayout').get(self, mimetype='text/html')
@@ -249,12 +300,12 @@ class PlominoForm(ATFolder):
 		for field in self.getFields():
 			fieldName = field.Title
 			#html_content = html_content.replace('#'+fieldName+'#', self.getFieldRender(doc, field.getObject(), editmode))
-			html_content = html_content.replace('<span class="plominoFieldClass">'+fieldName+'</span>', self.getFieldRender(doc, field.getObject(), editmode))
+			html_content = html_content.replace('<span class="plominoFieldClass">'+fieldName+'</span>', self.getFieldRender(doc, field.getObject(), editmode, creation))
 
 		# insert the actions
-		for action in self.getActions():
-			actionName = action.Title
-			actionDisplay = action.getObject().ActionDisplay
+		for action in self.getActions(doc, False):
+			actionName = action.Title()
+			actionDisplay = action.ActionDisplay
 			try:
 				exec "pt = self."+actionDisplay+"Action"
 			except Exception:
@@ -270,13 +321,28 @@ class PlominoForm(ATFolder):
 		"""return the form layout in edit mode (used to compose a new
 		document)
 		"""
-		return self.displayDocument(None, True)
+		return self.displayDocument(None, True, True)
 
 	security.declarePublic('getActions')
-	def getActions(self):
+	def getActions(self, target, hide=True):
 		"""Get actions
 		"""
-		return self.getFolderContents(contentFilter = {'portal_type' : ['PlominoAction']})
+		all = self.getFolderContents(contentFilter = {'portal_type' : ['PlominoAction']})
+		
+		filtered = []
+		for a in all:
+			obj_a=a.getObject()
+			if hide:
+				try:
+					result = RunFormula(target, obj_a.getHidewhen())
+				except Exception:
+					#if error, we hide anyway
+					result = True
+				if not result:
+					filtered.append(obj_a)
+			else:
+				filtered.append(obj_a)
+		return filtered
 
 	security.declarePublic('at_post_create_script')
 	def at_post_create_script(self):

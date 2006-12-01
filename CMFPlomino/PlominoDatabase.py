@@ -33,8 +33,10 @@ from Products.Archetypes.utils import make_uuid
 from AccessControl import ClassSecurityInfo
 from Products.CMFCore.utils import getToolByName
 from Acquisition import *
+from OFS.Folder import *
 from Products.CMFPlomino.PlominoUtils import *
 import string
+import Globals
 
 from zLOG import LOG, ERROR
 
@@ -174,9 +176,13 @@ class PlominoDatabase(ATFolder, PlominoAccessControl):
 
 	security.declarePublic('at_post_create_script')
 	def at_post_create_script(self):
-		"""ACL setup
+		"""DB initialization
 		"""
 		self.initializeACL()
+		resources = Folder('resources')
+		resources.title='resources'
+		self._setObject('resources', resources)
+		p=self.getParentPortal()
 
 	security.declarePublic('getForms')
 	def getForms(self):
@@ -190,6 +196,12 @@ class PlominoDatabase(ATFolder, PlominoAccessControl):
 		"""
 		return self.getFolderContents(contentFilter = {'portal_type' : ['PlominoView']})
 
+	security.declarePublic('getAllDocuments')
+	def getAllDocuments(self):
+		"""return all the database documents
+		"""
+		return [d.getObject() for d in self.getFolderContents(contentFilter = {'portal_type' : ['PlominoDocument']})]
+		
 	security.declarePublic('getForm')
 	def getForm(self,formname):
 		"""return a PlominoForm
@@ -223,8 +235,9 @@ class PlominoDatabase(ATFolder, PlominoAccessControl):
 		"""delete the document from database
 		"""
 		if not self.isCurrentUserAuthor(doc):
-			raise Unauthorized, "You cannot edit this document."
+			raise Unauthorized, "You cannot delete this document."
 		else:
+			self.getIndex().unindexDocument(doc)
 			self.manage_delObjects(doc.id)
 
 	security.declarePublic('getIndex')
@@ -242,8 +255,61 @@ class PlominoDatabase(ATFolder, PlominoAccessControl):
 		PlominoAccessControl.__init__(self)
 		index = PlominoIndex()
 		self._setObject(index.getId(), index)
-
-
+		
+	security.declarePublic('refreshDB')
+	def refreshDB(self):
+		"""all actions to take when reseting a DB (after import for instance)
+		"""
+		# reset reference on portal
+		p=self.getParentPortal()
+		
+		# destroy the index
+		self.manage_delObjects(self.getIndex().getId())
+		
+		#creat e new blank index
+		index = PlominoIndex()
+		self._setObject(index.getId(), index)
+		
+		#declare all the view formulas and columns index entries
+		for v in self.getViews():
+			v_obj=v.getObject()
+			self.getIndex().createSelectionIndex('PlominoViewFormula_'+v_obj.getViewName())
+			for c in v_obj.getColumns():
+				v_obj.declareColumn(c.getColumnName(), c)
+		#declare all the forms fields index entries 
+		for f in self.getForms():
+			f_obj=f.getObject()
+			for fi in f_obj.getFields():
+				self.getIndex().createIndex(fi.Title)
+		#reindex all the documents
+		for d in self.getAllDocuments():
+			self.getIndex().indexDocument(d)
+		
+	security.declarePublic('getParentPortal')
+	def getParentPortal(self):
+		try:
+			p = self._parentapp._getOb(self._parentportalid)
+		except Exception:
+			for o in self.aq_chain:
+				if type(aq_self(o)).__name__=='Application':
+					self._parentapp=o
+				if type(aq_self(o)).__name__=='PloneSite':
+					self._parentportalid=o.id
+			p = self._parentapp._getOb(self._parentportalid)
+		return p
+	
+	security.declarePublic('callScriptMethod')
+	def callScriptMethod(self, scriptname, methodname, *args):
+		code = importPlominoScript(self, scriptname)
+		code=code.replace('\r','')
+		lines=code.split('\n')
+		indented_code="def plominoScript(*args):\n"
+		for l in lines:
+			indented_code=indented_code+'\t'+l+'\n'
+		indented_code = indented_code +'\n\treturn '+methodname+'(*args)'
+		exec indented_code
+		return plominoScript(*args)
+			
 registerType(PlominoDatabase, PROJECTNAME)
 # end of class PlominoDatabase
 

@@ -8,12 +8,19 @@
     <div id="bodyContent">
     <form tal:attributes="name python:here.getForm().Title()" action="saveDocument" method="POST">
 		<tal:block tal:define="myF python:here.getForm()">
-			<tal:block tal:define="owner python:myF">
+			<tal:block tal:define="owner python:myF"
+					tal:condition="python:test(myF.ActionBarPosition!='BOTTOM')">
 	    		<span metal:use-macro="here/ActionBar/macros/EditDocumentActionBar" >
 					display form actions
 				</span>
 			</tal:block>
 			<span tal:content="structure python:here.editWithForm(myF)" />
+						<tal:block tal:define="owner python:myF"
+					tal:condition="python:test(myF.ActionBarPosition!='TOP')">
+	    		<span metal:use-macro="here/ActionBar/macros/EditDocumentActionBar" >
+					display form actions
+				</span>
+			</tal:block>
 		</tal:block>
 	</form>
 	</div>

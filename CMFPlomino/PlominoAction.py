@@ -77,6 +77,29 @@ schema = Schema((
 			i18n_domain='CMFPlomino',
 		)
 	),
+	
+	TextField(
+		name='Hidewhen',
+		widget=TextAreaWidget(
+			label="Hide-when formula",
+			description="Action is hiden if formula return True",
+			label_msgid='CMFPlomino_label_actionhidewhen',
+			description_msgid='CMFPlomino_help_actionhidewhen',
+			i18n_domain='CMFPlomino',
+		)
+	),
+	
+	BooleanField(
+		name='InActionBar',
+		default="1",
+		widget=BooleanWidget(
+			label="Display action in action bar",
+			description="Display action in action bar (yes/no)",
+			label_msgid='CMFPlomino_label_ActionInActionBar',
+			description_msgid='CMFPlomino_help_ActionInActionBar',
+			i18n_domain='CMFPlomino',
+		)
+	),
 ),
 )
 

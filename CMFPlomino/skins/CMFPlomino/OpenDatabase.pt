@@ -13,6 +13,9 @@
 				<a href="#" tal:attributes="href v/getURL" tal:define="vobj python:v.getObject()" tal:content="vobj/Label|v/Title">view link</a>
 				<br/>
 			</p>
+			<tal:block tal:condition="python:not(here.getCurrentUserRights()=='PlominoManager')">
+				<hr/><p><a href="./refreshDB">Refresh database</a></p>
+			</tal:block>
 		</tal:block>
 		<tal:block tal:condition="python:not(here.hasReadPermission())">
 			<p>Please log in</p>

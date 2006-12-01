@@ -42,7 +42,7 @@ schema = Schema((
 			description_msgid='CMFPlomino_help_FieldType',
 			i18n_domain='CMFPlomino',
 		),
-		vocabulary= [["TEXT", "Text"],["NUMBER", "Number"],["RICHTEXT", "Rich text"],["DATETIME", "Date/Time"],["SELECTION", "Selection list"],["MULTISELECTION", "Multi-Selection list"],["CHECKBOX", "Check boxes"],["RADIO", "Radio buttons"]]
+		vocabulary= [["TEXT", "Text"],["NUMBER", "Number"],["RICHTEXT", "Rich text"],["DATETIME", "Date/Time"], ["NAME", "Name"], ["NAMES", "Names"], ["SELECTION", "Selection list"],["MULTISELECTION", "Multi-Selection list"],["CHECKBOX", "Check boxes"],["RADIO", "Radio buttons"]]
 	),
 
 	StringField(
@@ -55,7 +55,7 @@ schema = Schema((
 			description_msgid='CMFPlomino_help_FieldMode',
 			i18n_domain='CMFPlomino',
 		),
-		vocabulary= [["EDITABLE", "Editable"], ["COMPUTED", "Computed"], ["DISPLAY", "Computed for display"]]
+		vocabulary= [["EDITABLE", "Editable"], ["COMPUTED", "Computed"], ["CREATION", "Computed on creation"], ["DISPLAY", "Computed for display"]]
 	),
 
 	TextField(
@@ -134,10 +134,22 @@ class PlominoField(BaseContent):
 
 	security.declarePublic('getProperSelectionList')
 	def getProperSelectionList(self, doc):
-		"""if formula available, use formula
-		if value not specified (format: label|value), use label as value
-		(return label|label)
+		"""return a list, format: label|value, use label as value if no label
 		"""
+		
+		# if NAME or NAMES type, return the portal members list
+		if self.getFieldType()=="NAMES" or self.getFieldType()=="NAME":
+			all = self.getPortalMembers()
+			s=[]
+			for m in all:
+				userid=m.getMemberId()
+				fullname = m.getProperty("fullname")
+				if fullname=='':
+					s.append(userid+'|'+userid)
+				else:
+					s.append(fullname+'|'+userid)
+			return s
+		
 		#if formula available, use formula, else use manual entries
 		f = self.getSelectionListFormula()
 		if f=='':

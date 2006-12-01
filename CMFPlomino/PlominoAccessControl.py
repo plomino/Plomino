@@ -335,14 +335,22 @@ class PlominoAccessControl(ATFolder):
 				self.UserRoles = roles
 		REQUEST.RESPONSE.redirect('./DatabaseACL')
 
+	security.declarePublic('getPortalMembers')
+	def getPortalMembers(self):
+		"""return all members
+		"""
+		membershiptool = getToolByName(self, 'portal_membership')
+		#return membershiptool.listMemberIds ()
+		return membershiptool.searchForMembers()
+		
 	security.declarePublic('getPortalMembersIds')
 	def getPortalMembersIds(self):
 		"""return all members id
 		"""
-		membershiptool = getToolByName(self, 'portal_membership')
-		return membershiptool.listMemberIds ()
-
-
+		l=self.getPortalMembers()
+		return [m.id for m in l]
+		
+	
 registerType(PlominoAccessControl, PROJECTNAME)
 # end of class PlominoAccessControl
 

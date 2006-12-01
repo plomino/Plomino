@@ -6,10 +6,10 @@
 
 <metal:main fill-slot="main">
     <div id="bodyContent">
-    <h3>Users access rights</h3>
+    <h3>Users access rightsYOYO</h3>
     <form name="RemoveEntries" action="removeACLEntries" method="POST">
     	<table class="listing">
-    	<tr><th>Access right</th><th>Users</th></tr>
+    	<tr><th>YOAccess right</th><th>Users</th></tr>
 		<tr><td valign="top"><b>Readers</b></td>
 		<td><tal:block tal:repeat="u python:here.getUsersForRight('PlominoReader')">
 			<input type="checkbox" name="users" tal:attributes="value u" /><span tal:content="u">user</span>	
@@ -41,7 +41,7 @@
 		</tal:block>
 		</td></tr>
 		</table>
-		<input type="submit" value="Remove selected users"/>
+		<input type="submit" class="context" value="Remove selected users"/>
 	</form>
 	<br/>
 	<form name="AddEntry" action="addACLEntry" method="POST">
@@ -58,7 +58,7 @@
 			<option value="PlominoDesigner">PlominoDesigner</option>
 			<option value="PlominoManager">PlominoManager</option>
 		</select>
-		<input type="submit" value="Add"/>
+		<input type="submit" class="context" value="Add"/>
 	</form>
 	<br/>
 	<h3>Generic users access rights</h3>
@@ -90,7 +90,7 @@
 				</select>
 			</td></tr>
 		</table>
-		<input type="submit" value="Change"/>
+		<input type="submit" class="context" value="Change"/>
 	</form>
 	<br/>
 	<h3>User roles</h3>
@@ -111,7 +111,7 @@
 		<table><tr>
 			<td>Add new user role:</td>
 			<td><input type="text" name="newrole" /></td>
-			<td><input type="submit" value="Add"/></td></tr>
+			<td><input type="submit" class="context" value="Add"/></td></tr>
 		</table>
 	</form>
 	<form name="RemovePlominoUserRole" action="removePlominoUserRole" method="POST">
@@ -124,7 +124,7 @@
 				</tal:block>
 				</select>
 			</td>
-			<td><input type="submit" value="Remove"/></td></tr>
+			<td><input type="submit" class="context" value="Remove"/></td></tr>
 		</table>
 	</form>
 	<form name="AddPlominoRoleToUser" action="addPlominoRoleToUser" method="POST">
@@ -145,7 +145,7 @@
 					</tal:block>
 				</select>
 			</td>
-			<td><input type="submit" value="Add"/></td></tr>
+			<td><input type="submit" class="context" value="Add"/></td></tr>
 		</table>
 	</form>
 	<form name="RemovePlominoRoleFromUser" action="removePlominoRoleFromUser" method="POST">
@@ -166,7 +166,7 @@
 					</tal:block>
 				</select>
 			</td>
-			<td><input type="submit" value="Remove"/></td></tr>
+			<td><input type="submit" class="context" value="Remove"/></td></tr>
 		</table>
 	</form>
 	</div>

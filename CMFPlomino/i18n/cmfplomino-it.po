@@ -208,3 +208,25 @@ msgstr "Parametro o codice"
 msgid "CMFPlomino_help_Content"
 msgstr "Codice o parametro in funzione del tipo di azione"
 
+#Action bar buttons
+msgid "Edit"
+msgstr "Edit"
+
+msgid "Close"
+msgstr "Close"
+
+msgid "Delete"
+msgstr "Delete"
+
+msgid "Save"
+msgstr "Save"
+
+#Gantt view labels
+msgid "From"
+msgstr "From"
+
+msgid "To"
+msgstr "To"
+
+msgid "Refresh"
+msgstr "Refresh"

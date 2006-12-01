@@ -8,12 +8,12 @@ msgstr ""
 "Last-Translator: [Eric BREHAULT] <[ebrehault@gmail.com]>\n"
 "Language-Team: [Eric BREHAULT] <[ebrehault@gmail.com]>\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Type: text/plain; charset=ISO-8859-1\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0\n"
 "Language-Code: fr\n"
 "Language-Name: French\n"
-"Preferred-Encodings: latin1 utf-8\n"
+"Preferred-Encodings: latin1 iso-8859-1\n"
 "Domain: CMFPlomino\n"
 
 #. Default: "How the action is shown"
@@ -205,3 +205,25 @@ msgstr "Paramètre ou code"
 msgid "CMFPlomino_help_Content"
 msgstr "En fonction du type d'action, on renseigne ici le paramètre ou le code nécessaire"
 
+#Action bar buttons
+msgid "Edit"
+msgstr "Modifier"
+
+msgid "Close"
+msgstr "Sortir"
+
+msgid "Delete"
+msgstr "Supprimer"
+
+msgid "Save"
+msgstr "Enregistrer"
+
+#Gantt view labels
+msgid "From"
+msgstr "De"
+
+msgid "To"
+msgstr "A"
+
+msgid "Refresh"
+msgstr "Rafraîchir"

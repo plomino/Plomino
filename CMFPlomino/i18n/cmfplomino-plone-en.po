@@ -41,3 +41,20 @@ msgstr "Plomino: Hide when"
 msgid "PlominoView"
 msgstr "Plomino: View"
 
+msgid "Forms"
+msgstr "Forms"
+
+msgid "Views"
+msgstr "Views"
+
+msgid "ACL"
+msgstr "ACL"
+
+msgid "About"
+msgstr "About"
+
+msgid "Using"
+msgstr "Using"
+
+msgid "Compose"
+msgstr "Compose"
