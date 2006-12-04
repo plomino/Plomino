@@ -7,8 +7,12 @@
 <metal:main fill-slot="main">
     <div id="bodyContent">
     	<h2 tal:content="here/Label|here/Title">view title</h2>
-    	<tal:block tal:condition="python:test(here.ActionBarPosition!='BOTTOM')"
-		tal:define="owner python:here">
+		<tal:block tal:define="myF python:here;
+							b myF/ActionBarPosition|nothing">
+			<tal:block
+			tal:define="owner python:myF"
+			tal:condition= "python:test((b and  myF.ActionBarPosition=='BOTTOM'),False, True)"
+			>
     		<span metal:use-macro="here/ActionBar/macros/ViewActionBar" >
 				display view actions
 			</span>
@@ -89,10 +93,15 @@
         </tal:block>
         		
 		</table>
-		<tal:block tal:condition="python:test(here.ActionBarPosition!='TOP')" tal:define="owner python:here">
+			<tal:block
+			tal:define="owner python:myF"
+			tal:condition="python:test((b and  myF.ActionBarPosition!='TOP'),True, False)"
+			>
+			
     		<span metal:use-macro="here/ActionBar/macros/ViewActionBar" >
 				display view actions
 			</span>
+			</tal:block>
 		</tal:block>
 	</div>
 </metal:main>

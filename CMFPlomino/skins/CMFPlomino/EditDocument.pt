@@ -7,16 +7,21 @@
 <metal:main fill-slot="main">
     <div id="bodyContent">
     <form tal:attributes="name python:here.getForm().Title()" action="saveDocument" method="POST">
-		<tal:block tal:define="myF python:here.getForm()">
-			<tal:block tal:define="owner python:myF"
-					tal:condition="python:test(myF.ActionBarPosition!='BOTTOM')">
+		<tal:block tal:define="myF python:here.getForm();
+							b myF/ActionBarPosition|nothing">
+			<tal:block
+			tal:define="owner python:myF"
+			tal:condition= "python:test((b and  myF.ActionBarPosition=='BOTTOM'),False, True)"
+			>
 	    		<span metal:use-macro="here/ActionBar/macros/EditDocumentActionBar" >
 					display form actions
 				</span>
 			</tal:block>
 			<span tal:content="structure python:here.editWithForm(myF)" />
-						<tal:block tal:define="owner python:myF"
-					tal:condition="python:test(myF.ActionBarPosition!='TOP')">
+					<tal:block
+			tal:define="owner python:myF"
+			tal:condition="python:test((b and  myF.ActionBarPosition!='TOP'),True, False)"
+			>
 	    		<span metal:use-macro="here/ActionBar/macros/EditDocumentActionBar" >
 					display form actions
 				</span>
