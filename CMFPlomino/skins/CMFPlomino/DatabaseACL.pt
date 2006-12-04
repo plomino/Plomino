@@ -6,7 +6,7 @@
 
 <metal:main fill-slot="main">
     <div id="bodyContent">
-    <h3>Users access rightsYOYO</h3>
+    <h3>Users access rights</h3>
     <form name="RemoveEntries" action="removeACLEntries" method="POST">
     	<table class="listing">
     	<tr><th>YOAccess right</th><th>Users</th></tr>
