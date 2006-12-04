@@ -25,7 +25,7 @@
 			<span metal:use-macro="here/ActionBar/macros/OpenFormActionBar" >
 				display form actions
 			</span>
-			</tazl:block>
+			</tal:block>
 		</tal:block>
 	</form>
 	</div>
