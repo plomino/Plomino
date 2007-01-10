@@ -1,0 +1,148 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en"
+      lang="en"
+      metal:use-macro="here/main_template/macros/master"
+      i18n:domain="plone">
+
+<body>
+
+    <div metal:fill-slot="main">
+    <metal:main-macro define-macro="main">
+
+        <div metal:use-macro="here/document_actions/macros/document_actions">
+            Document actions (print, sendto etc)
+        </div>
+
+        <h1 class="documentFirstHeading">
+            <tal:block tal:content="object_title">Title or id</tal:block> design
+        </h1>
+
+        <a href=""
+           class="link-parent"
+           tal:define="parent_url python:here.navigationParent(here, template_id)"
+           tal:condition="parent_url"
+           tal:attributes="href parent_url"
+           i18n:translate="go_to_parent_url">
+        Up one level
+        </a>
+
+        <div class="documentDescription" tal:content="here/Description">
+            description
+        </div>
+		<ul>
+			<li>Forms :
+			<ul>
+			<tal:block tal:repeat="f python:here.getForms()">
+				<li tal:define="fobj python:f.getObject()">
+					<tal:block tal:content="fobj/id">form id</tal:block>
+					<a tal:attributes="href python:f.getURL()+'/base_edit'"><img src="edit.gif" /></a>
+					<a tal:attributes="href python:f.getURL()+'/base_view'"><img src="view.gif" /></a>
+					<a tal:attributes="href python:f.getURL()+'/folder_contents'"><img src="content.gif" /></a>
+					<!--Colonnes des vues-->
+							<ul>
+													
+								
+								<li>
+									Fields : 
+								</li>
+								<tal:fieldsforms tal:repeat="fields python:fobj.getFields()">
+								<ul>
+									
+									<li>
+									<tal:block tal:content="fields/id">Field name</tal:block>
+									<a href="" tal:attributes="href python:fields.getURL()+'/base_edit'"><img src="edit.gif" /></a>
+									<a href="" tal:attributes="href python:fields.getURL()+'/base_view'"><img src="view.gif" /></a>
+									</li>
+								
+								</ul>
+								</tal:fieldsforms>
+								<!--Actions des vues-->
+							<!--	<li>
+									Actions : 
+								</li>
+								<ul>
+									<tal:actionsforms tal:repeat="action python:fobj.getActions(0)">
+										<li>
+										<tal:block tal:content="action/id">action name</tal:block>
+										<a href="" tal:attributes="href python:action.getURL()+'/base_edit'"><img src="edit.gif" /></a>
+										<a href="" tal:attributes="href python:action.getURL()+'/base_view'"><img src="view.gif" /></a>
+										</li>
+									</tal:actionsforms>
+								</ul>
+						-->
+							
+								
+							</ul>
+				</li>
+			</tal:block>
+			</ul>
+			</li>
+			<li>Views : 
+			<ul>
+			<tal:blockviews tal:repeat="views python:here.getViews()">
+				<li tal:define="view python:views.getObject()">
+					<tal:block tal:content="view/Label|views/Title">view name</tal:block>
+					<a tal:attributes="href python:views.getURL()+'/base_edit'"><img src="edit.gif" /></a>
+					<a tal:attributes="href python:views.getURL()+'/base_view'"><img src="view.gif" /></a>
+					<a tal:attributes="href python:views.getURL()+'/folder_contents'"><img src="content.gif" /></a>
+							<!--Colonnes des vues-->
+							<ul>
+								<li>
+									Columns : 
+								</li>
+								<ul>
+									<tal:colonnesviews tal:repeat="colonne python:view.getColumns()">
+									<li>
+									<tal:block tal:content="python:colonne.getColumnName()">column name</tal:block>
+										<a href="" tal:attributes="href python:colonne.absolute_url()+'/base_edit'"><img src="edit.gif" /></a>
+										<a href="" tal:attributes="href python:colonne.absolute_url()+'/base_view'"><img src="view.gif" /></a>
+									</li>
+								</tal:colonnesviews>
+								</ul>
+								<!--Actions des vues-->
+								<li>
+									Actions : 
+								</li>
+								<ul>
+									<tal:actionsviews tal:repeat="action python:view.getActions(1)">
+										<li>
+										<tal:block tal:content="action/id">action name</tal:block>
+										<a href="" tal:attributes="href python:action.absolute_url()+'/base_edit'"><img src="edit.gif" /></a>
+										<a href="" tal:attributes="href python:action.absolute_url()+'/base_view'"><img src="view.gif" /></a>
+										</li>
+									</tal:actionsviews>
+								</ul>
+							
+							</ul>
+						
+				</li>
+			</tal:blockviews>
+			</ul>
+			</li>
+		<!--	<li>Resources</li>
+			
+			
+			
+			<ul>
+			<tal:blockresources tal:repeat="views python:here.getDocuments()">
+				<li tal:define="view python:views.getObject()">
+					<tal:block tal:content="view/Label|views/Title">view name</tal:block>
+					<a tal:attributes="href python:views.getURL()+'/base_edit'"><img src="edit.gif" /></a>
+					<a tal:attributes="href python:views.getURL()+'/base_view'"><img src="view.gif" /></a>
+					<a tal:attributes="href python:views.getURL()+'/folder_contents'"><img src="content.gif" /></a>
+				</li>
+			</tal:blockresources >		
+			</ul>			
+			
+			
+			<li>Index</li>
+			<tal:blockrefresh tal:condition="python:not(here.getCurrentUserRights()=='PlominoManager')">		
+			<li>
+				<a href="../refreshDB">Refresh database</a>
+			</li>
+			</tal:blockrefresh>			
+		</ul>-->
+    </metal:main-macro>
+    </div>
+
+</body>
+</html>
