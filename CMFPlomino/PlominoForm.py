@@ -195,6 +195,16 @@ class PlominoForm(ATFolder):
 		"""
 		return self._getOb(fieldname)
 
+	security.declarePublic('hasDateTimeField')
+	def hasDateTimeField(self):
+		"""return true if the form contains at least one DateTime field
+		"""
+		fields=[f.getObject() for f in self.getFields()]
+		for f in fields:
+			if f.getFieldType()=="DATETIME":
+				return True
+		return False
+		
 	security.declarePublic('getHidewhenFormulas')
 	def getHidewhenFormulas(self):
 		"""Get hidden formulae
