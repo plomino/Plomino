@@ -251,7 +251,7 @@ class PlominoDocument(ATFolder):
 						elif f.getFieldType()=="DATETIME":
 							# TO BE MODIFIED: support different date/time format
 							#v = strptime(submittedValue, "%d/%m/%Y")
-							v = StringToDate(submittedValue)
+							v = StringToDate(submittedValue, '%Y/%m/%d')
 						else:
 							v = submittedValue
 						self.setItem(fieldName, v)
