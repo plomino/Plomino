@@ -24,6 +24,7 @@ from AccessControl import ClassSecurityInfo
 from Products.Archetypes.atapi import *
 from Products.ATContentTypes.content.folder import ATFolder
 from Products.CMFPlomino.PlominoAccessControl import PlominoAccessControl
+from Products.CMFPlomino.PlominoDesignManager import PlominoDesignManager
 from Products.CMFPlomino.config import *
 
 ##code-section module-header #fill in your manual code here
@@ -81,7 +82,7 @@ PlominoDatabase_schema = getattr(ATFolder, 'schema', Schema(())).copy() + \
 ##code-section after-schema #fill in your manual code here
 ##/code-section after-schema
 
-class PlominoDatabase(ATFolder, PlominoAccessControl):
+class PlominoDatabase(ATFolder, PlominoAccessControl, PlominoDesignManager):
 	"""
 	"""
 	security = ClassSecurityInfo()
@@ -114,20 +115,10 @@ class PlominoDatabase(ATFolder, PlominoAccessControl):
 		'condition': 'python:1'
 	   },
 
-
-	   {'action': "string:${object_url}/DatabaseForms",
+	   {'action': "string:${object_url}/DatabaseDesign",
 		'category': "object",
-		'id': 'forms',
-		'name': 'Forms',
-		'permissions': (DESIGN_PERMISSION,),
-		'condition': 'python:1'
-	   },
-
-
-	   {'action': "string:${object_url}/DatabaseViews",
-		'category': "object",
-		'id': 'views',
-		'name': 'Views',
+		'id': 'design',
+		'name': 'Design',
 		'permissions': (DESIGN_PERMISSION,),
 		'condition': 'python:1'
 	   },
@@ -255,35 +246,6 @@ class PlominoDatabase(ATFolder, PlominoAccessControl):
 		PlominoAccessControl.__init__(self)
 		index = PlominoIndex()
 		self._setObject(index.getId(), index)
-		
-	security.declarePublic('refreshDB')
-	def refreshDB(self):
-		"""all actions to take when reseting a DB (after import for instance)
-		"""
-		# reset reference on portal
-		p=self.getParentPortal()
-		
-		# destroy the index
-		self.manage_delObjects(self.getIndex().getId())
-		
-		#creat e new blank index
-		index = PlominoIndex()
-		self._setObject(index.getId(), index)
-		
-		#declare all the view formulas and columns index entries
-		for v in self.getViews():
-			v_obj=v.getObject()
-			self.getIndex().createSelectionIndex('PlominoViewFormula_'+v_obj.getViewName())
-			for c in v_obj.getColumns():
-				v_obj.declareColumn(c.getColumnName(), c)
-		#declare all the forms fields index entries 
-		for f in self.getForms():
-			f_obj=f.getObject()
-			for fi in f_obj.getFields():
-				self.getIndex().createIndex(fi.Title)
-		#reindex all the documents
-		for d in self.getAllDocuments():
-			self.getIndex().indexDocument(d)
 		
 	security.declarePublic('getParentPortal')
 	def getParentPortal(self):

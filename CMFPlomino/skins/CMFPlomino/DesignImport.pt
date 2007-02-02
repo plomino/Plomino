@@ -1,0 +1,64 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en"
+      lang="en"
+      metal:use-macro="here/main_template/macros/master"
+      i18n:domain="plone">
+<body>
+
+<metal:main fill-slot="main">
+    <div id="bodyContent">
+    <h3>Import design</h3>
+	<form name="ImportDesign" action="importDesign" method="POST">
+	<imput type="hidden" name="mode" value="refresh" />
+		<table tal:define="sourceURL request/sourceURL|nothing;
+						username request/username|nothing;
+						password request/password|nothing">
+			<tr>
+				<td>Source URL</td>
+				<td><input type="text" name="sourceURL" 
+					tal:attributes="value sourceURL"
+					/></td>
+			</tr>
+			<tr>
+				<td>Username</td>
+				<td><input type="text" name="username" tal:attributes="value username"/></td>
+			</tr>
+			<tr>
+				<td>Password</td>
+				<td><input type="password" name="password" tal:attributes="value password"/></td>
+			</tr>
+			<tr>
+				<td>Elements</td>
+				<td>
+				<select name="designelements" multiple="true" lines="6">
+					<tal:block tal:condition="sourceURL">
+						<tal:block tal:repeat="f python:here.getRemoteForms(sourceURL, username, password)">
+							<option tal:attributes="value f;"
+								tal:content="python:f+' (Form)'">value</option>
+						</tal:block>
+						<tal:block tal:repeat="v python:here.getRemoteViews(sourceURL, username, password)">
+							<option tal:attributes="value v;"
+								tal:content="python:v+' (View)'">value</option>
+						</tal:block>
+						<tal:block tal:repeat="v python:here.getRemoteResources(sourceURL, username, password)">
+							<option tal:attributes="value v;"
+								tal:content="python:v+' (Resource)'">value</option>
+						</tal:block>
+					</tal:block>
+				</select>
+				<input type="submit" name="submit_refresh" class="context" value="Refresh"/>
+				</td>
+			</tr>
+			<tr>
+				<td>Overwrite if element already exists ?</td>
+				<td><input type="radio" name="overwrite" value="yes" />Yes<br/>
+				<input type="radio" name="overwrite" value="no" checked="true" />No</td>
+			</tr>
+			<tr><td><input type="submit" class="context" value="Import" name="submit_import"/></td><td></td></tr>
+		</table>
+	</form>
+	</div>
+</metal:main>
+
+</body>
+</html>
+

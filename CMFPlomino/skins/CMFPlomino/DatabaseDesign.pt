@@ -28,8 +28,9 @@
         <div class="documentDescription" tal:content="here/Description">
             description
         </div>
-		<ul>
-			<li>Forms :
+      <dl class="collapsible inline collapsedOnLoad">
+        <dt class="collapsibleHeader">Forms</dt>
+        <dd class="collapsibleContent">
 			<ul>
 			<tal:block tal:repeat="f python:here.getForms()">
 				<li tal:define="fobj python:f.getObject()">
@@ -37,7 +38,7 @@
 					<a tal:attributes="href python:f.getURL()+'/base_edit'"><img src="edit.gif" /></a>
 					<a tal:attributes="href python:f.getURL()+'/base_view'"><img src="view.gif" /></a>
 					<a tal:attributes="href python:f.getURL()+'/folder_contents'"><img src="content.gif" /></a>
-					<!--Colonnes des vues-->
+					<!--Fields list-->
 							<ul>
 													
 								
@@ -55,28 +56,28 @@
 								
 								</ul>
 								</tal:fieldsforms>
-								<!--Actions des vues-->
-							<!--	<li>
+								<!--Form actions-->
+								<li>
 									Actions : 
 								</li>
 								<ul>
-									<tal:actionsforms tal:repeat="action python:fobj.getActions(0)">
+									<tal:actionsforms tal:repeat="action python:fobj.getActions(None, False)">
 										<li>
 										<tal:block tal:content="action/id">action name</tal:block>
-										<a href="" tal:attributes="href python:action.getURL()+'/base_edit'"><img src="edit.gif" /></a>
-										<a href="" tal:attributes="href python:action.getURL()+'/base_view'"><img src="view.gif" /></a>
+										<a href="" tal:attributes="href python:action.absolute_url()+'/base_edit'"><img src="edit.gif" /></a>
+										<a href="" tal:attributes="href python:action.absolute_url()+'/base_view'"><img src="view.gif" /></a>
 										</li>
 									</tal:actionsforms>
 								</ul>
-						-->
-							
 								
 							</ul>
 				</li>
 			</tal:block>
 			</ul>
-			</li>
-			<li>Views : 
+</dd></dl><br/>
+      <dl class="collapsible inline collapsedOnLoad">
+        <dt class="collapsibleHeader">Views</dt>
+        <dd class="collapsibleContent">
 			<ul>
 			<tal:blockviews tal:repeat="views python:here.getViews()">
 				<li tal:define="view python:views.getObject()">
@@ -84,7 +85,7 @@
 					<a tal:attributes="href python:views.getURL()+'/base_edit'"><img src="edit.gif" /></a>
 					<a tal:attributes="href python:views.getURL()+'/base_view'"><img src="view.gif" /></a>
 					<a tal:attributes="href python:views.getURL()+'/folder_contents'"><img src="content.gif" /></a>
-							<!--Colonnes des vues-->
+							<!--View columns-->
 							<ul>
 								<li>
 									Columns : 
@@ -98,12 +99,12 @@
 									</li>
 								</tal:colonnesviews>
 								</ul>
-								<!--Actions des vues-->
+								<!--View actions-->
 								<li>
 									Actions : 
 								</li>
 								<ul>
-									<tal:actionsviews tal:repeat="action python:view.getActions(1)">
+									<tal:actionsviews tal:repeat="action python:view.getActions(None, False)">
 										<li>
 										<tal:block tal:content="action/id">action name</tal:block>
 										<a href="" tal:attributes="href python:action.absolute_url()+'/base_edit'"><img src="edit.gif" /></a>
@@ -117,30 +118,69 @@
 				</li>
 			</tal:blockviews>
 			</ul>
-			</li>
-		<!--	<li>Resources</li>
-			
-			
-			
-			<ul>
-			<tal:blockresources tal:repeat="views python:here.getDocuments()">
-				<li tal:define="view python:views.getObject()">
-					<tal:block tal:content="view/Label|views/Title">view name</tal:block>
-					<a tal:attributes="href python:views.getURL()+'/base_edit'"><img src="edit.gif" /></a>
-					<a tal:attributes="href python:views.getURL()+'/base_view'"><img src="view.gif" /></a>
-					<a tal:attributes="href python:views.getURL()+'/folder_contents'"><img src="content.gif" /></a>
-				</li>
-			</tal:blockresources >		
-			</ul>			
-			
-			
-			<li>Index</li>
-			<tal:blockrefresh tal:condition="python:not(here.getCurrentUserRights()=='PlominoManager')">		
-			<li>
-				<a href="../refreshDB">Refresh database</a>
-			</li>
-			</tal:blockrefresh>			
-		</ul>-->
+</dd></dl><br/>
+      <dl class="collapsible inline collapsedOnLoad">
+        <dt class="collapsibleHeader">Others</dt>
+        <dd class="collapsibleContent">
+			<ul><li><a href="./resources/manage_main" target="_new">Resources folder (ZMI)</a></li>
+				<li><a href="./plomino_index/manage_catalogView" target="_new">Index (ZMI)</a></li>
+				<li><a href="./refreshDB">Refresh database</a></li>		
+			</ul>
+</dd></dl>
+
+
+
+		
+<hr/><h3>Import design</h3>
+	<form name="ImportDesign" action="importDesign" method="POST">
+	<imput type="hidden" name="mode" value="refresh" />
+		<table tal:define="sourceURL request/sourceURL|nothing;
+						username request/username|nothing;
+						password request/password|nothing">
+			<tr>
+				<td>Source URL</td>
+				<td><input type="text" name="sourceURL" 
+					tal:attributes="value sourceURL"
+					/></td>
+			</tr>
+			<tr>
+				<td>Username</td>
+				<td><input type="text" name="username" tal:attributes="value username"/></td>
+			</tr>
+			<tr>
+				<td>Password</td>
+				<td><input type="password" name="password" tal:attributes="value password"/></td>
+			</tr>
+			<tr>
+				<td>Elements</td>
+				<td>
+				<select name="designelements" multiple="true" lines="6">
+					<tal:block tal:condition="sourceURL">
+						<tal:block tal:repeat="f python:here.getRemoteForms(sourceURL, username, password)">
+							<option tal:attributes="value f;"
+								tal:content="python:f+' (Form)'">value</option>
+						</tal:block>
+						<tal:block tal:repeat="v python:here.getRemoteViews(sourceURL, username, password)">
+							<option tal:attributes="value v;"
+								tal:content="python:v+' (View)'">value</option>
+						</tal:block>
+						<tal:block tal:repeat="v python:here.getRemoteResources(sourceURL, username, password)">
+							<option tal:attributes="value v;"
+								tal:content="python:v+' (Resource)'">value</option>
+						</tal:block>
+					</tal:block>
+				</select>
+				<input type="submit" name="submit_refresh" class="context" value="Refresh"/>
+				</td>
+			</tr>
+			<tr>
+				<td>Overwrite if element already exists ?</td>
+				<td><input type="radio" name="overwrite" value="yes" />Yes<br/>
+				<input type="radio" name="overwrite" value="no" checked="true" />No</td>
+			</tr>
+			<tr><td><input type="submit" class="context" value="Import" name="submit_import"/></td><td></td></tr>
+		</table>
+	</form>
     </metal:main-macro>
     </div>
 

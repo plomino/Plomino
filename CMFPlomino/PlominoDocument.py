@@ -262,11 +262,14 @@ class PlominoDocument(ATFolder):
 		REQUEST.RESPONSE.redirect(self.absolute_url())
 
 	security.declareProtected(EDIT_PERMISSION, 'save')
-	def save(self, form, creation=False):
+	def save(self, form=None, creation=False):
 		"""refresh values according form, and reindex the document
 		"""
 		# we process computed fields (refresh the value)
 		# TODO: manage computed fields dependencies
+		if form is None:
+			form = self.getForm()
+		
 		db=self.getParentDatabase()
 		for field in form.getFields():
 			f = field.getObject()

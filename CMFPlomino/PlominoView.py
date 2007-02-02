@@ -248,7 +248,7 @@ class PlominoView(ATFolder):
 		return [i[1] for i in orderedcolumns]
 
 	security.declarePublic('getActions')
-	def getActions(self, target):
+	def getActions(self, target, hide=True):
 		"""Get actions
 		"""
 		all = self.getFolderContents(contentFilter = {'portal_type' : ['PlominoAction']})
@@ -256,12 +256,15 @@ class PlominoView(ATFolder):
 		filtered = []
 		for a in all:
 			obj_a=a.getObject()
-			try:
-				result = RunFormula(target, obj_a.getHidewhen())
-			except Exception:
-				#if error, we hide anyway
-				result = True
-			if not result:
+			if hide:
+				try:
+					result = RunFormula(target, obj_a.getHidewhen())
+				except Exception:
+					#if error, we hide anyway
+					result = True
+				if not result:
+					filtered.append(obj_a)
+			else:
 				filtered.append(obj_a)
 		return filtered
 		
