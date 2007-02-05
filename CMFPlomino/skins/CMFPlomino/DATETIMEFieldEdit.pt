@@ -7,7 +7,7 @@
                             show_ymd widget/show_ymd|nothing;
                             inputname options/fieldname;
                             formname string:edit_form;
-							inputvalue python:v.strftime('%Y/%m/%d');">
+							inputvalue python:v.strftime('%Y-%m-%d %H:%M');">
 				<tal:block metal:use-macro="here/DATETIMETool/macros/calendarDatePickerBoxFormat">
 					a calendar, hopefully
 				</tal:block>

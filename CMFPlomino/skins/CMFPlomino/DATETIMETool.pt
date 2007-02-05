@@ -23,7 +23,7 @@
 
 		<input type="hidden" tal:attributes="name inputname;
 		id input_id;
-		value python:not show_hm and inputvalue and hasattr(inputvalue, 'strftime') and inputvalue.strftime('%Y/%m/%d') or inputvalue"/>
+		value python:not show_hm and inputvalue and hasattr(inputvalue, 'strftime') and inputvalue.strftime('%Y-%m-%d %H:%M') or inputvalue"/>
 
 		<span tal:condition="python:len(years)!=1">
 			<select name="ic_year"
