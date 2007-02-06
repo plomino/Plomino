@@ -45,12 +45,14 @@
 	</form>
 	<br/>
 	<form name="AddEntry" action="addACLEntry" method="POST">
-		Add ACL entry:<select name="newuser">
-			<tal:block tal:repeat="u here/getPortalMembersIds">
+		Add ACL entry:
+		<select name="newuser">
+			<tal:block tal:repeat="u here/getPortalMembersGroupsIds">
 				<option tal:content="u" tal:attributes="value u">user</option>
 				<br/>
 			</tal:block>
 		</select>
+		<!--<input type="text" name="newuser"/>-->
 		<select name="accessright">
 			<option value="PlominoReader">PlominoReader</option>
 			<option value="PlominoAuthor">PlominoAuthor</option>

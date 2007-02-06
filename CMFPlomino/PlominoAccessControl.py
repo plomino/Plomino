@@ -349,6 +349,26 @@ class PlominoAccessControl(ATFolder):
 		"""
 		l=self.getPortalMembers()
 		return [m.id for m in l]
+	
+	security.declarePublic('getPortalGroups')
+	def getPortalGroups(self):
+		"""return all groups
+		"""
+		groupstool = self.portal_groups
+		return groupstool.listGroups()
+		
+	security.declarePublic('getPortalMembersGroupsIds')
+	def getPortalMembersGroupsIds(self):
+		tab = []
+		"""return all members id
+		"""
+		l=self.getPortalMembers()
+		tab = tab + l
+		"""return all groups id
+		"""
+		g=self.getPortalGroups()
+		tab = tab + g
+		return tab
 		
 	
 registerType(PlominoAccessControl, PROJECTNAME)
