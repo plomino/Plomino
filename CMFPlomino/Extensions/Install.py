@@ -86,6 +86,7 @@ def install(self, reinstall=False):
     factory_types=[
         "PlominoDatabase",
         "PlominoAction",
+		"PlominoAgent",
         "PlominoForm",
         "PlominoField",
         "PlominoView",

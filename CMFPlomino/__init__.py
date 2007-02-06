@@ -76,6 +76,7 @@ def initialize(context):
 
 	import PlominoDatabase
 	import PlominoAction
+	import PlominoAgent
 	import PlominoForm
 	import PlominoField
 	import PlominoView

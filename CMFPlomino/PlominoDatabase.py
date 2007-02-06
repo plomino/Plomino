@@ -93,7 +93,7 @@ class PlominoDatabase(ATFolder, PlominoAccessControl, PlominoDesignManager):
 
 	meta_type = 'PlominoDatabase'
 	portal_type = 'PlominoDatabase'
-	allowed_content_types = ['PlominoForm', 'PlominoView', 'PlominoDocument'] + list(getattr(ATFolder, 'allowed_content_types', [])) + list(getattr(PlominoAccessControl, 'allowed_content_types', []))
+	allowed_content_types = ['PlominoForm', 'PlominoView', 'PlominoAgent', 'PlominoDocument'] + list(getattr(ATFolder, 'allowed_content_types', [])) + list(getattr(PlominoAccessControl, 'allowed_content_types', []))
 	filter_content_types = 1
 	global_allow = 1
 	content_icon = 'PlominoDatabase.gif'
