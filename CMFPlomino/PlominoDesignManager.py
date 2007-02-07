@@ -43,8 +43,12 @@ class PlominoDesignManager:
 	def refreshDB(self):
 		"""all actions to take when reseting a DB (after import for instance)
 		"""
-		# reset reference on portal
-		p=self.getParentPortal()
+		# reset reference on portal and app
+		for o in self.aq_chain:
+			if type(aq_self(o)).__name__=='Application':
+				self._parentapp=o
+			if type(aq_self(o)).__name__=='PloneSite':
+				self._parentportalid=o.id
 		
 		# destroy the index
 		self.manage_delObjects(self.getIndex().getId())

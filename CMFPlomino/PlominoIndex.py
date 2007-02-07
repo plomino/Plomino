@@ -143,13 +143,13 @@ class PlominoIndex(UniqueObject, ZCatalog, ActionProviderBase):
 	def indexDocument(self,doc):
 		"""
 		"""
-		self.catalog_object(doc, doc.id)
+		self.catalog_object(doc, doc.absolute_url_path())
 
 	security.declarePublic('unindexDocument')
 	def unindexDocument(self,doc):
 		"""
 		"""
-		self.uncatalog_object(doc.id)
+		self.uncatalog_object(doc.absolute_url_path())
 
 	security.declarePublic('refresh')
 	def refresh(self):

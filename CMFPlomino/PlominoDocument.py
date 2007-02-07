@@ -393,6 +393,14 @@ class PlominoDocument(ATFolder):
 				#return ATFolder.__getattr__(self, name)
 			#	return BaseFolder.__getattr__(self, name)
 				raise AttributeError, name
+	
+	def __getitem__(self, key):
+		"""Overwrite __getitem__.
+		"""
+		if key.startswith('BABY_'):
+			return 'yepa'
+		else:
+			return BaseFolder.__getitem__(self, key)
 
 	security.declareProtected("READ_PERMISSION", 'isSelectedInView')
 	def isSelectedInView(self,viewname):
