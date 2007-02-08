@@ -9,7 +9,7 @@
     <h3>Users access rights</h3>
     <form name="RemoveEntries" action="removeACLEntries" method="POST">
     	<table class="listing">
-    	<tr><th>YOAccess right</th><th>Users</th></tr>
+    	<tr><th>Access right</th><th>Users</th></tr>
 		<tr><td valign="top"><b>Readers</b></td>
 		<td><tal:block tal:repeat="u python:here.getUsersForRight('PlominoReader')">
 			<input type="checkbox" name="users" tal:attributes="value u" /><span tal:content="u">user</span>	
