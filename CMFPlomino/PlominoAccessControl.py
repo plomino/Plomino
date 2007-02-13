@@ -31,7 +31,6 @@ from AccessControl.PermissionRole import rolesForPermissionOn
 from AccessControl import getSecurityManager
 from Products.CMFCore.utils import getToolByName
 
-from zLOG import LOG, ERROR
 ##/code-section module-header
 
 schema = Schema((

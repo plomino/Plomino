@@ -23,7 +23,6 @@ __docformat__ = 'plaintext'
 from DateTime import DateTime
 from time import strptime
 from Products.CMFCore.utils import getToolByName
-from zLOG import LOG, ERROR
 import sys
 
 def DateToString(d, format='%d/%m/%Y'):
@@ -73,7 +72,6 @@ def RunFormula(obj, formula):
 				msg="Plomino formula error: "+str(type)+": "+str(value)
 				msg=msg+"\nin code:\n"+indented_formula
 				msg=msg+"\nwith context:"+str(obj)
-				LOG("Plomino", ERROR, msg)
 				raise
 	return result
 
@@ -103,7 +101,7 @@ def sendMail(db, recipients, title, html_message):
 def userFullname(db, userid):
 	""" return user fullname if exist, else return userid, and return Unknown if user not found
 	"""
-	user=getToolByName(db.getParentPortal(), 'portal_membership').getMemberById(userid)
+	user=getToolByName(db, 'portal_membership').getMemberById(userid)
 	if not(user is None):
 		fullname=user.getProperty('fullname')
 		if fullname=='':
@@ -116,7 +114,7 @@ def userFullname(db, userid):
 def userInfo(db, userid):
 	""" return user object
 	"""
-	user=getToolByName(db.getParentPortal(), 'portal_membership').getMemberById(userid)
+	user=getToolByName(db, 'portal_membership').getMemberById(userid)
 	return user
 
 def importPlominoScript(obj, scriptname):

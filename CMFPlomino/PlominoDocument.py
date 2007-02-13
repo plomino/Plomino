@@ -34,7 +34,6 @@ from time import strptime
 from DateTime import DateTime
 from Products.CMFPlomino.PlominoUtils import *
 from Acquisition import *
-from zLOG import LOG, ERROR
 
 import PlominoDatabase
 import PlominoView
@@ -112,7 +111,6 @@ class PlominoDocument(ATFolder):
 	schema = PlominoDocument_schema
 
 	##code-section class-header #fill in your manual code here
-	security.declareProtected(READ_PERMISSION, 'OpenDocument')
 	##/code-section class-header
 
 	# Methods
@@ -132,11 +130,10 @@ class PlominoDocument(ATFolder):
 	def __init__(self,oid,**kw):
 		"""initialization
 		"""
-		# changed from BaseFolder to ATFolder because now inherits fron ATFolder
 		ATFolder.__init__(self, oid, **kw)
 		self.items={}
-		self._parentdatabase=None
-
+		self.views_dict={}
+		
 	security.declarePublic('setItem')
 	def setItem(self,name,value):
 		"""
@@ -199,16 +196,7 @@ class PlominoDocument(ATFolder):
 	def getParentDatabase(self):
 		"""
 		"""
-		if aq_parent(self) is not None:
-			return self.getParentNode()
-		else:
-			return self._parentdatabase
-
-	security.declarePublic('setParentDatabase')
-	def setParentDatabase(self,db):
-		"""
-		"""
-		self._parentdatabase = db
+		return self.getParentNode()
 
 	security.declarePublic('isAuthor')
 	def isAuthor(self):
@@ -249,7 +237,6 @@ class PlominoDocument(ATFolder):
 						if f.getFieldType()=="NUMBER":
 							v = long(submittedValue)
 						elif f.getFieldType()=="DATETIME":
-							# TO BE MODIFIED: support different date/time format
 							#v = strptime(submittedValue, "%d/%m/%Y")
 							v = StringToDate(submittedValue, '%Y-%m-%d %H:%M')
 						else:
@@ -373,34 +360,13 @@ class PlominoDocument(ATFolder):
 
 	security.declarePublic('__getattr__')
 	def __getattr__(self,name):
-		"""Overloads getattr to return item values, view selection formula
-		evaluation and views columns values as attibutes (so ZCatalog
-		can read them)
+		"""Overloads getattr to return item values as attibutes
 		"""
-		if(name.startswith("PlominoViewFormula_")):
-			param = name.split('_')
-			viewname=param[1]
-			return self.isSelectedInView(viewname)
-		elif(name.startswith("PlominoViewColumn_")):
-			param = name.split('_')
-			viewname=param[1]
-			columnname=param[2]
-			return self.computeColumnValue(viewname, columnname)
+		if(self.items.has_key(name)):
+			return self.items[name]
 		else:
-			if(self.items.has_key(name)):
-				return self.items[name]
-			else:
-				#return ATFolder.__getattr__(self, name)
-			#	return BaseFolder.__getattr__(self, name)
-				raise AttributeError, name
-	
-	def __getitem__(self, key):
-		"""Overwrite __getitem__.
-		"""
-		if key.startswith('BABY_'):
-			return 'yepa'
-		else:
-			return BaseFolder.__getitem__(self, key)
+			#raise AttributeError, name
+			return BaseObject.__getattr__(self, name)
 
 	security.declareProtected("READ_PERMISSION", 'isSelectedInView')
 	def isSelectedInView(self,viewname):

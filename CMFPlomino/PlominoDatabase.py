@@ -39,8 +39,6 @@ from Products.CMFPlomino.PlominoUtils import *
 import string
 import Globals
 
-from zLOG import LOG, ERROR
-
 from PlominoIndex import PlominoIndex
 ##/code-section module-header
 
@@ -173,7 +171,6 @@ class PlominoDatabase(ATFolder, PlominoAccessControl, PlominoDesignManager):
 		resources = Folder('resources')
 		resources.title='resources'
 		self._setObject('resources', resources)
-		p=self.getParentPortal()
 
 	security.declarePublic('getForms')
 	def getForms(self):
@@ -218,7 +215,6 @@ class PlominoDatabase(ATFolder, PlominoAccessControl, PlominoDesignManager):
 		newid = make_uuid()
 		self.invokeFactory( type_name='PlominoDocument', id=newid)
 		doc = self._getOb( newid )
-		doc.setParentDatabase(self)
 		return doc
 
 	security.declareProtected(EDIT_PERMISSION, 'deleteDocument')
@@ -241,24 +237,10 @@ class PlominoDatabase(ATFolder, PlominoAccessControl, PlominoDesignManager):
 	def __init__(self,oid,**kw):
 		"""
 		"""
-		#changed
 		ATFolder.__init__(self, oid, **kw)
 		PlominoAccessControl.__init__(self)
 		index = PlominoIndex()
 		self._setObject(index.getId(), index)
-		
-	security.declarePublic('getParentPortal')
-	def getParentPortal(self):
-		try:
-			p = self._parentapp._getOb(self._parentportalid)
-		except Exception:
-			for o in self.aq_chain:
-				if type(aq_self(o)).__name__=='Application':
-					self._parentapp=o
-				if type(aq_self(o)).__name__=='PloneSite':
-					self._parentportalid=o.id
-			p = self._parentapp._getOb(self._parentportalid)
-		return p
 	
 	security.declarePublic('callScriptMethod')
 	def callScriptMethod(self, scriptname, methodname, *args):
@@ -271,6 +253,7 @@ class PlominoDatabase(ATFolder, PlominoAccessControl, PlominoDesignManager):
 		indented_code = indented_code +'\n\treturn '+methodname+'(*args)'
 		exec indented_code
 		return plominoScript(*args)
+			
 			
 registerType(PlominoDatabase, PROJECTNAME)
 # end of class PlominoDatabase

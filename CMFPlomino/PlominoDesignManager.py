@@ -25,12 +25,14 @@ from Products.CMFPlomino.config import *
 ##code-section module-header #fill in your manual code here
 from Products.CMFCore import CMFCorePermissions
 from cStringIO import StringIO
-from zLOG import LOG, ERROR
 from Acquisition import *
 ##/code-section module-header
 from OFS.XMLExportImport import *
 import urllib
+import logging
 from PlominoIndex import PlominoIndex
+
+logger = logging.getLogger('Plomino')
 
 class PlominoDesignManager:
 	"""Plomino design import/export features
@@ -43,19 +45,22 @@ class PlominoDesignManager:
 	def refreshDB(self):
 		"""all actions to take when reseting a DB (after import for instance)
 		"""
-		# reset reference on portal and app
-		for o in self.aq_chain:
-			if type(aq_self(o)).__name__=='Application':
-				self._parentapp=o
-			if type(aq_self(o)).__name__=='PloneSite':
-				self._parentportalid=o.id
+		logger.info('Refreshing database '+self.id)
+		# 0.6.1 migration: remove references on portal and app
+		try:
+			del self._parentapp
+			del self._parentportalid
+		except:
+			pass
 		
 		# destroy the index
 		self.manage_delObjects(self.getIndex().getId())
+		logger.info('Old index removed')
 		
-		#creat e new blank index
+		#create new blank index
 		index = PlominoIndex()
 		self._setObject(index.getId(), index)
+		logger.info('New index created')
 		
 		#declare all the view formulas and columns index entries
 		for v in self.getViews():
@@ -63,14 +68,18 @@ class PlominoDesignManager:
 			self.getIndex().createSelectionIndex('PlominoViewFormula_'+v_obj.getViewName())
 			for c in v_obj.getColumns():
 				v_obj.declareColumn(c.getColumnName(), c)
-		#declare all the forms fields index entries 
-		for f in self.getForms():
-			f_obj=f.getObject()
-			for fi in f_obj.getFields():
-				self.getIndex().createIndex(fi.Title)
+		logger.info('Index structure initialized')
+		
 		#reindex all the documents
 		for d in self.getAllDocuments():
+			# 0.6.1 migration: remove references on parent db
+			try:
+				del self._parentdatabase
+			except:
+				pass
+				
 			self.getIndex().indexDocument(d)
+		logger.info('Documents indexed')
 			
 	security.declareProtected(DESIGN_PERMISSION, 'exportDesign')
 	def exportDesign(self, RESPONSE=None,REQUEST=None):

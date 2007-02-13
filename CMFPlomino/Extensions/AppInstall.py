@@ -26,4 +26,5 @@ def install(self):
 	wfTool = getToolByName(self, 'portal_workflow')
 	wfTool.setChainForPortalTypes(pt_names=allfieldTypes, chain='')
 	out.write("Workflow configuration cleanup: OK")
+		
 	return out.getvalue()

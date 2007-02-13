@@ -31,7 +31,6 @@ from Products.CMFCore import CMFCorePermissions
 from Products.Archetypes.utils import make_uuid
 from Products.CMFPlomino.PlominoUtils import *
 from ZPublisher.HTTPResponse import HTTPResponse
-from zLOG import LOG, ERROR
 
 import re
 

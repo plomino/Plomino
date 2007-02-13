@@ -39,6 +39,9 @@ from Products.CMFCore.ActionProviderBase import ActionProviderBase
 from Products.CMFCore.utils import UniqueObject
 
 from Products.CMFPlomino.config import PROJECTNAME
+from Products.CMFPlomino.PlominoCatalog import PlominoCatalog
+from Products.CMFPlomino.PlominoViewIndex import PlominoViewIndex
+from Products.CMFPlomino.PlominoColumnIndex import PlominoColumnIndex
 ##/code-section module-header
 
 schema = Schema((
@@ -98,8 +101,7 @@ class PlominoIndex(UniqueObject, ZCatalog, ActionProviderBase):
 		"""
 		"""
 		ZCatalog.__init__(self, self.getId())
-		self.createIndex('Form')
-		self.createIndex('Plomino_Authors')
+		self._catalog = PlominoCatalog()
 
 	security.declareProtected(CMFCorePermissions.View, 'getParentDatabase')
 	def getParentDatabase(self):
@@ -112,8 +114,7 @@ class PlominoIndex(UniqueObject, ZCatalog, ActionProviderBase):
 		"""
 		"""
 		try:
-			#self.addIndex(fieldname, 'FieldIndex')
-			self.addIndex(fieldname, 'KeywordIndex')
+			self._catalog.addIndex(fieldname,PlominoColumnIndex(fieldname))
 			self.addColumn(fieldname)
 		except CatalogError:
 			# index already exists
@@ -125,7 +126,7 @@ class PlominoIndex(UniqueObject, ZCatalog, ActionProviderBase):
 		"""
 		"""
 		try:
-			self.addIndex(fieldname, 'FieldIndex')
+			self._catalog.addIndex(fieldname,PlominoViewIndex(fieldname))
 		except CatalogError:
 			# index already exists
 			pass

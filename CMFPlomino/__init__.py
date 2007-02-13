@@ -31,9 +31,9 @@ __docformat__ = 'plaintext'
 #   - To register a customisation policy, create a file CustomizationPolicy.py
 #	   with a method register(context) to register the policy.
 
-from zLOG import LOG, INFO, DEBUG
-
-LOG('CMFPlomino', DEBUG, 'Installing Product')
+import logging
+logger = logging.getLogger('Plomino')
+logger.info('Installing Product')
 
 try:
 	import CustomizationPolicy
@@ -62,14 +62,13 @@ from Products.Archetypes.public import process_types, listTypes
 from Products.CMFCore import utils
 from Products.CMFCore.DirectoryView import registerDirectory
 from AccessControl.Permission import registerPermissions
-
+			
 ##/code-section custom-init-head
 
 
 def initialize(context):
 	##code-section custom-init-top #fill in your manual code here
 	registerPermissions([(ADD_DESIGN_PERMISSION, []), (ADD_CONTENT_PERMISSION, []), (READ_PERMISSION, []), (EDIT_PERMISSION, []), (CREATE_PERMISSION, []), (REMOVE_PERMISSION, []), (DESIGN_PERMISSION, []), (ACL_PERMISSION, [])])
-
 	##/code-section custom-init-top
 
 	# imports packages and types for registration
@@ -85,7 +84,7 @@ def initialize(context):
 	import PlominoHidewhen
 	import PlominoAccessControl
 	import PlominoIndex
-
+	
 	# Initialize portal content
 	content_types, constructors, ftis = process_types(
 		listTypes(PROJECTNAME),
@@ -126,4 +125,3 @@ def initialize(context):
 				).initialize(context)
 
 	##/code-section custom-init-bottom
-

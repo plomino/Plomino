@@ -33,7 +33,6 @@ from Products.CMFCore.utils import getToolByName
 from Acquisition import aq_parent
 from Products.CMFPlomino.PlominoUtils import *
 from Products.CMFPlomino.config import PROJECTNAME, READ_PERMISSION
-from zLOG import LOG, ERROR
 
 import PlominoDocument
 ##/code-section module-header
@@ -182,7 +181,6 @@ class PlominoView(ATFolder):
 	schema = PlominoView_schema
 
 	##code-section class-header #fill in your manual code here
-	security.declareProtected(READ_PERMISSION, 'OpenView')
 	##/code-section class-header
 
 	# Methods
