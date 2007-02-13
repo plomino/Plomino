@@ -40,7 +40,6 @@ import string
 import Globals
 
 from PlominoIndex import PlominoIndex
-from Products.ZopeScheduler import ZopeScheduler
 ##/code-section module-header
 
 schema = Schema((
