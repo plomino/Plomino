@@ -38,7 +38,16 @@ import PlominoDocument
 ##/code-section module-header
 
 schema = Schema((
-
+	StringField(
+		name='id',
+		widget=StringWidget(
+			label="Id",
+			description="The form id",
+			label_msgid='CMFPlomino_label_FormId',
+			description_msgid='CMFPlomino_help_FormId',
+			i18n_domain='CMFPlomino',
+		)
+	),
 	StringField(
 		name='DocumentTitle',
 		widget=StringWidget(
@@ -186,7 +195,8 @@ class PlominoForm(ATFolder):
 	def getFields(self):
 		"""get fields
 		"""
-		return self.getFolderContents(contentFilter = {'portal_type' : ['PlominoField']})
+		fieldlist = self.getFolderContents(contentFilter = {'portal_type' : ['PlominoField']})
+		return [f.getObject() for f in fieldlist]
 		
 	security.declarePublic('getFormField')
 	def getFormField(self, fieldname):
@@ -198,7 +208,7 @@ class PlominoForm(ATFolder):
 	def hasDateTimeField(self):
 		"""return true if the form contains at least one DateTime field
 		"""
-		fields=[f.getObject() for f in self.getFields()]
+		fields=self.getFields()
 		for f in fields:
 			if f.getFieldType()=="DATETIME":
 				return True
@@ -208,13 +218,14 @@ class PlominoForm(ATFolder):
 	def getHidewhenFormulas(self):
 		"""Get hidden formulae
 		"""
-		return self.getFolderContents(contentFilter = {'portal_type' : ['PlominoHidewhen']})
+		list = self.getFolderContents(contentFilter = {'portal_type' : ['PlominoHidewhen']})
+		return [h.getObject() for h in list]
 
 	security.declarePublic('getFormName')
 	def getFormName(self):
 		"""Return the form name
 		"""
-		return self.Title()
+		return self.id
 
 	security.declarePublic('getParentDatabase')
 	def getParentDatabase(self):
@@ -227,7 +238,7 @@ class PlominoForm(ATFolder):
 		"""Rendering the field
 		"""
 		mode = field.getFieldMode()
-		fieldName = field.Title()
+		fieldName = field.id
 		
 		# compute the value
 		if mode=="EDITABLE":
@@ -286,9 +297,9 @@ class PlominoForm(ATFolder):
 
 		# remove the hidden content
 		for hidewhen in self.getHidewhenFormulas():
-			hidewhenName = hidewhen.Title
+			hidewhenName = hidewhen.id
 			try:
-				result = RunFormula(doc, hidewhen.getObject().getFormula())
+				result = RunFormula(doc, hidewhen.getFormula())
 			except Exception:
 				#if error, we hide anyway
 				result = True
@@ -307,13 +318,12 @@ class PlominoForm(ATFolder):
 
 		# insert the fields with proper value and rendering
 		for field in self.getFields():
-			fieldName = field.Title
-			#html_content = html_content.replace('#'+fieldName+'#', self.getFieldRender(doc, field.getObject(), editmode))
-			html_content = html_content.replace('<span class="plominoFieldClass">'+fieldName+'</span>', self.getFieldRender(doc, field.getObject(), editmode, creation))
+			fieldName = field.id
+			html_content = html_content.replace('<span class="plominoFieldClass">'+fieldName+'</span>', self.getFieldRender(doc, field, editmode, creation))
 
 		# insert the actions
 		for action in self.getActions(doc, False):
-			actionName = action.Title()
+			actionName = action.id
 			actionDisplay = action.ActionDisplay
 			try:
 				exec "pt = self."+actionDisplay+"Action"
@@ -352,14 +362,6 @@ class PlominoForm(ATFolder):
 			else:
 				filtered.append(obj_a)
 		return filtered
-
-	security.declarePublic('at_post_create_script')
-	def at_post_create_script(self):
-		"""Post creation
-		"""
-		# replace Title with its normalized equivalent (stored in id)
-		self.setTitle(self.id)
-		self.reindexObject()
 	
 	security.declarePublic('at_post_edit_script')
 	def at_post_edit_script(self):

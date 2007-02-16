@@ -63,8 +63,7 @@ class PlominoDesignManager:
 		logger.info('New index created')
 		
 		#declare all the view formulas and columns index entries
-		for v in self.getViews():
-			v_obj=v.getObject()
+		for v_obj in self.getViews():
 			self.getIndex().createSelectionIndex('PlominoViewFormula_'+v_obj.getViewName())
 			for c in v_obj.getColumns():
 				v_obj.declareColumn(c.getColumnName(), c)
@@ -146,7 +145,7 @@ class PlominoDesignManager:
 		views = self.getViews()
 		ids = ""
 		for v in views:
-			ids=ids+v.getObject().id+"/"
+			ids=ids+v.id+"/"
 		return ids
 	
 	security.declareProtected(DESIGN_PERMISSION, 'getFormsList')
@@ -156,7 +155,7 @@ class PlominoDesignManager:
 		forms = self.getForms()
 		ids = ""
 		for f in forms:
-			ids=ids+f.getObject().id+"/"
+			ids=ids+f.id+"/"
 		return ids
 		
 	security.declareProtected(DESIGN_PERMISSION, 'getResourcesList')

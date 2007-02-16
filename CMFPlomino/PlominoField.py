@@ -31,7 +31,16 @@ from Products.CMFCore import CMFCorePermissions
 ##/code-section module-header
 
 schema = Schema((
-
+	StringField(
+		name='id',
+		widget=StringWidget(
+			label="Id",
+			description="The field id",
+			label_msgid='CMFPlomino_label_FieldId',
+			description_msgid='CMFPlomino_help_FieldId',
+			i18n_domain='CMFPlomino',
+		)
+	),
 	StringField(
 		name='FieldType',
 		default="TEXT",
@@ -177,26 +186,6 @@ class PlominoField(BaseContent):
 			else:
 				proper.append(v+'|'+v)
 		return proper
-
-	security.declarePublic('at_post_edit_script')
-	def at_post_edit_script(self):
-		"""Post edit
-		"""
-		if not self.getFieldMode()=="DISPLAY":
-			db = self.getParentDatabase()
-			db.getIndex().createIndex(self.Title())
-
-	security.declarePublic('at_post_create_script')
-	def at_post_create_script(self):
-		"""Post creation
-		"""
-		# replace Title with its normalized equivalent (stored in id)
-		self.setTitle(self.id)
-		self.reindexObject()
-		
-		if not self.getFieldMode()=="DISPLAY":
-			db = self.getParentDatabase()
-			db.getIndex().createIndex(self.Title())
 
 
 registerType(PlominoField, PROJECTNAME)

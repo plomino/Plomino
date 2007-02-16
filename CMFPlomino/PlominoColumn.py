@@ -33,12 +33,12 @@ from Products.CMFPlomino.config import PROJECTNAME
 
 schema = Schema((
 	StringField(
-		name='Label',
+		name='id',
 		widget=StringWidget(
-			label="Label",
-			description="The column label",
-			label_msgid='CMFPlomino_label_ColumnLabel',
-			description_msgid='CMFPlomino_help_ColumnLabel',
+			label="Id",
+			description="Column id",
+			label_msgid='CMFPlomino_label_ColumnId',
+			description_msgid='CMFPlomino_help_ColumnId',
 			i18n_domain='CMFPlomino',
 		)
 	),
@@ -123,7 +123,7 @@ class PlominoColumn(BaseContent):
 	def getColumnName(self):
 		"""get column name
 		"""
-		return self.Title()
+		return self.id
 
 	security.declarePublic('getParentView')
 	def getParentView(self):
@@ -142,10 +142,6 @@ class PlominoColumn(BaseContent):
 	def at_post_create_script(self):
 		"""post create
 		"""
-		# replace Title with its normalized equivalent (stored in id)
-		self.setTitle(self.id)
-		self.reindexObject()
-		
 		v = self.getParentView()
 		v.declareColumn(self.getColumnName(), self)
 

@@ -69,16 +69,16 @@
 
 <span metal:define-macro="LinkAction">
 	<a tal:attributes="href python:plominoaction.executeAction(plominotarget)"
-	    			tal:content="python: plominoaction.Label" />
+	    			tal:content="python: plominoaction.Title()" />
 </span>
 
 <span metal:define-macro="SubmitAction">
-	<input type="submit" class="context" tal:attributes="value python: plominoaction.Label" />
+	<input type="submit" class="context" tal:attributes="value python: plominoaction.Title()" />
 </span>
 
 <span metal:define-macro="ButtonAction">
 	<input class="context" type="button" tal:attributes="onclick python:'location.href=\''+plominoaction.executeAction(plominotarget)+'\'';
-								value python: plominoaction.Label" />
+								value python: plominoaction.Title()" />
 </span>
 
 <span metal:define-macro="CloseAction">

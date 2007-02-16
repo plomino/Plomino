@@ -32,7 +32,16 @@ from Products.CMFPlomino.config import PROJECTNAME
 ##/code-section module-header
 
 schema = Schema((
-
+	StringField(
+		name='id',
+		widget=StringWidget(
+			label="Id",
+			description="The hide-when id",
+			label_msgid='CMFPlomino_label_HideWhenId',
+			description_msgid='CMFPlomino_help_HideWhenId',
+			i18n_domain='CMFPlomino',
+		)
+	),
 	TextField(
 		name='Formula',
 		widget=TextAreaWidget(
@@ -83,15 +92,6 @@ class PlominoHidewhen(BaseContent):
 
 	##code-section class-header #fill in your manual code here
 	##/code-section class-header
-
-	# Methods
-	security.declarePublic('at_post_create_script')
-	def at_post_create_script(self):
-		"""Post creation
-		"""
-		# replace Title with its normalized equivalent (stored in id)
-		self.setTitle(self.id)
-		self.reindexObject()
 
 
 registerType(PlominoHidewhen, PROJECTNAME)

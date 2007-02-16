@@ -223,10 +223,9 @@ class PlominoDocument(ATFolder):
 		self.setItem('Form', form.getFormName())
 
 		# process editable fields (we read the submitted value in the request)
-		for field in form.getFields():
-			f = field.getObject()
+		for f in form.getFields():
 			mode = f.getFieldMode()
-			fieldName = f.Title()
+			fieldName = f.id
 			if mode=="EDITABLE":
 				submittedValue = REQUEST.get(fieldName)
 				if submittedValue is not None:
@@ -258,10 +257,9 @@ class PlominoDocument(ATFolder):
 			form = self.getForm()
 		
 		db=self.getParentDatabase()
-		for field in form.getFields():
-			f = field.getObject()
+		for f in form.getFields():
 			mode = f.getFieldMode()
-			fieldName = f.Title()
+			fieldName = f.id
 			if mode=="COMPUTED" or (mode=="CREATION" and creation):
 				try:
 					result = RunFormula(self, f.getFormula())

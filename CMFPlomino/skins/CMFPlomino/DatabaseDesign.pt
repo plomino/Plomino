@@ -33,11 +33,11 @@
         <dd class="collapsibleContent">
 			<ul>
 			<tal:block tal:repeat="f python:here.getForms()">
-				<li tal:define="fobj python:f.getObject()">
-					<tal:block tal:content="fobj/id">form id</tal:block>
-					<a tal:attributes="href python:f.getURL()+'/base_edit'"><img src="edit.gif" /></a>
-					<a tal:attributes="href python:f.getURL()+'/base_view'"><img src="view.gif" /></a>
-					<a tal:attributes="href python:f.getURL()+'/folder_contents'"><img src="content.gif" /></a>
+				<li>
+					<tal:block tal:content="f/id">form id</tal:block>
+					<a tal:attributes="href python:f.absolute_url_path()+'/base_edit'"><img src="edit.gif" /></a>
+					<a tal:attributes="href python:f.absolute_url_path()+'/base_view'"><img src="view.gif" /></a>
+					<a tal:attributes="href python:f.absolute_url_path()+'/folder_contents'"><img src="content.gif" /></a>
 					<!--Fields list-->
 							<ul>
 													
@@ -45,13 +45,13 @@
 								<li>
 									Fields : 
 								</li>
-								<tal:fieldsforms tal:repeat="fields python:fobj.getFields()">
+								<tal:fieldsforms tal:repeat="fields python:f.getFields()">
 								<ul>
 									
 									<li>
 									<tal:block tal:content="fields/id">Field name</tal:block>
-									<a href="" tal:attributes="href python:fields.getURL()+'/base_edit'"><img src="edit.gif" /></a>
-									<a href="" tal:attributes="href python:fields.getURL()+'/base_view'"><img src="view.gif" /></a>
+									<a href="" tal:attributes="href python:fields.absolute_url_path()+'/base_edit'"><img src="edit.gif" /></a>
+									<a href="" tal:attributes="href python:fields.absolute_url_path()+'/base_view'"><img src="view.gif" /></a>
 									</li>
 								
 								</ul>
@@ -61,7 +61,7 @@
 									Actions : 
 								</li>
 								<ul>
-									<tal:actionsforms tal:repeat="action python:fobj.getActions(None, False)">
+									<tal:actionsforms tal:repeat="action python:f.getActions(None, False)">
 										<li>
 										<tal:block tal:content="action/id">action name</tal:block>
 										<a href="" tal:attributes="href python:action.absolute_url()+'/base_edit'"><img src="edit.gif" /></a>
@@ -79,12 +79,12 @@
         <dt class="collapsibleHeader">Views</dt>
         <dd class="collapsibleContent">
 			<ul>
-			<tal:blockviews tal:repeat="views python:here.getViews()">
-				<li tal:define="view python:views.getObject()">
-					<tal:block tal:content="view/Label|views/Title">view name</tal:block>
-					<a tal:attributes="href python:views.getURL()+'/base_edit'"><img src="edit.gif" /></a>
-					<a tal:attributes="href python:views.getURL()+'/base_view'"><img src="view.gif" /></a>
-					<a tal:attributes="href python:views.getURL()+'/folder_contents'"><img src="content.gif" /></a>
+			<tal:blockviews tal:repeat="view python:here.getViews()">
+				<li>
+					<tal:block tal:content="view/id">view name</tal:block>
+					<a tal:attributes="href python:view.absolute_url_path()+'/base_edit'"><img src="edit.gif" /></a>
+					<a tal:attributes="href python:view.absolute_url_path()+'/base_view'"><img src="view.gif" /></a>
+					<a tal:attributes="href python:view.absolute_url_path()+'/folder_contents'"><img src="content.gif" /></a>
 							<!--View columns-->
 							<ul>
 								<li>

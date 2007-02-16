@@ -176,13 +176,15 @@ class PlominoDatabase(ATFolder, PlominoAccessControl, PlominoDesignManager):
 	def getForms(self):
 		"""return the database forms list
 		"""
-		return self.getFolderContents(contentFilter = {'portal_type' : ['PlominoForm']})
+		list = self.getFolderContents(contentFilter = {'portal_type' : ['PlominoForm']})
+		return [f.getObject() for f in list]
 
 	security.declarePublic('getViews')
 	def getViews(self):
 		"""return the database views list
 		"""
-		return self.getFolderContents(contentFilter = {'portal_type' : ['PlominoView']})
+		list = self.getFolderContents(contentFilter = {'portal_type' : ['PlominoView']})
+		return [v.getObject() for v in list]
 
 	security.declarePublic('getAllDocuments')
 	def getAllDocuments(self):

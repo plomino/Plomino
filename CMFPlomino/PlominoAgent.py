@@ -31,6 +31,16 @@ from Products.CMFPlomino.PlominoUtils import *
 ##/code-section module-header
 
 schema = Schema((
+	StringField(
+		name='id',
+		widget=StringWidget(
+			label="Id",
+			description="The agent id",
+			label_msgid='CMFPlomino_label_AgentId',
+			description_msgid='CMFPlomino_help_AgentId',
+			i18n_domain='CMFPlomino',
+		)
+	),
 	TextField(
 		name='Content',
 		widget=TextAreaWidget(
@@ -96,14 +106,7 @@ class PlominoAgent(BaseContent):
 				REQUEST.RESPONSE.redirect(plominoReturnURL)
 		except Exception, e:
 			return "Error: %s \nCode->\n%s" % (e, self.Content())
-	
-	security.declarePublic('at_post_create_script')
-	def at_post_create_script(self):
-		"""Post creation
-		"""
-		# replace Title with its normalized equivalent (stored in id)
-		self.setTitle(self.id)
-		self.reindexObject()
+
 
 	security.declarePublic('getParentDatabase')
 	def getParentDatabase(self):

@@ -6,7 +6,7 @@
 
 <metal:main fill-slot="main">
     <div id="bodyContent">
-    	<h2 tal:content="here/Label|here/Title">view title</h2>
+    	<h2 tal:content="here/Title">view title</h2>
 		<tal:block tal:define="myF python:here;
 							b myF/ActionBarPosition|nothing">
 			<tal:block
@@ -26,7 +26,7 @@
             <tr>
             <th>&nbsp;&nbsp;</th>
             <tal:block tal:repeat="c columns">
-            	<th tal:condition="not: c/HiddenColumn|nothing">&nbsp;<span tal:content="c/Label|c/Title">Title</span>&nbsp;</th>
+            	<th tal:condition="not: c/HiddenColumn|nothing">&nbsp;<span tal:content="c/Title">Title</span>&nbsp;</th>
             </tal:block>
             </tr>
         <tal:block tal:condition="python:test(here.Categorized)">
@@ -60,8 +60,8 @@
 								<tal:block tal:repeat="c columns">
 									<td tal:condition="not: c/HiddenColumn|nothing">
 										<tal:block tal:condition="python:test(c!=columns[0])">
-											<span tal:define="cname c/Title;
-														vname here/Title;
+											<span tal:define="cname c/id;
+														vname here/id;
 														cvalue python:path('doc/PlominoViewColumn_%s_%s' % (vname, cname))"
 												tal:content="structure cvalue" />
 										</tal:block>
@@ -82,8 +82,8 @@
 							>
 					<td><a href="#" tal:attributes="href doc/getPath">Go</a></td>
 					<tal:block tal:repeat="c columns">
-						<td tal:condition="not: c/HiddenColumn|nothing"><span tal:define="cname c/Title;
-											vname here/Title;
+						<td tal:condition="not: c/HiddenColumn|nothing"><span tal:define="cname c/id;
+											vname here/id;
 											cvalue python:path('doc/PlominoViewColumn_%s_%s' % (vname, cname));
 											"
 									tal:content="structure cvalue" /></td>

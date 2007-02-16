@@ -39,12 +39,12 @@ import PlominoDocument
 
 schema = Schema((
 	StringField(
-		name='Label',
+		name='id',
 		widget=StringWidget(
-			label="Label",
-			description="The view label",
-			label_msgid='CMFPlomino_label_ViewLabel',
-			description_msgid='CMFPlomino_help_ViewLabel',
+			label="Id",
+			description="If changed after creation, refresh database is needed.",
+			label_msgid='CMFPlomino_label_ViewId',
+			description_msgid='CMFPlomino_help_ViewId',
 			i18n_domain='CMFPlomino',
 		)
 	),
@@ -211,7 +211,7 @@ class PlominoView(ATFolder):
 	def getViewName(self):
 		"""Get view name
 		"""
-		return self.Title()
+		return self.id
 
 	security.declarePublic('getParentDatabase')
 	def getParentDatabase(self):
@@ -286,11 +286,6 @@ class PlominoView(ATFolder):
 	def at_post_create_script(self):
 		"""post create
 		"""
-		# replace Title with its normalized equivalent (stored in id)
-		self.setTitle(self.id)
-		self.reindexObject()
-		
-		
 		db = self.getParentDatabase()
 		db.getIndex().createSelectionIndex('PlominoViewFormula_'+self.getViewName())
 

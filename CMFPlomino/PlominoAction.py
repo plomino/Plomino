@@ -33,12 +33,12 @@ from Products.CMFPlomino.PlominoUtils import *
 schema = Schema((
 
 	StringField(
-		name='Label',
+		name='id',
 		widget=StringWidget(
-			label="Label",
-			description="The action name",
-			label_msgid='CMFPlomino_label_Label',
-			description_msgid='CMFPlomino_help_Label',
+			label="Id",
+			description="The action id",
+			label_msgid='CMFPlomino_label_ActionId',
+			description_msgid='CMFPlomino_help_ActionId',
 			i18n_domain='CMFPlomino',
 		)
 	),
@@ -181,14 +181,7 @@ class PlominoAction(BaseContent):
 			REQUEST.RESPONSE.redirect(plominoReturnURL)
 		except Exception, e:
 			return "Error: %s \nCode->\n%s" % (e, self.Content())
-	
-	security.declarePublic('at_post_create_script')
-	def at_post_create_script(self):
-		"""Post creation
-		"""
-		# replace Title with its normalized equivalent (stored in id)
-		self.setTitle(self.id)
-		self.reindexObject()
+
 
 
 registerType(PlominoAction, PROJECTNAME)
