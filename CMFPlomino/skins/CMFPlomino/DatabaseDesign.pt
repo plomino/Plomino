@@ -36,8 +36,8 @@
 				<li>
 					<tal:block tal:content="f/id">form id</tal:block>
 					<a tal:attributes="href python:f.absolute_url_path()+'/base_edit'"><img src="edit.gif" /></a>
-					<a tal:attributes="href python:f.absolute_url_path()+'/base_view'"><img src="view.gif" /></a>
-					<a tal:attributes="href python:f.absolute_url_path()+'/folder_contents'"><img src="content.gif" /></a>
+					<a tal:attributes="href python:f.absolute_url_path()+'/base_view'"><img src="document_icon.gif" /></a>
+					<a tal:attributes="href python:f.absolute_url_path()+'/folder_contents'"><img src="folder_icon.gif" /></a>
 					<!--Fields list-->
 							<ul>
 													
@@ -51,7 +51,7 @@
 									<li>
 									<tal:block tal:content="fields/id">Field name</tal:block>
 									<a href="" tal:attributes="href python:fields.absolute_url_path()+'/base_edit'"><img src="edit.gif" /></a>
-									<a href="" tal:attributes="href python:fields.absolute_url_path()+'/base_view'"><img src="view.gif" /></a>
+									<a href="" tal:attributes="href python:fields.absolute_url_path()+'/base_view'"><img src="document_icon.gif" /></a>
 									</li>
 								
 								</ul>
@@ -65,7 +65,7 @@
 										<li>
 										<tal:block tal:content="action/id">action name</tal:block>
 										<a href="" tal:attributes="href python:action.absolute_url()+'/base_edit'"><img src="edit.gif" /></a>
-										<a href="" tal:attributes="href python:action.absolute_url()+'/base_view'"><img src="view.gif" /></a>
+										<a href="" tal:attributes="href python:action.absolute_url()+'/base_view'"><img src="document_icon.gif" /></a>
 										</li>
 									</tal:actionsforms>
 								</ul>
@@ -83,8 +83,8 @@
 				<li>
 					<tal:block tal:content="view/id">view name</tal:block>
 					<a tal:attributes="href python:view.absolute_url_path()+'/base_edit'"><img src="edit.gif" /></a>
-					<a tal:attributes="href python:view.absolute_url_path()+'/base_view'"><img src="view.gif" /></a>
-					<a tal:attributes="href python:view.absolute_url_path()+'/folder_contents'"><img src="content.gif" /></a>
+					<a tal:attributes="href python:view.absolute_url_path()+'/base_view'"><img src="document_icon.gif" /></a>
+					<a tal:attributes="href python:view.absolute_url_path()+'/folder_contents'"><img src="folder_icon.gif" /></a>
 							<!--View columns-->
 							<ul>
 								<li>
@@ -95,7 +95,7 @@
 									<li>
 									<tal:block tal:content="python:colonne.getColumnName()">column name</tal:block>
 										<a href="" tal:attributes="href python:colonne.absolute_url()+'/base_edit'"><img src="edit.gif" /></a>
-										<a href="" tal:attributes="href python:colonne.absolute_url()+'/base_view'"><img src="view.gif" /></a>
+										<a href="" tal:attributes="href python:colonne.absolute_url()+'/base_view'"><img src="document_icon.gif" /></a>
 									</li>
 								</tal:colonnesviews>
 								</ul>
@@ -108,7 +108,7 @@
 										<li>
 										<tal:block tal:content="action/id">action name</tal:block>
 										<a href="" tal:attributes="href python:action.absolute_url()+'/base_edit'"><img src="edit.gif" /></a>
-										<a href="" tal:attributes="href python:action.absolute_url()+'/base_view'"><img src="view.gif" /></a>
+										<a href="" tal:attributes="href python:action.absolute_url()+'/base_view'"><img src="document_icon.gif" /></a>
 										</li>
 									</tal:actionsviews>
 								</ul>
@@ -131,7 +131,10 @@
 
 
 		
-<hr/><h3>Import design</h3>
+<hr/><h3>Import/Export design</h3>
+<table>
+<tr><th>Import</th><th>Export</th></tr>
+<tr><td valign="top">
 	<form name="ImportDesign" action="importDesign" method="POST">
 	<imput type="hidden" name="mode" value="refresh" />
 		<table tal:define="sourceURL request/sourceURL|nothing;
@@ -173,14 +176,49 @@
 				<input type="submit" name="submit_refresh" class="context" value="Refresh"/>
 				</td>
 			</tr>
-			<tr>
-				<td>Overwrite if element already exists ?</td>
-				<td><input type="radio" name="overwrite" value="yes" />Yes<br/>
-				<input type="radio" name="overwrite" value="no" checked="true" />No</td>
-			</tr>
 			<tr><td><input type="submit" class="context" value="Import" name="submit_import"/></td><td></td></tr>
 		</table>
 	</form>
+</td>
+<td valign="top">
+	<form name="ExportDesign" action="exportDesign" method="POST">
+		<table>
+			<tr>
+				<td>Target URL</td>
+				<td><input type="text" name="targetURL"/></td>
+			</tr>
+			<tr>
+				<td>Username</td>
+				<td><input type="text" name="username"/></td>
+			</tr>
+			<tr>
+				<td>Password</td>
+				<td><input type="password" name="password"/></td>
+			</tr>
+			<tr>
+				<td>Elements</td>
+				<td>
+				<select name="designelements" multiple="true" lines="6">
+					<tal:block tal:repeat="f python:here.getForms()">
+						<option tal:attributes="value f/id;"
+							tal:content="python:f.id+' (Form)'">value</option>
+					</tal:block>
+					<tal:block tal:repeat="v python:here.getViews()">
+						<option tal:attributes="value v/id;"
+							tal:content="python:v.id+' (View)'">value</option>
+					</tal:block>
+					<tal:block tal:repeat="v python:['resources/'+i for i in here.resources.objectIds()]">
+						<option tal:attributes="value v;"
+							tal:content="python:v+' (Resource)'">value</option>
+					</tal:block>
+				</select>
+				</td>
+			</tr>
+			<tr><td><input type="submit" class="context" value="Export" name="submit_export"/></td><td></td></tr>
+		</table>
+	</form>
+</tr>
+</table>
     </metal:main-macro>
     </div>
 

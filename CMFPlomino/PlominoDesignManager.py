@@ -28,9 +28,9 @@ from cStringIO import StringIO
 from Acquisition import *
 ##/code-section module-header
 from OFS.XMLExportImport import *
-import urllib
 import logging
 from PlominoIndex import PlominoIndex
+from HttpUtils import authenticateAndLoadURL, authenticateAndPostToURL
 
 logger = logging.getLogger('Plomino')
 
@@ -79,10 +79,41 @@ class PlominoDesignManager:
 				
 			self.getIndex().indexDocument(d)
 		logger.info('Documents indexed')
-			
+		
 	security.declareProtected(DESIGN_PERMISSION, 'exportDesign')
-	def exportDesign(self, RESPONSE=None,REQUEST=None):
-		"""return object as a .zexp stream 
+	def exportDesign(self, REQUEST=None):
+		"""export design elements from current database to remote database
+		"""
+		targetURL=REQUEST.get('targetURL')
+		username=REQUEST.get('username')
+		password=REQUEST.get('password')
+
+		designelements=REQUEST.get('designelements')
+		overwrite=REQUEST.get('overwrite')
+		if designelements:
+			if type(designelements)==str:
+				designelements=[designelements]
+			for e in designelements:
+				self.exportElementPush(targetURL, e, username, password)
+		REQUEST.RESPONSE.redirect(self.absolute_url()+"/DatabaseDesign")
+
+	security.declareProtected(DESIGN_PERMISSION, 'exportElementPush')
+	def exportElementPush(self, targetURL, path, username, password,):
+		"""send object as a .zexp stream via HTTP multipart POST
+		"""
+		if path.startswith('resources/'):
+			ob=self.resources._getOb(path.split('/')[1])
+			id="resources_"+ob.id
+		else:
+			ob=self._getOb(path)
+			id=ob.id
+		f=StringIO()
+		ob._p_jar.exportFile(ob._p_oid, f)
+		result=authenticateAndPostToURL(targetURL+"/importElementPush", username, password, '%s.%s' % (id, 'zexp'), f.getvalue())
+			
+	security.declareProtected(DESIGN_PERMISSION, 'exportElement')
+	def exportElement(self, RESPONSE=None,REQUEST=None):
+		"""retrieve object as a .zexp stream 
 		"""
 		try:
 			path=REQUEST.get('objpath')
@@ -95,13 +126,13 @@ class PlominoDesignManager:
 		id=ob.id
 		f=StringIO()
 		ob._p_jar.exportFile(ob._p_oid, f)
-		#XMLExportImport.exportXML(ob._p_jar, ob._p_oid, f)
 		if RESPONSE is not None:
 			RESPONSE.setHeader('Content-type','application/data')
 			RESPONSE.setHeader('Content-Disposition',
 					'inline;filename=%s.%s' % (id, 'zexp'))
 			return f.getvalue()
 
+			
 	security.declareProtected(DESIGN_PERMISSION, 'importDesign')
 	def importDesign(self, REQUEST=None):
 		"""import design elements in current database
@@ -112,7 +143,6 @@ class PlominoDesignManager:
 		password=REQUEST.get('password')
 		if submit_import:
 			designelements=REQUEST.get('designelements')
-			overwrite=REQUEST.get('overwrite')
 			if designelements:
 				if type(designelements)==str:
 					designelements=[designelements]
@@ -122,21 +152,38 @@ class PlominoDesignManager:
 					else:
 						container=self
 					if container.hasObject(e):
-						if overwrite=="yes":
-							container.manage_delObjects(e)
-							self.importElement(container, sourceURL, e, username, password)
+						container.manage_delObjects(e)
+						self.importElement(container, sourceURL, e, username, password)
 					else:
 						self.importElement(container, sourceURL, e, username, password)
 				self.refreshDB()
+			REQUEST.RESPONSE.redirect(self.absolute_url()+"/DatabaseDesign")
 		else:
-			REQUEST.RESPONSE.redirect(self.absolute_url()+"/DesignImport?username="+username+"&password="+password+"&sourceURL="+sourceURL)
+			REQUEST.RESPONSE.redirect(self.absolute_url()+"/DatabaseDesign?username="+username+"&password="+password+"&sourceURL="+sourceURL)
 		
 	security.declarePrivate('importElement')
 	def importElement(self, container, sourceURL, path, username, password):
 		"""import an element targeted by sourceURL into container
 		"""
-		f=self.loadPlominoURL(sourceURL+"/exportDesign?objpath="+path, username, password)
+		f=authenticateAndLoadURL(sourceURL+"/exportElement?objpath="+path, username, password)
 		container._importObjectFromFile(f)
+	
+	security.declarePrivate('importElementPush')
+	def importElementPush(self,REQUEST=None):
+		"""import an element received as a multipart HTTP POST
+		"""
+		f=REQUEST.get("file")
+		filename=f.filename
+		if filename.startswith('resources_'):
+			container=self.resources
+			filename=filename.replace('resources_','')
+		else:
+			container=self
+		id=filename.replace('.zexp','')
+		if container.hasObject(id):
+			container.manage_delObjects(id)
+		container._importObjectFromFile(f)
+		self.refreshDB()
 		
 	security.declareProtected(DESIGN_PERMISSION, 'getViewsList')
 	def getViewsList(self):
@@ -172,7 +219,7 @@ class PlominoDesignManager:
 	def getRemoteViews(self, sourceURL, username, password):
 		"""get views ids list from remote database
 		"""
-		views = self.loadPlominoURL(sourceURL+"/getViewsList", username, password).read()
+		views = authenticateAndLoadURL(sourceURL+"/getViewsList", username, password).read()
 		ids = views.split('/')
 		ids.pop()
 		return ids
@@ -181,7 +228,7 @@ class PlominoDesignManager:
 	def getRemoteForms(self, sourceURL, username, password):
 		"""get forms ids list from remote database
 		"""
-		forms = self.loadPlominoURL(sourceURL+"/getFormsList", username, password).read()
+		forms = authenticateAndLoadURL(sourceURL+"/getFormsList", username, password).read()
 		ids = forms.split('/')
 		ids.pop()
 		return ids
@@ -190,15 +237,8 @@ class PlominoDesignManager:
 	def getRemoteResources(self, sourceURL, username, password):
 		"""get resources ids list from remote database
 		"""
-		res = self.loadPlominoURL(sourceURL+"/getResourcesList", username, password).read()
+		res = authenticateAndLoadURL(sourceURL+"/getResourcesList", username, password).read()
 		ids = res.split('/')
 		ids.pop()
 		return ['resources/'+i for i in ids]
-		
-	security.declarePrivate('loadPlominoURL')
-	def loadPlominoURL(self, sourceURL, username, password):
-		"""return URL page content
-		"""
-		sourceURL=sourceURL.replace("http://", "http://"+username+":"+password+"@")
-		f=urllib.urlopen(sourceURL)
-		return f
+
