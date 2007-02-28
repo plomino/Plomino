@@ -56,7 +56,7 @@
 							<tr tal:define="oddrow repeat/doc/odd"
 								tal:attributes="class python:test(oddrow, 'even', 'odd')"
 								>
-								<td><a href="#" tal:attributes="href doc/getPath">Go</a></td>
+								<td><a href="#" tal:attributes="href python:doc.getPath().split('/')[-1]">Go</a></td>
 								<tal:block tal:repeat="c columns">
 									<td tal:condition="not: c/HiddenColumn|nothing">
 										<tal:block tal:condition="python:test(c!=columns[0])">
@@ -80,7 +80,7 @@
 				<tr tal:define="oddrow repeat/doc/odd"
 							tal:attributes="class python:test(oddrow, 'even', 'odd')"
 							>
-					<td><a href="#" tal:attributes="href doc/getPath">Go</a></td>
+					<td><a href="#" tal:attributes="href python:doc.getPath().split('/')[-1]">Go</a></td>
 					<tal:block tal:repeat="c columns">
 						<td tal:condition="not: c/HiddenColumn|nothing"><span tal:define="cname c/id;
 											vname here/id;

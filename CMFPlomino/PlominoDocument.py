@@ -87,11 +87,11 @@ class PlominoDocument(ATFolder):
 	   },
 
 
-	   {'action': "python:here.navigationParent(here)+'/'+here.id+'/EditDocument'",
+	   {'action': "string:${object_url}/EditDocument",
 		'category': "object",
 		'id': 'edit',
 		'name': 'Edit',
-		'permissions': (DESIGN_PERMISSION,),
+		'permissions': (EDIT_PERMISSION,),
 		'condition': 'python:1'
 	   },
 	   
@@ -118,7 +118,7 @@ class PlominoDocument(ATFolder):
 	security.declarePublic('checkBeforeOpenDocument')
 	def checkBeforeOpenDocument(self):
 		"""check read permission and open view  NOTE: if READ_PERMISSION
-		set on the 'view' actionb itself, it causes error 'maximum
+		set on the 'view' action itself, it causes error 'maximum
 		recursion depth exceeded' if user hasn't permission
 		"""
 		if self.checkUserPermission(READ_PERMISSION):
