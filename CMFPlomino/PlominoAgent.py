@@ -29,10 +29,13 @@ from Products.Archetypes.public import *
 from Products.CMFCore import CMFCorePermissions
 from Products.CMFPlomino.PlominoUtils import *
 from AccessControl.SecurityManagement import getSecurityManager, setSecurityManager
-from Products.TimerService import *
 from zLOG import LOG, ERROR
 from ZODB.PersistentMapping import PersistentMapping
 from types import IntType, ListType, NoneType, TupleType, StringType
+try:
+	from Products.TimerService import *
+except Exception, e:
+	pass
 ##/code-section module-header
 
 INTERVAL = 1
