@@ -28,7 +28,6 @@ from Products.CMFPlomino.config import *
 from Products.Archetypes.public import *
 from Products.CMFCore import CMFCorePermissions
 from AccessControl import ClassSecurityInfo
-from Products.CMFCore.utils import getToolByName
 from Globals import InitializeClass
 
 from Products.ZCatalog.ZCatalog import LOG
@@ -115,6 +114,18 @@ class PlominoIndex(UniqueObject, ZCatalog, ActionProviderBase):
 		"""
 		try:
 			self._catalog.addIndex(fieldname,PlominoColumnIndex(fieldname))
+			self.addColumn(fieldname)
+		except CatalogError:
+			# index already exists
+			pass
+		self.refreshCatalog()
+		
+	security.declareProtected(CMFCorePermissions.View, 'createFieldIndex')
+	def createFieldIndex(self,fieldname):
+		"""
+		"""
+		try:
+			self.addIndex(fieldname, 'KeywordIndex')
 			self.addColumn(fieldname)
 		except CatalogError:
 			# index already exists
