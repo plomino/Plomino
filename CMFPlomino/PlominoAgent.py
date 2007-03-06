@@ -28,7 +28,7 @@ from Products.CMFPlomino.config import *
 from Products.Archetypes.public import *
 from Products.CMFCore import CMFCorePermissions
 from Products.CMFPlomino.PlominoUtils import *
-from AccessControl.SecurityManagement import getSecurityManager, setSecurityManager
+from AccessControl.SecurityManagement import getSecurityManager, setSecurityManager, newSecurityManager
 from zLOG import LOG, ERROR
 from ZODB.PersistentMapping import PersistentMapping
 from types import IntType, ListType, NoneType, TupleType, StringType
@@ -94,9 +94,9 @@ schema = Schema((
 		)
 	),
 	StringField(
-		name='user',
+		name='AgentUser',
 		widget=StringWidget(
-			label="User",
+			label="AgentUser",
 			description="The run agent user",
 			label_msgid='CMFPlomino_label_AgentUser',
 			description_msgid='CMFPlomino_help_AgentUser',
@@ -225,11 +225,9 @@ class PlominoAgent(BaseContent):
 	def runAgent(self,REQUEST=None):
 		"""execute the python code
 		"""
-		#self._proxy_roles = ('PlominoManager',)
-		#acl = self.acl_users
-		#setSecurityManager(acl.getUserById('caro1', None))
-		#user = self.getUser()
-		#LOG("TESTAGENT", ERROR, user)
+
+		acl = self.acl_users
+		newSecurityManager(None, acl.getUserById(str(self.AgentUser), None))
 
 		plominoContext = self
 		plominoReturnURL = self.getParentDatabase().absolute_url()
@@ -277,7 +275,9 @@ class PlominoAgent(BaseContent):
 				if (self.dow == "*") or (str(dowc) == self.dow):
 					if (self.hour == "*") or (str(hourc) == self.hour):
 						if (self.minute == "*") or (str(minutec) == self.minute):
+							LOG('PlominoScheduler', ERROR, 'minute %s=%s OK' % (str(minutec),self.minute))
 							return 1
+		LOG('PlominoScheduler', ERROR, 'minute KO')
 		return 0
 
 	security.declareProtected( Permissions.manage_properties, 'deactivate' )
@@ -303,7 +303,8 @@ class PlominoAgent(BaseContent):
 		LOG('PlominoScheduler', ERROR,'Process timer tick at %s\n'%tick)
 
 		# decide process task or not
-		date = DateTime('%s/%s/%s %s:%s:00'%(year, month, day, hour, ('%0.2ds'%minute)[0]+'0'))
+		#date = DateTime('%s/%s/%s %s:%s:00'%(year, month, day, hour, ('%0.2ds'%minute)[0]+'0'))
+		date = DateTime('%s/%s/%s %s:%s:00'%(year, month, day, hour, minute))
 		prev_delta = date - prev_tick
 		#LOG('PlominoScheduler', ERROR,'prev_delta = %s\n'%prev_delta)
 		#LOG('PlominoScheduler', ERROR,'prev_tick = %s\n'%prev_tick)
@@ -312,7 +313,8 @@ class PlominoAgent(BaseContent):
 				return
 		else:
 			#LOG('PlominoScheduler', ERROR,'interval = %s\n'%INTERVAL)
-			date = DateTime('%s/%s/%s %s:%s:00'%(year, month, day, hour, ('%0.2ds'%(minute+INTERVAL))[0]+'0'))
+			#date = DateTime('%s/%s/%s %s:%s:00'%(year, month, day, hour, ('%0.2ds'%(minute+INTERVAL))[0]+'0'))
+			date = DateTime('%s/%s/%s %s:%s:00'%(year, month, day, hour, (minute+INTERVAL)))
 			#LOG('PlominoScheduler', ERROR,'Process timer date2 at %s\n'%date)
 			next_delta = next_tick - date
 			if next_delta > 0:
