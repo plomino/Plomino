@@ -153,10 +153,12 @@ class PlominoDesignManager:
 				for e in designelements:
 					if 'resources/' in e:
 						container=self.resources
+						eid=e.replace('resources/','')
 					else:
 						container=self
-					if container.hasObject(e):
-						container.manage_delObjects(e)
+						eid=e
+					if container.hasObject(eid):
+						container.manage_delObjects(eid)
 						self.importElement(container, sourceURL, e, username, password)
 					else:
 						self.importElement(container, sourceURL, e, username, password)
