@@ -275,9 +275,9 @@ class PlominoAgent(BaseContent):
 				if (self.dow == "*") or (str(dowc) == self.dow):
 					if (self.hour == "*") or (str(hourc) == self.hour):
 						if (self.minute == "*") or (str(minutec) == self.minute):
-							LOG('PlominoScheduler', ERROR, 'minute %s=%s OK' % (str(minutec),self.minute))
+							#LOG('PlominoScheduler', ERROR, 'minute %s=%s OK' % (str(minutec),self.minute))
 							return 1
-		LOG('PlominoScheduler', ERROR, 'minute KO')
+		#LOG('PlominoScheduler', ERROR, 'minute KO')
 		return 0
 
 	security.declareProtected( Permissions.manage_properties, 'deactivate' )
