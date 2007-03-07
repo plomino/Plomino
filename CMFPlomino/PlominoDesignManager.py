@@ -67,6 +67,10 @@ class PlominoDesignManager:
 			self.getIndex().createSelectionIndex('PlominoViewFormula_'+v_obj.getViewName())
 			for c in v_obj.getColumns():
 				v_obj.declareColumn(c.getColumnName(), c)
+		for f_obj in self.getForms() :
+			for f in f_obj.getFields() :
+				if f.deliverable :
+					self.getIndex().createFieldIndex(f.id)
 		logger.info('Index structure initialized')
 		
 		#reindex all the documents

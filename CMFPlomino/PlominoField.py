@@ -41,6 +41,17 @@ schema = Schema((
 			i18n_domain='CMFPlomino',
 		)
 	),
+	BooleanField(
+		name='tobeindexed',
+		default="0",
+		widget=BooleanWidget(
+			label="Add to index",
+			description="The field have to be added in Index",
+			label_msgid='CMFPlomino_label_FieldIndex',
+			description_msgid='CMFPlomino_help_FieldIndex',
+			i18n_domain='CMFPlomino',
+		)
+	),
 	StringField(
 		name='FieldType',
 		default="TEXT",
@@ -187,6 +198,21 @@ class PlominoField(BaseContent):
 				proper.append(v+'|'+v)
 		return proper
 
+	security.declarePublic('at_post_edit_script')
+	def at_post_edit_script(self):
+		"""post edit
+		"""
+		db = self.getParentDatabase()
+		if self.deliverable :
+			db.getIndex().createFieldIndex(self.id)
+
+	security.declarePublic('at_post_create_script')
+	def at_post_create_script(self):
+		"""post create
+		"""
+		db = self.getParentDatabase()
+		if self.deliverable :
+			db.getIndex().createFieldIndex(self.id)
 
 registerType(PlominoField, PROJECTNAME)
 # end of class PlominoField
