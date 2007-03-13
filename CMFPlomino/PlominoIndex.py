@@ -26,7 +26,6 @@ from Products.CMFPlomino.config import *
 
 ##code-section module-header #fill in your manual code here
 from Products.Archetypes.public import *
-from Products.CMFCore import CMFCorePermissions
 from AccessControl import ClassSecurityInfo
 from Globals import InitializeClass
 
@@ -102,13 +101,13 @@ class PlominoIndex(UniqueObject, ZCatalog, ActionProviderBase):
 		ZCatalog.__init__(self, self.getId())
 		self._catalog = PlominoCatalog()
 
-	security.declareProtected(CMFCorePermissions.View, 'getParentDatabase')
+	security.declareProtected(READ_PERMISSION, 'getParentDatabase')
 	def getParentDatabase(self):
 		"""
 		"""
 		return self.getParentNode()
 
-	security.declareProtected(CMFCorePermissions.View, 'createIndex')
+	security.declareProtected(DESIGN_PERMISSION, 'createIndex')
 	def createIndex(self,fieldname):
 		"""
 		"""
@@ -120,7 +119,7 @@ class PlominoIndex(UniqueObject, ZCatalog, ActionProviderBase):
 			pass
 		self.refreshCatalog()
 		
-	security.declareProtected(CMFCorePermissions.View, 'createFieldIndex')
+	security.declareProtected(DESIGN_PERMISSION, 'createFieldIndex')
 	def createFieldIndex(self,fieldname):
 		"""
 		"""
@@ -132,7 +131,7 @@ class PlominoIndex(UniqueObject, ZCatalog, ActionProviderBase):
 			pass
 		self.refreshCatalog()
 		
-	security.declareProtected(CMFCorePermissions.View, 'createSelectionIndex')
+	security.declareProtected(DESIGN_PERMISSION, 'createSelectionIndex')
 	def createSelectionIndex(self,fieldname):
 		"""
 		"""
@@ -143,7 +142,7 @@ class PlominoIndex(UniqueObject, ZCatalog, ActionProviderBase):
 			pass
 		self.refreshCatalog()
 
-	security.declareProtected(CMFCorePermissions.View, 'deleteIndex')
+	security.declareProtected(DESIGN_PERMISSION, 'deleteIndex')
 	def deleteIndex(self,fieldname):
 		"""
 		"""
@@ -151,13 +150,13 @@ class PlominoIndex(UniqueObject, ZCatalog, ActionProviderBase):
 		self.delColumn(fieldname)
 		self.refreshCatalog()
 
-	security.declareProtected(CMFCorePermissions.View, 'indexDocument')
+	security.declareProtected(READ_PERMISSION, 'indexDocument')
 	def indexDocument(self,doc):
 		"""
 		"""
 		self.catalog_object(doc, doc.absolute_url_path())
 
-	security.declarePublic('unindexDocument')
+	security.declareProtected(READ_PERMISSION, 'unindexDocument')
 	def unindexDocument(self,doc):
 		"""
 		"""
@@ -169,13 +168,13 @@ class PlominoIndex(UniqueObject, ZCatalog, ActionProviderBase):
 		"""
 		self.refreshCatalog()
 
-	security.declarePublic('dbsearch')
+	security.declareProtected(READ_PERMISSION, 'dbsearch')
 	def dbsearch(self,request,sortindex,reverse=0):
 		"""
 		"""
 		return self.search(request, sortindex, reverse)
 
-	security.declarePublic('getKeyUniqueValues')
+	security.declareProtected(READ_PERMISSION, 'getKeyUniqueValues')
 	def getKeyUniqueValues(self,key):
 		"""
 		"""

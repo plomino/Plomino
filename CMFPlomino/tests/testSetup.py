@@ -8,24 +8,36 @@ if __name__ == '__main__':
 
 from Products.PloneTestCase import PloneTestCase
 
-PloneTestCase.installProduct('CMFPlomino')
 PloneTestCase.setupPloneSite()
+PloneTestCase.installProduct('CMFPlomino')
 
-
-class TestPlominoDatabase(PloneTestCase.PloneTestCase):
+class TestPlominoInstall(PloneTestCase.PloneTestCase):
 
     def afterSetUp(self):
-        self.folder.invokeFactory('PlominoDatabase', 'db')
+        self.setRoles(['Manager'])
+        self.portal.portal_quickinstaller.installProduct('CMFPlomino')
+        self.types = ("PlominoDatabase",
+            "PlominoAction",
+            "PlominoAgent",
+            "PlominoForm",
+            "PlominoField",
+            "PlominoView",
+            "PlominoColumn",
+            "PlominoDocument",
+            "PlominoHidewhen",
+            "PlominoAccessControl",
+            )
 
-    def testDefaultAuthenticatedAccessRight(self):
-        # Test something
-        self.assertEqual(db.AuthenticatedAccessRight, 'NoAccess')
+    def testTypesInstalled(self):
+        for t in self.types:
+            self.failUnless(t in self.portal.portal_types.objectIds(),
+                            '%s content type not installed' % t)
 
 
 def test_suite():
     from unittest import TestSuite, makeSuite
     suite = TestSuite()
-    suite.addTest(makeSuite(TestPlominoDatabase))
+    suite.addTest(makeSuite(TestPlominoInstall))
     return suite
 
 if __name__ == '__main__':

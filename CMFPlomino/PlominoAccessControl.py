@@ -26,7 +26,7 @@ from Products.ATContentTypes.content.folder import ATFolder
 from Products.CMFPlomino.config import *
 
 ##code-section module-header #fill in your manual code here
-from Products.CMFCore import CMFCorePermissions
+from Products.CMFCore import permissions
 from AccessControl.PermissionRole import rolesForPermissionOn
 from AccessControl import getSecurityManager
 from Products.CMFCore.utils import getToolByName
@@ -77,25 +77,25 @@ class PlominoAccessControl(ATFolder):
 	"NoAccess" : [],
 	"PlominoReader" : [
 		READ_PERMISSION,
-		CMFCorePermissions.View],
+		permissions.View],
 	"PlominoAuthor" : [
 		READ_PERMISSION,
 		EDIT_PERMISSION,
 		REMOVE_PERMISSION,
 		CREATE_PERMISSION,
 		ADD_CONTENT_PERMISSION,
-		CMFCorePermissions.View,
-		CMFCorePermissions.AddPortalContent,
-		CMFCorePermissions.ModifyPortalContent],
+		permissions.View,
+		permissions.AddPortalContent,
+		permissions.ModifyPortalContent],
 	"PlominoEditor" : [
 		READ_PERMISSION,
 		EDIT_PERMISSION,
 		REMOVE_PERMISSION,
 		CREATE_PERMISSION,
 		ADD_CONTENT_PERMISSION,
-		CMFCorePermissions.View,
-		CMFCorePermissions.AddPortalContent,
-		CMFCorePermissions.ModifyPortalContent],
+		permissions.View,
+		permissions.AddPortalContent,
+		permissions.ModifyPortalContent],
 	"PlominoDesigner" : [
 		READ_PERMISSION,
 		EDIT_PERMISSION,
@@ -104,9 +104,9 @@ class PlominoAccessControl(ATFolder):
 		DESIGN_PERMISSION,
 		ADD_CONTENT_PERMISSION,
 		ADD_DESIGN_PERMISSION,
-		CMFCorePermissions.View,
-		CMFCorePermissions.AddPortalContent,
-		CMFCorePermissions.ModifyPortalContent],
+		permissions.View,
+		permissions.AddPortalContent,
+		permissions.ModifyPortalContent],
 	"PlominoManager" : [
 		READ_PERMISSION,
 		EDIT_PERMISSION,
@@ -116,9 +116,9 @@ class PlominoAccessControl(ATFolder):
 		ADD_CONTENT_PERMISSION,
 		ADD_DESIGN_PERMISSION,
 		ACL_PERMISSION,
-		CMFCorePermissions.View,
-		CMFCorePermissions.AddPortalContent,
-		CMFCorePermissions.ModifyPortalContent]
+		permissions.View,
+		permissions.AddPortalContent,
+		permissions.ModifyPortalContent]
 	}
 	##/code-section class-header
 
@@ -280,7 +280,7 @@ class PlominoAccessControl(ATFolder):
 		self.setPlominoPermissions("Authenticated", authenticatedaccessright)
 		REQUEST.RESPONSE.redirect('./DatabaseACL')
 
-	security.declarePublic('addPlominoUserRole')
+	security.declareProtected(ACL_PERMISSION, 'addPlominoUserRole')
 	def addPlominoUserRole(self,REQUEST):
 		"""add a user role in the ACL
 		"""
@@ -294,7 +294,7 @@ class PlominoAccessControl(ATFolder):
 			self.UserRoles = roles
 		REQUEST.RESPONSE.redirect('./DatabaseACL')
 
-	security.declarePublic('removePlominoUserRole')
+	security.declareProtected(ACL_PERMISSION, 'removePlominoUserRole')
 	def removePlominoUserRole(self,REQUEST):
 		"""remove a user role from the ACL
 		"""
@@ -305,7 +305,7 @@ class PlominoAccessControl(ATFolder):
 			self.UserRoles = roles
 		REQUEST.RESPONSE.redirect('./DatabaseACL')
 
-	security.declarePublic('addPlominoRoleToUser')
+	security.declareProtected(ACL_PERMISSION, 'addPlominoRoleToUser')
 	def addPlominoRoleToUser(self,REQUEST):
 		"""give a role to a user
 		"""
@@ -319,7 +319,7 @@ class PlominoAccessControl(ATFolder):
 			self.UserRoles = roles
 		REQUEST.RESPONSE.redirect('./DatabaseACL')
 
-	security.declarePublic('removePlominoRoleFromUser')
+	security.declareProtected(ACL_PERMISSION, 'removePlominoRoleFromUser')
 	def removePlominoRoleFromUser(self,REQUEST):
 		"""
 		"""

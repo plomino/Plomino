@@ -30,7 +30,7 @@ __docformat__ = 'plaintext'
 # AppConfig.py in your product's root directory. This will be included
 # in this file if found.
 
-from Products.CMFCore.CMFCorePermissions import setDefaultRoles
+from Products.CMFCore.permissions import setDefaultRoles
 ##code-section config-head #fill in your manual code here
 ##/code-section config-head
 

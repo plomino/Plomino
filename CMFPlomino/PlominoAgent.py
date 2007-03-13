@@ -26,7 +26,6 @@ from Products.CMFPlomino.config import *
 
 ##code-section module-header #fill in your manual code here
 from Products.Archetypes.public import *
-from Products.CMFCore import CMFCorePermissions
 from Products.CMFPlomino.PlominoUtils import *
 from AccessControl.SecurityManagement import getSecurityManager, setSecurityManager, newSecurityManager
 from zLOG import LOG, ERROR
@@ -221,7 +220,7 @@ class PlominoAgent(BaseContent):
 		self.deactivate()
 		self.activate()
 
-	security.declareProtected(CMFCorePermissions.View, 'runAgent')
+	security.declareProtected(READ_PERMISSION, 'runAgent')
 	def runAgent(self,REQUEST=None):
 		"""execute the python code
 		"""

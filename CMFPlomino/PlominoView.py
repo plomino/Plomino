@@ -27,7 +27,6 @@ from Products.CMFPlomino.config import *
 
 ##code-section module-header #fill in your manual code here
 from Products.Archetypes.public import *
-from Products.CMFCore import CMFCorePermissions
 from AccessControl import Unauthorized
 from Products.CMFCore.utils import getToolByName
 from Acquisition import aq_parent

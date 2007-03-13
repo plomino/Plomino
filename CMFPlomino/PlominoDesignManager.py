@@ -23,7 +23,6 @@ __docformat__ = 'plaintext'
 from Products.CMFPlomino.config import *
 
 ##code-section module-header #fill in your manual code here
-from Products.CMFCore import CMFCorePermissions
 from cStringIO import StringIO
 from Acquisition import *
 ##/code-section module-header

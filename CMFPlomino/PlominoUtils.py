@@ -23,7 +23,13 @@ __docformat__ = 'plaintext'
 from DateTime import DateTime
 from time import strptime
 from Products.CMFCore.utils import getToolByName
-import sys
+from Acquisition import *
+import ExtensionClass
+import logging
+#from zope.security.untrustedpython.interpreter import RestrictedInterpreter
+#from zope.security.checker import ProxyFactory
+
+logger = logging.getLogger('Plomino')
 
 def DateToString(d, format='%d/%m/%Y'):
 	"""return the date as string using the given format, default is '%d/%m/%Y'
@@ -53,9 +59,40 @@ def RunFormula(obj, formula):
 	"""
 	result = None
 	if not(formula=="" or formula is None):
+		# get the parent portal and get a safe proxy
+		for o in obj.aq_chain:
+			if type(aq_self(o)).__name__=='PloneSite':
+				safeparentportal=SafeProxy(o)
+				#safeparentportal = ProxyFactory(o)
+		#obj=safeparentportal.restrictedTraverse(obj.absolute_url_path())
+		# we cut all acquisition up to the parent db node 
+		if type(aq_self(obj)).__name__=='PlominoDatabase':
+			obj=aq_base(obj).__of__(safeparentportal)
+		else:
+			db = None
+			for o in obj.aq_chain:
+				if type(aq_self(o)).__name__=='PlominoDatabase':
+					parentdb=o
+			db = aq_base(parentdb)
+			db = db.__of__(safeparentportal)
+			obj=aq_base(obj).__of__(db)
+		safeobj=obj
+#		chain=obj.aq_chain
+#		chain.reverse()
+#		safeobj=None
+#		for o in chain:
+#			if type(aq_self(o)).__name__.startswith('Plomino'):
+#				currentobj=aq_base(o)
+#			else:
+#				currentobj=ProxyFactory(aq_base(o))
+#			if safeobj==None:
+#				safeobj=currentobj
+#			else:
+#				safeobj=currentobj.__of__(safeobj)
+		
 		# plominoDocument and plominoContext are the reserved names used in formulas
-		plominoContext = obj
-		plominoDocument = obj
+		plominoContext = safeobj
+		plominoDocument = safeobj
 		try:
 			exec "result = "+formula
 		except Exception:
@@ -68,10 +105,10 @@ def RunFormula(obj, formula):
 				exec indented_formula
 				result = plominoFormula(plominoDocument, plominoContext)
 			except Exception, e:
-				type, value = sys.exc_info()[:2]
-				msg="Plomino formula error: "+str(type)+": "+str(value)
+				msg="Plomino formula error: "+str(e)
 				msg=msg+"\nin code:\n"+indented_formula
 				msg=msg+"\nwith context:"+str(obj)
+				logger.error(msg)
 				raise
 	return result
 
@@ -121,4 +158,17 @@ def importPlominoScript(obj, scriptname):
 	sc=obj.resources._getOb(scriptname)
 	return str(sc)
 	
+class SafeProxy(object, ExtensionClass.Base):
+	def __init__(self, obj):
+		super(SafeProxy, self).__init__(obj)
+		self.__dict__['_obj'] = obj
+	def __getattr__(self, attr):
+		whitelist=['portal_membership', 'MailHost']
+		if attr in whitelist:
+			return getattr(self._obj, attr)
+		else:
+			raise AttributeError, "object is read-only"
+		
+	def __setattr__(self, attr, val):
+		raise AttributeError, "object is read-only" 
 	

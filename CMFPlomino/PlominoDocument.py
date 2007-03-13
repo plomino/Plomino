@@ -28,7 +28,6 @@ from Products.CMFPlomino.config import *
 
 ##code-section module-header #fill in your manual code here
 from Products.Archetypes.public import *
-from Products.CMFCore import CMFCorePermissions
 from AccessControl import Unauthorized
 from time import strptime
 from DateTime import DateTime
@@ -366,7 +365,7 @@ class PlominoDocument(ATFolder):
 			#raise AttributeError, name
 			return BaseObject.__getattr__(self, name)
 
-	security.declareProtected("READ_PERMISSION", 'isSelectedInView')
+	security.declareProtected(READ_PERMISSION, 'isSelectedInView')
 	def isSelectedInView(self,viewname):
 		"""
 		"""
@@ -378,7 +377,7 @@ class PlominoDocument(ATFolder):
 			result = False
 		return result
 
-	security.declareProtected("READ_PERMISSION", 'computeColumnValue')
+	security.declareProtected(READ_PERMISSION, 'computeColumnValue')
 	def computeColumnValue(self,viewname,columnname):
 		"""
 		"""

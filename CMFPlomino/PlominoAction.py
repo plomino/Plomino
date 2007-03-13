@@ -26,7 +26,6 @@ from Products.CMFPlomino.config import *
 
 ##code-section module-header #fill in your manual code here
 from Products.Archetypes.public import *
-from Products.CMFCore import CMFCorePermissions
 from Products.CMFPlomino.PlominoUtils import *
 ##/code-section module-header
 
@@ -144,7 +143,7 @@ class PlominoAction(BaseContent):
 
 	# Methods
 
-	security.declareProtected(CMFCorePermissions.View, 'executeAction')
+	security.declareProtected(READ_PERMISSION, 'executeAction')
 	def executeAction(self,target):
 		"""return the action resulting url
 		"""
@@ -166,7 +165,7 @@ class PlominoAction(BaseContent):
 		else:
 			return '.'
 
-	security.declareProtected(CMFCorePermissions.View, 'runScript')
+	security.declareProtected(READ_PERMISSION, 'runScript')
 	def runScript(self,REQUEST):
 		"""execute the python code
 		"""
