@@ -59,36 +59,42 @@ def RunFormula(obj, formula):
 	"""
 	result = None
 	if not(formula=="" or formula is None):
+		# does code look dangerous ?
+		dangerous=['_PlominoWrappedObj', '__dict__']
+		for w in dangerous:
+			if w in formula:
+				raise AttributeError, w+" not authorized in Plomino formula context"
+
 		# get the parent portal and get a safe proxy
 		for o in obj.aq_chain:
 			if type(aq_self(o)).__name__=='PloneSite':
 				safeparentportal=SafeProxy(o)
-				#safeparentportal = ProxyFactory(o)
-		#obj=safeparentportal.restrictedTraverse(obj.absolute_url_path())
+
 		# we cut all acquisition up to the parent db node 
-		if type(aq_self(obj)).__name__=='PlominoDatabase':
-			obj=aq_base(obj).__of__(safeparentportal)
-		else:
-			db = None
-			for o in obj.aq_chain:
-				if type(aq_self(o)).__name__=='PlominoDatabase':
-					parentdb=o
-			db = aq_base(parentdb)
-			db = db.__of__(safeparentportal)
-			obj=aq_base(obj).__of__(db)
-		safeobj=obj
-#		chain=obj.aq_chain
-#		chain.reverse()
-#		safeobj=None
-#		for o in chain:
-#			if type(aq_self(o)).__name__.startswith('Plomino'):
-#				currentobj=aq_base(o)
-#			else:
-#				currentobj=ProxyFactory(aq_base(o))
-#			if safeobj==None:
-#				safeobj=currentobj
-#			else:
-#				safeobj=currentobj.__of__(safeobj)
+#		if type(aq_self(obj)).__name__=='PlominoDatabase':
+#			obj=aq_base(obj).__of__(safeparentportal)
+#		else:
+#			db = None
+#			for o in obj.aq_chain:
+#				if type(aq_self(o)).__name__=='PlominoDatabase':
+#					parentdb=o
+#			db = aq_base(parentdb)
+#			db = db.__of__(safeparentportal)
+#			obj=aq_base(obj).__of__(db)
+#		safeobj=obj
+		
+		chain=obj.aq_chain
+		chain.reverse()
+		safeobj=None
+		for o in chain:
+			if type(aq_self(o)).__name__.startswith('Plomino'):
+				currentobj=aq_base(o)
+			else:
+				currentobj=SafeProxy(aq_base(o))
+			if safeobj==None:
+				safeobj=currentobj
+			else:
+				safeobj=currentobj.__of__(safeobj)
 		
 		# plominoDocument and plominoContext are the reserved names used in formulas
 		plominoContext = safeobj
@@ -158,17 +164,31 @@ def importPlominoScript(obj, scriptname):
 	sc=obj.resources._getOb(scriptname)
 	return str(sc)
 	
-class SafeProxy(object, ExtensionClass.Base):
+class SafeProxy(ExtensionClass.Base):
 	def __init__(self, obj):
-		super(SafeProxy, self).__init__(obj)
-		self.__dict__['_obj'] = obj
+		self.__dict__['_PlominoWrappedObj'] = obj
+		
 	def __getattr__(self, attr):
-		whitelist=['portal_membership', 'MailHost']
-		if attr in whitelist:
-			return getattr(self._obj, attr)
+		attributes_whitelist=['portal_membership', 'MailHost', 'plone_utils']
+		methods_whitelist=['getMemberById',
+						   'getProperty',
+						   'getPhysicalPath',
+						   'getAuthenticatedMember',
+						   'getMemberId',
+						   'getUserName',
+						   'getSiteEncoding',
+						   'secureSend',
+						   '__of__']
+		if attr in attributes_whitelist:
+			return SafeProxy(getattr(aq_self(self._PlominoWrappedObj), attr))
+		elif attr in methods_whitelist:
+			return lambda *args, **kwargs : self.methodWrapper(getattr(aq_self(self._PlominoWrappedObj), attr), args, kwargs)
 		else:
-			raise AttributeError, "object is read-only"
+			raise AttributeError, attr+" not allowed in Plomino formula context"
 		
 	def __setattr__(self, attr, val):
-		raise AttributeError, "object is read-only" 
-	
+		raise AttributeError, attr+" not allowed in Plomino formula context"
+		
+	def methodWrapper(self, func, args, kwargs):
+		return func(*args, **kwargs)
+		
