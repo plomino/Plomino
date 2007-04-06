@@ -92,7 +92,12 @@ class PlominoHidewhen(BaseContent):
 	##code-section class-header #fill in your manual code here
 	##/code-section class-header
 
-
+	security.declarePublic('at_post_edit_script')
+	def at_post_edit_script(self):
+		"""post edit
+		"""
+		self.cleanFormulaScripts("hidewhen_"+self.getParentNode().id+"_"+self.id)
+		
 registerType(PlominoHidewhen, PROJECTNAME)
 # end of class PlominoHidewhen
 

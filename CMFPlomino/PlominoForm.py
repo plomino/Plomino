@@ -28,7 +28,6 @@ from Products.CMFPlomino.config import *
 ##code-section module-header #fill in your manual code here
 from Products.Archetypes.public import *
 from Products.Archetypes.utils import make_uuid
-from Products.CMFPlomino.PlominoUtils import *
 from ZPublisher.HTTPResponse import HTTPResponse
 
 import re
@@ -184,7 +183,8 @@ class PlominoForm(ATFolder):
 
 		# execute the onCreateDocument code of the form
 		try:
-			RunFormula(doc, self.getOnCreateDocument())
+			#RunFormula(doc, self.getOnCreateDocument())
+			self.runFormulaScript("form_"+self.id+"_oncreate", doc, self.getOnCreateDocument)
 		except Exception:
 			pass
 			
@@ -248,7 +248,8 @@ class PlominoForm(ATFolder):
 
 		if mode=="DISPLAY" or mode=="COMPUTED":
 			try:
-				fieldValue = RunFormula(doc, field.getFormula())
+				#fieldValue = RunFormula(doc, field.getFormula())
+				fieldValue = self.runFormulaScript("field_"+self.id+"_"+field.id+"_formula", doc, field.getFormula)
 			except Exception:
 				fieldValue = ""
 		
@@ -256,7 +257,8 @@ class PlominoForm(ATFolder):
 			if creation:
 				# Note: on creation, there is no doc, we use self as param
 				# in formula
-				fieldValue = RunFormula(self, field.getFormula())
+				#fieldValue = RunFormula(self, field.getFormula())
+				fieldValue = self.runFormulaScript("field_"+self.id+"_"+field.id+"_formula", self, field.getFormula)
 			else:
 				fieldValue = doc.getItem(fieldName)
 			
@@ -298,7 +300,8 @@ class PlominoForm(ATFolder):
 		for hidewhen in self.getHidewhenFormulas():
 			hidewhenName = hidewhen.id
 			try:
-				result = RunFormula(doc, hidewhen.getFormula())
+				#result = RunFormula(doc, hidewhen.getFormula())
+				result = self.runFormulaScript("hidewhen_"+self.id+"_"+hidewhen.id+"_formula", doc, hidewhen.getFormula)
 			except Exception:
 				#if error, we hide anyway
 				result = True
@@ -352,7 +355,8 @@ class PlominoForm(ATFolder):
 			obj_a=a.getObject()
 			if hide:
 				try:
-					result = RunFormula(target, obj_a.getHidewhen())
+					#result = RunFormula(target, obj_a.getHidewhen())
+					result = self.runFormulaScript("action_"+self.id+"_"+obj_a.id+"_hidewhen", target, obj_a.getHidewhen)
 				except Exception:
 					#if error, we hide anyway
 					result = True
@@ -366,6 +370,7 @@ class PlominoForm(ATFolder):
 	def at_post_edit_script(self):
 		"""clean up the layout before saving
 		"""
+		self.cleanFormulaScripts("form_"+self.id)
 		# clean up the form layout field
 		html_content = self.getField('FormLayout').get(self, mimetype='text/html')
 		regexp = '<span class="plominoFieldClass"></span>'

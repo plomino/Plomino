@@ -26,7 +26,6 @@ from Products.CMFPlomino.config import *
 
 ##code-section module-header #fill in your manual code here
 from Products.Archetypes.public import *
-from Products.CMFPlomino.PlominoUtils import *
 ##/code-section module-header
 
 schema = Schema((
@@ -176,12 +175,17 @@ class PlominoAction(BaseContent):
 			plominoContext = self.getParentDatabase()._getOb(target)
 		plominoReturnURL = plominoContext.absolute_url()
 		try:
-			RunFormula(plominoContext, self.Content())
+			#RunFormula(plominoContext, "action_"+self.getParentNode().id+"_"+self.id, self.Content())
+			self.runFormulaScript("action_"+self.getParentNode().id+"_"+self.id+"_script", plominoContext, self.Content)
 			REQUEST.RESPONSE.redirect(plominoReturnURL)
 		except Exception, e:
 			return "Error: %s \nCode->\n%s" % (e, self.Content())
-
-
+		
+	security.declarePublic('at_post_edit_script')
+	def at_post_edit_script(self):
+		"""post edit
+		"""
+		self.cleanFormulaScripts("action_"+self.getParentNode().id+"_"+self.id)
 
 registerType(PlominoAction, PROJECTNAME)
 # end of class PlominoAction

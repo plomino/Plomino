@@ -31,7 +31,7 @@ from Products.Archetypes.public import *
 from AccessControl import Unauthorized
 from time import strptime
 from DateTime import DateTime
-from Products.CMFPlomino.PlominoUtils import *
+from Products.CMFPlomino.PlominoUtils import StringToDate, sendMail
 from Acquisition import *
 
 import PlominoDatabase
@@ -261,7 +261,8 @@ class PlominoDocument(ATFolder):
 			fieldName = f.id
 			if mode=="COMPUTED" or (mode=="CREATION" and creation):
 				try:
-					result = RunFormula(self, f.getFormula())
+					#result = RunFormula(self, f.getFormula())
+					result = self.runFormulaScript("field_"+form.id+"_"+f.id+"_formula", self, f.getFormula)
 				except Exception:
 					result = "Error"
 				self.setItem(fieldName, result)
@@ -271,7 +272,8 @@ class PlominoDocument(ATFolder):
 				
 		# compute the document title
 		try:
-			result = RunFormula(self, form.getDocumentTitle())
+			#result = RunFormula(self, form.getDocumentTitle())
+			result = self.runFormulaScript("form_"+form.id+"_title", self, form.getDocumentTitle)
 		except Exception:
 			result = "Document"
 		self.setTitle(result)
@@ -290,7 +292,8 @@ class PlominoDocument(ATFolder):
 
 		# execute the onSaveDocument code of the form
 		try:
-			RunFormula(self, form.getOnSaveDocument())
+			#RunFormula(self, form.getOnSaveDocument())
+			self.runFormulaScript("form_"+form.id+"_onsave", self, form.getOnSaveDocument)
 		except Exception:
 			pass
 			
@@ -310,7 +313,8 @@ class PlominoDocument(ATFolder):
 		# execute the onOpenDocument code of the form
 		try:
 			if not form.getOnOpenDocument()=="":
-				RunFormula(self, form.getOnOpenDocument())
+				#RunFormula(self, form.getOnOpenDocument())
+				self.runFormulaScript("form_"+form.id+"_onopen", self, form.getOnOpenDocument)
 		except Exception:
 			pass
 
@@ -372,7 +376,8 @@ class PlominoDocument(ATFolder):
 		db = self.getParentDatabase()
 		v = db.getView(viewname)
 		try:
-			result = RunFormula(self, v.SelectionFormula())
+			#result = RunFormula(self, v.SelectionFormula())
+			result = self.runFormulaScript("view_"+v.id+"_selection", self, v.SelectionFormula)
 		except Exception:
 			result = False
 		return result
@@ -384,7 +389,9 @@ class PlominoDocument(ATFolder):
 		db = self.getParentDatabase()
 		v = db.getView(viewname)
 		try:
-			result = RunFormula(self, v.getColumn(columnname).Formula())
+			c = v.getColumn(columnname)
+			#result = RunFormula(self, c.Formula())
+			result = self.runFormulaScript("column_"+v.id+"_"+c.id+"_formula", self, c.Formula)
 		except Exception:
 			result = False
 		return result

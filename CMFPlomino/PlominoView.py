@@ -30,7 +30,6 @@ from Products.Archetypes.public import *
 from AccessControl import Unauthorized
 from Products.CMFCore.utils import getToolByName
 from Acquisition import aq_parent
-from Products.CMFPlomino.PlominoUtils import *
 from Products.CMFPlomino.config import PROJECTNAME, READ_PERMISSION
 
 import PlominoDocument
@@ -255,7 +254,8 @@ class PlominoView(ATFolder):
 			obj_a=a.getObject()
 			if hide:
 				try:
-					result = RunFormula(target, obj_a.getHidewhen())
+					#result = RunFormula(target, obj_a.getHidewhen())
+					result = self.runFormulaScript("action_"+obj_a.getParentNode().id+"_"+obj_a.id+"_hidewhen", target, obj_a.getHidewhen)
 				except Exception:
 					#if error, we hide anyway
 					result = True
@@ -276,7 +276,8 @@ class PlominoView(ATFolder):
 		"""compute the form to be used to open documents
 		"""
 		try:
-			result = RunFormula(doc, self.getFormFormula())
+			#result = RunFormula(doc, self.getFormFormula())
+			result = self.runFormulaScript("view_"+self.id+"_formformula", doc, self.getFormFormula)
 		except Exception:
 			result = ""
 		return result
@@ -287,6 +288,11 @@ class PlominoView(ATFolder):
 		"""
 		db = self.getParentDatabase()
 		db.getIndex().createSelectionIndex('PlominoViewFormula_'+self.getViewName())
+		
+	security.declarePrivate('at_post_edit_script')
+	def at_post_edit_script(self):
+		self.cleanFormulaScripts("view_"+self.id)
+
 
 	security.declarePublic('declareColumn')
 	def declareColumn(self,column_name,column_obj):

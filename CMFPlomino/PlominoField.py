@@ -26,7 +26,6 @@ from Products.CMFPlomino.config import *
 
 ##code-section module-header #fill in your manual code here
 from Products.Archetypes.public import *
-from Products.CMFPlomino.PlominoUtils import *
 ##/code-section module-header
 
 schema = Schema((
@@ -41,11 +40,11 @@ schema = Schema((
 		)
 	),
 	BooleanField(
-		name='tobeindexed',
+		name='ToBeIndexed',
 		default="0",
 		widget=BooleanWidget(
 			label="Add to index",
-			description="The field have to be added in Index",
+			description="The field have to be added in the Plomino Index",
 			label_msgid='CMFPlomino_label_FieldIndex',
 			description_msgid='CMFPlomino_help_FieldIndex',
 			i18n_domain='CMFPlomino',
@@ -182,7 +181,8 @@ class PlominoField(BaseContent):
 			else:
 				obj = doc
 			try:
-				s = RunFormula(obj, f)
+				#s = RunFormula(obj, f)
+				s = self.runFormulaScript("field_"+self.getParentNode().id+"_"+self.id+"_SelectionListFormula", obj, self.getSelectionListFormula)
 			except:
 				s = ['Error']
 		
@@ -201,8 +201,9 @@ class PlominoField(BaseContent):
 	def at_post_edit_script(self):
 		"""post edit
 		"""
+		self.cleanFormulaScripts("field_"+self.getParentNode().id+"_"+self.id)
 		db = self.getParentDatabase()
-		if self.deliverable :
+		if self.getToBeIndexed() :
 			db.getIndex().createFieldIndex(self.id)
 
 	security.declarePublic('at_post_create_script')
@@ -210,7 +211,7 @@ class PlominoField(BaseContent):
 		"""post create
 		"""
 		db = self.getParentDatabase()
-		if self.deliverable :
+		if self.getToBeIndexed():
 			db.getIndex().createFieldIndex(self.id)
 
 registerType(PlominoField, PROJECTNAME)

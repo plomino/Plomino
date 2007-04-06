@@ -26,4 +26,6 @@ DESIGN_PERMISSION = 'CMFPlomino: Modify Database design'
 security.declarePublic('ACL_PERMISSION')
 ACL_PERMISSION = 'CMFPlomino: Control Database ACL'
 
+SAFE_UTILS='DateToString, StringToDate, DateRange, sendMail, userFullname, userInfo'
+
 

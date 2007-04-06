@@ -136,6 +136,7 @@ class PlominoColumn(BaseContent):
 		"""
 		v = self.getParentView()
 		v.declareColumn(self.getColumnName(), self)
+		self.cleanFormulaScripts("column_"+v.id+"_"+self.id)
 
 	security.declarePublic('at_post_create_script')
 	def at_post_create_script(self):

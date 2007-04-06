@@ -23,9 +23,8 @@ __docformat__ = 'plaintext'
 from DateTime import DateTime
 from time import strptime
 from Products.CMFCore.utils import getToolByName
-from Acquisition import *
-import ExtensionClass
 import logging
+
 #from zope.security.untrustedpython.interpreter import RestrictedInterpreter
 #from zope.security.checker import ProxyFactory
 
@@ -52,70 +51,6 @@ def DateRange(d1, d2):
 	for d in range(duration+1):
 		result.append(current)
 		current = current+1
-	return result
-
-def RunFormula(obj, formula):
-	"""try to run formula as single line code, then try to run it as multi line indented code, and return result
-	"""
-	result = None
-	if not(formula=="" or formula is None):
-		# does code look dangerous ?
-		dangerous=['_PlominoWrappedObj', '__dict__']
-		for w in dangerous:
-			if w in formula:
-				raise AttributeError, w+" not authorized in Plomino formula context"
-
-		# get the parent portal and get a safe proxy
-		for o in obj.aq_chain:
-			if type(aq_self(o)).__name__=='PloneSite':
-				safeparentportal=SafeProxy(o)
-
-		# we cut all acquisition up to the parent db node 
-#		if type(aq_self(obj)).__name__=='PlominoDatabase':
-#			obj=aq_base(obj).__of__(safeparentportal)
-#		else:
-#			db = None
-#			for o in obj.aq_chain:
-#				if type(aq_self(o)).__name__=='PlominoDatabase':
-#					parentdb=o
-#			db = aq_base(parentdb)
-#			db = db.__of__(safeparentportal)
-#			obj=aq_base(obj).__of__(db)
-#		safeobj=obj
-		
-		chain=obj.aq_chain
-		chain.reverse()
-		safeobj=None
-		for o in chain:
-			if type(aq_self(o)).__name__.startswith('Plomino'):
-				currentobj=aq_base(o)
-			else:
-				currentobj=SafeProxy(aq_base(o))
-			if safeobj==None:
-				safeobj=currentobj
-			else:
-				safeobj=currentobj.__of__(safeobj)
-		
-		# plominoDocument and plominoContext are the reserved names used in formulas
-		plominoContext = safeobj
-		plominoDocument = safeobj
-		try:
-			exec "result = "+formula
-		except Exception:
-			formula=formula.replace('\r','')
-			lines=formula.split('\n')
-			indented_formula="def plominoFormula(plominoDocument, plominoContext):\n"
-			for l in lines:
-				indented_formula=indented_formula+'\t'+l+'\n'
-			try:
-				exec indented_formula
-				result = plominoFormula(plominoDocument, plominoContext)
-			except Exception, e:
-				msg="Plomino formula error: "+str(e)
-				msg=msg+"\nin code:\n"+indented_formula
-				msg=msg+"\nwith context:"+str(obj)
-				logger.error(msg)
-				raise
 	return result
 
 def sendMail(db, recipients, title, html_message):
@@ -160,35 +95,6 @@ def userInfo(db, userid):
 	user=getToolByName(db, 'portal_membership').getMemberById(userid)
 	return user
 
-def importPlominoScript(obj, scriptname):
-	sc=obj.resources._getOb(scriptname)
-	return str(sc)
 	
-class SafeProxy(ExtensionClass.Base):
-	def __init__(self, obj):
-		self.__dict__['_PlominoWrappedObj'] = obj
-		
-	def __getattr__(self, attr):
-		attributes_whitelist=['portal_membership', 'MailHost', 'plone_utils']
-		methods_whitelist=['getMemberById',
-						   'getProperty',
-						   'getPhysicalPath',
-						   'getAuthenticatedMember',
-						   'getMemberId',
-						   'getUserName',
-						   'getSiteEncoding',
-						   'secureSend',
-						   '__of__']
-		if attr in attributes_whitelist:
-			return SafeProxy(getattr(aq_self(self._PlominoWrappedObj), attr))
-		elif attr in methods_whitelist:
-			return lambda *args, **kwargs : self.methodWrapper(getattr(aq_self(self._PlominoWrappedObj), attr), args, kwargs)
-		else:
-			raise AttributeError, attr+" not allowed in Plomino formula context"
-		
-	def __setattr__(self, attr, val):
-		raise AttributeError, attr+" not allowed in Plomino formula context"
-		
-	def methodWrapper(self, func, args, kwargs):
-		return func(*args, **kwargs)
+
 		

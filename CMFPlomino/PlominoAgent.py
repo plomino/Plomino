@@ -26,7 +26,6 @@ from Products.CMFPlomino.config import *
 
 ##code-section module-header #fill in your manual code here
 from Products.Archetypes.public import *
-from Products.CMFPlomino.PlominoUtils import *
 from AccessControl.SecurityManagement import getSecurityManager, setSecurityManager, newSecurityManager
 from zLOG import LOG, ERROR
 from ZODB.PersistentMapping import PersistentMapping
@@ -219,6 +218,7 @@ class PlominoAgent(BaseContent):
 	def at_post_edit_script(self):
 		self.deactivate()
 		self.activate()
+		self.cleanFormulaScripts("agent_"+self.id)
 
 	security.declareProtected(READ_PERMISSION, 'runAgent')
 	def runAgent(self,REQUEST=None):
@@ -231,7 +231,8 @@ class PlominoAgent(BaseContent):
 		plominoContext = self
 		plominoReturnURL = self.getParentDatabase().absolute_url()
 		try:
-			RunFormula(plominoContext, self.Content())
+			#RunFormula(plominoContext, "agent_"+self.id, self.Content())
+			self.runFormulaScript("agent_"+self.id, plominoContext, self.Content)
 			if REQUEST != None:
 				REQUEST.RESPONSE.redirect(plominoReturnURL)
 		except Exception, e:

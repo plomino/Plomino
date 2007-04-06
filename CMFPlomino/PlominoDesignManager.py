@@ -25,13 +25,17 @@ from Products.CMFPlomino.config import *
 ##code-section module-header #fill in your manual code here
 from cStringIO import StringIO
 from Acquisition import *
-##/code-section module-header
+from OFS.Folder import *
 from OFS.XMLExportImport import *
 import logging
 from PlominoIndex import PlominoIndex
 from HttpUtils import authenticateAndLoadURL, authenticateAndPostToURL
+from Products.PythonScripts.PythonScript import PythonScript
+import re
 
 logger = logging.getLogger('Plomino')
+##/code-section module-header
+
 
 class PlominoDesignManager:
 	"""Plomino design import/export features
@@ -52,6 +56,19 @@ class PlominoDesignManager:
 		except:
 			pass
 		
+		#check folders
+		if not hasattr(self, 'resources'):
+			resources = Folder('resources')
+			resources.title='resources'
+			self._setObject('resources', resources)
+		logger.info('Resources folder OK')
+		if not hasattr(self, 'scripts'):
+			scripts = Folder('scripts')
+			scripts.title='scripts'
+			self._setObject('scripts', scripts)
+		self.cleanFormulaScripts()
+		logger.info('Scripts folder OK and clean')
+		
 		# destroy the index
 		self.manage_delObjects(self.getIndex().getId())
 		logger.info('Old index removed')
@@ -68,7 +85,7 @@ class PlominoDesignManager:
 				v_obj.declareColumn(c.getColumnName(), c)
 		for f_obj in self.getForms() :
 			for f in f_obj.getFields() :
-				if f.deliverable :
+				if f.getToBeIndexed() :
 					self.getIndex().createFieldIndex(f.id)
 		logger.info('Index structure initialized')
 		
@@ -246,4 +263,86 @@ class PlominoDesignManager:
 		ids = res.split('/')
 		ids.pop()
 		return ['resources/'+i for i in ids]
+	
+	security.declarePublic('getFormulaScript')
+	def getFormulaScript(self, script_id):
+		if hasattr(self.scripts, script_id):
+			ps=getattr(self.scripts, script_id)
+			return ps
+		else:
+			return None
+		
+	security.declarePublic('cleanFormulaScripts')
+	def cleanFormulaScripts(self, script_id_pattern=None):
+		for s in self.scripts.objectIds():
+			if script_id_pattern is None:
+				self.scripts._delObject(s)
+			elif s.startswith(script_id_pattern):
+				self.scripts._delObject(s)
+	
+	security.declarePublic('compileFormulaScript')
+	def compileFormulaScript(self, script_id, formula, with_args=False):
+		ps = self.getFormulaScript(script_id)
+		if ps is None:
+			ps=PythonScript(script_id)
+			self.scripts._setObject(script_id, ps)
+		ps = self.getFormulaScript(script_id)
+		
+#		if with_args:
+#			str_formula="##parameters=*args\n##\n"
+#		else:
+#			str_formula=""
+		if with_args:
+			ps._params="*args"
+		str_formula="plominoContext = context\n"
+		str_formula=str_formula+"plominoDocument = context\n"
+		str_formula=str_formula+"from Products.CMFPlomino.PlominoUtils import "+SAFE_UTILS+'\n'
+		
+		r = re.compile('#Plomino import (.+)[\r\n]')
+		for i in r.findall(formula):
+			scriptname=i.strip()
+			try:
+				script_code = str(self.resources._getOb(scriptname))
+			except:
+				script_code = "#ALERT: "+scriptname+" not found in resources"
+			formula = formula.replace('#Plomino import '+scriptname, script_code)
+			
+		if formula.strip().count('\n')>0:
+			str_formula=str_formula+formula
+		else:
+			str_formula=str_formula+"return "+formula
+		ps.write(str_formula)
+		logger.info(script_id + " compiled")
+		return ps
 
+	security.declarePublic('runFormulaScript')
+	def runFormulaScript(self, script_id, context, formula_getter, with_args=False, *args):
+		ps = self.getFormulaScript(script_id)
+		if ps is None:
+			ps = self.compileFormulaScript(script_id, formula_getter(), with_args)
+		contextual_ps=ps.__of__(context)
+		result = None
+		try:
+			if with_args:
+				result = contextual_ps(*args)
+			else:
+				result = contextual_ps()
+		except Exception, e:
+			msg="Plomino formula error: "+str(e)
+			msg=msg+"\nin code:\n"+formula_getter()
+			msg=msg+"\nwith context:"+str(context)
+			logger.error(msg)
+			raise
+		return result
+	
+	security.declarePublic('callScriptMethod')
+	def callScriptMethod(self, scriptname, methodname, *args):
+		id="script_"+scriptname+"_"+methodname
+		try:
+			script_code = str(self.resources._getOb(scriptname))
+		except:
+			script_code = "#ALERT: "+scriptname+" not found in resources"
+		formula=lambda:script_code+'\n\nreturn '+methodname+'(*args)'
+		return self.runFormulaScript(id, self, formula, True, *args)
+
+	

@@ -170,6 +170,9 @@ class PlominoDatabase(ATFolder, PlominoAccessControl, PlominoDesignManager):
 		resources = Folder('resources')
 		resources.title='resources'
 		self._setObject('resources', resources)
+		scripts = Folder('scripts')
+		scripts.title='scripts'
+		self._setObject('scripts', scripts)
 
 	security.declarePublic('getForms')
 	def getForms(self):
@@ -242,18 +245,6 @@ class PlominoDatabase(ATFolder, PlominoAccessControl, PlominoDesignManager):
 		PlominoAccessControl.__init__(self)
 		index = PlominoIndex()
 		self._setObject(index.getId(), index)
-	
-	security.declarePublic('callScriptMethod')
-	def callScriptMethod(self, scriptname, methodname, *args):
-		code = importPlominoScript(self, scriptname)
-		code=code.replace('\r','')
-		lines=code.split('\n')
-		indented_code="def plominoScript(*args):\n"
-		for l in lines:
-			indented_code=indented_code+'\t'+l+'\n'
-		indented_code = indented_code +'\n\treturn '+methodname+'(*args)'
-		exec indented_code
-		return plominoScript(*args)
 			
 			
 registerType(PlominoDatabase, PROJECTNAME)
