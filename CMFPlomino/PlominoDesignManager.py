@@ -288,10 +288,6 @@ class PlominoDesignManager:
 			self.scripts._setObject(script_id, ps)
 		ps = self.getFormulaScript(script_id)
 		
-#		if with_args:
-#			str_formula="##parameters=*args\n##\n"
-#		else:
-#			str_formula=""
 		if with_args:
 			ps._params="*args"
 		str_formula="plominoContext = context\n"
