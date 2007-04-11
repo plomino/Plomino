@@ -188,6 +188,13 @@ class PlominoDatabase(ATFolder, PlominoAccessControl, PlominoDesignManager):
 		list = self.getFolderContents(contentFilter = {'portal_type' : ['PlominoView']})
 		return [v.getObject() for v in list]
 
+	security.declarePublic('getAgents')
+	def getAgents(self):
+		"""return the database agents list
+		"""
+		list = self.getFolderContents(contentFilter = {'portal_type' : ['PlominoAgent']})
+		return [a.getObject() for a in list]
+		
 	security.declarePublic('getAllDocuments')
 	def getAllDocuments(self):
 		"""return all the database documents

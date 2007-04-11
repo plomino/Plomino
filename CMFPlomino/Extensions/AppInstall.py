@@ -14,7 +14,7 @@ def install(self):
 	propsTool = getToolByName(self, 'portal_properties')
 	navtreeProperties = getattr(propsTool, 'navtree_properties')
 	typesNotListed = list(navtreeProperties.getProperty('metaTypesNotToList'))
-	fieldTypes = ['PlominoForm', 'PlominoField', 'PlominoDocument', 'PlominoColumn', 'PlominoAction', 'PlominoHidewhen']
+	fieldTypes = ['PlominoForm', 'PlominoField', 'PlominoDocument', 'PlominoColumn', 'PlominoAction', 'PlominoHidewhen', 'PlominoAgent']
 	for f in fieldTypes:
 		if f not in typesNotListed:
 			typesNotListed.append(f)

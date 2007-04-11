@@ -119,6 +119,18 @@
 			</tal:blockviews>
 			</ul>
 </dd></dl><br/>
+<dl class="collapsible inline collapsedOnLoad">
+        <dt class="collapsibleHeader">Agents</dt>
+        <dd class="collapsibleContent">
+			<ul>
+			<tal:blockagents tal:repeat="agent python:here.getAgents()">
+			<li>
+				<tal:block tal:content="agent/id">agent name</tal:block>
+				<a href="" tal:attributes="href python:agent.absolute_url()+'/base_edit'"><img src="edit.gif" /></a>
+			</li>
+			</tal:blockagents>
+			</ul>
+</dd></dl><br/>
       <dl class="collapsible inline collapsedOnLoad">
         <dt class="collapsibleHeader">Others</dt>
         <dd class="collapsibleContent">
