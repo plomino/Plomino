@@ -30,6 +30,7 @@ from AccessControl.SecurityManagement import getSecurityManager, setSecurityMana
 from zLOG import LOG, ERROR
 from ZODB.PersistentMapping import PersistentMapping
 from types import IntType, ListType, NoneType, TupleType, StringType
+from DateTime import DateTime
 try:
 	from Products.TimerService import *
 except Exception, e:
