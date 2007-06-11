@@ -62,7 +62,8 @@ from Products.Archetypes.public import process_types, listTypes
 from Products.CMFCore import utils
 from Products.CMFCore.DirectoryView import registerDirectory
 from AccessControl.Permission import registerPermissions
-			
+from Products.PythonScripts.Utility import allow_module
+allow_module("Products.CMFPlomino.PlominoUtils")
 ##/code-section custom-init-head
 
 

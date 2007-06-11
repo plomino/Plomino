@@ -29,6 +29,12 @@
 	border-style:dashed;
 	border_width:thin;
 	}
+
+.plominoHidewhenClass {
+	color: #00FF00;
+	border-style:dashed;
+	border_width:thin;
+	}
 
 /* </dtml-with> */
 

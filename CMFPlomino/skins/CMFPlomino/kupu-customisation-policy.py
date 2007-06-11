@@ -48,7 +48,8 @@ PARAGRAPH_STYLES = (
     "Formatted|pre",
     "Plomino Field|span|plominoFieldClass",
     "Plomino Action|span|plominoActionClass",
-    "Plomino Hide-when formula|span|plominoHidewhenClass"
+    "Plomino Hide-when formula|span|plominoHidewhenClass",
+    "Plomino Subform|span|plominoSubformClass"
 #    'Fancy|div|fancyClass',
 #    'Plain|div|plainClass',
 )

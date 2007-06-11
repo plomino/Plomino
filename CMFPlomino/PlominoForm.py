@@ -191,11 +191,15 @@ class PlominoForm(ATFolder):
 		doc.saveDocument(REQUEST, True)
 
 	security.declarePublic('getFields')
-	def getFields(self):
+	def getFields(self, includesubforms=False):
 		"""get fields
 		"""
 		fieldlist = self.getFolderContents(contentFilter = {'portal_type' : ['PlominoField']})
-		return [f.getObject() for f in fieldlist]
+		result = [f.getObject() for f in fieldlist]
+		if includesubforms:
+			for subformname in self.getSubforms():
+				result=result+self.getParentdatanse().getForm(subformname).getFields(True)
+		return result
 		
 	security.declarePublic('getFormField')
 	def getFormField(self, fieldname):
@@ -207,7 +211,7 @@ class PlominoForm(ATFolder):
 	def hasDateTimeField(self):
 		"""return true if the form contains at least one DateTime field
 		"""
-		fields=self.getFields()
+		fields=self.getFields(includesubforms=True)
 		for f in fields:
 			if f.getFieldType()=="DATETIME":
 				return True
@@ -232,6 +236,15 @@ class PlominoForm(ATFolder):
 		"""
 		return self.getParentNode()
 
+	security.declarePublic('getSubforms')
+	def getSubforms(self):
+		"""return the names of the subforms embedded in the form
+		"""
+		html_content = self.getField('FormLayout').get(self, mimetype='text/html')
+		html_content = html_content.replace('\n', '')
+		r = re.compile('<span class="plominoSubformClass">([^<]+)</span>')
+		return [i.strip() for i in r.findall(html_content)]
+			
 	security.declareProtected(READ_PERMISSION, 'getFieldRender')
 	def getFieldRender(self,doc,field,editmode,creation=False):
 		"""Rendering the field
@@ -290,7 +303,7 @@ class PlominoForm(ATFolder):
 
 
 	security.declareProtected(READ_PERMISSION, 'displayDocument')
-	def displayDocument(self,doc,editmode=False, creation=False):
+	def displayDocument(self,doc,editmode=False, creation=False, subform=False):
 		"""display the document using the form's layout
 		"""
 		html_content = self.getField('FormLayout').get(self, mimetype='text/html')
@@ -315,14 +328,19 @@ class PlominoForm(ATFolder):
 				html_content = html_content.replace(end, '')
 
 		#if editmode, we had a hidden field to handle the Form item value
-		if editmode:
+		if editmode and not subform:
 			html_content = "<input type='hidden' name='Form' value='"+self.getFormName()+"' />" + html_content
 
 		# insert the fields with proper value and rendering
 		for field in self.getFields():
 			fieldName = field.id
 			html_content = html_content.replace('<span class="plominoFieldClass">'+fieldName+'</span>', self.getFieldRender(doc, field, editmode, creation))
-
+		
+		# insert subforms
+		for subformname in self.getSubforms():
+			subformrendering=self.getParentDatabase().getForm(subformname).displayDocument(doc, editmode, creation, subform=True)
+			html_content = html_content.replace('<span class="plominoSubformClass">'+subformname+'</span>', subformrendering)
+		
 		# insert the actions
 		for action in self.getActions(doc, False):
 			actionName = action.id
