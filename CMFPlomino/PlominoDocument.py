@@ -63,8 +63,8 @@ class PlominoDocument(ATFolder):
 
 	meta_type = 'PlominoDocument'
 	portal_type = 'PlominoDocument'
-	allowed_content_types = [] + list(getattr(ATFolder, 'allowed_content_types', []))
-	filter_content_types = 0
+	allowed_content_types = ['PlominoFile']
+	filter_content_types = 1
 	global_allow = 0
 	content_icon = 'PlominoDocument.gif'
 	immediate_view = 'base_view'

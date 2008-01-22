@@ -217,6 +217,16 @@ msgstr ""
 msgid "Save"
 msgstr ""
 
+msgid "Attach file"
+msgstr ""
+
+msgid "attachments_label"
+msgstr ""
+
+# View labels
+msgid "go_link"
+msgstr ""
+
 #Gantt view labels
 msgid "From"
 msgstr ""

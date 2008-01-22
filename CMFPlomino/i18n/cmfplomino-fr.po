@@ -218,6 +218,16 @@ msgstr "Supprimer"
 msgid "Save"
 msgstr "Enregistrer"
 
+msgid "Attach file"
+msgstr "Joindre un fichier"
+
+msgid "attachments_label"
+msgstr "Fichiers joints:"
+
+# View labels
+msgid "go_link"
+msgstr "Voir"
+
 #Gantt view labels
 msgid "From"
 msgstr "De"

@@ -85,6 +85,7 @@ def initialize(context):
 	import PlominoHidewhen
 	import PlominoAccessControl
 	import PlominoIndex
+	import PlominoFile
 	
 	# Initialize portal content
 	content_types, constructors, ftis = process_types(
@@ -108,7 +109,7 @@ def initialize(context):
 	allTypes = zip(content_types, constructors)
 	for atype, constructor in allTypes:
 		kind = "%s: %s" % (PROJECTNAME, atype.archetype_name)
-		if atype.archetype_name.find("PlominoDocument")>=0:
+		if atype.archetype_name.find("PlominoDocument")>=0 or atype.archetype_name.find("PlominoFile")>=0:
 			utils.ContentInit(
 				kind,
 				content_types	  = (atype,),

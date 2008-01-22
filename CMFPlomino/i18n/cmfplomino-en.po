@@ -217,6 +217,16 @@ msgstr "Delete"
 msgid "Save"
 msgstr "Save"
 
+msgid "Attach file"
+msgstr "Attach file"
+
+msgid "attachments_label"
+msgstr "Attachments:"
+
+# View labels
+msgid "go_link"
+msgstr "Go"
+
 #Gantt view labels
 msgid "From"
 msgstr "From"

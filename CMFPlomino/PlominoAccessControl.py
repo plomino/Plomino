@@ -85,8 +85,9 @@ class PlominoAccessControl(ATFolder):
 		CREATE_PERMISSION,
 		ADD_CONTENT_PERMISSION,
 		permissions.View,
-		permissions.AddPortalContent,
-		permissions.ModifyPortalContent],
+		#permissions.AddPortalContent,
+		#permissions.ModifyPortalContent
+		],
 	"PlominoEditor" : [
 		READ_PERMISSION,
 		EDIT_PERMISSION,
@@ -94,8 +95,9 @@ class PlominoAccessControl(ATFolder):
 		CREATE_PERMISSION,
 		ADD_CONTENT_PERMISSION,
 		permissions.View,
-		permissions.AddPortalContent,
-		permissions.ModifyPortalContent],
+		#permissions.AddPortalContent,
+		#permissions.ModifyPortalContent
+		],
 	"PlominoDesigner" : [
 		READ_PERMISSION,
 		EDIT_PERMISSION,
