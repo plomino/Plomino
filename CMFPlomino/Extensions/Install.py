@@ -95,7 +95,6 @@ def install(self, reinstall=False):
         "PlominoHidewhen",
         "PlominoAccessControl",
         "PlominoIndex",
-	"PlominoFile",
         ] + factory_tool.getFactoryTypes().keys()
     factory_tool.manage_setPortalFactoryTypes(listOfTypeIds=factory_types)
 

@@ -1,1 +1,1 @@
-0.7 SVN-trunk $Rev$
+0.8 SVN-trunk

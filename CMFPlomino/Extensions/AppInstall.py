@@ -14,7 +14,7 @@ def install(self):
 	propsTool = getToolByName(self, 'portal_properties')
 	navtreeProperties = getattr(propsTool, 'navtree_properties')
 	typesNotListed = list(navtreeProperties.getProperty('metaTypesNotToList'))
-	fieldTypes = ['PlominoForm', 'PlominoField', 'PlominoDocument', 'PlominoColumn', 'PlominoAction', 'PlominoHidewhen', 'PlominoAgent', 'PlominoFile']
+	fieldTypes = ['PlominoForm', 'PlominoField', 'PlominoDocument', 'PlominoColumn', 'PlominoAction', 'PlominoHidewhen', 'PlominoAgent']
 	for f in fieldTypes:
 		if f not in typesNotListed:
 			typesNotListed.append(f)
@@ -22,7 +22,7 @@ def install(self):
 	navtreeProperties.manage_changeProperties(metaTypesNotToList = typesNotListed)
 	out.write("NavTree configuration: OK")
 	
-	allfieldTypes = ['PlominoDatabase', 'PlominoView', 'PlominoForm', 'PlominoField', 'PlominoDocument', 'PlominoColumn', 'PlominoAction', 'PlominoAgent', 'PlominoHidewhen', 'PlominoAccessControl', 'PlominoFile']
+	allfieldTypes = ['PlominoDatabase', 'PlominoView', 'PlominoForm', 'PlominoField', 'PlominoDocument', 'PlominoColumn', 'PlominoAction', 'PlominoAgent', 'PlominoHidewhen', 'PlominoAccessControl']
 	wfTool = getToolByName(self, 'portal_workflow')
 	wfTool.setChainForPortalTypes(pt_names=allfieldTypes, chain='')
 	out.write("Workflow configuration cleanup: OK")

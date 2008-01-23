@@ -3,10 +3,7 @@
 		<tal:block tal:condition="python:here.isAuthor()">
 			<td><input type="button" class="context" value="Edit" i18n:domain="CMFPlomino" i18n:attributes="value" 
 				tal:attributes="onclick python:'location.href=\''+here.navigationParent(here)+'/'+here.id+'/EditDocument\''"/>
-			</td>
-			<td><input type="button" class="context" value="Attach file" i18n:domain="CMFPlomino" i18n:attributes="value" 
-				tal:attributes="onclick python:'location.href=\''+here.navigationParent(here)+'/'+here.id+'/createObject?type_name=PlominoFile\''"/>
-			</td>			
+			</td>		
 <td><span metal:use-macro="here/ActionBar/macros/DeleteAction" >display delete action</span></td>
 		</tal:block>
     	<td><span metal:use-macro="here/ActionBar/macros/CloseAction" >display close action</span></td>

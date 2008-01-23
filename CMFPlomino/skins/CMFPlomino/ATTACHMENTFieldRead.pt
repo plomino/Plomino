@@ -1,0 +1,3 @@
+<tal:block tal:repeat="attachment options/fieldvalue">
+<a href="#" tal:attributes="href attachment" tal:content="attachment">filename</a><br/>
+</tal:block>

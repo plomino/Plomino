@@ -33,7 +33,7 @@
 <metal:main fill-slot="main">
     <div id="bodyContent">
 	<tal:test tal:condition="python:here.hasItem('Form')">
-    <form tal:attributes="name python:here.getForm().id" action="saveDocument" method="POST">
+    <form tal:attributes="name python:here.getForm().id" action="saveDocument" method="POST" enctype="multipart/form-data">
 		<tal:block tal:define="myF python:here.getForm();
 							b myF/ActionBarPosition|nothing">
 			<tal:block

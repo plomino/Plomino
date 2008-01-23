@@ -28,7 +28,7 @@
 
 <metal:main fill-slot="main">
     <div id="bodyContent">
-    <form tal:attributes="name here/id" action="createDocument" method="POST">
+    <form tal:attributes="name here/id" action="createDocument" method="POST" enctype="multipart/form-data">
 		<tal:block tal:define="myF python:here;
 							b myF/ActionBarPosition|nothing">
 			<tal:block

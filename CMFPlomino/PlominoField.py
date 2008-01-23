@@ -60,7 +60,18 @@ schema = Schema((
 			description_msgid='CMFPlomino_help_FieldType',
 			i18n_domain='CMFPlomino',
 		),
-		vocabulary= [["TEXT", "Text"],["NUMBER", "Number"],["RICHTEXT", "Rich text"],["DATETIME", "Date/Time"], ["NAME", "Name"], ["NAMES", "Names"], ["SELECTION", "Selection list"],["MULTISELECTION", "Multi-Selection list"],["CHECKBOX", "Check boxes"],["RADIO", "Radio buttons"]]
+		vocabulary= [["TEXT", "Text"],
+					 ["NUMBER", "Number"],
+					 ["RICHTEXT", "Rich text"],
+					 ["DATETIME", "Date/Time"],
+					 ["NAME", "Name"],
+					 ["NAMES", "Names"],
+					 ["SELECTION", "Selection list"],
+					 ["MULTISELECTION", "Multi-Selection list"],
+					 ["CHECKBOX", "Check boxes"],
+					 ["RADIO", "Radio buttons"],
+					 ["ATTACHMENT", "File attachment"]
+					 ]
 	),
 
 	StringField(

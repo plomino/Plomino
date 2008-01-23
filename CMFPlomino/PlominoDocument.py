@@ -33,9 +33,13 @@ from time import strptime
 from DateTime import DateTime
 from Products.CMFPlomino.PlominoUtils import StringToDate, sendMail
 from Acquisition import *
+from ZPublisher.HTTPRequest import FileUpload
 
 import PlominoDatabase
 import PlominoView
+
+import logging
+logger=logging.getLogger("Plomino")
 ##/code-section module-header
 
 schema = Schema((
@@ -63,7 +67,7 @@ class PlominoDocument(ATFolder):
 
 	meta_type = 'PlominoDocument'
 	portal_type = 'PlominoDocument'
-	allowed_content_types = ['PlominoFile']
+	allowed_content_types = []
 	filter_content_types = 1
 	global_allow = 0
 	content_icon = 'PlominoDocument.gif'
@@ -237,6 +241,21 @@ class PlominoDocument(ATFolder):
 						elif f.getFieldType()=="DATETIME":
 							#v = strptime(submittedValue, "%d/%m/%Y")
 							v = StringToDate(submittedValue, '%Y-%m-%d %H:%M')
+						elif f.getFieldType()=="ATTACHMENT":
+							if isinstance(submittedValue, FileUpload):
+								filename=submittedValue.filename
+								current_files=self.getItem(fieldName)
+								if filename!='':
+									if current_files=='':
+										current_files=[]
+									if hasattr(self, filename):
+										new_file="ERROR: "+filename+" already exists"
+									else:
+										self.manage_addFile(filename, submittedValue)
+										new_file=filename
+									if not(new_file in current_files):
+										current_files.append(new_file)
+								v=current_files
 						else:
 							v = submittedValue
 						self.setItem(fieldName, v)
@@ -396,7 +415,21 @@ class PlominoDocument(ATFolder):
 			result = False
 		return result
 
-
+	security.declareProtected(EDIT_PERMISSION, 'deleteAttachment')
+	def deleteAttachment(self,REQUEST):
+		"""remove file object and update corresponding item value
+		"""
+		fieldname=REQUEST.get('field')
+		filename=REQUEST.get('filename')
+		if filename in self.objectIds():
+			self.manage_delObjects(filename)
+		current_files=self.getItem(fieldname)
+		if filename in current_files:
+			current_files.remove(filename)
+			self.setItem(fieldname, current_files)
+			
+		REQUEST.RESPONSE.redirect(self.absolute_url()+"/EditDocument")
+	
 registerType(PlominoDocument, PROJECTNAME)
 # end of class PlominoDocument
 
