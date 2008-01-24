@@ -85,6 +85,7 @@
 					<a tal:attributes="href python:view.absolute_url_path()+'/base_edit'"><img src="edit.gif" /></a>
 					<a tal:attributes="href python:view.absolute_url_path()+'/base_view'"><img src="document_icon.gif" /></a>
 					<a tal:attributes="href python:view.absolute_url_path()+'/folder_contents'"><img src="folder_icon.gif" /></a>
+					<a tal:attributes="href python:view.absolute_url_path()+'/exportCSV'"><img src="download_icon.gif" /></a>
 							<!--View columns-->
 							<ul>
 								<li>

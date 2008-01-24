@@ -339,6 +339,32 @@ class PlominoView(ATFolder):
 			self.getReverseSorting())
 
 		
+	security.declareProtected(DESIGN_PERMISSION, 'exportCSV')
+	def exportCSV(self, REQUEST=None):
+		"""export columns values as CSV
+		"""
+		docs=self.getAllDocuments()
+		result=""
+		columns=[c.id for c in self.getColumns()]
+		vname=self.getViewName()
+		for doc in docs:
+			values=[]
+			for cname in columns:
+				v=getattr(doc, 'PlominoViewColumn_%s_%s' % (vname, cname))
+				if v is None:
+					v=''
+				else:
+					v=str(v)
+				values.append(v)
+			result=result+"\t".join(values)+"\n"
+		
+		if REQUEST:
+			REQUEST.RESPONSE.setHeader('content-type', 'text/csv')
+			REQUEST.RESPONSE.setHeader("Content-Disposition", "attachment; filename="+self.id+".csv")
+		return result
+				
+			
+			
 registerType(PlominoView, PROJECTNAME)
 # end of class PlominoView
 

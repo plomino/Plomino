@@ -413,7 +413,7 @@ class PlominoDocument(ATFolder):
 			#result = RunFormula(self, c.Formula())
 			result = self.runFormulaScript("column_"+v.id+"_"+c.id+"_formula", self, c.Formula)
 		except Exception:
-			result = False
+			result = None
 		return result
 
 	security.declareProtected(EDIT_PERMISSION, 'deleteAttachment')
