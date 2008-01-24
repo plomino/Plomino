@@ -226,40 +226,43 @@ class PlominoDocument(ATFolder):
 		self.setItem('Form', form.getFormName())
 
 		# process editable fields (we read the submitted value in the request)
-		for f in form.getFields(includesubforms=True):
-			mode = f.getFieldMode()
-			fieldName = f.id
-			if mode=="EDITABLE":
-				submittedValue = REQUEST.get(fieldName)
-				if submittedValue is not None:
-					if submittedValue=='':
-						self.removeItem(fieldName)
-					else:
-						# if non-text field, convert the value
-						if f.getFieldType()=="NUMBER":
-							v = long(submittedValue)
-						elif f.getFieldType()=="DATETIME":
-							#v = strptime(submittedValue, "%d/%m/%Y")
-							v = StringToDate(submittedValue, '%Y-%m-%d %H:%M')
-						elif f.getFieldType()=="ATTACHMENT":
-							if isinstance(submittedValue, FileUpload):
-								filename=submittedValue.filename
-								current_files=self.getItem(fieldName)
-								contenttype=''
-								if filename!='':
-									if current_files=='':
-										current_files={}
-									if hasattr(self, filename):
-										new_file="ERROR: "+filename+" already exists"
-									else:
-										self.manage_addFile(filename, submittedValue)
-										new_file=filename
-										contenttype=getattr(self,filename).getContentType()
-									current_files[new_file]=contenttype
-								v=current_files
+		try:
+			for f in form.getFields(includesubforms=True):
+				mode = f.getFieldMode()
+				fieldName = f.id
+				if mode=="EDITABLE":
+					submittedValue = REQUEST.get(fieldName)
+					if submittedValue is not None:
+						if submittedValue=='':
+							self.removeItem(fieldName)
 						else:
-							v = submittedValue
-						self.setItem(fieldName, v)
+							# if non-text field, convert the value
+							if f.getFieldType()=="NUMBER":
+								v = long(submittedValue)
+							elif f.getFieldType()=="DATETIME":
+								#v = strptime(submittedValue, "%d/%m/%Y")
+								v = StringToDate(submittedValue, '%Y-%m-%d %H:%M')
+							elif f.getFieldType()=="ATTACHMENT":
+								if isinstance(submittedValue, FileUpload):
+									filename=submittedValue.filename
+									current_files=self.getItem(fieldName)
+									contenttype=''
+									if filename!='':
+										if current_files=='':
+											current_files={}
+										if hasattr(self, filename):
+											new_file="ERROR: "+filename+" already exists"
+										else:
+											self.manage_addFile(filename, submittedValue)
+											new_file=filename
+											contenttype=getattr(self,filename).getContentType()
+										current_files[new_file]=contenttype
+									v=current_files
+							else:
+								v = submittedValue
+							self.setItem(fieldName, v)
+		except Exception, e:
+			return "<html><body><script>alert('"+str(e)+"'); history.back()</script></body></html>"
 
 		# refresh computed values, run onSave, reindex
 		self.save(form, creation)
