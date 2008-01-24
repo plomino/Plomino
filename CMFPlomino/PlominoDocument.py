@@ -425,8 +425,8 @@ class PlominoDocument(ATFolder):
 		if filename in self.objectIds():
 			self.manage_delObjects(filename)
 		current_files=self.getItem(fieldname)
-		if filename in current_files:
-			current_files.remove(filename)
+		if current_files.has_key(filename):
+			del current_files[filename]
 			self.setItem(fieldname, current_files)
 			
 		REQUEST.RESPONSE.redirect(self.absolute_url()+"/EditDocument")
