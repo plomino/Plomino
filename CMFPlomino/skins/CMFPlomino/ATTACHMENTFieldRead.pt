@@ -1,3 +1,9 @@
-<tal:block tal:repeat="attachment options/fieldvalue">
-<a href="#" tal:attributes="href attachment" tal:content="attachment">filename</a><br/>
+<tal:block tal:define="attachments options/fieldvalue" 
+	tal:repeat="attachment python:attachments.keys()">
+	<tal:block tal:define="contenttype python:attachments[attachment]">
+		<a tal:condition="python:not(contenttype.startswith('image'))" href="#" tal:attributes="href attachment" tal:content="attachment">filename</a>
+		<a tal:condition="python:contenttype.startswith('image')" href="#" tal:attributes="href attachment">
+			<img tal:attributes="src attachment" /></a>
+		<br/>
+	</tal:block>
 </tal:block>

@@ -245,16 +245,17 @@ class PlominoDocument(ATFolder):
 							if isinstance(submittedValue, FileUpload):
 								filename=submittedValue.filename
 								current_files=self.getItem(fieldName)
+								contenttype=''
 								if filename!='':
 									if current_files=='':
-										current_files=[]
+										current_files={}
 									if hasattr(self, filename):
 										new_file="ERROR: "+filename+" already exists"
 									else:
 										self.manage_addFile(filename, submittedValue)
 										new_file=filename
-									if not(new_file in current_files):
-										current_files.append(new_file)
+										contenttype=getattr(self,filename).getContentType()
+									current_files[new_file]=contenttype
 								v=current_files
 						else:
 							v = submittedValue
