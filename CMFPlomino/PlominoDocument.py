@@ -431,6 +431,18 @@ class PlominoDocument(ATFolder):
 			
 		REQUEST.RESPONSE.redirect(self.absolute_url()+"/EditDocument")
 	
+	security.declarePublic('SearchableText')
+	def SearchableText(self):
+		values=[]
+		for itemname in self.items.keys():
+			try:
+				v=str(self.getRenderedItem(itemname))
+				values.append(v)
+			except:
+				pass
+		return ' '.join(values)
+			
+		
 registerType(PlominoDocument, PROJECTNAME)
 # end of class PlominoDocument
 
