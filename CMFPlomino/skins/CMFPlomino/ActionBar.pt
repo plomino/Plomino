@@ -52,6 +52,22 @@
     </tr></table>
 </span>
 
+<span metal:define-macro="SearchFormActionBar">
+	<table><tr>
+		<td><span metal:use-macro="here/ActionBar/macros/CloseAction" >display close action</span></td>
+    	<td><input type="submit" class="context" value="Search" i18n:domain="CMFPlomino" i18n:attributes="value" /></td>
+	<tal:block tal:repeat="a python:owner.getActions(here)">
+	    	<td>
+	    	<tal:block tal:define="plominoaction python:a; plominotarget python:here">
+	    		<span metal:use-macro="here/ActionBar/macros/ButtonAction" >
+					display action as a link
+				</span>
+		</tal:block>
+		</td>
+	</tal:block>
+    </tr></table>
+</span>
+
 <span metal:define-macro="ViewActionBar">
 	<table><tr>
     	<td><span metal:use-macro="here/ActionBar/macros/CloseAction" >display close action</span></td>

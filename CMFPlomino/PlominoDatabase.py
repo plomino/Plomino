@@ -39,6 +39,9 @@ import string
 import Globals
 
 from PlominoIndex import PlominoIndex
+
+import logging
+logger=logging.getLogger("Plomino")
 ##/code-section module-header
 
 schema = Schema((

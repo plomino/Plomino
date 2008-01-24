@@ -48,6 +48,7 @@ schema = Schema((
 	),
 	StringField(
 		name='DocumentTitle',
+		schemata='Parameters',
 		widget=StringWidget(
 			label="Document title formula",
 			description="Compute the document title",
@@ -56,9 +57,61 @@ schema = Schema((
 			i18n_domain='CMFPlomino',
 		)
 	),
+		
+	StringField(
+		name='ActionBarPosition',
+		default="TOP",
+		schemata='Parameters',
+		widget=SelectionWidget(
+			label="Position of the action bar",
+			description="Select the position of the action bar",
+			label_msgid='CMFPlomino_label_ActionBarPosition',
+			description_msgid='CMFPlomino_help_ActionBarPosition',
+			i18n_domain='CMFPlomino',
+		),
+		vocabulary=  [["TOP", "At the top of the page"], ["BOTTOM", "At the bottom of the page"], ["BOTH", "At the top and at the bottom of the page "]]
+	),
+	
+	BooleanField(
+		name='SearchForm',
+		schemata='Parameters',
+		default="0",
+		widget=BooleanWidget(
+			label="Search form",
+			description="A search form is only used to search documents, it cannot be saved.",
+			label_msgid='CMFPlomino_label_SearchForm',
+			description_msgid='CMFPlomino_help_SearchForm',
+			i18n_domain='CMFPlomino',
+		)
+	),
+	
+	StringField(
+		name='SearchView',
+		schemata='Parameters',
+		widget=StringWidget(
+			label="Search view",
+			description="View used to display the search results",
+			label_msgid='CMFPlomino_label_SearchView',
+			description_msgid='CMFPlomino_help_SearchView',
+			i18n_domain='CMFPlomino',
+		)
+	),
+	
+	TextField(
+		name='SearchFormula',
+		schemata='Parameters',
+		widget=TextAreaWidget(
+			label="Search formula",
+			description="Leave blank to use default Zcatalog search",
+			label_msgid='CMFPlomino_label_SearchFormula',
+			description_msgid='CMFPlomino_help_SearchFormula',
+			i18n_domain='CMFPlomino',
+		)
+	),
 	
 	TextField(
 		name='onCreateDocument',
+		schemata='Events',
 		widget=TextAreaWidget(
 			label="On create document",
 			description="Action to take when the document is created",
@@ -70,6 +123,7 @@ schema = Schema((
 	
 	TextField(
 		name='onOpenDocument',
+		schemata='Events',
 		widget=TextAreaWidget(
 			label="On open document",
 			description="Action to take when the document is opened",
@@ -81,6 +135,7 @@ schema = Schema((
 
 	TextField(
 		name='onSaveDocument',
+		schemata='Events',
 		widget=TextAreaWidget(
 			label="On save document",
 			description="Action to take when saving the document",
@@ -90,18 +145,7 @@ schema = Schema((
 		)
 	),
 
-	StringField(
-		name='ActionBarPosition',
-		default="TOP",
-		widget=SelectionWidget(
-			label="Position of the action bar",
-			description="Select the position of the action bar",
-			label_msgid='CMFPlomino_label_ActionBarPosition',
-			description_msgid='CMFPlomino_help_ActionBarPosition',
-			i18n_domain='CMFPlomino',
-		),
-		vocabulary=  [["TOP", "At the top of the page"], ["BOTTOM", "At the bottom of the page"], ["BOTH", "At the top and at the bottom of the page "]]
-	),
+
 	
 	TextField(
 		name='FormLayout',
@@ -246,7 +290,7 @@ class PlominoForm(ATFolder):
 		return [i.strip() for i in r.findall(html_content)]
 			
 	security.declareProtected(READ_PERMISSION, 'getFieldRender')
-	def getFieldRender(self,doc,field,editmode,creation=False):
+	def getFieldRender(self,doc,field,editmode,creation=False, request=None):
 		"""Rendering the field
 		"""
 		mode = field.getFieldMode()
@@ -255,7 +299,10 @@ class PlominoForm(ATFolder):
 		# compute the value
 		if mode=="EDITABLE":
 			if doc is None:
-				fieldValue = ""
+				if request is None:
+					fieldValue = ""
+				else:
+					fieldValue = request.get(fieldName)
 			else:
 				fieldValue = doc.getItem(fieldName)
 
@@ -303,7 +350,7 @@ class PlominoForm(ATFolder):
 
 
 	security.declareProtected(READ_PERMISSION, 'displayDocument')
-	def displayDocument(self,doc,editmode=False, creation=False, subform=False):
+	def displayDocument(self,doc,editmode=False, creation=False, subform=False, request=None):
 		"""display the document using the form's layout
 		"""
 		html_content = self.getField('FormLayout').get(self, mimetype='text/html')
@@ -334,7 +381,7 @@ class PlominoForm(ATFolder):
 		# insert the fields with proper value and rendering
 		for field in self.getFields():
 			fieldName = field.id
-			html_content = html_content.replace('<span class="plominoFieldClass">'+fieldName+'</span>', self.getFieldRender(doc, field, editmode, creation))
+			html_content = html_content.replace('<span class="plominoFieldClass">'+fieldName+'</span>', self.getFieldRender(doc, field, editmode, creation, request=request))
 		
 		# insert subforms
 		for subformname in self.getSubforms():
@@ -356,12 +403,39 @@ class PlominoForm(ATFolder):
 		return html_content
 
 	security.declarePublic('formLayout')
-	def formLayout(self):
+	def formLayout(self, request=None):
 		"""return the form layout in edit mode (used to compose a new
 		document)
 		"""
-		return self.displayDocument(None, True, True)
+		return self.displayDocument(None, True, True, request=request)
 
+
+	security.declareProtected(READ_PERMISSION, 'searchDocuments')
+	def searchDocuments(self,REQUEST):
+		"""search documents in the view matching the submitted form fields values
+		"""
+		db = self.getParentDatabase()
+		searchview = db.getView(self.getSearchView())
+		index = db.getIndex()
+		query={'PlominoViewFormula_'+searchview.getViewName() : True}
+		
+		for f in self.getFields(includesubforms=True):
+			fieldName = f.id
+			submittedValue = REQUEST.get(fieldName)
+			if submittedValue is not None:
+				if not submittedValue=='':
+					# if non-text field, convert the value
+					if f.getFieldType()=="NUMBER":
+						v = long(submittedValue)
+					elif f.getFieldType()=="DATETIME":
+						#v = strptime(submittedValue, "%d/%m/%Y")
+						v = StringToDate(submittedValue, '%Y-%m-%d %H:%M')
+					else:
+						v = submittedValue
+					query[fieldName]=v
+		results=index.dbsearch(query, None)
+		return self.OpenForm(searchresults=results)
+		
 	security.declarePublic('getActions')
 	def getActions(self, target, hide=True):
 		"""Get actions

@@ -124,7 +124,8 @@ class PlominoIndex(UniqueObject, ZCatalog, ActionProviderBase):
 		"""
 		"""
 		try:
-			self.addIndex(fieldname, 'KeywordIndex')
+			#self.addIndex(fieldname, 'KeywordIndex')
+			self.addIndex(fieldname, 'TextIndex')
 			self.addColumn(fieldname)
 		except CatalogError:
 			# index already exists
