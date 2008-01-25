@@ -1,7 +1,6 @@
 <tal:block tal:define="v options/fieldvalue">
 	<tal:block tal:condition="python:test(v)">
 		<span>
-			<!--<input type="text" tal:attributes="name options/fieldname; value python:v.strftime('%d/%m/%Y')" />-->
 			<tal:block define="id options/fieldname;
 							show_hm widget/show_hm|nothing;
                             show_ymd widget/show_ymd|nothing;

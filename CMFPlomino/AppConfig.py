@@ -28,5 +28,18 @@ ACL_PERMISSION = 'CMFPlomino: Control Database ACL'
 
 SAFE_UTILS='DateToString, StringToDate, DateRange, sendMail, userFullname, userInfo'
 
+FIELD_TYPES={"TEXT": ["Text", "ZCTextIndex"],
+             "NUMBER": ["Number", "FieldIndex"],
+             "RICHTEXT": ["Rich text", "ZCTextIndex"],
+             "DATETIME": ["Date/Time", "DateIndex"],
+             "NAME": ["Name", "FieldIndex"],
+             "NAMES": ["Names", "FieldIndex"],
+             "SELECTION": ["Selection list", "ZCTextIndex"],
+             "MULTISELECTION": ["Multi-Selection list", "ZCTextIndex"],
+             "CHECKBOX": ["Check boxes", "ZCTextIndex"],
+             "RADIO": ["Radio buttons", "ZCTextIndex"],
+             "ATTACHMENT": ["File attachment", "ZCTextIndex"]
+             }
+
 
 

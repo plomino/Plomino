@@ -33,8 +33,13 @@ from Products.ZCatalog.ZCatalog import LOG
 from Products.ZCatalog.ZCatalog import ZCatalog
 from Products.ZCatalog.Catalog import CatalogError
 
+from Products.ZCTextIndex.Lexicon import CaseNormalizer
+from Products.ZCTextIndex.Lexicon import Splitter
+from Products.ZCTextIndex.Lexicon import StopWordRemover
+from Products.ZCTextIndex.ZCTextIndex import PLexicon
+
 from Products.CMFCore.ActionProviderBase import ActionProviderBase
-from Products.CMFCore.utils import UniqueObject
+from Products.CMFCore.utils import UniqueObject, SimpleRecord
 
 from Products.CMFPlomino.config import PROJECTNAME
 from Products.CMFPlomino.PlominoCatalog import PlominoCatalog
@@ -100,6 +105,8 @@ class PlominoIndex(UniqueObject, ZCatalog, ActionProviderBase):
 		"""
 		ZCatalog.__init__(self, self.getId())
 		self._catalog = PlominoCatalog()
+		lexicon = PLexicon('plaintext_lexicon', '', Splitter(), CaseNormalizer(), StopWordRemover())
+		self._setObject('plaintext_lexicon', lexicon)
 
 	security.declareProtected(READ_PERMISSION, 'getParentDatabase')
 	def getParentDatabase(self):
@@ -120,12 +127,17 @@ class PlominoIndex(UniqueObject, ZCatalog, ActionProviderBase):
 		self.refreshCatalog()
 		
 	security.declareProtected(DESIGN_PERMISSION, 'createFieldIndex')
-	def createFieldIndex(self,fieldname):
+	def createFieldIndex(self,fieldname, fieldtype):
 		"""
 		"""
 		try:
 			#self.addIndex(fieldname, 'KeywordIndex')
-			self.addIndex(fieldname, 'TextIndex')
+			indextype=FIELD_TYPES[fieldtype][1]
+			if indextype=='ZCTextIndex':
+				plaintext_extra = SimpleRecord( lexicon_id='plaintext_lexicon', index_type='Okapi BM25 Rank')
+				self.addIndex(fieldname, 'ZCTextIndex', plaintext_extra)
+			else:
+				self.addIndex(fieldname, indextype)
 			self.addColumn(fieldname)
 		except CatalogError:
 			# index already exists

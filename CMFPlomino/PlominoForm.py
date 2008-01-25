@@ -33,6 +33,7 @@ from ZPublisher.HTTPResponse import HTTPResponse
 import re
 
 import PlominoDocument
+from Products.CMFPlomino.PlominoUtils import StringToDate
 ##/code-section module-header
 
 schema = Schema((
@@ -303,6 +304,8 @@ class PlominoForm(ATFolder):
 					fieldValue = ""
 				else:
 					fieldValue = request.get(fieldName)
+					if field.getFieldType()=="DATETIME" and not (fieldValue=='' or fieldValue is None):
+						fieldValue = StringToDate(fieldValue, '%Y-%m-%d %H:%M')
 			else:
 				fieldValue = doc.getItem(fieldName)
 
@@ -429,7 +432,8 @@ class PlominoForm(ATFolder):
 						v = long(submittedValue)
 					elif f.getFieldType()=="DATETIME":
 						#v = strptime(submittedValue, "%d/%m/%Y")
-						v = StringToDate(submittedValue, '%Y-%m-%d %H:%M')
+						#v = StringToDate(submittedValue, '%Y-%m-%d %H:%M')
+						v = submittedValue
 					else:
 						v = submittedValue
 					query[fieldName]=v

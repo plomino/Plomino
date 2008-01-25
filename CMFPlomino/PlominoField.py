@@ -60,18 +60,7 @@ schema = Schema((
 			description_msgid='CMFPlomino_help_FieldType',
 			i18n_domain='CMFPlomino',
 		),
-		vocabulary= [["TEXT", "Text"],
-					 ["NUMBER", "Number"],
-					 ["RICHTEXT", "Rich text"],
-					 ["DATETIME", "Date/Time"],
-					 ["NAME", "Name"],
-					 ["NAMES", "Names"],
-					 ["SELECTION", "Selection list"],
-					 ["MULTISELECTION", "Multi-Selection list"],
-					 ["CHECKBOX", "Check boxes"],
-					 ["RADIO", "Radio buttons"],
-					 ["ATTACHMENT", "File attachment"]
-					 ]
+		vocabulary= [[f, FIELD_TYPES[f][0]] for f in FIELD_TYPES.keys()]
 	),
 
 	StringField(
@@ -215,7 +204,7 @@ class PlominoField(BaseContent):
 		self.cleanFormulaScripts("field_"+self.getParentNode().id+"_"+self.id)
 		db = self.getParentDatabase()
 		if self.getToBeIndexed() :
-			db.getIndex().createFieldIndex(self.id)
+			db.getIndex().createFieldIndex(self.id, self.getFieldType())
 
 	security.declarePublic('at_post_create_script')
 	def at_post_create_script(self):
@@ -223,7 +212,7 @@ class PlominoField(BaseContent):
 		"""
 		db = self.getParentDatabase()
 		if self.getToBeIndexed():
-			db.getIndex().createFieldIndex(self.id)
+			db.getIndex().createFieldIndex(self.id, self.getFieldType())
 
 registerType(PlominoField, PROJECTNAME)
 # end of class PlominoField

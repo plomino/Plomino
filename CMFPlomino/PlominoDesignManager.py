@@ -86,7 +86,7 @@ class PlominoDesignManager:
 		for f_obj in self.getForms() :
 			for f in f_obj.getFields() :
 				if f.getToBeIndexed() :
-					self.getIndex().createFieldIndex(f.id)
+					self.getIndex().createFieldIndex(f.id, f.getFieldType())
 		logger.info('Index structure initialized')
 		
 		#reindex all the documents
