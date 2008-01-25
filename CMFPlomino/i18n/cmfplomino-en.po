@@ -227,6 +227,16 @@ msgstr "Attachments:"
 msgid "go_link"
 msgstr "Go"
 
+# OpenDatabase
+msgid "Browse"
+msgstr "Browse"
+
+msgid "Search"
+msgstr "Search"
+
+msgid "Add new content"
+msgstr "Add new content"
+
 #Gantt view labels
 msgid "From"
 msgstr "From"
