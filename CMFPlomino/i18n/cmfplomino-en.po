@@ -33,22 +33,85 @@ msgstr "Categorised on first column"
 
 #. Default: "What this action can do"
 #: PlominoAction.py
-#: PlominoField.py
 msgid "CMFPlomino_help_Description"
 msgstr "What this action can do"
 
-#. Default: "How conten will be generated"
-#: PlominoField.py
-msgid "CMFPlomino_help_FieldMode"
-msgstr "How content will be generated"
+#: PlominoForm.py
+msgid "CMFPlomino_label_FormId"
+msgstr "Id"
+msgid "CMFPlomino_help_FormId"
+msgstr "The form id"
+msgid "CMFPlomino_label_DocumentTitle"
+msgstr "Document title formula"
+msgid "CMFPlomino_help_DocumentTitle"
+msgstr "Compute the document title"
+msgid "CMFPlomino_label_SearchForm"
+msgstr "Search form"
+msgid "CMFPlomino_help_SearchForm"
+msgstr "A search form is only used to search documents, it cannot be saved."
+msgid "CMFPlomino_label_SearchView"
+msgstr "Search view"
+msgid "CMFPlomino_help_SearchView"
+msgstr "View used to display the search results"
+msgid "CMFPlomino_label_SearchFormula"
+msgstr "Search formula"
+msgid "CMFPlomino_help_SearchFormula"
+msgstr "Leave blank to use default Zcatalog search"
+msgid "CMFPlomino_label_onCreateDocument"
+msgstr "On create document"
+msgid "CMFPlomino_help_onCreateDocument"
+msgstr "Action to take when the document is created"
+msgid "CMFPlomino_label_onOpenDocument"
+msgstr "On open document"
+msgid "CMFPlomino_help_onOpenDocument"
+msgstr "Action to take when the document is opened"
+msgid "CMFPlomino_label_onSaveDocument"
+msgstr "On save document"
+msgid "CMFPlomino_help_onSaveDocument"
+msgstr "Action to take when saving the document"
+msgid "CMFPlomino_label_FormLayout"
+msgstr "Form layout"
+msgid "CMFPlomino_help_FormLayout"
+msgstr "The form layout. text with 'Plominofield' style correspond to the contained field elements"
 
-#. Default: "The kind of this field"
+#: PlominoForm.py
+#: PlominoView.py
+msgid "CMFPlomino_label_ActionBarPosition"
+msgstr "Position of the action bar"
+msgid "CMFPlomino_help_ActionBarPosition"
+msgstr "Select the position of the action bar"
+
 #: PlominoField.py
+msgid "CMFPlomino_label_FieldId"
+msgstr "Id"
+msgid "CMFPlomino_help_FieldId"
+msgstr "The field id"
+msgid "CMFPlomino_label_FieldIndex"
+msgstr "Add to index"
+msgid "CMFPlomino_help_FieldIndex"
+msgstr "The field will be searchable"
+msgid "CMFPlomino_label_FieldType"
+msgstr "Field type"
 msgid "CMFPlomino_help_FieldType"
 msgstr "The kind of this field"
+msgid "CMFPlomino_label_FieldMode"
+msgstr "Field mode"
+msgid "CMFPlomino_help_FieldMode"
+msgstr "How content will be generated"
+msgid "CMFPlomino_label_FieldFormula"
+msgstr "Formula"
+msgid "CMFPlomino_help_FieldFormula"
+msgstr "How to calculate field content"
+msgid "CMFPlomino_label_SelectionList"
+msgstr "Selection list"
+msgid "CMFPlomino_help_SelectionList"
+msgstr "List of selectable values, one for line. Use | to separate label and value."
+msgid "CMFPlomino_label_SelectionListFormula"
+msgstr "Selection list formula"
+msgid "CMFPlomino_help_SelectionListFormula"
+msgstr "Formula to compute the selection list elements"
 
 #. Default: "How to calculate field content"
-#: PlominoField.py
 #: PlominoColumn.py
 #: PlominoHidewhen.py
 msgid "CMFPlomino_help_Formula"
@@ -58,11 +121,6 @@ msgstr "How to calculate field content"
 #: PlominoAction.py
 msgid "CMFPlomino_help_Label"
 msgstr "The action name"
-
-#. Default: "The form layout. text with 'Plominofield' style correspond to the contained field elements"
-#: PlominoForm.py
-msgid "CMFPlomino_help_FormLayout"
-msgstr "The form layout. Text with 'Plominofield' style correspond to the contained field elements"
 
 #. Default: "Position in view"
 #: PlominoColumn.py
@@ -74,25 +132,10 @@ msgstr "Position in view"
 msgid "CMFPlomino_help_SelectionFormula"
 msgstr "The view selection formula is a line of Python code which should return True or False. The formula will be evaluated for each document in the database to decide if the document must be displayed in the view or not. plominoDocument is a reserved name in formulae, it returns the current Plomino document. Each document field value can be accessed directly as an attribute of the document: plominoDocument.<fieldname>"
 
-#. Default: "Listo of values to select, one for line"
-#: PlominoField.py
-msgid "CMFPlomino_help_SelectionList"
-msgstr "List of values to select, one for line"
-
 #. Default: "Column used to sort the view"
 #: PlominoView.py
 msgid "CMFPlomino_help_SortColumn"
 msgstr "Column used to sort the view"
-
-#. Default: "Action to take when the document is opned"
-#: PlominoForm.py
-msgid "CMFPlomino_help_onOpenDocument"
-msgstr "Action to take when the document is opened"
-
-#. Default: "Action to take when saving the document"
-#: PlominoForm.py
-msgid "CMFPlomino_help_onSaveDocument"
-msgstr "Action to take when saving the document"
 
 #. Default: "Action display"
 #: PlominoAction.py
@@ -111,22 +154,10 @@ msgstr "Categorized"
 
 #. Default: "Description"
 #: PlominoAction.py
-#: PlominoField.py
 msgid "CMFPlomino_label_Description"
 msgstr "Description"
 
-#. Default: "Field mode"
-#: PlominoField.py
-msgid "CMFPlomino_label_FieldMode"
-msgstr "Field mode"
-
-#. Default: "Field type"
-#: PlominoField.py
-msgid "CMFPlomino_label_FieldType"
-msgstr "Field type"
-
 #. Default: "Formula"
-#: PlominoField.py
 #: PlominoColumn.py
 #: PlominoHidewhen.py
 msgid "CMFPlomino_label_Formula"
@@ -136,11 +167,6 @@ msgstr "Formula"
 #: PlominoAction.py
 msgid "CMFPlomino_label_Label"
 msgstr "Label"
-
-#. Default: "Form layout"
-#: PlominoForm.py
-msgid "CMFPlomino_label_FormLayout"
-msgstr "Form layout"
 
 #. Default: "Position"
 #: PlominoColumn.py
@@ -152,27 +178,10 @@ msgstr "Position"
 msgid "CMFPlomino_label_SelectionFormula"
 msgstr "Selection formula"
 
-#. Default: "Selection list"
-#: PlominoField.py
-msgid "CMFPlomino_label_SelectionList"
-msgstr "Selection list"
-
 #. Default: "Sort column"
 #: PlominoView.py
 msgid "CMFPlomino_label_SortColumn"
 msgstr "Sort column"
-
-#. Default: "On open document"
-#: PlominoForm.py
-msgid "CMFPlomino_label_onOpenDocument"
-msgstr "On open document"
-
-#. Default: "On save document"
-#: PlominoForm.py
-msgid "CMFPlomino_label_onSaveDocument"
-msgstr "On save document"
-
-# added by hand due to archgenxml problem 
 
 #. Default: "Form Formula"
 #: PlominoView.py
