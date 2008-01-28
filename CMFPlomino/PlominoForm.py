@@ -297,6 +297,11 @@ class PlominoForm(ATFolder):
 		mode = field.getFieldMode()
 		fieldName = field.id
 		
+		if doc is None:
+			target = self
+		else:
+			target = doc
+			
 		# compute the value
 		if mode=="EDITABLE":
 			if doc is None:
@@ -312,7 +317,7 @@ class PlominoForm(ATFolder):
 		if mode=="DISPLAY" or mode=="COMPUTED":
 			try:
 				#fieldValue = RunFormula(doc, field.getFormula())
-				fieldValue = self.runFormulaScript("field_"+self.id+"_"+field.id+"_formula", doc, field.getFormula)
+				fieldValue = self.runFormulaScript("field_"+self.id+"_"+field.id+"_formula", target, field.getFormula)
 			except Exception:
 				fieldValue = ""
 		
@@ -348,7 +353,7 @@ class PlominoForm(ATFolder):
 			self.REQUEST['RESPONSE']=HTTPResponse()
 		return pt(fieldname=fieldName,
 			fieldvalue=fieldValue,
-			selection=field.getProperSelectionList(doc)
+			selection=field.getProperSelectionList(target)
 			)
 
 

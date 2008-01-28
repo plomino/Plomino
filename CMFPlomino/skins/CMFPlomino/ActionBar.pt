@@ -4,7 +4,7 @@
 			<td><input type="button" class="context" value="Edit" i18n:domain="CMFPlomino" i18n:attributes="value" 
 				tal:attributes="onclick python:'location.href=\''+here.navigationParent(here)+'/'+here.id+'/EditDocument\''"/>
 			</td>		
-<td><span metal:use-macro="here/ActionBar/macros/DeleteAction" >display delete action</span></td>
+<td tal:condition="python:not(here.getCurrentUser().getUserName()=='Anonymous User')"><span metal:use-macro="here/ActionBar/macros/DeleteAction" >display delete action</span></td>
 		</tal:block>
     	<td><span metal:use-macro="here/ActionBar/macros/CloseAction" >display close action</span></td>
 		<tal:block tal:repeat="a python:owner.getActions(here)">
@@ -23,7 +23,7 @@
 	<table><tr>
 		<td><span metal:use-macro="here/ActionBar/macros/CloseAction" >display close action</span></td>
     	<td><input type="submit" class="context" value="Save" i18n:domain="CMFPlomino" i18n:attributes="value" /></td>
-    	<td><span metal:use-macro="here/ActionBar/macros/DeleteAction" >display delete action</span></td>
+    	<td tal:condition="python:not(here.getCurrentUser().getUserName()=='Anonymous User')"><span metal:use-macro="here/ActionBar/macros/DeleteAction" >display delete action</span></td>
 		<tal:block tal:repeat="a python:owner.getActions(here)">
 	    	<td>
 	    	<tal:block tal:define="plominoaction python:a; plominotarget python:here">
