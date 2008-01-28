@@ -226,6 +226,11 @@ class PlominoDocument(ATFolder):
 		"""
 		db = self.getParentDatabase()
 		form = db.getForm(REQUEST.get('Form'))
+		
+		errors=form.validateInputs(REQUEST)
+		if len(errors)>0:
+			return form.notifyErrors(errors)
+		
 		self.setItem('Form', form.getFormName())
 
 		# process editable fields (we read the submitted value in the request)

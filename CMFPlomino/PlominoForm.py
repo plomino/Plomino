@@ -223,6 +223,9 @@ class PlominoForm(ATFolder):
 		"""create a document using the forms submitted content
 		"""
 		db = self.getParentDatabase()
+		errors=self.validateInputs(REQUEST)
+		if len(errors)>0:
+			return self.notifyErrors(errors)
 		doc = db.createDocument()
 		doc.setItem('Form', self.getFormName())
 
@@ -481,8 +484,44 @@ class PlominoForm(ATFolder):
 		regexp = '<span class="plominoHidewhenClass"></span>'
 		self.setFormLayout(html_content)
 
-
-
+	security.declarePublic('validateInputs')
+	def validateInputs(self, REQUEST):
+		errors=[]
+		for f in self.getFields(includesubforms=True):
+			fieldname = f.id
+			fieldtype = f.getFieldType()
+			submittedValue = REQUEST.get(fieldname)
+			
+			# STEP 1: check mandatory fields
+			if submittedValue is None or submittedValue=='':
+				if f.getMandatory()==True:
+					errors.append(fieldname+" is mandatory")
+			else:
+				# STEP 2: check data types
+				if fieldtype=="NUMBER":
+					try:
+						v = long(submittedValue)
+					except:
+						errors.append(fieldname+" must be a number (submitted value was: "+submittedValue+")")
+				if fieldtype=="DATETIME":
+					try:
+						v = StringToDate(submittedValue, '%Y-%m-%d %H:%M')
+					except:
+						errors.append(fieldname+" must be a date/time (submitted value was: "+submittedValue+")")
+				
+				# STEP 3: check validation formula
+				
+								
+		return errors
+	
+	security.declarePublic('notifyError')
+	def notifyErrors(self, errors):
+		msg="<html><body><script>"
+		for e in errors:
+			msg=msg+"alert('"+e+"');"
+		msg=msg+"history.back()</script></body></html>"
+		return msg
+	
 registerType(PlominoForm, PROJECTNAME)
 # end of class PlominoForm
 

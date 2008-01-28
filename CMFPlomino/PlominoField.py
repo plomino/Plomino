@@ -40,6 +40,29 @@ schema = Schema((
 		)
 	),
 	BooleanField(
+		name='Mandatory',
+		default="0",
+		schemata='Validation',
+		widget=BooleanWidget(
+			label="Mandatory",
+			description="Is this field mandatory? (empty value will not be allowed)",
+			label_msgid='CMFPlomino_label_FieldMandatory',
+			description_msgid='CMFPlomino_help_FieldMandatory',
+			i18n_domain='CMFPlomino',
+		)
+	),
+	TextField(
+		name='ValidationFormula',
+		schemata='Validation',
+		widget=TextAreaWidget(
+			label="Validation formula",
+			description="Evaluate the input validation",
+			label_msgid='CMFPlomino_label_FieldValidation',
+			description_msgid='CMFPlomino_help_FieldValidation',
+			i18n_domain='CMFPlomino',
+		)
+	),
+	BooleanField(
 		name='ToBeIndexed',
 		default="0",
 		widget=BooleanWidget(
@@ -89,6 +112,7 @@ schema = Schema((
 
 	LinesField(
 		name='SelectionList',
+		schemata='Selection',
 		widget=LinesWidget(
 			label="Selection list",
 			description="List of selectable values, one for line",
@@ -100,6 +124,7 @@ schema = Schema((
 	
 	TextField(
 		name='SelectionListFormula',
+		schemata='Selection',
 		widget=TextAreaWidget(
 			label="Selection list formula",
 			description="Formula to compute the selection list elements",
