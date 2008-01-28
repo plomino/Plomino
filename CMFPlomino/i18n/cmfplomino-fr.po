@@ -72,7 +72,7 @@ msgstr "Position dans la vue"
 #. Default: "The view selection formula is a line of Python code which should return True or False. The formula will be evaluated for each document in the database to decide if the document must be displayed in the view or not. plominoDocument is a reserved name in formulae, it returns the current Plomino document. Each document field value can be accessed directly as an attribute of the document: plominoDocument.<fieldname>"
 #: PlominoView.py
 msgid "CMFPlomino_help_SelectionFormula"
-msgstr "La formule de sélection de la vue est une ligne de code Python qui doit retoruner un booléen. La formule sera évaluée pour chaque document dans la base Plomino pour établir si le document doit apparaître dans la vue ou pas. plominoDocument est un mot-clé réservé dans les formules, il retourne le document courant. Chaque valuer de champ du document peut être accédée de la même manière qu'un attribut: plominoDocument.<fieldname>"
+msgstr "La formule de sélection de la vue est une ligne de code Python qui doit retourner un booléen. La formule sera évaluée pour chaque document dans la base Plomino pour établir si le document doit apparaître dans la vue ou pas. plominoDocument est un mot-clé réservé dans les formules, il retourne le document courant. Chaque valuer de champ du document peut être accédée de la même manière qu'un attribut: plominoDocument.<fieldname>"
 
 #. Default: "Listo of values to select, one for line"
 #: PlominoField.py
@@ -155,7 +155,7 @@ msgstr "Formule de sélection"
 #. Default: "Selection list"
 #: PlominoField.py
 msgid "CMFPlomino_label_SelectionList"
-msgstr "Liste de sélection"
+msgstr "Liste de selection"
 
 #. Default: "Sort column"
 #: PlominoView.py

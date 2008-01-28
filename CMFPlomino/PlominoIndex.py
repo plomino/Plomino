@@ -40,11 +40,13 @@ from Products.ZCTextIndex.ZCTextIndex import PLexicon
 
 from Products.CMFCore.ActionProviderBase import ActionProviderBase
 from Products.CMFCore.utils import UniqueObject, SimpleRecord
+from Products.CMFCore.utils import getToolByName
 
 from Products.CMFPlomino.config import PROJECTNAME
 from Products.CMFPlomino.PlominoCatalog import PlominoCatalog
 from Products.CMFPlomino.PlominoViewIndex import PlominoViewIndex
 from Products.CMFPlomino.PlominoColumnIndex import PlominoColumnIndex
+from Products.CMFPlomino.PlominoFileIndex import PlominoFileIndex
 ##/code-section module-header
 
 schema = Schema((
@@ -136,6 +138,9 @@ class PlominoIndex(UniqueObject, ZCatalog, ActionProviderBase):
 			if indextype=='ZCTextIndex':
 				plaintext_extra = SimpleRecord( lexicon_id='plaintext_lexicon', index_type='Okapi BM25 Rank')
 				self.addIndex(fieldname, 'ZCTextIndex', plaintext_extra)
+				if fieldtype=='ATTACHMENT' and self.getParentDatabase().getIndexAttachments():
+					self._catalog.addIndex('PlominoFiles_'+fieldname,PlominoFileIndex('PlominoFiles_'+fieldname, caller=self, extra=plaintext_extra))
+					#self.addIndex('PlominoFiles_'+fieldname, 'ZCTextIndex', plaintext_extra)
 			else:
 				self.addIndex(fieldname, indextype)
 			self.addColumn(fieldname)
@@ -193,6 +198,37 @@ class PlominoIndex(UniqueObject, ZCatalog, ActionProviderBase):
 		"""
 		return self.uniqueValuesFor(key)
 
+	security.declarePublic('convertFileToText')
+	def convertFileToText(self, doc, field):
+		""" (adapted from Plone3 ATContentTypes file class)
+		"""
+		source   = ''
+		mimetype = 'text/plain'
+		encoding = 'utf-8'
+		
+		if hasattr(doc.getItem(field), 'keys'):
+			files=doc.getItem(field)
+			# stage 1: get the searchable text and convert it to utf8
+			sp    = getToolByName(self, 'portal_properties').site_properties
+			stEnc = getattr(sp, 'default_charset', 'utf-8')
+		
+			# get the file and try to convert it to utf8 text
+			ptTool = getToolByName(self, 'portal_transforms')
+			for filename in files.keys():
+				f = getattr(doc, filename)
+				if f:
+					mt = files[filename]
+					try:
+						result = ptTool.convertTo('text/plain', str(f), mimetype=mt)
+						if result:
+							data = result.getData()
+						else:
+							data = ''
+					except TransformException:
+						data = ''
+					source+=data
+
+		return source
 
 # end of class PlominoIndex
 

@@ -182,7 +182,7 @@ class PlominoDocument(ATFolder):
 		return self.items.keys()
 
 	security.declarePublic('getRenderedItem')
-	def getRenderedItem(self, itemname, form=None):
+	def getRenderedItem(self, itemname, form=None, convertattachments=False):
 		""" return the item value rendered according the field defined in the given form
 		(use default doc form if None)
 		"""
@@ -191,7 +191,10 @@ class PlominoDocument(ATFolder):
 			form = db.getForm(self.Form)
 		field=form.getFormField(itemname)
 		if not field is None:
-			return form.getFieldRender(self, field, False)
+			content = form.getFieldRender(self, field, False)
+			if field.getFieldType()=='ATTACHMENT':
+				content = content+' '+db.getIndex().convertFileToText(self,itemname)
+			return content
 		else:
 			return ''
 
@@ -250,7 +253,7 @@ class PlominoDocument(ATFolder):
 									if filename!='':
 										if current_files=='':
 											current_files={}
-										if hasattr(self, filename):
+										if filename in self.objectIds():
 											new_file="ERROR: "+filename+" already exists"
 										else:
 											self.manage_addFile(filename, submittedValue)
@@ -437,9 +440,10 @@ class PlominoDocument(ATFolder):
 	security.declarePublic('SearchableText')
 	def SearchableText(self):
 		values=[]
+		index_attachments=self.getParentDatabase().getIndexAttachments()
 		for itemname in self.items.keys():
 			try:
-				v=str(self.getRenderedItem(itemname))
+				v=str(self.getRenderedItem(itemname,form=None, convertattachments=index_attachments))
 				values.append(v)
 			except:
 				pass

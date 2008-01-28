@@ -69,6 +69,18 @@ schema = Schema((
 		),
 		default_output_type='text/html'
 	),
+	
+	BooleanField(
+		name='IndexAttachments',
+		default="0",
+		widget=BooleanWidget(
+			label="Index file attachments",
+			description="If enabled, files attached in File Attachments fields will be indexed. It might increase the index size.",
+			label_msgid='CMFPlomino_label_IndexAttachments',
+			description_msgid='CMFPlomino_help_IndexAttachments',
+			i18n_domain='CMFPlomino',
+		)
+	),
 ),
 )
 
