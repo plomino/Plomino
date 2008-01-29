@@ -34,6 +34,10 @@ import re
 
 import PlominoDocument
 from Products.CMFPlomino.PlominoUtils import StringToDate
+from PlominoDesignManager import TemporaryDocument
+import logging
+logger=logging.getLogger("Plomino")
+
 ##/code-section module-header
 
 schema = Schema((
@@ -293,6 +297,46 @@ class PlominoForm(ATFolder):
 		r = re.compile('<span class="plominoSubformClass">([^<]+)</span>')
 		return [i.strip() for i in r.findall(html_content)]
 			
+	security.declarePublic('readInputs')
+	def readInputs(self, doc, REQUEST, process_attachments=False):
+		""" read submitted values in REQUEST and store them in document according
+		fields definition
+		"""
+		for f in self.getFields(includesubforms=True):
+			mode = f.getFieldMode()
+			fieldName = f.id
+			if mode=="EDITABLE":
+				submittedValue = REQUEST.get(fieldName)
+				if submittedValue is not None:
+					if submittedValue=='':
+						doc.removeItem(fieldName)
+					else:
+						# if non-text field, convert the value
+						if f.getFieldType()=="NUMBER":
+							v = long(submittedValue)
+						elif f.getFieldType()=="DATETIME":
+							#v = strptime(submittedValue, "%d/%m/%Y")
+							v = StringToDate(submittedValue, '%Y-%m-%d %H:%M')
+						elif f.getFieldType()=="ATTACHMENT" and process_attachments:
+							if isinstance(submittedValue, FileUpload):
+								filename=submittedValue.filename
+								current_files=doc.getItem(fieldName)
+								contenttype=''
+								if filename!='':
+									if current_files=='':
+										current_files={}
+									if filename in doc.objectIds():
+										new_file="ERROR: "+filename+" already exists"
+									else:
+										doc.manage_addFile(filename, submittedValue)
+										new_file=filename
+										contenttype=getattr(doc,filename).getContentType()
+									current_files[new_file]=contenttype
+								v=current_files
+						else:
+							v = submittedValue
+						doc.setItem(fieldName, v)
+						
 	security.declareProtected(READ_PERMISSION, 'getFieldRender')
 	def getFieldRender(self,doc,field,editmode,creation=False, request=None):
 		"""Rendering the field
@@ -508,9 +552,19 @@ class PlominoForm(ATFolder):
 						v = StringToDate(submittedValue, '%Y-%m-%d %H:%M')
 					except:
 						errors.append(fieldname+" must be a date/time (submitted value was: "+submittedValue+")")
-				
-				# STEP 3: check validation formula
-				
+		
+		# STEP 3: check validation formula
+		tmp = TemporaryDocument(self.getParentDatabase(), self, REQUEST)
+		for f in self.getFields(includesubforms=True):
+			formula = f.getValidationFormula()
+			if not formula=='':
+				s=''
+				try:
+					s = self.runFormulaScript("field_"+self.id+"_"+f.id+"_ValidationFormula", tmp, f.getValidationFormula)
+				except:
+					pass
+				if not s=='':
+					errors.append(s)
 								
 		return errors
 	
@@ -526,6 +580,7 @@ registerType(PlominoForm, PROJECTNAME)
 # end of class PlominoForm
 
 ##code-section module-footer #fill in your manual code here
+	
 ##/code-section module-footer
 
 

@@ -95,6 +95,5 @@ def userInfo(db, userid):
 	user=getToolByName(db, 'portal_membership').getMemberById(userid)
 	return user
 
-	
 
 		

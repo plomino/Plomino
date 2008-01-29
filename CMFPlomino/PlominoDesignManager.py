@@ -29,6 +29,7 @@ from OFS.Folder import *
 from OFS.XMLExportImport import *
 import logging
 from PlominoIndex import PlominoIndex
+from PlominoDocument import PlominoDocument
 from HttpUtils import authenticateAndLoadURL, authenticateAndPostToURL
 from Products.PythonScripts.PythonScript import PythonScript
 import re
@@ -341,4 +342,13 @@ class PlominoDesignManager:
 		formula=lambda:script_code+'\n\nreturn '+methodname+'(*args)'
 		return self.runFormulaScript(id, self, formula, True, *args)
 
+class TemporaryDocument(PlominoDocument):
+	def __init__(self, parent, form, REQUEST):
+		self._parent=parent
+		self.items={}
+		self.setItem('Form', form.getFormName())
+		form.readInputs(self, REQUEST)
+		
+	def getParentDatabase(self):
+		return self._parent
 	
