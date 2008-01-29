@@ -17,19 +17,7 @@
 				</span>
 			</tal:block>
 			<span tal:content="structure python:here.openWithForm(myF)" />
-<tal:attachments tal:define="attachments python:here.getFolderContents()" tal:condition="python:len(attachments)>0">
-<span i18n:domain="CMFPlomino" i18n:translate="attachments_label">Attachments:</span>
-<dl tal:repeat="item attachments">
-<dt tal:define="item_url item/getURL|item/absolute_url;
-                item_type item/portal_type;
-                item_title_or_id item/pretty_title_or_id;
-                item_type_class python: 'visualIcon contenttype-' + normalizeString(item_type);">
-<span tal:attributes="class string:$item_type_class summary">
-<a href="#" tal:attributes="href item_url" class="visualIconPadding url" tal:content="item_title_or_id">attachment title</a>
-</span>
-</dt>
-</dl>
-</tal:attachments>
+
 			<tal:block
 			tal:define="owner python:myF"
 			tal:condition="python:test((b and  myF.ActionBarPosition!='TOP'),True, False)"

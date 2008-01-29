@@ -330,6 +330,8 @@ class PlominoDocument(ATFolder):
 			
 		# update index
 		db.getIndex().indexDocument(self)
+		# update portal_catalog
+		self.reindexObject()
 		
 	security.declareProtected(READ_PERMISSION, 'openWithForm')
 	def openWithForm(self,form,editmode=False):
