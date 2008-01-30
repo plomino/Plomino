@@ -29,6 +29,7 @@ from Products.CMFPlomino.config import *
 from Products.Archetypes.public import *
 from Products.Archetypes.utils import make_uuid
 from ZPublisher.HTTPResponse import HTTPResponse
+from ZPublisher.HTTPRequest import FileUpload
 
 import re
 

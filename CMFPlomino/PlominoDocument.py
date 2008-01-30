@@ -33,7 +33,6 @@ from time import strptime
 from DateTime import DateTime
 from Products.CMFPlomino.PlominoUtils import StringToDate, sendMail
 from Acquisition import *
-from ZPublisher.HTTPRequest import FileUpload
 
 import PlominoDatabase
 import PlominoView
