@@ -79,6 +79,19 @@ schema = Schema((
 	),
 	
 	BooleanField(
+		name='HideInMenu',
+		schemata='Parameters',
+		default="0",
+		widget=BooleanWidget(
+			label="Hide in menu",
+			description="It will not appear in the database main menu",
+			label_msgid='CMFPlomino_label_HideInMenu',
+			description_msgid='CMFPlomino_help_HideInMenu',
+			i18n_domain='CMFPlomino',
+		)
+	),
+	
+	BooleanField(
 		name='SearchForm',
 		schemata='Parameters',
 		default="0",

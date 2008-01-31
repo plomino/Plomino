@@ -60,6 +60,7 @@ schema = Schema((
 
 	StringField(
 		name='SortColumn',
+		schemata='Sorting',
 		widget=StringWidget(
 			label="Sort column",
 			description="Column used to sort the view",
@@ -82,6 +83,7 @@ schema = Schema((
 	
 	BooleanField(
 		name='Categorized',
+		schemata='Sorting',
 		default="0",
 		widget=BooleanWidget(
 			label="Categorized",
@@ -94,6 +96,7 @@ schema = Schema((
 
 	BooleanField(
 		name='ReverseSorting',
+		schemata='Sorting',
 		default="0",
 		widget=BooleanWidget(
 			label="Reverse sorting",
@@ -105,17 +108,8 @@ schema = Schema((
 	),
 	
 	StringField(
-		name='ViewTemplate',
-		widget=StringWidget(
-			label="View template",
-			description="Leave blank to use default",
-			label_msgid='CMFPlomino_label_ViewTemplate',
-			description_msgid='CMFPlomino_help_ViewTemplate',
-			i18n_domain='CMFPlomino',
-		)
-	),
-	StringField(
 		name='ActionBarPosition',
+		schemata='Parameters',
 		default="TOP",
 		widget=SelectionWidget(
 			label="Position of the action bar",
@@ -125,6 +119,31 @@ schema = Schema((
 			i18n_domain='CMFPlomino',
 		),
 		vocabulary=  [["TOP", "At the top of the page"], ["BOTTOM", "At the bottom of the page"], ["BOTH", "At the top and at the bottom of the page "]]
+	),
+	
+	BooleanField(
+		name='HideInMenu',
+		schemata='Parameters',
+		default="0",
+		widget=BooleanWidget(
+			label="Hide in menu",
+			description="It will not appear in the database main menu",
+			label_msgid='CMFPlomino_label_HideInMenu',
+			description_msgid='CMFPlomino_help_HideInMenu',
+			i18n_domain='CMFPlomino',
+		)
+	),
+	
+	StringField(
+		name='ViewTemplate',
+		schemata='Parameters',
+		widget=StringWidget(
+			label="View template",
+			description="Leave blank to use default",
+			label_msgid='CMFPlomino_label_ViewTemplate',
+			description_msgid='CMFPlomino_help_ViewTemplate',
+			i18n_domain='CMFPlomino',
+		)
 	),
 ),
 )

@@ -80,6 +80,10 @@ msgid "CMFPlomino_label_ActionBarPosition"
 msgstr "Position de la barre d'action"
 msgid "CMFPlomino_help_ActionBarPosition"
 msgstr "Indique l'endroit où la barre d'action s'affiche"
+msgid "CMFPlomino_label_HideInMenu"
+msgstr "Cacher dans le menu"
+msgid "CMFPlomino_help_HideInMenu"
+msgstr "Ne figurera pas dans le menu principal de la base"
 
 #: PlominoField.py
 msgid "CMFPlomino_label_FieldId"

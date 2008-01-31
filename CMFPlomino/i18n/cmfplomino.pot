@@ -80,6 +80,10 @@ msgid "CMFPlomino_label_ActionBarPosition"
 msgstr ""
 msgid "CMFPlomino_help_ActionBarPosition"
 msgstr ""
+msgid "CMFPlomino_label_HideInMenu"
+msgstr ""
+msgid "CMFPlomino_help_HideInMenu"
+msgstr ""
 
 #: PlominoField.py
 msgid "CMFPlomino_label_FieldId"
