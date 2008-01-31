@@ -472,25 +472,38 @@ class PlominoForm(ATFolder):
 		"""
 		db = self.getParentDatabase()
 		searchview = db.getView(self.getSearchView())
-		index = db.getIndex()
-		query={'PlominoViewFormula_'+searchview.getViewName() : True}
-		
-		for f in self.getFields(includesubforms=True):
-			fieldName = f.id
-			submittedValue = REQUEST.get(fieldName)
-			if submittedValue is not None:
-				if not submittedValue=='':
-					# if non-text field, convert the value
-					if f.getFieldType()=="NUMBER":
-						v = long(submittedValue)
-					elif f.getFieldType()=="DATETIME":
-						#v = strptime(submittedValue, "%d/%m/%Y")
-						#v = StringToDate(submittedValue, '%Y-%m-%d %H:%M')
-						v = submittedValue
-					else:
-						v = submittedValue
-					query[fieldName]=v
-		results=index.dbsearch(query, None)
+		searchformula=self.getSearchFormula()
+		if searchformula=='':
+			index = db.getIndex()
+			query={'PlominoViewFormula_'+searchview.getViewName() : True}
+			
+			for f in self.getFields(includesubforms=True):
+				fieldName = f.id
+				submittedValue = REQUEST.get(fieldName)
+				if submittedValue is not None:
+					if not submittedValue=='':
+						# if non-text field, convert the value
+						if f.getFieldType()=="NUMBER":
+							v = long(submittedValue)
+						elif f.getFieldType()=="DATETIME":
+							#v = strptime(submittedValue, "%d/%m/%Y")
+							#v = StringToDate(submittedValue, '%Y-%m-%d %H:%M')
+							v = submittedValue
+						else:
+							v = submittedValue
+						query[fieldName]=v
+			results=index.dbsearch(query, None)
+		else:
+			all=searchview.getAllDocuments()
+			results=[]
+			for doc in all:
+				try:
+					valid = self.runFormulaScript("searchformula_"+self.id, doc, self.getSearchFormula)
+				except Exception:
+					valid = False
+				if valid:
+					results.append(doc)
+				
 		return self.OpenForm(searchresults=results)
 		
 	security.declarePublic('getActions')
