@@ -7,7 +7,7 @@
 <td tal:condition="python:not(here.getCurrentUser().getUserName()=='Anonymous User')"><span metal:use-macro="here/ActionBar/macros/DeleteAction" >display delete action</span></td>
 		</tal:block>
     	<td><span metal:use-macro="here/ActionBar/macros/CloseAction" >display close action</span></td>
-		<tal:block tal:repeat="a python:owner.getActions(here)">
+		<tal:block tal:repeat="a python:[act for act in owner.getActions(here) if act.getInActionBar()==True]">
 	    	<td>
 	    	<tal:block tal:define="plominoaction python:a; plominotarget python:here">
 	    		<span metal:use-macro="here/ActionBar/macros/ButtonAction" >
@@ -24,7 +24,7 @@
 		<td><span metal:use-macro="here/ActionBar/macros/CloseAction" >display close action</span></td>
     	<td><input type="submit" class="context" value="Save" i18n:domain="CMFPlomino" i18n:attributes="value" /></td>
     	<td tal:condition="python:not(here.getCurrentUser().getUserName()=='Anonymous User')"><span metal:use-macro="here/ActionBar/macros/DeleteAction" >display delete action</span></td>
-		<tal:block tal:repeat="a python:owner.getActions(here)">
+		<tal:block tal:repeat="a python:[act for act in owner.getActions(here) if act.getInActionBar()==True]">
 	    	<td>
 	    	<tal:block tal:define="plominoaction python:a; plominotarget python:here">
 	    		<span metal:use-macro="here/ActionBar/macros/ButtonAction" >
@@ -40,7 +40,7 @@
 	<table><tr>
 		<td><span metal:use-macro="here/ActionBar/macros/CloseAction" >display close action</span></td>
     	<td><input type="submit" class="context" value="Save" i18n:domain="CMFPlomino" i18n:attributes="value" /></td>
-	<tal:block tal:repeat="a python:owner.getActions(here)">
+	<tal:block tal:repeat="a python:[act for act in owner.getActions(here) if act.getInActionBar()==True]">
 	    	<td>
 	    	<tal:block tal:define="plominoaction python:a; plominotarget python:here">
 	    		<span metal:use-macro="here/ActionBar/macros/ButtonAction" >
@@ -56,7 +56,7 @@
 	<table><tr>
 		<td><span metal:use-macro="here/ActionBar/macros/CloseAction" >display close action</span></td>
     	<td><input type="submit" class="context" value="Search" i18n:domain="CMFPlomino" i18n:attributes="value" /></td>
-	<tal:block tal:repeat="a python:owner.getActions(here)">
+	<tal:block tal:repeat="a python:[act for act in owner.getActions(here) if act.getInActionBar()==True]">
 	    	<td>
 	    	<tal:block tal:define="plominoaction python:a; plominotarget python:here">
 	    		<span metal:use-macro="here/ActionBar/macros/ButtonAction" >
@@ -71,7 +71,7 @@
 <span metal:define-macro="ViewActionBar">
 	<table><tr>
     	<td><span metal:use-macro="here/ActionBar/macros/CloseAction" >display close action</span></td>
-		<tal:block tal:repeat="a python:owner.getActions(here)">
+		<tal:block tal:repeat="a python:[act for act in owner.getActions(here) if act.getInActionBar()==True]">
 	    	<td>
 	    	<tal:block tal:define="plominoaction python:a; plominotarget python:here">
 	    		<span metal:use-macro="here/ActionBar/macros/ButtonAction" >
