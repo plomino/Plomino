@@ -258,6 +258,12 @@ msgstr ""
 msgid "Add new content"
 msgstr ""
 
+# ErrorsMessages
+msgid "Validation failed"
+msgstr ""
+msgid "Go back"
+msgstr ""
+
 #Gantt view labels
 msgid "From"
 msgstr ""

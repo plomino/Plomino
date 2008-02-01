@@ -597,11 +597,7 @@ class PlominoForm(ATFolder):
 	
 	security.declarePublic('notifyError')
 	def notifyErrors(self, errors):
-		msg="<html><body><script>"
-		for e in errors:
-			msg=msg+"alert('"+e+"');"
-		msg=msg+"history.back()</script></body></html>"
-		return msg
+		return self.ErrorsMessages(errors=errors)
 	
 registerType(PlominoForm, PROJECTNAME)
 # end of class PlominoForm
