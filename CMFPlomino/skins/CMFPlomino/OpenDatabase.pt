@@ -26,7 +26,7 @@
 					<br/>
 				</p>
 			</tal:search>
-			<tal:forms tal:condition="python:len(composeforms)>0">
+			<tal:forms tal:condition="python:len(composeforms)>0 and here.checkUserPermission('CMFPlomino: Edit documents')">
 				<h3 i18n:domain="CMFPlomino" i18n:translate="Add new content">Add new content</h3>
 				<p tal:repeat="f composeforms">
 					<a href="#" tal:attributes="href python:f.absolute_url_path()+'/OpenForm'" tal:content="f/Title">form link</a>

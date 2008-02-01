@@ -24,7 +24,7 @@
 	border_width:thin;
 	}
 	
-.plominoHidewhenClass {
+.plominoSubformClass {
 	color: #C0C0C0;
 	border-style:dashed;
 	border_width:thin;
