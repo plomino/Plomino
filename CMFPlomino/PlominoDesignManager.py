@@ -99,6 +99,7 @@ class PlominoDesignManager:
 				pass
 				
 			self.getIndex().indexDocument(d)
+			d.save()
 		logger.info('Documents indexed')
 		
 	security.declareProtected(DESIGN_PERMISSION, 'exportDesign')
