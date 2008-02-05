@@ -264,7 +264,7 @@ class PlominoForm(ATFolder):
 		result = [f.getObject() for f in fieldlist]
 		if includesubforms:
 			for subformname in self.getSubforms():
-				result=result+self.getParentdatanse().getForm(subformname).getFields(True)
+				result=result+self.getParentDatabase().getForm(subformname).getFields(True)
 		return result
 		
 	security.declarePublic('getFormField')
