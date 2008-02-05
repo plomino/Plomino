@@ -325,13 +325,12 @@ class PlominoDocument(ATFolder):
 		return self.openWithForm(form, True)
 
 	security.declarePublic('send')
-	def send(self,recipients,title,formname=''):
+	def send(self,recipients,title,form=None):
 		"""Send current doc by mail
 		"""
 		db = self.getParentDatabase()
-		if formname=='':
-			formname = self.getItem('Form')
-		form = db.getForm(formname)
+		if form is None:
+			form = self.getForm()
 		message = self.openWithForm(form)
 		sendMail(db, recipients, title, message)
 
