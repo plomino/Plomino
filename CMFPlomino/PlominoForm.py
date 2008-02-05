@@ -511,7 +511,7 @@ class PlominoForm(ATFolder):
 			results=[]
 			for doc in all:
 				try:
-					valid = self.runFormulaScript("searchformula_"+self.id, doc, self.getSearchFormula)
+					valid = self.runFormulaScript("form_"+self.id+"_searchformula", doc.getObject(), self.getSearchFormula)
 				except Exception:
 					valid = False
 				if valid:
