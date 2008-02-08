@@ -36,8 +36,6 @@ import re
 import PlominoDocument
 from Products.CMFPlomino.PlominoUtils import StringToDate
 from PlominoDesignManager import TemporaryDocument
-import logging
-logger=logging.getLogger("Plomino")
 
 ##/code-section module-header
 

@@ -23,12 +23,9 @@ __docformat__ = 'plaintext'
 from DateTime import DateTime
 from time import strptime
 from Products.CMFCore.utils import getToolByName
-import logging
 
 #from zope.security.untrustedpython.interpreter import RestrictedInterpreter
 #from zope.security.checker import ProxyFactory
-
-logger = logging.getLogger('Plomino')
 
 def DateToString(d, format='%d/%m/%Y'):
 	"""return the date as string using the given format, default is '%d/%m/%Y'

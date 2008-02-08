@@ -37,8 +37,6 @@ from Acquisition import *
 import PlominoDatabase
 import PlominoView
 
-import logging
-logger=logging.getLogger("Plomino")
 ##/code-section module-header
 
 schema = Schema((
