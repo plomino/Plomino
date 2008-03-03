@@ -90,7 +90,7 @@ schema = Schema((
 	),
 	
 	BooleanField(
-		name='SearchForm',
+		name='isSearchForm',
 		schemata='Parameters',
 		default="0",
 		widget=BooleanWidget(

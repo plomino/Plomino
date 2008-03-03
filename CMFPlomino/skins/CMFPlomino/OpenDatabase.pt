@@ -9,8 +9,8 @@
     	<h1><tal:block replace="structure python:getattr(here, here.getIcon(1))"/><span tal:content="here/Title">database title</span></h1>
 		<p tal:content="here/Description">description</p>
 		<tal:block tal:condition="python:here.hasReadPermission()"
-					tal:define="composeforms python:[f for f in here.getForms() if not f.getSearchForm() and not f.getHideInMenu()==True];
-								searchforms python:[f for f in here.getForms() if f.getSearchForm() and not f.getHideInMenu()==True];
+					tal:define="composeforms python:[f for f in here.getForms() if not f.getIsSearchForm() and not f.getHideInMenu()==True];
+								searchforms python:[f for f in here.getForms() if f.getIsSearchForm() and not f.getHideInMenu()==True];
 								views python:[v for v in here.getViews() if not v.getHideInMenu()==True];">
 			<tal:views tal:condition="python:len(views)>0">
 				<h3 i18n:domain="CMFPlomino" i18n:translate="Browse">Browse</h3>
