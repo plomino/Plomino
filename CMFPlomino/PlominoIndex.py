@@ -55,6 +55,8 @@ schema = Schema((
 )
 
 ##code-section after-local-schema #fill in your manual code here
+import logging
+logger = logging.getLogger('Plomino')
 ##/code-section after-local-schema
 
 PlominoIndex_schema = BaseSchema.copy() + \
@@ -172,14 +174,16 @@ class PlominoIndex(UniqueObject, ZCatalog, ActionProviderBase):
 	def indexDocument(self,doc):
 		"""
 		"""
-		self.catalog_object(doc, doc.absolute_url_path())
+		#self.catalog_object(doc, doc.absolute_url_path())
+		self.catalog_object(doc, "/".join(doc.getPhysicalPath()))
 
 	security.declareProtected(READ_PERMISSION, 'unindexDocument')
 	def unindexDocument(self,doc):
 		"""
 		"""
-		self.uncatalog_object(doc.absolute_url_path())
-
+		#self.uncatalog_object(doc.absolute_url_path())
+		self.uncatalog_object("/".join(doc.getPhysicalPath()))
+		
 	security.declarePublic('refresh')
 	def refresh(self):
 		"""
