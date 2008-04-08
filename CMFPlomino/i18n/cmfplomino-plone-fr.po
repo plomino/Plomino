@@ -58,3 +58,6 @@ msgstr "Aide"
 
 msgid "Compose"
 msgstr "Rédiger"
+
+msgid "Parameters"
+msgstr "Paramètres"
