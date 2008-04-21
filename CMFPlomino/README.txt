@@ -20,5 +20,9 @@ Key features
     * Forms, edited in WYSIWIG mode
     * Views
     * Access Control List / User Roles
+    
+DEPENDENCIES:
+- Plone 2.5.5
+- kupu 1.4.9
 
 
