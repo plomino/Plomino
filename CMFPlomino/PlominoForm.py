@@ -578,18 +578,19 @@ class PlominoForm(ATFolder):
 					except:
 						errors.append(fieldname+" must be a date/time (submitted value was: "+submittedValue+")")
 		
-		# STEP 3: check validation formula
-		tmp = TemporaryDocument(self.getParentDatabase(), self, REQUEST)
-		for f in self.getFields(includesubforms=True):
-			formula = f.getValidationFormula()
-			if not formula=='':
-				s=''
-				try:
-					s = self.runFormulaScript("field_"+self.id+"_"+f.id+"_ValidationFormula", tmp, f.getValidationFormula)
-				except:
-					pass
-				if not s=='':
-					errors.append(s)
+		if len(errors)==0:
+			# STEP 3: check validation formula
+			tmp = TemporaryDocument(self.getParentDatabase(), self, REQUEST)
+			for f in self.getFields(includesubforms=True):
+				formula = f.getValidationFormula()
+				if not formula=='':
+					s=''
+					try:
+						s = self.runFormulaScript("field_"+self.id+"_"+f.id+"_ValidationFormula", tmp, f.getValidationFormula)
+					except:
+						pass
+					if not s=='':
+						errors.append(s)
 								
 		return errors
 	
