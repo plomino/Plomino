@@ -5,6 +5,7 @@
 #################################################################################
 
 from Products.CMFCore.utils import getToolByName
+import transaction
 
 from StringIO import StringIO
 
@@ -34,6 +35,6 @@ def install(self):
 	quickinstaller = portal.portal_quickinstaller
 	print >> out, "(re-)Installing dependency kupu"
 	quickinstaller.reinstallProducts(['kupu'])
-	get_transaction().commit(1)
+	transaction.commit()
 	
 	return out.getvalue()

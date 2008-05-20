@@ -25,6 +25,7 @@ import os.path
 import sys
 from StringIO import StringIO
 from sets import Set
+import transaction
 from App.Common import package_home
 from Products.CMFCore.utils import getToolByName
 from Products.CMFCore.utils import manage_addTool
@@ -55,7 +56,7 @@ def install(self, reinstall=False):
     for dependency in DEPENDENCIES:
         print >> out, "Installing dependency %s:" % dependency
         quickinstaller.installProduct(dependency)
-        get_transaction().commit(1)
+        transaction.commit()
 
     classes = listTypes(PROJECTNAME)
     installTypes(self, out,
