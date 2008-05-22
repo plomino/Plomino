@@ -335,6 +335,8 @@ class PlominoForm(ATFolder):
 								current_files=doc.getItem(fieldName)
 								contenttype=''
 								if filename!='':
+									if """\\""" in filename:
+										filename=filename.split("\\")[-1]
 									if current_files=='':
 										current_files={}
 									if filename in doc.objectIds():
