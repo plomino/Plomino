@@ -193,8 +193,12 @@ class PlominoAccessControl(Persistent):
         """
         if not self.checkUserPermission(EDIT_PERMISSION):
             return False
-
-        if 'PlominoAuthor' in self.getCurrentUserRights():
+        
+        current_rights = self.getCurrentUserRights()
+        if "PlominoEditor" in current_rights or "PlominoDesigner" in current_rights or "PlominoManager" in current_rights:
+            return True
+        
+        if 'PlominoAuthor' in current_rights:
             authors = doc.getItem('Plomino_Authors')
             if authors is None:
                 authors=[]
@@ -213,8 +217,8 @@ class PlominoAccessControl(Persistent):
                 if u in usergroups:
                     return True
             return False
-        else:
-            return True
+        
+        return False
 
     security.declarePublic('hasReadPermission')
     def hasReadPermission(self, obj=None):
