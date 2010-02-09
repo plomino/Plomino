@@ -1,0 +1,11 @@
+<tal:sums-macro metal:define-macro="SumsMacro">
+    <tal:sums tal:define="sums python:here.getColumnSums();"
+              tal:condition="python:test(len(sums)>0)"> 
+        <tr><th>Total</th>
+        <tal:block tal:repeat="c python:here.getColumns()">
+        <th tal:condition="not: c/HiddenColumn|nothing">
+        <tal:sum tal:condition="python:test(c.id in sums)" tal:content="python:sums[c.id]">sum</tal:sum></th>
+        </tal:block>
+        </tr>
+    </tal:sums>
+</tal:sums-macro>

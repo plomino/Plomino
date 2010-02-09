@@ -1,0 +1,5 @@
+<tal:block tal:define="plominoaction python:options['plominoaction']; plominotarget python:options['plominotarget']">
+	<span metal:use-macro="here/ActionBar/macros/SubmitAction" >
+		display action as a submit button
+	</span>
+</tal:block>

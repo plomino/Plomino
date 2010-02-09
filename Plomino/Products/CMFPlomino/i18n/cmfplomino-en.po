@@ -1,0 +1,509 @@
+# ArchGenXML generated POT File
+# [Eric BREHAULT] <[ebrehault@gmail.com]>, 2006.
+msgid ""
+msgstr ""
+"Project-Id-Version: CMFPlomino\n"
+"POT-Creation-Date: Thu Sep 28 15:52:32 2006\n"
+"PO-Revision-Date: Thu Sep 28 15:52:32 2006\n"
+"Last-Translator: [Eric BREHAULT] <[ebrehault@gmail.com]>\n"
+"Language-Team: [Eric BREHAULT] <[ebrehault@gmail.com]>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0\n"
+"Language-Code: en\n"
+"Language-Name: English\n"
+"Preferred-Encodings: latin1 utf-8\n"
+"Domain: CMFPlomino\n"
+
+#. Default: "About this database"
+#: PlominoDatabase.py
+msgid "CMFPlomino_label_AboutDescription"
+msgstr "About this database"
+
+#. Default: "Describe the database, its objectives, its targetted audience, etc..."
+#: PlominoDatabase.py
+msgid "CMFPlomino_help_AboutDescription"
+msgstr "Describe the database, its objectives, its targetted audience, etc..."
+
+#. Default: "Using this database"
+#: PlominoDatabase.py
+msgid "CMFPlomino_label_UsingDescription"
+msgstr "Using this database"
+
+#. Default: "Describe how to use the database"
+#: PlominoDatabase.py
+msgid "CMFPlomino_help_UsingDescription"
+msgstr "Describe how to use the database"
+
+#. Default: "Index file attachments"
+#: PlominoDatabase.py
+msgid "CMFPlomino_label_IndexAttachments"
+msgstr "Index file attachments"
+
+#. Default: "If enabled, files attached in File Attachments fields will be indexed. It might increase the index size."
+#: PlominoDatabase.py
+msgid "CMFPlomino_help_IndexAttachments"
+msgstr "If enabled, files attached in File Attachments fields will be indexed. It might increase the index size."
+
+#. Default: "Debug mode"
+#: PlominoDatabase.py
+msgid "CMFPlomino_label_debugMode"
+msgstr "Debug mode"
+
+#. Default: "If enabled, script and formula errors are logged."
+#: PlominoDatabase.py
+msgid "CMFPlomino_help_debugMode"
+msgstr "If enabled, script and formula errors are logged."
+
+#. Default: "Use File System Storage for attachments"
+#: PlominoDatabase.py
+msgid "CMFPlomino_label_StorageAttachments"
+msgstr "Use File System Storage for attachments"
+
+#. Default: "File System Storage must be installed on the portal"
+#: PlominoDatabase.py
+msgid "CMFPlomino_help_StorageAttachments"
+msgstr "File System Storage must be installed on the portal"
+
+#. Default: "Count the number of documents"
+#: PlominoDatabase.py
+msgid "CMFPlomino_label_ShowDocumentsNumbers"
+msgstr "Count the number of documents"
+
+#. Default: "If enabled, count the number of documents for each view. Display might be slower."
+#: PlominoDatabase.py
+msgid "CMFPlomino_help_ShowDocumentsNumbers"
+msgstr "If enabled, count the number of documents for each view. Display might be slower."
+
+#. Default: "Date/time format"
+#: PlominoDatabase.py
+msgid "CMFPlomino_label_DateTimeFormat"
+msgstr "Date/time format"
+
+#. Default: "Format example: %Y-%m-%d"
+#: PlominoDatabase.py
+msgid "CMFPlomino_help_DateTimeFormat"
+msgstr "Format example: %Y-%m-%d"
+
+#. Default: "Start page"
+#: PlominoDatabase.py
+msgid "CMFPlomino_label_StartPage"
+msgstr "Start page"
+
+#. Default: "Element to display instead of the regular database menu."
+#: PlominoDatabase.py
+msgid "CMFPlomino_help_StartPage"
+msgstr "Element to display instead of the regular database menu."
+
+#. Default: "Id"
+#: PlominoAction.py
+msgid "CMFPlomino_label_action_id"
+msgstr "Id"
+
+#. Default: "The action id"
+#: PlominoAction.py
+msgid "CMFPlomino_help_action_id"
+msgstr "The action id"
+
+#. Default: "How the action is shown"
+#: PlominoAction.py
+msgid "CMFPlomino_help_ActionDisplay"
+msgstr "How the action is shown"
+
+#. Default: "Select the type for this action"
+#: PlominoAction.py
+msgid "CMFPlomino_help_ActionType"
+msgstr "Select the type for this action"
+
+#. Default: "Categorised on first column"
+#: PlominoView.py
+msgid "CMFPlomino_help_Categorized"
+msgstr "Categorised on first column"
+
+#: PlominoForm.py
+msgid "CMFPlomino_label_FormId"
+msgstr "Id"
+msgid "CMFPlomino_help_FormId"
+msgstr "The form id"
+msgid "CMFPlomino_label_DocumentTitle"
+msgstr "Document title formula"
+msgid "CMFPlomino_help_DocumentTitle"
+msgstr "Compute the document title"
+msgid "CMFPlomino_label_SearchForm"
+msgstr "Search form"
+msgid "CMFPlomino_help_SearchForm"
+msgstr "A search form is only used to search documents, it cannot be saved."
+msgid "CMFPlomino_label_isPage"
+msgstr "Page"
+msgid "CMFPlomino_help_isPage"
+msgstr "A page cannot be saved and does not provide any action bar. It can be useful to build a welcome page, explanations, reports, navigation, etc."
+msgid "CMFPlomino_label_SearchView"
+msgstr "Search view"
+msgid "CMFPlomino_help_SearchView"
+msgstr "View used to display the search results"
+msgid "CMFPlomino_label_SearchFormula"
+msgstr "Search formula"
+msgid "CMFPlomino_help_SearchFormula"
+msgstr "Leave blank to use default Zcatalog search"
+msgid "CMFPlomino_label_onCreateDocument"
+msgstr "On create document"
+msgid "CMFPlomino_help_onCreateDocument"
+msgstr "Action to take when the document is created"
+msgid "CMFPlomino_label_onOpenDocument"
+msgstr "On open document"
+msgid "CMFPlomino_help_onOpenDocument"
+msgstr "Action to take when the document is opened"
+msgid "CMFPlomino_label_onSaveDocument"
+msgstr "On save document"
+msgid "CMFPlomino_help_onSaveDocument"
+msgstr "Action to take when saving the document"
+msgid "CMFPlomino_label_onDeleteDocument"
+msgstr "On delete document"
+msgid "CMFPlomino_help_onDeleteDocument"
+msgstr "Action to take before deleting the document"
+msgid "CMFPlomino_label_FormLayout"
+msgstr "Form layout"
+msgid "CMFPlomino_help_FormLayout"
+msgstr "The form layout. text with 'Plominofield' style correspond to the contained field elements"
+
+#: PlominoForm.py
+#: PlominoView.py
+msgid "CMFPlomino_label_ActionBarPosition"
+msgstr "Position of the action bar"
+msgid "CMFPlomino_help_ActionBarPosition"
+msgstr "Select the position of the action bar"
+msgid "CMFPlomino_label_HideInMenu"
+msgstr "Hide in menu"
+msgid "CMFPlomino_help_HideInMenu"
+msgstr "It will not appear in the database main menu"
+
+#: PlominoField.py
+msgid "CMFPlomino_label_field_id"
+msgstr "Id"
+msgid "CMFPlomino_help_field_id"
+msgstr "The field id"
+msgid "CMFPlomino_label_FieldReadTemplate"
+msgstr "Field read template"
+msgid "CMFPlomino_help_FieldReadTemplate"
+msgstr "Custom rendering template in read mode"
+msgid "CMFPlomino_label_FieldEditTemplate"
+msgstr "Field edit template"
+msgid "CMFPlomino_help_FieldEditTemplate"
+msgstr "Custom rendering template in edit mode"
+msgid "CMFPlomino_label_FieldMandatory"
+msgstr "Mandatory"
+msgid "CMFPlomino_help_FieldMandatory"
+msgstr "Is this field mandatory? (empty value will not be allowed)"
+msgid "CMFPlomino_label_FieldValidation"
+msgstr "Validation formula"
+msgid "CMFPlomino_help_FieldValidation"
+msgstr "Evaluate the input validation"
+msgid "CMFPlomino_label_FieldIndex"
+msgstr "Add to index"
+msgid "CMFPlomino_help_FieldIndex"
+msgstr "The field will be searchable"
+msgid "CMFPlomino_label_FieldType"
+msgstr "Field type"
+msgid "CMFPlomino_help_FieldType"
+msgstr "The kind of this field"
+msgid "CMFPlomino_label_FieldMode"
+msgstr "Field mode"
+msgid "CMFPlomino_help_FieldMode"
+msgstr "How content will be generated"
+msgid "CMFPlomino_label_FieldFormula"
+msgstr "Formula"
+msgid "CMFPlomino_help_FieldFormula"
+msgstr "How to calculate field content"
+msgid "CMFPlomino_label_SelectionList"
+msgstr "Selection list"
+msgid "CMFPlomino_help_SelectionList"
+msgstr "List of selectable values, one for line. Use | to separate label and value."
+msgid "CMFPlomino_label_SelectionListFormula"
+msgstr "Selection list formula"
+msgid "CMFPlomino_help_SelectionListFormula"
+msgstr "Formula to compute the selection list elements"
+
+#: PlominoHidewhen.py
+msgid "CMFPlomino_label_hidewhen_id"
+msgstr "Id"
+msgid "CMFPlomino_help_hidewhen_id"
+msgstr "The hide-when id"
+msgid "CMFPlomino_label_HidewhenFormula"
+msgstr "Formula"
+msgid "CMFPlomino_help_HidewhenFormula"
+msgstr "If returning True, the block will be hidden."
+
+#. Default: "Id"
+#: PlominoColumn.py
+msgid "CMFPlomino_label_column_id"
+msgstr "Id"
+
+#. Default: "Column id"
+#: PlominoColumn.py
+msgid "CMFPlomino_help_column_id"
+msgstr "Column id"
+
+msgid "CMFPlomino_label_ColumnFormula"
+msgstr "Formula"
+msgid "CMFPlomino_help_ColumnFormula"
+msgstr "Python code returning the column value."
+
+#. Default: "Position"
+#: PlominoColumn.py
+msgid "CMFPlomino_label_ColumnPosition"
+msgstr "Position"
+
+#. Default: "Position in view"
+#: PlominoColumn.py
+msgid "CMFPlomino_help_ColumnPosition"
+msgstr "Position in view"
+
+#. Default: "Hidden column"
+#: PlominoColumn.py
+msgid "CMFPlomino_label_HiddenColumn"
+msgstr "Hidden column"
+
+#. Default: "Position in menu"
+msgid "CMFPlomino_help_Position"
+msgstr "Position in menu"
+
+#. Default: "The view selection formula is a line of Python code which should return True or False. The formula will be evaluated for each document in the database to decide if the document must be displayed in the view or not. plominoDocument is a reserved name in formulae, it returns the current Plomino document. Each document field value can be accessed directly as an attribute of the document: plominoDocument.<fieldname>"
+#: PlominoView.py
+msgid "CMFPlomino_help_SelectionFormula"
+msgstr "The view selection formula is a line of Python code which should return True or False. The formula will be evaluated for each document in the database to decide if the document must be displayed in the view or not. plominoDocument is a reserved name in formulae, it returns the current Plomino document. Each document field value can be accessed directly as an attribute of the document: plominoDocument.<fieldname>"
+
+#. Default: "Column used to sort the view"
+#: PlominoView.py
+msgid "CMFPlomino_help_SortColumn"
+msgstr "Column used to sort the view"
+
+#. Default: "Action display"
+#: PlominoAction.py
+msgid "CMFPlomino_label_ActionDisplay"
+msgstr "Action display"
+
+#. Default: "Action type"
+#: PlominoAction.py
+msgid "CMFPlomino_label_ActionType"
+msgstr "Action type"
+
+#. Default: "Parameter or code"
+#: PlominoAction.py
+msgid "CMFPlomino_label_ActionContent"
+msgstr "Parameter or code"
+
+#. Default: "Code or parameter depending on the action type"
+#: PlominoAction.py
+msgid "CMFPlomino_help_ActionContent"
+msgstr "Code or parameter depending on the action type"
+
+#. Default: "Hide-when formula"
+#: PlominoAction.py
+msgid "CMFPlomino_label_ActionHidewhen"
+msgstr "Hide-when formula"
+
+#. Default: "Action is hidden if formula return True"
+#: PlominoAction.py
+msgid "CMFPlomino_help_ActionHidewhen"
+msgstr "Action is hidden if formula return True"
+
+#. Default: "Display action in action bar"
+#: PlominoAction.py
+msgid "CMFPlomino_label_ActionInActionBar"
+msgstr "Display action in action bar"
+
+#. Default: "Display action in action bar (yes/no)"
+#: PlominoAction.py
+msgid "CMFPlomino_help_ActionInActionBar"
+msgstr "Display action in action bar (yes/no)"
+
+#. Default: "Categorized"
+#: PlominoView.py
+msgid "CMFPlomino_label_Categorized"
+msgstr "Categorized"
+
+#. Default: "Description"
+#: PlominoAction.py
+msgid "CMFPlomino_label_Description"
+msgstr "Description"
+
+#. Default: "Label"
+#: PlominoAction.py
+msgid "CMFPlomino_label_Label"
+msgstr "Label"
+
+#. Default: "Position"
+#: PlominoColumn.py
+msgid "CMFPlomino_label_Position"
+msgstr "Position"
+
+#: PlominoView.py
+msgid "CMFPlomino_label_view_id"
+msgstr "Id"
+msgid "CMFPlomino_help_view_id"
+msgstr "If changed after creation, database refresh is needed"
+msgid "CMFPlomino_label_ViewTemplate"
+msgstr "View template"
+msgid "CMFPlomino_help_ViewTemplate"
+msgstr "Leave blank to use default"
+
+msgid "CMFPlomino_label_SelectionFormula"
+msgstr "Selection formula"
+
+#. Default: "Sort column"
+#: PlominoView.py
+msgid "CMFPlomino_label_SortColumn"
+msgstr "Sort column"
+
+#. Default: "Form Formula"
+#: PlominoView.py
+msgid "CMFPlomino_label_FormFormula"
+msgstr "Form Formula"
+
+#. Default: "Documents open from the view will used the following formula (they use their own form if empty)"
+#: PlominoView.py
+msgid "CMFPlomino_help_FormFormula"
+msgstr "Documents open from the view will used the following formula (they use their own form if empty)"
+
+#. Default: "Reverse Sorting"
+#: PlominoView.py
+msgid "CMFPlomino_label_ReverseSorting"
+msgstr "Reverse Sorting"
+
+#. Default: "Reverse the sort ordering"
+#: PlominoView.py
+msgid "CMFPlomino_help_ReverseSorting"
+msgstr "Reverse the sort ordering"
+
+#Action bar buttons
+msgid "Edit"
+msgstr "Edit"
+
+msgid "Close"
+msgstr "Close"
+
+msgid "Delete"
+msgstr "Delete"
+
+msgid "Save"
+msgstr "Save"
+
+msgid "Attach file"
+msgstr "Attach file"
+
+msgid "attachments_label"
+msgstr "Attachments:"
+
+# View labels
+msgid "go_link"
+msgstr "Go"
+
+# OpenDatabase
+msgid "Browse"
+msgstr "Browse"
+
+msgid "Search"
+msgstr "Search"
+
+msgid "Add new content"
+msgstr "Add new content"
+
+# ErrorsMessages
+msgid "Validation failed"
+msgstr "Validation failed"
+msgid "Go back"
+msgstr "Go back"
+msgid "Continue"
+msgstr "Continue"
+
+#Gantt view labels
+msgid "From"
+msgstr "From"
+
+msgid "To"
+msgstr "To"
+
+msgid "Refresh"
+msgstr "Refresh"
+
+#. Default: "Id"
+#: PlominoAgent.py
+msgid "CMFPlomino_label_agent_id"
+msgstr "Id"
+
+#. Default: "The agent id"
+#: PlominoAgent.py
+msgid "CMFPlomino_help_agent_id"
+msgstr "The agent id"
+
+#. Default: "Code"
+#: PlominoAgent.py
+msgid "CMFPlomino_label_AgentContent"
+msgstr "Code"
+
+#. Default: "Code to execute"
+#: PlominoAgent.py
+msgid "CMFPlomino_help_AgentContent"
+msgstr "Code to execute"
+
+#. Default: "Scheduled"
+#: PlominoAgent.py
+msgid "CMFPlomino_label_Scheduled"
+msgstr "Scheduled"
+
+#. Default: "Scheduled agent"
+#: PlominoAgent.py
+msgid "CMFPlomino_help_Scheduled"
+msgstr "Scheduled agent"
+
+
+#. Default: "Agent user"
+#: PlominoAgent.py
+msgid "CMFPlomino_label_AgentUser"
+msgstr "Agent user"
+
+#. Default: "Effective user used to run the agent"
+#: PlominoAgent.py
+msgid "CMFPlomino_help_AgentUser"
+msgstr "Effective user used to run the agent"
+
+#. Default: "Cron"
+#: PlominoAgent.py
+msgid "CMFPlomino_label_Cron"
+msgstr "Cron"
+
+#. Default: "Format : crontab UNIX"
+#: PlominoAgent.py
+msgid "CMFPlomino_help_Cron"
+msgstr "Format : crontab UNIX"
+
+# Error messages
+msgid "is mandatory"
+msgstr "is mandatory"
+
+msgid " must be an integer (submitted value was: "
+msgstr " must be an integer (submitted value was: "
+
+msgid " must be a float (submitted value was: "
+msgstr " must be a float (submitted value was: "
+
+# Not categorized
+msgid "Not categorized"
+msgstr "Not categorized"
+
+# Please log in
+msgid "Please log in"
+msgstr "Please log in"
+
+# Do you really want to delete those documents
+msgid "Do you really want to delete those documents"
+msgstr "Do you really want to delete those documents"
+
+# Do you really want to delete this document
+msgid "Do you really want to delete this document"
+msgstr "Do you really want to delete this document"
+
+# Documents x to y of z
+msgid "documents_count"
+msgstr "Document(s) ${start} to ${end} of ${total}"

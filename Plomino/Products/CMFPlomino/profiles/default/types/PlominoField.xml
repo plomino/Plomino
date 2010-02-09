@@ -1,0 +1,106 @@
+<?xml version="1.0"?>
+<object name="PlominoField"
+        meta_type="Factory-based Type Information with dynamic views"
+        xmlns:i18n="http://xml.zope.org/namespaces/i18n">
+   
+ <property name="title">PlominoField</property>
+ <property name="description"></property>
+ <property name="content_icon">PlominoField.gif</property>
+ <property name="content_meta_type">PlominoField</property>
+ <property name="product">CMFPlomino</property>
+ <property name="factory">addPlominoField</property>
+ <property name="immediate_view">base_edit</property>
+ <property name="global_allow">False</property>
+ <property name="filter_content_types">False</property>
+ <property name="allowed_content_types">
+ </property>
+ <property name="allow_discussion">False</property>
+ <property name="default_view">base_edit</property>
+ <property name="view_methods">
+  <element value="base_view"/>
+ </property>
+ <property name="default_view_fallback">False</property>
+ <alias from="(Default)" to="(dynamic view)"/>
+ <alias from="index.html" to="(dynamic view)"/>
+ <alias from="view" to="(selected layout)"/>
+ <alias from="edit" to="base_edit"/>
+ <alias from="properties" to="base_metadata"/>
+ <action title="View" 
+         action_id="view"
+         category="object" 
+         condition_expr=""
+         url_expr="string:${object_url}/view" 
+         visible="True">
+  <permission value="View"/>
+ </action>
+ <action title="Edit" 
+         action_id="edit"
+         category="object" 
+         condition_expr="not:object/@@plone_lock_info/is_locked_for_current_user"
+         url_expr="string:${object_url}/edit" 
+         visible="True">
+  <permission value="Modify portal content"/>
+ </action>
+ <action title="Properties" 
+         action_id="metadata"
+         category="object" 
+         condition_expr=""
+         url_expr="string:${object_url}/properties" 
+         visible="True">
+  <permission value="Modify portal content"/>
+ </action>
+ <action title="Settings" action_id="textsettings" category="object"
+    condition_expr="python:object.getFieldType()=='TEXT'"
+    url_expr="string:${object_url}/textsettings" visible="True"
+    i18n:attributes="title">
+  <permission value="CMFPlomino: Modify Database design"/>
+ </action>
+ <action title="Settings" action_id="selectionsettings" category="object"
+    condition_expr="python:object.getFieldType()=='SELECTION'"
+    url_expr="string:${object_url}/selectionsettings" visible="True"
+    i18n:attributes="title">
+  <permission value="CMFPlomino: Modify Database design"/>
+ </action>
+ <action title="Settings" action_id="numbersettings" category="object"
+    condition_expr="python:object.getFieldType()=='NUMBER'"
+    url_expr="string:${object_url}/numbersettings" visible="True"
+    i18n:attributes="title">
+  <permission value="CMFPlomino: Modify Database design"/>
+ </action>
+ <action title="Settings" action_id="datetimesettings" category="object"
+    condition_expr="python:object.getFieldType()=='DATETIME'"
+    url_expr="string:${object_url}/datetimesettings" visible="True"
+    i18n:attributes="title">
+  <permission value="CMFPlomino: Modify Database design"/>
+ </action>
+ <action title="Settings" action_id="namesettings" category="object"
+    condition_expr="python:object.getFieldType()=='NAME'"
+    url_expr="string:${object_url}/namesettings" visible="True"
+    i18n:attributes="title">
+  <permission value="CMFPlomino: Modify Database design"/>
+ </action>
+ <action title="Settings" action_id="doclinksettings" category="object"
+    condition_expr="python:object.getFieldType()=='DOCLINK'"
+    url_expr="string:${object_url}/doclinksettings" visible="True"
+    i18n:attributes="title">
+  <permission value="CMFPlomino: Modify Database design"/>
+ </action>
+ <action title="Settings" action_id="richtextsettings" category="object"
+    condition_expr="python:object.getFieldType()=='RICHTEXT'"
+    url_expr="string:${object_url}/richtextsettings" visible="True"
+    i18n:attributes="title">
+  <permission value="CMFPlomino: Modify Database design"/>
+ </action>
+ <action title="Settings" action_id="googlechartsettings" category="object"
+    condition_expr="python:object.getFieldType()=='GOOGLECHART'"
+    url_expr="string:${object_url}/googlechartsettings" visible="True"
+    i18n:attributes="title">
+  <permission value="CMFPlomino: Modify Database design"/>
+ </action>
+ <action title="Settings" action_id="googlevisualizationsettings" category="object"
+    condition_expr="python:object.getFieldType()=='GOOGLEVISUALIZATION'"
+    url_expr="string:${object_url}/googlevisualizationsettings" visible="True"
+    i18n:attributes="title">
+  <permission value="CMFPlomino: Modify Database design"/>
+ </action>
+</object>

@@ -1,0 +1,510 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en"
+      xmlns:tal="http://xml.zope.org/namespaces/tal"
+      xmlns:metal="http://xml.zope.org/namespaces/metal"
+      xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+      lang="en"
+      metal:use-macro="here/main_template/macros/master"
+      i18n:domain="plone">
+<body>
+
+<metal:main fill-slot="main">
+    <tal:main-macro metal:define-macro="main">
+
+		<div tal:replace="structure provider:plone.abovecontenttitle" />
+
+		<h1 class="documentFirstHeading"><tal:block tal:content="object_title">Title or id</tal:block> replication</h1>
+		
+		<div tal:replace="structure provider:plone.belowcontenttitle" />
+
+		<div tal:replace="structure provider:plone.abovecontentbody" />
+		
+		<tal:permission tal:define="dummy here/checkEditPermission"/>
+		
+		<div>
+			<fieldset>
+            	<legend>Replication configuration</legend>
+				<form name="replicationForm" id="replicationForm" action="manage_replications" method="POST">
+					<tal:var tal:define="replications here/getReplications;
+										replicEditingId python:test(here.getReplicationEditingId())">
+						
+		                <span tal:condition="python:(not replications) or (len(replications)==0)">No replications settings saved.</span>
+		                
+		                <tal:block 
+		                	tal:condition="replications"
+		                	i18n:domain="CMFPlomino">
+						    <table class="listing">
+								<thead>
+									<tr tal:condition="python:not replicEditingId">
+										<!-- <th>Id</th> -->
+										<th i18n:translate="CMFPlomino_replication_selection">Selection</th>
+										<th i18n:translate="CMFPlomino_replication_name">Name</th>
+										<th i18n:translate="CMFPlomino_replication_scheduled">Scheduled</th>
+										<th i18n:translate="CMFPlomino_replication_remoteUrl">Remote URL</th>
+										<th i18n:translate="CMFPlomino_replication_user">User</th>
+										<th i18n:translate="CMFPlomino_replication_password">Password</th>
+										<th i18n:translate="CMFPlomino_replication_repType">Replication type</th>
+										<th i18n:translate="CMFPlomino_replication_whoWins">Conflict resolution</th>
+										<th i18n:translate="CMFPlomino_replication_viewrestriction">Restrict to view</th>
+										<th i18n:translate="CMFPlomino_replication_cron">Cron</th>
+									</tr>
+									<tr tal:condition="replicEditingId">
+										<!-- <th>Id</th> -->
+										<th i18n:translate="CMFPlomino_replication_selection">Selection</th>
+										<th>
+											<div class="widget">
+												<label for="Scheduled" i18n:translate="CMFPlomino_replication_name">Name</label>
+												<div  class="formHelp">Replication name</div>
+											</div>
+										</th>
+										<th>
+											<div class="widget">
+												<label for="Scheduled" i18n:translate="CMFPlomino_replication_scheduled">Scheduled</label>
+												<div  class="formHelp">Scheduled replication</div>
+											</div>
+										</th>
+										<th>
+											<div class="widget">
+												<label for="remote URL" i18n:translate="CMFPlomino_replication_remoteUrl">remote URL</label>
+												<span class="fieldRequired"
+									                title="Required"
+									                i18n:translate="label_required"
+									                i18n:attributes="title title_required;">
+									            	(Required)
+									        	</span>
+												<div  class="formHelp">Remote database URL</div>											
+											</div>
+										</th>
+										<th>
+											<div class="widget">
+												<label for="User" i18n:translate="CMFPlomino_replication_user">User</label>
+												<span class="fieldRequired"
+									                title="Required"
+									                i18n:translate="label_required"
+									                i18n:attributes="title title_required;">
+									            	(Required)
+									        	</span>
+												<div class="formHelp">Effective user for replication</div>
+											</div>													
+										</th>
+										<th>
+											<div class="widget">
+												<label for="Password" i18n:translate="CMFPlomino_replication_password">Password</label>
+												<span class="fieldRequired"
+									                title="Required"
+									                i18n:translate="label_required"
+									                i18n:attributes="title title_required;">
+									            	(Required)
+									        	</span>
+												<div class="formHelp">Password corresponding to effective user for replication</div>
+											</div>
+										</th>
+										<th>
+											<div class="widget">
+												<label for="Replication type" i18n:translate="CMFPlomino_replication_repType">Replication type</label>
+												<span class="fieldRequired"
+									                title="Required"
+									                i18n:translate="label_required"
+									                i18n:attributes="title title_required;">
+									            	(Required)
+									        	</span>
+												<div class="formHelp">Documents to replicate origin</div>
+											</div>
+										</th>
+										<th>
+											<div class="widget">
+												<label for="Conflict resolution" i18n:translate="CMFPlomino_replication_whoWins">Conflict resolution</label>
+												<span class="fieldRequired"
+									                title="Required"
+									                i18n:translate="label_required"
+									                i18n:attributes="title title_required;">
+									            	(Required)
+									        	</span>
+												<div class="formHelp">Which document to preserve in case of conflict</div>
+											</div>
+										</th>
+										<th>
+											<div class="widget">
+												<label for="RestrictToView" i18n:translate="CMFPlomino_replication_viewrestriction">Restrict to view</label>
+												<div class="formHelp">The replication will only process documents listed in this view</div>
+											</div>																							
+										</th>
+										<th>
+											<div class="widget">
+												<label for="Cron" i18n:translate="CMFPlomino_replication_cron">Cron</label>
+												<div class="formHelp">Format : crontab UNIX</div>
+											</div>																							
+										</th>
+									</tr>
+								</thead>
+								<tbody>
+									<tal:replications tal:repeat="replicationId replications">
+										<tal:replication tal:define="replic python:replications[replicationId];">
+											<tal:vars tal:define="oddrow repeat/replicationId/odd;
+																mode          python:replic['mode'] or request.get('mode','view');
+																name          python:replic['name'] or request.get('name',None);
+																remoteUrl     python:replic['remoteUrl'] or request.get('remoteUrl', None);
+																scheduled     python:replic['scheduled'] or request.get('scheduled',False);
+																selection     python:request.get('selection',False);
+																username      python:replic['username'] or request.get('username', None);
+																password      python:replic['password'] or None;
+																repType       python:replic['repType'] or request.get('repType', None);
+																whoWins       python:replic['whoWins'] or request.get('whoWins', None);
+																cron          python:replic['cron'] or request.get('cron', None);
+																restricttoview python:replic['restricttoview'] or request.get('restricttoview', None);
+																classname     python:test(oddrow, 'even', 'odd');
+																classname     python:classname + ' ' + mode;">
+												<tal:view tal:condition="python:mode=='view'">
+													<tr
+														tal:attributes="class classname">
+														<!-- <td><span tal:content="replicationId">replicationId</span></td> -->
+														<td>
+															<input class="textType"
+																type="checkbox"
+																id="selection" 
+																name="selection"
+																tal:attributes="value replicationId;
+																				checked python:test(selection,'checked','')"/>
+														</td>
+														<td><span tal:content="name">name</span></td>
+														<td><span tal:content="python:test(scheduled, 'Yes', 'No')">scheduled</span></td>
+														<td>
+															<a href="#" tal:attributes="href remoteUrl" tal:content="remoteUrl">remoteUrl</a>
+															<br/>
+															<span tal:content="python:'('+here.displayDates(remoteUrl, here)+')'">dates</span>
+														</td>
+														<td><span tal:content="username">username</span></td>
+														<td><span tal:content="python:here.hideIt(password)">password</span></td>
+														<td><span tal:content="python:here.displayItNice(repType,'REPLICATION_TYPES')">repType</span></td>
+														<td><span tal:content="python:here.displayItNice(whoWins,'CONFLICT_RESOLUTION_TYPE')">whoWins</span></td>
+														<td><span tal:content="restricttoview" tal:attributes="class string:plominoNoWrap">restricttoview</span></td>
+														<td><span tal:content="cron" tal:attributes="class string:plominoNoWrap">cron</span></td>
+													</tr>
+												</tal:view>
+												
+												<tal:edit tal:condition="python:mode=='edit' or mode=='add'">
+													<tr	tal:define="defaultRepType string:push;
+																	repType repType|defaultRepType;
+																	defaultWhoWins string:lastwins;
+																	whoWins whoWins|defaultWhoWins;"
+														tal:attributes="class classname">
+														<!-- <td>id</td> -->
+														<td>
+															<input class="textType"
+																type="hidden"
+																 id ="replicationId"
+																name="replicationId" 
+																tal:attributes="value replicationId"/>
+															<input class="textType"
+																type="hidden"
+																 id ="mode"
+																name="mode" 
+																tal:attributes="value mode"/>
+															<input class="textType"
+																type="checkbox"
+																id="selection" 
+																name="selection"
+																tal:attributes="value replicationId;
+																				checked python:test(selection,'checked','')"/>
+														</td>
+														<td>
+															<div class="field">
+																<div class="widget">
+																	<input class="textType"
+																		type="text" 
+																		id="name" 
+																		name="name"
+																		tal:attributes="value name"/>
+																</div>
+															</div>												
+														</td>
+														<td>
+															<div class="field">
+																<div class="widget">
+																	<input class="textType"
+																		type="checkbox" 
+																		id="scheduled" 
+																		name="scheduled"
+																		tal:attributes="checked python:test(scheduled,'checked','')"/>
+																</div>
+															</div>
+														</td>
+														<td>
+															<div class="field">
+																<div class="widget">
+																	<input class="textType"
+																		type="text" 
+																		id="remoteUrl" 
+																		name="remoteUrl"
+																		tal:attributes="value remoteUrl"/>
+																</div>
+															</div>												
+														</td>
+														<td>
+															<div class="field">
+																<div class="widget">
+																	<input class="textType"
+																		type="text" 
+																		id="username" 
+																		name="username"
+																		tal:attributes="value username"/>
+																</div>
+															</div>					
+														</td>
+														<td>
+															<div class="field">
+																<div class="widget">
+																	<input class="textType"
+																		type="password" 
+																		id="password" 
+																		name="password"
+																		tal:attributes="value password"/>
+																</div>
+															</div>
+														</td>
+														<td>
+															<div class="field">
+																<div class="widget">
+																	<input class="noborder"
+																		name="repType" 
+																		value="push"
+																		type="radio"
+																		tal:attributes="checked python:test(repType=='push',1,0)"/>
+											                        <label for="push">Push only</label>
+											                        <br/>
+											                        <input class="noborder"
+																		name="repType" 
+																		value="pull" 
+																		type="radio"
+																		tal:attributes="checked python:test(repType=='pull',1,0)"/>
+											                        <label for="pull">Pull only</label>
+											                        <br/>
+											                        <input class="noborder"
+																		name="repType" 
+																		value="pushpull" 
+																		type="radio"
+																		tal:attributes="checked python:test(repType=='pushpull',1,0)"/>
+											                        <label for="pushpull">Push and pull</label>
+																</div>
+															</div>					
+														</td>
+														<td>
+															<div class="field">
+																<div class="widget">
+																	<input class="noborder"
+																		name="whoWins" 
+																		value="localwins" 
+																		type="radio"
+																		tal:attributes="checked python:test(whoWins=='localwins',1,0)"/>
+											                        <label for="localwins">Local wins</label>
+											                        <br/>
+											                        <input class="noborder"
+																		name="whoWins" 
+																		value="remotewins" 
+																		type="radio"
+																		tal:attributes="checked python:test(whoWins=='remotewins',1,0)"/>
+											                        <label for="remotewins">Remote wins</label>
+											                        <br/>
+											                        <input class="noborder"
+																		name="whoWins" 
+																		value="lastwins" 
+																		type="radio"
+																		tal:attributes="checked python:test(whoWins=='lastwins',1,0)"/>
+											                        <label for="lastwins">Last wins</label>
+																</div>
+															</div>
+														</td>
+														<td>
+															<div class="field">
+																<div class="widget">
+																	<input class="textType"
+																		type="text" 
+																		id="restricttoview" 
+																		name="restricttoview"
+																		tal:attributes="value restricttoview"/>
+																</div>
+															</div>
+														</td>
+														<td>
+															<div class="field">
+																<div class="widget">
+																	<input class="textType"
+																		type="text" 
+																		id="cron" 
+																		name="cron"
+																		tal:attributes="value cron"/>
+																</div>
+															</div>
+														</td>
+													</tr>
+												</tal:edit>
+											</tal:vars>
+										</tal:replication>
+									</tal:replications>
+								</tbody>
+							</table>
+						</tal:block>
+						<div class="formControls">
+		                    <span class="actionButtons">
+		                        <input value="Delete selected" 
+		                        	name="delete_savereplication" 
+		                        	id="delete_savereplication" 
+		                        	class="context"
+		                        	onClick="document.forms['replicationForm'].actionType.value='delete';document.forms['replicationForm'].submit();" 
+		                        	type="button"/>
+		                        <input value="Replicate now"
+		                        	name="submit_replication"
+		                        	id="submit_replication"
+		                        	class="context"
+		                        	type="button"
+		                        	onClick="document.forms['replicationForm'].actionType.value='replicate';document.forms['replicationForm'].submit();;"/>
+		                        <input tal:condition="python:not replicEditingId" 
+		                        	value="Add"
+		                        	name="add_replication"
+		                        	id="add_replication"
+		                        	class="context"
+		                        	type="button"
+		                        	onClick="document.forms['replicationForm'].actionType.value='add';document.forms['replicationForm'].submit();;"/>
+		                        <input tal:condition="python:not replicEditingId" 
+		                        	value="Edit"
+		                        	name="edit_replication"
+		                        	id="edit_replication"
+		                        	class="context"
+		                        	type="button"
+		                        	onClick="document.forms['replicationForm'].actionType.value='edit';document.forms['replicationForm'].submit();;"/>
+		                        <input tal:condition="replicEditingId" 
+		                        	value="Save"
+		                        	name="save_replication"
+		                        	id="save_replication"
+		                        	class="context"
+		                        	type="button"
+		                        	onClick="document.forms['replicationForm'].actionType.value='save';document.forms['replicationForm'].submit();;"/>
+		                        <input tal:condition="replicEditingId" 
+		                        	value="Cancel"
+		                        	name="cancel_edit"
+		                        	id="cancel_edit"
+		                        	class="context"
+		                        	type="button"
+		                        	onClick="document.forms['replicationForm'].actionType.value='cancel';document.forms['replicationForm'].submit();;"/>
+		                    </span>
+		                </div>
+					</tal:var>
+	
+					<input type="hidden" name="actionType" id ="actionType" value=""/>
+				</form>
+			</fieldset>
+		</div>
+		
+		<div>
+			<fieldset>
+            	<legend>CSV Importation</legend>
+				<form name="importCSV" id="importCSV" action="manage_importation" method="POST" enctype="multipart/form-data">
+					<tal:vars tal:define="report here/getReport"
+						tal:condition="report">
+						<dl class="collapsible inline collapsedOnLoad">
+							<dt class="collapsibleHeader"
+								tal:content="string:Import report">Import report</dt>
+							<dd class="collapsibleContent">
+								<table class="listing">
+									<thead>
+										<tr>
+											<th>Line</th>
+											<th>State</th>
+											<th>Message</th>
+										</tr>
+									</thead>
+									<tbody>
+										<tal:boucle tal:repeat="rep report">
+											<tr>
+												<td tal:content="python:str(rep['line'])">Line</td>
+												<td tal:content="python:str(rep['state'])">State</td>
+												<td tal:content="python:str(rep['infoMsg'])">Message</td>
+											</tr>
+										</tal:boucle>
+									</tbody>
+								</table>	
+							</dd>
+						</dl>
+						<br/>
+						<br/>
+					</tal:vars>
+					<div class="field">
+						<div class="widget">
+							<label for="formElements">Form used to create documents</label>
+							<span class="fieldRequired"
+				                title="Required"
+				                i18n:translate="label_required"
+				                i18n:attributes="title title_required;">
+				            	(Required)
+				        	</span>
+							<div class="formHelp">Column values stored as items in document and document is saved with selected form</div>
+							<select name="formSelected">
+								<tal:block tal:repeat="f python:here.getForms()">
+									<option tal:attributes="value python:f.getId();"
+										tal:content="python:f.getId()">value</option>
+								</tal:block>
+							</select>
+						</div>
+					</div>
+					<div class="field">
+						<div class="widget">
+							<label for="separator">Separator</label>
+							<div class="formHelp">Choose columns separator. Text separator : double quote ("). </div>
+							<tal:separators tal:define="separators here/getSeparators">
+								<select name="separator">
+									<tal:block tal:repeat="sepName separators">
+										<option tal:attributes="value python:sepName;"
+											tal:content="sepName">separator</option>
+									</tal:block>
+								</select>														
+							</tal:separators>
+						</div>
+					</div>
+					<div class="field">
+						<div class="widget">
+							<label for="import_file">CSV File</label>
+							<span class="fieldRequired"
+				                title="Required"
+				                i18n:translate="label_required"
+				                i18n:attributes="title title_required;">
+				            	(Required)
+				        	</span>
+							<div class="formHelp">File containing documents to import</div>
+							<input name="import_file"
+									size="30"
+		                        	id="import_file"
+		                        	type="file"
+		                        	class="context"/>
+						</div>
+					</div>					
+					<div class="formControls">
+		            	<span class="actionButtons">
+		            		<input tal:condition="python:True" 
+		                        	value="Import"
+		                        	name="import_csv"
+		                        	id="import_csv"
+		                        	class="context"
+		                        	type="button"
+		                        	onClick="document.forms['importCSV'].actionType.value='import';document.forms['importCSV'].submit();;"/>
+		                    <input tal:condition="python:True" 
+		                        	value="Reset report"
+		                        	name="reset_report"
+		                        	id="reset_report"
+		                        	class="context"
+		                        	type="button"
+		                        	onClick="document.forms['importCSV'].actionType.value='reset_report';document.forms['importCSV'].submit();;"/>
+		            	</span>
+		            </div>
+					<input type="hidden" name="actionType" id ="actionType" value=""/>
+				</form>
+			</fieldset>
+		</div>
+		
+		<div tal:replace="structure provider:plone.belowcontentbody" />
+
+	</tal:main-macro>
+</metal:main>
+
+</body>
+</html>
+
+

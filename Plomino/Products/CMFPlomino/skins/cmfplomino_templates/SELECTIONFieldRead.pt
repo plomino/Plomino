@@ -1,0 +1,10 @@
+<tal:block tal:define="selection options/selection;
+			lselection python:[f.split('|') for f in selection];
+			current options/fieldvalue;
+			lcurrent python:test(hasattr(current,'split'),[current],current);
+			labeled python:[e for e in lselection if e[1] in lcurrent]
+	"><tal:loop tal:repeat="v labeled">
+	<tal:block tal:content="python:v[0]">selected value</tal:block>
+	<tal:sep tal:condition="not:repeat/v/end" tal:content="structure python:options['field'].getSettings('separator')">separator</tal:sep>
+</tal:loop>
+</tal:block>

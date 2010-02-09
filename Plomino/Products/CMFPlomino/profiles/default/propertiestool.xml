@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<object name="portal_properties" meta_type="Plone Properties Tool">
+ <object name="navtree_properties" meta_type="Plone Property Sheet">
+  <property name="metaTypesNotToList" type="lines" purge="False">
+   <element value="PlominoAgent"/>
+   <element value="PlominoForm"/>
+   <element value="PlominoField"/>
+   <element value="PlominoDocument"/>
+   <element value="PlominoColumn"/>
+   <element value="PlominoAction"/>
+   <element value="PlominoHidewhen"/>
+  </property>
+
+ </object>
+</object>

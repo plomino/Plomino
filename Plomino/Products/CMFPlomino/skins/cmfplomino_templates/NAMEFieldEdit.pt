@@ -1,0 +1,28 @@
+<span tal:define="fieldname options/fieldname;
+                fieldvalue options/fieldvalue;
+                selection options/selection;
+				type python:options['field'].getSettings('type')">
+	<tal:listusers tal:condition="python:test(selection)">
+		<select tal:condition="python:test(not(type=='MULTI'))" tal:attributes="name fieldname">
+			<tal:block tal:repeat="v selection">
+				<tal:block tal:define="current fieldvalue;l python:v.split('|')">
+					<option 
+						tal:attributes="value python:l[1]; selected python:test(current==l[1],1,0)"
+						tal:content="python:l[0]">value</option>
+				</tal:block>
+			</tal:block>
+		</select>
+		<select tal:condition="python:test(type=='MULTI')" tal:attributes="name fieldname" multiple="true" lines="4">
+			<tal:block tal:repeat="v selection">
+				<tal:block tal:define="current fieldvalue;l python:v.split('|')">
+					<option 
+						tal:attributes="value python:l[1]; selected python:test(current and l[1] in current,1,0)"
+						tal:content="python:l[0]">value</option>
+				</tal:block>
+			</tal:block>
+		</select>
+	</tal:listusers>
+	<tal:nolistusers tal:condition="python:test(not(selection))">
+		<input type="text" tal:attributes="name fieldname; value fieldvalue" />
+	</tal:nolistusers>
+</span>

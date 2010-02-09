@@ -1,0 +1,39 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en"
+      xmlns:tal="http://xml.zope.org/namespaces/tal"
+      xmlns:metal="http://xml.zope.org/namespaces/metal"
+      xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+      lang="en"
+      metal:use-macro="here/main_template/macros/master"
+      i18n:domain="plone">
+<body>
+
+<metal:main fill-slot="main">
+    <tal:main-macro metal:define-macro="main"
+           tal:define="kssClassesView context/@@kss_field_decorator_view;
+                       getKssClasses nocall:kssClassesView/getKssClassesInlineEditable;
+                       templateId template/getId;">
+
+		<div tal:replace="structure provider:plone.abovecontenttitle" />
+
+		<h1 class="documentFirstHeading"><tal:block replace="structure python:getattr(here, here.getIcon(1))"/><span tal:content="here/Title">database title</span></h1>
+		
+		<div tal:replace="structure provider:plone.belowcontenttitle" />
+
+		<div tal:replace="structure provider:plone.abovecontentbody" />
+		
+		<tal:permission tal:define="dummy here/checkReadPermission"/>
+			
+		<p tal:content="structure here/UsingDescription">UsingDescription</p>
+
+
+    
+        <div tal:replace="structure provider:plone.belowcontentbody" />
+
+    </tal:main-macro>
+</metal:main>
+
+</body>
+</html>
+
+
+

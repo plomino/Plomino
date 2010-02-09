@@ -1,0 +1,16 @@
+<configure xmlns="http://namespaces.zope.org/zope"
+           xmlns:browser="http://namespaces.zope.org/browser"
+           xmlns:five="http://namespaces.zope.org/five">
+  
+  <include file="profiles.zcml" />
+
+  <!-- ##code-section configure.zcml -->
+  <include package=".fields"/>
+  
+  <subscriber
+    for="Products.CMFPlomino.interfaces.IPlominoDocument zope.app.container.interfaces.IObjectRemovedEvent"
+    handler="Products.CMFPlomino.events.PlominoDocumentRemoveEventHandler"
+        />
+  <!-- ##/code-section configure.zcml -->
+
+</configure>

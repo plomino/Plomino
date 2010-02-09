@@ -1,0 +1,83 @@
+/*
+ *  This is the file where you put your CSS changes. 
+ *  You should preferrably use this and override the 
+ *  relevant properties you want to change here instead 
+ *  of customizing plone.css to survive upgrades. Writing
+ *  your own plone.css only makes sense for very heavy 
+ *  customizations. Useful variables from Plone are 
+ *  documented at the bottom of this file.
+ */
+ 
+/* <dtml-with base_properties> (do not remove this :) */
+/* <dtml-call "REQUEST.set('portal_url', portal_url())"> (not this either :) */
+
+
+.plominoFieldClass {
+	color: #0000FF;
+	border-style:dashed;
+	border-width:thin;
+	}
+
+.plominoActionClass {
+	color: #FF0000;
+	border-style:dashed;
+	border-width:thin;
+	}
+	
+.plominoSubformClass {
+	color: #C0C0C0;
+	border-style:dashed;
+	border-width:thin;
+	}
+
+.plominoHidewhenClass {
+	color: #00FF00;
+	border-style:dashed;
+	border-width:thin;
+	}
+.plominoNoWrap {
+	white-space: nowrap;	
+}
+
+/* The table used for plomino views */
+table.plominoview {
+/* The default table for plominoviews*/
+border-collapse: collapse;
+border-spacing: 0;
+border-left: &dtml-borderWidth; &dtml-borderStyle; &dtml-globalBorderColor;;
+border-bottom: &dtml-borderWidth; &dtml-borderStyle; &dtml-globalBorderColor;;
+font-size: &dtml-fontSmallSize;;
+margin: 1em 0em 1em 0em;
+}
+table.plominoview th {
+background: &dtml-globalBackgroundColor;;
+border-top: &dtml-borderWidth; &dtml-borderStyle; &dtml-globalBorderColor;;
+border-bottom: &dtml-borderWidth; &dtml-borderStyle; &dtml-globalBorderColor;;
+border-right: &dtml-borderWidth; &dtml-borderStyle; &dtml-globalBorderColor;;
+font-weight: normal;
+padding: 0.25em 0.5em;
+text-transform: &dtml-textTransform;;
+}
+table.plominoview td {
+border-right: &dtml-borderWidth; &dtml-borderStyle; &dtml-globalBorderColor;;
+padding: 0.25em 0.5em;
+cursor: pointer;
+}
+table.plominoview tr:hover {
+background: &dtml-globalBackgroundColor;;
+}
+.plominoActive {
+cursor: pointer;
+}
+
+table.plominoview a {
+text-decoration: none;
+}
+
+table.plominoview a:hover {
+text-decoration: underline;
+}
+/* </dtml-with> */
+
+
+

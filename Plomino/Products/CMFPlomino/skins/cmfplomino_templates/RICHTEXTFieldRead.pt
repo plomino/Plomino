@@ -1,0 +1,1 @@
+<tal:block tal:content="structure options/fieldvalue">Rich text read template</tal:block>

@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<object name="portal_javascripts" meta_type="JavaScripts Registry">
+ <!-- EXAMPLE DEFINITION
+ <javascript cacheable="True"
+             compression="safe"
+             cookable="True"
+             enabled="True"
+             expression=""
+             id="myfancyscript.js"
+             inline="False"/>
+ -->
+
+ <!-- ##code-section jsregistry.xml -->
+ <!-- ##/code-section jsregistry.xml -->
+
+</object>

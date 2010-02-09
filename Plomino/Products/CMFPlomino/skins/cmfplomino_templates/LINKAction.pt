@@ -1,0 +1,5 @@
+<tal:block tal:define="plominoaction python:options['plominoaction']; plominotarget python:options['plominotarget']">
+	<span metal:use-macro="here/ActionBar/macros/LinkAction" >
+		display action as a link
+	</span>
+</tal:block>

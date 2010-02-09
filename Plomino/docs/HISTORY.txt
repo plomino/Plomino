@@ -1,0 +1,113 @@
+Changelog
+=========
+
+1.5.4
+-----
+
+* Fix: insufficient privileges error when changing Anonymous access right from PlominoAuthor to No Access
+
+* Enable multiple Google Visualization fields in the same form
+
+* hide selection box in views if no remove permission
+
+* refresh() method on PlominoDocument: same as save() but do not trigger onSaveDocument
+
+* more i18n French translations
+
+* Validation formula improvments (ability to test the current doc id + bug fixes)
+
+* beforeCreateDocument event
+
+1.5.3
+-----
+
+* Security fix: when a group has PlominoAuthors rights, members of this group are just authors on their own documents
+
+1.5.2
+-----
+
+* Migration script
+
+1.5.1
+-----
+
+* TinyMCE support fix
+
+1.5
+---
+
+* Google chart integration : pie chart, bar chart, etc.
+(see http://code.google.com/intl/en/apis/chart/types.html )
+
+* Ability to display the sum of a column in view (when columns contain figures)
+
+* Google Visualization integration : organizational charts, dynamic charts, map, etc.
+(see http://code.google.com/intl/en/apis/visualization/documentation/gallery.html )
+
+* CSV support improvement
+
+* Ability to restrict a Names field to a given member group
+
+* Import/export and replication improvements
+
+1.4
+---
+
+* Control Kupu height for Richtext fields
+
+* Delete button confirmation message
+
+* German translation
+
+* Ability to hide Default Actions in forms
+
+* Group support in user roles and in Plomino_Authors
+
+* Import/export database settings and ACL settings
+
+* XML import/export design to/from file
+
+* Replication filtering using a view (feature financed by ACEA)
+
+* TinyMCE support
+
+* Delete documents from view
+
+* Bug fixes
+
+1.3-stable
+----------
+
+* Custom start page
+
+* Form as page (no action bar)
+
+* i18n fixes
+
+* bug fixes
+
+1.3RC4
+------
+
+* fr-fr fallback for i18n fr files
+
+* Date/Time widget fix for Plone 3.2
+
+* IMPORTANT NOTE: this version does not support Plone versions < 3.2
+
+* Better error handling for field rendering
+
+1.3RC3
+------
+
+* Clean up debug trace
+
+1.3RC2
+------
+
+* Fix migration script
+
+1.3RC1 - Unreleased
+----------------
+
+* Initial release

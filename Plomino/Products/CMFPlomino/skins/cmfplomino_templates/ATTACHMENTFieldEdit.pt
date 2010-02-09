@@ -1,0 +1,9 @@
+<tal:block tal:repeat="attachment options/fieldvalue">
+	<a href="#" tal:attributes="href python:'getfile?filename='+attachment" 
+		tal:content="attachment">filename</a>
+	 <a href="#" tal:attributes="href string:deleteAttachment?field=${options/fieldname}&filename=$attachment">
+	 	<img alt="Delete file" src="delete_icon.gif" />
+	 </a>
+	<br/>
+</tal:block>
+<input type="file" tal:attributes="name options/fieldname" />

@@ -1,0 +1,292 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en"
+      xmlns:tal="http://xml.zope.org/namespaces/tal"
+      xmlns:metal="http://xml.zope.org/namespaces/metal"
+      xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+      lang="en"
+      metal:use-macro="here/main_template/macros/master"
+      i18n:domain="plone">
+<body>
+
+<metal:main fill-slot="main">
+    <tal:main-macro metal:define-macro="main"
+           tal:define="kssClassesView context/@@kss_field_decorator_view;
+                       getKssClasses nocall:kssClassesView/getKssClassesInlineEditable;
+                       templateId template/getId;">
+
+		<div tal:replace="structure provider:plone.abovecontenttitle" />
+
+		<h1 class="documentFirstHeading"><tal:block tal:content="object_title">Title or id</tal:block> design</h1>
+		
+		<div tal:replace="structure provider:plone.belowcontenttitle" />
+
+		<div tal:replace="structure provider:plone.abovecontentbody" />
+		
+		<tal:permission tal:define="dummy here/checkDesignPermission"/>
+		
+		<div>Plomino database version: <tal:version tal:content="python:getattr(here,'plomino_version', 'before 1.3.0')">version</tal:version></div>
+		<dl class="collapsible inline collapsedOnLoad">
+        <dt class="collapsibleHeader">Forms</dt>
+        <dd class="collapsibleContent">
+			<tal:block tal:repeat="f python:here.getForms()">
+			<div>
+			<dl class="collapsible inline collapsedOnLoad">
+		        <dt class="collapsibleHeader">
+					<tal:block tal:content="f/id">form id</tal:block>
+					<a tal:attributes="href python:f.absolute_url_path()+'/base_edit'"><img src="edit.gif" /></a>
+					<a tal:attributes="href python:f.absolute_url_path()+'/base_view'"><img src="document_icon.gif" /></a>
+					<a tal:attributes="href python:f.absolute_url_path()+'/folder_contents'"><img src="folder_icon.gif" /></a>
+				</dt>
+		        <dd class="collapsibleContent">
+					<!--Fields list-->
+							<ul>
+								<li>
+									Fields : 
+								</li>
+								<tal:fieldsforms tal:repeat="fields python:f.getFields()">
+								<ul>
+									
+									<li>
+									<tal:block tal:content="fields/id">Field name</tal:block>
+									<a href="" tal:attributes="href python:fields.absolute_url_path()+'/base_edit'"><img src="edit.gif" /></a>
+									<a href="" tal:attributes="href python:fields.absolute_url_path()+'/base_view'"><img src="document_icon.gif" /></a>
+									</li>
+								
+								</ul>
+								</tal:fieldsforms>
+								
+								<li>
+									Hide-when : 
+								</li>
+								<tal:hidewhens tal:repeat="h python:f.getHidewhenFormulas()">
+								<ul>
+									
+									<li>
+									<tal:block tal:content="h/id">Hide when name</tal:block>
+									<a href="" tal:attributes="href python:h.absolute_url_path()+'/base_edit'"><img src="edit.gif" /></a>
+									<a href="" tal:attributes="href python:h.absolute_url_path()+'/base_view'"><img src="document_icon.gif" /></a>
+									</li>
+								
+								</ul>
+								</tal:hidewhens>
+								<li>
+									Actions : 
+								</li>
+								<ul>
+									<tal:actionsforms tal:repeat="action python:f.getActions(None, False)">
+										<li>
+										<tal:block tal:content="action/id">action name</tal:block>
+										<a href="" tal:attributes="href python:action.absolute_url()+'/base_edit'"><img src="edit.gif" /></a>
+										<a href="" tal:attributes="href python:action.absolute_url()+'/base_view'"><img src="document_icon.gif" /></a>
+										</li>
+									</tal:actionsforms>
+								</ul>
+								
+							</ul>
+				</dd></dl></div>
+			</tal:block>
+</dd></dl><br/>
+      <dl class="collapsible inline collapsedOnLoad">
+        <dt class="collapsibleHeader">Views</dt>
+        <dd class="collapsibleContent">
+			<tal:blockviews tal:repeat="view python:here.getViews()">
+			<div><dl class="collapsible inline collapsedOnLoad">
+        		<dt class="collapsibleHeader">
+					<tal:block tal:content="view/id">view name</tal:block>
+					<a tal:attributes="href python:view.absolute_url_path()+'/base_edit'"><img src="edit.gif" /></a>
+					<a tal:attributes="href python:view.absolute_url_path()+'/base_view'"><img src="document_icon.gif" /></a>
+					<a tal:attributes="href python:view.absolute_url_path()+'/folder_contents'"><img src="folder_icon.gif" /></a>
+					<a tal:attributes="href python:view.absolute_url_path()+'/exportCSV'"><img src="download_icon.gif" /></a>
+				</dt>
+        		<dd class="collapsibleContent">
+							<!--View columns-->
+							<ul>
+								<li>
+									Columns : 
+								</li>
+								<ul>
+									<tal:colonnesviews tal:repeat="colonne python:view.getColumns()">
+									<li>
+									<tal:block tal:content="python:colonne.getColumnName()">column name</tal:block>
+										<a href="" tal:attributes="href python:colonne.absolute_url()+'/base_edit'"><img src="edit.gif" /></a>
+										<a href="" tal:attributes="href python:colonne.absolute_url()+'/base_view'"><img src="document_icon.gif" /></a>
+									</li>
+								</tal:colonnesviews>
+								</ul>
+								<!--View actions-->
+								<li>
+									Actions : 
+								</li>
+								<ul>
+									<tal:actionsviews tal:repeat="action python:view.getActions(None, False)">
+										<li>
+										<tal:block tal:content="action/id">action name</tal:block>
+										<a href="" tal:attributes="href python:action.absolute_url()+'/base_edit'"><img src="edit.gif" /></a>
+										<a href="" tal:attributes="href python:action.absolute_url()+'/base_view'"><img src="document_icon.gif" /></a>
+										</li>
+									</tal:actionsviews>
+								</ul>
+							
+							</ul>
+						
+				</dd>
+			</dl></div>
+			</tal:blockviews>
+</dd></dl><br/>
+<dl class="collapsible inline collapsedOnLoad">
+        <dt class="collapsibleHeader">Agents</dt>
+        <dd class="collapsibleContent">
+			<ul>
+			<tal:blockagents tal:repeat="agent python:here.getAgents()">
+			<li>
+				<tal:block tal:content="agent/id">agent name</tal:block>
+				<a href="" tal:attributes="href python:agent.absolute_url()+'/base_edit'"><img src="edit.gif" /></a>
+				<a href="" tal:attributes="href python:agent.absolute_url()+'/runAgent?REDIRECT=True'"><img src="workflow_icon.gif"/></a>
+			</li>
+			</tal:blockagents>
+			</ul>
+</dd></dl><br/>
+      <dl class="collapsible inline collapsedOnLoad">
+        <dt class="collapsibleHeader">Others</dt>
+        <dd class="collapsibleContent">
+			<ul><li><a href="./resources/manage_main" target="_new">Resources folder (ZMI)</a></li>
+				<li><a href="./plomino_index/manage_catalogView" target="_new">Index (ZMI)</a></li>
+				<li><a href="./refreshDB">Refresh database</a></li>		
+			</ul>
+</dd></dl>
+
+
+
+		
+<hr/><h3>Import/Export design</h3>
+<table>
+<tr><th>Import</th><th>Export</th></tr>
+<tr><td valign="top">
+	<form name="ImportDesign" action="importDesign"  method="POST" enctype="multipart/form-data">
+	<imput type="hidden" name="mode" value="refresh" />
+		<table tal:define="sourceURL request/sourceURL|nothing;
+						username request/username|nothing;
+						password request/password|nothing">
+			<tr>
+			<td><input type="radio" name="sourcetype" value="file"/></td>
+				<td colspan="2"><strong>From file</strong></td>
+			</tr>
+			<tr><td></td>
+				<td>Plomino XML file</td>
+				<td><input type="file" name="sourceFile" /></td>
+			</tr>
+			<tr>
+				<td><input type="radio" name="sourcetype" value="server"/></td>
+				<td colspan="2"><strong>From server</strong></td>
+			</tr>
+			<tr><td></td>
+				<td>Source URL</td>
+				<td><input type="text" name="sourceURL" 
+					tal:attributes="value sourceURL"
+					/></td>
+			</tr>
+			<tr><td></td>
+				<td>Username</td>
+				<td><input type="text" name="username" tal:attributes="value username"/></td>
+			</tr>
+			<tr><td></td>
+				<td>Password</td>
+				<td><input type="password" name="password" tal:attributes="value password"/></td>
+			</tr>
+			<tr><td></td>
+				<td>Entire design</td>
+				<td><input type="checkbox" name="entire" value="Yes"/></td>
+			</tr>
+			<tr><td></td>
+				<td>or elements</td>
+				<td>
+				<select name="designelements" multiple="true" lines="6">
+					<tal:block tal:condition="sourceURL">
+						<tal:block tal:repeat="f python:here.getRemoteForms(sourceURL, username, password)">
+							<option tal:attributes="value f;"
+								tal:content="python:f+' (Form)'">value</option>
+						</tal:block>
+						<tal:block tal:repeat="v python:here.getRemoteViews(sourceURL, username, password)">
+							<option tal:attributes="value v;"
+								tal:content="python:v+' (View)'">value</option>
+						</tal:block>
+						<tal:block tal:repeat="a python:here.getRemoteAgents(sourceURL, username, password)">
+							<option tal:attributes="value a;"
+								tal:content="python:a+' (Agent)'">value</option>
+						</tal:block>
+						<tal:block tal:repeat="v python:here.getRemoteResources(sourceURL, username, password)">
+							<option tal:attributes="value v;"
+								tal:content="python:v+' (Resource)'">value</option>
+						</tal:block>
+					</tal:block>
+				</select>
+				<input type="submit" name="submit_refresh" class="context" value="Refresh"/>
+				</td>
+			</tr>
+			<tr><td colspan="2"><input type="submit" class="context" value="Import" name="submit_import"/></td><td></td></tr>
+		</table>
+	</form>
+</td>
+<td valign="top">
+	<form name="ExportDesign" action="exportDesign" method="POST">
+		<table>
+		    <tr>
+			<td><input type="radio" name="targettype" value="file"/></td>
+				<td colspan="2"><strong>To file</strong></td>
+			</tr>
+			<tr>
+			<td><input type="radio" name="targettype" value="server"/></td>
+				<td colspan="2"><strong>To server</strong></td>
+			</tr>
+			<tr><td></td>
+				<td>Target URL</td>
+				<td><input type="text" name="targetURL"/></td>
+			</tr>
+			<tr><td></td>
+				<td>Username</td>
+				<td><input type="text" name="username"/></td>
+			</tr>
+			<tr><td></td>
+				<td>Password</td>
+				<td><input type="password" name="password"/></td>
+			</tr>
+			<tr>
+				<td colspan="2">Entire design</td>
+				<td><input type="checkbox" name="entire" value="Yes"/></td>
+			</tr>
+			<tr>
+				<td colspan="2">or elements</td>
+				<td>
+				<select name="designelements" multiple="true" lines="6">
+					<tal:block tal:repeat="f python:here.getForms()">
+						<option tal:attributes="value f/id;"
+							tal:content="python:f.id+' (Form)'">value</option>
+					</tal:block>
+					<tal:block tal:repeat="v python:here.getViews()">
+						<option tal:attributes="value v/id;"
+							tal:content="python:v.id+' (View)'">value</option>
+					</tal:block>
+					<tal:block tal:repeat="a python:here.getAgents()">
+						<option tal:attributes="value a/id;"
+							tal:content="python:a.id+' (Agent)'">value</option>
+					</tal:block>
+					<tal:block tal:repeat="v python:['resources/'+i for i in here.resources.objectIds()]">
+						<option tal:attributes="value v;"
+							tal:content="python:v+' (Resource)'">value</option>
+					</tal:block>
+				</select>
+				</td>
+			</tr>
+			<tr><td colspan="2"><input type="submit" class="context" value="Export" name="submit_export"/></td><td></td></tr>
+		</table>
+	</form>
+</tr>
+</table>
+        <div tal:replace="structure provider:plone.belowcontentbody" />
+
+    </tal:main-macro>
+</metal:main>
+
+</body>
+</html>
+
+

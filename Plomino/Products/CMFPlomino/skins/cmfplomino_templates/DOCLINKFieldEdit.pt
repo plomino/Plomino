@@ -1,0 +1,53 @@
+<span tal:define="widget python:options['field'].getSettings('widget');
+				selection options/selection
+				">
+	<tal:widget tal:condition="python:test(widget=='SELECT')">
+		<select tal:attributes="name options/fieldname"><tal:loop tal:repeat="v selection">
+			<option tal:define="current options/fieldvalue;l python:v.split('|')"
+				tal:attributes="value python:l[1]; selected python:test(current==l[1],1,0)"
+				tal:content="python:l[0]">value</option>
+		</tal:loop></select>
+	</tal:widget>
+	<tal:widget tal:condition="python:test(widget=='MULTISELECT')">
+		<select tal:attributes="name options/fieldname" multiple="true" lines="4"><tal:loop tal:repeat="v selection">
+				<tal:block tal:define="current options/fieldvalue;l python:v.split('|')">
+					<option 
+						tal:attributes="value python:l[1]; selected python:test(current and l[1] in current,1,0)"
+						tal:content="python:l[0]">value</option>
+				</tal:block>
+		</tal:loop></select>
+	</tal:widget>
+	<tal:widget tal:condition="python:test(widget=='VIEW')" >
+		<table tal:define="sourceview python:options['field'].getSettings('sourceview');
+	                       v python:options['field'].getParentDatabase().getView(sourceview);
+	                       columns python:v.getColumns()">
+			<tr>
+				<th>&nbsp;&nbsp;</th>
+				<tal:block tal:repeat="c columns">
+					<th tal:condition="not: c/HiddenColumn|nothing">&nbsp;<span
+						tal:content="c/Title">Title</span>&nbsp;</th>
+				</tal:block>
+			</tr>
+			<tal:documents tal:define="current options/fieldvalue;
+				listdocuments python:[d for d in v.getAllDocuments() if test(v.hasReadPermission(v.getParentDatabase().getDocument(d.getPath().split('/')[-1]))==True)];"
+						tal:repeat="doc listdocuments">
+				<tr tal:define="oddrow repeat/doc/odd"
+					tal:attributes="class python:test(oddrow, 'even', 'odd')">
+					<td><input type="checkbox" 
+					tal:attributes="name options/fieldname;
+							value python:doc.getPath();
+							checked python:test(current and doc.getPath() in current,1,0)">
+					</td>
+					<tal:block tal:repeat="c columns">
+						<td tal:condition="not: c/HiddenColumn|nothing"><span
+							tal:define="cname c/id;
+										vname v/id;
+										cvalue python:path('doc/PlominoViewColumn_%s_%s' % (vname, cname));
+										"
+							tal:content="structure cvalue" /></td>
+					</tal:block>
+				</tr>
+			</tal:documents>
+		</table>
+	</tal:widget>
+</span>

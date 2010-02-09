@@ -1,0 +1,19 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en"
+      lang="en"
+      metal:use-macro="here/main_template/macros/master"
+      i18n:domain="plone">
+<body>
+
+<metal:main fill-slot="main">
+    <div id="bodyContent" tal:define="message request/message|nothing;
+                                      message_title request/title|nothing;
+                                      returnurl request/returnurl|nothing;">
+    	<h1 tal:content="python:test(message_title, message_title, 'Message')">Message</h1>
+		<p tal:condition="message" tal:content="message">message</p>
+		<input type="button" class="context" tal:attributes="onclick python:test(returnurl, 'location.href=\''+returnurl+'\'', 'history.back()')" value="Continue" i18n:domain="CMFPlomino" i18n:attributes="value"/>
+	</div>
+</metal:main>
+
+</body>
+</html>
+

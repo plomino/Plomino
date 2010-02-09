@@ -1,0 +1,60 @@
+# ArchGenXML generated POT File
+# [Eric BREHAULT] <[ebrehault@gmail.com]>, 2006.
+msgid ""
+msgstr ""
+"Project-Id-Version: CMFPlomino\n"
+"POT-Creation-Date: Thu Sep 28 15:52:32 2006\n"
+"PO-Revision-Date: 2008-04-19 22:13+0100\n"
+"Last-Translator: Stefano Saltannecchi <stefano.saltannecchi@gmail.com>\n"
+"Language-Team: [Mirto Busico] <[m.busico@ieee.org]>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0\n"
+"Language-Code: it\n"
+"Language-Name: Italian\n"
+"Preferred-Encodings: latin1 utf-8\n"
+"Domain: plone\n"
+
+msgid "PlominoAction"
+msgstr "Plomino: Azione"
+
+msgid "PlominoColumn"
+msgstr "Plomino: Colonna"
+
+msgid "PlominoDatabase"
+msgstr "Plomino: Database"
+
+msgid "PlominoDocument"
+msgstr "Plomino: Documento"
+
+msgid "PlominoField"
+msgstr "Plomino: Campo"
+
+msgid "PlominoForm"
+msgstr "Plomino: Modulo"
+
+msgid "PlominoHidewhen"
+msgstr "Plomino: Nascondi quando"
+
+msgid "PlominoView"
+msgstr "Plomino: Vista"
+
+msgid "Forms"
+msgstr "Moduli"
+
+msgid "Views"
+msgstr "Viste"
+
+msgid "ACL"
+msgstr "ACL"
+
+msgid "About"
+msgstr "A proposito"
+
+msgid "Using"
+msgstr "Istruzioni d'uso"
+
+msgid "Compose"
+msgstr "Comporre"
+

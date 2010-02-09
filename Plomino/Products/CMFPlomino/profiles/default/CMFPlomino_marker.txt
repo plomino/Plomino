@@ -1,0 +1,4 @@
+This is a marker for the products GenericSetup import steps.
+
+With this marker file present the steps in setuphandlers.py are executed only
+in context of this specific profile.

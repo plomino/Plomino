@@ -1,0 +1,50 @@
+<span tal:define="widget python:options['field'].getSettings('widget');
+				selection options/selection
+				">
+	<tal:widget tal:condition="python:test(widget=='SELECT')">
+		<select tal:attributes="name options/fieldname"><tal:loop tal:repeat="v selection">
+			<option tal:define="current options/fieldvalue;l python:v.split('|')"
+				tal:attributes="value python:l[1]; selected python:test(current==l[1],1,0)"
+				tal:content="python:l[0]">value</option>
+		</tal:loop></select>
+	</tal:widget>
+	<tal:widget tal:condition="python:test(widget=='MULTISELECT')">
+		<select tal:attributes="name options/fieldname" multiple="true" lines="4"><tal:loop tal:repeat="v selection">
+				<tal:block tal:define="current options/fieldvalue;
+									currentaslist python:test(hasattr(current, 'append'), current, [current]);
+									l python:v.split('|')">
+					<option 
+						tal:attributes="value python:l[1]; selected python:test(currentaslist and l[1] in currentaslist,1,0)"
+						tal:content="python:l[0]">value</option>
+				</tal:block>
+		</tal:loop></select>
+	</tal:widget>
+	<tal:widget tal:condition="python:test(widget=='CHECKBOX')">
+		<tal:block tal:define="current options/fieldvalue;
+							currentaslist python:test(hasattr(current, 'append'), current, [current]);"
+			tal:repeat="v selection">
+			<tal:block tal:define="l python:v.split('|')">
+				<input type="checkbox" 
+					tal:attributes="name options/fieldname;
+							value python:l[1];
+							checked python:test(currentaslist and l[1] in currentaslist,1,0)">
+				<tal:block tal:content="structure python:l[0]">value</tal:block>
+				<tal:sep tal:condition="not:repeat/v/end" tal:content="structure python:options['field'].getSettings('separator')">separator</tal:sep>
+			</tal:block>
+		</tal:block>
+	</tal:widget>
+	<tal:widget tal:condition="python:test(widget=='RADIO')">
+		<tal:block tal:define="current options/fieldvalue;
+							currentaslist python:test(hasattr(current, 'append'), current, [current]);"
+			tal:repeat="v selection">
+			<tal:block tal:define="l python:v.split('|')">
+				<input type="radio" 
+					tal:attributes="name options/fieldname;
+							value python:l[1];
+							checked python:test(currentaslist and l[1] in currentaslist,1,0)">
+				<tal:block tal:content="structure python:l[0]">value</tal:block>
+				<tal:sep tal:condition="not:repeat/v/end" tal:content="structure python:options['field'].getSettings('separator')">separator</tal:sep>
+			</tal:block>
+		</tal:block>
+	</tal:widget>
+</span>
