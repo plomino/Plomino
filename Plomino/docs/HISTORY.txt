@@ -4,7 +4,7 @@ Changelog
 1.5.5
 -----
 
-* Fix: escape CDATA in XML import/export (Jean Joordan contribution)
+* Fix: escape CDATA in XML import/export (Jean Jordaan contribution)
 
 * Fix: handle empty multiselect and empty checkboxes
 
