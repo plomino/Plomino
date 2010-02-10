@@ -469,6 +469,15 @@ class PlominoForm(ATFolder):
                     else:
                         v = f.processInput(submittedValue, doc, process_attachments)
                         doc.setItem(fieldName, v)
+                else:
+                    #the field was not submitted, probably because it is not part of the form (hide-when, ...)
+                    #so we just let it unchanged, but with SELECTION, we need to presume it was empty
+                    #(as SELECT/checkbox/radio tags do not submit an empty value, they are just missing
+                    #in the querystring)
+                    fieldtype = f.getFieldType()
+                    if fieldtype == "SELECTION":
+                        doc.removeItem(fieldName)
+                    
 
     security.declareProtected(READ_PERMISSION, 'searchDocuments')
     def searchDocuments(self,REQUEST):
