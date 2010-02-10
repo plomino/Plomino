@@ -1,6 +1,18 @@
 Changelog
 =========
 
+1.5.5
+-----
+
+* Fix: escape CDATA in XML import/export (Jean Joordan contribution)
+
+* Fix: handle empty multiselect and empty checkboxes
+
+* Fix: do not default to PlominoAuthor right if Authenticated generic right
+is PlominoAuthor whereas the current user as PlominoReader right
+
+* Fix: set encoding in exportCSV
+
 1.5.4
 -----
 
