@@ -23,7 +23,7 @@ DESIGN_PERMISSION = 'CMFPlomino: Modify Database design'
 security.declarePublic('ACL_PERMISSION')
 ACL_PERMISSION = 'CMFPlomino: Control Database ACL'
 
-SAFE_UTILS='DateToString, StringToDate, DateRange, sendMail, userFullname, userInfo, htmlencode, Now, asList, urlencode, csv_to_array'
+SAFE_UTILS='DateToString, StringToDate, DateRange, sendMail, userFullname, userInfo, htmlencode, Now, asList, urlencode, csv_to_array, MissingValue'
 
 FIELD_TYPES={"TEXT": ["Text", "ZCTextIndex"],
              "NUMBER": ["Number", "FieldIndex"],

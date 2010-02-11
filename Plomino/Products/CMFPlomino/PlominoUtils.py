@@ -16,7 +16,8 @@ from Products.CMFCore.utils import getToolByName
 import htmlentitydefs as entity
 import urllib
 import csv
-from cStringIO import StringIO 
+from cStringIO import StringIO
+import Missing
 
 def DateToString(d, format='%d/%m/%Y'):
     """return the date as string using the given format, default is '%d/%m/%Y'
@@ -134,3 +135,8 @@ def csv_to_array(csvcontent, delimiter='\t', quotechar='"'):
     else:
         csvfile = csvcontent
     return [l for l in csv.reader(csvfile, delimiter=delimiter, quotechar=quotechar)]
+
+def MissingValue():
+    """ useful to test search results value (as Missing.value cannot be imported in scripts)
+    """
+    return Missing.Value
