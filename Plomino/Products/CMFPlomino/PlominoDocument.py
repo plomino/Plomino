@@ -175,7 +175,7 @@ class PlominoDocument(ATFolder):
         """
         return self.getParentDatabase().isCurrentUserAuthor(self)
 
-    security.declareProtected(EDIT_PERMISSION, 'delete')
+    security.declareProtected(REMOVE_PERMISSION, 'delete')
     def delete(self,REQUEST=None):
         """delete the current doc
         """

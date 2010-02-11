@@ -290,7 +290,7 @@ class PlominoDatabase(ATFolder, PlominoAccessControl, PlominoDesignManager, Plom
             docid = docid.split("/")[-1]
         return getattr(self, docid, None)
 
-    security.declareProtected(EDIT_PERMISSION, 'deleteDocument')
+    security.declareProtected(REMOVE_PERMISSION, 'deleteDocument')
     def deleteDocument(self,doc):
         """delete the document from database
         """
@@ -308,7 +308,7 @@ class PlominoDatabase(ATFolder, PlominoAccessControl, PlominoDesignManager, Plom
             event.notify(ObjectRemovedEvent(doc, self, doc.id))
             return PortalFolder.manage_delObjects(self, doc.id, None)
 
-    security.declareProtected(DESIGN_PERMISSION, 'deleteDocuments')
+    security.declareProtected(REMOVE_PERMISSION, 'deleteDocuments')
     def deleteDocuments(self,ids=None, massive=True):
         """delete documents from database
         if massive, onDelete formula and index updating are not performed (use refreshDB to update)
@@ -326,7 +326,7 @@ class PlominoDatabase(ATFolder, PlominoAccessControl, PlominoDesignManager, Plom
                     # if insufficient access rights, we continue
                     pass
             
-    security.declareProtected(EDIT_PERMISSION, 'manage_deleteDocuments')
+    security.declareProtected(REMOVE_PERMISSION, 'manage_deleteDocuments')
     def manage_deleteDocuments(self, REQUEST):
         """delete documents action
         """

@@ -84,7 +84,8 @@ class PlominoAccessControl(Persistent):
                                "PlominoAuthor",
                                "PlominoEditor",
                                "PlominoDesigner",
-                               "PlominoManager"]
+                               "PlominoManager",
+                               "Owner"]
 
     # Methods
 
@@ -195,7 +196,7 @@ class PlominoAccessControl(Persistent):
             return False
         
         current_rights = self.getCurrentUserRights()
-        if "PlominoEditor" in current_rights or "PlominoDesigner" in current_rights or "PlominoManager" in current_rights:
+        if "PlominoEditor" in current_rights or "PlominoDesigner" in current_rights or "PlominoManager" in current_rights or "Owner" in current_rights:
             return True
         
         if 'PlominoAuthor' in current_rights:
@@ -276,6 +277,8 @@ class PlominoAccessControl(Persistent):
         self.setPlominoPermissions("PlominoDesigner", "PlominoDesigner")
         self._addRole("PlominoManager")
         self.setPlominoPermissions("PlominoManager", "PlominoManager")
+        self.setPlominoPermissions("Manager", "PlominoManager")
+        self.setPlominoPermissions("Owner", "PlominoManager")
         self.AnomynousAccessRight="NoAccess"
         self.setPlominoPermissions("Anonymous", "NoAccess")
         self.AuthenticatedAccessRight="NoAccess"
