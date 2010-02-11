@@ -1,6 +1,6 @@
 Metadata-Version: 1.0
 Name: Plomino
-Version: 1.5.4
+Version: 1.5.5
 Summary: Create specific applications in Plone without developping
 Home-page: http://www.brehault.net/plomino
 Author: Eric BREHAULT
@@ -13,6 +13,18 @@ Description: Introduction
         
         Changelog
         =========
+        
+        1.5.5
+        -----
+        
+        * Fix: escape CDATA in XML import/export (Jean Jordaan contribution)
+        
+        * Fix: handle empty multiselect and empty checkboxes
+        
+        * Fix: do not default to PlominoAuthor right if Authenticated generic right
+        is PlominoAuthor whereas the current user as PlominoReader right
+        
+        * Fix: set encoding in exportCSV
         
         1.5.4
         -----
