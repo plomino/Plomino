@@ -38,6 +38,8 @@ class PlominoColumnIndex(UnIndex):
 		if(self.id.startswith("PlominoViewColumn_")):
 			param = self.id.split('_')
 			viewname=param[1]
+			if not doc.isSelectedInView(viewname):
+				return 0
 			columnname=param[2]
 			newValue = doc.computeColumnValue(viewname, columnname)
 		else:
