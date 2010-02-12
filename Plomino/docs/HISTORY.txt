@@ -1,6 +1,20 @@
 Changelog
 =========
 
+1.5.6
+-----
+
+* Access control fix : Owner is author of any document (just like PlominoManager role)
+
+* MissingValue() method in PlominoUtils : it returns Missing.Value which can be useful
+when processing ZCatalog brains (=search results) as Missing.Value cannot be imported
+into formulas.
+
+* Do not compute column values in index if the document does not belong to the view.
+Note: it does not really change the performances when indexing, but it does reduce
+the index size.
+It also reduce the amount of error traceback in debug mode.
+
 1.5.5
 -----
 
