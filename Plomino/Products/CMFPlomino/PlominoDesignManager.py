@@ -340,7 +340,10 @@ class PlominoDesignManager(Persistent):
         if formula.strip().count('\n')>0:
             str_formula=str_formula+formula
         else:
-            str_formula=str_formula+"return "+formula
+            if formula.startswith('return '):
+                str_formula=str_formula+formula
+            else:
+                str_formula=str_formula+"return "+formula
         ps.write(str_formula)
         if self.debugMode:
             logger.info(script_id + " compiled")
