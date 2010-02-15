@@ -137,6 +137,6 @@ def csv_to_array(csvcontent, delimiter='\t', quotechar='"'):
     return [l for l in csv.reader(csvfile, delimiter=delimiter, quotechar=quotechar)]
 
 def MissingValue():
-    """ useful to test search results value (as Missing.value cannot be imported in scripts)
+    """ Useful to test search results value (as Missing.Value cannot be imported in scripts)
     """
     return Missing.Value
