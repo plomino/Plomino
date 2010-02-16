@@ -145,7 +145,7 @@ class PlominoAccessControl(Persistent):
 
     security.declarePublic('getCurrentUserRights')
     def getCurrentUserRights(self):
-        """get the current user rights
+        """get the current user Plomino rights
         """
         try:
             userid = self.getCurrentUser().getMemberId()
@@ -192,13 +192,21 @@ class PlominoAccessControl(Persistent):
     def isCurrentUserAuthor(self,doc):
         """is the current user the document's author?
         """
+        # the user must at least have edit permission
         if not self.checkUserPermission(EDIT_PERMISSION):
             return False
         
-        current_rights = self.getCurrentUserRights()
-        if "PlominoEditor" in current_rights or "PlominoDesigner" in current_rights or "PlominoManager" in current_rights or "Owner" in current_rights:
+        # if the user is Owner or Manager, no problem
+        general_plone_rights = self.getCurrentUser().getRolesInContext(doc)
+        if 'Owner' in general_plone_rights or 'Manager' in general_plone_rights:
             return True
         
+        # check if the user is more powerful than a regular PlominoAuthor
+        current_rights = self.getCurrentUserRights()
+        if "PlominoEditor" in current_rights or "PlominoDesigner" in current_rights or "PlominoManager" in current_rights:
+            return True
+        
+        # if he is just a PlominoAuthor, check if he is author of this very document
         if 'PlominoAuthor' in current_rights:
             authors = doc.getItem('Plomino_Authors')
             if authors is None:
