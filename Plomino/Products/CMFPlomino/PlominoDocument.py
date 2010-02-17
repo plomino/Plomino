@@ -407,18 +407,18 @@ class PlominoDocument(ATFolder):
         if filename is not None:
             if fss:
                 storage = FileSystemStorage()
-                file = storage.get(filename, self)
+                file_obj = storage.get(filename, self)
             else:
-                file = getattr(self, filename)
+                file_obj = getattr(self, filename)
             if REQUEST is None:
-                return file
+                return file_obj
             else:
-                REQUEST.RESPONSE.setHeader('content-type', file.getContentType())
+                REQUEST.RESPONSE.setHeader('content-type', file_obj.getContentType())
                 REQUEST.RESPONSE.setHeader("Content-Disposition", "inline; filename="+filename)
                 if fss:
-                    return file.getData()
+                    return file_obj.getData()
                 else:
-                    return file.data
+                    return file_obj.data
         else:
             return None
 
