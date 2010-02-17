@@ -68,7 +68,7 @@ class DoclinkField(BaseField):
             if v is None:
                 return []
             else:
-                return [str(getattr(d, 'PlominoViewColumn_'+self.sourceview+'_'+self.labelcolumn))+"|"+d.getPath() for d in v.getAllDocuments()]
+                return [getattr(d, 'PlominoViewColumn_'+self.sourceview+'_'+self.labelcolumn)+"|"+d.getPath() for d in v.getAllDocuments()]
         else:
             #if no doc provided (if OpenForm action), we use the PlominoForm
             if doc is None:
