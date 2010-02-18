@@ -67,7 +67,7 @@ schema = Schema((
             description_msgid='CMFPlomino_help_FieldMode',
             i18n_domain='CMFPlomino',
         ),
-        vocabulary= [["EDITABLE", "Editable"], ["COMPUTED", "Computed"], ["CREATION", "Computed on creation"], ["DISPLAY", "Computed for display"]],
+        vocabulary= FIELD_MODES,
     ),
     TextField(
         name='Formula',

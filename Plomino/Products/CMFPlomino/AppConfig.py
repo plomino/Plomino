@@ -42,6 +42,8 @@ FIELD_TYPES={"TEXT": ["Text", "ZCTextIndex"],
              "GOOGLEVISUALIZATION": ["Google visualization", "FieldIndex"]
              }
 
+FIELD_MODES = [["EDITABLE", "Editable"], ["COMPUTED", "Computed"], ["CREATION", "Computed on creation"], ["DISPLAY", "Computed for display"]]
+
 #DEPENDENCIES = ['kupu']
 
 #FCKeditor configuration styles
