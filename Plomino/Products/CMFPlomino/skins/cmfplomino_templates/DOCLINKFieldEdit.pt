@@ -1,16 +1,18 @@
 <span tal:define="widget python:options['field'].getSettings('widget');
-				selection options/selection
+				selection python:options['selection'];
+				name python:options['fieldname'];
+				current python:options['fieldvalue']
 				">
 	<tal:widget tal:condition="python:test(widget=='SELECT')">
-		<select tal:attributes="name options/fieldname"><tal:loop tal:repeat="v selection">
-			<option tal:define="current options/fieldvalue;l python:v.split('|')"
+		<select tal:attributes="name name"><tal:loop tal:repeat="v selection">
+			<option tal:define="l python:v.split('|')"
 				tal:attributes="value python:l[1]; selected python:test(current==l[1],1,0)"
 				tal:content="python:l[0]">value</option>
 		</tal:loop></select>
 	</tal:widget>
 	<tal:widget tal:condition="python:test(widget=='MULTISELECT')">
-		<select tal:attributes="name options/fieldname" multiple="true" lines="4"><tal:loop tal:repeat="v selection">
-				<tal:block tal:define="current options/fieldvalue;l python:v.split('|')">
+		<select tal:attributes="name name" multiple="true" lines="4"><tal:loop tal:repeat="v selection">
+				<tal:block tal:define="l python:v.split('|')">
 					<option 
 						tal:attributes="value python:l[1]; selected python:test(current and l[1] in current,1,0)"
 						tal:content="python:l[0]">value</option>
@@ -28,8 +30,7 @@
 						tal:content="c/Title">Title</span>&nbsp;</th>
 				</tal:block>
 			</tr>
-			<tal:documents tal:define="current options/fieldvalue;
-				listdocuments python:[d for d in v.getAllDocuments() if test(v.hasReadPermission(v.getParentDatabase().getDocument(d.getPath().split('/')[-1]))==True)];"
+			<tal:documents tal:define="listdocuments python:[d for d in v.getAllDocuments() if test(v.hasReadPermission(v.getParentDatabase().getDocument(d.getPath().split('/')[-1]))==True)];"
 						tal:repeat="doc listdocuments">
 				<tr tal:define="oddrow repeat/doc/odd"
 					tal:attributes="class python:test(oddrow, 'even', 'odd')">
@@ -50,4 +51,13 @@
 			</tal:documents>
 		</table>
 	</tal:widget>
+	<tal:widget tal:condition="python:test(widget=='GTABLE')"
+	       tal:define="googlejsapi here/REQUEST/googlejsapi|nothing;
+                       jscode python:options['field'].getSettings().jscode(selection, current);">
+        <script tal:condition="not:googlejsapi" type='text/javascript' src='http://www.google.com/jsapi'></script>
+        <script type='text/javascript' tal:content="structure jscode"></script>
+        <div id='googlevisualization_div' tal:attributes="id string:${name}_div"></div>
+        <input type="hidden" tal:attributes="name options/fieldname; id string:${name};
+                                          value python:test(current is not None,'|'.join(current),'')"/>
+    </tal:widget>
 </span>
