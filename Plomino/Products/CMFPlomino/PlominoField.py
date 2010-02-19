@@ -209,7 +209,7 @@ class PlominoField(BaseContent, BrowserDefaultMixin):
                 elif request is None:
                     fieldValue = ""
                 else:
-                    fieldValue = request.get(fieldName)
+                    fieldValue = request.get(fieldName, '')
                     if self.getFieldType()=="DATETIME" and not (fieldValue=='' or fieldValue is None):
                         fieldValue = StringToDate(fieldValue, form.getParentDatabase().getDateTimeFormat())
             else:
