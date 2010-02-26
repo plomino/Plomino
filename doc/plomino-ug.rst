@@ -272,7 +272,7 @@ Add a view
 Go back to the Books database.
 
 Select ``Plomino: view`` in the **Add item** Plone menu. Enter an
-identifier ('all') and a title ('All the books'):
+identifier (``all``) and a title ('All the books'):
 
 .. image:: images/m57ed2659.png
 
@@ -1453,15 +1453,19 @@ PlominoDatabase
     the ``resources`` folder. If the called method allows it, you may
     pass some arguments.
 
+    Note that if the file ``scriptname`` changes, you'll have to remove
+    derived scripts in the ``scripts`` folder manually.
+
 `createDocument(self)`
     returns a new empty document.
 
 `deleteDocument(self, doc)`
     deletes the document
 
-`deleteDocuments(self, doc)`
-    batch delete documents from database. The `onDelete` formula and
-    index updating are not performed (use `refreshDB` to update).
+`deleteDocuments(self, ids=None, massive=True)`
+    batch delete documents from database. If `massive` is ``True``, the
+    `onDelete` formula and index updating are not performed (use
+    `refreshDB` to update).
 
 `getAgents(self)`
     returns all the PlominoAgent objects stored in the database.
