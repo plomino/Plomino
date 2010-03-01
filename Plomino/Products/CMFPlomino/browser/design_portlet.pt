@@ -1,0 +1,38 @@
+<dl class="portlet portlet-plomino" tal:condition="python:view.hasDesignPermission()"
+                                    tal:define="db python:view.parentdatabase();
+                                                db_url python:db.absolute_url();
+                                                type python:view.currenttype();
+                                                url python:view.context.absolute_url();">
+    <dt class="portletHeader"><a tal:attributes="href string:${db_url}/DatabaseDesign">Design</a></dt>
+    <dd class="portletItem">
+        <strong>Database</strong>
+        <ul>
+        <li><a tal:attributes="href string:${db_url}/edit">Parameters</a></li>
+        <li><a tal:attributes="href string:${db_url}/DatabaseDesign">Design</a></li>
+        <li><a tal:attributes="href string:${db_url}/DatabaseACL">Access control</a></li>
+        </ul>
+    </dd>
+    <dd class="portletItem" tal:condition="python:type=='PlominoDatabase'">
+        <strong>Add new...</strong>
+        <ul>
+        <li><a tal:attributes="href string:${url}/createObject?type_name=PlominoForm">Form</a></li>
+        <li><a tal:attributes="href string:${url}/createObject?type_name=PlominoView">View</a></li>
+        <li><a tal:attributes="href string:${url}/createObject?type_name=PlominoAgent">Agent</a></li>
+        </ul>
+    </dd>
+    <dd class="portletItem" tal:condition="python:type=='PlominoForm'">
+        <strong>Add new...</strong>
+        <ul>
+        <li><a tal:attributes="href string:${url}/createObject?type_name=PlominoField">Field</a></li>
+        <li><a tal:attributes="href string:${url}/createObject?type_name=PlominoHideWhen">Hide when</a></li>
+        <li><a tal:attributes="href string:${url}/createObject?type_name=PlominoAction">Action</a></li>
+        </ul>
+    </dd>
+    <dd class="portletItem" tal:condition="python:type=='PlominoView'">
+        <strong>Add new...</strong>
+         <ul>
+        <li><a tal:attributes="href string:${url}/createObject?type_name=PlominoColumn">Column</a></li>
+        <li><a tal:attributes="href string:${url}/createObject?type_name=PlominoAction">Action</a></li>
+        </ul>
+    </dd>
+</dl>

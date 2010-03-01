@@ -1,0 +1,17 @@
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:browser="http://namespaces.zope.org/browser"
+    xmlns:plone="http://namespaces.plone.org/plone"
+    i18n_domain="CMFPlomino">
+
+  <plone:portlet
+      name="plomino.designportlet"
+      interface=".portlet.IPortlet"
+      assignment=".portlet.Assignment"
+      view_permission="zope2.View"
+      edit_permission="cmf.ManagePortal"
+      renderer=".portlet.Renderer"
+      addview=".portlet.AddForm"
+    />
+
+</configure>

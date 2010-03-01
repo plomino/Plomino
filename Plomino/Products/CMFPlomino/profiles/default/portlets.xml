@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<portlets>
+  <portlet
+    addview="plomino.designportlet"
+    title="Plomino design portlet"
+    description="Add/manage design items"
+  />
+ <assignment name="plomino-design-portlet" category="content_type"
+    key="PlominoDatabase" manager="plone.leftcolumn"
+    type="plomino.designportlet"/>
+</portlets>

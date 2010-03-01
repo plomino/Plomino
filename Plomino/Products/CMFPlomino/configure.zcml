@@ -4,13 +4,13 @@
   
   <include file="profiles.zcml" />
 
-  <!-- ##code-section configure.zcml -->
   <include package=".fields"/>
+  <include package=".browser"/>
   
   <subscriber
     for="Products.CMFPlomino.interfaces.IPlominoDocument zope.app.container.interfaces.IObjectRemovedEvent"
     handler="Products.CMFPlomino.events.PlominoDocumentRemoveEventHandler"
         />
-  <!-- ##/code-section configure.zcml -->
+
 
 </configure>
