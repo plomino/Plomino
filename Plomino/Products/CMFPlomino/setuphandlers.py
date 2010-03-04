@@ -49,14 +49,15 @@ def postInstall(context):
     site = context.getSite()
 
     #run kupu customisation script
-    logger.info('run Kupu Customisation Script')
-    skin=site.portal_skins.cmfplomino_styles
-    script = getattr(skin,'kupu-customisation-policy', None)
-    if script:
-        script()
-        logger.info('runKupuCustomisationScript done')
-    else:
-        logger.info('runKupuCustomisationScript : kupu-customisation-policy not found')
+    if hasattr(site.portal_properties, 'kupu_library_tool'):
+        logger.info('run Kupu Customisation Script')
+        skin=site.portal_skins.cmfplomino_styles
+        script = getattr(skin,'kupu-customisation-policy', None)
+        if script:
+            script()
+            logger.info('runKupuCustomisationScript done')
+        else:
+            logger.info('runKupuCustomisationScript : kupu-customisation-policy not found')
 
     #customise FCKedior configuration
     if hasattr(site.portal_properties, 'fckeditor_properties'):
