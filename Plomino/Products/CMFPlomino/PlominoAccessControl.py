@@ -17,7 +17,7 @@ from AccessControl.PermissionRole import rolesForPermissionOn
 from AccessControl import getSecurityManager
 from Products.CMFCore.utils import getToolByName
 from Products.DCWorkflow.DCWorkflow import DCWorkflowDefinition
-from Globals import Persistent
+from Persistence import Persistent
         
 class PlominoAccessControl(Persistent):
     """Plomino access control utilities
