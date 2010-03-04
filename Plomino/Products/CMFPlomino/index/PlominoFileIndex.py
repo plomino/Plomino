@@ -17,8 +17,6 @@ class PlominoFileIndex(ZCTextIndex):
 	"""Index for Plomino files attachments.
 	"""
 
-	__implements__ = ZCTextIndex.__implements__
-
 	meta_type="PlominoFileIndex"
 
 	query_options = ["query"]

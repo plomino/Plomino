@@ -17,8 +17,6 @@ class PlominoColumnIndex(UnIndex):
 	"""Index for Plomino columns.
 	"""
 
-	__implements__ = UnIndex.__implements__
-
 	meta_type="PlominoColumnIndex"
 
 	query_options = ["query","range"]

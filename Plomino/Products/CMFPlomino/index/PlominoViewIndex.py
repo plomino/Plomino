@@ -18,8 +18,6 @@ class PlominoViewIndex(UnIndex):
 	"""Index for Plomino view selection formula.
 	"""
 
-	__implements__ = UnIndex.__implements__
-
 	meta_type="PlominoViewIndex"
 
 	query_options = ["query","range"]
