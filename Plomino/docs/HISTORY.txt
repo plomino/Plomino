@@ -1,6 +1,15 @@
 Changelog
 =========
 
+1.5.7
+-----
+
+* Portlet with useful links for design management (add items, acl, etc...)
+
+* Google visualization table to display views
+
+* Fixes for Plone 4 compliancy (work in progress)
+
 1.5.6
 -----
 
