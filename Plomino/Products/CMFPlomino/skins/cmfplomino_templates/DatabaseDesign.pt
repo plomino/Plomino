@@ -15,7 +15,7 @@
 
 		<div tal:replace="structure provider:plone.abovecontenttitle" />
 
-		<h1 class="documentFirstHeading"><tal:block tal:content="object_title">Title or id</tal:block> design</h1>
+		<h1 class="documentFirstHeading"><tal:block tal:content="here/Title">Title or id</tal:block> design</h1>
 		
 		<div tal:replace="structure provider:plone.belowcontenttitle" />
 
