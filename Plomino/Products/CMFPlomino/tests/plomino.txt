@@ -219,12 +219,15 @@ A Doclink field allows to create a reference to another document.
     >>> adapted.sourceview=u'view1'
     >>> adapted.labelcolumn=u'col1'
 	>>> db.frm2.setFormLayout("""<p>Related artist: <span class="plominoFieldClass">relatedartist</span></p>""")
-    >>> result=u'<input type=\'hidden\' name=\'Form\' value=\'frm2\' /><p>Related artist: <span>\n\t\n\t\t<select name="relatedartist">\n\t\t\t<option value="/plone/Members/test_user_1_/mydb/doc1id">London calling</option>\n\t\t\n\t\t\t<option value="/plone/Members/test_user_1_/mydb/doc3id">bonjour</option>\n\t\t\n\t\t\t<option value="/plone/Members/test_user_1_/mydb/doc2id">hello</option>\n\t\t\n\t\t\t<option value="/plone/Members/test_user_1_/mydb/doc4id">ola</option>\n\t\t</select>\n\t\n\t\n\t\n</span>\n</p>'
-    >>> result=result.replace("doc1id", doc1.id)
-    >>> result=result.replace("doc2id", doc2.id)
-    >>> result=result.replace("doc3id", doc3.id)
-    >>> result=result.replace("doc4id", doc4.id)
-    >>> db.frm2.displayDocument(None, True, True)==result
+    >>> result=u'<input type=\'hidden\' name=\'Form\' value=\'frm2\' /><p>Related artist: <span>\n\t\n\t\t<select name="relatedartist">\n\t\t\t\n\t\t\n\t\t\t\n\t\t\n\t\t\t\n\t\t\n\t\t\t\n\t\t</select>\n\t\n\t\n\t\n\t\n</span>\n</p>'
+    >>> result=db.frm2.displayDocument(None, True, True)
+    >>> """<option value="/plone/Members/test_user_1_/mydb/%s">London calling</option>""" % (doc1.id) in result
+    True
+    >>> """<option value="/plone/Members/test_user_1_/mydb/%s">bonjour</option>""" % (doc3.id) in result
+    True
+    >>> """<option value="/plone/Members/test_user_1_/mydb/%s">hello</option>""" % (doc2.id) in result
+    True
+    >>> """<option value="/plone/Members/test_user_1_/mydb/%s">ola</option>""" % (doc4.id) in result
     True
 
 A field can be computed:
