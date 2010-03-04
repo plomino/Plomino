@@ -26,6 +26,8 @@ from Products.CMFPlomino.config import *
 from AccessControl import Unauthorized
 import csv, cStringIO
 
+from gvizpy import gviz_api
+
 import PlominoDocument
 
 ##/code-section module-header
@@ -132,6 +134,19 @@ schema = Schema((
             description_msgid='CMFPlomino_help_HideInMenu',
             i18n_domain='CMFPlomino',
         ),
+        schemata="Parameters",
+    ),
+    StringField(
+        name='Widget',
+        default="BASIC",
+        widget=SelectionWidget(
+            label="Widget",
+            description="Rendering mode",
+            label_msgid='CMFPlomino_label_ViewWidget',
+            description_msgid='CMFPlomino_help_ViewWidget',
+            i18n_domain='CMFPlomino',
+        ),
+        vocabulary= [["BASIC", "Basic html"], ["DYNAMICTABLE", "Dynamic table"]],
         schemata="Parameters",
     ),
     StringField(
@@ -431,6 +446,32 @@ class PlominoView(ATFolder):
                                     },
                                    sortindex, self.getReverseSorting())
         return [d.getObject() for d in results]
+
+    security.declarePublic('googleDataSource')
+    def googleDataSource(self, REQUEST):
+        """ return google.visualization.Query response
+        """
+        plone_tools = getToolByName(self, 'plone_utils')
+        encoding = plone_tools.getSiteEncoding()
+        
+        description = {"docurl": ('string', '')}
+        columns = self.getColumns()
+        for col in columns:
+            description[col.id] = ('string', col.Title())
+        
+        data = []
+        for doc in self.getAllDocuments():
+            row = {}
+            row['docurl'] = doc.getPath()
+            for col in columns:
+                row[col.id] = str(getattr(doc,"PlominoViewColumn_%s_%s" % (self.id, col.id)))
+            data.append(row)
+        
+        data_table = gviz_api.DataTable(description)
+        data_table.LoadData(data)
+        
+        REQUEST.RESPONSE.setHeader('content-type', 'text/plain; charset='+encoding)
+        return data_table.ToJSonResponse(columns_order=['docurl']+[col.id for col in columns])
 
 
 registerType(PlominoView, PROJECTNAME)

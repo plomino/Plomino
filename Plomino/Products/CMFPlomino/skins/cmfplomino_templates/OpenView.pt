@@ -35,11 +35,12 @@
 
 			<p tal:content="here/Description" class="documentDescription">description</p>
 
-			<tal:block tal:condition="python:test(hasReadPermission==True)">
-
+			<tal:block tal:condition="python:test(hasReadPermission==True)"
+			           tal:define="viewwidget python:here.getWidget()">
 
 				<div tal:replace="structure provider:plone.abovecontentbody" />
-
+                
+                <tal:basic tal:condition="python:test(viewwidget=='BASIC')">
 				<table tal:define="columns python:here.getColumns();
 				                   remove_permission python:here.hasRemovePermission(here)==True;
 				                   " id="sortable"
@@ -165,7 +166,45 @@
 						</tal:block>
 					</tal:block>
 				</table>
+				</tal:basic>
+				
+				<tal:dynamic tal:condition="python:test(viewwidget=='DYNAMICTABLE')">
+				    <script type='text/javascript' src='http://www.google.com/jsapi'></script>
+				    <script type='text/javascript' tal:content="string:var source_url='${here/absolute_url}/googleDataSource'"></script>
+				    <script type='text/javascript'>
+google.load('visualization', '1', {packages:['table']});
+google.setOnLoadCallback(loadSource);
+function loadSource() {
+    var query = new google.visualization.Query(source_url);
+    query.send(drawTable)
+}
 
+var table;
+var data;
+
+function drawTable(response) {
+	table = new google.visualization.Table(document.getElementById('table_div'));
+	data = response.getDataTable();
+    var formatter = new google.visualization.PatternFormat('<'+'a href="{0}"'+'>{1}<'+'/a>');
+    formatter.format(data, [0, 1], 1);
+    var view = new google.visualization.DataView(data);
+    view.hideColumns([0]);
+    table.draw(view, {showRowNumber: false, page: 'enable', pageSize: 30, allowHtml: true});
+}
+
+function gviz_selectedocuments() {
+   selection = table.getSelection();
+   var docids = "";
+   for (var i = 0; i < selection.length; i++) {
+	    row = selection[i].row;
+	    docids = docids + data.getValue(row, 0).split('/').reverse()[0] + "@";
+   }
+   return docids
+}
+				    </script>
+
+				    <div id='table_div'></div>
+				</tal:dynamic>
 				<tal:block tal:define="owner python:myF"
 					tal:condition="python:test((b and  myF.ActionBarPosition!='TOP'),True, False)">
 

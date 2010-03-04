@@ -97,19 +97,23 @@
 <script>
 function selecteddocuments()
 {
-var c_value = "";
-if(document.plominoviewform.sdoc.length==undefined) {
-	c_value=document.plominoviewform.sdoc.value;
+if (typeof(gviz_selectedocuments)!="undefined") {
+	return gviz_selectedocuments();
 } else {
-	for (var i=0; i < document.plominoviewform.sdoc.length; i++)
-	   {
-	   if (document.plominoviewform.sdoc[i].checked)
-	      {
-	      c_value = c_value + document.plominoviewform.sdoc[i].value + "@";
-	      }
-	   }
+	var c_value = "";
+	if(document.plominoviewform.sdoc.length==undefined) {
+		c_value=document.plominoviewform.sdoc.value;
+	} else {
+		for (var i=0; i < document.plominoviewform.sdoc.length; i++)
+		   {
+		   if (document.plominoviewform.sdoc[i].checked)
+		      {
+		      c_value = c_value + document.plominoviewform.sdoc[i].value + "@";
+		      }
+		   }
+	}
+	return c_value;
 }
-return c_value;
 }
 
 </script>
