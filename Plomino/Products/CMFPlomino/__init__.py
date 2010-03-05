@@ -34,7 +34,7 @@ logger.debug('Installing Product')
 
 import os
 import os.path
-from Globals import package_home
+from App.Common import package_home
 import Products.CMFPlone.interfaces
 from Products.Archetypes import listTypes
 from Products.Archetypes.atapi import *

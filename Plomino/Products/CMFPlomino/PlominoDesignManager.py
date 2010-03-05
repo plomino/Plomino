@@ -26,7 +26,7 @@ from ZPublisher.HTTPRequest import FileUpload
 from Products.PageTemplates.ZopePageTemplate import manage_addPageTemplate
 from Products.CMFCore.utils import getToolByName
 from Products.DCWorkflow.DCWorkflow import DCWorkflowDefinition
-from Globals import Persistent
+from Persistence import Persistent
 from xml.dom.minidom import getDOMImplementation
 from xml.dom.minidom import parseString
 from xml.sax.saxutils import escape, unescape
