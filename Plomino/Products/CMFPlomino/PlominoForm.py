@@ -102,7 +102,6 @@ schema = Schema((
     ),
     TextField(
         name='FormLayout',
-        allowable_content_types=('text/plain', 'text/structured', 'text/html', 'application/msword',),
         widget=RichWidget(
             label="Form layout",
             description="The form layout. text with 'Plominofield' style correspond to the contained field elements",
@@ -369,7 +368,7 @@ class PlominoForm(ATFolder):
         """
         plone_tools = getToolByName(self, 'plone_utils')
         encoding = plone_tools.getSiteEncoding()
-        html_content = self.getField('FormLayout').get(self, mimetype='text/html').decode(encoding)
+        html_content = self.getField('FormLayout').getRaw(self).decode(encoding)
         html_content = html_content.replace('\n', '')
 
         # remove the hidden content
@@ -420,14 +419,6 @@ class PlominoForm(ATFolder):
         """clean up the layout before saving
         """
         self.cleanFormulaScripts("form_"+self.id)
-        # clean up the form layout field
-        html_content = self.getField('FormLayout').get(self, mimetype='text/html')
-        regexp = '<span class="plominoFieldClass"></span>'
-        html_content = re.sub(regexp,'', html_content)
-        regexp = '<span class="plominoActionClass"></span>'
-        html_content = re.sub(regexp,'', html_content)
-        regexp = '<span class="plominoHidewhenClass"></span>'
-        self.setFormLayout(html_content)
 
     security.declarePublic('getFormField')
     def getFormField(self, fieldname):
