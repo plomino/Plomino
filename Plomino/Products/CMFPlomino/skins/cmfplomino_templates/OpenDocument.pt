@@ -16,31 +16,33 @@
         <tal:block tal:define="myF python:here.getForm();
 							b myF/ActionBarPosition|nothing">
 			<div tal:replace="structure provider:plone.abovecontenttitle" />
-
- 			<tal:block
-				tal:define="owner python:myF"
-				tal:condition= "python:test((b and  myF.ActionBarPosition=='BOTTOM'),False, True)"
-				>
-	    		<span metal:use-macro="here/ActionBar/macros/ReadDocumentActionBar" >
-					display form actions
-				</span><br/>
-			</tal:block>
-			<h1 class="documentFirstHeading" tal:content="here/Title">Title</h1>
-			<div tal:replace="structure provider:plone.belowcontenttitle" />
-
-			<div tal:replace="structure provider:plone.abovecontentbody" />
 			
-			<span tal:content="structure python:here.openWithForm(myF)" />
+			<form tal:attributes="name python:here.getForm().id">
 
-			<tal:block
-				tal:define="owner python:myF"
-				tal:condition="python:test((b and  myF.ActionBarPosition!='TOP'),True, False)"
-				>
-	    		<span metal:use-macro="here/ActionBar/macros/ReadDocumentActionBar" >
-					display form actions
-				</span>
-			</tal:block>
+	 			<tal:block
+					tal:define="owner python:myF"
+					tal:condition= "python:test((b and  myF.ActionBarPosition=='BOTTOM'),False, True)"
+					>
+		    		<span metal:use-macro="here/ActionBar/macros/ReadDocumentActionBar" >
+						display form actions
+					</span><br/>
+				</tal:block>
+			    <h1 class="documentFirstHeading" tal:content="here/Title">Title</h1>
+			    <div tal:replace="structure provider:plone.belowcontenttitle" />
+
+			    <div tal:replace="structure provider:plone.abovecontentbody" />
 			
+			    <span tal:content="structure python:here.openWithForm(myF)" />
+
+				<tal:block
+					tal:define="owner python:myF"
+					tal:condition="python:test((b and  myF.ActionBarPosition!='TOP'),True, False)"
+					>
+		    		<span metal:use-macro="here/ActionBar/macros/ReadDocumentActionBar" >
+						display form actions
+					</span>
+				</tal:block>
+			</form>
 		</tal:block>
     
         <div tal:replace="structure provider:plone.belowcontentbody" />
