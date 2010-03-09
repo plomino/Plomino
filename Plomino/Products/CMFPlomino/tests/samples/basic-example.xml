@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?><plominodatabase id="basic-example"><design><dbsettings><AboutDescription type="Products.Archetypes.Field.TextField"><![CDATA[]]></AboutDescription><UsingDescription type="Products.Archetypes.Field.TextField"><![CDATA[]]></UsingDescription><IndexAttachments type="Products.Archetypes.Field.BooleanField">False</IndexAttachments><debugMode type="Products.Archetypes.Field.BooleanField">False</debugMode><StorageAttachments type="Products.Archetypes.Field.BooleanField">False</StorageAttachments><CountDocuments type="Products.Archetypes.Field.BooleanField">False</CountDocuments><DateTimeFormat type="Products.Archetypes.Field.StringField">%Y/%m/%d</DateTimeFormat><StartPage type="Products.Archetypes.Field.StringField"></StartPage><DoNotListUsers type="Products.Archetypes.Field.BooleanField">False</DoNotListUsers><excludeFromNav type="Products.Archetypes.Field.BooleanField">False</excludeFromNav><acl AnomynousAccessRight="NoAccess" AuthenticatedAccessRight="NoAccess"><params id="UserRoles">
+<param>
+<value><struct>
+</struct></value>
+</param>
+</params><params id="SpecificRights">
+<param>
+<value><struct>
+<member>
+<name>specific_deletedocument</name>
+<value><string>PlominoAuthor</string></value>
+</member>
+</struct></value>
+</param>
+</params></acl></dbsettings><element id="frmBirthday" title="Birthday" type="PlominoForm"><id type="Products.Archetypes.Field.StringField">frmBirthday</id><onCreateDocument type="Products.Archetypes.Field.TextField"><![CDATA[]]></onCreateDocument><onOpenDocument type="Products.Archetypes.Field.TextField"><![CDATA[]]></onOpenDocument><onSaveDocument type="Products.Archetypes.Field.TextField"><![CDATA[]]></onSaveDocument><onDeleteDocument type="Products.Archetypes.Field.TextField"><![CDATA[]]></onDeleteDocument><beforeCreateDocument type="Products.Archetypes.Field.TextField"><![CDATA[]]></beforeCreateDocument><FormLayout type="Products.Archetypes.Field.TextField"><![CDATA[&lt;p&gt;Name: &lt;span class="plominoFieldClass"&gt;personName&lt;/span&gt;&lt;/p&gt;
+&lt;p&gt;Date of birth: &lt;span class="plominoFieldClass"&gt;birthDate&lt;/span&gt;&lt;/p&gt;
+&lt;p&gt;Category: &lt;span class="plominoFieldClass"&gt;personCategory&lt;/span&gt;&lt;/p&gt;
+&lt;p&gt; &lt;/p&gt;
+&lt;p&gt;&lt;span class="discreet"&gt;Today : &lt;span class="plominoFieldClass"&gt;todayDate&lt;/span&gt;&lt;/span&gt;&lt;/p&gt;]]></FormLayout><DocumentTitle type="Products.Archetypes.Field.TextField"><![CDATA[plominoDocument.personName]]></DocumentTitle><ActionBarPosition type="Products.Archetypes.Field.StringField">TOP</ActionBarPosition><HideDefaultActions type="Products.Archetypes.Field.BooleanField">False</HideDefaultActions><HideInMenu type="Products.Archetypes.Field.BooleanField">False</HideInMenu><isSearchForm type="Products.Archetypes.Field.BooleanField">False</isSearchForm><isPage type="Products.Archetypes.Field.BooleanField">False</isPage><SearchView type="Products.Archetypes.Field.StringField"></SearchView><SearchFormula type="Products.Archetypes.Field.TextField"><![CDATA[]]></SearchFormula><Position type="Products.Archetypes.Field.IntegerField"/><excludeFromNav type="Products.Archetypes.Field.BooleanField">False</excludeFromNav><elements><element id="personName" title="personName" type="PlominoField"><id type="Products.Archetypes.Field.StringField">personName</id><FieldType type="Products.Archetypes.Field.StringField">TEXT</FieldType><FieldMode type="Products.Archetypes.Field.StringField">EDITABLE</FieldMode><Formula type="Products.Archetypes.Field.TextField"><![CDATA[]]></Formula><FieldReadTemplate type="Products.Archetypes.Field.StringField"></FieldReadTemplate><FieldEditTemplate type="Products.Archetypes.Field.StringField"></FieldEditTemplate><Mandatory type="Products.Archetypes.Field.BooleanField">False</Mandatory><ValidationFormula type="Products.Archetypes.Field.TextField"><![CDATA[]]></ValidationFormula><ToBeIndexed type="Products.Archetypes.Field.BooleanField">False</ToBeIndexed></element><element id="birthDate" title="birthDate" type="PlominoField"><id type="Products.Archetypes.Field.StringField">birthDate</id><FieldType type="Products.Archetypes.Field.StringField">DATETIME</FieldType><FieldMode type="Products.Archetypes.Field.StringField">EDITABLE</FieldMode><Formula type="Products.Archetypes.Field.TextField"><![CDATA[]]></Formula><FieldReadTemplate type="Products.Archetypes.Field.StringField"></FieldReadTemplate><FieldEditTemplate type="Products.Archetypes.Field.StringField"></FieldEditTemplate><Mandatory type="Products.Archetypes.Field.BooleanField">False</Mandatory><ValidationFormula type="Products.Archetypes.Field.TextField"><![CDATA[]]></ValidationFormula><ToBeIndexed type="Products.Archetypes.Field.BooleanField">False</ToBeIndexed><params>
+<param>
+<value><struct>
+<member>
+<name>startingyear</name>
+<value><string>1940</string></value>
+</member>
+<member>
+<name>format</name>
+<value><string>%d-%m-%Y</string></value>
+</member>
+</struct></value>
+</param>
+</params></element><element id="todayDate" title="todayDate" type="PlominoField"><id type="Products.Archetypes.Field.StringField">todayDate</id><FieldType type="Products.Archetypes.Field.StringField">DATETIME</FieldType><FieldMode type="Products.Archetypes.Field.StringField">DISPLAY</FieldMode><Formula type="Products.Archetypes.Field.TextField"><![CDATA[Now()]]></Formula><FieldReadTemplate type="Products.Archetypes.Field.StringField"></FieldReadTemplate><FieldEditTemplate type="Products.Archetypes.Field.StringField"></FieldEditTemplate><Mandatory type="Products.Archetypes.Field.BooleanField">False</Mandatory><ValidationFormula type="Products.Archetypes.Field.TextField"><![CDATA[]]></ValidationFormula><ToBeIndexed type="Products.Archetypes.Field.BooleanField">False</ToBeIndexed></element><element id="personCategory" title="personCategory" type="PlominoField"><id type="Products.Archetypes.Field.StringField">personCategory</id><FieldType type="Products.Archetypes.Field.StringField">SELECTION</FieldType><FieldMode type="Products.Archetypes.Field.StringField">EDITABLE</FieldMode><Formula type="Products.Archetypes.Field.TextField"><![CDATA[]]></Formula><FieldReadTemplate type="Products.Archetypes.Field.StringField"></FieldReadTemplate><FieldEditTemplate type="Products.Archetypes.Field.StringField"></FieldEditTemplate><Mandatory type="Products.Archetypes.Field.BooleanField">False</Mandatory><ValidationFormula type="Products.Archetypes.Field.TextField"><![CDATA[]]></ValidationFormula><ToBeIndexed type="Products.Archetypes.Field.BooleanField">False</ToBeIndexed><params>
+<param>
+<value><struct>
+<member>
+<name>selectionlist</name>
+<value><array><data>
+<value><string>Relative</string></value>
+<value><string>Friend</string></value>
+<value><string>Colleague</string></value>
+</data></array></value>
+</member>
+</struct></value>
+</param>
+</params></element></elements></element><element id="all" title="All birthdays" type="PlominoView"><id type="Products.Archetypes.Field.StringField">all</id><SelectionFormula type="Products.Archetypes.Field.TextField"><![CDATA[True]]></SelectionFormula><SortColumn type="Products.Archetypes.Field.StringField"></SortColumn><Categorized type="Products.Archetypes.Field.BooleanField">False</Categorized><FormFormula type="Products.Archetypes.Field.TextField"><![CDATA[]]></FormFormula><ReverseSorting type="Products.Archetypes.Field.BooleanField">False</ReverseSorting><ActionBarPosition type="Products.Archetypes.Field.StringField">TOP</ActionBarPosition><HideDefaultActions type="Products.Archetypes.Field.BooleanField">False</HideDefaultActions><HideInMenu type="Products.Archetypes.Field.BooleanField">False</HideInMenu><Widget type="Products.Archetypes.Field.StringField">BASIC</Widget><ViewTemplate type="Products.Archetypes.Field.StringField"></ViewTemplate><Position type="Products.Archetypes.Field.IntegerField"/><excludeFromNav type="Products.Archetypes.Field.BooleanField">False</excludeFromNav><elements><element id="person" title="Name" type="PlominoColumn"><id type="Products.Archetypes.Field.StringField">person</id><Formula type="Products.Archetypes.Field.TextField"><![CDATA[plominoDocument.personName]]></Formula><Position type="Products.Archetypes.Field.IntegerField">1</Position><HiddenColumn type="Products.Archetypes.Field.BooleanField">False</HiddenColumn><DisplaySum type="Products.Archetypes.Field.BooleanField">False</DisplaySum></element><element id="birthDate" title="Birthday" type="PlominoColumn"><id type="Products.Archetypes.Field.StringField">birthDate</id><Formula type="Products.Archetypes.Field.TextField"><![CDATA[DateToString(plominoDocument.birthDate, "%B %d")]]></Formula><Position type="Products.Archetypes.Field.IntegerField">2</Position><HiddenColumn type="Products.Archetypes.Field.BooleanField">False</HiddenColumn><DisplaySum type="Products.Archetypes.Field.BooleanField">False</DisplaySum></element></elements></element></design></plominodatabase>
