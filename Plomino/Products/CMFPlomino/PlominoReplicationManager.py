@@ -21,7 +21,7 @@ from Products.CMFCore.utils import getToolByName
 from Products.CMFPlomino.exceptions import PlominoReplicationException
 from Products.CMFPlomino.PlominoUtils import StringToDate
 import re
-from Globals import Persistent
+from Persistence import Persistent
 from xml.dom.minidom import getDOMImplementation
 from xml.dom.minidom import parseString
 import xmlrpclib
