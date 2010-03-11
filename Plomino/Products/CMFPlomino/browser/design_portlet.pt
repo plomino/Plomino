@@ -24,7 +24,7 @@
         <strong>Add new...</strong>
         <ul>
         <li><a tal:attributes="href string:${url}/createObject?type_name=PlominoField">Field</a></li>
-        <li><a tal:attributes="href string:${url}/createObject?type_name=PlominoHideWhen">Hide when</a></li>
+        <li><a tal:attributes="href string:${url}/createObject?type_name=PlominoHidewhen">Hide when</a></li>
         <li><a tal:attributes="href string:${url}/createObject?type_name=PlominoAction">Action</a></li>
         </ul>
     </dd>
