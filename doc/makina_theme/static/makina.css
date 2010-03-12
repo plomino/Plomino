@@ -1,0 +1,351 @@
+body {
+    font: 12px Verdana, Tahoma, Arial, sans-serif;
+    line-height: 18px;
+    background-color: #E7E7E7;
+}
+
+a, a:link, a:visited {
+    color: #043F4A;
+    text-decoration: underline;
+}
+
+a:hover, a:active {
+    color: #717171;
+    text-decoration: none;
+}
+
+a.headerlink {
+    color: #043F4A!important;
+    margin-left: 6px;
+    padding: 0 4px 0 4px;
+    text-decoration: none!important;
+    visibility: hidden;
+}
+
+h1:hover > a.headerlink,
+h2:hover > a.headerlink,
+h3:hover > a.headerlink,
+h4:hover > a.headerlink,
+h5:hover > a.headerlink,
+h6:hover > a.headerlink,
+dt:hover > a.headerlink {
+    visibility: visible;
+}
+
+a.headerlink:hover {
+    background-color: #043F4A;
+    color: white!important;
+}
+
+span.pre {
+    font-family: 'Consolas', 'Deja Vu Sans Mono', 'Bitstream Vera Sans Mono', monospace;
+    letter-spacing: 0.015em;
+}
+
+pre {
+    font-family: 'Consolas', 'Deja Vu Sans Mono', 'Bitstream Vera Sans Mono', monospace;
+    letter-spacing: 0.015em;
+    padding: 5px;
+    border: 1px solid #d8d8d8;
+    background-color: #f4f4f4;
+    line-height: 15px;
+    white-space: pre-wrap; /* css-3 */
+    white-space: -moz-pre-wrap !important; /* Mozilla, since 1999 */
+    white-space: -pre-wrap; /* Opera 4-6 */
+    white-space: -o-pre-wrap; /* Opera 7 */
+    word-wrap: break-word; /* Internet Explorer 5.5+ */
+}
+
+pre a {
+    color: inherit;
+    text-decoration: underline;
+}
+
+ul {
+    list-style: square;
+}
+
+dl {
+    margin-bottom: 15px;
+}
+
+dd {
+    margin-top: 3px;
+    margin-bottom: 10px;
+    margin-left: 30px;
+}
+
+dt:target, .highlight {
+    background-color: #fbe54e;
+}
+
+div.document {
+    width: 960px;
+    margin: 20px auto 0 auto;
+    padding: 10px;
+    text-align: left;
+    background-color: #ffffff;
+    color: #303030;
+}
+
+#header {
+    margin: 0;
+    padding: 0;
+    height: 80px;
+    background-color: #000000;
+    background-image: url(../_static/logo.png);
+    background-repeat: no-repeat ;
+    color: #ffffff;
+}
+
+#header h1 {
+    margin: 0;
+    padding: 0;
+    padding: 15px 0 0 20px;
+    font-size: 28px;
+    letter-spacing: -2px;
+    font-weight: normal;
+}
+
+#header h2 {
+    margin: 0;
+    padding: 0;
+    margin: 15px 0 0 20px;
+    font-size: 16px;
+    /*background-color: inherit;*/
+    letter-spacing: -1px;
+    font-weight: normal;
+    color: #87B220;
+
+}
+
+div.related {
+    color: #ffffff;
+    background-color:#515151;
+}
+
+div.related h3 {
+    display: none;
+}
+
+div.related ul {
+	height: 20px;
+    list-style: none;
+    margin: 0;
+    padding-left: 10px;
+}
+
+div.related ul li {
+    margin: 0;
+    padding: 0;
+    height: 20px;
+    float: left;
+}
+
+div.related ul li.right {
+    float: right;
+    margin-right: 5px;
+}
+
+div.related ul li a {
+    margin: 0;
+    padding: 0 5px 0 5px;
+    color: #ffffff;
+}
+
+div.related ul li a:hover {
+    color: #717171;
+}
+
+.body {
+    float: left;
+    width: 720px;
+    padding: 10px 0;
+}
+
+div.body h1, div.body h2, div.body h3, div.body h4, div.body h5 {
+    color: #718E3E;
+    margin: 0px 0px 2px 0px;
+    border-bottom: 1px dotted #cccccc;
+    letter-spacing: -1px;
+    font-family: "Trebuchet MS", Tahoma, Arial;
+    padding-bottom: 3px;
+}
+
+.sphinxsidebar {
+    float: right;
+    width: 220px;
+    padding: 10px 0;
+    line-height: 18px;
+}
+
+.sphinxsidebar h3, .sphinxsidebar h4 {
+    background-color: #87B220;
+    margin: 0 10px 0 0;
+    font-weight: bold;
+    color: #ffffff;
+    padding: 5px 8px 5px 10px;
+}
+
+.sphinxsidebar h3 {
+    font-size: 13px;
+}
+
+.sphinxsidebar h4 {
+    font-size: 11px;
+}
+
+.sphinxsidebar p, .sphinxsidebar ul {
+    margin: 0 0 16px 0;
+    font-size: 0.9em;
+    padding: 4px;
+    border-top: 1px solid #d8d8d8;
+    border-right: 1px solid #d8d8d8;
+    border-bottom: 1px solid #d8d8d8;
+    border-left: 4px solid #cccccc;
+    width: 197px;
+    background-color: #f4f4f4;
+}
+
+.sphinxsidebar ul {
+    list-style: none;
+}
+
+.sphinxsidebar ul ul {
+    list-style: square;
+    border: none;
+    margin: 0;
+    width: 90%;
+    padding-left: 12px;
+}
+
+.sphinxsidebar form.search {
+    margin: 5px 0;
+}
+
+div.clearer {
+    clear: both;
+}
+
+div.footer {
+    clear: both;
+    padding: 10px;
+    font-size: 11px;
+    color: #f0f0f0;
+    background-color: #87B220;
+	text-align: center;
+}
+
+div.footer a {
+    color: #f0f0f0;
+    background-color: inherit;
+    font-weight: bold;
+}
+div.footer a:hover {
+    color: #ffffff;
+    background-color: inherit;
+    text-decoration: underline;
+}
+
+ul.search {
+    margin: 10px 0 0 20px;
+    padding: 0;
+}
+
+ul.search li {
+    padding: 5px 0 5px 20px;
+    background-image: url(file.png);
+    background-repeat: no-repeat;
+    background-position: 0 7px;
+}
+
+ul.search li a {
+    font-weight: bold;
+}
+
+ul.search li div.context {
+    color: #888;
+    margin: 2px 0 0 30px;
+    text-align: left;
+}
+
+ul.keywordmatches li.goodmatch a {
+    font-weight: bold;
+}
+
+
+/*added by jpc */
+/* Admonitions */
+
+div.admonition {
+    margin-top: 10px;
+    margin-bottom: 10px;
+    padding: 7px;
+}
+
+div.admonition dt {
+    font-weight: bold;
+}
+
+div.admonition dl {
+    margin-bottom: 0;
+}
+
+
+div.admonition p {
+    display: inline;
+}
+
+div.seealso {
+        background-color: #ffc;
+            border: 1px solid #ff6;
+        }
+
+div.warning {
+    background-color: #ffe4e4;
+    border: 1px solid #f66;
+}
+
+div.note {
+    background-color: #F3F781;
+    border: 1px solid #ccc;
+}
+
+p.admonition-title {
+    margin: 0px 10px 5px 0px;
+    font-weight: bold;
+    display: inline;
+}
+
+p.admonition-title:after {
+    content: ":";
+}
+
+div.admonition-a-faire {
+    background-color: #ff4500;
+    border: 1px solid #ccc;
+}
+
+div.admonition-a-valider {
+    background-color: #ffce7b;
+    border: 1px solid #ccc;
+}
+
+div.admonition-tovalid {
+    background-color: #ffce7b;
+    border: 1px solid #ccc;
+}
+
+div.admonition-done{
+    background-color: rgb(173, 255, 47);
+    border: 1px solid #ccc;
+    text-decoration: line-through;
+}
+
+.strike {
+    text-decoration: line-through;
+}
+
+
+
+
