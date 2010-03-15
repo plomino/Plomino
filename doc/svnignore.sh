@@ -38,6 +38,7 @@ ignore="
 bin
 buildout-buildbot.cfg.before.fixed_version.bak
 buildout-dev.cfg.before.fixed_ve
+files
 buildout-dev.cfg.before.fixed_version.bak
 develop-eggs
 .directory
