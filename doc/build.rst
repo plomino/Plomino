@@ -143,7 +143,7 @@ Add a view
 Go back to the Books database.
 
 Select ``Plomino: view`` in the **Add item** Plone menu. Enter an
-identifier ('all') and a title ('All the books'):
+identifier (``all``) and a title ('All the books'):
 
 .. image:: images/m57ed2659.png
 

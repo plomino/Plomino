@@ -63,7 +63,7 @@ You can also access the views and the other documents. Example::
     view=db.getView('pendingPurchases') 
     total=0 
     for doc in view.getAllDocuments(): 
-    total=total+doc.price 
+        total=total+doc.price 
     return total
 
 (this example computes the total amount for the pending purchase requests).
@@ -282,15 +282,18 @@ documents. For example::
 
 .. Note::
     in this example, we use the `getAllDocuments` method to get the
-    documents list, this method returns Catalog brains<!-- Hmm,
-    getAllDocuments doesn't sound like it will return brains, it sounds
-    like it will return documents.
+    documents list, this method returns Catalog brains
 
-Looking at the source code, I see that it does in fact return documents
-(d.getObject() for d in res) so this must have changed since 1.3 -->. To
-improve performance, the ``lastname`` field has been added to the index,
-so there is no need to wake up the objects (using `getObject`), and we
-use the `getPath` method to get the path of the real object.
+    To improve performance, the ``lastname`` field has been added to the
+    index, so there is no need to wake up the objects (using
+    `getObject`), and we use the `getPath` method to get the path of the
+    real object.
+    
+.. Todo: 
+    Hmm, getAllDocuments doesn't sound like it will return brains, it
+    sounds like it will return documents. Looking at the source code, I
+    see that it does in fact return documents (``d.getObject() for d in
+    res``) so this must have changed since 1.3. 
 
 Field templates
 ---------------

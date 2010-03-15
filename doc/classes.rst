@@ -18,10 +18,11 @@ PlominoDatabase
 `deleteDocument(self, doc)`
     deletes the document
 
-`deleteDocuments(self, doc)`
-    batch delete documents from database. The `onDelete` formula and
-    index updating are not performed (use `refreshDB` to update).
-
+`deleteDocuments(self, ids=None, massive=True)`
+    batch delete documents from database. If `massive` is ``True``, the
+    `onDelete` formula and index updating are not performed (use
+    `refreshDB` to update).
+    
 `getAgents(self)`
     returns all the PlominoAgent objects stored in the database.
 
