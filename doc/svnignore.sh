@@ -71,8 +71,8 @@ build
 
 
 svn propset -R svn:ignore "$ignore" .
-svn propset  svn:ignore "$ignore" src
-svn propset  svn:ignore "$ignore" src/PlominoDoc
+svn propset  svn:ignore "$src" src
+svn propset  svn:ignore "$inner" src/PlominoDoc
 svn ci -m "resetting svnignore"
 
 
