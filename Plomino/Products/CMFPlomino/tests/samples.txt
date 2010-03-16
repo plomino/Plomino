@@ -36,9 +36,10 @@ Create the browser object we'll be using and log in as userEditor
     >>> browser.getControl('Password').value = 'userEditor'
     >>> browser.getControl('Log in').click()
     
-Import db
     >>> import os.path
     >>> dir, _f = os.path.split(os.path.abspath(__file__))
+    
+Import basic-example db
     >>> f = open(os.path.join(dir, "samples", "basic-example.xml"))
     >>> id = folder.invokeFactory('PlominoDatabase', id='basic-example')
     >>> db = getattr(folder, 'basic-example')
@@ -76,4 +77,49 @@ Scenario
     >>> 'October 20' in browser.contents
     True
     >>> browser.open(base_url+'/basic-example/all')
+
+Import example-with-config-doc db
+    >>> f = open(os.path.join(dir, "samples", "example-with-config-doc.xml"))
+    >>> id = folder.invokeFactory('PlominoDatabase', id='example-with-config-doc')
+    >>> db = getattr(folder, 'example-with-config-doc')
+    >>> db.at_post_create_script()
+    >>> wf_tool = self.portal.portal_workflow
+    >>> wf_tool.doActionFor(db, 'publish')
+    >>> xmlstring=f.read()
+    >>> db.importDesignFromXML(xmlstring)
+    >>> db.refreshDB()    
+    >>> f.close()
+
+Set plomino roles and permissions
+    >>> db.manage_setLocalRoles('userManager', ['PlominoManager'])
+    >>> db.manage_setLocalRoles('userDesigner', ['PlominoDesigner'])
+    >>> db.manage_setLocalRoles('userEditor', ['PlominoEditor'])
+    >>> db.manage_setLocalRoles('userAuthor', ['PlominoAuthor'])
+    >>> db.manage_setLocalRoles('userReader', ['PlominoReader'])
+
+Scenario
+    >>> browser.open(base_url+'/example-with-config-doc/frmConfig/OpenForm')
+    >>> browser.getControl(name='configId').value = 'Departments'
+    >>> browser.getControl(name='configValues').value = 'Marketing\nDevelopment\nPurchase\nSales\nHuman resources'
+    >>> browser.getControl('Save').click()
+    >>> browser.open(base_url+'/example-with-config-doc/configview/OpenView')
+    >>> browser.open(base_url+'/example-with-config-doc/frmConfig/OpenForm')
+    >>> browser.getControl(name='configId').value = 'Reference year'
+    >>> browser.getControl(name='configValues').value = '2007'
+    >>> browser.getControl('Save').click()
+    >>> browser.open(base_url+'/example-with-config-doc/configview/OpenView')
+    >>> browser.open(base_url+'/example-with-config-doc/frmConfig/OpenForm')
+    >>> browser.getControl(name='configId').value = 'VAT'
+    >>> browser.getControl(name='configValues').value = '19.6'
+    >>> browser.getControl('Save').click()
+    >>> browser.open(base_url+'/example-with-config-doc/configview/OpenView')
+    >>> browser.open(base_url+'/example-with-config-doc')
+    >>> browser.getLink('Example form').click()
+    >>> browser.getControl(name='department').value = ['Development']
+    >>> browser.getControl(name='price').value = '10'
+    >>> browser.getControl('Save').click()
+    >>> '11.96' in browser.contents
+    True
+    >>> 'Ref. year 2007' in browser.contents
+    True
 
