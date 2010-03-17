@@ -462,11 +462,11 @@ class PlominoForm(ATFolder):
                         doc.setItem(fieldName, v)
                 else:
                     #the field was not submitted, probably because it is not part of the form (hide-when, ...)
-                    #so we just let it unchanged, but with SELECTION, we need to presume it was empty
+                    #so we just let it unchanged, but with SELECTION or DOCLINK, we need to presume it was empty
                     #(as SELECT/checkbox/radio tags do not submit an empty value, they are just missing
                     #in the querystring)
                     fieldtype = f.getFieldType()
-                    if fieldtype == "SELECTION":
+                    if fieldtype == "SELECTION" or fieldtype == "DOCLINK":
                         doc.removeItem(fieldName)
                     
 
