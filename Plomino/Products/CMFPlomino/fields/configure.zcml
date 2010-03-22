@@ -2,6 +2,11 @@
            xmlns:browser="http://namespaces.zope.org/browser"
            xmlns:five="http://namespaces.zope.org/five">
 
+  <permission
+     id="plomino.DESIGN_PERMISSION"
+     title="CMFPlomino: Modify Database design"
+     />
+     
 	<subscriber
        for="Products.CMFPlomino.interfaces.IPlominoField zope.lifecycleevent.interfaces.IObjectModifiedEvent"
        handler=".events.afterFieldModified"
@@ -16,7 +21,7 @@
         name="selectionsettings"
         for="Products.CMFPlomino.interfaces.IPlominoField"
         class=".selection.SettingForm"
-        permission="zope.Public"
+        permission="plomino.DESIGN_PERMISSION"
         />
    <adapter
 		for="Products.CMFPlomino.interfaces.IPlominoField"
@@ -27,7 +32,7 @@
         name="textsettings"
         for="Products.CMFPlomino.interfaces.IPlominoField"
         class=".text.SettingForm"
-        permission="zope.Public"
+        permission="plomino.DESIGN_PERMISSION"
         />
    <adapter
 		for="Products.CMFPlomino.interfaces.IPlominoField"
@@ -38,7 +43,7 @@
         name="numbersettings"
         for="Products.CMFPlomino.interfaces.IPlominoField"
         class=".number.SettingForm"
-        permission="zope.Public"
+        permission="plomino.DESIGN_PERMISSION"
         />
    <adapter
 		for="Products.CMFPlomino.interfaces.IPlominoField"
@@ -49,7 +54,7 @@
         name="datetimesettings"
         for="Products.CMFPlomino.interfaces.IPlominoField"
         class=".datetime.SettingForm"
-        permission="zope.Public"
+        permission="plomino.DESIGN_PERMISSION"
         />
    <adapter
 		for="Products.CMFPlomino.interfaces.IPlominoField"
@@ -60,7 +65,7 @@
         name="namesettings"
         for="Products.CMFPlomino.interfaces.IPlominoField"
         class=".name.SettingForm"
-        permission="zope.Public"
+        permission="plomino.DESIGN_PERMISSION"
         />
    <adapter
 		for="Products.CMFPlomino.interfaces.IPlominoField"
@@ -71,7 +76,7 @@
         name="doclinksettings"
         for="Products.CMFPlomino.interfaces.IPlominoField"
         class=".doclink.SettingForm"
-        permission="zope.Public"
+        permission="plomino.DESIGN_PERMISSION"
         />
    <adapter
 		for="Products.CMFPlomino.interfaces.IPlominoField"
@@ -82,7 +87,7 @@
         name="richtextsettings"
         for="Products.CMFPlomino.interfaces.IPlominoField"
         class=".richtext.SettingForm"
-        permission="zope.Public"
+        permission="plomino.DESIGN_PERMISSION"
         />
         
    <adapter
@@ -100,7 +105,7 @@
         name="googlechartsettings"
         for="Products.CMFPlomino.interfaces.IPlominoField"
         class=".googlechart.SettingForm"
-        permission="zope.Public"
+        permission="plomino.DESIGN_PERMISSION"
         />
         
    <adapter
@@ -112,6 +117,6 @@
         name="googlevisualizationsettings"
         for="Products.CMFPlomino.interfaces.IPlominoField"
         class=".googlevisualization.SettingForm"
-        permission="zope.Public"
+        permission="plomino.DESIGN_PERMISSION"
         />
 </configure>
