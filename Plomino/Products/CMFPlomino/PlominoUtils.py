@@ -130,6 +130,8 @@ def asList(x):
 def csv_to_array(csvcontent, delimiter='\t', quotechar='"'):
     """ csvcontent might be a string or a file
     """
+    if csvcontent is None:
+        return []
     if type(csvcontent) is str:
         csvfile = StringIO(csvcontent)
     else:
