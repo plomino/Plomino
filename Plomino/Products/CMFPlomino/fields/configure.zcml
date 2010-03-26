@@ -119,4 +119,16 @@
         class=".googlevisualization.SettingForm"
         permission="plomino.DESIGN_PERMISSION"
         />
+                
+   <adapter
+        for="Products.CMFPlomino.interfaces.IPlominoField"
+        provides=".datagrid.IDatagridField"
+        factory=".datagrid.DatagridField"
+        />
+   <browser:page
+        name="datagridsettings"
+        for="Products.CMFPlomino.interfaces.IPlominoField"
+        class=".datagrid.SettingForm"
+        permission="plomino.DESIGN_PERMISSION"
+        />
 </configure>
