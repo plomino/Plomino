@@ -1,0 +1,13 @@
+<tal:block tal:define="fieldname python:options['fieldname'];
+                       v options/fieldvalue;
+                       datatable_api here/REQUEST/datatable_api|nothing;">
+
+        <script tal:condition="not:datatable_api" type="text/javascript" language="javascript" src="jquery.js"></script>
+        <script tal:condition="not:datatable_api" type="text/javascript" language="javascript" src="jquery.dataTables.js"></script>
+        <script type="text/javascript" charset="utf-8"
+        tal:define="data python:options['field'].getSettings().tojson(v);
+                    param python:options['field'].getSettings().getParameters();"
+        tal:content="string:$(document).ready(function() {$('#${fieldname}_datagrid').dataTable( {'aaData': ${data}, ${param} } ); } );">
+        </script>
+        <table class="plain" TAL:ATTRIBUTES="id string:${fieldname}_datagrid"></table>
+</tal:block>
