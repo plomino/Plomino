@@ -24,7 +24,8 @@ setup(name='Plomino',
       zip_safe=False,
       install_requires=[
           'setuptools',
-          # -*- Extra requirements: -*-
+          'plone.app.jquerytools',
+          'simplejson',
       ],
       entry_points="""
       # -*- Entry points: -*-
