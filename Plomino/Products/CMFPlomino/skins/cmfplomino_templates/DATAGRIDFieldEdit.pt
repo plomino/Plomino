@@ -4,7 +4,7 @@
 <input type='hidden' tal:attributes="id string:${fieldname}_gridvalue;
                                      name fieldname;
                                      value v" />
-        <script tal:condition="not:datatable_api" type="text/javascript" language="javascript" src="jquery.js"></script>
+        <script tal:condition="not:datatable_api" type="text/javascript" language="javascript" src="jquery-v1.4.2.js"></script>
         <script tal:condition="not:datatable_api" type="text/javascript" language="javascript" src="jquery.dataTables.js"></script>
         <script tal:condition="not:datatable_api" type="text/javascript" language="javascript" src="jquery.jeditable.js"></script>
         <style tal:condition="not:datatable_api" >
