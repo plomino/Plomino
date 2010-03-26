@@ -35,7 +35,7 @@ class IDatagridField(IBaseField):
                       default=u"""
 "aoColumns": [
     { "sTitle": "Column 1" },
-    { "sTitle": "Column 2", "sClass": "center" },
+    { "sTitle": "Column 2", "sClass": "center" }
 ],
 "bPaginate": false,
 "bLengthChange": false,
