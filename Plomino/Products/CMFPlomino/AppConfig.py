@@ -39,7 +39,8 @@ FIELD_TYPES={"TEXT": ["Text", "ZCTextIndex"],
              "ATTACHMENT": ["File attachment", "ZCTextIndex"],
              "DOCLINK": ["Doclink", "KeywordIndex"],
              "GOOGLECHART": ["Google chart", "FieldIndex"],
-             "GOOGLEVISUALIZATION": ["Google visualization", "FieldIndex"]
+             "GOOGLEVISUALIZATION": ["Google visualization", "FieldIndex"],
+             "DATAGRID": ["Datagrid", "ZCTextIndex"],
              }
 
 FIELD_MODES = [["EDITABLE", "Editable"], ["COMPUTED", "Computed"], ["CREATION", "Computed on creation"], ["DISPLAY", "Computed for display"]]
