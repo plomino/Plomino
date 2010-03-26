@@ -101,6 +101,11 @@
     condition_expr="python:object.getFieldType()=='GOOGLEVISUALIZATION'"
     url_expr="string:${object_url}/googlevisualizationsettings" visible="True"
     i18n:attributes="title">
+     </action>
+ <action title="Settings" action_id="datagridsettings" category="object"
+    condition_expr="python:object.getFieldType()=='DATAGRID'"
+    url_expr="string:${object_url}/datagridsettings" visible="True"
+    i18n:attributes="title">
   <permission value="CMFPlomino: Modify Database design"/>
  </action>
 </object>
