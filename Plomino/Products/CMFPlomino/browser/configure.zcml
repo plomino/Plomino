@@ -14,4 +14,8 @@
       addview=".portlet.AddForm"
     />
 
+    <browser:resourceDirectory
+        name="plomino.javascript"
+        directory="javascript"
+        />
 </configure>
