@@ -77,6 +77,45 @@ text-decoration: none;
 table.plominoview a:hover {
 text-decoration: underline;
 }
+
+tr.datagrid_row_selected td {
+    background-color: #B0BED9;
+}
+
+.overlay { 
+     
+    /* must be initially hidden */ 
+    display:none; 
+     
+    /* place overlay on top of other elements */ 
+    z-index:10000; 
+     
+    /* styling */ 
+    background-color:white; 
+    padding: 2em;
+    width:675px;     
+    min-height:200px; 
+    border:1px solid #666; 
+     
+    /* CSS3 styling for latest browsers */ 
+    -moz-box-shadow:0 0 90px 5px #000; 
+    -webkit-box-shadow: 0 0 90px #000;     
+} 
+ 
+.overlay .close { 
+    background-image:url(++resource++plone.app.jquerytools.graphics/close.png); 
+    position:absolute; 
+    right:-15px; 
+    top:-15px; 
+    cursor:pointer; 
+    height:35px; 
+    width:35px; 
+}
+
+.overlay .close span {
+    display: none;
+}
+
 /* </dtml-with> */
 
 
