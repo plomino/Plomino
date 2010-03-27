@@ -2,8 +2,6 @@
                        v options/fieldvalue;
                        datatable_api here/REQUEST/datatable_api|nothing;">
 
-        <script tal:condition="not:datatable_api" type="text/javascript" language="javascript" src="jquery-v1.4.2.js"></script>
-        <script tal:condition="not:datatable_api" type="text/javascript" language="javascript" src="jquery.dataTables.js"></script>
         <script type="text/javascript" charset="utf-8"
         tal:define="data python:options['field'].getSettings().tojson(v);
                     param python:options['field'].getSettings().getParameters();"
