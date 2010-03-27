@@ -54,10 +54,6 @@ class DatagridField(BaseField):
     def getParameters(self):
         """
         """
-        loadjs = self.context.REQUEST.get('datatable_api', False)
-        if not loadjs:
-            self.context.REQUEST.set('datatable_api', True)
-            
         return self.jssettings
     
     def processInput(self, submittedValue):
