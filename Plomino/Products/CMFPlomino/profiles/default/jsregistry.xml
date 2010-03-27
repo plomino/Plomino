@@ -1,16 +1,41 @@
 <?xml version="1.0"?>
 <object name="portal_javascripts" meta_type="JavaScripts Registry">
- <!-- EXAMPLE DEFINITION
+
  <javascript cacheable="True"
              compression="safe"
              cookable="True"
              enabled="True"
              expression=""
-             id="myfancyscript.js"
+             id="++resource++plomino.javascript/jquery-v1.4.2.js"
              inline="False"/>
- -->
-
- <!-- ##code-section jsregistry.xml -->
- <!-- ##/code-section jsregistry.xml -->
-
+             
+ <javascript cacheable="True"
+             compression="safe"
+             cookable="True"
+             enabled="True"
+             expression=""
+             id="++resource++plomino.javascript/jquery.dataTables.js"
+             inline="False"
+             insert-after="++resource++plomino.javascript/jquery-v1.4.2.js"
+             />
+             
+ <javascript cacheable="True"
+             compression="safe"
+             cookable="True"
+             enabled="True"
+             expression=""
+             id="++resource++plomino.javascript/jquery.jeditable.mini.js"
+             inline="False"
+             insert-after="++resource++plomino.javascript/jquery-v1.4.2.js"
+             />
+             
+ <javascript cacheable="True"
+             compression="safe"
+             cookable="True"
+             enabled="True"
+             expression=""
+             id="++resource++plomino.javascript/plomino.datagrid.js"
+             inline="False"
+             insert-after="++resource++plomino.javascript/jquery-v1.4.2.js"
+             />
 </object>
