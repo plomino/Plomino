@@ -1,20 +1,20 @@
 <tal:block tal:define="fieldname python:options['fieldname'];
                        v options/fieldvalue;
-                       datatable_api here/REQUEST/datatable_api|nothing;">
+                       data python:options['field'].getSettings().tojson(v);">
 <input type='hidden' tal:attributes="id string:${fieldname}_gridvalue;
-                                     name fieldname;
-                                     value v" />
+                                     name fieldname;" />
        
-        <script type="text/javascript" charset="utf-8" tal:content="string:var ${fieldname}_datatable;$$(document).ready(function() {${fieldname}_init_table();make_selectable(${fieldname}_datatable, '${fieldname}');make_editable(${fieldname}_datatable, '${fieldname}');} );">
+        <script type="text/javascript" charset="utf-8" tal:content="string:var ${fieldname}_datatable;$$(document).ready(function() {${fieldname}_init_table();make_selectable(${fieldname}_datatable, '${fieldname}');make_editable(${fieldname}_datatable, '${fieldname}');save(${fieldname}_datatable, '${fieldname}');} );">
         </script>
         <script type="text/javascript" charset="utf-8"
-        tal:define="data python:options['field'].getSettings().tojson(v);
-                    param python:options['field'].getSettings().getParameters();"
+        tal:define="param python:options['field'].getSettings().getParameters();"
         tal:content="string:function ${fieldname}_init_table() {${fieldname}_datatable = $('#${fieldname}_datagrid').dataTable( {'aaData': ${data}, ${param} } ); }">
         </script>
         <table class="plain" tal:attributes="id string:${fieldname}_datagrid">
         </table>
-        <p><a href="javascript:void(0);" tal:attributes="onclick string:fnClickAddRow(${fieldname}_datatable, '${fieldname}');">Click to add a new row</a></p>
-        <p><a href="javascript:void(0)" tal:attributes="onclick string:fnDeleteAndUpdate(${fieldname}_datatable, '${fieldname}')" >Delete selected row</a></p>
+        <p><a href="javascript:void(0);" class="context"
+            tal:attributes="onclick string:fnClickAddRow(${fieldname}_datatable, '${fieldname}');">Add a new row</a>
+           <a href="javascript:void(0)" class="context"
+            tal:attributes="onclick string:fnDeleteAndUpdate(${fieldname}_datatable, '${fieldname}')" >Delete selected row</a></p>
 
 </tal:block>
