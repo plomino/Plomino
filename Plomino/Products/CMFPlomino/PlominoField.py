@@ -265,7 +265,8 @@ class PlominoField(BaseContent, BrowserDefaultMixin):
             return pt(fieldname=fieldName,
                 fieldvalue=fieldValue,
                 selection=selectionlist,
-                field=self
+                field=self,
+                doc=target
                 )
         except Exception, e:
             self.traceRenderingErr(e, self)

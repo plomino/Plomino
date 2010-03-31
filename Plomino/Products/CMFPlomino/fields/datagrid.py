@@ -13,7 +13,7 @@ __docformat__ = 'plaintext'
 from zope.formlib import form
 from zope.interface import implements
 from zope.schema import getFields
-from zope.schema import Text
+from zope.schema import Text, TextLine
 from zope.schema.vocabulary import SimpleVocabulary
 
 import simplejson as json
@@ -30,6 +30,14 @@ class IDatagridField(IBaseField):
     """
     Text field schema
     """
+    associated_form = TextLine(title=u'Associated form',
+                description=u'Form to use to create/edit rows',
+                required=False)
+    
+    field_mapping = TextLine(title=u'Columns/fields mapping',
+                description=u'Field ids from the associated form, ordered as the columns, separated by commas',
+                required=False)
+        
     jssettings = Text(title=u'Javascript settings',
                       description=u'jQuery datatable parameters',
                       default=u"""
@@ -59,11 +67,13 @@ class DatagridField(BaseField):
     def processInput(self, submittedValue):
         """
         """
-        return csv_to_array(submittedValue)
+        return json.loads(submittedValue)
     
     def tojson(self, value):
         """
         """
+        if value is None or value == "":
+            value = []
         return json.dumps(value)
     
 for f in getFields(IDatagridField).values():

@@ -8,7 +8,15 @@
              expression=""
              id="++resource++plomino.javascript/jquery-v1.4.2.js"
              inline="False"/>
-             
+
+ <javascript cacheable="True"
+             compression="safe"
+             cookable="True"
+             enabled="True"
+             expression=""
+             id="++resource++plomino.javascript/overlay.js"
+             inline="False"/>
+                      
  <javascript cacheable="True"
              compression="safe"
              cookable="True"
@@ -24,7 +32,7 @@
              cookable="True"
              enabled="True"
              expression=""
-             id="++resource++plomino.javascript/jquery.jeditable.mini.js"
+             id="++resource++plomino.javascript/jquery.json-2.2.min.js"
              inline="False"
              insert-after="++resource++plomino.javascript/jquery-v1.4.2.js"
              />
@@ -38,4 +46,5 @@
              inline="False"
              insert-after="++resource++plomino.javascript/jquery-v1.4.2.js"
              />
+             
 </object>

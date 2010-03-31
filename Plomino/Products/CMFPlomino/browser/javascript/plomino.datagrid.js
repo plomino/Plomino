@@ -2,52 +2,31 @@ function fnGetSelected( oTableLocal )
 {
     var aReturn = new Array();
     var aTrs = oTableLocal.fnGetNodes();
-    
+    j = -1;
     for ( var i=0 ; i<aTrs.length ; i++ )
     {
         if ( $(aTrs[i]).hasClass('datagrid_row_selected') )
         {
             aReturn.push( aTrs[i] );
+            j = i;
         }
     }
-    return aReturn;
-}
-function fnClickAddRow(table, field_id) {
-    len = table.fnSettings().aoColumns.length
-    newrow = new Array();
-    for(i=0;i<len;i++) {
-        newrow[i]='';
-    }
-    table.fnAddData( newrow );
-    make_editable(table, field_id);
-}
-function fnDeleteAndUpdate(table, field_id) {
-    var anSelected=fnGetSelected(table);
-    table.fnDeleteRow(anSelected[0], function(){}, true);
-    save(table, field_id);
+    return [aReturn, j];
 }
 
-function save(table, field_id) {
-    data = table.fnGetData();
-    csv="";
-    $(data).each(function(row) {
-        r=data[row];
-        if(typeof r!="undefined" && r!=null) {
-            csv=csv+r.join('\t')+'\n';
-        }
-       });
-    document.getElementById(field_id+'_gridvalue').value=csv;
-}
-function make_editable(table, field_id) {
-    $('#'+field_id+'_datagrid tbody td').editable( function(value, settings){
-        aPos = table.fnGetPosition( this );
-        table.fnUpdate( value, aPos[0], aPos[1] );
-        save(table, field_id);
-        return value;
-    }, {
-        tooltip   : "Doubleclick to edit...",
-        event     : "dblclick",
-    });
+function datagrid_delete(table, field_id) {
+	selection = fnGetSelected(table);
+    var anSelected=selection[0];
+    table.fnDeleteRow(anSelected[0], function(){}, true);
+    currentjson = document.getElementById(field_id+'_gridvalue').value
+    current = $.evalJSON(currentjson);
+    newvalue = new Array();
+    for(i=0;i<current.length;i++) {
+    	if(i!=selection[1]) {
+    		newvalue.push(current[i]);
+    	}
+    }
+    document.getElementById(field_id+'_gridvalue').value=$.toJSON(newvalue);
 }
 
 function make_selectable(table, field_id) {

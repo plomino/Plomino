@@ -339,8 +339,8 @@ class PlominoDocument(ATFolder):
         if(self.items.has_key(name)):
             return self.items[name]
         else:
-            #raise AttributeError, name
-            return BaseObject.__getattr__(self, name)
+            raise AttributeError, name
+            #return BaseObject.__getattr__(self, name)
 
     security.declareProtected(READ_PERMISSION, 'isSelectedInView')
     def isSelectedInView(self,viewname):

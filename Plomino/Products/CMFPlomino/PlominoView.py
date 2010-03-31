@@ -26,7 +26,7 @@ from Products.CMFPlomino.config import *
 from AccessControl import Unauthorized
 import csv, cStringIO
 
-from gvizpy import gviz_api
+from gvizpy import getGoogleDataSourceContent
 
 import PlominoDocument
 
@@ -454,24 +454,12 @@ class PlominoView(ATFolder):
         plone_tools = getToolByName(self, 'plone_utils')
         encoding = plone_tools.getSiteEncoding()
         
-        description = {"docurl": ('string', '')}
-        columns = self.getColumns()
-        for col in columns:
-            description[col.id] = ('string', col.Title())
-        
-        data = []
-        for doc in self.getAllDocuments():
-            row = {}
-            row['docurl'] = doc.getPath()
-            for col in columns:
-                row[col.id] = str(getattr(doc,"PlominoViewColumn_%s_%s" % (self.id, col.id)))
-            data.append(row)
-        
-        data_table = gviz_api.DataTable(description)
-        data_table.LoadData(data)
+        paths = REQUEST.get('paths', None)
+        if paths is not None:
+            paths = paths.split("@")
         
         REQUEST.RESPONSE.setHeader('content-type', 'text/plain; charset='+encoding)
-        return data_table.ToJSonResponse(columns_order=['docurl']+[col.id for col in columns])
+        return getGoogleDataSourceContent(self, paths)
 
 
 registerType(PlominoView, PROJECTNAME)

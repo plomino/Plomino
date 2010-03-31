@@ -25,6 +25,7 @@ from Products.CMFPlomino.PlominoUtils import PlominoTranslate
 ##code-section module-header #fill in your manual code here
 import sys
 import re
+import simplejson as json
 
 from Products.CMFCore.utils import getToolByName
 
@@ -252,9 +253,19 @@ class PlominoForm(ATFolder):
         errors=self.validateInputs(REQUEST)
         if len(errors)>0:
             return self.notifyErrors(errors)
+        
+        # if child form
+        parent_field = REQUEST.get("Plomino_Parent_Field", None)
+        parent_form = REQUEST.get("Plomino_Parent_Form", None)
+        if parent_field is not None:
+            tmp = TemporaryDocument(self.getParentDatabase(), self, REQUEST)
+            tmp.setItem("Plomino_Parent_Field", parent_field)
+            tmp.setItem("Plomino_Parent_Form", parent_form)
+            return self.ChildForm(temp_doc=tmp)
+            
         doc = db.createDocument()
         doc.setItem('Form', self.getFormName())
-
+        
         # execute the onCreateDocument code of the form
         valid = ''
         valid = self.runFormulaScript("form_"+self.id+"_oncreate", doc, self.onCreateDocument)
@@ -270,6 +281,7 @@ class PlominoForm(ATFolder):
         """
         fieldlist = self.portal_catalog.search({'portal_type' : ['PlominoField'], 'path': '/'.join(self.getPhysicalPath())})
         result = [f.getObject() for f in fieldlist]
+        result.sort()
         if includesubforms:
             for subformname in self.getSubforms(doc):
                 result=result+self.getParentDatabase().getForm(subformname).getFields(True)
@@ -362,6 +374,25 @@ class PlominoForm(ATFolder):
 
         return html_content
 
+    security.declareProtected(READ_PERMISSION, 'childDocument')
+    def childDocument(self,doc):
+        """
+        """
+        parent_form = self.getParentDatabase().getForm(doc.Plomino_Parent_Form)
+        parent_field = parent_form.getFormField(doc.Plomino_Parent_Field)
+        fields = parent_field.getSettings().field_mapping.split(',')
+        
+        raw_values = [doc.getItem(f) for f in fields]
+        
+        html = """<div id="raw_values">%s</div>""" % json.dumps(raw_values)
+        
+        html = html + """<div id="parent_field">%s</div>""" % doc.Plomino_Parent_Field
+        
+        for f in fields:
+            html = html + """<span id="%s" plomino="1">%s</span>""" % (f, doc.getRenderedItem(f, form=self))
+        
+        return html
+                        
     security.declareProtected(READ_PERMISSION, 'applyHideWhen')
     def applyHideWhen(self, doc=None):
         """evaluate hide-when formula and return resulting layout
@@ -429,10 +460,11 @@ class PlominoForm(ATFolder):
     security.declarePublic('hasDateTimeField')
     def hasDateTimeField(self):
         """return true if the form contains at least one DateTime field
+        or a datagrid (as a datagrid may contain a date)
         """
         fields=self.getFields(includesubforms=True)
         for f in fields:
-            if f.getFieldType()=="DATETIME":
+            if f.getFieldType() in ["DATETIME", "DATAGRID"]:
                 return True
         return False
 
