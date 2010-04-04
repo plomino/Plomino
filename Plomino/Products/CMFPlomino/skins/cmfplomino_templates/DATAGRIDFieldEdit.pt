@@ -18,8 +18,10 @@
         </table>
         <p><a class="context add-row" tal:attributes="href string:../${associated_form}/OpenForm?Plomino_Parent_Field=${fieldname}&Plomino_Parent_Form=${formname}"
              >Add row</a>
-            <a href="javascript:void(0)" class="context"
-            tal:attributes="onclick string:datagrid_edit(${fieldname}_datatable, '${fieldname}')" >Edit row</a>
+            <a class="context"
+            tal:attributes="id string:${fieldname}_editrow;
+            href string:../${associated_form}/OpenForm?Plomino_Parent_Field=${fieldname}&Plomino_Parent_Form=${formname};
+            " >Edit row</a>
             <a href="javascript:void(0)" class="context"
             tal:attributes="onclick string:datagrid_delete(${fieldname}_datatable, '${fieldname}')" >Delete row</a>
         </p>

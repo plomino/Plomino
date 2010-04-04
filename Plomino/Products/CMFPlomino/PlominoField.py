@@ -16,6 +16,8 @@ from AccessControl import ClassSecurityInfo
 from Products.Archetypes.atapi import *
 from zope.interface import implements
 import interfaces
+import simplejson as json
+
 from Products.CMFPlomino import fields
 
 from Products.CMFDynamicViewFTI.browserdefault import BrowserDefaultMixin
@@ -209,9 +211,18 @@ class PlominoField(BaseContent, BrowserDefaultMixin):
                 elif request is None:
                     fieldValue = ""
                 else:
-                    fieldValue = request.get(fieldName, '')
-                    if self.getFieldType()=="DATETIME" and not (fieldValue=='' or fieldValue is None):
-                        fieldValue = StringToDate(fieldValue, form.getParentDatabase().getDateTimeFormat())
+                    row_data_json = request.get("Plomino_datagrid_rowdata", None)
+                    if row_data_json is not None:
+                        # datagrid form case
+                        parent_form = request.get("Plomino_Parent_Form", None)
+                        parent_field = request.get("Plomino_Parent_Field", None)
+                        data = json.loads(row_data_json)
+                        datagrid_fields = self.getParentDatabase().getForm(parent_form).getFormField(parent_field).getSettings().field_mapping.split(',')
+                        fieldValue = data[datagrid_fields.index(self.id)]
+                    else: 
+                        fieldValue = request.get(fieldName, '')
+                        if self.getFieldType()=="DATETIME" and not (fieldValue=='' or fieldValue is None):
+                            fieldValue = StringToDate(fieldValue, form.getParentDatabase().getDateTimeFormat())
             else:
                 fieldValue = doc.getItem(fieldName)
 

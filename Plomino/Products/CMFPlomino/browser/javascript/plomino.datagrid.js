@@ -29,11 +29,46 @@ function datagrid_delete(table, field_id) {
     document.getElementById(field_id+'_gridvalue').value=$.toJSON(newvalue);
 }
 
+function get_current_row(table, field_id) {
+	selection = fnGetSelected(table);
+    var anSelected=selection[0];
+    currentjson = document.getElementById(field_id+'_gridvalue').value
+    current = $.evalJSON(currentjson);
+    row = current[selection[1]];
+    return $.toJSON(row);
+}
 function make_selectable(table, field_id) {
     $("#"+field_id+"_datagrid").click(function(event) {
         $(table.fnSettings().aoData).each(function (){
             $(this.nTr).removeClass('datagrid_row_selected');
         });
         $(event.target.parentNode).addClass('datagrid_row_selected');
+        
+        rowdata = get_current_row(table, field_id);
+        jq("#"+field_id+"_editrow").removeAttr('rel');
+        jq("#"+field_id+"_editrow").prepOverlay({
+            subtype:'ajax',
+            urlmatch:'$', urlreplace:"&Plomino_datagrid_rowdata=" + rowdata+' #region-content>*',
+            formselector:'[id=plomino_form]',
+            noform: 'close',
+            closeselector:'[name=plomino_close]',
+            afterpost: function(data, data_parent) {
+        	  field_id = data.context.querySelector('[id=plomino_parent_field]').innerHTML;
+         	  raw = data.context.querySelector('[id=raw_values]').innerHTML;
+         	  eval("table=window."+field_id+"_datatable;");
+         	 len = table.fnSettings().aoColumns.length
+             newrow = new Array();
+         	 fields=data.context.querySelectorAll('span[plomino]')
+             for(i=0;i<len;i++) {
+                 newrow[i] = fields[i].innerHTML;
+             }
+         	 selection = fnGetSelected(table)[1];
+         	 table.fnUpdate(newrow, selection);
+             currentjson = document.getElementById(field_id+'_gridvalue').value
+             current = $.evalJSON(currentjson);
+             current[selection]=$.evalJSON(raw);
+             document.getElementById(field_id+'_gridvalue').value=$.toJSON(current);
+            }
+        });
     });
 }
