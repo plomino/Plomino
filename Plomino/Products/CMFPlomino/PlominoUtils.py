@@ -138,6 +138,12 @@ def csv_to_array(csvcontent, delimiter='\t', quotechar='"'):
         csvfile = csvcontent
     return [l for l in csv.reader(csvfile, delimiter=delimiter, quotechar=quotechar)]
 
+def open_url(url):
+    """ retrieve content from url
+    """
+    f=urllib.urlopen(url)
+    return f
+
 def MissingValue():
     """ Useful to test search results value (as Missing.Value cannot be imported in scripts)
     """
