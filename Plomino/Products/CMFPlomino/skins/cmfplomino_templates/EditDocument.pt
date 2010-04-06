@@ -19,6 +19,9 @@
               tal:attributes="src string:$portal_url/jscalendar/calendar-en.js">
       </script>
 	</tal:block>
+    <tal:block tal:condition="python:here.hasGoogleVisualizationField()">
+        <script type='text/javascript' src='http://www.google.com/jsapi'></script>
+    </tal:block>
 </tal:test>
 </metal:javascript_head>
 

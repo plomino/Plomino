@@ -468,6 +468,16 @@ class PlominoForm(ATFolder):
                 return True
         return False
 
+    security.declarePublic('hasGoogleVisualizationField')
+    def hasGoogleVisualizationField(self):
+        """return true if the form contains at least one GoogleVisualization field
+        """
+        fields=self.getFields(includesubforms=True)
+        for f in fields:
+            if f.getFieldType() == "GOOGLEVISUALIZATION":
+                return True
+        return False
+    
     security.declarePublic('getSubforms')
     def getSubforms(self, doc=None):
         """return the names of the subforms embedded in the form

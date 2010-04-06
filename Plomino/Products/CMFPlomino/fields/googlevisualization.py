@@ -95,9 +95,6 @@ class GooglevisualizationField(BaseField):
     def jscode(self, datatable):
         """ return Google visualization js code
         """
-        loadjs = self.context.REQUEST.get('googlejsapi', False)
-        if not loadjs:
-            self.context.REQUEST.set('googlejsapi', True)
         js = self.jssettings + "\n"
         js = js + "function " + self.chartid + "_getCells() {\n"
         js = js + self.chartid+".addRows(" + str(len(datatable)) + ");\n"

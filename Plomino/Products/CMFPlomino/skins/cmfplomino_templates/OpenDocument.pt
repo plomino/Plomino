@@ -7,6 +7,12 @@
       i18n:domain="plone">
 <body>
 
+<metal:javascript_head fill-slot="javascript_head_slot">
+    <tal:block tal:condition="python:here.hasGoogleVisualizationField()">
+        <script type='text/javascript' src='http://www.google.com/jsapi'></script>
+    </tal:block>
+</metal:javascript_head>
+
 <metal:main fill-slot="main">
     <tal:main-macro metal:define-macro="main"
            tal:define="kssClassesView context/@@kss_field_decorator_view;
