@@ -14,7 +14,7 @@
         tal:define="param python:options['field'].getSettings().getParameters();"
         tal:content="string:function ${fieldname}_init_table() {${fieldname}_datatable = $('#${fieldname}_datagrid').dataTable( {'aaData': ${data}, ${param} } ); }">
         </script>
-        <table class="plain" tal:attributes="id string:${fieldname}_datagrid">
+        <table class="display" tal:attributes="id string:${fieldname}_datagrid">
         </table>
         <p><a class="context add-row" tal:attributes="href string:../${associated_form}/OpenForm?Plomino_Parent_Field=${fieldname}&Plomino_Parent_Form=${formname}"
              >Add row</a>

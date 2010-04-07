@@ -7,5 +7,5 @@
                     param python:options['field'].getSettings().getParameters();"
         tal:content="string:$(document).ready(function() {$('#${fieldname}_datagrid').dataTable( {'aaData': ${data}, ${param} } ); } );">
         </script>
-        <table class="plain" TAL:ATTRIBUTES="id string:${fieldname}_datagrid"></table>
+        <table class="display" TAL:ATTRIBUTES="id string:${fieldname}_datagrid"></table>
 </tal:block>
