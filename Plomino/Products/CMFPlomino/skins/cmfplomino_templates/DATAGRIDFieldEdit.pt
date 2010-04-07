@@ -12,7 +12,7 @@
     
         <script type="text/javascript" charset="utf-8"
         tal:define="param python:options['field'].getSettings().getParameters();"
-        tal:content="string:function ${fieldname}_init_table() {${fieldname}_datatable = $('#${fieldname}_datagrid').dataTable( {'aaData': ${data}, ${param} } ); }">
+        tal:content="structure string:function ${fieldname}_init_table() {${fieldname}_datatable = $('#${fieldname}_datagrid').dataTable( {'aaData': ${data}, ${param} } ); }">
         </script>
         <table class="display" tal:attributes="id string:${fieldname}_datagrid">
         </table>
