@@ -8,7 +8,7 @@
 <body>
 
 <metal:javascript_head fill-slot="javascript_head_slot">
-    <tal:block tal:condition="python:here.hasGoogleVisualizationField()">
+    <tal:block tal:condition="python:here.getForm().hasGoogleVisualizationField()">
         <script type='text/javascript' src='http://www.google.com/jsapi'></script>
     </tal:block>
 </metal:javascript_head>
