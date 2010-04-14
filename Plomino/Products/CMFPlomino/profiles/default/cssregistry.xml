@@ -24,5 +24,16 @@
              media="all"
              rel="stylesheet"
              rendering="import"/>
+             
+  <stylesheet title="datatable.css"
+             cacheable="True"
+             compression="save"
+             cookable="True"
+             enabled="1"
+             expression=""
+             id="datatable.css"
+             media="all"
+             rel="stylesheet"
+             rendering="import"/>
  <!-- ##/code-section cssregistry.xml -->
 </object>
