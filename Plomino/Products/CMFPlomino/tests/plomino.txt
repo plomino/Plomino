@@ -287,6 +287,18 @@ The Plomino index is a ZCatalog indexing views selection formula, view columns, 
     0
     >>> len(db.getIndex().dbsearch({'question': 'çé'}))
     1
+
+An index and a metadata are created for each view column
+    >>> 'PlominoViewColumn_view1_col1' in db.getIndex().indexes()
+    True
+
+A column can be a reference to a field, then it doesn't create a special index along the already indexed field  
+    >>> id=db.view1.invokeFactory('PlominoColumn', id='col2', Title='Col 2', SelectedField='frm1/field2')
+    >>> db.view1.col2.at_post_create_script()
+    >>> 'PlominoViewColumn_view1_col2' in db.getIndex().indexes()
+    False
+    >>> 'field2' in db.getIndex().indexes()
+    True
     
 Import/export design
 ---------------------

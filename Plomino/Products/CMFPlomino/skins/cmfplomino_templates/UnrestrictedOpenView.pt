@@ -88,8 +88,8 @@
 														tal:condition="python:test(c!=columns[0])">
 														<a tal:attributes="href string:${docurl}"><span
 															tal:define="cname c/id;
-																			vname here/id;
-																			cvalue python:path('doc/PlominoViewColumn_%s_%s' % (vname, cname))"
+															vname here/id;
+															cvalue python:getattr(doc, here.getIndexKey(cname));"
 															tal:content="structure cvalue" ></span></a>
 													</tal:block></td>
 												</tal:block>
@@ -127,7 +127,7 @@
 										<td tal:condition="not: c/HiddenColumn|nothing"><a tal:attributes="href string:${docurl}"><span
 											tal:define="cname c/id;
 																vname here/id;
-																cvalue python:path('doc/PlominoViewColumn_%s_%s' % (vname, cname));
+																cvalue python:getattr(doc, here.getIndexKey(cname));
 																"
 											tal:content="structure cvalue" ></span></a></td>
 									</tal:block>

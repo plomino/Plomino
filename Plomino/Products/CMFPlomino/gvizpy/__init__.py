@@ -16,7 +16,7 @@ def getGoogleDataSourceContent(plominoview, paths=None):
         row = {}
         row['docurl'] = doc.getPath()
         for col in columns:
-            row[col.id] = str(getattr(doc,"PlominoViewColumn_%s_%s" % (plominoview.id, col.id)))
+            row[col.id] = str(getattr(doc, plominoview.getIndexKey(col.id)))
         data.append(row)
     
     data_table = gviz_api.DataTable(description)

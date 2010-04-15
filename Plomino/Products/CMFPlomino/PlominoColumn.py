@@ -36,6 +36,17 @@ schema = Schema((
             i18n_domain='CMFPlomino',
         ),
     ),
+    StringField(
+        name='SelectedField',
+        widget=SelectionWidget(
+            label="Fields list",
+            description="Field value to display in the column. (It does not apply if Formula is provided).",
+#            label_msgid='CMFPlomino_label_FieldType',
+#            description_msgid='CMFPlomino_help_FieldType',
+#            i18n_domain='CMFPlomino',
+        ),
+        vocabulary='getFields',
+    ),
     TextField(
         name='Formula',
         widget=TextAreaWidget(
@@ -101,6 +112,15 @@ class PlominoColumn(BaseContent, BrowserDefaultMixin):
     ##/code-section class-header
 
     # Methods
+    security.declarePublic('getFields')
+    def getFields(self):
+        """get a list of fields in the base
+        """
+        fields = []
+        for form in self.getParentView().getParentDatabase().getForms():
+            fields.append([form.id, '=== ' + form.id + ' ==='])
+            fields.extend(([form.id + '/' + field.id, field.id] for field in form.getFields()))
+        return fields
 
     security.declarePublic('getColumnName')
     def getColumnName(self):

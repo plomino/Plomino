@@ -236,7 +236,7 @@ class PlominoView(ATFolder):
         if sortindex=='':
             sortindex=None
         else:
-            sortindex='PlominoViewColumn_'+self.getViewName()+'_'+sortindex
+            sortindex=self.getIndexKey(sortindex)
         results=index.dbsearch({'PlominoViewFormula_'+self.getViewName() : True}, sortindex, self.getReverseSorting())
         if limit==0:
             return results
@@ -313,14 +313,22 @@ class PlominoView(ATFolder):
         """declare column
         """
         db = self.getParentDatabase()
-        db.getIndex().createIndex('PlominoViewColumn_'+self.getViewName()+'_'+column_name)
+        if column_obj.Formula:
+            db.getIndex().createIndex('PlominoViewColumn_'+self.getViewName()+'_'+column_name)
+        else:
+            fieldpath = column_obj.SelectedField.split('/')
+            field = self.getParentDatabase().getForm(fieldpath[0]).getFormField(fieldpath[1])
+            if field:
+                field.setToBeIndexed(True)
+                field.at_post_edit_script()
+                #db.getIndex().createFieldIndex(field.id, field.getFieldType())
 
     security.declarePublic('getCategorizedColumnValues')
     def getCategorizedColumnValues(self,column_name):
         """return existing values for the given key and add the empty value
         """
         alldocs = self.getAllDocuments()
-        allvalues = [getattr(doc, 'PlominoViewColumn_'+self.getViewName()+'_'+column_name) for doc in alldocs]
+        allvalues = [getattr(doc, self.getIndexKey(column_name)) for doc in alldocs]
         categories={}
         for itemvalue in allvalues:
             if type(itemvalue)==list:
@@ -349,11 +357,13 @@ class PlominoView(ATFolder):
         if sortindex=='':
             sortindex=None
         else:
-            sortindex='PlominoViewColumn_'+self.getViewName()+'_'+sortindex
+            sortindex=self.getIndexKey(sortindex)
+        
+        print sortindex, self.getReverseSorting()
         return index.dbsearch(
             {
                 'PlominoViewFormula_'+self.getViewName() : True,
-                'PlominoViewColumn_'+self.getViewName()+'_'+category_column_name : category_value
+                self.getIndexKey(category_column_name) : category_value
             },
             sortindex,
             self.getReverseSorting())
@@ -367,8 +377,8 @@ class PlominoView(ATFolder):
         docs = self.getAllDocuments()
         for col in self.getColumns():
             if col.DisplaySum:
-                col_attr = 'PlominoViewColumn_%s_%s' % (self.id, col.id)
-                values = [getattr(doc, col_attr) for doc in docs]
+                indexkey = self.getIndexKey(col.getColumnName())
+                values = [getattr(doc, indexkey) for doc in docs]
                 try:
                     s = sum([v for v in values if v is not None])
                 except:
@@ -407,7 +417,7 @@ class PlominoView(ATFolder):
         for doc in docs:
             values=[]
             for cname in columns:
-                v=getattr(doc, 'PlominoViewColumn_%s_%s' % (vname, cname))
+                v=getattr(doc, self.getIndexKey(cname))
                 if v is None:
                     v=''
                 else:
@@ -440,7 +450,7 @@ class PlominoView(ATFolder):
         if sortindex=='':
             return []
         else:
-            sortindex='PlominoViewColumn_'+self.getViewName()+'_'+sortindex
+            sortindex=self.getIndexKey(sortindex)
             results=index.dbsearch({'PlominoViewFormula_'+self.getViewName() : True,
                                     sortindex : key
                                     },
@@ -460,6 +470,20 @@ class PlominoView(ATFolder):
         
         REQUEST.RESPONSE.setHeader('content-type', 'text/plain; charset='+encoding)
         return getGoogleDataSourceContent(self, paths)
+    
+    security.declarePublic('getIndexKey')
+    def getIndexKey(self, columnName):
+        """Returns an index key depending of which one exists.
+        It can be a computed index (PlominoViewColumn_) or a link to a column. 
+        """
+        key = 'PlominoViewColumn_%s_%s' % (self.getViewName(), columnName)
+        if key not in self.getParentDatabase().plomino_index.Indexes:
+            fieldPath = self.getColumn(columnName).SelectedField.split('/')
+            if len(fieldPath) > 1:
+                key = fieldPath[1]
+            else:
+                key = ''
+        return key
 
 
 registerType(PlominoView, PROJECTNAME)
