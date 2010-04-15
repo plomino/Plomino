@@ -43,7 +43,7 @@
 						<td tal:condition="not: c/HiddenColumn|nothing"><span
 							tal:define="cname c/id;
 										vname v/id;
-										cvalue python:path('doc/PlominoViewColumn_%s_%s' % (vname, cname));
+										cvalue python:getattr(doc, v.getIndexKey(cname));
 										"
 							tal:content="structure cvalue" /></td>
 					</tal:block>

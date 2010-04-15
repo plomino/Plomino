@@ -73,7 +73,7 @@ class DoclinkField(BaseField):
             if v is None:
                 return []
             else:
-                return [getattr(d, 'PlominoViewColumn_'+self.sourceview+'_'+self.labelcolumn, '')+"|"+d.getPath() for d in v.getAllDocuments()]
+                return [getattr(d, v.getIndexKey(self.labelcolumn), '')+"|"+d.getPath() for d in v.getAllDocuments()]
         else:
             #if no doc provided (if OpenForm action), we use the PlominoForm
             if doc is None:
@@ -114,7 +114,7 @@ class DoclinkField(BaseField):
             column_ids = [col.id for col in columns]
             column_labels = [col.Title() for col in columns]
             paths = [doc.getPath() for doc in alldocs]
-            datatable = [[getattr(doc, "PlominoViewColumn_%s_%s" % (self.sourceview, col)) for col in column_ids] for doc in alldocs]
+            datatable = [[getattr(doc, sourceview.getIndexKey(col)) for col in column_ids] for doc in alldocs]
         else:
             column_labels = [""]
             paths = [v.split('|')[1] for v in selectionlist]
@@ -143,7 +143,7 @@ function drawTable() {\n"""
             #TODO: accept other types than string
             js = js + "  %s_data.addColumn('string', '%s');\n" % (field_id, col)
 
-        js_table = ", ".join(["[" + ", ".join(["'"+cell+"'" for cell in row]) + "]" for row in datatable])
+        js_table = ", ".join(["[" + ", ".join(["'"+str(cell)+"'" for cell in row]) + "]" for row in datatable])
         js = js + "  %s_data.addRows([%s]);\n" % (field_id, js_table)
 #        i = 0
 #        for row in datatable:
