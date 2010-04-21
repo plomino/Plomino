@@ -4,7 +4,7 @@ Introduction
 Plomino is a Plone/ZOPE product which provides users with a Lotus Domino-like application development toolkit.
 
 
-A Makina Corpus AS add-on
+A Makina Corpus add-on
 -------------------------
 
 http://www.makina-corpus.com & http://makina-corpus.org
