@@ -4,7 +4,7 @@ Plomino is a Plone/ZOPE product which provides users with a Lotus Domino-like ap
 
 .. contents::
 
-Makina Corpus sponsorised software
+Credits
 ======================================
 |makinacom|_
 
