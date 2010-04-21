@@ -5,52 +5,39 @@ Changelog
 -----
 
 * Portlet with useful links for design management (add items, acl, etc...)
-
 * Google visualization table to display views
-
 * Fixes for Plone 4 compliancy (work in progress)
 
 1.5.6
 -----
 
 * Access control fix : Owner is author of any document (just like PlominoManager role)
-
 * MissingValue() method in PlominoUtils : it returns Missing.Value which can be useful
-when processing ZCatalog brains (=search results) as Missing.Value cannot be imported
-into formulas.
-
+  when processing ZCatalog brains (=search results) as Missing.Value cannot be imported
+  into formulas.
 * Do not compute column values in index if the document does not belong to the view.
-Note: it does not really change the performances when indexing, but it does reduce
-the index size.
-It also reduce the amount of error traceback in debug mode.
+  Note: it does not really change the performances when indexing, but it does reduce
+  the index size.
+  It also reduce the amount of error traceback in debug mode.
 
 1.5.5
 -----
 
 * Fix: escape CDATA in XML import/export (Jean Jordaan contribution)
-
 * Fix: handle empty multiselect and empty checkboxes
-
 * Fix: do not default to PlominoAuthor right if Authenticated generic right
-is PlominoAuthor whereas the current user as PlominoReader right
-
+  is PlominoAuthor whereas the current user as PlominoReader right
 * Fix: set encoding in exportCSV
 
 1.5.4
 -----
 
 * Fix: insufficient privileges error when changing Anonymous access right from PlominoAuthor to No Access
-
 * Enable multiple Google Visualization fields in the same form
-
 * hide selection box in views if no remove permission
-
 * refresh() method on PlominoDocument: same as save() but do not trigger onSaveDocument
-
 * more i18n French translations
-
 * Validation formula improvments (ability to test the current doc id + bug fixes)
-
 * beforeCreateDocument event
 
 1.5.3
@@ -72,42 +59,27 @@ is PlominoAuthor whereas the current user as PlominoReader right
 ---
 
 * Google chart integration : pie chart, bar chart, etc.
-(see http://code.google.com/intl/en/apis/chart/types.html )
-
+  (see http://code.google.com/intl/en/apis/chart/types.html )
 * Ability to display the sum of a column in view (when columns contain figures)
-
 * Google Visualization integration : organizational charts, dynamic charts, map, etc.
-(see http://code.google.com/intl/en/apis/visualization/documentation/gallery.html )
-
+  (see http://code.google.com/intl/en/apis/visualization/documentation/gallery.html )
 * CSV support improvement
-
 * Ability to restrict a Names field to a given member group
-
 * Import/export and replication improvements
 
 1.4
 ---
 
 * Control Kupu height for Richtext fields
-
 * Delete button confirmation message
-
 * German translation
-
 * Ability to hide Default Actions in forms
-
 * Group support in user roles and in Plomino_Authors
-
 * Import/export database settings and ACL settings
-
 * XML import/export design to/from file
-
 * Replication filtering using a view (feature financed by ACEA)
-
 * TinyMCE support
-
 * Delete documents from view
-
 * Bug fixes
 
 1.3-stable
@@ -143,6 +115,6 @@ is PlominoAuthor whereas the current user as PlominoReader right
 * Fix migration script
 
 1.3RC1 - Unreleased
-----------------
+---------------------------
 
 * Initial release
