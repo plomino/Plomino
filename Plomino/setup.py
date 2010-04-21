@@ -5,7 +5,7 @@ version = '1.5.7'
 
 setup(name='Plomino',
       version=version,
-      description="Create specific applications in Plone without developping",
+      description="Create specific applications in Plone without developping. Created by Makina Corpus.",
       long_description=open("README.txt").read() + "\n" +
                        open(os.path.join("docs", "HISTORY.txt")).read(),
       # Get more strings from http://pypi.python.org/pypi?%3Aaction=list_classifiers
