@@ -1,5 +1,4 @@
-<dl class="portlet portlet-plomino" tal:condition="python:view.hasDesignPermission()"
-                                    tal:define="db python:view.parentdatabase();
+<dl class="portlet portlet-plomino" tal:define="db python:view.parentdatabase();
                                                 db_url python:db.absolute_url();
                                                 type python:view.currenttype();
                                                 url python:view.context.absolute_url();">

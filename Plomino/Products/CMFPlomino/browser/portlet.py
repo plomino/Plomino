@@ -32,6 +32,10 @@ class Renderer(base.Renderer):
         """
         return self.parentdatabase().hasDesignPermission()
     
+    @property
+    def available(self):
+        return self.hasDesignPermission()
+    
 class AddForm(base.AddForm):
     form_fields = form.Fields(IPortlet)
 
