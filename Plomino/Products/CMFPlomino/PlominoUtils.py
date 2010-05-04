@@ -142,7 +142,7 @@ def open_url(url):
     """ retrieve content from url
     """
     f=urllib.urlopen(url)
-    return f
+    return f.read()
 
 def MissingValue():
     """ Useful to test search results value (as Missing.Value cannot be imported in scripts)
