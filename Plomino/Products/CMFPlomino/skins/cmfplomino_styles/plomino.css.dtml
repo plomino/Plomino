@@ -88,7 +88,7 @@ tr.datagrid_row_selected td {
     display:none; 
      
     /* place overlay on top of other elements */ 
-    z-index:10000; 
+    z-index:1000; 
      
     /* styling */ 
     background-color:white; 
@@ -116,6 +116,10 @@ tr.datagrid_row_selected td {
     display: none;
 }
 
+/* change z-index for calendar pop-up so it works in overlay */
+.calendar {
+    z-index: 1100;
+}
 /* </dtml-with> */
 
 

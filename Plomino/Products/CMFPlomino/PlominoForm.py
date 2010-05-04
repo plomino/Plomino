@@ -13,6 +13,7 @@ __author__ = """Eric BREHAULT <eric.brehault@makina-corpus.org>"""
 __docformat__ = 'plaintext'
 
 from AccessControl import ClassSecurityInfo
+from DateTime import DateTime
 from Products.Archetypes.atapi import *
 from zope.interface import implements
 import interfaces
@@ -20,7 +21,7 @@ from Products.ATContentTypes.content.folder import ATFolder
 from Products.CMFDynamicViewFTI.browserdefault import BrowserDefaultMixin
 
 from Products.CMFPlomino.config import *
-from Products.CMFPlomino.PlominoUtils import PlominoTranslate
+from Products.CMFPlomino.PlominoUtils import PlominoTranslate, DateToString
 
 ##code-section module-header #fill in your manual code here
 import sys
@@ -382,7 +383,13 @@ class PlominoForm(ATFolder):
         parent_field = parent_form.getFormField(doc.Plomino_Parent_Field)
         fields = parent_field.getSettings().field_mapping.split(',')
         
-        raw_values = [doc.getItem(f) for f in fields]
+        raw_values = []
+        for f in fields:
+            v = doc.getItem(f)
+            if hasattr(v, 'strftime'):
+                raw_values.append(DateToString(doc.getItem(f), self.getParentDatabase().getDateTimeFormat()))
+            else:
+                raw_values.append(v)
         
         html = """<div id="raw_values">%s</div>""" % json.dumps(raw_values)
         

@@ -4,6 +4,7 @@ jq(function(){
         urlmatch:'$', urlreplace:' #region-content>*',
         formselector:'[id=plomino_form]',
         noform: 'close',
+        config:{closeOnClick: false},
         closeselector:'[name=plomino_close]',
         afterpost: function(data, data_parent) {
     	  field_id = data.context.querySelector('[id=plomino_parent_field]').innerHTML;

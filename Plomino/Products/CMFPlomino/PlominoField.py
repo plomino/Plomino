@@ -221,8 +221,8 @@ class PlominoField(BaseContent, BrowserDefaultMixin):
                         fieldValue = data[datagrid_fields.index(self.id)]
                     else: 
                         fieldValue = request.get(fieldName, '')
-                        if self.getFieldType()=="DATETIME" and not (fieldValue=='' or fieldValue is None):
-                            fieldValue = StringToDate(fieldValue, form.getParentDatabase().getDateTimeFormat())
+                    if self.getFieldType()=="DATETIME" and not (fieldValue=='' or fieldValue is None):
+                        fieldValue = StringToDate(fieldValue, form.getParentDatabase().getDateTimeFormat())
             else:
                 fieldValue = doc.getItem(fieldName)
 

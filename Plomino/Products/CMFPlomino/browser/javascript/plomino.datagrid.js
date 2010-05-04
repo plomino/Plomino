@@ -51,6 +51,7 @@ function make_selectable(table, field_id) {
             urlmatch:'$', urlreplace:"&Plomino_datagrid_rowdata=" + rowdata+' #region-content>*',
             formselector:'[id=plomino_form]',
             noform: 'close',
+            config:{closeOnClick: false},
             closeselector:'[name=plomino_close]',
             afterpost: function(data, data_parent) {
         	  field_id = data.context.querySelector('[id=plomino_parent_field]').innerHTML;
