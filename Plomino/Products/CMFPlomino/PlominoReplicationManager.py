@@ -1075,7 +1075,7 @@ class PlominoReplicationManager(Persistent):
         node.setAttribute('lastmodified', doc.getLastModified(asString=True))
         
         # export items
-        str_items = xmlrpclib.dumps((doc.items,))
+        str_items = xmlrpclib.dumps((doc.items,), allow_none=True)
         dom_items = parseString(str_items)
         node.appendChild(dom_items.documentElement)
         
