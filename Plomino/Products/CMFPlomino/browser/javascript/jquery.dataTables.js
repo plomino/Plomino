@@ -147,7 +147,7 @@ if(typeof mData!="object"){sDisplay=mData;oSettings.aoData[iRow]._aData[iColumn]
 if(oSettings.aoColumns[iColumn].fnRender!==null){sDisplay=oSettings.aoColumns[iColumn].fnRender({iDataRow:iRow,iDataColumn:iColumn,aData:oSettings.aoData[iRow]._aData,oSettings:oSettings});
 if(oSettings.aoColumns[iColumn].bUseRendered){oSettings.aoData[iRow]._aData[iColumn]=sDisplay
 }}iVisibleColumn=_fnColumnIndexToVisible(oSettings,iColumn);if(iVisibleColumn!==null){oSettings.aoData[iRow].nTr.getElementsByTagName("td")[iVisibleColumn].innerHTML=sDisplay
-}}else{if(mData.length!=oSettings.aoColumns.length){alert("DataTables warning: An array passed to fnUpdate must have the same number of columns as the table in question - in this case "+oSettings.aoColumns.length);
+}}else{if(mData.length!=oSettings.aoColumns.length){
 return 1}for(var i=0;i<mData.length;i++){sDisplay=mData[i];oSettings.aoData[iRow]._aData[i]=sDisplay;
 if(oSettings.aoColumns[i].fnRender!==null){sDisplay=oSettings.aoColumns[i].fnRender({iDataRow:iRow,iDataColumn:i,aData:oSettings.aoData[iRow]._aData,oSettings:oSettings});
 if(oSettings.aoColumns[i].bUseRendered){oSettings.aoData[iRow]._aData[i]=sDisplay
@@ -204,7 +204,7 @@ oCol.sSortingClassJUI=""}else{if($.inArray("asc",oCol.asSorting)!=-1&&$.inArray(
 oCol.sSortingClassJUI=oSettings.oClasses.sSortJUIAscAllowed}else{if($.inArray("asc",oCol.asSorting)==-1&&$.inArray("desc",oCol.asSorting)!=-1){oCol.sSortingClass=oSettings.oClasses.sSortableDesc;
 oCol.sSortingClassJUI=oSettings.oClasses.sSortJUIDescAllowed}}}if(typeof oSettings.aoPreSearchCols[iLength]=="undefined"||oSettings.aoPreSearchCols[iLength]===null){oSettings.aoPreSearchCols[iLength]={sSearch:"",bEscapeRegex:true}
 }else{if(typeof oSettings.aoPreSearchCols[iLength].bEscapeRegex=="undefined"){oSettings.aoPreSearchCols[iLength].bEscapeRegex=true
-}}}function _fnAddData(oSettings,aData){if(aData.length!=oSettings.aoColumns.length){alert("DataTables warning: Added data does not match known number of columns");
+}}}function _fnAddData(oSettings,aData){if(aData.length!=oSettings.aoColumns.length){
 return -1}var iThisIndex=oSettings.aoData.length;oSettings.aoData.push({nTr:document.createElement("tr"),_iId:oSettings.iNextId++,_aData:aData.slice(),_anHidden:[],_sRowStripe:""});
 var nTd,sThisType;for(var i=0;i<aData.length;i++){nTd=document.createElement("td");
 if(typeof oSettings.aoColumns[i].fnRender=="function"){var sRendered=oSettings.aoColumns[i].fnRender({iDataRow:iThisIndex,iDataColumn:i,aData:aData,oSettings:oSettings});
@@ -222,7 +222,7 @@ oSettings.aiDisplayMaster.push(iThisIndex);aLocalData=oSettings.aoData[iThisInde
 nTds=nTrs[i].childNodes;jInner=0;for(j=0,jLen=nTds.length;j<jLen;j++){if(nTds[j].nodeName=="TD"){aLocalData[jInner]=nTds[j].innerHTML;
 jInner++}}}}}nTrs=_fnGetTrNodes(oSettings);nTds=[];for(i=0,iLen=nTrs.length;i<iLen;
 i++){for(j=0,jLen=nTrs[i].childNodes.length;j<jLen;j++){nTd=nTrs[i].childNodes[j];
-if(nTd.nodeName=="TD"){nTds.push(nTd)}}}if(nTds.length!=nTrs.length*oSettings.aoColumns.length){alert("DataTables warning: Unexpected number of TD elements. Expected "+(nTrs.length*oSettings.aoColumns.length)+" and got "+nTds.length+". DataTables does not support rowspan / colspan in the table body, and there must be one cell for each row/column combination.")
+if(nTd.nodeName=="TD"){nTds.push(nTd)}}}if(nTds.length!=nTrs.length*oSettings.aoColumns.length){
 }for(iColumn=0,iColumns=oSettings.aoColumns.length;iColumn<iColumns;iColumn++){if(oSettings.aoColumns[iColumn].sTitle===null){oSettings.aoColumns[iColumn].sTitle=oSettings.aoColumns[iColumn].nTh.innerHTML
 }var bAutoType=oSettings.aoColumns[iColumn]._bAutoType,bRender=typeof oSettings.aoColumns[iColumn].fnRender=="function",bClass=oSettings.aoColumns[iColumn].sClass!==null,bVisible=oSettings.aoColumns[iColumn].bVisible,nCell,sThisType,sRendered;
 if(bAutoType||bRender||bClass||!bVisible){for(iRow=0,iRows=oSettings.aoData.length;
@@ -257,7 +257,7 @@ var iEnd=oSettings._iDisplayEnd;if(oSettings.oFeatures.bServerSide){iStart=0;iEn
 var nRow=aoData.nTr;if(iStrips!==0){var sStrip=oSettings.asStripClasses[iRowCount%iStrips];
 if(aoData._sRowStripe!=sStrip){$(nRow).removeClass(aoData._sRowStripe).addClass(sStrip);
 aoData._sRowStripe=sStrip}}if(typeof oSettings.fnRowCallback=="function"){nRow=oSettings.fnRowCallback(nRow,oSettings.aoData[oSettings.aiDisplay[j]]._aData,iRowCount,j);
-if(!nRow&&!bRowError){alert("DataTables warning: A node was not returned by fnRowCallback");
+if(!nRow&&!bRowError){
 bRowError=true}}anRows.push(nRow);iRowCount++;if(iOpenRows!==0){for(var k=0;k<iOpenRows;
 k++){if(nRow==oSettings.aoOpenRows[k].nParent){anRows.push(oSettings.aoOpenRows[k].nTr)
 }}}}}else{anRows[0]=document.createElement("tr");if(typeof oSettings.asStripClasses[0]!="undefined"){anRows[0].className=oSettings.asStripClasses[0]
@@ -406,7 +406,7 @@ if(sAction=="first"){oSettings._iDisplayStart=0}else{if(sAction=="previous"){oSe
 if(oSettings._iDisplayStart<0){oSettings._iDisplayStart=0}}else{if(sAction=="next"){if(oSettings._iDisplayLength>=0){if(oSettings._iDisplayStart+oSettings._iDisplayLength<oSettings.fnRecordsDisplay()){oSettings._iDisplayStart+=oSettings._iDisplayLength
 }}else{oSettings._iDisplayStart=0}}else{if(sAction=="last"){if(oSettings._iDisplayLength>=0){var iPages=parseInt((oSettings.fnRecordsDisplay()-1)/oSettings._iDisplayLength,10)+1;
 oSettings._iDisplayStart=(iPages-1)*oSettings._iDisplayLength}else{oSettings._iDisplayStart=0
-}}else{alert("DataTables warning: unknown paging action: "+sAction)}}}}return iOldStart!=oSettings._iDisplayStart
+}}else{}}}}return iOldStart!=oSettings._iDisplayStart
 }function _fnFeatureHtmlInfo(oSettings){var nInfo=document.createElement("div");nInfo.className=oSettings.oClasses.sInfo;
 if(typeof oSettings.aanFeatures.i=="undefined"){oSettings.aoDrawCallback.push({fn:_fnUpdateInfo,sName:"information"});
 if(oSettings.sTableId!==""){nInfo.setAttribute("id",oSettings.sTableId+"_info")}}return nInfo
@@ -544,7 +544,7 @@ this.oApi._fnReOrderIndex=_fnReOrderIndex;this.oApi._fnColumnOrdering=_fnColumnO
 this.oApi._fnClearTable=_fnClearTable;this.oApi._fnSaveState=_fnSaveState;this.oApi._fnLoadState=_fnLoadState;
 this.oApi._fnCreateCookie=_fnCreateCookie;this.oApi._fnReadCookie=_fnReadCookie;this.oApi._fnGetUniqueThs=_fnGetUniqueThs;
 this.oApi._fnReDraw=_fnReDraw;var _that=this;return this.each(function(){var i=0,iLen,j,jLen;
-for(i=0,iLen=_aoSettings.length;i<iLen;i++){if(_aoSettings[i].nTable==this){alert("DataTables warning: Unable to re-initialise DataTable. Please use the API to make any configuration changes required.");
+for(i=0,iLen=_aoSettings.length;i<iLen;i++){if(_aoSettings[i].nTable==this){
 return _aoSettings[i]}}var oSettings=new classSettings();_aoSettings.push(oSettings);
 var bInitHandedOff=false;var bUsePassedData=false;var sId=this.getAttribute("id");
 if(sId!==null){oSettings.sTableId=sId;oSettings.sInstance=sId}else{oSettings.sInstance=_oExt._oExternConfig.iNextUnique++
