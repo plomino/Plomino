@@ -222,7 +222,10 @@
 				<input type="submit" name="submit_refresh" class="context" value="Refresh"/>
 				</td>
 			</tr>
-			<tr><td colspan="2"><input type="submit" class="context" value="Import" name="submit_import"/></td><td></td></tr>
+			<tr><td colspan="3">
+			         Do not refresh database after design update: <input type="checkbox" name="no_refresh_documents" value="Yes"/><br/>
+			         <input type="submit" class="context" value="Import" name="submit_import"/>
+			    </td></tr>
 		</table>
 	</form>
 </td>
@@ -251,7 +254,7 @@
 			</tr>
 			<tr>
 				<td colspan="2">Entire design</td>
-				<td><input type="checkbox" name="entire" value="Yes"/></td>
+				<td><input type="checkbox" name="entire" value="Yes" checked="1"/></td>
 			</tr>
 			<tr>
 				<td colspan="2">or elements</td>

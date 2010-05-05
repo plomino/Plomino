@@ -140,10 +140,15 @@ class PlominoDesignManager(Persistent):
         msg = 'Existing documents: '+ str(len(documents))
         report.append(msg)
         logger.info(msg)
+        count = 0
         for d in documents:
-            self.getIndex().indexDocument(d)
-            d.save(onSaveEvent=False)
-        msg = 'Documents re-indexed'
+            try:
+                #self.getIndex().indexDocument(d)
+                d.save(onSaveEvent=False)
+                count = count + 1
+            except:
+                pass
+        msg = '%d documents re-indexed' % (count)
         report.append(msg)
         logger.info(msg)
         
@@ -217,7 +222,9 @@ class PlominoDesignManager(Persistent):
                 xmlstring=fileToImport.read()
         
             self.importDesignFromXML(xmlstring)
-            self.refreshDB()
+            no_refresh_documents = REQUEST.get('no_refresh_documents', 'No')
+            if no_refresh_documents == 'No':
+                self.refreshDB()
             REQUEST.RESPONSE.redirect(self.absolute_url()+"/DatabaseDesign")
         else:
             REQUEST.RESPONSE.redirect(self.absolute_url()+"/DatabaseDesign?username="+username+"&password="+password+"&sourceURL="+sourceURL)
