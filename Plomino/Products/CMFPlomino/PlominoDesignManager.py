@@ -118,6 +118,11 @@ class PlominoDesignManager(Persistent):
             msg = migrate_to_15(self)
             report.append(msg)
             logger.info(msg)
+        if self.plomino_version=="1.5":
+            from migration.migration import migrate_to_16
+            msg = migrate_to_16(self)
+            report.append(msg)
+            logger.info(msg)
             
         #declare all the view formulas and columns index entries
         for v_obj in self.getViews():

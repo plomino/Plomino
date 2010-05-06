@@ -57,16 +57,16 @@ schema = Schema((
             i18n_domain='CMFPlomino',
         ),
     ),
-    IntegerField(
-        name='Position',
-        widget=IntegerField._properties['widget'](
-            label="Position",
-            description="Position in view",
-            label_msgid='CMFPlomino_label_ColumnPosition',
-            description_msgid='CMFPlomino_help_ColumnPosition',
-            i18n_domain='CMFPlomino',
-        ),
-    ),
+#    IntegerField(
+#        name='Position',
+#        widget=IntegerField._properties['widget'](
+#            label="Position",
+#            description="Position in view",
+#            label_msgid='CMFPlomino_label_ColumnPosition',
+#            description_msgid='CMFPlomino_help_ColumnPosition',
+#            i18n_domain='CMFPlomino',
+#        ),
+#    ),
     BooleanField(
         name='HiddenColumn',
         default="0",

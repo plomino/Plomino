@@ -247,14 +247,15 @@ class PlominoView(ATFolder):
     def getColumns(self):
         """Get colums
         """
-        columnslist = self.portal_catalog.search({'portal_type' : ['PlominoColumn'], 'path': '/'.join(self.getPhysicalPath())})
-        orderedcolumns = []
-        for c in columnslist:
-            c_obj = c.getObject()
-            if not(c_obj is None):
-                orderedcolumns.append([c_obj.Position, c_obj])
-        orderedcolumns.sort()
-        return [i[1] for i in orderedcolumns]
+        columnslist = self.portal_catalog.search({'portal_type' : ['PlominoColumn'], 'path': '/'.join(self.getPhysicalPath())}, sort_index='getObjPositionInParent')
+        #orderedcolumns = []
+        #for c in columnslist:
+        #    c_obj = c.getObject()
+        #    if not(c_obj is None):
+        #        orderedcolumns.append([c_obj.Position, c_obj])
+        #orderedcolumns.sort()
+        #return [i[1] for i in orderedcolumns]
+        return [c.getObject() for c in columnslist]
 
     security.declarePublic('getActions')
     def getActions(self, target, hide=True):

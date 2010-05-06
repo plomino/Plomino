@@ -71,3 +71,23 @@ def migrate_to_15(db):
     msg = "Migration to 1.5: DisplaySum attribute added"
     db.plomino_version = "1.5"
     return msg
+
+def migrate_to_16(db):
+    """ attribute Position in column is replaced by AtFolder sorting
+    """
+    for v_obj in db.getViews():
+        # sort columns by their Position
+        orderedcolumns = []
+        for c in v_obj.getColumns():
+            if not(c is None):
+                orderedcolumns.append([c.Position, c])
+        orderedcolumns.sort()
+        
+        # set the position using the previous sorting
+        for i, c in enumerate(orderedcolumns):
+            v_obj.moveObject(c[1].id, i)
+            v_obj.plone_utils.reindexOnReorder(v_obj)
+            
+    msg = "Migration to 1.6: Position column attribute deleted"
+    db.plomino_version = "1.6"
+    return msg

@@ -499,6 +499,14 @@
 			</fieldset>
 		</div>
 		
+		<div>
+            <fieldset>
+                <legend>XML import/export</legend>
+                <a href="./exportAsXML">Export as XML</a>
+                <form name="importXML" action="" method="POST" enctype="multipart/form-data">
+                </form>
+            </fieldset>
+        </div>
 		<div tal:replace="structure provider:plone.belowcontentbody" />
 
 	</tal:main-macro>
