@@ -363,8 +363,8 @@ class PlominoDesignManager(Persistent):
 
     security.declarePublic('runFormulaScript')
     def runFormulaScript(self, script_id, context, formula_getter, with_args=False, *args):
-        if self.debugMode:
-            logger.info('Evaluating '+script_id+' with context '+str(context))
+#        if self.debugMode:
+#            logger.info('Evaluating '+script_id+' with context '+str(context))
         try:
             ps = self.getFormulaScript(script_id)
             if ps is None:
@@ -387,7 +387,7 @@ class PlominoDesignManager(Persistent):
         
         except Exception, e:
             if self.debugMode:
-                logger.info('runFormulaScript Exception : ' + str(e))
+                logger.info('runFormulaScript Exception evaluating '+script_id+' with context '+str(context)+ ':' + str(e))
     
     security.declarePrivate('traceErr')
     def traceErr(self, e, context, script_id, formula_getter):
