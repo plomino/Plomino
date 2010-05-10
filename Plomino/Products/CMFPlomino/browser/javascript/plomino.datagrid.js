@@ -21,6 +21,8 @@ jq(function(){
          current = $.evalJSON(currentjson);
          current.push($.evalJSON(raw));
          document.getElementById(field_id+'_gridvalue').value=$.toJSON(current);
+         document.getElementById(field_id+'_editrow').style.display = "inline";
+         document.getElementById(field_id+'_deleterow').style.display = "inline";
         }
     });
 });
@@ -52,6 +54,10 @@ function datagrid_delete(table, field_id) {
     	if(i!=selection[1]) {
     		newvalue.push(current[i]);
     	}
+    }
+    if(newvalue.length==0) {
+        document.getElementById(field_id+'_editrow').style.display = "none";
+        document.getElementById(field_id+'_deleterow').style.display = "none";
     }
     document.getElementById(field_id+'_gridvalue').value=$.toJSON(newvalue);
 }

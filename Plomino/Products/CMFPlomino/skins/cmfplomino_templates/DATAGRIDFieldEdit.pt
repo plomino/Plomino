@@ -20,10 +20,14 @@
              >Add row</a>
             <a class="context"
             tal:attributes="id string:${fieldname}_editrow;
-            href string:../${associated_form}/OpenForm?Plomino_Parent_Field=${fieldname}&Plomino_Parent_Form=${formname};
-            " >Edit row</a>
+                            href string:../${associated_form}/OpenForm?Plomino_Parent_Field=${fieldname}&Plomino_Parent_Form=${formname};
+                            style python:test(len(v)==0,'display:none', '')"
+            >Edit row</a>
             <a href="javascript:void(0)" class="context"
-            tal:attributes="onclick string:datagrid_delete(${fieldname}_datatable, '${fieldname}')" >Delete row</a>
+            tal:attributes="id string:${fieldname}_deleterow;
+                            onclick string:datagrid_delete(${fieldname}_datatable, '${fieldname}');
+                            style python:test(len(v)==0,'display:none', '')" 
+            >Delete row</a>
         </p>
             
 
