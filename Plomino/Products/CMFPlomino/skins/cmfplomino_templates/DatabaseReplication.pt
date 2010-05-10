@@ -502,9 +502,37 @@
 		<div>
             <fieldset>
                 <legend>XML import/export</legend>
-                <a href="./exportAsXML">Export as XML</a>
-                <form name="importXML" action="" method="POST" enctype="multipart/form-data">
-                </form>
+                <table>
+				<tr><th>Import</th><th>Export</th></tr>
+				<tr><td valign="top">
+	                <form name="importXML" action="manage_importFromXML" method="POST" enctype="multipart/form-data">
+	                    <div class="field">
+	                        <div class="widget">
+	                            <label for="import_file">XML File</label>
+	                            <span class="fieldRequired"
+	                                title="Required"
+	                                i18n:translate="label_required"
+	                                i18n:attributes="title title_required;">
+	                                (Required)
+	                            </span>
+	                            <div class="formHelp">File containing documents to import</div>
+	                            <input name="file"
+	                                    size="30"
+	                                    id="import_file"
+	                                    type="file"
+	                                    class="context"/>
+	                        </div>
+	                    </div>
+	                    <div class="formControls">
+	                        <span class="actionButtons">
+	                            <input value="Import"
+	                                    name="import_xml"
+	                                    id="import_xml"
+	                                    class="context"
+	                                    type="submit"
+	                                    />
+	                </form>
+	            </td><td valign="top"><a href="./manage_exportAsXML">Export as XML</a></td></tr>
             </fieldset>
         </div>
 		<div tal:replace="structure provider:plone.belowcontentbody" />

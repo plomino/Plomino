@@ -1042,6 +1042,14 @@ class PlominoReplicationManager(Persistent):
         
         self.importReport.append({'line' : lineNumber, 'state' : state, 'infoMsg' : infoMessage})
     
+    security.declareProtected(READ_PERMISSION, 'manage_exportAsXML')
+    def manage_exportAsXML(self, REQUEST):
+        """
+        """
+        REQUEST.RESPONSE.setHeader('content-type', 'text/xml')
+        REQUEST.RESPONSE.setHeader("Content-Disposition", "attachment; filename="+self.id+".xml")
+        return self.exportAsXML(docids=None, REQUEST=REQUEST)
+        
     security.declareProtected(READ_PERMISSION, 'exportAsXML')
     def exportAsXML(self, docids=None, REQUEST=None):
         """
@@ -1063,7 +1071,9 @@ class PlominoReplicationManager(Persistent):
         for d in docs:
             node = self.exportDocumentAsXML(xmldoc, d)
             root.appendChild(node)
-        
+            
+        if REQUEST is not None:
+            REQUEST.RESPONSE.setHeader('content-type', 'text/xml')
         return xmldoc.toxml()
 
     security.declareProtected(READ_PERMISSION, 'exportDocumentAsXML')
@@ -1089,6 +1099,14 @@ class PlominoReplicationManager(Persistent):
         
         return node
 
+    security.declareProtected(REMOVE_PERMISSION, 'manage_importFromXML')
+    def manage_importFromXML(self, REQUEST):
+        """
+        """
+        (imports, errors) = self.importFromXML(REQUEST=REQUEST)
+        self.writeMessageOnPage("%d documents imported successfully, %d document(s) not imported" % (imports, errors), REQUEST, "", False)
+        REQUEST.RESPONSE.redirect(self.absolute_url()+"/DatabaseReplication")
+                
     security.declareProtected(REMOVE_PERMISSION, 'importFromXML')
     def importFromXML(self, xmlstring=None, REQUEST=None):
         """
@@ -1098,11 +1116,18 @@ class PlominoReplicationManager(Persistent):
             xmlstring = f.read()
         xmldoc = parseString(xmlstring)
         documents = xmldoc.getElementsByTagName("document")
+        errors = 0
+        imports = 0
         for d in documents:
             docid = d.getAttribute('id')
-            if self.hasObject(docid):
-                self.manage_delObjects(docid)
-            self.importDocumentFromXML(d)
+            try:
+                if self.hasObject(docid):
+                    self.manage_delObjects(docid)
+                self.importDocumentFromXML(d)
+                imports = imports + 1
+            except:
+                errors = errors + 1
+        return (imports, errors)
             
     security.declareProtected(CREATE_PERMISSION, 'importDocumentFromXML')
     def importDocumentFromXML(self, node):
