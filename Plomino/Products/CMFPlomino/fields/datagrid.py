@@ -67,7 +67,10 @@ class DatagridField(BaseField):
     def processInput(self, submittedValue):
         """
         """
-        return json.loads(submittedValue)
+        try:
+            return json.loads(submittedValue)
+        except:
+            return []
     
     def tojson(self, value):
         """
