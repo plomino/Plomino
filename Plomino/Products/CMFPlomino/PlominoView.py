@@ -318,11 +318,19 @@ class PlominoView(ATFolder):
             db.getIndex().createIndex('PlominoViewColumn_'+self.getViewName()+'_'+column_name)
         else:
             fieldpath = column_obj.SelectedField.split('/')
-            field = self.getParentDatabase().getForm(fieldpath[0]).getFormField(fieldpath[1])
-            if field:
-                field.setToBeIndexed(True)
-                field.at_post_edit_script()
-                #db.getIndex().createFieldIndex(field.id, field.getFieldType())
+            form = self.getParentDatabase().getForm(fieldpath[0])
+            if form:
+                field = form.getFormField(fieldpath[1])
+                if field:
+                    field.setToBeIndexed(True)
+                    field.at_post_edit_script()
+                    #db.getIndex().createFieldIndex(field.id, field.getFieldType())
+                else:
+                    column_obj.setFormula("'Non-existing field'")
+                    db.getIndex().createIndex('PlominoViewColumn_'+self.getViewName()+'_'+column_name)
+            else:
+                column_obj.setFormula("'Non-existing form'")
+                db.getIndex().createIndex('PlominoViewColumn_'+self.getViewName()+'_'+column_name)
 
     security.declarePublic('getCategorizedColumnValues')
     def getCategorizedColumnValues(self,column_name):
