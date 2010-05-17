@@ -7,22 +7,26 @@ jq(function(){
         config:{closeOnClick: false},
         closeselector:'[name=plomino_close]',
         afterpost: function(data, data_parent) {
-    	  field_id = data.context.querySelector('[id=plomino_parent_field]').innerHTML;
-     	  raw = data.context.querySelector('[id=raw_values]').innerHTML;
-     	  eval("table=window."+field_id+"_datatable;");
-     	 len = table.fnSettings().aoColumns.length
-         newrow = new Array();
-     	 fields=data.context.querySelectorAll('span[plomino]')
-         for(i=0;i<len;i++) {
-             newrow[i] = fields[i].innerHTML;
-         }
-         table.fnAddData( newrow );
-         currentjson = document.getElementById(field_id+'_gridvalue').value
-         current = $.evalJSON(currentjson);
-         current.push($.evalJSON(raw));
-         document.getElementById(field_id+'_gridvalue').value=$.toJSON(current);
-         document.getElementById(field_id+'_editrow').style.display = "inline";
-         document.getElementById(field_id+'_deleterow').style.display = "inline";
+        	 errors = data.context.querySelector('[id=error_list]');
+        	 if(errors) {
+        		 alert(errors.textContent);
+        	 }
+	    	 field_id = data.context.querySelector('[id=plomino_parent_field]').innerHTML;
+	     	 raw = data.context.querySelector('[id=raw_values]').innerHTML;
+	         eval("table=window."+field_id+"_datatable;");
+	     	 len = table.fnSettings().aoColumns.length
+	         newrow = new Array();
+	     	 fields=data.context.querySelectorAll('span[plomino]')
+	         for(i=0;i<len;i++) {
+	             newrow[i] = fields[i].innerHTML;
+	         }
+	         table.fnAddData( newrow );
+	         currentjson = document.getElementById(field_id+'_gridvalue').value
+	         current = $.evalJSON(currentjson);
+	         current.push($.evalJSON(raw));
+	         document.getElementById(field_id+'_gridvalue').value=$.toJSON(current);
+	         document.getElementById(field_id+'_editrow').style.display = "inline";
+	         document.getElementById(field_id+'_deleterow').style.display = "inline";
         }
     });
 });

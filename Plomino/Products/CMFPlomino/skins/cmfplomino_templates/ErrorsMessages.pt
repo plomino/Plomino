@@ -7,7 +7,7 @@
 <metal:main fill-slot="main">
     <div id="bodyContent" tal:define="asparam request/error|nothing">
     	<h1 i18n:domain="CMFPlomino" i18n:translate="Validation failed">Validation failed</h1>
-		<ul tal:condition="not:asparam" tal:repeat="e options/errors">
+		<ul id="error_list" tal:condition="not:asparam" tal:repeat="e options/errors">
 			<li tal:content="structure e">error message</li>
 		</ul>
 		<ul tal:condition="asparam">

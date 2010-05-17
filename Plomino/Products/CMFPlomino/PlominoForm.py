@@ -251,14 +251,21 @@ class PlominoForm(ATFolder):
         """create a document using the forms submitted content
         """
         db = self.getParentDatabase()
-        errors=self.validateInputs(REQUEST)
-        if len(errors)>0:
-            return self.notifyErrors(errors)
         
-        # if child form
         parent_field = REQUEST.get("Plomino_Parent_Field", None)
         parent_form = REQUEST.get("Plomino_Parent_Form", None)
         if parent_field is not None:
+            is_childform = True
+            
+        # validate submitted values
+        errors=self.validateInputs(REQUEST)
+        if len(errors)>0:
+            if is_childform:
+                return """<script>alert('erreur');</script>"""
+            return self.notifyErrors(errors)
+        
+        # if child form
+        if is_childform:
             tmp = TemporaryDocument(self.getParentDatabase(), self, REQUEST)
             tmp.setItem("Plomino_Parent_Field", parent_field)
             tmp.setItem("Plomino_Parent_Form", parent_form)
