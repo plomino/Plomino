@@ -70,7 +70,6 @@ class DatagridField(BaseField):
         try:
             return json.loads(submittedValue)
         except:
-            logger.error(submittedValue)
             return []
     
     def tojson(self, value):
