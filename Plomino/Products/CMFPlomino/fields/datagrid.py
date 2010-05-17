@@ -70,9 +70,6 @@ class DatagridField(BaseField):
         try:
             return json.loads(submittedValue)
         except:
-            import logging
-            logger = logging.getLogger("TEST")
-            logger.error("JSON FAIL")
             logger.error(submittedValue)
             return []
     
