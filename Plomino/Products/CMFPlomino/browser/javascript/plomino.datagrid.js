@@ -91,6 +91,10 @@ function make_selectable(table, field_id) {
             config:{closeOnClick: false},
             closeselector:'[name=plomino_close]',
             afterpost: function(data, data_parent) {
+            	errors = data.context.querySelector('[id=error_list]');
+           	    if(errors) {
+           		   alert(errors.textContent);
+           	    }
         	  field_id = data.context.querySelector('[id=plomino_parent_field]').innerHTML;
          	  raw = data.context.querySelector('[id=raw_values]').innerHTML;
          	  eval("table=window."+field_id+"_datatable;");
