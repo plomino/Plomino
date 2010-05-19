@@ -83,6 +83,17 @@ schema = Schema((
         ),
     ),
     BooleanField(
+        name='FulltextIndex',
+        default=False,
+        widget=BooleanField._properties['widget'](
+            label="Local full-text index",
+            description="If enabled, documents are full-text indexed into the Plomino index.",
+            label_msgid='CMFPlomino_label_FulltextIndex',
+            description_msgid='CMFPlomino_help_FulltextIndex',
+            i18n_domain='CMFPlomino',
+        ),
+    ),
+    BooleanField(
         name='debugMode',
         default="False",
         widget=BooleanField._properties['widget'](
@@ -191,7 +202,7 @@ class PlominoDatabase(ATFolder, PlominoAccessControl, PlominoDesignManager, Plom
         """DB initialization
         """
         self.initializeACL()
-        index = PlominoIndex()
+        index = PlominoIndex(FULLTEXT=self.FulltextIndex)
         self._setObject(index.getId(), index)
         resources = Folder('resources')
         resources.title='resources'

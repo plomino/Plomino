@@ -70,6 +70,35 @@ class PlominoDesignManager(Persistent):
         """
         logger.info('Refreshing database '+self.id)
         report = []
+        
+        # migrate to current version
+        if not(hasattr(self, "plomino_version")):
+            msg = 'Migration to 1.3.0'
+            report.append(msg)
+            logger.info(msg)
+            from migration.migration import migrate_to_130
+            msg = migrate_to_130(self)
+            report.append(msg)
+            logger.info(msg)
+        if self.plomino_version=="1.3.0":
+            # no migration needed here
+            self.plomino_version = "1.4.0"
+        if self.plomino_version=="1.4.0":
+            from migration.migration import migrate_to_15
+            msg = migrate_to_15(self)
+            report.append(msg)
+            logger.info(msg)
+        if self.plomino_version=="1.5":
+            from migration.migration import migrate_to_16
+            msg = migrate_to_16(self)
+            report.append(msg)
+            logger.info(msg)
+        if self.plomino_version=="1.6":
+            from migration.migration import migrate_to_161
+            msg = migrate_to_161(self)
+            report.append(msg)
+            logger.info(msg)
+            
         #check folders
         if not hasattr(self, 'resources'):
             resources = Folder('resources')
@@ -94,35 +123,12 @@ class PlominoDesignManager(Persistent):
         logger.info(msg)
         
         #create new blank index
-        index = PlominoIndex()
+        index = PlominoIndex(FULLTEXT=self.FulltextIndex)
         self._setObject(index.getId(), index)
         self.getIndex().no_refresh = True
         msg = 'New index created'
         report.append(msg)
         logger.info(msg)
-        
-        # migrate to current version
-        if not(hasattr(self, "plomino_version")):
-            msg = 'Migration to 1.3.0'
-            report.append(msg)
-            logger.info(msg)
-            from migration.migration import migrate_to_130
-            msg = migrate_to_130(self)
-            report.append(msg)
-            logger.info(msg)
-        if self.plomino_version=="1.3.0":
-            # no migration needed here
-            self.plomino_version = "1.4.0"
-        if self.plomino_version=="1.4.0":
-            from migration.migration import migrate_to_15
-            msg = migrate_to_15(self)
-            report.append(msg)
-            logger.info(msg)
-        if self.plomino_version=="1.5":
-            from migration.migration import migrate_to_16
-            msg = migrate_to_16(self)
-            report.append(msg)
-            logger.info(msg)
             
         #declare all the view formulas and columns index entries
         for v_obj in self.getViews():

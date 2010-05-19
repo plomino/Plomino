@@ -48,7 +48,7 @@ class PlominoIndex(UniqueObject, ZCatalog, ActionProviderBase):
     # Methods
 
     security.declarePublic('__init__')
-    def __init__(self):
+    def __init__(self, FULLTEXT = False):
         """
         """
         ZCatalog.__init__(self, self.getId())
@@ -59,6 +59,8 @@ class PlominoIndex(UniqueObject, ZCatalog, ActionProviderBase):
         self._setObject('plaintext_lexicon', lexicon)
         self.no_refresh = False
         self.createFieldIndex('Form', 'SELECTION')
+        if FULLTEXT:
+            self.createFieldIndex('SearchableText', 'TEXT')
 
     security.declareProtected(READ_PERMISSION, 'getParentDatabase')
     def getParentDatabase(self):

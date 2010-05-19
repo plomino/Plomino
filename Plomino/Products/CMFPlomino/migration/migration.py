@@ -91,3 +91,11 @@ def migrate_to_16(db):
     msg = "Migration to 1.6: Position column attribute deleted"
     db.plomino_version = "1.6"
     return msg
+
+def migrate_to_161(db):
+    """ Fulltext index db attribute.
+    """
+    db.setFulltextIndex(False)
+    msg = "Migration to 1.6.1: Fulltext index db attribute set to False"
+    db.plomino_version = "1.6.1"
+    return msg
