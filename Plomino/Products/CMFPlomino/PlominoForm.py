@@ -252,6 +252,7 @@ class PlominoForm(ATFolder):
         """
         db = self.getParentDatabase()
         
+        is_childform = False
         parent_field = REQUEST.get("Plomino_Parent_Field", None)
         parent_form = REQUEST.get("Plomino_Parent_Form", None)
         if parent_field is not None:
