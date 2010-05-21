@@ -276,35 +276,36 @@ class PlominoField(BaseContent, BrowserDefaultMixin):
         if self.getFieldType()=="DATAGRID" and templatemode=="Read":
              # fieldValue is a array of arrays, where we must replace raw values with
              # rendered values
-             db = self.getParentDatabase()
              child_form_id = self.getSettings().associated_form
-             child_form = db.getForm(child_form_id)
-             fields = self.getSettings().field_mapping.split(',')
-             fields_obj = [child_form.getFormField(f) for f in fields]
-             fields_to_render = [f.id for f in fields_obj if f.getFieldType() not in ["DATETIME", "NUMBER", "TEXT", "RICHTEXT"]]
-             
-             rendered_values = []
-             for row in fieldValue:
-                 row_values = {}
-                 j = 0
-                 for v in row:
-                     if fields[j] in fields_to_render:
-                         row_values[fields[j]] = v
-                     j = j + 1
-                 if len(row_values) > 0:
-                     row_values['Plomino_Parent_Document'] = doc.id 
-                     tmp = TemporaryDocument(db, child_form, row_values)
-                     tmp.setItem('Form', child_form_id)
-                 rendered_row = []
-                 i = 0
-                 for f in fields:
-                     if f in fields_to_render:
-                         rendered_row.append(tmp.getRenderedItem(f))
-                     else:
-                         rendered_row.append(row[i])
-                     i = i + 1
-                 rendered_values.append(rendered_row)
-             fieldValue = rendered_values
+             if child_form_id is not None:
+                 db = self.getParentDatabase()
+                 child_form = db.getForm(child_form_id)
+                 fields = self.getSettings().field_mapping.split(',')
+                 fields_obj = [child_form.getFormField(f) for f in fields]
+                 fields_to_render = [f.id for f in fields_obj if f.getFieldType() not in ["DATETIME", "NUMBER", "TEXT", "RICHTEXT"]]
+                 
+                 rendered_values = []
+                 for row in fieldValue:
+                     row_values = {}
+                     j = 0
+                     for v in row:
+                         if fields[j] in fields_to_render:
+                             row_values[fields[j]] = v
+                         j = j + 1
+                     if len(row_values) > 0:
+                         row_values['Plomino_Parent_Document'] = doc.id 
+                         tmp = TemporaryDocument(db, child_form, row_values)
+                         tmp.setItem('Form', child_form_id)
+                     rendered_row = []
+                     i = 0
+                     for f in fields:
+                         if f in fields_to_render:
+                             rendered_row.append(tmp.getRenderedItem(f))
+                         else:
+                             rendered_row.append(row[i])
+                         i = i + 1
+                     rendered_values.append(rendered_row)
+                 fieldValue = rendered_values
              
         try:
             return pt(fieldname=fieldName,
