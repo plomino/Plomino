@@ -85,6 +85,17 @@ schema = Schema((
             i18n_domain='CMFPlomino',
         ),
     ),
+    BooleanField(
+        name='ContainsHTML',
+        default="0",
+        widget=BooleanField._properties['widget'](
+            label="Can contain HTML tags",
+            description=" This option allows to sort the column correctly, when HTML tags are present.",
+            label_msgid='CMFPlomino_label_ContainsHTML',
+            description_msgid='CMFPlomino_help_ContainsHTML',
+            i18n_domain='CMFPlomino',
+        ),
+    ),
 ),
 )
 

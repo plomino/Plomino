@@ -26,10 +26,9 @@ from Products.CMFPlomino.config import *
 from AccessControl import Unauthorized
 import csv, cStringIO
 
-from gvizpy import getGoogleDataSourceContent
-
 import PlominoDocument
 
+import simplejson as json
 ##/code-section module-header
 
 schema = Schema((
@@ -147,6 +146,24 @@ schema = Schema((
             i18n_domain='CMFPlomino',
         ),
         vocabulary= [["BASIC", "Basic html"], ["DYNAMICTABLE", "Dynamic table"]],
+        schemata="Parameters",
+    ),
+    TextField(
+        name='DynamicTableParameters',
+        widget=TextAreaWidget(
+            label="Dynamic Table Parameters",
+            description="Change these options to customize the dynamic table.",
+            label_msgid='CMFPlomino_label_DynamicTableParameters',
+            description_msgid='CMFPlomino_help_DynamicTableParameters',
+            i18n_domain='CMFPlomino',
+        ),
+        default=u"""
+'bPaginate': false,
+'bLengthChange': false,
+'bFilter': true,
+'bSort': true,
+'bInfo': false,
+'bAutoWidth': true""",
         schemata="Parameters",
     ),
     StringField(
@@ -368,7 +385,6 @@ class PlominoView(ATFolder):
         else:
             sortindex=self.getIndexKey(sortindex)
         
-        print sortindex, self.getReverseSorting()
         return index.dbsearch(
             {
                 'PlominoViewFormula_'+self.getViewName() : True,
@@ -465,20 +481,31 @@ class PlominoView(ATFolder):
                                     },
                                    sortindex, self.getReverseSorting())
         return [d.getObject() for d in results]
-
-    security.declarePublic('googleDataSource')
-    def googleDataSource(self, REQUEST):
-        """ return google.visualization.Query response
+    
+    security.declarePublic('tojson')
+    def tojson(self):
+        """Returns a JSON representation of view data 
         """
-        plone_tools = getToolByName(self, 'plone_utils')
-        encoding = plone_tools.getSiteEncoding()
-        
-        paths = REQUEST.get('paths', None)
-        if paths is not None:
-            paths = paths.split("@")
-        
-        REQUEST.RESPONSE.setHeader('content-type', 'text/plain; charset='+encoding)
-        return getGoogleDataSourceContent(self, paths)
+        data = []
+        columns = self.getColumns()
+        for doc in self.getAllDocuments():
+            row = [doc.getPath().split('/')[-1]]
+            for col in columns:
+                row.append(str(getattr(doc, self.getIndexKey(col.id))))
+            data.append(row)
+        return json.dumps(data)
+    
+    security.declarePublic('getJQueryColumns')
+    def getJQueryColumns(self):
+        """Returns a JSON representation columns headers, designed for JQuery DataTables
+        """
+        cols = [{"bVisible": False}]
+        for col in self.getColumns():
+            colInfos = {"sTitle": col.Title()}
+            if (getattr(col, 'ContainsHTML', False)):
+                colInfos["sType"] = "html"
+            cols.append(colInfos)
+        return json.dumps(cols);
     
     security.declarePublic('getIndexKey')
     def getIndexKey(self, columnName):

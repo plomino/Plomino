@@ -73,12 +73,12 @@
 									<td class="even"
 										style="text-align: left; text-transform: none"
 										tal:attributes="colspan python:len(columns)"><tal:block
-										tal:condition="python:test(cat=='')">Not categorized</tal:block>
+										tal:condition="python:test(cat[0]=='')">Not categorized</tal:block>
 									<span tal:content="python:cat[0]+' ('+str(cat[1])+')'" /></td>
 								</tr>
 								<tal:block tal:condition="expanded">
 									<tal:block
-										tal:repeat="doc python:here.getCategoryViewEntries(columns[0].getColumnName(), cat)">
+										tal:repeat="doc python:here.getCategoryViewEntries(columns[0].getColumnName(), cat[0])">
 
 										<tal:block
 											tal:define="currentDoc python:here.getDocument(doc.getPath().split('/')[-1])"
@@ -170,41 +170,28 @@
 				</tal:basic>
 				
 				<tal:dynamic tal:condition="python:test(viewwidget=='DYNAMICTABLE')">
-				    <script type='text/javascript' src='http://www.google.com/jsapi'></script>
-				    <script type='text/javascript' tal:content="string:var source_url='${here/absolute_url}/googleDataSource'"></script>
-				    <script type='text/javascript'>
-google.load('visualization', '1', {packages:['table']});
-google.setOnLoadCallback(loadSource);
-function loadSource() {
-    var query = new google.visualization.Query(source_url);
-    query.send(drawTable)
-}
-
-var table;
-var data;
-
-function drawTable(response) {
-	table = new google.visualization.Table(document.getElementById('table_div'));
-	data = response.getDataTable();
-    var formatter = new google.visualization.PatternFormat('<'+'a href="{0}"'+'>{1}<'+'/a>');
-    formatter.format(data, [0, 1], 1);
-    var view = new google.visualization.DataView(data);
-    view.hideColumns([0]);
-    table.draw(view, {showRowNumber: false, page: 'enable', pageSize: 30, allowHtml: true});
-}
-
-function gviz_selectedocuments() {
-   selection = table.getSelection();
-   var docids = "";
-   for (var i = 0; i < selection.length; i++) {
-	    row = selection[i].row;
-	    docids = docids + data.getValue(row, 0).split('/').reverse()[0] + "@";
-   }
-   return docids
-}
-				    </script>
-
-				    <div id='table_div'></div>
+					<script type="text/javascript" charset="utf-8"
+				        tal:define="data here/tojson;
+				                    cols here/getJQueryColumns;
+				                    params here/DynamicTableParameters;"
+				        tal:content="structure string:
+				        				var oDynamicTable;
+				        				$(document).ready(function() {
+					        				oDynamicTable = $('#dynamictable').dataTable( {
+						        				'aaData': ${data},
+						        				'aoColumns': ${cols},
+						        				${params},
+						        				fnHeaderCallback: modifyTableHeader,
+						        				fnFooterCallback: generateTableFooter,
+						        				fnRowCallback: addCheckboxToRow
+					        				});
+					        			 });">
+			        </script>
+			        
+			        <table class="plain" id="dynamictable">
+			        	<tfoot style="cursor: auto;"><tr></tr></tfoot>
+			        </table>
+				
 				</tal:dynamic>
 				<tal:block tal:define="owner python:myF"
 					tal:condition="python:test((b and  myF.ActionBarPosition!='TOP'),True, False)">

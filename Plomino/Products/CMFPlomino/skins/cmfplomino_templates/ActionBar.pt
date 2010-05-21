@@ -97,8 +97,8 @@
 <script>
 function selecteddocuments()
 {
-if (typeof(gviz_selectedocuments)!="undefined") {
-	return gviz_selectedocuments();
+if (typeof(oDynamicTable)!="undefined") {
+	return dynamicview_selecteddocuments();
 } else {
 	var c_value = "";
 	if(document.plominoviewform.sdoc.length==undefined) {

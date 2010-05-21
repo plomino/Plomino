@@ -18,6 +18,16 @@
              inline="False"
              insert-after="++resource++plomino.javascript/jquery-v1.4.2.js"
              />
+
+ <javascript cacheable="True"
+             compression="safe"
+             cookable="True"
+             enabled="True"
+             expression=""
+             id="++resource++plomino.javascript/plomino.dynamicview.js"
+             inline="False"
+             insert-after="++resource++plomino.javascript/jquery.dataTables.js"
+             />
              
  <javascript cacheable="True"
              compression="safe"

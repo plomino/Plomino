@@ -70,12 +70,12 @@
 									<td class="even"
 										style="text-align: left; text-transform: none"
 										tal:attributes="colspan python:len(columns)"><tal:block
-										tal:condition="python:test(cat=='')">Not categorized</tal:block>
+										tal:condition="python:test(cat[0]=='')">Not categorized</tal:block>
 									<span tal:content="python:cat[0]+' ('+str(cat[1])+')'" /></td>
 								</tr>
 								<tal:block tal:condition="expanded">
 									<tal:block
-										tal:repeat="doc python:here.getCategoryViewEntries(columns[0].getColumnName(), cat)">
+										tal:repeat="doc python:here.getCategoryViewEntries(columns[0].getColumnName(), cat[0])">
 
 										<tal:block
 											tal:define="currentDoc python:here.getDocument(doc.getPath().split('/')[-1])">
