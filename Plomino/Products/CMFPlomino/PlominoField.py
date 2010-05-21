@@ -283,7 +283,7 @@ class PlominoField(BaseContent, BrowserDefaultMixin):
                  fields = self.getSettings().field_mapping.split(',')
                  fields_obj = [child_form.getFormField(f) for f in fields]
                  # avoid bad field ids
-                 fields_obj = [f for f in fields if f is not None]
+                 fields_obj = [f for f in fields_obj if f is not None]
                  fields_to_render = [f.id for f in fields_obj if f.getFieldType() not in ["DATETIME", "NUMBER", "TEXT", "RICHTEXT"]]
                  
                  rendered_values = []
