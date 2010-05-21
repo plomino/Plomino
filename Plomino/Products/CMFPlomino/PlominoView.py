@@ -163,7 +163,7 @@ schema = Schema((
 'bFilter': true,
 'bSort': true,
 'bInfo': false,
-'bAutoWidth': true""",
+'bAutoWidth': false""",
         schemata="Parameters",
     ),
     StringField(
