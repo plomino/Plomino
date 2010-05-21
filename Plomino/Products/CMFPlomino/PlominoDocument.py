@@ -391,7 +391,9 @@ class PlominoDocument(ATFolder):
         index_attachments=self.getParentDatabase().getIndexAttachments()
         for itemname in self.items.keys():
             try:
-                v=str(self.getRenderedItem(itemname,form=None, convertattachments=index_attachments))
+                v = str(self.getRenderedItem(itemname,form=None, convertattachments=index_attachments))
+                if v=='':
+                    v = str(self.getItem(itemname))
                 values.append(v)
             except:
                 pass

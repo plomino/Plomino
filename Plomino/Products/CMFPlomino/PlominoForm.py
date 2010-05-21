@@ -470,7 +470,7 @@ class PlominoForm(ATFolder):
     def getFormField(self, fieldname):
         """return the field
         """
-        return getattr(self, fieldname)
+        return getattr(self, fieldname, None)
 
     security.declarePublic('hasDateTimeField')
     def hasDateTimeField(self):
