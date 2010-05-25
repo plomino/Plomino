@@ -17,17 +17,16 @@ function generateTableFooter(nFoot, aasData, iStart, iEnd, aiDisplay ) {
 		}
 		
     	// Table which stores sums
-    	result = [NaN];
-    	for (var i = 1; i < aasData[0].length; i++) {
-			var data = aasData[aiDisplay[0]][i];
-			result[i] = Number(data);
-    	}
+    	var result = [];
+    	var ths = $('#dynamictable thead > tr > th').each(function (index, element) {
+    		if ($(element).hasClass('displaysum'))
+				result[index] = 0;
+    	});
 
     	// Sums computation of displayed data
-    	for (var i = 1; i < aiDisplay.length; i++) {
+    	for (var i = 0; i < aiDisplay.length; i++) {
 			for (var j = 0; j < aasData[0].length; j++) {
-				var data = aasData[aiDisplay[i]][j];
-				result[j] += Number(data);
+				result[j] += Number(aasData[aiDisplay[i]][j]);
 			}
 		}
 		
@@ -42,7 +41,9 @@ function generateTableFooter(nFoot, aasData, iStart, iEnd, aiDisplay ) {
         	nFoot.getElementsByTagName('th')[i].firstChild.nodeValue = colResult;
 		}
 	}
-	if ((!hasSums) || aiDisplay.length == 0) {
+	
+	// No sum to display
+	if (!hasSums) {
     	ths = nFoot.getElementsByTagName('th');
     	for (var i = ths.length - 1; i >= 0; i--) {
         	nFoot.removeChild(ths[i]);
