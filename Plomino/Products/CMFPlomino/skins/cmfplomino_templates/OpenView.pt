@@ -180,6 +180,7 @@
 					        				oDynamicTable = $('#dynamictable').dataTable( {
 						        				'aaData': ${data},
 						        				'aoColumns': ${cols},
+						        				'aaSorting': [],
 						        				${params},
 						        				fnHeaderCallback: modifyTableHeader,
 						        				fnFooterCallback: generateTableFooter,
