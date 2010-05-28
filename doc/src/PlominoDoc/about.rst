@@ -3,7 +3,7 @@ About this Document
 -------------------
 
 This document is aimed at Plomino application designers and managers. It
-applies to Plomino 1.3.
+applies to Plomino 1.6.
 
 This document is published under the **Creative Commons by-sa-nc**
 licence.

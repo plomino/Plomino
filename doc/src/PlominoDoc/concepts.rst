@@ -25,6 +25,9 @@ inserts the fields wherever he wants.
 A form can also contain some action buttons to trigger specific
 processing.
 
+A form might also not be used to create or view documents but just to provide a special page 
+(to build a custom menu, generate some reports, etc.).
+
 Documents
 =========
 

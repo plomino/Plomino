@@ -237,3 +237,56 @@ Separator
 
           Examples: ``;-,``
 
+Datagrid field
+-------------
+
+A datagrid field allows to edit a table. Rows are edited using an associated 
+form (displayed in a pop-up) which fields are mapped to columns.
+
+.. image:: images/datagrid-settings.jpg
+
+Associated form
+    :Value:
+        String
+    :Purpose:
+          Id of the form to use to add or modify row content.
+Columns/fields mapping
+    :Value:
+          List separated with commas (with no space).
+    :Purpose:
+          Field ids of the associated form sorted according the columns
+Javascript settings
+    :Value:
+          Javascript
+    :Purpose: 
+          JQuery Datatables parameters
+
+Google chart field
+------------------
+
+Allow to draw static charts (or maps, etc.).
+
+Example:
+
+create a "computed for display" Googfle chart field, and enter the following formula::
+    cost=75
+    margin=25
+    return {'chd': 't:'+str(cost)+','+str(margin), 'chs': '250x100', 'cht': 'p3', 'chl': 'Cost|Margin'}
+
+
+.. image:: images/google-chart.jpg
+
+See `Google chart reference <http://code.google.com/intl/fr/apis/chart/>`_.
+
+TO BE COMPLETED
+
+Google visualization field
+--------------------------
+
+Allow to draw dynamic charts (or maps, etc.).
+
+.. image:: images/gviz-piechart.jpg
+
+.. image:: images/gviz-densitymap.jpg
+
+TO BE COMPLETED

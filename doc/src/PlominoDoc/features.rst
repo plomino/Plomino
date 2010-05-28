@@ -147,6 +147,10 @@ visible or not.
 If you select ``Display action in action bar``, the action will be
 displayed together with the standard Plomino actions in the action bar.
 
+** New in Plomino 1.5 **
+
+Actions can be inserted directly in the form layout using TinyMCE.
+
 Example:
 
 .. image:: images/m2899c882.png
@@ -404,6 +408,9 @@ In a Plomino form, you can use the following events:
     (`onSaveDocument` will also be executed, but after
     `onCreateDocument`)
 
+`beforeCreateDocument`
+    executed before a blank form is opened.
+    
 In the **Events** tab, you can enter the formulas for each event you
 need.
 
@@ -447,6 +454,10 @@ hidden. If it returns `False`, the area is displayed (in our example: if
 the book is damaged, it cannot be borrowed, so we hide the action to
 check the book availability).
 
+** New in Plomino 1.5 **
+
+Hide-when formulas can be inserted directly in the form layout using TinyMCE.
+
 Sub-forms
 ---------
 
@@ -473,6 +484,10 @@ The form is inserted using the Plomino *Subform* style in Kupu:
     as you probably do not want 'borrowInfo' to be displayed in the
     database home page, you have to check ``Hide in menu`` in the form
     **Parameters** tab.
+
+** New in Plomino 1.5 **
+
+Sub-forms can be inserted directly in the form layout using TinyMCE.
 
 Search formula
 --------------

@@ -79,6 +79,18 @@ The field will be displayed in Kupu in blue and dashed.
 
 Save the modification.
 
+Create fields and form at the same time using TinyMCE
+=====================================================
+
+** New in Plomino 1.5 **
+
+If you use TinyMCE as your Plone richtext editor, you can install 
+plomino.tinymce which plugs some Plomino specific features into 
+the TinyMCE editor.
+
+.. image:: images/tiny-edit-field.jpg
+
+
 Use the form
 ============
 
@@ -224,6 +236,13 @@ which contains the `bookCategory` field value, and select
 
 Each category can be expanded or collapsed. 
 
+Dynamic view
+============
+
+** New in Plomino 1.5 **
+
+Click on **Edit**, go to the **Parameters**, and change widget to **Dynamic table**.
+It renders the view using JQuery Datatables (column sorting, live filtering, ...).
 
 Add a search form
 =================

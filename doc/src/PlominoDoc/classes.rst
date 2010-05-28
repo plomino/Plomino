@@ -4,6 +4,8 @@ Plomino class reference
 
 Non-exhaustive list of the classes' methods.
 
+TO BE UPDATED
+
 PlominoDatabase
 ===============
 
