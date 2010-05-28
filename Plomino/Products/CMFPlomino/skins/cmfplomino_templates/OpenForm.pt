@@ -134,7 +134,7 @@
                                         <td tal:condition="not: c/HiddenColumn|nothing"><a tal:attributes="href string:${docurl}"><span
                                             tal:define="cname c/id;
                                                                 vname searchviewobj/id;
-                                                                cvalue python:path('doc/PlominoViewColumn_%s_%s' % (vname, cname));
+                                                                cvalue python:getattr(doc, searchviewobj.getIndexKey(cname), '');
                                                                 "
                                             tal:content="structure cvalue" ></span></a></td>
                                     </tal:block>
