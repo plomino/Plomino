@@ -238,7 +238,7 @@ Separator
           Examples: ``;-,``
 
 Datagrid field
--------------
+---------------
 
 A datagrid field allows to edit a table. Rows are edited using an associated 
 form (displayed in a pop-up) which fields are mapped to columns.
