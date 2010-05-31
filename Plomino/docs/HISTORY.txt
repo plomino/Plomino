@@ -1,6 +1,15 @@
 Changelog
 =========
 
+1.6.1
+-----
+
+* JQuery datatables to render Plomino views
+* Datagrid field type
+* Fulltext indexing in local Plomino index
+* Documents import/export via XML files
+* Ability to define column values using existing fields
+
 1.5.7
 -----
 
