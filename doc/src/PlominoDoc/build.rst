@@ -190,12 +190,10 @@ column value, for instance::
 
     plominoDocument.bookTitle
 
-Then, enter the column position. 
-
-.. image:: images/b38e0e1.png
-
-
 Similarly, add a column to display bookAuthor.
+
+Columnscan be ordered by going to the view's Contents tab and moving
+the columns where needed.
 
 If you go back to the Books database root, the view is proposed in the
 Browse section: 
