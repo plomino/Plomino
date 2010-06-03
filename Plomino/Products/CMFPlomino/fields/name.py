@@ -69,6 +69,8 @@ class NameField(BaseField):
     def getFullname(self, userid):
         """ return member fullname if available
         """
+        if userid is None or userid == "":
+            return ''
         user=getToolByName(self.context, 'portal_membership').getMemberById(userid)
         if not(user is None):
             fullname=user.getProperty('fullname')
