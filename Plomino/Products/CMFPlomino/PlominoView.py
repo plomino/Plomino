@@ -504,6 +504,8 @@ class PlominoView(ATFolder):
             colInfos = {"sTitle": col.Title()}
             if (getattr(col, 'ContainsHTML', False)):
                 colInfos["sType"] = "html"
+            if col.DisplaySum:
+                colInfos["sClass"] = "displaysum"
             cols.append(colInfos)
         return json.dumps(cols);
     
