@@ -29,7 +29,6 @@ from Products.DCWorkflow.DCWorkflow import DCWorkflowDefinition
 from Persistence import Persistent
 from xml.dom.minidom import getDOMImplementation
 from xml.dom.minidom import parseString
-from xml.sax.saxutils import escape, unescape
 import xmlrpclib
 from cStringIO import StringIO
 import sys
@@ -521,7 +520,10 @@ class PlominoDesignManager(Persistent):
                     e = getattr(self, id)
                 elements.append(e)
         
-        elements.sort()
+        # Sort elements by type (to store forms before views), then by id
+        elements.sort(key=lambda elt: elt.id)
+        elements.sort(key=lambda elt: elt.Type())
+        
         designNode = doc.createElement('design')
         
         # if export all design, export also database settings
@@ -537,13 +539,20 @@ class PlominoDesignManager(Persistent):
                 node = self.exportResourceAsXML(doc, e)
                 
             designNode.appendChild(node)
-
+        
         root.appendChild(designNode)
         s=StringIO()
         doc.writexml(s, encoding='utf-8')
         if REQUEST:
             REQUEST.RESPONSE.setHeader('content-type', "text/xml;charset=utf-8")
-        return s.getvalue()
+        
+        # Usage of lxml to make a pretty output
+        try:
+            from lxml import etree
+            parser = etree.XMLParser(strip_cdata=False, encoding="utf-8")
+            return etree.tostring(etree.XML(s.getvalue(), parser), encoding="utf-8", pretty_print=True)
+        except ImportError:
+            return s.getvalue().replace("><", ">\n<")
     
     security.declareProtected(DESIGN_PERMISSION, 'exportElementAsXML')
     def exportElementAsXML(self, xmldoc, obj, isDatabase=False):
@@ -568,7 +577,7 @@ class PlominoDesignManager(Persistent):
             v = f.get(obj)
             if v is not None:
                 if type=="Products.Archetypes.Field.TextField":
-                    text = xmldoc.createCDATASection(escape(str(f.getRaw(obj))))
+                    text = xmldoc.createCDATASection(str(f.getRaw(obj)))
                 else:
                     text = xmldoc.createTextNode(str(f.get(obj)))
                 fieldNode.appendChild(text)
@@ -584,7 +593,7 @@ class PlominoDesignManager(Persistent):
                 v = f.get(obj)
                 if v is not None:
                     if type=="Products.Archetypes.Field.TextField":
-                        text = xmldoc.createCDATASection(escape(str(f.getRaw(obj))))
+                        text = xmldoc.createCDATASection(str(f.getRaw(obj)))
                     else:
                         text = xmldoc.createTextNode(str(f.get(obj)))
                     fieldNode.appendChild(text)
@@ -641,7 +650,7 @@ class PlominoDesignManager(Persistent):
         node.setAttribute('type', type)
         node.setAttribute('title', obj.title)
         if type=="Page Template":
-            data = xmldoc.createCDATASection(escape(obj.read()))
+            data = xmldoc.createCDATASection(obj.read())
         else:
             node.setAttribute('contenttype', obj.getContentType())
             stream = obj.data
@@ -706,7 +715,8 @@ class PlominoDesignManager(Persistent):
                     # (fields, actions, columns, hide-when)
                     subchild = child.firstChild
                     while subchild is not None:
-                        self.importElementFromXML(obj, subchild)
+                        if subchild.nodeType == subchild.ELEMENT_NODE:
+                            self.importElementFromXML(obj, subchild)
                         subchild = subchild.nextSibling
                 elif name == 'params':
                     # current object is a field, the params tag contains the
@@ -731,14 +741,18 @@ class PlominoDesignManager(Persistent):
                 else:
                     if child.hasChildNodes():
                         field = obj.Schema().getField(name)
-                        v = child.firstChild.data
-                        if child.firstChild.nodeType == child.CDATA_SECTION_NODE:
-                          v = unescape(v)
+                        
+                        # Get cdata content if available, else get text node
+                        cdatas = [n for n in child.childNodes if n.nodeType == n.CDATA_SECTION_NODE]
+                        if len(cdatas) > 0:
+                            v = cdatas[0].data
+                        else:
+                            v = child.firstChild.data
                         at_values[name] = v
                 child = child.nextSibling
                 
             if len(at_values) > 0:
-                obj.processForm(REQUEST='dummy', values=at_values)
+                obj.processForm(values=at_values)
             if len(settings_values) > 0:
                 adapt = obj.getSettings()
                 for key in settings_values.keys():
@@ -760,12 +774,13 @@ class PlominoDesignManager(Persistent):
                 self.setPlominoPermissions("Authenticated", authenticatedaccessright)
                 subchild = child.firstChild
                 while subchild is not None:
-                    result, method = xmlrpclib.loads(subchild.toxml())
-                    type = subchild.getAttribute('id')
-                    if type=="SpecificRights":
-                        self.specific_rights = result[0]
-                    else:
-                        self.UserRoles = result[0]
+                    if subchild.nodeType == subchild.ELEMENT_NODE:
+                        result, method = xmlrpclib.loads(subchild.toxml())
+                        type = subchild.getAttribute('id')
+                        if type=="SpecificRights":
+                            self.specific_rights = result[0]
+                        else:
+                            self.UserRoles = result[0]
                     subchild = subchild.nextSibling
                      
             else:
@@ -788,7 +803,7 @@ class PlominoDesignManager(Persistent):
             else:
                 obj = getattr(container, id)
             obj.title = node.getAttribute('title')
-            obj.write(unescape(node.firstChild.data))
+            obj.write(node.firstChild.data)
         else:
             if not(hasattr(container, id)):
                 container.manage_addFile(id)
