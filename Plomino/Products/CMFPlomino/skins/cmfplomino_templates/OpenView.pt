@@ -180,6 +180,7 @@
 					        				oDynamicTable = $('#dynamictable').dataTable( {
 						        				'aaData': ${data},
 						        				'aoColumns': ${cols},
+						        				'aaSorting': [],
 						        				${params},
 						        				fnHeaderCallback: modifyTableHeader,
 						        				fnFooterCallback: generateTableFooter,
@@ -189,7 +190,7 @@
 			        </script>
 			        
 			        <table class="display" id="dynamictable">
-			        	<tfoot style="cursor: auto;"><tr></tr></tfoot>
+			        	<tfoot><tr></tr></tfoot>
 			        </table>
 				
 				</tal:dynamic>
