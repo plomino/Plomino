@@ -669,6 +669,7 @@ class PlominoDesignManager(Persistent):
         if REQUEST:
             f=REQUEST.get("file")
             xmlstring = f.read()
+        xmlstring = xmlstring.replace(">\n<", "><")
         xmldoc = parseString(xmlstring)
         design = xmldoc.getElementsByTagName("design")[0]
         e = design.firstChild
@@ -748,6 +749,7 @@ class PlominoDesignManager(Persistent):
                             v = cdatas[0].data
                         else:
                             v = child.firstChild.data
+                        v = v.strip()
                         at_values[name] = v
                 child = child.nextSibling
                 

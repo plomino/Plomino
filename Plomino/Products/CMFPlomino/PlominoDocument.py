@@ -18,6 +18,7 @@ from zope.interface import implements
 import interfaces
 from Products.ATContentTypes.content.folder import ATFolder
 from Products.CMFDynamicViewFTI.browserdefault import BrowserDefaultMixin
+from Products.CMFCore.utils import getToolByName
 
 from Products.CMFPlomino.config import *
 
@@ -273,8 +274,8 @@ class PlominoDocument(ATFolder):
         """display the document using the given form's layout - first,
         check if the user has proper access rights
         """
+        db = self.getParentDatabase()
         if editmode:
-            db = self.getParentDatabase()
             if not db.isCurrentUserAuthor(self):
                 raise Unauthorized, "You cannot edit this document."
 
@@ -293,6 +294,11 @@ class PlominoDocument(ATFolder):
             
         else:
             html_content = valid
+        
+        plone_tools = getToolByName(db, 'plone_utils')
+        encoding = plone_tools.getSiteEncoding()
+        html_content = html_content.encode(encoding) 
+        
         return html_content
         
 
