@@ -10,7 +10,7 @@ Plomino 1.6 user guide
 :Author: Eric Brehault <eric.brehault@makina-corpus.com>
 :Contributor: Jean Jordaan <jean.jordaan@gmail.com>
 :Contact: eric.brehault@makina-corpus.com
-:Revision: Version 1.0 - May 2010
+:Revision: Version 1.1 - June 2010
 :Date: 2010-05-28
 :Copyright: This document has been placed in the public domain.
 

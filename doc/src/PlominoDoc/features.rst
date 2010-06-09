@@ -690,6 +690,39 @@ since the last replication, there are 3 conflict resolution modes:
 Replication can be useful to synchronize information between 2 servers,
 or for mobile workers who want to be able to work on a local replica.
 
+Documents XML import/export
+---------------------------
+
+In the Replication tab (at the bottom), you can import/export documents
+from/to an XML file.
+
+.. image:: images/import-export-docs.jpg
+
+Exported documents can be restricted to a view (meanning that only documents
+selected in this view will be exported).
+
+Document ids are preserved so if a document already exists in the target
+database, it is updated and not duplicated.
+
+Note: when importing from XML, onSaveDocument event is not called (as document
+items are all part of the export).
+
+Documents CSV import
+--------------------
+
+In the Replication tab, you can import documents from a CSV file.
+
+.. image:: images/import-csv.jpg
+
+You need to indicate which form has to be used to create the documents.
+
+The first row in the CSV file must contain the field id for the considered
+column.
+
+Note: when importing from CSV, onSaveDocument event is called (as some
+items might needed to be computed) but index is not refreshed to avoid
+bad performances.
+
 Start page
 ----------
 
