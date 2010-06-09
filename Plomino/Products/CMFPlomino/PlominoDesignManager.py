@@ -27,6 +27,7 @@ from Products.PageTemplates.ZopePageTemplate import manage_addPageTemplate
 from Products.CMFCore.utils import getToolByName
 from Products.DCWorkflow.DCWorkflow import DCWorkflowDefinition
 from Persistence import Persistent
+from webdav.Lockable import wl_isLocked
 from xml.dom.minidom import getDOMImplementation
 from xml.dom.minidom import parseString
 import xmlrpclib
@@ -694,6 +695,9 @@ class PlominoDesignManager(Persistent):
         id = node.getAttribute('id')
         type = node.getAttribute('type')
         if id in container.objectIds():
+            ob = getattr(container, id)
+            if wl_isLocked(ob):
+                ob.wl_clearLocks()
             container.manage_delObjects([id])
         container.invokeFactory(type, id=id)
 #        if not(hasattr(container, id)):
