@@ -1157,7 +1157,7 @@ class PlominoReplicationManager(Persistent):
         for fnode in node.getElementsByTagName("attachment"):
             filename = str(fnode.getAttribute('id'))
             doc.setfile(fnode.firstChild.data.decode('base64'), filename=filename, overwrite=True)
-        doc.save()
+        doc.save(onSaveEvent=False)
         doc.plomino_modification_time = lastmodified
 
                 
