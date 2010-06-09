@@ -231,37 +231,37 @@ class PlominoDatabase(ATFolder, PlominoAccessControl, PlominoDesignManager, Plom
             raise Unauthorized, "You cannot read this content"
         
     security.declarePublic('getForms')
-    def getForms(self):
+    def getForms(self, sortbyid=False):
         """return the database forms list
         """
-        formlist = self.portal_catalog.search({'portal_type' : ['PlominoForm'], 'path': '/'.join(self.getPhysicalPath())})
-        orderedformlist = []
-        for f in formlist:
-            f_obj = f.getObject()
-            if not f_obj is None :
-                orderedformlist.append([f_obj.getPosition(), f_obj])
-        orderedformlist.sort()
-        return [i[1] for i in orderedformlist]
+        form_list = self.portal_catalog.search({'portal_type' : ['PlominoForm'], 'path': '/'.join(self.getPhysicalPath())})
+        form_obj_list = [a.getObject() for a in form_list]
+        if sortbyid:
+            form_obj_list.sort(key=lambda elt: elt.id.lower())
+        else:
+            form_obj_list.sort(key=lambda elt: elt.getPosition())
+        return form_obj_list
 
     security.declarePublic('getViews')
-    def getViews(self):
+    def getViews(self, sortbyid=False):
         """return the database views list
         """
-        viewlist = self.portal_catalog.search({'portal_type' : ['PlominoView'], 'path': '/'.join(self.getPhysicalPath())})
-        orderedviewlist = []
-        for v in viewlist:
-            v_obj = v.getObject()
-            if not v_obj is None :
-                orderedviewlist.append([v_obj.getPosition(), v_obj])
-        orderedviewlist.sort()
-        return [i[1] for i in orderedviewlist]
+        view_list = self.portal_catalog.search({'portal_type' : ['PlominoView'], 'path': '/'.join(self.getPhysicalPath())})
+        view_obj_list = [a.getObject() for a in view_list]
+        if sortbyid:
+            view_obj_list.sort(key=lambda elt: elt.id.lower())
+        else:
+            view_obj_list.sort(key=lambda elt: elt.getPosition())
+        return view_obj_list
 
     security.declarePublic('getAgents')
     def getAgents(self):
         """return the database agents list
         """
-        list = self.portal_catalog.search({'portal_type' : ['PlominoAgent'], 'path': '/'.join(self.getPhysicalPath())})
-        return [a.getObject() for a in list]
+        agent_list = self.portal_catalog.search({'portal_type' : ['PlominoAgent'], 'path': '/'.join(self.getPhysicalPath())})
+        agent_obj_list = [a.getObject() for a in agent_list]
+        agent_obj_list.sort(key=lambda elt: elt.id.lower())
+        return agent_obj_list
 
     security.declarePublic('getForm')
     def getForm(self,formname):

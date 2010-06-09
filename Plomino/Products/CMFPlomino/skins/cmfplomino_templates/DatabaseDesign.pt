@@ -27,7 +27,7 @@
 		<dl class="collapsible inline collapsedOnLoad">
         <dt class="collapsibleHeader">Forms</dt>
         <dd class="collapsibleContent">
-			<tal:block tal:repeat="f python:here.getForms()">
+			<tal:block tal:repeat="f python:here.getForms(sortbyid=True)">
 			<div>
 			<dl class="collapsible inline collapsedOnLoad">
 		        <dt class="collapsibleHeader">
@@ -88,7 +88,7 @@
       <dl class="collapsible inline collapsedOnLoad">
         <dt class="collapsibleHeader">Views</dt>
         <dd class="collapsibleContent">
-			<tal:blockviews tal:repeat="view python:here.getViews()">
+			<tal:blockviews tal:repeat="view python:here.getViews(sortbyid=True)">
 			<div><dl class="collapsible inline collapsedOnLoad">
         		<dt class="collapsibleHeader">
 					<tal:block tal:content="view/id">view name</tal:block>

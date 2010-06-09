@@ -290,7 +290,7 @@ class PlominoForm(ATFolder):
         """
         fieldlist = self.portal_catalog.search({'portal_type' : ['PlominoField'], 'path': '/'.join(self.getPhysicalPath())})
         result = [f.getObject() for f in fieldlist]
-        result.sort()
+        result.sort(key=lambda elt: elt.id.lower())
         if includesubforms:
             for subformname in self.getSubforms(doc):
                 result=result+self.getParentDatabase().getForm(subformname).getFields(True)
