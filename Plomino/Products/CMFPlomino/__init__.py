@@ -53,7 +53,7 @@ from AccessControl.Permission import registerPermissions
 
 from Products.PythonScripts.Utility import allow_module
 allow_module("Products.CMFPlomino.PlominoUtils")
-allow_module("re")
+#allow_module("re")
 
 # Load custom allow_module
 # To allow modules in Plomino formula, add a file named AllowModules.py in CMFPlomino/
