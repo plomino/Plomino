@@ -531,8 +531,43 @@
 	                                    class="context"
 	                                    type="submit"
 	                                    />
+	                        </span>
+	                    </div>
 	                </form>
-	            </td><td valign="top"><a href="./manage_exportAsXML">Export as XML</a></td></tr>
+	            </td><td valign="top">
+	            <form name="importXML" action="manage_exportAsXML" method="POST">
+	               <div class="field">
+		                <div class="widget">
+		                    <label for="export_restricttoview">Restrict to view</label>
+		                    <span class="fieldRequired"
+		                        title="Required"
+		                        i18n:translate="label_required"
+		                        i18n:attributes="title title_required;">
+		                        (Required)
+		                    </span>
+		                    <div class="formHelp">Exported file will only contain documents listed in this view.</div>
+		                    <select name="restricttoview" id="restricttoview">
+		                       <option value="">[All documents]</option>
+		                       <tal:views tal:repeat="v python:here.getViews()">
+		                           <option tal:attributes="value v/id"
+		                            tal:content="v/id">view id</option>
+		                       </tal:views>
+		                    </select>
+		                </div>
+		            </div>
+		            
+		            <div class="formControls">
+	                    <span class="actionButtons">
+	                        <input value="Export"
+	                                name="export_xml"
+	                                id="export_xml"
+	                                class="context"
+	                                type="submit"
+	                                />
+	                    </span>
+	                </div>
+	            </form>
+	            </td></tr>
             </fieldset>
         </div>
 		<div tal:replace="structure provider:plone.belowcontentbody" />

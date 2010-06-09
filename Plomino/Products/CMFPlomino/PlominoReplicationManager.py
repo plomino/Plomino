@@ -1046,9 +1046,15 @@ class PlominoReplicationManager(Persistent):
     def manage_exportAsXML(self, REQUEST):
         """
         """
+        restricttoview = REQUEST.get("restricttoview", "")
+        if restricttoview != "":
+            sourceview = self.getView(restricttoview)
+            docids = [doc.getObject().id for doc in sourceview.getAllDocuments()]
+        else:
+            docids = None
         REQUEST.RESPONSE.setHeader('content-type', 'text/xml')
         REQUEST.RESPONSE.setHeader("Content-Disposition", "attachment; filename="+self.id+".xml")
-        return self.exportAsXML(docids=None, REQUEST=REQUEST)
+        return self.exportAsXML(docids, REQUEST=REQUEST)
         
     security.declareProtected(READ_PERMISSION, 'exportAsXML')
     def exportAsXML(self, docids=None, REQUEST=None):
