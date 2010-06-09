@@ -99,3 +99,10 @@ def migrate_to_161(db):
     msg = "Migration to 1.6.1: Fulltext index db attribute set to False"
     db.plomino_version = "1.6.1"
     return msg
+
+def migrate_with_no_change(db, version):
+    """ Fulltext index db attribute.
+    """
+    msg = "Migration to %s: no change" % version
+    db.plomino_version = version
+    return msg

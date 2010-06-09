@@ -34,6 +34,8 @@ import xmlrpclib
 from cStringIO import StringIO
 import sys
 
+from migration.migration import migrate_with_no_change
+
 # get AT specific schemas for each Plomino class
 from Products.CMFPlomino.PlominoForm import schema as form_schema
 from Products.CMFPlomino.PlominoAction import schema as action_schema
@@ -98,7 +100,11 @@ class PlominoDesignManager(Persistent):
             msg = migrate_to_161(self)
             report.append(msg)
             logger.info(msg)
-            
+        if self.plomino_version=="1.6.1":
+            msg = migrate_with_no_change(self, "1.6.2")
+            report.append(msg)
+            logger.info(msg)
+               
         #check folders
         if not hasattr(self, 'resources'):
             resources = Folder('resources')
