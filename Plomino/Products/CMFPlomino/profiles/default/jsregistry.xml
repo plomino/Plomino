@@ -59,4 +59,14 @@
              insert-after="++resource++plomino.javascript/jquery-v1.4.2.js"
              />
              
+ <javascript cacheable="True"
+             compression="safe"
+             cookable="True"
+             enabled="True"
+             expression=""
+             id="++resource++plomino.javascript/plomino.accordion.js"
+             inline="False"
+             insert-after="++resource++jquery-ui-1.8.min.js"
+             />
+             
 </object>

@@ -120,6 +120,13 @@ tr.datagrid_row_selected td {
 .calendar {
     z-index: 1100;
 }
+
+/* Shows accordions content in TinyMCE editor */
+.plomino-accordion-content {
+	border: solid 1px #f00;
+	margin: 3px;
+	padding: 3px;
+}
 /* </dtml-with> */
 
 
