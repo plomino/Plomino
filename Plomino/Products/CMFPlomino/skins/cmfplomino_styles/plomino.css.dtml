@@ -122,7 +122,7 @@ tr.datagrid_row_selected td {
 }
 
 /* Shows accordions content in TinyMCE editor */
-.TMPplomino-accordion-content {
+.mceContentBody .plomino-accordion-content {
 	border: solid 1px #f00;
 	margin: 3px;
 	padding: 3px;

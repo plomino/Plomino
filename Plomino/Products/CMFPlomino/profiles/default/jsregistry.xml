@@ -58,7 +58,7 @@
              inline="False"
              insert-after="++resource++plomino.javascript/jquery-v1.4.2.js"
              />
-             
+     
  <javascript cacheable="True"
              compression="safe"
              cookable="True"
@@ -66,6 +66,7 @@
              expression=""
              id="++resource++plomino.javascript/plomino.accordion.js"
              inline="False"
+             insert-after="++resource++jquery-ui-1.7.2.jq-tools-compat.js"
              />
              
 </object>
