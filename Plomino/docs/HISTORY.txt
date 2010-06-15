@@ -5,21 +5,15 @@ Changelog
 -----
 
 * ability to restrict documents XML export to a given view
-
 * sort elements by id in the Design tab
-
 * XML export improvements: elements are sorted, xml is pretty
-(so diff and svn play nicely), CDATA escaping has been removed, and
-lxml is used if installed
-
+  (so diff and svn play nicely), CDATA escaping has been removed, and
+  lxml is used if installed
 * unlock webdav-locked elements before importing
-
 * fix: column sorting and summing
-
 * fix: openWithForm encoding errors
-
 * fix: do not call onSave when importing document from replication
-or XML file
+  or XML file
 
 1.6.1
 -----
