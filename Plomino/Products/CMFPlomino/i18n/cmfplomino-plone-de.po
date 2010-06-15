@@ -25,7 +25,7 @@ msgstr "Plomino: Spalte"
 
 
 msgid "PlominoDatabase"
-msgstr "Plomino: Databank"
+msgstr "Plomino: Datenbank"
 
 msgid "PlominoDocument"
 msgstr "Plomino: Dokument"

@@ -30,7 +30,7 @@ msgstr "Beschreiben Sie die Datenbank, ihren Zweck, die möglichen Benutzer usw.
 #. Default: "Using this database"
 #: PlominoDatabase.py
 msgid "CMFPlomino_label_UsingDescription"
-msgstr "Bedienungsnaleitung"
+msgstr "Bedienungsanleitung"
 
 #. Default: "Describe how to use the database"
 #: PlominoDatabase.py
@@ -162,7 +162,7 @@ msgstr "Diese Formel wird beim Speichern eines Dokuments ausgeführt"
 msgid "CMFPlomino_label_onDeleteDocument"
 msgstr "Beim Löschen eines Dokuments"
 msgid "CMFPlomino_help_onDeleteDocument"
-msgstr "Diese Formel wird beim Löschen eines Dokuments ausgeführt"
+msgstr "Diese Formel wird vor dem Löschen eines Dokuments ausgeführt"
 msgid "CMFPlomino_label_FormLayout"
 msgstr "Layout der Form"
 msgid "CMFPlomino_help_FormLayout"
@@ -195,7 +195,7 @@ msgstr "Template um das Feld im Bearbeiten-Modus anzuzeigen"
 msgid "CMFPlomino_label_FieldMandatory"
 msgstr "Obligatorisch"
 msgid "CMFPlomino_help_FieldMandatory"
-msgstr "Wenn Sie diese Option wählen, wird das Dokument nicht erstellt, solange dieses Feld leer ist."
+msgstr "Wenn Sie diese Option wählen, wird das Dokument nur erstellt, wenn dieses Feld ausgefüllt ist."
 msgid "CMFPlomino_label_FieldValidation"
 msgstr "Validation-Formel"
 msgid "CMFPlomino_help_FieldValidation"
@@ -485,27 +485,27 @@ msgid "is mandatory"
 msgstr "Erforderlich"
 
 msgid " must be an integer (submitted value was: "
-msgstr " must be an integer (submitted value was: "
+msgstr " Muss eine Integer-Zahl sein (submitted value was: "
 
 msgid " must be a float (submitted value was: "
-msgstr " must be a float (submitted value was: "
+msgstr " Muss eine Fliesskomma-Zahl sein (submitted value was: "
 
 # Not categorized
 msgid "Not categorized"
-msgstr "Nicht gekategorisiert"
+msgstr "Nicht kategorisiert"
 
 # Please log in
 msgid "Please log in"
-msgstr "Please log in"
+msgstr "Bitte einloggen"
 
 # Do you really want to delete those documents
 msgid "Do you really want to delete those documents"
-msgstr "Do you really want to delete those documents"
+msgstr "Wollen Sie die markierten Dokumente wirklich löschen?"
 
 # Do you really want to delete this document
 msgid "Do you really want to delete this document"
-msgstr "Do you really want to delete this document"
+msgstr "Wollen Sie dieses Dokument wirklich löschen?"
 
 # Documents x to y of z
 msgid "documents_count"
-msgstr "Document(s) ${start} to ${end} of ${total}"
+msgstr "Dokument(e) ${start} bis ${end} von ${total}"
