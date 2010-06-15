@@ -81,8 +81,8 @@ PlominoDatabase
 `getViews(self)`
     returns all the PlominoView objects stored in the database.
 
-`hasUserRole(self, user, role)`
-    returns `True` if the specified user has the given role.
+`hasUserRole(self, userid, role)`
+    returns `True` if the specified user id has the given role.
 
 `isCurrentUserAuthor(self, doc)`
     returns `True` if the current user is author of the given document

@@ -72,7 +72,7 @@ You can check the current user rights or roles. Example::
 
     db=plominoDocument.getParentDatabase() 
     user=db.getCurrentUser() 
-    if db.hasUserRole(user, '[Expert]'): 
+    if db.hasUserRole(user.id, '[Expert]'): 
         return True 
     elif db.isCurrentUserAuthor(doc): 
         return True 
