@@ -1,15 +1,15 @@
 jq(document).ready(function() {
 	// Declare accordions and sub-accordions
-	jq("#plomino_form h6.plomino-accordion-header").parent().accordion({
+	jq("h6.plomino-accordion-header").parent().accordion({
 		header: "h6.plomino-accordion-header", collapsible: true, autoHeight: false
 	});
-	jq("#plomino_form h5.plomino-accordion-header").parent().accordion({
+	jq("h5.plomino-accordion-header").parent().accordion({
 		header: "h5.plomino-accordion-header", collapsible: true, autoHeight: false
 	});
-	jq("#plomino_form h4.plomino-accordion-header").parent().accordion({
+	jq("h4.plomino-accordion-header").parent().accordion({
 		header: "h4.plomino-accordion-header", collapsible: true, autoHeight: false
 	});
-	jq("#plomino_form h3.plomino-accordion-header").parent().accordion({
+	jq("h3.plomino-accordion-header").parent().accordion({
 		header: "h3.plomino-accordion-header", collapsible: true, autoHeight: false
 	});
 });
