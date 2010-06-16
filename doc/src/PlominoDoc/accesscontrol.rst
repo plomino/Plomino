@@ -64,3 +64,42 @@ Manage the access rights
 Access rights are managed in the tab named **ACL** (Access Control List). 
 
 .. image:: images/30eab40c.png 
+
+Application-level access control
+================================
+
+In addition to the global access rights, it may also be necessary to
+configure access to documents individually. As an example, here is one way to restrict
+document access to the creator of the document:
+
+- create a ``Name`` field named ``creator`` for instance,
+  `Computed on creation`, with the following formula::
+
+    plominoDocument.getCurrentUser().getMemberId()
+  
+  This will store the user id of the user who creates the
+  document (it might be dangerous to use the `Plomino_Authors`
+  item on the document, as its value may evolve during the
+  document life cycle).
+  
+  Add this field to the index.
+
+- add a formula for the `onOpenDocument` event to make sure the
+  user is the creator (if this formula returns a false value,
+  opening is allowed, but if it returns a true value, e.g. a
+  string, opening fails, and the value is displayed as an error
+  message).
+  
+  Here's an example formula::
+
+    if plominoDocument.getCurrentUser().getMemberId()==plominoDocument.getItem('creator'):
+        return None
+
+    roles=plominoDocument.getCurrentUserRoles()
+    if "[controller]" in roles:
+        return None
+
+    return "You are not allowed to view this document."
+
+- create a search form which filters documents where the creator
+  field matches the current user id.
