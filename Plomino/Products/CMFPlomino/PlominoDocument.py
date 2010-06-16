@@ -288,7 +288,7 @@ class PlominoDocument(ATFolder):
         except Exception:
             pass
 
-        if valid is None or valid=='':
+        if not valid:
             # we use the specified form's layout
             html_content = form.displayDocument(self, editmode)
             
