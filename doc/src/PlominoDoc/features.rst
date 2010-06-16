@@ -397,6 +397,11 @@ In a Plomino form, you can use the following events:
 `onOpenDocument`
     executed before document is opened (in both read mode and edit mode)
 
+    If the formula for this event returns a false value, opening is
+    allowed; but if it returns a true value, e.g. a string,
+    opening fails, and the value is displayed as an error
+    message.
+
 `onSaveDocument`
     executed before document is saved
 
