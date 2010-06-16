@@ -101,5 +101,14 @@ document access to the creator of the document:
 
     return "You are not allowed to view this document."
 
+.. Note: in this formula, we're checking for the
+    ``[controller]`` custom role, instead of the 
+    ``PlominoManager`` role. While this does imply that you have to
+    give this role to everyone who has the ``PlominoManager``
+    role, it allows you to distinguish between functional
+    managers (who will only have the ``[controller]`` role, and
+    technical managers (who will also have the
+    ``PlominoManager`` role). 
+
 - create a search form which filters documents where the creator
   field matches the current user id.
