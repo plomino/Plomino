@@ -1,22 +1,26 @@
 Plomino Installation
 --------------------
 
-* Add ``Plomino`` to the list of eggs to install, e.g.:
+* Add link to Plomino buildout extend in your buildout.cfg extends statement:
 
     [buildout]
     ...
-    eggs =
+    extends =
+        https://plomino.svn.sourceforge.net/svnroot/plomino/trunk/buildouts/buildout-plone3.cfg
         ...
-        Plomino
-       
-and re-run buildout, e.g. with:
+
+or 
+
+    [buildout]
+    ...
+    extends =
+        https://plomino.svn.sourceforge.net/svnroot/plomino/trunk/buildouts/buildout-plone4.cfg
+        ...
+
+Note: for Plone4, make sure to include it at the beginning of the "extends" statement
+
+* re-run buildout, e.g. with:
 
     $ ./bin/buildout
 
-* Because its top level Python namespace package is called ``Products``, this
-package can also be installed in Zope 2 as an old style **Zope 2 Product**.
-
-For that, move (or symlink) the ``CMFPlomino`` folder of this project
-(``Plomino/Products/CMFPlomino``) into the ``Products`` directory of
-the Zope instance it has to be installed for, and restart the server.
 
