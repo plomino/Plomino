@@ -104,6 +104,10 @@ class PlominoDesignManager(Persistent):
             msg = migrate_with_no_change(self, "1.6.2")
             report.append(msg)
             logger.info(msg)
+        if self.plomino_version=="1.6.2":
+            msg = migrate_with_no_change(self, "1.6.3")
+            report.append(msg)
+            logger.info(msg)
                
         #check folders
         if not hasattr(self, 'resources'):
