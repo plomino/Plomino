@@ -101,6 +101,16 @@ class ElementPortletRenderer(base.Renderer):
             return element.hasGoogleVisualizationField()
         else:
             return False
+        
+    @property
+    def action_url(self):
+        element = self.getElement()
+        base_url = element.absolute_url()
+        if element.isSearchForm:
+            return base_url+"/searchDocuments"
+        if element.isPage:
+            return "."
+        return base_url+"/createDocument"
     
     def elementLayout(self):
         """Get the element layout to be displayed by the portlet
