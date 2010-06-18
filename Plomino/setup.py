@@ -1,7 +1,7 @@
 from setuptools import setup, find_packages
 import os
 
-version = '1.6.2'
+version = '1.6.3'
 
 setup(name='Plomino',
       version=version,
@@ -27,7 +27,7 @@ setup(name='Plomino',
           'Plone',
           'plone.app.jquerytools',
           'collective.js.jquery',
-          'collective.js.jqueryui==1.7.2.7',
+          'collective.js.jqueryui',
           'simplejson',
       ],
       entry_points="""
