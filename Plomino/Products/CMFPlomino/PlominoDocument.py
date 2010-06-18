@@ -320,15 +320,18 @@ class PlominoDocument(ATFolder):
 
     security.declarePublic('getForm')
     def getForm(self):
-        """try to acquire the formname using the parent view form formula,
-        if nothing, use the Form item
+        """by default, we use the form corresponding to the Form item value
+        but it might be forced to a different form by passing the form id as
+        request parameter, or by evaluating the parent view form formula
         """
-        if hasattr(self, 'evaluateViewForm'):
-            formname = self.evaluateViewForm(self)
-            if formname == "" or formname is None:
-                formname = self.getItem('Form')
-        else:
+        if hasattr(self, 'REQUEST'):
+            formname = self.REQUEST.get("openwithform", None)
+        if not formname:
+            if hasattr(self, 'evaluateViewForm'):
+                formname = self.evaluateViewForm(self)
+        if not formname:
             formname = self.getItem('Form')
+            
         return self.getParentDatabase().getForm(formname)
 
     security.declarePrivate('manage_afterClone')
