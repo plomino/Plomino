@@ -32,4 +32,13 @@
  <assignment name="plomino-design-portlet" category="content_type"
     key="PlominoDocument" manager="plone.leftcolumn"
     type="plomino.designportlet"/>
+    
+  <portlet
+    addview="plomino.elementportlet"
+    title="Plomino element portlet"
+    description="Display Plomino elements"
+  />
+ <assignment name="plomino-element-portlet" category="context"
+    key="/" manager="plone.leftcolumn"
+    type="plomino.elementportlet"/>
 </portlets>

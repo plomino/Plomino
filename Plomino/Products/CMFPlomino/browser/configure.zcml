@@ -14,6 +14,17 @@
       addview=".portlet.AddForm"
     />
 
+  <plone:portlet
+      name="plomino.elementportlet"
+      interface=".portlet.IElementPortlet"
+      assignment=".portlet.ElementPortletAssignment"
+      view_permission="zope2.View"
+      edit_permission="cmf.ManagePortal"
+      renderer=".portlet.ElementPortletRenderer"
+      addview=".portlet.ElementPortletAddForm"
+      editview=".portlet.ElementPortletEditForm"
+    />
+
     <browser:resourceDirectory
         name="plomino.javascript"
         directory="javascript"
