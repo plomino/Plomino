@@ -1117,6 +1117,7 @@ class PlominoReplicationManager(Persistent):
     def importFromXML(self, xmlstring=None, REQUEST=None):
         """
         """
+        logger.info("Start documents import")
         if REQUEST:
             f=REQUEST.get("file")
             xmlstring = f.read()
@@ -1133,6 +1134,7 @@ class PlominoReplicationManager(Persistent):
                 imports = imports + 1
             except:
                 errors = errors + 1
+        logger.info("%d documents imported successfully, %d document(s) not imported" % (imports, errors))
         return (imports, errors)
             
     security.declareProtected(CREATE_PERMISSION, 'importDocumentFromXML')
