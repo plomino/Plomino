@@ -12,7 +12,6 @@ __docformat__ = 'plaintext'
 
 from Products.CMFPlomino.config import *
 
-from cStringIO import StringIO
 from traceback import print_exc
 from Acquisition import *
 from index.PlominoIndex import PlominoIndex
@@ -32,6 +31,7 @@ from xml.dom.minidom import getDOMImplementation
 from xml.dom.minidom import parseString
 import xmlrpclib
 from cStringIO import StringIO
+import codecs
 import sys
 
 from migration.migration import migrate_with_no_change
@@ -575,19 +575,18 @@ class PlominoDesignManager(Persistent):
         else:
             node = xmldoc.createElement('element')
             node.setAttribute('id', obj.id)
-            type = obj.Type()
-            node.setAttribute('type', type)
+            node.setAttribute('type', obj.Type())
             title = obj.Title()
             node.setAttribute('title', title)
-            schema = plomino_schemas[type]
+            schema = plomino_schemas[obj.Type()]
             
         for f in schema.fields():
             fieldNode = xmldoc.createElement(f.getName())
-            type = f.getType()
-            fieldNode.setAttribute('type', type)
+            field_type = f.getType()
+            fieldNode.setAttribute('type', field_type)
             v = f.get(obj)
             if v is not None:
-                if type=="Products.Archetypes.Field.TextField":
+                if field_type=="Products.Archetypes.Field.TextField":
                     text = xmldoc.createCDATASection(str(f.getRaw(obj)))
                 else:
                     text = xmldoc.createTextNode(str(f.get(obj)))
@@ -599,11 +598,11 @@ class PlominoDesignManager(Persistent):
             f = obj.Schema().getField(extra)
             if f is not None:
                 fieldNode = xmldoc.createElement(extra)
-                type = f.getType()
-                fieldNode.setAttribute('type', type)
+                field_type = f.getType()
+                fieldNode.setAttribute('type', field_type)
                 v = f.get(obj)
                 if v is not None:
-                    if type=="Products.Archetypes.Field.TextField":
+                    if field_type=="Products.Archetypes.Field.TextField":
                         text = xmldoc.createCDATASection(str(f.getRaw(obj)))
                     else:
                         text = xmldoc.createTextNode(str(f.get(obj)))
@@ -657,10 +656,10 @@ class PlominoDesignManager(Persistent):
         if callable(id):
             id=id()
         node.setAttribute('id', id)
-        type = obj.meta_type
-        node.setAttribute('type', type)
+        resource_type = obj.meta_type
+        node.setAttribute('type', resource_type)
         node.setAttribute('title', obj.title)
-        if type=="Page Template":
+        if resource_type=="Page Template":
             data = xmldoc.createCDATASection(obj.read())
         else:
             node.setAttribute('contenttype', obj.getContentType())
@@ -675,7 +674,7 @@ class PlominoDesignManager(Persistent):
     def importDesignFromXML(self, xmlstring=None, REQUEST=None):
         """
         """
-        logger.info("Start import")
+        logger.info("Start design import")
         self.getIndex().no_refresh = True
         if REQUEST:
             f=REQUEST.get("file")
@@ -703,17 +702,17 @@ class PlominoDesignManager(Persistent):
         """
         """
         id = node.getAttribute('id')
-        type = node.getAttribute('type')
+        element_type = node.getAttribute('type')
         if id in container.objectIds():
             ob = getattr(container, id)
             if wl_isLocked(ob):
                 ob.wl_clearLocks()
             container.manage_delObjects([id])
-        container.invokeFactory(type, id=id)
+        container.invokeFactory(element_type, id=id)
 #        if not(hasattr(container, id)):
-#            container.invokeFactory(type, id=id)
+#            container.invokeFactory(element_type, id=id)
         obj = getattr(container, id)
-        if obj.Type() == type:
+        if obj.Type() == element_type:
             # note: there might be an existing object with the same id but with a
             # different type, in this case, we do not import
             title = node.getAttribute('title')
@@ -736,7 +735,7 @@ class PlominoDesignManager(Persistent):
                 elif name == 'params':
                     # current object is a field, the params tag contains the
                     # specific settings
-                    result, method = xmlrpclib.loads(node.toxml())
+                    result, method = xmlrpclib.loads(node.toxml().encode('utf-8'))
                     parameters = result[0]
                     for key in parameters.keys():
                         v = parameters[key]
@@ -792,8 +791,8 @@ class PlominoDesignManager(Persistent):
                 while subchild is not None:
                     if subchild.nodeType == subchild.ELEMENT_NODE:
                         result, method = xmlrpclib.loads(subchild.toxml())
-                        type = subchild.getAttribute('id')
-                        if type=="SpecificRights":
+                        object_type = subchild.getAttribute('id')
+                        if object_type=="SpecificRights":
                             self.specific_rights = result[0]
                         else:
                             self.UserRoles = result[0]
@@ -812,8 +811,8 @@ class PlominoDesignManager(Persistent):
         """
         """
         id = str(node.getAttribute('id'))
-        type = node.getAttribute('type')
-        if type == "Page Template":
+        resource_type = node.getAttribute('type')
+        if resource_type == "Page Template":
             if not(hasattr(container, id)):
                 obj = manage_addPageTemplate(container, id)
             else:
@@ -824,7 +823,7 @@ class PlominoDesignManager(Persistent):
             if not(hasattr(container, id)):
                 container.manage_addFile(id)
             obj = getattr(container, id)
-            obj.meta_type = type
+            obj.meta_type = resource_type
             obj.title = node.getAttribute('title')
             obj.update_data(node.firstChild.data.decode('base64'), content_type=node.getAttribute('contenttype'))
 
