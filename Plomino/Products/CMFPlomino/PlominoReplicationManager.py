@@ -1125,6 +1125,8 @@ class PlominoReplicationManager(Persistent):
         documents = xmldoc.getElementsByTagName("document")
         errors = 0
         imports = 0
+        logger.info("Documents count: %d" % len(documents))
+        counter = 0
         for d in documents:
             docid = d.getAttribute('id')
             try:
@@ -1132,9 +1134,14 @@ class PlominoReplicationManager(Persistent):
                     self.manage_delObjects(docid)
                 self.importDocumentFromXML(d)
                 imports = imports + 1
-            except:
+            except PlominoReplicationException, e:
+                logger.info('error while importing %s (%s)' % (docid, e))
                 errors = errors + 1
-        logger.info("%d documents imported successfully, %d document(s) not imported" % (imports, errors))
+            counter = counter + 1
+            if counter == 100:
+                counter = 0
+                logger.info("%d documents imported successfully, %d errors(s) ...(still running)" % (imports, errors))
+        logger.info("Importation finished: %d documents imported successfully, %d document(s) not imported" % (imports, errors))
         return (imports, errors)
             
     security.declareProtected(CREATE_PERMISSION, 'importDocumentFromXML')
@@ -1147,12 +1154,12 @@ class PlominoReplicationManager(Persistent):
         # restore items
         itemnode = node.getElementsByTagName("params")[0]
         #result, method = xmlrpclib.loads(node.firstChild.toxml())
-        result, method = xmlrpclib.loads(itemnode.toxml())
+        result, method = xmlrpclib.loads(itemnode.toxml().encode('utf-8'))
         items = result[0]
         for k in items.keys():
             # convert xmlrpclib.DateTime into DateTime
             if items[k].__class__.__name__=='DateTime':
-                items[k]=StringToDate(items[k].value.split("+")[0], format="%Y-%m-%dT%H:%M:%S")
+                items[k]=StringToDate(items[k].value[:19], format="%Y-%m-%dT%H:%M:%S")
         doc.items = items
         
         # restore files
