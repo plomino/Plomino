@@ -143,7 +143,14 @@ class PlominoAgent(BaseContent, BrowserDefaultMixin):
         """
         txn = transaction.get()
         plominoContext = self
-        return self.runFormulaScript("agent_"+self.id, plominoContext, self.Content, True, *args)
+        try:
+            result = self.runFormulaScript("agent_"+self.id, plominoContext, self.Content, True, *args)
+            txn.commit()
+        except Exception, e:
+            txn.abort()
+            result = "Error: %s \nCode->\n%s" % (e, self.Content())
+            
+        return result
         
     security.declarePublic('runAgent')
     def runAgent(self,REQUEST=None):
