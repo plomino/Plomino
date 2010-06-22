@@ -33,6 +33,7 @@ import xmlrpclib
 from cStringIO import StringIO
 import codecs
 import sys
+import transaction
 
 from migration.migration import migrate_with_no_change
 
@@ -683,6 +684,9 @@ class PlominoDesignManager(Persistent):
         xmldoc = parseString(xmlstring)
         design = xmldoc.getElementsByTagName("design")[0]
         e = design.firstChild
+        txn = transaction.get()
+        count = 0
+        total = 0
         while e is not None:
             name = str(e.nodeName)
             if name == 'dbsettings':
@@ -694,7 +698,17 @@ class PlominoDesignManager(Persistent):
             if name == 'resource':
                 logger.info("Import resource "+e.getAttribute('id'))
                 self.importResourceFromXML(self.resources, e)
+            count = count + 1
+            total = total + 1
+            if count == 100:
+                txn.commit()
+                logger.info("(100 elements committed, still running...)")
+                txn = transaction.get()
+                counter = 0
             e = e.nextSibling
+        if counter > 0:
+            txn.commit()
+        logger.info("(%d elements imported)" % total)
         self.getIndex().no_refresh = False
         
     security.declareProtected(DESIGN_PERMISSION, 'importElementFromXML')
