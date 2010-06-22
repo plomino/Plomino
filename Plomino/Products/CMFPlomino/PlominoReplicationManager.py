@@ -25,6 +25,7 @@ from Persistence import Persistent
 from xml.dom.minidom import getDOMImplementation
 from xml.dom.minidom import parseString
 import xmlrpclib
+import transaction
 
 from ZPublisher.HTTPRequest import FileUpload
 import csv
@@ -1118,6 +1119,7 @@ class PlominoReplicationManager(Persistent):
         """
         """
         logger.info("Start documents import")
+        txn = transaction.get()
         if REQUEST:
             f=REQUEST.get("file")
             xmlstring = f.read()
@@ -1139,8 +1141,12 @@ class PlominoReplicationManager(Persistent):
                 errors = errors + 1
             counter = counter + 1
             if counter == 100:
+                txn.commit()
+                txn = transaction.get()
                 counter = 0
                 logger.info("%d documents imported successfully, %d errors(s) ...(still running)" % (imports, errors))
+        if counter > 0:
+            txn.commit()
         logger.info("Importation finished: %d documents imported successfully, %d document(s) not imported" % (imports, errors))
         return (imports, errors)
             
