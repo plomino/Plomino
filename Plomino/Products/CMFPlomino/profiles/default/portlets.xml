@@ -38,7 +38,5 @@
     title="Plomino element portlet"
     description="Display Plomino elements"
   />
- <assignment name="plomino-element-portlet" category="context"
-    key="/" manager="plone.leftcolumn"
-    type="plomino.elementportlet"/>
+
 </portlets>
