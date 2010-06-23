@@ -143,7 +143,7 @@ def open_url(url, asFile=False):
     """
     f=urllib.urlopen(url)
     if asFile:
-        return f
+        return f.fp
     else:
         return f.read()
 
