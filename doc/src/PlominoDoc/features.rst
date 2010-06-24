@@ -808,3 +808,46 @@ To access this folder, go to the **Design** tab, expand the **Others**
 section and click on **Resources Folder**. It opens the standard ZMI
 screen, which allows new elements to be added.
 
+Plomino Element Portlet
+=======================
+
+A portlet displaying a Plomino form can be added anywhere in a Plone site. It
+can be useful to show informations, like statistics or charts (thanks to Google
+Visualization, for example), computed when the page is displayed.
+
+.. Note::
+
+	In Plone, when you add a portlet to a page, all of its children pages
+	will contain it too. For example, if you add a portlet to the main page of
+	the site, it will be displayed in every pages of the site. You can prevent
+	this mechanism in a child page: click on **Manage Portlets** in this page,
+	find the selector next to the name of the portlet (e.g. *Plomino element
+	portlet*), and select ``Block``.
+
+
+You can add a portlet on a page within fiew steps:
+
+- Click on the link **Manage portlets**
+- In the **Add portlet...** selector, choose the **Plomino element portlet**
+  option
+
+A new page appears, with some fields:
+
+.. image:: images/element-portlet-edition.png
+
+- The header field sets the title of the portlet.
+
+- Database path is the path of a Plomino database in the site, storing the
+  form to be displayed. If the base is accessible at the URL
+  ``http://example.org/Plone/database``, the path is ``/Plone/database``. Since
+  there is always an exception to a rule, you have to be careful when the site
+  URLs are re-written (e.g. if the Plone site is behind an Apache server). The
+  path must be the *Plone site* path, not the public URL.
+
+- Element ID is the form identifier (set at its creation) in the database
+  specified previously.
+
+The portlet new is now displayed in the page side.
+
+.. image:: images/element-portlet-display.png
+
