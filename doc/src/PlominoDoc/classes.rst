@@ -90,6 +90,12 @@ PlominoDatabase
 
 `refreshDB(self)`
     refresh the database index and the formulas.
+    
+`writeMessageOnPage(self, infoMsg, REQUEST, ifMsgEmpty = '', error = False)`
+    displays a standard Plone status message.
+    The REQUEST parameter is mandatory, most part of time plominoDocument.REQUEST will be the correct value.
+    ifMsgEmpty is the default message to display if infoMsg is empty.
+    If error is False, the message displays as an information message, if True, it displays as an Error message.
 
 PlominoDocument
 ===============
