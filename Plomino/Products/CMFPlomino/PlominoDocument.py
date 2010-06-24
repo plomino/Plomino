@@ -324,6 +324,7 @@ class PlominoDocument(ATFolder):
         but it might be forced to a different form by passing the form id as
         request parameter, or by evaluating the parent view form formula
         """
+        formname = None
         if hasattr(self, 'REQUEST'):
             formname = self.REQUEST.get("openwithform", None)
         if not formname:
