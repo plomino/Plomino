@@ -551,6 +551,21 @@ Result if you are ``[dbadmin]``:
 
 .. image:: images/5203c813.png
 
+Open with form
+--------------
+
+A Plomino document is displayed by default using the form corresponding to its 'Form' 
+item value (which contains the id of the forms used during the last document saving).
+
+But if the view where from the document is opened does define a Form formula, the 
+resulting form will be used instead.
+
+And to force the usage of a given form, the form id can be passed in the 
+request using the 'openwithform' parameter.
+
+Example:
+
+http://localhost:8080/test/testdb/58862f161ea71732944d37e0a0489cfc?openwithform=frmtest
 
 Views
 =====
