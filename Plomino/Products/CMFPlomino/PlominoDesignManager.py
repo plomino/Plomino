@@ -704,9 +704,9 @@ class PlominoDesignManager(Persistent):
                 txn.commit()
                 logger.info("(100 elements committed, still running...)")
                 txn = transaction.get()
-                counter = 0
+                count = 0
             e = e.nextSibling
-        if counter > 0:
+        if count > 0:
             txn.commit()
         logger.info("(%d elements imported)" % total)
         self.getIndex().no_refresh = False
