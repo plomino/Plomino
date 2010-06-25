@@ -455,7 +455,7 @@ class PlominoForm(ATFolder):
         valid = ''
         if hasattr(self,'beforeCreateDocument') and self.beforeCreateDocument is not None:
             valid = self.runFormulaScript("form_"+self.id+"_beforecreate", self, self.beforeCreateDocument)
-        if valid is None or valid=='':
+        if valid is None or valid=='' or self.hasDesignPermission(self):
             return self.displayDocument(None, True, True, request=request)
         else:
             self.REQUEST.RESPONSE.redirect(self.getParentDatabase().absolute_url()+"/ErrorsMessages?disable_border=1&error="+valid)
