@@ -162,15 +162,26 @@ class PlominoDesignManager(Persistent):
         msg = 'Existing documents: '+ str(len(documents))
         report.append(msg)
         logger.info(msg)
-        count = 0
+        total = 0
+        counter = 0
+        errors = 0
+        txn = transaction.get()
         for d in documents:
             try:
                 #self.getIndex().indexDocument(d)
                 d.save(onSaveEvent=False)
-                count = count + 1
+                total = total + 1
             except:
-                pass
-        msg = '%d documents re-indexed' % (count)
+                errors = errors + 1
+            counter = counter + 1
+            if counter == 100:
+                txn.commit()
+                txn = transaction.get()
+                counter = 0
+                logger.info("%d documents re-indexed successfully, %d errors(s) ...(still running)" % (total, errors))
+        if counter > 0:
+            txn.commit()
+        msg = "%d documents re-indexed successfully, %d errors(s)" % (total, errors)
         report.append(msg)
         logger.info(msg)
         
