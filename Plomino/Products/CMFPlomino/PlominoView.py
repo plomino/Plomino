@@ -17,7 +17,6 @@ from Products.Archetypes.atapi import *
 from zope.interface import implements
 import interfaces
 from Products.ATContentTypes.content.folder import ATFolder
-from Products.CMFCore.utils import getToolByName
 from Products.CMFDynamicViewFTI.browserdefault import BrowserDefaultMixin
 
 from Products.CMFPlomino.config import *
@@ -446,14 +445,12 @@ class PlominoView(ATFolder):
                 if v is None:
                     v=''
                 else:
-                    v=str(v).strip()
+                    v = unicode(v).encode('utf-8')
                 values.append(v)
             writer.writerow(values)
 
         if REQUEST:
-            plone_tools = getToolByName(self, 'plone_utils')
-            encoding = plone_tools.getSiteEncoding()
-            REQUEST.RESPONSE.setHeader('content-type', 'text/csv; charset='+encoding)
+            REQUEST.RESPONSE.setHeader('content-type', 'text/csv; charset=utf-8')
             REQUEST.RESPONSE.setHeader("Content-Disposition", "attachment; filename="+self.id+".csv")
         return stream.getvalue()
 
