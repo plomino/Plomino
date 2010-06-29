@@ -37,7 +37,10 @@ class PlominoCatalog(Catalog):
 				param = x.split('_')
 				viewname=param[1]
 				columnname=param[2]
-				v = object.computeColumnValue(viewname, columnname)
+				if not object.isSelectedInView(viewname):
+					v = None
+				else:
+					v = object.computeColumnValue(viewname, columnname)
 				record.append(v)
 			else:
 				attr=getattr(object, x, MV)
