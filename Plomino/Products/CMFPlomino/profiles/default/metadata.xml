@@ -1,8 +1,7 @@
 <?xml version="1.0"?>
 <metadata>
-  <version>16</version>
+  <version>17</version>
   <dependencies>
-    <dependency>profile-collective.js.jquery:default</dependency>
     <dependency>profile-plone.app.jquerytools:default</dependency>
     <dependency>profile-collective.js.jqueryui:withjqtoolsplone3</dependency>
   </dependencies>
