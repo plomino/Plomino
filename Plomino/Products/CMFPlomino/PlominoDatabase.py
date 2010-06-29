@@ -73,7 +73,7 @@ schema = Schema((
     ),
     BooleanField(
         name='IndexAttachments',
-        default="0",
+        default=False,
         widget=BooleanField._properties['widget'](
             label="Index file attachments",
             description="If enabled, files attached in File Attachments fields will be indexed. It might increase the index size.",
@@ -95,7 +95,7 @@ schema = Schema((
     ),
     BooleanField(
         name='debugMode',
-        default="False",
+        default=False,
         widget=BooleanField._properties['widget'](
             label="Debug mode",
             description="If enabled, script and formula errors are logged.",
@@ -106,7 +106,7 @@ schema = Schema((
     ),
     BooleanField(
         name='StorageAttachments',
-        default="0",
+        default=False,
         widget=BooleanField._properties['widget'](
             label="Use File System Storage for attachments",
             description="File System Storage must be installed on the portal",
@@ -117,6 +117,7 @@ schema = Schema((
     ),
     BooleanField(
         name='CountDocuments',
+        default=False,
         widget=BooleanField._properties['widget'](
             label="Count the number of documents",
             description="If enabled, count the number of documents for each view. Display might be slower.",
@@ -148,12 +149,23 @@ schema = Schema((
     ),
     BooleanField(
         name='DoNotListUsers',
-        default="False",
+        default=False,
         widget=BooleanField._properties['widget'](
             label="Do not list portal users",
             description="If True, in ACL screen, users are entered using a free text field, if False, using a selection list. Use True when the amount of users is big.",
             description_msgid="CMFPlomino_help_DoNotListUsers",
             label_msgid="CMFPlomino_label_DoNotListUsers",
+            i18n_domain='CMFPlomino',
+        ),
+    ),
+    BooleanField(
+        name='DoNotReindex',
+        default=False,
+        widget=BooleanField._properties['widget'](
+            label="Do not re-index documents on design changes",
+            description="If True, documents are not re-indexed automatically when views, columns or indexed fields are changed. Note: manual refresh db is then needed.",
+            description_msgid="CMFPlomino_help_DoNotReindex",
+            label_msgid="CMFPlomino_label_DoNotReindex",
             i18n_domain='CMFPlomino',
         ),
     ),

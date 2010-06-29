@@ -314,8 +314,10 @@ class PlominoView(ATFolder):
 
     security.declarePublic('at_post_edit_script')
     def at_post_edit_script(self):
+        db = self.getParentDatabase()
         self.cleanFormulaScripts("view_"+self.id)
-        self.getParentDatabase().getIndex().refresh()
+        if not db.DoNotReindex:
+            self.getParentDatabase().getIndex().refresh()
 
     security.declarePublic('at_post_create_script')
     def at_post_create_script(self):
@@ -323,15 +325,18 @@ class PlominoView(ATFolder):
         """
         db = self.getParentDatabase()
         db.getIndex().createSelectionIndex('PlominoViewFormula_'+self.getViewName())
-        self.getParentDatabase().getIndex().refresh()
+        if not db.DoNotReindex:
+            self.getParentDatabase().getIndex().refresh()
 
     security.declarePublic('declareColumn')
     def declareColumn(self,column_name,column_obj):
         """declare column
         """
         db = self.getParentDatabase()
+        refresh = not(db.DoNotReindex)
+        
         if column_obj.Formula:
-            db.getIndex().createIndex('PlominoViewColumn_'+self.getViewName()+'_'+column_name)
+            db.getIndex().createIndex('PlominoViewColumn_'+self.getViewName()+'_'+column_name, refresh=refresh)
         else:
             fieldpath = column_obj.SelectedField.split('/')
             form = self.getParentDatabase().getForm(fieldpath[0])
@@ -343,10 +348,10 @@ class PlominoView(ATFolder):
                     #db.getIndex().createFieldIndex(field.id, field.getFieldType())
                 else:
                     column_obj.setFormula("'Non-existing field'")
-                    db.getIndex().createIndex('PlominoViewColumn_'+self.getViewName()+'_'+column_name)
+                    db.getIndex().createIndex('PlominoViewColumn_'+self.getViewName()+'_'+column_name, refresh=refresh)
             else:
                 column_obj.setFormula("'Non-existing form'")
-                db.getIndex().createIndex('PlominoViewColumn_'+self.getViewName()+'_'+column_name)
+                db.getIndex().createIndex('PlominoViewColumn_'+self.getViewName()+'_'+column_name, refresh=refresh)
 
     security.declarePublic('getCategorizedColumnValues')
     def getCategorizedColumnValues(self,column_name):

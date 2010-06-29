@@ -152,7 +152,9 @@ class PlominoColumn(BaseContent, BrowserDefaultMixin):
         v = self.getParentView()
         v.declareColumn(self.getColumnName(), self)
         self.cleanFormulaScripts("column_"+v.id+"_"+self.id)
-        self.getParentDatabase().getIndex().refresh()
+        db = self.getParentDatabase()
+        if not db.DoNotReindex:
+            db.getIndex().refresh()
 
     security.declarePublic('at_post_create_script')
     def at_post_create_script(self):
@@ -160,7 +162,9 @@ class PlominoColumn(BaseContent, BrowserDefaultMixin):
         """
         v = self.getParentView()
         v.declareColumn(self.getColumnName(), self)
-        self.getParentDatabase().getIndex().refresh()
+        db = self.getParentDatabase()
+        if not db.DoNotReindex:
+            db.getIndex().refresh()
 
 
 registerType(PlominoColumn, PROJECTNAME)

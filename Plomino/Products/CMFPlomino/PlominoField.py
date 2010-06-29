@@ -335,7 +335,7 @@ class PlominoField(BaseContent, BrowserDefaultMixin):
         """
         self.cleanFormulaScripts("field_"+self.getParentNode().id+"_"+self.id)
         db = self.getParentDatabase()
-        if self.getToBeIndexed() :
+        if self.getToBeIndexed() and not db.DoNotReindex:
             db.getIndex().createFieldIndex(self.id, self.getFieldType())
 
     security.declarePublic('at_post_create_script')
@@ -343,7 +343,7 @@ class PlominoField(BaseContent, BrowserDefaultMixin):
         """post create
         """
         db = self.getParentDatabase()
-        if self.getToBeIndexed():
+        if self.getToBeIndexed() and not db.DoNotReindex:
             db.getIndex().createFieldIndex(self.id, self.getFieldType())
 
     security.declarePublic('getSettings')

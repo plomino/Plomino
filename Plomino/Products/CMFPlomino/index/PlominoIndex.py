@@ -69,7 +69,7 @@ class PlominoIndex(UniqueObject, ZCatalog, ActionProviderBase):
         return self.getParentNode()
 
     security.declareProtected(DESIGN_PERMISSION, 'createIndex')
-    def createIndex(self,fieldname):
+    def createIndex(self, fieldname, refresh=True):
         """
         """
         try:
@@ -78,10 +78,11 @@ class PlominoIndex(UniqueObject, ZCatalog, ActionProviderBase):
         except CatalogError:
             # index already exists
             pass
-        self.refresh()
+        if refresh:
+            self.refresh()
         
     security.declareProtected(DESIGN_PERMISSION, 'createFieldIndex')
-    def createFieldIndex(self,fieldname, fieldtype):
+    def createFieldIndex(self,fieldname, fieldtype, refresh=True):
         """
         """
         try:
@@ -99,10 +100,11 @@ class PlominoIndex(UniqueObject, ZCatalog, ActionProviderBase):
         except CatalogError:
             # index already exists
             pass
-        self.refresh()
+        if refresh:
+            self.refresh()
         
     security.declareProtected(DESIGN_PERMISSION, 'createSelectionIndex')
-    def createSelectionIndex(self,fieldname):
+    def createSelectionIndex(self,fieldname, refresh=True):
         """
         """
         try:
@@ -110,15 +112,17 @@ class PlominoIndex(UniqueObject, ZCatalog, ActionProviderBase):
         except CatalogError:
             # index already exists
             pass
-        self.refresh()
+        if refresh:
+            self.refresh()
 
     security.declareProtected(DESIGN_PERMISSION, 'deleteIndex')
-    def deleteIndex(self,fieldname):
+    def deleteIndex(self,fieldname, refresh=True):
         """
         """
         self.delIndex(fieldname)
         self.delColumn(fieldname)
-        self.refresh()
+        if refresh:
+            self.refresh()
 
     security.declareProtected(READ_PERMISSION, 'indexDocument')
     def indexDocument(self,doc):

@@ -100,6 +100,14 @@ def migrate_to_161(db):
     db.plomino_version = "1.6.1"
     return msg
 
+def migrate_to_164(db):
+    """ Fulltext index db attribute.
+    """
+    db.setDoNotReindex(False)
+    msg = "Migration to 1.6.4: DoNotReindex db attribute set to False"
+    db.plomino_version = "1.6.4"
+    return msg
+
 def migrate_with_no_change(db, version):
     """ Fulltext index db attribute.
     """
