@@ -1,0 +1,548 @@
+# [Eric BREHAULT] <[ebrehault@gmail.com]>, 2006.
+msgid ""
+msgstr ""
+"Project-Id-Version: CMFPlomino-lt\n"
+"POT-Creation-Date: Thu Sep 28 15:52:32 2006\n"
+"PO-Revision-Date: 2010-06-08 10:12+0200\n"
+"Last-Translator: Martynas <martynas.storasta@gmail.com>\n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0\n"
+"Language-Code: lt\n"
+"Language-Name: Lithuanian\n"
+"Preferred-Encodings: utf-8\n"
+"X-Is-Fallback-For: lt-lt\n"
+"Domain: CMFPlomino\n"
+"X-Poedit-Language: Lithuanian\n"
+
+#. Default: "About this database"
+#: PlominoDatabase.py
+msgid "CMFPlomino_label_AboutDescription"
+msgstr "Apie šią duomenų bazę"
+
+#. Default: "Describe the database, its objectives, its targetted audience, etc..."
+#: PlominoDatabase.py
+msgid "CMFPlomino_help_AboutDescription"
+msgstr "Aprašykite duomenų bazę, jos paskirtį ir t.t."
+
+#. Default: "Using this database"
+#: PlominoDatabase.py
+msgid "CMFPlomino_label_UsingDescription"
+msgstr "Kaip naudojama ši duomenų bazė"
+
+#. Default: "Describe how to use the database"
+#: PlominoDatabase.py
+msgid "CMFPlomino_help_UsingDescription"
+msgstr "Aprašykite, kaip naudotis duomenų baze"
+
+#. Default: "Index file attachments"
+#: PlominoDatabase.py
+msgid "CMFPlomino_label_IndexAttachments"
+msgstr "Indeksuoti pridedamus failus"
+
+#. Default: "If enabled, files attached in File Attachments fields will be indexed. It might increase the index size."
+#: PlominoDatabase.py
+msgid "CMFPlomino_help_IndexAttachments"
+msgstr "Jei įjungta, prisegti failai bus indeksuojami. Tai gali išplėsti indekso apimtį."
+
+#. Default: "Debug mode"
+#: PlominoDatabase.py
+msgid "CMFPlomino_label_debugMode"
+msgstr "Klaidų tikrinimo režimas"
+
+#. Default: "If enabled, script and formula errors are logged."
+#: PlominoDatabase.py
+msgid "CMFPlomino_help_debugMode"
+msgstr "Jei įjungta, bus įrašomos scenarijaus bei formulių klaidos."
+
+#. Default: "Use File System Storage for attachments"
+#: PlominoDatabase.py
+msgid "CMFPlomino_label_StorageAttachments"
+msgstr "Naudoti failų sistemą priedams saugoti"
+
+#. Default: "File System Storage must be installed on the portal"
+#: PlominoDatabase.py
+msgid "CMFPlomino_help_StorageAttachments"
+msgstr "Portale turi būti įdiegtas File System Storage produktas"
+
+#. Default: "Count the number of documents"
+#: PlominoDatabase.py
+msgid "CMFPlomino_label_ShowDocumentsNumbers"
+msgstr "Skaičiuoti dokumentų kiekį"
+
+#. Default: "If enabled, count the number of documents for each view. Display might be slower."
+#: PlominoDatabase.py
+msgid "CMFPlomino_help_ShowDocumentsNumbers"
+msgstr "Jei įjungta, bus skaičiuojamas dokumentų kiekis visiems DB vaizdams. Gali sulėtėti informacijos pateikimas."
+
+#. Default: "Date/time format"
+#: PlominoDatabase.py
+msgid "CMFPlomino_label_DateTimeFormat"
+msgstr "Datos/laiko formatas"
+
+#. Default: "Format example: %Y-%m-%d"
+#: PlominoDatabase.py
+msgid "CMFPlomino_help_DateTimeFormat"
+msgstr "Formato pvz.: %Y-%m-%d"
+
+#. Default: "Start page"
+#: PlominoDatabase.py
+msgid "CMFPlomino_label_StartPage"
+msgstr "Pradinis puslapis"
+
+#. Default: "Element to display instead of the regular database menu."
+#: PlominoDatabase.py
+msgid "CMFPlomino_help_StartPage"
+msgstr "Elementas, kurį rodysite vietoje įprasto DB meniu."
+
+#. Default: "Id"
+#: PlominoAction.py
+msgid "CMFPlomino_label_action_id"
+msgstr "Id"
+
+#. Default: "The action id"
+#: PlominoAction.py
+msgid "CMFPlomino_help_action_id"
+msgstr "Veiksmo id"
+
+#. Default: "How the action is shown"
+#: PlominoAction.py
+msgid "CMFPlomino_help_ActionDisplay"
+msgstr "Kaip parodomas veiksmas"
+
+#. Default: "Select the type for this action"
+#: PlominoAction.py
+msgid "CMFPlomino_help_ActionType"
+msgstr "Pasirinkite šio veiksmo tipą"
+
+#. Default: "Categorised on first column"
+#: PlominoView.py
+msgid "CMFPlomino_help_Categorized"
+msgstr "Grupuojama pagal pirmą stulpelį"
+
+#: PlominoForm.py
+msgid "CMFPlomino_label_FormId"
+msgstr "Id"
+
+msgid "CMFPlomino_help_FormId"
+msgstr "Formos id"
+
+msgid "CMFPlomino_label_DocumentTitle"
+msgstr "Dokumento pavadinimo formulė"
+
+msgid "CMFPlomino_help_DocumentTitle"
+msgstr "Apskaičiuoti dokumento pavadinimą"
+
+msgid "CMFPlomino_label_SearchForm"
+msgstr "Paieškos forma"
+
+msgid "CMFPlomino_help_SearchForm"
+msgstr "Paieškos forma naudojama tik paieškai, jos negalite išsaugoti."
+
+msgid "CMFPlomino_label_isPage"
+msgstr "Puslapis"
+
+msgid "CMFPlomino_help_isPage"
+msgstr "Puslapis negali būti išsaugotas ir neturi veiksmų juostos. Gali būti naudingas kuriant pradinį psl., paaiškinimus, ataskaitas ir pan."
+
+msgid "CMFPlomino_label_SearchView"
+msgstr "Paieškos vaizdas"
+
+msgid "CMFPlomino_help_SearchView"
+msgstr "Vaizdas, naudojamas pateikti paieškos rezultatus"
+
+msgid "CMFPlomino_label_SearchFormula"
+msgstr "Paieškos formulė"
+
+msgid "CMFPlomino_help_SearchFormula"
+msgstr "Palikite tuščią, jei naudosite numatytą Zcatalog paiešką"
+
+msgid "CMFPlomino_label_onCreateDocument"
+msgstr "Sukūrus dokumentą"
+
+msgid "CMFPlomino_help_onCreateDocument"
+msgstr "Veiksmas, atliekamas sukūrus dokumentą"
+
+msgid "CMFPlomino_label_onOpenDocument"
+msgstr "Atidarant dokumentą"
+
+msgid "CMFPlomino_help_onOpenDocument"
+msgstr "Veiksmas, atliekaams atveriant dokumentą"
+
+msgid "CMFPlomino_label_onSaveDocument"
+msgstr "Išsaugant dokumentą"
+
+msgid "CMFPlomino_help_onSaveDocument"
+msgstr "Veiksmas, atliekaams išsaugant dokumentą"
+
+msgid "CMFPlomino_label_onDeleteDocument"
+msgstr "Pašalinant dokumentą"
+
+msgid "CMFPlomino_help_onDeleteDocument"
+msgstr "Veiksmas, atliekamas pašalinant dokumentą"
+
+msgid "CMFPlomino_label_FormLayout"
+msgstr "Formos išdėstymas"
+
+msgid "CMFPlomino_help_FormLayout"
+msgstr "Formos išdėstymas. Tekstas, kuriam taikomas stilius 'Plominofield' atitinka sukurtų laukų id"
+
+#: PlominoForm.py
+#: PlominoView.py
+msgid "CMFPlomino_label_ActionBarPosition"
+msgstr "Veiksmų juostelės padėtis"
+
+msgid "CMFPlomino_help_ActionBarPosition"
+msgstr "Pasirinkite veiksmų juostelės padėtį"
+
+msgid "CMFPlomino_label_HideInMenu"
+msgstr "Nerodyti meniu"
+
+msgid "CMFPlomino_help_HideInMenu"
+msgstr "Nebus matomas pagrindiniame DB meniu lape"
+
+#: PlominoField.py
+msgid "CMFPlomino_label_field_id"
+msgstr "Id"
+
+msgid "CMFPlomino_help_field_id"
+msgstr "Lauko id"
+
+msgid "CMFPlomino_label_FieldReadTemplate"
+msgstr "Lauko nuskaitymo šablonas"
+
+msgid "CMFPlomino_help_FieldReadTemplate"
+msgstr "Specialus šablonas skaitymo režime"
+
+msgid "CMFPlomino_label_FieldEditTemplate"
+msgstr "Lauko redagavimo šablonas"
+
+msgid "CMFPlomino_help_FieldEditTemplate"
+msgstr "Specialus šablonas redagavimo režime"
+
+msgid "CMFPlomino_label_FieldMandatory"
+msgstr "Privalomas"
+
+msgid "CMFPlomino_help_FieldMandatory"
+msgstr "Ar šis laukas privalomas (bus reikalaujama įvesti reikšmę)"
+
+msgid "CMFPlomino_label_FieldValidation"
+msgstr "Patikrinimo formulė"
+
+msgid "CMFPlomino_help_FieldValidation"
+msgstr "Patikrina įvestos reikšmės teisingumą"
+
+msgid "CMFPlomino_label_FieldIndex"
+msgstr "Prideti prie indekso"
+
+msgid "CMFPlomino_help_FieldIndex"
+msgstr "Bus galima ieškoti lauko reikšmių"
+
+msgid "CMFPlomino_label_FieldType"
+msgstr "Lauko tipas"
+
+msgid "CMFPlomino_help_FieldType"
+msgstr "Šio lauko tipas"
+
+msgid "CMFPlomino_label_FieldMode"
+msgstr "Lauko režimas"
+
+msgid "CMFPlomino_help_FieldMode"
+msgstr "Kaip bus generuojamas turinys"
+
+msgid "CMFPlomino_label_FieldFormula"
+msgstr "Formulė"
+
+msgid "CMFPlomino_help_FieldFormula"
+msgstr "Kaip apskaičiuoti lauko turinį"
+
+msgid "CMFPlomino_label_SelectionList"
+msgstr "Pasirinkimo sąrašas"
+
+msgid "CMFPlomino_help_SelectionList"
+msgstr "Pasirenkamų reikšmių sąrašas, po vieną eilutėje. Naudokite | jei reikia atskirti antraštę nuo reikšmės."
+
+msgid "CMFPlomino_label_SelectionListFormula"
+msgstr "Pasirinkimo sąrašo formulė"
+
+msgid "CMFPlomino_help_SelectionListFormula"
+msgstr "Formulė, skirta apskaičiuoti pasirinkimo sąrašo reikšmes"
+
+#: PlominoHidewhen.py
+msgid "CMFPlomino_label_hidewhen_id"
+msgstr "Id"
+
+msgid "CMFPlomino_help_hidewhen_id"
+msgstr "Paslėpti kai id"
+
+msgid "CMFPlomino_label_HidewhenFormula"
+msgstr "Formulė"
+
+msgid "CMFPlomino_help_HidewhenFormula"
+msgstr "Jei bus įvertinta kaip True, šis blokas pasislėps."
+
+#. Default: "Id"
+#: PlominoColumn.py
+msgid "CMFPlomino_label_column_id"
+msgstr "Id"
+
+#. Default: "Column id"
+#: PlominoColumn.py
+msgid "CMFPlomino_help_column_id"
+msgstr "Stulpelio id"
+
+msgid "CMFPlomino_label_ColumnFormula"
+msgstr "Formulė"
+
+msgid "CMFPlomino_help_ColumnFormula"
+msgstr "Python kodas, pateikiantis stulpelio reikšmė."
+
+#. Default: "Position"
+#: PlominoColumn.py
+msgid "CMFPlomino_label_ColumnPosition"
+msgstr "Padėtis (eiliškumas)"
+
+#. Default: "Position in view"
+#: PlominoColumn.py
+msgid "CMFPlomino_help_ColumnPosition"
+msgstr "Padėtis atvaizduojant"
+
+#. Default: "Hidden column"
+#: PlominoColumn.py
+msgid "CMFPlomino_label_HiddenColumn"
+msgstr "Paslėptas stulpelis"
+
+#. Default: "Position in menu"
+msgid "CMFPlomino_help_Position"
+msgstr "Padėtis meniu struktūroje"
+
+#. Default: "The view selection formula is a line of Python code which should return True or False. The formula will be evaluated for each document in the database to decide if the document must be displayed in the view or not. plominoDocument is a reserved name in formulae, it returns the current Plomino document. Each document field value can be accessed directly as an attribute of the document: plominoDocument.<fieldname>"
+#: PlominoView.py
+msgid "CMFPlomino_help_SelectionFormula"
+msgstr "Vaizdo pasirinkimo formulė yra Python kodo eilutė, kuri turėtų būti įvertinta kaip True ar False. Pagal šią formulę bus vertinamas kiekvienas dokumentas (įrašas) duomenų bazėje, kad pagal tai būtų nuspręsta, ar jį rodyti, ar ne. plominoDocument yra rezervuotas vardas formulėje jis parodo dabartinį Plomino dokumentą. Kiekviena dokumento lauko reikšmė gali būti prieinama tiesiogiai  kaip dokumento atributas: plominoDocument.<fieldname>"
+
+#. Default: "Column used to sort the view"
+#: PlominoView.py
+msgid "CMFPlomino_help_SortColumn"
+msgstr "Stulpelis, pagal kurį bus rūšiuojamas DB vaizdas"
+
+#. Default: "Action display"
+#: PlominoAction.py
+msgid "CMFPlomino_label_ActionDisplay"
+msgstr "Veiksmų atvaizdavimas"
+
+#. Default: "Action type"
+#: PlominoAction.py
+msgid "CMFPlomino_label_ActionType"
+msgstr "Veiksmo tipas"
+
+#. Default: "Parameter or code"
+#: PlominoAction.py
+msgid "CMFPlomino_label_ActionContent"
+msgstr "Parametras ar kodas"
+
+#. Default: "Code or parameter depending on the action type"
+#: PlominoAction.py
+msgid "CMFPlomino_help_ActionContent"
+msgstr "Parametras ar kodas, priklausomai nuo veiksmo tipo"
+
+#. Default: "Hide-when formula"
+#: PlominoAction.py
+msgid "CMFPlomino_label_ActionHidewhen"
+msgstr "Paslėpti-kai formulė"
+
+#. Default: "Action is hidden if formula return True"
+#: PlominoAction.py
+msgid "CMFPlomino_help_ActionHidewhen"
+msgstr "Veiksmas paslepiamas, jei ši formulė įvertinama True"
+
+#. Default: "Display action in action bar"
+#: PlominoAction.py
+msgid "CMFPlomino_label_ActionInActionBar"
+msgstr "Rodyti veiksmą prie veiksmų juostos"
+
+#. Default: "Display action in action bar (yes/no)"
+#: PlominoAction.py
+msgid "CMFPlomino_help_ActionInActionBar"
+msgstr "Rodyti veiksmą prie veiksmų juostos (taip/ne)"
+
+#. Default: "Categorized"
+#: PlominoView.py
+msgid "CMFPlomino_label_Categorized"
+msgstr "Sugrupuotas vaizdas"
+
+#. Default: "Description"
+#: PlominoAction.py
+msgid "CMFPlomino_label_Description"
+msgstr "Aprašas"
+
+#. Default: "Label"
+#: PlominoAction.py
+msgid "CMFPlomino_label_Label"
+msgstr "Antraštė"
+
+#. Default: "Position"
+#: PlominoColumn.py
+msgid "CMFPlomino_label_Position"
+msgstr "Padėtis"
+
+#: PlominoView.py
+msgid "CMFPlomino_label_view_id"
+msgstr "Id"
+
+msgid "CMFPlomino_help_view_id"
+msgstr "Jei pakeitėte po sukūrimo, reikia atnaujinti duomenų bazę"
+
+msgid "CMFPlomino_label_ViewTemplate"
+msgstr "Peržiūros šablonas"
+
+msgid "CMFPlomino_help_ViewTemplate"
+msgstr "Palikite tuščią, jei naudosite standartinį"
+
+msgid "CMFPlomino_label_SelectionFormula"
+msgstr "Atrankos formulė"
+
+#. Default: "Sort column"
+#: PlominoView.py
+msgid "CMFPlomino_label_SortColumn"
+msgstr "Rūšiuoti stulpelius"
+
+#. Default: "Form Formula"
+#: PlominoView.py
+msgid "CMFPlomino_label_FormFormula"
+msgstr "Formos formulė"
+
+#. Default: "Documents open from the view will used the following formula (they use their own form if empty)"
+#: PlominoView.py
+msgid "CMFPlomino_help_FormFormula"
+msgstr "Dokumentai, atverti iš DB vaizdo bus adaptuoti pagal šią formulę (jei nenurodyta, bus naudojama įprasta įvedimo forma)"
+
+#. Default: "Reverse Sorting"
+#: PlominoView.py
+msgid "CMFPlomino_label_ReverseSorting"
+msgstr "Atvirkštinis rūšiavimas"
+
+#. Default: "Reverse the sort ordering"
+#: PlominoView.py
+msgid "CMFPlomino_help_ReverseSorting"
+msgstr "Apsukti rūšiavimo tvarką"
+
+#Action bar buttons
+msgid "Edit"
+msgstr "Redaguoti"
+
+msgid "Close"
+msgstr "Uždaryti"
+
+msgid "Delete"
+msgstr "Pašalinti"
+
+msgid "Save"
+msgstr "Išsaugoti"
+
+msgid "Attach file"
+msgstr "Pridėti priedą"
+
+msgid "attachments_label"
+msgstr "Priedai:"
+
+# View labels
+msgid "go_link"
+msgstr "Peržiūrėti"
+
+# OpenDatabase
+msgid "Browse"
+msgstr "Naršyti"
+
+msgid "Search"
+msgstr "Ieškoti"
+
+msgid "Add new content"
+msgstr "Pridėti naujus įrašus"
+
+# ErrorsMessages
+msgid "Patikrinimas nepavyko"
+msgstr "Validation failed"
+
+msgid "Go back"
+msgstr "Grįžti atgal"
+
+msgid "Continue"
+msgstr "Tęsti"
+
+#Gantt view labels
+msgid "From"
+msgstr "Nuo"
+
+msgid "To"
+msgstr "Kam"
+
+msgid "Refresh"
+msgstr "Atnaujinti"
+
+#. Default: "Id"
+#: PlominoAgent.py
+msgid "CMFPlomino_label_agent_id"
+msgstr "Id"
+
+#. Default: "The agent id"
+#: PlominoAgent.py
+msgid "CMFPlomino_help_agent_id"
+msgstr "Agento id"
+
+#. Default: "Code"
+#: PlominoAgent.py
+msgid "CMFPlomino_label_AgentContent"
+msgstr "Kodas"
+
+#. Default: "Code to execute"
+#: PlominoAgent.py
+msgid "CMFPlomino_help_AgentContent"
+msgstr "Vykdyti skirtas kodas"
+
+#. Default: "Scheduled"
+#: PlominoAgent.py
+msgid "CMFPlomino_label_Scheduled"
+msgstr "Suplanuota"
+
+#. Default: "Scheduled agent"
+#: PlominoAgent.py
+msgid "CMFPlomino_help_Scheduled"
+msgstr "Suplanuotas agentas"
+
+#. Default: "Agent user"
+#: PlominoAgent.py
+msgid "CMFPlomino_label_AgentUser"
+msgstr "Agento naudotojas"
+
+#. Default: "Effective user used to run the agent"
+#: PlominoAgent.py
+msgid "CMFPlomino_help_AgentUser"
+msgstr "Veikiantis naudotojas, skirtas paleisti agentą"
+
+#. Default: "Cron"
+#: PlominoAgent.py
+msgid "CMFPlomino_label_Cron"
+msgstr "Cron"
+
+#. Default: "Format : crontab UNIX"
+#: PlominoAgent.py
+msgid "CMFPlomino_help_Cron"
+msgstr "Formatas : crontab UNIX"
+
+# Error messages
+msgid "is mandatory"
+msgstr "yra privalomas"
+
+msgid " must be an integer (submitted value was: "
+msgstr " privalo būti sveikasis skaičius (buvo įvesta: "
+
+msgid " must be a float (submitted value was: "
+msgstr "privalo būti slankusis skaičius (buvo įvesta: "
+
+# Not categorized
+msgid "Not categorized"
+msgstr "Negrupuojama"
+

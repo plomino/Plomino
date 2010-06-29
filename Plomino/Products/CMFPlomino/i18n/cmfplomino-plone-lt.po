@@ -1,0 +1,60 @@
+# [Eric BREHAULT] <[ebrehault@gmail.com]>, 2006.
+msgid ""
+msgstr ""
+"Project-Id-Version: CMFPlomino\n"
+"POT-Creation-Date: Thu Sep 28 15:52:32 2006\n"
+"PO-Revision-Date: 2010-06-07 09:22+0200\n"
+"Last-Translator: Martynas <martynas.storasta@gmail.com>\n"
+"Language-Team: [Eric BREHAULT] <[ebrehault@gmail.com]>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0\n"
+"Language-Code: lt\n"
+"Language-Name: Lithuanian\n"
+"X-Is-Fallback-For: lt-lt\n"
+"Preferred-Encodings: utf-8\n"
+"Domain: plone\n"
+
+msgid "PlominoAction"
+msgstr "Plomino: veiksmas"
+
+msgid "PlominoColumn"
+msgstr "Plomino: stulpelis"
+
+msgid "PlominoDatabase"
+msgstr "Plomino: duomenų bazė"
+
+msgid "PlominoDocument"
+msgstr "Plomino: dokumentas"
+
+msgid "PlominoField"
+msgstr "Plomino: laukas"
+
+msgid "PlominoForm"
+msgstr "Plomino: forma"
+
+msgid "PlominoHidewhen"
+msgstr "Plomino: paslėpti kai"
+
+msgid "PlominoView"
+msgstr "Plomino: vaizdas"
+
+msgid "Forms"
+msgstr "Formos"
+
+msgid "Views"
+msgstr "Vaizdai"
+
+msgid "ACL"
+msgstr "Prieiga"
+
+msgid "About"
+msgstr "Apie"
+
+msgid "Using"
+msgstr "Naudoja"
+
+msgid "Compose"
+msgstr "Sukurti"
+
