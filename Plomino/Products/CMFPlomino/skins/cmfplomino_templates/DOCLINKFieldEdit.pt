@@ -52,9 +52,8 @@
 		</table>
 	</tal:widget>
 	<tal:widget tal:condition="python:test(widget=='GTABLE')"
-	       tal:define="googlejsapi here/REQUEST/googlejsapi|nothing;
-                       jscode python:options['field'].getSettings().jscode(selection, current);">
-        <script tal:condition="not:googlejsapi" type='text/javascript' src='http://www.google.com/jsapi'></script>
+	       tal:define="jscode python:options['field'].getSettings().jscode(selection, current);">
+        <script type='text/javascript' src='http://www.google.com/jsapi'></script>
         <script type='text/javascript' tal:content="structure jscode"></script>
         <div id='googlevisualization_div' tal:attributes="id string:${name}_div"></div>
         <input type="hidden" tal:attributes="name options/fieldname; id string:${name};
