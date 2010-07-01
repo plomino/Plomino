@@ -459,6 +459,13 @@
 							</tal:separators>
 						</div>
 					</div>
+                    <div class="field">
+                        <div class="widget">
+                            <label for="file_encoding">Encoding</label>
+                            <div class="formHelp">Default is UTF-8.</div>
+                            <input type="text" value="utf-8" name="file_encoding" />
+                        </div>
+                    </div>
 					<div class="field">
 						<div class="widget">
 							<label for="import_file">CSV File</label>

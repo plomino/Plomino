@@ -875,6 +875,7 @@ class PlominoReplicationManager(Persistent):
             formName = REQUEST.get('formSelected',None)
             separatorName = REQUEST.get('separator',None)
             fileToImport = REQUEST.get('import_file',None)
+            file_encoding = REQUEST.get('file_encoding', "utf-8")
 
         #form name
         if not formName:
@@ -901,7 +902,7 @@ class PlominoReplicationManager(Persistent):
             raise PlominoReplicationException, 'unrecognized file uploaded'
              
         #parse
-        fileContent = self.parseFile(fileToImport, formName, separator)
+        fileContent = self.parseFile(fileToImport, formName, separator, file_encoding)
         
         #import
         nbDocDone, nbDocFailed = self.importCsv(fileContent)
@@ -911,7 +912,7 @@ class PlominoReplicationManager(Persistent):
         return infoMsg
     
     security.declareProtected(EDIT_PERMISSION, 'processImport')
-    def processImportAPI(self, formName, separatorName, fileToImport):
+    def processImportAPI(self, formName, separatorName, fileToImport, file_encoding='utf-8'):
         """
         Process import API method.
         """
@@ -941,13 +942,13 @@ class PlominoReplicationManager(Persistent):
          #   raise PlominoReplicationException, 'unrecognized file uploaded'
              
         #parse and import
-        fileContent = self.parseFile(fileToImport, formName, separator)
+        fileContent = self.parseFile(fileToImport, formName, separator, file_encoding)
          
         nbDocDone, nbDocFailed = self.importCsv(fileContent)        
         logger.info('Import processed : ' + str(nbDocDone) + ' document(s) imported, ' + str(nbDocFailed) + ' document(s) failed.')       
         
     security.declareProtected(EDIT_PERMISSION, 'parseFile')
-    def parseFile(self, fileToImport, formName, separator):
+    def parseFile(self, fileToImport, formName, separator, file_encoding='utf-8'):
         """
         """
         res= []
@@ -970,7 +971,7 @@ class PlominoReplicationManager(Persistent):
                 
                 #copy col values
                 for col in line:
-                    docInfos[col] = line[col]
+                    docInfos[col] = line[col].decode(file_encoding)
                 
                 #add doc infos to res
                 res.append(docInfos)
@@ -990,8 +991,11 @@ class PlominoReplicationManager(Persistent):
         #import
         nbDocDone = 0
         nbDocFailed = 0
+        counter = 0
         
         i = 2
+        logger.info("Documents count: %d" % len(fileContent))
+        txn = transaction.get()
         for docInfos in fileContent:
             try:
                 #create doc
@@ -1009,6 +1013,15 @@ class PlominoReplicationManager(Persistent):
                 self.addToReport(i, e, True)
             #next 
             i = i + 1
+            counter = counter + 1
+            if counter == 100:
+                txn.commit()
+                txn = transaction.get()
+                counter = 0
+                logger.info("%d documents imported successfully, %d errors(s) ...(still running)" % (nbDocDone, nbDocFailed))
+        if counter > 0:
+            txn.commit()
+        logger.info("Importation finished: %d documents imported successfully, %d document(s) not imported" % (nbDocDone, nbDocFailed))
         
         #re-index database
         self.refreshDB()    
