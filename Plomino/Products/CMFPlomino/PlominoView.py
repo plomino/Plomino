@@ -493,7 +493,8 @@ class PlominoView(ATFolder):
         for doc in self.getAllDocuments():
             row = [doc.getPath().split('/')[-1]]
             for col in columns:
-                row.append(str(getattr(doc, self.getIndexKey(col.id))))
+                v = getattr(doc, self.getIndexKey(col.id))
+                row.append(unicode(v).encode('utf-8'))
             data.append(row)
         return json.dumps(data)
     
