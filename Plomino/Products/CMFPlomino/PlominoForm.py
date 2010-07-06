@@ -356,7 +356,8 @@ class PlominoForm(ATFolder):
             fieldblock='<span class="plominoFieldClass">'+fieldName+'</span>'
             if creation and not(fieldblock in html_content) and request is not None:
                 html_content = "<input type='hidden' name='"+fieldName+"' value='"+str(request.get(fieldName,''))+"' />" + html_content
-            html_content = html_content.replace(fieldblock, field.getFieldRender(self, doc, editmode, creation, request=request))
+            if fieldblock in html_content:
+                html_content = html_content.replace(fieldblock, field.getFieldRender(self, doc, editmode, creation, request=request))
 
         # insert subforms
         for subformname in self.getSubforms(doc):
