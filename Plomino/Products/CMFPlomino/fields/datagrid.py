@@ -77,6 +77,8 @@ class DatagridField(BaseField):
         """
         if value is None or value == "":
             value = []
+        if isinstance(value, basestring):
+            return value
         return json.dumps(value)
     
 for f in getFields(IDatagridField).values():
