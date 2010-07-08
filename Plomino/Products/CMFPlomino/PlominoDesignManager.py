@@ -73,6 +73,8 @@ class PlominoDesignManager(Persistent):
         """
         logger.info('Refreshing database '+self.id)
         report = []
+
+        self.setStatus("Refreshing design", commit=True)
         
         # migrate to current version
         if not(hasattr(self, "plomino_version")):
@@ -164,12 +166,14 @@ class PlominoDesignManager(Persistent):
         #getAllDocuments use the PlominoIndex. To get the documents to reindex, use portal catalog
         #for d in self.getAllDocuments():
         documents = [d.getObject() for d in self.portal_catalog.search({'portal_type' : ['PlominoDocument'], 'path': '/'.join(self.getPhysicalPath())})]
-        msg = 'Existing documents: '+ str(len(documents))
+        total_docs = len(documents)
+        msg = 'Existing documents: '+ str(total_docs)
         report.append(msg)
         logger.info(msg)
         total = 0
         counter = 0
         errors = 0
+        self.setStatus("Re-indexing (0%)", commit=True)
         txn = transaction.get()
         for d in documents:
             try:
@@ -179,13 +183,15 @@ class PlominoDesignManager(Persistent):
             except:
                 errors = errors + 1
             counter = counter + 1
-            if counter == 100:
+            if counter == 10:
+                self.setStatus("Re-indexing (%d%%)" % int(100*(total+errors)/total_docs))
                 txn.commit()
                 txn = transaction.get()
                 counter = 0
                 logger.info("%d documents re-indexed successfully, %d errors(s) ...(still running)" % (total, errors))
         if counter > 0:
             txn.commit()
+        self.setStatus("Ready", commit=True)
         msg = "%d documents re-indexed successfully, %d errors(s)" % (total, errors)
         report.append(msg)
         logger.info(msg)
@@ -692,6 +698,7 @@ class PlominoDesignManager(Persistent):
         """
         """
         logger.info("Start design import")
+        self.setStatus("Importing design", commit=True)
         self.getIndex().no_refresh = True
         if REQUEST:
             f=REQUEST.get("file")
@@ -699,32 +706,41 @@ class PlominoDesignManager(Persistent):
         xmlstring = xmlstring.replace(">\n<", "><")
         xmldoc = parseString(xmlstring)
         design = xmldoc.getElementsByTagName("design")[0]
-        e = design.firstChild
+        elements = [e for e in design.childNodes
+                        if e.nodeName in ('resource', 'element', 'dbsettings')]
         txn = transaction.get()
         count = 0
         total = 0
+        total_elements = len(elements)
+        e = design.firstChild
         while e is not None:
             name = str(e.nodeName)
-            if name == 'dbsettings':
-                logger.info("Import db settings")
-                self.importDbSettingsFromXML(e)
-            if name == 'element':
-                logger.info("Import "+e.getAttribute('id'))
-                self.importElementFromXML(self, e)
-            if name == 'resource':
-                logger.info("Import resource "+e.getAttribute('id'))
-                self.importResourceFromXML(self.resources, e)
-            count = count + 1
-            total = total + 1
-            if count == 100:
+            if name in ('resource', 'element', 'dbsettings'):
+                if name == 'dbsettings':
+                    logger.info("Import db settings")
+                    self.importDbSettingsFromXML(e)
+                if name == 'element':
+                    logger.info("Import "+e.getAttribute('id'))
+                    self.importElementFromXML(self, e)
+                if name == 'resource':
+                    logger.info("Import resource "+e.getAttribute('id'))
+                    self.importResourceFromXML(self.resources, e)
+                count = count + 1
+                total = total + 1
+            if count == 10:
+                self.setStatus("Importing design (%d%%)" % int(100*total/total_elements))
+                logger.info("(%d elements committed, still running...)" % total)
                 txn.commit()
-                logger.info("(100 elements committed, still running...)")
                 txn = transaction.get()
                 count = 0
             e = e.nextSibling
+            
         if count > 0:
+            self.setStatus("Importing design (100%)")
             txn.commit()
+            
         logger.info("(%d elements imported)" % total)
+        self.setStatus("Ready", commit=True)
         self.getIndex().no_refresh = False
         
     security.declareProtected(DESIGN_PERMISSION, 'importElementFromXML')

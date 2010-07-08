@@ -34,6 +34,7 @@ from OFS.ObjectManager import ObjectManager
 from Products.CMFPlomino.PlominoUtils import *
 import string
 import Globals
+import transaction
 
 from index.PlominoIndex import PlominoIndex
 from PlominoAccessControl import PlominoAccessControl
@@ -207,6 +208,7 @@ class PlominoDatabase(ATFolder, PlominoAccessControl, PlominoDesignManager, Plom
         """
         ATFolder.__init__(self, oid, **kw)
         self.plomino_version = VERSION
+        self.setStatus("Ready")
         PlominoAccessControl.__init__(self)
 
     security.declarePublic('at_post_create_script')
@@ -223,6 +225,23 @@ class PlominoDatabase(ATFolder, PlominoAccessControl, PlominoDesignManager, Plom
         scripts.title='scripts'
         self._setObject('scripts', scripts)
 
+    security.declarePublic('getStatus')
+    def getStatus(self):
+        """return DB current status
+        """
+        return getattr(self, "plomino_db_status", "Ready")
+        
+    security.declarePublic('setStatus')
+    def setStatus(self, status, commit=False):
+        """set DB current status
+        """
+        if commit:
+            txn = transaction.get()
+            self.plomino_db_status = status
+            txn.commit()
+        else:
+            self.plomino_db_status = status
+            
     security.declarePublic('checkBeforeOpenDatabase')
     def checkBeforeOpenDatabase(self):
         """check if custom start page

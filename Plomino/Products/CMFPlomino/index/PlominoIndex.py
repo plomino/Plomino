@@ -51,16 +51,17 @@ class PlominoIndex(UniqueObject, ZCatalog, ActionProviderBase):
     def __init__(self, FULLTEXT = False):
         """
         """
+        self.no_refresh = True
         ZCatalog.__init__(self, self.getId())
         self._catalog = PlominoCatalog()
         # TODO: use TextindexNG3
         #lexicon = PLexicon('plaintext_lexicon', '', Splitter(), CaseNormalizer(), StopWordRemover())
         lexicon = PLexicon('plaintext_lexicon', '', Splitter(), CaseNormalizer())
         self._setObject('plaintext_lexicon', lexicon)
-        self.no_refresh = False
         self.createFieldIndex('Form', 'SELECTION')
         if FULLTEXT:
             self.createFieldIndex('SearchableText', 'TEXT')
+        self.no_refresh = False
 
     security.declareProtected(READ_PERMISSION, 'getParentDatabase')
     def getParentDatabase(self):
@@ -141,7 +142,9 @@ class PlominoIndex(UniqueObject, ZCatalog, ActionProviderBase):
         """
         """
         if not self.no_refresh:
+            self.getParentDatabase().setStatus("Re-indexing", commit=True)
             self.refreshCatalog()
+            self.getParentDatabase().setStatus("Ready", commit=True)
 
     security.declareProtected(READ_PERMISSION, 'dbsearch')
     def dbsearch(self,request,sortindex=None,reverse=0):

@@ -34,4 +34,16 @@
         <li><a tal:attributes="href string:${url}/createObject?type_name=PlominoAction">Action</a></li>
         </ul>
     </dd>
+    <dd class="portletItem" tal:define="status python:db.getStatus();
+                                        inprogress python:'%' in status">
+        <strong>Status</strong><br/>
+        <tal:ready tal:condition="not:inprogress" tal:content="status">status</tal:ready>
+        <tal:inprogress tal:condition="inprogress">
+            <tal:block tal:define="str_status python:status[:status.index('(')];
+                                   progress python:status[status.index('(')+1:-1]">
+                <tal:block tal:content="str_status">status</tal:block>
+                <div style="border:1px solid blue; width: 100%"><div tal:attributes="style string:width:$progress;;background-color:blue">&nbsp;</div></div>
+            </tal:block>
+        </tal:inprogress>
+    </dd>
 </dl>
