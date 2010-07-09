@@ -44,4 +44,6 @@ class BaseField(object):
     def processInput(self, strValue):
         """
         """
+        if type(strValue) == str:
+            strValue = strValue.decode('utf-8')
         return strValue

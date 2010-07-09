@@ -348,7 +348,7 @@ Check the documents imported
     >>> allDocumentsIndexes = db.allArticle.getAllDocuments()
     >>> allDocuments = [d.getObject() for d in allDocumentsIndexes]
     >>> [d.editDate for d in allDocuments]
-    ['2009/07/29', '2009/08/29']
+    [u'2009/07/29', u'2009/08/29']
     >>> [d.articleTitle for d in allDocuments]
-    ['test1', 'test2']
+    [u'test1', u'test2']
     
