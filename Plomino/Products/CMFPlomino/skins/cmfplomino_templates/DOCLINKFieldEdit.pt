@@ -51,11 +51,11 @@
 			</tal:documents>
 		</table>
 	</tal:widget>
-	<tal:widget tal:condition="python:test(widget=='GTABLE')"
+	<tal:widget tal:condition="python:test(widget=='DYNAMICTABLE')"
 	       tal:define="jscode python:options['field'].getSettings().jscode(selection, current);">
-        <script type='text/javascript' src='http://www.google.com/jsapi'></script>
         <script type='text/javascript' tal:content="structure jscode"></script>
-        <div id='googlevisualization_div' tal:attributes="id string:${name}_div"></div>
+        <table id='dynamictable_table' tal:attributes="id string:${name}_table" class="display"></table>
+        <div style="clear: both"></div>
         <input type="hidden" tal:attributes="name options/fieldname; id string:${name};
                                           value python:test(current is not None,'|'.join(current),'')"/>
     </tal:widget>

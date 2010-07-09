@@ -21,6 +21,8 @@ from Products.Five.formlib.formbase import EditForm
 
 from base import IBaseField, BaseField
 
+import simplejson as json
+
 class IDoclinkField(IBaseField):
     """
     Selection field schema
@@ -28,7 +30,7 @@ class IDoclinkField(IBaseField):
     widget = Choice(vocabulary=SimpleVocabulary.fromItems([("Selection list", "SELECT"),
                                                            ("Multi-selection list", "MULTISELECT"),
                                                            ("Embedded view", "VIEW"),
-                                                           ("Google Visualization table", "GTABLE")
+                                                           ("Dynamic table", "DYNAMICTABLE")
                                                            ]),
                     title=u'Widget',
                     description=u'Field rendering',
@@ -49,10 +51,17 @@ class IDoclinkField(IBaseField):
     separator = TextLine(title=u'Separator',
                       description=u'Only apply if multi-valued',
                       required=False)
-    googletableparam = TextLine(title=u'Google table parameters',
-                    description=u'See Google visualization documentation',
-                    default=u"showRowNumber: false",
-                    required=False)
+    dynamictableparam = Text(
+        title=u"Dynamic Table Parameters",
+        description=u"Change these options to customize the dynamic table.",
+        default=u"""
+'bPaginate': false,
+'bLengthChange': false,
+'bFilter': true,
+'bSort': true,
+'bInfo': true,
+'bAutoWidth': false"""
+    )
     
 class DoclinkField(BaseField):
     """
@@ -102,7 +111,7 @@ class DoclinkField(BaseField):
             return submittedValue.split("|")
         else:
             return submittedValue
-        
+    
     def jscode(self, selectionlist, selected):
         """ return Google visualization js code
         """
@@ -114,62 +123,50 @@ class DoclinkField(BaseField):
             column_ids = [col.id for col in columns]
             column_labels = [col.Title() for col in columns]
             paths = [doc.getPath() for doc in alldocs]
-            datatable = [[getattr(doc, sourceview.getIndexKey(col)) for col in column_ids] for doc in alldocs]
+            datatable = [[doc.getPath()] + [getattr(doc, sourceview.getIndexKey(col)) for col in column_ids] for doc in alldocs]
         else:
             column_labels = [""]
             paths = [v.split('|')[1] for v in selectionlist]
-            datatable = [[v.split('|')[0]] for v in selectionlist]
+            datatable = [v.split('|')[::-1] for v in selectionlist]
             
-        loadjs = self.context.REQUEST.get('googlejsapi', False)
-        if not loadjs:
-            self.context.REQUEST.set('googlejsapi', True)
-            
+        column_dicts = [{"sTitle": col} for col in column_labels]
+        column_dicts.insert(0, {"bVisible": False})
+        
         js = """
-google.load('visualization', '1', {packages:['table']});
-google.setOnLoadCallback(drawTable);
-function drawTable() {\n"""
+var oDynamicTable;
+$(document).ready(function() {
+    o_%(id)s_DynamicTable = $('#%(id)s_table').dataTable( {
+        'aaData': %(data)s,
+        'aoColumns': %(cols)s,
+        'aaSorting': [],
+        'fnRowCallback': function (nRow, aData, iDisplayIndex) {
+            var iId = aData[0];
+            if ('%(selected)s'.indexOf(iId) != -1)
+                $(nRow).addClass('row_selected');
+            return nRow;
+        },
+        %(params)s
+    });
+ 
+    $('#%(id)s_table tbody tr').live('click', function () {
+        var aData = o_%(id)s_DynamicTable.fnGetData( this );
+        var iId = aData[0];
         
-        js = js + "var %s_mapping = new Array(%s);\n" % (field_id,  ", ".join(["'"+p+"'" for p in paths]) )
-        if selected is None or len(selected)==0:
-            js_selected = ""
-        else:
-            js_selected = ", ".join(['{row:%d, column: null}' % paths.index(s) for s in selected if s in paths])
-            
-        js = js + "var %s_selected = new Array(%s);\n" % (field_id, js_selected )
+        var docInput = document.getElementById('%(id)s');
         
-        js = js + "var %s_data = new google.visualization.DataTable();\n" % (field_id)
+        var selectedDocs = docInput.value;
+        selectedDocs = selectedDocs.indexOf(iId) == -1 ? selectedDocs + iId + '|' : selectedDocs.replace(iId + '|', '');
+        docInput.value = selectedDocs;
         
-        for col in column_labels:
-            #TODO: accept other types than string
-            js = js + "  %s_data.addColumn('string', '%s');\n" % (field_id, col)
+        $(this).toggleClass('row_selected');
+    } );
+ });
+""" % {"id": field_id,
+       "data": json.dumps(datatable),
+       "cols": json.dumps(column_dicts),
+       "params": self.dynamictableparam,
+       "selected": '|'.join(selected)}
 
-        js_table = ", ".join(["[" + ", ".join(["'"+str(cell)+"'" for cell in row]) + "]" for row in datatable])
-        js = js + "  %s_data.addRows([%s]);\n" % (field_id, js_table)
-#        i = 0
-#        for row in datatable:
-#            j = 0
-#            for cell in row:
-#                js = js + field_id +"_data.setCell(" + str(i) + ", " + str(j) + ", '" + cell + "');\n"
-#                j = j + 1
-#            i = i + 1
-        js = js + """
- var %s_table = new google.visualization.Table(document.getElementById('%s_div'));
- %s_table.draw(%s_data, {%s});\n""" % (field_id, field_id, field_id, field_id, self.googletableparam)
-
-        js = js + "%s_table.setSelection(%s_selected);\n" % (field_id, field_id)
-        js = js + """
-                google.visualization.events.addListener(%s_table, 'select',
-                  function(event) {
-                    selection = %s_table.getSelection();
-                    v = ""
-                    for(var i = 0; i < selection.length; i++) {
-                        v = v + %s_mapping[selection[i].row] + "|";
-                    }
-                    field = document.getElementById('%s');
-                    field.value = v;
-                  });
-        """ % (field_id, field_id, field_id, field_id)
-        js = js + "}"
         return js
     
 for f in getFields(IDoclinkField).values():
