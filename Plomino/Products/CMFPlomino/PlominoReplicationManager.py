@@ -1132,6 +1132,7 @@ class PlominoReplicationManager(Persistent):
         """
         """
         logger.info("Start documents import")
+        self.setStatus("Importing documents (0%)", commit=True)
         txn = transaction.get()
         if REQUEST:
             f=REQUEST.get("file")
@@ -1140,7 +1141,8 @@ class PlominoReplicationManager(Persistent):
         documents = xmldoc.getElementsByTagName("document")
         errors = 0
         imports = 0
-        logger.info("Documents count: %d" % len(documents))
+        total_docs = len(documents)
+        logger.info("Documents count: %d" % total_docs)
         counter = 0
         for d in documents:
             docid = d.getAttribute('id')
@@ -1154,12 +1156,14 @@ class PlominoReplicationManager(Persistent):
                 errors = errors + 1
             counter = counter + 1
             if counter == 100:
+                self.setStatus("Importing documents (%d%%)" % int(100*counter/total_docs))
                 txn.commit()
                 txn = transaction.get()
                 counter = 0
                 logger.info("%d documents imported successfully, %d errors(s) ...(still running)" % (imports, errors))
         if counter > 0:
             txn.commit()
+        self.setStatus("Ready", commit=True)
         logger.info("Importation finished: %d documents imported successfully, %d document(s) not imported" % (imports, errors))
         return (imports, errors)
             
