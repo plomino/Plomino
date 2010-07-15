@@ -1,0 +1,4 @@
+<tal:block
+	tal:define="filter here/REQUEST/sSearch|nothing;
+				echo here/REQUEST/sEcho;"
+	tal:replace="python:here.getSettings().getFilteredNames(filter, echo)"></tal:block>

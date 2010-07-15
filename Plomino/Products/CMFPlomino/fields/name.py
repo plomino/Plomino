@@ -22,6 +22,8 @@ from Products.CMFCore.utils import getToolByName
 
 from base import IBaseField, BaseField
 
+import simplejson as json
+
 class INameField(IBaseField):
     """
     Name field schema
@@ -32,6 +34,14 @@ class INameField(IBaseField):
                     title=u'Type',
                     description=u'Single or multi valued name field',
                     default="SINGLE",
+                    required=True)
+    selector = Choice(vocabulary=SimpleVocabulary.fromItems([("Select in a list", "LIST"),
+                                                           ("Fill a field", "FIELD"),
+                                                           ("Search", "SEARCH")
+                                                           ]),
+                    title=u'Selection mode',
+                    description=u'How the name is selected.',
+                    default="LIST",
                     required=True)
     restricttogroup = TextLine(title=u'Restrict to group',
                       description=u'The field will only display member of the following group. Empty = no group restriction.',
@@ -80,6 +90,31 @@ class NameField(BaseField):
                 return fullname
         else:
             return userid
+    
+    def getFilteredNames(self, filter, echo):
+        """Return a JSON list of users, usable by JQuery DataTables, filtered by name.
+        The 'echo' parameter is required by JQuery DataTables, and must be sent back unchanged.
+        """
+        if filter:
+            if self.restricttogroup and self.restricttogroup != '':
+                group = self.context.portal_groups.getGroupById(self.restricttogroup)
+                if group is not None:
+                    all = [(m.getProperty('id'), m.getProperty("fullname")) for m in group.getGroupMembers()]
+                else:
+                    all = []
+            elif not(self.context.getParentDatabase().getDoNotListUsers()):
+                all = [(m.getId(), m.getProperty("fullname")) for m in self.context.getPortalMembers()]
+            else:
+                all = []
+        else:
+            all = []
+        
+        result  = [list(l) for l in all if filter in l[0] or filter in l[1]]
+        return json.dumps({"aaData": result,
+                           "sEcho": int(echo),
+                           "iTotalRecords": len(result),
+                           "iTotalDisplayRecords": len(result)})
+    
         
 for f in getFields(INameField).values():
     setattr(NameField, f.getName(), DictionaryProperty(f, 'parameters'))

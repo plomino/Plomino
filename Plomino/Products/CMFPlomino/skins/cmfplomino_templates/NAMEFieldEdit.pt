@@ -1,26 +1,106 @@
 <span tal:define="fieldname options/fieldname;
                 fieldvalue options/fieldvalue;
                 selection options/selection;
-				type python:options['field'].getSettings('type')">
+				type python:options['field'].getSettings('type');
+				selector python:options['field'].getSettings('selector');">
+	
 	<tal:listusers tal:condition="python:test(selection)">
-		<select tal:condition="python:test(not(type=='MULTI'))" tal:attributes="name fieldname">
-			<tal:block tal:repeat="v selection">
-				<tal:block tal:define="current fieldvalue;l python:v.split('|')">
-					<option 
-						tal:attributes="value python:l[1]; selected python:test(current==l[1],1,0)"
-						tal:content="python:l[0]">value</option>
+		<tal:block tal:condition="python:test(selector=='LIST')">
+			<select tal:condition="python:test(not(type=='MULTI'))" tal:attributes="name fieldname">
+				<tal:block tal:repeat="v selection">
+					<tal:block tal:define="current fieldvalue;l python:v.split('|')">
+						<option 
+							tal:attributes="value python:l[1]; selected python:test(current==l[1],1,0)"
+							tal:content="python:l[0]">value</option>
+					</tal:block>
 				</tal:block>
-			</tal:block>
-		</select>
-		<select tal:condition="python:test(type=='MULTI')" tal:attributes="name fieldname" multiple="true" lines="4">
-			<tal:block tal:repeat="v selection">
-				<tal:block tal:define="current fieldvalue;l python:v.split('|')">
-					<option 
-						tal:attributes="value python:l[1]; selected python:test(current and l[1] in current,1,0)"
-						tal:content="python:l[0]">value</option>
+			</select>
+			<select tal:condition="python:test(type=='MULTI')" tal:attributes="name fieldname" multiple="true" lines="4">
+				<tal:block tal:repeat="v selection">
+					<tal:block tal:define="current fieldvalue;l python:v.split('|')">
+						<option 
+							tal:attributes="value python:l[1]; selected python:test(current and l[1] in current,1,0)"
+							tal:content="python:l[0]">value</option>
+					</tal:block>
 				</tal:block>
-			</tal:block>
-		</select>
+			</select>
+		</tal:block>
+
+		<tal:block tal:condition="python:test(selector=='FIELD')">
+			<input type="text" tal:attributes="name fieldname; value fieldvalue" />
+		</tal:block>
+		
+		<tal:block tal:condition="python:test(selector=='SEARCH')"
+			tal:define="fieldpath options/field/absolute_url_path">
+			<script type="text/javascript" tal:content="structure string:
+			 	function ${fieldname}_delete_row(elt) {
+					var rows = $('#${fieldname}_datagrid_result > tbody > tr');
+					if (rows.length <= 1)
+						$('#${fieldname}_datagrid_result > tbody').append('<tr><td></td><td><input type=\'hidden\' name=\'${fieldname}\' value=\'\' /></td></tr>');
+					$(elt).closest('tr').remove();
+			 	}
+	
+			 	function ${fieldname}_add_row() {
+			 		var selected = o_${fieldname}_datagrid.fnGetData(this)[0];
+			 		var tablebody = $('#${fieldname}_datagrid_result > tbody');
+			 		if (tablebody.has('input[value=' + selected + ']').length == 0) {
+			 			tablebody.children().has('input[value=]').remove()
+				 		var row = $('<tr><td>' + selected + '</td><td>' +
+						 			'<img alt=\'Remove\' src=\'delete_icon.gif\' onclick=\'${fieldname}_delete_row(this)\' />' +
+							 		'<input type=\'hidden\' name=\'${fieldname}\' value=\'' + selected + '\' /></td></tr>');
+				 		tablebody.append(row);
+			 		}
+			 	}
+			 	
+				var o_${fieldname}_datagrid;
+				$(document).ready(function() {
+					o_${fieldname}_datagrid = $('#${fieldname}_datagrid').dataTable( {
+						'sAjaxSource': '${fieldpath}/filterednames',
+						'bServerSide': true,
+						'bProcessing': true,
+						'bSort': false,
+						'bInfo': false,
+						'bAutoWidth': false,
+						'sDom': 'lrtip',
+						'fnDrawCallback': function() {
+						 	$('#${fieldname}_datagrid > tbody > tr').click(${fieldname}_add_row);
+					 	}
+				 	} );
+				 	
+				 	$('#${fieldname}_search').click(function() {
+				 		o_${fieldname}_datagrid.fnFilter(document.getElementById('${fieldname}_searchfield').value);
+				 	} );
+				} );
+				">
+			</script>
+			
+			<table tal:attributes="id python:fieldname + '_datagrid_result'">
+				<tbody tal:define="fieldvalue python:isinstance(fieldvalue, basestring) and [fieldvalue] or fieldvalue">
+					<tr tal:repeat="v fieldvalue">
+						<td tal:content="v"></td>
+						<td>
+							<img alt="Remove" src="delete_icon.gif" tal:attributes="onclick string:${fieldname}_delete_row(this)" />
+							<input type="hidden" tal:attributes="name fieldname; value v" />
+						</td>
+					</tr>
+				</tbody>
+			</table>
+			
+			<p style="text-align: right; margin:0">
+				<!--<label tal:attributes="for python:fieldname + '_search'" class="discreet">Search a name:</label>-->
+				<input type="text" tal:attributes="id python:fieldname + '_searchfield'" />
+				<input type="button" value="Search" class="context"
+					tal:attributes="id string:${fieldname}_search" />
+			</p>
+			<table class="display" tal:attributes="id python:fieldname + '_datagrid';">
+				<thead>
+					<tr>
+						<th>Identifier</th>
+						<th>Name</th>
+					</tr>
+				</thead>
+			</table>
+		</tal:block>
 	</tal:listusers>
 	<tal:nolistusers tal:condition="python:test(not(selection))">
 		<input type="text" tal:attributes="name fieldname; value fieldvalue" />

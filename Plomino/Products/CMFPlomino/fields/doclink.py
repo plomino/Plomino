@@ -30,7 +30,8 @@ class IDoclinkField(IBaseField):
     widget = Choice(vocabulary=SimpleVocabulary.fromItems([("Selection list", "SELECT"),
                                                            ("Multi-selection list", "MULTISELECT"),
                                                            ("Embedded view", "VIEW"),
-                                                           ("Dynamic table", "DYNAMICTABLE")
+                                                           ("Dynamic table", "DYNAMICTABLE"),
+                                                           ("Dynamic picklist", "PICKLIST")
                                                            ]),
                     title=u'Widget',
                     description=u'Field rendering',
@@ -55,8 +56,8 @@ class IDoclinkField(IBaseField):
         title=u"Dynamic Table Parameters",
         description=u"Change these options to customize the dynamic table.",
         default=u"""
-'bPaginate': false,
-'bLengthChange': false,
+'bPaginate': true,
+'bLengthChange': true,
 'bFilter': true,
 'bSort': true,
 'bInfo': true,
@@ -82,7 +83,13 @@ class DoclinkField(BaseField):
             if v is None:
                 return []
             else:
-                return [getattr(d, v.getIndexKey(self.labelcolumn), '')+"|"+d.getPath() for d in v.getAllDocuments()]
+                result = []
+                for d in v.getAllDocuments():
+                    val = getattr(d, v.getIndexKey(self.labelcolumn), '')
+                    if not val:
+                        val = ''
+                    result.append(val + "|" + d.getPath())
+                return result
         else:
             #if no doc provided (if OpenForm action), we use the PlominoForm
             if doc is None:
@@ -112,62 +119,105 @@ class DoclinkField(BaseField):
         else:
             return submittedValue
     
-    def jscode(self, selectionlist, selected):
-        """ return Google visualization js code
+    def tojson(self, selectionlist):
+        """Return a JSON table storing documents to be displayed
         """
-        field_id = self.context.id
         if self.sourceview is not None:
             sourceview = self.context.getParentDatabase().getView(self.sourceview)
             alldocs = sourceview.getAllDocuments()
             columns = sourceview.getColumns()
             column_ids = [col.id for col in columns]
+            
+            datatable = []
+            for doc in alldocs:
+                row = [doc.getPath()]
+                for col in column_ids:
+                    cell = getattr(doc, sourceview.getIndexKey(col))
+                    if not cell:
+                        cell = ''
+                    row.append(cell)
+                datatable.append(row)
+        else:
+            datatable = [v.split('|')[::-1] for v in selectionlist]
+            
+        return json.dumps(datatable)
+    
+    def getJQueryColumns(self):
+        """Returns a JSON representation of columns headers, designed for JQuery DataTables
+        """
+        if self.sourceview is not None:
+            sourceview = self.context.getParentDatabase().getView(self.sourceview)
+            columns = sourceview.getColumns()
             column_labels = [col.Title() for col in columns]
-            paths = [doc.getPath() for doc in alldocs]
-            datatable = [[doc.getPath()] + [getattr(doc, sourceview.getIndexKey(col)) for col in column_ids] for doc in alldocs]
         else:
             column_labels = [""]
-            paths = [v.split('|')[1] for v in selectionlist]
-            datatable = [v.split('|')[::-1] for v in selectionlist]
             
         column_dicts = [{"sTitle": col} for col in column_labels]
         column_dicts.insert(0, {"bVisible": False})
         
-        js = """
-var oDynamicTable;
-$(document).ready(function() {
-    o_%(id)s_DynamicTable = $('#%(id)s_table').dataTable( {
-        'aaData': %(data)s,
-        'aoColumns': %(cols)s,
-        'aaSorting': [],
-        'fnRowCallback': function (nRow, aData, iDisplayIndex) {
-            var iId = aData[0];
-            if ('%(selected)s'.indexOf(iId) != -1)
-                $(nRow).addClass('row_selected');
-            return nRow;
-        },
-        %(params)s
-    });
- 
-    $('#%(id)s_table tbody tr').live('click', function () {
-        var aData = o_%(id)s_DynamicTable.fnGetData( this );
-        var iId = aData[0];
-        
-        var docInput = document.getElementById('%(id)s');
-        
-        var selectedDocs = docInput.value;
-        selectedDocs = selectedDocs.indexOf(iId) == -1 ? selectedDocs + iId + '|' : selectedDocs.replace(iId + '|', '');
-        docInput.value = selectedDocs;
-        
-        $(this).toggleClass('row_selected');
-    } );
- });
-""" % {"id": field_id,
-       "data": json.dumps(datatable),
-       "cols": json.dumps(column_dicts),
-       "params": self.dynamictableparam,
-       "selected": '|'.join(selected)}
-
-        return js
+        return json.dumps(column_dicts)
+    
+    def getColumnLabelIndex(self):
+        """Return the column index used to display the document label
+        """
+        return [col.id for col in self.context.getParentDatabase().getView(self.sourceview).getColumns()].index(self.labelcolumn);
+    
+#    def jscode(self, selectionlist, selected):
+#        """ return JQueryDataTables js code
+#        """
+#        field_id = self.context.id
+#        if self.sourceview is not None:
+#            sourceview = self.context.getParentDatabase().getView(self.sourceview)
+#            alldocs = sourceview.getAllDocuments()
+#            columns = sourceview.getColumns()
+#            column_ids = [col.id for col in columns]
+#            column_labels = [col.Title() for col in columns]
+#            paths = [doc.getPath() for doc in alldocs]
+#            datatable = [[doc.getPath()] + [getattr(doc, sourceview.getIndexKey(col)) for col in column_ids] for doc in alldocs]
+#        else:
+#            column_labels = [""]
+#            paths = [v.split('|')[1] for v in selectionlist]
+#            datatable = [v.split('|')[::-1] for v in selectionlist]
+#            
+#        column_dicts = [{"sTitle": col} for col in column_labels]
+#        column_dicts.insert(0, {"bVisible": False})
+#        
+#        js = """
+#var o_%(id)s_DynamicTable;
+#$(document).ready(function() {
+#    o_%(id)s_DynamicTable = $('#%(id)s_table').dataTable( {
+#        'aaData': %(data)s,
+#        'aoColumns': %(cols)s,
+#        'aaSorting': [],
+#        'fnRowCallback': function (nRow, aData, iDisplayIndex) {
+#            var iId = aData[0];
+#            if ('%(selected)s'.indexOf(iId) != -1)
+#                $(nRow).addClass('row_selected');
+#            return nRow;
+#        },
+#        %(params)s
+#    });
+# 
+#    $('#%(id)s_table tbody tr').live('click', function () {
+#        var aData = o_%(id)s_DynamicTable.fnGetData( this );
+#        var iId = aData[0];
+#        
+#        var docInput = document.getElementById('%(id)s');
+#        
+#        var selectedDocs = docInput.value;
+#        selectedDocs = selectedDocs.indexOf(iId) == -1 ? selectedDocs + iId + '|' : selectedDocs.replace(iId + '|', '');
+#        docInput.value = selectedDocs;
+#        
+#        $(this).toggleClass('row_selected');
+#    } );
+# });
+#""" % {"id": field_id,
+#       "data": json.dumps(datatable),
+#       "cols": json.dumps(column_dicts),
+#       "params": self.dynamictableparam,
+#       "selected": '|'.join(selected)}
+#
+#        return js
     
 for f in getFields(IDoclinkField).values():
     setattr(DoclinkField, f.getName(), DictionaryProperty(f, 'parameters'))
