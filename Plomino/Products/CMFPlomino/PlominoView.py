@@ -449,6 +449,8 @@ class PlominoView(ATFolder):
                 v=getattr(doc, self.getIndexKey(cname))
                 if v is None:
                     v=''
+                elif isinstance(v, basestring):
+                    v = v.encode('utf-8')
                 else:
                     v = unicode(v).encode('utf-8')
                 values.append(v)
