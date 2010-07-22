@@ -38,11 +38,13 @@
 					if (rows.length <= 1)
 						$('#${fieldname}_datagrid_result > tbody').append('<tr><td></td><td><input type=\'hidden\' name=\'${fieldname}\' value=\'\' /></td></tr>');
 					$(elt).closest('tr').remove();
+			 		${fieldname}_set_row_style();
 			 	}
 	
 			 	function ${fieldname}_add_row() {
 			 		var selected = o_${fieldname}_datagrid.fnGetData(this)[0];
 			 		var tablebody = $('#${fieldname}_datagrid_result > tbody');
+			 		// Addthe row
 			 		if (tablebody.has('input[value=' + selected + ']').length == 0) {
 			 			tablebody.children().has('input[value=]').remove()
 				 		var row = $('<tr><td>' + selected + '</td><td>' +
@@ -50,10 +52,19 @@
 							 		'<input type=\'hidden\' name=\'${fieldname}\' value=\'' + selected + '\' /></td></tr>');
 				 		tablebody.append(row);
 			 		}
+			 		${fieldname}_set_row_style();
+			 	}
+
+			 	function ${fieldname}_set_row_style() {
+			 		var tablebody = $('#${fieldname}_datagrid_result > tbody');
+			 		tablebody.children().removeClass('odd even');
+			 		tablebody.children(':even').addClass('odd');
+			 		tablebody.children(':odd').addClass('even');
 			 	}
 			 	
 				var o_${fieldname}_datagrid;
 				$(document).ready(function() {
+					// Init the datagrid
 					o_${fieldname}_datagrid = $('#${fieldname}_datagrid').dataTable( {
 						'sAjaxSource': '${fieldpath}/filterednames',
 						'bServerSide': true,
@@ -66,15 +77,19 @@
 						 	$('#${fieldname}_datagrid > tbody > tr').click(${fieldname}_add_row);
 					 	}
 				 	} );
-				 	
+
+				 	// Add the selected row to results
 				 	$('#${fieldname}_search').click(function() {
 				 		o_${fieldname}_datagrid.fnFilter(document.getElementById('${fieldname}_searchfield').value);
 				 	} );
+
+			 		${fieldname}_set_row_style();
 				} );
 				">
 			</script>
 			
-			<table tal:attributes="id python:fieldname + '_datagrid_result'">
+			<table tal:attributes="id python:fieldname + '_datagrid_result'" class="plain">
+				<caption>Selected</caption>
 				<tbody tal:define="fieldvalue python:isinstance(fieldvalue, basestring) and [fieldvalue] or fieldvalue">
 					<tr tal:repeat="v fieldvalue">
 						<td tal:content="v"></td>
@@ -87,7 +102,6 @@
 			</table>
 			
 			<p style="text-align: right; margin:0">
-				<!--<label tal:attributes="for python:fieldname + '_search'" class="discreet">Search a name:</label>-->
 				<input type="text" tal:attributes="id python:fieldname + '_searchfield'" />
 				<input type="button" value="Search" class="context"
 					tal:attributes="id string:${fieldname}_search" />

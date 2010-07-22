@@ -100,7 +100,7 @@
 	    			data python:options['field'].getSettings().tojson(selection);
 	    			cols python:options['field'].getSettings().getJQueryColumns();
 	    			params python:options['field'].getSettings('dynamictableparam');
-	    			selected python:'|'.join(current);
+	    			selected python:isinstance(current, basestring) and current or '|'.join(current);
 	    			colindex python:options['field'].getSettings().getColumnLabelIndex();
 	    			">
         <script type='text/javascript' tal:content="structure string:
@@ -109,6 +109,7 @@
 				if (rows.length <= 1)
 					$('#${name}_table_result > tbody').append('<tr><td></td><td><input type=\'hidden\' name=\'${name}\' value=\'\' /></td></tr>');
 				$(elt).closest('tr').remove();
+		 		${name}_set_row_style();
 		 	}
 
 		 	function ${name}_add_row(data) {
@@ -120,6 +121,14 @@
 						 		'<input type=\'hidden\' name=\'${name}\' value=\'' + data[0] + '\' /></td></tr>');
 			 		tablebody.append(row);
 		 		}
+		 		${name}_set_row_style();
+		 	}
+
+		 	function ${name}_set_row_style() {
+		 		var tablebody = $('#${name}_table_result > tbody');
+		 		tablebody.children().removeClass('odd even');
+		 		tablebody.children(':even').addClass('odd');
+		 		tablebody.children(':odd').addClass('even');
 		 	}
 			
 			var o_${fieldid}_table;
@@ -142,7 +151,8 @@
 			});
 		"></script>
 			
-		<table tal:attributes="id python:name + '_table_result'">
+		<table tal:attributes="id python:name + '_table_result'" class="plain">
+			<caption>Selected</caption>
 			<tbody></tbody>
 		</table>
 		
