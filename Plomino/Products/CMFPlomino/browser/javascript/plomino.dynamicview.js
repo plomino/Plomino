@@ -18,8 +18,8 @@ function generateTableFooter(nFoot, aasData, iStart, iEnd, aiDisplay ) {
 		
     	// Table which stores sums
     	var result = [];
-    	var ths = $('#dynamictable thead > tr > th').each(function (index, element) {
-    		if ($(element).hasClass('displaysum'))
+    	var ths = jq('#dynamictable thead > tr > th').each(function (index, element) {
+    		if (jq(element).hasClass('displaysum'))
 				result[index] = 0;
     	});
 
@@ -65,8 +65,8 @@ function addCheckboxToRow (nRow, aData, iDisplayIndex) {
 		// Add a onclick event on every existing td of the row
 		for (var i = 0; i < nRow.childNodes.length; i++) {
 			var node = nRow.childNodes[i];
-			if ($("a", node).length == 0) {
-				$(node).css('cursor', 'pointer');
+			if (jq("a", node).length == 0) {
+				jq(node).css('cursor', 'pointer');
 				node.onclick = function(event) {
 					window.location.href = oDynamicTable.fnGetData(oDynamicTable.fnGetPosition(nRow))[0];
 				}
@@ -77,11 +77,11 @@ function addCheckboxToRow (nRow, aData, iDisplayIndex) {
 		var cb = document.createElement('input');
 		cb.setAttribute('type', 'checkbox');
 		// click changes the style of the row
-		$(cb).click(function() {
-			if ( $(nRow).hasClass('row_selected') )
-				$(nRow).removeClass('row_selected');
+		jq(cb).click(function() {
+			if ( jq(nRow).hasClass('row_selected') )
+				jq(nRow).removeClass('row_selected');
 			else
-				$(nRow).addClass('row_selected');
+				jq(nRow).addClass('row_selected');
 	
 		});
 		

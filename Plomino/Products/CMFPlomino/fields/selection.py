@@ -52,7 +52,7 @@ class SelectionField(BaseField):
     implements(ISelectionField)
     
     def getSelectionList(self, doc):
-        """return a list, format: label|value, use label as value if no label
+        """return the values list, format: label|value, use label as value if no label
         """
 
         #if formula available, use formula, else use manual entries

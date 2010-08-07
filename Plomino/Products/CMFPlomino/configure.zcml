@@ -3,8 +3,7 @@
            xmlns:five="http://namespaces.zope.org/five">
   
   <include package="collective.js.jqueryui" />
-  <include package="plone.app.jquerytools" />
-  
+     
   <include file="profiles.zcml" />
 
   <include package=".fields"/>

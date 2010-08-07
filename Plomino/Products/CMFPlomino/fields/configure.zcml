@@ -120,7 +120,7 @@
         permission="plomino.DESIGN_PERMISSION"
         />
                 
-   <adapter
+   <!--<adapter
         for="Products.CMFPlomino.interfaces.IPlominoField"
         provides=".datagrid.IDatagridField"
         factory=".datagrid.DatagridField"
@@ -130,5 +130,5 @@
         for="Products.CMFPlomino.interfaces.IPlominoField"
         class=".datagrid.SettingForm"
         permission="plomino.DESIGN_PERMISSION"
-        />
+        />-->
 </configure>

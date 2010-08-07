@@ -49,62 +49,8 @@
          visible="True">
   <permission value="Modify portal content"/>
  </action>
- <action title="Settings" action_id="textsettings" category="object"
-    condition_expr="python:object.getFieldType()=='TEXT'"
-    url_expr="string:${object_url}/textsettings" visible="True"
-    i18n:attributes="title">
-  <permission value="CMFPlomino: Modify Database design"/>
- </action>
- <action title="Settings" action_id="selectionsettings" category="object"
-    condition_expr="python:object.getFieldType()=='SELECTION'"
-    url_expr="string:${object_url}/selectionsettings" visible="True"
-    i18n:attributes="title">
-  <permission value="CMFPlomino: Modify Database design"/>
- </action>
- <action title="Settings" action_id="numbersettings" category="object"
-    condition_expr="python:object.getFieldType()=='NUMBER'"
-    url_expr="string:${object_url}/numbersettings" visible="True"
-    i18n:attributes="title">
-  <permission value="CMFPlomino: Modify Database design"/>
- </action>
- <action title="Settings" action_id="datetimesettings" category="object"
-    condition_expr="python:object.getFieldType()=='DATETIME'"
-    url_expr="string:${object_url}/datetimesettings" visible="True"
-    i18n:attributes="title">
-  <permission value="CMFPlomino: Modify Database design"/>
- </action>
- <action title="Settings" action_id="namesettings" category="object"
-    condition_expr="python:object.getFieldType()=='NAME'"
-    url_expr="string:${object_url}/namesettings" visible="True"
-    i18n:attributes="title">
-  <permission value="CMFPlomino: Modify Database design"/>
- </action>
- <action title="Settings" action_id="doclinksettings" category="object"
-    condition_expr="python:object.getFieldType()=='DOCLINK'"
-    url_expr="string:${object_url}/doclinksettings" visible="True"
-    i18n:attributes="title">
-  <permission value="CMFPlomino: Modify Database design"/>
- </action>
- <action title="Settings" action_id="richtextsettings" category="object"
-    condition_expr="python:object.getFieldType()=='RICHTEXT'"
-    url_expr="string:${object_url}/richtextsettings" visible="True"
-    i18n:attributes="title">
-  <permission value="CMFPlomino: Modify Database design"/>
- </action>
- <action title="Settings" action_id="googlechartsettings" category="object"
-    condition_expr="python:object.getFieldType()=='GOOGLECHART'"
-    url_expr="string:${object_url}/googlechartsettings" visible="True"
-    i18n:attributes="title">
-  <permission value="CMFPlomino: Modify Database design"/>
- </action>
- <action title="Settings" action_id="googlevisualizationsettings" category="object"
-    condition_expr="python:object.getFieldType()=='GOOGLEVISUALIZATION'"
-    url_expr="string:${object_url}/googlevisualizationsettings" visible="True"
-    i18n:attributes="title">
-     </action>
- <action title="Settings" action_id="datagridsettings" category="object"
-    condition_expr="python:object.getFieldType()=='DATAGRID'"
-    url_expr="string:${object_url}/datagridsettings" visible="True"
+ <action title="Settings" action_id="fieldsettings" category="object"
+    url_expr="python:object.absolute_url()+'/'+object.getFieldType().lower()+'settings'" visible="True"
     i18n:attributes="title">
   <permission value="CMFPlomino: Modify Database design"/>
  </action>

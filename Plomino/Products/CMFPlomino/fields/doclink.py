@@ -69,8 +69,8 @@ class DoclinkField(BaseField):
     """
     implements(IDoclinkField)
     
-    def getDocumentsList(self, doc):
-        """return a list, format: label|path_to_doc, use value is used as label if no label
+    def getSelectionList(self, doc):
+        """return the documents list, format: label|path_to_doc, use value is used as label if no label
         """
 
         #if formula available, use formula, else use view entries

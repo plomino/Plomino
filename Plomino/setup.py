@@ -24,8 +24,7 @@ setup(name='Plomino',
       zip_safe=False,
       install_requires=[
           'setuptools',
-          'Plone',
-          'plone.app.jquerytools',
+          # -*- Extra requirements: -*-
           'collective.js.jqueryui',
           'simplejson',
       ],
@@ -34,5 +33,5 @@ setup(name='Plomino',
 
       [z3c.autoinclude.plugin]
       target = plone
-      """,
+      """
       )

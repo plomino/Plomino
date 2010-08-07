@@ -176,8 +176,8 @@
 				                    params here/DynamicTableParameters;"
 				        tal:content="structure string:
 				        				var oDynamicTable;
-				        				$(document).ready(function() {
-					        				oDynamicTable = $('#dynamictable').dataTable( {
+				        				jq(document).ready(function() {
+					        				oDynamicTable = jq('#dynamictable').dataTable( {
 						        				'aaData': ${data},
 						        				'aoColumns': ${cols},
 						        				'aaSorting': [],

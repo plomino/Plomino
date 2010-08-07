@@ -58,6 +58,20 @@ class DatetimeField(BaseField):
         submittedValue = submittedValue.strip()
         # calendar widget default format is '%Y-%m-%d %H:%M'
         return StringToDate(submittedValue, '%Y-%m-%d %H:%M')
+
+    def getFieldValue(self, form, doc, editmode, creation, request):
+        """
+        """
+        fieldValue = BaseField.getFieldValue(self, form, doc, editmode, creation, request)
+        
+        mode = self.context.getFieldMode()
+        
+        if mode=="EDITABLE":
+            if doc is None and not(creation) and request is not None:
+                fieldValue = request.get(fieldName, '')
+                if not(fieldValue=='' or fieldValue is None):
+                    fieldValue = StringToDate(fieldValue, form.getParentDatabase().getDateTimeFormat())
+        return fieldValue
     
 for f in getFields(IDatetimeField).values():
     setattr(DatetimeField, f.getName(), DictionaryProperty(f, 'parameters'))

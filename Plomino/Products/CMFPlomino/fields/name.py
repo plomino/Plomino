@@ -55,8 +55,8 @@ class NameField(BaseField):
     """
     implements(INameField)
     
-    def getNamesList(self):
-        """return a list, format: fullname|userid
+    def getSelectionList(self, doc):
+        """return the Plone users list, format: fullname|userid
         """
         if self.restricttogroup and self.restricttogroup != '':
             group = self.context.portal_groups.getGroupById(self.restricttogroup)

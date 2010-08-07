@@ -16,7 +16,6 @@ from AccessControl import ClassSecurityInfo
 from Products.Archetypes.atapi import *
 from zope.interface import implements
 import interfaces
-import simplejson as json
 
 from Products.CMFPlomino import fields
 
@@ -33,6 +32,7 @@ from fields.datetime import IDatetimeField
 from fields.name import INameField
 from fields.doclink import IDoclinkField
 from ZPublisher.HTTPRequest import FileUpload
+from zope import component
 
 ##/code-section module-header
 
@@ -58,7 +58,7 @@ schema = Schema((
             description_msgid='CMFPlomino_help_FieldType',
             i18n_domain='CMFPlomino',
         ),
-        vocabulary=[[f, FIELD_TYPES[f][0]] for f in FIELD_TYPES.keys()],
+        vocabulary='type_vocabulary',
     ),
     StringField(
         name='FieldMode',
@@ -145,6 +145,13 @@ PlominoField_schema = BaseSchema.copy() + \
     schema.copy()
 
 ##code-section after-schema #fill in your manual code here
+def get_field_types():
+    field_types = FIELD_TYPES
+    for plugin_field in component.getUtilitiesFor(interfaces.IPlominoField):
+        params = plugin_field[1].plomino_field_parameters
+        field_types[str(plugin_field[0])] = [params['label'], params['index_type']]
+    return field_types
+
 ##/code-section after-schema
 
 class PlominoField(BaseContent, BrowserDefaultMixin):
@@ -200,49 +207,9 @@ class PlominoField(BaseContent, BrowserDefaultMixin):
             target = form
         else:
             target = doc
-
-        # compute the value
-        if mode=="EDITABLE":
-            if doc is None:
-                if creation and not self.Formula()=="":
-                    try:
-                        fieldValue = self.runFormulaScript("field_"+form.id+"_"+fieldName+"_formula", target, self.Formula)
-                    except Exception:
-                        fieldValue = ""
-                elif request is None:
-                    fieldValue = ""
-                else:
-                    row_data_json = request.get("Plomino_datagrid_rowdata", None)
-                    if row_data_json is not None:
-                        # datagrid form case
-                        parent_form = request.get("Plomino_Parent_Form", None)
-                        parent_field = request.get("Plomino_Parent_Field", None)
-                        data = json.loads(row_data_json)
-                        datagrid_fields = self.getParentDatabase().getForm(parent_form).getFormField(parent_field).getSettings().field_mapping.split(',')
-                        fieldValue = data[datagrid_fields.index(self.id)]
-                    else: 
-                        fieldValue = request.get(fieldName, '')
-                    if self.getFieldType()=="DATETIME" and not (fieldValue=='' or fieldValue is None):
-                        fieldValue = StringToDate(fieldValue, form.getParentDatabase().getDateTimeFormat())
-            else:
-                fieldValue = doc.getItem(fieldName)
-
-        if mode=="DISPLAY" or mode=="COMPUTED":
-            try:
-                fieldValue = self.runFormulaScript("field_"+form.id+"_"+fieldName+"_formula", target, self.Formula)
-            except Exception:
-                fieldValue = ""
-
-        if mode=="CREATION":
-            if creation:
-                # Note: on creation, there is no doc, we use self as param
-                # in formula
-                try:
-                    fieldValue = self.runFormulaScript("field_"+form.id+"_"+fieldName+"_formula", form, self.Formula)
-                except Exception:
-                    fieldValue = ""
-            else:
-                fieldValue = doc.getItem(fieldName)
+            
+        adapt = self.getSettings()
+        fieldValue = adapt.getFieldValue(form, doc, editmode, creation, request)
 
         # get the rendering template
         pt=None
@@ -257,61 +224,20 @@ class PlominoField(BaseContent, BrowserDefaultMixin):
             if not self.getFieldReadTemplate()=="":
                 pt=getattr(self.resources, self.getFieldReadTemplate()).__of__(self)
         
-        # if no custom template provided, get the template associated to the field type 
+        # if no custom template provided, get the template associated to the field type
         if pt is None:
-            fieldType = self.FieldType
-            pt=self.getRenderingTemplate(fieldType+"Field"+templatemode)
-            if pt is None:
-                pt=self.getRenderingTemplate("DefaultField"+templatemode)
+            if templatemode=="Read" and hasattr(adapt, 'read_template'):
+                pt = adapt.read_template
+            elif templatemode=="Edit" and hasattr(adapt, 'edit_template'):
+                pt = adapt.edit_template
+            else:
+                fieldType = self.FieldType
+                pt=self.getRenderingTemplate(fieldType+"Field"+templatemode)
+                if pt is None:
+                    pt=self.getRenderingTemplate("DefaultField"+templatemode)
         
-        if self.getFieldType()=="SELECTION":
-            selectionlist = ISelectionField(self).getSelectionList(target)
-        elif self.getFieldType()=="NAME" and mode=="EDITABLE" and editmode:
-            selectionlist = INameField(self).getNamesList()
-        elif self.getFieldType()=="DOCLINK":
-            selectionlist = IDoclinkField(self).getDocumentsList(target)
-        else:
-            selectionlist = None
-            
-        if self.getFieldType()=="DATAGRID" and templatemode=="Read":
-             # fieldValue is a array of arrays, where we must replace raw values with
-             # rendered values
-             try:
-                 child_form_id = self.getSettings().associated_form
-                 if child_form_id is not None:
-                     db = self.getParentDatabase()
-                     child_form = db.getForm(child_form_id)
-                     fields = self.getSettings().field_mapping.split(',')
-                     fields_obj = [child_form.getFormField(f) for f in fields]
-                     # avoid bad field ids
-                     fields_obj = [f for f in fields_obj if f is not None]
-                     fields_to_render = [f.id for f in fields_obj if f.getFieldType() not in ["DATETIME", "NUMBER", "TEXT", "RICHTEXT"]]
-                     
-                     rendered_values = []
-                     for row in fieldValue:
-                         row_values = {}
-                         j = 0
-                         for v in row:
-                             if fields[j] in fields_to_render:
-                                 row_values[fields[j]] = v
-                             j = j + 1
-                         if len(row_values) > 0:
-                             row_values['Plomino_Parent_Document'] = doc.id 
-                             tmp = TemporaryDocument(db, child_form, row_values)
-                             tmp.setItem('Form', child_form_id)
-                         rendered_row = []
-                         i = 0
-                         for f in fields:
-                             if f in fields_to_render:
-                                 rendered_row.append(tmp.getRenderedItem(f))
-                             else:
-                                 rendered_row.append(row[i])
-                             i = i + 1
-                         rendered_values.append(rendered_row)
-                     fieldValue = rendered_values
-             except:
-                 pass
-             
+        selectionlist = self.getSettings().getSelectionList(target)
+        
         try:
             return pt(fieldname=fieldName,
                 fieldvalue=fieldValue,
@@ -350,15 +276,24 @@ class PlominoField(BaseContent, BrowserDefaultMixin):
     def getSettings(self, key=None):
         """
         """
-        if hasattr(fields, self.FieldType.lower()):
-            fieldinterface = getattr(getattr(fields, self.FieldType.lower()), "I"+self.FieldType.capitalize()+"Field")
+        fieldclass = component.queryUtility(interfaces.IPlominoField, self.FieldType, None)
+        if fieldclass is None:
+            if hasattr(fields, self.FieldType.lower()):
+                fieldinterface = getattr(getattr(fields, self.FieldType.lower()), "I"+self.FieldType.capitalize()+"Field")
+            else:
+                fieldinterface = getattr(getattr(fields, "base"), "IBaseField")
         else:
-            fieldinterface = getattr(getattr(fields, "base"), "IBaseField")
+            fieldinterface = fieldclass.plomino_field_parameters['interface']
+            
         if key is None:
             return fieldinterface(self)
         else:
             return getattr(fieldinterface(self), key, None)
-                                           
+    
+    def type_vocabulary(self):
+        ALL_FIELD_TYPES = get_field_types()
+        return [[f, ALL_FIELD_TYPES[f][0]] for f in ALL_FIELD_TYPES.keys()]
+
 registerType(PlominoField, PROJECTNAME)
 # end of class PlominoField
 
