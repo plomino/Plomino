@@ -3,36 +3,21 @@ Changelog
 
 1.7
 ---
-
-* Remove dependencies with: collective.js.jquery, collective.js.jqueryui,
-plone.app.jquerytools.
-
+* Remove dependencies with: collective.js.jquery, collective.js.jqueryui, plone.app.jquerytools.
 * Dynamic hide-when.
-
 * Fields can be provided by external products as plugin utilities.
-
 * Fields improvements: picklist for names and doclinks.
-
 * Store all texts in unicode.
-
 * Lithuanian translation.
-
 * Improve import/replication/refresh performances and display a progress bar.
 
 1.6.3
 -----
-
 * Plone 4 compliant
-
-* JQueryUI accordion integration (ability to create collapsible sections 
-in forms)
-
+* JQueryUI accordion integration (ability to create collapsible sections in forms)
 * New portlet to insert a Plomino form anywhere in your Plone site
-
-* Installation using a buildout extend 
-
-* Force form for a document using ?openwithform=<formid> in the request
-
+* Installation using a buildout extend
+* Force form for a document using ?openwithform=formid in the request
 * German translation fixes
 
 1.6.2
