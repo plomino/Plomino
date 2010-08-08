@@ -1,0 +1,291 @@
+<?xml version="1.0" encoding="utf-8"?><plominodatabase id="timeline"><design><dbsettings><AboutDescription type="Products.Archetypes.Field.TextField"><![CDATA[
+&lt;p&gt;The purpose of this add is to store spatio-temporal datas.&lt;/p&gt;
+&lt;p&gt;&amp;nbsp;&lt;/p&gt;
+&lt;p&gt;You will be able to manage geolocation and date about something or someone.&lt;/p&gt;
+&lt;p&gt;For examples:&lt;/p&gt;
+&lt;ul&gt;&lt;li&gt;Show on a map the most important artist of the XVth and XVIth century :&lt;/li&gt;&lt;/ul&gt;
+&lt;a class="external-link" href="http://timemap.googlecode.com/svn/trunk/examples/basic.html"&gt;http://timemap.googlecode.com/svn/trunk/examples/basic.html&lt;/a&gt;
+&lt;ul&gt;&lt;li&gt;Show the evolution of an area on a decade :&lt;br /&gt;&lt;/li&gt;&lt;/ul&gt;
+&lt;a class="external-link" href="http://timemap.googlecode.com/svn/trunk/examples/polytween.html"&gt;http://timemap.googlecode.com/svn/trunk/examples/polytween.html&lt;/a&gt;
+&lt;ul&gt;&lt;li&gt;Collect the different species you find during you travels:&amp;nbsp;&lt;/li&gt;&lt;/ul&gt;
+&lt;a class="external-link" href="http://timemap.googlecode.com/svn/trunk/examples/pathlines.html"&gt;http://timemap.googlecode.com/svn/trunk/examples/pathlines.html&lt;/a&gt;
+&lt;p&gt;&amp;nbsp;&lt;/p&gt;
+&lt;p&gt;Let's see an example of Google Timemap on Plomino :&lt;/p&gt;
+&lt;a href="timemapDocs"&gt;Here&lt;/a&gt;]]></AboutDescription><UsingDescription type="Products.Archetypes.Field.TextField"><![CDATA[Prerequisite : A Plone website, Plomino1.6
+&lt;p&gt;&amp;nbsp;&lt;/p&gt;
+&lt;ol&gt;&lt;li&gt;Launch your Plone&lt;/li&gt;&lt;li&gt;In the "Design" tab of this website, select export file option, select&amp;nbsp; "timemapDocs (View)", "timemapDocsToJson (Agent)", "resources/timemapTemplate (Resource)" and "resources/scriptTimemap (Resource)", then click "export" button. You will get "timemap.xml" which contains all element just mentioned.&lt;br /&gt;&lt;/li&gt;&lt;li&gt;Create a Plomino database or use an existent one.&lt;/li&gt;&lt;li&gt;In the "Design" tab of your Plone website, select import from file option, browse "timemap.xml" you got on this website,  then click "import" button.&lt;/li&gt;&lt;li&gt;
+&lt;p&gt;Google timemap use google API, consequently you need an API key for your website. To get it you have to check &lt;a class="external-link" href="http://code.google.com/intl/fr/apis/maps/signup.html"&gt;http://code.google.com/intl/fr/apis/maps/signup.html&lt;/a&gt; , enter your website URL and accept conditions. When you have your api key you have to edit resources/timemapTemplate (Resource) and set the key attribute by your key on the line :&amp;nbsp; " &amp;lt;script src="http://maps.google.com/maps?file=api&amp;amp;v=2&amp;amp;key=&lt;strong&gt;ABQIAAAAHp8rDLOg2tT_jQsoSpE56xR4EqRj3RNZnoYuzojShxUjcPQKRRTCLikg6NlW5hkENrwOn8S_j-IVKA&lt;/strong&gt;"&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp; type="text/javascript"&amp;gt;&amp;lt;/script&amp;gt; ".&lt;/p&gt;
+&lt;/li&gt;&lt;li&gt;The next step is to create a PlominoForm in your Plomino Database. To make elements "displayable" in your new imported view, you have to add a selectionList named "inTimemap" with values "True" and "False". If you want to display the document in the timemap, you will have to fill the field "inTimemap" with "True".&lt;/li&gt;&lt;li&gt;The Last step is to add other fields which will give information about your items directly on the map.&amp;nbsp;
+&lt;blockquote&gt;
+&lt;ul&gt;&lt;li&gt;To add a markup point on the map:&lt;/li&gt;&lt;/ul&gt;
+You have to add two fields (TextFields) named "latitude" and "longitude".
+&lt;ul&gt;&lt;li&gt;
+&lt;p&gt;To add a markup point in the timeline:&lt;/p&gt;
+&lt;/li&gt;&lt;/ul&gt;
+&lt;p&gt;You have to add one field (TextField) named "beginDate"&lt;/p&gt;
+&lt;ul&gt;&lt;li&gt;To add a duration in the timeline:&lt;/li&gt;&lt;/ul&gt;
+You have to add two fields (TexField) named "beginDate" and "endDate", you can
+specify the year, ex: 2000, or be more precise ex: 2000-08-02.
+&lt;ul&gt;&lt;li&gt;To add a shape in the timemap:&lt;/li&gt;&lt;/ul&gt;
+&lt;p&gt;You have to add a field (TextField) name "beginShape". To fill the field "beginShape" you need a google account, then go on&amp;nbsp;&lt;a class="external-link" href="http://maps.google.com/"&gt;http://maps.google.com&lt;/a&gt; (login if you haven't done yet), then click on "my maps", create your on map, and finaly design your shape.&lt;/p&gt;
+&lt;ul&gt;&lt;li&gt;To add a scalable shape in the timemap:&lt;/li&gt;&lt;/ul&gt;
+&lt;p&gt;you need to add two fields(TextFields) named "beginShape" and "endShape".&lt;/p&gt;
+&lt;ul&gt;&lt;li&gt;To add add a description on your document:&lt;/li&gt;&lt;/ul&gt;
+&amp;nbsp;add a field(RichText) named "desc".&lt;br /&gt;&lt;br /&gt;
+&lt;p&gt;&amp;nbsp;&lt;/p&gt;
+/!\ you can't make a markup point and a SCALABLE shape.&lt;/blockquote&gt;
+&lt;/li&gt;&lt;/ol&gt;
+&lt;p&gt;&amp;nbsp;&lt;/p&gt;
+&lt;p&gt;TIPS: you can get the latitude, longitude on a Google map by entering and executing this javascript in the URL bar:&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;javascript:void(prompt('',gApplication.getMap().getCenter()));&lt;/em&gt;&lt;/p&gt;
+&lt;p&gt;&amp;nbsp;&lt;/p&gt;
+&lt;p&gt;&amp;nbsp;&lt;/p&gt;
+]]></UsingDescription><IndexAttachments type="Products.Archetypes.Field.BooleanField">False</IndexAttachments><FulltextIndex type="Products.Archetypes.Field.BooleanField">False</FulltextIndex><debugMode type="Products.Archetypes.Field.BooleanField">False</debugMode><StorageAttachments type="Products.Archetypes.Field.BooleanField">False</StorageAttachments><CountDocuments type="Products.Archetypes.Field.BooleanField">False</CountDocuments><DateTimeFormat type="Products.Archetypes.Field.StringField">%Y/%m/%d</DateTimeFormat><StartPage type="Products.Archetypes.Field.StringField"></StartPage><DoNotListUsers type="Products.Archetypes.Field.BooleanField">False</DoNotListUsers><excludeFromNav type="Products.Archetypes.Field.BooleanField">False</excludeFromNav><acl AnomynousAccessRight="NoAccess" AuthenticatedAccessRight="NoAccess"><params id="UserRoles">
+<param>
+<value><struct>
+</struct></value>
+</param>
+</params><params id="SpecificRights">
+<param>
+<value><struct>
+<member>
+<name>specific_deletedocument</name>
+<value><string>PlominoAuthor</string></value>
+</member>
+</struct></value>
+</param>
+</params></acl></dbsettings><element id="composerForm" title="add a composer" type="PlominoForm"><id type="Products.Archetypes.Field.StringField">composerForm</id><onCreateDocument type="Products.Archetypes.Field.TextField"><![CDATA[]]></onCreateDocument><onOpenDocument type="Products.Archetypes.Field.TextField"><![CDATA[]]></onOpenDocument><onSaveDocument type="Products.Archetypes.Field.TextField"><![CDATA[]]></onSaveDocument><onDeleteDocument type="Products.Archetypes.Field.TextField"><![CDATA[]]></onDeleteDocument><beforeCreateDocument type="Products.Archetypes.Field.TextField"><![CDATA[]]></beforeCreateDocument><FormLayout type="Products.Archetypes.Field.TextField"><![CDATA[
+&lt;p&gt;First name = &lt;span class="plominoFieldClass"&gt;firstName&lt;/span&gt;&lt;/p&gt;
+&lt;p&gt;Last Name = &lt;span class="plominoFieldClass"&gt;lastName&lt;/span&gt;&lt;/p&gt;
+&lt;p&gt;Date of birth = &lt;span class="plominoFieldClass"&gt;beginDate&lt;/span&gt;&lt;/p&gt;
+&lt;p&gt;Date of death = &lt;span class="plominoFieldClass"&gt;endDate&lt;/span&gt;&lt;/p&gt;
+&lt;p&gt;Longitude = &lt;span class="plominoFieldClass"&gt;longitude&lt;/span&gt;&lt;/p&gt;
+&lt;p&gt;Latitude = &lt;span class="plominoFieldClass"&gt;latitude&lt;/span&gt;&lt;/p&gt;
+&lt;p&gt;Display in timemap = &lt;span class="plominoFieldClass"&gt;inTimemap&lt;/span&gt;&lt;/p&gt;
+&lt;p&gt;Description = &lt;span class="plominoFieldClass"&gt;desc&lt;/span&gt;&lt;/p&gt;
+]]></FormLayout><DocumentTitle type="Products.Archetypes.Field.TextField"><![CDATA["%s %s (%s-%s)" %(plominoDocument.firstName, plominoDocument.lastName, plominoDocument.birthDate, plominoDocument.deathDate)]]></DocumentTitle><ActionBarPosition type="Products.Archetypes.Field.StringField">TOP</ActionBarPosition><HideDefaultActions type="Products.Archetypes.Field.BooleanField">False</HideDefaultActions><HideInMenu type="Products.Archetypes.Field.BooleanField">False</HideInMenu><isSearchForm type="Products.Archetypes.Field.BooleanField">False</isSearchForm><isPage type="Products.Archetypes.Field.BooleanField">False</isPage><SearchView type="Products.Archetypes.Field.StringField"></SearchView><SearchFormula type="Products.Archetypes.Field.TextField"><![CDATA[]]></SearchFormula><Position type="Products.Archetypes.Field.IntegerField"/><excludeFromNav type="Products.Archetypes.Field.BooleanField">False</excludeFromNav><elements><element id="firstName" title="First name" type="PlominoField"><id type="Products.Archetypes.Field.StringField">firstName</id><FieldType type="Products.Archetypes.Field.StringField">TEXT</FieldType><FieldMode type="Products.Archetypes.Field.StringField">EDITABLE</FieldMode><Formula type="Products.Archetypes.Field.TextField"><![CDATA[]]></Formula><FieldReadTemplate type="Products.Archetypes.Field.StringField"></FieldReadTemplate><FieldEditTemplate type="Products.Archetypes.Field.StringField"></FieldEditTemplate><Mandatory type="Products.Archetypes.Field.BooleanField">False</Mandatory><ValidationFormula type="Products.Archetypes.Field.TextField"><![CDATA[]]></ValidationFormula><ToBeIndexed type="Products.Archetypes.Field.BooleanField">True</ToBeIndexed></element><element id="inTimemap" title="Display in timemap ?" type="PlominoField"><id type="Products.Archetypes.Field.StringField">inTimemap</id><FieldType type="Products.Archetypes.Field.StringField">SELECTION</FieldType><FieldMode type="Products.Archetypes.Field.StringField">EDITABLE</FieldMode><Formula type="Products.Archetypes.Field.TextField"><![CDATA[]]></Formula><FieldReadTemplate type="Products.Archetypes.Field.StringField"></FieldReadTemplate><FieldEditTemplate type="Products.Archetypes.Field.StringField"></FieldEditTemplate><Mandatory type="Products.Archetypes.Field.BooleanField">False</Mandatory><ValidationFormula type="Products.Archetypes.Field.TextField"><![CDATA[]]></ValidationFormula><ToBeIndexed type="Products.Archetypes.Field.BooleanField">False</ToBeIndexed><params>
+<param>
+<value><struct>
+<member>
+<name>selectionlist</name>
+<value><array><data>
+<value><string>False</string></value>
+<value><string>True</string></value>
+</data></array></value>
+</member>
+</struct></value>
+</param>
+</params></element><element id="lastName" title="Last name" type="PlominoField"><id type="Products.Archetypes.Field.StringField">lastName</id><FieldType type="Products.Archetypes.Field.StringField">TEXT</FieldType><FieldMode type="Products.Archetypes.Field.StringField">EDITABLE</FieldMode><Formula type="Products.Archetypes.Field.TextField"><![CDATA[]]></Formula><FieldReadTemplate type="Products.Archetypes.Field.StringField"></FieldReadTemplate><FieldEditTemplate type="Products.Archetypes.Field.StringField"></FieldEditTemplate><Mandatory type="Products.Archetypes.Field.BooleanField">False</Mandatory><ValidationFormula type="Products.Archetypes.Field.TextField"><![CDATA[]]></ValidationFormula><ToBeIndexed type="Products.Archetypes.Field.BooleanField">False</ToBeIndexed></element><element id="beginDate" title="birthDate" type="PlominoField"><id type="Products.Archetypes.Field.StringField">beginDate</id><FieldType type="Products.Archetypes.Field.StringField">TEXT</FieldType><FieldMode type="Products.Archetypes.Field.StringField">EDITABLE</FieldMode><Formula type="Products.Archetypes.Field.TextField"><![CDATA[]]></Formula><FieldReadTemplate type="Products.Archetypes.Field.StringField"></FieldReadTemplate><FieldEditTemplate type="Products.Archetypes.Field.StringField"></FieldEditTemplate><Mandatory type="Products.Archetypes.Field.BooleanField">False</Mandatory><ValidationFormula type="Products.Archetypes.Field.TextField"><![CDATA[]]></ValidationFormula><ToBeIndexed type="Products.Archetypes.Field.BooleanField">False</ToBeIndexed></element><element id="endDate" title="Death date" type="PlominoField"><id type="Products.Archetypes.Field.StringField">endDate</id><FieldType type="Products.Archetypes.Field.StringField">TEXT</FieldType><FieldMode type="Products.Archetypes.Field.StringField">EDITABLE</FieldMode><Formula type="Products.Archetypes.Field.TextField"><![CDATA[]]></Formula><FieldReadTemplate type="Products.Archetypes.Field.StringField"></FieldReadTemplate><FieldEditTemplate type="Products.Archetypes.Field.StringField"></FieldEditTemplate><Mandatory type="Products.Archetypes.Field.BooleanField">False</Mandatory><ValidationFormula type="Products.Archetypes.Field.TextField"><![CDATA[]]></ValidationFormula><ToBeIndexed type="Products.Archetypes.Field.BooleanField">False</ToBeIndexed></element><element id="longitude" title="Longitude" type="PlominoField"><id type="Products.Archetypes.Field.StringField">longitude</id><FieldType type="Products.Archetypes.Field.StringField">TEXT</FieldType><FieldMode type="Products.Archetypes.Field.StringField">EDITABLE</FieldMode><Formula type="Products.Archetypes.Field.TextField"><![CDATA[]]></Formula><FieldReadTemplate type="Products.Archetypes.Field.StringField"></FieldReadTemplate><FieldEditTemplate type="Products.Archetypes.Field.StringField"></FieldEditTemplate><Mandatory type="Products.Archetypes.Field.BooleanField">False</Mandatory><ValidationFormula type="Products.Archetypes.Field.TextField"><![CDATA[]]></ValidationFormula><ToBeIndexed type="Products.Archetypes.Field.BooleanField">False</ToBeIndexed></element><element id="latitude" title="Latitude" type="PlominoField"><id type="Products.Archetypes.Field.StringField">latitude</id><FieldType type="Products.Archetypes.Field.StringField">TEXT</FieldType><FieldMode type="Products.Archetypes.Field.StringField">EDITABLE</FieldMode><Formula type="Products.Archetypes.Field.TextField"><![CDATA[]]></Formula><FieldReadTemplate type="Products.Archetypes.Field.StringField"></FieldReadTemplate><FieldEditTemplate type="Products.Archetypes.Field.StringField"></FieldEditTemplate><Mandatory type="Products.Archetypes.Field.BooleanField">False</Mandatory><ValidationFormula type="Products.Archetypes.Field.TextField"><![CDATA[]]></ValidationFormula><ToBeIndexed type="Products.Archetypes.Field.BooleanField">False</ToBeIndexed></element><element id="desc" title="Description" type="PlominoField"><id type="Products.Archetypes.Field.StringField">desc</id><FieldType type="Products.Archetypes.Field.StringField">RICHTEXT</FieldType><FieldMode type="Products.Archetypes.Field.StringField">EDITABLE</FieldMode><Formula type="Products.Archetypes.Field.TextField"><![CDATA[]]></Formula><FieldReadTemplate type="Products.Archetypes.Field.StringField"></FieldReadTemplate><FieldEditTemplate type="Products.Archetypes.Field.StringField"></FieldEditTemplate><Mandatory type="Products.Archetypes.Field.BooleanField">False</Mandatory><ValidationFormula type="Products.Archetypes.Field.TextField"><![CDATA[]]></ValidationFormula><ToBeIndexed type="Products.Archetypes.Field.BooleanField">False</ToBeIndexed></element></elements></element><element id="warForm" title="Add a war event" type="PlominoForm"><id type="Products.Archetypes.Field.StringField">warForm</id><onCreateDocument type="Products.Archetypes.Field.TextField"><![CDATA[]]></onCreateDocument><onOpenDocument type="Products.Archetypes.Field.TextField"><![CDATA[]]></onOpenDocument><onSaveDocument type="Products.Archetypes.Field.TextField"><![CDATA[]]></onSaveDocument><onDeleteDocument type="Products.Archetypes.Field.TextField"><![CDATA[]]></onDeleteDocument><beforeCreateDocument type="Products.Archetypes.Field.TextField"><![CDATA[]]></beforeCreateDocument><FormLayout type="Products.Archetypes.Field.TextField"><![CDATA[
+&lt;p&gt;Event Name = &lt;span class="plominoFieldClass"&gt;name&lt;/span&gt;&lt;/p&gt;
+&lt;p&gt;Begin's event date = &lt;span class="plominoFieldClass"&gt;beginDate&lt;/span&gt;&lt;/p&gt;
+&lt;p&gt;Begin's Shape of the event&amp;nbsp; = &lt;span class="plominoFieldClass"&gt;beginShape&lt;/span&gt;&lt;/p&gt;
+&lt;p&gt;End's event date&amp;nbsp; = &lt;span class="plominoFieldClass"&gt;endDate&lt;/span&gt;&lt;/p&gt;
+&lt;p&gt;End's Shape of the event = &lt;span class="plominoFieldClass"&gt;endShape&lt;/span&gt;&lt;/p&gt;
+&lt;p&gt;Display in timemap = &lt;span class="plominoFieldClass"&gt;inTimemap&lt;/span&gt;&lt;/p&gt;
+&lt;p&gt;Description = &lt;span class="plominoFieldClass"&gt;desc&lt;/span&gt;&lt;/p&gt;
+]]></FormLayout><DocumentTitle type="Products.Archetypes.Field.TextField"><![CDATA["%s (%s-%s)" %(plominoDocument.name, plominoDocument.beginDate, plominoDocument.endDate)]]></DocumentTitle><ActionBarPosition type="Products.Archetypes.Field.StringField">TOP</ActionBarPosition><HideDefaultActions type="Products.Archetypes.Field.BooleanField">False</HideDefaultActions><HideInMenu type="Products.Archetypes.Field.BooleanField">False</HideInMenu><isSearchForm type="Products.Archetypes.Field.BooleanField">False</isSearchForm><isPage type="Products.Archetypes.Field.BooleanField">False</isPage><SearchView type="Products.Archetypes.Field.StringField"></SearchView><SearchFormula type="Products.Archetypes.Field.TextField"><![CDATA[]]></SearchFormula><Position type="Products.Archetypes.Field.IntegerField"/><excludeFromNav type="Products.Archetypes.Field.BooleanField">False</excludeFromNav><elements><element id="name" title="War name" type="PlominoField"><id type="Products.Archetypes.Field.StringField">name</id><FieldType type="Products.Archetypes.Field.StringField">TEXT</FieldType><FieldMode type="Products.Archetypes.Field.StringField">EDITABLE</FieldMode><Formula type="Products.Archetypes.Field.TextField"><![CDATA[]]></Formula><FieldReadTemplate type="Products.Archetypes.Field.StringField"></FieldReadTemplate><FieldEditTemplate type="Products.Archetypes.Field.StringField"></FieldEditTemplate><Mandatory type="Products.Archetypes.Field.BooleanField">False</Mandatory><ValidationFormula type="Products.Archetypes.Field.TextField"><![CDATA[]]></ValidationFormula><ToBeIndexed type="Products.Archetypes.Field.BooleanField">False</ToBeIndexed></element><element id="endDate" title="End's war date" type="PlominoField"><id type="Products.Archetypes.Field.StringField">endDate</id><FieldType type="Products.Archetypes.Field.StringField">TEXT</FieldType><FieldMode type="Products.Archetypes.Field.StringField">EDITABLE</FieldMode><Formula type="Products.Archetypes.Field.TextField"><![CDATA[]]></Formula><FieldReadTemplate type="Products.Archetypes.Field.StringField"></FieldReadTemplate><FieldEditTemplate type="Products.Archetypes.Field.StringField"></FieldEditTemplate><Mandatory type="Products.Archetypes.Field.BooleanField">False</Mandatory><ValidationFormula type="Products.Archetypes.Field.TextField"><![CDATA[]]></ValidationFormula><ToBeIndexed type="Products.Archetypes.Field.BooleanField">False</ToBeIndexed></element><element id="beginDate" title="Begin's war date" type="PlominoField"><id type="Products.Archetypes.Field.StringField">beginDate</id><FieldType type="Products.Archetypes.Field.StringField">TEXT</FieldType><FieldMode type="Products.Archetypes.Field.StringField">EDITABLE</FieldMode><Formula type="Products.Archetypes.Field.TextField"><![CDATA[]]></Formula><FieldReadTemplate type="Products.Archetypes.Field.StringField"></FieldReadTemplate><FieldEditTemplate type="Products.Archetypes.Field.StringField"></FieldEditTemplate><Mandatory type="Products.Archetypes.Field.BooleanField">False</Mandatory><ValidationFormula type="Products.Archetypes.Field.TextField"><![CDATA[]]></ValidationFormula><ToBeIndexed type="Products.Archetypes.Field.BooleanField">False</ToBeIndexed></element><element id="beginShape" title="Begin's war shape" type="PlominoField"><id type="Products.Archetypes.Field.StringField">beginShape</id><FieldType type="Products.Archetypes.Field.StringField">TEXT</FieldType><FieldMode type="Products.Archetypes.Field.StringField">EDITABLE</FieldMode><Formula type="Products.Archetypes.Field.TextField"><![CDATA[]]></Formula><FieldReadTemplate type="Products.Archetypes.Field.StringField"></FieldReadTemplate><FieldEditTemplate type="Products.Archetypes.Field.StringField"></FieldEditTemplate><Mandatory type="Products.Archetypes.Field.BooleanField">False</Mandatory><ValidationFormula type="Products.Archetypes.Field.TextField"><![CDATA[]]></ValidationFormula><ToBeIndexed type="Products.Archetypes.Field.BooleanField">False</ToBeIndexed></element><element id="endShape" title="End's war shape" type="PlominoField"><id type="Products.Archetypes.Field.StringField">endShape</id><FieldType type="Products.Archetypes.Field.StringField">TEXT</FieldType><FieldMode type="Products.Archetypes.Field.StringField">EDITABLE</FieldMode><Formula type="Products.Archetypes.Field.TextField"><![CDATA[]]></Formula><FieldReadTemplate type="Products.Archetypes.Field.StringField"></FieldReadTemplate><FieldEditTemplate type="Products.Archetypes.Field.StringField"></FieldEditTemplate><Mandatory type="Products.Archetypes.Field.BooleanField">False</Mandatory><ValidationFormula type="Products.Archetypes.Field.TextField"><![CDATA[]]></ValidationFormula><ToBeIndexed type="Products.Archetypes.Field.BooleanField">False</ToBeIndexed></element><element id="desc" title="Description" type="PlominoField"><id type="Products.Archetypes.Field.StringField">desc</id><FieldType type="Products.Archetypes.Field.StringField">RICHTEXT</FieldType><FieldMode type="Products.Archetypes.Field.StringField">EDITABLE</FieldMode><Formula type="Products.Archetypes.Field.TextField"><![CDATA[]]></Formula><FieldReadTemplate type="Products.Archetypes.Field.StringField"></FieldReadTemplate><FieldEditTemplate type="Products.Archetypes.Field.StringField"></FieldEditTemplate><Mandatory type="Products.Archetypes.Field.BooleanField">False</Mandatory><ValidationFormula type="Products.Archetypes.Field.TextField"><![CDATA[]]></ValidationFormula><ToBeIndexed type="Products.Archetypes.Field.BooleanField">False</ToBeIndexed></element><element id="inTimemap" title="element displayable in timemap ?" type="PlominoField"><id type="Products.Archetypes.Field.StringField">inTimemap</id><FieldType type="Products.Archetypes.Field.StringField">SELECTION</FieldType><FieldMode type="Products.Archetypes.Field.StringField">EDITABLE</FieldMode><Formula type="Products.Archetypes.Field.TextField"><![CDATA[]]></Formula><FieldReadTemplate type="Products.Archetypes.Field.StringField"></FieldReadTemplate><FieldEditTemplate type="Products.Archetypes.Field.StringField"></FieldEditTemplate><Mandatory type="Products.Archetypes.Field.BooleanField">False</Mandatory><ValidationFormula type="Products.Archetypes.Field.TextField"><![CDATA[]]></ValidationFormula><ToBeIndexed type="Products.Archetypes.Field.BooleanField">False</ToBeIndexed><params>
+<param>
+<value><struct>
+<member>
+<name>selectionlist</name>
+<value><array><data>
+<value><string>False</string></value>
+<value><string>True</string></value>
+</data></array></value>
+</member>
+</struct></value>
+</param>
+</params></element></elements></element><element id="timemapDocs" title="view documents in timemap" type="PlominoView"><id type="Products.Archetypes.Field.StringField">timemapDocs</id><SelectionFormula type="Products.Archetypes.Field.TextField"><![CDATA[plominoDocument.inTimemap=="True"]]></SelectionFormula><SortColumn type="Products.Archetypes.Field.StringField"></SortColumn><Categorized type="Products.Archetypes.Field.BooleanField">False</Categorized><FormFormula type="Products.Archetypes.Field.TextField"><![CDATA[]]></FormFormula><ReverseSorting type="Products.Archetypes.Field.BooleanField">False</ReverseSorting><ActionBarPosition type="Products.Archetypes.Field.StringField">BOTH</ActionBarPosition><HideDefaultActions type="Products.Archetypes.Field.BooleanField">False</HideDefaultActions><HideInMenu type="Products.Archetypes.Field.BooleanField">False</HideInMenu><Widget type="Products.Archetypes.Field.StringField">BASIC</Widget><DynamicTableParameters type="Products.Archetypes.Field.TextField"><![CDATA[
+'bPaginate': false,
+'bLengthChange': false,
+'bFilter': true,
+'bSort': true,
+'bInfo': false,
+'bAutoWidth': false]]></DynamicTableParameters><ViewTemplate type="Products.Archetypes.Field.StringField">timemapTemplate</ViewTemplate><Position type="Products.Archetypes.Field.IntegerField"/><excludeFromNav type="Products.Archetypes.Field.BooleanField">False</excludeFromNav><elements><element id="col1" title="begin date" type="PlominoColumn"><id type="Products.Archetypes.Field.StringField">col1</id><SelectedField type="Products.Archetypes.Field.StringField"></SelectedField><Formula type="Products.Archetypes.Field.TextField"><![CDATA[plominoDocument.beginDate]]></Formula><HiddenColumn type="Products.Archetypes.Field.BooleanField">False</HiddenColumn><DisplaySum type="Products.Archetypes.Field.BooleanField">False</DisplaySum><ContainsHTML type="Products.Archetypes.Field.BooleanField">False</ContainsHTML></element></elements></element><element id="timemapDocsToJson" title="timemap documents to json" type="PlominoAgent"><id type="Products.Archetypes.Field.StringField">timemapDocsToJson</id><Content type="Products.Archetypes.Field.TextField"><![CDATA[db=plominoDocument.getParentDatabase()
+objectList = [i.getObject() for i in db.getView("timemapDocs").getAllDocuments()]
+json = []
+json += ['[']
+i=0
+
+def is_set(var):
+    return var != "" and var is not None
+        
+for obj in objectList:
+    json += ['    {'] 
+    if is_set(obj.getItem("beginDate")):
+        json += ['        "start" : "%s",' %(obj.getItem("beginDate"))]
+        if is_set(obj.getItem("endDate")):
+            json += ['        "end" : "%s",' %(obj.getItem("endDate"))]
+    if is_set(obj.title):
+        json += ['        "title" : "%s",' %(obj.title.decode("utf8").encode("ascii","replace").replace('"', '\\"'))]
+    if is_set(obj.getItem("latitude")):
+        if is_set(obj.getItem("longitude")):
+            json += ['        "point" : { "lat" : %s, "lon" : %s },' %(obj.getItem("latitude"), obj.getItem("longitude"))]
+    if is_set(obj.getItem("beginShape")):
+        beginShape = db.callScriptMethod("scriptTimemap", "getPosListFromGML", obj.getItem("beginShape"))
+        if is_set(beginShape):
+            json += ['        "polygon" : %s,' %(beginShape)]
+            if is_set(obj.getItem("endShape")):
+                endShape = db.callScriptMethod("scriptTimemap", "getPosListFromGML", obj.getItem("endShape"))
+
+    json += ['        "options" : {']
+    if is_set(obj.getItem("desc")):
+        json += ['                        "description": "%s",' %(obj.getItem("desc").decode("utf8").encode("ascii","replace").replace('"', '\\"'))]
+    try:
+        json += ['                        "endpoly" : %s' %(endShape)]
+    except:
+        pass
+    json += ['                    },']
+    
+    json += ['    },']
+    i+=1 
+json += [']']
+
+json = u"\n".join(json)
+plominoContext.REQUEST.RESPONSE.setHeader('content-type', 'application/x-javascript')
+plominoContext.REQUEST.RESPONSE.setBody(json)]]></Content><Scheduled type="Products.Archetypes.Field.BooleanField">False</Scheduled><AgentUser type="Products.Archetypes.Field.StringField"></AgentUser><Cron type="Products.Archetypes.Field.StringField">* 1 * * *</Cron></element><resource id="timemapTemplate" title="" type="Page Template"><![CDATA[&lt;html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en"
+      lang="en"
+      metal:use-macro="here/main_template/macros/master"
+      i18n:domain="plone"&gt;
+  &lt;metal:javascript_head_slot fill-slot="javascript_head_slot"&gt;
+    &lt;script src="http://maps.google.com/maps?file=api&amp;v=2&amp;key=ABQIAAAAO-qakdV5g5hj9BUJGe4uChShAQH80EjSYjp4OPKo78zSPT19zRQ-rZyVy7nlhEwf7OesQOsfxwbB4A"
+      type="text/javascript"&gt;&lt;/script&gt;
+
+    &lt;script type="text/javascript" src="http://static.simile.mit.edu/timeline/api/timeline-api.js"&gt;&lt;/script&gt;
+    &lt;script src="http://timemap.googlecode.com/svn/trunk/timemap.js" type="text/javascript"&gt;&lt;/script&gt;
+    &lt;script type="text/javascript" src="http://timemap.googlecode.com/svn/trunk/loaders/json.js"&gt;&lt;/script&gt;
+    &lt;script type="text/javascript"
+              src="http://timemap.googlecode.com/svn/trunk/loaders/georss.js"&gt;
+    &lt;/script&gt;
+
+    &lt;link href="http://timemap.googlecode.com/svn/trunk/examples/examples.css" type="text/css" rel="stylesheet"/&gt;
+    &lt;style&gt;
+    div#timelinecontainer{ height: 300px; }
+    div#mapcontainer{ height: 300px; }
+    &lt;/style&gt;
+  &lt;/metal:javascript_head_slot&gt;
+&lt;body&gt;
+
+&lt;metal:main fill-slot="main"&gt;
+    &lt;div id="bodyContent"&gt;
+        &lt;h2 tal:content="here/Title"&gt;view title&lt;/h2&gt;
+                  
+    &lt;div id="timelinecontainer"&gt;
+            &lt;div id="timeline"&gt;&lt;/div&gt;
+        &lt;/div&gt;
+        &lt;div id="mapcontainer"&gt;
+            &lt;div id="map"&gt;&lt;/div&gt;
+        &lt;/div&gt;
+
+
+        &lt;script type="text/javascript"&gt;
+
+        function load() {
+
+            tm = TimeMap.init({
+                mapId: "map",               // Id of map div element (required)
+                timelineId: "timeline",     // Id of timeline div element (required) 
+                datasets: [
+                    {
+                        title: "timemap Dataset exemple",
+                        id: "test",
+                        type: "json_string",
+                        options: {
+                                      url: "./timemapDocsToJson/runAgent" 
+                        }
+
+            }
+        ], 
+        bandIntervals: [
+            Timeline.DateTime.YEAR, 
+            Timeline.DateTime.DECADE
+        ],
+        // make pathlines
+        dataDisplayedFunction: function(tm) {
+            // new filter chain for poly tweening
+            tm.addFilterChain("polytween",
+                function(item) {
+                    // create tween if item is visible
+                    if (item.visible) {
+                        var theme = item.opts.theme || item.dataset.opts.theme;
+                        var pm = item.placemark;
+                        var ep = item.opts.endpoly;
+                        // get tween percent
+                        var now = item.dataset.timemap.timeline.getBand(0)
+                            .getCenterVisibleDate().getTime();
+                        var start = item.event.getStart().getTime();
+                        var end = item.event.getEnd().getTime();
+                        var percent;
+                        if (now &lt; start) percent = 0;
+                        else if (now &gt; end) percent = 1;
+                        else percent = 1 - ((end - now) / (end - start));
+                        // assume the same number of vertices
+                        var points=[], pt1, pt2;
+                        for (var x=0; x&lt;pm.getVertexCount(); x++) {
+                            pt1 = pm.getVertex(x);
+                            pt2 = ep[x];
+                            points.push(new GLatLng(
+                                (pt1.lat() + ((parseFloat(pt2.lat) - pt1.lat()) * percent)),
+                                (pt1.lng() + ((parseFloat(pt2.lon) - pt1.lng()) * percent))
+                            ));
+                            // remove the old tween
+                            if (item.tween) item.map.removeOverlay(item.tween);
+                            // hide the real placemark
+                            item.placemark.hide();
+                            // show the new tween
+                            item.tween = new GPolygon(points, 
+                                         theme.polygonLineColor, 
+                                         theme.polygonLineWeight,
+                                         theme.polygonLineOpacity,
+                                         theme.fillColor,
+                                         theme.fillOpacity);
+                            item.map.addOverlay(item.tween);
+                        }
+                    } else {
+                        // remove tween if any
+                        if (item.tween) {
+                            item.map.removeOverlay(item.tween);
+                            item.tween = null;
+                        }
+                    }
+                },
+                function(item) {
+                }
+            );
+            tm.addFilter("polytween", function(item) {
+                return (item.event &amp;&amp;item.placemark &amp;&amp;
+                    !item.event.isInstant() &amp;&amp; 'getVertex' in item.placemark &amp;&amp; 
+                    item.opts.endpoly);
+            });
+            tm.filter("polytween");
+            // update map on timeline scroll
+            tm.timeline.getBand(0).addOnScrollListener(function() {
+                tm.filter("polytween");
+            });
+        }
+    });
+    
+}
+
+        
+        registerEventListener(window, 'load', load);
+        registerEventListener(window, 'unload', GUnload);
+        &lt;/script&gt;
+
+
+    &lt;/div&gt;
+&lt;/metal:main&gt;
+
+&lt;/body&gt;
+&lt;/html&gt;]]></resource><resource contenttype="text/x-unknown-content-type" id="scriptTimemap" title="" type="File"><![CDATA[ZGVmIGdldFBvc0xpc3RGcm9tR01MKGdtbFVybCk6CiAgICByZXNwb25zZSA9ICIiCiAgICBnbWwg
+PSBvcGVuX3VybChnbWxVcmwpLnNwbGl0KCJnbWw6cG9zTGlzdCIpCiAgICBjb29yZGluYXRlcyA9
+IGdtbFsxXS5yZXBsYWNlKCIgICAgICAgICAgICAiLCAiIikuc3BsaXQoIlxuIikKICAgIGlmIGxl
+bihnbWwpID09IDM6CiAgICAgICAgY29vcmRpbmF0ZXMucmVtb3ZlKGNvb3JkaW5hdGVzWzBdKQog
+ICAgICAgIGNvb3JkaW5hdGVzLnJlbW92ZShjb29yZGluYXRlc1tsZW4oY29vcmRpbmF0ZXMpLTFd
+KQogICAgICAgIGNvb3JkaW5hdGVzID0gW2Muc3BsaXQoIiAiKSBmb3IgYyBpbiBjb29yZGluYXRl
+c10KICAgICAgICBpID0gMAogICAgICAgIGZvciBjIGluIGNvb3JkaW5hdGVzOgogICAgICAgICAg
+ICBjWzBdID0gJyJsYXQiOicrY1swXQogICAgICAgICAgICBjWzFdID0gJyJsb24iOicrY1sxXQog
+ICAgICAgICAgICBjb29yZGluYXRlc1tpXSA9ICIsIi5qb2luKGMpCiAgICAgICAgICAgIGkgKz0g
+MQogICAgICAgIHJlc3BvbnNlID0gIlt7IisifSx7Ii5qb2luKGNvb3JkaW5hdGVzKSsifV0iCgog
+ICAgcmV0dXJuIHJlc3BvbnNlCg==
+]]></resource></design></plominodatabase>

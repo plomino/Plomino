@@ -1,0 +1,60 @@
+# ArchGenXML generated POT File
+# [Eric BREHAULT] <[ebrehault@gmail.com]>, 2006.
+msgid ""
+msgstr ""
+"Project-Id-Version: CMFPlomino\n"
+"POT-Creation-Date: Thu Sep 28 15:52:32 2006\n"
+"PO-Revision-Date: Thu Sep 28 15:52:32 2006\n"
+"Last-Translator: [Eric BREHAULT] <[ebrehault@gmail.com]>\n"
+"Language-Team: [Eric BREHAULT] <[ebrehault@gmail.com]>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0\n"
+"Language-Code: es\n"
+"Language-Name: Spanish\n"
+"Preferred-Encodings: utf-8\n"
+"Domain: plone\n"
+
+msgid "PlominoAction"
+msgstr "Plomino: Acción"
+
+msgid "PlominoColumn"
+msgstr "Plomino: Columna"
+
+
+msgid "PlominoDatabase"
+msgstr "Plomino: Base de datos"
+
+msgid "PlominoDocument"
+msgstr "Plomino: Documento"
+
+msgid "PlominoField"
+msgstr "Plomino: Campo"
+
+msgid "PlominoForm"
+msgstr "Plomino: Formulario"
+
+msgid "PlominoHidewhen"
+msgstr "Plomino: Ocultar cuando"
+
+msgid "PlominoView"
+msgstr "Plomino: Vista"
+
+msgid "Forms"
+msgstr "Formularios"
+
+msgid "Views"
+msgstr "Vistas"
+
+msgid "ACL"
+msgstr "ACL"
+
+msgid "About"
+msgstr "A proposito"
+
+msgid "Using"
+msgstr "Uso"
+
+msgid "Compose"
+msgstr "Componer"

@@ -23,7 +23,7 @@ def test_suite():
 #            'tests/debug.txt', package='Products.CMFPlomino',
 #            test_class=ExampleFunctionalTestCase,
 #            optionflags=doctest.NORMALIZE_WHITESPACE | doctest.ELLIPSIS),
-            #optionflags=doctest.REPORT_ONLY_FIRST_FAILURE | doctest.NORMALIZE_WHITESPACE | doctest.ELLIPSIS),
+#            #optionflags=doctest.REPORT_ONLY_FIRST_FAILURE | doctest.NORMALIZE_WHITESPACE | doctest.ELLIPSIS),
             
         ztc.ZopeDocFileSuite(
             'tests/plomino.txt', package='Products.CMFPlomino',
@@ -57,7 +57,7 @@ def setup_product():
     
     # Load the ZCML configuration for the example.tests package.
     # This can of course use <include /> to include other packages.
-    
+    import Products.CMFPlomino
     ztc.installProduct('CMFPlomino')
     
 # The order here is important: We first call the (deferred) function which
@@ -65,7 +65,7 @@ def setup_product():
 # set up this product on installation.
 
 setup_product()
-ptc.setupPloneSite(products=['CMFPlomino'])
+ptc.setupPloneSite(products=['CMFPlomino'], extension_profiles=['Products.CMFPlomino:default'])
 
 class ExampleFunctionalTestCase(ptc.FunctionalTestCase):
     """We use this class for functional integration tests that use doctest

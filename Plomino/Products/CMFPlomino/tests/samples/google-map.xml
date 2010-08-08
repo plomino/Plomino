@@ -1,0 +1,334 @@
+<?xml version="1.0" encoding="utf-8"?>
+<plominodatabase id="google-map">
+<design>
+<dbsettings>
+<AboutDescription type="Products.Archetypes.Field.TextField">
+<![CDATA[]]>
+</AboutDescription>
+<UsingDescription type="Products.Archetypes.Field.TextField">
+<![CDATA[]]>
+</UsingDescription>
+<IndexAttachments type="Products.Archetypes.Field.BooleanField">False</IndexAttachments>
+<FulltextIndex type="Products.Archetypes.Field.BooleanField">False</FulltextIndex>
+<debugMode type="Products.Archetypes.Field.BooleanField">True</debugMode>
+<StorageAttachments type="Products.Archetypes.Field.BooleanField">False</StorageAttachments>
+<CountDocuments type="Products.Archetypes.Field.BooleanField">False</CountDocuments>
+<DateTimeFormat type="Products.Archetypes.Field.StringField">%Y/%m/%d</DateTimeFormat>
+<StartPage type="Products.Archetypes.Field.StringField">mapdisplay</StartPage>
+<DoNotListUsers type="Products.Archetypes.Field.BooleanField">False</DoNotListUsers>
+<excludeFromNav type="Products.Archetypes.Field.BooleanField">False</excludeFromNav>
+<acl AnomynousAccessRight="PlominoReader" AuthenticatedAccessRight="NoAccess">
+<params id="UserRoles">
+<param>
+<value>
+<struct>
+</struct>
+</value>
+</param>
+</params>
+<params id="SpecificRights">
+<param>
+<value>
+<struct>
+<member>
+<name>specific_deletedocument</name>
+<value>
+<string>PlominoAuthor</string>
+</value>
+</member>
+</struct>
+</value>
+</param>
+</params>
+</acl>
+</dbsettings>
+<element id="frmLocation" title="Location" type="PlominoForm">
+<id type="Products.Archetypes.Field.StringField">frmLocation</id>
+<onCreateDocument type="Products.Archetypes.Field.TextField">
+<![CDATA[]]>
+</onCreateDocument>
+<onOpenDocument type="Products.Archetypes.Field.TextField">
+<![CDATA[]]>
+</onOpenDocument>
+<onSaveDocument type="Products.Archetypes.Field.TextField">
+<![CDATA[]]>
+</onSaveDocument>
+<onDeleteDocument type="Products.Archetypes.Field.TextField">
+<![CDATA[]]>
+</onDeleteDocument>
+<beforeCreateDocument type="Products.Archetypes.Field.TextField">
+<![CDATA[]]>
+</beforeCreateDocument>
+<FormLayout type="Products.Archetypes.Field.TextField">
+<![CDATA[<p>Place: <span class="plominoFieldClass">place_name</span>
+</p>
+<p>Latitude: <span class="plominoFieldClass">lat</span>
+</p>
+<p>Longitude: <span class="plominoFieldClass">lon</span>
+</p>]]>
+</FormLayout>
+<DocumentTitle type="Products.Archetypes.Field.TextField">
+<![CDATA[plominoDocument.place_name]]>
+</DocumentTitle>
+<ActionBarPosition type="Products.Archetypes.Field.StringField">TOP</ActionBarPosition>
+<HideDefaultActions type="Products.Archetypes.Field.BooleanField">False</HideDefaultActions>
+<HideInMenu type="Products.Archetypes.Field.BooleanField">False</HideInMenu>
+<isSearchForm type="Products.Archetypes.Field.BooleanField">False</isSearchForm>
+<isPage type="Products.Archetypes.Field.BooleanField">False</isPage>
+<SearchView type="Products.Archetypes.Field.StringField">
+</SearchView>
+<SearchFormula type="Products.Archetypes.Field.TextField">
+<![CDATA[]]>
+</SearchFormula>
+<Position type="Products.Archetypes.Field.IntegerField"/>
+<excludeFromNav type="Products.Archetypes.Field.BooleanField">False</excludeFromNav>
+<elements>
+<element id="place_name" title="place_name" type="PlominoField">
+<id type="Products.Archetypes.Field.StringField">place_name</id>
+<FieldType type="Products.Archetypes.Field.StringField">TEXT</FieldType>
+<FieldMode type="Products.Archetypes.Field.StringField">EDITABLE</FieldMode>
+<Formula type="Products.Archetypes.Field.TextField">
+<![CDATA[]]>
+</Formula>
+<FieldReadTemplate type="Products.Archetypes.Field.StringField">
+</FieldReadTemplate>
+<FieldEditTemplate type="Products.Archetypes.Field.StringField">
+</FieldEditTemplate>
+<Mandatory type="Products.Archetypes.Field.BooleanField">False</Mandatory>
+<ValidationFormula type="Products.Archetypes.Field.TextField">
+<![CDATA[]]>
+</ValidationFormula>
+<ToBeIndexed type="Products.Archetypes.Field.BooleanField">False</ToBeIndexed>
+</element>
+<element id="lat" title="lat" type="PlominoField">
+<id type="Products.Archetypes.Field.StringField">lat</id>
+<FieldType type="Products.Archetypes.Field.StringField">NUMBER</FieldType>
+<FieldMode type="Products.Archetypes.Field.StringField">EDITABLE</FieldMode>
+<Formula type="Products.Archetypes.Field.TextField">
+<![CDATA[]]>
+</Formula>
+<FieldReadTemplate type="Products.Archetypes.Field.StringField">
+</FieldReadTemplate>
+<FieldEditTemplate type="Products.Archetypes.Field.StringField">
+</FieldEditTemplate>
+<Mandatory type="Products.Archetypes.Field.BooleanField">False</Mandatory>
+<ValidationFormula type="Products.Archetypes.Field.TextField">
+<![CDATA[]]>
+</ValidationFormula>
+<ToBeIndexed type="Products.Archetypes.Field.BooleanField">False</ToBeIndexed>
+<params>
+<param>
+<value>
+<struct>
+<member>
+<name>type</name>
+<value>
+<string>FLOAT</string>
+</value>
+</member>
+</struct>
+</value>
+</param>
+</params>
+</element>
+<element id="lon" title="lon" type="PlominoField">
+<id type="Products.Archetypes.Field.StringField">lon</id>
+<FieldType type="Products.Archetypes.Field.StringField">NUMBER</FieldType>
+<FieldMode type="Products.Archetypes.Field.StringField">EDITABLE</FieldMode>
+<Formula type="Products.Archetypes.Field.TextField">
+<![CDATA[]]>
+</Formula>
+<FieldReadTemplate type="Products.Archetypes.Field.StringField">
+</FieldReadTemplate>
+<FieldEditTemplate type="Products.Archetypes.Field.StringField">
+</FieldEditTemplate>
+<Mandatory type="Products.Archetypes.Field.BooleanField">False</Mandatory>
+<ValidationFormula type="Products.Archetypes.Field.TextField">
+<![CDATA[]]>
+</ValidationFormula>
+<ToBeIndexed type="Products.Archetypes.Field.BooleanField">False</ToBeIndexed>
+<params>
+<param>
+<value>
+<struct>
+<member>
+<name>type</name>
+<value>
+<string>FLOAT</string>
+</value>
+</member>
+</struct>
+</value>
+</param>
+</params>
+</element>
+</elements>
+</element>
+<element id="mapdisplay" title="Map" type="PlominoForm">
+<id type="Products.Archetypes.Field.StringField">mapdisplay</id>
+<onCreateDocument type="Products.Archetypes.Field.TextField">
+<![CDATA[]]>
+</onCreateDocument>
+<onOpenDocument type="Products.Archetypes.Field.TextField">
+<![CDATA[]]>
+</onOpenDocument>
+<onSaveDocument type="Products.Archetypes.Field.TextField">
+<![CDATA[]]>
+</onSaveDocument>
+<onDeleteDocument type="Products.Archetypes.Field.TextField">
+<![CDATA[]]>
+</onDeleteDocument>
+<beforeCreateDocument type="Products.Archetypes.Field.TextField">
+<![CDATA[]]>
+</beforeCreateDocument>
+<FormLayout type="Products.Archetypes.Field.TextField">
+<![CDATA[<p>
+<span class="plominoActionClass">add_location</span>
+</p>
+<p>
+<span class="plominoFieldClass">location_map</span>
+</p>]]>
+</FormLayout>
+<DocumentTitle type="Products.Archetypes.Field.TextField">
+<![CDATA[]]>
+</DocumentTitle>
+<ActionBarPosition type="Products.Archetypes.Field.StringField">BOTTOM</ActionBarPosition>
+<HideDefaultActions type="Products.Archetypes.Field.BooleanField">False</HideDefaultActions>
+<HideInMenu type="Products.Archetypes.Field.BooleanField">False</HideInMenu>
+<isSearchForm type="Products.Archetypes.Field.BooleanField">False</isSearchForm>
+<isPage type="Products.Archetypes.Field.BooleanField">True</isPage>
+<SearchView type="Products.Archetypes.Field.StringField">
+</SearchView>
+<SearchFormula type="Products.Archetypes.Field.TextField">
+<![CDATA[]]>
+</SearchFormula>
+<Position type="Products.Archetypes.Field.IntegerField"/>
+<excludeFromNav type="Products.Archetypes.Field.BooleanField">False</excludeFromNav>
+<elements>
+<element id="location_map" title="location_map" type="PlominoField">
+<id type="Products.Archetypes.Field.StringField">location_map</id>
+<FieldType type="Products.Archetypes.Field.StringField">GOOGLEVISUALIZATION</FieldType>
+<FieldMode type="Products.Archetypes.Field.StringField">DISPLAY</FieldMode>
+<Formula type="Products.Archetypes.Field.TextField">
+<![CDATA[db = plominoDocument.getParentDatabase()
+all = db.getAllDocuments()
+result = []
+for doc in all:
+  lat = doc.lat
+  lon = doc.lon
+  try:
+    description = doc.place_name.decode('utf-8', 'ignore')
+  except:
+    description = "(encoding error)"
+  result.append(['%d' % lat, '%d' % lon, "'%s'" % description])
+return result]]>
+</Formula>
+<FieldReadTemplate type="Products.Archetypes.Field.StringField">
+</FieldReadTemplate>
+<FieldEditTemplate type="Products.Archetypes.Field.StringField">
+</FieldEditTemplate>
+<Mandatory type="Products.Archetypes.Field.BooleanField">False</Mandatory>
+<ValidationFormula type="Products.Archetypes.Field.TextField">
+<![CDATA[]]>
+</ValidationFormula>
+<ToBeIndexed type="Products.Archetypes.Field.BooleanField">False</ToBeIndexed>
+<params>
+<param>
+<value>
+<struct>
+<member>
+<name>jssettings</name>
+<value>
+<string>google.load('visualization', '1', {packages:['map']});
+google.setOnLoadCallback(gvisudata_drawChart);
+var gvisudata;
+
+function gvisudata_drawChart() {
+gvisudata = new google.visualization.DataTable();
+gvisudata.addColumn('number', 'Lat');
+gvisudata.addColumn('number', 'Lon');
+gvisudata.addColumn('string', 'Name');
+gvisudata_getCells();
+var gvisudata_chart = new google.visualization.Map(document.getElementById('gvisudata_div'));
+gvisudata_chart.draw(gvisudata, {allowHtml:true, showTip:true});
+}
+</string>
+</value>
+</member>
+</struct>
+</value>
+</param>
+</params>
+</element>
+<element id="add_location" title="Add a new location" type="PlominoAction">
+<id type="Products.Archetypes.Field.StringField">add_location</id>
+<ActionType type="Products.Archetypes.Field.StringField">OPENFORM</ActionType>
+<ActionDisplay type="Products.Archetypes.Field.StringField">BUTTON</ActionDisplay>
+<Content type="Products.Archetypes.Field.TextField">
+<![CDATA[frmLocation]]>
+</Content>
+<Hidewhen type="Products.Archetypes.Field.TextField">
+<![CDATA[]]>
+</Hidewhen>
+<InActionBar type="Products.Archetypes.Field.BooleanField">False</InActionBar>
+</element>
+</elements>
+</element>
+<element id="all" title="All locations" type="PlominoView">
+<id type="Products.Archetypes.Field.StringField">all</id>
+<SelectionFormula type="Products.Archetypes.Field.TextField">
+<![CDATA[True]]>
+</SelectionFormula>
+<SortColumn type="Products.Archetypes.Field.StringField">
+</SortColumn>
+<Categorized type="Products.Archetypes.Field.BooleanField">False</Categorized>
+<FormFormula type="Products.Archetypes.Field.TextField">
+<![CDATA[]]>
+</FormFormula>
+<ReverseSorting type="Products.Archetypes.Field.BooleanField">False</ReverseSorting>
+<ActionBarPosition type="Products.Archetypes.Field.StringField">TOP</ActionBarPosition>
+<HideDefaultActions type="Products.Archetypes.Field.BooleanField">False</HideDefaultActions>
+<HideInMenu type="Products.Archetypes.Field.BooleanField">False</HideInMenu>
+<Widget type="Products.Archetypes.Field.StringField">BASIC</Widget>
+<DynamicTableParameters type="Products.Archetypes.Field.TextField">
+<![CDATA[
+'bPaginate': false,
+'bLengthChange': false,
+'bFilter': true,
+'bSort': true,
+'bInfo': true,
+'bAutoWidth': false]]>
+</DynamicTableParameters>
+<ViewTemplate type="Products.Archetypes.Field.StringField">
+</ViewTemplate>
+<Position type="Products.Archetypes.Field.IntegerField"/>
+<excludeFromNav type="Products.Archetypes.Field.BooleanField">False</excludeFromNav>
+<elements>
+<element id="place" title="place" type="PlominoColumn">
+<id type="Products.Archetypes.Field.StringField">place</id>
+<SelectedField type="Products.Archetypes.Field.StringField">
+</SelectedField>
+<Formula type="Products.Archetypes.Field.TextField">
+<![CDATA[plominoDocument.place_name]]>
+</Formula>
+<HiddenColumn type="Products.Archetypes.Field.BooleanField">False</HiddenColumn>
+<DisplaySum type="Products.Archetypes.Field.BooleanField">False</DisplaySum>
+<ContainsHTML type="Products.Archetypes.Field.BooleanField">False</ContainsHTML>
+</element>
+<element id="add_new" title="Add new location" type="PlominoAction">
+<id type="Products.Archetypes.Field.StringField">add_new</id>
+<ActionType type="Products.Archetypes.Field.StringField">OPENFORM</ActionType>
+<ActionDisplay type="Products.Archetypes.Field.StringField">
+</ActionDisplay>
+<Content type="Products.Archetypes.Field.TextField">
+<![CDATA[frmLocation]]>
+</Content>
+<Hidewhen type="Products.Archetypes.Field.TextField">
+<![CDATA[]]>
+</Hidewhen>
+<InActionBar type="Products.Archetypes.Field.BooleanField">True</InActionBar>
+</element>
+</elements>
+</element>
+</design>
+</plominodatabase>

@@ -23,8 +23,8 @@
              media="all"
              rel="stylesheet"
              rendering="import"/>
-  <stylesheet title="" cacheable="True" compression="safe" cookable="True" enabled="True"
-      expression="" id="++resource++plomino.javascript/css/smoothness/jquery-ui-1.7.3.custom.css"
+  <stylesheet title="jquery-ui-1.7.3.custom.css" cacheable="True" compression="safe" cookable="True" enabled="True"
+      expression="" id="jquery-ui-1.7.3.custom.css"
       media="screen" rel="stylesheet" rendering="import" />
       
  <!-- ##/code-section cssregistry.xml -->
