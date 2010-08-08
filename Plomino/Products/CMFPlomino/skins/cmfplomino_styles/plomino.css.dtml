@@ -78,6 +78,9 @@ table.plominoview a:hover {
 text-decoration: underline;
 }
 
+tr.datagrid_row_selected td {
+    background-color: #B0BED9;
+}
 /* Shows accordions content in TinyMCE editor */
 .mceContentBody .plomino-accordion-content {
 	border: solid 1px #f00;
