@@ -153,7 +153,7 @@ class DoclinkField(BaseField):
             column_labels = [""]
             
         column_dicts = [{"sTitle": col} for col in column_labels]
-        column_dicts.insert(0, {"bVisible": False})
+        column_dicts.insert(0, {"bVisible": False, "bSearchable": False})
         
         return json.dumps(column_dicts)
     

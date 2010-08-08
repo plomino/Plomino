@@ -507,7 +507,7 @@ class PlominoView(ATFolder):
     def getJQueryColumns(self):
         """Returns a JSON representation columns headers, designed for JQuery DataTables
         """
-        cols = [{"bVisible": False}]
+        cols = [{"bSearchable": False, "bSortable": False}]
         for col in self.getColumns():
             colInfos = {"sTitle": col.Title()}
             if (getattr(col, 'ContainsHTML', False)):

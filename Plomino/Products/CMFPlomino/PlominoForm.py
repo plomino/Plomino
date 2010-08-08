@@ -218,6 +218,18 @@ schema = Schema((
         ),
         schemata="Parameters",
     ),
+    BooleanField(
+        name='isDynamicHidewhen',
+        default=False,
+        widget=BooleanField._properties['widget'](
+            label="Dynamic Hide-when",
+            description="Hide-when are evaluated dynamically when the user enters information",
+            label_msgid='CMFPlomino_label_isDynamicHidewhen',
+            description_msgid='CMFPlomino_help_isDynamicHidewhen',
+            i18n_domain='CMFPlomino',
+        ),
+        schemata="Parameters",
+    ),
 ),
 )
 
@@ -432,14 +444,39 @@ class PlominoForm(ATFolder):
                 result = True
             start = '<span class="plominoHidewhenClass">start:'+hidewhenName+'</span>'
             end = '<span class="plominoHidewhenClass">end:'+hidewhenName+'</span>'
-            if result:
-                regexp = start+'.+?'+end
-                html_content = re.sub(regexp,'', html_content)
+            
+            if getattr(self, 'isDynamicHidewhen', False):
+                if result:
+                    style = ' style="display: none"'
+                else:
+                    style = ''
+                html_content = re.sub(start,'<div id="' + hidewhenName + '"' + style + '>', html_content)
+                html_content = re.sub(end,'</div>', html_content)
             else:
-                html_content = html_content.replace(start, '')
-                html_content = html_content.replace(end, '')
+                if result:
+                    regexp = start+'.+?'+end
+                    html_content = re.sub(regexp,'', html_content)
+                else:
+                    html_content = html_content.replace(start, '')
+                    html_content = html_content.replace(end, '')
                 
         return html_content
+    
+    security.declareProtected(READ_PERMISSION, 'getHidewhenAsJSON')
+    def getHidewhenAsJSON(self, REQUEST):
+        """
+        """
+        result = {}
+        target = TemporaryDocument(self.getParentDatabase(), self, REQUEST)
+        for hidewhen in self.getHidewhenFormulas():
+            try:
+                isHidden = self.runFormulaScript("hidewhen_"+self.id+"_"+hidewhen.id+"_formula", target, hidewhen.Formula)
+            except Exception:
+                #if error, we hide anyway
+                isHidden = True
+            result[hidewhen.id] = isHidden 
+        
+        return json.dumps(result)
                 
     security.declarePublic('formLayout')
     def formLayout(self, request=None):

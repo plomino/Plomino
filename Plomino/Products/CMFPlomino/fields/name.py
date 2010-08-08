@@ -91,9 +91,8 @@ class NameField(BaseField):
         else:
             return userid
     
-    def getFilteredNames(self, filter, echo):
-        """Return a JSON list of users, usable by JQuery DataTables, filtered by name.
-        The 'echo' parameter is required by JQuery DataTables, and must be sent back unchanged.
+    def getFilteredNames(self, filter):
+        """Return a JSON list of users, filtered by id or name.
         """
         if filter:
             if self.restricttogroup and self.restricttogroup != '':
@@ -109,11 +108,10 @@ class NameField(BaseField):
         else:
             all = []
         
-        result  = [list(l) for l in all if filter in l[0] or filter in l[1]]
-        return json.dumps({"aaData": result,
-                           "sEcho": int(echo),
-                           "iTotalRecords": len(result),
-                           "iTotalDisplayRecords": len(result)})
+        result  = [l for l in all if filter in l[0] or filter in l[1]]
+        result.sort()
+        
+        return json.dumps(result)
     
         
 for f in getFields(INameField).values():

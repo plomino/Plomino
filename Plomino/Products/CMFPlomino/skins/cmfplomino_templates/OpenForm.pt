@@ -17,6 +17,18 @@
     <tal:block tal:condition="python:here.hasGoogleVisualizationField()">
         <script type='text/javascript' src='http://www.google.com/jsapi'></script>
     </tal:block>
+    <script type="text/javascript" tal:condition="here/isDynamicHidewhen">
+    	function refreshHidewhen() {
+        	var onsuccess = function(data, textStatus, xhr) {
+            	for (var hw in data)
+                	jq('#' + hw).css('display', data[hw]?'none':'block');
+        	}
+        	jq.post('computehidewhens', jq('#plomino_form').serialize(), onsuccess, 'json');
+    	}
+    	jq(document).ready( function() {
+    		jq('#plomino_form :input').change(refreshHidewhen);
+    	});
+	</script>
 </metal:javascript_head>
 
 <metal:css fill-slot="css_slot">

@@ -8,6 +8,40 @@ from Products.CMFPlomino.fields.doclink import IDoclinkField
 import logging
 logger = logging.getLogger('Plomino migration')
 
+def migrate(db):
+    """
+    """
+    messages = []
+    if not(hasattr(db, "plomino_version")):
+        msg = migrate_to_130(db)
+        messages.append(msg)
+    if db.plomino_version=="1.3.0":
+        # no migration needed here
+        db.plomino_version = "1.4.0"
+    if db.plomino_version=="1.4.0":
+        msg = migrate_to_15(db)
+        messages.append(msg)
+    if db.plomino_version=="1.5":
+        msg = migrate_to_16(db)
+        messages.append(msg)
+    if db.plomino_version=="1.6":
+        msg = migrate_to_161(db)
+        messages.append(msg)
+    if db.plomino_version=="1.6.1":
+        # no migration needed here
+        db.plomino_version = "1.6.2"
+    if db.plomino_version=="1.6.2":
+        # no migration needed here
+        db.plomino_version = "1.6.3"
+    if db.plomino_version=="1.6.3":
+        msg = migrate_to_164(db)
+        messages.append(msg)
+    if db.plomino_version=="1.6.4":
+        msg = migrate_to_17(db)
+        messages.append(msg)
+    
+    return messages
+
 def migrate_to_130(db):
     """ PlominoField schema has been changed, all type-specific parameters
     have been removed and are now handled through specific adapters.
@@ -108,9 +142,11 @@ def migrate_to_164(db):
     db.plomino_version = "1.6.4"
     return msg
 
-def migrate_with_no_change(db, version):
-    """ Fulltext index db attribute.
+def migrate_to_17(db):
+    """ dynamic hidewhen attribute
     """
-    msg = "Migration to %s: no change" % version
-    db.plomino_version = version
+    for form in db.getForms():
+        form.setIsDynamicHidewhen(False)
+    msg = "Migration to 1.7: Dynamic hide-when initialized"
+    db.plomino_version = "1.7"
     return msg

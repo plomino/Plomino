@@ -35,7 +35,7 @@ import codecs
 import sys
 import transaction
 
-from migration.migration import migrate_with_no_change
+from migration.migration import migrate
 
 # get AT specific schemas for each Plomino class
 from Products.CMFPlomino.PlominoForm import schema as form_schema
@@ -77,43 +77,8 @@ class PlominoDesignManager(Persistent):
         self.setStatus("Refreshing design", commit=True)
         
         # migrate to current version
-        if not(hasattr(self, "plomino_version")):
-            msg = 'Migration to 1.3.0'
-            report.append(msg)
-            logger.info(msg)
-            from migration.migration import migrate_to_130
-            msg = migrate_to_130(self)
-            report.append(msg)
-            logger.info(msg)
-        if self.plomino_version=="1.3.0":
-            # no migration needed here
-            self.plomino_version = "1.4.0"
-        if self.plomino_version=="1.4.0":
-            from migration.migration import migrate_to_15
-            msg = migrate_to_15(self)
-            report.append(msg)
-            logger.info(msg)
-        if self.plomino_version=="1.5":
-            from migration.migration import migrate_to_16
-            msg = migrate_to_16(self)
-            report.append(msg)
-            logger.info(msg)
-        if self.plomino_version=="1.6":
-            from migration.migration import migrate_to_161
-            msg = migrate_to_161(self)
-            report.append(msg)
-            logger.info(msg)
-        if self.plomino_version=="1.6.1":
-            msg = migrate_with_no_change(self, "1.6.2")
-            report.append(msg)
-            logger.info(msg)
-        if self.plomino_version=="1.6.2":
-            msg = migrate_with_no_change(self, "1.6.3")
-            report.append(msg)
-            logger.info(msg)
-        if self.plomino_version=="1.6.3":
-            from migration.migration import migrate_to_164
-            msg = migrate_to_164(self)
+        messages = migrate(self)
+        for msg in messages:
             report.append(msg)
             logger.info(msg)
             

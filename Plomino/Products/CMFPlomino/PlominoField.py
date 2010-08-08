@@ -292,7 +292,9 @@ class PlominoField(BaseContent, BrowserDefaultMixin):
     
     def type_vocabulary(self):
         ALL_FIELD_TYPES = get_field_types()
-        return [[f, ALL_FIELD_TYPES[f][0]] for f in ALL_FIELD_TYPES.keys()]
+        l = [[f, ALL_FIELD_TYPES[f][0]] for f in ALL_FIELD_TYPES.keys()]
+        l.sort(key=lambda f:f[1])
+        return l
 
 registerType(PlominoField, PROJECTNAME)
 # end of class PlominoField

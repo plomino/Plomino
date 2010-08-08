@@ -84,6 +84,18 @@ text-decoration: underline;
 	margin: 3px;
 	padding: 3px;
 }
+
+/* Style of the picklist block (doclink) */
+.picklist {
+	margin-top: 5px;
+	padding: 5px;
+	border: 1px solid #ccc;
+}
+
+/* change z-index for calendar pop-up so it works in overlay */
+.calendar {
+    z-index: 1100;
+}
 /* </dtml-with> */
 
 

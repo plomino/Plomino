@@ -61,31 +61,31 @@
 	    			">
         <script type='text/javascript' tal:content="structure string:
 			var o_${fieldid}_DynamicTable;
-			$(document).ready(function() {
-			    o_${fieldid}_DynamicTable = $('#${fieldid}_table').dataTable( {
+			jq(document).ready(function() {
+			    o_${fieldid}_DynamicTable = jq('#${fieldid}_table').dataTable( {
 			        'aaData': ${data},
 			        'aoColumns': ${cols},
 			        'aaSorting': [],
 			        'fnRowCallback': function (nRow, aData, iDisplayIndex) {
 			            var iId = aData[0];
 			            if ('${selected}'.indexOf(iId) != -1)
-			                $(nRow).addClass('row_selected');
+			                jq(nRow).addClass('row_selected');
 			            return nRow;
 			        },
 			        ${params}
 			    });
 			 
-			    $('#${fieldid}_table tbody tr').live('click', function () {
+			    jq('#${fieldid}_table tbody tr').live('click', function () {
 			        var aData = o_${fieldid}_DynamicTable.fnGetData( this );
 			        var iId = aData[0];
 			        
 			        var docInput = document.getElementById('${fieldid}');
 			        
 			        var selectedDocs = docInput.value;
-			        selectedDocs = selectedDocs.indexOf(iId) == -1 ? selectedDocs + iId + '|' : selectedDocs.replace(iId + '|', '');
+			        selectedDocs = selectedDocs.indexOf(iId) == -1 ? selectedDocs + '|' + iId : selectedDocs.replace(iId + '|', '');
 			        docInput.value = selectedDocs;
 			        
-			        $$(this).toggleClass('row_selected');
+			        jq(this).toggleClass('row_selected');
 			    } );
 			});
 		"></script>
@@ -105,18 +105,21 @@
 	    			">
         <script type='text/javascript' tal:content="structure string:
 		 	function ${name}_delete_row(elt) {
-				var rows = $('#${name}_table_result > tbody > tr');
-				if (rows.length <= 1)
-					$('#${name}_table_result > tbody').append('<tr><td></td><td><input type=\'hidden\' name=\'${name}\' value=\'\' /></td></tr>');
-				$(elt).closest('tr').remove();
+				var rows = jq('#${name}_table_result > tbody > tr');
+				if (rows.length <= 1) {
+					jq('#${name}_table_result > tbody').append('<tr style=\'display: none\'><td><input type=\'hidden\' name=\'${name}\' value=\'\' /></td><td></td></tr>');
+				}
+				jq(elt).closest('tr').remove();
 		 		${name}_set_row_style();
 		 	}
 
 		 	function ${name}_add_row(data) {
-		 		var tablebody = $('#${name}_table_result > tbody');
-		 		if (tablebody.has('input[value=' + data[0] + ']').length == 0) {
-		 			tablebody.children().has('input[value=]').remove()
-			 		var row = $('<tr><td>' + data[${colindex} + 1] + '</td><td>' +
+		 		var tablebody = jq('#${name}_table_result > tbody');
+		 		//if (tablebody.has('input[value=' + data[0] + ']').length == 0) {
+		 		if (jq('#${name}_table_result > tbody:has(input[value=' + data[0] + '])').length == 0) {
+		 			//tablebody.children().has('input[value=]').remove()
+		 			jq('#${name}_table_result > tbody > *:has(input[value=])').remove()
+			 		var row = jq('<tr><td>' + data[${colindex} + 1] + '</td><td>' +
 					 			'<img alt=\'Remove\' src=\'delete_icon.gif\' onclick=\'${name}_delete_row(this)\' />' +
 						 		'<input type=\'hidden\' name=\'${name}\' value=\'' + data[0] + '\' /></td></tr>');
 			 		tablebody.append(row);
@@ -125,15 +128,15 @@
 		 	}
 
 		 	function ${name}_set_row_style() {
-		 		var tablebody = $('#${name}_table_result > tbody');
+		 		var tablebody = jq('#${name}_table_result > tbody');
 		 		tablebody.children().removeClass('odd even');
 		 		tablebody.children(':even').addClass('odd');
 		 		tablebody.children(':odd').addClass('even');
 		 	}
 			
 			var o_${fieldid}_table;
-			$$(document).ready(function() {
-			    o_${fieldid}_table = $('#${fieldid}_table').dataTable( {
+			jq(document).ready(function() {
+			    o_${fieldid}_table = jq('#${fieldid}_table').dataTable( {
 			        'aaData': ${data},
 			        'aoColumns': ${cols},
 			        'aaSorting': [],
@@ -145,14 +148,13 @@
 			        ${params}
 			    });
 			 
-			    $('#${fieldid}_table tbody tr').live('click', function () {
+			    jq('#${fieldid}_table tbody tr').live('click', function () {
 			    	${name}_add_row(o_${name}_table.fnGetData(this));
 			    } );
 			});
 		"></script>
 			
 		<table tal:attributes="id python:name + '_table_result'" class="plain">
-			<caption>Selected</caption>
 			<tbody></tbody>
 		</table>
 		

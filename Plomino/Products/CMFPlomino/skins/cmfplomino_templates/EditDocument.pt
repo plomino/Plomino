@@ -22,6 +22,18 @@
     <tal:block tal:condition="python:here.getForm().hasGoogleVisualizationField()">
         <script type='text/javascript' src='http://www.google.com/jsapi'></script>
     </tal:block>
+    <script type="text/javascript" tal:condition="python:here.getForm().isDynamicHidewhen">
+    	function refreshHidewhen() {
+        	var onsuccess = function(data, textStatus, xhr) {
+            	for (var hw in data)
+                	jq('#' + hw).css('display', data[hw]?'none':'block');
+        	}
+        	jq.post('computehidewhens', jq('#plomino_form').serialize(), onsuccess, 'json');
+    	}
+    	jq(document).ready( function() {
+    		jq('#plomino_form :input').change(refreshHidewhen);
+    	});
+	</script>
 </tal:test>
 </metal:javascript_head>
 
@@ -46,7 +58,7 @@
                        getKssClasses nocall:kssClassesView/getKssClassesInlineEditable;
                        templateId template/getId;">
 	<tal:test tal:condition="python:here.hasItem('Form')">
-	<form tal:attributes="name python:here.getForm().id" action="saveDocument" method="POST" enctype="multipart/form-data">
+	<form tal:attributes="name python:here.getForm().id" id="plomino_form" action="saveDocument" method="POST" enctype="multipart/form-data">
 	<tal:block tal:define="myF python:here.getForm();
 							b myF/ActionBarPosition|nothing">
 		<div tal:replace="structure provider:plone.abovecontenttitle" />

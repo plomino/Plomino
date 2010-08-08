@@ -4,29 +4,20 @@ function generateTableFooter(nFoot, aasData, iStart, iEnd, aiDisplay ) {
 	var hasSums = false;
 	
 	if (aiDisplay.length > 0) {
-    	// The first column is hidden, but another is displayed instead of it.
-    	
-    	// Add the required number of th in the footer
-		if (nFoot.getElementsByTagName('th').length == 0) {
-			for (var i = 0; i < aasData[0].length; i++) { 
-	        	var text = document.createTextNode("");
-				var th = document.createElement('th');
-				th.appendChild(text);
-				nFoot.appendChild(th);
-			}
-		}
-		
     	// Table which stores sums
     	var result = [];
-    	var ths = jq('#dynamictable thead > tr > th').each(function (index, element) {
+    	var ths = jq('#dynamictable > tbody > tr:first-child > td').each(function (index, element) {
     		if (jq(element).hasClass('displaysum'))
 				result[index] = 0;
+    		else
+    			result[index] = NaN;
     	});
 
     	// Sums computation of displayed data
     	for (var i = 0; i < aiDisplay.length; i++) {
-			for (var j = 0; j < aasData[0].length; j++) {
-				result[j] += Number(aasData[aiDisplay[i]][j]);
+			for (var j = 0; j <result.length; j++) {
+				if (!isNaN(result[j]))
+					result[j] += Number(aasData[aiDisplay[i]][j]);
 			}
 		}
 		
@@ -38,71 +29,23 @@ function generateTableFooter(nFoot, aasData, iStart, iEnd, aiDisplay ) {
 	        	colResult = "";
         	else
         		hasSums = true;
-        	nFoot.getElementsByTagName('th')[i].firstChild.nodeValue = colResult;
+        	jq('th', nFoot).eq(i).text(colResult);
 		}
 	}
 	
-	// No sum to display
-	if (!hasSums) {
-    	ths = nFoot.getElementsByTagName('th');
-    	for (var i = ths.length - 1; i >= 0; i--) {
-        	nFoot.removeChild(ths[i]);
-		}
-	}
+	// Display the footer if there is sums to display
+	if (!hasSums)
+    	jq(nFoot).hide();
+	else
+		jq(nFoot).show();
 }
 
-// Add a column header (th) on top of the checkboxes column
-function modifyTableHeader(nHead, aasData, iStart, iEnd, aiDisplay) {
-	if (aasData.length > 0 && nHead.childNodes.length == aasData[0].length - 1) {
-		var th = document.createElement('th');
-		nHead.insertBefore(th, nHead.firstChild);
-	}
-}
-
-// Add a checkbox to select documents in the datagrid 
-function addCheckboxToRow (nRow, aData, iDisplayIndex) {
-	if (nRow.childNodes.length == aData.length - 1) {
-		// Add a onclick event on every existing td of the row
-		for (var i = 0; i < nRow.childNodes.length; i++) {
-			var node = nRow.childNodes[i];
-			if (jq("a", node).length == 0) {
-				jq(node).css('cursor', 'pointer');
-				node.onclick = function(event) {
-					window.location.href = oDynamicTable.fnGetData(oDynamicTable.fnGetPosition(nRow))[0];
-				}
-			}
-		}
-	
-		// Create a checkbox which select the document (for a delete)
-		var cb = document.createElement('input');
-		cb.setAttribute('type', 'checkbox');
-		// click changes the style of the row
-		jq(cb).click(function() {
-			if ( jq(nRow).hasClass('row_selected') )
-				jq(nRow).removeClass('row_selected');
-			else
-				jq(nRow).addClass('row_selected');
-	
-		});
-		
-		// Add it at the beginning of the row
-		var td = document.createElement('td');
-		td.appendChild(cb);
-		nRow.insertBefore(td, nRow.firstChild);
-	}
-	
-	return nRow;
-}
-
-//
+// Returns a string storing every selected documents, separated by '@'
 function dynamicview_selecteddocuments() {
+	var docs = jq('input:checked', oDynamicTable.fnGetNodes()).toArray();
 	var docids = "";
-	var rows = oDynamicTable.fnGetNodes();
-	for (var i = 0; i < rows.length; i++) {
-		if (rows[i].firstChild.firstChild.checked) {
-			docids += oDynamicTable.fnGetData(oDynamicTable.fnGetPosition(rows[i]))[0] + "@";
-		}
-	}
+	for (var i = 0; i < docs.length; i++)
+		docids += docs[i].value + '@';
 	
 	return docids;
 }
