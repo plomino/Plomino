@@ -1,6 +1,24 @@
 Changelog
 =========
 
+1.7
+---
+
+* Remove dependencies with: collective.js.jquery, collective.js.jqueryui,
+plone.app.jquerytools.
+
+* Dynamic hide-when.
+
+* Fields can be provided by external products as plugin utilities.
+
+* Fields improvements: picklist for names and doclinks.
+
+* Store all texts in unicode.
+
+* Lithuanian translation.
+
+* Improve import/replication/refresh performances and display a progress bar.
+
 1.6.3
 -----
 

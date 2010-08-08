@@ -1,0 +1,1 @@
+Icons 'dialog-close.png' and 'list-remove.png' are extracted from the Oxygen Icons. See AUTHORS and copyright in the 'oxygen' directory.
