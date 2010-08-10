@@ -1,6 +1,15 @@
 Changelog
 =========
 
+1.7.2
+-----
+* fix delete button in Plomino views when using the Dynamic view rendering
+* fix XML import with indexed datagrid fields
+
+1.7.1
+-----
+* fix jqueryui skin elements access
+
 1.7
 ---
 * Remove dependencies with: collective.js.jquery, collective.js.jqueryui, plone.app.jquerytools.
