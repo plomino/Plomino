@@ -12,6 +12,7 @@ __docformat__ = 'plaintext'
 
 from AccessControl import ClassSecurityInfo
 from Products.CMFPlomino.config import *
+from Products.CMFPlomino.PlominoField import get_field_types
 
 from Products.ZCatalog.ZCatalog import ZCatalog
 from Products.ZCatalog.Catalog import CatalogError
@@ -88,7 +89,7 @@ class PlominoIndex(UniqueObject, ZCatalog, ActionProviderBase):
         """
         try:
             #self.addIndex(fieldname, 'KeywordIndex')
-            indextype=FIELD_TYPES[fieldtype][1]
+            indextype=get_field_types()[fieldtype][1]
             if indextype=='ZCTextIndex':
                 plaintext_extra = SimpleRecord( lexicon_id='plaintext_lexicon', index_type='Okapi BM25 Rank')
                 self.addIndex(fieldname, 'ZCTextIndex', plaintext_extra)
