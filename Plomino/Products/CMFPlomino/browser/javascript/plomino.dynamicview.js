@@ -42,7 +42,7 @@ function generateTableFooter(nFoot, aasData, iStart, iEnd, aiDisplay ) {
 
 // Returns a string storing every selected documents, separated by '@'
 function dynamicview_selecteddocuments() {
-	var docs = jq('input:checked', oDynamicTable.fnGetNodes()).toArray();
+	var docs = jq('input:checked', oDynamicTable.fnGetNodes()).get();
 	var docids = "";
 	for (var i = 0; i < docs.length; i++)
 		docids += docs[i].value + '@';
