@@ -42,11 +42,11 @@ CONFLICT_RESOLUTION_TYPE = {'localwins' : 'local wins', 'remotewins' : 'remote w
 REPLICATION_MODES = {'view' : 'view', 'edit' : 'edit', 'add' : 'add'}
 PASSWORD_DISPLAY_CAR = '*'
 PLOMINO_IMPORT_SEPARATORS = {'semicolon (;)' : ';',
-                             'coma (,)' : ',', 
+                             'comma (,)' : ',', 
                              'tabulation' : '\t', 
                              'white space' : ' ',
                              'end of line' : '\n',
-                             'dash(-)' : '-'}
+                             'dash (-)' : '-'}
 
 class PlominoReplicationManager(Persistent):
     """Plomino replication push/pull features
@@ -971,7 +971,10 @@ class PlominoReplicationManager(Persistent):
                 
                 #copy col values
                 for col in line:
-                    docInfos[col] = line[col].decode(file_encoding)
+                   v = line[col]
+                   if v is None:
+                       v = u''
+                   docInfos[col] = v.decode(file_encoding)
                 
                 #add doc infos to res
                 res.append(docInfos)
