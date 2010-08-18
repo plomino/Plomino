@@ -971,10 +971,10 @@ class PlominoReplicationManager(Persistent):
                 
                 #copy col values
                 for col in line:
-                   v = line[col]
-                   if v is None:
-                       v = u''
-                   docInfos[col] = v.decode(file_encoding)
+                    v = line[col]
+                    if v is None:
+                        v = u''
+                    docInfos[col] = v.decode(file_encoding)
                 
                 #add doc infos to res
                 res.append(docInfos)
