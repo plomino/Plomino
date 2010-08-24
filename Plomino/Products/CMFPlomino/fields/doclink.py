@@ -103,7 +103,6 @@ class DoclinkField(BaseField):
         # if values not specified, use label as value
         proper = []
         for v in s:
-            v = str(v)
             l = v.split('|')
             if len(l)==2:
                 proper.append(v)
@@ -160,7 +159,10 @@ class DoclinkField(BaseField):
     def getColumnLabelIndex(self):
         """Return the column index used to display the document label
         """
-        return [col.id for col in self.context.getParentDatabase().getView(self.sourceview).getColumns()].index(self.labelcolumn);
+        if self.sourceview:
+            return [col.id for col in self.context.getParentDatabase().getView(self.sourceview).getColumns()].index(self.labelcolumn);
+        else:
+            return 0
     
 #    def jscode(self, selectionlist, selected):
 #        """ return JQueryDataTables js code
