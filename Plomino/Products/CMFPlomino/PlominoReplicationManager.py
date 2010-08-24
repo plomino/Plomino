@@ -1007,7 +1007,7 @@ class PlominoReplicationManager(Persistent):
                 for infos in docInfos:
                     doc.setItem(infos, docInfos[infos])
                 #save
-                doc.save(refresh_index=False)
+                doc.save(creation=True, refresh_index=False)
                 #count
                 nbDocDone = nbDocDone + 1
                 
