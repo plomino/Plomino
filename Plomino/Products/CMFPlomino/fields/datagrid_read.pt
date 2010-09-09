@@ -1,11 +1,22 @@
 <tal:block tal:define="fieldname python:options['fieldname'];
                        v options/fieldvalue;
-                       datatable_api here/REQUEST/datatable_api|nothing;">
+                       datatable_api here/REQUEST/datatable_api|nothing;
+                       field python:options['field']">
 
         <script type="text/javascript" charset="utf-8"
         tal:define="data python:options['field'].getSettings().tojson(v);
-                    param python:options['field'].getSettings().getParameters();"
-        tal:content="structure string:jq(document).ready(function() {jq('#${fieldname}_datagrid').dataTable( {'aaData': ${data}, ${param} } ); } );">
+                    param python:options['field'].getSettings().getParameters();
+        			langpath python:field.restrictedTraverse('/'.join(field.getPhysicalPath()) + '/DataTables/getLanguagePath')()"
+        tal:content="structure string:
+        				jq(document).ready(function() {
+        					jq('#${fieldname}_datagrid').dataTable( {
+        						'aaData': ${data},
+        						${param},
+        						'oLanguage': {
+        							'sUrl': '${langpath}'
+        						}
+        					} );
+        				} );">
         </script>
         <table class="display" TAL:ATTRIBUTES="id string:${fieldname}_datagrid"></table>
 </tal:block>

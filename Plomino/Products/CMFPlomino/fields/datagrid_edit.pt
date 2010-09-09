@@ -2,13 +2,15 @@
                        v options/fieldvalue;
                        data python:options['field'].getSettings().tojson(v);
                        formname python:options['field'].getParentNode().id;
-                       associated_form python:options['field'].getSettings().associated_form">
+                       associated_form python:options['field'].getSettings().associated_form;
+                       field python:options['field']">
 <input type='hidden' tal:attributes="id string:${fieldname}_gridvalue;
                                      name fieldname;
                                      value data"/>
        
         <script type="text/javascript" charset="utf-8"
-        	tal:define="param python:options['field'].getSettings().getParameters();"
+        	tal:define="param python:options['field'].getSettings().getParameters();
+        				langpath python:field.restrictedTraverse('/'.join(field.getPhysicalPath()) + '/DataTables/getLanguagePath')()"
         	tal:content="structure string:var ${fieldname}_datatable;
         		jq(document).ready(function() {
 		        	${fieldname}_datatable = jq('#${fieldname}_datagrid').dataTable( {
@@ -19,7 +21,10 @@
 		        				datagrid_deselect_rows(${fieldname}_datatable);
 		        				jq(this).addClass('datagrid_row_selected');
 		        			});
-		        		}
+		        		},
+        				'oLanguage': {
+        					'sUrl': '${langpath}'
+						}
 		        	} );
         	
         			jq('#${fieldname}_addrow').click(function() {

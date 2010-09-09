@@ -164,63 +164,6 @@ class DoclinkField(BaseField):
         else:
             return 0
     
-#    def jscode(self, selectionlist, selected):
-#        """ return JQueryDataTables js code
-#        """
-#        field_id = self.context.id
-#        if self.sourceview is not None:
-#            sourceview = self.context.getParentDatabase().getView(self.sourceview)
-#            alldocs = sourceview.getAllDocuments()
-#            columns = sourceview.getColumns()
-#            column_ids = [col.id for col in columns]
-#            column_labels = [col.Title() for col in columns]
-#            paths = [doc.getPath() for doc in alldocs]
-#            datatable = [[doc.getPath()] + [getattr(doc, sourceview.getIndexKey(col)) for col in column_ids] for doc in alldocs]
-#        else:
-#            column_labels = [""]
-#            paths = [v.split('|')[1] for v in selectionlist]
-#            datatable = [v.split('|')[::-1] for v in selectionlist]
-#            
-#        column_dicts = [{"sTitle": col} for col in column_labels]
-#        column_dicts.insert(0, {"bVisible": False})
-#        
-#        js = """
-#var o_%(id)s_DynamicTable;
-#$(document).ready(function() {
-#    o_%(id)s_DynamicTable = $('#%(id)s_table').dataTable( {
-#        'aaData': %(data)s,
-#        'aoColumns': %(cols)s,
-#        'aaSorting': [],
-#        'fnRowCallback': function (nRow, aData, iDisplayIndex) {
-#            var iId = aData[0];
-#            if ('%(selected)s'.indexOf(iId) != -1)
-#                $(nRow).addClass('row_selected');
-#            return nRow;
-#        },
-#        %(params)s
-#    });
-# 
-#    $('#%(id)s_table tbody tr').live('click', function () {
-#        var aData = o_%(id)s_DynamicTable.fnGetData( this );
-#        var iId = aData[0];
-#        
-#        var docInput = document.getElementById('%(id)s');
-#        
-#        var selectedDocs = docInput.value;
-#        selectedDocs = selectedDocs.indexOf(iId) == -1 ? selectedDocs + iId + '|' : selectedDocs.replace(iId + '|', '');
-#        docInput.value = selectedDocs;
-#        
-#        $(this).toggleClass('row_selected');
-#    } );
-# });
-#""" % {"id": field_id,
-#       "data": json.dumps(datatable),
-#       "cols": json.dumps(column_dicts),
-#       "params": self.dynamictableparam,
-#       "selected": '|'.join(selected)}
-#
-#        return js
-    
 for f in getFields(IDoclinkField).values():
     setattr(DoclinkField, f.getName(), DictionaryProperty(f, 'parameters'))
 

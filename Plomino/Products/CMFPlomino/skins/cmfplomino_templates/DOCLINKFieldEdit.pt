@@ -72,6 +72,9 @@
 			                jq(nRow).addClass('row_selected');
 			            return nRow;
 			        },
+       				'oLanguage': {
+       					'sUrl': '${context/DataTables/getLanguagePath}'
+					},
 			        ${params}
 			    });
 			 
@@ -145,6 +148,9 @@
 				            if ('${selected}'.indexOf(oSettings.aoData[i]._aData[0]) != -1)
 					        	${name}_add_row(oSettings.aoData[i]._aData);
 			        },
+       				'oLanguage': {
+       					'sUrl': '${context/DataTables/getLanguagePath}'
+					},
 			        ${params}
 			    });
 			 

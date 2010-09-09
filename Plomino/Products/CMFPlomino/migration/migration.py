@@ -39,6 +39,9 @@ def migrate(db):
     if db.plomino_version=="1.6.4":
         msg = migrate_to_17(db)
         messages.append(msg)
+    if db.plomino_version=="1.7":
+        msg = migrate_to_173(db)
+        messages.append(msg)
     
     return messages
 
@@ -145,8 +148,19 @@ def migrate_to_164(db):
 def migrate_to_17(db):
     """ dynamic hidewhen attribute
     """
-    for form in db.getForms():
-        form.setIsDynamicHidewhen(False)
+    #for form in db.getForms():
+    #    form.setIsDynamicHidewhen(False)
     msg = "Migration to 1.7: Dynamic hide-when initialized"
     db.plomino_version = "1.7"
     return msg
+
+def migrate_to_173(db):
+    """ dynamic hidewhen attribute moved
+    """
+    for form in db.getForms():
+        for hidewhen in form.getHidewhenFormulas():
+            hidewhen.setIsDynamicHidewhen(False)
+    msg = "Migration to 1.7.3: Dynamic hide-when initialized"
+    db.plomino_version = "1.7.3"
+    return msg
+    

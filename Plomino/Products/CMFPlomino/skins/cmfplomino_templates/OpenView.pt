@@ -180,16 +180,15 @@
 						        				'aoColumns': ${cols},
 						        				'aaSorting': [],
 						        				${params},
-						        				fnFooterCallback: generateTableFooter
+						        				fnFooterCallback: generateTableFooter,
+						        				'oLanguage': {
+						        					'sUrl': '${context/DataTables/getLanguagePath}'
+												}
 					        				});
 					        				
 					        				var tableNodes = oDynamicTable.fnGetNodes();
 											jq('td > input:checkbox', tableNodes).change(function() {
 												jq(this).closest('tr').toggleClass('row_selected');
-											});
-											
-											jq('td:has(input:checkbox)', tableNodes).nextAll().click( function() {
-												window.location.href = jq(this).parent().find('td:first > input:checkbox').val();
 											});
 					        			});">
 			        </script>
@@ -198,13 +197,17 @@
 			        	<thead>
 			        		<tr>
 			        			<th></th>
-			        			<th tal:repeat="col cols" tal:content="col/Title"></th>
+			        			<tal:block tal:repeat="col cols">
+			        				<th tal:condition="not: col/HiddenColumn|nothing" tal:content="col/Title"></th>
+			        			</tal:block>
 			        		</tr>
 			        	</thead>
 			        	<tfoot>
 			        		<tr>
 			        			<th></th>
-			        			<th tal:repeat="col cols"></th>
+			        			<tal:block tal:repeat="col cols">
+			        				<th tal:condition="not: col/HiddenColumn|nothing"></th>
+			        			</tal:block>
 			        		</tr>
 			        	</tfoot>
 			        	<tbody>
@@ -212,7 +215,15 @@
 			        			<td>
 			        				<input type="checkbox" tal:attributes="value python:doc.getPath().split('/')[-1]" />
 			        			</td>
-			        			<td tal:repeat="col cols" style="cursor: pointer" tal:content="python:getattr(doc, here.getIndexKey(col.id))"></td>
+			        			<tal:block tal:repeat="col cols">
+			        				<td tal:condition="not: col/HiddenColumn|nothing">
+			        					<tal:block tal:define="val python:getattr(doc, here.getIndexKey(col.id)); haslink python:val and '&lt;a' in val">
+				        					<a class="viewlink" tal:condition="not:haslink" tal:attributes="href python:doc.getPath().split('/')[-1]"
+												tal:content="structure python:getattr(doc, here.getIndexKey(col.id)) or '&nbsp;'"></a>
+											<tal:block tal:condition="haslink" tal:content="structure python:getattr(doc, here.getIndexKey(col.id))"></tal:block>
+										</tal:block>
+			        				</td>
+			        			</tal:block>
 			        		</tr>
 			        	</tbody>
 			        </table>

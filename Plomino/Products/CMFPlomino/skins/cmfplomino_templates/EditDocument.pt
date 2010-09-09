@@ -22,7 +22,7 @@
     <tal:block tal:condition="python:here.getForm().hasGoogleVisualizationField()">
         <script type='text/javascript' src='http://www.google.com/jsapi'></script>
     </tal:block>
-    <script type="text/javascript" tal:condition="python:here.getForm().isDynamicHidewhen">
+    <script type="text/javascript" tal:condition="python:here.getForm().hasDynamicHidewhen()">
     	function refreshHidewhen() {
         	var onsuccess = function(data, textStatus, xhr) {
             	for (var hw in data)

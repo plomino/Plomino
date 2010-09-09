@@ -8,7 +8,7 @@
  * Displays the form (obtained by an AJAX request), and integrates it in the page.
  * - field_id: id of the datagrid field
  * - formurl: url of the form
- * - onsubmit(newrow): function called when the server returned the result of the
+ * - onsubmit(newrow, rawdata): function called when the server returned the result of the
  *  	form (second request, when the user clicks on the submit button of the sub-form)
  */
 function datagrid_show_form(field_id, formurl, onsubmit) {
@@ -27,7 +27,8 @@ function datagrid_show_form(field_id, formurl, onsubmit) {
 				jq('span[plomino]', data).each(function(){
 					rowdata.push(this.innerHTML);
 				})
-				onsubmit(rowdata);
+				var raw = jq.evalJSON(jq('#raw_values', data).text());
+				onsubmit(rowdata, raw);
 			});
 			popup.dialog('close');
 			return false;
@@ -67,18 +68,24 @@ function datagrid_get_selected_row(table) {
 }
 
 /*
- * Update the field used to send data to the server.
- * - field_id: id of the datagrid field
- * - data: 2d data array
+ * Get the correct index of the row in the field.
+ * Since DataTables don't really delete rows when asked (it just set them to null, if required),
+ * indexes of the datatable and the field are not identical, and must be corrected, by substracting
+ * every 'null' row to the index given by the datagrid.
+ *
+ * - table: JQuery DataTables object (returned by the initialisation method)
+ * - row: row we are searching for the index
  */
-function datagrid_update_field(field_id, data) {
-	for (var i = 0; i < data.length; i++) {
-		if (data[i] === null) {
-			data.splice(i, 1);
-			i--;
-		}
-	}
-    document.getElementById(field_id+'_gridvalue').value=jq.toJSON(data);
+function datagrid_get_field_index(table, row) {
+	// find the correct index of the row in the field
+	var table_data = table.fnGetData();
+	var row_index = table.fnGetPosition(row);
+	var empty_rows = 0;
+	for (var i = 0; i < row_index; i++)
+		if (!table_data[i])
+			empty_rows++;
+
+	return row_index - empty_rows;
 }
 
 /*
@@ -88,9 +95,17 @@ function datagrid_update_field(field_id, data) {
  * - formurl: url of the form used to insert data
  */
 function datagrid_add_row(table, field_id, formurl) {
-	datagrid_show_form(field_id, formurl, function(rowdata) {
+	datagrid_show_form(field_id, formurl, function(rowdata, raw) {
+		// update the datagrid
 		table.fnAddData(rowdata);
-		datagrid_update_field(field_id, table.fnGetData());
+
+		// update the field
+		var field = jq('#' + field_id + '_gridvalue');
+		var field_data = jq.evalJSON(field.val());
+		field_data.push(raw);
+		field.val(jq.toJSON(field_data));
+
+		// show buttons
 		jq('#' + field_id + '_editrow').show();
 		jq('#' + field_id + '_deleterow').show();
 	});
@@ -105,10 +120,19 @@ function datagrid_add_row(table, field_id, formurl) {
 function datagrid_edit_row(table, field_id, formurl) {
 	var row = datagrid_get_selected_row(table);
 	if (row) {
-		formurl += '&Plomino_datagrid_rowdata=' + jq.toJSON(table.fnGetData(row));
-		datagrid_show_form(field_id, formurl, function(rowdata) {
+		// get data to send
+		var field = jq('#' + field_id + '_gridvalue');
+		var field_data = jq.evalJSON(field.val());
+		var row_index = datagrid_get_field_index(table, row);
+
+		formurl += '&Plomino_datagrid_rowdata=' + jq.toJSON(field_data[row_index]);
+		datagrid_show_form(field_id, formurl, function(rowdata, raw) {
+			// update the datagrid
 			table.fnUpdate(rowdata, row);
-			datagrid_update_field(field_id, table.fnGetData());
+
+			// update the field
+			field_data[row_index] = raw;
+			field.val(jq.toJSON(field_data));
 		});
 	}
 	else {
@@ -124,8 +148,17 @@ function datagrid_edit_row(table, field_id, formurl) {
 function datagrid_delete_row(table, field_id) {
 	var row = datagrid_get_selected_row(table);
 	if (row) {
+		// find the correct index of the row in the field
+		var row_index = datagrid_get_field_index(table, row)
+
+		// delete the row in the datagrid
 		table.fnDeleteRow(row, undefined, true);
-		datagrid_update_field(field_id, table.fnGetData());
+
+		// update the field
+		var field = jq('#' + field_id + '_gridvalue');
+		var field_data = jq.evalJSON(field.val());
+		field_data.splice(row_index, 1);
+		field.val(jq.toJSON(field_data));
 	}
 	else {
 		alert('You must select a row to delete.');

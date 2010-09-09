@@ -1,6 +1,13 @@
 Changelog
 =========
 
+1.7.3
+-----
+* fix datagrid (it was storing rendered values and not raw values)
+* localization for datatables: en, es, fr, it, lt, nl
+* dynamic hidewhen are now manage at hidewhen level (and not as a global setting in the form)
+* few minor fixes
+
 1.7.2
 -----
 * fix delete button in Plomino views when using the Dynamic view rendering

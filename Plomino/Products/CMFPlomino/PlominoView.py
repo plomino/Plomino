@@ -509,12 +509,15 @@ class PlominoView(ATFolder):
         """
         cols = [{"bSearchable": False, "bSortable": False}]
         for col in self.getColumns():
-            colInfos = {"sTitle": col.Title()}
-            if (getattr(col, 'ContainsHTML', False)):
-                colInfos["sType"] = "html"
-            if col.DisplaySum:
-                colInfos["sClass"] = "displaysum"
-            cols.append(colInfos)
+            if not col.HiddenColumn:
+                colInfos = {}
+                if (getattr(col, 'ContainsHTML', False)):
+                    colInfos["sType"] = "html"
+                if col.DisplaySum:
+                    colInfos["sClass"] = "displaysum"
+                if not colInfos:
+                    colInfos = None
+                cols.append(colInfos)
         return json.dumps(cols);
     
     security.declarePublic('getIndexKey')

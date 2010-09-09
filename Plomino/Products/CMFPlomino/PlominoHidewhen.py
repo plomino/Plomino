@@ -46,6 +46,17 @@ schema = Schema((
             i18n_domain='CMFPlomino',
         ),
     ),
+    BooleanField(
+        name='isDynamicHidewhen',
+        default=False,
+        widget=BooleanField._properties['widget'](
+            label="Dynamic Hide-when",
+            description="Hide-when are evaluated dynamically when the user enters information",
+            label_msgid='CMFPlomino_label_isDynamicHidewhen',
+            description_msgid='CMFPlomino_help_isDynamicHidewhen',
+            i18n_domain='CMFPlomino',
+        ),
+    ),
 ),
 )
 

@@ -75,7 +75,10 @@
 						'aaSorting': [],
 						'bInfo': true,
 						'bAutoWidth': false,
-						'sDom': '<\'wrapper\'lrtip>'
+						'sDom': '<\'wrapper\'lrtip>',
+	       				'oLanguage': {	
+	       					'sUrl': '${context/DataTables/getLanguagePath}'
+						}
 				 	} );
 
 				 	jq('div.wrapper:has(#${fieldname}_datagrid)').ready( function() {
