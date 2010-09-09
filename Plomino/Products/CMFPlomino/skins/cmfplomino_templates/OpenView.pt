@@ -217,7 +217,7 @@
 			        			</td>
 			        			<tal:block tal:repeat="col cols">
 			        				<td tal:condition="not: col/HiddenColumn|nothing">
-			        					<tal:block tal:define="val python:getattr(doc, here.getIndexKey(col.id)); haslink python:val and '&lt;a' in val">
+			        					<tal:block tal:define="val python:getattr(doc, here.getIndexKey(col.id)); haslink python:val and isinstance(val, basestring) and '&lt;a' in val">
 				        					<a class="viewlink" tal:condition="not:haslink" tal:attributes="href python:doc.getPath().split('/')[-1]"
 												tal:content="structure python:getattr(doc, here.getIndexKey(col.id)) or '&nbsp;'"></a>
 											<tal:block tal:condition="haslink" tal:content="structure python:getattr(doc, here.getIndexKey(col.id))"></tal:block>
