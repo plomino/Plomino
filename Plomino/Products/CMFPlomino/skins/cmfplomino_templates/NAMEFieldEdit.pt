@@ -78,11 +78,10 @@
 						'sDom': '<\'wrapper\'lrtip>',
 	       				'oLanguage': {	
 	       					'sUrl': '${context/DataTables/getLanguagePath}'
-						}
-				 	} );
-
-				 	jq('div.wrapper:has(#${fieldname}_datagrid)').ready( function() {
-				 		jq('div.wrapper:has(#${fieldname}_datagrid)').hide();
+						},
+				        'fnInitComplete': function(oSettings) {
+					 		jq('#${fieldname}_datagrid').closest('div.wrapper').hide();
+				        }
 				 	} );
 
 					// Close button

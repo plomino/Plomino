@@ -21,6 +21,8 @@ from Products.Five.formlib.formbase import EditForm
 
 from base import IBaseField, BaseField
 
+import simplejson as json
+
 class ISelectionField(IBaseField):
     """
     Selection field schema
@@ -28,7 +30,8 @@ class ISelectionField(IBaseField):
     widget = Choice(vocabulary=SimpleVocabulary.fromItems([("Selection list", "SELECT"),
                                                            ("Multi-selection list", "MULTISELECT"),
                                                            ("Checkboxes", "CHECKBOX"),
-                                                           ("Radio buttons", "RADIO")
+                                                           ("Radio buttons", "RADIO"),
+                                                           ("Dynamic picklist", "PICKLIST")
                                                            ]),
                     title=u'Widget',
                     description=u'Field rendering',
@@ -45,6 +48,17 @@ class ISelectionField(IBaseField):
     separator = TextLine(title=u'Separator',
                       description=u'Only apply if multi-valued',
                       required=False)
+    dynamictableparam = Text(
+        title=u"Dynamic Table Parameters",
+        description=u"Change these options to customize the dynamic table.",
+        default=u"""
+'bPaginate': true,
+'bLengthChange': true,
+'bFilter': true,
+'bSort': true,
+'bInfo': true,
+'bAutoWidth': false"""
+    )
 
 class SelectionField(BaseField):
     """
@@ -80,6 +94,13 @@ class SelectionField(BaseField):
             else:
                 proper.append(v+'|'+v)
         return proper
+    
+    def tojson(self, selection):
+        """Return a JSON table storing documents to be displayed
+        """
+        
+        return json.dumps([v.split('|')[::-1] for v in selection])
+    
     
 for f in getFields(ISelectionField).values():
     setattr(SelectionField, f.getName(), DictionaryProperty(f, 'parameters'))
