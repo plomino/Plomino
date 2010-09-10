@@ -41,7 +41,6 @@ def updateRoleMappings(context):
 
 def postInstall(context):
     """Called as at the end of the setup process. """
-    # the right place for your custom code
     if isNotCMFPlominoProfile(context): return
     shortContext = context._profile_path.split(os.path.sep)[-3]
     if shortContext != 'CMFPlomino': # avoid infinite recursions
@@ -65,7 +64,9 @@ def postInstall(context):
         styles = getattr(properties, 'fck_menu_styles') + FCK_STYLES
         properties.manage_changeProperties(fck_menu_styles = styles)
 
-
+    # tidy up old jquery reference
+    jsregistry = getToolByName(db, 'portal_javascript')
+    jsregistry.unregisterResource('++resource++plomino.javascript/jquery-v1.4.2.js')
 
 ##code-section FOOT
 ##/code-section FOOT
