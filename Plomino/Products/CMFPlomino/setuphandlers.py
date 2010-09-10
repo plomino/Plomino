@@ -65,7 +65,7 @@ def postInstall(context):
         properties.manage_changeProperties(fck_menu_styles = styles)
 
     # tidy up old jquery reference
-    jsregistry = getToolByName(db, 'portal_javascript')
+    jsregistry = getToolByName(site, 'portal_javascripts')
     jsregistry.unregisterResource('++resource++plomino.javascript/jquery-v1.4.2.js')
 
 ##code-section FOOT
