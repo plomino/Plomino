@@ -520,7 +520,7 @@ class PlominoDesignManager(Persistent):
                 elements.append(e)
         
         # Sort elements by type (to store forms before views), then by id
-        elements.sort(key=lambda elt: elt.id)
+        elements.sort(key=lambda elt: elt.getId())
         elements.sort(key=lambda elt: elt.Type())
         
         designNode = doc.createElement('design')
