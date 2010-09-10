@@ -1,6 +1,10 @@
 Changelog
 =========
 
+1.7.4
+-----
+* Dynamic picklist for selection field
+
 1.7.3
 -----
 * fix datagrid (it was storing rendered values and not raw values)
