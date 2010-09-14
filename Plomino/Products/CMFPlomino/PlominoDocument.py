@@ -421,7 +421,8 @@ class PlominoDocument(ATFolder):
                 storage = FileSystemStorage()
                 file_obj = storage.get(filename, self)
             else:
-                file_obj = getattr(self, filename)
+                #file_obj = getattr(self, filename)
+                file_obj = self[filename]
             if REQUEST is None:
                 return file_obj
             else:
@@ -467,7 +468,9 @@ class PlominoDocument(ATFolder):
                     contenttype=storage.get(filename,self).getContentType()
                 else:
                     self.manage_addFile(filename, submittedValue)
-                    contenttype=getattr(self,filename).getContentType()
+                    #import pdb; pdb.set_trace()
+                    #contenttype=getattr(self,filename).getContentType()
+                    contenttype=self[filename].getContentType()
                 return (filename, contenttype)
         else:
             return (None, "")
