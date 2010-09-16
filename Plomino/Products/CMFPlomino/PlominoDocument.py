@@ -397,16 +397,29 @@ class PlominoDocument(ATFolder):
 
     security.declarePublic('SearchableText')
     def SearchableText(self):
-        values=[]
+        values = []
         index_attachments=self.getParentDatabase().getIndexAttachments()
+        form = self.getForm()
+        
         for itemname in self.items.keys():
-            try:
-                v = str(self.getRenderedItem(itemname,form=None, convertattachments=index_attachments))
-                if v=='':
-                    v = str(self.getItem(itemname))
-                values.append(v)
-            except:
-                pass
+            item_value = self.getItem(itemname)
+            if type(item_value) is list: 
+                for v in item_value:
+                    if type(v) is list:
+                        values = values + [unicode(k) for k in v]
+                    else:
+                        values.append(unicode(v))
+            else:
+                values.append(unicode(item_value))
+            # if selection or attachment field, we try to index rendered values too
+            field = form.getFormField(itemname)
+            if field and field.getFieldType() in ["SELECTION", "ATTACHMENT"]:
+                try:
+                    v = unicode(self.getRenderedItem(itemname,form=form, convertattachments=index_attachments))
+                    if v:
+                        values.append(v)
+                except:
+                    pass
         return ' '.join(values)
 
     security.declareProtected(READ_PERMISSION, 'getfile')
