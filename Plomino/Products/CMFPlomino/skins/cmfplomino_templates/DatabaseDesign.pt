@@ -140,7 +140,7 @@
 			<li>
 				<tal:block tal:content="agent/id">agent name</tal:block>
 				<a href="" tal:attributes="href python:agent.absolute_url()+'/base_edit'"><img src="edit.gif" /></a>
-				<a href="" tal:attributes="href python:agent.absolute_url()+'/runAgent?REDIRECT=True'"><img src="workflow_icon.gif"/></a>
+				<a href="" target="_new" tal:attributes="href python:agent.absolute_url()+'/runAgent'"><img src="workflow_icon.gif"/></a>
 			</li>
 			</tal:blockagents>
 			</ul>
