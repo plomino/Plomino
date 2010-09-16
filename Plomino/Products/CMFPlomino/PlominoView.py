@@ -503,23 +503,6 @@ class PlominoView(ATFolder):
             data.append(row)
         return json.dumps(data)
     
-    security.declarePublic('getJQueryColumns')
-    def getJQueryColumns(self):
-        """Returns a JSON representation columns headers, designed for JQuery DataTables
-        """
-        cols = [{"bSearchable": False, "bSortable": False}]
-        for col in self.getColumns():
-            if not col.HiddenColumn:
-                colInfos = {}
-                if (getattr(col, 'ContainsHTML', False)):
-                    colInfos["sType"] = "html"
-                if col.DisplaySum:
-                    colInfos["sClass"] = "displaysum"
-                if not colInfos:
-                    colInfos = None
-                cols.append(colInfos)
-        return json.dumps(cols);
-    
     security.declarePublic('getIndexKey')
     def getIndexKey(self, columnName):
         """Returns an index key depending of which one exists.

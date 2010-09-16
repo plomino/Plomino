@@ -39,31 +39,31 @@
     	<tr><th>Access right</th><th>Users</th></tr>
 		<tr><td valign="top"><b>Readers</b></td>
 		<td><tal:block tal:repeat="u python:here.getUsersForRight('PlominoReader')">
-			<input type="checkbox" name="users" tal:attributes="value u" /><span tal:content="u">user</span>	
+			<input type="checkbox" name="users" tal:attributes="value u; id string:reader-${u}" /> <label tal:attributes="for string:reader-${u}" tal:content="u">user</label>	
 			<br/>
 		</tal:block>
 		</td></tr>
 		<tr><td valign="top"><b>Authors</b></td>
 		<td><tal:block tal:repeat="u python:here.getUsersForRight('PlominoAuthor')">
-			<input type="checkbox" name="users" tal:attributes="value u" /><span tal:content="u">user</span>	
+			<input type="checkbox" name="users" tal:attributes="value u; id string:author-${u}" /> <label tal:attributes="for string:author-${u}" tal:content="u">user</label>	
 			<br/>
 		</tal:block>
 		</td></tr>
 		<tr><td valign="top"><b>Editors</b></td>
 		<td><tal:block tal:repeat="u python:here.getUsersForRight('PlominoEditor')">
-			<input type="checkbox" name="users" tal:attributes="value u" /><span tal:content="u">user</span>	
+			<input type="checkbox" name="users" tal:attributes="value u; id string:editor-${u}" /> <label tal:attributes="for string:editor-${u}" tal:content="u">user</label>	
 			<br/>
 		</tal:block>
 		</td></tr>
 		<tr><td valign="top"><b>Designers</b></td>
 		<td><tal:block tal:repeat="u python:here.getUsersForRight('PlominoDesigner')">
-			<input type="checkbox" name="users" tal:attributes="value u" /><span tal:content="u">user</span>	
+			<input type="checkbox" name="users" tal:attributes="value u; id string:designer-${u}" /> <label tal:attributes="for string:designer-${u}" tal:content="u">user</label>	
 			<br/>
 		</tal:block>
 		</td></tr>
 		<tr><td valign="top"><b>Managers</b></td>
 		<td><tal:block tal:repeat="u python:here.getUsersForRight('PlominoManager')">
-			<input type="checkbox" name="users" tal:attributes="value u" /><span tal:content="u">user</span>	
+			<input type="checkbox" name="users" tal:attributes="value u; id string:manager-${u}" /> <label tal:attributes="for string:manager-${u}" tal:content="u">user</label>	
 			<br/>
 		</tal:block>
 		</td></tr>

@@ -171,39 +171,55 @@
 				
 				<tal:dynamic tal:condition="python:test(viewwidget=='DYNAMICTABLE')">
 					<script type="text/javascript" charset="utf-8"
-				        tal:define="cols here/getJQueryColumns;
-				                    params here/DynamicTableParameters;"
+				        tal:define="params here/DynamicTableParameters;"
 				        tal:content="structure string:
-				        				var oDynamicTable;
-				        				jq(document).ready(function() {
-					        				oDynamicTable = jq('#dynamictable').dataTable( {
-						        				'aoColumns': ${cols},
-						        				'aaSorting': [],
-						        				${params},
-						        				fnFooterCallback: generateTableFooter,
-						        				'oLanguage': {
-						        					'sUrl': '${context/DataTables/getLanguagePath}'
+										var oDynamicTable;
+										jq(document).ready(function() {
+											oDynamicTable = jq('#dynamictable').dataTable( {
+												'aaSorting': [],
+												${params},
+												aoColumnDefs: [ {
+														'aTargets': ['_all'],
+														'bUseRendered': false,
+														'fnRender': function(oObj) {
+															var cell = oObj.aData[oObj.iDataColumn];
+															if (oObj.iDataColumn > 1 && cell.indexOf('<a') == -1) {
+																return oObj.aData[1].replace('Open', cell);
+															}
+															else
+																return cell;
+														}
+													},
+													{ 'aTargets': [0,1], 'bSearchable': false, 'bSortable': false, 'sWidth': 'auto' },
+													{ 'aTargets': [1], 'bVisible': false }
+												],
+												fnFooterCallback: generateTableFooter,
+												'oLanguage': {
+													'sUrl': '${context/DataTables/getLanguagePath}'
 												}
-					        				});
-					        				
-					        				var tableNodes = oDynamicTable.fnGetNodes();
-											jq('td > input:checkbox', tableNodes).change(function() {
+											});
+
+											var tableNodes = oDynamicTable.fnGetNodes();
+											jq('td > input:checkbox', tableNodes).removeAttr('disabled').change(function() {
 												jq(this).closest('tr').toggleClass('row_selected');
 											});
-					        			});">
+										});">
 			        </script>
 			        
 			        <table class="display" id="dynamictable" tal:define="cols here/getColumns">
 			        	<thead>
 			        		<tr>
 			        			<th></th>
+			        			<th></th>
 			        			<tal:block tal:repeat="col cols">
-			        				<th tal:condition="not: col/HiddenColumn|nothing" tal:content="col/Title"></th>
+			        				<th tal:condition="not: col/HiddenColumn|nothing" tal:content="col/Title"
+										tal:attributes="class python:getattr(col, 'DisplaySum') and 'displaysum' or ''"></th>
 			        			</tal:block>
 			        		</tr>
 			        	</thead>
 			        	<tfoot>
 			        		<tr>
+			        			<th></th>
 			        			<th></th>
 			        			<tal:block tal:repeat="col cols">
 			        				<th tal:condition="not: col/HiddenColumn|nothing"></th>
@@ -213,16 +229,13 @@
 			        	<tbody>
 			        		<tr tal:repeat="doc here/getAllDocuments">
 			        			<td>
-			        				<input type="checkbox" tal:attributes="value python:doc.getPath().split('/')[-1]" />
+			        				<input type="checkbox" disabled="disabled" tal:attributes="value python:doc.getPath().split('/')[-1]" />
 			        			</td>
+								<td>
+									<a class="viewlink" tal:attributes="href python:doc.getPath().split('/')[-1]">Open</a>
+								</td>
 			        			<tal:block tal:repeat="col cols">
-			        				<td tal:condition="not: col/HiddenColumn|nothing">
-			        					<tal:block tal:define="val python:getattr(doc, here.getIndexKey(col.id)); haslink python:val and isinstance(val, basestring) and '&lt;a' in val">
-				        					<a class="viewlink" tal:condition="not:haslink" tal:attributes="href python:doc.getPath().split('/')[-1]"
-												tal:content="structure python:getattr(doc, here.getIndexKey(col.id)) or '&nbsp;'"></a>
-											<tal:block tal:condition="haslink" tal:content="structure python:getattr(doc, here.getIndexKey(col.id))"></tal:block>
-										</tal:block>
-			        				</td>
+			        				<td tal:condition="not: col/HiddenColumn|nothing" tal:content="structure python:getattr(doc, here.getIndexKey(col.id)) or '&nbsp;'"></td>
 			        			</tal:block>
 			        		</tr>
 			        	</tbody>

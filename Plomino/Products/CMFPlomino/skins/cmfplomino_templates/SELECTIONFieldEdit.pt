@@ -27,8 +27,9 @@
 				<input type="checkbox" 
 					tal:attributes="name options/fieldname;
 							value python:l[1];
-							checked python:test(currentaslist and l[1] in currentaslist,1,0)">
-				<tal:block tal:content="structure python:l[0]">value</tal:block>
+							checked python:test(currentaslist and l[1] in currentaslist,1,0);
+							id python:options['fieldname'] + '-' + l[1]">
+				<label tal:attributes="for python:options['fieldname'] + '-' + l[1]" tal:content="structure python:l[0]">value</label>
 				<tal:sep tal:condition="not:repeat/v/end" tal:content="structure python:options['field'].getSettings('separator')">separator</tal:sep>
 			</tal:block>
 		</tal:block>
@@ -41,8 +42,9 @@
 				<input type="radio" 
 					tal:attributes="name options/fieldname;
 							value python:l[1];
-							checked python:test(currentaslist and l[1] in currentaslist,1,0)">
-				<tal:block tal:content="structure python:l[0]">value</tal:block>
+							checked python:test(currentaslist and l[1] in currentaslist,1,0);
+							id python:options['fieldname'] + '-' + l[1]">
+				<label tal:attributes="for python:options['fieldname'] + '-' + l[1]" tal:content="structure python:l[0]">value</label>
 				<tal:sep tal:condition="not:repeat/v/end" tal:content="structure python:options['field'].getSettings('separator')">separator</tal:sep>
 			</tal:block>
 		</tal:block>
