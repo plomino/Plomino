@@ -91,6 +91,11 @@ class PlominoDocument(ATFolder):
         else:
             raise Unauthorized, "You cannot read this content"
 
+    def url(self):
+        db = self.getParentDatabase()
+        db_url = db.absolute_url()
+        return db_url + "/" + self.id
+        
     security.declarePublic('setItem')
     def setItem(self,name,value):
         """
@@ -168,7 +173,11 @@ class PlominoDocument(ATFolder):
     def getParentDatabase(self):
         """
         """
-        return self.getParentNode()
+        parent = self.getParentNode()
+        if parent.id == "plomino_documents":
+            return parent.getParentNode()
+        else:
+            return parent
 
     security.declarePublic('isAuthor')
     def isAuthor(self):

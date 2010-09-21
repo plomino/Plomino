@@ -128,9 +128,8 @@ class PlominoDesignManager(Persistent):
         logger.info(msg)
         
         #reindex all the documents
-        #getAllDocuments use the PlominoIndex. To get the documents to reindex, use portal catalog
-        #for d in self.getAllDocuments():
-        documents = [d.getObject() for d in self.portal_catalog.search({'portal_type' : ['PlominoDocument'], 'path': '/'.join(self.getPhysicalPath())})]
+        #documents = [d.getObject() for d in self.portal_catalog.search({'portal_type' : ['PlominoDocument'], 'path': '/'.join(self.getPhysicalPath())})]
+        documents = self.getAllDocuments()
         total_docs = len(documents)
         msg = 'Existing documents: '+ str(total_docs)
         report.append(msg)
@@ -151,13 +150,13 @@ class PlominoDesignManager(Persistent):
             counter = counter + 1
             if counter == 10:
                 self.setStatus("Re-indexing (%d%%)" % int(100*(total+errors)/total_docs))
-                txn.commit()
+                #txn.savepoint(optimistic=True)
+                txn.commit(1)
                 txn = transaction.get()
                 counter = 0
                 logger.info("%d documents re-indexed successfully, %d errors(s) ...(still running)" % (total, errors))
-        if counter > 0:
-            txn.commit()
         self.setStatus("Ready", commit=True)
+        txn.commit()
         msg = "%d documents re-indexed successfully, %d errors(s)" % (total, errors)
         report.append(msg)
         logger.info(msg)
@@ -696,17 +695,15 @@ class PlominoDesignManager(Persistent):
             if count == 10:
                 self.setStatus("Importing design (%d%%)" % int(100*total/total_elements))
                 logger.info("(%d elements committed, still running...)" % total)
-                txn.commit()
+                #txn.savepoint(optimistic=True)
+                txn.commit(1)
                 txn = transaction.get()
                 count = 0
             e = e.nextSibling
-            
-        if count > 0:
-            self.setStatus("Importing design (100%)")
-            txn.commit()
-            
+
         logger.info("(%d elements imported)" % total)
         self.setStatus("Ready", commit=True)
+        txn.commit()
         self.getIndex().no_refresh = False
         
     security.declareProtected(DESIGN_PERMISSION, 'importElementFromXML')

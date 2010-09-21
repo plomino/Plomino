@@ -24,7 +24,7 @@ from Products.CMFPlomino.config import *
 ##code-section module-header #fill in your manual code here
 from AccessControl import Unauthorized
 import csv, cStringIO
-
+from Acquisition import aq_inner
 import PlominoDocument
 
 import simplejson as json
@@ -242,6 +242,11 @@ class PlominoView(ATFolder):
         """
         return self.getParentNode()
 
+    def __bobo_traverse__(self, request, name):
+        if self.documents.has_key(name):
+            return aq_inner(getattr(self.documents, name)).__of__(self)
+        return BaseObject.__bobo_traverse__(self, request, name)
+    
     security.declarePublic('getAllDocuments')
     def getAllDocuments(self, start=1, limit=0):
         """Get all documents (as CatalogBrains, you have to use getObject()

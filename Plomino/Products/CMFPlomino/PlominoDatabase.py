@@ -24,19 +24,24 @@ from Products.CMFPlomino.config import *
 ##code-section module-header #fill in your manual code here
 from Products.Archetypes.public import *
 from Products.Archetypes.utils import make_uuid
+from Products.Archetypes.BaseObject import BaseObject
 
 from zope import event
+from zope.interface import directlyProvides
 from zope.app.container.contained import ObjectRemovedEvent
 from AccessControl import ClassSecurityInfo
+from Acquisition import aq_inner
 from Products.CMFCore.utils import getToolByName
 from OFS.Folder import *
 from OFS.ObjectManager import ObjectManager
-from Products.CMFPlomino.PlominoUtils import *
+from Products.BTreeFolder2.BTreeFolder2 import manage_addBTreeFolder
+from Products.CMFPlone.interfaces import IHideFromBreadcrumbs
 import string
 import Globals
 import transaction
 
 from index.PlominoIndex import PlominoIndex
+from Products.CMFPlomino.PlominoUtils import *
 from PlominoAccessControl import PlominoAccessControl
 from PlominoDesignManager import PlominoDesignManager
 from PlominoReplicationManager import PlominoReplicationManager
@@ -210,6 +215,15 @@ class PlominoDatabase(ATFolder, PlominoAccessControl, PlominoDesignManager, Plom
         self.plomino_version = VERSION
         self.setStatus("Ready")
         PlominoAccessControl.__init__(self)
+        manage_addBTreeFolder(self, id='plomino_documents')
+        directlyProvides(self.documents, IHideFromBreadcrumbs)
+
+    @property
+    def documents(self):
+        # returns plomino_documents BTreeFolder
+        # note: default to {} to avoid errors for db having version <1.7.5 not
+        # refreshed yet
+        return getattr(self, 'plomino_documents', {})
 
     security.declarePublic('at_post_create_script')
     def at_post_create_script(self):
@@ -225,6 +239,12 @@ class PlominoDatabase(ATFolder, PlominoAccessControl, PlominoDesignManager, Plom
         scripts.title='scripts'
         self._setObject('scripts', scripts)
 
+    def __bobo_traverse__(self, request, name):
+        if hasattr(self, 'documents'):
+            if self.documents.has_key(name):
+                return aq_inner(getattr(self.documents, name)).__of__(self)
+        return BaseObject.__bobo_traverse__(self, request, name)
+      
     security.declarePublic('getStatus')
     def getStatus(self):
         """return DB current status
@@ -238,7 +258,7 @@ class PlominoDatabase(ATFolder, PlominoAccessControl, PlominoDesignManager, Plom
         if commit:
             txn = transaction.get()
             self.plomino_db_status = status
-            txn.commit()
+            txn.savepoint(optimistic=True)
         else:
             self.plomino_db_status = status
             
@@ -319,8 +339,9 @@ class PlominoDatabase(ATFolder, PlominoAccessControl, PlominoDesignManager, Plom
         """create a unique ID and invoke PlominoDocument factory
         """
         newid = make_uuid()
-        self.invokeFactory( type_name='PlominoDocument', id=newid)
-        doc = getattr(self, newid)
+        pt = getToolByName(self, 'portal_types')
+        pt.constructContent('PlominoDocument', self.documents, newid)
+        doc = self.documents.get(newid)
         return doc
 
     security.declarePublic('getDocument')
@@ -330,7 +351,7 @@ class PlominoDatabase(ATFolder, PlominoAccessControl, PlominoDesignManager, Plom
         if "/" in docid:
             # let's assume it is a path
             docid = docid.split("/")[-1]
-        return getattr(self, docid, None)
+        return self.documents.get(docid)
 
     security.declareProtected(REMOVE_PERMISSION, 'deleteDocument')
     def deleteDocument(self,doc):
@@ -347,8 +368,8 @@ class PlominoDatabase(ATFolder, PlominoAccessControl, PlominoDesignManager, Plom
                 pass
 
             self.getIndex().unindexDocument(doc)
-            event.notify(ObjectRemovedEvent(doc, self, doc.id))
-            return PortalFolder.manage_delObjects(self, doc.id, None)
+            event.notify(ObjectRemovedEvent(doc, self.documents, doc.id))
+            self.documents._delOb(doc.id)
 
     security.declareProtected(REMOVE_PERMISSION, 'deleteDocuments')
     def deleteDocuments(self,ids=None, massive=True):
@@ -359,7 +380,7 @@ class PlominoDatabase(ATFolder, PlominoAccessControl, PlominoDesignManager, Plom
             ids=[doc.id for doc in self.getAllDocuments()]
             
         if massive:
-            ObjectManager.manage_delObjects(self, ids)
+            ObjectManager.manage_delObjects(self.documents, ids)
         else:
             for id in ids:
                 try:
@@ -388,10 +409,11 @@ class PlominoDatabase(ATFolder, PlominoAccessControl, PlominoDesignManager, Plom
     def getAllDocuments(self):
         """return all the database documents
         """
+        return self.documents.values()
         #return [d.getObject() for d in self.portal_catalog.search({'portal_type' : ['PlominoDocument'], 'path': '/'.join(self.getPhysicalPath())})]
-        index = self.getIndex()
-        res = index.dbsearch({},None)
-        return [d.getObject() for d in res]
+#        index = self.getIndex()
+#        res = index.dbsearch({},None)
+#        return [d.getObject() for d in res]
 
     security.declarePublic('isDocumentsCountEnabled')
     def isDocumentsCountEnabled(self):

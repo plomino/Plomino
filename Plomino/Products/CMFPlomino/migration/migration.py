@@ -1,3 +1,7 @@
+from zope.interface import directlyProvides
+from Products.BTreeFolder2.BTreeFolder2 import manage_addBTreeFolder
+from Products.CMFPlone.interfaces import IHideFromBreadcrumbs
+
 from Products.CMFPlomino.fields.text import ITextField
 from Products.CMFPlomino.fields.selection import ISelectionField
 from Products.CMFPlomino.fields.number import INumberField
@@ -45,6 +49,9 @@ def migrate(db):
     if db.plomino_version=="1.7.3":
         # no migration needed here
         db.plomino_version = "1.7.4"
+    if db.plomino_version=="1.7.4":
+        msg = migrate_to_175(db)
+        messages.append(msg)
     return messages
 
 def migrate_to_130(db):
@@ -164,5 +171,17 @@ def migrate_to_173(db):
             hidewhen.setIsDynamicHidewhen(False)
     msg = "Migration to 1.7.3: Dynamic hide-when initialized"
     db.plomino_version = "1.7.3"
+    return msg
+    
+def migrate_to_175(db):
+    """ documents stores in BTreeFolder
+    """
+    manage_addBTreeFolder(db, id='plomino_documents')
+    directlyProvides(db.documents, IHideFromBreadcrumbs)
+    docids = [id for id in db.objectIds() if getattr(db, id).portal_type == "PlominoDocument"]
+    cookie = db.manage_cutObjects(ids=docids)
+    db.documents.manage_pasteObjects(cookie)
+    msg = "Migration to 1.7.5: Documents moved in BTreeFolder"
+    db.plomino_version = "1.7.5"
     return msg
     

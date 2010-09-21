@@ -151,11 +151,11 @@ Selection field:
     >>> adapted.selectionlist=[u'The Beatles', u'The Doors', u'The Pixies']
     >>> adapted.widget="SELECT"
 	>>> db.frm2.setFormLayout("""<p>choose: <span class="plominoFieldClass">artistsfield</span></p>""")
-    >>> db.frm2.displayDocument(None, True, True)
-    u'<input type=\'hidden\' name=\'Form\' value=\'frm2\' /><p>choose: <span>\n\t\n\t\t<select name="artistsfield">\n\t\t\t<option value="The Beatles">The Beatles</option>\n\t\t\n\t\t\t<option value="The Doors">The Doors</option>\n\t\t\n\t\t\t<option value="The Pixies">The Pixies</option>\n\t\t</select>\n\t\n\t\n\t\n\t\n</span>\n</p>'
+    >>> db.frm2.displayDocument(None, True, True).replace('\n', '').replace('\t', '')
+    u'<input type=\'hidden\' name=\'Form\' value=\'frm2\' /><p>choose: <span><select name="artistsfield"><option value="The Beatles">The Beatles</option><option value="The Doors">The Doors</option><option value="The Pixies">The Pixies</option></select></span></p>'
     >>> adapted.widget="CHECKBOX"
-    >>> db.frm2.displayDocument(None, True, True)
-    u'<input type=\'hidden\' name=\'Form\' value=\'frm2\' /><p>choose: <span>\n\t\n\t\n\t\n\t\t\n\t\t\t\n\t\t\t\t<input type="checkbox" name="artistsfield"\n           value="The Beatles">\n\t\t\t\tThe Beatles\n\t\t\t\t\n\t\t\t\n\t\t\n\t\t\n\t\t\t\n\t\t\t\t<input type="checkbox" name="artistsfield"\n           value="The Doors">\n\t\t\t\tThe Doors\n\t\t\t\t\n\t\t\t\n\t\t\n\t\t\n\t\t\t\n\t\t\t\t<input type="checkbox" name="artistsfield"\n           value="The Pixies">\n\t\t\t\tThe Pixies\n\t\t\t\t\n\t\t\t\n\t\t\n\t\n\t\n</span>\n</p>'
+    >>> db.frm2.displayDocument(None, True, True).replace('\n', '').replace('\t', '')
+    u'<input type=\'hidden\' name=\'Form\' value=\'frm2\' /><p>choose: <span><input type="checkbox" name="artistsfield"           value="The Beatles" id="artistsfield-The Beatles"><label for="artistsfield-The Beatles">The Beatles</label><input type="checkbox" name="artistsfield"           value="The Doors" id="artistsfield-The Doors"><label for="artistsfield-The Doors">The Doors</label><input type="checkbox" name="artistsfield"           value="The Pixies" id="artistsfield-The Pixies"><label for="artistsfield-The Pixies">The Pixies</label></span></p>'
     
 Date/Time field:
     >>> id=db.frm2.invokeFactory('PlominoField', id='lastalbum', Title='lastalbum', FieldType="DATETIME", FieldMode="EDITABLE")
@@ -281,11 +281,11 @@ The Plomino index is a ZCatalog indexing views selection formula, view columns, 
     1
     >>> db.getIndex().dbsearch({'question': 'where'})[0].getObject()==doc5
     True
-    >>> doc5.setItem('question', 'çé')
+    >>> doc5.setItem('question', u'çé')
     >>> doc5.save()
     >>> len(db.getIndex().dbsearch({'question': 'where'}))
     0
-    >>> len(db.getIndex().dbsearch({'question': 'çé'}))
+    >>> len(db.getIndex().dbsearch({'question': u'çé'}))
     1
 
 An index and a metadata are created for each view column
@@ -347,8 +347,12 @@ Import CSV file (API)
 Check the documents imported
     >>> allDocumentsIndexes = db.allArticle.getAllDocuments()
     >>> allDocuments = [d.getObject() for d in allDocumentsIndexes]
-    >>> [d.editDate for d in allDocuments]
+    >>> test = [d.editDate for d in allDocuments]
+    >>> test.sort()
+    >>> test
     [u'2009/07/29', u'2009/08/29']
-    >>> [d.articleTitle for d in allDocuments]
+    >>> test = [d.articleTitle for d in allDocuments]
+    >>> test.sort()
+    >>> test
     [u'test1', u'test2']
     

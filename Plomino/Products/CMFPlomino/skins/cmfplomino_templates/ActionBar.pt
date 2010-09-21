@@ -177,6 +177,6 @@ if (typeof(oDynamicTable)!="undefined") {
 	class="context plominoDelete" value="Delete" i18n:domain="CMFPlomino" name="plomino_delete"
 	i18n:attributes="value"
 	tal:define="msg python:here.plone_utils.translation_service.translate(msgid='Do you really want to delete this document', domain='CMFPlomino');"
-	tal:attributes="onclick python:'if(confirm(\''+msg+' ?\')){location.href=\''+here.absolute_url()+'/delete?returnurl='+here.navigationParent(here)+'\'}'" />
+	tal:attributes="onclick python:'if(confirm(\''+msg+' ?\')){location.href=\''+here.absolute_url()+'/delete?returnurl='+here.getParentDatabase().absolute_url()+'\'}'" />
 	</tal:block>
 </tal:block>

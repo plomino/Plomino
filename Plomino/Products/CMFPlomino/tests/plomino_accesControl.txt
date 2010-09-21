@@ -52,16 +52,14 @@ Add some minimal content to test access (view 1 displays all documents)
     >>> doc.setItem('Form', 'form1')
     >>> doc.setItem('field1', 'what a value')
     >>> docid = doc.id
-    >>> docUrl = base_url + '/' + docid
-    >>> docUrl == doc.absolute_url()
+    >>> docUrl = doc.url()
+    >>> docUrl == base_url + '/' + docid
     True
     >>> doc2 = db.createDocument()
     >>> doc2.setItem('Form', 'form1')
     >>> doc2.setItem('field1', 'I prefer this value')
     >>> docid2 = doc2.id
-    >>> docUrl2 = base_url + '/' + docid2
-    >>> docUrl2 == doc2.absolute_url()
-    True
+    >>> docUrl2 = doc2.url()
 
 Create the browser object we'll be using.
 

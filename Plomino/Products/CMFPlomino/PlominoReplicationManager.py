@@ -1018,16 +1018,15 @@ class PlominoReplicationManager(Persistent):
             i = i + 1
             counter = counter + 1
             if counter == 100:
-                txn.commit()
+                txn.savepoint(optimistic=True)
                 txn = transaction.get()
                 counter = 0
                 logger.info("%d documents imported successfully, %d errors(s) ...(still running)" % (nbDocDone, nbDocFailed))
-        if counter > 0:
-            txn.commit()
+        txn.commit()
         logger.info("Importation finished: %d documents imported successfully, %d document(s) not imported" % (nbDocDone, nbDocFailed))
         
         #re-index database
-        self.refreshDB()    
+        self.refreshDB() 
         
         #result sent
         return (nbDocDone, nbDocFailed)
@@ -1160,22 +1159,23 @@ class PlominoReplicationManager(Persistent):
             counter = counter + 1
             if counter == 100:
                 self.setStatus("Importing documents (%d%%)" % int(100*counter/total_docs))
-                txn.commit()
+                txn.savepoint(optimistic=True)
                 txn = transaction.get()
                 counter = 0
                 logger.info("%d documents imported successfully, %d errors(s) ...(still running)" % (imports, errors))
-        if counter > 0:
-            txn.commit()
         self.setStatus("Ready", commit=True)
         logger.info("Importation finished: %d documents imported successfully, %d document(s) not imported" % (imports, errors))
+        txn.commit()
         return (imports, errors)
             
     security.declareProtected(CREATE_PERMISSION, 'importDocumentFromXML')
     def importDocumentFromXML(self, node):
         docid = node.getAttribute('id')
         lastmodified = DateTime(node.getAttribute('lastmodified'))
-        self.invokeFactory(type_name='PlominoDocument', id=docid)
-        doc = getattr(self, docid)
+        pt = getToolByName(self, 'portal_types')
+        pt.constructContent('PlominoDocument', self.documents, docid)
+        #self.invokeFactory(type_name='PlominoDocument', id=docid)
+        doc = self.documents.get(docid)
         
         # restore items
         itemnode = node.getElementsByTagName("params")[0]
