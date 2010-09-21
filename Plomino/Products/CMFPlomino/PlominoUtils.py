@@ -127,6 +127,15 @@ def asList(x):
     else:
         return [x]
 
+def asUnicode(x):
+    """
+    """
+    if type(x) is str:
+        return x.decode('utf-8')
+    if type(x) is unicode:
+        return x
+    return unicode(x)
+    
 def csv_to_array(csvcontent, delimiter='\t', quotechar='"'):
     """ csvcontent might be a string or a file
     """

@@ -31,7 +31,7 @@ from DateTime import DateTime
 from zope import event
 from Products.Archetypes.event import ObjectEditedEvent
 
-from PlominoUtils import DateToString, StringToDate, sendMail
+from PlominoUtils import DateToString, StringToDate, sendMail, asUnicode
 from OFS.Image import File
 try:
     from iw.fss.FileSystemStorage import FileSystemStorage, FSSFileInfo
@@ -406,16 +406,16 @@ class PlominoDocument(ATFolder):
             if type(item_value) is list: 
                 for v in item_value:
                     if type(v) is list:
-                        values = values + [unicode(k) for k in v]
+                        values = values + [asUnicode(k) for k in v]
                     else:
-                        values.append(unicode(v))
+                        values.append(asUnicode(v))
             else:
-                values.append(unicode(item_value))
+                values.append(asUnicode(item_value))
             # if selection or attachment field, we try to index rendered values too
             field = form.getFormField(itemname)
             if field and field.getFieldType() in ["SELECTION", "ATTACHMENT"]:
                 try:
-                    v = unicode(self.getRenderedItem(itemname,form=form, convertattachments=index_attachments))
+                    v = asUnicode(self.getRenderedItem(itemname,form=form, convertattachments=index_attachments))
                     if v:
                         values.append(v)
                 except:
