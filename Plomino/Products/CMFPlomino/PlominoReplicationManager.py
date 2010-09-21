@@ -1019,6 +1019,7 @@ class PlominoReplicationManager(Persistent):
             counter = counter + 1
             if counter == 100:
                 txn.savepoint(optimistic=True)
+                #txn.commit()
                 txn = transaction.get()
                 counter = 0
                 logger.info("%d documents imported successfully, %d errors(s) ...(still running)" % (nbDocDone, nbDocFailed))
@@ -1160,6 +1161,7 @@ class PlominoReplicationManager(Persistent):
             if counter == 100:
                 self.setStatus("Importing documents (%d%%)" % int(100*counter/total_docs))
                 txn.savepoint(optimistic=True)
+                #txn.commit()
                 txn = transaction.get()
                 counter = 0
                 logger.info("%d documents imported successfully, %d errors(s) ...(still running)" % (imports, errors))

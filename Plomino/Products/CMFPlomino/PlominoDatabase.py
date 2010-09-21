@@ -259,6 +259,7 @@ class PlominoDatabase(ATFolder, PlominoAccessControl, PlominoDesignManager, Plom
             txn = transaction.get()
             self.plomino_db_status = status
             txn.savepoint(optimistic=True)
+            #txn.commit()
         else:
             self.plomino_db_status = status
             
