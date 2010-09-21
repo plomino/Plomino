@@ -145,8 +145,9 @@ class PlominoDesignManager(Persistent):
                 #self.getIndex().indexDocument(d)
                 d.save(onSaveEvent=False)
                 total = total + 1
-            except:
+            except Exception, e:
                 errors = errors + 1
+                logger.info("Ouch! \n%s\n%s" % (e, `d`))
             counter = counter + 1
             if counter == 10:
                 self.setStatus("Re-indexing (%d%%)" % int(100*(total+errors)/total_docs))
