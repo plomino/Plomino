@@ -137,6 +137,20 @@ class DatagridField(BaseField):
                      fieldValue = rendered_values
              except:
                  pass
+        
+        mapping = self.field_mapping
+        if mapping:
+            col_number = len(mapping.split(','))
+            resized = []
+            empty = ['']
+            for row in fieldValue:
+                if len(row) < col_number:
+                    resized.append(row + empty * (col_number - len(row)))
+                elif len(row) > col_number:
+                    resized.append(row[:col_number])
+                else:
+                    resized.append(row)
+            fieldValue = resized
         return fieldValue
 
 component.provideUtility(DatagridField, IPlominoField, 'DATAGRID')
