@@ -320,20 +320,16 @@ class PlominoDatabase(ATFolder, PlominoAccessControl, PlominoDesignManager, Plom
         """return a PlominoForm
         """
         obj = getattr(self, formname, None)
-        if obj is not None and obj.Type() == 'PlominoForm':
+        if obj and obj.Type() == 'PlominoForm':
             return obj
-        else:
-            return None
 
     security.declarePublic('getView')
     def getView(self,viewname):
         """return a PlominoView
         """
         obj = getattr(self, viewname, None)
-        if obj is not None and obj.Type() == 'PlominoView':
+        if obj and obj.Type() == 'PlominoView':
             return obj
-        else:
-            return None
 
     security.declareProtected(CREATE_PERMISSION, 'createDocument')
     def createDocument(self):
