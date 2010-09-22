@@ -421,14 +421,15 @@ class PlominoDocument(ATFolder):
             else:
                 values.append(asUnicode(item_value))
             # if selection or attachment field, we try to index rendered values too
-            field = form.getFormField(itemname)
-            if field and field.getFieldType() in ["SELECTION", "ATTACHMENT"]:
-                try:
-                    v = asUnicode(self.getRenderedItem(itemname,form=form, convertattachments=index_attachments))
-                    if v:
-                        values.append(v)
-                except:
-                    pass
+            if form:
+                field = form.getFormField(itemname)
+                if field and field.getFieldType() in ["SELECTION", "ATTACHMENT"]:
+                    try:
+                        v = asUnicode(self.getRenderedItem(itemname,form=form, convertattachments=index_attachments))
+                        if v:
+                            values.append(v)
+                    except:
+                        pass
         return ' '.join(values)
 
     security.declareProtected(READ_PERMISSION, 'getfile')
