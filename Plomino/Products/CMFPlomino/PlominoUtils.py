@@ -19,14 +19,14 @@ import csv
 from cStringIO import StringIO
 import Missing
 
-def DateToString(d, format='%d/%m/%Y'):
-    """return the date as string using the given format, default is '%d/%m/%Y'
+def DateToString(d, format='%Y-%m-%d'):
+    """return the date as string using the given format, default is '%Y-%m-%d'
     """
     #return DateTime(*d[0:6]).strftime(format)
     return d.strftime(format)
 
-def StringToDate(str_d, format='%d/%m/%Y'):
-    """parse the string using the given format (default is '%d/%m/%Y') and return the date 
+def StringToDate(str_d, format='%Y-%m-%d'):
+    """parse the string using the given format (default is '%Y-%m-%d') and return the date 
     """
     dt = strptime(str_d, format)
     if len(dt)>=5:
