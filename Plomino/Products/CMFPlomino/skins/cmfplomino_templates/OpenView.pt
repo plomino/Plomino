@@ -223,7 +223,7 @@
 			        </table>
 			        
 			        <p style="clear: both;" class="discreet">
-			        	<a href="?widget=BASIC" i18n:domain="CMFPlomino" i18n:translate="plominoview_viewstatictable">View aas static table</a>
+			        	<a href="?widget=BASIC" i18n:domain="CMFPlomino" i18n:translate="plominoview_viewstatictable">View as static table</a>
 			        </p>
 				</tal:dynamic>
 				
