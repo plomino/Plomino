@@ -36,140 +36,141 @@
 			<p tal:content="here/Description" class="documentDescription">description</p>
 
 			<tal:block tal:condition="python:test(hasReadPermission==True)"
-			           tal:define="viewwidget python:here.getWidget()">
+			           tal:define="requiredwidget here/REQUEST/widget|nothing;
+			                       viewwidget python:requiredwidget in ('BASIC', 'DYNAMICTABLE') and requiredwidget or here.getWidget();">
 
 				<div tal:replace="structure provider:plone.abovecontentbody" />
                 
-                <tal:basic tal:condition="python:test(viewwidget=='BASIC')">
-				<table tal:define="columns python:here.getColumns();
-				                   remove_permission python:here.hasRemovePermission(here)==True;
-				                   " id="sortable"
-					class="plominoview" summary="Content listing"
-					i18n:attributes="summary summary_content_listing;">
-					<tr>
-						<th>&nbsp;&nbsp;</th>
-						<tal:block tal:repeat="c columns">
-							<th tal:condition="not: c/HiddenColumn|nothing">&nbsp;<span
-								tal:content="c/Title">Title</span>&nbsp;</th>
-						</tal:block>
-					</tr>
-					<tal:block tal:condition="python:test(here.Categorized)">
-						<!-- Categorized view -->
-						<tal:block
-							tal:define="categories python:here.getCategorizedColumnValues(columns[0].getColumnName())"
-							tal:repeat="cat categories">
+                <tal:basic tal:condition="python:viewwidget == 'BASIC'">
+					<table tal:define="columns python:here.getColumns();
+					                   remove_permission python:here.hasRemovePermission(here)==True;
+					                   " id="sortable"
+						class="plominoview" summary="Content listing"
+						i18n:attributes="summary summary_content_listing;">
+						<tr>
+							<th>&nbsp;&nbsp;</th>
+							<tal:block tal:repeat="c columns">
+								<th tal:condition="not: c/HiddenColumn|nothing">&nbsp;<span
+									tal:content="c/Title">Title</span>&nbsp;</th>
+							</tal:block>
+						</tr>
+						<tal:block tal:condition="python:test(here.Categorized)">
+							<!-- Categorized view -->
 							<tal:block
-								tal:define="currentindex repeat/cat/index;
-														expand request/expand|python:'@';
-														expanded python:expand.find('@'+str(currentindex)+'@')>-1">
-								<tr>
-									<td class="even"><tal:block tal:condition="expanded">
-										<a href="#"
-											tal:attributes="href python:request.URL+'?expand='+expand.replace('@'+str(currentindex)+'@','@')">-</a>
-									</tal:block> <tal:block tal:condition="not: expanded">
-										<a href="#"
-											tal:attributes="href python:request.URL+'?expand='+expand.replace('@','@'+str(currentindex)+'@',1)">+</a>
-									</tal:block></td>
-									<td class="even"
-										style="text-align: left; text-transform: none"
-										tal:attributes="colspan python:len(columns)"><tal:block
-										tal:condition="python:test(cat[0]=='')">Not categorized</tal:block>
-									<span tal:content="python:cat[0]+' ('+str(cat[1])+')'" /></td>
-								</tr>
-								<tal:block tal:condition="expanded">
-									<tal:block
-										tal:repeat="doc python:here.getCategoryViewEntries(columns[0].getColumnName(), cat[0])">
-
+								tal:define="categories python:here.getCategorizedColumnValues(columns[0].getColumnName())"
+								tal:repeat="cat categories">
+								<tal:block
+									tal:define="currentindex repeat/cat/index;
+															expand request/expand|python:'@';
+															expanded python:expand.find('@'+str(currentindex)+'@')>-1">
+									<tr>
+										<td class="even"><tal:block tal:condition="expanded">
+											<a href="#"
+												tal:attributes="href python:request.URL+'?expand='+expand.replace('@'+str(currentindex)+'@','@')">-</a>
+										</tal:block> <tal:block tal:condition="not: expanded">
+											<a href="#"
+												tal:attributes="href python:request.URL+'?expand='+expand.replace('@','@'+str(currentindex)+'@',1)">+</a>
+										</tal:block></td>
+										<td class="even"
+											style="text-align: left; text-transform: none"
+											tal:attributes="colspan python:len(columns)"><tal:block
+											tal:condition="python:test(cat[0]=='')">Not categorized</tal:block>
+										<span tal:content="python:cat[0]+' ('+str(cat[1])+')'" /></td>
+									</tr>
+									<tal:block tal:condition="expanded">
 										<tal:block
-											tal:define="currentDoc python:here.getDocument(doc.getPath().split('/')[-1])"
-											tal:condition="python:test(currentDoc.hasReadPermission(currentDoc)==True)">
-											<tr tal:define="oddrow repeat/doc/odd;
-															docurl python:doc.getPath().split('/')[-1]"
-												tal:attributes="class python:test(oddrow, 'even', 'odd');">
-												<td>
-												   <input tal:condition="remove_permission" type="checkbox" name="sdoc" tal:attributes="value python:doc.getPath().split('/')[-1]" /></td>
-												<tal:block tal:repeat="c columns">
-													<td tal:condition="not: c/HiddenColumn|nothing"><tal:block
-														tal:condition="python:test(c!=columns[0])">
-														<a tal:attributes="href string:${docurl}"><span
-															tal:define="cname c/id;
-																			vname here/id;
-																			cvalue python:getattr(doc, here.getIndexKey(cname), '');
-																			"
-															tal:content="structure cvalue" ></span></a>
-													</tal:block></td>
-												</tal:block>
-											</tr>
+											tal:repeat="doc python:here.getCategoryViewEntries(columns[0].getColumnName(), cat[0])">
+	
+											<tal:block
+												tal:define="currentDoc python:here.getDocument(doc.getPath().split('/')[-1])"
+												tal:condition="python:test(currentDoc.hasReadPermission(currentDoc)==True)">
+												<tr tal:define="oddrow repeat/doc/odd;
+																docurl python:doc.getPath().split('/')[-1]"
+													tal:attributes="class python:test(oddrow, 'even', 'odd');">
+													<td>
+													   <input tal:condition="remove_permission" type="checkbox" name="sdoc" tal:attributes="value python:doc.getPath().split('/')[-1]" /></td>
+													<tal:block tal:repeat="c columns">
+														<td tal:condition="not: c/HiddenColumn|nothing"><tal:block
+															tal:condition="python:test(c!=columns[0])">
+															<a tal:attributes="href string:${docurl}"><span
+																tal:define="cname c/id;
+																				vname here/id;
+																				cvalue python:getattr(doc, here.getIndexKey(cname), '');
+																				"
+																tal:content="structure cvalue" ></span></a>
+														</tal:block></td>
+													</tal:block>
+												</tr>
+											</tal:block>
 										</tal:block>
 									</tal:block>
 								</tal:block>
 							</tal:block>
-						</tal:block>
-						<tal:sums metal:use-macro="here/view_macros/macros/SumsMacro">sums</tal:sums>
-						
-					</tal:block>
-
-					<tal:block tal:condition="python:test(not(here.Categorized))">
-						<!-- Regular view -->
-
-						<tal:block
-							tal:define="listdocuments  python:[d for d in here.getAllDocuments() if test(here.hasReadPermission(here.getParentDatabase().getDocument(d.getPath().split('/')[-1]))==True)];
-												count python:len(listdocuments);
-												paramstart request/start|python:'1';
-												paramlimit request/limit|python:'100';
-												start python:int(paramstart);
-												limit python:int(paramlimit);
-												overlimit python:count>limit;
-												nextstart python:start+limit;
-												previousstart python:max(0,start-100);
-												">
-
-
-							<tal:loop
-								tal:repeat="doc python:listdocuments[start-1:start-1+limit]">
-								<tr tal:define="oddrow repeat/doc/odd;
-								docurl python:doc.getPath().split('/')[-1]"
-									tal:attributes="class python:test(oddrow, 'even', 'odd');">
-									<td>
-									   <input tal:condition="remove_permission" type="checkbox" name="sdoc" tal:attributes="value python:doc.getPath().split('/')[-1]" /></td>
-									<tal:block tal:repeat="c columns">
-										<td tal:condition="not: c/HiddenColumn|nothing"><a tal:attributes="href string:${docurl}"><span
-											tal:define="cname c/id;
-																vname here/id;
-																cvalue python:getattr(doc, here.getIndexKey(cname), '');
-																"
-											tal:content="structure cvalue" ></span></a></td>
-									</tal:block>
-								</tr>
-							</tal:loop>
-							
 							<tal:sums metal:use-macro="here/view_macros/macros/SumsMacro">sums</tal:sums>
 							
-							<!-- DOC COUNTING -->
-							<tr>
-								<th tal:attributes="colspan python:len(columns)+1"><tal:block
-									tal:condition="python:start>1">
-									<a
-										tal:attributes="href python:'/'.join(context.getPhysicalPath())+'?start='+str(previousstart)+'&limit='+str(limit)">&lt;&lt;
-									Previous</a>
-								</tal:block>
-								<tal:count i18n:domain="CMFPlomino" i18n:translate="documents_count">
-								     Document(s) <span i18n:name="start" tal:content="python:str(start)">start</span> to
-                                     <span i18n:name="end" tal:content="python:str(min(start+limit-1,count))">end</span>
-                                     of <span i18n:name="total" tal:content="count">count</span>
-                                </tal:count>
-                                <tal:block tal:condition="python:start+limit<count">
-									<a
-										tal:attributes="href python:'/'.join(context.getPhysicalPath())+'?start='+str(nextstart)+'&limit='+str(limit)">Next
-									&gt;&gt;</a>
-								</tal:block></th>
-							</tr>
 						</tal:block>
-					</tal:block>
-				</table>
+	
+						<tal:block tal:condition="python:test(not(here.Categorized))">
+							<!-- Regular view -->
+	
+							<tal:block
+								tal:define="listdocuments  python:[d for d in here.getAllDocuments() if test(here.hasReadPermission(here.getParentDatabase().getDocument(d.getPath().split('/')[-1]))==True)];
+													count python:len(listdocuments);
+													paramstart request/start|python:'1';
+													paramlimit request/limit|python:'100';
+													start python:int(paramstart);
+													limit python:int(paramlimit);
+													overlimit python:count>limit;
+													nextstart python:start+limit;
+													previousstart python:max(0,start-100);
+													">
+	
+	
+								<tal:loop
+									tal:repeat="doc python:listdocuments[start-1:start-1+limit]">
+									<tr tal:define="oddrow repeat/doc/odd;
+									docurl python:doc.getPath().split('/')[-1]"
+										tal:attributes="class python:test(oddrow, 'even', 'odd');">
+										<td>
+										   <input tal:condition="remove_permission" type="checkbox" name="sdoc" tal:attributes="value python:doc.getPath().split('/')[-1]" /></td>
+										<tal:block tal:repeat="c columns">
+											<td tal:condition="not: c/HiddenColumn|nothing"><a tal:attributes="href string:${docurl}"><span
+												tal:define="cname c/id;
+																	vname here/id;
+																	cvalue python:getattr(doc, here.getIndexKey(cname), '');
+																	"
+												tal:content="structure cvalue" ></span></a></td>
+										</tal:block>
+									</tr>
+								</tal:loop>
+								
+								<tal:sums metal:use-macro="here/view_macros/macros/SumsMacro">sums</tal:sums>
+								
+								<!-- DOC COUNTING -->
+								<tr>
+									<th tal:attributes="colspan python:len(columns)+1"><tal:block
+										tal:condition="python:start>1">
+										<a
+											tal:attributes="href python:'/'.join(context.getPhysicalPath())+'?widget=BASIC&start='+str(previousstart)+'&limit='+str(limit)">&lt;&lt;
+										Previous</a>
+									</tal:block>
+									<tal:count i18n:domain="CMFPlomino" i18n:translate="documents_count">
+									     Document(s) <span i18n:name="start" tal:content="python:str(start)">start</span> to
+	                                     <span i18n:name="end" tal:content="python:str(min(start+limit-1,count))">end</span>
+	                                     of <span i18n:name="total" tal:content="count">count</span>
+	                                </tal:count>
+	                                <tal:block tal:condition="python:start+limit<count">
+										<a
+											tal:attributes="href python:'/'.join(context.getPhysicalPath())+'?widget=BASIC&start='+str(nextstart)+'&limit='+str(limit)">Next
+										&gt;&gt;</a>
+									</tal:block></th>
+								</tr>
+							</tal:block>
+						</tal:block>
+					</table>
 				</tal:basic>
 				
-				<tal:dynamic tal:condition="python:test(viewwidget=='DYNAMICTABLE')">
+				<tal:dynamic tal:condition="python:viewwidget == 'DYNAMICTABLE'">
 					<script type="text/javascript" charset="utf-8"
 				        tal:define="params here/DynamicTableParameters;"
 				        tal:content="structure string:
@@ -177,30 +178,24 @@
 										jq(document).ready(function() {
 											oDynamicTable = jq('#dynamictable').dataTable( {
 												'aaSorting': [],
+												'bProcessing': true,
+												'sAjaxSource': 'tojson',
 												${params},
-												aoColumnDefs: [ {
+												'aoColumnDefs': [ {
 														'aTargets': ['_all'],
 														'bUseRendered': false,
-														'fnRender': function(oObj) {
-															var cell = oObj.aData[oObj.iDataColumn];
-															if (oObj.iDataColumn > 1 && cell.indexOf('<a') == -1) {
-																return oObj.aData[1].replace('Open', cell);
-															}
-															else
-																return cell;
-														}
+														'fnRender': dynamicview_generate_cells_content
 													},
-													{ 'aTargets': [0,1], 'bSearchable': false, 'bSortable': false, 'sWidth': 'auto' },
-													{ 'aTargets': [1], 'bVisible': false }
+													{ 'aTargets': [0], 'bSearchable': false, 'bSortable': false }
 												],
-												fnFooterCallback: generateTableFooter,
+												'fnFooterCallback': generateTableFooter,
 												'oLanguage': {
 													'sUrl': '${context/DataTables/getLanguagePath}'
 												}
 											});
 
 											var tableNodes = oDynamicTable.fnGetNodes();
-											jq('td > input:checkbox', tableNodes).removeAttr('disabled').change(function() {
+											jq('td > input:checkbox', tableNodes).change(function() {
 												jq(this).closest('tr').toggleClass('row_selected');
 											});
 										});">
@@ -209,7 +204,6 @@
 			        <table class="display" id="dynamictable" tal:define="cols here/getColumns">
 			        	<thead>
 			        		<tr>
-			        			<th></th>
 			        			<th></th>
 			        			<tal:block tal:repeat="col cols">
 			        				<th tal:condition="not: col/HiddenColumn|nothing" tal:content="col/Title"
@@ -220,28 +214,19 @@
 			        	<tfoot>
 			        		<tr>
 			        			<th></th>
-			        			<th></th>
 			        			<tal:block tal:repeat="col cols">
 			        				<th tal:condition="not: col/HiddenColumn|nothing"></th>
 			        			</tal:block>
 			        		</tr>
 			        	</tfoot>
-			        	<tbody>
-			        		<tr tal:repeat="doc here/getAllDocuments">
-			        			<td>
-			        				<input type="checkbox" disabled="disabled" tal:attributes="value python:doc.getPath().split('/')[-1]" />
-			        			</td>
-								<td>
-									<a class="viewlink" tal:attributes="href python:doc.getPath().split('/')[-1]">Open</a>
-								</td>
-			        			<tal:block tal:repeat="col cols">
-			        				<td tal:condition="not: col/HiddenColumn|nothing" tal:content="structure python:getattr(doc, here.getIndexKey(col.id)) or '&nbsp;'"></td>
-			        			</tal:block>
-			        		</tr>
-			        	</tbody>
+			        	<tbody></tbody>
 			        </table>
-				
+			        
+			        <p style="clear: both;" class="discreet">
+			        	<a href="?widget=BASIC" i18n:domain="CMFPlomino" i18n:translate="plominoview_viewstatictable">View aas static table</a>
+			        </p>
 				</tal:dynamic>
+				
 				<tal:block tal:define="owner python:myF"
 					tal:condition="python:test((b and  myF.ActionBarPosition!='TOP'),True, False)">
 

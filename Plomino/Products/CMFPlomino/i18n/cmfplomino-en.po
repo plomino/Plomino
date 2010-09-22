@@ -507,3 +507,8 @@ msgstr "Do you really want to delete this document"
 # Documents x to y of z
 msgid "documents_count"
 msgstr "Document(s) ${start} to ${end} of ${total}"
+
+#. Default: "View as static table"
+#: OpenView.pt
+msgid "plominoview_viewstatictable"
+msgstr "View as static table"

@@ -496,17 +496,17 @@ class PlominoView(ATFolder):
         """Returns a JSON representation of view data 
         """
         data = []
-        columns = self.getColumns()
+        columnids = [col.id for col in self.getColumns() if not getattr(col, 'HiddenColumn', False)]
         for doc in self.getAllDocuments():
             row = [doc.getPath().split('/')[-1]]
-            for col in columns:
-                v = getattr(doc, self.getIndexKey(col.id))
-                if type(v) != str:
+            for colid in columnids:
+                v = getattr(doc, self.getIndexKey(colid), '')
+                if not isinstance(v, str):
                     v = unicode(v).encode('utf-8')
-                row.append(v)
+                row.append(v or '&nbsp;')
                 
             data.append(row)
-        return json.dumps(data)
+        return json.dumps({ 'aaData': data })
     
     security.declarePublic('getIndexKey')
     def getIndexKey(self, columnName):
