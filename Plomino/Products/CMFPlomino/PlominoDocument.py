@@ -237,22 +237,23 @@ class PlominoDocument(ATFolder):
             form = self.getForm()
 
         db=self.getParentDatabase()
-        for f in form.getFields(includesubforms=True):
-            mode = f.getFieldMode()
-            fieldName = f.id
-            if mode=="COMPUTED" or (mode=="CREATION" and creation):
-                result = self.runFormulaScript("field_"+f.getParentNode().id+"_"+f.id+"_formula", self, f.Formula)
-                self.setItem(fieldName, result)
-            else:
-                # computed for display field are not stored
-                pass
+        if form:
+            for f in form.getFields(includesubforms=True):
+                mode = f.getFieldMode()
+                fieldName = f.id
+                if mode=="COMPUTED" or (mode=="CREATION" and creation):
+                    result = self.runFormulaScript("field_"+f.getParentNode().id+"_"+f.id+"_formula", self, f.Formula)
+                    self.setItem(fieldName, result)
+                else:
+                    # computed for display field are not stored
+                    pass
 
-        # compute the document title
-        try:
-            result = self.runFormulaScript("form_"+form.id+"_title", self, form.getDocumentTitle)
-        except Exception:
-            result = "Document"
-        self.setTitle(result)
+            # compute the document title
+            try:
+                result = self.runFormulaScript("form_"+form.id+"_title", self, form.getDocumentTitle)
+            except Exception:
+                result = "Document"
+            self.setTitle(result)
 
         # update the Plomino_Authors field with the current user name
         if asAuthor:
@@ -268,7 +269,7 @@ class PlominoDocument(ATFolder):
             self.setItem('Plomino_Authors', authors)
 
         # execute the onSaveDocument code of the form
-        if onSaveEvent:
+        if form and onSaveEvent:
             self.runFormulaScript("form_"+form.id+"_onsave", self, form.onSaveDocument)
 
         if refresh_index:
