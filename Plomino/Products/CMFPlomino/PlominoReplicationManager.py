@@ -1019,8 +1019,6 @@ class PlominoReplicationManager(Persistent):
             counter = counter + 1
             if counter == 100:
                 txn.savepoint(optimistic=True)
-                #txn.commit()
-                txn = transaction.get()
                 counter = 0
                 logger.info("%d documents imported successfully, %d errors(s) ...(still running)" % (nbDocDone, nbDocFailed))
         txn.commit()
@@ -1150,8 +1148,8 @@ class PlominoReplicationManager(Persistent):
         for d in documents:
             docid = d.getAttribute('id')
             try:
-                if self.hasObject(docid):
-                    self.manage_delObjects(docid)
+                if self.documents.has_key(docid):
+                    self.documents._delOb(docid)
                 self.importDocumentFromXML(d)
                 imports = imports + 1
             except PlominoReplicationException, e:
@@ -1161,8 +1159,6 @@ class PlominoReplicationManager(Persistent):
             if counter == 100:
                 self.setStatus("Importing documents (%d%%)" % int(100*counter/total_docs))
                 txn.savepoint(optimistic=True)
-                #txn.commit()
-                txn = transaction.get()
                 counter = 0
                 logger.info("%d documents imported successfully, %d errors(s) ...(still running)" % (imports, errors))
         self.setStatus("Ready")

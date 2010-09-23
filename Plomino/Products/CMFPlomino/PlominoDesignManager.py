@@ -151,8 +151,6 @@ class PlominoDesignManager(Persistent):
             if counter == 10:
                 self.setStatus("Re-indexing (%d%%)" % int(100*(total+errors)/total_docs))
                 txn.savepoint(optimistic=True)
-                #txn.commit()
-                txn = transaction.get()
                 counter = 0
                 logger.info("%d documents re-indexed successfully, %d errors(s) ...(still running)" % (total, errors))
         self.setStatus("Ready")
@@ -696,8 +694,6 @@ class PlominoDesignManager(Persistent):
                 self.setStatus("Importing design (%d%%)" % int(100*total/total_elements))
                 logger.info("(%d elements committed, still running...)" % total)
                 txn.savepoint(optimistic=True)
-                #txn.commit()
-                txn = transaction.get()
                 count = 0
             e = e.nextSibling
 
