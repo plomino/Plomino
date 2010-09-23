@@ -253,7 +253,7 @@ class PlominoDatabase(ATFolder, PlominoAccessControl, PlominoDesignManager, Plom
         return all_db_status.get(self.absolute_url(), "Ready")
         
     security.declarePublic('setStatus')
-    def setStatus(self, status, commit=False):
+    def setStatus(self, status):
         """set DB current status
         """
         all_db_status = get_resource("plomino_status", dict)

@@ -1135,7 +1135,7 @@ class PlominoReplicationManager(Persistent):
         """
         """
         logger.info("Start documents import")
-        self.setStatus("Importing documents (0%)", commit=True)
+        self.setStatus("Importing documents (0%)")
         txn = transaction.get()
         if REQUEST:
             f=REQUEST.get("file")
@@ -1165,7 +1165,7 @@ class PlominoReplicationManager(Persistent):
                 txn = transaction.get()
                 counter = 0
                 logger.info("%d documents imported successfully, %d errors(s) ...(still running)" % (imports, errors))
-        self.setStatus("Ready", commit=True)
+        self.setStatus("Ready")
         logger.info("Importation finished: %d documents imported successfully, %d document(s) not imported" % (imports, errors))
         txn.commit()
         return (imports, errors)

@@ -74,7 +74,7 @@ class PlominoDesignManager(Persistent):
         logger.info('Refreshing database '+self.id)
         report = []
 
-        self.setStatus("Refreshing design", commit=True)
+        self.setStatus("Refreshing design")
         
         # migrate to current version
         messages = migrate(self)
@@ -137,7 +137,7 @@ class PlominoDesignManager(Persistent):
         total = 0
         counter = 0
         errors = 0
-        self.setStatus("Re-indexing (0%)", commit=True)
+        self.setStatus("Re-indexing (0%)")
         txn = transaction.get()
         for d in documents:
             try:
@@ -155,7 +155,7 @@ class PlominoDesignManager(Persistent):
                 txn = transaction.get()
                 counter = 0
                 logger.info("%d documents re-indexed successfully, %d errors(s) ...(still running)" % (total, errors))
-        self.setStatus("Ready", commit=True)
+        self.setStatus("Ready")
         txn.commit()
         msg = "%d documents re-indexed successfully, %d errors(s)" % (total, errors)
         report.append(msg)
@@ -663,7 +663,7 @@ class PlominoDesignManager(Persistent):
         """
         """
         logger.info("Start design import")
-        self.setStatus("Importing design", commit=True)
+        self.setStatus("Importing design")
         self.getIndex().no_refresh = True
         if REQUEST:
             f=REQUEST.get("file")
@@ -702,7 +702,7 @@ class PlominoDesignManager(Persistent):
             e = e.nextSibling
 
         logger.info("(%d elements imported)" % total)
-        self.setStatus("Ready", commit=True)
+        self.setStatus("Ready")
         txn.commit()
         self.getIndex().no_refresh = False
         

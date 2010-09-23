@@ -145,9 +145,9 @@ class PlominoIndex(UniqueObject, ZCatalog, ActionProviderBase):
         """
         """
         if not self.no_refresh:
-            self.getParentDatabase().setStatus("Re-indexing", commit=True)
+            self.getParentDatabase().setStatus("Re-indexing")
             self.refreshCatalog()
-            self.getParentDatabase().setStatus("Ready", commit=True)
+            self.getParentDatabase().setStatus("Ready")
 
     security.declareProtected(READ_PERMISSION, 'dbsearch')
     def dbsearch(self,request,sortindex=None,reverse=0):
