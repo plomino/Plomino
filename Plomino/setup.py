@@ -1,7 +1,7 @@
 from setuptools import setup, find_packages
 import os
 
-version = '1.7.4'
+version = '1.7.5'
 
 setup(name='Plomino',
       version=version,
@@ -26,6 +26,7 @@ setup(name='Plomino',
           'setuptools',
           # -*- Extra requirements: -*-
           'simplejson',
+          'dm.sharedresource',
       ],
       entry_points="""
       # -*- Entry points: -*-

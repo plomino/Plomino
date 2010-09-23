@@ -38,7 +38,7 @@ from Products.BTreeFolder2.BTreeFolder2 import manage_addBTreeFolder
 from Products.CMFPlone.interfaces import IHideFromBreadcrumbs
 import string
 import Globals
-import transaction
+from dm.sharedresource import get_resource
 
 from index.PlominoIndex import PlominoIndex
 from Products.CMFPlomino.PlominoUtils import *
@@ -249,19 +249,15 @@ class PlominoDatabase(ATFolder, PlominoAccessControl, PlominoDesignManager, Plom
     def getStatus(self):
         """return DB current status
         """
-        return getattr(self, "plomino_db_status", "Ready")
+        all_db_status = get_resource("plomino_status", dict)
+        return all_db_status.get(self.absolute_url(), "Ready")
         
     security.declarePublic('setStatus')
     def setStatus(self, status, commit=False):
         """set DB current status
         """
-        if commit:
-            txn = transaction.get()
-            self.plomino_db_status = status
-            txn.savepoint(optimistic=True)
-            #txn.commit()
-        else:
-            self.plomino_db_status = status
+        all_db_status = get_resource("plomino_status", dict)
+        all_db_status[self.absolute_url()] = status
             
     security.declarePublic('checkBeforeOpenDatabase')
     def checkBeforeOpenDatabase(self):
