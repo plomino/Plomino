@@ -484,7 +484,7 @@ class PlominoView(ATFolder):
 
         # add column titles
         if displayColumnsTitle=='True' :
-            titles = [c.title for c in self.getColumns()]
+            titles = [c.title.encode('utf-8') for c in self.getColumns()]
             rows.append(titles)
 
         for doc in docs:
