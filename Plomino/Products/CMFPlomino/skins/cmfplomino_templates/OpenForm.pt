@@ -101,7 +101,7 @@
                             hasReadPermissionOnForm python:test(here.hasReadPermission(here)==True);">
 
 
-                <form tal:attributes="name here/id" action="searchDocuments"
+                <form id="plomino_form" tal:attributes="name here/id" action="searchDocuments"
                     method="POST">
                 <div tal:replace="structure provider:plone.abovecontenttitle" /><tal:block
                     tal:condition="python:test(hasReadPermissionOnDatabase==True and hasReadPermissionOnForm==True)">
@@ -172,7 +172,7 @@
                 <h1 class="documentFirstHeading" tal:content="here/Title">Title</h1>
                 <div tal:replace="structure provider:plone.belowcontenttitle" />
                 <div tal:replace="structure provider:plone.abovecontentbody" />
-                <form tal:attributes="name here/id">
+                <form id="plomino_form" tal:attributes="name here/id">
                     <span tal:content="structure python:here.formLayout(request)" />
                 </form>
                 <div tal:replace="structure provider:plone.belowcontentbody" />
