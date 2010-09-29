@@ -40,7 +40,7 @@ msgstr "Décrire comment utiliser cette base de données"
 #. Default: "Index file attachments"
 #: PlominoDatabase.py
 msgid "CMFPlomino_label_IndexAttachments"
-msgstr "Indexerles fichiers joints"
+msgstr "Indexer les fichiers joints"
 
 #. Default: "If enabled, files attached in File Attachments fields will be indexed. It might increase the index size."
 #: PlominoDatabase.py
