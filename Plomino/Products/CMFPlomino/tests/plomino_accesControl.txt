@@ -30,7 +30,7 @@ Create plomino database and publish it
     >>> db.at_post_create_script()
     >>> wf_tool = self.portal.portal_workflow
     >>> wf_tool.doActionFor(db, 'publish')
-    >>> base_url = db.absolute_url()
+    >>> base_url = db.absolute_url_path()
 
 Set plomino roles and permissions
     >>> db.manage_setLocalRoles('userManager', ['PlominoManager'])
