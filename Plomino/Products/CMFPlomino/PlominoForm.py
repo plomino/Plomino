@@ -285,14 +285,14 @@ class PlominoForm(ATFolder):
             REQUEST.RESPONSE.redirect(db.absolute_url())
 
     security.declarePublic('getFields')
-    def getFields(self, includesubforms=False, doc=None):
+    def getFields(self, includesubforms=False, doc=None, applyhidewhen=True):
         """get fields
         """
         fieldlist = self.portal_catalog.search({'portal_type' : ['PlominoField'], 'path': '/'.join(self.getPhysicalPath())})
         result = [f.getObject() for f in fieldlist]
         result.sort(key=lambda elt: elt.id.lower())
         if includesubforms:
-            for subformname in self.getSubforms(doc):
+            for subformname in self.getSubforms(doc, applyhidewhen):
                 result=result+self.getParentDatabase().getForm(subformname).getFields(True)
         return result
 
@@ -530,19 +530,26 @@ class PlominoForm(ATFolder):
         return False
     
     security.declarePublic('getSubforms')
-    def getSubforms(self, doc=None):
+    def getSubforms(self, doc=None, applyhidewhen=True):
         """return the names of the subforms embedded in the form
         """
-        html_content = html_content = self.applyHideWhen(doc)
+        if applyhidewhen:
+            html_content = self.applyHideWhen(doc)
+        else:
+            plone_tools = getToolByName(self, 'plone_utils')
+            encoding = plone_tools.getSiteEncoding()
+            html_content = self.getField('FormLayout').getRaw(self).decode(encoding)
+            html_content = html_content.replace('\n', '')
+        
         r = re.compile('<span class="plominoSubformClass">([^<]+)</span>')
         return [i.strip() for i in r.findall(html_content)]
 
     security.declarePublic('readInputs')
-    def readInputs(self, doc, REQUEST, process_attachments=False):
+    def readInputs(self, doc, REQUEST, process_attachments=False, applyhidewhen=True):
         """ read submitted values in REQUEST and store them in document according
         fields definition
         """
-        for f in self.getFields(includesubforms=True, doc=doc):
+        for f in self.getFields(includesubforms=True, doc=doc, applyhidewhen=applyhidewhen):
             mode = f.getFieldMode()
             fieldName = f.id
             if mode=="EDITABLE":
