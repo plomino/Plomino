@@ -37,6 +37,12 @@ try:
     from iw.fss.FileSystemStorage import FileSystemStorage, FSSFileInfo
 except Exception, e:
     pass
+try:
+    from plone.app.blob.field import BlobWrapper
+    from plone.app.blob.utils import guessMimetype
+    HAS_BLOB = True
+except Exception, e:
+    HAS_BLOB = False
 
 ##/code-section module-header
 
@@ -93,7 +99,7 @@ class PlominoDocument(ATFolder):
 
     def url(self):
         db = self.getParentDatabase()
-        db_url = db.absolute_url()
+        db_url = db.absolute_url_path()
         return db_url + "/" + self.id
         
     security.declarePublic('setItem')
@@ -477,7 +483,6 @@ class PlominoDocument(ATFolder):
             filename=submittedValue.filename
         contenttype=''
         if filename!='':
-            tmpfile=File(filename, filename, submittedValue)
             if """\\""" in filename:
                 filename=filename.split("\\")[-1]
             if filename in self.objectIds():
@@ -487,9 +492,20 @@ class PlominoDocument(ATFolder):
                     return ("ERROR: "+filename+" already exists", "")
             else:
                 if(self.getParentDatabase().getStorageAttachments()==True):
+                    tmpfile=File(filename, filename, submittedValue)
                     storage = FileSystemStorage();
                     storage.set(filename, self, tmpfile);
                     contenttype=storage.get(filename,self).getContentType()
+                elif HAS_BLOB:
+                    blob = BlobWrapper()
+                    file = blob.getBlob().open('w')
+                    file.write(submittedValue.read())
+                    submittedValue.seek(0)
+                    contenttype = guessMimetype(submittedValue, filename)
+                    file.close()
+                    blob.setFilename(filename)
+                    blob.setContentType(contenttype)
+                    self._setObject(filename, blob)
                 else:
                     self.manage_addFile(filename, submittedValue)
                     #import pdb; pdb.set_trace()
