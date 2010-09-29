@@ -1004,8 +1004,17 @@ class PlominoReplicationManager(Persistent):
                 #create doc
                 doc = self.createDocument()
                 #fill it
-                for infos in docInfos:
-                    doc.setItem(infos, docInfos[infos])
+                form = self.getForm(docInfos['Form'])
+                form.readInputs(doc, docInfos, process_attachments=False, applyhidewhen=False)
+                doc.setItem('Form', docInfos['Form'])
+                #add items that don't correspond to any field 
+                computedItems = doc.getItems()
+                for info in docInfos:
+                    if info not in computedItems:
+                        v = docInfos[info]
+                        if isinstance(v, str):
+                            v.decode('utf-8')
+                        doc.setItem(info, v)
                 #save
                 doc.save(creation=True, refresh_index=False)
                 #count
