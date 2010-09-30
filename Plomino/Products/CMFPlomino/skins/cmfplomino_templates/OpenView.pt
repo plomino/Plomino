@@ -179,7 +179,7 @@
 											oDynamicTable = jq('#dynamictable').dataTable( {
 												'aaSorting': [],
 												'bProcessing': true,
-												'sAjaxSource': 'tojson',
+												'sAjaxSource': '${here/absolute_url_path}/tojson',
 												${params},
 												'aoColumnDefs': [ {
 														'aTargets': ['_all'],
