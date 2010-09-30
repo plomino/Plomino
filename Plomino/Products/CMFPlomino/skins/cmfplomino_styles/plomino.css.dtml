@@ -35,7 +35,8 @@
 	border-style:dashed;
 	border-width:thin;
 	}
-.plominoNoWrap {
+
+.plominoNoWrap {
 	white-space: nowrap;	
 }
 
@@ -93,6 +94,11 @@ tr.datagrid_row_selected td {
 	margin-top: 5px;
 	padding: 5px;
 	border: 1px solid #ccc;
+}
+
+/* Dynamic categorized view style */
+tr.collapsed, tr.expanded {
+	cursor: pointer;
 }
 
 /* change z-index for calendar pop-up so it works in overlay */

@@ -61,8 +61,8 @@
 								tal:repeat="cat categories">
 								<tal:block
 									tal:define="currentindex repeat/cat/index;
-															expand request/expand|python:'@';
-															expanded python:expand.find('@'+str(currentindex)+'@')>-1">
+												expand request/expand|python:'@';
+												expanded python:expand.find('@'+str(currentindex)+'@')>-1">
 									<tr>
 										<td class="even"><tal:block tal:condition="expanded">
 											<a href="#"
@@ -172,22 +172,30 @@
 				
 				<tal:dynamic tal:condition="python:viewwidget == 'DYNAMICTABLE'">
 					<script type="text/javascript" charset="utf-8"
-				        tal:define="params here/DynamicTableParameters;"
-				        tal:content="structure string:
+						tal:define="params here/DynamicTableParameters;
+									categorized python:getattr(here, 'Categorized', False) and 'true' or 'false';"
+						tal:content="structure string:
 										var oDynamicTable;
 										jq(document).ready(function() {
 											oDynamicTable = jq('#dynamictable').dataTable( {
 												'aaSorting': [],
 												'bProcessing': true,
-												'sAjaxSource': '${here/absolute_url_path}/tojson',
+												'sAjaxSource': 'tojson',
 												${params},
 												'aoColumnDefs': [ {
 														'aTargets': ['_all'],
 														'bUseRendered': false,
 														'fnRender': dynamicview_generate_cells_content
 													},
-													{ 'aTargets': [0], 'bSearchable': false, 'bSortable': false }
+													{ 'aTargets': [0], 'bSearchable': false, 'bSortable': false, 'sWidth': '0' },
+													{ 'aTargets': [1], 'sWidth': '0' }
 												],
+												'aaSortingFixed': [[1, 'asc']],
+												'fnDrawCallback': function() {
+													if (${categorized}) {
+														dynamicview_categorize('dynamictable');
+													}
+												},
 												'fnFooterCallback': generateTableFooter,
 												'oLanguage': {
 													'sUrl': '${context/DataTables/getLanguagePath}'
