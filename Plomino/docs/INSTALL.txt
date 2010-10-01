@@ -1,26 +1,11 @@
 Plomino Installation
 --------------------
 
-* Add link to Plomino buildout extend in your buildout.cfg extends statement:
+edit your buildout.cfg and add Plomino in the eggs list:
 
-    [buildout]
-    ...
-    extends =
-        https://plomino.svn.sourceforge.net/svnroot/plomino/trunk/buildouts/buildout-plone3.cfg
+    eggs =
         ...
+        Plomino
+Then you have to run your buildout:
 
-or 
-
-    [buildout]
-    ...
-    extends =
-        https://plomino.svn.sourceforge.net/svnroot/plomino/trunk/buildouts/buildout-plone4.cfg
-        ...
-
-Note: for Plone4, make sure to include it at the beginning of the "extends" statement
-
-* re-run buildout, e.g. with:
-
-    $ ./bin/buildout
-
-
+    $ ./bin/buildout -N
