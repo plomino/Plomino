@@ -37,7 +37,7 @@
 
 			<tal:block tal:condition="python:test(hasReadPermission==True)"
 			           tal:define="requiredwidget here/REQUEST/widget|nothing;
-			                       viewwidget python:requiredwidget in ('BASIC', 'DYNAMICTABLE') and requiredwidget or here.getWidget();">
+			                       viewwidget python:requiredwidget == 'BASIC' and requiredwidget or here.getWidget();">
 
 				<div tal:replace="structure provider:plone.abovecontentbody" />
                 
@@ -66,10 +66,10 @@
 									<tr>
 										<td class="even"><tal:block tal:condition="expanded">
 											<a href="#"
-												tal:attributes="href python:request.URL+'?expand='+expand.replace('@'+str(currentindex)+'@','@')">-</a>
+												tal:attributes="href python:request.URL+'?widget=BASIC&expand='+expand.replace('@'+str(currentindex)+'@','@')">-</a>
 										</tal:block> <tal:block tal:condition="not: expanded">
 											<a href="#"
-												tal:attributes="href python:request.URL+'?expand='+expand.replace('@','@'+str(currentindex)+'@',1)">+</a>
+												tal:attributes="href python:request.URL+'?widget=BASIC&expand='+expand.replace('@','@'+str(currentindex)+'@',1)">+</a>
 										</tal:block></td>
 										<td class="even"
 											style="text-align: left; text-transform: none"
@@ -173,8 +173,10 @@
 				<tal:dynamic tal:condition="python:viewwidget == 'DYNAMICTABLE'">
 					<script type="text/javascript" charset="utf-8"
 						tal:define="params here/DynamicTableParameters;
-									categorized python:getattr(here, 'Categorized', False) and 'true' or 'false';
-									fixedsorting python:getattr(here, 'Categorized', False) and '\'aaSortingFixed\': [[1, \'asc\']],' or '';"
+									iscategorized python:getattr(here, 'Categorized', False);
+									categorized python:iscategorized and 'true' or 'false';
+									fixedsorting python:iscategorized and '\'aaSortingFixed\': [[1, \'asc\']],' or '';
+									fixedcol1size python:iscategorized and '{ \'aTargets\': [1], \'sWidth\': \'0\' },' or '';"
 						tal:content="structure string:
 										var oDynamicTable;
 										jq(document).ready(function() {
@@ -188,8 +190,8 @@
 														'bUseRendered': false,
 														'fnRender': dynamicview_generate_cells_content
 													},
-													{ 'aTargets': [0], 'bSearchable': false, 'bSortable': false, 'sWidth': '0' },
-													{ 'aTargets': [1], 'sWidth': '0' }
+													${fixedcol1size}
+													{ 'aTargets': [0], 'bSearchable': false, 'bSortable': false, 'sWidth': '0' }
 												],
 												${fixedsorting}
 												'fnDrawCallback': function() {
