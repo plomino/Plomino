@@ -1,6 +1,17 @@
 Changelog
 =========
 
+1.7.5
+-----
+* Documents stored in a BTreeFolder.
+* If available, use plone.app.blob to store file attachments.
+* When importing design or documents, use savepoints instead of actual commit.
+* CSV import uses fields definition (so values are casted accordingly, instead of storing everything as strings).
+* Excel export method on views.
+* Categorized views supported with dynamic mode.
+* Fix file attachment bug under Plone 4.
+* 
+
 1.7.4
 -----
 * Dynamic picklist for selection field
