@@ -173,7 +173,8 @@
 				<tal:dynamic tal:condition="python:viewwidget == 'DYNAMICTABLE'">
 					<script type="text/javascript" charset="utf-8"
 						tal:define="params here/DynamicTableParameters;
-									categorized python:getattr(here, 'Categorized', False) and 'true' or 'false';"
+									categorized python:getattr(here, 'Categorized', False) and 'true' or 'false';
+									fixedsorting python:getattr(here, 'Categorized', False) and '\'aaSortingFixed\': [[1, \'asc\']],' or '';"
 						tal:content="structure string:
 										var oDynamicTable;
 										jq(document).ready(function() {
@@ -190,7 +191,7 @@
 													{ 'aTargets': [0], 'bSearchable': false, 'bSortable': false, 'sWidth': '0' },
 													{ 'aTargets': [1], 'sWidth': '0' }
 												],
-												'aaSortingFixed': [[1, 'asc']],
+												${fixedsorting}
 												'fnDrawCallback': function() {
 													if (${categorized}) {
 														dynamicview_categorize('dynamictable');
