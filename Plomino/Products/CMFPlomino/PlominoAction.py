@@ -153,11 +153,15 @@ class PlominoAction(BaseContent, BrowserDefaultMixin):
     def runScript(self,REQUEST):
         """execute the python code
         """
+        db = self.getParentDatabase()
         target = REQUEST.get('target')
         if target == "None":
-            plominoContext = self.getParentDatabase()
+            plominoContext = db
         else:
-            plominoContext = getattr(self.getParentDatabase(), target)
+            plominoContext = db.getDocument(target)
+            if plominoContext is None:
+                plominoContext = getattr(db, target, db)
+            
         plominoReturnURL = plominoContext.absolute_url()
         try:
             #RunFormula(plominoContext, "action_"+self.getParentNode().id+"_"+self.id, self.Content())
