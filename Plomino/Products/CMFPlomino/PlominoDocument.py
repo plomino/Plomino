@@ -19,6 +19,7 @@ import interfaces
 from Products.ATContentTypes.content.folder import ATFolder
 from Products.CMFDynamicViewFTI.browserdefault import BrowserDefaultMixin
 from Products.CMFCore.utils import getToolByName
+from Products.CMFPlone.utils import normalizeString
 
 from Products.CMFPlomino.config import *
 
@@ -485,6 +486,7 @@ class PlominoDocument(ATFolder):
         if filename!='':
             if """\\""" in filename:
                 filename=filename.split("\\")[-1]
+            filename = ".".join([normalizeString(s, encoding='utf-8') for s in filename.split('.')])
             if filename in self.objectIds():
                 if overwrite:
                     self.deletefile(filename)
