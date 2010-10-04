@@ -259,7 +259,9 @@ class PlominoDocument(ATFolder):
             try:
                 result = self.runFormulaScript("form_"+form.id+"_title", self, form.getDocumentTitle)
             except Exception:
-                result = "Document"
+                result = ""
+            if not result:
+                result = form.Title()
             self.setTitle(result)
 
         # update the Plomino_Authors field with the current user name
