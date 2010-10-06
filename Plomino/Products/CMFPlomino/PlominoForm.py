@@ -122,7 +122,7 @@ schema = Schema((
             description_msgid='CMFPlomino_help_DocumentTitle',
             i18n_domain='CMFPlomino',
         ),
-        schemata="Parameters",
+#        schemata="Parameters",
     ),
     StringField(
         name='ActionBarPosition',
@@ -134,7 +134,7 @@ schema = Schema((
             description_msgid='CMFPlomino_help_ActionBarPosition',
             i18n_domain='CMFPlomino',
         ),
-        schemata="Parameters",
+#        schemata="Parameters",
         vocabulary=[["TOP", "At the top of the page"], ["BOTTOM", "At the bottom of the page"], ["BOTH", "At the top and at the bottom of the page "]],
     ),
     BooleanField(
@@ -147,7 +147,7 @@ schema = Schema((
             description_msgid='CMFPlomino_help_HideDefaultActions',
             i18n_domain='CMFPlomino',
         ),
-        schemata="Parameters",
+#        schemata="Parameters",
     ),
     BooleanField(
         name='HideInMenu',
@@ -159,7 +159,7 @@ schema = Schema((
             description_msgid='CMFPlomino_help_HideInMenu',
             i18n_domain='CMFPlomino',
         ),
-        schemata="Parameters",
+#        schemata="Parameters",
     ),
     BooleanField(
         name='isSearchForm',
@@ -171,7 +171,7 @@ schema = Schema((
             description_msgid='CMFPlomino_help_SearchForm',
             i18n_domain='CMFPlomino',
         ),
-        schemata="Parameters",
+#        schemata="Parameters",
     ),
     BooleanField(
         name='isPage',
@@ -183,7 +183,7 @@ schema = Schema((
             description_msgid='CMFPlomino_help_isPage',
             i18n_domain='CMFPlomino',
         ),
-        schemata="Parameters",
+#        schemata="Parameters",
     ),
     StringField(
         name='SearchView',
@@ -194,7 +194,7 @@ schema = Schema((
             description_msgid='CMFPlomino_help_SearchView',
             i18n_domain='CMFPlomino',
         ),
-        schemata="Parameters",
+#        schemata="Parameters",
     ),
     TextField(
         name='SearchFormula',
@@ -205,7 +205,7 @@ schema = Schema((
             description_msgid='CMFPlomino_help_SearchFormula',
             i18n_domain='CMFPlomino',
         ),
-        schemata="Parameters",
+#        schemata="Parameters",
     ),
     IntegerField(
         name='Position',
@@ -216,7 +216,7 @@ schema = Schema((
             description_msgid="CMFPlomino_help_Position",
             i18n_domain='CMFPlomino',
         ),
-        schemata="Parameters",
+#        schemata="Parameters",
     ),
 ),
 )

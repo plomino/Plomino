@@ -107,7 +107,7 @@ schema = Schema((
             description_msgid='CMFPlomino_help_ActionBarPosition',
             i18n_domain='CMFPlomino',
         ),
-        schemata="Parameters",
+#        schemata="Parameters",
         vocabulary=[["TOP", "At the top of the page"], ["BOTTOM", "At the bottom of the page"], ["BOTH", "At the top and at the bottom of the page "]],
     ),
     BooleanField(
@@ -120,7 +120,7 @@ schema = Schema((
             description_msgid='CMFPlomino_help_HideViewDefaultActions',
             i18n_domain='CMFPlomino',
         ),
-        schemata="Parameters",
+#        schemata="Parameters",
     ),
     BooleanField(
         name='HideInMenu',
@@ -132,7 +132,7 @@ schema = Schema((
             description_msgid='CMFPlomino_help_HideInMenu',
             i18n_domain='CMFPlomino',
         ),
-        schemata="Parameters",
+#        schemata="Parameters",
     ),
     StringField(
         name='Widget',
@@ -145,7 +145,7 @@ schema = Schema((
             i18n_domain='CMFPlomino',
         ),
         vocabulary= [["BASIC", "Basic html"], ["DYNAMICTABLE", "Dynamic table"]],
-        schemata="Parameters",
+#        schemata="Parameters",
     ),
     TextField(
         name='DynamicTableParameters',
@@ -163,7 +163,7 @@ schema = Schema((
 'bSort': true,
 'bInfo': true,
 'bAutoWidth': false""",
-        schemata="Parameters",
+#        schemata="Parameters",
     ),
     StringField(
         name='ViewTemplate',
@@ -174,7 +174,7 @@ schema = Schema((
             description_msgid='CMFPlomino_help_ViewTemplate',
             i18n_domain='CMFPlomino',
         ),
-        schemata="Parameters",
+#        schemata="Parameters",
     ),
     IntegerField(
         name='Position',
@@ -185,7 +185,7 @@ schema = Schema((
             description_msgid="CMFPlomino_description_Position",
             i18n_domain='CMFPlomino',
         ),
-        schemata="Parameters",
+#        schemata="Parameters",
     ),
 ),
 )
