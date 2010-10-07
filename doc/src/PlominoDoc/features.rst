@@ -134,7 +134,8 @@ Then select the action type:
 - Python script: run the formula entered in ``Parameter or code``, and
   redirect to the current object (in read mode). Examples: send a mail
   notification to someone, compute a field value and update the document
-  with this new value, etc.
+  with this new value, etc. If the formula returns a string, Plomino will 
+  will assume it is a URL and use it for redirection.
 
 - Redirect: same as ``Python script``, but the formula should return an
   URL that will be used for redirection. Example: create a new document
