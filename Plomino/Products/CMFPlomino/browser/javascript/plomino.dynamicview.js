@@ -76,9 +76,9 @@ function dynamicview_categorize(sTableId) {
 		var category = jq('td:eq(1)', this).text();
 		if (index == 0 || category != row.prev().children("td:eq(1)").text()) {
 			var asExpanded = table.data("asExpanded") || [];
-			var class = findInArray(asExpanded, category) == -1 ? "collapsed" : "expanded";
+			var classname = findInArray(asExpanded, category) == -1 ? "collapsed" : "expanded";
 			var colspan = row.children().length - 1;
-			row.before('<tr onclick="dynamicview_toggle_category(this);" class="' + class + '"><td class="group"></td><td class="group" colspan="' + colspan + '">' + category + '</td></tr>');
+			row.before('<tr onclick="dynamicview_toggle_category(this);" class="' + classname + '"><td class="group"></td><td class="group" colspan="' + colspan + '">' + category + '</td></tr>');
 		}
 	});
 	jq('tbody tr:not(.collapsed,.expanded)', table).each(function(){
