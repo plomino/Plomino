@@ -22,6 +22,7 @@ import re
 from ZPublisher.HTTPResponse import HTTPResponse
 from ZPublisher.HTTPRequest import HTTPRequest
 from ZPublisher.HTTPRequest import FileUpload
+from OFS.ObjectManager import ObjectManager
 from Products.PageTemplates.ZopePageTemplate import manage_addPageTemplate
 from Products.CMFCore.utils import getToolByName
 from Products.DCWorkflow.DCWorkflow import DCWorkflowDefinition
@@ -32,6 +33,7 @@ from xml.dom.minidom import parseString
 import xmlrpclib
 from cStringIO import StringIO
 import codecs
+import os
 import sys
 import transaction
 
@@ -178,38 +180,82 @@ class PlominoDesignManager(Persistent):
     def exportDesign(self, REQUEST=None):
         """export design elements from current database to remote database
         """
-        targetURL=REQUEST.get('targetURL')
-        username=REQUEST.get('username')
-        password=REQUEST.get('password')
         entire=REQUEST.get('entire')
         targettype=REQUEST.get('targettype')
+        dbsettings=REQUEST.get('dbsettings')
+        if dbsettings == "Yes":
+            dbsettings = True
+        else:
+            dbsettings = False
+        
         if entire=="Yes":
-            xmlstring = self.exportDesignAsXML()
+            designelements = None
         else:
             designelements=REQUEST.get('designelements')
             if designelements:
                 if type(designelements)==str:
                     designelements=[designelements]
-                xmlstring = self.exportDesignAsXML(elementids=designelements)
-        if targettype=="server":
-            result=authenticateAndPostToURL(targetURL+"/importDesignFromXML", username, password, 'exportDesignAsXML.xml', xmlstring)
-            REQUEST.RESPONSE.redirect(self.absolute_url()+"/DatabaseDesign")
+        
+        if targettype != "folder":
+            xmlstring = self.exportDesignAsXML(elementids=designelements, dbsettings=dbsettings)
+                
+            if targettype == "server":
+                targetURL=REQUEST.get('targetURL')
+                username=REQUEST.get('username')
+                password=REQUEST.get('password')
+                result=authenticateAndPostToURL(targetURL+"/importDesignFromXML", username, password, 'exportDesignAsXML.xml', xmlstring)
+                REQUEST.RESPONSE.redirect(self.absolute_url()+"/DatabaseDesign")
+            else:
+                REQUEST.RESPONSE.setHeader('content-type', 'text/xml')
+                REQUEST.RESPONSE.setHeader("Content-Disposition", "attachment; filename="+self.id+".xml")
+                return xmlstring
         else:
-            REQUEST.RESPONSE.setHeader('content-type', 'text/xml')
-            REQUEST.RESPONSE.setHeader("Content-Disposition", "attachment; filename="+self.id+".xml")
-            return xmlstring
-
+            targetfolder=REQUEST.get('targetfolder')
+            if not designelements:
+                designelements = [o.id for o in self.getForms()] \
+                                 + [o.id for o in self.getViews()] \
+                                 + [o.id for o in self.getAgents()] \
+                                 + ["resources/"+id for id in self.resources.objectIds()]
+            exportpath = os.path.join(targetfolder,(self.id))
+            if not os.path.isdir(exportpath):
+                os.makedirs(exportpath)
+            resources_exportpath = os.path.join(exportpath,('resources'))
+            if len([id for id in designelements if id.startswith('resources/')]) > 0:
+                if not os.path.isdir(resources_exportpath):
+                    os.makedirs(resources_exportpath)
             
+            for id in designelements:
+                if id.startswith('resources/'):
+                    path = os.path.join(resources_exportpath, (id.split('/')[-1]+'.xml'))
+                    xmlstring = self.exportDesignAsXML(elementids=[id], dbsettings=False)
+                    self.saveFile(path, xmlstring)
+                else:
+                    path = os.path.join(exportpath, (id+'.xml'))
+                    xmlstring = self.exportDesignAsXML(elementids=[id], dbsettings=False)
+                    self.saveFile(path, xmlstring)
+            if dbsettings:
+                path = os.path.join(exportpath, ('dbsettings.xml'))
+                xmlstring = self.exportDesignAsXML(elementids=[], dbsettings=True)
+                self.saveFile(path, xmlstring)
+    
+    @staticmethod
+    def saveFile(path, content):
+        fileobj = codecs.open(path, "w", "utf-8")
+        fileobj.write(content.decode('utf-8'))
+        fileobj.close()
+        
     security.declareProtected(DESIGN_PERMISSION, 'importDesign')
     def importDesign(self, REQUEST=None):
         """import design elements in current database
         """
         submit_import=REQUEST.get('submit_import')
+        entire=REQUEST.get('entire')
+        sourcetype=REQUEST.get('sourcetype')
         sourceURL=REQUEST.get('sourceURL')
         username=REQUEST.get('username')
         password=REQUEST.get('password')
-        entire=REQUEST.get('entire')
-        sourcetype=REQUEST.get('sourcetype')
+        replace_design=REQUEST.get('replace_design')
+        replace = replace_design == "Yes"
         if submit_import:
             if sourcetype=="server":
                 export_url=sourceURL+"/exportDesignAsXML"
@@ -220,6 +266,12 @@ class PlominoDesignManager(Persistent):
                             designelements=[designelements]
                         export_url=export_url+"?elementids="+"@".join(designelements)
                 xmlstring=authenticateAndLoadURL(export_url, username, password).read()
+                self.importDesignFromXML(xmlstring, replace=replace)
+                
+            elif sourcetype =="folder":
+                path = REQUEST.get('sourcefolder')
+                self.importDesignFromXML(from_folder=path, replace=replace)
+                    
             else:
                 fileToImport = REQUEST.get('sourceFile',None)
                 if not fileToImport:
@@ -227,8 +279,8 @@ class PlominoDesignManager(Persistent):
                 if not isinstance(fileToImport, FileUpload):
                     raise PlominoDesignException, 'unrecognized file uploaded'
                 xmlstring=fileToImport.read()
+                self.importDesignFromXML(xmlstring, replace=replace)
         
-            self.importDesignFromXML(xmlstring)
             no_refresh_documents = REQUEST.get('no_refresh_documents', 'No')
             if no_refresh_documents == 'No':
                 self.refreshDB()
@@ -493,7 +545,7 @@ class PlominoDesignManager(Persistent):
             return None
           
     security.declareProtected(DESIGN_PERMISSION, 'exportDesignAsXML')
-    def exportDesignAsXML(self, elementids=None, REQUEST=None):
+    def exportDesignAsXML(self, elementids=None, REQUEST=None, dbsettings=True):
         """
         """
         impl = getDOMImplementation()
@@ -523,8 +575,8 @@ class PlominoDesignManager(Persistent):
         
         designNode = doc.createElement('design')
         
-        # if export all design, export also database settings
-        if elementids is None:
+        # export database settings
+        if dbsettings:
             node = self.exportElementAsXML(doc, self, isDatabase=True)
             designNode.appendChild(node)
             
@@ -657,45 +709,80 @@ class PlominoDesignManager(Persistent):
         return node
         
     security.declareProtected(DESIGN_PERMISSION, 'importDesignFromXML')
-    def importDesignFromXML(self, xmlstring=None, REQUEST=None):
+    def importDesignFromXML(self, xmlstring=None, REQUEST=None, from_folder=None, replace=False):
         """
         """
         logger.info("Start design import")
         self.setStatus("Importing design")
         self.getIndex().no_refresh = True
-        if REQUEST:
-            f=REQUEST.get("file")
-            xmlstring = f.read()
-        xmlstring = xmlstring.replace(">\n<", "><")
-        xmldoc = parseString(xmlstring)
-        design = xmldoc.getElementsByTagName("design")[0]
-        elements = [e for e in design.childNodes
-                        if e.nodeName in ('resource', 'element', 'dbsettings')]
         txn = transaction.get()
+        xml_strings = []
         count = 0
         total = 0
-        total_elements = len(elements)
-        e = design.firstChild
-        while e is not None:
-            name = str(e.nodeName)
-            if name in ('resource', 'element', 'dbsettings'):
-                if name == 'dbsettings':
-                    logger.info("Import db settings")
-                    self.importDbSettingsFromXML(e)
-                if name == 'element':
-                    logger.info("Import "+e.getAttribute('id'))
-                    self.importElementFromXML(self, e)
-                if name == 'resource':
-                    logger.info("Import resource "+e.getAttribute('id'))
-                    self.importResourceFromXML(self.resources, e)
-                count = count + 1
-                total = total + 1
-            if count == 10:
-                self.setStatus("Importing design (%d%%)" % int(100*total/total_elements))
-                logger.info("(%d elements committed, still running...)" % total)
-                txn.savepoint(optimistic=True)
-                count = 0
-            e = e.nextSibling
+        if from_folder:
+            if not os.path.isdir(from_folder):
+                raise PlominoDesignException, '%s does not exist' % path
+            filenames = os.listdir(from_folder)
+            xml_files = []
+            for f in filenames:
+                if f != 'resources':
+                    xml_files.append(os.path.join(from_folder, f))
+                else:
+                    resources_path = os.path.join(from_folder, 'resources')
+                    for r in os.listdir(resources_path):
+                        xml_files.append(os.path.join(resources_path, r))
+            total_elements = len(xml_files)
+            for p in xml_files:
+                fileobj = codecs.open(p, 'r', 'utf-8')
+                xml_strings.append(fileobj.read().encode('utf-8'))
+        else:
+            if REQUEST:
+                f=REQUEST.get("file")
+                xml_strings.append(f.read())
+            else:
+                xml_strings.append(xmlstring)
+            total_elements = None
+        
+        if replace:
+            logger.info("Replace mode: removing current design")
+            designelements = [o.id for o in self.getForms()] \
+                                 + [o.id for o in self.getViews()] \
+                                 + [o.id for o in self.getAgents()]
+            ObjectManager.manage_delObjects(self, designelements)
+            ObjectManager.manage_delObjects(self.resources, self.resources.objectIds())
+            logger.info("Current design removed")
+            
+        for xmlstring in xml_strings:
+            xmlstring = xmlstring.replace(">\n<", "><")
+            xmldoc = parseString(xmlstring)
+            design = xmldoc.getElementsByTagName("design")[0]
+            elements = [e for e in design.childNodes
+                            if e.nodeName in ('resource', 'element', 'dbsettings')]
+            
+            if not total_elements:
+                total_elements = len(elements)
+                
+            e = design.firstChild
+            while e is not None:
+                name = str(e.nodeName)
+                if name in ('resource', 'element', 'dbsettings'):
+                    if name == 'dbsettings':
+                        logger.info("Import db settings")
+                        self.importDbSettingsFromXML(e)
+                    if name == 'element':
+                        logger.info("Import "+e.getAttribute('id'))
+                        self.importElementFromXML(self, e)
+                    if name == 'resource':
+                        logger.info("Import resource "+e.getAttribute('id'))
+                        self.importResourceFromXML(self.resources, e)
+                    count = count + 1
+                    total = total + 1
+                if count == 10:
+                    self.setStatus("Importing design (%d%%)" % int(100*total/total_elements))
+                    logger.info("(%d elements committed, still running...)" % total)
+                    txn.savepoint(optimistic=True)
+                    count = 0
+                e = e.nextSibling
 
         logger.info("(%d elements imported)" % total)
         self.setStatus("Ready")

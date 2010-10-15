@@ -174,9 +174,17 @@
 				<td>Plomino XML file</td>
 				<td><input type="file" name="sourceFile" /></td>
 			</tr>
+            <tr>
+            <td><input type="radio" name="sourcetype" value="folder" id="sourcetype-folder"/></td>
+                <td colspan="2"><label for="sourcetype-folder">From server folder</label></td>
+            </tr>
+            <tr><td></td>
+                <td>Path</td>
+                <td><input type="text" name="sourcefolder" value="/tmp"/></td>
+            </tr>
 			<tr>
 				<td><input type="radio" name="sourcetype" value="server" id="sourcetype-server"/></td>
-				<td colspan="2"><label for="sourcetype-server">From server</label></td>
+				<td colspan="2"><label for="sourcetype-server">From remote server</label></td>
 			</tr>
 			<tr><td></td>
 				<td>Source URL</td>
@@ -225,8 +233,14 @@
 			<tr><td colspan="3">
 			         <label for="no_refresh_documents">Do not refresh database after design update:</label>
 			         <input type="checkbox" name="no_refresh_documents" id="no_refresh_documents" value="Yes"/><br/>
-			         <input type="submit" class="context" value="Import" name="submit_import"/>
 			    </td></tr>
+			<tr><td colspan="3">
+                     <label for="replace_design">Replace mode:</label>
+                     <input type="checkbox" name="replace_design" id="replace_design" value="Yes"/><br/>
+                 </td></tr>
+            <tr><td colspan="3">
+                     <input type="submit" class="context" value="Import" name="submit_import"/>
+                </td></tr>
 		</table>
 	</form>
 </td>
@@ -235,11 +249,19 @@
 		<table>
 		    <tr>
 			<td><input type="radio" name="targettype" value="file" id="targettype-file" checked="checked"/></td>
-				<td colspan="2"><label for="targettype-file">To file</label></td>
+				<td colspan="2"><label for="targettype-file">To XML file</label></td>
 			</tr>
 			<tr>
+            <td><input type="radio" name="targettype" value="folder" id="targettype-folder"/></td>
+                <td colspan="2"><label for="targettype-folder">To server folder</label></td>
+            </tr>
+            <tr><td></td>
+                <td>Path</td>
+                <td><input type="text" name="targetfolder" value="/tmp"/></td>
+            </tr>
+            <tr>
 			<td><input type="radio" name="targettype" value="server" id="targettype-server"/></td>
-				<td colspan="2"><label for="targettype-server">To server</label></td>
+				<td colspan="2"><label for="targettype-server">To remote server</label></td>
 			</tr>
 			<tr><td></td>
 				<td>Target URL</td>
@@ -280,6 +302,10 @@
 				</select>
 				</td>
 			</tr>
+			<tr>
+                <td colspan="2"><label for="export-dbsettings">Include db settings</label></td>
+                <td><input type="checkbox" name="dbsettings" value="Yes" checked="checked" id="export-dbsettings"/></td>
+            </tr>
 			<tr><td colspan="2"><input type="submit" class="context" value="Export" name="submit_export"/></td><td></td></tr>
 		</table>
 	</form>
