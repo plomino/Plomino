@@ -177,10 +177,10 @@ def migrate_to_175(db):
     """ documents stores in BTreeFolder
     """
     manage_addBTreeFolder(db, id='plomino_documents')
-    directlyProvides(db.documents, IHideFromBreadcrumbs)
+    directlyProvides(db.plomino_documents, IHideFromBreadcrumbs)
     docids = [id for id in db.objectIds() if getattr(db, id).portal_type == "PlominoDocument"]
     cookie = db.manage_cutObjects(ids=docids)
-    db.documents.manage_pasteObjects(cookie)
+    db.plomino_documents.manage_pasteObjects(cookie)
     msg = "Migration to 1.7.5: Documents moved in BTreeFolder"
     db.plomino_version = "1.7.5"
     return msg
