@@ -1,17 +1,17 @@
 {
-	"sProcessing":   "Bezig met verwerken...",
-	"sLengthMenu":   "Toon _MENU_ rijen",
-	"sZeroRecords":  "Geen resultaten gevonden",
-	"sInfo":         "_START_ tot _END_ van _TOTAL_ rijen",
-	"sInfoEmpty":    "Er zijn geen records om te tonen",
-	"sInfoFiltered": "(gefilterd uit _MAX_ rijen)",
+	"sProcessing":   "in Bearbeitung ...",
+	"sLengthMenu":   "Zeige _MENU_ Datensätze",
+	"sZeroRecords":  "Keine passenden Datensätze gefunden!",
+	"sInfo":         "_START_ bis _END_ aus _TOTAL_ Datensätzen",
+	"sInfoEmpty":    "Es sind keine passenden Datensätze vorhanden!",
+	"sInfoFiltered": "(gefiltert aus _MAX_ Datensätzen)",
 	"sInfoPostFix":  "",
-	"sSearch":       "Zoek:",
+	"sSearch":       "Suche:",
 	"sUrl":          "",
 	"oPaginate": {
-		"sFirst":    "Eerste",
-		"sPrevious": "Vorige",
-		"sNext":     "Volgende",
-		"sLast":     "Laatste"
+		"sFirst":    "Erster",
+		"sPrevious": "Vorheriger",
+		"sNext":     "Folgender",
+		"sLast":     "Letzter"
 	}
 }
