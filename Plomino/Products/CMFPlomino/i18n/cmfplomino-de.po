@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: CMFPlomino\n"
 "POT-Creation-Date: Thu Sep 28 15:52:32 2006\n"
 "PO-Revision-Date: Thu Sep 28 15:52:32 2006\n"
-"Last-Translator: [Beat Keller] <[keller_beat@bluewin.ch]>\n"
+"Last-Translator: [Volker TILL] <[vtill@till.net]>\n"
 "Language-Team: [Eric BREHAULT] <[ebrehault@gmail.com]>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -45,7 +45,7 @@ msgstr "Index für angehängte Dateien erstellen"
 #. Default: "If enabled, files attached in File Attachments fields will be indexed. It might increase the index size."
 #: PlominoDatabase.py
 msgid "CMFPlomino_help_IndexAttachments"
-msgstr "Wenn Sie diese Option wählen, werden angehängte Dateien indexiert, was den Katalog massiv vergrössern kann."
+msgstr "Wenn Sie diese Option wählen, werden angehängte Dateien indiziert, was den Katalog stark vergrössern kann."
 
 #. Default: "Debug mode"
 #: PlominoDatabase.py
@@ -60,22 +60,22 @@ msgstr "Wenn Sie diese Option wählen, werden Skript- und Formel-Fehler in die l
 #. Default: "Use File System Storage for attachments"
 #: PlominoDatabase.py
 msgid "CMFPlomino_label_StorageAttachments"
-msgstr "File System Storage für angehängte Dateien benutzen"
+msgstr "File-System-Storage für angehängte Dateien benutzen"
 
 #. Default: "File System Storage must be installed on the portal"
 #: PlominoDatabase.py
 msgid "CMFPlomino_help_StorageAttachments"
-msgstr "File System Storage muss im Portal installiert sein!"
+msgstr "File-System-Storage muss im Portal installiert sein!"
 
 #. Default: "Count the number of documents"
 #: PlominoDatabase.py
 msgid "CMFPlomino_label_ShowDocumentsNumbers"
-msgstr "Anzahl Dokumente zählen"
+msgstr "Dokumente zählen"
 
 #. Default: "If enabled, count the number of documents for each view. Display might be slower."
 #: PlominoDatabase.py
 msgid "CMFPlomino_help_ShowDocumentsNumbers"
-msgstr "Wenn Sie diese Option wählen, wird bei jeder Ansicht die Anzahl Dokumente gezählt und angezeigt. Das kann den Aufbau der Ansicht verlangsamen."
+msgstr "Wenn Sie diese Option wählen, werden bei jeder Ansicht die Dokumente gezählt und angezeigt. Das kann den Aufbau der Ansicht verzögern."
 
 #. Default: "Date/time format"
 #: PlominoDatabase.py
@@ -105,17 +105,17 @@ msgstr "Id"
 #. Default: "The action id"
 #: PlominoAction.py
 msgid "CMFPlomino_help_action_id"
-msgstr "Kurzname der action"
+msgstr "Kurzname der Aktion"
 
 #. Default: "How the action is shown"
 #: PlominoAction.py
 msgid "CMFPlomino_help_ActionDisplay"
-msgstr "Präsentationstyp der action"
+msgstr "Präsentationstyp der Aktion"
 
 #. Default: "Select the type for this action"
 #: PlominoAction.py
 msgid "CMFPlomino_help_ActionType"
-msgstr "Wählen Sie den Typ der action"
+msgstr "Wählen Sie den Typ der Aktion"
 
 #. Default: "Categorised on first column"
 #: PlominoView.py
@@ -126,27 +126,27 @@ msgstr "Kategorisiert anhand der Werte in der ersten Spalte"
 msgid "CMFPlomino_label_FormId"
 msgstr "Id"
 msgid "CMFPlomino_help_FormId"
-msgstr "Kurzname der Form"
+msgstr "Kurzname des Formulars"
 msgid "CMFPlomino_label_DocumentTitle"
 msgstr "Titel des Dokuments"
 msgid "CMFPlomino_help_DocumentTitle"
-msgstr "Der Titel wird anhand dieser Formel konstruiert"
+msgstr "Der Titel wird anhand dieser Formel erzeugt"
 msgid "CMFPlomino_label_SearchForm"
-msgstr "Suchform"
+msgstr "Suchformular"
 msgid "CMFPlomino_help_SearchForm"
-msgstr "Mit einer Suchform kann man nur suchen, keine Dokumente erstellen."
+msgstr "Mit einem Suchformular kann man nur suchen, keine Dokumente erstellen."
 msgid "CMFPlomino_label_isPage"
 msgstr "Seite"
 msgid "CMFPlomino_help_isPage"
-msgstr "Mit einer Seite kann man keine Dokumente erstellen. Solche Formen sind nur geeignet für Startseiten, Navigationen, Berichte, Erklärungen usw."
+msgstr "Mit einer Seite kann man keine Dokumente erstellen. Solche Formulare sind nur geeignet für Startseiten, Navigationsseiten, Berichte, Erklärungen usw."
 msgid "CMFPlomino_label_SearchView"
-msgstr "Such-Ansicht"
+msgstr "Suchansicht"
 msgid "CMFPlomino_help_SearchView"
 msgstr "Für das Suchen und das Anzeigen der Suchresultate"
 msgid "CMFPlomino_label_SearchFormula"
-msgstr "Such-Formel"
+msgstr "Suchformel"
 msgid "CMFPlomino_help_SearchFormula"
-msgstr "Leer lassen, um die ZCatalog-Defaultsuche zu verwenden"
+msgstr "Leer lassen, wenn die ZCatalog-Defaultsuche verwendet werden soll"
 msgid "CMFPlomino_label_onCreateDocument"
 msgstr "Beim Erstellen eines Dokuments"
 msgid "CMFPlomino_help_onCreateDocument"
@@ -164,20 +164,20 @@ msgstr "Beim Löschen eines Dokuments"
 msgid "CMFPlomino_help_onDeleteDocument"
 msgstr "Diese Formel wird vor dem Löschen eines Dokuments ausgeführt"
 msgid "CMFPlomino_label_FormLayout"
-msgstr "Layout der Form"
+msgstr "Layout des Formulars"
 msgid "CMFPlomino_help_FormLayout"
-msgstr "Mit einem wysiwyg-Editor können Sie das Layout der Form nach Belieben gestalten. Die Stile 'Plomino XXX' erlauben die Positionierung von Feldern, von 'Verbergen, wenn'-Formeln und von actions"
+msgstr "Mit einem Wysiwyg-Editor können Sie das Layous der Formulars nach Belieben gestalten. Die Auszeichnungen (Stil) 'Plomino XXX' erlauben die Positionierung von Feldern, von 'Verbergen, wenn'-Formeln und von Aktionen"
 
 #: PlominoForm.py
 #: PlominoView.py
 msgid "CMFPlomino_label_ActionBarPosition"
-msgstr "Position action-Anzeige"
+msgstr "Position Aktions-Anzeige"
 msgid "CMFPlomino_help_ActionBarPosition"
-msgstr "Die möglichen Orte der action-Anzeige"
+msgstr "Mögliche Orte der Aktions-Anzeige"
 msgid "CMFPlomino_label_HideInMenu"
 msgstr "Im Menu verbergen"
 msgid "CMFPlomino_help_HideInMenu"
-msgstr "Wenn Sie diese Option wählen, wird die Form bzw. die Ansicht im Hauptmenu nicht angezeigt"
+msgstr "Wenn Sie diese Option wählen, wird das Formular oder die Ansicht nicht im Hauptmenu angezeigt"
 
 #: PlominoField.py
 msgid "CMFPlomino_label_field_id"
@@ -201,9 +201,9 @@ msgstr "Validation-Formel"
 msgid "CMFPlomino_help_FieldValidation"
 msgstr "Zum Überprüfen der formalen Korrektheit der Eingabe"
 msgid "CMFPlomino_label_FieldIndex"
-msgstr "Im Katalog indexieren"
+msgstr "Den Inhalt des Feldes im Katalog indizieren"
 msgid "CMFPlomino_help_FieldIndex"
-msgstr "Das Feld kann u.a. als Suchkriterium verwendet werden"
+msgstr "Das Feld kann als Suchkriterium verwendet werden"
 msgid "CMFPlomino_label_FieldType"
 msgstr "Typ"
 msgid "CMFPlomino_help_FieldType"
@@ -223,7 +223,7 @@ msgstr "Liste der auswählbaren Werte. Verwenden Sie 'Label|Wert', wenn das Labe
 msgid "CMFPlomino_label_SelectionListFormula"
 msgstr "Auswahllisten-Formel"
 msgid "CMFPlomino_help_SelectionListFormula"
-msgstr "Eine Formel, die die Auswahlliste zusammenstellt"
+msgstr "Eine Formel, die die Auswahlliste erzeugt"
 
 
 #: PlominoHidewhen.py
@@ -249,7 +249,7 @@ msgstr "Kurzname der Spalte"
 msgid "CMFPlomino_label_ColumnFormula"
 msgstr "Formel"
 msgid "CMFPlomino_help_ColumnFormula"
-msgstr "Formel, die den Wert für die Spalte berechnet."
+msgstr "Formel, die den Wert für die Inhalte der Spalte berechnet."
 
 #. Default: "Position"
 #: PlominoColumn.py
@@ -273,22 +273,22 @@ msgstr "Position im Menu"
 #. Default: "The view selection formula is a line of Python code which should return True or False. The formula will be evaluated for each document in the database to decide if the document must be displayed in the view or not. plominoDocument is a reserved name in formulae, it returns the current Plomino document. Each document field value can be accessed directly as an attribute of the document: plominoDocument.<fieldname>"
 #: PlominoView.py
 msgid "CMFPlomino_help_SelectionFormula"
-msgstr "Die Auswahl-Formel der Ansicht muss wahr oder falsch zurückgeben. Sie entscheidet für jedes Dokument der Datenbank,  ob dieses Dokumnet in der Ansicht erscheinen soll oder nicht. 'plominoDocument' ist ein reserviertes Schlüsselwort in der Formel, es liefert das aktuelle Dokument. Jeder Feldwert des Dokumentes kann mit der Attribut-Schreibweise geholt werden: plominoDocument.<fieldname>"
+msgstr "Die Auswahl-Formel der Ansicht muss 'True' oder 'Faslse' zurückgeben. Sie entscheidet für jedes Dokument der Datenbank,  ob dieses Dokument in der Ansicht erscheinen soll oder nicht. 'plominoDocument' ist ein reserviertes Schlüsselwort in der Formel, es liefert das aktuelle Dokument. Jeder Wert eines Feldes im Dokument kann mit der Attribut-Schreibweise erreicht werden: plominoDocument.<fieldname>"
 
 #. Default: "Column used to sort the view"
 #: PlominoView.py
 msgid "CMFPlomino_help_SortColumn"
-msgstr "Spalte, nach welcher die Dolumente in der Ansicht sortiert werden"
+msgstr "Spalte, nach der die Dolumente in der Ansicht sortiert werden"
 
 #. Default: "Action display"
 #: PlominoAction.py
 msgid "CMFPlomino_label_ActionDisplay"
-msgstr "Anzeige der action"
+msgstr "Anzeige der Aktion"
 
 #. Default: "Action type"
 #: PlominoAction.py
 msgid "CMFPlomino_label_ActionType"
-msgstr "Typ der action"
+msgstr "Typ der Aktion"
 
 #. Default: "Parameter or code"
 #: PlominoAction.py
@@ -298,7 +298,7 @@ msgstr "Parameter oder Code"
 #. Default: "Code or parameter depending on the action type"
 #: PlominoAction.py
 msgid "CMFPlomino_help_ActionContent"
-msgstr "Je nach Typ der action"
+msgstr "Je nach Typ der Aktion"
 
 #. Default: "Hide-when formula"
 #: PlominoAction.py
@@ -308,17 +308,17 @@ msgstr "'Verbergen, wenn'-Formel"
 #. Default: "Action is hidden if formula return True"
 #: PlominoAction.py
 msgid "CMFPlomino_help_ActionHidewhen"
-msgstr "Die action wird verborgen, wenn die Berechnung der Formel 'True' ergibt"
+msgstr "Die Aktion wird verborgen, wenn die Berechnung der Formel 'True' ergibt"
 
 #. Default: "Display action in action bar"
 #: PlominoAction.py
 msgid "CMFPlomino_label_ActionInActionBar"
-msgstr "action-Anzeige?"
+msgstr "Aktion im der Aktions-Anzeige anzeigen"
 
 #. Default: "Afficher l'action dans la barrre d'actions (oui/non)"
 #: PlominoAction.py
 msgid "CMFPlomino_help_ActionInActionBar"
-msgstr "Soll die action in der action-Anzeige erscheinen?"
+msgstr "Soll die Aktion in der Aktion-Anzeige erscheinen?"
 
 #. Default: "Categorized"
 #: PlominoView.py
@@ -328,12 +328,12 @@ msgstr "Kategorisierung"
 #. Default: "Description"
 #: PlominoAction.py
 msgid "CMFPlomino_label_Description"
-msgstr "Bechreibung"
+msgstr "Beschreibung"
 
 #. Default: "Label"
 #: PlominoAction.py
 msgid "CMFPlomino_label_Label"
-msgstr "Label"
+msgstr "Bezeichnung"
 
 #. Default: "Position"
 #: PlominoColumn.py
@@ -344,11 +344,11 @@ msgstr "Position"
 msgid "CMFPlomino_label_view_id"
 msgstr "Id"
 msgid "CMFPlomino_help_view_id"
-msgstr "Wenn Sie die Id nach den Erstellen des Objekte ändern, müssen Sie die Datenbank auffrischen."
+msgstr "Wenn Sie die Id nach den Erstellen des Objekte ändern, müssen Sie die Datenbank neu indizieren."
 msgid "CMFPlomino_label_ViewTemplate"
 msgstr "Ansichtstemplate"
 msgid "CMFPlomino_help_ViewTemplate"
-msgstr "Leer lassen, um das Standardtemplate zu verwenden."
+msgstr "Wenn das Feld leer bleibt, wird das Standardtemplate verwendet."
 
 msgid "CMFPlomino_label_SelectionFormula"
 msgstr "Auswahlformel"
@@ -356,17 +356,17 @@ msgstr "Auswahlformel"
 #. Default: "Sort column"
 #: PlominoView.py
 msgid "CMFPlomino_label_SortColumn"
-msgstr "Sortierspalte"
+msgstr "Spalte, nach der sortiert werden soll"
 
 #. Default: "Form Formula"
 #: PlominoView.py
 msgid "CMFPlomino_label_FormFormula"
-msgstr "Form-Formel"
+msgstr "Formular-Formel"
 
 #. Default: "Documents open from the view will used the following formula (they use their own form if empty)"
 #: PlominoView.py
 msgid "CMFPlomino_help_FormFormula"
-msgstr "Werden Dokumente über diese Ansicht geöffnet, verwenden sie die Form, die durch die Form-Formel definiert wird (wird hier nichts angegebn, verwenden die Dokumente ihre eigene Form)"
+msgstr "Dokumente werden aus dieser Ansicht mit der angegebenen Formular-Formel geöffnet. (Wenn dieses Feld leer bleibt, wird die Standard-Formel verwendet)."
 
 #. Default: "Reverse Sorting"
 #: PlominoView.py
@@ -399,7 +399,7 @@ msgstr "Angehängte Dateien:"
 
 # View labels
 msgid "go_link"
-msgstr "go"
+msgstr "Los"
 
 # OpenDatabase
 msgid "Browse"
@@ -409,7 +409,7 @@ msgid "Search"
 msgstr "Suche"
 
 msgid "Add new content"
-msgstr "Neue Dokumente erstellen"
+msgstr "Neues Dokument erstellen"
 
 # ErrorsMessages
 msgid "Validation failed"
@@ -417,17 +417,17 @@ msgstr "Formal falsche Eingabe!"
 msgid "Go back"
 msgstr "Zurück"
 msgid "Continue"
-msgstr "Fortsetzen"
+msgstr "Weiter"
 
 #Gantt view labels
 msgid "From"
 msgstr "Von"
 
 msgid "To"
-msgstr "Zu"
+msgstr "Bis"
 
 msgid "Refresh"
-msgstr "Auffrischen"
+msgstr "Aktualisieren"
 
 #. Default: "Id"
 #: PlominoAgent.py
@@ -447,7 +447,7 @@ msgstr "Code"
 #. Default: "Code to execute"
 #: PlominoAgent.py
 msgid "CMFPlomino_help_AgentContent"
-msgstr "ausführbarer Code"
+msgstr "Ausführbarer Code"
 
 #. Default: "Scheduled"
 #: PlominoAgent.py
@@ -457,7 +457,7 @@ msgstr "Planen"
 #. Default: "Scheduled agent"
 #: PlominoAgent.py
 msgid "CMFPlomino_help_Scheduled"
-msgstr "geplanter Agent"
+msgstr "Geplanter Agent"
 
 
 #. Default: "Agent user"
@@ -485,10 +485,10 @@ msgid "is mandatory"
 msgstr "Erforderlich"
 
 msgid " must be an integer (submitted value was: "
-msgstr " Muss eine Integer-Zahl sein (submitted value was: "
+msgstr " muss eine Integer-Zahl sein (der eigegebene Wert war: "
 
 msgid " must be a float (submitted value was: "
-msgstr " Muss eine Fliesskomma-Zahl sein (submitted value was: "
+msgstr " muss eine Fliesskomma-Zahl sein (der eingegebene Wert war: "
 
 # Not categorized
 msgid "Not categorized"
