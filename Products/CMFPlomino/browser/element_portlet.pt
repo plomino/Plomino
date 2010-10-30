@@ -1,0 +1,16 @@
+<dl class="portlet portlet-plomino"
+	tal:define="header view/data/header;
+				element_layout view/elementLayout;
+				element_id view/data/element_id;">
+	
+	<tal:block tal:condition="view/hasGoogleVisualizationField">
+        <script type='text/javascript' src='http://www.google.com/jsapi'></script>
+    </tal:block>
+	
+   	<dt class="portletHeader"><span tal:content="header"></span></dt>
+    <dd class="portletItem">
+	    <form tal:attributes="name element_id; action view/action_url">
+	        <span tal:content="structure element_layout"></span>
+	    </form>
+    </dd>
+</dl>

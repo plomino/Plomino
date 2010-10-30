@@ -1,0 +1,61 @@
+<?xml version="1.0"?>
+<object name="PlominoDocument"
+        meta_type="Factory-based Type Information with dynamic views"
+        xmlns:i18n="http://xml.zope.org/namespaces/i18n">
+   
+ <property name="title">PlominoDocument</property>
+ <property name="description"></property>
+ <property name="content_icon">PlominoDocument.gif</property>
+ <property name="content_meta_type">PlominoDocument</property>
+ <property name="product">CMFPlomino</property>
+ <property name="factory">addPlominoDocument</property>
+ <property name="immediate_view">checkBeforeOpenDocument</property>
+ <property name="global_allow">False</property>
+ <property name="filter_content_types">True</property>
+ <property name="allowed_content_types">
+ </property>
+ <property name="allow_discussion">False</property>
+ <property name="default_view">checkBeforeOpenDocument</property>
+ <property name="view_methods">
+  <element value="base_view"/>
+  <element value="checkBeforeOpenDocument"/>
+ </property>
+ <property name="default_view_fallback">False</property>
+ <alias from="(Default)" to="(dynamic view)"/>
+ <alias from="index.html" to="(dynamic view)"/>
+ <alias from="view" to="(selected layout)"/>
+ <alias from="edit" to="base_edit"/>
+ <alias from="properties" to="base_metadata"/>
+ <action title="Properties" 
+         action_id="metadata"
+         category="object" 
+         condition_expr=""
+         url_expr="string:${object_url}/properties" 
+         visible="True">
+  <permission value="Modify portal content"/>
+ </action>
+ <action title="Edit" 
+         action_id="edit"
+         category="object" 
+         condition_expr="python:1"
+         url_expr="string:${object_url}/EditDocument" 
+         visible="True">
+  <permission value="python:EDIT_PERMISSION"/>
+ </action>
+ <action title="Document properties" 
+         action_id="documentproperties"
+         category="object" 
+         condition_expr="python:1"
+         url_expr="string:${object_url}/DocumentProperties" 
+         visible="True">
+  <permission value="python:DESIGN_PERMISSION"/>
+ </action>
+ <action title="View" 
+         action_id="view"
+         category="object" 
+         condition_expr="python:1"
+         url_expr="string:${object_url}/checkBeforeOpenDocument" 
+         visible="True">
+  <permission value="View"/>
+ </action>
+</object>

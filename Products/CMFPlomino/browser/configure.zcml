@@ -1,0 +1,46 @@
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:browser="http://namespaces.zope.org/browser"
+    xmlns:plone="http://namespaces.plone.org/plone"
+    i18n_domain="CMFPlomino">
+
+  <plone:portlet
+      name="plomino.designportlet"
+      interface=".portlet.IPortlet"
+      assignment=".portlet.Assignment"
+      view_permission="zope2.View"
+      edit_permission="cmf.ManagePortal"
+      renderer=".portlet.Renderer"
+      addview=".portlet.AddForm"
+    />
+
+  <plone:portlet
+      name="plomino.elementportlet"
+      interface=".portlet.IElementPortlet"
+      assignment=".portlet.ElementPortletAssignment"
+      view_permission="zope2.View"
+      edit_permission="cmf.ManagePortal"
+      renderer=".portlet.ElementPortletRenderer"
+      addview=".portlet.ElementPortletAddForm"
+      editview=".portlet.ElementPortletEditForm"
+    />
+
+    <browser:resourceDirectory
+        name="plomino.javascript"
+        directory="javascript"
+        />
+
+    <browser:resourceDirectory
+        name="dataTables.lang"
+        directory="javascript/dataTables/lang"
+        />
+        
+    <browser:page
+        name="DataTables"
+        for="*"
+        class=".javascript.dataTables.utils.DataTables"
+        permission="zope.Public"
+        allowed_attributes="getLanguagePath"
+        />
+        
+</configure>

@@ -1,0 +1,46 @@
+<span metal:define-macro="FieldRead">
+	<tal:block tal:define="fieldvalue fieldvalue; fieldtype python:f.FieldType">
+		<tal:block tal:condition="python:here.Fields.macros.has_key(fieldtype+'FieldRead')">
+			<span metal:use-macro="python:here.Fields.macros[fieldtype+'FieldRead']" >
+				field rendering in read mode according its type
+			</span>
+		</tal:block>
+		<tal:block tal:condition="python:not(here.Fields.macros.has_key(fieldtype+'FieldRead'))">
+			<span metal:use-macro="here/Fields/macros/DefaultFieldRead" >
+				default field rendering in read mode
+			</span>
+		</tal:block>
+	</tal:block>
+
+</span>
+
+<span metal:define-macro="FieldEdit">
+	<tal:block tal:define="fieldname f/id; fieldvalue fieldvalue; fieldtype python:f.FieldType">
+		<tal:block tal:condition="python:here.Fields.macros.has_key(fieldtype+'FieldEdit')">
+			<span metal:use-macro="python:here.Fields.macros[fieldtype+'FieldEdit']" >
+				field rendering in edit mode according its type
+			</span>
+		</tal:block>
+		<tal:block tal:condition="python:not(here.Fields.macros.has_key(fieldtype+'FieldEdit'))">
+			<span metal:use-macro="here/Fields/macros/DefaultFieldEdit" >
+				default field rendering in edit mode
+			</span>
+		</tal:block>
+	</tal:block>
+</span>
+
+<span metal:define-macro="DefaultFieldRead">
+	<span tal:content="fieldvalue">my value</span>
+</span>
+
+<span metal:define-macro="DefaultFieldEdit">
+	<input type="text" tal:attributes="name fieldname; value fieldvalue" /> (type <span tal:content="fieldtype">my type</span>)
+</span>
+
+<span metal:define-macro="TEXTFieldEdit">
+	<input type="text" tal:attributes="name fieldname; value fieldvalue" />
+</span>
+
+<span metal:define-macro="RICHTEXTFieldEdit">
+	<textarea tal:attributes="name fieldname"><tal:block tal:content="fieldvalue">my value</tal:block></textarea>
+</span>

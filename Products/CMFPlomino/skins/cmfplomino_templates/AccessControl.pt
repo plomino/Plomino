@@ -1,0 +1,13 @@
+<span metal:define-macro="AccessRights">
+	<h2>Your access rights</h2>
+	<u>Username:</u> <span tal:content="user/getUserName"></span><br/>
+	<u>Plomino access right:</u> <span tal:content="python:here.getCurrentUserRights()"></span><br/>
+	<u>Plomino roles:</u> <span tal:content="python:here.getCurrentUserRoles()"></span><br/>
+	<u>Plone roles:</u>
+    Local:<tal:block tal:repeat="r python:here.get_local_roles_for_userid(user.getUserName())">
+    	[<span tal:content="r" />]
+    </tal:block><br/>
+    In context:<tal:block tal:repeat="r python:user.getRolesInContext(here)">
+    	[<span tal:content="r" />]
+    </tal:block><br/>
+</span>

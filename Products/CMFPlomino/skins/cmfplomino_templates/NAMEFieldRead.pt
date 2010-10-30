@@ -1,0 +1,10 @@
+<tal:block tal:define="namefield python:options['field'].getSettings();
+			">
+	<tal:block tal:define="current options/fieldvalue;
+			lcurrent python:test(hasattr(current,'split'),[current],current);
+		"><tal:loop tal:repeat="v lcurrent">
+			<tal:block tal:content="python:namefield.getFullname(v)">selected user name</tal:block>
+			<tal:sep tal:condition="not:repeat/v/end" tal:content="structure python:options['field'].getSettings('separator')">separator</tal:sep>
+		  </tal:loop>
+	</tal:block>
+</tal:block>

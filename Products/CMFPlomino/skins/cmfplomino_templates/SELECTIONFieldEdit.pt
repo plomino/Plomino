@@ -1,0 +1,154 @@
+<span tal:define="widget python:options['field'].getSettings('widget');
+				selection options/selection
+				">
+	<tal:widget tal:condition="python:test(widget=='SELECT')">
+		<select tal:attributes="name options/fieldname"><tal:loop tal:repeat="v selection">
+			<option tal:define="current options/fieldvalue;l python:v.split('|')"
+				tal:attributes="value python:l[1]; selected python:test(current==l[1],1,0)"
+				tal:content="python:l[0]">value</option>
+		</tal:loop></select>
+	</tal:widget>
+	<tal:widget tal:condition="python:test(widget=='MULTISELECT')">
+		<select tal:attributes="name options/fieldname" multiple="true" lines="4"><tal:loop tal:repeat="v selection">
+				<tal:block tal:define="current options/fieldvalue;
+									currentaslist python:test(hasattr(current, 'append'), current, [current]);
+									l python:v.split('|')">
+					<option 
+						tal:attributes="value python:l[1]; selected python:test(currentaslist and l[1] in currentaslist,1,0)"
+						tal:content="python:l[0]">value</option>
+				</tal:block>
+		</tal:loop></select>
+	</tal:widget>
+	<tal:widget tal:condition="python:test(widget=='CHECKBOX')">
+		<tal:block tal:define="current options/fieldvalue;
+							currentaslist python:test(hasattr(current, 'append'), current, [current]);"
+			tal:repeat="v selection">
+			<tal:block tal:define="l python:v.split('|')">
+				<input type="checkbox" 
+					tal:attributes="name options/fieldname;
+							value python:l[1];
+							checked python:test(currentaslist and l[1] in currentaslist,1,0);
+							id python:options['fieldname'] + '-' + l[1]">
+				<label tal:attributes="for python:options['fieldname'] + '-' + l[1]" tal:content="structure python:l[0]">value</label>
+				<tal:sep tal:condition="not:repeat/v/end" tal:content="structure python:options['field'].getSettings('separator')">separator</tal:sep>
+			</tal:block>
+		</tal:block>
+	</tal:widget>
+	<tal:widget tal:condition="python:test(widget=='RADIO')">
+		<tal:block tal:define="current options/fieldvalue;
+							currentaslist python:test(hasattr(current, 'append'), current, [current]);"
+			tal:repeat="v selection">
+			<tal:block tal:define="l python:v.split('|')">
+				<input type="radio" 
+					tal:attributes="name options/fieldname;
+							value python:l[1];
+							checked python:test(currentaslist and l[1] in currentaslist,1,0);
+							id python:options['fieldname'] + '-' + l[1]">
+				<label tal:attributes="for python:options['fieldname'] + '-' + l[1]" tal:content="structure python:l[0]">value</label>
+				<tal:sep tal:condition="not:repeat/v/end" tal:content="structure python:options['field'].getSettings('separator')">separator</tal:sep>
+			</tal:block>
+		</tal:block>
+	</tal:widget>
+	
+	<tal:widget tal:condition="python:widget == 'PICKLIST'"
+		tal:define="fieldid options/field/id;
+	    			data python:options['field'].getSettings().tojson(selection);
+	    			params python:options['field'].getSettings('dynamictableparam');
+	    			current python:options['fieldvalue'];
+	    			selected python:isinstance(current, basestring) and current or '|'.join(current);
+	    			">
+        <script type='text/javascript' tal:content="structure string:
+		 	function ${fieldid}_delete_row(elt) {
+				var rows = jq('#${fieldid}_table_result > tbody > tr');
+				if (rows.length <= 1) {
+					jq('#${fieldid}_table_result > tbody').append('<tr style=\'display: none\'><td><input type=\'hidden\' name=\'${fieldid}\' value=\'\' /></td><td></td></tr>');
+				}
+				jq(elt).closest('tr').remove();
+		 		${fieldid}_set_row_style();
+		 	}
+
+		 	function ${fieldid}_add_row(data) {
+		 		var tablebody = jq('#${fieldid}_table_result > tbody');
+		 		//if (tablebody.has('input[value=' + data[0] + ']').length == 0) {
+		 		if (jq('#${fieldid}_table_result > tbody:has(input[value=' + data[0] + '])').length == 0) {
+		 			//tablebody.children().has('input[value=]').remove()
+		 			jq('#${fieldid}_table_result > tbody > *:has(input[value=])').remove()
+			 		var row = jq('<tr><td><img alt=\'Remove\' src=\'list-remove.png\' style=\'cursor: pointer\' onclick=\'${fieldid}_delete_row(this)\' />' +
+						 		'<input type=\'hidden\' name=\'${fieldid}\' value=\'' + data[0] + '\' /></td>' +
+						 		'<td>' + data[1] + '</td></tr>');
+			 		tablebody.append(row);
+		 		}
+		 		${fieldid}_set_row_style();
+		 	}
+
+		 	function ${fieldid}_set_row_style() {
+		 		var tablebody = jq('#${fieldid}_table_result > tbody');
+		 		tablebody.children().removeClass('odd even');
+		 		tablebody.children(':even').addClass('odd');
+		 		tablebody.children(':odd').addClass('even');
+		 	}
+			
+			var o_${fieldid}_table;
+			jq(document).ready(function() {
+				o_${fieldid}_table = jq('#${fieldid}_table').dataTable( {
+			        'aaData': ${data},
+			        'aoColumns': [{'bVisible': false, 'bSearchable': false}, {'sTitle':'Value'}],
+			        'aaSorting': [],
+			        'fnInitComplete': function(oSettings) {
+			        	jq('#${fieldid}_table').closest('.wrapper').hide();
+				        
+				        for (var i = 0; i < oSettings.aoData.length; i++)
+				            if ('${selected}'.indexOf(oSettings.aoData[i]._aData[0]) != -1)
+					        	${fieldid}_add_row(oSettings.aoData[i]._aData);
+			        },
+       				'oLanguage': {
+       					'sUrl': '${context/DataTables/getLanguagePath}'
+					},
+					'sDom': '<\'wrapper\'rtilp>',
+			        ${params}
+			    });
+				 
+			    jq('#${fieldid}_table tbody tr').live('click', function () {
+			    	${fieldid}_add_row(o_${fieldid}_table.fnGetData(this));
+			    } );
+
+			 	var close_ctrl = jq('#${fieldid}_table').closest('.picklist').children('img.close_button');
+
+			    var onTextChanged = function(value) {
+				    var table = jq('#${fieldid}_table');
+				    if (value) {
+			        	close_ctrl.show();
+			        	table.closest('.wrapper').slideDown();
+			    		o_${fieldid}_table.fnFilter(value);
+				    }
+				    else {
+				    	table.closest('.wrapper').slideUp();
+			        	close_ctrl.hide();
+				    }
+			    };
+
+			    close_ctrl.click( function () {
+			    	onTextChanged('');
+			    } );
+
+			    jq('#${fieldid}_search').keyup( function() {
+			    	onTextChanged(this.value);
+			    } );
+			});
+		"></script>
+
+		<table tal:attributes="id string:${fieldid}_table_result" class="plain">
+			<tbody></tbody>
+		</table>
+		
+		<div class="picklist">
+			<img src="dialog-close.png" alt="Close the dialog" title="Close the dialog" class="close_button" style="float: right; display: none" />
+				
+			<label tal:attributes="for string:${fieldid}_search">Search</label>
+			<input type="text" tal:attributes="id string:${fieldid}_search" />
+
+	        <table id='dynamictable_table' tal:attributes="id string:${fieldid}_table" class="display"></table>
+	        <div style="clear: both"></div>
+        </div>
+	</tal:widget>
+</span>

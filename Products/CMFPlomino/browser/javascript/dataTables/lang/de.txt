@@ -1,0 +1,17 @@
+{
+	"sProcessing":   "in Bearbeitung ...",
+	"sLengthMenu":   "Zeige _MENU_ Datensätze",
+	"sZeroRecords":  "Keine passenden Datensätze gefunden!",
+	"sInfo":         "_START_ bis _END_ aus _TOTAL_ Datensätzen",
+	"sInfoEmpty":    "Es sind keine passenden Datensätze vorhanden!",
+	"sInfoFiltered": "(gefiltert aus _MAX_ Datensätzen)",
+	"sInfoPostFix":  "",
+	"sSearch":       "Suche:",
+	"sUrl":          "",
+	"oPaginate": {
+		"sFirst":    "Erster",
+		"sPrevious": "Vorheriger",
+		"sNext":     "Folgender",
+		"sLast":     "Letzter"
+	}
+}

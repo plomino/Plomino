@@ -1,0 +1,125 @@
+===========================
+Test samples databases
+===========================
+
+    >>> self.setRoles(['Manager'])
+    >>> id = self.portal.invokeFactory('Folder', id='samples')
+    >>> folder = self.portal.samples
+    >>> base_url = folder.absolute_url()
+
+Create some users    
+    >>> memberName = 'siteManager'
+    >>> self.portal.portal_membership.addMember(memberName, memberName, ('Member, Manager',), '', {'fullname': memberName, 'email': memberName+'@dummy.fr',} )
+    >>> memberName = 'userReader'
+    >>> self.portal.portal_membership.addMember(memberName, memberName, ('Member',), '', {'fullname': memberName, 'email': memberName+'@dummy.fr',} )
+    >>> memberName = 'userDesigner'
+    >>> self.portal.portal_membership.addMember(memberName, memberName, ('Member',), '', {'fullname': memberName, 'email': memberName+'@dummy.fr',} )
+    >>> memberName = 'userAuthor'
+    >>> self.portal.portal_membership.addMember(memberName, memberName, ('Member',), '', {'fullname': memberName, 'email': memberName+'@dummy.fr',} )
+    >>> memberName = 'userAuthor2'
+    >>> self.portal.portal_membership.addMember(memberName, memberName, ('Member',), '', {'fullname': memberName, 'email': memberName+'@dummy.fr',} )
+    >>> memberName = 'userEditor'
+    >>> self.portal.portal_membership.addMember(memberName, memberName, ('Member',), '', {'fullname': memberName, 'email': memberName+'@dummy.fr',} )
+    >>> memberName = 'userManager'
+    >>> self.portal.portal_membership.addMember(memberName, memberName, ('Member',), '', {'fullname': memberName, 'email': memberName+'@dummy.fr',} )
+    >>> memberName = 'demouser'
+    >>> self.portal.portal_membership.addMember(memberName, memberName, ('Member',), '', {'fullname': memberName, 'email': memberName+'@dummy.fr',} )
+    
+
+Create the browser object we'll be using and log in as userEditor
+    >>> from Products.Five.testbrowser import Browser
+    >>> browser = Browser()
+    >>> portal_url = self.portal.absolute_url()
+    >>> browser.open(portal_url)
+    >>> browser.getLink('Log in').click()
+    >>> browser.getControl('Login Name').value = 'userEditor'
+    >>> browser.getControl('Password').value = 'userEditor'
+    >>> browser.getControl('Log in').click()
+    
+    >>> import os.path
+    >>> dir, _f = os.path.split(os.path.abspath(__file__))
+    
+Import basic-example db
+    >>> f = open(os.path.join(dir, "samples", "basic-example.xml"))
+    >>> id = folder.invokeFactory('PlominoDatabase', id='basic-example')
+    >>> db = getattr(folder, 'basic-example')
+    >>> db.at_post_create_script()
+    >>> wf_tool = self.portal.portal_workflow
+    >>> wf_tool.doActionFor(db, 'publish')
+    >>> xmlstring=f.read()
+    >>> db.importDesignFromXML(xmlstring)
+    >>> db.refreshDB()    
+    >>> f.close()
+
+Set plomino roles and permissions
+    >>> db.manage_setLocalRoles('userManager', ['PlominoManager'])
+    >>> db.manage_setLocalRoles('userDesigner', ['PlominoDesigner'])
+    >>> db.manage_setLocalRoles('userEditor', ['PlominoEditor'])
+    >>> db.manage_setLocalRoles('userAuthor', ['PlominoAuthor'])
+    >>> db.manage_setLocalRoles('userReader', ['PlominoReader'])
+
+Scenario    
+    >>> browser.open(base_url+'/basic-example')
+    >>> 'Birthday' in browser.contents
+    True
+    >>> browser.getLink('Birthday').click()
+    >>> browser.getControl(name='personName').value = 'Eric'
+    >>> browser.getControl(name='birthDate').value = '1974-10-20 00:00'
+    >>> browser.getControl(name='personCategory').value = ['Friend']
+    >>> browser.getControl(name='plomino_save').click()
+    >>> '20-10-1974' in browser.contents
+    True
+    >>> browser.open(browser.url+"/EditDocument")
+    >>> browser.getControl(name='personCategory').value = ['Relative']
+    >>> browser.getControl(name='plomino_save').click()
+    >>> browser.open(base_url+'/basic-example')
+    >>> browser.getLink('All birthdays').click()
+    >>> 'October 20' in browser.contents
+    True
+    >>> browser.open(base_url+'/basic-example/all')
+
+Import example-with-config-doc db
+    >>> f = open(os.path.join(dir, "samples", "example-with-config-doc.xml"))
+    >>> id = folder.invokeFactory('PlominoDatabase', id='example-with-config-doc')
+    >>> db = getattr(folder, 'example-with-config-doc')
+    >>> db.at_post_create_script()
+    >>> wf_tool = self.portal.portal_workflow
+    >>> wf_tool.doActionFor(db, 'publish')
+    >>> xmlstring=f.read()
+    >>> db.importDesignFromXML(xmlstring)
+    >>> db.refreshDB()    
+    >>> f.close()
+
+Set plomino roles and permissions
+    >>> db.manage_setLocalRoles('userManager', ['PlominoManager'])
+    >>> db.manage_setLocalRoles('userDesigner', ['PlominoDesigner'])
+    >>> db.manage_setLocalRoles('userEditor', ['PlominoEditor'])
+    >>> db.manage_setLocalRoles('userAuthor', ['PlominoAuthor'])
+    >>> db.manage_setLocalRoles('userReader', ['PlominoReader'])
+
+Scenario
+    >>> browser.open(base_url+'/example-with-config-doc/frmConfig/OpenForm')
+    >>> browser.getControl(name='configId').value = 'Departments'
+    >>> browser.getControl(name='configValues').value = 'Marketing\nDevelopment\nPurchase\nSales\nHuman resources'
+    >>> browser.getControl('Save').click()
+    >>> browser.open(base_url+'/example-with-config-doc/configview/OpenView')
+    >>> browser.open(base_url+'/example-with-config-doc/frmConfig/OpenForm')
+    >>> browser.getControl(name='configId').value = 'Reference year'
+    >>> browser.getControl(name='configValues').value = '2007'
+    >>> browser.getControl('Save').click()
+    >>> browser.open(base_url+'/example-with-config-doc/configview/OpenView')
+    >>> browser.open(base_url+'/example-with-config-doc/frmConfig/OpenForm')
+    >>> browser.getControl(name='configId').value = 'VAT'
+    >>> browser.getControl(name='configValues').value = '19.6'
+    >>> browser.getControl('Save').click()
+    >>> browser.open(base_url+'/example-with-config-doc/configview/OpenView')
+    >>> browser.open(base_url+'/example-with-config-doc')
+    >>> browser.getLink('Example form').click()
+    >>> browser.getControl(name='department').value = ['Development']
+    >>> browser.getControl(name='price').value = '10'
+    >>> browser.getControl('Save').click()
+    >>> '11.96' in browser.contents
+    True
+    >>> 'Ref. year 2007' in browser.contents
+    True
+

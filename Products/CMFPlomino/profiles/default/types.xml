@@ -1,0 +1,32 @@
+<?xml version="1.0"?>
+<object name="portal_types"
+        meta_type="Plone Types Tool">
+
+ <object name="PlominoDatabase"
+         meta_type="Factory-based Type Information with dynamic views"/>
+
+ <object name="PlominoAction"
+         meta_type="Factory-based Type Information with dynamic views"/>
+
+ <object name="PlominoForm"
+         meta_type="Factory-based Type Information with dynamic views"/>
+
+ <object name="PlominoField"
+         meta_type="Factory-based Type Information with dynamic views"/>
+
+ <object name="PlominoView"
+         meta_type="Factory-based Type Information with dynamic views"/>
+
+ <object name="PlominoColumn"
+         meta_type="Factory-based Type Information with dynamic views"/>
+
+ <object name="PlominoDocument"
+         meta_type="Factory-based Type Information with dynamic views"/>
+
+ <object name="PlominoHidewhen"
+         meta_type="Factory-based Type Information with dynamic views"/>
+
+ <object name="PlominoAgent"
+         meta_type="Factory-based Type Information with dynamic views"/>
+
+</object>

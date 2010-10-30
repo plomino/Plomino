@@ -1,0 +1,66 @@
+<tal:block tal:define="fieldname python:options['fieldname'];
+                       v options/fieldvalue;
+                       data python:options['field'].getSettings().tojson(v);
+                       formname python:options['field'].getParentNode().id;
+                       associated_form python:options['field'].getSettings().associated_form;
+                       field python:options['field']">
+<input type='hidden' tal:attributes="id string:${fieldname}_gridvalue;
+                                     name fieldname;
+                                     value data"/>
+       
+        <script type="text/javascript" charset="utf-8"
+        	tal:define="param python:options['field'].getSettings().getParameters();
+        				langpath python:field.restrictedTraverse('/'.join(field.getPhysicalPath()) + '/DataTables/getLanguagePath')()"
+        	tal:content="structure string:var ${fieldname}_datatable;
+        		jq(document).ready(function() {
+		        	${fieldname}_datatable = jq('#${fieldname}_datagrid').dataTable( {
+		        		'aaData': ${data},
+		        		${param},
+		        		'fnDrawCallback': function() {
+		        			jq('#${fieldname}_datagrid > tbody > tr').click(function() {
+		        				datagrid_deselect_rows(${fieldname}_datatable);
+		        				jq(this).addClass('datagrid_row_selected');
+		        			});
+		        		},
+        				'oLanguage': {
+        					'sUrl': '${langpath}'
+						}
+		        	} );
+        	
+        			jq('#${fieldname}_addrow').click(function() {
+        				datagrid_add_row(${fieldname}_datatable, '${fieldname}', this.href);
+        			});
+        			jq('#${fieldname}_editrow').click(function() {
+        				datagrid_edit_row(${fieldname}_datatable, '${fieldname}', this.href);
+        			});
+        			jq('#${fieldname}_deleterow').click(function() {
+        				datagrid_delete_row(${fieldname}_datatable, '${fieldname}');
+        			});
+        			
+        			jq('#${fieldname}_editform').dialog({ 'autoOpen': false, 'modal': true });
+        		} );">
+        </script>
+        
+        <table class="display" tal:attributes="id string:${fieldname}_datagrid">
+        </table>
+        <div tal:attributes="id string:${fieldname}_editform"></div>
+        <p><a class="context add-row"
+        		tal:attributes="id string:${fieldname}_addrow;
+				        		href string:../${associated_form}/OpenForm?Plomino_Parent_Field=${fieldname}&Plomino_Parent_Form=${formname};
+				        		onclick string:return false"
+             >Add row</a>
+            <a class="context edit-row"
+            tal:attributes="id string:${fieldname}_editrow;
+                            href string:../${associated_form}/OpenForm?Plomino_Parent_Field=${fieldname}&Plomino_Parent_Form=${formname};
+        					onclick string:return false;
+                            style python:{0: 'display:none'}.get(len(v), '')"
+            >Edit row</a>
+            <a href="javascript:void(0)" class="context delete-row"
+            tal:attributes="id string:${fieldname}_deleterow;
+                            onclick string:return false;
+                            style python:{0: 'display:none'}.get(len(v), '')" 
+            >Delete row</a>
+        </p>
+            
+
+</tal:block>

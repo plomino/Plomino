@@ -1,0 +1,155 @@
+<span tal:define="fieldname options/fieldname;
+                fieldvalue options/fieldvalue;
+                selection options/selection;
+				type python:options['field'].getSettings('type');
+				selector python:options['field'].getSettings('selector');">
+	
+	<tal:listusers tal:condition="python:test(selection)">
+		<tal:block tal:condition="python:test(selector=='LIST')">
+			<select tal:condition="python:test(not(type=='MULTI'))" tal:attributes="name fieldname">
+				<tal:block tal:repeat="v selection">
+					<tal:block tal:define="current fieldvalue;l python:v.split('|')">
+						<option 
+							tal:attributes="value python:l[1]; selected python:test(current==l[1],1,0)"
+							tal:content="python:l[0]">value</option>
+					</tal:block>
+				</tal:block>
+			</select>
+			<select tal:condition="python:test(type=='MULTI')" tal:attributes="name fieldname" multiple="true" lines="4">
+				<tal:block tal:repeat="v selection">
+					<tal:block tal:define="current fieldvalue;l python:v.split('|')">
+						<option 
+							tal:attributes="value python:l[1]; selected python:test(current and l[1] in current,1,0)"
+							tal:content="python:l[0]">value</option>
+					</tal:block>
+				</tal:block>
+			</select>
+		</tal:block>
+
+		<tal:block tal:condition="python:test(selector=='FIELD')">
+			<input type="text" tal:attributes="name fieldname; value fieldvalue" />
+		</tal:block>
+		
+		<tal:block tal:condition="python:test(selector=='SEARCH')"
+			tal:define="fieldpath options/field/absolute_url_path">
+			<script type="text/javascript" tal:content="structure string:
+			 	function ${fieldname}_delete_row(elt) {
+					var rows = jq('#${fieldname}_datagrid_result > tbody > tr');
+					if (rows.length <= 1)
+						jq('#${fieldname}_datagrid_result > tbody').append('<tr style=\'display: none\'><td><input type=\'hidden\' name=\'${fieldname}\' value=\'\' /></td><td></td></tr>');
+					jq(elt).closest('tr').remove();
+			 		${fieldname}_set_row_style();
+			 	}
+
+				// Add a row to the results table
+			 	function ${fieldname}_add_row() {
+			 		var selected = o_${fieldname}_datagrid.fnGetData(this)[0];
+			 		var tablebody = jq('#${fieldname}_datagrid_result > tbody');
+			 		// Add the row
+			 		//if (tablebody.has('input[value=' + selected + ']').length == 0) {
+			 		if (jq('#${fieldname}_datagrid_result > tbody:has(input[value=' + selected + '])').length == 0) {
+			 			//tablebody.children().has('input[value=]').remove()
+			 			jq('#${fieldname}_datagrid_result > tbody > *:has(input[value=])').remove()
+				 		var row = jq('<tr><td><img alt=\'Remove\' src=\'list-remove.png\' style=\'cursor: pointer\' onclick=\'${fieldname}_delete_row(this)\' />' +
+							 		'<input type=\'hidden\' name=\'${fieldname}\' value=\'' + selected + '\' /></td><td>' + selected + '</td></tr>');
+				 		tablebody.append(row);
+			 		}
+			 		${fieldname}_set_row_style();
+			 	}
+
+			 	// Update rows classes in the results table
+			 	function ${fieldname}_set_row_style() {
+			 		var tablebody = jq('#${fieldname}_datagrid_result > tbody');
+			 		tablebody.children().removeClass('odd even');
+			 		tablebody.children(':even').addClass('odd');
+			 		tablebody.children(':odd').addClass('even');
+			 	}
+			 	
+				var o_${fieldname}_datagrid;
+				jq(document).ready(function() {
+					// Init the datagrid
+					o_${fieldname}_datagrid = jq('#${fieldname}_datagrid').dataTable( {
+						'bProcessing': true,
+						'bPaginate': true,
+						'bSort': true,
+						'aaSorting': [],
+						'bInfo': true,
+						'bAutoWidth': false,
+						'sDom': '<\'wrapper\'lrtip>',
+	       				'oLanguage': {	
+	       					'sUrl': '${context/DataTables/getLanguagePath}'
+						},
+				        'fnInitComplete': function(oSettings) {
+					 		jq('#${fieldname}_datagrid').closest('div.wrapper').hide();
+				        }
+				 	} );
+
+					// Close button
+				 	var close_ctrl = jq('#${fieldname}_datagrid').closest('.picklist').children('img.close_button');
+
+				 	// Search
+				 	jq('#${fieldname}_search').click(function() {
+				 		// Do an ajax request, and update the table
+				 		jq.post('${fieldpath}/filterednames',
+						 		'filter=' + document.getElementById('${fieldname}_searchfield').value,
+						 		function(data, textStatus, XMLHttpRequest) {
+				 					o_${fieldname}_datagrid.fnClearTable(false);
+				 					o_${fieldname}_datagrid.fnAddData(data, false);
+									jq(o_${fieldname}_datagrid.fnGetNodes()).click(${fieldname}_add_row);
+									jq(o_${fieldname}_datagrid.fnGetNodes()).css('cursor', 'pointer');
+				 					o_${fieldname}_datagrid.fnDraw();
+				 				},
+				 				'json');
+	 					
+				 		close_ctrl.show();
+				 		jq('#${fieldname}_datagrid').closest('.wrapper').slideDown();
+				 	} );
+
+				 	// Close the panel
+				 	close_ctrl.click( function () {
+				 		jq('#${fieldname}_datagrid').closest('.wrapper').slideUp();
+				 		close_ctrl.hide();
+				    } );
+
+			 		${fieldname}_set_row_style();
+				} );
+				">
+			</script>
+			
+			<table tal:attributes="id python:fieldname + '_datagrid_result'" class="plain">
+				<tbody tal:define="fieldvalue python:isinstance(fieldvalue, basestring) and [fieldvalue] or fieldvalue">
+					<tal:content tal:repeat="v fieldvalue">
+						<tr tal:condition="v">
+							<td>
+								<img alt="Remove" src="list-remove.png" style="cursor: pointer" tal:attributes="onclick string:${fieldname}_delete_row(this)" />
+								<input type="hidden" tal:attributes="name fieldname; value v" />
+							</td>
+							<td tal:content="v"></td>
+						</tr>
+					</tal:content>
+				</tbody>
+			</table>
+			
+			<div class="picklist">
+				<img src="dialog-close.png" alt="Close the dialog" title="Close the dialog" class="close_button" style="float: right; display: none" />
+				
+				<input type="text" tal:attributes="id python:fieldname + '_searchfield'" />
+				<input type="button" value="Search" class="context"
+					tal:attributes="id string:${fieldname}_search" />
+				
+				<table class="display" tal:attributes="id python:fieldname + '_datagrid';">
+					<thead>
+						<tr>
+							<th>Identifier</th>
+							<th>Name</th>
+						</tr>
+					</thead>
+				</table>
+				<div style="clear: both"></div>
+			</div>
+		</tal:block>
+	</tal:listusers>
+	<tal:nolistusers tal:condition="python:test(not(selection))">
+		<input type="text" tal:attributes="name fieldname; value fieldvalue" />
+	</tal:nolistusers>
+</span>

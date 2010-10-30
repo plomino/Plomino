@@ -1,0 +1,8 @@
+INSTALL
+Install Plomino from the Plone control panel.
+
+DEPENDENCIES
+If you want to use scheduled agent or scheduled replication,
+you need to install ZpCron (http://www.zope.org/Members/janik/ZpCron )
+NOTE: use version 0.99 beta 080314 (or upper):
+http://www.zope.org/Members/janik/ZpCron/ZpCron-0.99_beta080314.tar.bz2

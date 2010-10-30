@@ -1,0 +1,193 @@
+Changelog
+=========
+
+1.7.5
+-----
+* Documents stored in a BTreeFolder.
+* If available, use plone.app.blob to store file attachments.
+* When importing design or documents, use savepoints instead of actual commit.
+* CSV import uses fields definition (so values are casted accordingly, instead of storing everything as strings).
+* Excel export method on views.
+* Categorized views supported with dynamic mode.
+* Fix file attachment bug under Plone 4.
+* 
+
+1.7.4
+-----
+* Dynamic picklist for selection field
+
+1.7.3
+-----
+* fix datagrid (it was storing rendered values and not raw values)
+* localization for datatables: en, es, fr, it, lt, nl
+* dynamic hidewhen are now manage at hidewhen level (and not as a global setting in the form)
+* few minor fixes
+
+1.7.2
+-----
+* fix delete button in Plomino views when using the Dynamic view rendering
+* fix XML import with indexed datagrid fields
+
+1.7.1
+-----
+* fix jqueryui skin elements access
+
+1.7
+---
+* Remove dependencies with: collective.js.jquery, collective.js.jqueryui, plone.app.jquerytools.
+* Dynamic hide-when.
+* Fields can be provided by external products as plugin utilities.
+* Fields improvements: picklist for names and doclinks.
+* Store all texts in unicode.
+* Lithuanian translation.
+* Improve import/replication/refresh performances and display a progress bar.
+
+1.6.3
+-----
+* Plone 4 compliant
+* JQueryUI accordion integration (ability to create collapsible sections in forms)
+* New portlet to insert a Plomino form anywhere in your Plone site
+* Installation using a buildout extend
+* Force form for a document using ?openwithform=formid in the request
+* German translation fixes
+
+1.6.2
+-----
+
+* ability to restrict documents XML export to a given view
+* sort elements by id in the Design tab
+* XML export improvements: elements are sorted, xml is pretty
+  (so diff and svn play nicely), CDATA escaping has been removed, and
+  lxml is used if installed
+* unlock webdav-locked elements before importing
+* fix: column sorting and summing
+* fix: openWithForm encoding errors
+* fix: do not call onSave when importing document from replication
+  or XML file
+
+1.6.1
+-----
+
+* JQuery datatables to render Plomino views
+* Datagrid field type
+* Fulltext indexing in local Plomino index
+* Documents import/export via XML files
+* Ability to define column values using existing fields
+
+1.5.7
+-----
+
+* Portlet with useful links for design management (add items, acl, etc...)
+* Google visualization table to display views
+* Fixes for Plone 4 compliancy (work in progress)
+
+1.5.6
+-----
+
+* Access control fix : Owner is author of any document (just like PlominoManager role)
+* MissingValue() method in PlominoUtils : it returns Missing.Value which can be useful
+  when processing ZCatalog brains (=search results) as Missing.Value cannot be imported
+  into formulas.
+* Do not compute column values in index if the document does not belong to the view.
+  Note: it does not really change the performances when indexing, but it does reduce
+  the index size.
+  It also reduce the amount of error traceback in debug mode.
+
+1.5.5
+-----
+
+* Fix: escape CDATA in XML import/export (Jean Jordaan contribution)
+* Fix: handle empty multiselect and empty checkboxes
+* Fix: do not default to PlominoAuthor right if Authenticated generic right
+  is PlominoAuthor whereas the current user as PlominoReader right
+* Fix: set encoding in exportCSV
+
+1.5.4
+-----
+
+* Fix: insufficient privileges error when changing Anonymous access right from PlominoAuthor to No Access
+* Enable multiple Google Visualization fields in the same form
+* hide selection box in views if no remove permission
+* refresh() method on PlominoDocument: same as save() but do not trigger onSaveDocument
+* more i18n French translations
+* Validation formula improvments (ability to test the current doc id + bug fixes)
+* beforeCreateDocument event
+
+1.5.3
+-----
+
+* Security fix: when a group has PlominoAuthors rights, members of this group are just authors on their own documents
+
+1.5.2
+-----
+
+* Migration script
+
+1.5.1
+-----
+
+* TinyMCE support fix
+
+1.5
+---
+
+* Google chart integration : pie chart, bar chart, etc.
+  (see http://code.google.com/intl/en/apis/chart/types.html )
+* Ability to display the sum of a column in view (when columns contain figures)
+* Google Visualization integration : organizational charts, dynamic charts, map, etc.
+  (see http://code.google.com/intl/en/apis/visualization/documentation/gallery.html )
+* CSV support improvement
+* Ability to restrict a Names field to a given member group
+* Import/export and replication improvements
+
+1.4
+---
+
+* Control Kupu height for Richtext fields
+* Delete button confirmation message
+* German translation
+* Ability to hide Default Actions in forms
+* Group support in user roles and in Plomino_Authors
+* Import/export database settings and ACL settings
+* XML import/export design to/from file
+* Replication filtering using a view (feature financed by ACEA)
+* TinyMCE support
+* Delete documents from view
+* Bug fixes
+
+1.3-stable
+----------
+
+* Custom start page
+
+* Form as page (no action bar)
+
+* i18n fixes
+
+* bug fixes
+
+1.3RC4
+------
+
+* fr-fr fallback for i18n fr files
+
+* Date/Time widget fix for Plone 3.2
+
+* IMPORTANT NOTE: this version does not support Plone versions < 3.2
+
+* Better error handling for field rendering
+
+1.3RC3
+------
+
+* Clean up debug trace
+
+1.3RC2
+------
+
+* Fix migration script
+
+1.3RC1 - Unreleased
+---------------------------
+
+* Initial release

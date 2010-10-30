@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="utf-8"?><plominodatabase id="charts-example"><design><dbsettings><AboutDescription type="Products.Archetypes.Field.TextField"><![CDATA[]]></AboutDescription><UsingDescription type="Products.Archetypes.Field.TextField"><![CDATA[]]></UsingDescription><IndexAttachments type="Products.Archetypes.Field.BooleanField">False</IndexAttachments><FulltextIndex type="Products.Archetypes.Field.BooleanField">False</FulltextIndex><debugMode type="Products.Archetypes.Field.BooleanField">False</debugMode><StorageAttachments type="Products.Archetypes.Field.BooleanField">False</StorageAttachments><CountDocuments type="Products.Archetypes.Field.BooleanField">False</CountDocuments><DateTimeFormat type="Products.Archetypes.Field.StringField">%Y/%m/%d</DateTimeFormat><StartPage type="Products.Archetypes.Field.StringField"></StartPage><DoNotListUsers type="Products.Archetypes.Field.BooleanField">False</DoNotListUsers><excludeFromNav type="Products.Archetypes.Field.BooleanField">False</excludeFromNav><acl AnomynousAccessRight="NoAccess" AuthenticatedAccessRight="NoAccess"><params id="UserRoles">
+<param>
+<value><struct>
+</struct></value>
+</param>
+</params><params id="SpecificRights">
+<param>
+<value><struct>
+<member>
+<name>specific_deletedocument</name>
+<value><string>PlominoAuthor</string></value>
+</member>
+</struct></value>
+</param>
+</params></acl></dbsettings><element id="frmSaleAnalysis" title="Sale analysis" type="PlominoForm"><id type="Products.Archetypes.Field.StringField">frmSaleAnalysis</id><onCreateDocument type="Products.Archetypes.Field.TextField"><![CDATA[]]></onCreateDocument><onOpenDocument type="Products.Archetypes.Field.TextField"><![CDATA[]]></onOpenDocument><onSaveDocument type="Products.Archetypes.Field.TextField"><![CDATA[]]></onSaveDocument><onDeleteDocument type="Products.Archetypes.Field.TextField"><![CDATA[]]></onDeleteDocument><beforeCreateDocument type="Products.Archetypes.Field.TextField"><![CDATA[]]></beforeCreateDocument><FormLayout type="Products.Archetypes.Field.TextField"><![CDATA[&lt;p&gt;Brand: &lt;span class="plominoFieldClass"&gt;brand_name&lt;/span&gt;&lt;/p&gt;
+&lt;p&gt;Sales:&lt;/p&gt;
+&lt;p&gt;&lt;span class="plominoFieldClass"&gt;brand_sales&lt;/span&gt;&lt;/p&gt;
+&lt;p&gt;Charts and map:&lt;/p&gt;
+&lt;p&gt;&lt;span class="plominoFieldClass"&gt;sales_barchart&lt;/span&gt;&lt;/p&gt;
+&lt;p&gt;sales_map&lt;/p&gt;]]></FormLayout><DocumentTitle type="Products.Archetypes.Field.TextField"><![CDATA[plominoDocument.brand_name]]></DocumentTitle><ActionBarPosition type="Products.Archetypes.Field.StringField">TOP</ActionBarPosition><HideDefaultActions type="Products.Archetypes.Field.BooleanField">False</HideDefaultActions><HideInMenu type="Products.Archetypes.Field.BooleanField">False</HideInMenu><isSearchForm type="Products.Archetypes.Field.BooleanField">False</isSearchForm><isPage type="Products.Archetypes.Field.BooleanField">False</isPage><SearchView type="Products.Archetypes.Field.StringField"></SearchView><SearchFormula type="Products.Archetypes.Field.TextField"><![CDATA[]]></SearchFormula><Position type="Products.Archetypes.Field.IntegerField"/><excludeFromNav type="Products.Archetypes.Field.BooleanField">False</excludeFromNav><elements><element id="brand_name" title="brand_name" type="PlominoField"><id type="Products.Archetypes.Field.StringField">brand_name</id><FieldType type="Products.Archetypes.Field.StringField">TEXT</FieldType><FieldMode type="Products.Archetypes.Field.StringField">EDITABLE</FieldMode><Formula type="Products.Archetypes.Field.TextField"><![CDATA[]]></Formula><FieldReadTemplate type="Products.Archetypes.Field.StringField"></FieldReadTemplate><FieldEditTemplate type="Products.Archetypes.Field.StringField"></FieldEditTemplate><Mandatory type="Products.Archetypes.Field.BooleanField">False</Mandatory><ValidationFormula type="Products.Archetypes.Field.TextField"><![CDATA[]]></ValidationFormula><ToBeIndexed type="Products.Archetypes.Field.BooleanField">True</ToBeIndexed></element><element id="brand_sales" title="brand_sales" type="PlominoField"><id type="Products.Archetypes.Field.StringField">brand_sales</id><FieldType type="Products.Archetypes.Field.StringField">DATAGRID</FieldType><FieldMode type="Products.Archetypes.Field.StringField">EDITABLE</FieldMode><Formula type="Products.Archetypes.Field.TextField"><![CDATA[]]></Formula><FieldReadTemplate type="Products.Archetypes.Field.StringField"></FieldReadTemplate><FieldEditTemplate type="Products.Archetypes.Field.StringField"></FieldEditTemplate><Mandatory type="Products.Archetypes.Field.BooleanField">False</Mandatory><ValidationFormula type="Products.Archetypes.Field.TextField"><![CDATA[]]></ValidationFormula><ToBeIndexed type="Products.Archetypes.Field.BooleanField">False</ToBeIndexed><params>
+<param>
+<value><struct>
+<member>
+<name>associated_form</name>
+<value><string>frmSale</string></value>
+</member>
+<member>
+<name>jssettings</name>
+<value><string>&quot;aoColumns&quot;: [
+    { &quot;sTitle&quot;: &quot;Product&quot; },
+    { &quot;sTitle&quot;: &quot;Country&quot; },
+    { &quot;sTitle&quot;: &quot;Total&quot; }
+],
+&quot;bPaginate&quot;: false,
+&quot;bLengthChange&quot;: false,
+&quot;bFilter&quot;: true,
+&quot;bSort&quot;: true,
+&quot;bInfo&quot;: false,
+&quot;bAutoWidth&quot;: false
+</string></value>
+</member>
+<member>
+<name>field_mapping</name>
+<value><string>product_name,country,total_sales</string></value>
+</member>
+</struct></value>
+</param>
+</params></element><element id="sales_barchart" title="sales_barchart" type="PlominoField"><id type="Products.Archetypes.Field.StringField">sales_barchart</id><FieldType type="Products.Archetypes.Field.StringField">GOOGLEVISUALIZATION</FieldType><FieldMode type="Products.Archetypes.Field.StringField">DISPLAY</FieldMode><Formula type="Products.Archetypes.Field.TextField"><![CDATA[sales = plominoDocument.brand_sales
+return [['"%s"' % s.product_name, "%d" % s.total_sales] for s in sales]]]></Formula><FieldReadTemplate type="Products.Archetypes.Field.StringField"></FieldReadTemplate><FieldEditTemplate type="Products.Archetypes.Field.StringField"></FieldEditTemplate><Mandatory type="Products.Archetypes.Field.BooleanField">False</Mandatory><ValidationFormula type="Products.Archetypes.Field.TextField"><![CDATA[]]></ValidationFormula><ToBeIndexed type="Products.Archetypes.Field.BooleanField">False</ToBeIndexed><params>
+<param>
+<value><struct>
+<member>
+<name>chartid</name>
+<value><string>barchart</string></value>
+</member>
+<member>
+<name>jssettings</name>
+<value><string>google.load('visualization', '1', {packages:['barchart']});
+google.setOnLoadCallback(barchart_drawChart);
+var barchart;
+
+function barchart_drawChart() {
+barchart = new google.visualization.DataTable();
+barchart.addColumn('string', 'Product');
+//barchart.addColumn('string', 'Country');
+barchart.addColumn('number', 'Sales');
+barchart_getCells();
+var barchart_chart = new google.visualization.BarChart(document.getElementById('barchart_div'));
+barchart_chart.draw(barchart, {width: 400, height: 220, is3D: true, backgroundColor: '#FFFFFF', legend: 'label',tooltipFontSize:'10'});
+}</string></value>
+</member>
+</struct></value>
+</param>
+</params></element></elements></element><element id="all" title="All analysis" type="PlominoView"><id type="Products.Archetypes.Field.StringField">all</id><SelectionFormula type="Products.Archetypes.Field.TextField"><![CDATA[True]]></SelectionFormula><SortColumn type="Products.Archetypes.Field.StringField"></SortColumn><Categorized type="Products.Archetypes.Field.BooleanField">False</Categorized><FormFormula type="Products.Archetypes.Field.TextField"><![CDATA[]]></FormFormula><ReverseSorting type="Products.Archetypes.Field.BooleanField">False</ReverseSorting><ActionBarPosition type="Products.Archetypes.Field.StringField">TOP</ActionBarPosition><HideDefaultActions type="Products.Archetypes.Field.BooleanField">False</HideDefaultActions><HideInMenu type="Products.Archetypes.Field.BooleanField">False</HideInMenu><Widget type="Products.Archetypes.Field.StringField">BASIC</Widget><DynamicTableParameters type="Products.Archetypes.Field.TextField"><![CDATA['bPaginate': false,
+'bLengthChange': false,
+'bFilter': true,
+'bSort': true,
+'bInfo': false,
+'bAutoWidth': false]]></DynamicTableParameters><ViewTemplate type="Products.Archetypes.Field.StringField"></ViewTemplate><Position type="Products.Archetypes.Field.IntegerField"/><excludeFromNav type="Products.Archetypes.Field.BooleanField">False</excludeFromNav><elements><element id="brand" title="Brand" type="PlominoColumn"><id type="Products.Archetypes.Field.StringField">brand</id><SelectedField type="Products.Archetypes.Field.StringField">frmSaleAnalysis/brand_name</SelectedField><Formula type="Products.Archetypes.Field.TextField"><![CDATA[]]></Formula><HiddenColumn type="Products.Archetypes.Field.BooleanField">False</HiddenColumn><DisplaySum type="Products.Archetypes.Field.BooleanField">False</DisplaySum><ContainsHTML type="Products.Archetypes.Field.BooleanField">False</ContainsHTML></element></elements></element><element id="frmSale" title="Sale" type="PlominoForm"><id type="Products.Archetypes.Field.StringField">frmSale</id><onCreateDocument type="Products.Archetypes.Field.TextField"><![CDATA[]]></onCreateDocument><onOpenDocument type="Products.Archetypes.Field.TextField"><![CDATA[]]></onOpenDocument><onSaveDocument type="Products.Archetypes.Field.TextField"><![CDATA[]]></onSaveDocument><onDeleteDocument type="Products.Archetypes.Field.TextField"><![CDATA[]]></onDeleteDocument><beforeCreateDocument type="Products.Archetypes.Field.TextField"><![CDATA[]]></beforeCreateDocument><FormLayout type="Products.Archetypes.Field.TextField"><![CDATA[&lt;p&gt;Product: &lt;span class="plominoFieldClass"&gt;product_name&lt;/span&gt;&lt;/p&gt;
+&lt;p&gt;Country: &lt;span class="plominoFieldClass"&gt;country&lt;/span&gt;&lt;/p&gt;
+&lt;p&gt;Total sales: &lt;span class="plominoFieldClass"&gt;total_sales&lt;/span&gt;&lt;/p&gt;]]></FormLayout><DocumentTitle type="Products.Archetypes.Field.TextField"><![CDATA[]]></DocumentTitle><ActionBarPosition type="Products.Archetypes.Field.StringField">TOP</ActionBarPosition><HideDefaultActions type="Products.Archetypes.Field.BooleanField">False</HideDefaultActions><HideInMenu type="Products.Archetypes.Field.BooleanField">True</HideInMenu><isSearchForm type="Products.Archetypes.Field.BooleanField">False</isSearchForm><isPage type="Products.Archetypes.Field.BooleanField">False</isPage><SearchView type="Products.Archetypes.Field.StringField"></SearchView><SearchFormula type="Products.Archetypes.Field.TextField"><![CDATA[]]></SearchFormula><Position type="Products.Archetypes.Field.IntegerField"/><excludeFromNav type="Products.Archetypes.Field.BooleanField">False</excludeFromNav><elements><element id="product_name" title="product_name" type="PlominoField"><id type="Products.Archetypes.Field.StringField">product_name</id><FieldType type="Products.Archetypes.Field.StringField">SELECTION</FieldType><FieldMode type="Products.Archetypes.Field.StringField">EDITABLE</FieldMode><Formula type="Products.Archetypes.Field.TextField"><![CDATA[]]></Formula><FieldReadTemplate type="Products.Archetypes.Field.StringField"></FieldReadTemplate><FieldEditTemplate type="Products.Archetypes.Field.StringField"></FieldEditTemplate><Mandatory type="Products.Archetypes.Field.BooleanField">False</Mandatory><ValidationFormula type="Products.Archetypes.Field.TextField"><![CDATA[]]></ValidationFormula><ToBeIndexed type="Products.Archetypes.Field.BooleanField">False</ToBeIndexed><params>
+<param>
+<value><struct>
+<member>
+<name>selectionlist</name>
+<value><array><data>
+<value><string>SR-100</string></value>
+<value><string>SR-110</string></value>
+<value><string>TW-12A</string></value>
+<value><string>HY-1000</string></value>
+</data></array></value>
+</member>
+</struct></value>
+</param>
+</params></element><element id="country" title="country" type="PlominoField"><id type="Products.Archetypes.Field.StringField">country</id><FieldType type="Products.Archetypes.Field.StringField">SELECTION</FieldType><FieldMode type="Products.Archetypes.Field.StringField">EDITABLE</FieldMode><Formula type="Products.Archetypes.Field.TextField"><![CDATA[]]></Formula><FieldReadTemplate type="Products.Archetypes.Field.StringField"></FieldReadTemplate><FieldEditTemplate type="Products.Archetypes.Field.StringField"></FieldEditTemplate><Mandatory type="Products.Archetypes.Field.BooleanField">False</Mandatory><ValidationFormula type="Products.Archetypes.Field.TextField"><![CDATA[]]></ValidationFormula><ToBeIndexed type="Products.Archetypes.Field.BooleanField">False</ToBeIndexed><params>
+<param>
+<value><struct>
+<member>
+<name>selectionlist</name>
+<value><array><data>
+<value><string>Germany|DE</string></value>
+<value><string>Italy|IT</string></value>
+<value><string>Spain|ES</string></value>
+<value><string>United Kingdom|UK</string></value>
+</data></array></value>
+</member>
+</struct></value>
+</param>
+</params></element><element id="total_sales" title="total_sales" type="PlominoField"><id type="Products.Archetypes.Field.StringField">total_sales</id><FieldType type="Products.Archetypes.Field.StringField">NUMBER</FieldType><FieldMode type="Products.Archetypes.Field.StringField">EDITABLE</FieldMode><Formula type="Products.Archetypes.Field.TextField"><![CDATA[]]></Formula><FieldReadTemplate type="Products.Archetypes.Field.StringField"></FieldReadTemplate><FieldEditTemplate type="Products.Archetypes.Field.StringField"></FieldEditTemplate><Mandatory type="Products.Archetypes.Field.BooleanField">False</Mandatory><ValidationFormula type="Products.Archetypes.Field.TextField"><![CDATA[]]></ValidationFormula><ToBeIndexed type="Products.Archetypes.Field.BooleanField">False</ToBeIndexed></element></elements></element></design></plominodatabase>

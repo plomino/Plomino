@@ -1,0 +1,429 @@
+<?xml version="1.0" encoding="utf-8"?>
+<plominodatabase id="example-with-config-doc">
+<design>
+<dbsettings>
+<AboutDescription type="Products.Archetypes.Field.TextField">
+<![CDATA[]]>
+</AboutDescription>
+<UsingDescription type="Products.Archetypes.Field.TextField">
+<![CDATA[]]>
+</UsingDescription>
+<IndexAttachments type="Products.Archetypes.Field.BooleanField">False</IndexAttachments>
+<FulltextIndex type="Products.Archetypes.Field.BooleanField">False</FulltextIndex>
+<debugMode type="Products.Archetypes.Field.BooleanField">False</debugMode>
+<StorageAttachments type="Products.Archetypes.Field.BooleanField">False</StorageAttachments>
+<CountDocuments type="Products.Archetypes.Field.BooleanField">False</CountDocuments>
+<DateTimeFormat type="Products.Archetypes.Field.StringField">%Y/%m/%d</DateTimeFormat>
+<StartPage type="Products.Archetypes.Field.StringField">
+</StartPage>
+<DoNotListUsers type="Products.Archetypes.Field.BooleanField">False</DoNotListUsers>
+<excludeFromNav type="Products.Archetypes.Field.BooleanField">False</excludeFromNav>
+<acl AnomynousAccessRight="NoAccess" AuthenticatedAccessRight="NoAccess">
+<params id="UserRoles">
+<param>
+<value>
+<struct>
+</struct>
+</value>
+</param>
+</params>
+<params id="SpecificRights">
+<param>
+<value>
+<struct>
+<member>
+<name>specific_deletedocument</name>
+<value>
+<string>PlominoAuthor</string>
+</value>
+</member>
+</struct>
+</value>
+</param>
+</params>
+</acl>
+</dbsettings>
+<resource contenttype="text/x-unknown-content-type" id="scriptConfig" title="" type="File">
+<![CDATA[ZGVmIGdldENvbmZpZ1ZhbHVlKGRiLCBrZXksIGRlZmF1bHQ9IiIpOgogIGNvbmZpZ2RvYyA9IGRi
+LmdldFZpZXcoImNvbmZpZ3ZpZXciKS5nZXREb2N1bWVudHNCeUtleShrZXkpWzBdCiAgaWYgY29u
+ZmlnZG9jIGlzIG5vdCBOb25lOgogICAgcmV0dXJuIGNvbmZpZ2RvYy5jb25maWdWYWx1ZXMKICBl
+bHNlOgogICAgcmV0dXJuIGRlZmF1bHQKCmRlZiBnZXRDb25maWdWYWx1ZXNBc0xpc3QoZGIsIGtl
+eSwgZGVmYXVsdD1bXSk6CiAgdmFsdWVzID0gZ2V0Q29uZmlnVmFsdWUoZGIsIGtleSwgZGVmYXVs
+dD1Ob25lKQogIGlmIHZhbHVlcyBpcyBOb25lOgogICAgcmV0dXJuIGRlZmF1bHQKICBlbHNlOgog
+ICAgcmV0dXJuIHZhbHVlcy5yZXBsYWNlKCdccicsICcnKS5zcGxpdCgnXG4nKQ==
+]]>
+</resource>
+<element id="frmConfig" title="Parameters" type="PlominoForm">
+<id type="Products.Archetypes.Field.StringField">frmConfig</id>
+<onCreateDocument type="Products.Archetypes.Field.TextField">
+<![CDATA[]]>
+</onCreateDocument>
+<onOpenDocument type="Products.Archetypes.Field.TextField">
+<![CDATA[]]>
+</onOpenDocument>
+<onSaveDocument type="Products.Archetypes.Field.TextField">
+<![CDATA[]]>
+</onSaveDocument>
+<onDeleteDocument type="Products.Archetypes.Field.TextField">
+<![CDATA[]]>
+</onDeleteDocument>
+<beforeCreateDocument type="Products.Archetypes.Field.TextField">
+<![CDATA[]]>
+</beforeCreateDocument>
+<FormLayout type="Products.Archetypes.Field.TextField">
+<![CDATA[<p>Id: <span class="plominoFieldClass">configId</span>
+</p>
+<p>Value(s):</p>
+<p>
+<span class="plominoFieldClass">configValues</span>
+</p>]]>
+</FormLayout>
+<DocumentTitle type="Products.Archetypes.Field.TextField">
+<![CDATA[plominoDocument.configId]]>
+</DocumentTitle>
+<ActionBarPosition type="Products.Archetypes.Field.StringField">TOP</ActionBarPosition>
+<HideDefaultActions type="Products.Archetypes.Field.BooleanField">False</HideDefaultActions>
+<HideInMenu type="Products.Archetypes.Field.BooleanField">False</HideInMenu>
+<isSearchForm type="Products.Archetypes.Field.BooleanField">False</isSearchForm>
+<isPage type="Products.Archetypes.Field.BooleanField">False</isPage>
+<SearchView type="Products.Archetypes.Field.StringField">
+</SearchView>
+<SearchFormula type="Products.Archetypes.Field.TextField">
+<![CDATA[]]>
+</SearchFormula>
+<Position type="Products.Archetypes.Field.IntegerField"/>
+<excludeFromNav type="Products.Archetypes.Field.BooleanField">False</excludeFromNav>
+<elements>
+<element id="configId" title="configId" type="PlominoField">
+<id type="Products.Archetypes.Field.StringField">configId</id>
+<FieldType type="Products.Archetypes.Field.StringField">TEXT</FieldType>
+<FieldMode type="Products.Archetypes.Field.StringField">EDITABLE</FieldMode>
+<Formula type="Products.Archetypes.Field.TextField">
+<![CDATA[]]>
+</Formula>
+<FieldReadTemplate type="Products.Archetypes.Field.StringField">
+</FieldReadTemplate>
+<FieldEditTemplate type="Products.Archetypes.Field.StringField">
+</FieldEditTemplate>
+<Mandatory type="Products.Archetypes.Field.BooleanField">False</Mandatory>
+<ValidationFormula type="Products.Archetypes.Field.TextField">
+<![CDATA[]]>
+</ValidationFormula>
+<ToBeIndexed type="Products.Archetypes.Field.BooleanField">False</ToBeIndexed>
+</element>
+<element id="configValues" title="configValues" type="PlominoField">
+<id type="Products.Archetypes.Field.StringField">configValues</id>
+<FieldType type="Products.Archetypes.Field.StringField">TEXT</FieldType>
+<FieldMode type="Products.Archetypes.Field.StringField">EDITABLE</FieldMode>
+<Formula type="Products.Archetypes.Field.TextField">
+<![CDATA[]]>
+</Formula>
+<FieldReadTemplate type="Products.Archetypes.Field.StringField">
+</FieldReadTemplate>
+<FieldEditTemplate type="Products.Archetypes.Field.StringField">
+</FieldEditTemplate>
+<Mandatory type="Products.Archetypes.Field.BooleanField">False</Mandatory>
+<ValidationFormula type="Products.Archetypes.Field.TextField">
+<![CDATA[]]>
+</ValidationFormula>
+<ToBeIndexed type="Products.Archetypes.Field.BooleanField">False</ToBeIndexed>
+<params>
+<param>
+<value>
+<struct>
+<member>
+<name>widget</name>
+<value>
+<string>TEXTAREA</string>
+</value>
+</member>
+<member>
+<name>size</name>
+<value>
+<string>10</string>
+</value>
+</member>
+</struct>
+</value>
+</param>
+</params>
+</element>
+<element id="back" title="Back to parameters list" type="PlominoAction">
+<id type="Products.Archetypes.Field.StringField">back</id>
+<ActionType type="Products.Archetypes.Field.StringField">OPENVIEW</ActionType>
+<ActionDisplay type="Products.Archetypes.Field.StringField">
+</ActionDisplay>
+<Content type="Products.Archetypes.Field.TextField">
+<![CDATA[configview]]>
+</Content>
+<Hidewhen type="Products.Archetypes.Field.TextField">
+<![CDATA[]]>
+</Hidewhen>
+<InActionBar type="Products.Archetypes.Field.BooleanField">True</InActionBar>
+</element>
+</elements>
+</element>
+<element id="frmExample" title="Example form" type="PlominoForm">
+<id type="Products.Archetypes.Field.StringField">frmExample</id>
+<onCreateDocument type="Products.Archetypes.Field.TextField">
+<![CDATA[]]>
+</onCreateDocument>
+<onOpenDocument type="Products.Archetypes.Field.TextField">
+<![CDATA[]]>
+</onOpenDocument>
+<onSaveDocument type="Products.Archetypes.Field.TextField">
+<![CDATA[]]>
+</onSaveDocument>
+<onDeleteDocument type="Products.Archetypes.Field.TextField">
+<![CDATA[]]>
+</onDeleteDocument>
+<beforeCreateDocument type="Products.Archetypes.Field.TextField">
+<![CDATA[]]>
+</beforeCreateDocument>
+<FormLayout type="Products.Archetypes.Field.TextField">
+<![CDATA[<p style="text-align: right; ">
+<span class="discreet">Ref. year <span class="plominoFieldClass">refyear</span>
+</span>
+</p>
+<ul>
+<li>
+<b>Department:</b> <span class="plominoFieldClass">department</span>
+</li>
+<li>
+<b>Price:</b> <span class="plominoFieldClass">price</span>
+</li>
+<li>
+<b>Total price (VAT included):</b> <span class="plominoFieldClass">pricewithVAT</span>
+</li>
+</ul>]]>
+</FormLayout>
+<DocumentTitle type="Products.Archetypes.Field.TextField">
+<![CDATA["Example"]]>
+</DocumentTitle>
+<ActionBarPosition type="Products.Archetypes.Field.StringField">TOP</ActionBarPosition>
+<HideDefaultActions type="Products.Archetypes.Field.BooleanField">False</HideDefaultActions>
+<HideInMenu type="Products.Archetypes.Field.BooleanField">False</HideInMenu>
+<isSearchForm type="Products.Archetypes.Field.BooleanField">False</isSearchForm>
+<isPage type="Products.Archetypes.Field.BooleanField">False</isPage>
+<SearchView type="Products.Archetypes.Field.StringField">
+</SearchView>
+<SearchFormula type="Products.Archetypes.Field.TextField">
+<![CDATA[]]>
+</SearchFormula>
+<Position type="Products.Archetypes.Field.IntegerField"/>
+<excludeFromNav type="Products.Archetypes.Field.BooleanField">False</excludeFromNav>
+<elements>
+<element id="refyear" title="refyear" type="PlominoField">
+<id type="Products.Archetypes.Field.StringField">refyear</id>
+<FieldType type="Products.Archetypes.Field.StringField">TEXT</FieldType>
+<FieldMode type="Products.Archetypes.Field.StringField">DISPLAY</FieldMode>
+<Formula type="Products.Archetypes.Field.TextField">
+<![CDATA[db=plominoDocument.getParentDatabase()
+return db.callScriptMethod("scriptConfig", "getConfigValue", db, "Reference year")]]>
+</Formula>
+<FieldReadTemplate type="Products.Archetypes.Field.StringField">
+</FieldReadTemplate>
+<FieldEditTemplate type="Products.Archetypes.Field.StringField">
+</FieldEditTemplate>
+<Mandatory type="Products.Archetypes.Field.BooleanField">False</Mandatory>
+<ValidationFormula type="Products.Archetypes.Field.TextField">
+<![CDATA[]]>
+</ValidationFormula>
+<ToBeIndexed type="Products.Archetypes.Field.BooleanField">False</ToBeIndexed>
+</element>
+<element id="department" title="department" type="PlominoField">
+<id type="Products.Archetypes.Field.StringField">department</id>
+<FieldType type="Products.Archetypes.Field.StringField">SELECTION</FieldType>
+<FieldMode type="Products.Archetypes.Field.StringField">EDITABLE</FieldMode>
+<Formula type="Products.Archetypes.Field.TextField">
+<![CDATA[]]>
+</Formula>
+<FieldReadTemplate type="Products.Archetypes.Field.StringField">
+</FieldReadTemplate>
+<FieldEditTemplate type="Products.Archetypes.Field.StringField">
+</FieldEditTemplate>
+<Mandatory type="Products.Archetypes.Field.BooleanField">False</Mandatory>
+<ValidationFormula type="Products.Archetypes.Field.TextField">
+<![CDATA[]]>
+</ValidationFormula>
+<ToBeIndexed type="Products.Archetypes.Field.BooleanField">False</ToBeIndexed>
+<params>
+<param>
+<value>
+<struct>
+<member>
+<name>selectionlistformula</name>
+<value>
+<string>db=plominoDocument.getParentDatabase()
+return db.callScriptMethod(&quot;scriptConfig&quot;, &quot;getConfigValuesAsList&quot;, db, &quot;Departments&quot;)</string>
+</value>
+</member>
+</struct>
+</value>
+</param>
+</params>
+</element>
+<element id="price" title="price" type="PlominoField">
+<id type="Products.Archetypes.Field.StringField">price</id>
+<FieldType type="Products.Archetypes.Field.StringField">NUMBER</FieldType>
+<FieldMode type="Products.Archetypes.Field.StringField">EDITABLE</FieldMode>
+<Formula type="Products.Archetypes.Field.TextField">
+<![CDATA[]]>
+</Formula>
+<FieldReadTemplate type="Products.Archetypes.Field.StringField">
+</FieldReadTemplate>
+<FieldEditTemplate type="Products.Archetypes.Field.StringField">
+</FieldEditTemplate>
+<Mandatory type="Products.Archetypes.Field.BooleanField">False</Mandatory>
+<ValidationFormula type="Products.Archetypes.Field.TextField">
+<![CDATA[]]>
+</ValidationFormula>
+<ToBeIndexed type="Products.Archetypes.Field.BooleanField">False</ToBeIndexed>
+</element>
+<element id="pricewithVAT" title="pricewithVAT" type="PlominoField">
+<id type="Products.Archetypes.Field.StringField">pricewithVAT</id>
+<FieldType type="Products.Archetypes.Field.StringField">NUMBER</FieldType>
+<FieldMode type="Products.Archetypes.Field.StringField">COMPUTED</FieldMode>
+<Formula type="Products.Archetypes.Field.TextField">
+<![CDATA[db=plominoDocument.getParentDatabase()
+vat=float(db.callScriptMethod("scriptConfig", "getConfigValue", db, "VAT"))
+plominoDocument.plone_log(vat)
+try:
+  return plominoDocument.price*(1+vat/100)
+except:
+  return 0]]>
+</Formula>
+<FieldReadTemplate type="Products.Archetypes.Field.StringField">
+</FieldReadTemplate>
+<FieldEditTemplate type="Products.Archetypes.Field.StringField">
+</FieldEditTemplate>
+<Mandatory type="Products.Archetypes.Field.BooleanField">False</Mandatory>
+<ValidationFormula type="Products.Archetypes.Field.TextField">
+<![CDATA[]]>
+</ValidationFormula>
+<ToBeIndexed type="Products.Archetypes.Field.BooleanField">False</ToBeIndexed>
+</element>
+</elements>
+</element>
+<element id="allexampledocs" title="Example docs" type="PlominoView">
+<id type="Products.Archetypes.Field.StringField">allexampledocs</id>
+<SelectionFormula type="Products.Archetypes.Field.TextField">
+<![CDATA[plominoDocument.Form=="frmExample"]]>
+</SelectionFormula>
+<SortColumn type="Products.Archetypes.Field.StringField">
+</SortColumn>
+<Categorized type="Products.Archetypes.Field.BooleanField">False</Categorized>
+<FormFormula type="Products.Archetypes.Field.TextField">
+<![CDATA[]]>
+</FormFormula>
+<ReverseSorting type="Products.Archetypes.Field.BooleanField">False</ReverseSorting>
+<ActionBarPosition type="Products.Archetypes.Field.StringField">TOP</ActionBarPosition>
+<HideDefaultActions type="Products.Archetypes.Field.BooleanField">False</HideDefaultActions>
+<HideInMenu type="Products.Archetypes.Field.BooleanField">False</HideInMenu>
+<Widget type="Products.Archetypes.Field.StringField">DYNAMICTABLE</Widget>
+<DynamicTableParameters type="Products.Archetypes.Field.TextField">
+<![CDATA['bPaginate': false,
+'bLengthChange': false,
+'bFilter': true,
+'bSort': true,
+'bInfo': false,
+'bAutoWidth': false]]>
+</DynamicTableParameters>
+<ViewTemplate type="Products.Archetypes.Field.StringField">
+</ViewTemplate>
+<Position type="Products.Archetypes.Field.IntegerField"/>
+<excludeFromNav type="Products.Archetypes.Field.BooleanField">False</excludeFromNav>
+<elements>
+<element id="department" title="Department" type="PlominoColumn">
+<id type="Products.Archetypes.Field.StringField">department</id>
+<SelectedField type="Products.Archetypes.Field.StringField">
+</SelectedField>
+<Formula type="Products.Archetypes.Field.TextField">
+<![CDATA[plominoDocument.department]]>
+</Formula>
+<HiddenColumn type="Products.Archetypes.Field.BooleanField">False</HiddenColumn>
+<DisplaySum type="Products.Archetypes.Field.BooleanField">False</DisplaySum>
+<ContainsHTML type="Products.Archetypes.Field.BooleanField">False</ContainsHTML>
+</element>
+<element id="price" title="Total price" type="PlominoColumn">
+<id type="Products.Archetypes.Field.StringField">price</id>
+<SelectedField type="Products.Archetypes.Field.StringField">
+</SelectedField>
+<Formula type="Products.Archetypes.Field.TextField">
+<![CDATA[plominoDocument.pricewithVAT]]>
+</Formula>
+<HiddenColumn type="Products.Archetypes.Field.BooleanField">False</HiddenColumn>
+<DisplaySum type="Products.Archetypes.Field.BooleanField">False</DisplaySum>
+<ContainsHTML type="Products.Archetypes.Field.BooleanField">False</ContainsHTML>
+</element>
+</elements>
+</element>
+<element id="configview" title="Parameters list" type="PlominoView">
+<id type="Products.Archetypes.Field.StringField">configview</id>
+<SelectionFormula type="Products.Archetypes.Field.TextField">
+<![CDATA[plominoDocument.Form=="frmConfig"]]>
+</SelectionFormula>
+<SortColumn type="Products.Archetypes.Field.StringField">configId</SortColumn>
+<Categorized type="Products.Archetypes.Field.BooleanField">False</Categorized>
+<FormFormula type="Products.Archetypes.Field.TextField">
+<![CDATA[]]>
+</FormFormula>
+<ReverseSorting type="Products.Archetypes.Field.BooleanField">False</ReverseSorting>
+<ActionBarPosition type="Products.Archetypes.Field.StringField">BOTH</ActionBarPosition>
+<HideDefaultActions type="Products.Archetypes.Field.BooleanField">False</HideDefaultActions>
+<HideInMenu type="Products.Archetypes.Field.BooleanField">False</HideInMenu>
+<Widget type="Products.Archetypes.Field.StringField">BASIC</Widget>
+<DynamicTableParameters type="Products.Archetypes.Field.TextField">
+<![CDATA[
+'bPaginate': false,
+'bLengthChange': false,
+'bFilter': true,
+'bSort': true,
+'bInfo': false,
+'bAutoWidth': false]]>
+</DynamicTableParameters>
+<ViewTemplate type="Products.Archetypes.Field.StringField">
+</ViewTemplate>
+<Position type="Products.Archetypes.Field.IntegerField"/>
+<excludeFromNav type="Products.Archetypes.Field.BooleanField">True</excludeFromNav>
+<elements>
+<element id="configId" title="Id" type="PlominoColumn">
+<id type="Products.Archetypes.Field.StringField">configId</id>
+<SelectedField type="Products.Archetypes.Field.StringField">
+</SelectedField>
+<Formula type="Products.Archetypes.Field.TextField">
+<![CDATA[plominoDocument.configId]]>
+</Formula>
+<HiddenColumn type="Products.Archetypes.Field.BooleanField">False</HiddenColumn>
+<DisplaySum type="Products.Archetypes.Field.BooleanField">False</DisplaySum>
+<ContainsHTML type="Products.Archetypes.Field.BooleanField">False</ContainsHTML>
+</element>
+<element id="configvalues" title="Values" type="PlominoColumn">
+<id type="Products.Archetypes.Field.StringField">configvalues</id>
+<SelectedField type="Products.Archetypes.Field.StringField">
+</SelectedField>
+<Formula type="Products.Archetypes.Field.TextField">
+<![CDATA[v=plominoDocument.configValues
+return ', '.join(v.split('\n'))]]>
+</Formula>
+<HiddenColumn type="Products.Archetypes.Field.BooleanField">False</HiddenColumn>
+<DisplaySum type="Products.Archetypes.Field.BooleanField">False</DisplaySum>
+<ContainsHTML type="Products.Archetypes.Field.BooleanField">False</ContainsHTML>
+</element>
+<element id="addnew" title="Add a parameter" type="PlominoAction">
+<id type="Products.Archetypes.Field.StringField">addnew</id>
+<ActionType type="Products.Archetypes.Field.StringField">OPENFORM</ActionType>
+<ActionDisplay type="Products.Archetypes.Field.StringField">
+</ActionDisplay>
+<Content type="Products.Archetypes.Field.TextField">
+<![CDATA[frmConfig]]>
+</Content>
+<Hidewhen type="Products.Archetypes.Field.TextField">
+<![CDATA[]]>
+</Hidewhen>
+<InActionBar type="Products.Archetypes.Field.BooleanField">True</InActionBar>
+</element>
+</elements>
+</element>
+</design>
+</plominodatabase>

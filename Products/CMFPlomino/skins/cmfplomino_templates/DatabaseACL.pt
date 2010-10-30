@@ -1,0 +1,248 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en"
+      xmlns:tal="http://xml.zope.org/namespaces/tal"
+      xmlns:metal="http://xml.zope.org/namespaces/metal"
+      xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+      lang="en"
+      metal:use-macro="here/main_template/macros/master"
+      i18n:domain="plone">
+<body>
+
+<metal:main fill-slot="main">
+    <tal:main-macro metal:define-macro="main"
+           tal:define="kssClassesView context/@@kss_field_decorator_view;
+                       getKssClasses nocall:kssClassesView/getKssClassesInlineEditable;
+                       templateId template/getId;
+                       nouserlist here/DoNotListUsers|nothing">
+
+		<div tal:replace="structure provider:plone.abovecontenttitle" />
+
+		<h1 class="documentFirstHeading">Access rights</h1>
+		
+		<div tal:replace="structure provider:plone.belowcontenttitle" />
+
+		<div tal:replace="structure provider:plone.abovecontentbody" />
+		
+		<h3>Current workflow state</h3>
+		<div>Note: Plone workflow state might impact Plomino access right settings.</div>
+		<table class="listing" tal:define="wfstates python:here.getWorkflowStates()">
+		<tr><th>Workflow</th><th>State</th></tr>
+		<tal:loop tal:repeat="w python:wfstates.keys()">
+			<tr><td tal:content="w">workflow id</td><td><strong><span tal:content="python:wfstates[w]">state</span></strong></td></tr>
+		</tal:loop>
+		</table>
+		
+		<tal:permission tal:define="dummy here/checkACLPermission"/>
+			
+		<form name="RemoveEntries" action="removeACLEntries" method="POST">
+		<h3>Users access rights</h3>
+    	<table class="listing">
+    	<tr><th>Access right</th><th>Users</th></tr>
+		<tr><td valign="top"><b>Readers</b></td>
+		<td><tal:block tal:repeat="u python:here.getUsersForRight('PlominoReader')">
+			<input type="checkbox" name="users" tal:attributes="value u; id string:reader-${u}" /> <label tal:attributes="for string:reader-${u}" tal:content="u">user</label>	
+			<br/>
+		</tal:block>
+		</td></tr>
+		<tr><td valign="top"><b>Authors</b></td>
+		<td><tal:block tal:repeat="u python:here.getUsersForRight('PlominoAuthor')">
+			<input type="checkbox" name="users" tal:attributes="value u; id string:author-${u}" /> <label tal:attributes="for string:author-${u}" tal:content="u">user</label>	
+			<br/>
+		</tal:block>
+		</td></tr>
+		<tr><td valign="top"><b>Editors</b></td>
+		<td><tal:block tal:repeat="u python:here.getUsersForRight('PlominoEditor')">
+			<input type="checkbox" name="users" tal:attributes="value u; id string:editor-${u}" /> <label tal:attributes="for string:editor-${u}" tal:content="u">user</label>	
+			<br/>
+		</tal:block>
+		</td></tr>
+		<tr><td valign="top"><b>Designers</b></td>
+		<td><tal:block tal:repeat="u python:here.getUsersForRight('PlominoDesigner')">
+			<input type="checkbox" name="users" tal:attributes="value u; id string:designer-${u}" /> <label tal:attributes="for string:designer-${u}" tal:content="u">user</label>	
+			<br/>
+		</tal:block>
+		</td></tr>
+		<tr><td valign="top"><b>Managers</b></td>
+		<td><tal:block tal:repeat="u python:here.getUsersForRight('PlominoManager')">
+			<input type="checkbox" name="users" tal:attributes="value u; id string:manager-${u}" /> <label tal:attributes="for string:manager-${u}" tal:content="u">user</label>	
+			<br/>
+		</tal:block>
+		</td></tr>
+		</table>
+		<input type="submit" class="context" value="Remove selected users"/>
+	</form>
+	<br/>
+	<form name="AddEntry" action="addACLEntry" method="POST">
+		Add ACL entry:
+		<tal:listusers tal:condition="python:not(nouserlist)">
+			<select name="newuser">
+				<tal:block tal:repeat="u here/getPortalMembersGroupsIds">
+					<option tal:content="u" tal:attributes="value u">user</option>
+					<br/>
+				</tal:block>
+			</select>
+		</tal:listusers>
+		<tal:nolistusers tal:condition="nouserlist">
+			<input type="text" name="newuser"/>
+		</tal:nolistusers>
+		<select name="accessright">
+			<option value="PlominoReader">PlominoReader</option>
+			<option value="PlominoAuthor">PlominoAuthor</option>
+			<option value="PlominoEditor">PlominoEditor</option>
+			<option value="PlominoDesigner">PlominoDesigner</option>
+			<option value="PlominoManager">PlominoManager</option>
+		</select>
+		<input type="submit" class="context" value="Add"/>
+	</form>
+	<br/>
+	<h3>Generic users access rights</h3>
+	<form name="SetGenericAccess" action="setGenericAccess" method="POST">
+		<table class="listing">
+	    	<tr><th>Generic user</th><th>Current access right</th><th>Change to</th></tr>
+			<tr><td valign="top"><b>Anonymous</b></td>
+			<td><tal:block tal:content="here/AnomynousAccessRight" /></td>
+			<td>
+				<select name="anonymousaccessright">
+					<option value="NoAccess">No access</option>
+					<option value="PlominoReader">PlominoReader</option>
+					<option value="PlominoAuthor">PlominoAuthor</option>
+					<option value="PlominoEditor">PlominoEditor</option>
+					<option value="PlominoDesigner">PlominoDesigner</option>
+					<option value="PlominoManager">PlominoManager</option>
+				</select>
+			</td></tr>
+			<tr><td valign="top"><b>Authenticated</b></td>
+			<td><tal:block tal:content="here/AuthenticatedAccessRight" /></td>
+			<td>
+				<select name="authenticatedaccessright">
+					<option value="NoAccess">No access</option>
+					<option value="PlominoReader">PlominoReader</option>
+					<option value="PlominoAuthor">PlominoAuthor</option>
+					<option value="PlominoEditor">PlominoEditor</option>
+					<option value="PlominoDesigner">PlominoDesigner</option>
+					<option value="PlominoManager">PlominoManager</option>
+				</select>
+			</td></tr>
+		</table>
+		<input type="submit" class="context" value="Change"/>
+	</form>
+	<br/>
+	<h3>User roles</h3>
+	<table class="listing">
+		<tr><th>Roles</th><th>Users</th></tr>
+		<tal:block tal:repeat="r python:here.getUserRoles()">
+			<tr>
+				<td valign="top"><b><tal:block tal:content="r" /></b></td>
+				<td>
+					<tal:block tal:repeat="u python:here.getUsersForRoles(r)">
+						<span tal:content="u">user</span><br/>
+					</tal:block>
+				</td>
+			</tr>
+		</tal:block>
+	</table>
+	<form name="AddPlominoUserRole" action="addPlominoUserRole" method="POST">
+		<table><tr>
+			<td>Add new user role:</td>
+			<td><input type="text" name="newrole" /></td>
+			<td><input type="submit" class="context" value="Add"/></td></tr>
+		</table>
+	</form>
+	<form name="RemovePlominoUserRole" action="removePlominoUserRole" method="POST">
+		<table><tr>
+			<td>Remove user role:</td>
+			<td><select name="role">
+				<tal:block tal:repeat="r python:here.getUserRoles()">
+					<option tal:content="r" tal:attributes="value r">role</option>
+					<br/>
+				</tal:block>
+				</select>
+			</td>
+			<td><input type="submit" class="context" value="Remove"/></td></tr>
+		</table>
+	</form>
+	<form name="AddPlominoRoleToUser" action="addPlominoRoleToUser" method="POST">
+		<table><tr>
+			<td>Add role to user:</td><td>Role:</td>
+			<td><select name="role">
+				<tal:block tal:repeat="r python:here.getUserRoles()">
+					<option tal:content="r" tal:attributes="value r">role</option>
+					<br/>
+				</tal:block>
+				</select>
+			</td>
+			<td>User:</td>
+			<td>
+			<tal:listusers tal:condition="python:not(nouserlist)">
+				<select name="user">
+					<tal:block tal:repeat="u here/getPortalMembersGroupsIds">
+						<option tal:content="u" tal:attributes="value u">user</option>
+						<br/>
+					</tal:block>
+				</select>
+			</tal:listusers>
+			<tal:nolistusers tal:condition="nouserlist">
+				<input type="text" name="user"/>
+			</tal:nolistusers>
+			</td>
+			<td><input type="submit" class="context" value="Add"/></td></tr>
+		</table>
+	</form>
+	<form name="RemovePlominoRoleFromUser" action="removePlominoRoleFromUser" method="POST">
+		<table><tr>
+			<td>Remove role from user:</td><td>Role:</td>
+			<td><select name="role">
+				<tal:block tal:repeat="r python:here.getUserRoles()">
+					<option tal:content="r" tal:attributes="value r">role</option>
+					<br/>
+				</tal:block>
+				</select>
+			</td>
+			<td>User:</td>
+			<td>
+			<tal:listusers tal:condition="python:not(nouserlist)">
+			<select name="user">
+				<tal:block tal:repeat="u here/getPortalMembersGroupsIds">
+					<option tal:content="u" tal:attributes="value u">user</option>
+					<br/>
+				</tal:block>
+			</select>
+			</tal:listusers>
+			<tal:nolistusers tal:condition="nouserlist">
+				<input type="text" name="user"/>
+			</tal:nolistusers>
+			</td>
+			<td><input type="submit" class="context" value="Remove"/></td></tr>
+		</table>
+	</form>
+	
+	<h3>Specific action rights</h3>
+	<form name="ManageSpecificRights" action="manage_specificrights" method="POST">
+		<table class="listing">
+			<tr><th>Action</th><th>Access level</th><th>Change to</th></tr>
+			<tr>
+				<td><b>Delete document action</b></td>
+				<td><span tal:content="python:here.getSpecificRights('specific_deletedocument')">level</span></td>
+				<td><select name="specific_deletedocument">
+				    <option value="">Keep unchanged</option>
+					<option value="PlominoReader">PlominoReader</option>
+					<option value="PlominoAuthor">PlominoAuthor</option>
+					<option value="PlominoEditor">PlominoEditor</option>
+					<option value="PlominoDesigner">PlominoDesigner</option>
+					<option value="PlominoManager">PlominoManager</option>
+				</select>
+			</tr>
+		</table>
+		<input type="submit" class="context" value="Change rights"/>
+	</form>
+	
+   <div tal:replace="structure provider:plone.belowcontentbody" />
+
+    </tal:main-macro>
+</metal:main>
+
+</body>
+</html>
+
+
+
+

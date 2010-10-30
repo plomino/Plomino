@@ -1,0 +1,28 @@
+<?xml version="1.0"?>
+<import-steps>
+
+ 
+ <import-step 
+    id="CMFPlomino-Update-RoleMappings" 
+    handler="Products.CMFPlomino.setuphandlers.updateRoleMappings"
+    title="Update Workflow role mappings for CMFPlomino"
+    version="2009-01-18T14:27:49.907875">
+   <dependency step="plone-final"/>
+   updates the workflow role mappings for CMFPlomino
+ </import-step>
+
+ <import-step 
+    id="CMFPlomino-postInstall" 
+    handler="Products.CMFPlomino.setuphandlers.postInstall"
+    title="manual coded post-install for CMFPlomino"
+    version="2009-01-18T14:27:49.907875">
+   <dependency step="plone-final"/>
+   manual coded post-install for CMFPlomino
+ </import-step>
+
+<!-- ##code-section ADDITIONALSTEPS -->
+dependency step="plone-final"
+<!-- ##/code-section ADDITIONALSTEPS --> 
+
+</import-steps>
+ 

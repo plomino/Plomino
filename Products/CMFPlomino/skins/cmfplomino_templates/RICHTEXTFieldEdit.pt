@@ -1,0 +1,30 @@
+<tal:block tal:define="height python:options['field'].getSettings('height');">
+<div class="field"
+          tal:define="utool nocall:here/portal_url;
+                          portal utool/getPortalObject;
+                          portal_url portal/absolute_url;
+                          mtool nocall:portal/portal_membership;
+                          member mtool/getAuthenticatedMember;
+                          tabindex python:0;
+                          input options/fieldvalue;
+                          cleaninput python:test(input is None,'',input);
+                          text cleaninput;
+                          cooked_text cleaninput">
+<style type="text/css" media="all" tal:define="h height|string:300" tal:content="string:iframe.kupu-editor-iframe { height: ${h}px !important; }">
+    iframe.kupu-editor-iframe { height: 200px !important; }
+</style>
+	   <tal:editor define="inputname  options/fieldname;
+						   formname   string:edit_form;
+						   inputvalue python:text;
+						   cooked_inputvalue python:cooked_text;
+						   here_url here/absolute_url;">
+		 <div
+metal:use-macro="here/wysiwyg_support/macros/wysiwygEditorBox">
+		   The WYSIWYG code
+		 </div>
+	   </tal:editor>
+</div>
+</tal:block>
+
+
+

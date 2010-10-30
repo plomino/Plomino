@@ -1,0 +1,129 @@
+<?xml version="1.0"?>
+<object>
+ <resourcetypes>
+  <link_using_uids value="False"/>
+  <allow_captioned_images value="False"/>
+  <rooted value="False"/>
+  <linkable>
+   <element value="Topic"/>
+   <element value="Event"/>
+   <element value="File"/>
+   <element value="Folder"/>
+   <element value="Image"/>
+   <element value="Large Plone Folder"/>
+   <element value="News Item"/>
+   <element value="Document"/>
+  </linkable>
+  <containsobjects>
+   <element value="Folder"/>
+   <element value="Large Plone Folder"/>
+   <element value="Plone Site"/>
+  </containsobjects>
+  <containsanchors>
+   <element value="Event"/>
+   <element value="News Item"/>
+   <element value="Document"/>
+   <element value="ATRelativePathCriterion"/>
+  </containsanchors>
+  <imageobjects>
+   <element value="Image"/>
+  </imageobjects>
+  <customplugins>
+    <element value="ploneimage"/>
+    <element value="plonelink"/>
+  </customplugins>
+  <entity_encoding value="raw"/>
+ </resourcetypes>
+ <layout>
+  <styles>
+   <element value="Heading|h2"/>
+   <element value="Subheading|h3"/>
+   <element value="Literal|pre"/>
+   <element value="Discreet|span|discreet"/>
+   <element value="Pull-quote|blockquote|pullquote"/>
+   <element value="Call-out|p|callout"/>
+   <element value="Highlight|span|visualHighlight"/>
+   <element value="Odd row|tr|odd"/>
+   <element value="Even row|tr|even"/>
+   <element value="Heading cell|th|"/>
+   <element value="Page break (print only)|div|pageBreak"/>
+   <element value="Clear floats|div|visualClear"/>
+   <element value="Plomino Field|span|plominoFieldClass"/>
+   <element value="Plomino Action|span|plominoActionClass"/>
+   <element value="Plomino Hide-when formula|span|plominoHidewhenClass"/>
+   <element value="Plomino Subform|span|plominoSubformClass"/>
+  </styles>
+  <content_css value=""/>
+  <editor_width value="100%"/>
+  <editor_height value="400"/>
+  <directionality value="ltr"/>
+  <contextmenu value="True"/>
+  <autoresize value="False"/>
+  <tablestyles>
+   <element value="Subdued grid|plain"/>
+   <element value="Invisible grid|invisible"/>
+   <element value="Fancy listing|listing"/>
+   <element value="Fancy grid listing|grid listing"/>
+   <element value="Fancy vertical listing|vertical listing"/>
+  </tablestyles>
+  <resizing value="True"/>
+ </layout>
+ <toolbar>
+  <toolbar_anchor value="True"/>
+  <toolbar_hr value="False"/>
+  <toolbar_insertdate value="False"/>
+  <toolbar_style value="True"/>
+  <toolbar_cut value="False"/>
+  <toolbar_link value="True"/>
+  <toolbar_emotions value="False"/>
+  <toolbar_print value="False"/>
+  <toolbar_justifyright value="True"/>
+  <toolbar_replace value="False"/>
+  <toolbar_outdent value="True"/>
+  <toolbar_strikethrough value="False"/>
+  <toolbar_pasteword value="False"/>
+  <toolbar_width value="440"/>
+  <toolbar_paste value="False"/>
+  <toolbar_fullscreen value="True"/>
+  <toolbar_justifycenter value="True"/>
+  <toolbar_inserttime value="False"/>
+  <toolbar_sup value="False"/>
+  <toolbar_justifyleft value="True"/>
+  <toolbar_nonbreaking value="False"/>
+  <toolbar_redo value="False"/>
+  <toolbar_tablecontrols value="True"/>
+  <toolbar_unlink value="True"/>
+  <toolbar_visualchars value="False"/>
+  <toolbar_media value="False"/>
+  <toolbar_code value="True"/>
+  <toolbar_justifyfull value="True"/>
+  <toolbar_charmap value="False"/>
+  <toolbar_forecolor value="False"/>
+  <toolbar_copy value="False"/>
+  <toolbar_bullist value="True"/>
+  <toolbar_definitionlist value="True"/>
+  <toolbar_pastetext value="False"/>
+  <toolbar_visualaid value="False"/>
+  <toolbar_image value="True"/>
+  <toolbar_indent value="True"/>
+  <toolbar_removeformat value="False"/>
+  <toolbar_undo value="False"/>
+  <toolbar_iespell value="False"/>
+  <toolbar_search value="False"/>
+  <toolbar_save value="True"/>
+  <toolbar_advhr value="False"/>
+  <toolbar_sub value="False"/>
+  <toolbar_numlist value="True"/>
+  <toolbar_underline value="False"/>
+  <toolbar_italic value="True"/>
+  <toolbar_pagebreak value="False"/>
+  <toolbar_bold value="True"/>
+  <toolbar_backcolor value="False"/>
+  <toolbar_preview value="False"/>
+  <toolbar_attribs value="False"/>
+  <toolbar_external value="False"/>
+  <toolbar_cleanup value="False"/>
+  <customtoolbarbuttons>
+  </customtoolbarbuttons>
+ </toolbar>
+</object>

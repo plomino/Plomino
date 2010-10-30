@@ -1,0 +1,8 @@
+<span tal:define="fieldname python:options['fieldname'];
+                  fieldvalue python:options['fieldvalue'];
+                  hasparams fieldvalue|nothing;
+                  rows python:options['field'].getSettings('editrows');
+                  params python:test(fieldvalue, fieldvalue, {})">
+<textarea tal:attributes="name fieldname; rows rows"
+                   tal:content="python:'\n'.join([k+'='+params[k] for k in params.keys()])">params</textarea>
+</span>

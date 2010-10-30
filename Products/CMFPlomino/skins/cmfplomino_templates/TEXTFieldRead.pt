@@ -1,0 +1,1 @@
+<tal:block tal:define="v options/fieldvalue" tal:content="structure python:v.replace('\n','<br/>')">text</tal:block>

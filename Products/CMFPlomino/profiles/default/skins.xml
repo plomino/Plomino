@@ -1,0 +1,28 @@
+<?xml version="1.0"?>
+
+<object name="portal_skins"
+        meta_type="Plone Skins Tool"
+        allow_any="False"
+        cookie_persistence="False"
+        request_varname="plone_skin">
+
+ <object name="cmfplomino_templates"
+         meta_type="Filesystem Directory View"
+         directory="CMFPlomino/skins/cmfplomino_templates"/>
+ <object name="cmfplomino_images"
+         meta_type="Filesystem Directory View"
+         directory="CMFPlomino/skins/cmfplomino_images"/>
+ <object name="cmfplomino_styles"
+         meta_type="Filesystem Directory View"
+         directory="CMFPlomino/skins/cmfplomino_styles"/>
+ 
+ <skin-path name="*">
+  <layer insert-after="custom" 
+         name="cmfplomino_templates"/>
+  <layer insert-after="custom" 
+         name="cmfplomino_images"/>
+  <layer insert-after="custom" 
+         name="cmfplomino_styles"/>
+ </skin-path>
+
+</object>

@@ -1,0 +1,97 @@
+<?xml version="1.0"?>
+<object name="PlominoDatabase"
+        meta_type="Factory-based Type Information with dynamic views"
+        xmlns:i18n="http://xml.zope.org/namespaces/i18n">
+   
+ <property name="title">PlominoDatabase</property>
+ <property name="description"></property>
+ <property name="content_icon">PlominoDatabase.gif</property>
+ <property name="content_meta_type">PlominoDatabase</property>
+ <property name="product">CMFPlomino</property>
+ <property name="factory">addPlominoDatabase</property>
+ <property name="immediate_view">checkBeforeOpenDatabase</property>
+ <property name="global_allow">True</property>
+ <property name="filter_content_types">True</property>
+ <property name="allowed_content_types">
+   <element value="PlominoForm"/>
+   <element value="PlominoView"/>
+   <element value="PlominoDocument"/>
+   <element value="PlominoAgent"/>
+ </property>
+ <property name="allow_discussion">False</property>
+ <property name="default_view">checkBeforeOpenDatabase</property>
+ <property name="view_methods">
+  <element value="base_view"/>
+  <element value="checkBeforeOpenDatabase"/>
+ </property>
+ <property name="default_view_fallback">False</property>
+ <alias from="(Default)" to="(dynamic view)"/>
+ <alias from="view" to="(selected layout)"/>
+ <alias from="edit" to="base_edit"/>
+ <alias from="properties" to="base_metadata"/>
+ <alias from="sharing" to="folder_localrole_form"/>
+ <action title="Properties" 
+         action_id="metadata"
+         category="object" 
+         condition_expr=""
+         url_expr="string:${object_url}/properties" 
+         visible="True">
+  <permission value="Modify portal content"/>
+ </action>
+ <action title="About" 
+         action_id="about"
+         category="object" 
+         condition_expr="python:1"
+         url_expr="string:${object_url}/AboutDatabase" 
+         visible="True">
+  <permission value="View"/>
+ </action>
+ <action title="Edit" 
+         action_id="edit"
+         category="object" 
+         condition_expr="python:1"
+         url_expr="string:${object_url}/base_edit" 
+         visible="True">
+  <permission value="python:DESIGN_PERMISSION"/>
+ </action>
+ <action title="ACL" 
+         action_id="acl"
+         category="object" 
+         condition_expr="python:1"
+         url_expr="string:${object_url}/DatabaseACL" 
+         visible="True">
+  <permission value="python:ACL_PERMISSION"/>
+ </action>
+ <action title="Replication" 
+         action_id="replication"
+         category="object" 
+         condition_expr="python:1"
+         url_expr="string:${object_url}/DatabaseReplication" 
+         visible="True">
+  <permission value="python:EDIT_PERMISSION"/>
+ </action>
+ <action title="Design" 
+         action_id="design"
+         category="object" 
+         condition_expr="python:1"
+         url_expr="string:${object_url}/DatabaseDesign" 
+         visible="True">
+  <permission value="python:DESIGN_PERMISSION"/>
+ </action>
+ <action title="Using" 
+         action_id="using"
+         category="object" 
+         condition_expr="python:1"
+         url_expr="string:${object_url}/UsingDatabase" 
+         visible="True">
+  <permission value="View"/>
+ </action>
+ <action title="View" 
+         action_id="view"
+         category="object" 
+         condition_expr="python:1"
+         url_expr="string:${object_url}/checkBeforeOpenDatabase" 
+         visible="True">
+  <permission value="View"/>
+ </action>
+</object>

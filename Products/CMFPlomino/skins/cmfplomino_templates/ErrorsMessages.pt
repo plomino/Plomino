@@ -1,0 +1,22 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en"
+      lang="en"
+      metal:use-macro="here/main_template/macros/master"
+      i18n:domain="plone">
+<body>
+
+<metal:main fill-slot="main">
+    <div id="bodyContent" tal:define="asparam request/error|nothing">
+    	<h1 i18n:domain="CMFPlomino" i18n:translate="Validation failed">Validation failed</h1>
+		<ul id="error_list" tal:condition="not:asparam" tal:repeat="e options/errors">
+			<li tal:content="structure e">error message</li>
+		</ul>
+		<ul tal:condition="asparam">
+			<li tal:content="structure request/error">error message</li>
+		</ul>
+		<input type="button" class="context" onclick="history.back()" value="Go back" i18n:domain="CMFPlomino" i18n:attributes="value"/>
+	</div>
+</metal:main>
+
+</body>
+</html>
+

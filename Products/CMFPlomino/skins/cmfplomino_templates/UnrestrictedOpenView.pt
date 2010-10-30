@@ -1,0 +1,173 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en"
+	xmlns:tal="http://xml.zope.org/namespaces/tal"
+	xmlns:metal="http://xml.zope.org/namespaces/metal"
+	xmlns:i18n="http://xml.zope.org/namespaces/i18n" lang="en"
+	metal:use-macro="here/main_template/macros/master" i18n:domain="plone">
+<body>
+
+<metal:main fill-slot="main">
+	<tal:main-macro metal:define-macro="main"
+		tal:define="kssClassesView context/@@kss_field_decorator_view;
+	                       getKssClasses nocall:kssClassesView/getKssClassesInlineEditable;
+	                       templateId template/getId;">
+
+		<div tal:replace="structure provider:plone.abovecontenttitle" /><tal:block
+			tal:define="myF python:here;
+								b myF/ActionBarPosition|nothing;
+								hasReadPermission python:test(here.hasReadPermission(here)==True
+															and here.hasReadPermission(here.getParentDatabase())==True)">
+
+			<form name="plominoviewform">
+			<tal:block tal:condition="python:test(hasReadPermission==True)">
+				<tal:block tal:define="owner python:myF"
+					tal:condition="python:test((b and  myF.ActionBarPosition=='BOTTOM'),False, True)">
+					<span metal:use-macro="here/ActionBar/macros/ViewActionBar">
+					display view actions </span><br/>
+				</tal:block>
+
+			</tal:block>
+
+			<h1 class="documentFirstHeading" tal:content="here/Title">view
+			title</h1>
+
+
+			<div tal:replace="structure provider:plone.belowcontenttitle" />
+
+			<p tal:content="here/Description" class="documentDescription">description</p>
+
+			<tal:block tal:condition="python:test(hasReadPermission==True)">
+
+
+				<div tal:replace="structure provider:plone.abovecontentbody" />
+
+				<table tal:define="columns python:here.getColumns()" id="sortable"
+					class="plominoview" summary="Content listing"
+					i18n:attributes="summary summary_content_listing;">
+					<tr>
+						<th>&nbsp;&nbsp;</th>
+						<tal:block tal:repeat="c columns">
+							<th tal:condition="not: c/HiddenColumn|nothing">&nbsp;<span
+								tal:content="c/Title">Title</span>&nbsp;</th>
+						</tal:block>
+					</tr>
+					<tal:block tal:condition="python:test(here.Categorized)">
+						<!-- Categorized view -->
+						<tal:block
+							tal:define="categories python:here.getCategorizedColumnValues(columns[0].getColumnName())"
+							tal:repeat="cat categories">
+							<tal:block
+								tal:define="currentindex repeat/cat/index;
+														expand request/expand|python:'@';
+														expanded python:expand.find('@'+str(currentindex)+'@')>-1">
+								<tr>
+									<td class="even"><tal:block tal:condition="expanded">
+										<a href="#"
+											tal:attributes="href python:request.URL+'?expand='+expand.replace('@'+str(currentindex)+'@','@')">-</a>
+									</tal:block> <tal:block tal:condition="not: expanded">
+										<a href="#"
+											tal:attributes="href python:request.URL+'?expand='+expand.replace('@','@'+str(currentindex)+'@',1)">+</a>
+									</tal:block></td>
+									<td class="even"
+										style="text-align: left; text-transform: none"
+										tal:attributes="colspan python:len(columns)"><tal:block
+										tal:condition="python:test(cat[0]=='')">Not categorized</tal:block>
+									<span tal:content="python:cat[0]+' ('+str(cat[1])+')'" /></td>
+								</tr>
+								<tal:block tal:condition="expanded">
+									<tal:block
+										tal:repeat="doc python:here.getCategoryViewEntries(columns[0].getColumnName(), cat[0])">
+
+										<tal:block
+											tal:define="currentDoc python:here.getDocument(doc.getPath().split('/')[-1])">
+											<tr tal:define="oddrow repeat/doc/odd;
+															docurl python:doc.getPath().split('/')[-1]"
+												tal:attributes="class python:test(oddrow, 'even', 'odd');">
+												<td><input type="checkbox" name="sdoc" tal:attributes="value python:doc.getPath().split('/')[-1]" /></td>
+												<tal:block tal:repeat="c columns">
+													<td tal:condition="not: c/HiddenColumn|nothing"><tal:block
+														tal:condition="python:test(c!=columns[0])">
+														<a tal:attributes="href string:${docurl}"><span
+															tal:define="cname c/id;
+															vname here/id;
+															cvalue python:getattr(doc, here.getIndexKey(cname));"
+															tal:content="structure cvalue" ></span></a>
+													</tal:block></td>
+												</tal:block>
+											</tr>
+										</tal:block>
+									</tal:block>
+								</tal:block>
+							</tal:block>
+						</tal:block>
+					</tal:block>
+
+					<tal:block tal:condition="python:test(not(here.Categorized))">
+						<!-- Regular view -->
+
+						<tal:block
+							tal:define="listdocuments  python:here.getAllDocuments();
+												count python:len(listdocuments);
+												paramstart request/start|python:'1';
+												paramlimit request/limit|python:'100';
+												start python:int(paramstart);
+												limit python:int(paramlimit);
+												overlimit python:count>limit;
+												nextstart python:start+limit;
+												previousstart python:max(0,start-100);
+												">
+
+
+							<tal:loop
+								tal:repeat="doc python:listdocuments[start-1:start-1+limit]">
+								<tr tal:define="oddrow repeat/doc/odd;
+								docurl python:doc.getPath().split('/')[-1]"
+									tal:attributes="class python:test(oddrow, 'even', 'odd');">
+									<td><input type="checkbox" name="sdoc" tal:attributes="value python:doc.getPath().split('/')[-1]" /></td>
+									<tal:block tal:repeat="c columns">
+										<td tal:condition="not: c/HiddenColumn|nothing"><a tal:attributes="href string:${docurl}"><span
+											tal:define="cname c/id;
+																vname here/id;
+																cvalue python:getattr(doc, here.getIndexKey(cname));
+																"
+											tal:content="structure cvalue" ></span></a></td>
+									</tal:block>
+								</tr>
+							</tal:loop>
+							<tr>
+								<th tal:attributes="colspan python:len(columns)+1"><tal:block
+									tal:condition="python:start>1">
+									<a
+										tal:attributes="href python:'/'.join(context.getPhysicalPath())+'?start='+str(previousstart)+'&limit='+str(limit)">&lt;&lt;
+									Previous</a>
+								</tal:block> Documents <span tal:content="python:str(start)">start</span> to
+								<span tal:content="python:str(min(start+limit-1,count))">end</span>
+								of <span tal:content="count">count</span> <tal:block
+									tal:condition="python:start+limit<count">
+									<a
+										tal:attributes="href python:'/'.join(context.getPhysicalPath())+'?start='+str(nextstart)+'&limit='+str(limit)">Next
+									&gt;&gt;</a>
+								</tal:block></th>
+							</tr>
+						</tal:block>
+					</tal:block>
+				</table>
+
+				<tal:block tal:define="owner python:myF"
+					tal:condition="python:test((b and  myF.ActionBarPosition!='TOP'),True, False)">
+
+					<span metal:use-macro="here/ActionBar/macros/ViewActionBar">
+					display view actions </span>
+				</tal:block>
+			</tal:block>
+			<tal:block tal:condition="python:not(hasReadPermission==True)">
+				<p i18n:domain="CMFPlomino" i18n:translate="Please log in">Please log in</p>
+			</tal:block>
+			</form>
+		</tal:block>
+
+		<div tal:replace="structure provider:plone.belowcontentbody" />
+	</tal:main-macro>
+</metal:main>
+
+</body>
+</html>

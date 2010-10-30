@@ -1,0 +1,203 @@
+<span tal:define="widget python:options['field'].getSettings('widget');
+				selection python:options['selection'];
+				name python:options['fieldname'];
+				current python:options['fieldvalue']
+				">
+	<tal:widget tal:condition="python:test(widget=='SELECT')">
+		<select tal:attributes="name name"><tal:loop tal:repeat="v selection">
+			<option tal:define="l python:v.split('|')"
+				tal:attributes="value python:l[1]; selected python:test(current==l[1],1,0)"
+				tal:content="python:l[0]">value</option>
+		</tal:loop></select>
+	</tal:widget>
+	<tal:widget tal:condition="python:test(widget=='MULTISELECT')">
+		<select tal:attributes="name name" multiple="true" lines="4"><tal:loop tal:repeat="v selection">
+				<tal:block tal:define="l python:v.split('|')">
+					<option 
+						tal:attributes="value python:l[1]; selected python:test(current and l[1] in current,1,0)"
+						tal:content="python:l[0]">value</option>
+				</tal:block>
+		</tal:loop></select>
+	</tal:widget>
+	<tal:widget tal:condition="python:test(widget=='VIEW')" >
+		<table tal:define="sourceview python:options['field'].getSettings('sourceview');
+	                       v python:options['field'].getParentDatabase().getView(sourceview);
+	                       columns python:v.getColumns()">
+			<tr>
+				<th>&nbsp;&nbsp;</th>
+				<tal:block tal:repeat="c columns">
+					<th tal:condition="not: c/HiddenColumn|nothing">&nbsp;<span
+						tal:content="c/Title">Title</span>&nbsp;</th>
+				</tal:block>
+			</tr>
+			<tal:documents tal:define="listdocuments python:[d for d in v.getAllDocuments() if test(v.hasReadPermission(v.getParentDatabase().getDocument(d.getPath().split('/')[-1]))==True)];"
+						tal:repeat="doc listdocuments">
+				<tr tal:define="oddrow repeat/doc/odd"
+					tal:attributes="class python:test(oddrow, 'even', 'odd')">
+					<td><input type="checkbox" 
+					tal:attributes="name options/fieldname;
+							value python:doc.getPath();
+							checked python:test(current and doc.getPath() in current,1,0)">
+					</td>
+					<tal:block tal:repeat="c columns">
+						<td tal:condition="not: c/HiddenColumn|nothing"><span
+							tal:define="cname c/id;
+										vname v/id;
+										cvalue python:getattr(doc, v.getIndexKey(cname));
+										"
+							tal:content="structure cvalue" /></td>
+					</tal:block>
+				</tr>
+			</tal:documents>
+		</table>
+	</tal:widget>
+	
+	<tal:widget tal:condition="python:test(widget=='DYNAMICTABLE')"
+		tal:define="fieldid options/field/id;
+	    			data python:options['field'].getSettings().tojson(selection);
+	    			cols python:options['field'].getSettings().getJQueryColumns();
+	    			params python:options['field'].getSettings('dynamictableparam');
+	    			selected python:'|'.join(current);
+	    			">
+        <script type='text/javascript' tal:content="structure string:
+			var o_${fieldid}_DynamicTable;
+			jq(document).ready(function() {
+			    o_${fieldid}_DynamicTable = jq('#${fieldid}_table').dataTable( {
+			        'aaData': ${data},
+			        'aoColumns': ${cols},
+			        'aaSorting': [],
+			        'fnRowCallback': function (nRow, aData, iDisplayIndex) {
+			            var iId = aData[0];
+			            if ('${selected}'.indexOf(iId) != -1)
+			                jq(nRow).addClass('row_selected');
+			            return nRow;
+			        },
+       				'oLanguage': {
+       					'sUrl': '${context/DataTables/getLanguagePath}'
+					},
+			        ${params}
+			    });
+			 
+			    jq('#${fieldid}_table tbody tr').live('click', function () {
+			        var aData = o_${fieldid}_DynamicTable.fnGetData( this );
+			        var iId = aData[0];
+			        
+			        var docInput = document.getElementById('${fieldid}');
+			        
+			        var selectedDocs = docInput.value;
+			        selectedDocs = selectedDocs.indexOf(iId) == -1 ? selectedDocs + '|' + iId : selectedDocs.replace(iId + '|', '');
+			        docInput.value = selectedDocs;
+			        
+			        jq(this).toggleClass('row_selected');
+			    } );
+			});
+		"></script>
+        <table id='dynamictable_table' tal:attributes="id string:${name}_table" class="display"></table>
+        <div style="clear: both"></div>
+        <input type="hidden" tal:attributes="name options/fieldname; id string:${name};
+                                          value python:test(current is not None,'|'.join(current),'')"/>
+    </tal:widget>
+    
+	<tal:widget tal:condition="python:test(widget=='PICKLIST')"
+		tal:define="fieldid options/field/id;
+	    			data python:options['field'].getSettings().tojson(selection);
+	    			cols python:options['field'].getSettings().getJQueryColumns();
+	    			params python:options['field'].getSettings('dynamictableparam');
+	    			selected python:isinstance(current, basestring) and current or '|'.join(current);
+	    			colindex python:options['field'].getSettings().getColumnLabelIndex();
+	    			">
+        <script type='text/javascript' tal:content="structure string:
+		 	function ${name}_delete_row(elt) {
+				var rows = jq('#${name}_table_result > tbody > tr');
+				if (rows.length <= 1) {
+					jq('#${name}_table_result > tbody').append('<tr style=\'display: none\'><td><input type=\'hidden\' name=\'${name}\' value=\'\' /></td><td></td></tr>');
+				}
+				jq(elt).closest('tr').remove();
+		 		${name}_set_row_style();
+		 	}
+
+		 	function ${name}_add_row(data) {
+		 		var tablebody = jq('#${name}_table_result > tbody');
+		 		//if (tablebody.has('input[value=' + data[0] + ']').length == 0) {
+		 		if (jq('#${name}_table_result > tbody:has(input[value=' + data[0] + '])').length == 0) {
+		 			//tablebody.children().has('input[value=]').remove()
+		 			jq('#${name}_table_result > tbody > *:has(input[value=])').remove()
+			 		var row = jq('<tr><td><img alt=\'Remove\' src=\'list-remove.png\' style=\'cursor: pointer\' onclick=\'${name}_delete_row(this)\' />' +
+						 		'<input type=\'hidden\' name=\'${name}\' value=\'' + data[0] + '\' /></td>' +
+						 		'<td>' + data[${colindex} + 1] + '</td></tr>');
+			 		tablebody.append(row);
+		 		}
+		 		${name}_set_row_style();
+		 	}
+
+		 	function ${name}_set_row_style() {
+		 		var tablebody = jq('#${name}_table_result > tbody');
+		 		tablebody.children().removeClass('odd even');
+		 		tablebody.children(':even').addClass('odd');
+		 		tablebody.children(':odd').addClass('even');
+		 	}
+			
+			var o_${fieldid}_table;
+			jq(document).ready(function() {
+			    o_${fieldid}_table = jq('#${fieldid}_table').dataTable( {
+			        'aaData': ${data},
+			        'aoColumns': ${cols},
+			        'aaSorting': [],
+			        'fnInitComplete': function(oSettings) {
+			        	jq('#${fieldid}_table').closest('.wrapper').hide();
+				        
+				        for (var i = 0; i < oSettings.aoData.length; i++)
+				            if ('${selected}'.indexOf(oSettings.aoData[i]._aData[0]) != -1)
+					        	${name}_add_row(oSettings.aoData[i]._aData);
+			        },
+       				'oLanguage': {
+       					'sUrl': '${context/DataTables/getLanguagePath}'
+					},
+					'sDom': '<\'wrapper\'rtilp>',
+			        ${params}
+			    });
+			 
+			    jq('#${fieldid}_table tbody tr').live('click', function () {
+			    	${name}_add_row(o_${name}_table.fnGetData(this));
+			    } );
+
+			 	var close_ctrl = jq('#${fieldid}_table').closest('.picklist').children('img.close_button');
+
+			    var onTextChanged = function(value) {
+				    var table = jq('#${fieldid}_table');
+				    if (value) {
+			        	close_ctrl.show();
+			        	table.closest('.wrapper').slideDown();
+			    		o_${fieldid}_table.fnFilter(value);
+				    }
+				    else {
+				    	table.closest('.wrapper').slideUp();
+			        	close_ctrl.hide();
+				    }
+			    };
+
+			    close_ctrl.click( function () {
+			    	onTextChanged('');
+			    } );
+
+			    jq('#${name}_search').keyup( function() {
+			    	onTextChanged(this.value);
+			    } );
+			});
+		"></script>
+			
+		<table tal:attributes="id python:name + '_table_result'" class="plain">
+			<tbody></tbody>
+		</table>
+		
+		<div class="picklist">
+			<img src="dialog-close.png" alt="Close the dialog" title="Close the dialog" class="close_button" style="float: right; display: none" />
+				
+			<label tal:attributes="for string:${name}_search">Search</label>
+			<input type="text" tal:attributes="id string:${name}_search" />
+
+	        <table id='dynamictable_table' tal:attributes="id string:${name}_table" class="display"></table>
+	        <div style="clear: both"></div>
+        </div>
+    </tal:widget>
+</span>

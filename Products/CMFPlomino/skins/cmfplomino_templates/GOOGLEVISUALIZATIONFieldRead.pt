@@ -1,0 +1,9 @@
+<tal:visualization tal:define="fieldvalue python:options['fieldvalue'];
+                        googlejsapi here/REQUEST/googlejsapi|nothing;
+                        jscode python:options['field'].getSettings().jscode(fieldvalue);
+                        div_id python:options['field'].getSettings('chartid')+'_div';">
+    
+    <script type='text/javascript' tal:content="structure jscode"></script>
+    <div id='googlevisualization_div' tal:attributes="id div_id"></div>
+    
+</tal:visualization>
