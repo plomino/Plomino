@@ -4,7 +4,7 @@
  <!-- ##code-section cssregistry.xml -->
   <stylesheet title="plomino.css"
              cacheable="True"
-             compression="save"
+             compression="safe"
              cookable="True"
              enabled="1"
              expression=""
@@ -15,7 +15,7 @@
 
   <stylesheet title="datatable.css"
              cacheable="True"
-             compression="save"
+             compression="safe"
              cookable="True"
              enabled="1"
              expression=""
