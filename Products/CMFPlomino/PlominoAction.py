@@ -20,6 +20,7 @@ import interfaces
 from Products.CMFDynamicViewFTI.browserdefault import BrowserDefaultMixin
 
 from Products.CMFPlomino.config import *
+from exceptions import PlominoScriptException
 
 ##code-section module-header #fill in your manual code here
 from Products.Archetypes.public import *
@@ -169,8 +170,9 @@ class PlominoAction(BaseContent, BrowserDefaultMixin):
             if returnurl is None or returnurl=='':
                 returnurl=plominoReturnURL
             REQUEST.RESPONSE.redirect(returnurl)
-        except Exception, e:
-            return "Error: %s \nCode->\n%s" % (e, self.Content())
+        except PlominoScriptException, e:
+            db.writeMessageOnPage("Action failed", REQUEST, error = True)
+            REQUEST.RESPONSE.redirect(plominoReturnURL)
 
     security.declarePublic('at_post_edit_script')
     def at_post_edit_script(self):

@@ -281,7 +281,7 @@ class PlominoForm(ATFolder):
         if valid is None or valid=='':
             doc.saveDocument(REQUEST, True)
         else:
-            db.writeMessageOnPage(valid, REQUEST, '', False)
+            db.writeMessageOnPage(valid, REQUEST, False)
             REQUEST.RESPONSE.redirect(db.absolute_url())
 
     security.declarePublic('getFields')

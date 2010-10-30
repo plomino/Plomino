@@ -115,7 +115,7 @@ class PlominoReplicationManager(Persistent):
                             error = True
                         
                         #write message
-                        self.writeMessageOnPage(infoMsg, REQUEST, '', error)
+                        self.writeMessageOnPage(infoMsg, REQUEST, error)
                     
                     #no end message
                     error = False
@@ -145,7 +145,7 @@ class PlominoReplicationManager(Persistent):
                 error = True
                 
         #write message
-        self.writeMessageOnPage(infoMsg, REQUEST, '', error)
+        self.writeMessageOnPage(infoMsg, REQUEST, error)
         
         #redirect
         REQUEST.RESPONSE.redirect(self.absolute_url()+'/DatabaseReplication')
@@ -852,7 +852,7 @@ class PlominoReplicationManager(Persistent):
             error = True
             
         #write message
-        self.writeMessageOnPage(infoMsg, REQUEST, '', error)
+        self.writeMessageOnPage(infoMsg, REQUEST, error)
         
         #redirect
         REQUEST.RESPONSE.redirect(self.absolute_url()+'/DatabaseReplication')
@@ -1134,7 +1134,7 @@ class PlominoReplicationManager(Persistent):
         """
         """
         (imports, errors) = self.importFromXML(REQUEST=REQUEST)
-        self.writeMessageOnPage("%d documents imported successfully, %d document(s) not imported" % (imports, errors), REQUEST, "", False)
+        self.writeMessageOnPage("%d documents imported successfully, %d document(s) not imported" % (imports, errors), REQUEST, False)
         REQUEST.RESPONSE.redirect(self.absolute_url()+"/DatabaseReplication")
                 
     security.declareProtected(REMOVE_PERMISSION, 'importFromXML')
