@@ -109,6 +109,7 @@ tr.collapsed, tr.expanded {
 a.viewlink {
 	display: block;
 	text-decoration: none;
+	border: none !important;
 }
 
 /* </dtml-with> */
