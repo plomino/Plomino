@@ -285,7 +285,7 @@ class PlominoDocument(ATFolder):
             except PlominoScriptException, e:
                 if self.REQUEST:
                     db.writeMessageOnPage('Document has been saved but onSave event failed.', self.REQUEST, error = True)
-                self.REQUEST.RESPONSE.redirect(self.url())
+                    self.REQUEST.RESPONSE.redirect(self.url())
 
         if refresh_index:
             # update index
