@@ -19,6 +19,7 @@ import interfaces
 from Products.ATContentTypes.content.folder import ATFolder
 from Products.CMFDynamicViewFTI.browserdefault import BrowserDefaultMixin
 
+from exceptions import PlominoScriptException
 from Products.CMFPlomino.config import *
 
 ##code-section module-header #fill in your manual code here
@@ -357,8 +358,9 @@ class PlominoDatabase(ATFolder, PlominoAccessControl, PlominoDesignManager, Plom
             try:
                 form = doc.getForm()
                 self.runFormulaScript("form_"+form.id+"_ondelete", doc, form.onDeleteDocument)
-            except Exception:
-                pass
+            except PlominoScriptException, e:
+                if self.REQUEST:
+                    self.writeMessageOnPage('Document has been deleted, but onDelete event failed.', self.REQUEST, error = True)
 
             self.getIndex().unindexDocument(doc)
             event.notify(ObjectRemovedEvent(doc, self.documents, doc.id))
