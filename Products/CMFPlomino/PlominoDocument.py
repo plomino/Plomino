@@ -21,6 +21,7 @@ from Products.CMFDynamicViewFTI.browserdefault import BrowserDefaultMixin
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import normalizeString
 
+from exceptions import PlominoScriptException
 from Products.CMFPlomino.config import *
 
 ##code-section module-header #fill in your manual code here
@@ -279,7 +280,12 @@ class PlominoDocument(ATFolder):
 
         # execute the onSaveDocument code of the form
         if form and onSaveEvent:
-            self.runFormulaScript("form_"+form.id+"_onsave", self, form.onSaveDocument)
+            try:
+                self.runFormulaScript("form_"+form.id+"_onsave", self, form.onSaveDocument)
+            except PlominoScriptException, e:
+                if self.REQUEST:
+                    db.writeMessageOnPage('Document has been saved but onSave event failed.', self.REQUEST, error = True)
+                self.REQUEST.RESPONSE.redirect(self.url())
 
         if refresh_index:
             # update index
