@@ -20,15 +20,14 @@ from Products.ATContentTypes.content.folder import ATFolder
 from Products.CMFDynamicViewFTI.browserdefault import BrowserDefaultMixin
 
 from Products.CMFPlomino.config import *
+from exceptions import PlominoScriptException
 
-##code-section module-header #fill in your manual code here
 from AccessControl import Unauthorized
 import csv, cStringIO
 from Acquisition import aq_inner
 import PlominoDocument
 
 import simplejson as json
-##/code-section module-header
 
 schema = Schema((
 
@@ -291,7 +290,9 @@ class PlominoView(ATFolder):
                 try:
                     #result = RunFormula(target, obj_a.getHidewhen())
                     result = self.runFormulaScript("action_"+obj_a.getParentNode().id+"_"+obj_a.id+"_hidewhen", target, obj_a.Hidewhen)
-                except Exception:
+                except PlominoScriptException, e:
+                    if self.REQUEST:
+                        self.writeMessageOnPage('"%s" action hide-when failed' % obj_a.Title(), self.REQUEST, error = True)
                     #if error, we hide anyway
                     result = True
                 if not result:
@@ -313,7 +314,9 @@ class PlominoView(ATFolder):
         try:
             #result = RunFormula(doc, self.getFormFormula())
             result = self.runFormulaScript("view_"+self.id+"_formformula", doc, self.FormFormula)
-        except Exception:
+        except PlominoScriptException, e:
+            if self.REQUEST:
+                self.writeMessageOnPage('"%s" form formula failed' % self.Title(), self.REQUEST, error = True)
             result = ""
         return result
 
