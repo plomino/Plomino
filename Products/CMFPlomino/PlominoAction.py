@@ -145,8 +145,8 @@ class PlominoAction(BaseContent, BrowserDefaultMixin):
             try:
                 redirecturl=self.runFormulaScript("action_"+self.getParentNode().id+"_"+self.id+"_script", target, self.Content)
                 return str(redirecturl)
-            except Exception, e:
-                return "javascript:alert(\"Error: %s\")" % ('run script error in redirect action ' + self.Title())
+            except PlominoScriptException, e:
+                return "javascript:alert(\"Error: %s\")" % ('formula error in redirect action ' + self.Title())
         else:
             return '.'
 
