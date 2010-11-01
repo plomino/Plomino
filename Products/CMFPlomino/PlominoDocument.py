@@ -310,9 +310,10 @@ class PlominoDocument(ATFolder):
             if not form.getOnOpenDocument()=="":
                 #RunFormula(self, form.getOnOpenDocument())
                 valid = self.runFormulaScript("form_"+form.id+"_onopen", self, form.onOpenDocument)
-        except Exception:
-            pass
-
+        except PlominoScriptException, e:
+            if self.REQUEST:
+                db.writeMessageOnPage('onOpen event failed', self.REQUEST, error = True)
+                
         if not valid:
             # we use the specified form's layout
             html_content = form.displayDocument(self, editmode)
