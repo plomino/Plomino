@@ -491,7 +491,12 @@ class PlominoForm(ATFolder):
         # execute the beforeCreateDocument code of the form
         valid = ''
         if hasattr(self,'beforeCreateDocument') and self.beforeCreateDocument is not None:
-            valid = self.runFormulaScript("form_"+self.id+"_beforecreate", self, self.beforeCreateDocument)
+            try:
+                valid = self.runFormulaScript("form_"+self.id+"_beforecreate", self, self.beforeCreateDocument)
+            except PlominoScriptException, e:
+                if self.REQUEST:
+                    self.writeMessageOnPage('beforeCreate formula failed', self.REQUEST, error = True)
+            
         if valid is None or valid=='' or self.hasDesignPermission(self):
             return self.displayDocument(None, True, True, request=request)
         else:
