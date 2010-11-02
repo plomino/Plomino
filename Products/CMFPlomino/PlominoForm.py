@@ -317,7 +317,9 @@ class PlominoForm(ATFolder):
                 try:
                     #result = RunFormula(target, obj_a.getHidewhen())
                     result = self.runFormulaScript("action_"+self.id+"_"+obj_a.id+"_hidewhen", target, obj_a.Hidewhen)
-                except Exception:
+                except PlominoScriptException, e:
+                    if self.REQUEST:
+                        self.writeMessageOnPage('"%s" hide-when formula failed' % obj_a.Title(), self.REQUEST, error = True)
                     #if error, we hide anyway
                     result = True
                 if not result:
