@@ -18,7 +18,7 @@ from zope.interface import implements
 import interfaces
 
 from Products.CMFDynamicViewFTI.browserdefault import BrowserDefaultMixin
-
+from exceptions import PlominoScriptException
 from Products.CMFPlomino.config import *
 
 schema = Schema((
@@ -79,7 +79,8 @@ class PlominoAgent(BaseContent, BrowserDefaultMixin):
         try:
             result = self.runFormulaScript("agent_"+self.id, plominoContext, self.Content, True, *args)
         except Exception, e:
-            result = "Error: %s \nCode->\n%s" % (e, self.Content())
+            self.reportError('Agent failed.')
+            result = None
             
         return result
         
@@ -95,7 +96,7 @@ class PlominoAgent(BaseContent, BrowserDefaultMixin):
                 if r is not None:
                     plominoReturnURL=r
                 REQUEST.RESPONSE.redirect(plominoReturnURL)
-        except Exception, e:
+        except PlominoScriptException, e:
             return "Error: %s \nCode->\n%s" % (e, self.Content())
 
 

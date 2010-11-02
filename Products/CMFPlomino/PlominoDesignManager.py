@@ -512,7 +512,17 @@ class PlominoDesignManager(Persistent):
             for msg in infoMsg:
                 if msg:
                     plone_tools.addPortalMessage(msg, msgType, REQUEST)
-                  
+
+    security.declarePublic('getRenderingTemplate')
+    def reportError(self, message, REQUEST=None):
+        """
+        """
+        if self.REQUEST:
+            REQUEST = self.REQUEST
+        if REQUEST:
+            plone_tools = getToolByName(self, 'plone_utils')
+            plone_tools.addPortalMessage(message, 'error', REQUEST)
+            
     security.declarePublic('getRenderingTemplate')
     def getRenderingTemplate(self, templatename):
         """

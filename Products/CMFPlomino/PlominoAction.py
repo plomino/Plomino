@@ -171,7 +171,7 @@ class PlominoAction(BaseContent, BrowserDefaultMixin):
                 returnurl=plominoReturnURL
             REQUEST.RESPONSE.redirect(returnurl)
         except PlominoScriptException, e:
-            db.writeMessageOnPage('"%s" action failed' % self.Title(), REQUEST, error = True)
+            self.reportError('"%s" action failed' % self.Title(), REQUEST)
             REQUEST.RESPONSE.redirect(plominoReturnURL)
 
     security.declarePublic('at_post_edit_script')

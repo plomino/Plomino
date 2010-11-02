@@ -250,7 +250,11 @@ class PlominoDocument(ATFolder):
                 mode = f.getFieldMode()
                 fieldName = f.id
                 if mode=="COMPUTED" or (mode=="CREATION" and creation):
-                    result = self.runFormulaScript("field_"+f.getParentNode().id+"_"+f.id+"_formula", self, f.Formula)
+                    try:
+                        result = self.runFormulaScript("field_"+f.getParentNode().id+"_"+fieldName+"_formula", self, f.Formula)
+                    except PlominoScriptException, e:
+                        self.reportError('%s field formula failed' % fieldName)
+                        result = None
                     self.setItem(fieldName, result)
                 else:
                     # computed for display field are not stored
@@ -259,7 +263,8 @@ class PlominoDocument(ATFolder):
             # compute the document title
             try:
                 result = self.runFormulaScript("form_"+form.id+"_title", self, form.getDocumentTitle)
-            except Exception:
+            except PlominoScriptException, e:
+                self.reportError('Title formula failed')
                 result = ""
             if not result:
                 result = form.Title()
@@ -284,7 +289,7 @@ class PlominoDocument(ATFolder):
                 self.runFormulaScript("form_"+form.id+"_onsave", self, form.onSaveDocument)
             except PlominoScriptException, e:
                 if self.REQUEST:
-                    db.writeMessageOnPage('Document has been saved but onSave event failed.', self.REQUEST, error = True)
+                    self.reportError('Document has been saved but onSave event failed.')
                     self.REQUEST.RESPONSE.redirect(self.url())
 
         if refresh_index:
@@ -311,8 +316,7 @@ class PlominoDocument(ATFolder):
                 #RunFormula(self, form.getOnOpenDocument())
                 valid = self.runFormulaScript("form_"+form.id+"_onopen", self, form.onOpenDocument)
         except PlominoScriptException, e:
-            if self.REQUEST:
-                db.writeMessageOnPage('onOpen event failed', self.REQUEST, error = True)
+            self.reportError('onOpen event failed')
                 
         if not valid:
             # we use the specified form's layout
@@ -387,7 +391,8 @@ class PlominoDocument(ATFolder):
         try:
             #result = RunFormula(self, v.SelectionFormula())
             result = self.runFormulaScript("view_"+v.id+"_selection", self, v.SelectionFormula)
-        except Exception:
+        except PlominoScriptException, e:
+            self.reportError('View selection formula failed')
             result = False
         return result
 
@@ -401,7 +406,8 @@ class PlominoDocument(ATFolder):
             c = v.getColumn(columnname)
             #result = RunFormula(self, c.Formula())
             result = self.runFormulaScript("column_"+v.id+"_"+c.id+"_formula", self, c.Formula)
-        except Exception:
+        except PlominoScriptException, e:
+            self.reportError('"%s" column formula failed' % c.Title())
             result = None
         return result
 

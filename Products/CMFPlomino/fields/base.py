@@ -14,6 +14,8 @@ from zope.interface import Interface, implements
 from zope.annotation.interfaces import IAnnotations
 from persistent.dict import PersistentDict
 
+from Products.CMFPlomino.exceptions import PlominoScriptException
+
 import simplejson as json
 
 class IBaseField(Interface):
@@ -71,7 +73,10 @@ class BaseField(object):
         if mode=="EDITABLE":
             if doc is None:
                 if creation and not self.context.Formula()=="":
-                    fieldValue = db.runFormulaScript("field_"+form.id+"_"+fieldName+"_formula", target, self.context.Formula)
+                    try:
+                        fieldValue = db.runFormulaScript("field_"+form.id+"_"+fieldName+"_formula", target, self.context.Formula)
+                    except PlominoScriptException, e:
+                        db.reportError('%s field formula failed' % fieldName)
                 elif request is None:
                     fieldValue = ""
                 else:
@@ -89,13 +94,18 @@ class BaseField(object):
                 fieldValue = doc.getItem(fieldName)
 
         if mode=="DISPLAY" or mode=="COMPUTED":
-            fieldValue = db.runFormulaScript("field_"+form.id+"_"+fieldName+"_formula", target, self.context.Formula)
-
+            try:
+                fieldValue = db.runFormulaScript("field_"+form.id+"_"+fieldName+"_formula", target, self.context.Formula)
+            except PlominoScriptException, e:
+                db.reportError('%s field formula failed' % fieldName)
         if mode=="CREATION":
             if creation:
                 # Note: on creation, there is no doc, we use self as param
                 # in formula
-                fieldValue = db.runFormulaScript("field_"+form.id+"_"+fieldName+"_formula", form, self.context.Formula)
+                try:
+                    fieldValue = db.runFormulaScript("field_"+form.id+"_"+fieldName+"_formula", form, self.context.Formula)
+                except PlominoScriptException, e:
+                    db.reportError('%s field formula failed' % fieldName)
             else:
                 fieldValue = doc.getItem(fieldName)
         

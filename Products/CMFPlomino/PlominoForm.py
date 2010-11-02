@@ -281,7 +281,7 @@ class PlominoForm(ATFolder):
         try:
             valid = self.runFormulaScript("form_"+self.id+"_oncreate", doc, self.onCreateDocument)
         except PlominoScriptException, e:
-            self.writeMessageOnPage('onCreate formula failed', REQUEST, error = True)
+            self.reportError('onCreate formula failed', REQUEST)
         
         if valid is None or valid=='':
             doc.saveDocument(REQUEST, True)
@@ -322,8 +322,7 @@ class PlominoForm(ATFolder):
                     #result = RunFormula(target, obj_a.getHidewhen())
                     result = self.runFormulaScript("action_"+self.id+"_"+obj_a.id+"_hidewhen", target, obj_a.Hidewhen)
                 except PlominoScriptException, e:
-                    if self.REQUEST:
-                        self.writeMessageOnPage('"%s" hide-when formula failed' % obj_a.Title(), self.REQUEST, error = True)
+                    self.reportError('"%s" hide-when formula failed' % obj_a.Title())
                     #if error, we hide anyway
                     result = True
                 if not result:
@@ -435,8 +434,7 @@ class PlominoForm(ATFolder):
                     target = doc
                 result = self.runFormulaScript("hidewhen_"+self.id+"_"+hidewhen.id+"_formula", target, hidewhen.Formula)
             except PlominoScriptException, e:
-                if self.REQUEST:
-                    self.writeMessageOnPage('%s hide-when formula failed' % hidewhen.id, self.REQUEST, error = True)
+                self.reportError('%s hide-when formula failed' % hidewhen.id)
                 #if error, we hide anyway
                 result = True
             start = '<span class="plominoHidewhenClass">start:'+hidewhenName+'</span>'
@@ -479,7 +477,7 @@ class PlominoForm(ATFolder):
                 try:
                     isHidden = self.runFormulaScript("hidewhen_"+self.id+"_"+hidewhen.id+"_formula", target, hidewhen.Formula)
                 except PlominoScriptException, e:
-                    self.writeMessageOnPage('%s hide-when formula failed' % hidewhen.id, REQUEST, error = True)
+                    self.reportError('%s hide-when formula failed' % hidewhen.id, REQUEST)
                     #if error, we hide anyway
                     isHidden = True
                 result[hidewhen.id] = isHidden 
@@ -503,8 +501,7 @@ class PlominoForm(ATFolder):
             try:
                 valid = self.runFormulaScript("form_"+self.id+"_beforecreate", self, self.beforeCreateDocument)
             except PlominoScriptException, e:
-                if self.REQUEST:
-                    self.writeMessageOnPage('beforeCreate formula failed', self.REQUEST, error = True)
+                self.reportError('beforeCreate formula failed')
             
         if valid is None or valid=='' or self.hasDesignPermission(self):
             return self.displayDocument(None, True, True, request=request)
@@ -618,13 +615,13 @@ class PlominoForm(ATFolder):
         searchformula=self.getSearchFormula()
         if searchformula:
             filteredResults = []
-            for doc in results:
-                try:
+            try:
+                for doc in results:
                     valid = self.runFormulaScript("form_"+self.id+"_searchformula", doc.getObject(), self.SearchFormula)
-                except Exception, e:
-                    valid = False
-                if valid:
-                    filteredResults.append(doc)
+                    if valid:
+                        filteredResults.append(doc)
+            except PlominoScriptException, e:
+                self.reportError('Search formula failed')
             results = filteredResults
 
         return self.OpenForm(searchresults=results)
@@ -655,8 +652,7 @@ class PlominoForm(ATFolder):
                     try:
                         s = self.runFormulaScript("field_"+self.id+"_"+f.id+"_ValidationFormula", tmp, f.ValidationFormula)
                     except PlominoScriptException, e:
-                        if self.REQUEST:
-                            self.writeMessageOnPage('%s validation formula failed' % f.id, self.REQUEST, error = True)
+                        self.reportError('%s validation formula failed' % f.id)
                     if not s=='':
                         errors.append(s)
 
