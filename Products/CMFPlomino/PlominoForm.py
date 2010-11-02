@@ -428,7 +428,9 @@ class PlominoForm(ATFolder):
                 else:
                     target = doc
                 result = self.runFormulaScript("hidewhen_"+self.id+"_"+hidewhen.id+"_formula", target, hidewhen.Formula)
-            except Exception:
+            except PlominoScriptException, e:
+                if self.REQUEST:
+                    self.writeMessageOnPage('%s hide-when formula failed' % hidewhen.id, self.REQUEST, error = True)
                 #if error, we hide anyway
                 result = True
             start = '<span class="plominoHidewhenClass">start:'+hidewhenName+'</span>'
@@ -470,7 +472,8 @@ class PlominoForm(ATFolder):
             if getattr(hidewhen, 'isDynamicHidewhen', False):
                 try:
                     isHidden = self.runFormulaScript("hidewhen_"+self.id+"_"+hidewhen.id+"_formula", target, hidewhen.Formula)
-                except Exception:
+                except PlominoScriptException, e:
+                    self.writeMessageOnPage('%s hide-when formula failed' % hidewhen.id, REQUEST, error = True)
                     #if error, we hide anyway
                     isHidden = True
                 result[hidewhen.id] = isHidden 
