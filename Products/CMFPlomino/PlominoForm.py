@@ -30,6 +30,7 @@ import simplejson as json
 
 from Products.CMFCore.utils import getToolByName
 
+from exceptions import PlominoScriptException
 import PlominoDocument
 from PlominoDocument import TemporaryDocument
 
@@ -639,8 +640,9 @@ class PlominoForm(ATFolder):
                     s=''
                     try:
                         s = self.runFormulaScript("field_"+self.id+"_"+f.id+"_ValidationFormula", tmp, f.ValidationFormula)
-                    except:
-                        pass
+                    except PlominoScriptException, e:
+                        if self.REQUEST:
+                            self.writeMessageOnPage('%s validation formula failed' % f.id, self.REQUEST, error = True)
                     if not s=='':
                         errors.append(s)
 
