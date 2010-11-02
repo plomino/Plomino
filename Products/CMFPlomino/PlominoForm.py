@@ -278,7 +278,11 @@ class PlominoForm(ATFolder):
         
         # execute the onCreateDocument code of the form
         valid = ''
-        valid = self.runFormulaScript("form_"+self.id+"_oncreate", doc, self.onCreateDocument)
+        try:
+            valid = self.runFormulaScript("form_"+self.id+"_oncreate", doc, self.onCreateDocument)
+        except PlominoScriptException, e:
+            self.writeMessageOnPage('onCreate formula failed', REQUEST, error = True)
+        
         if valid is None or valid=='':
             doc.saveDocument(REQUEST, True)
         else:
