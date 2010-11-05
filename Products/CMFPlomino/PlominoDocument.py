@@ -514,11 +514,15 @@ class PlominoDocument(ATFolder):
                     storage.set(filename, self, tmpfile);
                     contenttype=storage.get(filename,self).getContentType()
                 elif HAS_BLOB:
-                    blob = BlobWrapper()
-                    file = blob.getBlob().open('w')
-                    file.write(submittedValue.read())
                     submittedValue.seek(0)
                     contenttype = guessMimetype(submittedValue, filename)
+                    try:
+                        blob = BlobWrapper(contenttype)
+                    except:
+                        # BEFORE PLONE 4.0.1
+                        blob = BlobWrapper()
+                    file = blob.getBlob().open('w')
+                    file.write(submittedValue.read())
                     file.close()
                     blob.setFilename(filename)
                     blob.setContentType(contenttype)
