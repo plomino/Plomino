@@ -355,11 +355,12 @@ class PlominoDatabase(ATFolder, PlominoAccessControl, PlominoDesignManager, Plom
             raise Unauthorized, "You cannot delete this document."
         else:
             # execute the onDeleteDocument code of the form
-            try:
-                form = doc.getForm()
-                self.runFormulaScript("form_"+form.id+"_ondelete", doc, form.onDeleteDocument)
-            except PlominoScriptException, e:
-                self.reportError('Document has been deleted, but onDelete event failed.')
+            form = doc.getForm()
+            if form:
+                try:
+                    self.runFormulaScript("form_"+form.id+"_ondelete", doc, form.onDeleteDocument)
+                except PlominoScriptException, e:
+                    self.reportError('Document has been deleted, but onDelete event failed.')
 
             self.getIndex().unindexDocument(doc)
             event.notify(ObjectRemovedEvent(doc, self.documents, doc.id))
