@@ -20,6 +20,7 @@ from dictionaryproperty import DictionaryProperty
 from Products.Five.formlib.formbase import EditForm
 
 from base import IBaseField, BaseField
+from Products.CMFPlomino.exceptions import PlominoScriptException
 
 import simplejson as json
 
@@ -81,7 +82,11 @@ class SelectionField(BaseField):
                 obj = self.context
             else:
                 obj = doc
-            s = self.context.runFormulaScript("field_"+self.context.getParentNode().id+"_"+self.context.id+"_SelectionListFormula", obj, lambda: f)
+            try:
+                s = self.context.runFormulaScript("field_"+self.context.getParentNode().id+"_"+self.context.id+"_SelectionListFormula", obj, lambda: f)
+            except PlominoScriptException, e:
+                self.context.reportError('%s field selection list formula failed' % self.context.id)
+                s = None
             if s is None:
                 s = []
 

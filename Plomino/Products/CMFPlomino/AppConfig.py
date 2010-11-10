@@ -43,7 +43,7 @@ FIELD_TYPES={"TEXT": ["Text", "ZCTextIndex"],
              #"DATAGRID": ["Datagrid", "ZCTextIndex"],
              }
 
-FIELD_MODES = [["EDITABLE", "Editable"], ["COMPUTED", "Computed"], ["CREATION", "Computed on creation"], ["DISPLAY", "Computed for display"]]
+FIELD_MODES = [["EDITABLE", "Editable"], ["COMPUTED", "Computed"], ["CREATION", "Computed on creation"], ["DISPLAY", "Computed for display"], ["COMPUTEDONSAVE", "Computed on save"],]
 
 #FCKeditor configuration styles
 FCK_STYLES = '''

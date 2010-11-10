@@ -20,6 +20,7 @@ import interfaces
 from Products.CMFDynamicViewFTI.browserdefault import BrowserDefaultMixin
 
 from Products.CMFPlomino.config import *
+from exceptions import PlominoScriptException
 
 ##code-section module-header #fill in your manual code here
 from Products.Archetypes.public import *
@@ -144,8 +145,8 @@ class PlominoAction(BaseContent, BrowserDefaultMixin):
             try:
                 redirecturl=self.runFormulaScript("action_"+self.getParentNode().id+"_"+self.id+"_script", target, self.Content)
                 return str(redirecturl)
-            except Exception, e:
-                return "javascript:alert(\"Error: %s\")" % ('run script error in redirect action ' + self.Title())
+            except PlominoScriptException, e:
+                return "javascript:alert(\"Error: %s\")" % ('formula error in redirect action ' + self.Title())
         else:
             return '.'
 
@@ -169,8 +170,9 @@ class PlominoAction(BaseContent, BrowserDefaultMixin):
             if returnurl is None or returnurl=='':
                 returnurl=plominoReturnURL
             REQUEST.RESPONSE.redirect(returnurl)
-        except Exception, e:
-            return "Error: %s \nCode->\n%s" % (e, self.Content())
+        except PlominoScriptException, e:
+            self.reportError('"%s" action failed' % self.Title(), REQUEST)
+            REQUEST.RESPONSE.redirect(plominoReturnURL)
 
     security.declarePublic('at_post_edit_script')
     def at_post_edit_script(self):

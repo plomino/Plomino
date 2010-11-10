@@ -38,6 +38,7 @@ import sys
 import transaction
 
 from migration.migration import migrate
+from exceptions import PlominoScriptException
 
 # get AT specific schemas for each Plomino class
 from Products.CMFPlomino.PlominoForm import schema as form_schema
@@ -173,7 +174,7 @@ class PlominoDesignManager(Persistent):
         logger.info(msg)
         
         if REQUEST:
-            self.writeMessageOnPage(MSG_SEPARATOR.join(report), REQUEST, "", False)
+            self.writeMessageOnPage(MSG_SEPARATOR.join(report), REQUEST, False)
             REQUEST.RESPONSE.redirect(self.absolute_url()+"/DatabaseDesign")
             
     security.declareProtected(DESIGN_PERMISSION, 'exportDesign')
@@ -427,21 +428,21 @@ class PlominoDesignManager(Persistent):
                     logger.info('ps.errors : ' + str(ps.errors))
             contextual_ps=ps.__of__(context)
             result = None
-            try:
-                if with_args:
-                    result = contextual_ps(*args)
-                else:
-                    result = contextual_ps()
-                if self.debugMode and hasattr(contextual_ps, 'errors') and contextual_ps.errors:
-                    logger.info('python errors at '+str(context)+' in '+script_id+': ' + str(contextual_ps.errors))
-            except Exception, e:
-                self.traceErr(e, context, script_id, formula_getter)
-                raise
+            if with_args:
+                result = contextual_ps(*args)
+            else:
+                result = contextual_ps()
+            if self.debugMode and hasattr(contextual_ps, 'errors') and contextual_ps.errors:
+                logger.info('python errors at '+str(context)+' in '+script_id+': ' + str(contextual_ps.errors))
             return result
-        
         except Exception, e:
-            if self.debugMode:
-                logger.info('runFormulaScript Exception evaluating '+script_id+' with context '+str(context)+ ':' + str(e))
+            self.traceErr(e, context, script_id, formula_getter)
+            raise PlominoScriptException
+#        return result
+        
+#        except Exception, e:
+#            if self.debugMode:
+#                logger.info('runFormulaScript Exception evaluating '+script_id+' with context '+str(context)+ ':' + str(e))
     
     security.declarePrivate('traceErr')
     def traceErr(self, e, context, script_id, formula_getter):
@@ -491,7 +492,7 @@ class PlominoDesignManager(Persistent):
         return self.runFormulaScript(id, self, formula, True, *args)
     
     security.declarePublic('writeMessageOnPage')
-    def writeMessageOnPage(self, infoMsg, REQUEST, ifMsgEmpty = '', error = False):
+    def writeMessageOnPage(self, infoMsg, REQUEST, error = False):
         """adds portal message        
         """
         #message
@@ -503,22 +504,24 @@ class PlominoDesignManager(Persistent):
             else:
                 msgType = 'info'
             
-            #if empty
-            if (infoMsg == ''):
-               infoMsg = ifMsgEmpty
-                
             #split message   
             infoMsg = infoMsg.split(MSG_SEPARATOR)
             
             #display it
             for msg in infoMsg:
-                if len(msg)==0:
-                    mess = ifMsgEmpty
-                else:
-                    mess = msg
-                if len(mess)>0:
-                    plone_tools.addPortalMessage(mess, msgType, REQUEST)
-                  
+                if msg:
+                    plone_tools.addPortalMessage(msg, msgType, REQUEST)
+
+    security.declarePublic('getRenderingTemplate')
+    def reportError(self, message, REQUEST=None):
+        """
+        """
+        if self.REQUEST:
+            REQUEST = self.REQUEST
+        if REQUEST:
+            plone_tools = getToolByName(self, 'plone_utils')
+            plone_tools.addPortalMessage(message, 'error', REQUEST)
+            
     security.declarePublic('getRenderingTemplate')
     def getRenderingTemplate(self, templatename):
         """

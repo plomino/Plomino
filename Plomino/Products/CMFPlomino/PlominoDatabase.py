@@ -19,6 +19,7 @@ import interfaces
 from Products.ATContentTypes.content.folder import ATFolder
 from Products.CMFDynamicViewFTI.browserdefault import BrowserDefaultMixin
 
+from exceptions import PlominoScriptException
 from Products.CMFPlomino.config import *
 
 ##code-section module-header #fill in your manual code here
@@ -354,11 +355,12 @@ class PlominoDatabase(ATFolder, PlominoAccessControl, PlominoDesignManager, Plom
             raise Unauthorized, "You cannot delete this document."
         else:
             # execute the onDeleteDocument code of the form
-            try:
-                form = doc.getForm()
-                self.runFormulaScript("form_"+form.id+"_ondelete", doc, form.onDeleteDocument)
-            except Exception:
-                pass
+            form = doc.getForm()
+            if form:
+                try:
+                    self.runFormulaScript("form_"+form.id+"_ondelete", doc, form.onDeleteDocument)
+                except PlominoScriptException, e:
+                    self.reportError('Document has been deleted, but onDelete event failed.')
 
             self.getIndex().unindexDocument(doc)
             event.notify(ObjectRemovedEvent(doc, self.documents, doc.id))
