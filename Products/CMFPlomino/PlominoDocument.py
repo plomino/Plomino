@@ -249,7 +249,7 @@ class PlominoDocument(ATFolder):
             for f in form.getFields(includesubforms=True):
                 mode = f.getFieldMode()
                 fieldName = f.id
-                if mode=="COMPUTED" or (mode=="CREATION" and creation):
+                if mode in ["COMPUTED", "COMPUTEDONSAVE"] or (mode=="CREATION" and creation):
                     try:
                         result = self.runFormulaScript("field_"+f.getParentNode().id+"_"+fieldName+"_formula", self, f.Formula)
                     except PlominoScriptException, e:

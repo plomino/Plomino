@@ -108,7 +108,10 @@ class BaseField(object):
                     db.reportError('%s field formula failed' % fieldName)
             else:
                 fieldValue = doc.getItem(fieldName)
-        
+                
+        if mode=="COMPUTEDONSAVE":
+            fieldValue = doc.getItem(fieldName)
+            
         if fieldValue is None:
             fieldValue = ""
         return fieldValue
