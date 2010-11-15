@@ -112,6 +112,11 @@ a.viewlink {
 	border: none !important;
 }
 
+/* clouseau debugger */
+#plominoMessages dd a {
+    border: none;
+    float: right;
+}
 /* </dtml-with> */
 
 

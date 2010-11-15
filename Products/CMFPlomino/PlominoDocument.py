@@ -316,7 +316,7 @@ class PlominoDocument(ATFolder):
                 #RunFormula(self, form.getOnOpenDocument())
                 valid = self.runFormulaScript("form_"+form.id+"_onopen", self, form.onOpenDocument)
         except PlominoScriptException, e:
-            self.reportError('onOpen event failed')
+            self.reportError('onOpen event failed', formula=e.formula)
                 
         if not valid:
             # we use the specified form's layout

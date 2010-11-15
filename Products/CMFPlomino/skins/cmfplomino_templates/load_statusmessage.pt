@@ -14,8 +14,8 @@
         <dt>Info</dt>
         <dd><tal:block replace="nothing">KSS portal message</tal:block></dd>
     </dl>
-
-    <tal:statusmsg tal:define="messages python:context.plone_utils.showPortalMessages()"
+    <tal:statusmsg tal:define="messages python:context.plone_utils.showPortalMessages();
+                               clouseau context/clouseau_tool/enabled | nothing"
                    tal:repeat="message messages">
 
         <dl class="portalMessage info"
@@ -25,12 +25,25 @@
                 i18n:translate="">
                 Info
             </dt>
-            <dd tal:content="message/message | nothing"
-                i18n:translate="">
-                The status message.
+            <dd tal:define="msg message/message | nothing;
+                            plominoerror python:test(' - Plomino formula ' in msg)">
+                <span tal:condition="not:plominoerror" tal:content="msg"
+	                i18n:translate="">
+	                The status message.</span>
+                <tal:block tal:condition="plominoerror"
+                            tal:define="plomino_message python:msg.split(' - Plomino formula ');
+                                        user_message python:plomino_message[0];
+                                        formula_path python:plomino_message[-1];">
+                    <span tal:content="user_message">
+                        The status message.</span>
+	                <a href="#" tal:condition="clouseau"
+	                   class="ui-icon ui-icon-search"
+	                   title="Launch debugger"
+	                   tal:attributes="href string:javascript:debug_plomino('${here/absolute_url_path}', '${formula_path}')"
+	                   >Debug</a>
+                </tal:block>
             </dd>
         </dl>
-
     </tal:statusmsg>
 </div>
 </tal:block>

@@ -428,7 +428,6 @@ class PlominoDesignManager(Persistent):
                     logger.info('ps.errors : ' + str(ps.errors))
             contextual_ps=ps.__of__(context)
             result = None
-    #        try:
             if with_args:
                 result = contextual_ps(*args)
             else:
@@ -438,7 +437,7 @@ class PlominoDesignManager(Persistent):
             return result
         except Exception, e:
             self.traceErr(e, context, script_id, formula_getter)
-            raise PlominoScriptException
+            raise PlominoScriptException(context.absolute_url_path(), formula_getter)
 #        return result
         
 #        except Exception, e:
@@ -514,12 +513,14 @@ class PlominoDesignManager(Persistent):
                     plone_tools.addPortalMessage(msg, msgType, REQUEST)
 
     security.declarePublic('getRenderingTemplate')
-    def reportError(self, message, REQUEST=None):
+    def reportError(self, message, REQUEST=None, formula=None):
         """
         """
         if self.REQUEST:
             REQUEST = self.REQUEST
         if REQUEST:
+            if formula:
+                message = message + " - Plomino formula %s" % formula.absolute_url_path()
             plone_tools = getToolByName(self, 'plone_utils')
             plone_tools.addPortalMessage(message, 'error', REQUEST)
             

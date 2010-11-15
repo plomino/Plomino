@@ -1,0 +1,790 @@
+<?xml version="1.0" encoding="utf-8"?>
+<plominodatabase id="dynamic-hiding">
+<design>
+<dbsettings>
+<AboutDescription type="Products.Archetypes.Field.TextField">
+<![CDATA[]]>
+</AboutDescription>
+<UsingDescription type="Products.Archetypes.Field.TextField">
+<![CDATA[]]>
+</UsingDescription>
+<IndexAttachments type="Products.Archetypes.Field.BooleanField">False</IndexAttachments>
+<FulltextIndex type="Products.Archetypes.Field.BooleanField">False</FulltextIndex>
+<debugMode type="Products.Archetypes.Field.BooleanField">False</debugMode>
+<StorageAttachments type="Products.Archetypes.Field.BooleanField">False</StorageAttachments>
+<CountDocuments type="Products.Archetypes.Field.BooleanField">False</CountDocuments>
+<DateTimeFormat type="Products.Archetypes.Field.StringField">%Y/%m/%d</DateTimeFormat>
+<StartPage type="Products.Archetypes.Field.StringField">
+</StartPage>
+<DoNotListUsers type="Products.Archetypes.Field.BooleanField">False</DoNotListUsers>
+<DoNotReindex type="Products.Archetypes.Field.BooleanField">False</DoNotReindex>
+<excludeFromNav type="Products.Archetypes.Field.BooleanField">False</excludeFromNav>
+<acl AnomynousAccessRight="NoAccess" AuthenticatedAccessRight="NoAccess">
+<params id="UserRoles">
+<param>
+<value>
+<struct>
+</struct>
+</value>
+</param>
+</params>
+<params id="SpecificRights">
+<param>
+<value>
+<struct>
+<member>
+<name>specific_deletedocument</name>
+<value>
+<string>PlominoAuthor</string>
+</value>
+</member>
+</struct>
+</value>
+</param>
+</params>
+</acl>
+</dbsettings>
+<element id="frmSpecies" title="Species" type="PlominoForm">
+<id type="Products.Archetypes.Field.StringField">frmSpecies</id>
+<onCreateDocument type="Products.Archetypes.Field.TextField">
+<![CDATA[]]>
+</onCreateDocument>
+<onOpenDocument type="Products.Archetypes.Field.TextField">
+<![CDATA[]]>
+</onOpenDocument>
+<onSaveDocument type="Products.Archetypes.Field.TextField">
+<![CDATA[]]>
+</onSaveDocument>
+<onDeleteDocument type="Products.Archetypes.Field.TextField">
+<![CDATA[]]>
+</onDeleteDocument>
+<beforeCreateDocument type="Products.Archetypes.Field.TextField">
+<![CDATA[]]>
+</beforeCreateDocument>
+<FormLayout type="Products.Archetypes.Field.TextField">
+<![CDATA[<h3>What is this animal</h3>
+<p>How many legs ? <span class="plominoFieldClass">legs</span>
+</p>
+<p>
+<span class="plominoHidewhenClass">start:notInsect</span>
+</p>
+<h3>Insects <span class="plominoFieldClass">insect_type</span>
+</h3>
+<p>
+<span class="plominoHidewhenClass">start:notFlying</span>
+<span class="plominoFieldClass">flying_insects</span>
+<span class="plominoHidewhenClass">end:notFlying</span>
+</p>
+<p>
+<span class="plominoHidewhenClass">start:notWalking</span>
+<span class="plominoFieldClass">walking_insects</span>
+<span class="plominoHidewhenClass">end:notWalking</span>
+</p>
+<p>
+<span class="plominoHidewhenClass">end:notInsect</span>
+</p>
+<p>
+<span class="plominoHidewhenClass">start:notBird</span>
+</p>
+<h3>Birds <span class="plominoFieldClass">birds_type</span>
+</h3>
+<p>
+<span class="plominoHidewhenClass">start:notLand</span>
+<span class="plominoFieldClass">land_birds</span>
+<span class="plominoHidewhenClass">end:notLand</span>
+</p>
+<p>
+<span class="plominoHidewhenClass">start:notWater</span>
+<span class="plominoFieldClass">water_birds</span>
+<span class="plominoHidewhenClass">end:notWater</span>
+</p>
+<p>
+<span class="plominoHidewhenClass">end:notBird</span>
+</p>
+<p>
+<span class="plominoHidewhenClass">start:notMammal</span>
+</p>
+<h3>Mammals <span class="plominoFieldClass">mammal_size</span>
+</h3>
+<p>
+<span class="plominoHidewhenClass">start:notSmall</span>
+<span class="plominoFieldClass">small_mammals</span>
+<span class="plominoHidewhenClass">end:notSmall</span>
+</p>
+<p>
+<span class="plominoHidewhenClass">start:notBig</span>
+<span class="plominoFieldClass">big_mammals</span>
+<span class="plominoHidewhenClass">end:notBig</span>
+</p>
+<p>
+<span class="plominoHidewhenClass">end:notMammal</span>
+</p>]]>
+</FormLayout>
+<DocumentTitle type="Products.Archetypes.Field.TextField">
+<![CDATA[]]>
+</DocumentTitle>
+<ActionBarPosition type="Products.Archetypes.Field.StringField">TOP</ActionBarPosition>
+<HideDefaultActions type="Products.Archetypes.Field.BooleanField">False</HideDefaultActions>
+<HideInMenu type="Products.Archetypes.Field.BooleanField">False</HideInMenu>
+<isSearchForm type="Products.Archetypes.Field.BooleanField">False</isSearchForm>
+<isPage type="Products.Archetypes.Field.BooleanField">True</isPage>
+<SearchView type="Products.Archetypes.Field.StringField">
+</SearchView>
+<SearchFormula type="Products.Archetypes.Field.TextField">
+<![CDATA[]]>
+</SearchFormula>
+<Position type="Products.Archetypes.Field.IntegerField"/>
+<excludeFromNav type="Products.Archetypes.Field.BooleanField">False</excludeFromNav>
+<elements>
+<element id="legs" title="legs" type="PlominoField">
+<id type="Products.Archetypes.Field.StringField">legs</id>
+<FieldType type="Products.Archetypes.Field.StringField">SELECTION</FieldType>
+<FieldMode type="Products.Archetypes.Field.StringField">EDITABLE</FieldMode>
+<Formula type="Products.Archetypes.Field.TextField">
+<![CDATA[]]>
+</Formula>
+<FieldReadTemplate type="Products.Archetypes.Field.StringField">
+</FieldReadTemplate>
+<FieldEditTemplate type="Products.Archetypes.Field.StringField">
+</FieldEditTemplate>
+<Mandatory type="Products.Archetypes.Field.BooleanField">False</Mandatory>
+<ValidationFormula type="Products.Archetypes.Field.TextField">
+<![CDATA[]]>
+</ValidationFormula>
+<ToBeIndexed type="Products.Archetypes.Field.BooleanField">False</ToBeIndexed>
+<params>
+<param>
+<value>
+<struct>
+<member>
+<name>dynamictableparam</name>
+<value>
+<string>'bPaginate': true,
+'bLengthChange': true,
+'bFilter': true,
+'bSort': true,
+'bInfo': true,
+'bAutoWidth': false</string>
+</value>
+</member>
+<member>
+<name>selectionlist</name>
+<value>
+<array>
+<data>
+<value>
+<string>?|</string>
+</value>
+<value>
+<string>2</string>
+</value>
+<value>
+<string>4</string>
+</value>
+<value>
+<string>6</string>
+</value>
+</data>
+</array>
+</value>
+</member>
+</struct>
+</value>
+</param>
+</params>
+</element>
+<element id="notInsect" title="notInsect" type="PlominoHidewhen">
+<id type="Products.Archetypes.Field.StringField">notInsect</id>
+<Formula type="Products.Archetypes.Field.TextField">
+<![CDATA[plominoDocument.legs!="6"]]>
+</Formula>
+<isDynamicHidewhen type="Products.Archetypes.Field.BooleanField">True</isDynamicHidewhen>
+</element>
+<element id="notBird" title="notBird" type="PlominoHidewhen">
+<id type="Products.Archetypes.Field.StringField">notBird</id>
+<Formula type="Products.Archetypes.Field.TextField">
+<![CDATA[plominoDocument.legs!="2"]]>
+</Formula>
+<isDynamicHidewhen type="Products.Archetypes.Field.BooleanField">True</isDynamicHidewhen>
+</element>
+<element id="notMammal" title="notMammal" type="PlominoHidewhen">
+<id type="Products.Archetypes.Field.StringField">notMammal</id>
+<Formula type="Products.Archetypes.Field.TextField">
+<![CDATA[plominoDocument.legs!="4"]]>
+</Formula>
+<isDynamicHidewhen type="Products.Archetypes.Field.BooleanField">True</isDynamicHidewhen>
+</element>
+<element id="insect_type" title="insect_type" type="PlominoField">
+<id type="Products.Archetypes.Field.StringField">insect_type</id>
+<FieldType type="Products.Archetypes.Field.StringField">SELECTION</FieldType>
+<FieldMode type="Products.Archetypes.Field.StringField">EDITABLE</FieldMode>
+<Formula type="Products.Archetypes.Field.TextField">
+<![CDATA["Flying"]]>
+</Formula>
+<FieldReadTemplate type="Products.Archetypes.Field.StringField">
+</FieldReadTemplate>
+<FieldEditTemplate type="Products.Archetypes.Field.StringField">
+</FieldEditTemplate>
+<Mandatory type="Products.Archetypes.Field.BooleanField">False</Mandatory>
+<ValidationFormula type="Products.Archetypes.Field.TextField">
+<![CDATA[]]>
+</ValidationFormula>
+<ToBeIndexed type="Products.Archetypes.Field.BooleanField">False</ToBeIndexed>
+<params>
+<param>
+<value>
+<struct>
+<member>
+<name>dynamictableparam</name>
+<value>
+<string>'bPaginate': true,
+'bLengthChange': true,
+'bFilter': true,
+'bSort': true,
+'bInfo': true,
+'bAutoWidth': false</string>
+</value>
+</member>
+<member>
+<name>selectionlist</name>
+<value>
+<array>
+<data>
+<value>
+<string>Flying</string>
+</value>
+<value>
+<string>Walking</string>
+</value>
+</data>
+</array>
+</value>
+</member>
+</struct>
+</value>
+</param>
+</params>
+</element>
+<element id="notFlying" title="notFlying" type="PlominoHidewhen">
+<id type="Products.Archetypes.Field.StringField">notFlying</id>
+<Formula type="Products.Archetypes.Field.TextField">
+<![CDATA[plominoDocument.insect_type!="Flying"]]>
+</Formula>
+<isDynamicHidewhen type="Products.Archetypes.Field.BooleanField">True</isDynamicHidewhen>
+</element>
+<element id="notWalking" title="notWalking" type="PlominoHidewhen">
+<id type="Products.Archetypes.Field.StringField">notWalking</id>
+<Formula type="Products.Archetypes.Field.TextField">
+<![CDATA[plominoDocument.insect_type!="Walking"]]>
+</Formula>
+<isDynamicHidewhen type="Products.Archetypes.Field.BooleanField">True</isDynamicHidewhen>
+</element>
+<element id="flying_insects" title="flying_insects" type="PlominoField">
+<id type="Products.Archetypes.Field.StringField">flying_insects</id>
+<FieldType type="Products.Archetypes.Field.StringField">SELECTION</FieldType>
+<FieldMode type="Products.Archetypes.Field.StringField">EDITABLE</FieldMode>
+<Formula type="Products.Archetypes.Field.TextField">
+<![CDATA[]]>
+</Formula>
+<FieldReadTemplate type="Products.Archetypes.Field.StringField">
+</FieldReadTemplate>
+<FieldEditTemplate type="Products.Archetypes.Field.StringField">
+</FieldEditTemplate>
+<Mandatory type="Products.Archetypes.Field.BooleanField">False</Mandatory>
+<ValidationFormula type="Products.Archetypes.Field.TextField">
+<![CDATA[]]>
+</ValidationFormula>
+<ToBeIndexed type="Products.Archetypes.Field.BooleanField">False</ToBeIndexed>
+<params>
+<param>
+<value>
+<struct>
+<member>
+<name>selectionlistformula</name>
+<value>
+<string>[&quot;Bee&quot;, &quot;Mosquito&quot;, &quot;Butterfly&quot;]</string>
+</value>
+</member>
+<member>
+<name>dynamictableparam</name>
+<value>
+<string>'bPaginate': true,
+'bLengthChange': true,
+'bFilter': true,
+'bSort': true,
+'bInfo': true,
+'bAutoWidth': false</string>
+</value>
+</member>
+<member>
+<name>widget</name>
+<value>
+<string>RADIO</string>
+</value>
+</member>
+<member>
+<name>separator</name>
+<value>
+<string>&lt;br/&gt;</string>
+</value>
+</member>
+</struct>
+</value>
+</param>
+</params>
+</element>
+<element id="walking_insects" title="walking_insects" type="PlominoField">
+<id type="Products.Archetypes.Field.StringField">walking_insects</id>
+<FieldType type="Products.Archetypes.Field.StringField">SELECTION</FieldType>
+<FieldMode type="Products.Archetypes.Field.StringField">EDITABLE</FieldMode>
+<Formula type="Products.Archetypes.Field.TextField">
+<![CDATA[]]>
+</Formula>
+<FieldReadTemplate type="Products.Archetypes.Field.StringField">
+</FieldReadTemplate>
+<FieldEditTemplate type="Products.Archetypes.Field.StringField">
+</FieldEditTemplate>
+<Mandatory type="Products.Archetypes.Field.BooleanField">False</Mandatory>
+<ValidationFormula type="Products.Archetypes.Field.TextField">
+<![CDATA[]]>
+</ValidationFormula>
+<ToBeIndexed type="Products.Archetypes.Field.BooleanField">False</ToBeIndexed>
+<params>
+<param>
+<value>
+<struct>
+<member>
+<name>selectionlistformula</name>
+<value>
+<string>[&quot;Ant&quot;, &quot;Beetle&quot;, &quot;Cockroach&quot;]</string>
+</value>
+</member>
+<member>
+<name>dynamictableparam</name>
+<value>
+<string>'bPaginate': true,
+'bLengthChange': true,
+'bFilter': true,
+'bSort': true,
+'bInfo': true,
+'bAutoWidth': false</string>
+</value>
+</member>
+<member>
+<name>widget</name>
+<value>
+<string>RADIO</string>
+</value>
+</member>
+<member>
+<name>separator</name>
+<value>
+<string>&lt;br/&gt;</string>
+</value>
+</member>
+</struct>
+</value>
+</param>
+</params>
+</element>
+<element id="birds_type" title="birds_type" type="PlominoField">
+<id type="Products.Archetypes.Field.StringField">birds_type</id>
+<FieldType type="Products.Archetypes.Field.StringField">SELECTION</FieldType>
+<FieldMode type="Products.Archetypes.Field.StringField">EDITABLE</FieldMode>
+<Formula type="Products.Archetypes.Field.TextField">
+<![CDATA["Land bird"]]>
+</Formula>
+<FieldReadTemplate type="Products.Archetypes.Field.StringField">
+</FieldReadTemplate>
+<FieldEditTemplate type="Products.Archetypes.Field.StringField">
+</FieldEditTemplate>
+<Mandatory type="Products.Archetypes.Field.BooleanField">False</Mandatory>
+<ValidationFormula type="Products.Archetypes.Field.TextField">
+<![CDATA[]]>
+</ValidationFormula>
+<ToBeIndexed type="Products.Archetypes.Field.BooleanField">False</ToBeIndexed>
+<params>
+<param>
+<value>
+<struct>
+<member>
+<name>dynamictableparam</name>
+<value>
+<string>'bPaginate': true,
+'bLengthChange': true,
+'bFilter': true,
+'bSort': true,
+'bInfo': true,
+'bAutoWidth': false</string>
+</value>
+</member>
+<member>
+<name>selectionlist</name>
+<value>
+<array>
+<data>
+<value>
+<string>Land bird</string>
+</value>
+<value>
+<string>Water bird</string>
+</value>
+</data>
+</array>
+</value>
+</member>
+</struct>
+</value>
+</param>
+</params>
+</element>
+<element id="land_birds" title="land_birds" type="PlominoField">
+<id type="Products.Archetypes.Field.StringField">land_birds</id>
+<FieldType type="Products.Archetypes.Field.StringField">SELECTION</FieldType>
+<FieldMode type="Products.Archetypes.Field.StringField">EDITABLE</FieldMode>
+<Formula type="Products.Archetypes.Field.TextField">
+<![CDATA[]]>
+</Formula>
+<FieldReadTemplate type="Products.Archetypes.Field.StringField">
+</FieldReadTemplate>
+<FieldEditTemplate type="Products.Archetypes.Field.StringField">
+</FieldEditTemplate>
+<Mandatory type="Products.Archetypes.Field.BooleanField">False</Mandatory>
+<ValidationFormula type="Products.Archetypes.Field.TextField">
+<![CDATA[]]>
+</ValidationFormula>
+<ToBeIndexed type="Products.Archetypes.Field.BooleanField">False</ToBeIndexed>
+<params>
+<param>
+<value>
+<struct>
+<member>
+<name>selectionlistformula</name>
+<value>
+<string>[&quot;Parrot&quot;, &quot;Chicken&quot;, &quot;Hummingbird&quot;]</string>
+</value>
+</member>
+<member>
+<name>dynamictableparam</name>
+<value>
+<string>'bPaginate': true,
+'bLengthChange': true,
+'bFilter': true,
+'bSort': true,
+'bInfo': true,
+'bAutoWidth': false</string>
+</value>
+</member>
+<member>
+<name>widget</name>
+<value>
+<string>RADIO</string>
+</value>
+</member>
+</struct>
+</value>
+</param>
+</params>
+</element>
+<element id="water_birds" title="water_birds" type="PlominoField">
+<id type="Products.Archetypes.Field.StringField">water_birds</id>
+<FieldType type="Products.Archetypes.Field.StringField">SELECTION</FieldType>
+<FieldMode type="Products.Archetypes.Field.StringField">EDITABLE</FieldMode>
+<Formula type="Products.Archetypes.Field.TextField">
+<![CDATA[]]>
+</Formula>
+<FieldReadTemplate type="Products.Archetypes.Field.StringField">
+</FieldReadTemplate>
+<FieldEditTemplate type="Products.Archetypes.Field.StringField">
+</FieldEditTemplate>
+<Mandatory type="Products.Archetypes.Field.BooleanField">False</Mandatory>
+<ValidationFormula type="Products.Archetypes.Field.TextField">
+<![CDATA[]]>
+</ValidationFormula>
+<ToBeIndexed type="Products.Archetypes.Field.BooleanField">False</ToBeIndexed>
+<params>
+<param>
+<value>
+<struct>
+<member>
+<name>selectionlistformula</name>
+<value>
+<string>return [&quot;Black-bellied Whistling-Duck, Dendrocygna autumnalis&quot;,
+&quot;Fulvous Whistling-Duck, Dendrocygna bicolor&quot;,
+&quot;Taiga Bean-Goose, Anser fabalis&quot;,
+&quot;Tundra Bean-Goose, Anser serrirostris&quot;,
+&quot;Pink-footed Goose, Anser brachyrhynchus (C)&quot;,
+&quot;Graylag Goose, Anser anser (A)&quot;,
+&quot;Greater White-fronted Goose, Anser albifrons&quot;,
+&quot;Lesser White-fronted Goose, Anser erythropus (A)&quot;,
+&quot;Emperor Goose, Chen canagica&quot;,
+&quot;Snow Goose, Chen caerulescens&quot;,
+&quot;Ross's Goose, Chen rossii&quot;,
+&quot;Cackling Goose, Branta hutchinsii&quot;,
+&quot;Canada Goose, Branta canadensis&quot;,
+&quot;Brant, Branta bernicla&quot;,
+&quot;Barnacle Goose, Branta leucopsis (C)&quot;,
+&quot;Mute Swan, Cygnus olor (I)&quot;,
+&quot;Trumpeter Swan, Cygnus buccinator&quot;,
+&quot;Tundra Swan, Cygnus columbianus&quot;,
+&quot;Whooper Swan, Cygnus cygnus&quot;,
+&quot;Muscovy Duck, Cairina moschata&quot;,
+&quot;Wood Duck, Aix sponsa&quot;,
+&quot;Gadwall, Anas strepera&quot;,
+&quot;Falcated Duck, Anas falcata (C)&quot;,
+&quot;Eurasian Wigeon, Anas penelope&quot;,
+&quot;American Wigeon, Anas americana&quot;,
+&quot;American Black Duck, Anas rubripes&quot;,
+&quot;Mallard, Anas platyrhynchos&quot;,
+&quot;Mottled Duck, Anas fulvigula&quot;,
+&quot;Eastern Spot-billed Duck, Anas zonorhyncha (A)&quot;,
+&quot;Blue-winged Teal, Anas discors&quot;,
+&quot;Cinnamon Teal, Anas cyanoptera&quot;,
+&quot;Northern Shoveler, Anas clypeata&quot;,
+&quot;White-cheeked Pintail, Anas bahamensis (C)&quot;,
+&quot;Northern Pintail, Anas acuta&quot;,
+&quot;Garganey, Anas querquedula (C)&quot;,
+&quot;Baikal Teal, Anas formosa (C)&quot;,
+&quot;Green-winged Teal, Anas carolinensis&quot;,
+&quot;Common Teal Anas crecca (C)&quot;,
+&quot;Canvasback, Aythya valisineria&quot;,
+&quot;Redhead, Aythya americana&quot;,
+&quot;Common Pochard, Aythya ferina&quot;,
+&quot;Ring-necked Duck, Aythya collaris&quot;,
+&quot;Tufted Duck, Aythya fuligula&quot;,
+&quot;Greater Scaup, Aythya marila&quot;,
+&quot;Lesser Scaup, Aythya affinis&quot;,
+&quot;Steller's Eider, Polysticta stelleri&quot;,
+&quot;Spectacled Eider, Somateria fischeri&quot;,
+&quot;King Eider, Somateria spectabilis&quot;,
+&quot;Common Eider, Somateria mollissima&quot;,
+&quot;Harlequin Duck, Histrionicus histrionicus&quot;,
+&quot;Labrador Duck, Camptorhynchus labradorius (E)&quot;,
+&quot;Surf Scoter, Melanitta perspicillata&quot;,
+&quot;White-winged Scoter, Melanitta fusca&quot;,
+&quot;Black Scoter, Melanitta nigra&quot;,
+&quot;Long-tailed Duck, Clangula hyemalis&quot;,
+&quot;Bufflehead, Bucephala albeola&quot;,
+&quot;Common Goldeneye, Bucephala clangula&quot;,
+&quot;Barrow's Goldeneye, Bucephala islandica&quot;,
+&quot;Smew, Mergellus albellus&quot;,
+&quot;Hooded Merganser, Lophodytes cucullatus&quot;,
+&quot;Common Merganser, Mergus merganser&quot;,
+&quot;Red-breasted Merganser, Mergus serrator&quot;,
+&quot;Masked Duck, Nomonyx dominicus&quot;,
+&quot;Ruddy Duck, Oxyura jamaicensis&quot;]</string>
+</value>
+</member>
+<member>
+<name>dynamictableparam</name>
+<value>
+<string>'bPaginate': true,
+'bLengthChange': true,
+'bFilter': true,
+'bSort': true,
+'bInfo': true,
+'bAutoWidth': false</string>
+</value>
+</member>
+<member>
+<name>widget</name>
+<value>
+<string>PICKLIST</string>
+</value>
+</member>
+</struct>
+</value>
+</param>
+</params>
+</element>
+<element id="notLand" title="notLand" type="PlominoHidewhen">
+<id type="Products.Archetypes.Field.StringField">notLand</id>
+<Formula type="Products.Archetypes.Field.TextField">
+<![CDATA[plominoDocument.birds_type!="Land bird"]]>
+</Formula>
+<isDynamicHidewhen type="Products.Archetypes.Field.BooleanField">True</isDynamicHidewhen>
+</element>
+<element id="notWater" title="notWater" type="PlominoHidewhen">
+<id type="Products.Archetypes.Field.StringField">notWater</id>
+<Formula type="Products.Archetypes.Field.TextField">
+<![CDATA[plominoDocument.birds_type!="Water bird"]]>
+</Formula>
+<isDynamicHidewhen type="Products.Archetypes.Field.BooleanField">True</isDynamicHidewhen>
+</element>
+<element id="mammal_size" title="mammal_size" type="PlominoField">
+<id type="Products.Archetypes.Field.StringField">mammal_size</id>
+<FieldType type="Products.Archetypes.Field.StringField">SELECTION</FieldType>
+<FieldMode type="Products.Archetypes.Field.StringField">EDITABLE</FieldMode>
+<Formula type="Products.Archetypes.Field.TextField">
+<![CDATA["Small"]]>
+</Formula>
+<FieldReadTemplate type="Products.Archetypes.Field.StringField">
+</FieldReadTemplate>
+<FieldEditTemplate type="Products.Archetypes.Field.StringField">
+</FieldEditTemplate>
+<Mandatory type="Products.Archetypes.Field.BooleanField">False</Mandatory>
+<ValidationFormula type="Products.Archetypes.Field.TextField">
+<![CDATA[]]>
+</ValidationFormula>
+<ToBeIndexed type="Products.Archetypes.Field.BooleanField">False</ToBeIndexed>
+<params>
+<param>
+<value>
+<struct>
+<member>
+<name>dynamictableparam</name>
+<value>
+<string>'bPaginate': true,
+'bLengthChange': true,
+'bFilter': true,
+'bSort': true,
+'bInfo': true,
+'bAutoWidth': false</string>
+</value>
+</member>
+<member>
+<name>selectionlist</name>
+<value>
+<array>
+<data>
+<value>
+<string>Small</string>
+</value>
+<value>
+<string>Big</string>
+</value>
+</data>
+</array>
+</value>
+</member>
+</struct>
+</value>
+</param>
+</params>
+</element>
+<element id="notSmall" title="notSmall" type="PlominoHidewhen">
+<id type="Products.Archetypes.Field.StringField">notSmall</id>
+<Formula type="Products.Archetypes.Field.TextField">
+<![CDATA[plominoDocument.mammal_size!="Small"]]>
+</Formula>
+<isDynamicHidewhen type="Products.Archetypes.Field.BooleanField">True</isDynamicHidewhen>
+</element>
+<element id="notBig" title="notBig" type="PlominoHidewhen">
+<id type="Products.Archetypes.Field.StringField">notBig</id>
+<Formula type="Products.Archetypes.Field.TextField">
+<![CDATA[plominoDocument.mammal_size!="Big"]]>
+</Formula>
+<isDynamicHidewhen type="Products.Archetypes.Field.BooleanField">True</isDynamicHidewhen>
+</element>
+<element id="small_mammals" title="small_mammals" type="PlominoField">
+<id type="Products.Archetypes.Field.StringField">small_mammals</id>
+<FieldType type="Products.Archetypes.Field.StringField">SELECTION</FieldType>
+<FieldMode type="Products.Archetypes.Field.StringField">EDITABLE</FieldMode>
+<Formula type="Products.Archetypes.Field.TextField">
+<![CDATA[]]>
+</Formula>
+<FieldReadTemplate type="Products.Archetypes.Field.StringField">
+</FieldReadTemplate>
+<FieldEditTemplate type="Products.Archetypes.Field.StringField">
+</FieldEditTemplate>
+<Mandatory type="Products.Archetypes.Field.BooleanField">False</Mandatory>
+<ValidationFormula type="Products.Archetypes.Field.TextField">
+<![CDATA[]]>
+</ValidationFormula>
+<ToBeIndexed type="Products.Archetypes.Field.BooleanField">False</ToBeIndexed>
+<params>
+<param>
+<value>
+<struct>
+<member>
+<name>selectionlistformula</name>
+<value>
+<string>[&quot;Mouse&quot;, &quot;Hedgehog&quot;, &quot;Squirrel&quot;]</string>
+</value>
+</member>
+<member>
+<name>dynamictableparam</name>
+<value>
+<string>'bPaginate': true,
+'bLengthChange': true,
+'bFilter': true,
+'bSort': true,
+'bInfo': true,
+'bAutoWidth': false</string>
+</value>
+</member>
+<member>
+<name>widget</name>
+<value>
+<string>RADIO</string>
+</value>
+</member>
+<member>
+<name>separator</name>
+<value>
+<string>&lt;br/&gt;</string>
+</value>
+</member>
+</struct>
+</value>
+</param>
+</params>
+</element>
+<element id="big_mammals" title="big_mammals" type="PlominoField">
+<id type="Products.Archetypes.Field.StringField">big_mammals</id>
+<FieldType type="Products.Archetypes.Field.StringField">SELECTION</FieldType>
+<FieldMode type="Products.Archetypes.Field.StringField">EDITABLE</FieldMode>
+<Formula type="Products.Archetypes.Field.TextField">
+<![CDATA[]]>
+</Formula>
+<FieldReadTemplate type="Products.Archetypes.Field.StringField">
+</FieldReadTemplate>
+<FieldEditTemplate type="Products.Archetypes.Field.StringField">
+</FieldEditTemplate>
+<Mandatory type="Products.Archetypes.Field.BooleanField">False</Mandatory>
+<ValidationFormula type="Products.Archetypes.Field.TextField">
+<![CDATA[]]>
+</ValidationFormula>
+<ToBeIndexed type="Products.Archetypes.Field.BooleanField">False</ToBeIndexed>
+<params>
+<param>
+<value>
+<struct>
+<member>
+<name>selectionlistformula</name>
+<value>
+<string>[&quot;Hippopotamus&quot;, &quot;Tiger&quot;, &quot;Human&quot;]</string>
+</value>
+</member>
+<member>
+<name>dynamictableparam</name>
+<value>
+<string>'bPaginate': true,
+'bLengthChange': true,
+'bFilter': true,
+'bSort': true,
+'bInfo': true,
+'bAutoWidth': false</string>
+</value>
+</member>
+<member>
+<name>widget</name>
+<value>
+<string>RADIO</string>
+</value>
+</member>
+<member>
+<name>separator</name>
+<value>
+<string>&lt;br/&gt;</string>
+</value>
+</member>
+</struct>
+</value>
+</param>
+</params>
+</element>
+</elements>
+</element>
+</design>
+</plominodatabase>
