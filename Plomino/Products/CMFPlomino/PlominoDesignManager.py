@@ -593,8 +593,8 @@ class PlominoDesignManager(Persistent):
             designNode.appendChild(node)
         
         root.appendChild(designNode)
-        s=StringIO()
-        doc.writexml(s, encoding='utf-8')
+        s = doc.toxml()
+        
         if REQUEST:
             REQUEST.RESPONSE.setHeader('content-type', "text/xml;charset=utf-8")
         
@@ -602,9 +602,9 @@ class PlominoDesignManager(Persistent):
         try:
             from lxml import etree
             parser = etree.XMLParser(strip_cdata=False, encoding="utf-8")
-            return etree.tostring(etree.XML(s.getvalue(), parser), encoding="utf-8", pretty_print=True)
+            return etree.tostring(etree.XML(s, parser), encoding="utf-8", pretty_print=True)
         except ImportError:
-            return s.getvalue().replace("><", ">\n<")
+            return s.encode('utf-8').replace("><", ">\n<")
     
     security.declareProtected(DESIGN_PERMISSION, 'exportElementAsXML')
     def exportElementAsXML(self, xmldoc, obj, isDatabase=False):
@@ -628,7 +628,7 @@ class PlominoDesignManager(Persistent):
             v = f.get(obj)
             if v is not None:
                 if field_type=="Products.Archetypes.Field.TextField":
-                    text = xmldoc.createCDATASection(str(f.getRaw(obj)))
+                    text = xmldoc.createCDATASection(f.getRaw(obj).decode('utf-8'))
                 else:
                     text = xmldoc.createTextNode(str(f.get(obj)))
                 fieldNode.appendChild(text)
@@ -644,7 +644,7 @@ class PlominoDesignManager(Persistent):
                 v = f.get(obj)
                 if v is not None:
                     if field_type=="Products.Archetypes.Field.TextField":
-                        text = xmldoc.createCDATASection(str(f.getRaw(obj)))
+                        text = xmldoc.createCDATASection(f.getRaw(obj).decode('utf-8'))
                     else:
                         text = xmldoc.createTextNode(str(f.get(obj)))
                     fieldNode.appendChild(text)
@@ -660,7 +660,7 @@ class PlominoDesignManager(Persistent):
                 #items = dict(adapt.parameters)
                 if len(items)>0:
                     # export field settings
-                    str_items = xmlrpclib.dumps((items,), allow_none=1, encoding='utf-8')
+                    str_items = xmlrpclib.dumps((items,), allow_none=1)
                     dom_items = parseString(str_items)
                     node.appendChild(dom_items.documentElement)
         if not isDatabase:
@@ -676,11 +676,11 @@ class PlominoDesignManager(Persistent):
            acl = xmldoc.createElement('acl')
            acl.setAttribute('AnomynousAccessRight', obj.AnomynousAccessRight)
            acl.setAttribute('AuthenticatedAccessRight', obj.AuthenticatedAccessRight)
-           str_UserRoles = xmlrpclib.dumps((obj.UserRoles,), allow_none=1, encoding='utf-8')
+           str_UserRoles = xmlrpclib.dumps((obj.UserRoles,), allow_none=1)
            dom_UserRoles = parseString(str_UserRoles)
            dom_UserRoles.firstChild.setAttribute('id', 'UserRoles')
            acl.appendChild(dom_UserRoles.documentElement)
-           str_SpecificRights = xmlrpclib.dumps((obj.getSpecificRights(),), allow_none=1, encoding='utf-8')
+           str_SpecificRights = xmlrpclib.dumps((obj.getSpecificRights(),), allow_none=1)
            dom_SpecificRights = parseString(str_SpecificRights)
            dom_SpecificRights.firstChild.setAttribute('id', 'SpecificRights')
            acl.appendChild(dom_SpecificRights.documentElement)
