@@ -69,7 +69,7 @@ class PlominoDocument(ATFolder):
     implements(interfaces.IPlominoDocument)
 
     meta_type = 'PlominoDocument'
-    _at_rename_after_creation = True
+    _at_rename_after_creation = False
 
     schema = PlominoDocument_schema
 

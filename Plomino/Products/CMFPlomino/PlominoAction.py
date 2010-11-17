@@ -113,7 +113,7 @@ class PlominoAction(BaseContent, BrowserDefaultMixin):
     implements(interfaces.IPlominoAction)
 
     meta_type = 'PlominoAction'
-    _at_rename_after_creation = True
+    _at_rename_after_creation = False
 
     schema = PlominoAction_schema
 

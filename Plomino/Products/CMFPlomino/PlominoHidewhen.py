@@ -76,7 +76,7 @@ class PlominoHidewhen(BaseContent, BrowserDefaultMixin):
     implements(interfaces.IPlominoHidewhen)
 
     meta_type = 'PlominoHidewhen'
-    _at_rename_after_creation = True
+    _at_rename_after_creation = False
 
     schema = PlominoHidewhen_schema
 

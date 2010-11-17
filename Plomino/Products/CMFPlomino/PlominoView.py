@@ -205,7 +205,7 @@ class PlominoView(ATFolder):
     implements(interfaces.IPlominoView)
 
     meta_type = 'PlominoView'
-    _at_rename_after_creation = True
+    _at_rename_after_creation = False
 
     schema = PlominoView_schema
 

@@ -199,7 +199,7 @@ class PlominoDatabase(ATFolder, PlominoAccessControl, PlominoDesignManager, Plom
     implements(interfaces.IPlominoDatabase)
 
     meta_type = 'PlominoDatabase'
-    _at_rename_after_creation = True
+    _at_rename_after_creation = False
 
     schema = PlominoDatabase_schema
 

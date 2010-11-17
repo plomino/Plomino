@@ -104,7 +104,7 @@ class PlominoColumn(BaseContent, BrowserDefaultMixin):
     implements(interfaces.IPlominoColumn)
 
     meta_type = 'PlominoColumn'
-    _at_rename_after_creation = True
+    _at_rename_after_creation = False
 
     schema = PlominoColumn_schema
 

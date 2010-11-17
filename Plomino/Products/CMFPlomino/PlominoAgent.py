@@ -56,7 +56,7 @@ class PlominoAgent(BaseContent, BrowserDefaultMixin):
     implements(interfaces.IPlominoAgent)
 
     meta_type = 'PlominoAgent'
-    _at_rename_after_creation = True
+    _at_rename_after_creation = False
 
     schema = PlominoAgent_schema
 

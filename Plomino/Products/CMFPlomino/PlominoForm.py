@@ -238,7 +238,7 @@ class PlominoForm(ATFolder):
     implements(interfaces.IPlominoForm)
 
     meta_type = 'PlominoForm'
-    _at_rename_after_creation = True
+    _at_rename_after_creation = False
 
     schema = PlominoForm_schema
 
