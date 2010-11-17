@@ -147,6 +147,14 @@ def csv_to_array(csvcontent, delimiter='\t', quotechar='"'):
         csvfile = csvcontent
     return [l for l in csv.reader(csvfile, delimiter=delimiter, quotechar=quotechar)]
 
+def array_to_csv(values, delimiter='\t', quotechar='"'):
+    """
+    """
+    s = StringIO()
+    writer = csv.writer(s, delimiter=delimiter, quotechar=quotechar, quoting=csv.QUOTE_NONNUMERIC)
+    writer.writerows(values)
+    return s.getvalue()
+    
 def open_url(url, asFile=False):
     """ retrieve content from url
     """

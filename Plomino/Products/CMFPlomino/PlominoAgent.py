@@ -41,6 +41,7 @@ schema = Schema((
             label_msgid="CMFPlomino_label_AgentContent",
             description_msgid="CMFPlomino_help_AgentContent",
             i18n_domain='CMFPlomino',
+            rows=25,
         ),
     ),
 ),
