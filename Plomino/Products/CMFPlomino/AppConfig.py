@@ -25,12 +25,12 @@ ACL_PERMISSION = 'CMFPlomino: Control Database ACL'
 
 SAFE_UTILS='DateToString, StringToDate, DateRange, sendMail, userFullname, userInfo, htmlencode, Now, asList, urlencode, csv_to_array, MissingValue, open_url, asUnicode'
 
-FIELD_TYPES={"TEXT": ["Text", "ZCTextIndex"],
+FIELD_TYPES={"TEXT": ["Text", "FieldIndex"],
              "NUMBER": ["Number", "FieldIndex"],
              #"FLOAT": ["Float", "FieldIndex"],
              "RICHTEXT": ["Rich text", "ZCTextIndex"],
              "DATETIME": ["Date/Time", "DateIndex"],
-             "NAME": ["Name", "ZCTextIndex"],
+             "NAME": ["Name", "FieldIndex"],
              #"NAMES": ["Names", "ZCTextIndex"],
              "SELECTION": ["Selection list", "KeywordIndex"],
              #"MULTISELECTION": ["Multi-Selection list", "KeywordIndex"],
