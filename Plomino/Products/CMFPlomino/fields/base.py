@@ -109,7 +109,7 @@ class BaseField(object):
             else:
                 fieldValue = doc.getItem(fieldName)
                 
-        if mode=="COMPUTEDONSAVE":
+        if mode=="COMPUTEDONSAVE" and doc:
             fieldValue = doc.getItem(fieldName)
             
         if fieldValue is None:
