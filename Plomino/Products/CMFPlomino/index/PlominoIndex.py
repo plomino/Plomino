@@ -131,7 +131,11 @@ class PlominoIndex(UniqueObject, ZCatalog, ActionProviderBase):
         """
         """
         #self.catalog_object(doc, "/".join(doc.getPhysicalPath()))
-        self.catalog_object(doc, "/".join(doc.getParentDatabase().getPhysicalPath())+"/"+doc.id)
+        try:
+          self.catalog_object(doc, "/".join(doc.getParentDatabase().getPhysicalPath())+"/"+doc.id)
+        except Exception, e:
+          self.plone_log('%s\non %s'%(`e`, doc.id))
+          raise
 
     security.declareProtected(READ_PERMISSION, 'unindexDocument')
     def unindexDocument(self,doc):
