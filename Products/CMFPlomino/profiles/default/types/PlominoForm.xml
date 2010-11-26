@@ -58,6 +58,6 @@
          condition_expr="python:1"
          url_expr="string:${object_url}/OpenForm" 
          visible="True">
-  <permission value="python:CREATE_PERMISSION"/>
+  <permission value="CMFPlomino: Create documents"/>
  </action>
 </object>
