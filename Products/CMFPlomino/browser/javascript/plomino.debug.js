@@ -43,7 +43,7 @@ function init_debugger() {
 function start_debug() {
 	eval_codeline("plominoContext = context");
     eval_codeline("plominoDocument = context");
-    eval_codeline("from Products.CMFPlomino.PlominoUtils import DateToString, StringToDate, DateRange, sendMail, userFullname, userInfo, htmlencode, Now, asList, urlencode, csv_to_array, MissingValue, open_url, asUnicode");
+    eval_codeline("from Products.CMFPlomino.PlominoUtils import DateToString, StringToDate, DateRange, sendMail, userFullname, userInfo, htmlencode, Now, asList, urlencode, csv_to_array, MissingValue, open_url, asUnicode, array_to_csv");
     //jq("#debug-button").remove();
     jq("#debug-button").html("<a href='javascript:execute_next()' title='Next' class='ui-icon ui-icon-circle-triangle-e'>Debug</a>");
     jq('#debug-code').text(formula_lines[current_line]);
@@ -68,6 +68,7 @@ function execute_next() {
 }
 
 function eval_codeline(line) {
+	line = line.replace("return ", "");
     var f_input = jq("#input-field");
     //f_input.val(line).focus();
     f_input.val(line);
