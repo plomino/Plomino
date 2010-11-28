@@ -1,6 +1,19 @@
 Changelog
 =========
 
+1.8
+---
+* Replace mode for design import (existing design is entirely replaced by 
+the imported one).
+* German translation.
+* User-friendly error messages for failing formulas.
+* TEXT and NAME fields indexed as FieldIndex (instead not ZCTextIndex) to 
+allow sorting.
+* New field mode "Computed on save": value is computed when document is saved
+and stored, it is not re-computed when the document is opened.
+* Online debugger (integration with Clouseau): failing formula can be executed 
+step-by-step from the web interface.
+
 1.7.5
 -----
 * Documents stored in a BTreeFolder.
