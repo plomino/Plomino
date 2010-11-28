@@ -513,14 +513,16 @@ class PlominoDesignManager(Persistent):
                     plone_tools.addPortalMessage(msg, msgType, REQUEST)
 
     security.declarePublic('reportError')
-    def reportError(self, message, REQUEST=None, formula=None):
+    def reportError(self, message, REQUEST=None, formula=None, path=None):
         """
         """
         if self.REQUEST:
             REQUEST = self.REQUEST
         if REQUEST:
             if formula and hasattr(formula, 'absolute_url_path'):
-                message = message + " - Plomino formula %s" % formula.absolute_url_path()
+                path = formula.absolute_url_path()
+            if path:
+                message = message + " - Plomino formula %s" % path
             plone_tools = getToolByName(self, 'plone_utils')
             plone_tools.addPortalMessage(message, 'error', REQUEST)
             
