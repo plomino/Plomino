@@ -437,7 +437,7 @@ class PlominoDesignManager(Persistent):
             return result
         except Exception, e:
             self.traceErr(e, context, script_id, formula_getter)
-            raise PlominoScriptException
+            raise PlominoScriptException(context.absolute_url_path(), formula_getter)
 #        return result
         
 #        except Exception, e:
@@ -512,13 +512,15 @@ class PlominoDesignManager(Persistent):
                 if msg:
                     plone_tools.addPortalMessage(msg, msgType, REQUEST)
 
-    security.declarePublic('getRenderingTemplate')
-    def reportError(self, message, REQUEST=None):
+    security.declarePublic('reportError')
+    def reportError(self, message, REQUEST=None, formula=None):
         """
         """
         if self.REQUEST:
             REQUEST = self.REQUEST
         if REQUEST:
+            if formula and hasattr(formula, 'absolute_url_path'):
+                message = message + " - Plomino formula %s" % formula.absolute_url_path()
             plone_tools = getToolByName(self, 'plone_utils')
             plone_tools.addPortalMessage(message, 'error', REQUEST)
             

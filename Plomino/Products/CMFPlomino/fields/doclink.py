@@ -100,7 +100,7 @@ class DoclinkField(BaseField):
             try:
                 s = self.context.runFormulaScript("field_"+self.context.getParentNode().id+"_"+self.context.id+"_DocumentListFormula", obj, lambda: f)
             except PlominoScriptException, e:
-                self.context.reportError('%s doclink field selection list formula failed' % self.context.id)
+                self.context.reportError('%s doclink field selection list formula failed' % self.context.id, formula=e.formula)
                 s = None
             if s is None:
                 s = []

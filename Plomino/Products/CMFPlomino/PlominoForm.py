@@ -281,7 +281,7 @@ class PlominoForm(ATFolder):
         try:
             valid = self.runFormulaScript("form_"+self.id+"_oncreate", doc, self.onCreateDocument)
         except PlominoScriptException, e:
-            self.reportError('onCreate formula failed', REQUEST)
+            self.reportError('onCreate formula failed', REQUEST, formula=e.formula)
         
         if valid is None or valid=='':
             doc.saveDocument(REQUEST, True)
@@ -322,7 +322,7 @@ class PlominoForm(ATFolder):
                     #result = RunFormula(target, obj_a.getHidewhen())
                     result = self.runFormulaScript("action_"+self.id+"_"+obj_a.id+"_hidewhen", target, obj_a.Hidewhen)
                 except PlominoScriptException, e:
-                    self.reportError('"%s" hide-when formula failed' % obj_a.Title())
+                    self.reportError('"%s" hide-when formula failed' % obj_a.Title(), formula=e.formula)
                     #if error, we hide anyway
                     result = True
                 if not result:
@@ -434,7 +434,7 @@ class PlominoForm(ATFolder):
                     target = doc
                 result = self.runFormulaScript("hidewhen_"+self.id+"_"+hidewhen.id+"_formula", target, hidewhen.Formula)
             except PlominoScriptException, e:
-                self.reportError('%s hide-when formula failed' % hidewhen.id)
+                self.reportError('%s hide-when formula failed' % hidewhen.id, formula=e.formula)
                 #if error, we hide anyway
                 result = True
             start = '<span class="plominoHidewhenClass">start:'+hidewhenName+'</span>'
@@ -477,7 +477,7 @@ class PlominoForm(ATFolder):
                 try:
                     isHidden = self.runFormulaScript("hidewhen_"+self.id+"_"+hidewhen.id+"_formula", target, hidewhen.Formula)
                 except PlominoScriptException, e:
-                    self.reportError('%s hide-when formula failed' % hidewhen.id, REQUEST)
+                    self.reportError('%s hide-when formula failed' % hidewhen.id, REQUEST, formula=e.formula)
                     #if error, we hide anyway
                     isHidden = True
                 result[hidewhen.id] = isHidden 
@@ -501,7 +501,7 @@ class PlominoForm(ATFolder):
             try:
                 valid = self.runFormulaScript("form_"+self.id+"_beforecreate", self, self.beforeCreateDocument)
             except PlominoScriptException, e:
-                self.reportError('beforeCreate formula failed')
+                self.reportError('beforeCreate formula failed', formula=e.formula)
             
         if valid is None or valid=='' or self.hasDesignPermission(self):
             return self.displayDocument(None, True, True, request=request)
@@ -621,7 +621,7 @@ class PlominoForm(ATFolder):
                     if valid:
                         filteredResults.append(doc)
             except PlominoScriptException, e:
-                self.reportError('Search formula failed')
+                self.reportError('Search formula failed', formula=e.formula)
             results = filteredResults
 
         return self.OpenForm(searchresults=results)
@@ -652,7 +652,7 @@ class PlominoForm(ATFolder):
                     try:
                         s = self.runFormulaScript("field_"+self.id+"_"+f.id+"_ValidationFormula", tmp, f.ValidationFormula)
                     except PlominoScriptException, e:
-                        self.reportError('%s validation formula failed' % f.id)
+                        self.reportError('%s validation formula failed' % f.id, formula=e.formula)
                     if not s=='':
                         errors.append(s)
 

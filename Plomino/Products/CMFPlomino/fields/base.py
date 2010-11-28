@@ -76,7 +76,7 @@ class BaseField(object):
                     try:
                         fieldValue = db.runFormulaScript("field_"+form.id+"_"+fieldName+"_formula", target, self.context.Formula)
                     except PlominoScriptException, e:
-                        db.reportError('%s field formula failed' % fieldName)
+                        db.reportError('%s field formula failed' % fieldName, formula=e.formula)
                 elif request is None:
                     fieldValue = ""
                 else:
@@ -97,7 +97,7 @@ class BaseField(object):
             try:
                 fieldValue = db.runFormulaScript("field_"+form.id+"_"+fieldName+"_formula", target, self.context.Formula)
             except PlominoScriptException, e:
-                db.reportError('%s field formula failed' % fieldName)
+                db.reportError('%s field formula failed' % fieldName, formula=e.formula)
         if mode=="CREATION":
             if creation:
                 # Note: on creation, there is no doc, we use self as param
@@ -105,7 +105,7 @@ class BaseField(object):
                 try:
                     fieldValue = db.runFormulaScript("field_"+form.id+"_"+fieldName+"_formula", form, self.context.Formula)
                 except PlominoScriptException, e:
-                    db.reportError('%s field formula failed' % fieldName)
+                    db.reportError('%s field formula failed' % fieldName, formula=e.formula)
             else:
                 fieldValue = doc.getItem(fieldName)
                 

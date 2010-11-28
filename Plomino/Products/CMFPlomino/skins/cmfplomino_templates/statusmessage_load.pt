@@ -4,35 +4,18 @@
       xmlns:i18n="http://xml.zope.org/namespaces/i18n"
       i18n:domain="plone">
 
-<body>
-
-<tal:block i18n:domain="plone"
-           metal:define-macro="portal_message">
-
+<div id="plonePortalMessages">
     <dl class="portalMessage info" id="kssPortalMessage" style="display:none">
         <dt>Info</dt>
         <dd><tal:block replace="nothing">KSS portal message</tal:block></dd>
     </dl>
-    
     <tal:statusmsg tal:define="messages python:context.plone_utils.showPortalMessages();
                                clouseau context/clouseau_tool/enabled | nothing"
                    tal:repeat="message messages">
 
         <tal:block metal:use-macro="here/statusmessage_display/macros/display_error">display
             message</tal:block>
-
+        
     </tal:statusmsg>
-    
-    <div id="plominoMessages"></div>
-    <script type="text/javascript">
-        function refreshStatusMessages() {
-            container = jq("#plominoMessages");
-        	container.load("./load_statusmessage #plonePortalMessages");
-        }
-        jq(document).ready(refreshStatusMessages);
-    </script>
-
-</tal:block>
-
-</body>
+</div>
 </html>

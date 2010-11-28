@@ -1,0 +1,78 @@
+<metal:page define-macro="master">
+  <metal:doctype define-slot="doctype">
+    <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+  </metal:doctype>
+<metal:block define-slot="top_slot" />
+<metal:block use-macro="here/global_defines/macros/defines" />
+
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xml:lang="en" lang="en"
+      xmlns:tal="http://xml.zope.org/namespaces/tal"
+      xmlns:metal="http://xml.zope.org/namespaces/metal"
+      xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+      tal:define="language context/@@plone_portal_state/language;
+                  isRTL context/@@plone_portal_state/is_rtl;
+                  portal_url context/@@plone_portal_state/portal_url;"
+      tal:attributes="lang language;
+                      xml:lang language">
+
+  <tal:cache tal:define="lang language;
+                         charset site_properties/default_charset|string:utf-8">
+    <metal:cache use-macro="here/global_cache_settings/macros/cacheheaders">
+      Get the global cache headers located in global_cache_settings.
+    </metal:cache>
+  </tal:cache>
+
+  <tal:comment replace="nothing"> Backwards compatibility </tal:comment>  
+
+  <head metal:use-macro="here/header/macros/html_header | here/clouseau_header/macros/html_header">
+
+    <metal:fillbase fill-slot="base">
+      <metal:baseslot define-slot="base">
+        <base href="" tal:attributes="href here/renderBase" />
+      </metal:baseslot>
+    </metal:fillbase>
+
+  </head>
+
+  <body tal:attributes="class here/getSectionFromURL;
+                        dir python:test(isRTL, 'rtl', 'ltr')">
+    <div id="clouseau-visual-portal-wrapper">
+      <div id="clouseau-top" i18n:domain="plone">
+<script tal:content="string:var formula_path='${here/REQUEST/formula}';"></script>
+<script><!--
+var formula_lines = new Array();
+var current_line = 0;
+jq(document).ready(function() {
+	jq.get(formula_path, function(data) {
+		formula_lines = data.split('\n');
+    });
+	init_debugger();
+});
+--></script>
+
+<!-- <input type="button" id="debug-button" value="Start debug" onclick="start_debug()" /> -->
+            <span metal:use-macro="context/clouseau_macros/macros/prompt"></span>
+            <div id="message-wrapper">
+    			<p class="discreet">
+    			    <b><span i18n:translate="label_clouseaumacros_session">Session</span> <span id="session-id">1</span></b> |
+			    <b i18n:translate="label_clouseaumacros_status">Status</b> <span id="message"></span><br />
+    			    <b i18n:translate="label_clouseaumacros_commands">Commands</b>
+                    <a href="" onClick="clouseauChange(''); return false;" title="Show all lines in this session"
+		       i18n:attributes="title title_clouseaumacros_show">
+		      <img src="" tal:attributes="src string:$portal_url/add_alternative_icon.gif">
+		      <span i18n:translate="label_clouseaumacros_show">Show</span>
+		    </a>
+                    <a href="" onClick="clouseauChange('none'); return false;" title="Hide previous lines in this session"
+		       i18n:attributes="title title_clouseaumacros_hide">
+		      <img src="" tal:attributes="src string:$portal_url/download_icon.gif" /> 
+		      <span i18n:translate="label_clouseaumacros_hide">Hide</span>
+		    </a> 
+    			</p>
+    			<a name="footer-focus"></a>
+    		</div>
+      </div>
+    </div>
+</body>
+</html>
+</metal:page>

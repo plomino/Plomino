@@ -34,8 +34,6 @@ logger.debug('Installing Product')
 
 import os
 import os.path
-from App.Common import package_home
-import Products.CMFPlone.interfaces
 from Products.Archetypes import listTypes
 from Products.Archetypes.atapi import *
 from Products.Archetypes.utils import capitalize

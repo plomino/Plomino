@@ -1,5 +1,10 @@
 class PlominoScriptException(Exception):
-    pass
+    
+    def __init__(self, context_url, formula):
+        """
+        """
+        self.context_url = context_url
+        self.formula = formula
 
 
 class PlominoReplicationException(Exception):

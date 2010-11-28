@@ -71,5 +71,14 @@
              id="++resource++plomino.javascript/plomino.datagrid.js"
              inline="False"
              insert-after="jquery-integration.js"
-             />   
+             />
+ <javascript cacheable="True"
+             compression="safe"
+             cookable="True"
+             enabled="True"
+             expression=""
+             id="++resource++plomino.javascript/plomino.debug.js"
+             inline="False"
+             insert-after="jquery-integration.js"
+             />    
 </object>

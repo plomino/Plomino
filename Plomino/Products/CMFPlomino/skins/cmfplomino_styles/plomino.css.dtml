@@ -112,6 +112,14 @@ a.viewlink {
 	border: none !important;
 }
 
+/* clouseau debugger */
+dd.plominoMessage a {
+    border: none;
+    float: right;
+}
+#debug-button {
+    border:1px solid transparent;
+}
 /* </dtml-with> */
 
 

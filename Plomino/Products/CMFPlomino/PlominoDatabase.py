@@ -360,7 +360,7 @@ class PlominoDatabase(ATFolder, PlominoAccessControl, PlominoDesignManager, Plom
                 try:
                     self.runFormulaScript("form_"+form.id+"_ondelete", doc, form.onDeleteDocument)
                 except PlominoScriptException, e:
-                    self.reportError('Document has been deleted, but onDelete event failed.')
+                    self.reportError('Document has been deleted, but onDelete event failed.', formula=e.formula)
 
             self.getIndex().unindexDocument(doc)
             event.notify(ObjectRemovedEvent(doc, self.documents, doc.id))
