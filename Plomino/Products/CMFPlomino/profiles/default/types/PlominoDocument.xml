@@ -40,7 +40,7 @@
          condition_expr="python:1"
          url_expr="string:${object_url}/EditDocument" 
          visible="True">
-  <permission value="python:EDIT_PERMISSION"/>
+  <permission value="CMFPlomino: Edit documents"/>
  </action>
  <action title="Document properties" 
          action_id="documentproperties"
@@ -48,7 +48,7 @@
          condition_expr="python:1"
          url_expr="string:${object_url}/DocumentProperties" 
          visible="True">
-  <permission value="python:DESIGN_PERMISSION"/>
+  <permission value="CMFPlomino: Modify Database design"/>
  </action>
  <action title="View" 
          action_id="view"

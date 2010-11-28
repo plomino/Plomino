@@ -52,7 +52,7 @@
          condition_expr="python:1"
          url_expr="string:${object_url}/base_edit" 
          visible="True">
-  <permission value="python:DESIGN_PERMISSION"/>
+  <permission value="CMFPlomino: Modify Database design"/>
  </action>
  <action title="ACL" 
          action_id="acl"
@@ -60,7 +60,7 @@
          condition_expr="python:1"
          url_expr="string:${object_url}/DatabaseACL" 
          visible="True">
-  <permission value="python:ACL_PERMISSION"/>
+  <permission value="CMFPlomino: Control Database ACL"/>
  </action>
  <action title="Replication" 
          action_id="replication"
@@ -68,7 +68,7 @@
          condition_expr="python:1"
          url_expr="string:${object_url}/DatabaseReplication" 
          visible="True">
-  <permission value="python:EDIT_PERMISSION"/>
+  <permission value="CMFPlomino: Edit documents"/>
  </action>
  <action title="Design" 
          action_id="design"
@@ -76,7 +76,7 @@
          condition_expr="python:1"
          url_expr="string:${object_url}/DatabaseDesign" 
          visible="True">
-  <permission value="python:DESIGN_PERMISSION"/>
+  <permission value="CMFPlomino: Modify Database design"/>
  </action>
  <action title="Using" 
          action_id="using"
