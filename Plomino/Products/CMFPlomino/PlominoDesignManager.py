@@ -35,6 +35,7 @@ from cStringIO import StringIO
 import codecs
 import os
 import sys
+from shutil import rmtree
 import transaction
 
 from migration.migration import migrate
@@ -218,8 +219,10 @@ class PlominoDesignManager(Persistent):
                                  + [o.id for o in self.getAgents()] \
                                  + ["resources/"+id for id in self.resources.objectIds()]
             exportpath = os.path.join(targetfolder,(self.id))
-            if not os.path.isdir(exportpath):
-                os.makedirs(exportpath)
+            if os.path.isdir(exportpath):
+                # remove previous export
+                rmtree(exportpath)
+            os.makedirs(exportpath)
             resources_exportpath = os.path.join(exportpath,('resources'))
             if len([id for id in designelements if id.startswith('resources/')]) > 0:
                 if not os.path.isdir(resources_exportpath):
