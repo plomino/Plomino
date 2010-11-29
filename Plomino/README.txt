@@ -1,7 +1,7 @@
 Introduction
 ============
 
-Plomino is a Plone/ZOPE product which provides users with a Lotus Domino-like application development toolkit.
+Plomino is a powerful and flexible web-based application builder for Plone.
 
 Credits
 ========
