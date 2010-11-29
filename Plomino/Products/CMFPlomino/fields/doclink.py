@@ -129,7 +129,7 @@ class DoclinkField(BaseField):
         if self.sourceview is not None:
             sourceview = self.context.getParentDatabase().getView(self.sourceview)
             alldocs = sourceview.getAllDocuments()
-            columns = sourceview.getColumns()
+            columns = [col for col in sourceview.getColumns() if not(col.getHiddenColumn())]
             column_ids = [col.id for col in columns]
             
             datatable = []
@@ -151,7 +151,7 @@ class DoclinkField(BaseField):
         """
         if self.sourceview is not None:
             sourceview = self.context.getParentDatabase().getView(self.sourceview)
-            columns = sourceview.getColumns()
+            columns = [col for col in sourceview.getColumns() if not(col.getHiddenColumn())]
             column_labels = [col.Title() for col in columns]
         else:
             column_labels = [""]
