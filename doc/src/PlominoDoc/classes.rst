@@ -118,9 +118,10 @@ PlominoDocument
     is opened from a view and if the view has a form formula), else
     returns the form given by the document's Form item.
 
-`getItem(self, name)`
-    returns the item value if it exists, else returns an empty string.
-
+`getItem(self, name, default='')`
+    returns the item value if it exists, else returns the default value (an 
+    empty string if not provided).
+    
 `getItemClassname(self, name)`
     returns the class name of the item .
 
