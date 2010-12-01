@@ -462,9 +462,8 @@ class PlominoDesignManager(Persistent):
             print_exc(limit=50, file=f)
             msg = str(f.getvalue())
             #code / value
-            msg = msg + "Plomino formula error in "+script_id+": " + str(e)
-            msg = msg + "\n   in code : \n" + formula_getter()
-            msg = msg + "\n   with context : " + str(context)            
+            msg = msg + "\nScript id: "+script_id+": " + str(e)
+            msg = msg + "\n    code : \n" + formula_getter()
         else:
             msg = None
         
@@ -497,8 +496,9 @@ class PlominoDesignManager(Persistent):
         except:
             script_code = "#ALERT: "+scriptname+" not found in resources"
         formula=lambda:script_code+'\n\nreturn '+methodname+'(*args)'
+        
         return self.runFormulaScript(id, self, formula, True, *args)
-    
+        
     security.declarePublic('writeMessageOnPage')
     def writeMessageOnPage(self, infoMsg, REQUEST, error = False):
         """adds portal message        
