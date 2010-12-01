@@ -114,13 +114,13 @@ class PlominoDocument(ATFolder):
         self.plomino_modification_time = DateTime().toZone('UTC')
 
     security.declarePublic('getItem')
-    def getItem(self,name):
+    def getItem(self,name, default=''):
         """
         """
         if(self.items.has_key(name)):
             return self.items[name]
         else:
-            return ''
+            return default
 
     security.declarePublic('hasItem')
     def hasItem(self,name):
