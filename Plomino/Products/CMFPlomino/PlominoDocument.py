@@ -243,6 +243,8 @@ class PlominoDocument(ATFolder):
         # TODO: manage computed fields dependencies
         if form is None:
             form = self.getForm()
+        else:
+            self.setItem('Form', form.getFormName())
 
         db=self.getParentDatabase()
         if form:
