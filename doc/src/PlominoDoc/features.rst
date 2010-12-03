@@ -386,6 +386,22 @@ Result:
 
 .. image:: images/2c92d666.png
 
+Filling fields from the REQUEST
+-------------------------------
+
+Editable fields which are not part of the layout take automatically their value
+from the REQUEST.
+
+So, for example, if you want to pass a parameter to another form:
+- in the origin document, put the parameter in link to the target form, by
+  adding ``?param1=value&param2=value`` to the URL. This will cause the
+  parameter to be part of the GET request which retrieves the target form. 
+- in the target form, create an editable field with the same id as the param
+  key (e.g. ``param1``), but do not insert it in the form layout. The field
+  will get its value from the REQUEST.
+- then you can create `Computed on save` (or on display, or whatever) fields
+  which use the value of this field.
+
 
 Forms
 =====
