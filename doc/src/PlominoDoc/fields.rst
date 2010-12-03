@@ -261,6 +261,22 @@ Javascript settings
     :Purpose: 
           JQuery Datatables parameters
 
+Example: hide a column in a view
+````````````````````````````````
+
+You can hide a column in a view by changing the "Dynamic Table Parameters"
+field to include something like::
+
+    'aoData': [
+    	   { "bVisible":    false },
+    	   null,
+    	   null,
+    	   null
+    ]
+
+You would need one item in the array for each column in the table. 
+
+
 Google chart field
 ------------------
 
