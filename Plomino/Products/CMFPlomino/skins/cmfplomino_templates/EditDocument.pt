@@ -8,8 +8,8 @@
 <body>
 
 <metal:javascript_head fill-slot="javascript_head_slot">
-<tal:test tal:condition="python:here.hasItem('Form')">
-	<tal:block tal:condition="python:here.getForm().hasDateTimeField()">
+<tal:test tal:define="form python:here.getForm()" tal:condition="form">
+	<tal:block tal:condition="python:form.hasDateTimeField()">
 	    <script type="text/javascript"
 	              charset="iso-8859-1"
 	              tal:attributes="src string:$portal_url/jscalendar/calendar_stripped.js">
@@ -19,10 +19,10 @@
               tal:attributes="src string:$portal_url/jscalendar/calendar-en.js">
       </script>
 	</tal:block>
-    <tal:block tal:condition="python:here.getForm().hasGoogleVisualizationField()">
+    <tal:block tal:condition="python:form.hasGoogleVisualizationField()">
         <script type='text/javascript' src='http://www.google.com/jsapi'></script>
     </tal:block>
-    <script type="text/javascript" tal:condition="python:here.getForm().hasDynamicHidewhen()">
+    <script type="text/javascript" tal:condition="python:form.hasDynamicHidewhen()">
     	function refreshHidewhen() {
         	var onsuccess = function(data, textStatus, xhr) {
             	for (var hw in data)
@@ -38,14 +38,14 @@
 </metal:javascript_head>
 
 <metal:css fill-slot="style_slot">
-<tal:test tal:condition="python:here.hasItem('Form')">
-	<tal:block tal:condition="python:here.getForm().hasDateTimeField()">
+<tal:test tal:define="form python:here.getForm()" tal:condition="form">
+	<tal:block tal:condition="python:form.hasDateTimeField()">
       <style type="text/css"
              media="all"
              tal:content="structure string:<!-- @import url($portal_url/jscalendar/calendar-system.css); -->">
       </style>
 	</tal:block>
-	<tal:block tal:condition="python:here.getForm().hasGoogleVisualizationField()">
+	<tal:block tal:condition="python:form.hasGoogleVisualizationField()">
         <style type="text/css" media="all" tal:content="structure string:<!-- @import url($portal_url/datatable.css); -->">
         </style>
     </tal:block>
