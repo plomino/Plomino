@@ -535,26 +535,27 @@ class PlominoDesignManager(Persistent):
             plone_tools.addPortalMessage(message, 'error', REQUEST)
             
     security.declarePublic('getRenderingTemplate')
-    def getRenderingTemplate(self, templatename):
+    def getRenderingTemplate(self, templatename, request=None):
         """
         """
-        req = self.REQUEST
-        try:
-            rep=self.REQUEST['RESPONSE']
-        except Exception:
-            self.REQUEST['RESPONSE']=HTTPResponse()
-
         skin=self.portal_skins.cmfplomino_templates
         if hasattr(skin, templatename):
             pt = getattr(skin, templatename)
             if not pt.REQUEST.__class__.__name__=='HTTPRequest':
-                # probably ZpCron context, so we create a fake HTTPRequest
-                response = HTTPResponse(stdout=sys.stdout)
-                env = {'SERVER_NAME':'fake_server',
-                       'SERVER_PORT':'80',
-                       'REQUEST_METHOD':'GET'}
-                fakerequest = HTTPRequest(sys.stdin, env, response)
-                pt.REQUEST = fakerequest
+                # we are not in an actual web context, but we a need a request
+                # object to have the template working
+                if not request:
+                    response = HTTPResponse(stdout=sys.stdout)
+                    env = {'SERVER_NAME':'fake_server',
+                           'SERVER_PORT':'80',
+                           'REQUEST_METHOD':'GET'}
+                    request = HTTPRequest(sys.stdin, env, response)
+                pt.REQUEST = request
+                
+            # we also need a RESPONSE
+            if not pt.REQUEST.has_key('RESPONSE'):
+                pt.REQUEST['RESPONSE']=HTTPResponse()
+                
             return pt
         else:
             return None
