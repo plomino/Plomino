@@ -134,7 +134,7 @@ class PlominoIndex(UniqueObject, ZCatalog, ActionProviderBase):
         try:
           self.catalog_object(doc, "/".join(doc.getParentDatabase().getPhysicalPath())+"/"+doc.id)
         except Exception, e:
-          self.plone_log('%s\non %s'%(`e`, doc.id))
+          self.portal_skins.plone_scripts.plone_log('%s\non %s'%(`e`, doc.id))
           raise
 
     security.declareProtected(READ_PERMISSION, 'unindexDocument')
