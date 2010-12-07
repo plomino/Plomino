@@ -410,7 +410,7 @@ class PlominoDocument(ATFolder):
             #result = RunFormula(self, c.Formula())
             result = self.runFormulaScript("column_"+v.id+"_"+c.id+"_formula", self, c.Formula)
         except PlominoScriptException, e:
-            self.reportError('"%s" column formula failed' % c.Title(), formula=e.formula)
+            self.reportError('"%s" column formula failed in %s view' % (c.Title(), viewname), formula=e.formula)
             result = None
         return result
 
