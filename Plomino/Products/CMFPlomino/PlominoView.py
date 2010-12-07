@@ -501,7 +501,10 @@ class PlominoView(ATFolder):
                 values.append(v)
             rows.append(values)
         
-        html ="<html>\n<body>\n<table>\n"
+        html ="""<html><head>
+    <meta http-equiv="Content-Type"
+          content="text/html;charset=utf-8" />
+<body><table>"""
         for row in rows:
             html = html + "<tr>" + ''.join(["<td>%s</td>" % v for v in row]) + "</tr>\n"
         
