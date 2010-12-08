@@ -80,6 +80,7 @@ schema = Schema((
             label_msgid='CMFPlomino_label_FieldFormula',
             description_msgid='CMFPlomino_help_FieldFormula',
             i18n_domain='CMFPlomino',
+            rows=10,
         ),
     ),
     StringField(
