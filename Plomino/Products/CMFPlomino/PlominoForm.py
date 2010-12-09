@@ -520,6 +520,21 @@ class PlominoForm(ATFolder):
         """
         return getattr(self, fieldname, None)
 
+    security.declarePublic('computeFieldValue')
+    def computeFieldValue(self, fieldname, target):
+        """evalute field formula over target
+        """
+        field = self.getFormField(fieldname)
+        fieldvalue = None
+        if field:
+            db = self.getParentDatabase()
+            try:
+                fieldvalue = db.runFormulaScript("field_"+self.id+"_"+fieldname+"_formula", target, field.Formula)
+            except PlominoScriptException, e:
+                db.reportError('%s field formula failed' % fieldname, formula=e.formula)
+            
+        return fieldvalue
+    
     security.declarePublic('hasDateTimeField')
     def hasDateTimeField(self):
         """return true if the form contains at least one DateTime field

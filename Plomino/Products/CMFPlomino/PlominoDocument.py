@@ -250,14 +250,10 @@ class PlominoDocument(ATFolder):
         if form:
             for f in form.getFields(includesubforms=True):
                 mode = f.getFieldMode()
-                fieldName = f.id
+                fieldname = f.id
                 if mode in ["COMPUTED", "COMPUTEDONSAVE"] or (mode=="CREATION" and creation):
-                    try:
-                        result = self.runFormulaScript("field_"+f.getParentNode().id+"_"+fieldName+"_formula", self, f.Formula)
-                    except PlominoScriptException, e:
-                        self.reportError('%s field formula failed' % fieldName, formula=e.formula)
-                        result = None
-                    self.setItem(fieldName, result)
+                    result = form.computeFieldValue(fieldname, self)
+                    self.setItem(fieldname, result)
                 else:
                     # computed for display field are not stored
                     pass
