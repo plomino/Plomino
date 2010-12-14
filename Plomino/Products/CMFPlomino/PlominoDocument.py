@@ -161,22 +161,46 @@ class PlominoDocument(ATFolder):
             return self.plomino_modification_time
         
     security.declarePublic('getRenderedItem')
-    def getRenderedItem(self, itemname, form=None, convertattachments=False):
+    def getRenderedItem(self, itemname, form=None, formid=None, convertattachments=False):
         """ return the item value rendered according the field defined in the given form
         (use default doc form if None)
         """
-        db=self.getParentDatabase()
-        if form is None:
-            form = db.getForm(self.Form)
-        field=form.getFormField(itemname)
-        if not field is None:
-            content = field.getFieldRender(form, self, False)
-            if field.getFieldType()=='ATTACHMENT' and convertattachments:
-                content = content+' '+db.getIndex().convertFileToText(self,itemname)
-            return content
-        else:
-            return ''
+        result = ''
+        db = self.getParentDatabase()
+        if not form:
+            if not formid:
+                form = self.getForm()
+            else:
+                form = db.getForm(formid)
+        if form:
+            field = form.getFormField(itemname)
+            if field:
+                result = field.getFieldRender(form, self, False)
+                if field.getFieldType()=='ATTACHMENT' and convertattachments:
+                    result = result + ' ' + db.getIndex().convertFileToText(self,itemname)
+                return result
 
+        return result
+
+    security.declarePublic('computeItem')
+    def computeItem(self, itemname, form=None, formid=None, store=True):
+        """ return the item value according the formula of the field defined in
+        the given form (use default doc form if None)
+        and store the value in the doc (if store=True)
+        """
+        result = None
+        db = self.getParentDatabase()
+        if not form:
+            if not formid:
+                form = self.getForm()
+            else:
+                form = db.getForm(formid)
+        if form:
+            result = form.computeFieldValue(itemname, self)
+            if store:
+                self.setItem(itemname, result)
+        return result
+            
     security.declarePublic('getParentDatabase')
     def getParentDatabase(self):
         """
