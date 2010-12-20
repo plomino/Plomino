@@ -318,7 +318,8 @@ class PlominoDocument(ATFolder):
             # update index
             db.getIndex().indexDocument(self)
             # update portal_catalog
-            self.reindexObject()
+            if db.getIndexInPortal():
+                self.reindexObject()
             event.notify(ObjectEditedEvent(self))
 
     security.declareProtected(READ_PERMISSION, 'openWithForm')
@@ -467,15 +468,15 @@ class PlominoDocument(ATFolder):
             else:
                 values.append(asUnicode(item_value))
             # if selection or attachment field, we try to index rendered values too
-            if form:
-                field = form.getFormField(itemname)
-                if field and field.getFieldType() in ["SELECTION", "ATTACHMENT"]:
-                    try:
+            try:
+                if form:
+                    field = form.getFormField(itemname)
+                    if field and field.getFieldType() in ["SELECTION", "ATTACHMENT"]:
                         v = asUnicode(self.getRenderedItem(itemname,form=form, convertattachments=index_attachments))
                         if v:
                             values.append(v)
-                    except:
-                        pass
+            except:
+                pass
         return ' '.join(values)
 
     security.declareProtected(READ_PERMISSION, 'getfile')

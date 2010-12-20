@@ -101,6 +101,17 @@ schema = Schema((
         ),
     ),
     BooleanField(
+        name='IndexInPortal',
+        default=True,
+        widget=BooleanField._properties['widget'](
+            label="Index documents in Plone portal",
+            description="If enabled, documents are searchable in Plone search.",
+            label_msgid='CMFPlomino_label_IndexInPortal',
+            description_msgid='CMFPlomino_help_IndexInPortal',
+            i18n_domain='CMFPlomino',
+        ),
+    ),
+    BooleanField(
         name='debugMode',
         default=False,
         widget=BooleanField._properties['widget'](

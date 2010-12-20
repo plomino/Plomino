@@ -103,6 +103,15 @@ class PlominoDesignManager(Persistent):
         report.append(msg)
         logger.info(msg)
         
+        # clean portal_catalog
+        portal_catalog = self.portal_catalog
+        catalog_entries = portal_catalog.search({'portal_type' : ['PlominoDocument'], 'path': '/'.join(self.getPhysicalPath())})
+        for d in catalog_entries:
+            portal_catalog.uncatalog_object(d.getPath())
+        msg = 'Portal catalog clean'
+        report.append(msg)
+        logger.info(msg)
+        
         # destroy the index
         self.manage_delObjects(self.getIndex().getId())
         msg = 'Old index removed'
