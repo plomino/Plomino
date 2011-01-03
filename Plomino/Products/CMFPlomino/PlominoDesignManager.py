@@ -40,6 +40,7 @@ import transaction
 
 from migration.migration import migrate
 from exceptions import PlominoScriptException
+from PlominoUtils import asUnicode
 
 # get AT specific schemas for each Plomino class
 from Products.CMFPlomino.PlominoForm import schema as form_schema
@@ -533,6 +534,7 @@ class PlominoDesignManager(Persistent):
     def reportError(self, message, request=None, formula=None, path=None):
         """
         """
+        message = asUnicode(message)
         if not request:
             if hasattr(self, 'REQUEST'):
                 request = self.REQUEST
