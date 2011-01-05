@@ -194,8 +194,8 @@ Rich-text field:
     >>> db.frm2.setFormLayout("""<p>My comments: <span class="plominoFieldClass">comments</span></p>""")
     >>> doc4.setItem('comments', """I am not sure it is <b>correct</b><br/>.\nSo please, check <a href='http://www.google.com'>here</a>""")
     >>> doc4.save()
-    >>> db.frm2.displayDocument(doc4)
-    u"<p>My comments: I am not sure it is <b>correct</b><br/>.\nSo please, check <a href='http://www.google.com'>here</a>\n</p>"
+    >>> db.frm2.displayDocument(doc4).replace('\n', '')
+    u"<p>My comments: I am not sure it is <b>correct</b><br/>.So please, check <a href='http://www.google.com'>here</a></p>"
     >>> REQUEST={'comments': """I am not sure it is <b>correct</b><br/>.\nSo please, check <a href='http://www.google.com'>here</a>"""}
     >>> db.frm2.validateInputs(REQUEST)
     []
@@ -271,7 +271,7 @@ Plomino index
 
 The Plomino index is a ZCatalog indexing views selection formula, view columns, and all the fields flagged as to be indexed
 
-    >>> id=db.frm2.invokeFactory('PlominoField', id='question', Title='A question', FieldType="TEXT", ToBeIndexed=True)
+    >>> id=db.frm2.invokeFactory('PlominoField', id='question', Title='A question', FieldType="RICHTEXT", ToBeIndexed=True)
     >>> db.frm2.question.at_post_create_script()
     >>> doc5=db.createDocument()
     >>> doc5.setItem('Form', 'frm2')

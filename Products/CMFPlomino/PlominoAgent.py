@@ -41,6 +41,7 @@ schema = Schema((
             label_msgid="CMFPlomino_label_AgentContent",
             description_msgid="CMFPlomino_help_AgentContent",
             i18n_domain='CMFPlomino',
+            rows=25,
         ),
     ),
 ),
@@ -56,7 +57,7 @@ class PlominoAgent(BaseContent, BrowserDefaultMixin):
     implements(interfaces.IPlominoAgent)
 
     meta_type = 'PlominoAgent'
-    _at_rename_after_creation = True
+    _at_rename_after_creation = False
 
     schema = PlominoAgent_schema
 
@@ -79,7 +80,7 @@ class PlominoAgent(BaseContent, BrowserDefaultMixin):
         try:
             result = self.runFormulaScript("agent_"+self.id, plominoContext, self.Content, True, *args)
         except Exception, e:
-            self.reportError('Agent failed.')
+            self.reportError('Agent failed.', formula=e.formula)
             result = None
             
         return result
@@ -97,7 +98,7 @@ class PlominoAgent(BaseContent, BrowserDefaultMixin):
                     plominoReturnURL=r
                 REQUEST.RESPONSE.redirect(plominoReturnURL)
         except PlominoScriptException, e:
-            return "Error: %s \nCode->\n%s" % (e, self.Content())
+            return "Error"
 
 
 registerType(PlominoAgent, PROJECTNAME)

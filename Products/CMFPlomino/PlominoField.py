@@ -80,6 +80,7 @@ schema = Schema((
             label_msgid='CMFPlomino_label_FieldFormula',
             description_msgid='CMFPlomino_help_FieldFormula',
             i18n_domain='CMFPlomino',
+            rows=10,
         ),
     ),
     StringField(
@@ -161,7 +162,7 @@ class PlominoField(BaseContent, BrowserDefaultMixin):
     implements(interfaces.IPlominoField)
 
     meta_type = 'PlominoField'
-    _at_rename_after_creation = True
+    _at_rename_after_creation = False
 
     schema = PlominoField_schema
 

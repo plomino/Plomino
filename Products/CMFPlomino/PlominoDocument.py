@@ -69,7 +69,7 @@ class PlominoDocument(ATFolder):
     implements(interfaces.IPlominoDocument)
 
     meta_type = 'PlominoDocument'
-    _at_rename_after_creation = True
+    _at_rename_after_creation = False
 
     schema = PlominoDocument_schema
 
@@ -114,13 +114,13 @@ class PlominoDocument(ATFolder):
         self.plomino_modification_time = DateTime().toZone('UTC')
 
     security.declarePublic('getItem')
-    def getItem(self,name):
+    def getItem(self,name, default=''):
         """
         """
         if(self.items.has_key(name)):
             return self.items[name]
         else:
-            return ''
+            return default
 
     security.declarePublic('hasItem')
     def hasItem(self,name):
@@ -161,22 +161,46 @@ class PlominoDocument(ATFolder):
             return self.plomino_modification_time
         
     security.declarePublic('getRenderedItem')
-    def getRenderedItem(self, itemname, form=None, convertattachments=False):
+    def getRenderedItem(self, itemname, form=None, formid=None, convertattachments=False):
         """ return the item value rendered according the field defined in the given form
         (use default doc form if None)
         """
-        db=self.getParentDatabase()
-        if form is None:
-            form = db.getForm(self.Form)
-        field=form.getFormField(itemname)
-        if not field is None:
-            content = field.getFieldRender(form, self, False)
-            if field.getFieldType()=='ATTACHMENT' and convertattachments:
-                content = content+' '+db.getIndex().convertFileToText(self,itemname)
-            return content
-        else:
-            return ''
+        result = ''
+        db = self.getParentDatabase()
+        if not form:
+            if not formid:
+                form = self.getForm()
+            else:
+                form = db.getForm(formid)
+        if form:
+            field = form.getFormField(itemname)
+            if field:
+                result = field.getFieldRender(form, self, False)
+                if field.getFieldType()=='ATTACHMENT' and convertattachments:
+                    result = result + ' ' + db.getIndex().convertFileToText(self,itemname)
+                return result
 
+        return result
+
+    security.declarePublic('computeItem')
+    def computeItem(self, itemname, form=None, formid=None, store=True):
+        """ return the item value according the formula of the field defined in
+        the given form (use default doc form if None)
+        and store the value in the doc (if store=True)
+        """
+        result = None
+        db = self.getParentDatabase()
+        if not form:
+            if not formid:
+                form = self.getForm()
+            else:
+                form = db.getForm(formid)
+        if form:
+            result = form.computeFieldValue(itemname, self)
+            if store:
+                self.setItem(itemname, result)
+        return result
+            
     security.declarePublic('getParentDatabase')
     def getParentDatabase(self):
         """
@@ -243,28 +267,26 @@ class PlominoDocument(ATFolder):
         # TODO: manage computed fields dependencies
         if form is None:
             form = self.getForm()
+        else:
+            self.setItem('Form', form.getFormName())
 
         db=self.getParentDatabase()
         if form:
             for f in form.getFields(includesubforms=True):
                 mode = f.getFieldMode()
-                fieldName = f.id
+                fieldname = f.id
                 if mode in ["COMPUTED", "COMPUTEDONSAVE"] or (mode=="CREATION" and creation):
-                    try:
-                        result = self.runFormulaScript("field_"+f.getParentNode().id+"_"+fieldName+"_formula", self, f.Formula)
-                    except PlominoScriptException, e:
-                        self.reportError('%s field formula failed' % fieldName)
-                        result = None
-                    self.setItem(fieldName, result)
+                    result = form.computeFieldValue(fieldname, self)
+                    self.setItem(fieldname, result)
                 else:
                     # computed for display field are not stored
                     pass
 
             # compute the document title
             try:
-                result = self.runFormulaScript("form_"+form.id+"_title", self, form.getDocumentTitle)
+                result = self.runFormulaScript("form_"+form.id+"_title", self, form.DocumentTitle)
             except PlominoScriptException, e:
-                self.reportError('Title formula failed')
+                self.reportError('Title formula failed', formula=e.formula)
                 result = ""
             if not result:
                 result = form.Title()
@@ -289,14 +311,15 @@ class PlominoDocument(ATFolder):
                 self.runFormulaScript("form_"+form.id+"_onsave", self, form.onSaveDocument)
             except PlominoScriptException, e:
                 if self.REQUEST:
-                    self.reportError('Document has been saved but onSave event failed.')
+                    self.reportError('Document has been saved but onSave event failed.', formula=e.formula)
                     self.REQUEST.RESPONSE.redirect(self.url())
 
         if refresh_index:
             # update index
             db.getIndex().indexDocument(self)
             # update portal_catalog
-            self.reindexObject()
+            if db.getIndexInPortal():
+                self.reindexObject()
             event.notify(ObjectEditedEvent(self))
 
     security.declareProtected(READ_PERMISSION, 'openWithForm')
@@ -388,12 +411,13 @@ class PlominoDocument(ATFolder):
         """
         db = self.getParentDatabase()
         v = db.getView(viewname)
-        try:
-            #result = RunFormula(self, v.SelectionFormula())
-            result = self.runFormulaScript("view_"+v.id+"_selection", self, v.SelectionFormula)
-        except PlominoScriptException, e:
-            self.reportError('View selection formula failed')
-            result = False
+        result = False
+        if v:
+            try:
+                #result = RunFormula(self, v.SelectionFormula())
+                result = self.runFormulaScript("view_"+v.id+"_selection", self, v.SelectionFormula)
+            except PlominoScriptException, e:
+                self.reportError('%s view selection formula failed' % viewname, formula=e.formula)
         return result
 
     security.declareProtected(READ_PERMISSION, 'computeColumnValue')
@@ -407,7 +431,7 @@ class PlominoDocument(ATFolder):
             #result = RunFormula(self, c.Formula())
             result = self.runFormulaScript("column_"+v.id+"_"+c.id+"_formula", self, c.Formula)
         except PlominoScriptException, e:
-            self.reportError('"%s" column formula failed' % c.Title())
+            self.reportError('"%s" column formula failed in %s view' % (c.Title(), viewname), formula=e.formula)
             result = None
         return result
 
@@ -444,15 +468,15 @@ class PlominoDocument(ATFolder):
             else:
                 values.append(asUnicode(item_value))
             # if selection or attachment field, we try to index rendered values too
-            if form:
-                field = form.getFormField(itemname)
-                if field and field.getFieldType() in ["SELECTION", "ATTACHMENT"]:
-                    try:
+            try:
+                if form:
+                    field = form.getFormField(itemname)
+                    if field and field.getFieldType() in ["SELECTION", "ATTACHMENT"]:
                         v = asUnicode(self.getRenderedItem(itemname,form=form, convertattachments=index_attachments))
                         if v:
                             values.append(v)
-                    except:
-                        pass
+            except:
+                pass
         return ' '.join(values)
 
     security.declareProtected(READ_PERMISSION, 'getfile')

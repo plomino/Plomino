@@ -8,13 +8,13 @@
 <body>
 
 <metal:javascript_head fill-slot="javascript_head_slot">
-    <tal:block tal:condition="python:here.getForm().hasGoogleVisualizationField()">
+    <tal:block tal:condition="python:here.hasItem('Form') and here.getForm().hasGoogleVisualizationField()">
         <script type='text/javascript' src='http://www.google.com/jsapi'></script>
     </tal:block>
 </metal:javascript_head>
 
-<metal:css fill-slot="css_slot">
-    <tal:block tal:condition="python:here.getForm().hasGoogleVisualizationField()">
+<metal:css fill-slot="style_slot">
+    <tal:block tal:condition="python:here.hasItem('Form') and here.getForm().hasGoogleVisualizationField()">
         <style type="text/css" media="all" tal:content="structure string:<!-- @import url($portal_url/datatable.css); -->">
         </style>
     </tal:block>
@@ -30,7 +30,7 @@
 							b myF/ActionBarPosition|nothing">
 			<div tal:replace="structure provider:plone.abovecontenttitle" />
 			
-			<form tal:attributes="name python:here.getForm().id">
+			<form tal:attributes="name python:myF.id">
 			<span style="display: none" id="plomino_path" tal:content="python:'/'.join(here.getPhysicalPath())">path</span>
 			<span style="display: none" id="plomino_childof" 
                   tal:condition="python:test(here.hasItem('Plomino_ChildOf'))"

@@ -113,7 +113,7 @@ a.viewlink {
 }
 
 /* clouseau debugger */
-#plominoMessages dd a {
+dd.plominoMessage a {
     border: none;
     float: right;
 }

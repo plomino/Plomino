@@ -136,7 +136,7 @@ Log out
 AUTHOR
 ==============================================================================
 Log in with PlominoAuthor access rights
-    >>> browser.getLink('Log in').click()
+    >>> browser.open(portal_url+'/login_form')
     >>> browser.getControl('Login Name').value = 'userAuthor'
     >>> browser.getControl('Password').value = 'userAuthor'
     >>> browser.getControl('Log in').click()
@@ -212,7 +212,7 @@ Log out
 EDITOR
 ==============================================================================
 Log in with PlominoEditor access rights
-    >>> browser.getLink('Log in').click()
+    >>> browser.open(portal_url+'/login_form')
     >>> browser.getControl('Login Name').value = 'userEditor'
     >>> browser.getControl('Password').value = 'userEditor'
     >>> browser.getControl('Log in').click()
@@ -259,7 +259,7 @@ AUTHOR RIGHT FOR GROUPS
     >>> db.manage_setLocalRoles('PowerfulPeople', ['PlominoAuthor'])
 
 Log in with account from the author group and create a doc
-    >>> browser.getLink('Log in').click()
+    >>> browser.open(portal_url+'/login_form')
     >>> browser.getControl('Login Name').value = 'userAuthor'
     >>> browser.getControl('Password').value = 'userAuthor'
     >>> browser.getControl('Log in').click()
@@ -270,7 +270,7 @@ Log in with account from the author group and create a doc
     >>> browser.open(portal_url+'/logout')
 
 Log as other group member
-    >>> browser.getLink('Log in').click()
+    >>> browser.open(portal_url+'/login_form')
     >>> browser.getControl('Login Name').value = 'userAuthor2'
     >>> browser.getControl('Password').value = 'userAuthor2'
     >>> browser.getControl('Log in').click()

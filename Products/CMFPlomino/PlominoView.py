@@ -205,7 +205,7 @@ class PlominoView(ATFolder):
     implements(interfaces.IPlominoView)
 
     meta_type = 'PlominoView'
-    _at_rename_after_creation = True
+    _at_rename_after_creation = False
 
     schema = PlominoView_schema
 
@@ -291,7 +291,7 @@ class PlominoView(ATFolder):
                     #result = RunFormula(target, obj_a.getHidewhen())
                     result = self.runFormulaScript("action_"+obj_a.getParentNode().id+"_"+obj_a.id+"_hidewhen", target, obj_a.Hidewhen)
                 except PlominoScriptException, e:
-                    self.reportError('"%s" action hide-when failed' % obj_a.Title())
+                    self.reportError('"%s" action hide-when failed' % obj_a.Title(), formula=e.formula)
                     #if error, we hide anyway
                     result = True
                 if not result:
@@ -314,7 +314,7 @@ class PlominoView(ATFolder):
             #result = RunFormula(doc, self.getFormFormula())
             result = self.runFormulaScript("view_"+self.id+"_formformula", doc, self.FormFormula)
         except PlominoScriptException, e:
-            self.reportError('"%s" form formula failed' % self.Title())
+            self.reportError('"%s" form formula failed' % self.Title(), formula=e.formula)
             result = ""
         return result
 
@@ -501,7 +501,10 @@ class PlominoView(ATFolder):
                 values.append(v)
             rows.append(values)
         
-        html ="<html>\n<body>\n<table>\n"
+        html ="""<html><head>
+    <meta http-equiv="Content-Type"
+          content="text/html;charset=utf-8" />
+<body><table>"""
         for row in rows:
             html = html + "<tr>" + ''.join(["<td>%s</td>" % v for v in row]) + "</tr>\n"
         

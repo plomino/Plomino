@@ -73,10 +73,7 @@ class BaseField(object):
         if mode=="EDITABLE":
             if doc is None:
                 if creation and not self.context.Formula()=="":
-                    try:
-                        fieldValue = db.runFormulaScript("field_"+form.id+"_"+fieldName+"_formula", target, self.context.Formula)
-                    except PlominoScriptException, e:
-                        db.reportError('%s field formula failed' % fieldName)
+                    fieldValue = form.computeFieldValue(fieldName, target)
                 elif request is None:
                     fieldValue = ""
                 else:
@@ -94,22 +91,17 @@ class BaseField(object):
                 fieldValue = doc.getItem(fieldName)
 
         if mode=="DISPLAY" or mode=="COMPUTED":
-            try:
-                fieldValue = db.runFormulaScript("field_"+form.id+"_"+fieldName+"_formula", target, self.context.Formula)
-            except PlominoScriptException, e:
-                db.reportError('%s field formula failed' % fieldName)
+            fieldValue = form.computeFieldValue(fieldName, target)
+
         if mode=="CREATION":
             if creation:
-                # Note: on creation, there is no doc, we use self as param
+                # Note: on creation, there is no doc, we use form as target
                 # in formula
-                try:
-                    fieldValue = db.runFormulaScript("field_"+form.id+"_"+fieldName+"_formula", form, self.context.Formula)
-                except PlominoScriptException, e:
-                    db.reportError('%s field formula failed' % fieldName)
+                fieldValue = form.computeFieldValue(fieldName, form)
             else:
                 fieldValue = doc.getItem(fieldName)
                 
-        if mode=="COMPUTEDONSAVE":
+        if mode=="COMPUTEDONSAVE" and doc:
             fieldValue = doc.getItem(fieldName)
             
         if fieldValue is None:

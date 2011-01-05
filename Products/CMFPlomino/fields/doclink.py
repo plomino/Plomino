@@ -100,7 +100,7 @@ class DoclinkField(BaseField):
             try:
                 s = self.context.runFormulaScript("field_"+self.context.getParentNode().id+"_"+self.context.id+"_DocumentListFormula", obj, lambda: f)
             except PlominoScriptException, e:
-                self.context.reportError('%s doclink field selection list formula failed' % self.context.id)
+                self.context.reportError('%s doclink field selection list formula failed' % self.context.id, path=self.context.absolute_url_path()+'/getSettings?key=documentslistformula')
                 s = None
             if s is None:
                 s = []
@@ -129,7 +129,7 @@ class DoclinkField(BaseField):
         if self.sourceview is not None:
             sourceview = self.context.getParentDatabase().getView(self.sourceview)
             alldocs = sourceview.getAllDocuments()
-            columns = sourceview.getColumns()
+            columns = [col for col in sourceview.getColumns() if not(col.getHiddenColumn())]
             column_ids = [col.id for col in columns]
             
             datatable = []
@@ -151,7 +151,7 @@ class DoclinkField(BaseField):
         """
         if self.sourceview is not None:
             sourceview = self.context.getParentDatabase().getView(self.sourceview)
-            columns = sourceview.getColumns()
+            columns = [col for col in sourceview.getColumns() if not(col.getHiddenColumn())]
             column_labels = [col.Title() for col in columns]
         else:
             column_labels = [""]

@@ -31,7 +31,7 @@
 	</script>
 </metal:javascript_head>
 
-<metal:css fill-slot="css_slot">
+<metal:css fill-slot="style_slot">
     <tal:block tal:condition="python:here.hasDateTimeField()">
         <style type="text/css" media="all" tal:content="structure string:<!-- @import url($portal_url/jscalendar/calendar-system.css); -->">
       </style>

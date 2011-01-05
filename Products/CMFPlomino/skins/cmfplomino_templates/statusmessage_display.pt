@@ -1,0 +1,37 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en"
+      xmlns:tal="http://xml.zope.org/namespaces/tal"
+      xmlns:metal="http://xml.zope.org/namespaces/metal"
+      xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+      i18n:domain="plone">
+
+
+<tal:block metal:define-macro="display_error">
+    <dl class="portalMessage info"
+        tal:define="mtype message/type | nothing;
+                    msg message/message | nothing;
+                    plominoerror python:test(' - Plomino formula ' in msg);"
+        tal:attributes="class string:portalMessage ${mtype};">
+        <dt tal:content="python:mtype.capitalize()"
+            i18n:translate="">
+            Info
+        </dt>
+        <dd tal:attributes="class python:test(plominoerror, 'plominoMessage', '')">
+            <span tal:condition="not:plominoerror" tal:content="msg"
+                i18n:translate="">
+                The status message.</span>
+            <tal:block tal:condition="plominoerror"
+                        tal:define="plomino_message python:msg.split(' - Plomino formula ');
+                                    user_message python:plomino_message[0];
+                                    formula_path python:plomino_message[-1];">
+                <span tal:content="user_message">
+                    The status message.</span>
+                <a href="#" tal:condition="clouseau"
+                   class="plominoMessage ui-icon ui-icon-search"
+                   title="Launch debugger"
+                   tal:attributes="href string:javascript:debug_plomino('${here/absolute_url_path}', '${formula_path}')"
+                   >Debug</a>
+            </tal:block>
+        </dd>
+    </dl>
+</tal:block>
+</html>

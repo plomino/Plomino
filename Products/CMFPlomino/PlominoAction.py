@@ -113,7 +113,7 @@ class PlominoAction(BaseContent, BrowserDefaultMixin):
     implements(interfaces.IPlominoAction)
 
     meta_type = 'PlominoAction'
-    _at_rename_after_creation = True
+    _at_rename_after_creation = False
 
     schema = PlominoAction_schema
 
@@ -129,10 +129,12 @@ class PlominoAction(BaseContent, BrowserDefaultMixin):
         db = self.getParentDatabase()
         if self.ActionType == "OPENFORM":
             form = db.getForm(self.Content())
-            return form.absolute_url() + '/OpenForm'
+            if form:
+                return form.absolute_url() + '/OpenForm'
         elif self.ActionType == "OPENVIEW":
             view = db.getView(self.Content())
-            return view.absolute_url() + '/OpenView'
+            if view:
+                return view.absolute_url() + '/OpenView'
         elif self.ActionType == "CLOSE":
             return db.absolute_url() + '/checkBeforeOpenDatabase'
         elif self.ActionType == "PYTHON":
@@ -171,7 +173,7 @@ class PlominoAction(BaseContent, BrowserDefaultMixin):
                 returnurl=plominoReturnURL
             REQUEST.RESPONSE.redirect(returnurl)
         except PlominoScriptException, e:
-            self.reportError('"%s" action failed' % self.Title(), REQUEST)
+            self.reportError('"%s" action failed' % self.Title(), REQUEST, formula=e.formula)
             REQUEST.RESPONSE.redirect(plominoReturnURL)
 
     security.declarePublic('at_post_edit_script')

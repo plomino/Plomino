@@ -55,17 +55,17 @@ def sendMail(db, recipients, title, html_message, sender=None):
     """
     host = getToolByName(db, 'MailHost')
     plone_tools = getToolByName(db, 'plone_utils')
-    message = '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">\n'
+    encoding = plone_tools.getSiteEncoding()
+    message = 'Content-Type: text/html; charset="%s"' % encoding
+    message = message + '\n<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">\n'
     message = message + "<html>"
     message = message + html_message
     message = message + "</html>"
     if sender is None:
         sender = db.getCurrentUser().getProperty("email")
-    encoding = plone_tools.getSiteEncoding()
-    host.secureSend(message, recipients,
-        sender, subject=title,
-        subtype='html', charset=encoding,
-        debug=False, From=sender)
+    host.send(message, mto=recipients,
+        mfrom=sender, subject=title,
+        encode=encoding)
     
 def userFullname(db, userid):
     """ return user fullname if exist, else return userid, and return Unknown if user not found
@@ -147,6 +147,14 @@ def csv_to_array(csvcontent, delimiter='\t', quotechar='"'):
         csvfile = csvcontent
     return [l for l in csv.reader(csvfile, delimiter=delimiter, quotechar=quotechar)]
 
+def array_to_csv(values, delimiter='\t', quotechar='"'):
+    """
+    """
+    s = StringIO()
+    writer = csv.writer(s, delimiter=delimiter, quotechar=quotechar, quoting=csv.QUOTE_NONNUMERIC)
+    writer.writerows(values)
+    return s.getvalue()
+    
 def open_url(url, asFile=False):
     """ retrieve content from url
     """

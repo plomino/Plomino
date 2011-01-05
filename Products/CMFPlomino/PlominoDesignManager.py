@@ -35,10 +35,12 @@ from cStringIO import StringIO
 import codecs
 import os
 import sys
+import glob
 import transaction
 
 from migration.migration import migrate
 from exceptions import PlominoScriptException
+from PlominoUtils import asUnicode
 
 # get AT specific schemas for each Plomino class
 from Products.CMFPlomino.PlominoForm import schema as form_schema
@@ -99,6 +101,15 @@ class PlominoDesignManager(Persistent):
             self._setObject('scripts', scripts)
         self.cleanFormulaScripts()
         msg = 'Scripts folder OK and clean'
+        report.append(msg)
+        logger.info(msg)
+        
+        # clean portal_catalog
+        portal_catalog = self.portal_catalog
+        catalog_entries = portal_catalog.search({'portal_type' : ['PlominoDocument'], 'path': '/'.join(self.getPhysicalPath())})
+        for d in catalog_entries:
+            portal_catalog.uncatalog_object(d.getPath())
+        msg = 'Portal catalog clean'
         report.append(msg)
         logger.info(msg)
         
@@ -218,9 +229,16 @@ class PlominoDesignManager(Persistent):
                                  + [o.id for o in self.getAgents()] \
                                  + ["resources/"+id for id in self.resources.objectIds()]
             exportpath = os.path.join(targetfolder,(self.id))
-            if not os.path.isdir(exportpath):
-                os.makedirs(exportpath)
             resources_exportpath = os.path.join(exportpath,('resources'))
+            if os.path.isdir(exportpath):
+                # remove previous export
+                for f in glob.glob(os.path.join(exportpath,"*.xml")):
+                    os.remove(f)
+                if os.path.isdir(resources_exportpath):
+                    for f in glob.glob(os.path.join(resources_exportpath,"*.xml")):
+                        os.remove(f)
+            else:
+                os.makedirs(exportpath)
             if len([id for id in designelements if id.startswith('resources/')]) > 0:
                 if not os.path.isdir(resources_exportpath):
                     os.makedirs(resources_exportpath)
@@ -454,9 +472,8 @@ class PlominoDesignManager(Persistent):
             print_exc(limit=50, file=f)
             msg = str(f.getvalue())
             #code / value
-            msg = msg + "Plomino formula error in "+script_id+": " + str(e)
-            msg = msg + "\n   in code : \n" + formula_getter()
-            msg = msg + "\n   with context : " + str(context)            
+            msg = msg + "\nScript id: "+script_id+": " + str(e)
+            msg = msg + "\n    code : \n" + formula_getter()
         else:
             msg = None
         
@@ -489,8 +506,9 @@ class PlominoDesignManager(Persistent):
         except:
             script_code = "#ALERT: "+scriptname+" not found in resources"
         formula=lambda:script_code+'\n\nreturn '+methodname+'(*args)'
+        
         return self.runFormulaScript(id, self, formula, True, *args)
-    
+        
     security.declarePublic('writeMessageOnPage')
     def writeMessageOnPage(self, infoMsg, REQUEST, error = False):
         """adds portal message        
@@ -512,39 +530,44 @@ class PlominoDesignManager(Persistent):
                 if msg:
                     plone_tools.addPortalMessage(msg, msgType, REQUEST)
 
-    security.declarePublic('getRenderingTemplate')
-    def reportError(self, message, REQUEST=None, formula=None):
+    security.declarePublic('reportError')
+    def reportError(self, message, request=None, formula=None, path=None):
         """
         """
-        if self.REQUEST:
-            REQUEST = self.REQUEST
-        if REQUEST:
-            if formula:
-                message = message + " - Plomino formula %s" % formula.absolute_url_path()
+        message = asUnicode(message)
+        if not request:
+            if hasattr(self, 'REQUEST'):
+                request = self.REQUEST
+        if request:
+            if formula and hasattr(formula, 'absolute_url_path'):
+                path = formula.absolute_url_path()
+            if path:
+                message = message + " - Plomino formula %s" % path
             plone_tools = getToolByName(self, 'plone_utils')
-            plone_tools.addPortalMessage(message, 'error', REQUEST)
+            plone_tools.addPortalMessage(message, 'error', request)
             
     security.declarePublic('getRenderingTemplate')
-    def getRenderingTemplate(self, templatename):
+    def getRenderingTemplate(self, templatename, request=None):
         """
         """
-        req = self.REQUEST
-        try:
-            rep=self.REQUEST['RESPONSE']
-        except Exception:
-            self.REQUEST['RESPONSE']=HTTPResponse()
-
         skin=self.portal_skins.cmfplomino_templates
         if hasattr(skin, templatename):
             pt = getattr(skin, templatename)
             if not pt.REQUEST.__class__.__name__=='HTTPRequest':
-                # probably ZpCron context, so we create a fake HTTPRequest
-                response = HTTPResponse(stdout=sys.stdout)
-                env = {'SERVER_NAME':'fake_server',
-                       'SERVER_PORT':'80',
-                       'REQUEST_METHOD':'GET'}
-                fakerequest = HTTPRequest(sys.stdin, env, response)
-                pt.REQUEST = fakerequest
+                # we are not in an actual web context, but we a need a request
+                # object to have the template working
+                if not request:
+                    response = HTTPResponse(stdout=sys.stdout)
+                    env = {'SERVER_NAME':'fake_server',
+                           'SERVER_PORT':'80',
+                           'REQUEST_METHOD':'GET'}
+                    request = HTTPRequest(sys.stdin, env, response)
+                pt.REQUEST = request
+                
+            # we also need a RESPONSE
+            if not pt.REQUEST.has_key('RESPONSE'):
+                pt.REQUEST['RESPONSE']=HTTPResponse()
+                
             return pt
         else:
             return None

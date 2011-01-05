@@ -37,7 +37,7 @@
 </tal:test>
 </metal:javascript_head>
 
-<metal:css fill-slot="css_slot">
+<metal:css fill-slot="style_slot">
 <tal:test tal:condition="python:here.hasItem('Form')">
 	<tal:block tal:condition="python:here.getForm().hasDateTimeField()">
       <style type="text/css"

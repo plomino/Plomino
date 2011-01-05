@@ -1,0 +1,21 @@
+#Tue Nov 23 15:55:17 CET 2010
+eclipse.preferences.version=1
+encoding//Products/CMFPlomino/PlominoAccessControl.py=utf-8
+encoding//Products/CMFPlomino/PlominoAction.py=utf-8
+encoding//Products/CMFPlomino/PlominoAgent.py=utf-8
+encoding//Products/CMFPlomino/PlominoDatabase.py=utf-8
+encoding//Products/CMFPlomino/PlominoDesignManager.py=utf-8
+encoding//Products/CMFPlomino/PlominoDocument.py=utf-8
+encoding//Products/CMFPlomino/PlominoField.py=utf-8
+encoding//Products/CMFPlomino/PlominoForm.py=utf-8
+encoding//Products/CMFPlomino/PlominoReplicationManager.py=utf-8
+encoding//Products/CMFPlomino/PlominoScheduler.py=utf-8
+encoding//Products/CMFPlomino/PlominoUtils.py=utf-8
+encoding//Products/CMFPlomino/PlominoView.py=utf-8
+encoding//Products/CMFPlomino/__init__.py=utf-8
+encoding//Products/CMFPlomino/fields/base.py=utf-8
+encoding//Products/CMFPlomino/fields/datagrid.py=utf-8
+encoding//Products/CMFPlomino/fields/datetime.py=utf-8
+encoding//Products/CMFPlomino/fields/doclink.py=utf-8
+encoding//Products/CMFPlomino/fields/name.py=utf-8
+encoding//Products/CMFPlomino/fields/selection.py=utf-8

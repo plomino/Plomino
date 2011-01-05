@@ -3,7 +3,8 @@ import doctest
 
 
 from Testing import ZopeTestCase as ztc
-
+from Products.Five import zcml
+from Products.Five import fiveconfigure
 from Products.PloneTestCase import PloneTestCase as ptc
 from Products.PloneTestCase.layer import onsetup
 
@@ -34,12 +35,14 @@ def test_suite():
         ztc.ZopeDocFileSuite(
             'tests/plomino_accesControl.txt', package='Products.CMFPlomino',
             test_class=ExampleFunctionalTestCase,
+            #optionflags=doctest.NORMALIZE_WHITESPACE | doctest.ELLIPSIS),
             optionflags=doctest.REPORT_ONLY_FIRST_FAILURE | doctest.NORMALIZE_WHITESPACE | doctest.ELLIPSIS),
           
         ztc.ZopeDocFileSuite(
             'tests/samples.txt', package='Products.CMFPlomino',
             test_class=ExampleFunctionalTestCase,
-            optionflags=doctest.REPORT_ONLY_FIRST_FAILURE | doctest.NORMALIZE_WHITESPACE | doctest.ELLIPSIS),
+            optionflags=doctest.NORMALIZE_WHITESPACE | doctest.ELLIPSIS),
+            #optionflags=doctest.REPORT_ONLY_FIRST_FAILURE | doctest.NORMALIZE_WHITESPACE | doctest.ELLIPSIS),
             
         # We could add more doctest files here as well, by copying the file
         # block above.
@@ -54,16 +57,17 @@ def setup_product():
     until the setup of the Plone site testing layer. We could have created our
     own layer, but this is the easiest way for Plone integration tests.
     """
-    
-    # Load the ZCML configuration for the example.tests package.
-    # This can of course use <include /> to include other packages.
+    fiveconfigure.debug_mode = True
     import Products.CMFPlomino
-    ztc.installProduct('CMFPlomino')
+    zcml.load_config('configure.zcml', Products.CMFPlomino)
+    fiveconfigure.debug_mode = False
+    
     
 # The order here is important: We first call the (deferred) function which
 # installs the products we need for this product. Then, we let PloneTestCase 
 # set up this product on installation.
 
+ztc.installProduct('CMFPlomino')
 setup_product()
 ptc.setupPloneSite(products=['CMFPlomino'], extension_profiles=['Products.CMFPlomino:default'])
 

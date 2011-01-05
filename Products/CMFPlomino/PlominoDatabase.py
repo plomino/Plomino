@@ -101,6 +101,17 @@ schema = Schema((
         ),
     ),
     BooleanField(
+        name='IndexInPortal',
+        default=True,
+        widget=BooleanField._properties['widget'](
+            label="Index documents in Plone portal",
+            description="If enabled, documents are searchable in Plone search.",
+            label_msgid='CMFPlomino_label_IndexInPortal',
+            description_msgid='CMFPlomino_help_IndexInPortal',
+            i18n_domain='CMFPlomino',
+        ),
+    ),
+    BooleanField(
         name='debugMode',
         default=False,
         widget=BooleanField._properties['widget'](
@@ -360,7 +371,7 @@ class PlominoDatabase(ATFolder, PlominoAccessControl, PlominoDesignManager, Plom
                 try:
                     self.runFormulaScript("form_"+form.id+"_ondelete", doc, form.onDeleteDocument)
                 except PlominoScriptException, e:
-                    self.reportError('Document has been deleted, but onDelete event failed.')
+                    self.reportError('Document has been deleted, but onDelete event failed.', formula=e.formula)
 
             self.getIndex().unindexDocument(doc)
             event.notify(ObjectRemovedEvent(doc, self.documents, doc.id))
