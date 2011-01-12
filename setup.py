@@ -7,6 +7,7 @@ setup(name='Plomino',
       version=version,
       description="Create specific applications in Plone without developping. Created by Makina Corpus.",
       long_description=open("README.txt").read() + "\n" +
+                       open(os.path.join("docs", "INSTALL.txt")).read() + "\n" +
                        open(os.path.join("docs", "HISTORY.txt")).read(),
       # Get more strings from http://pypi.python.org/pypi?%3Aaction=list_classifiers
       classifiers=[
@@ -27,6 +28,7 @@ setup(name='Plomino',
           # -*- Extra requirements: -*-
           'simplejson',
           'dm.sharedresource',
+          'collective.js.jqueryui',
       ],
       entry_points="""
       # -*- Entry points: -*-
