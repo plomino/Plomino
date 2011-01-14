@@ -750,15 +750,8 @@ class PlominoDesignManager(Persistent):
         if from_folder:
             if not os.path.isdir(from_folder):
                 raise PlominoDesignException, '%s does not exist' % path
-            filenames = os.listdir(from_folder)
-            xml_files = []
-            for f in filenames:
-                if f != 'resources':
-                    xml_files.append(os.path.join(from_folder, f))
-                else:
-                    resources_path = os.path.join(from_folder, 'resources')
-                    for r in os.listdir(resources_path):
-                        xml_files.append(os.path.join(resources_path, r))
+            xml_files = (glob.glob(os.path.join(from_folder, '*.xml')) +
+                     glob.glob(os.path.join(from_folder, 'resources/*.xml')))
             total_elements = len(xml_files)
             for p in xml_files:
                 fileobj = codecs.open(p, 'r', 'utf-8')
