@@ -518,7 +518,15 @@ class PlominoForm(ATFolder):
     def getFormField(self, fieldname):
         """return the field
         """
-        return getattr(self, fieldname, None)
+        field = getattr(self, fieldname, None)
+        # if field is not in main form, we search in the subforms
+        # and return the first of them matching the id
+        if not field:
+            all_fields = self.getFields(includesubforms=True)
+            matching_fields = [f for f in all_fields if f.id == fieldname]
+            if len(matching_fields) > 0:
+                field = matching_fields[0]
+        return field
 
     security.declarePublic('computeFieldValue')
     def computeFieldValue(self, fieldname, target):
