@@ -183,11 +183,11 @@ class PlominoField(BaseContent, BrowserDefaultMixin):
         """process submitted value according the field type
         """
         fieldtype = self.getFieldType()
-        fieldName = self.id
+        fieldname = self.id
         adapt = self.getSettings()
         if fieldtype=="ATTACHMENT" and process_attachments:
             if isinstance(submittedValue, FileUpload):
-                current_files=doc.getItem(fieldName)
+                current_files=doc.getItem(fieldname)
                 if current_files=='':
                     current_files={}
                 (new_file, contenttype) = doc.setfile(submittedValue)
@@ -202,15 +202,17 @@ class PlominoField(BaseContent, BrowserDefaultMixin):
     def getFieldRender(self, form, doc, editmode, creation=False, request=None):
         """Rendering the field
         """
+        if request:
+            self.REQUEST = request
         mode = self.getFieldMode()
-        fieldName = self.id
+        fieldname = self.id
         if doc is None:
             target = form
         else:
             target = doc
             
         adapt = self.getSettings()
-        fieldValue = adapt.getFieldValue(form, doc, editmode, creation, request)
+        fieldvalue = adapt.getFieldValue(form, doc, editmode, creation, request)
 
         # get the rendering template
         pt=None
@@ -237,12 +239,12 @@ class PlominoField(BaseContent, BrowserDefaultMixin):
                 if pt is None:
                     pt=self.getRenderingTemplate("DefaultField"+templatemode)
         
-        selectionlist = self.getSettings().getSelectionList(target)
+        selection = self.getSettings().getSelectionList(target)
         
         try:
-            return pt(fieldname=fieldName,
-                fieldvalue=fieldValue,
-                selection=selectionlist,
+            return pt(fieldname=fieldname,
+                fieldvalue=fieldvalue,
+                selection=selection,
                 field=self,
                 doc=target
                 )
