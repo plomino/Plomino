@@ -553,16 +553,20 @@ class PlominoDesignManager(Persistent):
         skin=self.portal_skins.cmfplomino_templates
         if hasattr(skin, templatename):
             pt = getattr(skin, templatename)
-            if not pt.REQUEST.__class__.__name__=='HTTPRequest':
-                # we are not in an actual web context, but we a need a request
-                # object to have the template working
-                if not request:
+            if request:
+                pt.REQUEST = request
+            else:
+                request = getattr(pt, 'REQUEST', None)
+                proper_request = request and pt.REQUEST.__class__.__name__=='HTTPRequest'
+                if not proper_request:
+                    # XXX What *else* could REQUEST be here?
+                    # we are not in an actual web context, but we a need a
+                    # request object to have the template working
                     response = HTTPResponse(stdout=sys.stdout)
                     env = {'SERVER_NAME':'fake_server',
                            'SERVER_PORT':'80',
                            'REQUEST_METHOD':'GET'}
-                    request = HTTPRequest(sys.stdin, env, response)
-                pt.REQUEST = request
+                    pt.REQUEST = HTTPRequest(sys.stdin, env, response)
                 
             # we also need a RESPONSE
             if not pt.REQUEST.has_key('RESPONSE'):
