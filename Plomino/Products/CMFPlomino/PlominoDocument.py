@@ -343,8 +343,19 @@ class PlominoDocument(ATFolder):
                 
         if not valid:
             # we use the specified form's layout
-            html_content = form.displayDocument(self, editmode)
-            
+            request = getattr(self, 'REQUEST', None)
+            if not request:
+                import sys
+                from ZPublisher.HTTPResponse import HTTPResponse
+                from ZPublisher.HTTPRequest import HTTPRequest
+                response = HTTPResponse(stdout=sys.stdout)
+                env = {'SERVER_NAME':'fake_server',
+                       'SERVER_PORT':'80',
+                       'REQUEST_METHOD':'GET'}
+                request = HTTPRequest(sys.stdin, env, response)
+            html_content = form.displayDocument(self,
+                                editmode=editmode,
+                                request=request)
         else:
             html_content = valid
         
