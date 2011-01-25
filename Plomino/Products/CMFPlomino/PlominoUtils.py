@@ -65,8 +65,8 @@ def sendMail(db, recipients, title, html_message, sender=None):
         sender = db.getCurrentUser().getProperty("email")
     host.send(message, mto=recipients,
         mfrom=sender, subject=title,
-        encode='quoted-printable')
-    
+        encode='base64')
+
 def userFullname(db, userid):
     """ return user fullname if exist, else return userid, and return Unknown if user not found
     """
@@ -79,7 +79,7 @@ def userFullname(db, userid):
             return fullname
     else:
         return "Unknown"
-        
+
 def userInfo(db, userid):
     """ return user object
     """
@@ -103,7 +103,7 @@ def PlominoTranslate(message, context, domain='CMFPlomino'):
 def htmlencode(s):
     """ replace unicode characters with their corresponding html entities
     """
-    
+
     t=""
     for i in s:
         if ord(i) in entity.codepoint2name:
@@ -135,7 +135,7 @@ def asUnicode(x):
     if type(x) is unicode:
         return x
     return unicode(x)
-    
+
 def csv_to_array(csvcontent, delimiter='\t', quotechar='"'):
     """ csvcontent might be a string or a file
     """
@@ -154,7 +154,7 @@ def array_to_csv(values, delimiter='\t', quotechar='"'):
     writer = csv.writer(s, delimiter=delimiter, quotechar=quotechar, quoting=csv.QUOTE_NONNUMERIC)
     writer.writerows(values)
     return s.getvalue()
-    
+
 def open_url(url, asFile=False):
     """ retrieve content from url
     """
