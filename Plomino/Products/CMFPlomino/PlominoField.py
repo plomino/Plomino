@@ -202,8 +202,6 @@ class PlominoField(BaseContent, BrowserDefaultMixin):
     def getFieldRender(self, form, doc, editmode, creation=False, request=None):
         """Rendering the field
         """
-        if request:
-            self.REQUEST = request
         mode = self.getFieldMode()
         fieldname = self.id
         if doc is None:
