@@ -5,7 +5,7 @@ security = ClassSecurityInfo()
 PROJECTNAME = 'CMFPlomino'
 
 VERSION = '1.8'
- 
+
 security.declarePublic('ADD_DESIGN_PERMISSION')
 ADD_DESIGN_PERMISSION = 'CMFPlomino: Add Plomino design elements'
 security.declarePublic('ADD_CONTENT_PERMISSION')

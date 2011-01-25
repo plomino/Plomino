@@ -61,7 +61,7 @@ class PlominoScheduler(Persistent):
                     if not userAgent.startswith('/'):
                         userAgent = '/' + userAgent
                     newTabCron[agent.absolute_url(1) + '/runAgent'] = {'user':userAgent,'cron':agent.getCron(),}
-            
+
             #rebuild replication commands
             replications = self.getReplications()
             for replicationId in replications:

@@ -65,7 +65,7 @@ class SelectionField(BaseField):
     """
     """
     implements(ISelectionField)
-    
+
     def getSelectionList(self, doc):
         """return the values list, format: label|value, use label as value if no label
         """
@@ -99,14 +99,14 @@ class SelectionField(BaseField):
             else:
                 proper.append(v+'|'+v)
         return proper
-    
+
     def tojson(self, selection):
         """Return a JSON table storing documents to be displayed
         """
-        
+
         return json.dumps([v.split('|')[::-1] for v in selection])
-    
-    
+
+
 for f in getFields(ISelectionField).values():
     setattr(SelectionField, f.getName(), DictionaryProperty(f, 'parameters'))
 
@@ -114,4 +114,4 @@ class SettingForm(EditForm):
     """
     """
     form_fields = form.Fields(ISelectionField)
-    
+

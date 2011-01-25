@@ -26,7 +26,7 @@ class BaseField(object):
     """
     """
     implements(IBaseField)
-    
+
     def __init__(self, context):
         """Initialize adapter."""
         self.context = context
@@ -38,37 +38,37 @@ class BaseField(object):
             self.parameters = annotations["PLOMINOFIELDCONFIG"]
         # allow access
         self.__allow_access_to_unprotected_subobjects__ = True
-            
+
     def validate(self, strValue):
         """
         """
         errors=[]
         return errors
-    
+
     def processInput(self, strValue):
         """
         """
         if type(strValue) == str:
             strValue = strValue.decode('utf-8')
         return strValue
-    
+
     def getSelectionList(self, doc):
         """
         """
         return None
-    
+
     def getFieldValue(self, form, doc, editmode, creation, request):
         """
         """
         fieldName = self.context.id
         mode = self.context.getFieldMode()
-        
+
         db = self.context.getParentDatabase()
         if doc is None:
             target = form
         else:
             target = doc
-        
+
         fieldValue = None
         if mode=="EDITABLE":
             if doc is None:
@@ -100,10 +100,10 @@ class BaseField(object):
                 fieldValue = form.computeFieldValue(fieldName, form)
             else:
                 fieldValue = doc.getItem(fieldName)
-                
+
         if mode=="COMPUTEDONSAVE" and doc:
             fieldValue = doc.getItem(fieldName)
-            
+
         if fieldValue is None:
             fieldValue = ""
         return fieldValue

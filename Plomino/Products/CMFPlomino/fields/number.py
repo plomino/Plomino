@@ -56,9 +56,9 @@ class NumberField(BaseField):
                 v = float(submittedValue)
             except:
                 errors.append(fieldname+PlominoTranslate(" must be a float (submitted value was: ", self.context)+submittedValue+")")
-        
+
         return errors
-    
+
     def processInput(self, submittedValue):
         """
         """
@@ -68,7 +68,7 @@ class NumberField(BaseField):
             return float(submittedValue)
         else:
             return submittedValue
-    
+
 for f in getFields(INumberField).values():
     setattr(NumberField, f.getName(), DictionaryProperty(f, 'parameters'))
 
@@ -76,4 +76,4 @@ class SettingForm(EditForm):
     """
     """
     form_fields = form.Fields(INumberField)
-    
+

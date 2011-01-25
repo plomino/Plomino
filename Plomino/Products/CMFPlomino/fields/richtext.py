@@ -34,7 +34,7 @@ class RichtextField(BaseField):
     """
     """
     implements(IRichtextField)
-    
+
 for f in getFields(IRichtextField).values():
     setattr(RichtextField, f.getName(), DictionaryProperty(f, 'parameters'))
 
@@ -42,4 +42,4 @@ class SettingForm(EditForm):
     """
     """
     form_fields = form.Fields(IRichtextField)
-    
+

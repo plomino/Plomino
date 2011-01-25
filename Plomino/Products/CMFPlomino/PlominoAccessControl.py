@@ -18,7 +18,7 @@ from AccessControl import getSecurityManager
 from Products.CMFCore.utils import getToolByName
 from Products.DCWorkflow.DCWorkflow import DCWorkflowDefinition
 from Persistence import Persistent
-        
+
 class PlominoAccessControl(Persistent):
     """Plomino access control utilities
     """
@@ -78,7 +78,7 @@ class PlominoAccessControl(Persistent):
         permissions.AddPortalContent,
         permissions.ModifyPortalContent]
     }
-    
+
     PLOMINO_RIGHTS_PRIORITY = ["NoAccess",
                                "PlominoReader",
                                "PlominoAuthor",
@@ -175,7 +175,7 @@ class PlominoAccessControl(Persistent):
             return maxlevel >= self.PLOMINO_RIGHTS_PRIORITY.index(right)
         else:
             return False
-        
+
     security.declarePublic('getCurrentUserRoles')
     def getCurrentUserRoles(self):
         """get current user roles
@@ -195,17 +195,17 @@ class PlominoAccessControl(Persistent):
         # the user must at least have edit permission
         if not self.checkUserPermission(EDIT_PERMISSION):
             return False
-        
+
         # if the user is Owner or Manager, no problem
         general_plone_rights = self.getCurrentUser().getRolesInContext(doc)
         if 'Owner' in general_plone_rights or 'Manager' in general_plone_rights:
             return True
-        
+
         # check if the user is more powerful than a regular PlominoAuthor
         current_rights = self.getCurrentUserRights()
         if "PlominoEditor" in current_rights or "PlominoDesigner" in current_rights or "PlominoManager" in current_rights:
             return True
-        
+
         # if he is just a PlominoAuthor, check if he is author of this very document
         if 'PlominoAuthor' in current_rights:
             authors = doc.getItem('Plomino_Authors')
@@ -226,7 +226,7 @@ class PlominoAccessControl(Persistent):
                 if u in usergroups:
                     return True
             return False
-        
+
         return False
 
     security.declarePublic('hasReadPermission')
@@ -238,7 +238,7 @@ class PlominoAccessControl(Persistent):
         else:
             result = getSecurityManager().checkPermission(READ_PERMISSION, obj)==True
         return result
-    
+
     security.declarePublic('hasCreatePermission')
     def hasCreatePermission(self, obj=None):
         """has create permission ?
@@ -246,7 +246,7 @@ class PlominoAccessControl(Persistent):
         if obj is None:
             obj = self
         return getSecurityManager().checkPermission(CREATE_PERMISSION, obj)==True and getSecurityManager().checkPermission(ADD_CONTENT_PERMISSION, obj)==True
-    
+
     security.declarePublic('hasEditPermission')
     def hasEditPermission(self, obj=None):
         """has edit permission ?
@@ -254,7 +254,7 @@ class PlominoAccessControl(Persistent):
         if obj is None:
             obj = self
         return getSecurityManager().checkPermission(EDIT_PERMISSION, obj)==True
-    
+
     security.declarePublic('hasRemovePermission')
     def hasRemovePermission(self, obj=None):
         """has remove permission ?
@@ -262,7 +262,7 @@ class PlominoAccessControl(Persistent):
         if obj is None:
             obj = self
         return getSecurityManager().checkPermission(REMOVE_PERMISSION, obj)==True
-        
+
     security.declarePublic('hasDesignPermission')
     def hasDesignPermission(self, obj=None):
         """has design permission ?
@@ -270,7 +270,7 @@ class PlominoAccessControl(Persistent):
         if obj is None:
             obj = self
         return getSecurityManager().checkPermission(DESIGN_PERMISSION, obj)==True
-    
+
     security.declarePublic('initializeACL')
     def initializeACL(self):
         """create the default Plomino access rights
@@ -340,7 +340,7 @@ class PlominoAccessControl(Persistent):
         authenticatedaccessright=REQUEST.get('authenticatedaccessright')
         self.AuthenticatedAccessRight=authenticatedaccessright
         self.setPlominoPermissions("Authenticated", authenticatedaccessright)
-        
+
         # update Plone workflow mappings
         workflow_tool = getToolByName(self, 'portal_workflow')
         wfs = workflow_tool.getWorkflowsFor(self)
@@ -348,7 +348,7 @@ class PlominoAccessControl(Persistent):
             if not isinstance( wf, DCWorkflowDefinition ):
                 continue
             wf.updateRoleMappingsFor( self )
-            
+
         REQUEST.RESPONSE.redirect('./DatabaseACL')
 
     security.declareProtected(ACL_PERMISSION, 'addPlominoUserRole')
@@ -412,21 +412,21 @@ class PlominoAccessControl(Persistent):
         membershiptool = getToolByName(self, 'portal_membership')
         #return membershiptool.listMemberIds ()
         return membershiptool.searchForMembers()
-        
+
     security.declarePublic('getPortalMembersIds')
     def getPortalMembersIds(self):
         """return all members id
         """
         l=self.getPortalMembers()
         return [m.getId() for m in l]
-    
+
     security.declarePublic('getPortalGroups')
     def getPortalGroups(self):
         """return all groups
         """
         groupstool = self.portal_groups
         return groupstool.listGroups()
-        
+
     security.declarePublic('getPortalMembersGroupsIds')
     def getPortalMembersGroupsIds(self):
         tab = []
@@ -439,7 +439,7 @@ class PlominoAccessControl(Persistent):
         g=self.getPortalGroups()
         tab = tab + g
         return tab
-    
+
     security.declarePublic('getSpecificRights')
     def getSpecificRights(self, key=None):
         """
@@ -458,7 +458,7 @@ class PlominoAccessControl(Persistent):
         s = self.getSpecificRights()
         s[right] = key
         self.specific_rights = s
-            
+
     security.declareProtected(ACL_PERMISSION, 'manage_specificrights')
     def manage_specificrights(self, REQUEST):
         """
@@ -466,7 +466,7 @@ class PlominoAccessControl(Persistent):
         if REQUEST.get('specific_deletedocument', None) is not None:
             self.setSpecificRights('specific_deletedocument', REQUEST.get('specific_deletedocument'))
         REQUEST.RESPONSE.redirect('./DatabaseACL')
-    
+
     security.declareProtected(ACL_PERMISSION, 'getWorkflowStates')
     def getWorkflowStates(self):
         """
@@ -490,7 +490,7 @@ class PlominoAccessControl(Persistent):
                         state = '(Unknown)'
                     states[wf_id] = state
         return states
-                    
+
     security.declareProtected(READ_PERMISSION, 'checkReadPermission')
     def checkReadPermission(self):
         """called from templates to check access permission
@@ -502,28 +502,28 @@ class PlominoAccessControl(Persistent):
         """called from templates to check access permission
         """
         pass
-    
+
     security.declareProtected(REMOVE_PERMISSION, 'checkRemovePermission')
     def checkRemovePermission(self):
         """called from templates to check access permission
         """
         pass
-    
+
     security.declareProtected(CREATE_PERMISSION, 'checkCreatePermission')
     def checkCreatePermission(self):
         """called from templates to check access permission
         """
         pass
-    
+
     security.declareProtected(DESIGN_PERMISSION, 'checkDesignPermission')
     def checkDesignPermission(self):
         """called from templates to check access permission
         """
         pass
-    
+
     security.declareProtected(ACL_PERMISSION, 'checkACLPermission')
     def checkACLPermission(self):
         """called from templates to check access permission
         """
         pass
-    
+

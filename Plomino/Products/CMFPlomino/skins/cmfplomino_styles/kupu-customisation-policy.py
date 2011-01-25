@@ -51,7 +51,7 @@ EXCLUDED_HTML = [
   {'tags': ('center','tt','big','small','basefont','font',),
    'attributes':(),
    'keep': 1 },
-  
+
   {'tags':(),
   'attributes': ('lang','valign','halign','border','frame',
       'rules','cellspacing','cellpadding','bgcolor'),
@@ -88,7 +88,7 @@ PARAGRAPH_STYLES = (
 #    'Fancy|div|fancyClass',
 #    'Plain|div|plainClass',
 )
-    
+
 LIBRARIES = (
     dict(id="root",
          title="string:Home",

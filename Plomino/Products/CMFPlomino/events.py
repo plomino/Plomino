@@ -30,7 +30,7 @@ def PlominoDocumentRemoveEventHandler(obj, event):
     # form for every (referred) subobject, so we remember and skip them...
     #if obj is not event.object:
     #    return
-    
+
     #TODO : test if deletion confirmation has been done, and unindex document
     #TODO : find how to know if confirmation has been done
     #return

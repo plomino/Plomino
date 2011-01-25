@@ -44,7 +44,7 @@ def authenticateAndPostToURL(targetURL, username, password, filename, fileconten
     conn.send(body)
     response = conn.getresponse()
     return (response.status, response.reason)
-    
+
 def encode_file(filename, filecontent):
     """ (based on Wade Leftwich's post on aspn.activestate.com)
     """

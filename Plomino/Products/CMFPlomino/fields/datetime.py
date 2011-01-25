@@ -51,7 +51,7 @@ class DatetimeField(BaseField):
         except:
             errors.append(fieldname+" must be a date/time (submitted value was: "+submittedValue+")")
         return errors
-    
+
     def processInput(self, submittedValue):
         """
         """
@@ -63,16 +63,16 @@ class DatetimeField(BaseField):
         """
         """
         fieldValue = BaseField.getFieldValue(self, form, doc, editmode, creation, request)
-        
+
         mode = self.context.getFieldMode()
-        
+
         if mode=="EDITABLE":
             if doc is None and not(creation) and request is not None:
                 fieldValue = request.get(fieldName, '')
                 if not(fieldValue=='' or fieldValue is None):
                     fieldValue = StringToDate(fieldValue, form.getParentDatabase().getDateTimeFormat())
         return fieldValue
-    
+
 for f in getFields(IDatetimeField).values():
     setattr(DatetimeField, f.getName(), DictionaryProperty(f, 'parameters'))
 
@@ -80,4 +80,4 @@ class SettingForm(EditForm):
     """
     """
     form_fields = form.Fields(IDatetimeField)
-    
+

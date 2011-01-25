@@ -29,7 +29,7 @@ class PlominoColumnIndex(UnIndex):
 		'threshold' is the number of words to process between committing
 		subtransactions.  If None, subtransactions are disabled.
 		"""
-		
+
 		returnStatus = 0
 		parentdb = self.getParentDatabase()
 		doc = obj.__of__(parentdb)
@@ -42,7 +42,7 @@ class PlominoColumnIndex(UnIndex):
 			newValue = doc.computeColumnValue(viewname, columnname)
 		else:
 			return 0
-			
+
 		oldValue = self._unindex.get( documentId, None )
 		if newValue != oldValue:
 			if oldValue is not None:
@@ -65,6 +65,6 @@ class PlominoColumnIndex(UnIndex):
 				self._unindex[documentId] = newValue
 
 			returnStatus = 1
-			
+
 		return returnStatus
 

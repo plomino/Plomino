@@ -15,7 +15,7 @@ class Assignment(base.Assignment):
 
 class Renderer(base.Renderer):
     render = ViewPageTemplateFile('design_portlet.pt')
-    
+
     def parentdatabase(self):
         """
         """
@@ -28,16 +28,16 @@ class Renderer(base.Renderer):
         """
         """
         return self.context.__class__.__name__
-    
+
     def hasDesignPermission(self):
         """
         """
         return self.parentdatabase().hasDesignPermission()
-    
+
     @property
     def available(self):
         return self.hasDesignPermission()
-    
+
 class AddForm(base.AddForm):
     form_fields = form.Fields(IPortlet)
 
@@ -57,29 +57,29 @@ class IElementPortlet(Interface):
     element_id = schema.TextLine(title=_(u"Element ID"),
                              description=_(u"ID of the form to be displayed"),
                              required=True)
-    
+
 
 class ElementPortletAssignment(base.Assignment):
     """Initialises a Plomino Element portlet
     """
     implements(IElementPortlet)
-    
+
     title = u'Plomino Element Display'
     header = u""
     db_path = ""
     element_id = ""
-    
+
     def __init__(self, header=u"", db_path="", element_id=""):
         self.header = header
         self.db_path = db_path
         self.element_id = element_id
 
-    
+
 class ElementPortletRenderer(base.Renderer):
     """Displays the Plomino Element portlet
     """
     render = ViewPageTemplateFile('element_portlet.pt')
-    
+
     def getElement(self):
         """Get the element to be displayed by the portlet
         """
@@ -89,11 +89,11 @@ class ElementPortletRenderer(base.Renderer):
             if hasattr(element, 'formLayout'):
                 return element
         return None
-        
+
     @property
     def available(self):
         return True
-    
+
     @property
     def hasGoogleVisualizationField(self):
         element = self.getElement() 
@@ -101,7 +101,7 @@ class ElementPortletRenderer(base.Renderer):
             return element.hasGoogleVisualizationField()
         else:
             return False
-        
+
     @property
     def action_url(self):
         element = self.getElement()
@@ -111,7 +111,7 @@ class ElementPortletRenderer(base.Renderer):
         if element.isPage:
             return "."
         return base_url+"/createDocument"
-    
+
     def elementLayout(self):
         """Get the element layout to be displayed by the portlet
         """
@@ -121,7 +121,7 @@ class ElementPortletRenderer(base.Renderer):
             return element.formLayout(self.request)
         else:
             return """<p>The database cannot be found or the element cannot be displayed.</p>"""
-    
+
 class ElementPortletAddForm(base.AddForm):
     """Creates a portlet used to display a Plomino element everywhere in a Plone site
     """
@@ -131,7 +131,7 @@ class ElementPortletAddForm(base.AddForm):
 
     def create(self, data):
         return ElementPortletAssignment(**data)
-    
+
 class ElementPortletEditForm(base.EditForm):
     """Edit a portlet used to display a Plomino element everywhere in a Plone site
     """

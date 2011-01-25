@@ -252,37 +252,37 @@ class PlominoForm(ATFolder):
         """create a document using the forms submitted content
         """
         db = self.getParentDatabase()
-        
+
         is_childform = False
         parent_field = REQUEST.get("Plomino_Parent_Field", None)
         parent_form = REQUEST.get("Plomino_Parent_Form", None)
         if parent_field is not None:
             is_childform = True
-            
+
         # validate submitted values
         errors=self.validateInputs(REQUEST)
         if len(errors)>0:
             if is_childform:
                 return """<script>alert('erreur');</script>"""
             return self.notifyErrors(errors)
-        
+
         # if child form
         if is_childform:
             tmp = TemporaryDocument(self.getParentDatabase(), self, REQUEST)
             tmp.setItem("Plomino_Parent_Field", parent_field)
             tmp.setItem("Plomino_Parent_Form", parent_form)
             return self.ChildForm(temp_doc=tmp)
-            
+
         doc = db.createDocument()
         doc.setItem('Form', self.getFormName())
-        
+
         # execute the onCreateDocument code of the form
         valid = ''
         try:
             valid = self.runFormulaScript("form_"+self.id+"_oncreate", doc, self.onCreateDocument)
         except PlominoScriptException, e:
             self.reportError('onCreate formula failed', REQUEST, formula=e.formula)
-        
+
         if valid is None or valid=='':
             doc.saveDocument(REQUEST, True)
         else:
@@ -348,10 +348,10 @@ class PlominoForm(ATFolder):
     def displayDocument(self,doc,editmode=False, creation=False, subform=False, request=None):
         """display the document using the form's layout
         """
-        
+
         # remove the hidden content
         html_content = self.applyHideWhen(doc)
-        
+
         #if editmode, we had a hidden field to handle the Form item value
         if editmode and not subform:
             html_content = "<input type='hidden' name='Form' value='"+self.getFormName()+"' />" + html_content
@@ -397,7 +397,7 @@ class PlominoForm(ATFolder):
         parent_form = self.getParentDatabase().getForm(doc.Plomino_Parent_Form)
         parent_field = parent_form.getFormField(doc.Plomino_Parent_Field)
         fields = parent_field.getSettings().field_mapping.split(',')
-        
+
         raw_values = []
         for f in fields:
             v = doc.getItem(f)
@@ -405,16 +405,16 @@ class PlominoForm(ATFolder):
                 raw_values.append(DateToString(doc.getItem(f), self.getParentDatabase().getDateTimeFormat()))
             else:
                 raw_values.append(v)
-        
+
         html = """<div id="raw_values">%s</div>""" % json.dumps(raw_values)
-        
+
         html = html + """<div id="parent_field">%s</div>""" % doc.Plomino_Parent_Field
-        
+
         for f in fields:
             html = html + """<span id="%s" plomino="1">%s</span>""" % (f, doc.getRenderedItem(f, form=self))
-        
+
         return html
-                        
+
     security.declareProtected(READ_PERMISSION, 'applyHideWhen')
     def applyHideWhen(self, doc=None):
         """evaluate hide-when formula and return resulting layout
@@ -439,7 +439,7 @@ class PlominoForm(ATFolder):
                 result = True
             start = '<span class="plominoHidewhenClass">start:'+hidewhenName+'</span>'
             end = '<span class="plominoHidewhenClass">end:'+hidewhenName+'</span>'
-            
+
             if getattr(hidewhen, 'isDynamicHidewhen', False):
                 if result:
                     style = ' style="display: none"'
@@ -454,9 +454,9 @@ class PlominoForm(ATFolder):
                 else:
                     html_content = html_content.replace(start, '')
                     html_content = html_content.replace(end, '')
-                
+
         return html_content
-    
+
     security.declareProtected(READ_PERMISSION, 'hasDynamicHidewhen')
     def hasDynamicHidewhen(self):
         """Search if a dynamic hidewhen is stored in the form
@@ -465,7 +465,7 @@ class PlominoForm(ATFolder):
            if getattr(hidewhen, 'isDynamicHidewhen', False):
                return True
         return False
-    
+
     security.declareProtected(READ_PERMISSION, 'getHidewhenAsJSON')
     def getHidewhenAsJSON(self, REQUEST):
         """Return a JSON object to dynamically show or hide hidewhens (works only with isDynamicHidewhen)
@@ -481,9 +481,9 @@ class PlominoForm(ATFolder):
                     #if error, we hide anyway
                     isHidden = True
                 result[hidewhen.id] = isHidden 
-        
+
         return json.dumps(result)
-                
+
     security.declarePublic('formLayout')
     def formLayout(self, request=None):
         """return the form layout in edit mode (used to compose a new
@@ -502,12 +502,12 @@ class PlominoForm(ATFolder):
                 valid = self.runFormulaScript("form_"+self.id+"_beforecreate", self, self.beforeCreateDocument)
             except PlominoScriptException, e:
                 self.reportError('beforeCreate formula failed', formula=e.formula)
-            
+
         if valid is None or valid=='' or self.hasDesignPermission(self):
             return self.displayDocument(None, True, True, request=request)
         else:
             self.REQUEST.RESPONSE.redirect(self.getParentDatabase().absolute_url()+"/ErrorsMessages?disable_border=1&error="+valid)
-    
+
     security.declarePublic('at_post_edit_script')
     def at_post_edit_script(self):
         """clean up the layout before saving
@@ -540,9 +540,9 @@ class PlominoForm(ATFolder):
                 fieldvalue = db.runFormulaScript("field_"+self.id+"_"+fieldname+"_formula", target, field.Formula)
             except PlominoScriptException, e:
                 db.reportError('%s field formula failed' % fieldname, formula=e.formula)
-            
+
         return fieldvalue
-    
+
     security.declarePublic('hasDateTimeField')
     def hasDateTimeField(self):
         """return true if the form contains at least one DateTime field
@@ -563,7 +563,7 @@ class PlominoForm(ATFolder):
             if f.getFieldType() == "GOOGLEVISUALIZATION":
                 return True
         return False
-    
+
     security.declarePublic('getSubforms')
     def getSubforms(self, doc=None, applyhidewhen=True):
         """return the names of the subforms embedded in the form
@@ -575,7 +575,7 @@ class PlominoForm(ATFolder):
             encoding = plone_tools.getSiteEncoding()
             html_content = self.getField('FormLayout').getRaw(self).decode(encoding)
             html_content = html_content.replace('\n', '')
-        
+
         r = re.compile('<span class="plominoSubformClass">([^<]+)</span>')
         return [i.strip() for i in r.findall(html_content)]
 
@@ -603,7 +603,7 @@ class PlominoForm(ATFolder):
                     fieldtype = f.getFieldType()
                     if fieldtype == "SELECTION" or fieldtype == "DOCLINK":
                         doc.removeItem(fieldName)
-                    
+
 
     security.declareProtected(READ_PERMISSION, 'searchDocuments')
     def searchDocuments(self,REQUEST):
@@ -664,7 +664,7 @@ class PlominoForm(ATFolder):
             else:
                 # STEP 2: check data types
                 errors = errors + f.validateFormat(submittedValue)
-                
+
         if len(errors)==0:
             # STEP 3: check validation formula
             tmp = TemporaryDocument(self.getParentDatabase(), self, REQUEST, doc)
@@ -700,7 +700,7 @@ class PlominoForm(ATFolder):
         """
         # when the context is a form, it is necessarily a new doc
         return True
-        
+
     security.declarePublic('isEditMode')
     def isEditMode(self):
         """
@@ -711,7 +711,7 @@ class PlominoForm(ATFolder):
             return command in ['openform', 'edit']
         else:
             return False
-    
+
 registerType(PlominoForm, PROJECTNAME)
 # end of class PlominoForm
 

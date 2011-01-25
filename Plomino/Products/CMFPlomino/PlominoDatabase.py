@@ -256,21 +256,21 @@ class PlominoDatabase(ATFolder, PlominoAccessControl, PlominoDesignManager, Plom
             if self.documents.has_key(name):
                 return aq_inner(getattr(self.documents, name)).__of__(self)
         return BaseObject.__bobo_traverse__(self, request, name)
-      
+
     security.declarePublic('getStatus')
     def getStatus(self):
         """return DB current status
         """
         all_db_status = get_resource("plomino_status", dict)
         return all_db_status.get(self.absolute_url(), "Ready")
-        
+
     security.declarePublic('setStatus')
     def setStatus(self, status):
         """set DB current status
         """
         all_db_status = get_resource("plomino_status", dict)
         all_db_status[self.absolute_url()] = status
-            
+
     security.declarePublic('checkBeforeOpenDatabase')
     def checkBeforeOpenDatabase(self):
         """check if custom start page
@@ -289,7 +289,7 @@ class PlominoDatabase(ATFolder, PlominoAccessControl, PlominoDesignManager, Plom
                 return self.OpenDatabase()
         else:
             raise Unauthorized, "You cannot read this content"
-        
+
     security.declarePublic('getForms')
     def getForms(self, sortbyid=False):
         """return the database forms list
@@ -384,7 +384,7 @@ class PlominoDatabase(ATFolder, PlominoAccessControl, PlominoDesignManager, Plom
         """
         if ids is None:
             ids=[doc.id for doc in self.getAllDocuments()]
-            
+
         if massive:
             ObjectManager.manage_delObjects(self.documents, ids)
         else:
@@ -394,7 +394,7 @@ class PlominoDatabase(ATFolder, PlominoAccessControl, PlominoDesignManager, Plom
                 except:
                     # if insufficient access rights, we continue
                     pass
-            
+
     security.declareProtected(REMOVE_PERMISSION, 'manage_deleteDocuments')
     def manage_deleteDocuments(self, REQUEST):
         """delete documents action
@@ -404,7 +404,7 @@ class PlominoDatabase(ATFolder, PlominoAccessControl, PlominoDesignManager, Plom
             ids = [i for i in strids.split('@') if i is not '']
             self.deleteDocuments(ids=ids, massive=False)
         REQUEST.RESPONSE.redirect('.')
-        
+
     security.declarePublic('getIndex')
     def getIndex(self):
         """return the database index

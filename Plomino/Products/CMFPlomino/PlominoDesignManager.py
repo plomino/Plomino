@@ -80,13 +80,13 @@ class PlominoDesignManager(Persistent):
         report = []
 
         self.setStatus("Refreshing design")
-        
+
         # migrate to current version
         messages = migrate(self)
         for msg in messages:
             report.append(msg)
             logger.info(msg)
-            
+
         #check folders
         if not hasattr(self, 'resources'):
             resources = Folder('resources')
@@ -103,7 +103,7 @@ class PlominoDesignManager(Persistent):
         msg = 'Scripts folder OK and clean'
         report.append(msg)
         logger.info(msg)
-        
+
         # clean portal_catalog
         portal_catalog = self.portal_catalog
         catalog_entries = portal_catalog.search({'portal_type' : ['PlominoDocument'], 'path': '/'.join(self.getPhysicalPath())})
@@ -112,13 +112,13 @@ class PlominoDesignManager(Persistent):
         msg = 'Portal catalog clean'
         report.append(msg)
         logger.info(msg)
-        
+
         # destroy the index
         self.manage_delObjects(self.getIndex().getId())
         msg = 'Old index removed'
         report.append(msg)
         logger.info(msg)
-        
+
         #create new blank index
         index = PlominoIndex(FULLTEXT=self.FulltextIndex)
         self._setObject(index.getId(), index)
@@ -126,7 +126,7 @@ class PlominoDesignManager(Persistent):
         msg = 'New index created'
         report.append(msg)
         logger.info(msg)
-            
+
         #declare all the view formulas and columns index entries
         for v_obj in self.getViews():
             self.getIndex().createSelectionIndex('PlominoViewFormula_'+v_obj.getViewName())
@@ -140,7 +140,7 @@ class PlominoDesignManager(Persistent):
         msg = 'Index structure initialized'
         report.append(msg)
         logger.info(msg)
-        
+
         #reindex all the documents
         #documents = [d.getObject() for d in self.portal_catalog.search({'portal_type' : ['PlominoDocument'], 'path': '/'.join(self.getPhysicalPath())})]
         documents = self.getAllDocuments()
@@ -172,7 +172,7 @@ class PlominoDesignManager(Persistent):
         msg = "%d documents re-indexed successfully, %d errors(s)" % (total, errors)
         report.append(msg)
         logger.info(msg)
-        
+
         # update Plone workflow state
         workflow_tool = getToolByName(self, 'portal_workflow')
         wfs = workflow_tool.getWorkflowsFor(self)
@@ -183,11 +183,11 @@ class PlominoDesignManager(Persistent):
         msg = 'Plone workflow update'
         report.append(msg)
         logger.info(msg)
-        
+
         if REQUEST:
             self.writeMessageOnPage(MSG_SEPARATOR.join(report), REQUEST, False)
             REQUEST.RESPONSE.redirect(self.absolute_url()+"/DatabaseDesign")
-            
+
     security.declareProtected(DESIGN_PERMISSION, 'exportDesign')
     def exportDesign(self, REQUEST=None):
         """export design elements from current database to remote database
@@ -199,7 +199,7 @@ class PlominoDesignManager(Persistent):
             dbsettings = True
         else:
             dbsettings = False
-        
+
         if entire=="Yes":
             designelements = None
         else:
@@ -207,10 +207,10 @@ class PlominoDesignManager(Persistent):
             if designelements:
                 if type(designelements)==str:
                     designelements=[designelements]
-        
+
         if targettype != "folder":
             xmlstring = self.exportDesignAsXML(elementids=designelements, dbsettings=dbsettings)
-                
+
             if targettype == "server":
                 targetURL=REQUEST.get('targetURL')
                 username=REQUEST.get('username')
@@ -242,7 +242,7 @@ class PlominoDesignManager(Persistent):
             if len([id for id in designelements if id.startswith('resources/')]) > 0:
                 if not os.path.isdir(resources_exportpath):
                     os.makedirs(resources_exportpath)
-            
+
             for id in designelements:
                 if id.startswith('resources/'):
                     path = os.path.join(resources_exportpath, (id.split('/')[-1]+'.xml'))
@@ -256,13 +256,13 @@ class PlominoDesignManager(Persistent):
                 path = os.path.join(exportpath, ('dbsettings.xml'))
                 xmlstring = self.exportDesignAsXML(elementids=[], dbsettings=True)
                 self.saveFile(path, xmlstring)
-    
+
     @staticmethod
     def saveFile(path, content):
         fileobj = codecs.open(path, "w", "utf-8")
         fileobj.write(content.decode('utf-8'))
         fileobj.close()
-        
+
     security.declareProtected(DESIGN_PERMISSION, 'importDesign')
     def importDesign(self, REQUEST=None):
         """import design elements in current database
@@ -286,11 +286,11 @@ class PlominoDesignManager(Persistent):
                         export_url=export_url+"?elementids="+"@".join(designelements)
                 xmlstring=authenticateAndLoadURL(export_url, username, password).read()
                 self.importDesignFromXML(xmlstring, replace=replace)
-                
+
             elif sourcetype =="folder":
                 path = REQUEST.get('sourcefolder')
                 self.importDesignFromXML(from_folder=path, replace=replace)
-                    
+
             else:
                 fileToImport = REQUEST.get('sourceFile',None)
                 if not fileToImport:
@@ -299,14 +299,14 @@ class PlominoDesignManager(Persistent):
                     raise PlominoDesignException, 'unrecognized file uploaded'
                 xmlstring=fileToImport.read()
                 self.importDesignFromXML(xmlstring, replace=replace)
-        
+
             no_refresh_documents = REQUEST.get('no_refresh_documents', 'No')
             if no_refresh_documents == 'No':
                 self.refreshDB()
             REQUEST.RESPONSE.redirect(self.absolute_url()+"/DatabaseDesign")
         else:
             REQUEST.RESPONSE.redirect(self.absolute_url()+"/DatabaseDesign?username="+username+"&password="+password+"&sourceURL="+sourceURL)
-              
+
     security.declareProtected(DESIGN_PERMISSION, 'getViewsList')
     def getViewsList(self):
         """return the database views ids in a string
@@ -316,7 +316,7 @@ class PlominoDesignManager(Persistent):
         for v in views:
             ids=ids+v.id+"/"
         return ids
-    
+
     security.declareProtected(DESIGN_PERMISSION, 'getFormsList')
     def getFormsList(self):
         """return the database forms ids in a string
@@ -336,7 +336,7 @@ class PlominoDesignManager(Persistent):
         for a in agents:
             ids=ids+a.id+"/"
         return ids
-            
+
     security.declareProtected(DESIGN_PERMISSION, 'getResourcesList')
     def getResourcesList(self):
         """return the database resources objects ids in a string
@@ -364,7 +364,7 @@ class PlominoDesignManager(Persistent):
         ids = forms.split('/')
         ids.pop()
         return ids
-    
+
     security.declareProtected(DESIGN_PERMISSION, 'getRemoteAgents')
     def getRemoteAgents(self, sourceURL, username, password):
         """get agents ids list from remote database
@@ -382,7 +382,7 @@ class PlominoDesignManager(Persistent):
         ids = res.split('/')
         ids.pop()
         return ['resources/'+i for i in ids]
-    
+
     security.declarePublic('getFormulaScript')
     def getFormulaScript(self, script_id):
         if hasattr(self.scripts, script_id):
@@ -390,7 +390,7 @@ class PlominoDesignManager(Persistent):
             return ps
         else:
             return None
-        
+
     security.declarePublic('cleanFormulaScripts')
     def cleanFormulaScripts(self, script_id_pattern=None):
         for s in self.scripts.objectIds():
@@ -398,7 +398,7 @@ class PlominoDesignManager(Persistent):
                 self.scripts._delObject(s)
             elif s.startswith(script_id_pattern):
                 self.scripts._delObject(s)
-    
+
     security.declarePublic('compileFormulaScript')
     def compileFormulaScript(self, script_id, formula, with_args=False):
         ps = self.getFormulaScript(script_id)
@@ -406,13 +406,13 @@ class PlominoDesignManager(Persistent):
             ps=PythonScript(script_id)
             self.scripts._setObject(script_id, ps)
         ps = self.getFormulaScript(script_id)
-        
+
         if with_args:
             ps._params="*args"
         str_formula="plominoContext = context\n"
         str_formula=str_formula+"plominoDocument = context\n"
         str_formula=str_formula+"from Products.CMFPlomino.PlominoUtils import "+SAFE_UTILS+'\n'
-        
+
         r = re.compile('#Plomino import (.+)[\r\n]')
         for i in r.findall(formula):
             scriptname=i.strip()
@@ -421,7 +421,7 @@ class PlominoDesignManager(Persistent):
             except:
                 script_code = "#ALERT: "+scriptname+" not found in resources"
             formula = formula.replace('#Plomino import '+scriptname, script_code)
-            
+
         if formula.strip().count('\n')>0:
             str_formula=str_formula+formula
         else:
@@ -457,11 +457,11 @@ class PlominoDesignManager(Persistent):
             self.traceErr(e, context, script_id, formula_getter)
             raise PlominoScriptException(context.absolute_url_path(), formula_getter)
 #        return result
-        
+
 #        except Exception, e:
 #            if self.debugMode:
 #                logger.info('runFormulaScript Exception evaluating '+script_id+' with context '+str(context)+ ':' + str(e))
-    
+
     security.declarePrivate('traceErr')
     def traceErr(self, e, context, script_id, formula_getter):
         """trace errors from Scripts
@@ -476,10 +476,10 @@ class PlominoDesignManager(Persistent):
             msg = msg + "\n    code : \n" + formula_getter()
         else:
             msg = None
-        
+
         if msg:
             logger.error(msg)
-    
+
     security.declarePrivate('traceRenderingErr')
     def traceRenderingErr(self, e, context):
         """trace rendering errors
@@ -494,10 +494,10 @@ class PlominoDesignManager(Persistent):
             msg = msg + "\n   with context : " + str(context)            
         else:
             msg = None
-        
+
         if msg:
             logger.error(msg)
-    
+
     security.declarePublic('callScriptMethod')
     def callScriptMethod(self, scriptname, methodname, *args):
         id="script_"+scriptname+"_"+methodname
@@ -506,9 +506,9 @@ class PlominoDesignManager(Persistent):
         except:
             script_code = "#ALERT: "+scriptname+" not found in resources"
         formula=lambda:script_code+'\n\nreturn '+methodname+'(*args)'
-        
+
         return self.runFormulaScript(id, self, formula, True, *args)
-        
+
     security.declarePublic('writeMessageOnPage')
     def writeMessageOnPage(self, infoMsg, REQUEST, error = False):
         """adds portal message        
@@ -521,10 +521,10 @@ class PlominoDesignManager(Persistent):
                 msgType = 'error'
             else:
                 msgType = 'info'
-            
+
             #split message   
             infoMsg = infoMsg.split(MSG_SEPARATOR)
-            
+
             #display it
             for msg in infoMsg:
                 if msg:
@@ -545,7 +545,7 @@ class PlominoDesignManager(Persistent):
                 message = message + " - Plomino formula %s" % path
             plone_tools = getToolByName(self, 'plone_utils')
             plone_tools.addPortalMessage(message, 'error', request)
-            
+
     security.declarePublic('getRenderingTemplate')
     def getRenderingTemplate(self, templatename, request=None):
         """
@@ -567,15 +567,15 @@ class PlominoDesignManager(Persistent):
                            'SERVER_PORT':'80',
                            'REQUEST_METHOD':'GET'}
                     pt.REQUEST = HTTPRequest(sys.stdin, env, response)
-                
+
             # we also need a RESPONSE
             if not pt.REQUEST.has_key('RESPONSE'):
                 pt.REQUEST['RESPONSE']=HTTPResponse()
-                
+
             return pt
         else:
             return None
-          
+
     security.declareProtected(DESIGN_PERMISSION, 'exportDesignAsXML')
     def exportDesignAsXML(self, elementids=None, REQUEST=None, dbsettings=True):
         """
@@ -584,12 +584,12 @@ class PlominoDesignManager(Persistent):
         doc = impl.createDocument(None, "plominodatabase", None)
         root = doc.documentElement
         root.setAttribute("id", self.id)
-        
+
         if REQUEST:
             str_elementids=REQUEST.get("elementids")
             if str_elementids is not None:
                 elementids = str_elementids.split("@")
-                
+
         if elementids is None:
             elements = self.getForms() + self.getViews() + self.getAgents() + [o for o in self.resources.getChildNodes()] 
         else:
@@ -600,33 +600,33 @@ class PlominoDesignManager(Persistent):
                 else:
                     e = getattr(self, id)
                 elements.append(e)
-        
+
         # Sort elements by type (to store forms before views), then by id
         elements.sort(key=lambda elt: elt.getId())
         elements.sort(key=lambda elt: elt.Type())
-        
+
         designNode = doc.createElement('design')
-        
+
         # export database settings
         if dbsettings:
             node = self.exportElementAsXML(doc, self, isDatabase=True)
             designNode.appendChild(node)
-            
+
         # export database design elements
         for e in elements:
             if e.meta_type in plomino_schemas.keys():
                 node = self.exportElementAsXML(doc, e)
             else:
                 node = self.exportResourceAsXML(doc, e)
-                
+
             designNode.appendChild(node)
-        
+
         root.appendChild(designNode)
         s = doc.toxml()
-        
+
         if REQUEST:
             REQUEST.RESPONSE.setHeader('content-type', "text/xml;charset=utf-8")
-        
+
         # Usage of lxml to make a pretty output
         try:
             from lxml import etree
@@ -634,7 +634,7 @@ class PlominoDesignManager(Persistent):
             return etree.tostring(etree.XML(s, parser), encoding="utf-8", pretty_print=True)
         except ImportError:
             return s.encode('utf-8').replace("><", ">\n<")
-    
+
     security.declareProtected(DESIGN_PERMISSION, 'exportElementAsXML')
     def exportElementAsXML(self, xmldoc, obj, isDatabase=False):
         """
@@ -649,7 +649,7 @@ class PlominoDesignManager(Persistent):
             title = obj.Title()
             node.setAttribute('title', title)
             schema = plomino_schemas[obj.Type()]
-            
+
         for f in schema.fields():
             fieldNode = xmldoc.createElement(f.getName())
             field_type = f.getType()
@@ -662,7 +662,7 @@ class PlominoDesignManager(Persistent):
                     text = xmldoc.createTextNode(str(f.get(obj)))
                 fieldNode.appendChild(text)
             node.appendChild(fieldNode)
-            
+
         # add AT standard extra attributes
         for extra in extra_schema_attributes:
             f = obj.Schema().getField(extra)
@@ -700,7 +700,7 @@ class PlominoDesignManager(Persistent):
                     elementNode = self.exportElementAsXML(xmldoc, getattr(obj, id))
                     elements.appendChild(elementNode)
                 node.appendChild(elements)
-        
+
         if isDatabase:
            acl = xmldoc.createElement('acl')
            acl.setAttribute('AnomynousAccessRight', obj.AnomynousAccessRight)
@@ -714,9 +714,9 @@ class PlominoDesignManager(Persistent):
            dom_SpecificRights.firstChild.setAttribute('id', 'SpecificRights')
            acl.appendChild(dom_SpecificRights.documentElement)
            node.appendChild(acl)
-           
+
         return node
-    
+
     security.declareProtected(DESIGN_PERMISSION, 'exportResourceAsXML')
     def exportResourceAsXML(self, xmldoc, obj):
         """
@@ -739,7 +739,7 @@ class PlominoDesignManager(Persistent):
             data = xmldoc.createCDATASection(stream.encode('base64'))
         node.appendChild(data)
         return node
-        
+
     security.declareProtected(DESIGN_PERMISSION, 'importDesignFromXML')
     def importDesignFromXML(self, xmlstring=None, REQUEST=None, from_folder=None, replace=False):
         """
@@ -767,7 +767,7 @@ class PlominoDesignManager(Persistent):
             else:
                 xml_strings.append(xmlstring)
             total_elements = None
-        
+
         if replace:
             logger.info("Replace mode: removing current design")
             designelements = [o.id for o in self.getForms()] \
@@ -776,17 +776,17 @@ class PlominoDesignManager(Persistent):
             ObjectManager.manage_delObjects(self, designelements)
             ObjectManager.manage_delObjects(self.resources, self.resources.objectIds())
             logger.info("Current design removed")
-            
+
         for xmlstring in xml_strings:
             xmlstring = xmlstring.replace(">\n<", "><")
             xmldoc = parseString(xmlstring)
             design = xmldoc.getElementsByTagName("design")[0]
             elements = [e for e in design.childNodes
                             if e.nodeName in ('resource', 'element', 'dbsettings')]
-            
+
             if not total_elements:
                 total_elements = len(elements)
-                
+
             e = design.firstChild
             while e is not None:
                 name = str(e.nodeName)
@@ -813,7 +813,7 @@ class PlominoDesignManager(Persistent):
         self.setStatus("Ready")
         txn.commit()
         self.getIndex().no_refresh = False
-        
+
     security.declareProtected(DESIGN_PERMISSION, 'importElementFromXML')
     def importElementFromXML(self, container, node):
         """
@@ -872,7 +872,7 @@ class PlominoDesignManager(Persistent):
                 else:
                     if child.hasChildNodes():
                         field = obj.Schema().getField(name)
-                        
+
                         # Get cdata content if available, else get text node
                         cdatas = [n for n in child.childNodes if n.nodeType == n.CDATA_SECTION_NODE]
                         if len(cdatas) > 0:
@@ -882,7 +882,7 @@ class PlominoDesignManager(Persistent):
                         v = v.strip()
                         at_values[name] = v
                 child = child.nextSibling
-                
+
             if len(at_values) > 0:
                 obj.processForm(REQUEST='dummy', values=at_values)
             if len(settings_values) > 0:
@@ -914,7 +914,7 @@ class PlominoDesignManager(Persistent):
                         else:
                             self.UserRoles = result[0]
                     subchild = subchild.nextSibling
-                     
+
             else:
                 if child.hasChildNodes():
                     field = self.Schema().getField(name)
@@ -922,7 +922,7 @@ class PlominoDesignManager(Persistent):
                     result=field.widget.process_form(self, field, {name : child.firstChild.data})
                     field.set(self, result[0])
             child = child.nextSibling
-                
+
     security.declareProtected(DESIGN_PERMISSION, 'importResourceFromXML')
     def importResourceFromXML(self, container, node):
         """
@@ -944,5 +944,5 @@ class PlominoDesignManager(Persistent):
             obj.title = node.getAttribute('title')
             obj.update_data(node.firstChild.data.decode('base64'), content_type=node.getAttribute('contenttype'))
 
-                
-        
+
+

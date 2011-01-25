@@ -164,7 +164,7 @@ class PlominoAction(BaseContent, BrowserDefaultMixin):
             plominoContext = db.getDocument(target)
             if plominoContext is None:
                 plominoContext = getattr(db, target, db)
-            
+
         plominoReturnURL = plominoContext.absolute_url()
         try:
             #RunFormula(plominoContext, "action_"+self.getParentNode().id+"_"+self.id, self.Content())

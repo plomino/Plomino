@@ -38,15 +38,15 @@ class IDoclinkField(IBaseField):
                     description=u'Field rendering',
                     default="SELECT",
                     required=True)
-    
+
     sourceview = TextLine(title=u'Source view',
                     description=u'View containing the linkable documents',
                     required=False)
-    
+
     labelcolumn = TextLine(title=u'Label column',
                     description=u'View column used as label',
                     required=False)
-    
+
     documentslistformula = Text(title=u'Documents list formula',
                       description=u'Formula to compute the linkable documents list (must return a list of label|path_to_doc)',
                       required=False)
@@ -64,12 +64,12 @@ class IDoclinkField(IBaseField):
 'bInfo': true,
 'bAutoWidth': false"""
     )
-    
+
 class DoclinkField(BaseField):
     """
     """
     implements(IDoclinkField)
-    
+
     def getSelectionList(self, doc):
         """return the documents list, format: label|path_to_doc, use value is used as label if no label
         """
@@ -122,7 +122,7 @@ class DoclinkField(BaseField):
             return submittedValue.split("|")
         else:
             return submittedValue
-    
+
     def tojson(self, selectionlist):
         """Return a JSON table storing documents to be displayed
         """
@@ -131,7 +131,7 @@ class DoclinkField(BaseField):
             alldocs = sourceview.getAllDocuments()
             columns = [col for col in sourceview.getColumns() if not(col.getHiddenColumn())]
             column_ids = [col.id for col in columns]
-            
+
             datatable = []
             for doc in alldocs:
                 row = [doc.getPath()]
@@ -143,9 +143,9 @@ class DoclinkField(BaseField):
                 datatable.append(row)
         else:
             datatable = [v.split('|')[::-1] for v in selectionlist]
-            
+
         return json.dumps(datatable)
-    
+
     def getJQueryColumns(self):
         """Returns a JSON representation of columns headers, designed for JQuery DataTables
         """
@@ -155,12 +155,12 @@ class DoclinkField(BaseField):
             column_labels = [col.Title() for col in columns]
         else:
             column_labels = [""]
-            
+
         column_dicts = [{"sTitle": col} for col in column_labels]
         column_dicts.insert(0, {"bVisible": False, "bSearchable": False})
-        
+
         return json.dumps(column_dicts)
-    
+
     def getColumnLabelIndex(self):
         """Return the column index used to display the document label
         """
@@ -168,7 +168,7 @@ class DoclinkField(BaseField):
             return [col.id for col in self.context.getParentDatabase().getView(self.sourceview).getColumns()].index(self.labelcolumn);
         else:
             return 0
-    
+
 for f in getFields(IDoclinkField).values():
     setattr(DoclinkField, f.getName(), DictionaryProperty(f, 'parameters'))
 
@@ -176,4 +176,4 @@ class SettingForm(EditForm):
     """
     """
     form_fields = form.Fields(IDoclinkField)
-    
+

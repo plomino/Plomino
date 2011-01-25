@@ -39,7 +39,7 @@ class TextField(BaseField):
     """
     """
     implements(ITextField)
-    
+
 for f in getFields(ITextField).values():
     setattr(TextField, f.getName(), DictionaryProperty(f, 'parameters'))
 
@@ -47,4 +47,4 @@ class SettingForm(EditForm):
     """
     """
     form_fields = form.Fields(ITextField)
-    
+

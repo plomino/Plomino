@@ -70,7 +70,7 @@ class GooglevisualizationField(BaseField):
     'Mike','Mike<div style="color:red; font-style:italic">President</div>'|''|'The pres'
     'Tim'|'Mike'|'vp'
     'Tom'|'Mike'|'chief'
-    
+
     More information about Google Visualization javascript APIs:
     http://code.google.com/intl/en/apis/visualization/documentation/
     """
@@ -82,7 +82,7 @@ class GooglevisualizationField(BaseField):
         errors=[]
         # no validation needed
         return errors
-    
+
     def processInput(self, submittedValue):
         """
         """
@@ -91,7 +91,7 @@ class GooglevisualizationField(BaseField):
         for l in lines:
             datatable.append(l.split('|'))
         return datatable
-    
+
     def jscode(self, datatable):
         """ return Google visualization js code
         """
@@ -108,7 +108,7 @@ class GooglevisualizationField(BaseField):
         js = js + "}"
         return js
 
-    
+
 for f in getFields(IGooglevisualizationField).values():
     setattr(GooglevisualizationField, f.getName(), DictionaryProperty(f, 'parameters'))
 
@@ -116,4 +116,4 @@ class SettingForm(EditForm):
     """
     """
     form_fields = form.Fields(IGooglevisualizationField)
-    
+

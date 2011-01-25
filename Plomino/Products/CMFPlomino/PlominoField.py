@@ -210,7 +210,7 @@ class PlominoField(BaseContent, BrowserDefaultMixin):
             target = form
         else:
             target = doc
-            
+
         adapt = self.getSettings()
         fieldvalue = adapt.getFieldValue(form, doc, editmode, creation, request)
 
@@ -226,7 +226,7 @@ class PlominoField(BaseContent, BrowserDefaultMixin):
             # if custom template, use it
             if not self.getFieldReadTemplate()=="":
                 pt=getattr(self.resources, self.getFieldReadTemplate()).__of__(self)
-        
+
         # if no custom template provided, get the template associated to the field type
         if pt is None:
             if templatemode=="Read" and hasattr(adapt, 'read_template'):
@@ -238,9 +238,9 @@ class PlominoField(BaseContent, BrowserDefaultMixin):
                 pt=self.getRenderingTemplate(fieldType+"Field"+templatemode)
                 if pt is None:
                     pt=self.getRenderingTemplate("DefaultField"+templatemode)
-        
+
         selection = self.getSettings().getSelectionList(target)
-        
+
         try:
             return pt(fieldname=fieldname,
                 fieldvalue=fieldvalue,
@@ -251,13 +251,13 @@ class PlominoField(BaseContent, BrowserDefaultMixin):
         except Exception, e:
             self.traceRenderingErr(e, self)
             return ""
-        
+
     security.declarePublic('getParentDatabase')
     def getParentDatabase(self):
         """Get the database containing this field
         """
         return self.getParentNode().getParentDatabase()
-    
+
     security.declarePublic('at_post_edit_script')
     def at_post_edit_script(self):
         """post edit
@@ -287,12 +287,12 @@ class PlominoField(BaseContent, BrowserDefaultMixin):
                 fieldinterface = getattr(getattr(fields, "base"), "IBaseField")
         else:
             fieldinterface = fieldclass.plomino_field_parameters['interface']
-            
+
         if key is None:
             return fieldinterface(self)
         else:
             return getattr(fieldinterface(self), key, None)
-    
+
     def type_vocabulary(self):
         ALL_FIELD_TYPES = get_field_types()
         l = [[f, ALL_FIELD_TYPES[f][0]] for f in ALL_FIELD_TYPES.keys()]

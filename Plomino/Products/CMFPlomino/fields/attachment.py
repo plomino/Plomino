@@ -29,6 +29,6 @@ class AttachmentField(BaseField):
     """
     implements(IAttachmentField)
 
-    
+
 for f in getFields(IAttachmentField).values():
     setattr(AttachmentField, f.getName(), DictionaryProperty(f, 'parameters'))

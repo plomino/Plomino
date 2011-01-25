@@ -23,14 +23,14 @@ class PlominoFileIndex(ZCTextIndex):
 
 	def index_object(self, documentId, obj, threshold=None):
 	    """Wrapper for  index_doc()  handling indexing of multiple attributes.
-	
+
 	    Enter the document with the specified documentId in the index
 	    under the terms extracted from the indexed text attributes,
 	    each of which should yield either a string or a list of
 	    strings (Unicode or otherwise) to be passed to index_doc().
 	    """
 	    # XXX We currently ignore subtransaction threshold
-	
+
 	    res = 0
 	    all_texts = []
 	    if self._fieldname.startswith("PlominoFiles_"):
@@ -41,7 +41,7 @@ class PlominoFileIndex(ZCTextIndex):
 	                all_texts.extend(text)
 	            else:
 	                all_texts.append(text)
-	
+
 	    # Check that we're sending only strings
 	    all_texts = filter(lambda text: isinstance(text, basestring), \
 	                       all_texts)

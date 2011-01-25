@@ -82,9 +82,9 @@ class PlominoAgent(BaseContent, BrowserDefaultMixin):
         except Exception, e:
             self.reportError('Agent failed.', formula=e.formula)
             result = None
-            
+
         return result
-        
+
     security.declarePublic('runAgent')
     def runAgent(self,REQUEST=None):
         """execute the python code

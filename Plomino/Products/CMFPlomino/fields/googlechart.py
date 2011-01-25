@@ -41,7 +41,7 @@ class GooglechartField(BaseField):
         errors=[]
         # no validation needed (we do not want to parse the GoogleChart param)
         return errors
-    
+
     def processInput(self, submittedValue):
         """
         """
@@ -56,7 +56,7 @@ class GooglechartField(BaseField):
             params[key] = value
         return params
 
-    
+
 for f in getFields(IGooglechartField).values():
     setattr(GooglechartField, f.getName(), DictionaryProperty(f, 'parameters'))
 
@@ -64,4 +64,4 @@ class SettingForm(EditForm):
     """
     """
     form_fields = form.Fields(IGooglechartField)
-    
+

@@ -49,12 +49,12 @@ class INameField(IBaseField):
     separator = TextLine(title=u'Separator',
                       description=u'Only apply if multi-valued',
                       required=False)
-    
+
 class NameField(BaseField):
     """
     """
     implements(INameField)
-    
+
     def getSelectionList(self, doc):
         """return the Plone users list, format: fullname|userid
         """
@@ -75,7 +75,7 @@ class NameField(BaseField):
             else:
                 s.append(m[1]+'|'+m[0])
         return s
-    
+
     def getFullname(self, userid):
         """ return member fullname if available
         """
@@ -90,7 +90,7 @@ class NameField(BaseField):
                 return fullname
         else:
             return userid
-    
+
     def getFilteredNames(self, filter):
         """Return a JSON list of users, filtered by id or name.
         """
@@ -107,13 +107,13 @@ class NameField(BaseField):
                 all = []
         else:
             all = []
-        
+
         result  = [l for l in all if filter in l[0] or filter in l[1]]
         result.sort()
-        
+
         return json.dumps(result)
-    
-        
+
+
 for f in getFields(INameField).values():
     setattr(NameField, f.getName(), DictionaryProperty(f, 'parameters'))
 
@@ -121,4 +121,4 @@ class SettingForm(EditForm):
     """
     """
     form_fields = form.Fields(INameField)
-    
+

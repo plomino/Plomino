@@ -37,7 +37,7 @@ class PlominoIndex(UniqueObject, ZCatalog, ActionProviderBase):
     """Plomino index
     """
     security = ClassSecurityInfo()
-   
+
     id = 'plomino_index'
 
     manage_options = ( ZCatalog.manage_options +
@@ -82,7 +82,7 @@ class PlominoIndex(UniqueObject, ZCatalog, ActionProviderBase):
             pass
         if refresh:
             self.refresh()
-        
+
     security.declareProtected(DESIGN_PERMISSION, 'createFieldIndex')
     def createFieldIndex(self,fieldname, fieldtype, refresh=True):
         """
@@ -104,7 +104,7 @@ class PlominoIndex(UniqueObject, ZCatalog, ActionProviderBase):
             pass
         if refresh:
             self.refresh()
-        
+
     security.declareProtected(DESIGN_PERMISSION, 'createSelectionIndex')
     def createSelectionIndex(self,fieldname, refresh=True):
         """
@@ -172,13 +172,13 @@ class PlominoIndex(UniqueObject, ZCatalog, ActionProviderBase):
         source   = ''
         mimetype = 'text/plain'
         encoding = 'utf-8'
-        
+
         if hasattr(doc.getItem(field), 'keys'):
             files=doc.getItem(field)
             # stage 1: get the searchable text and convert it to utf8
             sp    = getToolByName(self, 'portal_properties').site_properties
             stEnc = getattr(sp, 'default_charset', 'utf-8')
-        
+
             # get the file and try to convert it to utf8 text
             ptTool = getToolByName(self, 'portal_transforms')
             for filename in files.keys():

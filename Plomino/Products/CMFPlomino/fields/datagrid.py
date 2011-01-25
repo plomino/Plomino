@@ -37,11 +37,11 @@ class IDatagridField(IBaseField):
     associated_form = TextLine(title=u'Associated form',
                 description=u'Form to use to create/edit rows',
                 required=False)
-    
+
     field_mapping = TextLine(title=u'Columns/fields mapping',
                 description=u'Field ids from the associated form, ordered as the columns, separated by commas',
                 required=False)
-        
+
     jssettings = Text(title=u'Javascript settings',
                       description=u'jQuery datatable parameters',
                       default=u"""
@@ -62,19 +62,19 @@ class DatagridField(BaseField):
     """
     """
     implements(IDatagridField)
-    
+
     plomino_field_parameters = {'interface': IDatagridField,
                                 'label': "Datagrid",
                                 'index_type': "ZCTextIndex"}
-    
+
     read_template = PageTemplateFile('datagrid_read.pt')
     edit_template = PageTemplateFile('datagrid_edit.pt')
-    
+
     def getParameters(self):
         """
         """
         return self.jssettings
-    
+
     def processInput(self, submittedValue):
         """
         """
@@ -82,7 +82,7 @@ class DatagridField(BaseField):
             return json.loads(submittedValue)
         except:
             return []
-    
+
     def tojson(self, value):
         """
         """
@@ -91,14 +91,14 @@ class DatagridField(BaseField):
         if isinstance(value, basestring):
             return value
         return json.dumps(value)
-    
+
     def getFieldValue(self, form, doc, editmode, creation, request):
         """
         """
         fieldValue = BaseField.getFieldValue(self, form, doc, editmode, creation, request)
-        
+
         mode = self.context.getFieldMode()
-                        
+
         if not(mode=="EDITABLE" and editmode):
              # fieldValue is a array of arrays, where we must replace raw values with
              # rendered values
@@ -112,7 +112,7 @@ class DatagridField(BaseField):
                      # avoid bad field ids
                      fields_obj = [f for f in fields_obj if f is not None]
                      fields_to_render = [f.id for f in fields_obj if f.getFieldType() not in ["DATETIME", "NUMBER", "TEXT", "RICHTEXT"]]
-                     
+
                      rendered_values = []
                      for row in fieldValue:
                          row_values = {}
@@ -137,7 +137,7 @@ class DatagridField(BaseField):
                      fieldValue = rendered_values
              except:
                  pass
-        
+
         mapping = self.field_mapping
         if mapping:
             col_number = len(mapping.split(','))
@@ -162,4 +162,4 @@ class SettingForm(EditForm):
     """
     """
     form_fields = form.Fields(IDatagridField)
-    
+

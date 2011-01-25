@@ -25,25 +25,25 @@ def test_suite():
 #            test_class=ExampleFunctionalTestCase,
 #            optionflags=doctest.NORMALIZE_WHITESPACE | doctest.ELLIPSIS),
 #            #optionflags=doctest.REPORT_ONLY_FIRST_FAILURE | doctest.NORMALIZE_WHITESPACE | doctest.ELLIPSIS),
-            
+
         ztc.ZopeDocFileSuite(
             'tests/plomino.txt', package='Products.CMFPlomino',
             test_class=ExampleFunctionalTestCase,
             optionflags=doctest.NORMALIZE_WHITESPACE | doctest.ELLIPSIS),
             #optionflags=doctest.REPORT_ONLY_FIRST_FAILURE | doctest.NORMALIZE_WHITESPACE | doctest.ELLIPSIS),
-        
+
         ztc.ZopeDocFileSuite(
             'tests/plomino_accesControl.txt', package='Products.CMFPlomino',
             test_class=ExampleFunctionalTestCase,
             #optionflags=doctest.NORMALIZE_WHITESPACE | doctest.ELLIPSIS),
             optionflags=doctest.REPORT_ONLY_FIRST_FAILURE | doctest.NORMALIZE_WHITESPACE | doctest.ELLIPSIS),
-          
+
         ztc.ZopeDocFileSuite(
             'tests/samples.txt', package='Products.CMFPlomino',
             test_class=ExampleFunctionalTestCase,
             optionflags=doctest.NORMALIZE_WHITESPACE | doctest.ELLIPSIS),
             #optionflags=doctest.REPORT_ONLY_FIRST_FAILURE | doctest.NORMALIZE_WHITESPACE | doctest.ELLIPSIS),
-            
+
         # We could add more doctest files here as well, by copying the file
         # block above.
 
@@ -52,7 +52,7 @@ def test_suite():
 @onsetup
 def setup_product():
     """Set up the package and its dependencies.
-    
+
     The @onsetup decorator causes the execution of this body to be deferred
     until the setup of the Plone site testing layer. We could have created our
     own layer, but this is the easiest way for Plone integration tests.
@@ -61,8 +61,8 @@ def setup_product():
     import Products.CMFPlomino
     zcml.load_config('configure.zcml', Products.CMFPlomino)
     fiveconfigure.debug_mode = False
-    
-    
+
+
 # The order here is important: We first call the (deferred) function which
 # installs the products we need for this product. Then, we let PloneTestCase 
 # set up this product on installation.

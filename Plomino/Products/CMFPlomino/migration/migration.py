@@ -63,7 +63,7 @@ def migrate_to_130(db):
     """
     db.setDebugMode(False)
     msg = "Migration to 1.3: DebugMode attribute added"
-    
+
     for form in db.getForms():
         for field in form.getFields():
             type = field.getFieldType()
@@ -110,7 +110,7 @@ def migrate_to_130(db):
     msg = msg + ", FieldType remapped" 
     db.plomino_version = "1.3.0"
     return msg
-    
+
 def migrate_to_15(db):
     """ new attribute in Column: DisplaySum
     """
@@ -131,12 +131,12 @@ def migrate_to_16(db):
             if not(c is None):
                 orderedcolumns.append([c.Position, c])
         orderedcolumns.sort()
-        
+
         # set the position using the previous sorting
         for i, c in enumerate(orderedcolumns):
             v_obj.moveObject(c[1].id, i)
             v_obj.plone_utils.reindexOnReorder(v_obj)
-            
+
     msg = "Migration to 1.6: Position column attribute deleted"
     db.plomino_version = "1.6"
     return msg
@@ -175,7 +175,7 @@ def migrate_to_173(db):
     msg = "Migration to 1.7.3: Dynamic hide-when initialized"
     db.plomino_version = "1.7.3"
     return msg
-    
+
 def migrate_to_175(db):
     """ documents stores in BTreeFolder
     """
@@ -187,4 +187,3 @@ def migrate_to_175(db):
     msg = "Migration to 1.7.5: Documents moved in BTreeFolder"
     db.plomino_version = "1.7.5"
     return msg
-    

@@ -30,7 +30,7 @@ class PlominoViewIndex(UnIndex):
 		'threshold' is the number of words to process between committing
 		subtransactions.  If None, subtransactions are disabled.
 		"""
-		
+
 		returnStatus = 0
 		parentdb = self.getParentDatabase()
 		doc = obj.__of__(parentdb)
@@ -40,7 +40,7 @@ class PlominoViewIndex(UnIndex):
 			newSelection = doc.isSelectedInView(viewname)
 		else:
 			return 0
-			
+
 		oldSelection = self._unindex.get( documentId, None )
 		if newSelection != oldSelection:
 			if oldSelection is not None:
@@ -57,6 +57,6 @@ class PlominoViewIndex(UnIndex):
 				self._unindex[documentId] = newSelection
 
 			returnStatus = 1
-			
+
 		return returnStatus
 

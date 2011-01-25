@@ -61,7 +61,7 @@ PlominoDocument_schema = getattr(ATFolder, 'schema', Schema(())).copy() + \
 
 ##code-section after-schema #fill in your manual code here
 ##/code-section after-schema
-        
+
 class PlominoDocument(ATFolder):
     """
     """
@@ -103,7 +103,7 @@ class PlominoDocument(ATFolder):
         db = self.getParentDatabase()
         db_url = db.absolute_url_path()
         return db_url + "/" + self.id
-        
+
     security.declarePublic('setItem')
     def setItem(self,name,value):
         """
@@ -159,7 +159,7 @@ class PlominoDocument(ATFolder):
             return str(self.plomino_modification_time)
         else:
             return self.plomino_modification_time
-        
+
     security.declarePublic('getRenderedItem')
     def getRenderedItem(self, itemname, form=None, formid=None, convertattachments=False):
         """ return the item value rendered according the field defined in the given form
@@ -200,7 +200,7 @@ class PlominoDocument(ATFolder):
             if store:
                 self.setItem(itemname, result)
         return result
-            
+
     security.declarePublic('getParentDatabase')
     def getParentDatabase(self):
         """
@@ -233,11 +233,11 @@ class PlominoDocument(ATFolder):
         """
         db = self.getParentDatabase()
         form = db.getForm(REQUEST.get('Form'))
-        
+
         errors=form.validateInputs(REQUEST, doc=self)
         if len(errors)>0:
             return form.notifyErrors(errors)
-        
+
         self.setItem('Form', form.getFormName())
 
         # process editable fields (we read the submitted value in the request)
@@ -340,7 +340,7 @@ class PlominoDocument(ATFolder):
                 valid = self.runFormulaScript("form_"+form.id+"_onopen", self, form.onOpenDocument)
         except PlominoScriptException, e:
             self.reportError('onOpen event failed', formula=e.formula)
-                
+
         if not valid:
             # we use the specified form's layout
             request = getattr(self, 'REQUEST', None)
@@ -358,13 +358,13 @@ class PlominoDocument(ATFolder):
                                 request=request)
         else:
             html_content = valid
-        
+
         plone_tools = getToolByName(db, 'plone_utils')
         encoding = plone_tools.getSiteEncoding()
         html_content = html_content.encode(encoding) 
-        
+
         return html_content
-        
+
 
     security.declareProtected(EDIT_PERMISSION, 'editWithForm')
     def editWithForm(self,form):
@@ -396,7 +396,7 @@ class PlominoDocument(ATFolder):
                 formname = self.evaluateViewForm(self)
         if not formname:
             formname = self.getItem('Form')
-            
+
         return self.getParentDatabase().getForm(formname)
 
     security.declarePrivate('manage_afterClone')
@@ -467,7 +467,7 @@ class PlominoDocument(ATFolder):
         values = []
         index_attachments=self.getParentDatabase().getIndexAttachments()
         form = self.getForm()
-        
+
         for itemname in self.items.keys():
             item_value = self.getItem(itemname)
             if type(item_value) is list: 
@@ -570,7 +570,7 @@ class PlominoDocument(ATFolder):
                 return (filename, contenttype)
         else:
             return (None, "")
-        
+
     security.declareProtected(EDIT_PERMISSION, 'deletefile')
     def deletefile(self, filename):
         """
@@ -581,7 +581,7 @@ class PlominoDocument(ATFolder):
         else:
             if filename in self.objectIds():
                 self.manage_delObjects(filename)
-                
+
     security.declarePublic('isNewDocument')
     def isNewDocument(self):
         """
@@ -599,15 +599,15 @@ class PlominoDocument(ATFolder):
             return command in ['editdocument', 'edit']
         else:
             return False
-    
+
 registerType(PlominoDocument, PROJECTNAME)
 # end of class PlominoDocument
 
 ##code-section module-footer #fill in your manual code here
 class TemporaryDocument(PlominoDocument):
-    
+
     security = ClassSecurityInfo()
-    
+
     def __init__(self, parent, form, REQUEST, real_doc=None):
         self._parent=parent
         if real_doc is not None:
@@ -623,13 +623,13 @@ class TemporaryDocument(PlominoDocument):
     security.declarePublic('getParentDatabase')
     def getParentDatabase(self):
         return self._parent
-    
+
     security.declarePublic('isEditMode')
     def isEditMode(self):
         """
         """
         return True
-    
+
     security.declarePublic('isNewDocument')
     def isNewDocument(self):
         """
@@ -638,14 +638,14 @@ class TemporaryDocument(PlominoDocument):
             return True
         else:
             return False
-     
+
     security.declarePublic('id')
     @property
     def id(self):
         """
         """
         return self.real_id
-    
+
 ##/code-section module-footer
 
 

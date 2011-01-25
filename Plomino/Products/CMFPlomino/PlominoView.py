@@ -245,7 +245,7 @@ class PlominoView(ATFolder):
         if self.documents.has_key(name):
             return aq_inner(getattr(self.documents, name)).__of__(self)
         return BaseObject.__bobo_traverse__(self, request, name)
-    
+
     security.declarePublic('getAllDocuments')
     def getAllDocuments(self, start=1, limit=0):
         """Get all documents (as CatalogBrains, you have to use getObject()
@@ -340,7 +340,7 @@ class PlominoView(ATFolder):
         """
         db = self.getParentDatabase()
         refresh = not(db.DoNotReindex)
-        
+
         if column_obj.Formula:
             db.getIndex().createIndex('PlominoViewColumn_'+self.getViewName()+'_'+column_name, refresh=refresh)
         else:
@@ -394,7 +394,7 @@ class PlominoView(ATFolder):
             sortindex=None
         else:
             sortindex=self.getIndexKey(sortindex)
-        
+
         return index.dbsearch(
             {
                 'PlominoViewFormula_'+self.getViewName() : True,
@@ -432,7 +432,7 @@ class PlominoView(ATFolder):
                 quoting = int(quoting)
             except:
                 quoting=csv.QUOTE_NONNUMERIC
-                
+
         if brain_docs is None:
             docs = self.getAllDocuments()
         else:
@@ -480,7 +480,7 @@ class PlominoView(ATFolder):
         result=""
         columns=[c.id for c in self.getColumns()]
         vname=self.getViewName()
-        
+
         rows = []
 
         # add column titles
@@ -500,14 +500,14 @@ class PlominoView(ATFolder):
                     v = unicode(v).encode('utf-8')
                 values.append(v)
             rows.append(values)
-        
+
         html ="""<html><head>
     <meta http-equiv="Content-Type"
           content="text/html;charset=utf-8" />
 <body><table>"""
         for row in rows:
             html = html + "<tr>" + ''.join(["<td>%s</td>" % v for v in row]) + "</tr>\n"
-        
+
         html = html + "</table>\n</body></html>"
         REQUEST.RESPONSE.setHeader('content-type', 'application/vnd.ms-excel; charset=utf-8')
         REQUEST.RESPONSE.setHeader("Content-Disposition", "inline; filename="+self.id+".xls")
@@ -538,7 +538,7 @@ class PlominoView(ATFolder):
                                     },
                                    sortindex, self.getReverseSorting())
         return [d.getObject() for d in results]
-    
+
     security.declarePublic('tojson')
     def tojson(self):
         """Returns a JSON representation of view data 
@@ -552,10 +552,10 @@ class PlominoView(ATFolder):
                 if not isinstance(v, str):
                     v = unicode(v).encode('utf-8')
                 row.append(v or '&nbsp;')
-                
+
             data.append(row)
         return json.dumps({ 'aaData': data })
-    
+
     security.declarePublic('getIndexKey')
     def getIndexKey(self, columnName):
         """Returns an index key depending of which one exists.
