@@ -4,9 +4,9 @@
                        field python:options['field']">
 
         <script type="text/javascript" charset="utf-8"
-        tal:define="data python:options['field'].getSettings().tojson(v);
-                    param python:options['field'].getSettings().getParameters();
-        			langpath python:field.restrictedTraverse('/'.join(field.getPhysicalPath()) + '/DataTables/getLanguagePath')()"
+        tal:define="data python:field.getSettings().tojson(v);
+                    param python:field.getSettings().getParameters();
+        			langpath python:field.getSettings().getLang()"
         tal:content="structure string:
         				jq(document).ready(function() {
         					jq('#${fieldname}_datagrid').dataTable( {
