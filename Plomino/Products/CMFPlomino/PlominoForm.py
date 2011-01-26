@@ -361,7 +361,8 @@ class PlominoForm(ATFolder):
             fieldName = field.id
             fieldblock='<span class="plominoFieldClass">'+fieldName+'</span>'
             if creation and not(fieldblock in html_content) and request is not None:
-                html_content = "<input type='hidden' name='"+fieldName+"' value='"+str(request.get(fieldName,''))+"' />" + html_content
+                if request.has_key(fieldName):
+                    html_content = "<input type='hidden' name='"+fieldName+"' value='"+str(request.get(fieldName,''))+"' />" + html_content
             if fieldblock in html_content:
                 html_content = html_content.replace(fieldblock, field.getFieldRender(self, doc, editmode, creation, request=request))
 
@@ -685,6 +686,52 @@ class PlominoForm(ATFolder):
     def notifyErrors(self, errors):
         return self.ErrorsMessages(errors=errors)
 
+    security.declareProtected(DESIGN_PERMISSION, 'manage_generateView')
+    def manage_generateView(self, REQUEST=None):
+        """ create a view automatically
+        where selection is : plominoDocument.Form == "this_form"
+        and displaying a column for all the acceptable fields
+        (i.e. editable and not richtext, file attachment, datagrid, ...
+        which might need reformatting)
+        """
+        db = self.getParentDatabase()
+        view_id = "all" + self.id.replace('_', '').replace('-', '')
+        if view_id in db.objectIds():
+            self.reportError('%s is already an existing object.' % view_id)
+            if REQUEST:
+                REQUEST.RESPONSE.redirect(self.absolute_url_path())
+            return
+        view_title = "All " + self.Title()
+        formula = 'plominoDocument.Form=="%s"' % self.id
+        db.invokeFactory('PlominoView',
+                         id=view_id,
+                         title=view_title,
+                         SelectionFormula=formula)
+        view_obj = getattr(db, view_id)
+        view_obj.at_post_create_script()
+        
+        fields = self.getFields(includesubforms=True)
+        acceptable_types = ["TEXT", "NUMBER", "NAME", "SELECTION", "DATETIME"]
+        fields = [f for f in fields if f.getFieldMode()=="EDITABLE" and f.FieldType in acceptable_types]
+        for f in fields:
+            col_id = f.id.replace('_', '').replace('-', '')
+            col_title = col_id
+            col_definition = self.id + '/' + f.id
+            view_obj.invokeFactory('PlominoColumn',
+                                      id=col_id,
+                                      title=col_title,
+                                      SelectedField=col_definition)
+            getattr(view_obj, col_id).at_post_create_script()
+        view_obj.invokeFactory('PlominoAction',
+                                  id='add_new',
+                                  title="Add a new "+self.Title(),
+                                  ActionType="OPENFORM",
+                                  ActionDisplay="BUTTON",
+                                  Content=self.id)
+        
+        if REQUEST:
+            REQUEST.RESPONSE.redirect(view_obj.absolute_url_path())
+        
     security.declarePublic('getPosition')
     def getPosition(self):
         """Return the form position in the database
