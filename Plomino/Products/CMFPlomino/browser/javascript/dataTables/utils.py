@@ -5,6 +5,8 @@ def get_language_path(context):
     """Select the right language file from the context language. 
     """
     
+    if not getattr(context, 'REQUEST', None):
+        return 'No lanuage'
     portal_state = getMultiAdapter((context, context.REQUEST), name=u'plone_portal_state')
     current_language = portal_state.language()
     
