@@ -65,8 +65,8 @@ def sendMail(db, recipients, title, html_message, sender=None):
         sender = db.getCurrentUser().getProperty("email")
     host.send(message, mto=recipients,
         mfrom=sender, subject=title,
-        encode='base64')
-
+        encode='quoted-printable')
+    
 def userFullname(db, userid):
     """ return user fullname if exist, else return userid, and return Unknown if user not found
     """
