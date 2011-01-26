@@ -92,6 +92,11 @@ class ElementPortletRenderer(base.Renderer):
 
     @property
     def available(self):
+        element = self.getElement()
+        if element and hasattr(element, "getFormField"):
+            availability_field = element.getFormField("Plomino_Portlet_Availabilty")
+            if availability_field:
+                return element.computeFieldValue("Plomino_Portlet_Availabilty", element)
         return True
 
     @property
@@ -105,11 +110,11 @@ class ElementPortletRenderer(base.Renderer):
     @property
     def action_url(self):
         element = self.getElement()
-        base_url = element.absolute_url()
+        base_url = element.absolute_url_path()
         if element.isSearchForm:
             return base_url+"/searchDocuments"
         if element.isPage:
-            return "."
+            return base_url
         return base_url+"/createDocument"
 
     def elementLayout(self):
