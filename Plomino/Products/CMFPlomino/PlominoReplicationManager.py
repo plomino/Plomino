@@ -436,8 +436,8 @@ class PlominoReplicationManager(Persistent):
         res = False
 
         #search for doc locally
-        localDoc = getattr(self, docId, None)
-
+        localDoc = self.getDocument(docId)
+                
         #if no local doc found -> import 
         if localDoc is None:
             res = True 
@@ -521,7 +521,7 @@ class PlominoReplicationManager(Persistent):
         """
         #check replication
         replication = self.checkReplication(replication)
-
+                        
         #replication list
         replications = self.getReplications()        
 
@@ -1016,7 +1016,7 @@ class PlominoReplicationManager(Persistent):
                             v.decode('utf-8')
                         doc.setItem(info, v)
                 #save
-                doc.save(creation=True, refresh_index=False)
+                doc.save(creation=True, refresh_index=True)
                 #count
                 nbDocDone = nbDocDone + 1
 
@@ -1031,11 +1031,8 @@ class PlominoReplicationManager(Persistent):
                 counter = 0
                 logger.info("%d documents imported successfully, %d errors(s) ...(still running)" % (nbDocDone, nbDocFailed))
         txn.commit()
-        logger.info("Importation finished: %d documents imported successfully, %d document(s) not imported" % (nbDocDone, nbDocFailed))
-
-        #re-index database
-        self.refreshDB() 
-
+        logger.info("Importation finished: %d documents imported successfully, %d document(s) not imported" % (nbDocDone, nbDocFailed)) 
+        
         #result sent
         return (nbDocDone, nbDocFailed)
 
@@ -1121,9 +1118,11 @@ class PlominoReplicationManager(Persistent):
 
         # export attached files
         for f in doc.getFilenames():
+            attached_file = doc.getfile(f)
             fnode = xmldoc.createElement('attachment')
             fnode.setAttribute('id', f)
-            data = xmldoc.createCDATASection(str(doc.getfile(f)).encode('base64'))
+            fnode.setAttribute('contenttype', getattr(attached_file, 'content_type',''))
+            data = xmldoc.createCDATASection(str(attached_file).encode('base64'))
             fnode.appendChild(data)
             node.appendChild(fnode)
 
@@ -1198,7 +1197,8 @@ class PlominoReplicationManager(Persistent):
         # restore files
         for fnode in node.getElementsByTagName("attachment"):
             filename = str(fnode.getAttribute('id'))
-            doc.setfile(fnode.firstChild.data.decode('base64'), filename=filename, overwrite=True)
+            contenttype = str(fnode.getAttribute('contenttype'))
+            doc.setfile(fnode.firstChild.data.decode('base64'), filename=filename, overwrite=True, contenttype=contenttype)
         doc.save(onSaveEvent=False)
         doc.plomino_modification_time = lastmodified
 
