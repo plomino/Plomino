@@ -1,0 +1,16 @@
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:genericsetup="http://namespaces.zope.org/genericsetup"
+    i18n_domain="CMFPlomino">
+
+
+  <genericsetup:upgradeStep
+      source="22"
+      destination="23"
+      title="Remove embed jqueryui, use c.js.jqueryui"
+      description=""
+      profile="Products.CMFPlomino:default"
+      handler=".upgrades.upgrade_22_to_23"
+      />
+
+</configure>

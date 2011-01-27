@@ -3,7 +3,8 @@
            xmlns:five="http://namespaces.zope.org/five">
      
   <include file="profiles.zcml" />
-
+  <include file="upgrades.zcml" />
+  
   <include package=".fields"/>
   <include package=".browser"/>
   
