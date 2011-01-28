@@ -82,8 +82,7 @@
 											tal:repeat="doc python:here.getCategoryViewEntries(columns[0].getColumnName(), cat[0])">
 	
 											<tal:block
-												tal:define="currentDoc python:here.getDocument(doc.getPath().split('/')[-1])"
-												tal:condition="python:test(currentDoc.hasReadPermission(currentDoc)==True)">
+												tal:define="currentDoc python:here.getDocument(doc.getPath().split('/')[-1])">
 												<tr tal:define="oddrow repeat/doc/odd;
 																docurl python:doc.getPath().split('/')[-1]"
 													tal:attributes="class python:test(oddrow, 'even', 'odd');">
@@ -114,7 +113,7 @@
 							<!-- Regular view -->
 	
 							<tal:block
-								tal:define="listdocuments  python:[d for d in here.getAllDocuments() if test(here.hasReadPermission(here.getParentDatabase().getDocument(d.getPath().split('/')[-1]))==True)];
+								tal:define="listdocuments  python:here.getAllDocuments();
 													count python:len(listdocuments);
 													paramstart request/start|python:'1';
 													paramlimit request/limit|python:'100';

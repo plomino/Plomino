@@ -247,7 +247,7 @@ class PlominoView(ATFolder):
         return BaseObject.__bobo_traverse__(self, request, name)
 
     security.declarePublic('getAllDocuments')
-    def getAllDocuments(self, start=1, limit=0):
+    def getAllDocuments(self, start=1, limit=0, only_allowed=True):
         """Get all documents (as CatalogBrains, you have to use getObject()
         to get the real PlominoDocument)
         """
@@ -257,7 +257,7 @@ class PlominoView(ATFolder):
             sortindex=None
         else:
             sortindex=self.getIndexKey(sortindex)
-        results=index.dbsearch({'PlominoViewFormula_'+self.getViewName() : True}, sortindex, self.getReverseSorting())
+        results=index.dbsearch({'PlominoViewFormula_'+self.getViewName() : True}, sortindex, self.getReverseSorting(), only_allowed=only_allowed)
         if limit==0:
             return results
         else:

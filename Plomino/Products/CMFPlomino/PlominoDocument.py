@@ -92,9 +92,7 @@ class PlominoDocument(ATFolder):
         set on the 'view' action itself, it causes error 'maximum
         recursion depth exceeded' if user hasn't permission
         """
-        if self.checkUserPermission(READ_PERMISSION):
-            if hasattr(self, 'REQUEST') and not self.checkUserPermission(DESIGN_PERMISSION):
-                self.REQUEST["disable_border"]=True
+        if self.isReader():
             return self.OpenDocument()
         else:
             raise Unauthorized, "You cannot read this content"
@@ -211,6 +209,21 @@ class PlominoDocument(ATFolder):
         else:
             return parent
 
+    security.declarePublic('getPlominoReaders')
+    def getPlominoReaders(self):
+        """
+        """
+        if self.hasItem('Plomino_Readers'):
+            return asList(self.Plomino_Readers)
+        else:
+            return ['*']
+
+    security.declarePublic('isReader')
+    def isReader(self):
+        """
+        """
+        return self.getParentDatabase().isCurrentUserReader(self)
+        
     security.declarePublic('isAuthor')
     def isAuthor(self):
         """

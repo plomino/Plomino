@@ -60,8 +60,10 @@ class PlominoIndex(UniqueObject, ZCatalog, ActionProviderBase):
         lexicon = PLexicon('plaintext_lexicon', '', Splitter(), CaseNormalizer())
         self._setObject('plaintext_lexicon', lexicon)
         self.createFieldIndex('Form', 'SELECTION')
+        self.createFieldIndex('getPlominoReaders', 'SELECTION')
+        
         if FULLTEXT:
-            self.createFieldIndex('SearchableText', 'TEXT')
+            self.createFieldIndex('SearchableText', 'RICHTEXT')
         self.no_refresh = False
 
     security.declareProtected(READ_PERMISSION, 'getParentDatabase')
@@ -154,9 +156,16 @@ class PlominoIndex(UniqueObject, ZCatalog, ActionProviderBase):
             self.getParentDatabase().setStatus("Ready")
 
     security.declareProtected(READ_PERMISSION, 'dbsearch')
-    def dbsearch(self,request,sortindex=None,reverse=0):
+    def dbsearch(self, request, sortindex=None, reverse=0, only_allowed=True):
         """
         """
+        user_groups_roles = ['Anonymous', '*']
+        user_id = self.getCurrentUser().getUserName()
+        if user_id != "Anonymous User":
+            user_groups_roles += [user_id] \
+                           + self.getCurrentUserGroups() \
+                           + self.getCurrentUserRoles()
+        request['getPlominoReaders'] = user_groups_roles
         return self.search(request, sortindex, reverse)
 
     security.declareProtected(READ_PERMISSION, 'getKeyUniqueValues')

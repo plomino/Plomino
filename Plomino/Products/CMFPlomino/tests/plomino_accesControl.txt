@@ -282,4 +282,89 @@ This user is not author of the document
     >>> browser.open(currentDocUrl+'/EditDocument')
     >>> InsufficientPrivileges in browser.url
     True
+    >>> browser.open(portal_url+'/logout')
     
+==========================================
+Plomino_Authors ITEM
+==========================================
+
+All PlominoDocument contain a Plomino_Authors item.
+Plomino_Authors allows to define the list of users, groups, and/or
+user roles allowed to edit the document.
+Everytime the document is saved, the id of the current user is added to
+Plomino_Authors.
+    >>> browser.open(portal_url+'/login_form')
+    >>> browser.getControl('Login Name').value = 'userAuthor'
+    >>> browser.getControl('Password').value = 'userAuthor'
+    >>> browser.getControl('Log in').click()
+    >>> browser.open(base_url + '/form1/OpenForm')
+    >>> browser.getControl(name='field1').value="Another value entered by author 1"
+    >>> browser.getForm(name='form1').submit(name='plomino_save')
+    >>> currentDocUrl = browser.url
+    >>> doc = db.getDocument(currentDocUrl.split('/')[-1])
+    >>> doc.Plomino_Authors
+    ['userAuthor']
+    
+Other authors not mentioned in Plomino_Authors cannot edit the document
+    >>> browser.open(portal_url+'/login_form')
+    >>> browser.getControl('Login Name').value = 'userAuthor2'
+    >>> browser.getControl('Password').value = 'userAuthor2'
+    >>> browser.getControl('Log in').click()
+    >>> browser.open(currentDocUrl+'/EditDocument')
+    >>> InsufficientPrivileges in browser.url
+    True
+        
+But if, for some reasons, we need to grant edit access to other users
+than the original author, Plomino_Authors might be dynamically computed
+(using the onSave event, or an action, or a field...).
+    >>> doc.setItem('Plomino_Authors', ['userAuthor', 'userAuthor2'])
+    >>> browser.open(currentDocUrl+'/EditDocument')
+    >>> InsufficientPrivileges in browser.url
+    False
+
+Plomino_Authors can contain users or groups, but also Plomino user roles
+(mentionned within brackets).
+    >>> db.UserRoles = {'[HR]': {'userAuthor2': 1}}
+    >>> doc.setItem('Plomino_Authors', ['userAuthor', '[HR]'])
+    >>> browser.open(currentDocUrl+'/EditDocument')
+    >>> InsufficientPrivileges in browser.url
+    False
+    
+==========================================
+Plomino_Readers ITEM
+==========================================
+
+Any PlominoDocument may contain a Plomino_Readers item.
+Plomino_Readers allows to restrict the list of users, groups, and/or
+user roles allowed to view the document.
+By default, Plomino_Readers is not created, meaning that any user
+allowed to view documents according the ACL will be allowed to view the
+document.
+    >>> doc.hasItem("Plomino_Readers")
+    False
+    >>> browser.open(portal_url+'/logout')
+    >>> browser.open(portal_url+'/login_form')
+    >>> browser.getControl('Login Name').value = 'userReader'
+    >>> browser.getControl('Password').value = 'userReader'
+    >>> browser.getControl('Log in').click()
+    >>> browser.open(currentDocUrl)
+    >>> InsufficientPrivileges in browser.url
+    False
+
+If we create a Plomino_Readers item, it will restrict the regular ACL settings.
+    >>> doc.setItem('Plomino_Readers', ['userAuthor'])
+    >>> browser.open(currentDocUrl)
+    >>> InsufficientPrivileges in browser.url
+    True
+    >>> doc.setItem('Plomino_Readers', ['userReader'])
+    >>> browser.open(currentDocUrl)
+    >>> InsufficientPrivileges in browser.url
+    False
+    
+As Plomino_Authors, Plomino_Readers can contain users or groups, but also
+Plomino user roles (mentionned within brackets).
+    >>> db.UserRoles = {'[HR]': {'userAuthor2': 1}, '[Artist]': {'userReader': 1}}
+    >>> doc.setItem('Plomino_Readers', ['[Artist]'])
+    >>> browser.open(currentDocUrl)
+    >>> InsufficientPrivileges in browser.url
+    False

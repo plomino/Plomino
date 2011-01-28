@@ -143,6 +143,13 @@ class PlominoAccessControl(Persistent):
         membershiptool = getToolByName(self, 'portal_membership')
         return membershiptool.getAuthenticatedMember()
 
+    security.declarePublic('getCurrentUserGroups')
+    def getCurrentUserGroups(self):
+        """get the current user groups
+        """
+        user = self.getCurrentUser()
+        return user.getGroups()
+    
     security.declarePublic('getCurrentUserRights')
     def getCurrentUserRights(self):
         """get the current user Plomino rights
@@ -188,6 +195,30 @@ class PlominoAccessControl(Persistent):
                 roles.append(r)
         return roles
 
+
+    security.declarePublic('isCurrentUserReader')
+    def isCurrentUserReader(self, doc):
+        """does the current user have read permission on db
+        (so Plone security is preserved)
+        and if Plomino_Readers defined on the doc, is he part of it ?
+        """
+        isreader = False
+        if self.checkUserPermission(READ_PERMISSION, doc):
+            allowed_readers = doc.getPlominoReaders()
+            if '*' in allowed_readers or self.checkUserPermission(ACL_PERMISSION):
+                isreader = True
+            else:
+                username = self.getCurrentUser().getUserName()
+                if username == "Anonymous User":
+                    user_groups_roles = ['Anonymous']
+                else:
+                    user_groups_roles = ['Anonymous', username] \
+                                   + self.getCurrentUserGroups() \
+                                   + self.getCurrentUserRoles()
+                if len([name for name in allowed_readers if name in user_groups_roles]) > 0:
+                    isreader = True
+        return isreader
+                    
     security.declarePublic('isCurrentUserAuthor')
     def isCurrentUserAuthor(self,doc):
         """is the current user the document's author?
@@ -195,7 +226,11 @@ class PlominoAccessControl(Persistent):
         # the user must at least have edit permission
         if not self.checkUserPermission(EDIT_PERMISSION):
             return False
-
+        
+        # the user must at least be an allowed reader
+        if not self.isCurrentUserReader(doc):
+            return False
+        
         # if the user is Owner or Manager, no problem
         general_plone_rights = self.getCurrentUser().getRolesInContext(doc)
         if 'Owner' in general_plone_rights or 'Manager' in general_plone_rights:
