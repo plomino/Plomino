@@ -42,6 +42,14 @@
     </tal:block>
 </metal:css>
 
+<metal:block fill-slot="top_slot"
+             tal:define="is_designer python:here.hasDesignPermission()">
+    <tal:notdesigner tal:condition="not:is_designer">
+        <tal:hide tal:condition="not:is_designer"
+             tal:define="dummy python:request.set('disable_border', 1);" />
+    </tal:notdesigner>
+</metal:block>
+
 <metal:main fill-slot="main">
     <tal:main-macro metal:define-macro="main"
         tal:define="kssClassesView context/@@kss_field_decorator_view;

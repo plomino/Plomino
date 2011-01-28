@@ -5,8 +5,7 @@
 			tal:condition="python:test(here.hasEditPermission(here)==True and here.hasEditPermission(here.getParentDatabase())==True and here.isAuthor())">
 		<input type="button" class="context plominoEdit" value="Edit" name="plomino_edit"
 			i18n:domain="CMFPlomino" i18n:attributes="value"
-			tal:define="disable_border python:test(here.hasDesignPermission(here), '', '?disable_border=1')"
-			tal:attributes="onclick python:'location.href=\''+here.navigationParent(here)+'/'+here.id+'/EditDocument'+disable_border+'\''" />
+			tal:attributes="onclick python:'location.href=\''+here.navigationParent(here)+'/'+here.id+'/EditDocument\''" />
 		</tal:block>
 
 		<tal:block

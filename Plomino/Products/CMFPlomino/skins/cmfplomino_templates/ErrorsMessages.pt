@@ -4,6 +4,14 @@
       i18n:domain="plone">
 <body>
 
+<metal:block fill-slot="top_slot"
+             tal:define="is_designer python:here.hasDesignPermission()">
+    <tal:notdesigner tal:condition="not:is_designer">
+        <tal:hide tal:condition="not:is_designer"
+             tal:define="dummy python:request.set('disable_border', 1);" />
+    </tal:notdesigner>
+</metal:block>
+
 <metal:main fill-slot="main">
     <div id="bodyContent" tal:define="asparam request/error|nothing">
     	<h1 i18n:domain="CMFPlomino" i18n:translate="Validation failed">Validation failed</h1>

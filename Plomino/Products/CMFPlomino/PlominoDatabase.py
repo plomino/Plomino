@@ -276,8 +276,8 @@ class PlominoDatabase(ATFolder, PlominoAccessControl, PlominoDesignManager, Plom
         """check if custom start page
         """
         if self.checkUserPermission(READ_PERMISSION):
-            if hasattr(self, 'REQUEST') and not self.checkUserPermission(DESIGN_PERMISSION):
-                self.REQUEST["disable_border"]=True
+#            if hasattr(self, 'REQUEST') and not self.checkUserPermission(DESIGN_PERMISSION):
+#                self.REQUEST["disable_border"]=True
             try:
                 if self.StartPage:        
                     if hasattr(self, self.getStartPage()):
