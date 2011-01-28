@@ -33,8 +33,9 @@ from DateTime import DateTime
 from zope import event
 from Products.Archetypes.event import ObjectEditedEvent
 
-from PlominoUtils import DateToString, StringToDate, sendMail, asUnicode
+from PlominoUtils import DateToString, StringToDate, sendMail, asUnicode, asList
 from OFS.Image import File
+from ZPublisher.HTTPRequest import FileUpload
 try:
     from iw.fss.FileSystemStorage import FileSystemStorage, FSSFileInfo
 except Exception, e:
@@ -537,15 +538,18 @@ class PlominoDocument(ATFolder):
         if fss:
             return [o.getTitle() for o in self.__dict__.values() if isinstance(o, FSSFileInfo)]
         else:
-            return [o.getId() for o in self.getChildNodes() if isinstance(o, File)]
+            #return [o.getId() for o in self.getChildNodes() if isinstance(o, File)]
+            if HAS_BLOB:
+                return [id for id in self.objectIds() if isinstance(self[id], BlobWrapper)]
+            else:
+                return [id for id in self.objectIds() if isinstance(self[id], File)]
 
     security.declareProtected(EDIT_PERMISSION, 'setfile')
-    def setfile(self, submittedValue, filename='', overwrite=False):
+    def setfile(self, submittedValue, filename='', overwrite=False, contenttype=''):
         """
         """
         if filename=='':
             filename=submittedValue.filename
-        contenttype=''
         if filename!='':
             if """\\""" in filename:
                 filename=filename.split("\\")[-1]
@@ -562,23 +566,23 @@ class PlominoDocument(ATFolder):
                     storage.set(filename, self, tmpfile);
                     contenttype=storage.get(filename,self).getContentType()
                 elif HAS_BLOB:
-                    submittedValue.seek(0)
-                    contenttype = guessMimetype(submittedValue, filename)
+                    if isinstance(submittedValue, FileUpload):
+                        submittedValue.seek(0)
+                        contenttype = guessMimetype(submittedValue, filename)
+                        submittedValue = submittedValue.read()
                     try:
                         blob = BlobWrapper(contenttype)
                     except:
                         # BEFORE PLONE 4.0.1
                         blob = BlobWrapper()
                     file = blob.getBlob().open('w')
-                    file.write(submittedValue.read())
+                    file.write(submittedValue)
                     file.close()
                     blob.setFilename(filename)
                     blob.setContentType(contenttype)
                     self._setObject(filename, blob)
                 else:
                     self.manage_addFile(filename, submittedValue)
-                    #import pdb; pdb.set_trace()
-                    #contenttype=getattr(self,filename).getContentType()
                     contenttype=self[filename].getContentType()
                 return (filename, contenttype)
         else:
