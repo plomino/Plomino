@@ -1,7 +1,6 @@
 <?xml version="1.0"?>
 <import-steps>
 
- 
  <import-step 
     id="CMFPlomino-Update-RoleMappings" 
     handler="Products.CMFPlomino.setuphandlers.updateRoleMappings"
@@ -19,10 +18,6 @@
    <dependency step="plone-final"/>
    manual coded post-install for CMFPlomino
  </import-step>
-
-<!-- ##code-section ADDITIONALSTEPS -->
-dependency step="plone-final"
-<!-- ##/code-section ADDITIONALSTEPS --> 
 
 </import-steps>
  
