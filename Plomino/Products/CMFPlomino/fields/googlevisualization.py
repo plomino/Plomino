@@ -50,26 +50,35 @@ gvisudata_chart.draw(gvisudata, {allowHtml:true});
 
 class GooglevisualizationField(BaseField):
     """ GooglevisualizationField allows to render a datatable using the Google
-    Visulization tools.
-    The field value is supposed to be an array of array containing the values
-    each columns declared in the Google Vizualization javascript code.
+    Visualization tools.
+
+    The field value should be list of lists. Each child list contains the
+    values for the columns declared in the Google Vizualization javascript
+    code.
+
     Example:
-    if columns declaration is:
-    gvisudata.addColumn('string', 'Name');
-    gvisudata.addColumn('string', 'Manager');
-    gvisudata.addColumn('string', 'ToolTip');
-    (typical case when using orgchart package)
-    then the field value must be like:
+
+    If the columns declaration is:
+
+        gvisudata.addColumn('string', 'Name');
+        gvisudata.addColumn('string', 'Manager');
+        gvisudata.addColumn('string', 'ToolTip');
+
+    (typical case when using orgchart package) then the field value should look
+    like:
+
     [['\'Mike\',\'Mike<div style="color:red; font-style:italic">President</div>\'', "''", "'The pres'"],
     ["'Tim'", "'Mike'", "'vp'"],
     ["'Tom'", "'Mike'", "'chief'"]]
+
     Notes:
     - strings must be enclosed in quotes (as they will be inserted in JS code)
-    - when editing the field value from the form, the rows are separated with a newline,
-    and the cells are separated with a pipe:
-    'Mike','Mike<div style="color:red; font-style:italic">President</div>'|''|'The pres'
-    'Tim'|'Mike'|'vp'
-    'Tom'|'Mike'|'chief'
+    - when editing the field value from the form, the rows are separated with a
+      newline, and the cells are separated with a pipe:
+
+        'Mike','Mike<div style="color:red; font-style:italic">President</div>'|''|'The pres'
+        'Tim'|'Mike'|'vp'
+        'Tom'|'Mike'|'chief'
 
     More information about Google Visualization javascript APIs:
     http://code.google.com/intl/en/apis/visualization/documentation/
