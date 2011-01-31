@@ -121,6 +121,8 @@ def urlencode(h):
 
 def asList(x):
     """ if not list, return x in a single-element list
+    XXX: Don't call asList if x may be None, as [None] probably is not what you
+    want.
     """
     if hasattr(x, 'append'):
         return x
