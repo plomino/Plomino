@@ -42,7 +42,7 @@
 								<li>
 									Fields : 
 								</li>
-								<tal:fieldsforms tal:repeat="fields python:f.getFields()">
+								<tal:fieldsforms tal:repeat="fields python:f.getFormFields()">
 								<ul>
 									
 									<li>
