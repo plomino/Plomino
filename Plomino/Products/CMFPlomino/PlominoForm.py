@@ -22,6 +22,7 @@ from Products.CMFDynamicViewFTI.browserdefault import BrowserDefaultMixin
 
 from Products.CMFPlomino.config import *
 from Products.CMFPlomino.PlominoUtils import PlominoTranslate, DateToString
+from Products.CMFPlomino.exceptions import PlominoDesignException
 
 ##code-section module-header #fill in your manual code here
 import sys
@@ -289,16 +290,20 @@ class PlominoForm(ATFolder):
             db.writeMessageOnPage(valid, REQUEST, False)
             REQUEST.RESPONSE.redirect(db.absolute_url())
 
-    security.declarePublic('getFields')
-    def getFields(self, includesubforms=False, doc=None, applyhidewhen=True):
+    security.declarePublic('getFormFields')
+    def getFormFields(self, includesubforms=False, doc=None, applyhidewhen=True):
         """get fields
         """
         fieldlist = self.portal_catalog.search({'portal_type' : ['PlominoField'], 'path': '/'.join(self.getPhysicalPath())})
         result = [f.getObject() for f in fieldlist]
         result.sort(key=lambda elt: elt.id.lower())
         if includesubforms:
+            subformsseen = []
             for subformname in self.getSubforms(doc, applyhidewhen):
-                result=result+self.getParentDatabase().getForm(subformname).getFields(True)
+                if subformname in subformsseen:
+                    continue
+                result=result+self.getParentDatabase().getForm(subformname).getFormFields(includesubforms=True)
+                subformsseen.append(subformname)
         return result
 
     security.declarePublic('getHidewhenFormulas')
@@ -357,7 +362,7 @@ class PlominoForm(ATFolder):
             html_content = "<input type='hidden' name='Form' value='"+self.getFormName()+"' />" + html_content
 
         # insert the fields with proper value and rendering
-        for field in self.getFields():
+        for field in self.getFormFields():
             fieldName = field.id
             fieldblock='<span class="plominoFieldClass">'+fieldName+'</span>'
             if creation and not(fieldblock in html_content) and request is not None:
@@ -516,17 +521,21 @@ class PlominoForm(ATFolder):
         self.cleanFormulaScripts("form_"+self.id)
 
     security.declarePublic('getFormField')
-    def getFormField(self, fieldname):
+    def getFormField(self, fieldname, includesubforms=True):
         """return the field
         """
         field = getattr(self, fieldname, None)
         # if field is not in main form, we search in the subforms
-        # and return the first of them matching the id
         if not field:
-            all_fields = self.getFields(includesubforms=True)
+            all_fields = self.getFormFields(includesubforms=includesubforms)
             matching_fields = [f for f in all_fields if f.id == fieldname]
-            if len(matching_fields) > 0:
-                field = matching_fields[0]
+            if matching_fields:
+                if len(matching_fields) == 1:
+                    field = matching_fields[0]
+                else:
+                    raise (PlominoDesignException,
+                        'Ambiguous fieldname: %s' %`[
+                            '/'.join(f.getPhysicalPath()) for f in matching_fields]`)
         return field
 
     security.declarePublic('computeFieldValue')
@@ -549,7 +558,7 @@ class PlominoForm(ATFolder):
         """return true if the form contains at least one DateTime field
         or a datagrid (as a datagrid may contain a date)
         """
-        fields=self.getFields(includesubforms=True)
+        fields=self.getFormFields(includesubforms=True)
         for f in fields:
             if f.getFieldType() in ["DATETIME", "DATAGRID"]:
                 return True
@@ -559,7 +568,7 @@ class PlominoForm(ATFolder):
     def hasGoogleVisualizationField(self):
         """return true if the form contains at least one GoogleVisualization field
         """
-        fields=self.getFields(includesubforms=True)
+        fields=self.getFormFields(includesubforms=True)
         for f in fields:
             if f.getFieldType() == "GOOGLEVISUALIZATION":
                 return True
@@ -585,7 +594,7 @@ class PlominoForm(ATFolder):
         """ read submitted values in REQUEST and store them in document according
         fields definition
         """
-        for f in self.getFields(includesubforms=True, doc=doc, applyhidewhen=applyhidewhen):
+        for f in self.getFormFields(includesubforms=True, doc=doc, applyhidewhen=applyhidewhen):
             mode = f.getFieldMode()
             fieldName = f.id
             if mode=="EDITABLE":
@@ -617,7 +626,7 @@ class PlominoForm(ATFolder):
         index = db.getIndex()
         query={'PlominoViewFormula_'+searchview.getViewName() : True}
 
-        for f in self.getFields(includesubforms=True):
+        for f in self.getFormFields(includesubforms=True):
             fieldName = f.id
             #if fieldName is not an index -> search doesn't matter and returns all
             submittedValue = REQUEST.get(fieldName)
@@ -653,7 +662,7 @@ class PlominoForm(ATFolder):
     security.declarePublic('validateInputs')
     def validateInputs(self, REQUEST, doc=None):
         errors=[]
-        for f in self.getFields(includesubforms=True, doc=doc):
+        for f in self.getFormFields(includesubforms=True, doc=doc):
             fieldname = f.id
             fieldtype = f.getFieldType()
             submittedValue = REQUEST.get(fieldname)
@@ -669,7 +678,7 @@ class PlominoForm(ATFolder):
         if len(errors)==0:
             # STEP 3: check validation formula
             tmp = TemporaryDocument(self.getParentDatabase(), self, REQUEST, doc)
-            for f in self.getFields(includesubforms=True):
+            for f in self.getFormFields(includesubforms=True):
                 formula = f.getValidationFormula()
                 if not formula=='':
                     s=''

@@ -65,7 +65,7 @@ def migrate_to_130(db):
     msg = "Migration to 1.3: DebugMode attribute added"
 
     for form in db.getForms():
-        for field in form.getFields():
+        for field in form.getFormFields():
             type = field.getFieldType()
             if type == "TEXT":
                 adapt = ITextField(field)

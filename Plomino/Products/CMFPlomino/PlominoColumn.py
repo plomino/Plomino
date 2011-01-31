@@ -45,7 +45,7 @@ schema = Schema((
 #            description_msgid='CMFPlomino_help_FieldType',
 #            i18n_domain='CMFPlomino',
         ),
-        vocabulary='getFields',
+        vocabulary='getFormFields',
     ),
     TextField(
         name='Formula',
@@ -112,14 +112,14 @@ class PlominoColumn(BaseContent, BrowserDefaultMixin):
     ##/code-section class-header
 
     # Methods
-    security.declarePublic('getFields')
-    def getFields(self):
+    security.declarePublic('getFormFields')
+    def getFormFields(self):
         """get a list of fields in the base
         """
         fields = []
         for form in self.getParentView().getParentDatabase().getForms():
             fields.append([form.id, '=== ' + form.id + ' ==='])
-            fields.extend(([form.id + '/' + field.id, field.id] for field in form.getFields()))
+            fields.extend(([form.id + '/' + field.id, field.id] for field in form.getFormFields()))
         return fields
 
     security.declarePublic('getColumnName')

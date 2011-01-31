@@ -133,7 +133,7 @@ class PlominoDesignManager(Persistent):
             for c in v_obj.getColumns():
                 v_obj.declareColumn(c.getColumnName(), c)
         for f_obj in self.getForms() :
-            for f in f_obj.getFields() :
+            for f in f_obj.getFormFields() :
                 if f.getToBeIndexed() :
                     self.getIndex().createFieldIndex(f.id, f.getFieldType())
         self.getIndex().no_refresh = False
