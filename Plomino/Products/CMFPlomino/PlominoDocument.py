@@ -100,7 +100,7 @@ class PlominoDocument(ATFolder):
 
     def url(self):
         db = self.getParentDatabase()
-        db_url = db.physicalPathToURL()
+        db_url = db.absolute_url_path()
         return db_url + "/" + self.id
 
     security.declarePublic('setItem')
