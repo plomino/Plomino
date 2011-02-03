@@ -1202,5 +1202,3 @@ class PlominoReplicationManager(Persistent):
         doc.save(onSaveEvent=False)
         doc.plomino_modification_time = lastmodified
 
-
-

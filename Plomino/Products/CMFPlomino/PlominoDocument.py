@@ -98,10 +98,14 @@ class PlominoDocument(ATFolder):
         else:
             raise Unauthorized, "You cannot read this content"
 
-    def url(self):
+    def doc_path(self):
+        # Ugly, because we're trying to pretend that the plomino_documents
+        # container doesn't exist.
         db = self.getParentDatabase()
-        db_url = db.absolute_url_path()
-        return db_url + "/" + self.id
+        return db.getPhysicalPath() + (self.id,)
+
+    # BBB: should deprecate.
+    url = doc_path
 
     security.declarePublic('setItem')
     def setItem(self,name,value):
@@ -326,7 +330,8 @@ class PlominoDocument(ATFolder):
             except PlominoScriptException, e:
                 if self.REQUEST:
                     self.reportError('Document has been saved but onSave event failed.', formula=e.formula)
-                    self.REQUEST.RESPONSE.redirect(self.url())
+                    doc_path = self.REQUEST.physicalPathToURL(self.doc_path())
+                    self.REQUEST.RESPONSE.redirect(doc_path)
 
         if refresh_index:
             # update index
