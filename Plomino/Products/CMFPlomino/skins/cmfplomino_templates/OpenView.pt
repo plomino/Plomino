@@ -168,7 +168,7 @@
 	                                </tal:count>
 	                                <tal:block tal:condition="python:start+limit<count">
 										<a
-											tal:attributes="href python:'/'.join(context.getPhysicalPath())+'?widget=BASIC&start='+str(nextstart)+'&limit='+str(limit)">Next
+											tal:attributes="href python:request.physicalPathToURL(context.getPhysicalPath())+'?widget=BASIC&start='+str(nextstart)+'&limit='+str(limit)">Next
 										&gt;&gt;</a>
 									</tal:block></th>
 								</tr>
