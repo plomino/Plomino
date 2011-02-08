@@ -56,16 +56,18 @@ def sendMail(db, recipients, title, html_message, sender=None):
     host = getToolByName(db, 'MailHost')
     plone_tools = getToolByName(db, 'plone_utils')
     encoding = plone_tools.getSiteEncoding()
-    message = 'Content-Type: text/html; charset="%s"' % encoding
-    message = message + '\n<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">\n'
+    message = '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">\n'
     message = message + "<html>"
     message = message + html_message
     message = message + "</html>"
     if sender is None:
         sender = db.getCurrentUser().getProperty("email")
-    host.send(message, mto=recipients,
-        mfrom=sender, subject=title,
-        encode='quoted-printable')
+    # secureSend is deprecated in Plone 4 but as it takes care to produce
+    # the email.MIMEText.MIMEText and set headers etc. by itself, it remains
+    # for now the most robust approach
+    host.secureSend(message, recipients,
+        sender, subject=title,
+        subtype='html', charset=encoding)
     
 def userFullname(db, userid):
     """ return user fullname if exist, else return userid, and return Unknown if user not found
