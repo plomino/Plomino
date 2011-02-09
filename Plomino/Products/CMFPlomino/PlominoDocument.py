@@ -99,16 +99,22 @@ class PlominoDocument(ATFolder):
             raise Unauthorized, "You cannot read this content"
 
     def doc_path(self):
-        # Ugly, because we're trying to pretend that the plomino_documents
-        # container doesn't exist.
-        db = self.getParentDatabase()
-        return db.getPhysicalPath() + (self.id,)
+        #db = self.getParentDatabase()
+        #return db.getPhysicalPath() + (self.id,)
+        # here we return actual path, we do not hide plomino_documents anymore
+        return self.getPhysicalPath()
 
-    def url(self):
+    def doc_url(self):
+        """ return valid and nice url:
+        - hide plomino_documents
+        - use physicalPathToURL if REQUEST available
+        """
+        path = self.doc_path()
+        short_path = [p for p in path if p!="plomino_documents"]
         if hasattr(self, "REQUEST"):
-            return self.REQUEST.physicalPathToURL(self.doc_path())
+            return self.REQUEST.physicalPathToURL(short_path)
         else:
-            return "/".join(self.doc_path())
+            return "/".join(short_path)
 
     security.declarePublic('setItem')
     def setItem(self,name,value):
