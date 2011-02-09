@@ -6,7 +6,7 @@ def get_language_path(context):
     """
     
     if not getattr(context, 'REQUEST', None):
-        return 'No lanuage'
+        return 'No language'
     portal_state = getMultiAdapter((context, context.REQUEST), name=u'plone_portal_state')
     current_language = portal_state.language()
     
