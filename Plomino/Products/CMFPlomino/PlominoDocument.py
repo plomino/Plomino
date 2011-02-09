@@ -104,8 +104,11 @@ class PlominoDocument(ATFolder):
         db = self.getParentDatabase()
         return db.getPhysicalPath() + (self.id,)
 
-    # BBB: should deprecate.
-    url = doc_path
+    def url(self):
+        if hasattr(self, "REQUEST"):
+            return self.REQUEST.physicalPathToURL(self.doc_path())
+        else:
+            return "/".join(self.doc_path())
 
     security.declarePublic('setItem')
     def setItem(self,name,value):
