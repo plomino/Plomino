@@ -21,3 +21,4 @@ dist
 *.tmp*
 .pydevproject
 .project
+.settings
