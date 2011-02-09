@@ -30,7 +30,7 @@ Create plomino database and publish it
     >>> db.at_post_create_script()
     >>> wf_tool = self.portal.portal_workflow
     >>> wf_tool.doActionFor(db, 'publish')
-    >>> base_url = db.absolute_url_path()
+    >>> base_url = db.REQUEST.physicalPathToURL(db.getPhysicalPath())
 
 Set plomino roles and permissions
     >>> db.manage_setLocalRoles('userManager', ['PlominoManager'])
@@ -52,14 +52,14 @@ Add some minimal content to test access (view 1 displays all documents)
     >>> doc.setItem('Form', 'form1')
     >>> doc.setItem('field1', 'what a value')
     >>> docid = doc.id
-    >>> docUrl = doc.url()
+    >>> docUrl = doc.doc_url()
     >>> docUrl == base_url + '/' + docid
     True
     >>> doc2 = db.createDocument()
     >>> doc2.setItem('Form', 'form1')
     >>> doc2.setItem('field1', 'I prefer this value')
     >>> docid2 = doc2.id
-    >>> docUrl2 = doc2.url()
+    >>> docUrl2 = doc2.doc_url()
 
 Create the browser object we'll be using.
 
