@@ -884,7 +884,7 @@ class PlominoDesignManager(Persistent):
                 child = child.nextSibling
 
             if len(at_values) > 0:
-                obj.processForm(REQUEST='dummy', values=at_values)
+                obj.processForm(REQUEST=None, values=at_values)
             if len(settings_values) > 0:
                 adapt = obj.getSettings()
                 for key in settings_values.keys():
