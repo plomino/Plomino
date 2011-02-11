@@ -20,9 +20,7 @@ import interfaces
 from Products.CMFDynamicViewFTI.browserdefault import BrowserDefaultMixin
 
 from Products.CMFPlomino.config import *
-
-##code-section module-header #fill in your manual code here
-##/code-section module-header
+from validator import isValidPlominoId
 
 schema = Schema((
 
@@ -35,6 +33,7 @@ schema = Schema((
             description_msgid='CMFPlomino_help_column_id',
             i18n_domain='CMFPlomino',
         ),
+        validators = ("isValidId", isValidPlominoId),
     ),
     StringField(
         name='SelectedField',
@@ -88,14 +87,8 @@ schema = Schema((
 ),
 )
 
-##code-section after-local-schema #fill in your manual code here
-##/code-section after-local-schema
-
 PlominoColumn_schema = BaseSchema.copy() + \
     schema.copy()
-
-##code-section after-schema #fill in your manual code here
-##/code-section after-schema
 
 class PlominoColumn(BaseContent, BrowserDefaultMixin):
     """
@@ -107,9 +100,6 @@ class PlominoColumn(BaseContent, BrowserDefaultMixin):
     _at_rename_after_creation = False
 
     schema = PlominoColumn_schema
-
-    ##code-section class-header #fill in your manual code here
-    ##/code-section class-header
 
     # Methods
     security.declarePublic('getFormFields')
@@ -158,9 +148,6 @@ class PlominoColumn(BaseContent, BrowserDefaultMixin):
 
 registerType(PlominoColumn, PROJECTNAME)
 # end of class PlominoColumn
-
-##code-section module-footer #fill in your manual code here
-##/code-section module-footer
 
 
 

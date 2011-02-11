@@ -116,6 +116,3 @@ def initialize(context):
                               constructors= (all_constructors[i],),
                               permission  = ADD_CONTENT_PERMISSIONS[klassname])
 
-    ##code-section custom-init-bottom #fill in your manual code here
-    ##/code-section custom-init-bottom
-

@@ -21,6 +21,7 @@ from Products.CMFDynamicViewFTI.browserdefault import BrowserDefaultMixin
 
 from Products.CMFPlomino.config import *
 from exceptions import PlominoScriptException
+from validator import isValidPlominoId
 
 from AccessControl import Unauthorized
 import csv, cStringIO
@@ -40,6 +41,7 @@ schema = Schema((
             description_msgid='CMFPlomino_help_view_id',
             i18n_domain='CMFPlomino',
         ),
+        validators = ("isValidId", isValidPlominoId),
     ),
     TextField(
         name='SelectionFormula',
@@ -50,6 +52,7 @@ schema = Schema((
             description_msgid='CMFPlomino_help_SelectionFormula',
             i18n_domain='CMFPlomino',
         ),
+        default = "True",
     ),
     StringField(
         name='SortColumn',
@@ -189,14 +192,8 @@ schema = Schema((
 ),
 )
 
-##code-section after-local-schema #fill in your manual code here
-##/code-section after-local-schema
-
 PlominoView_schema = getattr(ATFolder, 'schema', Schema(())).copy() + \
     schema.copy()
-
-##code-section after-schema #fill in your manual code here
-##/code-section after-schema
 
 class PlominoView(ATFolder):
     """
@@ -208,9 +205,6 @@ class PlominoView(ATFolder):
     _at_rename_after_creation = False
 
     schema = PlominoView_schema
-
-    ##code-section class-header #fill in your manual code here
-    ##/code-section class-header
 
     # Methods
 
@@ -573,9 +567,6 @@ class PlominoView(ATFolder):
 
 registerType(PlominoView, PROJECTNAME)
 # end of class PlominoView
-
-##code-section module-footer #fill in your manual code here
-##/code-section module-footer
 
 
 
