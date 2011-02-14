@@ -189,45 +189,51 @@ class PlominoDesignManager(Persistent):
             REQUEST.RESPONSE.redirect(self.absolute_url()+"/DatabaseDesign")
 
     security.declareProtected(DESIGN_PERMISSION, 'exportDesign')
-    def exportDesign(self, REQUEST=None):
-        """export design elements from current database to remote database
+    def exportDesign(self, targettype='file', targetfolder='', dbsettings=True, designelements=None, REQUEST=None, **kw):
+        """ Export design elements to XML.
+        The targettype can be file, server, or folder.
         """
-        entire=REQUEST.get('entire')
-        targettype=REQUEST.get('targettype')
-        dbsettings=REQUEST.get('dbsettings')
+        if REQUEST:
+            entire=REQUEST.get('entire')
+            targettype=REQUEST.get('targettype')
+            targetfolder=REQUEST.get('targetfolder')
+            dbsettings=REQUEST.get('dbsettings')
+
         if dbsettings == "Yes":
             dbsettings = True
         else:
             dbsettings = False
 
-        if entire=="Yes":
-            designelements = None
-        else:
-            designelements=REQUEST.get('designelements')
-            if designelements:
-                if type(designelements)==str:
-                    designelements=[designelements]
+        if not designelements is None:
+            if entire=="Yes":
+                designelements = None
+            else:
+                designelements=REQUEST.get('designelements')
+                if designelements:
+                    if type(designelements)==str:
+                        designelements=[designelements]
 
-        if targettype != "folder":
+        if targettype in ["server", "file"]:
             xmlstring = self.exportDesignAsXML(elementids=designelements, dbsettings=dbsettings)
 
             if targettype == "server":
-                targetURL=REQUEST.get('targetURL')
-                username=REQUEST.get('username')
-                password=REQUEST.get('password')
+                if REQUEST:
+                    targetURL=REQUEST.get('targetURL')
+                    username=REQUEST.get('username')
+                    password=REQUEST.get('password')
                 result=authenticateAndPostToURL(targetURL+"/importDesignFromXML", username, password, 'exportDesignAsXML.xml', xmlstring)
                 REQUEST.RESPONSE.redirect(self.absolute_url()+"/DatabaseDesign")
-            else:
-                REQUEST.RESPONSE.setHeader('content-type', 'text/xml')
-                REQUEST.RESPONSE.setHeader("Content-Disposition", "attachment; filename="+self.id+".xml")
+            elif targettype == "file":
+                if REQUEST:
+                    REQUEST.RESPONSE.setHeader('content-type', 'text/xml')
+                    REQUEST.RESPONSE.setHeader("Content-Disposition", "attachment; filename="+self.id+".xml")
                 return xmlstring
-        else:
-            targetfolder=REQUEST.get('targetfolder')
+        elif targettype == "folder":
             if not designelements:
-                designelements = [o.id for o in self.getForms()] \
-                                 + [o.id for o in self.getViews()] \
-                                 + [o.id for o in self.getAgents()] \
-                                 + ["resources/"+id for id in self.resources.objectIds()]
+                designelements = ([o.id for o in self.getForms()] +
+                                  [o.id for o in self.getViews()] +
+                                  [o.id for o in self.getAgents()] +
+                                  ["resources/"+id for id in self.resources.objectIds()])
             exportpath = os.path.join(targetfolder,(self.id))
             resources_exportpath = os.path.join(exportpath,('resources'))
             if os.path.isdir(exportpath):
@@ -260,7 +266,7 @@ class PlominoDesignManager(Persistent):
     @staticmethod
     def saveFile(path, content):
         fileobj = codecs.open(path, "w", "utf-8")
-        fileobj.write(content.decode('utf-8'))
+        fileobj.write(content)
         fileobj.close()
 
     security.declareProtected(DESIGN_PERMISSION, 'importDesign')
