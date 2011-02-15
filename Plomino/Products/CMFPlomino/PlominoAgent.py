@@ -98,7 +98,7 @@ class PlominoAgent(BaseContent, BrowserDefaultMixin):
                     plominoReturnURL=r
                 REQUEST.RESPONSE.redirect(plominoReturnURL)
         except PlominoScriptException, e:
-            return "Error"
+            return e.message
 
 
 registerType(PlominoAgent, PROJECTNAME)

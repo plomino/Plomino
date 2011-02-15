@@ -10,7 +10,8 @@ class PlominoScriptException(Exception):
     def __str__(self):
         """
         """
-        msg = "Plomino formula error\n    in "+str(self.formula) + "\n    with context : " +self.context_url
+        #msg = "Plomino formula error\n    in "+str(self.formula) + "\n    with context : " +self.context_url
+        msg = self.message
         return msg
 
 class PlominoReplicationException(Exception):
