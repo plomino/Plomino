@@ -34,7 +34,7 @@ class PlominoScriptException(Exception):
         else:
             msg = formatted_lines[-3:]
         msg.append("Context is <%s> %s" % (self.context.__class__.__name__, self.context_url))
-        if self.context.debugMode:
+        if self.context.getParentDatabase().debugMode:
             msg.append("Code : ")
             line_number = 4
             for l in self.formula().replace('\r', '').split('\n'):
@@ -44,11 +44,12 @@ class PlominoScriptException(Exception):
             
         return "\r\n".join(msg)
 
-    def reportError(self, label, path=None):
+    def reportError(self, label, path=None, request=None):
         """
         """
         report = asUnicode(label)
-        request = getattr(self.context, 'REQUEST', None)
+        if not request:
+            request = getattr(self.context, 'REQUEST', None)
         if request:
             if not path:
                 if self.formula and hasattr(self.formula, 'absolute_url_path'):
@@ -58,7 +59,7 @@ class PlominoScriptException(Exception):
 
             traceback = self.message.replace("<", "&lt;").replace(">", "&gt;")
             report += " - Plomino traceback " + traceback.replace('\n', '\n<br/>')
-            plone_tools = getToolByName(self.context, 'plone_utils')
+            plone_tools = getToolByName(self.context.getParentDatabase().aq_inner, 'plone_utils')
             plone_tools.addPortalMessage(report, 'error', request)
             
 class PlominoRenderingException(Exception):
