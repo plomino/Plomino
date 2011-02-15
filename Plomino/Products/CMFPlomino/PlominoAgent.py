@@ -98,6 +98,8 @@ class PlominoAgent(BaseContent, BrowserDefaultMixin):
                     plominoReturnURL=r
                 REQUEST.RESPONSE.redirect(plominoReturnURL)
         except PlominoScriptException, e:
+            if REQUEST:
+                REQUEST.RESPONSE.setHeader('content-type', 'text/plain; charset=utf-8')
             return e.message
 
 
