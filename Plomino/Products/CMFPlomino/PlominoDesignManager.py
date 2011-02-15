@@ -473,23 +473,20 @@ class PlominoDesignManager(Persistent):
         """trace errors from Scripts
         """
         msg = None
-        #traceback
-#        f = StringIO()
-#        print_exc(limit=50, file=f)
-#        msg = str(f.getvalue())
+
         formatted_lines = traceback.format_exc().splitlines()
         if formatted_lines:
-            msg = formatted_lines[-2].strip() + "\n" + formatted_lines[-1]
-        #code / value
-        msg += "\nCode : \n"
-        line_number = 4
-        for l in formula_getter().split('\n'):
-            msg += "%d: %s\n" % (line_number, l)
-            line_number += 1
+            msg = "\r\n".join(formatted_lines[-3:]).strip()
 
         if msg and self.debugMode:
             logger.error(msg)
-        
+            code = "\nCode : \n"
+            line_number = 4
+            for l in formula_getter().replace('\r', '').split('\n'):
+                code += "%d: %s\r\n" % (line_number, l)
+                line_number += 1
+            logger.error(code)
+            
         return msg
 
     security.declarePrivate('traceRenderingErr')
@@ -524,14 +521,14 @@ class PlominoDesignManager(Persistent):
             if path:
                 message = message + " - Plomino formula %s" % path
             if exc_obj:
-                traceback_lines = exc_obj.message.split('\n')
-                traceback = "<strong>"+"<br/>".join(traceback_lines[0:3]) \
-                        + "</strong><br/><pre>" \
-                        + "\n".join(traceback_lines[3:]) \
-                        + "</pre>"
-                        
-                traceback = traceback.replace(" ", "&nbsp;")
-                message = message + " - Plomino traceback " + traceback
+                traceback = exc_obj.message.replace("<", "&lt;").replace(">", "&gt;")
+#                exception_message = exc_obj.message
+#                traceback_lines = exception_message[:exception_message.index("Code :")].replace('\r','').split('\n')
+#                code_lines = exception_message[exception_message.index("Code :")+8:].replace('\r','').split('\n')
+#                traceback = "<strong>"+"\r\n<br/>".join(traceback_lines) \
+#                    + "</strong><br/><pre>" + "\r\n".join(code_lines).replace("<", "&lt;").replace(">", "&gt;") + "</pre>"
+
+                message = message + " - Plomino traceback " + traceback.replace('\n', '\n<br/>')
             plone_tools = getToolByName(self, 'plone_utils')
             plone_tools.addPortalMessage(message, 'error', request)
 
