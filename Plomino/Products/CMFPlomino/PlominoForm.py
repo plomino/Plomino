@@ -302,7 +302,7 @@ class PlominoForm(ATFolder):
             for subformname in self.getSubforms(doc, applyhidewhen):
                 if subformname in subformsseen:
                     continue
-                result=result+self.getParentDatabase().getForm(subformname).getFormFields(includesubforms=True)
+                result=result+self.getParentDatabase().getForm(subformname).getFormFields(includesubforms=True, doc=doc, applyhidewhen=applyhidewhen)
                 subformsseen.append(subformname)
         return result
 
@@ -362,7 +362,7 @@ class PlominoForm(ATFolder):
             html_content = "<input type='hidden' name='Form' value='"+self.getFormName()+"' />" + html_content
 
         # insert the fields with proper value and rendering
-        for field in self.getFormFields():
+        for field in self.getFormFields(doc=doc):
             fieldName = field.id
             fieldblock='<span class="plominoFieldClass">'+fieldName+'</span>'
             if creation and not(fieldblock in html_content) and request is not None:
@@ -440,7 +440,7 @@ class PlominoForm(ATFolder):
                     target = doc
                 result = self.runFormulaScript("hidewhen_"+self.id+"_"+hidewhen.id+"_formula", target, hidewhen.Formula)
             except PlominoScriptException, e:
-                e.reportError('%s hide-when formula failed' % hidewhen.id)
+                e.reportError('%s hide-when formula failed' % hidewhen.id, request=getattr(self, 'REQUEST', None))
                 #if error, we hide anyway
                 result = True
             start = '<span class="plominoHidewhenClass">start:'+hidewhenName+'</span>'
@@ -451,11 +451,11 @@ class PlominoForm(ATFolder):
                     style = ' style="display: none"'
                 else:
                     style = ''
-                html_content = re.sub(start,'<div id="' + hidewhenName + '"' + style + '>', html_content)
+                html_content = re.sub(start,'<div class="hidewhen-' + hidewhenName + '"' + style + '>', html_content)
                 html_content = re.sub(end,'</div>', html_content)
             else:
                 if result:
-                    regexp = start+'.*'+end
+                    regexp = start+'.*?'+end
                     html_content = re.sub(regexp,'', html_content)
                 else:
                     html_content = html_content.replace(start, '')
@@ -527,7 +527,7 @@ class PlominoForm(ATFolder):
         field = getattr(self, fieldname, None)
         # if field is not in main form, we search in the subforms
         if not field:
-            all_fields = self.getFormFields(includesubforms=includesubforms)
+            all_fields = self.getFormFields(includesubforms=includesubforms, applyhidewhen=False)
             matching_fields = [f for f in all_fields if f.id == fieldname]
             if matching_fields:
                 if len(matching_fields) == 1:
@@ -558,7 +558,7 @@ class PlominoForm(ATFolder):
         """return true if the form contains at least one DateTime field
         or a datagrid (as a datagrid may contain a date)
         """
-        fields=self.getFormFields(includesubforms=True)
+        fields=self.getFormFields(includesubforms=True, applyhidewhen=False)
         for f in fields:
             if f.getFieldType() in ["DATETIME", "DATAGRID"]:
                 return True
@@ -568,7 +568,7 @@ class PlominoForm(ATFolder):
     def hasGoogleVisualizationField(self):
         """return true if the form contains at least one GoogleVisualization field
         """
-        fields=self.getFormFields(includesubforms=True)
+        fields=self.getFormFields(includesubforms=True, applyhidewhen=False)
         for f in fields:
             if f.getFieldType() == "GOOGLEVISUALIZATION":
                 return True
@@ -626,7 +626,7 @@ class PlominoForm(ATFolder):
         index = db.getIndex()
         query={'PlominoViewFormula_'+searchview.getViewName() : True}
 
-        for f in self.getFormFields(includesubforms=True):
+        for f in self.getFormFields(includesubforms=True, applyhidewhen=False):
             fieldName = f.id
             #if fieldName is not an index -> search doesn't matter and returns all
             submittedValue = REQUEST.get(fieldName)
@@ -662,7 +662,8 @@ class PlominoForm(ATFolder):
     security.declarePublic('validateInputs')
     def validateInputs(self, REQUEST, doc=None):
         errors=[]
-        for f in self.getFormFields(includesubforms=True, doc=doc):
+        fields = self.getFormFields(includesubforms=True, doc=doc, applyhidewhen=True)
+        for f in fields:
             fieldname = f.id
             fieldtype = f.getFieldType()
             submittedValue = REQUEST.get(fieldname)
@@ -678,7 +679,7 @@ class PlominoForm(ATFolder):
         if len(errors)==0:
             # STEP 3: check validation formula
             tmp = TemporaryDocument(self.getParentDatabase(), self, REQUEST, doc)
-            for f in self.getFormFields(includesubforms=True):
+            for f in fields:
                 formula = f.getValidationFormula()
                 if not formula=='':
                     s=''

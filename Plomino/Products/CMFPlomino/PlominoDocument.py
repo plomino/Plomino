@@ -299,7 +299,7 @@ class PlominoDocument(ATFolder):
 
         db=self.getParentDatabase()
         if form:
-            for f in form.getFormFields(includesubforms=True):
+            for f in form.getFormFields(includesubforms=True, doc=self):
                 mode = f.getFieldMode()
                 fieldname = f.id
                 if mode in ["COMPUTED", "COMPUTEDONSAVE"] or (mode=="CREATION" and creation):
