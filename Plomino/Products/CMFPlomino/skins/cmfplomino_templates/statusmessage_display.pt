@@ -22,13 +22,13 @@
             <tal:block tal:condition="plominoerror"
                         tal:define="plomino_message python:msg.split(' - Plomino formula ');
                                     user_message python:plomino_message[0];
-                                    extra_infos python:plomino_message[-1].split(' - Plomino traceback ');
-                                    formula_path python:extra_infos[0];
-                                    traceback python:extra_infos[-1];">
+                                    extra_infos_index python:plomino_message[-1].index(' - Plomino traceback ');
+                                    formula_path python:plomino_message[-1][:extra_infos_index];
+                                    traceback python:plomino_message[-1][extra_infos_index+21:];">
                 <span tal:content="user_message">
                     The status message.</span>
                 <span class="plominoTraceback ui-icon ui-icon-alert"
-                   tal:attributes="onclick string:showTraceback(this);"
+                   tal:attributes="onclick string:showTraceback(this, '${formula_path}');"
                    ><div style="display:none" tal:content="structure traceback">traceback</div></span>
                 <a href="#" tal:condition="clouseau"
                    class="plominoMessage ui-icon ui-icon-search"

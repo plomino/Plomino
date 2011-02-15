@@ -24,17 +24,29 @@
     </tal:statusmsg>
     
     <div id="plominoMessages"></div>
-    <div id="plominoTracebackPopup"></div>
+    <div id="plominoTracebackPopup" style="display: none;">
+        <strong></strong>
+        <pre style="overflow: auto; height: 70%"></pre>
+    </div>
     <script type="text/javascript">
         function refreshStatusMessages() {
             container = jq("#plominoMessages");
         	container.load("./statusmessage_load #plonePortalMessages");
         }
-        function showTraceback(el) {
-            msg = jq(el).children().first().html();
+        function showTraceback(el, formula_path) {
+            msg = jq(el).children().filter(":first").html();
             popup = jq("#plominoTracebackPopup");
-            popup.html(msg);
-        	popup.dialog({show: "blind"});
+            jq("#plominoTracebackPopup strong").html(msg);
+            jq.get(formula_path, function(data) {
+                offset = 4;
+                code = "";
+                jq.each(data.split('\n'), function(index, value) {
+                    line = index + offset
+                    code = code + line + ": " + value;
+                });
+            	jq("#plominoTracebackPopup pre").html(jq("<div/>").text(code).html());
+            });
+        	popup.dialog({show: "blind", height: 430, width: 530});
         }
         jq(document).ready(refreshStatusMessages);
     </script>
