@@ -117,6 +117,9 @@ dd.plominoMessage a {
     border: none;
     float: right;
 }
+.plominoTraceback {
+    float: right;
+}
 #debug-button {
     border:1px solid transparent;
 }

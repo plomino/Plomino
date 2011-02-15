@@ -12,7 +12,7 @@ __docformat__ = 'plaintext'
 
 from Products.CMFPlomino.config import *
 
-from traceback import print_exc
+import traceback
 from Acquisition import *
 from index.PlominoIndex import PlominoIndex
 from Products.CMFPlomino.exceptions import PlominoDesignException
@@ -460,8 +460,8 @@ class PlominoDesignManager(Persistent):
                 logger.info('python errors at '+str(context)+' in '+script_id+': ' + str(contextual_ps.errors))
             return result
         except Exception, e:
-            self.traceErr(e, context, script_id, formula_getter)
-            raise PlominoScriptException(context.absolute_url_path(), formula_getter)
+            msg = self.traceErr(e, context, script_id, formula_getter)
+            raise PlominoScriptException(context.absolute_url_path(), formula_getter, message=msg)
 #        return result
 
 #        except Exception, e:
@@ -472,19 +472,25 @@ class PlominoDesignManager(Persistent):
     def traceErr(self, e, context, script_id, formula_getter):
         """trace errors from Scripts
         """
-        if self.debugMode:
-            #traceback
-            f = StringIO()
-            print_exc(limit=50, file=f)
-            msg = str(f.getvalue())
-            #code / value
-            msg = msg + "\nScript id: "+script_id+": " + str(e)
-            msg = msg + "\n    code : \n" + formula_getter()
-        else:
-            msg = None
+        msg = None
+        #traceback
+#        f = StringIO()
+#        print_exc(limit=50, file=f)
+#        msg = str(f.getvalue())
+        formatted_lines = traceback.format_exc().splitlines()
+        if formatted_lines:
+            msg = formatted_lines[-2].strip() + "\n" + formatted_lines[-1]
+        #code / value
+        msg += "\nCode : \n"
+        line_number = 4
+        for l in formula_getter().split('\n'):
+            msg += "%d: %s\n" % (line_number, l)
+            line_number += 1
 
-        if msg:
+        if msg and self.debugMode:
             logger.error(msg)
+        
+        return msg
 
     security.declarePrivate('traceRenderingErr')
     def traceRenderingErr(self, e, context):
@@ -503,6 +509,31 @@ class PlominoDesignManager(Persistent):
 
         if msg:
             logger.error(msg)
+
+    security.declarePublic('reportError')
+    def reportError(self, message, request=None, formula=None, path=None, exc_obj=None):
+        """
+        """
+        message = asUnicode(message)
+        if not request:
+            if hasattr(self, 'REQUEST'):
+                request = self.REQUEST
+        if request:
+            if formula and hasattr(formula, 'absolute_url_path'):
+                path = formula.absolute_url_path()
+            if path:
+                message = message + " - Plomino formula %s" % path
+            if exc_obj:
+                traceback_lines = exc_obj.message.split('\n')
+                traceback = "<strong>"+"<br/>".join(traceback_lines[0:3]) \
+                        + "</strong><br/><pre>" \
+                        + "\n".join(traceback_lines[3:]) \
+                        + "</pre>"
+                        
+                traceback = traceback.replace(" ", "&nbsp;")
+                message = message + " - Plomino traceback " + traceback
+            plone_tools = getToolByName(self, 'plone_utils')
+            plone_tools.addPortalMessage(message, 'error', request)
 
     security.declarePublic('callScriptMethod')
     def callScriptMethod(self, scriptname, methodname, *args):
@@ -535,22 +566,6 @@ class PlominoDesignManager(Persistent):
             for msg in infoMsg:
                 if msg:
                     plone_tools.addPortalMessage(msg, msgType, REQUEST)
-
-    security.declarePublic('reportError')
-    def reportError(self, message, request=None, formula=None, path=None):
-        """
-        """
-        message = asUnicode(message)
-        if not request:
-            if hasattr(self, 'REQUEST'):
-                request = self.REQUEST
-        if request:
-            if formula and hasattr(formula, 'absolute_url_path'):
-                path = formula.absolute_url_path()
-            if path:
-                message = message + " - Plomino formula %s" % path
-            plone_tools = getToolByName(self, 'plone_utils')
-            plone_tools.addPortalMessage(message, 'error', request)
 
     security.declarePublic('getRenderingTemplate')
     def getRenderingTemplate(self, templatename, request=None):

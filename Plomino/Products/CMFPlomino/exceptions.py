@@ -1,10 +1,11 @@
 class PlominoScriptException(Exception):
 
-    def __init__(self, context_url, formula):
+    def __init__(self, context_url, formula, message=''):
         """
         """
         self.context_url = context_url
         self.formula = formula
+        self.message = message
 
     def __str__(self):
         """
