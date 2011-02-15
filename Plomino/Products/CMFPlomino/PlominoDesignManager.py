@@ -12,10 +12,7 @@ __docformat__ = 'plaintext'
 
 from Products.CMFPlomino.config import *
 
-import traceback
 from Acquisition import *
-from index.PlominoIndex import PlominoIndex
-from Products.CMFPlomino.exceptions import PlominoDesignException
 from HttpUtils import authenticateAndLoadURL, authenticateAndPostToURL
 from Products.PythonScripts.PythonScript import PythonScript
 import re
@@ -32,6 +29,7 @@ from xml.dom.minidom import getDOMImplementation
 from xml.dom.minidom import parseString
 import xmlrpclib
 from cStringIO import StringIO
+import traceback
 import codecs
 import os
 import sys
@@ -39,7 +37,8 @@ import glob
 import transaction
 
 from migration.migration import migrate
-from exceptions import PlominoScriptException
+from index.PlominoIndex import PlominoIndex
+from exceptions import PlominoScriptException, PlominoDesignException
 from PlominoUtils import asUnicode
 
 # get AT specific schemas for each Plomino class
@@ -460,34 +459,9 @@ class PlominoDesignManager(Persistent):
                 logger.info('python errors at '+str(context)+' in '+script_id+': ' + str(contextual_ps.errors))
             return result
         except Exception, e:
-            msg = self.traceErr(e, context, script_id, formula_getter)
-            raise PlominoScriptException(context.absolute_url_path(), formula_getter, message=msg)
-#        return result
-
-#        except Exception, e:
-#            if self.debugMode:
-#                logger.info('runFormulaScript Exception evaluating '+script_id+' with context '+str(context)+ ':' + str(e))
-
-    security.declarePrivate('traceErr')
-    def traceErr(self, e, context, script_id, formula_getter):
-        """trace errors from Scripts
-        """
-        msg = None
-
-        formatted_lines = traceback.format_exc().splitlines()
-        if formatted_lines:
-            msg = "\r\n".join(formatted_lines[-3:]).strip()
-
-        if msg and self.debugMode:
-            logger.error(msg)
-            code = "\nCode : \n"
-            line_number = 4
-            for l in formula_getter().replace('\r', '').split('\n'):
-                code += "%d: %s\r\n" % (line_number, l)
-                line_number += 1
-            logger.error(code)
-            
-        return msg
+            raise PlominoScriptException(context, e, formula_getter, script_id)
+#            msg = self.traceErr(e, context, script_id, formula_getter)
+#            raise PlominoScriptException(context.absolute_url_path(), formula_getter, message=msg)
 
     security.declarePrivate('traceRenderingErr')
     def traceRenderingErr(self, e, context):
@@ -495,42 +469,15 @@ class PlominoDesignManager(Persistent):
         """
         if self.debugMode:
             #traceback
-            f = StringIO()
-            print_exc(limit=50, file=f)
-            msg = str(f.getvalue())
+            formatted_lines = traceback.format_exc().splitlines()
+            msg = "\r\n".join(formatted_lines[-3:]).strip()
             #code / value
-            msg = msg + "Plomino rendering error : " + str(e)
-            msg = msg + "\n   with context : " + str(context)            
+            msg = msg + "Plomino rendering error with context : " + str(context)            
         else:
             msg = None
 
         if msg:
             logger.error(msg)
-
-    security.declarePublic('reportError')
-    def reportError(self, message, request=None, formula=None, path=None, exc_obj=None):
-        """
-        """
-        message = asUnicode(message)
-        if not request:
-            if hasattr(self, 'REQUEST'):
-                request = self.REQUEST
-        if request:
-            if formula and hasattr(formula, 'absolute_url_path'):
-                path = formula.absolute_url_path()
-            if path:
-                message = message + " - Plomino formula %s" % path
-            if exc_obj:
-                traceback = exc_obj.message.replace("<", "&lt;").replace(">", "&gt;")
-#                exception_message = exc_obj.message
-#                traceback_lines = exception_message[:exception_message.index("Code :")].replace('\r','').split('\n')
-#                code_lines = exception_message[exception_message.index("Code :")+8:].replace('\r','').split('\n')
-#                traceback = "<strong>"+"\r\n<br/>".join(traceback_lines) \
-#                    + "</strong><br/><pre>" + "\r\n".join(code_lines).replace("<", "&lt;").replace(">", "&gt;") + "</pre>"
-
-                message = message + " - Plomino traceback " + traceback.replace('\n', '\n<br/>')
-            plone_tools = getToolByName(self, 'plone_utils')
-            plone_tools.addPortalMessage(message, 'error', request)
 
     security.declarePublic('callScriptMethod')
     def callScriptMethod(self, scriptname, methodname, *args):

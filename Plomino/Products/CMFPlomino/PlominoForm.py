@@ -282,7 +282,7 @@ class PlominoForm(ATFolder):
         try:
             valid = self.runFormulaScript("form_"+self.id+"_oncreate", doc, self.onCreateDocument)
         except PlominoScriptException, e:
-            self.reportError('onCreate formula failed', REQUEST, formula=e.formula)
+            e.reportError('Document is created, but onCreate formula failed')
 
         if valid is None or valid=='':
             doc.saveDocument(REQUEST, True)
@@ -327,7 +327,7 @@ class PlominoForm(ATFolder):
                     #result = RunFormula(target, obj_a.getHidewhen())
                     result = self.runFormulaScript("action_"+self.id+"_"+obj_a.id+"_hidewhen", target, obj_a.Hidewhen)
                 except PlominoScriptException, e:
-                    self.reportError('"%s" hide-when formula failed' % obj_a.Title(), formula=e.formula)
+                    e.reportError('"%s" hide-when formula failed' % obj_a.Title())
                     #if error, we hide anyway
                     result = True
                 if not result:
@@ -440,7 +440,7 @@ class PlominoForm(ATFolder):
                     target = doc
                 result = self.runFormulaScript("hidewhen_"+self.id+"_"+hidewhen.id+"_formula", target, hidewhen.Formula)
             except PlominoScriptException, e:
-                self.reportError('%s hide-when formula failed' % hidewhen.id, formula=e.formula)
+                e.reportError('%s hide-when formula failed' % hidewhen.id)
                 #if error, we hide anyway
                 result = True
             start = '<span class="plominoHidewhenClass">start:'+hidewhenName+'</span>'
@@ -483,7 +483,7 @@ class PlominoForm(ATFolder):
                 try:
                     isHidden = self.runFormulaScript("hidewhen_"+self.id+"_"+hidewhen.id+"_formula", target, hidewhen.Formula)
                 except PlominoScriptException, e:
-                    self.reportError('%s hide-when formula failed' % hidewhen.id, REQUEST, formula=e.formula)
+                    e.reportError('%s hide-when formula failed' % hidewhen.id)
                     #if error, we hide anyway
                     isHidden = True
                 result[hidewhen.id] = isHidden 
@@ -507,7 +507,7 @@ class PlominoForm(ATFolder):
             try:
                 valid = self.runFormulaScript("form_"+self.id+"_beforecreate", self, self.beforeCreateDocument)
             except PlominoScriptException, e:
-                self.reportError('beforeCreate formula failed', formula=e.formula)
+                e.reportError('beforeCreate formula failed')
 
         if valid is None or valid=='' or self.hasDesignPermission(self):
             return self.displayDocument(None, True, True, request=request)
@@ -549,7 +549,7 @@ class PlominoForm(ATFolder):
             try:
                 fieldvalue = db.runFormulaScript("field_"+self.id+"_"+fieldname+"_formula", target, field.Formula)
             except PlominoScriptException, e:
-                db.reportError('%s field formula failed' % fieldname, formula=e.formula)
+                e.reportError('%s field formula failed' % fieldname)
 
         return fieldvalue
 
@@ -654,7 +654,7 @@ class PlominoForm(ATFolder):
                     if valid:
                         filteredResults.append(doc)
             except PlominoScriptException, e:
-                self.reportError('Search formula failed', formula=e.formula)
+                e.reportError('Search formula failed')
             results = filteredResults
 
         return self.OpenForm(searchresults=results)
@@ -685,7 +685,7 @@ class PlominoForm(ATFolder):
                     try:
                         s = self.runFormulaScript("field_"+self.id+"_"+f.id+"_ValidationFormula", tmp, f.ValidationFormula)
                     except PlominoScriptException, e:
-                        self.reportError('%s validation formula failed' % f.id, formula=e.formula)
+                        e.reportError('%s validation formula failed' % f.id)
                     if not s=='':
                         errors.append(s)
 
@@ -706,7 +706,7 @@ class PlominoForm(ATFolder):
         db = self.getParentDatabase()
         view_id = "all" + self.id.replace('_', '').replace('-', '')
         if view_id in db.objectIds():
-            self.reportError('%s is already an existing object.' % view_id)
+            e.reportError('%s is already an existing object.' % view_id)
             if REQUEST:
                 REQUEST.RESPONSE.redirect(self.absolute_url_path())
             return

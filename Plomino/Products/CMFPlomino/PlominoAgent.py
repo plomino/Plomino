@@ -79,8 +79,8 @@ class PlominoAgent(BaseContent, BrowserDefaultMixin):
         plominoContext = self
         try:
             result = self.runFormulaScript("agent_"+self.id, plominoContext, self.Content, True, *args)
-        except Exception, e:
-            self.reportError('Agent failed.', formula=e.formula)
+        except PlominoScriptException, e:
+            e.reportError('Agent failed')
             result = None
 
         return result

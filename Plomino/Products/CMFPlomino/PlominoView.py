@@ -285,7 +285,7 @@ class PlominoView(ATFolder):
                     #result = RunFormula(target, obj_a.getHidewhen())
                     result = self.runFormulaScript("action_"+obj_a.getParentNode().id+"_"+obj_a.id+"_hidewhen", target, obj_a.Hidewhen)
                 except PlominoScriptException, e:
-                    self.reportError('"%s" action hide-when failed' % obj_a.Title(), formula=e.formula)
+                    e.reportError('"%s" action hide-when failed' % obj_a.Title())
                     #if error, we hide anyway
                     result = True
                 if not result:
@@ -308,7 +308,7 @@ class PlominoView(ATFolder):
             #result = RunFormula(doc, self.getFormFormula())
             result = self.runFormulaScript("view_"+self.id+"_formformula", doc, self.FormFormula)
         except PlominoScriptException, e:
-            self.reportError('"%s" form formula failed' % self.Title(), formula=e.formula)
+            e.reportError('"%s" form formula failed' % self.Title())
             result = ""
         return result
 

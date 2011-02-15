@@ -42,7 +42,7 @@
                 code = "";
                 jq.each(data.split('\n'), function(index, value) {
                     line = index + offset
-                    code = code + line + ": " + value;
+                    code = code + line + ": " + value + '\n';
                 });
             	jq("#plominoTracebackPopup pre").html(jq("<div/>").text(code).html());
             });

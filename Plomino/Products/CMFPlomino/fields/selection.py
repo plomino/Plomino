@@ -85,7 +85,7 @@ class SelectionField(BaseField):
             try:
                 s = self.context.runFormulaScript("field_"+self.context.getParentNode().id+"_"+self.context.id+"_SelectionListFormula", obj, lambda: f)
             except PlominoScriptException, e:
-                self.context.reportError('%s field selection list formula failed' % self.context.id, path=self.context.absolute_url_path()+'/getSettings?key=selectionlistformula')
+                e.reportError('%s field selection list formula failed' % self.context.id, path=self.context.absolute_url_path()+'/getSettings?key=selectionlistformula')
                 s = None
             if s is None:
                 s = []
