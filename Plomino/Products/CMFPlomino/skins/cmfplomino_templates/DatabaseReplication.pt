@@ -539,9 +539,9 @@
 		                    </span>
 		                    <div class="formHelp">Import from a folder.</div>
                             <p>
-                            <input type="radio" name="targettype" value="folder" id="targettype-folder"/>From server folder
+                            <input type="radio" name="sourcetype" value="folder" id="sourcetype-folder"/>From server folder
                             </p>
-                            <p><input type="text" name="targetfolder" value="/tmp"/>
+                            <p><input type="text" name="from_folder" value="/tmp"/>
                             </p>
 		                </div>
 	                    </div>
