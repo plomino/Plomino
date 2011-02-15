@@ -765,7 +765,7 @@ class PlominoDesignManager(Persistent):
             total_elements = len(xml_files)
             for p in xml_files:
                 fileobj = codecs.open(p, 'r', 'utf-8')
-                xml_strings.append(fileobj.read().encode('utf-8'))
+                xml_strings.append(fileobj.read())
         else:
             if REQUEST:
                 f=REQUEST.get("file")

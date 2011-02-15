@@ -25,6 +25,10 @@ from Persistence import Persistent
 from xml.dom.minidom import getDOMImplementation
 from xml.dom.minidom import parseString
 import xmlrpclib
+import codecs
+import os
+import sys
+import glob
 import transaction
 
 from ZPublisher.HTTPRequest import FileUpload
@@ -1078,30 +1082,65 @@ class PlominoReplicationManager(Persistent):
         return self.exportAsXML(docids, REQUEST=REQUEST)
 
     security.declareProtected(READ_PERMISSION, 'exportAsXML')
-    def exportAsXML(self, docids=None, REQUEST=None):
+    def exportAsXML(self, docids=None, targettype='file', targetfolder='', REQUEST=None):
+        """ Export documents to XML.
+        The targettype can be file or folder.
         """
-        """
-        impl = getDOMImplementation()
-        xmldoc = impl.createDocument(None, "plominodatabase", None)
-        root = xmldoc.documentElement
-        root.setAttribute("id", self.id)
-
         if REQUEST:
+            targettype=REQUEST.get('targettype')
+            targetfolder=REQUEST.get('targetfolder')
             str_docids=REQUEST.get("docids")
             if str_docids is not None:
                 docids = str_docids.split("@")
+
+        impl = getDOMImplementation()
+
         if docids is None:
             docs = self.getAllDocuments()
         else:
             docs = [self.getDocument(id) for id in docids]
 
-        for d in docs:
-            node = self.exportDocumentAsXML(xmldoc, d)
-            root.appendChild(node)
+        if targettype == 'file':
+            xmldoc = impl.createDocument(None, "plominodatabase", None)
+            root = xmldoc.documentElement
+            root.setAttribute("id", self.id)
 
-        if REQUEST is not None:
-            REQUEST.RESPONSE.setHeader('content-type', 'text/xml')
-        return xmldoc.toxml()
+            for d in docs:
+                node = self.exportDocumentAsXML(xmldoc, d)
+                root.appendChild(node)
+
+            if REQUEST is not None:
+                REQUEST.RESPONSE.setHeader('content-type', 'text/xml')
+            return xmldoc.toxml()
+
+        if targettype == 'folder':
+
+            if REQUEST:
+                targetfolder=REQUEST.get('targetfolder')
+
+            exportpath = os.path.join(targetfolder,(self.id))
+            if os.path.isdir(exportpath):
+                # remove previous export
+                for f in glob.glob(os.path.join(exportpath,"*.xml")):
+                    os.remove(f)
+            else:
+                os.makedirs(exportpath)
+
+            for d in docs:
+                xmldoc = impl.createDocument(None, "plominodatabase", None)
+                root = xmldoc.documentElement
+                root.setAttribute("id", d.id)
+                node = self.exportDocumentAsXML(xmldoc, d)
+                root.appendChild(node)
+                xmlstring = xmldoc.toxml()
+                docfilepath = os.path.join(exportpath, (d.id+'.xml'))
+                self.saveFile(docfilepath, xmlstring)
+
+    @staticmethod
+    def saveFile(path, content):
+        fileobj = codecs.open(path, "w", "utf-8")
+        fileobj.write(content)
+        fileobj.close()
 
     security.declareProtected(READ_PERMISSION, 'exportDocumentAsXML')
     def exportDocumentAsXML(self, xmldoc, doc):
@@ -1137,41 +1176,62 @@ class PlominoReplicationManager(Persistent):
         REQUEST.RESPONSE.redirect(self.absolute_url()+"/DatabaseReplication")
 
     security.declareProtected(REMOVE_PERMISSION, 'importFromXML')
-    def importFromXML(self, xmlstring=None, REQUEST=None):
-        """
+    def importFromXML(self, xmlstring=None, sourcetype='sourceFile', file=None, from_folder=None, REQUEST=None):
+        """ Import documents from XML.
+        The sourcetype can be sourceFile or sourceFolder.
         """
         logger.info("Start documents import")
         self.setStatus("Importing documents (0%)")
         txn = transaction.get()
         if REQUEST:
-            f=REQUEST.get("file")
-            xmlstring = f.read()
-        xmldoc = parseString(xmlstring)
-        documents = xmldoc.getElementsByTagName("document")
+            sourcetype = REQUEST.get('sourcetype')
+        if sourcetype == 'sourceFile':
+# XXX: if REQUEST, we ignore arguments. Is that OK?
+            if REQUEST:
+                xml_files = [REQUEST.get("file")]
+        elif sourcetype == 'folder':
+            if REQUEST:
+                from_folder=REQUEST.get("from_folder")
+            xml_files = glob.glob(os.path.join(from_folder, '*.xml'))
+
+        counter = 0
         errors = 0
         imports = 0
-        total_docs = len(documents)
-        logger.info("Documents count: %d" % total_docs)
-        counter = 0
-        for d in documents:
-            docid = d.getAttribute('id')
-            try:
-                if self.documents.has_key(docid):
-                    self.documents._delOb(docid)
-                self.importDocumentFromXML(d)
-                imports = imports + 1
-            except PlominoReplicationException, e:
-                logger.info('error while importing %s (%s)' % (docid, e))
-                errors = errors + 1
-            counter = counter + 1
-            if counter == 100:
-                self.setStatus("Importing documents (%d%%)" % int(100*counter/total_docs))
-                txn.savepoint(optimistic=True)
-                counter = 0
-                logger.info("%d documents imported successfully, %d errors(s) ...(still running)" % (imports, errors))
+
+        for xml_file in xml_files:
+            if hasattr(xml_file, 'read'):
+# We only accept UTF-8 incoming
+                xmlstring = xml_file.read().decode('utf-8')
+            else:
+                fileobj = codecs.open(xml_file, 'r', 'utf-8')
+                xmlstring = fileobj.read()
+
+            xmldoc = parseString(xmlstring)
+            documents = xmldoc.getElementsByTagName("document")
+            total_docs = len(documents)
+            logger.info("Documents count: %d" % total_docs)
+
+            for d in documents:
+                docid = d.getAttribute('id')
+                try:
+                    if self.documents.has_key(docid):
+                        self.documents._delOb(docid)
+                    self.importDocumentFromXML(d)
+                    imports = imports + 1
+                except PlominoReplicationException, e:
+                    logger.info('error while importing %s (%s)' % (docid, e))
+                    errors = errors + 1
+                counter = counter + 1
+                if counter == 100:
+                    self.setStatus("Importing documents (%d%%)" % int(100*counter/total_docs))
+                    txn.savepoint(optimistic=True)
+                    counter = 0
+                    logger.info("%d documents imported successfully, %d errors(s) ...(still running)" % (imports, errors))
+
         self.setStatus("Ready")
         logger.info("Importation finished: %d documents imported successfully, %d document(s) not imported" % (imports, errors))
         txn.commit()
+
         return (imports, errors)
 
     security.declareProtected(CREATE_PERMISSION, 'importDocumentFromXML')
