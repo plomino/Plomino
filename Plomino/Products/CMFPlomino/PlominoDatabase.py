@@ -252,6 +252,7 @@ class PlominoDatabase(ATFolder, PlominoAccessControl, PlominoDesignManager, Plom
         self._setObject('scripts', scripts)
 
     def __bobo_traverse__(self, request, name):
+        # TODO: replace with ITraversable
         if hasattr(self, 'documents'):
             if self.documents.has_key(name):
                 return aq_inner(getattr(self.documents, name)).__of__(self)
