@@ -26,7 +26,7 @@
     <div id="plominoMessages"></div>
     <div id="plominoTracebackPopup" style="display: none;">
         <strong></strong>
-        <pre style="overflow: auto; height: 70%"></pre>
+        <pre></pre>
     </div>
     <script type="text/javascript">
         function refreshStatusMessages() {

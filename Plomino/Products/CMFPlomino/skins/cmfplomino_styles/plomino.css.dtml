@@ -123,6 +123,18 @@ dd.plominoMessage a {
 #debug-button {
     border:1px solid transparent;
 }
+
+#plominoTracebackPopup pre {
+    background-color: #222;
+    color: White;
+    font-family: Consolas, Inconsolata, Menlo, "DejaVu Sans Mono", "Bitstream Vera Sans Mono", "Courier New", monospace;
+    padding: 1em;
+    overflow: auto;
+    height: 70%;
+    font-size: 90%;
+    margin-bottom: 1em;
+    line-height: 1.25em;
+}
 /* </dtml-with> */
 
 
