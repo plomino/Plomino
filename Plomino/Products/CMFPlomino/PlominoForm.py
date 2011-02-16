@@ -124,7 +124,16 @@ schema = Schema((
             description_msgid='CMFPlomino_help_DocumentTitle',
             i18n_domain='CMFPlomino',
         ),
-#        schemata="Parameters",
+    ),
+    TextField(
+        name='DocumentId',
+        widget=TextAreaWidget(
+            label="Document id formula",
+            description="Compute the document id at creation",
+            label_msgid='CMFPlomino_label_DocumentId',
+            description_msgid='CMFPlomino_help_DocumentId',
+            i18n_domain='CMFPlomino',
+        ),
     ),
     StringField(
         name='ActionBarPosition',
@@ -287,6 +296,7 @@ class PlominoForm(ATFolder):
         if valid is None or valid=='':
             doc.saveDocument(REQUEST, True)
         else:
+            db.documents._delOb(doc.id)
             db.writeMessageOnPage(valid, REQUEST, False)
             REQUEST.RESPONSE.redirect(db.absolute_url())
 

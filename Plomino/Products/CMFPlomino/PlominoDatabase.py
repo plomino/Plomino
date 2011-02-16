@@ -252,7 +252,7 @@ class PlominoDatabase(ATFolder, PlominoAccessControl, PlominoDesignManager, Plom
         self._setObject('scripts', scripts)
 
     def __bobo_traverse__(self, request, name):
-        # TODO: replace with IPublishTraverse 
+        # TODO: replace with IPublishTraverse or/and ITraverse
         if hasattr(self, 'documents'):
             if self.documents.has_key(name):
                 return aq_inner(getattr(self.documents, name)).__of__(self)
@@ -341,13 +341,14 @@ class PlominoDatabase(ATFolder, PlominoAccessControl, PlominoDesignManager, Plom
             return obj
 
     security.declareProtected(CREATE_PERMISSION, 'createDocument')
-    def createDocument(self):
-        """create a unique ID and invoke PlominoDocument factory
+    def createDocument(self, docid=None):
+        """invoke PlominoDocument factory
         """
-        newid = make_uuid()
+        if not docid:
+            docid = make_uuid()
         pt = getToolByName(self, 'portal_types')
-        pt.constructContent('PlominoDocument', self.documents, newid)
-        doc = self.documents.get(newid)
+        pt.constructContent('PlominoDocument', self.documents, docid)
+        doc = self.documents.get(docid)
         return doc
 
     security.declarePublic('getDocument')

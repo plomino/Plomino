@@ -24,7 +24,6 @@ from Products.CMFPlone.utils import normalizeString
 from exceptions import PlominoScriptException
 from Products.CMFPlomino.config import *
 
-##code-section module-header #fill in your manual code here
 from interfaces import *
 from Products.Archetypes.public import *
 from AccessControl import Unauthorized
@@ -32,7 +31,16 @@ from time import strptime
 from DateTime import DateTime
 from zope import event
 from Products.Archetypes.event import ObjectEditedEvent
+from zope.component import queryUtility
 
+# Import conditionally, so we don't introduce a hard dependency
+try:
+    from plone.i18n.normalizer.interfaces import IUserPreferredURLNormalizer
+    from plone.i18n.normalizer.interfaces import IURLNormalizer
+    URL_NORMALIZER = True
+except ImportError:
+    URL_NORMALIZER = False
+    
 from PlominoUtils import DateToString, StringToDate, sendMail, asUnicode, asList
 from OFS.Image import File
 from ZPublisher.HTTPRequest import FileUpload
@@ -46,8 +54,6 @@ try:
     HAS_BLOB = True
 except Exception, e:
     HAS_BLOB = False
-
-##/code-section module-header
 
 schema = Schema((
 
@@ -319,6 +325,10 @@ class PlominoDocument(ATFolder):
                 result = form.Title()
             self.setTitle(result)
 
+            # update the document id
+            if creation and form.getDocumentId():
+                self._renameAfterCreation()
+            
         # update the Plomino_Authors field with the current user name
         if asAuthor:
             authors = self.getItem('Plomino_Authors')
@@ -631,6 +641,41 @@ class PlominoDocument(ATFolder):
         else:
             return False
 
+    def generateNewId(self):
+        """ compute the id using the Document id formula
+        (overwrite Archetypes generateNewId, and provides same behaviour, 
+        but use Document id formula instead of title)
+        """
+        form = self.getForm()
+        if not form:
+            return None
+
+        if not form.getDocumentId():
+            return None
+
+        result = None
+        try:
+            result = self.runFormulaScript("form_"+form.id+"_docid", self, form.DocumentId)
+        except PlominoScriptException, e:
+            e.reportError('Document id formula failed')
+
+        if not result:
+            return None
+
+        # Don't do anything without the plone.i18n package
+        if not URL_NORMALIZER:
+            return None
+
+        if not isinstance(result, unicode):
+            charset = self.getCharset()
+            result = unicode(result, charset)
+
+        request = getattr(self, 'REQUEST', None)
+        if request is not None:
+            return IUserPreferredURLNormalizer(request).normalize(result)
+
+        return queryUtility(IURLNormalizer).normalize(result)
+    
 registerType(PlominoDocument, PROJECTNAME)
 # end of class PlominoDocument
 
