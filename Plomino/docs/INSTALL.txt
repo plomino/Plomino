@@ -6,6 +6,7 @@ edit your buildout.cfg and add Plomino in the eggs list:
     eggs =
         ...
         Plomino
+
 Then you have to run your buildout:
 
     $ ./bin/buildout -N

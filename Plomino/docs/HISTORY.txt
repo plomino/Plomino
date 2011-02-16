@@ -1,18 +1,29 @@
 Changelog
 =========
 
+1.9
+---
+* Document id formula to compute document id at creation time.
+* Display error traceback in a pop-up (showing error message and formula code).
+* Import/export documents to/from a server local folder
+* Validator to avoid using underscores in views and columns ids.
+* Fix URLs in virtual hosting context.
+* Plomino_Readers: Plomino_Readers allows to restrict the list of users, groups, and/or user roles allowed to view the document.
+* Use collective.js.jqueryui instead of custom jqueryui. IMPORTANT NOTE: in Plone 3, please use collective.js.jqueryui = 1.7.3.1
+* Fix replication (file attachments support with blob + push/pull behavior).
+* Plomino element portlet can be conditionally displayed.
+* Generate a view based on a form (use fields for columns, set selection formula, and create "Add new" button).
+* Clean "browserims" (make sure Plomino API works when REQUEST is not defined to allow proper usage from a script).
+* Plomino documents are not necessarily indexed into the portal catalog.
+
 1.8
 ---
-* Replace mode for design import (existing design is entirely replaced by 
-the imported one).
+* Replace mode for design import (existing design is entirely replaced by the imported one).
 * German translation.
 * User-friendly error messages for failing formulas.
-* TEXT and NAME fields indexed as FieldIndex (instead not ZCTextIndex) to 
-allow sorting.
-* New field mode "Computed on save": value is computed when document is saved
-and stored, it is not re-computed when the document is opened.
-* Online debugger (integration with Clouseau): failing formula can be executed 
-step-by-step from the web interface.
+* TEXT and NAME fields indexed as FieldIndex (instead not ZCTextIndex) to allow sorting.
+* New field mode "Computed on save": value is computed when document is saved and stored, it is not re-computed when the document is opened.
+* Online debugger (integration with Clouseau): failing formula can be executed step-by-step from the web interface.
 
 1.7.5
 -----

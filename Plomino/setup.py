@@ -1,11 +1,11 @@
 from setuptools import setup, find_packages
 import os
 
-version = '1.8'
+version = '1.9'
 
 setup(name='Plomino',
       version=version,
-      description="Create specific applications in Plone without developping. Created by Makina Corpus.",
+      description="Create specific applications in Plone without developing. Created by Makina Corpus.",
       long_description=open("README.txt").read() + "\n" +
                        open(os.path.join("docs", "INSTALL.txt")).read() + "\n" +
                        open(os.path.join("docs", "HISTORY.txt")).read(),
