@@ -1079,7 +1079,11 @@ class PlominoReplicationManager(Persistent):
             docids = None
         if REQUEST.get('targettype') == "file":
             REQUEST.RESPONSE.setHeader('content-type', 'text/xml')
-            REQUEST.RESPONSE.setHeader("Content-Disposition", "attachment; filename="+self.id+".xml")
+            if restricttoview:
+                label = restricttoview
+            else:
+                label = "all"
+            REQUEST.RESPONSE.setHeader("Content-Disposition", "attachment; filename=%s-%s-documents.xml" % (self.id, label))
         return self.exportAsXML(docids, REQUEST=REQUEST)
 
     security.declareProtected(READ_PERMISSION, 'exportAsXML')
