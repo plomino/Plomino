@@ -1,7 +1,7 @@
 from setuptools import setup, find_packages
 import os
 
-version = '1.9'
+version = '1.9.1'
 
 setup(name='Plomino',
       version=version,
