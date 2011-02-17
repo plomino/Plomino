@@ -1207,7 +1207,7 @@ class PlominoReplicationManager(Persistent):
                 fileobj = codecs.open(xml_file, 'r', 'utf-8')
                 xmlstring = fileobj.read().encode('utf-8')
 
-            xmldoc = parseString(xmlstring.encode('utf-8'))
+            xmldoc = parseString(xmlstring)
             documents = xmldoc.getElementsByTagName("document")
             total_docs = len(documents)
             logger.info("Documents count: %d" % total_docs)
