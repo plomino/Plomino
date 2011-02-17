@@ -15,12 +15,12 @@ class PlominoScriptException(Exception):
         self.context_url = context.absolute_url_path()
         self.formula = formula
         self.script_id = script_id
-        self.message = self.traceErr()
+        self.message = self.traceErr().decode('utf-8')
 
     def __str__(self):
         """
         """
-        msg = self.message
+        msg = self.message.encode('utf-8')
         return msg
 
     def traceErr(self):
@@ -60,7 +60,7 @@ class PlominoScriptException(Exception):
             traceback = self.message.replace("<", "&lt;").replace(">", "&gt;")
             report += " - Plomino traceback " + traceback.replace('\n', '\n<br/>')
             plone_tools = getToolByName(self.context.getParentDatabase().aq_inner, 'plone_utils')
-            plone_tools.addPortalMessage(report, 'error', request)
+            plone_tools.addPortalMessage(report.encode('utf-8'), 'error', request)
             
 class PlominoRenderingException(Exception):
     pass
