@@ -611,7 +611,7 @@ class PlominoDesignManager(Persistent):
             node = xmldoc.createElement('element')
             node.setAttribute('id', obj.id)
             node.setAttribute('type', obj.Type())
-            title = obj.Title()
+            title = obj.title
             node.setAttribute('title', title)
             schema = plomino_schemas[obj.Type()]
 
