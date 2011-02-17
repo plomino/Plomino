@@ -1077,8 +1077,9 @@ class PlominoReplicationManager(Persistent):
             docids = [doc.getObject().id for doc in sourceview.getAllDocuments()]
         else:
             docids = None
-        REQUEST.RESPONSE.setHeader('content-type', 'text/xml')
-        REQUEST.RESPONSE.setHeader("Content-Disposition", "attachment; filename="+self.id+".xml")
+        if REQUEST.get('targettype') == "file":
+            REQUEST.RESPONSE.setHeader('content-type', 'text/xml')
+            REQUEST.RESPONSE.setHeader("Content-Disposition", "attachment; filename="+self.id+".xml")
         return self.exportAsXML(docids, REQUEST=REQUEST)
 
     security.declareProtected(READ_PERMISSION, 'exportAsXML')
@@ -1182,6 +1183,7 @@ class PlominoReplicationManager(Persistent):
         """
         logger.info("Start documents import")
         self.setStatus("Importing documents (0%)")
+        xml_files = []
         txn = transaction.get()
         if REQUEST:
             sourcetype = REQUEST.get('sourcetype')
@@ -1200,11 +1202,10 @@ class PlominoReplicationManager(Persistent):
 
         for xml_file in xml_files:
             if hasattr(xml_file, 'read'):
-# We only accept UTF-8 incoming
-                xmlstring = xml_file.read().decode('utf-8')
+                xmlstring = xml_file.read()
             else:
                 fileobj = codecs.open(xml_file, 'r', 'utf-8')
-                xmlstring = fileobj.read()
+                xmlstring = fileobj.read().encode('utf-8')
 
             xmldoc = parseString(xmlstring)
             documents = xmldoc.getElementsByTagName("document")
