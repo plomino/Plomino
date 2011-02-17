@@ -15,7 +15,7 @@ class PlominoScriptException(Exception):
         self.context_url = context.absolute_url_path()
         self.formula = formula
         self.script_id = script_id
-        self.message = self.traceErr().decode('utf-8')
+        self.message = asUnicode(self.traceErr())
 
     def __str__(self):
         """
@@ -29,18 +29,19 @@ class PlominoScriptException(Exception):
         msg = []
 
         formatted_lines = traceback.format_exc().splitlines()
-        if not "line" in formatted_lines[-3]:
-            msg = formatted_lines[-2:]
-        else:
-            msg = formatted_lines[-3:]
+        index = 0
+        for (i, line) in enumerate(formatted_lines):
+            if self.script_id in line:
+                index = i
+        msg = formatted_lines[index:]
         msg.append("Context is <%s> %s" % (self.context.__class__.__name__, self.context_url))
         if self.context.getParentDatabase().debugMode:
-            msg.append("Code : ")
+            code = ["Code : "]
             line_number = 4
             for l in self.formula().replace('\r', '').split('\n'):
-                msg.append("%d: %s\r\n" % (line_number, l))
+                code.append("%d: %s" % (line_number, l))
                 line_number += 1
-            logger.error('\n'.join(msg))
+            logger.error('\n'.join(msg+code))
             
         return "\r\n".join(msg)
 
@@ -60,7 +61,7 @@ class PlominoScriptException(Exception):
             traceback = self.message.replace("<", "&lt;").replace(">", "&gt;")
             report += " - Plomino traceback " + traceback.replace('\n', '\n<br/>')
             plone_tools = getToolByName(self.context.getParentDatabase().aq_inner, 'plone_utils')
-            plone_tools.addPortalMessage(report.encode('utf-8'), 'error', request)
+            plone_tools.addPortalMessage(report, 'error', request)
             
 class PlominoRenderingException(Exception):
     pass
