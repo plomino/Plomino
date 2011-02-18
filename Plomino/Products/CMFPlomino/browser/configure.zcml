@@ -19,7 +19,7 @@
       interface=".portlet.IElementPortlet"
       assignment=".portlet.ElementPortletAssignment"
       view_permission="zope2.View"
-      edit_permission="cmf.ManagePortal"
+      edit_permission="plomino.DESIGN_PERMISSION"
       renderer=".portlet.ElementPortletRenderer"
       addview=".portlet.ElementPortletAddForm"
       editview=".portlet.ElementPortletEditForm"
