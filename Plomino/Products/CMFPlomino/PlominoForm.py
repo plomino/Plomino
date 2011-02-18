@@ -730,7 +730,7 @@ class PlominoForm(ATFolder):
         view_obj = getattr(db, view_id)
         view_obj.at_post_create_script()
         
-        fields = self.getFields(includesubforms=True)
+        fields = self.getFormFields(includesubforms=True)
         acceptable_types = ["TEXT", "NUMBER", "NAME", "SELECTION", "DATETIME"]
         fields = [f for f in fields if f.getFieldMode()=="EDITABLE" and f.FieldType in acceptable_types]
         for f in fields:
