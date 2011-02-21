@@ -33,8 +33,8 @@ class PlominoScriptException(Exception):
         for (i, line) in enumerate(formatted_lines):
             if self.script_id in line:
                 index = i
-        if i == len(formatted_lines)-1:
-            msg = [formatted_lines[-1]]
+        if index == len(formatted_lines)-1:
+            msg = [formatted_lines[index]]
         else:
             msg = [formatted_lines[index], formatted_lines[-1]]
         msg.append("Context is <%s> %s" % (self.context.__class__.__name__, self.context_url))
