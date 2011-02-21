@@ -21,6 +21,7 @@ from Products.Five.formlib.formbase import EditForm
 
 from base import IBaseField, BaseField
 from Products.CMFPlomino.exceptions import PlominoScriptException
+from Products.CMFPlomino.PlominoUtils import asUnicode
 
 import simplejson as json
 
@@ -93,6 +94,7 @@ class SelectionField(BaseField):
         # if values not specified, use label as value
         proper = []
         for v in s:
+            l = asUnicode(l)
             l = v.split('|')
             if len(l)==2:
                 proper.append(v)
