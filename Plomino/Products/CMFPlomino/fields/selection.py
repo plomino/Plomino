@@ -94,7 +94,7 @@ class SelectionField(BaseField):
         # if values not specified, use label as value
         proper = []
         for v in s:
-            l = asUnicode(l)
+            v = asUnicode(v)
             l = v.split('|')
             if len(l)==2:
                 proper.append(v)
