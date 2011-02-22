@@ -5,7 +5,8 @@ Build a simple Plomino application
 Create a Plomino database
 =========================
 
-To create a Plomino database, select ``Plomino: database`` in the **Add item** Plone menu
+To create a Plomino database, select ``Plomino: database`` in the **Add item** 
+Plone menu.
 
 .. image:: images/m440f207a.png
 
@@ -14,7 +15,8 @@ Enter a title for the database (for instance: Books) and save it.
 Add a form
 ==========
 
-To add a form, select ``Plomino: form`` in the **Add item** Plone menu.
+To add a form, click **Add new... Form** in the Plomino design left portlet.
+Note: you can also select ``Plomino: form`` in the **Add item** Plone menu.
 
 .. image:: images/m4539359f.png
 
@@ -29,70 +31,65 @@ In Title, enter the form label, which will be displayed to the users
 
 .. image:: images/m34f61fc7.png
 
-Save.
+Save (you need to save it once before being able to add fields in your
+form).
 
-Add fields
-==========
+Create layout and add fields
+============================
 
-To add a field, select ``Plomino: field`` in the Plone Add item menu. 
+Click on the **Edit** tab.
 
-.. image:: images/2a0c5008.png
+Go to the Form layout section which contain sthe TinyMCE editor. If necessary,
+expand the editing area by dragging the bottom-right corner.
 
-Like for Form, the id should be changed, and title must be completed.
+Create your form layout using the standard editing tools (styles, tables, etc.).
 
-Create a 'bookAuthor' field, with type 'Text', and check 'Add in index': 
+.. image:: images/build-1.png
 
-.. image:: images/m730203ab.png
+To add a field, select a word in the form layout and click on the "Add/edit 
+Plomino field" button in the TinyMCE toolbar. 
 
-and save.
+.. image:: images/build-2.png
+
+The selected text will be used as the field id, and a pop-up window will allow
+to define the field main parameters:
+
+.. image:: images/build-3.png
+
+For ``bookAuthor`` field, keep the default ('Text' and 'Editable') and click 
+Insert and then Close.
+
+As you can see, the field is rendered with a blue dashed border in the layout.
 
 Do the same for the following fields:
 
-- 'bookTitle', type 'Text', Add in index 
-- 'publicationYear', type 'Number', Add in index 
-- 'summary', type 'Rich text', Add in index 
-- 'cover', type 'File attachment' 
-- 'bookCategory', type 'Selection list', Add in index
+- ``bookTitle``, type 'Text', 'Editable' 
+- ``publicationYear``, type 'Number', 'Editable' 
+- ``summary``, type 'Rich text', 'Editable' 
+- ``cover``, type 'File attachment', 'Editable'
 
-Once the bookCategory field saved, go its Settings tab. 
+For ``bookCategory``, choose type 'Selection list', 'Editable', but after 
+clicking Insert, click on Specific settings.
 
-.. image:: images/m472f3e6a.png
+It opens the field settings page in a new windows, where you can enter the 
+Selection list the possible values : 
 
-and enter in Selection list the possible values : 
+.. image:: images/build-4.png
 
-.. image:: images/m37199d48.png
+Click Apply, and go back to the Form window, close the field pop-up.
 
-Create the form layout
-======================
+Now the form is built and its associated fields have been created.
 
-Go back to the frmBook form object and click on the **Edit** tab.
+.. image:: images/build-5.png
 
-In Form layout, you can create the layout you want using the Kupu
-editor.
-
-You indicate the area where a given field should be displayed by
-entering its field id and applying the ``Plomino field`` style on it: 
-
-.. image:: images/62293509.png 
-
-The field will be displayed in Kupu in blue and dashed.
-
-Save the modification.
-
-Create fields and form at the same time using TinyMCE
-=====================================================
-
-** New in Plomino 1.5 **
-
-If you use TinyMCE as your Plone richtext editor, you can install 
-plomino.tinymce which plugs some Plomino specific features into 
-the TinyMCE editor.
-
-.. image:: images/tiny-edit-field.jpg
-
+Save the form (click Save button at the bottom of the page).
 
 Use the form
 ============
+
+You can now use this form to create documents.
+
+.. image:: images/build-6.png
 
 Go back to the Books database, the database welcome page now contains a
 link to add a new document using the ``Book description`` form:
