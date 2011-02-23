@@ -94,16 +94,16 @@ You can now use this form to create documents.
 Go back to the Books database, the database welcome page now contains a
 link to add a new document using the ``Book description`` form:
 
-.. image:: images/49f39a7c.png
+.. image:: images/build-7.png
 
 Click on this link, and you get the form displayed as designed in the
-kupu editor and including the fields as they have been defined: 
+TinyMCE editor and including the fields as they have been defined: 
 
-.. image:: images/3e84c372.png
+.. image:: images/build-8.png
 
 You can enter values and save, it will create a new document: 
 
-.. image:: images/m23140d98.png 
+.. image:: images/build-9.png 
 
 
 Explore the database design
