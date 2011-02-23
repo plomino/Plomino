@@ -147,6 +147,8 @@ def csv_to_array(csvcontent, delimiter='\t', quotechar='"'):
         return []
     if type(csvcontent) is str:
         csvfile = StringIO(csvcontent)
+    elif hasattr(csvcontent, 'blob'):
+        csvfile = csvcontent.blob.open()
     else:
         csvfile = csvcontent
     return [l for l in csv.reader(csvfile, delimiter=delimiter, quotechar=quotechar)]
