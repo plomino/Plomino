@@ -514,14 +514,15 @@ Sub-forms can be inserted directly in the form layout using TinyMCE.
 Search formula
 --------------
 
-When you create a search form, Plomino uses the form fields to make a
-regular ZCatalog search among the view's documents.
+When you create a search form, Plomino uses the form fields to do a
+default ZCatalog search among the documents of the view associated with 
+the search page.
 
 If needed, you can create a specific search formula in the form
 **Parameters** tab.
 
-This formula must return `True` or `False` for each document listed in
-the search view.
+This formula is used to filter the result set of the default query, and 
+must return `True` or `False` for each document in the result set.
 
 You can access the values submitted by the search form on the REQUEST
 object: `plominoContext.REQUEST.get('myfield')`.
@@ -537,6 +538,17 @@ Example::
 .. Note::
     Search formulas can be a lot slower than regular ZCatalog searches,
     you must use them carefully.
+
+Search event
+------------
+
+If you do not want the default filters of a search page (the view, the 
+query, and the formula), you can define an `onSearch` event on the form
+**Events** tab. The formula of this event should return the required list 
+of documents. 
+
+You can access the values submitted by the search form on the REQUEST
+object: `plominoContext.REQUEST.get('myfield')`.
 
 Page
 ----
