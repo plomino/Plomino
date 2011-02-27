@@ -647,8 +647,7 @@ class PlominoForm(ATFolder):
             except PlominoScriptException, e:
                 if self.REQUEST:
                     e.reportError('Search event failed.')
-                    doc_path = self.REQUEST.physicalPathToURL(self.doc_path())
-                    self.REQUEST.RESPONSE.redirect(doc_path)
+                    self.OpenForm(searchresults=[])
         else:
             # Allow Plomino to filter by view, default query, and formula
             db = self.getParentDatabase()
