@@ -134,7 +134,7 @@ class PlominoIndex(UniqueObject, ZCatalog, ActionProviderBase):
         """
         #self.catalog_object(doc, "/".join(doc.getPhysicalPath()))
         try:
-          self.catalog_object(doc, "/".join(doc.getParentDatabase().getPhysicalPath())+"/"+doc.id)
+          self.catalog_object()
         except Exception, e:
           self.portal_skins.plone_scripts.plone_log('%s\non %s'%(`e`, doc.id))
           raise
@@ -144,7 +144,7 @@ class PlominoIndex(UniqueObject, ZCatalog, ActionProviderBase):
         """
         """
         #self.uncatalog_object("/".join(doc.getPhysicalPath()))
-        self.uncatalog_object("/".join(doc.getParentDatabase().getPhysicalPath())+"/"+doc.id)
+        self.uncatalog_object()
 
     security.declarePublic('refresh')
     def refresh(self):
