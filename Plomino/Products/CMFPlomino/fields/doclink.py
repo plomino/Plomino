@@ -136,10 +136,10 @@ class DoclinkField(BaseField):
             for doc in alldocs:
                 row = [doc.getPath()]
                 for col in column_ids:
-                    cell = getattr(doc, sourceview.getIndexKey(col))
-                    if not cell:
-                        cell = ''
-                    row.append(cell)
+                    v = getattr(doc, sourceview.getIndexKey(col))
+                    if not isinstance(v, str):
+                        v = unicode(v).encode('utf-8')
+                    row.append(v or '&nbsp;')
                 datatable.append(row)
         else:
             datatable = [v.split('|')[::-1] for v in selectionlist]
