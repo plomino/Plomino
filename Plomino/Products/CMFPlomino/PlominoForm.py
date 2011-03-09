@@ -94,6 +94,17 @@ schema = Schema((
         schemata="Events",
     ),
     TextField(
+        name='onSearch',
+        widget=TextAreaWidget(
+            label="On submssion of search form",
+            description="Action to take when submitting a search",
+            label_msgid='CMFPlomino_label_onSearch',
+            description_msgid='CMFPlomino_help_onSearch',
+            i18n_domain='CMFPlomino',
+        ),
+        schemata="Events",
+    ),
+    TextField(
         name='beforeCreateDocument',
         widget=TextAreaWidget(
             label="Before document creation",
@@ -629,43 +640,53 @@ class PlominoForm(ATFolder):
     def searchDocuments(self,REQUEST):
         """search documents in the view matching the submitted form fields values
         """
-        db = self.getParentDatabase()
-        searchview = db.getView(self.getSearchView())
-
-        #index search
-        index = db.getIndex()
-        query={'PlominoViewFormula_'+searchview.getViewName() : True}
-
-        for f in self.getFormFields(includesubforms=True, applyhidewhen=False):
-            fieldName = f.id
-            #if fieldName is not an index -> search doesn't matter and returns all
-            submittedValue = REQUEST.get(fieldName)
-            if submittedValue is not None:
-                if not submittedValue=='':
-                    # if non-text field, convert the value
-                    if f.getFieldType()=="NUMBER":
-                        v = long(submittedValue)
-                    elif f.getFieldType()=="FLOAT":
-                        v = float(submittedValue)
-                    elif f.getFieldType()=="DATETIME":
-                        v = submittedValue
-                    else:
-                        v = submittedValue
-                    query[fieldName]=v
-        results=index.dbsearch(query, None)
-
-        #filter search with searchformula
-        searchformula=self.getSearchFormula()
-        if searchformula:
-            filteredResults = []
+        if self.onSearch:
+            # Manually generate a result set
             try:
-                for doc in results:
-                    valid = self.runFormulaScript("form_"+self.id+"_searchformula", doc.getObject(), self.SearchFormula)
-                    if valid:
-                        filteredResults.append(doc)
+                results = self.runFormulaScript("form_"+self.id+"_onsearch", self, self.onSearch)
             except PlominoScriptException, e:
-                e.reportError('Search formula failed')
-            results = filteredResults
+                if self.REQUEST:
+                    e.reportError('Search event failed.')
+                    self.OpenForm(searchresults=[])
+        else:
+            # Allow Plomino to filter by view, default query, and formula
+            db = self.getParentDatabase()
+            searchview = db.getView(self.getSearchView())
+
+            #index search
+            index = db.getIndex()
+            query={'PlominoViewFormula_'+searchview.getViewName() : True}
+
+            for f in self.getFormFields(includesubforms=True, applyhidewhen=False):
+                fieldName = f.id
+                #if fieldName is not an index -> search doesn't matter and returns all
+                submittedValue = REQUEST.get(fieldName)
+                if submittedValue is not None:
+                    if not submittedValue=='':
+                        # if non-text field, convert the value
+                        if f.getFieldType()=="NUMBER":
+                            v = long(submittedValue)
+                        elif f.getFieldType()=="FLOAT":
+                            v = float(submittedValue)
+                        elif f.getFieldType()=="DATETIME":
+                            v = submittedValue
+                        else:
+                            v = submittedValue
+                        query[fieldName]=v
+            results=index.dbsearch(query, None)
+
+            #filter search with searchformula
+            searchformula=self.getSearchFormula()
+            if searchformula:
+                filteredResults = []
+                try:
+                    for doc in results:
+                        valid = self.runFormulaScript("form_"+self.id+"_searchformula", doc.getObject(), self.SearchFormula)
+                        if valid:
+                            filteredResults.append(doc)
+                except PlominoScriptException, e:
+                    e.reportError('Search formula failed')
+                results = filteredResults
 
         return self.OpenForm(searchresults=results)
 

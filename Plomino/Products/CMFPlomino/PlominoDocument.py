@@ -590,7 +590,7 @@ class PlominoDocument(ATFolder):
                     storage.set(filename, self, tmpfile);
                     contenttype=storage.get(filename,self).getContentType()
                 elif HAS_BLOB:
-                    if isinstance(submittedValue, FileUpload):
+                    if isinstance(submittedValue, FileUpload) or type(submittedValue) == file:
                         submittedValue.seek(0)
                         contenttype = guessMimetype(submittedValue, filename)
                         submittedValue = submittedValue.read()
@@ -599,9 +599,9 @@ class PlominoDocument(ATFolder):
                     except:
                         # BEFORE PLONE 4.0.1
                         blob = BlobWrapper()
-                    file = blob.getBlob().open('w')
-                    file.write(submittedValue)
-                    file.close()
+                    file_obj = blob.getBlob().open('w')
+                    file_obj.write(submittedValue)
+                    file_obj.close()
                     blob.setFilename(filename)
                     blob.setContentType(contenttype)
                     self._setObject(filename, blob)

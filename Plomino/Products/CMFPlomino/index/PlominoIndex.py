@@ -134,17 +134,22 @@ class PlominoIndex(UniqueObject, ZCatalog, ActionProviderBase):
         """
         #self.catalog_object(doc, "/".join(doc.getPhysicalPath()))
         try:
-          self.catalog_object(doc, "/".join(doc.getParentDatabase().getPhysicalPath())+"/"+doc.id)
+            # TODO DONE LATER (cataloging real path is better but it implies
+            # to test all the side-effect and provide a migration script)
+            #self.catalog_object(doc)
+            self.catalog_object(doc, "/".join(doc.getParentDatabase().getPhysicalPath()) + "/" + doc.id)
         except Exception, e:
-          self.portal_skins.plone_scripts.plone_log('%s\non %s'%(`e`, doc.id))
-          raise
+            self.portal_skins.plone_scripts.plone_log('%s\non %s'%(`e`, doc.id))
+            raise
 
     security.declareProtected(READ_PERMISSION, 'unindexDocument')
     def unindexDocument(self,doc):
         """
         """
-        #self.uncatalog_object("/".join(doc.getPhysicalPath()))
-        self.uncatalog_object("/".join(doc.getParentDatabase().getPhysicalPath())+"/"+doc.id)
+        # TODO DONE LATER (cataloging real path is better but it implies
+        # to test all the side-effect and provide a migration script)
+        #self.uncatalog_object("/".join(doc.getPhysicalPath()
+        self.uncatalog_object("/".join(doc.getParentDatabase().getPhysicalPath()) + "/" + doc.id)
 
     security.declarePublic('refresh')
     def refresh(self):

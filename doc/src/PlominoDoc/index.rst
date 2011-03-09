@@ -4,14 +4,14 @@
    contain the root `toctree` directive.
 
 ======================
-Plomino 1.6 user guide
+Plomino 1.9 user guide
 ======================
 
 :Author: Eric Brehault <eric.brehault@makina-corpus.com>
 :Contributor: Jean Jordaan <jean.jordaan@gmail.com>
 :Contact: eric.brehault@makina-corpus.com
-:Revision: Version 1.1 - June 2010
-:Date: 2010-05-28
+:Revision: Version 1.2 - February 2011
+:Date: 2011-02-22
 :Copyright: This document has been placed in the public domain.
 
 Contents:
@@ -21,6 +21,7 @@ Contents:
    
    about.rst
    introduction.rst
+   install.rst
    concepts.rst
    build.rst
    accesscontrol.rst

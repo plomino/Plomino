@@ -46,8 +46,11 @@ class DatetimeField(BaseField):
         fieldname = self.context.id
         submittedValue = submittedValue.strip()
         try:
-            # calendar widget default format is '%Y-%m-%d %H:%M'
-            v = StringToDate(submittedValue, '%Y-%m-%d %H:%M')
+            # calendar widget default format is '%Y-%m-%d %H:%M' and might use the AM/PM format
+            if submittedValue[-2:] in ['AM', 'PM']:
+                v = StringToDate(submittedValue, '%Y-%m-%d %I:%M %p')
+            else:
+                v = StringToDate(submittedValue, '%Y-%m-%d %H:%M')
         except:
             errors.append(fieldname+" must be a date/time (submitted value was: "+submittedValue+")")
         return errors
@@ -56,8 +59,12 @@ class DatetimeField(BaseField):
         """
         """
         submittedValue = submittedValue.strip()
-        # calendar widget default format is '%Y-%m-%d %H:%M'
-        return StringToDate(submittedValue, '%Y-%m-%d %H:%M')
+        # calendar widget default format is '%Y-%m-%d %H:%M' and might use the AM/PM format
+        if submittedValue[-2:] in ['AM', 'PM']:
+            d = StringToDate(submittedValue, '%Y-%m-%d %I:%M %p')
+        else:
+            d = StringToDate(submittedValue, '%Y-%m-%d %H:%M')
+        return d
 
     def getFieldValue(self, form, doc, editmode, creation, request):
         """

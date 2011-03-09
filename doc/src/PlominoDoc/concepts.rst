@@ -25,8 +25,8 @@ inserts the fields wherever he wants.
 A form can also contain some action buttons to trigger specific
 processing.
 
-A form might also not be used to create or view documents but just to provide a special page 
-(to build a custom menu, generate some reports, etc.).
+A form might also not be used to create or view documents but just to provide 
+specific features (see Search form, and Page form).
 
 Documents
 =========
@@ -51,8 +51,8 @@ application designer wants to be displayed in the view.
 A view contains columns. Column contents is computed using data stored
 in the documents.
 
-Search
-======
+Search forms
+============
 
 The application designer can create specific forms dedicated to performs
 search requests (those forms will not be used to create documents but to
@@ -60,6 +60,12 @@ input the request criteria).
 
 It allows the designer to provide more accurate and more
 business-oriented search features than the global Plone search.
+
+Page forms
+==========
+
+The application designer can create page forms to build custom navigation 
+menus, generate reports, provide portlet content, etc.
 
 Design
 ======
