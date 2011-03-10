@@ -168,6 +168,7 @@ But if you create a new document, you will get a id corresponding to your formul
 Add a view
 ==========
 
+To be able to view the existing documents, 
 Go back to the Books database.
 
 Select ``Plomino: view`` in the **Add item** Plone menu. Enter an
