@@ -113,7 +113,7 @@ Go to the Books database and click the **Design** tab.
 
 This tab displays all the design elements contained in the database: 
 
-.. image:: images/2d8bbc56.png 
+.. image:: images/build-10.png 
 
 The pencil icon gives access to the corresponding object in edit mode,
 the page icon in read mode, and the folder icon in content mode.
@@ -121,21 +121,20 @@ the page icon in read mode, and the folder icon in content mode.
 Change the document title
 =========================
 
-As you can see on the document you have just created with the frmBook
-form, the title is a meaningless identifier: 
+By default, all the documents created with a form have the same title as the form. 
 
-.. image:: images/4014d979.png
+In the present case, the title is "Book description", and it will be the title
+of all the documents you would create with your form.
 
-To display a more meaningful title, go to the frmBook object, edit it,
-go to **Parameters** tab, and enter the following formula in Document
-title::
+To display a more accurate title, go to the frmBook object, edit it, and enter 
+the following formula in 'Document title formula'::
 
     "Information about "+plominoDocument.bookTitle +" ("+plominoDocument.bookAuthor+")"
 
 Save the form, go back to the document, make a change and save it (so it
 is refreshed), and you get the title as specified in the formula: 
 
-.. image:: images/2dc31e82.png
+.. image:: images/build-11.png
 
 'Document title' is computed by a formula. As all the entry points
 allowing formula usage in Plomino, it is a Python expression where
@@ -145,6 +144,26 @@ All the document items values are accessible as object attributes
 (`plominoDocument.<field name>`).
 
 For more information about formulas, see below.
+
+Change the document id
+======================
+
+The document id is displayed in the URL, by default it is a random meaningless
+identifier::
+
+    http://localhost:8090/demo/books/plomino_documents/4e219e4ffff21b9753c94a0e006e95bf
+
+If you want to use meaningful ids, you can define a Document id formula.
+Go to the frmBook object, edit it, and enter the following formula in 'Document id formula'::
+
+    plominoDocument.bookTitle +"-"+plominoDocument.bookAuthor
+
+Unlike the title, the id is computed at creation time, and it cannot be changed later.
+So the existing document will not use this formula even if we re-save it.
+But if you create a new document, you will get a id corresponding to your formula::
+
+    http://localhost:8090/demo/books/plomino_documents/1919-john-dospassos
+
 
 Add a view
 ==========
