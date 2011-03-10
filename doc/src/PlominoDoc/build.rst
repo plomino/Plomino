@@ -168,7 +168,29 @@ But if you create a new document, you will get a id corresponding to your formul
 Add a view
 ==========
 
-To be able to view the existing documents, 
+A view allows to list documents, so the users can find them.
+A view has a selection formula, which defines which documents must be listed, 
+and it contains some columns to display information about the documents.
+
+You can generate a view automatically from a form::
+
+Go to the frmBook form, and click on ``Generate view`` in the Design portlet 
+on the left.
+
+It generates a view selecting all the documents which form is 'frmBook', it
+creates a column for each appropriate fields (files attachment, or rich text
+are not considered as appropriate for instance), and it also insert a "Add new"
+action.
+
+.. image:: images/build-12.png
+
+The columns can be re-ordered by drag-and-drop in the Contents tab. The column
+labels can also be changed.
+
+
+Add a view manually
+===================
+
 Go back to the Books database.
 
 Select ``Plomino: view`` in the **Add item** Plone menu. Enter an
@@ -196,9 +218,6 @@ You get the following result:
 
 We just see a link '**Go**' which allows us to access the document we
 have created. Now we need to add columns to this view.
-
-Add columns
-===========
 
 Select ``Plomino: column`` in the **Add item** Plone menu.
 
@@ -255,8 +274,6 @@ Each category can be expanded or collapsed.
 
 Dynamic view
 ============
-
-** New in Plomino 1.5 **
 
 Click on **Edit**, go to the **Parameters**, and change widget to **Dynamic table**.
 It renders the view using JQuery Datatables (column sorting, live filtering, ...).
