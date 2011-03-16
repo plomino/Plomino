@@ -1200,7 +1200,7 @@ class PlominoReplicationManager(Persistent):
                 from_folder=REQUEST.get("from_folder")
             xml_files = glob.glob(os.path.join(from_folder, '*.xml'))
 
-        counter = 0
+        files_counter = 0
         errors = 0
         imports = 0
 
@@ -1214,7 +1214,10 @@ class PlominoReplicationManager(Persistent):
             xmldoc = parseString(xmlstring)
             documents = xmldoc.getElementsByTagName("document")
             total_docs = len(documents)
-            logger.info("Documents count: %d" % total_docs)
+            if total_docs > 1:
+                logger.info("Documents count: %d" % total_docs)
+            docs_counter = 0
+            files_counter = files_counter + 1
 
             for d in documents:
                 docid = d.getAttribute('id')
@@ -1226,12 +1229,17 @@ class PlominoReplicationManager(Persistent):
                 except PlominoReplicationException, e:
                     logger.info('error while importing %s (%s)' % (docid, e))
                     errors = errors + 1
-                counter = counter + 1
-                if counter == 100:
-                    self.setStatus("Importing documents (%d%%)" % int(100*counter/total_docs))
+                docs_counter = docs_counter + 1
+                if docs_counter == 100:
+                    self.setStatus("Importing documents (%d%%)" % int(100*docs_counter/total_docs))
                     txn.savepoint(optimistic=True)
-                    counter = 0
+                    docs_counter = 0
                     logger.info("%d documents imported successfully, %d errors(s) ...(still running)" % (imports, errors))
+            if files_counter == 100:
+                self.setStatus("Importing documents (%s)" % files_counter)
+                txn.savepoint(optimistic=True)
+                files_counter = 0
+                logger.info("%d documents imported successfully, %d errors(s) ...(still running)" % (imports, errors))
 
         self.setStatus("Ready")
         logger.info("Importation finished: %d documents imported successfully, %d document(s) not imported" % (imports, errors))
