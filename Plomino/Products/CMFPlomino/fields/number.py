@@ -35,7 +35,10 @@ class INumberField(IBaseField):
     size = TextLine(title=u'Size',
                       description=u'Length',
                       required=False)
-
+    format = TextLine(title=u'Format',
+                      description=u'Number formatting (example: %1.2f)',
+                      required=False)
+    
 class NumberField(BaseField):
     """
     """
@@ -69,6 +72,19 @@ class NumberField(BaseField):
         else:
             return submittedValue
 
+    def format_value(self, v):
+        """
+        """
+        str_v = ""
+        if self.format:
+            try:
+                str_v = self.format % v
+            except:
+                str_v = "Formatting error"
+        else:
+            str_v = str(v)
+        return str_v
+        
 for f in getFields(INumberField).values():
     setattr(NumberField, f.getName(), DictionaryProperty(f, 'parameters'))
 
