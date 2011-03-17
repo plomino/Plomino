@@ -176,4 +176,7 @@ def MissingValue():
     return Missing.Value
 
 def isDocument(doc):
-    return not doc or doc.isNewDocument()
+    if doc:
+        if not doc.isNewDocument():
+            return True
+    return False
