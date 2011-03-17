@@ -265,7 +265,7 @@ class PlominoDesignManager(Persistent):
     @staticmethod
     def saveFile(path, content):
         fileobj = codecs.open(path, "w", "utf-8")
-        fileobj.write(content)
+        fileobj.write(content.decode('utf-8'))
         fileobj.close()
 
     security.declareProtected(DESIGN_PERMISSION, 'importDesign')
@@ -744,7 +744,7 @@ class PlominoDesignManager(Persistent):
 
         for xmlstring in xml_strings:
             xmlstring = xmlstring.replace(">\n<", "><")
-            xmldoc = parseString(xmlstring)
+            xmldoc = parseString(xmlstring.encode('utf-8'))
             design = xmldoc.getElementsByTagName("design")[0]
             elements = [e for e in design.childNodes
                             if e.nodeName in ('resource', 'element', 'dbsettings')]

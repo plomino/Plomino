@@ -1,6 +1,11 @@
 Changelog
 =========
 
+1.9.3 (2011-03-09)
+------------------
+* File handling fixes
+* onSearch event (for Search forms)
+
 1.9.2 (2011-02-21)
 ------------------
 * Fix view generation

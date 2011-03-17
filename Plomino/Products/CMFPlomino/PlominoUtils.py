@@ -174,3 +174,9 @@ def MissingValue():
     """ Useful to test search results value (as Missing.Value cannot be imported in scripts)
     """
     return Missing.Value
+
+def isDocument(doc):
+    if doc:
+        if not doc.isNewDocument():
+            return True
+    return False

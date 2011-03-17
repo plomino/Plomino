@@ -20,6 +20,7 @@ from Products.ATContentTypes.content.folder import ATFolder
 from Products.CMFDynamicViewFTI.browserdefault import BrowserDefaultMixin
 
 from Products.CMFPlomino.config import *
+from PlominoUtils import asUnicode, asList
 from exceptions import PlominoScriptException
 from validator import isValidPlominoId
 
@@ -538,16 +539,26 @@ class PlominoView(ATFolder):
         """Returns a JSON representation of view data 
         """
         data = []
+        categorized = self.getCategorized()
+        
         columnids = [col.id for col in self.getColumns() if not getattr(col, 'HiddenColumn', False)]
         for doc in self.getAllDocuments():
             row = [doc.getPath().split('/')[-1]]
             for colid in columnids:
                 v = getattr(doc, self.getIndexKey(colid), '')
-                if not isinstance(v, str):
-                    v = unicode(v).encode('utf-8')
+                if isinstance(v, list):
+                    v = [asUnicode(e).encode('utf-8') for e in v]
+                else:
+                    v = asUnicode(v).encode('utf-8')
                 row.append(v or '&nbsp;')
 
-            data.append(row)
+            if categorized:
+                for cat in asList(row[1]):
+                    entry = [c for c in row]
+                    entry[1] = cat
+                    data.append(entry)
+            else:
+                data.append(row)
         return json.dumps({ 'aaData': data })
 
     security.declarePublic('getIndexKey')

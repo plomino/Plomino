@@ -402,7 +402,7 @@ class PlominoForm(ATFolder):
             target = self
         else:
             target = doc
-        actionsToDisplay=[a.id for a in self.getActions(target, True)]
+        actionsToDisplay=[a.id for a in self.getActions(target, hide=True)]
         for action in self.getActions(target, False):
             actionName = action.id
             if actionName in actionsToDisplay:
