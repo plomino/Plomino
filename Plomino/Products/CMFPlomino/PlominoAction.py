@@ -129,12 +129,10 @@ class PlominoAction(BaseContent, BrowserDefaultMixin):
         db = self.getParentDatabase()
         if self.ActionType == "OPENFORM":
             form = db.getForm(self.Content())
-            if form:
-                return form.absolute_url() + '/OpenForm'
+            return form.absolute_url() + '/OpenForm'
         elif self.ActionType == "OPENVIEW":
             view = db.getView(self.Content())
-            if view:
-                return view.absolute_url() + '/OpenView'
+            return view.absolute_url() + '/OpenView'
         elif self.ActionType == "CLOSE":
             return db.absolute_url() + '/checkBeforeOpenDatabase'
         elif self.ActionType == "PYTHON":
