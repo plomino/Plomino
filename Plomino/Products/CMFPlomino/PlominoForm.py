@@ -527,7 +527,7 @@ class PlominoForm(ATFolder):
         if valid is None or valid=='' or self.hasDesignPermission(self):
             return self.displayDocument(None, True, True, request=request)
         else:
-            self.REQUEST.RESPONSE.redirect(self.getParentDatabase().absolute_url()+"/ErrorsMessages?disable_border=1&error="+valid)
+            self.REQUEST.RESPONSE.redirect(self.getParentDatabase().absolute_url()+"/ErrorMessages?disable_border=1&error="+valid)
 
     security.declarePublic('at_post_edit_script')
     def at_post_edit_script(self):
