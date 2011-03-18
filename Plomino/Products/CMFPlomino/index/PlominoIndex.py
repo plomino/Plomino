@@ -66,12 +66,6 @@ class PlominoIndex(UniqueObject, ZCatalog, ActionProviderBase):
             self.createFieldIndex('SearchableText', 'RICHTEXT')
         self.no_refresh = False
 
-    security.declareProtected(READ_PERMISSION, 'getParentDatabase')
-    def getParentDatabase(self):
-        """
-        """
-        return self.getParentNode()
-
     security.declareProtected(DESIGN_PERMISSION, 'createIndex')
     def createIndex(self, fieldname, refresh=True):
         """

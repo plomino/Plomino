@@ -360,6 +360,15 @@ class PlominoDatabase(ATFolder, PlominoAccessControl, PlominoDesignManager, Plom
             docid = docid.split("/")[-1]
         return self.documents.get(docid)
 
+    security.declareProtected(READ_PERMISSION, 'getParentDatabase')
+    def getParentDatabase(self):
+        """ Acquired by Plomino objects
+        """
+        obj = self
+        while getattr(obj, 'meta_type', '') != 'PlominoDatabase':
+            obj = self.aq_parent
+        return obj
+
     security.declareProtected(REMOVE_PERMISSION, 'deleteDocument')
     def deleteDocument(self,doc):
         """delete the document from database

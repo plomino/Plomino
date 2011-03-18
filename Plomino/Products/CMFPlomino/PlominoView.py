@@ -230,12 +230,6 @@ class PlominoView(ATFolder):
         """
         return self.id
 
-    security.declarePublic('getParentDatabase')
-    def getParentDatabase(self):
-        """Get parent database
-        """
-        return self.getParentNode()
-
     def __bobo_traverse__(self, request, name):
         if self.documents.has_key(name):
             return aq_inner(getattr(self.documents, name)).__of__(self)

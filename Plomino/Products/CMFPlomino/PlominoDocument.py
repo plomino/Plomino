@@ -219,16 +219,6 @@ class PlominoDocument(ATFolder):
                 self.setItem(itemname, result)
         return result
 
-    security.declarePublic('getParentDatabase')
-    def getParentDatabase(self):
-        """
-        """
-        parent = self.getParentNode()
-        if parent.id == "plomino_documents":
-            return parent.getParentNode()
-        else:
-            return parent
-
     security.declarePublic('getPlominoReaders')
     def getPlominoReaders(self):
         """
@@ -695,10 +685,6 @@ class TemporaryDocument(PlominoDocument):
         self.setItem('Form', form.getFormName())
         form.readInputs(self, REQUEST)
         self.REQUEST=REQUEST
-
-    security.declarePublic('getParentDatabase')
-    def getParentDatabase(self):
-        return self._parent
 
     security.declarePublic('isEditMode')
     def isEditMode(self):

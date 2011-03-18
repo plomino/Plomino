@@ -363,12 +363,6 @@ class PlominoForm(ATFolder):
         """
         return self.id
 
-    security.declarePublic('getParentDatabase')
-    def getParentDatabase(self):
-        """Get the database containing this form
-        """
-        return self.getParentNode()
-
 
     security.declareProtected(READ_PERMISSION, 'displayDocument')
     def displayDocument(self,doc,editmode=False, creation=False, subform=False, request=None):

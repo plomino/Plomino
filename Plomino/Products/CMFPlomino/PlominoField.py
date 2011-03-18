@@ -250,12 +250,6 @@ class PlominoField(BaseContent, BrowserDefaultMixin):
             self.traceRenderingErr(e, self)
             return ""
 
-    security.declarePublic('getParentDatabase')
-    def getParentDatabase(self):
-        """Get the database containing this field
-        """
-        return self.getParentNode().getParentDatabase()
-
     security.declarePublic('at_post_edit_script')
     def at_post_edit_script(self):
         """post edit

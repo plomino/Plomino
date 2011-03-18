@@ -67,12 +67,6 @@ class PlominoAgent(BaseContent, BrowserDefaultMixin):
         """
         self.cleanFormulaScripts("agent_"+self.id)
 
-    security.declarePublic('getParentDatabase')
-    def getParentDatabase(self):
-        """
-        """
-        return self.getParentNode()
-
     def __call__(self, *args):
         """
         """
