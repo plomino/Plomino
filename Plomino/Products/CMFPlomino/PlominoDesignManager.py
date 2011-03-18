@@ -728,9 +728,9 @@ class PlominoDesignManager(Persistent):
         else:
             if REQUEST:
                 f=REQUEST.get("file")
-                xml_strings.append(f.read())
+                xml_strings.append(asUnicode(f.read()))
             else:
-                xml_strings.append(xmlstring)
+                xml_strings.append(asUnicode(xmlstring))
             total_elements = None
 
         if replace:
