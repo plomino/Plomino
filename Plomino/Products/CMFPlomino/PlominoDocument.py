@@ -686,6 +686,12 @@ class TemporaryDocument(PlominoDocument):
         form.readInputs(self, REQUEST)
         self.REQUEST=REQUEST
 
+    security.declarePublic('getParentDatabase')
+    def getParentDatabase(self):
+        """ Temporary docs are able to acquire from the db
+        """
+        return self._parent
+        
     security.declarePublic('isEditMode')
     def isEditMode(self):
         """
