@@ -517,17 +517,17 @@ class PlominoForm(ATFolder):
         """check beforeCreateDocument then open the form
         """
         # execute the beforeCreateDocument code of the form
-        valid = ''
+        invalid = False
         if hasattr(self,'beforeCreateDocument') and self.beforeCreateDocument is not None:
             try:
-                valid = self.runFormulaScript("form_"+self.id+"_beforecreate", self, self.beforeCreateDocument)
+                invalid = self.runFormulaScript("form_"+self.id+"_beforecreate", self, self.beforeCreateDocument)
             except PlominoScriptException, e:
                 e.reportError('beforeCreate formula failed')
 
-        if valid is None or valid=='' or self.hasDesignPermission(self):
+        if (not invalid) or self.hasDesignPermission(self):
             return self.displayDocument(None, True, True, request=request)
         else:
-            self.REQUEST.RESPONSE.redirect(self.getParentDatabase().absolute_url()+"/ErrorMessages?disable_border=1&error="+valid)
+            self.REQUEST.RESPONSE.redirect(self.getParentDatabase().absolute_url()+"/ErrorMessages?disable_border=1&error="+invalid)
 
     security.declarePublic('at_post_edit_script')
     def at_post_edit_script(self):
