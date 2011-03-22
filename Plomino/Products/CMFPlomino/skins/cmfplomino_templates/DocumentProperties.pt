@@ -23,12 +23,11 @@
 		
 		<tal:permission tal:define="dummy here/checkDesignPermission"/>
 			
-		<table tal:define="form here/getForm|nothing" class="listing">
+		<table tal:define="form python:here.getItem('Form')" class="listing">
 	    		<tr><th>Property</th><th>Value</th></tr>
     			<tr><td>Id</td><td tal:content="here/id">id</td></tr>
     			<tr><td>Last modified</td><td tal:content="python:here.getLastModified(asString=True)">id</td></tr>
-			<tr tal:condition="form"><td>Form name</td><td tal:content="python:here.getForm().getFormName()">formname</td></tr>
-			<tr tal:condition="form"><td>Form</td><td tal:content="python:here.getForm()">formn</td></tr>
+			<tr tal:condition="form"><td>Form id</td><td tal:content="form">formname</td></tr>
 			<tr tal:condition="not:form"><td>Form</td><td>FORM NOT AVAILABLE</td></tr>
 		</table>
     		<br/><br/>
