@@ -541,9 +541,9 @@ class PlominoView(ATFolder):
             for colid in columnids:
                 v = getattr(doc, self.getIndexKey(colid), '')
                 if isinstance(v, list):
-                    v = [asUnicode(e).encode('utf-8') for e in v]
+                    v = [asUnicode(e).encode('utf-8').replace('\r', '') for e in v]
                 else:
-                    v = asUnicode(v).encode('utf-8')
+                    v = asUnicode(v).encode('utf-8').replace('\r', '')
                 row.append(v or '&nbsp;')
 
             if categorized:
