@@ -1,6 +1,12 @@
 Changelog
 =========
 
+1.9.4 (2011-03-24)
+------------------
+* isDocument method in PlominoUtils to test if context is a document
+* fix categorized dynamic view (when column contains multivalues)
+* fix richtext field bug with Products.TinyMCE 1.1.8
+
 1.9.3 (2011-03-09)
 ------------------
 * File handling fixes
