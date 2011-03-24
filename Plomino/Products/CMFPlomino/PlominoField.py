@@ -291,6 +291,14 @@ class PlominoField(BaseContent, BrowserDefaultMixin):
         l.sort(key=lambda f:f[1])
         return l
 
+    def getContentType(self, fieldname=None):
+        # Make sure RICHTEXT fields are considered as html
+        # (TinyMCE 1.1.8 tests if content is HTML
+        # if not, it displays a basic textarea)
+        if self.FieldType == "RICHTEXT":
+            return "text/html"
+        return "text/plain"
+        
 registerType(PlominoField, PROJECTNAME)
 # end of class PlominoField
 
