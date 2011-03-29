@@ -470,9 +470,9 @@ class PlominoDesignManager(Persistent):
         if self.debugMode:
             #traceback
             formatted_lines = traceback.format_exc().splitlines()
-            msg = "\r\n".join(formatted_lines[-3:]).strip()
+            msg = "\n".join(formatted_lines[-3:]).strip()
             #code / value
-            msg = msg + "Plomino rendering error with context : " + str(context)            
+            msg = msg + "\nPlomino rendering error with context: " + '/'.join(context.getPhysicalPath())
         else:
             msg = None
 
