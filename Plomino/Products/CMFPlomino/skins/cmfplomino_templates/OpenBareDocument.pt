@@ -6,7 +6,7 @@
       i18n:domain="plone">
 <body>
 <div id="content">
-      <tal:block tal:define="myF python:here.getForm();
+  <tal:block tal:define="myF python:here.getForm();
 					b myF/ActionBarPosition|nothing">
 	
 	<form tal:attributes="name python:myF.id">
@@ -42,7 +42,7 @@
 			</span>
 		</tal:block>
 	</form>
-</tal:block>
+  </tal:block>
 </div>
 </body>
 </html>
