@@ -11,6 +11,7 @@
         				jq(document).ready(function() {
         					jq('#${fieldname}_datagrid').dataTable( {
         						'aaData': ${data},
+        						'bJQueryUI': true,
         						${param},
         						'oLanguage': {
         							'sUrl': '${langpath}'

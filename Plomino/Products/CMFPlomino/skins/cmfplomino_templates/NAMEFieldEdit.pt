@@ -71,6 +71,7 @@
 					o_${fieldname}_datagrid = jq('#${fieldname}_datagrid').dataTable( {
 						'bProcessing': true,
 						'bPaginate': true,
+						'bJQueryUI': true,
 						'bSort': true,
 						'aaSorting': [],
 						'bInfo': true,

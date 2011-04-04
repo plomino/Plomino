@@ -92,6 +92,7 @@
 			jq(document).ready(function() {
 				o_${fieldid}_table = jq('#${fieldid}_table').dataTable( {
 			        'aaData': ${data},
+			        'bJQueryUI': true,
 			        'aoColumns': [{'bVisible': false, 'bSearchable': false}, {'sTitle':'Value'}],
 			        'aaSorting': [],
 			        'fnInitComplete': function(oSettings) {
