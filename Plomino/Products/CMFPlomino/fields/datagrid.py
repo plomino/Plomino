@@ -110,12 +110,15 @@ class DatagridField(BaseField):
         if not fieldValue:
             return fieldValue
 
-        mode = self.context.getFieldMode()
+        # if doc is not a PlominoDocument, no processing needed
+        if not doc or doc.isNewDocument():
+            return fieldValue
 
+        mode = self.context.getFieldMode()
         if not(mode=="EDITABLE" and editmode):
             # Rendering for DISPLAY
             # If editing, we don't do the rendering.
-            
+
             mapped_fields = []
             if self.field_mapping:
                 mapped_fields = self.field_mapping.split(',')
