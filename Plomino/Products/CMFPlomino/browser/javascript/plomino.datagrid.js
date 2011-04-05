@@ -124,8 +124,7 @@ function datagrid_edit_row(table, field_id, formurl) {
 		var field = jq('#' + field_id + '_gridvalue');
 		var field_data = jq.evalJSON(field.val());
 		var row_index = datagrid_get_field_index(table, row);
-
-		formurl += '&Plomino_datagrid_rowdata=' + jq.toJSON(field_data[row_index]);
+		formurl += '&Plomino_datagrid_rowdata=' + jq.URLEncode(jq.toJSON(field_data[row_index]));
 		datagrid_show_form(field_id, formurl, function(rowdata, raw) {
 			// update the datagrid
 			table.fnUpdate(rowdata, row);
