@@ -292,6 +292,9 @@ class PlominoForm(ATFolder):
             tmp = TemporaryDocument(self.getParentDatabase(), self, REQUEST)
             tmp.setItem("Plomino_Parent_Field", parent_field)
             tmp.setItem("Plomino_Parent_Form", parent_form)
+            tmp.setItem(parent_field+"_itemnames", [
+                f.getId() for f in self.getFormFields() 
+                if not f.getFieldMode() == 'DISPLAY'])
             return self.ChildForm(temp_doc=tmp)
 
         doc = db.createDocument()
