@@ -119,7 +119,10 @@ class DatagridField(BaseField):
             mapped_fields = []
             if self.field_mapping:
                 mapped_fields = self.field_mapping.split(',')
-            item_names = doc.getItem(self.context.id+'_itemnames')
+            if doc:
+                item_names = doc.getItem(self.context.id+'_itemnames')
+            else:
+                item_names = []
 
             if mapped_fields:
                 if not item_names:
