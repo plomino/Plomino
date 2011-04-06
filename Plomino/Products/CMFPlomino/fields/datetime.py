@@ -65,17 +65,25 @@ class DatetimeField(BaseField):
         """
         """
         submittedValue = submittedValue.strip()
-        # check if date only:
-        if len(submittedValue) == 10:
-            d = StringToDate(submittedValue, '%Y-%m-%d')
-        else:
-            # calendar widget default format is '%Y-%m-%d %H:%M' and might use the AM/PM format
-
-            if submittedValue[-2:] in ['AM', 'PM']:
-                d = StringToDate(submittedValue, '%Y-%m-%d %I:%M %p')
+        try:
+            # check if date only:
+            if len(submittedValue) == 10:
+                d = StringToDate(submittedValue, '%Y-%m-%d')
             else:
-                d = StringToDate(submittedValue, '%Y-%m-%d %H:%M')
-        return d
+                # calendar widget default format is '%Y-%m-%d %H:%M' and might use the AM/PM format
+    
+                if submittedValue[-2:] in ['AM', 'PM']:
+                    d = StringToDate(submittedValue, '%Y-%m-%d %I:%M %p')
+                else:
+                    d = StringToDate(submittedValue, '%Y-%m-%d %H:%M')
+            return d
+        except:
+            # with datagrid, we might get dates formatted differently than using calendar
+            # widget default format
+            format = self.format
+            if not format:
+                format = self.context.getParentDatabase().getDateTimeFormat()
+            return StringToDate(submittedValue, format)
 
     def getFieldValue(self, form, doc, editmode, creation, request):
         """
