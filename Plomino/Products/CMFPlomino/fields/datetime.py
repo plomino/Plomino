@@ -22,6 +22,8 @@ from Products.Five.formlib.formbase import EditForm
 from Products.CMFPlomino.PlominoUtils import StringToDate
 
 from base import IBaseField, BaseField
+import logging
+logger = logging.getLogger('Plomino')
 
 class IDatetimeField(IBaseField):
     """
@@ -81,12 +83,15 @@ class DatetimeField(BaseField):
         fieldValue = BaseField.getFieldValue(self, form, doc, editmode, creation, request)
 
         mode = self.context.getFieldMode()
-
-        if mode=="EDITABLE":
-            if doc is None and not(creation) and request is not None:
-                fieldValue = request.get(fieldName, '')
-                if not(fieldValue=='' or fieldValue is None):
-                    fieldValue = StringToDate(fieldValue, form.getParentDatabase().getDateTimeFormat())
+        if mode=="EDITABLE" and request:
+            if (doc is None and not(creation)) or request.has_key('Plomino_datagrid_rowdata'):
+                fieldname = self.context.id
+                fieldValue = request.get(fieldname, fieldValue)
+                if fieldValue:
+                    format = self.format
+                    if not format:
+                        format = form.getParentDatabase().getDateTimeFormat()
+                    fieldValue = StringToDate(fieldValue, format)
         return fieldValue
 
 for f in getFields(IDatetimeField).values():
