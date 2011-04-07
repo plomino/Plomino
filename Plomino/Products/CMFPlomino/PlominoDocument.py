@@ -337,7 +337,7 @@ class PlominoDocument(ATFolder):
             try:
                 self.runFormulaScript("form_"+form.id+"_onsave", self, form.onSaveDocument)
             except PlominoScriptException, e:
-                if self.REQUEST:
+                if hasattr(self, 'REQUEST'):
                     e.reportError('Document has been saved but onSave event failed.')
                     doc_path = self.REQUEST.physicalPathToURL(self.doc_path())
                     self.REQUEST.RESPONSE.redirect(doc_path)
