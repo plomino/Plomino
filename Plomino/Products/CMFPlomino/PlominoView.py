@@ -513,7 +513,7 @@ class PlominoView(ATFolder):
             return None
 
     security.declarePublic('getDocumentsByKey')
-    def getDocumentsByKey(self, key):
+    def getDocumentsByKey(self, key, getObject=True):
         """Get documents which sorted column value match the given key
         """
         index = self.getParentDatabase().getIndex()
@@ -526,7 +526,10 @@ class PlominoView(ATFolder):
                                     sortindex : key
                                     },
                                    sortindex, self.getReverseSorting())
-        return [d.getObject() for d in results]
+        if getObject:
+            return [d.getObject() for d in results]
+        else:
+            return results
 
     security.declarePublic('tojson')
     def tojson(self):
