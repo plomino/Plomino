@@ -260,7 +260,7 @@ class PlominoDesignManager(Persistent):
             if dbsettings:
                 path = os.path.join(exportpath, ('dbsettings.xml'))
                 xmlstring = self.exportDesignAsXML(elementids=[], dbsettings=True)
-                self.saveFile(path, xmlstring)
+                self.saveFile(path, xmlstring.decode('utf-8'))
 
     @staticmethod
     def saveFile(path, content):
@@ -694,7 +694,7 @@ class PlominoDesignManager(Persistent):
         resource_type = obj.meta_type
         node.setAttribute('type', resource_type)
         node.setAttribute('title', obj.title)
-        if resource_type=="Page Template":
+        if resource_type in ["Page Template", "Script (Python)"]:
             data = xmldoc.createCDATASection(obj.read())
         else:
             node.setAttribute('contenttype', obj.getContentType())
