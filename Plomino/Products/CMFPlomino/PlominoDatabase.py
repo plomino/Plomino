@@ -146,7 +146,7 @@ schema = Schema((
     ),
     StringField(
         name='DateTimeFormat',
-        default="%Y/%m/%d",
+        default="%Y-%m-%d",
         widget=StringField._properties['widget'](
             label='Date/time format',
             description='Format example: %Y-%m-%d',
