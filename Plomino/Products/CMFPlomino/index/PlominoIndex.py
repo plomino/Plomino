@@ -59,8 +59,11 @@ class PlominoIndex(UniqueObject, ZCatalog, ActionProviderBase):
         #lexicon = PLexicon('plaintext_lexicon', '', Splitter(), CaseNormalizer(), StopWordRemover())
         lexicon = PLexicon('plaintext_lexicon', '', Splitter(), CaseNormalizer())
         self._setObject('plaintext_lexicon', lexicon)
-        self.createFieldIndex('Form', 'SELECTION')
-        self.createFieldIndex('getPlominoReaders', 'SELECTION')
+        #self.createFieldIndex('Form', 'SELECTION')
+        #self.createFieldIndex('getPlominoReaders', 'SELECTION')
+        self.addIndex('Form', "FieldIndex")
+        self.addIndex('id', "FieldIndex")
+        self.addIndex('getPlominoReaders', "KeywordIndex")
         
         if FULLTEXT:
             self.createFieldIndex('SearchableText', 'RICHTEXT')
