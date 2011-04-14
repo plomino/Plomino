@@ -48,25 +48,42 @@ DirectoryView.registerDirectory('skins', product_globals)
 
 ##code-section custom-init-head #fill in your manual code here
 from AccessControl.Permission import registerPermissions
-
 from Products.PythonScripts.Utility import allow_module
+from zope import component
+import interfaces
+from zope.interface import implements
+
+class PlominoCoreUtils:
+    implements(interfaces.IPlominoUtils)
+    
+    module = "Products.CMFPlomino.PlominoUtils"
+    methods = ['DateToString',
+               'StringToDate',
+               'DateRange',
+               'sendMail',
+               'userFullname',
+               'userInfo',
+               'htmlencode',
+               'Now',
+               'asList',
+               'urlencode',
+               'csv_to_array',
+               'MissingValue',
+               'open_url',
+               'asUnicode',
+               'array_to_csv',
+               'isDocument']
+
+component.provideUtility(PlominoCoreUtils, interfaces.IPlominoUtils)
+
+def get_utils():
+    utils = {}
+    for plugin_utils in component.getUtilitiesFor(interfaces.IPlominoUtils):
+        module = plugin_utils[1].module
+        utils[module] = plugin_utils[1].methods
+    return utils
+
 allow_module("Products.CMFPlomino.PlominoUtils")
-#allow_module("re")
-
-# Load custom allow_module
-# To allow modules in Plomino formula, add a file named AllowModules.py in CMFPlomino/
-# with the following code:
-# from Products.PythonScripts.Utility import allow_module
-# allow_module("YourModulePath")
-# Then restart Zope, et re-install Plomino
-try:
-    logger.debug("CUSTOM allow modules")
-    from Products.CMFPlomino.AllowModules import *
-except ImportError:
-    logger.debug("No custom allow modules")
-    pass
-##/code-section custom-init-head
-
 
 def initialize(context):
     """initialize product (called by zope)"""

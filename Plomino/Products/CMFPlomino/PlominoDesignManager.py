@@ -40,7 +40,7 @@ from migration.migration import migrate
 from index.PlominoIndex import PlominoIndex
 from exceptions import PlominoScriptException, PlominoDesignException
 from PlominoUtils import asUnicode
-
+from Products.CMFPlomino import get_utils
 # get AT specific schemas for each Plomino class
 from Products.CMFPlomino.PlominoForm import schema as form_schema
 from Products.CMFPlomino.PlominoAction import schema as action_schema
@@ -416,7 +416,12 @@ class PlominoDesignManager(Persistent):
             ps._params="*args"
         str_formula="plominoContext = context\n"
         str_formula=str_formula+"plominoDocument = context\n"
-        str_formula=str_formula+"from Products.CMFPlomino.PlominoUtils import "+SAFE_UTILS+'\n'
+        #str_formula=str_formula+"from Products.CMFPlomino.PlominoUtils import "+SAFE_UTILS+'\n'
+        safe_utils = get_utils()
+        import_list = []
+        for module in safe_utils:
+            import_list.append("from %s import %s" % (module, ", ".join(safe_utils[module])))
+        str_formula=str_formula+";".join(import_list)+'\n'
 
         r = re.compile('#Plomino import (.+)[\r\n]')
         for i in r.findall(formula):
