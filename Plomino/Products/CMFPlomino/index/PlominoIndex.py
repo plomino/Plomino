@@ -126,7 +126,7 @@ class PlominoIndex(UniqueObject, ZCatalog, ActionProviderBase):
             self.refresh()
 
     security.declareProtected(READ_PERMISSION, 'indexDocument')
-    def indexDocument(self,doc):
+    def indexDocument(self, doc, idxs=None, update_metadata=1):
         """
         """
         #self.catalog_object(doc, "/".join(doc.getPhysicalPath()))
@@ -134,7 +134,9 @@ class PlominoIndex(UniqueObject, ZCatalog, ActionProviderBase):
             # TODO DONE LATER (cataloging real path is better but it implies
             # to test all the side-effect and provide a migration script)
             #self.catalog_object(doc)
-            self.catalog_object(doc, "/".join(doc.getParentDatabase().getPhysicalPath()) + "/" + doc.id)
+            self.catalog_object(doc,
+                                "/".join(doc.getParentDatabase().getPhysicalPath()) + "/" + doc.id,
+                                idxs=idxs, update_metadata=update_metadata)
         except Exception, e:
             self.portal_skins.plone_scripts.plone_log('%s\non %s'%(`e`, doc.id))
             raise

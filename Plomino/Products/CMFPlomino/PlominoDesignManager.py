@@ -118,60 +118,41 @@ class PlominoDesignManager(Persistent):
         report.append(msg)
         logger.info(msg)
 
-        #create new blank index
-        index = PlominoIndex(FULLTEXT=self.FulltextIndex)
+        #create new blank index (without fulltext
+        index = PlominoIndex(FULLTEXT=False)
         self._setObject(index.getId(), index)
         self.getIndex().no_refresh = True
         msg = 'New index created'
         report.append(msg)
         logger.info(msg)
 
+        #declare all indexed fields
+        for f_obj in self.getForms() :
+            for f in f_obj.getFormFields() :
+                if f.getToBeIndexed() :
+                    self.getIndex().createFieldIndex(f.id, f.getFieldType())
+        logger.info('Field indexing initialized')
+        
+        #reindex all the documents items
+        msg = self.reindexDocuments(items_only=True, update_metadata=0)
+        report.append(msg)
+            
         #declare all the view formulas and columns index entries
         for v_obj in self.getViews():
             self.getIndex().createSelectionIndex('PlominoViewFormula_'+v_obj.getViewName())
             for c in v_obj.getColumns():
                 v_obj.declareColumn(c.getColumnName(), c)
-        for f_obj in self.getForms() :
-            for f in f_obj.getFormFields() :
-                if f.getToBeIndexed() :
-                    self.getIndex().createFieldIndex(f.id, f.getFieldType())
+        # add fulltext if needed
+        if self.FulltextIndex:
+            self.getIndex().createFieldIndex('SearchableText', 'RICHTEXT')
+        logger.info('Views indexing initialized')
+        
+        # re-index views and columns, and update metadata
+        msg = self.reindexDocuments(views_only=True, update_portal=self.getIndexInPortal())
+        report.append(msg)
         self.getIndex().no_refresh = False
-        msg = 'Index structure initialized'
-        report.append(msg)
-        logger.info(msg)
-
-        #reindex all the documents
-        #documents = [d.getObject() for d in self.portal_catalog.search({'portal_type' : ['PlominoDocument'], 'path': '/'.join(self.getPhysicalPath())})]
-        documents = self.getAllDocuments()
-        total_docs = len(documents)
-        msg = 'Existing documents: '+ str(total_docs)
-        report.append(msg)
-        logger.info(msg)
-        total = 0
-        counter = 0
-        errors = 0
-        self.setStatus("Re-indexing (0%)")
-        txn = transaction.get()
-        for d in documents:
-            try:
-                #self.getIndex().indexDocument(d)
-                d.save(onSaveEvent=False)
-                total = total + 1
-            except Exception, e:
-                errors = errors + 1
-                logger.info("Ouch! \n%s\n%s" % (e, `d`))
-            counter = counter + 1
-            if counter == 10:
-                self.setStatus("Re-indexing (%d%%)" % int(100*(total+errors)/total_docs))
-                txn.savepoint(optimistic=True)
-                counter = 0
-                logger.info("%d documents re-indexed successfully, %d errors(s) ...(still running)" % (total, errors))
         self.setStatus("Ready")
-        txn.commit()
-        msg = "%d documents re-indexed successfully, %d errors(s)" % (total, errors)
-        report.append(msg)
-        logger.info(msg)
-
+        
         # update Plone workflow state
         workflow_tool = getToolByName(self, 'portal_workflow')
         wfs = workflow_tool.getWorkflowsFor(self)
@@ -187,6 +168,86 @@ class PlominoDesignManager(Persistent):
             self.writeMessageOnPage(MSG_SEPARATOR.join(report), REQUEST, False)
             REQUEST.RESPONSE.redirect(self.absolute_url()+"/DatabaseDesign")
 
+    security.declareProtected(DESIGN_PERMISSION, 'reindexDocuments')
+    def reindexDocuments(self, items_only=False, views_only=False, update_metadata=1, update_portal=False):
+        documents = self.getAllDocuments()
+        total_docs = len(self.plomino_documents)
+        logger.info('Existing documents: '+ str(total_docs))
+        total_docs = len(documents)
+        total = 0
+        counter = 0
+        errors = 0
+        label = "documents"
+        if items_only:
+            label = "items" 
+        if views_only:
+            label = "views" 
+        self.setStatus("Re-indexing %s (0%%)" % label)
+
+        plomino_index = self.getIndex()
+        indexes = plomino_index.indexes()
+        view_indexes = [idx for idx in indexes if idx.startswith("PlominoView")]
+        if 'SearchableText' in indexes:
+            view_indexes.append('SearchableText')
+        for d in documents:
+            try:
+                idxs = []
+                if items_only:
+                    items = d.getItems() + ['id', 'getPlominoReaders']
+                    idxs = [idx for idx in indexes if idx in items]
+                if views_only:
+                    idx = view_indexes
+                txn = transaction.get()
+                plomino_index.indexDocument(d, idxs=idxs, update_metadata=update_metadata)
+                if update_portal:
+                    d.reindexObject()
+                txn.commit()
+                total = total + 1
+            except Exception, e:
+                errors = errors + 1
+                logger.info("Ouch! \n%s\n%s" % (e, `d`))
+            counter = counter + 1
+            if counter == 10:
+                self.setStatus("Re-indexing %s (%d%%)" % (label, int(100*(total+errors)/total_docs)))
+                counter = 0
+                logger.info("Re-indexing %s: %d re-indexed successfully, %d errors(s) ...(still running)" % (label, total, errors))
+        msg = "Re-indexing %s: %d documents re-indexed successfully, %d errors(s)" % (label, total, errors)
+        logger.info(msg)
+        return msg
+
+    security.declareProtected(DESIGN_PERMISSION, 'refreshDB')
+    def recomputeAllDocuments(self, REQUEST=None):
+        """
+        """
+        logger.info('Re-compute documents in '+self.id)
+        documents = self.getAllDocuments()
+        total_docs = len(self.plomino_documents)
+        logger.info('Existing documents: '+ str(total_docs))
+        total_docs = len(documents)
+        total = 0
+        counter = 0
+        errors = 0
+        self.setStatus("Re-compute documents")
+        for d in documents:
+            try:
+                txn = transaction.get()
+                d.save(asAuthor=False, onSaveEvent=False)
+                txn.commit()
+                total = total + 1
+            except Exception, e:
+                errors = errors + 1
+                logger.info("Ouch! \n%s\n%s" % (e, `d`))
+            counter = counter + 1
+            if counter == 10:
+                self.setStatus("Re-compute documents (%d%%)" % int(100*(total+errors)/total_docs))
+                counter = 0
+                logger.info("Re-compute documents: %d computed successfully, %d errors(s) ...(still running)" % (total, errors))
+        msg = "Re-compute documents: %d documents computed successfully, %d errors(s)" % (total, errors)
+        logger.info(msg)
+        if REQUEST:
+            self.writeMessageOnPage(msg, REQUEST, False)
+            REQUEST.RESPONSE.redirect(self.absolute_url()+"/DatabaseDesign")
+        
     security.declareProtected(DESIGN_PERMISSION, 'exportDesign')
     def exportDesign(self, targettype='file', targetfolder='', dbsettings=True, designelements=None, REQUEST=None, **kw):
         """ Export design elements to XML.
@@ -446,8 +507,6 @@ class PlominoDesignManager(Persistent):
 
     security.declarePublic('runFormulaScript')
     def runFormulaScript(self, script_id, context, formula_getter, with_args=False, *args):
-#        if self.debugMode:
-#            logger.info('Evaluating '+script_id+' with context '+str(context))
         try:
             ps = self.getFormulaScript(script_id)
             if ps is None:
@@ -465,8 +524,6 @@ class PlominoDesignManager(Persistent):
             return result
         except Exception, e:
             raise PlominoScriptException(context, e, formula_getter, script_id)
-#            msg = self.traceErr(e, context, script_id, formula_getter)
-#            raise PlominoScriptException(context.absolute_url_path(), formula_getter, message=msg)
 
     security.declarePrivate('traceRenderingErr')
     def traceRenderingErr(self, e, context):
