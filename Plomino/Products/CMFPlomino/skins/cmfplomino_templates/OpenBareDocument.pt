@@ -29,8 +29,6 @@
 				display form actions
 			</span><br/>
 		</tal:block>
-	    <h1 class="documentFirstHeading" tal:content="here/Title">Title</h1>
-	
 	    <span tal:content="structure python:here.openWithForm(myF)" />
 
 		<tal:block
