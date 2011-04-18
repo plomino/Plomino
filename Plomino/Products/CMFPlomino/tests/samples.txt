@@ -74,7 +74,7 @@ Scenario
     >>> browser.getControl(name='plomino_save').click()
     >>> browser.open(base_url+'/basic-example')
     >>> browser.getLink('All birthdays').click()
-    >>> 'October 20' in browser.contents
+    >>> 'Eric' in browser.contents
     True
     >>> browser.open(base_url+'/basic-example/all')
 

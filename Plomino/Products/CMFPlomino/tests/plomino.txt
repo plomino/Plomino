@@ -168,7 +168,7 @@ Date/Time field:
     >>> doc4.setItem('Form', 'frm2')
     >>> doc4.save()
     >>> db.frm2.displayDocument(doc4)
-    u'<p>last album release date: \n2009/01/17\n\n</p>'
+    u'<p>last album release date: \n2009-01-17\n\n</p>'
     >>> adapted=IDatetimeField(db.frm2.lastalbum)
     >>> adapted.format=u'%d/%m/%Y %H:%M'
     >>> db.frm2.displayDocument(doc4)

@@ -275,7 +275,7 @@
 <id type="Products.Archetypes.Field.StringField">birthDate</id>
 <SelectedField type="Products.Archetypes.Field.StringField">frmBirthday</SelectedField>
 <Formula type="Products.Archetypes.Field.TextField">
-<![CDATA[DateToString(plominoDocument.birthDate, "%B %d")]]>
+<![CDATA[plominoDocument.birthDate]]>
 </Formula>
 <HiddenColumn type="Products.Archetypes.Field.BooleanField">False</HiddenColumn>
 <DisplaySum type="Products.Archetypes.Field.BooleanField">False</DisplaySum>
