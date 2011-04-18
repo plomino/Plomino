@@ -326,7 +326,9 @@ class PlominoForm(ATFolder):
             for subformname in self.getSubforms(doc, applyhidewhen):
                 if subformname in subformsseen:
                     continue
-                result=result+self.getParentDatabase().getForm(subformname).getFormFields(includesubforms=True, doc=doc, applyhidewhen=applyhidewhen)
+                subform = self.getParentDatabase().getForm(subformname)
+                if subform:
+                    result=result + subform.getFormFields(includesubforms=True, doc=doc, applyhidewhen=applyhidewhen)
                 subformsseen.append(subformname)
         return result
 
@@ -391,8 +393,10 @@ class PlominoForm(ATFolder):
 
         # insert subforms
         for subformname in self.getSubforms(doc):
-            subformrendering=self.getParentDatabase().getForm(subformname).displayDocument(doc, editmode, creation, subform=True, request=request)
-            html_content = html_content.replace('<span class="plominoSubformClass">'+subformname+'</span>', subformrendering)
+            subform = self.getParentDatabase().getForm(subformname)
+            if subform:
+                subformrendering = subform.displayDocument(doc, editmode, creation, subform=True, request=request)
+                html_content = html_content.replace('<span class="plominoSubformClass">'+subformname+'</span>', subformrendering)
 
         # insert the actions
         if doc is None:
