@@ -248,9 +248,10 @@ class PlominoDesignManager(Persistent):
             if counter == 10:
                 self.setStatus("Re-compute documents (%d%%)" % int(100*(total+errors)/total_docs))
                 counter = 0
-                logger.info("Re-compute documents: %d computed successfully, %d errors(s) ...(still running)" % (total, errors))
+                logger.info("Re-compute documents: %d computed successfully, %d errors(s) ..." % (total, errors))
         msg = "Re-compute documents: %d documents computed successfully, %d errors(s)" % (total, errors)
         logger.info(msg)
+        self.setStatus("Ready")
         if REQUEST:
             self.writeMessageOnPage(msg, REQUEST, False)
             REQUEST.RESPONSE.redirect(self.absolute_url()+"/DatabaseDesign")
@@ -277,7 +278,8 @@ class PlominoDesignManager(Persistent):
                     portal_catalog.uncatalog_object(d.getPath())
                 logger.info('Related portal catalog entries have been removed.')
             msg = 'Database is not cataloged'
-            
+        
+        logger.info(msg)
         if REQUEST:
             self.writeMessageOnPage(msg, REQUEST, False)
             REQUEST.RESPONSE.redirect(self.absolute_url()+"/DatabaseDesign")
