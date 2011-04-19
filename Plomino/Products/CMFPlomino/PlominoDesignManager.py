@@ -20,7 +20,6 @@ from ZPublisher.HTTPResponse import HTTPResponse
 from ZPublisher.HTTPRequest import HTTPRequest
 from ZPublisher.HTTPRequest import FileUpload
 from OFS.ObjectManager import ObjectManager
-from OFS.CopySupport import CopyContainer
 from Products.PageTemplates.ZopePageTemplate import manage_addPageTemplate
 from Products.CMFCore.utils import getToolByName
 from Products.DCWorkflow.DCWorkflow import DCWorkflowDefinition
@@ -149,7 +148,6 @@ class PlominoDesignManager(Persistent):
         # destroy the ol index and rename the new one
         self.manage_delObjects("plomino_index")
         self._setObject('plomino_index', index.aq_base)
-        #CopyContainer.manage_renameObject(self, id="tmp_index", new_id="plomino_index")
         msg = 'Old index removed and replaced'
         report.append(msg)
         logger.info(msg)
