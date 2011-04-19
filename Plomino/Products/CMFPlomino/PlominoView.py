@@ -330,7 +330,7 @@ class PlominoView(ATFolder):
         db = self.getParentDatabase()
         refresh = not(db.DoNotReindex)
         
-        if not index:
+        if index is None:
             index = db.getIndex()
             
         if column_obj.Formula:

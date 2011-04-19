@@ -20,6 +20,7 @@ from ZPublisher.HTTPResponse import HTTPResponse
 from ZPublisher.HTTPRequest import HTTPRequest
 from ZPublisher.HTTPRequest import FileUpload
 from OFS.ObjectManager import ObjectManager
+from DateTime import DateTime
 from Products.PageTemplates.ZopePageTemplate import manage_addPageTemplate
 from Products.CMFCore.utils import getToolByName
 from Products.DCWorkflow.DCWorkflow import DCWorkflowDefinition
@@ -35,6 +36,8 @@ import os
 import sys
 import glob
 import transaction
+from zope import event
+from Products.Archetypes.event import ObjectEditedEvent
 
 from migration.migration import migrate
 from index.PlominoIndex import PlominoIndex
@@ -121,15 +124,11 @@ class PlominoDesignManager(Persistent):
 
         #declare all indexed fields
         for f_obj in self.getForms() :
-            for f in f_obj.getFormFields() :
+            for f in f_obj.getFormFields():
                 if f.getToBeIndexed() :
                     index.createFieldIndex(f.id, f.getFieldType())
         logger.info('Field indexing initialized')
-        
-        #reindex all the documents items
-        msg = self.reindexDocuments(index, items_only=True, update_metadata=0)
-        report.append(msg)
-            
+
         #declare all the view formulas and columns index entries
         for v_obj in self.getViews():
             index.createSelectionIndex('PlominoViewFormula_'+v_obj.getViewName())
@@ -140,12 +139,17 @@ class PlominoDesignManager(Persistent):
             index.createFieldIndex('SearchableText', 'RICHTEXT')
         logger.info('Views indexing initialized')
         
-        # re-index views and columns, and update metadata
-        msg = self.reindexDocuments(index, views_only=True, update_portal=self.getIndexInPortal())
+        # re-index documents
+        start_time = DateTime().toZone('UTC')
+        msg = self.reindexDocuments(index)
+        report.append(msg)
+        
+        # as it takes time, re-indexed documents changed since re-indexing started
+        msg = self.reindexDocuments(index, changed_since=start_time)
         report.append(msg)
         index.no_refresh = False
 
-        # destroy the ol index and rename the new one
+        # destroy the old index and rename the new one
         self.manage_delObjects("plomino_index")
         self._setObject('plomino_index', index.aq_base)
         msg = 'Old index removed and replaced'
@@ -169,11 +173,15 @@ class PlominoDesignManager(Persistent):
             REQUEST.RESPONSE.redirect(self.absolute_url()+"/DatabaseDesign")
 
     security.declareProtected(DESIGN_PERMISSION, 'reindexDocuments')
-    def reindexDocuments(self, plomino_index, items_only=False, views_only=False, update_metadata=1, update_portal=False):
+    def reindexDocuments(self, plomino_index, items_only=False, views_only=False, update_metadata=1, changed_since=None):
         documents = self.getAllDocuments()
-        total_docs = len(self.plomino_documents)
-        logger.info('Existing documents: '+ str(total_docs))
-        total_docs = len(documents)
+        if changed_since:
+            documents = [doc for doc in documents if doc.plomino_modification_time > changed_since]
+            total_docs = len(documents)
+            logger.info('Re-indexing %d changed document' % total_docs)
+        else:
+            total_docs = len(self.plomino_documents)
+            logger.info('Existing documents: '+ str(total_docs))
         total = 0
         counter = 0
         errors = 0
@@ -196,21 +204,21 @@ class PlominoDesignManager(Persistent):
                     idxs = [idx for idx in indexes if idx in items]
                 if views_only:
                     idx = view_indexes
-                #txn = transaction.get()
+                txn = transaction.get()
                 plomino_index.indexDocument(d, idxs=idxs, update_metadata=update_metadata)
-                if update_portal:
-                    d.reindexObject()
-                #txn.commit()
+                txn.commit()
                 total = total + 1
             except Exception, e:
                 errors = errors + 1
                 logger.info("Ouch! \n%s\n%s" % (e, `d`))
             counter = counter + 1
-            if counter == 100:
+            if counter == 10:
                 self.setStatus("Re-indexing %s (%d%%)" % (label, int(100*(total+errors)/total_docs)))
                 counter = 0
-                logger.info("Re-indexing %s: %d re-indexed successfully, %d errors(s) ...(still running)" % (label, total, errors))
-        msg = "Re-indexing %s: %d documents re-indexed successfully, %d errors(s)" % (label, total, errors)
+                logger.info("Re-indexing %s: %d indexed successfully, %d errors(s)..." % (label, total, errors))
+        if changed_since:
+            msg = "Intermediary changes: %d modified documents re-indexed successfully, %d errors(s)" % (total, errors)
+        msg = "Re-indexing %s: %d documents indexed successfully, %d errors(s)" % (label, total, errors)
         logger.info(msg)
         return msg
 
@@ -243,6 +251,33 @@ class PlominoDesignManager(Persistent):
                 logger.info("Re-compute documents: %d computed successfully, %d errors(s) ...(still running)" % (total, errors))
         msg = "Re-compute documents: %d documents computed successfully, %d errors(s)" % (total, errors)
         logger.info(msg)
+        if REQUEST:
+            self.writeMessageOnPage(msg, REQUEST, False)
+            REQUEST.RESPONSE.redirect(self.absolute_url()+"/DatabaseDesign")
+
+    security.declareProtected(DESIGN_PERMISSION, 'refreshPortalCatalog')
+    def refreshPortalCatalog(self, REQUEST=None):
+        """
+        """
+        msg = ""
+        portal_catalog = self.portal_catalog
+        if self.getIndexInPortal():
+            logger.info('Refresh documents from '+self.id+' in portal catalog')
+            documents = self.getAllDocuments()
+            total_docs = len(self.plomino_documents)
+            logger.info('Existing documents: '+ str(total_docs))
+            for d in documents:
+                portal_catalog.catalog_object(d)
+            msg = '%d documents re-cataloged' % total_docs
+        else:
+            logger.info('Database '+self.id+' does not allow portal catalog indexing.')
+            catalog_entries = portal_catalog.search({'portal_type' : ['PlominoDocument'], 'path': '/'.join(self.getPhysicalPath())})
+            if catalog_entries:
+                for d in catalog_entries:
+                    portal_catalog.uncatalog_object(d.getPath())
+                logger.info('Related portal catalog entries have been removed.')
+            msg = 'Database is not cataloged'
+            
         if REQUEST:
             self.writeMessageOnPage(msg, REQUEST, False)
             REQUEST.RESPONSE.redirect(self.absolute_url()+"/DatabaseDesign")
