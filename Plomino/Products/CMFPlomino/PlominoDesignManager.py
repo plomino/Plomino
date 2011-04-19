@@ -20,6 +20,7 @@ from ZPublisher.HTTPResponse import HTTPResponse
 from ZPublisher.HTTPRequest import HTTPRequest
 from ZPublisher.HTTPRequest import FileUpload
 from OFS.ObjectManager import ObjectManager
+from OFS.CopySupport import CopyContainer
 from Products.PageTemplates.ZopePageTemplate import manage_addPageTemplate
 from Products.CMFCore.utils import getToolByName
 from Products.DCWorkflow.DCWorkflow import DCWorkflowDefinition
@@ -112,16 +113,9 @@ class PlominoDesignManager(Persistent):
         report.append(msg)
         logger.info(msg)
 
-        # destroy the index
-        self.manage_delObjects(self.getIndex().getId())
-        msg = 'Old index removed'
-        report.append(msg)
-        logger.info(msg)
-
-        #create new blank index (without fulltext
-        index = PlominoIndex(FULLTEXT=False)
-        self._setObject(index.getId(), index)
-        self.getIndex().no_refresh = True
+        #create new blank index (without fulltext)
+        index = PlominoIndex(FULLTEXT=False).__of__(self)
+        index.no_refresh = True
         msg = 'New index created'
         report.append(msg)
         logger.info(msg)
@@ -130,29 +124,36 @@ class PlominoDesignManager(Persistent):
         for f_obj in self.getForms() :
             for f in f_obj.getFormFields() :
                 if f.getToBeIndexed() :
-                    self.getIndex().createFieldIndex(f.id, f.getFieldType())
+                    index.createFieldIndex(f.id, f.getFieldType())
         logger.info('Field indexing initialized')
         
         #reindex all the documents items
-        msg = self.reindexDocuments(items_only=True, update_metadata=0)
+        msg = self.reindexDocuments(index, items_only=True, update_metadata=0)
         report.append(msg)
             
         #declare all the view formulas and columns index entries
         for v_obj in self.getViews():
-            self.getIndex().createSelectionIndex('PlominoViewFormula_'+v_obj.getViewName())
+            index.createSelectionIndex('PlominoViewFormula_'+v_obj.getViewName())
             for c in v_obj.getColumns():
-                v_obj.declareColumn(c.getColumnName(), c)
+                v_obj.declareColumn(c.getColumnName(), c, index=index)
         # add fulltext if needed
         if self.FulltextIndex:
-            self.getIndex().createFieldIndex('SearchableText', 'RICHTEXT')
+            index.createFieldIndex('SearchableText', 'RICHTEXT')
         logger.info('Views indexing initialized')
         
         # re-index views and columns, and update metadata
-        msg = self.reindexDocuments(views_only=True, update_portal=self.getIndexInPortal())
+        msg = self.reindexDocuments(index, views_only=True, update_portal=self.getIndexInPortal())
         report.append(msg)
-        self.getIndex().no_refresh = False
-        self.setStatus("Ready")
-        
+        index.no_refresh = False
+
+        # destroy the ol index and rename the new one
+        self.manage_delObjects("plomino_index")
+        self._setObject('plomino_index', index.aq_base)
+        #CopyContainer.manage_renameObject(self, id="tmp_index", new_id="plomino_index")
+        msg = 'Old index removed and replaced'
+        report.append(msg)
+        logger.info(msg)
+                
         # update Plone workflow state
         workflow_tool = getToolByName(self, 'portal_workflow')
         wfs = workflow_tool.getWorkflowsFor(self)
@@ -163,13 +164,14 @@ class PlominoDesignManager(Persistent):
         msg = 'Plone workflow update'
         report.append(msg)
         logger.info(msg)
-
+        
+        self.setStatus("Ready")
         if REQUEST:
             self.writeMessageOnPage(MSG_SEPARATOR.join(report), REQUEST, False)
             REQUEST.RESPONSE.redirect(self.absolute_url()+"/DatabaseDesign")
 
     security.declareProtected(DESIGN_PERMISSION, 'reindexDocuments')
-    def reindexDocuments(self, items_only=False, views_only=False, update_metadata=1, update_portal=False):
+    def reindexDocuments(self, plomino_index, items_only=False, views_only=False, update_metadata=1, update_portal=False):
         documents = self.getAllDocuments()
         total_docs = len(self.plomino_documents)
         logger.info('Existing documents: '+ str(total_docs))
@@ -184,7 +186,6 @@ class PlominoDesignManager(Persistent):
             label = "views" 
         self.setStatus("Re-indexing %s (0%%)" % label)
 
-        plomino_index = self.getIndex()
         indexes = plomino_index.indexes()
         view_indexes = [idx for idx in indexes if idx.startswith("PlominoView")]
         if 'SearchableText' in indexes:
@@ -197,17 +198,17 @@ class PlominoDesignManager(Persistent):
                     idxs = [idx for idx in indexes if idx in items]
                 if views_only:
                     idx = view_indexes
-                txn = transaction.get()
+                #txn = transaction.get()
                 plomino_index.indexDocument(d, idxs=idxs, update_metadata=update_metadata)
                 if update_portal:
                     d.reindexObject()
-                txn.commit()
+                #txn.commit()
                 total = total + 1
             except Exception, e:
                 errors = errors + 1
                 logger.info("Ouch! \n%s\n%s" % (e, `d`))
             counter = counter + 1
-            if counter == 10:
+            if counter == 100:
                 self.setStatus("Re-indexing %s (%d%%)" % (label, int(100*(total+errors)/total_docs)))
                 counter = 0
                 logger.info("Re-indexing %s: %d re-indexed successfully, %d errors(s) ...(still running)" % (label, total, errors))

@@ -38,7 +38,7 @@ class PlominoIndex(UniqueObject, ZCatalog, ActionProviderBase):
     """
     security = ClassSecurityInfo()
 
-    id = 'plomino_index'
+    #id = 'plomino_index'
 
     manage_options = ( ZCatalog.manage_options +
         ActionProviderBase.manage_options +

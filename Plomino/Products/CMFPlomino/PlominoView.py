@@ -324,14 +324,17 @@ class PlominoView(ATFolder):
             self.getParentDatabase().getIndex().refresh()
 
     security.declarePublic('declareColumn')
-    def declareColumn(self,column_name,column_obj):
+    def declareColumn(self,column_name,column_obj, index=None):
         """declare column
         """
         db = self.getParentDatabase()
         refresh = not(db.DoNotReindex)
-
+        
+        if not index:
+            index = db.getIndex()
+            
         if column_obj.Formula:
-            db.getIndex().createIndex('PlominoViewColumn_'+self.getViewName()+'_'+column_name, refresh=refresh)
+            index.createIndex('PlominoViewColumn_'+self.getViewName()+'_'+column_name, refresh=refresh)
         else:
             fieldpath = column_obj.SelectedField.split('/')
             form = self.getParentDatabase().getForm(fieldpath[0])
@@ -339,14 +342,14 @@ class PlominoView(ATFolder):
                 field = form.getFormField(fieldpath[1])
                 if field:
                     field.setToBeIndexed(True)
-                    field.at_post_edit_script()
-                    #db.getIndex().createFieldIndex(field.id, field.getFieldType())
+                    #field.at_post_edit_script()
+                    index.createFieldIndex(field.id, field.getFieldType())
                 else:
                     column_obj.setFormula("'Non-existing field'")
-                    db.getIndex().createIndex('PlominoViewColumn_'+self.getViewName()+'_'+column_name, refresh=refresh)
+                    index.createIndex('PlominoViewColumn_'+self.getViewName()+'_'+column_name, refresh=refresh)
             else:
                 column_obj.setFormula("'Non-existing form'")
-                db.getIndex().createIndex('PlominoViewColumn_'+self.getViewName()+'_'+column_name, refresh=refresh)
+                index.createIndex('PlominoViewColumn_'+self.getViewName()+'_'+column_name, refresh=refresh)
 
     security.declarePublic('getCategorizedColumnValues')
     def getCategorizedColumnValues(self,column_name):

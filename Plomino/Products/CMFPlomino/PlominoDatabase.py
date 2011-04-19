@@ -243,7 +243,7 @@ class PlominoDatabase(ATFolder, PlominoAccessControl, PlominoDesignManager, Plom
         """
         self.initializeACL()
         index = PlominoIndex(FULLTEXT=self.FulltextIndex)
-        self._setObject(index.getId(), index)
+        self._setObject('plomino_index', index)
         resources = Folder('resources')
         resources.title='resources'
         self._setObject('resources', resources)
