@@ -219,16 +219,6 @@ class PlominoDocument(ATFolder):
                 self.setItem(itemname, result)
         return result
 
-    security.declarePublic('getParentDatabase')
-    def getParentDatabase(self):
-        """
-        """
-        parent = self.getParentNode()
-        if parent.id == "plomino_documents":
-            return parent.getParentNode()
-        else:
-            return parent
-
     security.declarePublic('getPlominoReaders')
     def getPlominoReaders(self):
         """
@@ -347,7 +337,7 @@ class PlominoDocument(ATFolder):
             try:
                 self.runFormulaScript("form_"+form.id+"_onsave", self, form.onSaveDocument)
             except PlominoScriptException, e:
-                if self.REQUEST:
+                if hasattr(self, 'REQUEST'):
                     e.reportError('Document has been saved but onSave event failed.')
                     doc_path = self.REQUEST.physicalPathToURL(self.doc_path())
                     self.REQUEST.RESPONSE.redirect(doc_path)
@@ -694,12 +684,14 @@ class TemporaryDocument(PlominoDocument):
             self.real_id="TEMPDOC"
         self.setItem('Form', form.getFormName())
         form.readInputs(self, REQUEST)
-        self.REQUEST=REQUEST
+        self._REQUEST=REQUEST
 
     security.declarePublic('getParentDatabase')
     def getParentDatabase(self):
+        """ Temporary docs are able to acquire from the db
+        """
         return self._parent
-
+        
     security.declarePublic('isEditMode')
     def isEditMode(self):
         """
@@ -715,6 +707,13 @@ class TemporaryDocument(PlominoDocument):
         else:
             return False
 
+    security.declarePublic('REQUEST')
+    @property
+    def REQUEST(self):
+        """
+        """
+        return self._REQUEST
+    
     security.declarePublic('id')
     @property
     def id(self):

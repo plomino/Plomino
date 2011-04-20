@@ -84,7 +84,10 @@ class BaseField(object):
                         parent_field = request.get("Plomino_Parent_Field", None)
                         data = json.loads(row_data_json)
                         datagrid_fields = db.getForm(parent_form).getFormField(parent_field).getSettings().field_mapping.split(',')
-                        fieldValue = data[datagrid_fields.index(fieldName)]
+                        if fieldName in datagrid_fields:
+                            fieldValue = data[datagrid_fields.index(fieldName)]
+                        else:
+                            fieldValue = ""
                     else: 
                         fieldValue = request.get(fieldName, '')
             else:

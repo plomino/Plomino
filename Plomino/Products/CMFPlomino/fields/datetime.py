@@ -22,6 +22,8 @@ from Products.Five.formlib.formbase import EditForm
 from Products.CMFPlomino.PlominoUtils import StringToDate
 
 from base import IBaseField, BaseField
+import logging
+logger = logging.getLogger('Plomino')
 
 class IDatetimeField(IBaseField):
     """
@@ -46,11 +48,15 @@ class DatetimeField(BaseField):
         fieldname = self.context.id
         submittedValue = submittedValue.strip()
         try:
-            # calendar widget default format is '%Y-%m-%d %H:%M' and might use the AM/PM format
-            if submittedValue[-2:] in ['AM', 'PM']:
-                v = StringToDate(submittedValue, '%Y-%m-%d %I:%M %p')
+            # check if date only:
+            if len(submittedValue) == 10:
+                v = StringToDate(submittedValue, '%Y-%m-%d')
             else:
-                v = StringToDate(submittedValue, '%Y-%m-%d %H:%M')
+                # calendar widget default format is '%Y-%m-%d %H:%M' and might use the AM/PM format
+                if submittedValue[-2:] in ['AM', 'PM']:
+                    v = StringToDate(submittedValue, '%Y-%m-%d %I:%M %p')
+                else:
+                    v = StringToDate(submittedValue, '%Y-%m-%d %H:%M')
         except:
             errors.append(fieldname+" must be a date/time (submitted value was: "+submittedValue+")")
         return errors
@@ -59,12 +65,25 @@ class DatetimeField(BaseField):
         """
         """
         submittedValue = submittedValue.strip()
-        # calendar widget default format is '%Y-%m-%d %H:%M' and might use the AM/PM format
-        if submittedValue[-2:] in ['AM', 'PM']:
-            d = StringToDate(submittedValue, '%Y-%m-%d %I:%M %p')
-        else:
-            d = StringToDate(submittedValue, '%Y-%m-%d %H:%M')
-        return d
+        try:
+            # check if date only:
+            if len(submittedValue) == 10:
+                d = StringToDate(submittedValue, '%Y-%m-%d')
+            else:
+                # calendar widget default format is '%Y-%m-%d %H:%M' and might use the AM/PM format
+    
+                if submittedValue[-2:] in ['AM', 'PM']:
+                    d = StringToDate(submittedValue, '%Y-%m-%d %I:%M %p')
+                else:
+                    d = StringToDate(submittedValue, '%Y-%m-%d %H:%M')
+            return d
+        except:
+            # with datagrid, we might get dates formatted differently than using calendar
+            # widget default format
+            format = self.format
+            if not format:
+                format = self.context.getParentDatabase().getDateTimeFormat()
+            return StringToDate(submittedValue, format)
 
     def getFieldValue(self, form, doc, editmode, creation, request):
         """
@@ -72,12 +91,15 @@ class DatetimeField(BaseField):
         fieldValue = BaseField.getFieldValue(self, form, doc, editmode, creation, request)
 
         mode = self.context.getFieldMode()
-
-        if mode=="EDITABLE":
-            if doc is None and not(creation) and request is not None:
-                fieldValue = request.get(fieldName, '')
-                if not(fieldValue=='' or fieldValue is None):
-                    fieldValue = StringToDate(fieldValue, form.getParentDatabase().getDateTimeFormat())
+        if mode=="EDITABLE" and request:
+            if (doc is None and not(creation)) or request.has_key('Plomino_datagrid_rowdata'):
+                fieldname = self.context.id
+                fieldValue = request.get(fieldname, fieldValue)
+                if fieldValue:
+                    format = self.format
+                    if not format:
+                        format = form.getParentDatabase().getDateTimeFormat()
+                    fieldValue = StringToDate(fieldValue, format)
         return fieldValue
 
 for f in getFields(IDatetimeField).values():

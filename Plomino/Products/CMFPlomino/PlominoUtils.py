@@ -19,16 +19,25 @@ import csv
 from cStringIO import StringIO
 import Missing
 
+import logging
+logger = logging.getLogger('Plomino')
+
 def DateToString(d, format='%Y-%m-%d'):
-    """return the date as string using the given format, default is '%Y-%m-%d'
+    """ Return the date as string using the given format
     """
-    #return DateTime(*d[0:6]).strftime(format)
+    # XXX: Should use db.getDateTimeFormat
     return d.strftime(format)
 
 def StringToDate(str_d, format='%Y-%m-%d'):
-    """parse the string using the given format (default is '%Y-%m-%d') and return the date 
+    """ Parse the string using the given format and return the date 
     """
-    dt = strptime(str_d, format)
+    # XXX: Should use db.getDateTimeFormat
+    try:
+        dt = strptime(str_d, format)
+    except ValueError, e:
+        logger.info('StringToDate> %s, %s'%(str_d, `e`))
+        # XXX: Just let DateTime guess.
+        dt = strptime(DateTime(str_d).ISO(), '%Y-%m-%d %H:%M:%S')
     if len(dt)>=5:
         return DateTime(dt[0], dt[1], dt[2], dt[3], dt[4])
     else:

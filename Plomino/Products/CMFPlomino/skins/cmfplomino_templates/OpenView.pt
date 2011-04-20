@@ -189,6 +189,7 @@
 										jq(document).ready(function() {
 											oDynamicTable = jq('#dynamictable').dataTable( {
 												'aaSorting': [],
+												'bJQueryUI': true,
 												'bProcessing': true,
 												'sAjaxSource': 'tojson',
 												${params},

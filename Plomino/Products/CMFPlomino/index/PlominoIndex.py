@@ -38,7 +38,7 @@ class PlominoIndex(UniqueObject, ZCatalog, ActionProviderBase):
     """
     security = ClassSecurityInfo()
 
-    id = 'plomino_index'
+    #id = 'plomino_index'
 
     manage_options = ( ZCatalog.manage_options +
         ActionProviderBase.manage_options +
@@ -59,18 +59,15 @@ class PlominoIndex(UniqueObject, ZCatalog, ActionProviderBase):
         #lexicon = PLexicon('plaintext_lexicon', '', Splitter(), CaseNormalizer(), StopWordRemover())
         lexicon = PLexicon('plaintext_lexicon', '', Splitter(), CaseNormalizer())
         self._setObject('plaintext_lexicon', lexicon)
-        self.createFieldIndex('Form', 'SELECTION')
-        self.createFieldIndex('getPlominoReaders', 'SELECTION')
+        #self.createFieldIndex('Form', 'SELECTION')
+        #self.createFieldIndex('getPlominoReaders', 'SELECTION')
+        self.addIndex('Form', "FieldIndex")
+        self.addIndex('id', "FieldIndex")
+        self.addIndex('getPlominoReaders', "KeywordIndex")
         
         if FULLTEXT:
             self.createFieldIndex('SearchableText', 'RICHTEXT')
         self.no_refresh = False
-
-    security.declareProtected(READ_PERMISSION, 'getParentDatabase')
-    def getParentDatabase(self):
-        """
-        """
-        return self.getParentNode()
 
     security.declareProtected(DESIGN_PERMISSION, 'createIndex')
     def createIndex(self, fieldname, refresh=True):
@@ -129,7 +126,7 @@ class PlominoIndex(UniqueObject, ZCatalog, ActionProviderBase):
             self.refresh()
 
     security.declareProtected(READ_PERMISSION, 'indexDocument')
-    def indexDocument(self,doc):
+    def indexDocument(self, doc, idxs=None, update_metadata=1):
         """
         """
         #self.catalog_object(doc, "/".join(doc.getPhysicalPath()))
@@ -137,7 +134,9 @@ class PlominoIndex(UniqueObject, ZCatalog, ActionProviderBase):
             # TODO DONE LATER (cataloging real path is better but it implies
             # to test all the side-effect and provide a migration script)
             #self.catalog_object(doc)
-            self.catalog_object(doc, "/".join(doc.getParentDatabase().getPhysicalPath()) + "/" + doc.id)
+            self.catalog_object(doc,
+                                "/".join(doc.getParentDatabase().getPhysicalPath()) + "/" + doc.id,
+                                idxs=idxs, update_metadata=update_metadata)
         except Exception, e:
             self.portal_skins.plone_scripts.plone_log('%s\non %s'%(`e`, doc.id))
             raise

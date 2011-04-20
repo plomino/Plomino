@@ -17,7 +17,8 @@
 						   formname   string:edit_form;
 						   inputvalue python:text;
 						   cooked_inputvalue python:cooked_text;
-						   here_url here/absolute_url;">
+						   here_url here/absolute_url;
+						   here python:options['field'];">
 		 <div
 metal:use-macro="here/wysiwyg_support/macros/wysiwygEditorBox">
 		   The WYSIWYG code

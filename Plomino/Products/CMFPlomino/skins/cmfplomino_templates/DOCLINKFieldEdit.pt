@@ -64,6 +64,7 @@
 			jq(document).ready(function() {
 			    o_${fieldid}_DynamicTable = jq('#${fieldid}_table').dataTable( {
 			        'aaData': ${data},
+			        'bJQueryUI': true,
 			        'aoColumns': ${cols},
 			        'aaSorting': [],
 			        'fnRowCallback': function (nRow, aData, iDisplayIndex) {
@@ -141,6 +142,7 @@
 			jq(document).ready(function() {
 			    o_${fieldid}_table = jq('#${fieldid}_table').dataTable( {
 			        'aaData': ${data},
+			        'bJQueryUI': true,
 			        'aoColumns': ${cols},
 			        'aaSorting': [],
 			        'fnInitComplete': function(oSettings) {

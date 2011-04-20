@@ -140,7 +140,7 @@ schema = Schema((
         name='DocumentId',
         widget=TextAreaWidget(
             label="Document id formula",
-            description="Compute the document id at creation",
+            description="Compute the document id at creation. Must be globally unique if intended to sync with other databases.",
             label_msgid='CMFPlomino_label_DocumentId',
             description_msgid='CMFPlomino_help_DocumentId',
             i18n_domain='CMFPlomino',
@@ -292,6 +292,9 @@ class PlominoForm(ATFolder):
             tmp = TemporaryDocument(self.getParentDatabase(), self, REQUEST)
             tmp.setItem("Plomino_Parent_Field", parent_field)
             tmp.setItem("Plomino_Parent_Form", parent_form)
+            tmp.setItem(parent_field+"_itemnames", [
+                f.getId() for f in self.getFormFields() 
+                if not f.getFieldMode() == 'DISPLAY'])
             return self.ChildForm(temp_doc=tmp)
 
         doc = db.createDocument()
@@ -323,7 +326,9 @@ class PlominoForm(ATFolder):
             for subformname in self.getSubforms(doc, applyhidewhen):
                 if subformname in subformsseen:
                     continue
-                result=result+self.getParentDatabase().getForm(subformname).getFormFields(includesubforms=True, doc=doc, applyhidewhen=applyhidewhen)
+                subform = self.getParentDatabase().getForm(subformname)
+                if subform:
+                    result=result + subform.getFormFields(includesubforms=True, doc=doc, applyhidewhen=applyhidewhen)
                 subformsseen.append(subformname)
         return result
 
@@ -363,12 +368,6 @@ class PlominoForm(ATFolder):
         """
         return self.id
 
-    security.declarePublic('getParentDatabase')
-    def getParentDatabase(self):
-        """Get the database containing this form
-        """
-        return self.getParentNode()
-
 
     security.declareProtected(READ_PERMISSION, 'displayDocument')
     def displayDocument(self,doc,editmode=False, creation=False, subform=False, request=None):
@@ -394,8 +393,10 @@ class PlominoForm(ATFolder):
 
         # insert subforms
         for subformname in self.getSubforms(doc):
-            subformrendering=self.getParentDatabase().getForm(subformname).displayDocument(doc, editmode, creation, subform=True, request=request)
-            html_content = html_content.replace('<span class="plominoSubformClass">'+subformname+'</span>', subformrendering)
+            subform = self.getParentDatabase().getForm(subformname)
+            if subform:
+                subformrendering = subform.displayDocument(doc, editmode, creation, subform=True, request=request)
+                html_content = html_content.replace('<span class="plominoSubformClass">'+subformname+'</span>', subformrendering)
 
         # insert the actions
         if doc is None:
@@ -523,17 +524,17 @@ class PlominoForm(ATFolder):
         """check beforeCreateDocument then open the form
         """
         # execute the beforeCreateDocument code of the form
-        valid = ''
+        invalid = False
         if hasattr(self,'beforeCreateDocument') and self.beforeCreateDocument is not None:
             try:
-                valid = self.runFormulaScript("form_"+self.id+"_beforecreate", self, self.beforeCreateDocument)
+                invalid = self.runFormulaScript("form_"+self.id+"_beforecreate", self, self.beforeCreateDocument)
             except PlominoScriptException, e:
                 e.reportError('beforeCreate formula failed')
 
-        if valid is None or valid=='' or self.hasDesignPermission(self):
+        if (not invalid) or self.hasDesignPermission(self):
             return self.displayDocument(None, True, True, request=request)
         else:
-            self.REQUEST.RESPONSE.redirect(self.getParentDatabase().absolute_url()+"/ErrorsMessages?disable_border=1&error="+valid)
+            self.REQUEST.RESPONSE.redirect(self.getParentDatabase().absolute_url()+"/ErrorMessages?disable_border=1&error="+invalid)
 
     security.declarePublic('at_post_edit_script')
     def at_post_edit_script(self):
@@ -725,7 +726,7 @@ class PlominoForm(ATFolder):
 
     security.declarePublic('notifyErrors')
     def notifyErrors(self, errors):
-        return self.ErrorsMessages(errors=errors)
+        return self.ErrorMessages(errors=errors)
 
     security.declareProtected(DESIGN_PERMISSION, 'manage_generateView')
     def manage_generateView(self, REQUEST=None):

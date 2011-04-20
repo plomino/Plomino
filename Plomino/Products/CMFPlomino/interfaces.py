@@ -2,9 +2,6 @@
 
 from zope.interface import Interface
 
-##code-section HEAD
-##/code-section HEAD
-
 class IPlominoDatabase(Interface):
     """Marker interface for .PlominoDatabase.PlominoDatabase
     """
@@ -41,5 +38,6 @@ class IPlominoAgent(Interface):
     """Marker interface for .PlominoAgent.PlominoAgent
     """
 
-##code-section FOOT
-##/code-section FOOT
+class IPlominoUtils(Interface):
+    """Marker interface for PlominoUtils
+    """

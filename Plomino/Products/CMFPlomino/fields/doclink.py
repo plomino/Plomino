@@ -138,7 +138,7 @@ class DoclinkField(BaseField):
                 for col in column_ids:
                     v = getattr(doc, sourceview.getIndexKey(col))
                     if not isinstance(v, str):
-                        v = unicode(v).encode('utf-8')
+                        v = unicode(v).encode('utf-8').replace('\r', '')
                     row.append(v or '&nbsp;')
                 datatable.append(row)
         else:

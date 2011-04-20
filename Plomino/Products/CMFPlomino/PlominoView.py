@@ -230,12 +230,6 @@ class PlominoView(ATFolder):
         """
         return self.id
 
-    security.declarePublic('getParentDatabase')
-    def getParentDatabase(self):
-        """Get parent database
-        """
-        return self.getParentNode()
-
     def __bobo_traverse__(self, request, name):
         if self.documents.has_key(name):
             return aq_inner(getattr(self.documents, name)).__of__(self)
@@ -330,14 +324,17 @@ class PlominoView(ATFolder):
             self.getParentDatabase().getIndex().refresh()
 
     security.declarePublic('declareColumn')
-    def declareColumn(self,column_name,column_obj):
+    def declareColumn(self,column_name,column_obj, index=None):
         """declare column
         """
         db = self.getParentDatabase()
         refresh = not(db.DoNotReindex)
-
+        
+        if index is None:
+            index = db.getIndex()
+            
         if column_obj.Formula:
-            db.getIndex().createIndex('PlominoViewColumn_'+self.getViewName()+'_'+column_name, refresh=refresh)
+            index.createIndex('PlominoViewColumn_'+self.getViewName()+'_'+column_name, refresh=refresh)
         else:
             fieldpath = column_obj.SelectedField.split('/')
             form = self.getParentDatabase().getForm(fieldpath[0])
@@ -345,14 +342,14 @@ class PlominoView(ATFolder):
                 field = form.getFormField(fieldpath[1])
                 if field:
                     field.setToBeIndexed(True)
-                    field.at_post_edit_script()
-                    #db.getIndex().createFieldIndex(field.id, field.getFieldType())
+                    #field.at_post_edit_script()
+                    index.createFieldIndex(field.id, field.getFieldType())
                 else:
                     column_obj.setFormula("'Non-existing field'")
-                    db.getIndex().createIndex('PlominoViewColumn_'+self.getViewName()+'_'+column_name, refresh=refresh)
+                    index.createIndex('PlominoViewColumn_'+self.getViewName()+'_'+column_name, refresh=refresh)
             else:
                 column_obj.setFormula("'Non-existing form'")
-                db.getIndex().createIndex('PlominoViewColumn_'+self.getViewName()+'_'+column_name, refresh=refresh)
+                index.createIndex('PlominoViewColumn_'+self.getViewName()+'_'+column_name, refresh=refresh)
 
     security.declarePublic('getCategorizedColumnValues')
     def getCategorizedColumnValues(self,column_name):
@@ -519,7 +516,7 @@ class PlominoView(ATFolder):
             return None
 
     security.declarePublic('getDocumentsByKey')
-    def getDocumentsByKey(self, key):
+    def getDocumentsByKey(self, key, getObject=True):
         """Get documents which sorted column value match the given key
         """
         index = self.getParentDatabase().getIndex()
@@ -532,7 +529,10 @@ class PlominoView(ATFolder):
                                     sortindex : key
                                     },
                                    sortindex, self.getReverseSorting())
-        return [d.getObject() for d in results]
+        if getObject:
+            return [d.getObject() for d in results]
+        else:
+            return results
 
     security.declarePublic('tojson')
     def tojson(self):
@@ -547,9 +547,9 @@ class PlominoView(ATFolder):
             for colid in columnids:
                 v = getattr(doc, self.getIndexKey(colid), '')
                 if isinstance(v, list):
-                    v = [asUnicode(e).encode('utf-8') for e in v]
+                    v = [asUnicode(e).encode('utf-8').replace('\r', '') for e in v]
                 else:
-                    v = asUnicode(v).encode('utf-8')
+                    v = asUnicode(v).encode('utf-8').replace('\r', '')
                 row.append(v or '&nbsp;')
 
             if categorized:

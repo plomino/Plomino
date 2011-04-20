@@ -446,7 +446,7 @@ class PlominoAccessControl(Persistent):
         """
         membershiptool = getToolByName(self, 'portal_membership')
         #return membershiptool.listMemberIds ()
-        return membershiptool.searchForMembers()
+        return membershiptool.searchForMembers(sort_by='userid')
 
     security.declarePublic('getPortalMembersIds')
     def getPortalMembersIds(self):

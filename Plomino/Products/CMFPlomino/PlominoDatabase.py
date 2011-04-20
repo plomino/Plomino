@@ -146,7 +146,7 @@ schema = Schema((
     ),
     StringField(
         name='DateTimeFormat',
-        default="%Y/%m/%d",
+        default="%Y-%m-%d",
         widget=StringField._properties['widget'](
             label='Date/time format',
             description='Format example: %Y-%m-%d',
@@ -243,7 +243,7 @@ class PlominoDatabase(ATFolder, PlominoAccessControl, PlominoDesignManager, Plom
         """
         self.initializeACL()
         index = PlominoIndex(FULLTEXT=self.FulltextIndex)
-        self._setObject(index.getId(), index)
+        self._setObject('plomino_index', index)
         resources = Folder('resources')
         resources.title='resources'
         self._setObject('resources', resources)
@@ -359,6 +359,15 @@ class PlominoDatabase(ATFolder, PlominoAccessControl, PlominoDesignManager, Plom
             # let's assume it is a path
             docid = docid.split("/")[-1]
         return self.documents.get(docid)
+
+    security.declareProtected(READ_PERMISSION, 'getParentDatabase')
+    def getParentDatabase(self):
+        """ Acquired by Plomino objects
+        """
+        obj = self
+        while getattr(obj, 'meta_type', '') != 'PlominoDatabase':
+            obj = self.aq_parent
+        return obj
 
     security.declareProtected(REMOVE_PERMISSION, 'deleteDocument')
     def deleteDocument(self,doc):

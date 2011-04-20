@@ -22,7 +22,7 @@ import sys, os
 
 # Add any Sphinx extension module names here, as strings. They can be extensions
 # coming with Sphinx (named 'sphinx.ext.*') or your custom ones.
-extensions = []
+extensions = ['sphinx.ext.autodoc','rst2pdf.pdfbuilder']
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
@@ -196,3 +196,9 @@ latex_documents = [
 
 # If false, no module index is generated.
 #latex_use_modindex = True
+
+pdf_documents = [
+('index', u'PlominoDoc', u'Plomino documentation', u'Eric BREHAULT'),
+]
+pdf_stylesheets = ['sphinx','kerning','a4']
+pdf_language = "en_US"

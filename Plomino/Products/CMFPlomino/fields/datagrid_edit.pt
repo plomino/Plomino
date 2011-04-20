@@ -15,6 +15,7 @@
         		jq(document).ready(function() {
 		        	${fieldname}_datatable = jq('#${fieldname}_datagrid').dataTable( {
 		        		'aaData': ${data},
+		        		'bJQueryUI': true,
 		        		${param},
 		        		'fnDrawCallback': function() {
 		        			jq('#${fieldname}_datagrid > tbody > tr').click(function() {

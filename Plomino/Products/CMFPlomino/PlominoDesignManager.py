@@ -20,6 +20,7 @@ from ZPublisher.HTTPResponse import HTTPResponse
 from ZPublisher.HTTPRequest import HTTPRequest
 from ZPublisher.HTTPRequest import FileUpload
 from OFS.ObjectManager import ObjectManager
+from DateTime import DateTime
 from Products.PageTemplates.ZopePageTemplate import manage_addPageTemplate
 from Products.CMFCore.utils import getToolByName
 from Products.DCWorkflow.DCWorkflow import DCWorkflowDefinition
@@ -35,12 +36,14 @@ import os
 import sys
 import glob
 import transaction
+from zope import event
+from Products.Archetypes.event import ObjectEditedEvent
 
 from migration.migration import migrate
 from index.PlominoIndex import PlominoIndex
 from exceptions import PlominoScriptException, PlominoDesignException
 from PlominoUtils import asUnicode
-
+from Products.CMFPlomino import get_utils
 # get AT specific schemas for each Plomino class
 from Products.CMFPlomino.PlominoForm import schema as form_schema
 from Products.CMFPlomino.PlominoAction import schema as action_schema
@@ -112,66 +115,47 @@ class PlominoDesignManager(Persistent):
         report.append(msg)
         logger.info(msg)
 
-        # destroy the index
-        self.manage_delObjects(self.getIndex().getId())
-        msg = 'Old index removed'
-        report.append(msg)
-        logger.info(msg)
-
-        #create new blank index
-        index = PlominoIndex(FULLTEXT=self.FulltextIndex)
-        self._setObject(index.getId(), index)
-        self.getIndex().no_refresh = True
+        #create new blank index (without fulltext)
+        index = PlominoIndex(FULLTEXT=False).__of__(self)
+        index.no_refresh = True
         msg = 'New index created'
         report.append(msg)
         logger.info(msg)
 
+        #declare all indexed fields
+        for f_obj in self.getForms() :
+            for f in f_obj.getFormFields():
+                if f.getToBeIndexed() :
+                    index.createFieldIndex(f.id, f.getFieldType())
+        logger.info('Field indexing initialized')
+
         #declare all the view formulas and columns index entries
         for v_obj in self.getViews():
-            self.getIndex().createSelectionIndex('PlominoViewFormula_'+v_obj.getViewName())
+            index.createSelectionIndex('PlominoViewFormula_'+v_obj.getViewName())
             for c in v_obj.getColumns():
-                v_obj.declareColumn(c.getColumnName(), c)
-        for f_obj in self.getForms() :
-            for f in f_obj.getFormFields() :
-                if f.getToBeIndexed() :
-                    self.getIndex().createFieldIndex(f.id, f.getFieldType())
-        self.getIndex().no_refresh = False
-        msg = 'Index structure initialized'
+                v_obj.declareColumn(c.getColumnName(), c, index=index)
+        # add fulltext if needed
+        if self.FulltextIndex:
+            index.createFieldIndex('SearchableText', 'RICHTEXT')
+        logger.info('Views indexing initialized')
+        
+        # re-index documents
+        start_time = DateTime().toZone('UTC')
+        msg = self.reindexDocuments(index)
         report.append(msg)
-        logger.info(msg)
+        
+        # as it takes time, re-indexed documents changed since re-indexing started
+        msg = self.reindexDocuments(index, changed_since=start_time)
+        report.append(msg)
+        index.no_refresh = False
 
-        #reindex all the documents
-        #documents = [d.getObject() for d in self.portal_catalog.search({'portal_type' : ['PlominoDocument'], 'path': '/'.join(self.getPhysicalPath())})]
-        documents = self.getAllDocuments()
-        total_docs = len(documents)
-        msg = 'Existing documents: '+ str(total_docs)
+        # destroy the old index and rename the new one
+        self.manage_delObjects("plomino_index")
+        self._setObject('plomino_index', index.aq_base)
+        msg = 'Old index removed and replaced'
         report.append(msg)
         logger.info(msg)
-        total = 0
-        counter = 0
-        errors = 0
-        self.setStatus("Re-indexing (0%)")
-        txn = transaction.get()
-        for d in documents:
-            try:
-                #self.getIndex().indexDocument(d)
-                d.save(onSaveEvent=False)
-                total = total + 1
-            except Exception, e:
-                errors = errors + 1
-                logger.info("Ouch! \n%s\n%s" % (e, `d`))
-            counter = counter + 1
-            if counter == 10:
-                self.setStatus("Re-indexing (%d%%)" % int(100*(total+errors)/total_docs))
-                txn.savepoint(optimistic=True)
-                counter = 0
-                logger.info("%d documents re-indexed successfully, %d errors(s) ...(still running)" % (total, errors))
-        self.setStatus("Ready")
-        txn.commit()
-        msg = "%d documents re-indexed successfully, %d errors(s)" % (total, errors)
-        report.append(msg)
-        logger.info(msg)
-
+                
         # update Plone workflow state
         workflow_tool = getToolByName(self, 'portal_workflow')
         wfs = workflow_tool.getWorkflowsFor(self)
@@ -182,11 +166,124 @@ class PlominoDesignManager(Persistent):
         msg = 'Plone workflow update'
         report.append(msg)
         logger.info(msg)
-
+        
+        self.setStatus("Ready")
         if REQUEST:
             self.writeMessageOnPage(MSG_SEPARATOR.join(report), REQUEST, False)
             REQUEST.RESPONSE.redirect(self.absolute_url()+"/DatabaseDesign")
 
+    security.declareProtected(DESIGN_PERMISSION, 'reindexDocuments')
+    def reindexDocuments(self, plomino_index, items_only=False, views_only=False, update_metadata=1, changed_since=None):
+        documents = self.getAllDocuments()
+        if changed_since:
+            documents = [doc for doc in documents if doc.plomino_modification_time > changed_since]
+            total_docs = len(documents)
+            logger.info('Re-indexing %d changed document' % total_docs)
+        else:
+            total_docs = len(self.plomino_documents)
+            logger.info('Existing documents: '+ str(total_docs))
+        total = 0
+        counter = 0
+        errors = 0
+        label = "documents"
+        if items_only:
+            label = "items" 
+        if views_only:
+            label = "views" 
+        self.setStatus("Re-indexing %s (0%%)" % label)
+
+        indexes = plomino_index.indexes()
+        view_indexes = [idx for idx in indexes if idx.startswith("PlominoView")]
+        if 'SearchableText' in indexes:
+            view_indexes.append('SearchableText')
+        for d in documents:
+            try:
+                idxs = []
+                if items_only:
+                    items = d.getItems() + ['id', 'getPlominoReaders']
+                    idxs = [idx for idx in indexes if idx in items]
+                if views_only:
+                    idx = view_indexes
+                txn = transaction.get()
+                plomino_index.indexDocument(d, idxs=idxs, update_metadata=update_metadata)
+                txn.commit()
+                total = total + 1
+            except Exception, e:
+                errors = errors + 1
+                logger.info("Ouch! \n%s\n%s" % (e, `d`))
+            counter = counter + 1
+            if counter == 10:
+                self.setStatus("Re-indexing %s (%d%%)" % (label, int(100*(total+errors)/total_docs)))
+                counter = 0
+                logger.info("Re-indexing %s: %d indexed successfully, %d errors(s)..." % (label, total, errors))
+        if changed_since:
+            msg = "Intermediary changes: %d modified documents re-indexed successfully, %d errors(s)" % (total, errors)
+        msg = "Re-indexing %s: %d documents indexed successfully, %d errors(s)" % (label, total, errors)
+        logger.info(msg)
+        return msg
+
+    security.declareProtected(DESIGN_PERMISSION, 'refreshDB')
+    def recomputeAllDocuments(self, REQUEST=None):
+        """
+        """
+        logger.info('Re-compute documents in '+self.id)
+        documents = self.getAllDocuments()
+        total_docs = len(self.plomino_documents)
+        logger.info('Existing documents: '+ str(total_docs))
+        total_docs = len(documents)
+        total = 0
+        counter = 0
+        errors = 0
+        self.setStatus("Re-compute documents")
+        for d in documents:
+            try:
+                txn = transaction.get()
+                d.save(asAuthor=False, onSaveEvent=False)
+                txn.commit()
+                total = total + 1
+            except Exception, e:
+                errors = errors + 1
+                logger.info("Ouch! \n%s\n%s" % (e, `d`))
+            counter = counter + 1
+            if counter == 10:
+                self.setStatus("Re-compute documents (%d%%)" % int(100*(total+errors)/total_docs))
+                counter = 0
+                logger.info("Re-compute documents: %d computed successfully, %d errors(s) ..." % (total, errors))
+        msg = "Re-compute documents: %d documents computed successfully, %d errors(s)" % (total, errors)
+        logger.info(msg)
+        self.setStatus("Ready")
+        if REQUEST:
+            self.writeMessageOnPage(msg, REQUEST, False)
+            REQUEST.RESPONSE.redirect(self.absolute_url()+"/DatabaseDesign")
+
+    security.declareProtected(DESIGN_PERMISSION, 'refreshPortalCatalog')
+    def refreshPortalCatalog(self, REQUEST=None):
+        """
+        """
+        msg = ""
+        portal_catalog = self.portal_catalog
+        if self.getIndexInPortal():
+            logger.info('Refresh documents from '+self.id+' in portal catalog')
+            documents = self.getAllDocuments()
+            total_docs = len(self.plomino_documents)
+            logger.info('Existing documents: '+ str(total_docs))
+            for d in documents:
+                portal_catalog.catalog_object(d)
+            msg = '%d documents re-cataloged' % total_docs
+        else:
+            logger.info('Database '+self.id+' does not allow portal catalog indexing.')
+            catalog_entries = portal_catalog.search({'portal_type' : ['PlominoDocument'], 'path': '/'.join(self.getPhysicalPath())})
+            if catalog_entries:
+                for d in catalog_entries:
+                    portal_catalog.uncatalog_object(d.getPath())
+                logger.info('Related portal catalog entries have been removed.')
+            msg = 'Database is not cataloged'
+        
+        logger.info(msg)
+        if REQUEST:
+            self.writeMessageOnPage(msg, REQUEST, False)
+            REQUEST.RESPONSE.redirect(self.absolute_url()+"/DatabaseDesign")
+        
     security.declareProtected(DESIGN_PERMISSION, 'exportDesign')
     def exportDesign(self, targettype='file', targetfolder='', dbsettings=True, designelements=None, REQUEST=None, **kw):
         """ Export design elements to XML.
@@ -260,7 +357,7 @@ class PlominoDesignManager(Persistent):
             if dbsettings:
                 path = os.path.join(exportpath, ('dbsettings.xml'))
                 xmlstring = self.exportDesignAsXML(elementids=[], dbsettings=True)
-                self.saveFile(path, xmlstring)
+                self.saveFile(path, xmlstring.decode('utf-8'))
 
     @staticmethod
     def saveFile(path, content):
@@ -416,7 +513,12 @@ class PlominoDesignManager(Persistent):
             ps._params="*args"
         str_formula="plominoContext = context\n"
         str_formula=str_formula+"plominoDocument = context\n"
-        str_formula=str_formula+"from Products.CMFPlomino.PlominoUtils import "+SAFE_UTILS+'\n'
+        #str_formula=str_formula+"from Products.CMFPlomino.PlominoUtils import "+SAFE_UTILS+'\n'
+        safe_utils = get_utils()
+        import_list = []
+        for module in safe_utils:
+            import_list.append("from %s import %s" % (module, ", ".join(safe_utils[module])))
+        str_formula=str_formula+";".join(import_list)+'\n'
 
         r = re.compile('#Plomino import (.+)[\r\n]')
         for i in r.findall(formula):
@@ -441,8 +543,6 @@ class PlominoDesignManager(Persistent):
 
     security.declarePublic('runFormulaScript')
     def runFormulaScript(self, script_id, context, formula_getter, with_args=False, *args):
-#        if self.debugMode:
-#            logger.info('Evaluating '+script_id+' with context '+str(context))
         try:
             ps = self.getFormulaScript(script_id)
             if ps is None:
@@ -460,8 +560,6 @@ class PlominoDesignManager(Persistent):
             return result
         except Exception, e:
             raise PlominoScriptException(context, e, formula_getter, script_id)
-#            msg = self.traceErr(e, context, script_id, formula_getter)
-#            raise PlominoScriptException(context.absolute_url_path(), formula_getter, message=msg)
 
     security.declarePrivate('traceRenderingErr')
     def traceRenderingErr(self, e, context):
@@ -470,9 +568,9 @@ class PlominoDesignManager(Persistent):
         if self.debugMode:
             #traceback
             formatted_lines = traceback.format_exc().splitlines()
-            msg = "\r\n".join(formatted_lines[-3:]).strip()
+            msg = "\n".join(formatted_lines[-3:]).strip()
             #code / value
-            msg = msg + "Plomino rendering error with context : " + str(context)            
+            msg = msg + "\nPlomino rendering error with context: " + '/'.join(context.getPhysicalPath())
         else:
             msg = None
 
@@ -694,7 +792,7 @@ class PlominoDesignManager(Persistent):
         resource_type = obj.meta_type
         node.setAttribute('type', resource_type)
         node.setAttribute('title', obj.title)
-        if resource_type=="Page Template":
+        if resource_type in ["Page Template", "Script (Python)"]:
             data = xmldoc.createCDATASection(obj.read())
         else:
             node.setAttribute('contenttype', obj.getContentType())
@@ -728,9 +826,9 @@ class PlominoDesignManager(Persistent):
         else:
             if REQUEST:
                 f=REQUEST.get("file")
-                xml_strings.append(f.read())
+                xml_strings.append(asUnicode(f.read()))
             else:
-                xml_strings.append(xmlstring)
+                xml_strings.append(asUnicode(xmlstring))
             total_elements = None
 
         if replace:

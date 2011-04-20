@@ -250,12 +250,6 @@ class PlominoField(BaseContent, BrowserDefaultMixin):
             self.traceRenderingErr(e, self)
             return ""
 
-    security.declarePublic('getParentDatabase')
-    def getParentDatabase(self):
-        """Get the database containing this field
-        """
-        return self.getParentNode().getParentDatabase()
-
     security.declarePublic('at_post_edit_script')
     def at_post_edit_script(self):
         """post edit
@@ -297,6 +291,14 @@ class PlominoField(BaseContent, BrowserDefaultMixin):
         l.sort(key=lambda f:f[1])
         return l
 
+    def getContentType(self, fieldname=None):
+        # Make sure RICHTEXT fields are considered as html
+        # (TinyMCE 1.1.8 tests if content is HTML
+        # if not, it displays a basic textarea)
+        if self.FieldType == "RICHTEXT":
+            return "text/html"
+        return "text/plain"
+        
 registerType(PlominoField, PROJECTNAME)
 # end of class PlominoField
 
