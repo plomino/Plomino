@@ -1,6 +1,13 @@
 Changelog
 =========
 
+1.9.6 (2011-04-20)
+------------------
+* enable JQuery UI theme support in datatables
+* load accordions content on click if url provided
+* external utils pluggin mechanism
+* refreshdb improvements
+
 1.9.5 (2011-03-25)
 ------------------
 * fix richtext field bug with Products.TinyMCE 1.1.8 (a commit was missing in 1.9.4)
