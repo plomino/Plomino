@@ -150,7 +150,7 @@
         <dd class="collapsibleContent">
 			<ul><li><a href="./resources/manage_main" target="_new">Resources folder (ZMI)</a></li>
 				<li><a href="./plomino_index/manage_catalogView" target="_new">Index (ZMI)</a></li>
-				<li><a href="./plomino_documents">Documents folder</a></li>		
+				<li><a href="./plomino_documents/manage_main">Documents folder</a></li>		
 			</ul>
 </dd></dl>
 <hr/><h3>Refresh database</h3>
