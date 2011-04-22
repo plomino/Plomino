@@ -34,7 +34,7 @@ msgid "PlominoField"
 msgstr "Plomino: Champ"
 
 msgid "PlominoForm"
-msgstr "Plomino: Masque"
+msgstr "Plomino: Formulaire"
 
 msgid "PlominoHidewhen"
 msgstr "Plomino: Cacher quand"
@@ -43,7 +43,7 @@ msgid "PlominoView"
 msgstr "Plomino: Vue"
 
 msgid "Forms"
-msgstr "Masques"
+msgstr "Formulaires"
 
 msgid "Views"
 msgstr "Vues"
