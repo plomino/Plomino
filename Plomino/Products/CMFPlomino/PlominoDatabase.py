@@ -357,6 +357,8 @@ class PlominoDatabase(ATFolder, PlominoAccessControl, PlominoDesignManager, Plom
     def getDocument(self, docid):
         """return a PlominoDocument
         """
+        if not docid:
+            return None
         if "/" in docid:
             # let's assume it is a path
             docid = docid.split("/")[-1]
@@ -368,7 +370,7 @@ class PlominoDatabase(ATFolder, PlominoAccessControl, PlominoDesignManager, Plom
         """
         obj = self
         while getattr(obj, 'meta_type', '') != 'PlominoDatabase':
-            obj = self.aq_parent
+            obj = obj.aq_parent
         return obj
 
     security.declareProtected(REMOVE_PERMISSION, 'deleteDocument')
