@@ -35,7 +35,8 @@ from Acquisition import aq_inner
 from Products.CMFCore.utils import getToolByName
 from OFS.Folder import *
 from OFS.ObjectManager import ObjectManager
-from Products.BTreeFolder2.BTreeFolder2 import manage_addBTreeFolder
+#from Products.BTreeFolder2.BTreeFolder2 import manage_addBTreeFolder
+from Products.CMFCore.CMFBTreeFolder import manage_addCMFBTreeFolder
 from Products.CMFPlone.interfaces import IHideFromBreadcrumbs
 import string
 import Globals
@@ -227,7 +228,8 @@ class PlominoDatabase(ATFolder, PlominoAccessControl, PlominoDesignManager, Plom
         self.plomino_version = VERSION
         self.setStatus("Ready")
         PlominoAccessControl.__init__(self)
-        manage_addBTreeFolder(self, id='plomino_documents')
+        #manage_addBTreeFolder(self, id='plomino_documents')
+        manage_addCMFBTreeFolder(self, id='plomino_documents')
         directlyProvides(self.documents, IHideFromBreadcrumbs)
 
     @property
