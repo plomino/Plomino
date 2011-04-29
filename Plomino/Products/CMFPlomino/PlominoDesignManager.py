@@ -992,16 +992,15 @@ class PlominoDesignManager(Persistent):
         """
         id = str(node.getAttribute('id'))
         resource_type = node.getAttribute('type')
+        if hasattr(container, id):
+            container.manage_delObjects([id])
+            
         if resource_type == "Page Template":
-            if not(hasattr(container, id)):
-                obj = manage_addPageTemplate(container, id)
-            else:
-                obj = getattr(container, id)
+            obj = manage_addPageTemplate(container, id)
             obj.title = node.getAttribute('title')
             obj.write(node.firstChild.data)
         else:
-            if not(hasattr(container, id)):
-                container.manage_addFile(id)
+            container.manage_addFile(id)
             obj = getattr(container, id)
             obj.meta_type = resource_type
             obj.title = node.getAttribute('title')
