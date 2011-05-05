@@ -792,7 +792,8 @@ class PlominoDesignManager(Persistent):
         resource_type = obj.meta_type
         node.setAttribute('type', resource_type)
         node.setAttribute('title', obj.title)
-        if resource_type in ["Page Template", "Script (Python)"]:
+        #if resource_type in ["Page Template", "Script (Python)"]:
+        if hasattr(obj, 'read'):
             data = xmldoc.createCDATASection(obj.read())
         else:
             node.setAttribute('contenttype', obj.getContentType())
