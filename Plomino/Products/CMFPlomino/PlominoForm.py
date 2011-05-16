@@ -659,9 +659,9 @@ class PlominoForm(ATFolder):
             query={'PlominoViewFormula_'+searchview.getViewName() : True}
 
             for f in self.getFormFields(includesubforms=True, applyhidewhen=False):
-                fieldName = f.id
-                #if fieldName is not an index -> search doesn't matter and returns all
-                submittedValue = REQUEST.get(fieldName)
+                fieldname = f.id
+                #if fieldname is not an index -> search doesn't matter and returns all
+                submittedValue = REQUEST.get(fieldname)
                 if submittedValue is not None:
                     if not submittedValue=='':
                         # if non-text field, convert the value
@@ -673,7 +673,11 @@ class PlominoForm(ATFolder):
                             v = submittedValue
                         else:
                             v = submittedValue
-                        query[fieldName]=v
+                        # rename Plomino_SearchableText to perform full-text searches on
+                        # regular SearchableText index
+                        if fieldname == "Plomino_SearchableText":
+                            fieldname = "SearchableText"
+                        query[fieldname]=v
             results=index.dbsearch(query, None)
 
             #filter search with searchformula
