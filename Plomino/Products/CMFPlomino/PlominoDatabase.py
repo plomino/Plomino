@@ -445,7 +445,15 @@ class PlominoDatabase(ATFolder, PlominoAccessControl, PlominoDesignManager, Plom
         except Exception :
             return False
 
-
+    def getObjectPosition(self, id):
+        """
+        """
+        if id in self.documents:
+            # documents will not be ordered in site map
+            return 0
+        return ATFolder.getObjectPosition(self, id)
+            
+        
 registerType(PlominoDatabase, PROJECTNAME)
 # end of class PlominoDatabase
 

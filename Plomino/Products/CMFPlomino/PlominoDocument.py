@@ -121,7 +121,7 @@ class PlominoDocument(ATFolder):
             return self.REQUEST.physicalPathToURL(short_path)
         else:
             return "/".join(short_path)
-
+    
     security.declarePublic('setItem')
     def setItem(self,name,value):
         """
@@ -347,7 +347,7 @@ class PlominoDocument(ATFolder):
             db.getIndex().indexDocument(self)
             # update portal_catalog
             if db.getIndexInPortal():
-                self.reindexObject()
+                db.portal_catalog.catalog_object(self, "/".join(db.getPhysicalPath() + (self.id,)))
             event.notify(ObjectEditedEvent(self))
 
     security.declareProtected(READ_PERMISSION, 'openWithForm')
