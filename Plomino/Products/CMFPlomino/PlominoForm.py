@@ -743,8 +743,9 @@ class PlominoForm(ATFolder):
         db = self.getParentDatabase()
         view_id = "all" + self.id.replace('_', '').replace('-', '')
         if view_id in db.objectIds():
-            e.reportError('%s is already an existing object.' % view_id)
             if REQUEST:
+                plone_tools = getToolByName(self, 'plone_utils')
+                plone_tools.addPortalMessage('%s is already an existing object.' % view_id, 'error', REQUEST)
                 REQUEST.RESPONSE.redirect(self.absolute_url_path())
             return
         view_title = "All " + self.Title()
