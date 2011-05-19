@@ -268,7 +268,7 @@ class PlominoDesignManager(Persistent):
             total_docs = len(self.plomino_documents)
             logger.info('Existing documents: '+ str(total_docs))
             for d in documents:
-                portal_catalog.catalog_object(d)
+                portal_catalog.catalog_object(d, "/".join(self.getPhysicalPath() + (d.id,)))
             msg = '%d documents re-cataloged' % total_docs
         else:
             logger.info('Database '+self.id+' does not allow portal catalog indexing.')
@@ -792,7 +792,8 @@ class PlominoDesignManager(Persistent):
         resource_type = obj.meta_type
         node.setAttribute('type', resource_type)
         node.setAttribute('title', obj.title)
-        if resource_type in ["Page Template", "Script (Python)"]:
+        #if resource_type in ["Page Template", "Script (Python)"]:
+        if hasattr(obj, 'read'):
             data = xmldoc.createCDATASection(obj.read())
         else:
             node.setAttribute('contenttype', obj.getContentType())
@@ -992,16 +993,15 @@ class PlominoDesignManager(Persistent):
         """
         id = str(node.getAttribute('id'))
         resource_type = node.getAttribute('type')
+        if hasattr(container, id):
+            container.manage_delObjects([id])
+            
         if resource_type == "Page Template":
-            if not(hasattr(container, id)):
-                obj = manage_addPageTemplate(container, id)
-            else:
-                obj = getattr(container, id)
+            obj = manage_addPageTemplate(container, id)
             obj.title = node.getAttribute('title')
             obj.write(node.firstChild.data)
         else:
-            if not(hasattr(container, id)):
-                container.manage_addFile(id)
+            container.manage_addFile(id)
             obj = getattr(container, id)
             obj.meta_type = resource_type
             obj.title = node.getAttribute('title')

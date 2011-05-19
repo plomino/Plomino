@@ -1,6 +1,13 @@
 Changelog
 =========
 
+1.9.7 (2011-05-05)
+------------------
+* Fix resources import/export
+* Fix dynamic view for IE<9 compliancy
+* Fix conflicts with Collage
+* Update french translation
+
 1.9.6 (2011-04-20)
 ------------------
 * enable JQuery UI theme support in datatables

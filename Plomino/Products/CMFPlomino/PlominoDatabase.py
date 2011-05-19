@@ -35,7 +35,8 @@ from Acquisition import aq_inner
 from Products.CMFCore.utils import getToolByName
 from OFS.Folder import *
 from OFS.ObjectManager import ObjectManager
-from Products.BTreeFolder2.BTreeFolder2 import manage_addBTreeFolder
+#from Products.BTreeFolder2.BTreeFolder2 import manage_addBTreeFolder
+from Products.CMFCore.CMFBTreeFolder import manage_addCMFBTreeFolder
 from Products.CMFPlone.interfaces import IHideFromBreadcrumbs
 import string
 import Globals
@@ -227,7 +228,8 @@ class PlominoDatabase(ATFolder, PlominoAccessControl, PlominoDesignManager, Plom
         self.plomino_version = VERSION
         self.setStatus("Ready")
         PlominoAccessControl.__init__(self)
-        manage_addBTreeFolder(self, id='plomino_documents')
+        #manage_addBTreeFolder(self, id='plomino_documents')
+        manage_addCMFBTreeFolder(self, id='plomino_documents')
         directlyProvides(self.documents, IHideFromBreadcrumbs)
 
     @property
@@ -355,6 +357,8 @@ class PlominoDatabase(ATFolder, PlominoAccessControl, PlominoDesignManager, Plom
     def getDocument(self, docid):
         """return a PlominoDocument
         """
+        if not docid:
+            return None
         if "/" in docid:
             # let's assume it is a path
             docid = docid.split("/")[-1]
@@ -366,7 +370,7 @@ class PlominoDatabase(ATFolder, PlominoAccessControl, PlominoDesignManager, Plom
         """
         obj = self
         while getattr(obj, 'meta_type', '') != 'PlominoDatabase':
-            obj = self.aq_parent
+            obj = obj.aq_parent
         return obj
 
     security.declareProtected(REMOVE_PERMISSION, 'deleteDocument')
@@ -441,7 +445,15 @@ class PlominoDatabase(ATFolder, PlominoAccessControl, PlominoDesignManager, Plom
         except Exception :
             return False
 
-
+    def getObjectPosition(self, id):
+        """
+        """
+        if id in self.documents:
+            # documents will not be ordered in site map
+            return 0
+        return ATFolder.getObjectPosition(self, id)
+            
+        
 registerType(PlominoDatabase, PROJECTNAME)
 # end of class PlominoDatabase
 

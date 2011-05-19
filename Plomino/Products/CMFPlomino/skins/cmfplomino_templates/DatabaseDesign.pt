@@ -4,7 +4,7 @@
       xmlns:i18n="http://xml.zope.org/namespaces/i18n"
       lang="en"
       metal:use-macro="here/main_template/macros/master"
-      i18n:domain="plone">
+      i18n:domain="CMFPlomino">
 <body>
 
 <metal:main fill-slot="main">
@@ -23,9 +23,9 @@
 		
 		<tal:permission tal:define="dummy here/checkDesignPermission"/>
 		
-		<div>Plomino database version: <tal:version tal:content="python:getattr(here,'plomino_version', 'before 1.3.0')">version</tal:version></div>
+		<div><span i18n:translate="">Plomino database version</span>: <tal:version tal:content="python:getattr(here,'plomino_version', 'before 1.3.0')">version</tal:version></div>
 		<dl class="collapsible inline collapsedOnLoad">
-        <dt class="collapsibleHeader">Forms</dt>
+        <dt class="collapsibleHeader" i18n:translate="">Forms</dt>
         <dd class="collapsibleContent">
 			<tal:block tal:repeat="f python:here.getForms(sortbyid=True)">
 			<div>
@@ -39,23 +39,19 @@
 		        <dd class="collapsibleContent">
 					<!--Fields list-->
 							<ul>
-								<li>
-									Fields : 
-								</li>
+								<li><span i18n:translate="">Fields</span>:</li>
 								<tal:fieldsforms tal:repeat="fields python:f.getFormFields()">
 								<ul>
-									
 									<li>
 									<tal:block tal:content="fields/id">Field name</tal:block>
 									<a href="" tal:attributes="href python:fields.absolute_url_path()+'/base_edit'"><img src="edit.gif" /></a>
 									<a href="" tal:attributes="href python:fields.absolute_url_path()+'/base_view'"><img src="document_icon.gif" /></a>
 									</li>
-								
 								</ul>
 								</tal:fieldsforms>
 								
 								<li>
-									Hide-when : 
+									<span i18n:translate="">Hide when</span> : 
 								</li>
 								<tal:hidewhens tal:repeat="h python:f.getHidewhenFormulas()">
 								<ul>
@@ -69,7 +65,7 @@
 								</ul>
 								</tal:hidewhens>
 								<li>
-									Actions : 
+									<span i18n:translate="">Actions</span> : 
 								</li>
 								<ul>
 									<tal:actionsforms tal:repeat="action python:f.getActions(None, False)">
@@ -86,7 +82,7 @@
 			</tal:block>
 </dd></dl><br/>
       <dl class="collapsible inline collapsedOnLoad">
-        <dt class="collapsibleHeader">Views</dt>
+        <dt class="collapsibleHeader" i18n:translate="">Views</dt>
         <dd class="collapsibleContent">
 			<tal:blockviews tal:repeat="view python:here.getViews(sortbyid=True)">
 			<div><dl class="collapsible inline collapsedOnLoad">
@@ -101,7 +97,7 @@
 							<!--View columns-->
 							<ul>
 								<li>
-									Columns : 
+									<span i18n:translate="">Columns</span> : 
 								</li>
 								<ul>
 									<tal:colonnesviews tal:repeat="colonne python:view.getColumns()">
@@ -114,7 +110,7 @@
 								</ul>
 								<!--View actions-->
 								<li>
-									Actions : 
+									<span i18n:translate="">Actions</span> : 
 								</li>
 								<ul>
 									<tal:actionsviews tal:repeat="action python:view.getActions(None, False)">
@@ -133,7 +129,7 @@
 			</tal:blockviews>
 </dd></dl><br/>
 <dl class="collapsible inline collapsedOnLoad">
-        <dt class="collapsibleHeader">Agents</dt>
+        <dt class="collapsibleHeader" i18n:translate="">Agents</dt>
         <dd class="collapsibleContent">
 			<ul>
 			<tal:blockagents tal:repeat="agent python:here.getAgents()">
@@ -146,73 +142,72 @@
 			</ul>
 </dd></dl><br/>
       <dl class="collapsible inline collapsedOnLoad">
-        <dt class="collapsibleHeader">Others</dt>
+        <dt class="collapsibleHeader" i18n:translate="">Others</dt>
         <dd class="collapsibleContent">
-			<ul><li><a href="./resources/manage_main" target="_new">Resources folder (ZMI)</a></li>
-				<li><a href="./plomino_index/manage_catalogView" target="_new">Index (ZMI)</a></li>
-				<li><a href="./plomino_documents">Documents folder</a></li>		
+			<ul><li><a href="./resources/manage_main" target="_new" i18n:translate="">Resources folder (ZMI)</a></li>
+				<li><a href="./plomino_index/manage_catalogView" target="_new" i18n:translate="">Index (ZMI)</a></li>
+				<li><a href="./plomino_documents/manage_main" i18n:translate="">Documents folder</a></li>		
 			</ul>
 </dd></dl>
-<hr/><h3>Refresh database</h3>
+<hr/><h3 i18n:translate="">Refresh database</h3>
 <ul>
-  <li><a href="./refreshDB">Refresh database</a>
-  (clean scripts, re-index documents, and check Plomino version migration)</li>     
-  <li><a href="./recomputeAllDocuments">Re-compute documents</a>
-  (save all documents with their current form: computed fields and computed
-  on save fields will be re-computed and stored, and documents are re-indexed)
-  <li><a href="./refreshPortalCatalog">Re-index documents in portal catalog</a>
-  (if the database allows portal catalog indexing, documents are re-indexed, else they are removed from the catalog)
+  <li><a href="./refreshDB" i18n:translate="">Refresh database</a>
+  <span i18n:translate="">(clean scripts, re-index documents, and check Plomino version migration)</span></li>     
+  <li><a href="./recomputeAllDocuments" i18n:translate="">Re-compute documents</a>
+  <span i18n:translate="">(save all documents with their current form: computed fields and computed on save fields will be re-computed and stored, and documents are re-indexed)</span></li>
+  <li><a href="./refreshPortalCatalog" i18n:translate="">Re-index documents in portal catalog</a>
+  <span i18n:translate="">(if the database allows portal catalog indexing, documents are re-indexed, else they are removed from the catalog)</span>
   </li>
 </ul>
-<hr/><h3>Import/Export design</h3>
+<hr/><h3 i18n:translate="">Import/Export design</h3>
 <table>
-<tr><th>Import</th><th>Export</th></tr>
+<tr><th i18n:translate="">Import</th><th i18n:translate="">Export</th></tr>
 <tr><td valign="top">
 	<form name="ImportDesign" action="importDesign"  method="POST" enctype="multipart/form-data">
-	<imput type="hidden" name="mode" value="refresh" />
+	<input type="hidden" name="mode" value="refresh"/>
 		<table tal:define="sourceURL request/sourceURL|nothing;
 						username request/username|nothing;
 						password request/password|nothing">
 			<tr>
 			<td><input type="radio" name="sourcetype" value="file" id="sourcetype-file" checked="checked"/></td>
-				<td colspan="2"><label for="sourcetype-file">From file</label></td>
+				<td colspan="2"><label for="sourcetype-file" i18n:translate="">From file</label></td>
 			</tr>
 			<tr><td></td>
-				<td>Plomino XML file</td>
+				<td i18n:translate="">Plomino XML file</td>
 				<td><input type="file" name="sourceFile" /></td>
 			</tr>
             <tr>
             <td><input type="radio" name="sourcetype" value="folder" id="sourcetype-folder"/></td>
-                <td colspan="2"><label for="sourcetype-folder">From server folder</label></td>
+                <td colspan="2"><label for="sourcetype-folder" i18n:translate="">From server folder</label></td>
             </tr>
             <tr><td></td>
-                <td>Path</td>
+                <td i18n:translate="">Path</td>
                 <td><input type="text" name="sourcefolder" value="/tmp"/></td>
             </tr>
 			<tr>
 				<td><input type="radio" name="sourcetype" value="server" id="sourcetype-server"/></td>
-				<td colspan="2"><label for="sourcetype-server">From remote server</label></td>
+				<td colspan="2"><label for="sourcetype-server" i18n:translate="">From remote server</label></td>
 			</tr>
 			<tr><td></td>
-				<td>Source URL</td>
+				<td i18n:translate="">Source URL</td>
 				<td><input type="text" name="sourceURL" 
 					tal:attributes="value sourceURL"
 					/></td>
 			</tr>
 			<tr><td></td>
-				<td>Username</td>
+				<td i18n:translate="">Username</td>
 				<td><input type="text" name="username" tal:attributes="value username"/></td>
 			</tr>
 			<tr><td></td>
-				<td>Password</td>
+				<td i18n:translate="">Password</td>
 				<td><input type="password" name="password" tal:attributes="value password"/></td>
 			</tr>
 			<tr><td></td>
-				<td><label for="import-entire">Entire design</label></td>
+				<td><label for="import-entire" i18n:translate="">Entire design</label></td>
 				<td><input type="checkbox" name="entire" value="Yes" id="import-entire"/></td>
 			</tr>
 			<tr><td></td>
-				<td>or elements</td>
+				<td i18n:translate="">or elements</td>
 				<td>
 				<select name="designelements" multiple="true" lines="6">
 					<tal:block tal:condition="sourceURL">
@@ -234,19 +229,19 @@
 						</tal:block>
 					</tal:block>
 				</select>
-				<input type="submit" name="submit_refresh" class="context" value="Refresh"/>
+				<input type="submit" name="submit_refresh" class="context" value="Refresh" i18n:attributes="value"/>
 				</td>
 			</tr>
 			<tr><td colspan="3">
-			         <label for="no_refresh_documents">Do not refresh database after design update:</label>
+			         <label for="no_refresh_documents" i18n:translate="">Do not refresh database after design update:</label>
 			         <input type="checkbox" name="no_refresh_documents" id="no_refresh_documents" value="Yes"/><br/>
 			    </td></tr>
 			<tr><td colspan="3">
-                     <label for="replace_design">Replace mode:</label>
+                     <label for="replace_design" i18n:translate="">Replace mode:</label>
                      <input type="checkbox" name="replace_design" id="replace_design" value="Yes"/><br/>
                  </td></tr>
             <tr><td colspan="3">
-                     <input type="submit" class="context" value="Import" name="submit_import"/>
+                     <input type="submit" class="context" value="Import" name="submit_import" i18n:attributes="value"/>
                 </td></tr>
 		</table>
 	</form>
@@ -256,38 +251,38 @@
 		<table>
 		    <tr>
 			<td><input type="radio" name="targettype" value="file" id="targettype-file" checked="checked"/></td>
-				<td colspan="2"><label for="targettype-file">To XML file</label></td>
+				<td colspan="2"><label for="targettype-file" i18n:translate="">To XML file</label></td>
 			</tr>
 			<tr>
             <td><input type="radio" name="targettype" value="folder" id="targettype-folder"/></td>
-                <td colspan="2"><label for="targettype-folder">To server folder</label></td>
+                <td colspan="2"><label for="targettype-folder" i18n:translate="">To server folder</label></td>
             </tr>
             <tr><td></td>
-                <td>Path</td>
+                <td i18n:translate="">Path</td>
                 <td><input type="text" name="targetfolder" value="/tmp"/></td>
             </tr>
             <tr>
 			<td><input type="radio" name="targettype" value="server" id="targettype-server"/></td>
-				<td colspan="2"><label for="targettype-server">To remote server</label></td>
+				<td colspan="2"><label for="targettype-server" i18n:translate="">To remote server</label></td>
 			</tr>
 			<tr><td></td>
-				<td>Target URL</td>
+				<td i18n:translate="">Target URL</td>
 				<td><input type="text" name="targetURL"/></td>
 			</tr>
 			<tr><td></td>
-				<td>Username</td>
+				<td i18n:translate="">Username</td>
 				<td><input type="text" name="username"/></td>
 			</tr>
 			<tr><td></td>
-				<td>Password</td>
+				<td i18n:translate="">Password</td>
 				<td><input type="password" name="password"/></td>
 			</tr>
 			<tr>
-				<td colspan="2"><label for="export-entire">Entire design</label></td>
+				<td colspan="2"><label for="export-entire" i18n:translate="">Entire design</label></td>
 				<td><input type="checkbox" name="entire" value="Yes" checked="checked" id="export-entire"/></td>
 			</tr>
 			<tr>
-				<td colspan="2">or elements</td>
+				<td colspan="2" i18n:translate="">or elements</td>
 				<td>
 				<select name="designelements" multiple="true" lines="6">
 					<tal:block tal:repeat="f python:here.getForms()">
@@ -310,10 +305,10 @@
 				</td>
 			</tr>
 			<tr>
-                <td colspan="2"><label for="export-dbsettings">Include db settings</label></td>
+                <td colspan="2"><label for="export-dbsettings" i18n:translate="">Include db settings</label></td>
                 <td><input type="checkbox" name="dbsettings" value="Yes" checked="checked" id="export-dbsettings"/></td>
             </tr>
-			<tr><td colspan="2"><input type="submit" class="context" value="Export" name="submit_export"/></td><td></td></tr>
+			<tr><td colspan="2"><input type="submit" class="context" value="Export" name="submit_export" i18n:attributes="value"/></td><td></td></tr>
 		</table>
 	</form>
 </tr>
