@@ -86,7 +86,7 @@
                             <ul>
                                 <li><span i18n:translate="">Fields</span>:
                                 <ul>
-                                <tal:fieldsforms tal:repeat="field python:f.getFormFields(applyhidewhen=False)">
+                                <tal:fieldsforms tal:repeat="field python:f.getFormFields()">
                                     <li>
                                     <tal:block tal:content="field/id">Field name</tal:block>
                                     <a href="" tal:attributes="href python:field.absolute_url_path()+'/base_edit'"><img src="edit.gif" /></a>

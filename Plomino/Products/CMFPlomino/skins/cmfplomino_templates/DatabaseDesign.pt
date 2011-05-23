@@ -40,11 +40,11 @@
 					<!--Fields list-->
 							<ul>
 								<li><span i18n:translate="">Fields</span>:</li>
-								<tal:fieldsforms tal:repeat="fields python:f.getFormFields(applyhidewhen=False)">
+								<tal:fieldsforms tal:repeat="field python:f.getFormFields()">
 								<ul>
 									<li>
-									<tal:block tal:content="fields/id">Field name</tal:block>
-									<a href="" tal:attributes="href python:fields.absolute_url_path()+'/base_edit'"><img src="edit.gif" /></a>
+									<tal:block tal:content="field/id">Field name</tal:block>
+									<a href="" tal:attributes="href python:field.absolute_url_path()+'/base_edit'"><img src="edit.gif" /></a>
 									<a href="" tal:attributes="href python:field.absolute_url_path()+'/'+field.getFieldType().lower()+'settings'"><img src="document_icon.gif" /></a>
 									</li>
 								</ul>

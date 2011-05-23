@@ -315,7 +315,7 @@ class PlominoForm(ATFolder):
             REQUEST.RESPONSE.redirect(db.absolute_url())
 
     security.declarePublic('getFormFields')
-    def getFormFields(self, includesubforms=False, doc=None, applyhidewhen=True):
+    def getFormFields(self, includesubforms=False, doc=None, applyhidewhen=False):
         """get fields
         """
         fieldlist = self.portal_catalog.search({'portal_type' : ['PlominoField'], 'path': '/'.join(self.getPhysicalPath())})
@@ -385,7 +385,7 @@ class PlominoForm(ATFolder):
             html_content = "<input type='hidden' name='Form' value='"+self.getFormName()+"' />" + html_content
 
         # insert the fields with proper value and rendering
-        for field in self.getFormFields(doc=doc):
+        for field in self.getFormFields(doc=doc, applyhidewhen=True):
             fieldName = field.id
             fieldblock='<span class="plominoFieldClass">'+fieldName+'</span>'
             if creation and not(fieldblock in html_content) and request is not None:
@@ -552,7 +552,7 @@ class PlominoForm(ATFolder):
         field = getattr(self, fieldname, None)
         # if field is not in main form, we search in the subforms
         if not field:
-            all_fields = self.getFormFields(includesubforms=includesubforms, applyhidewhen=False)
+            all_fields = self.getFormFields(includesubforms=includesubforms)
             matching_fields = [f for f in all_fields if f.id == fieldname]
             if matching_fields:
                 if len(matching_fields) == 1:
@@ -583,7 +583,7 @@ class PlominoForm(ATFolder):
         """return true if the form contains at least one DateTime field
         or a datagrid (as a datagrid may contain a date)
         """
-        fields=self.getFormFields(includesubforms=True, applyhidewhen=False)
+        fields=self.getFormFields(includesubforms=True, applyhidewhen=True)
         for f in fields:
             if f.getFieldType() in ["DATETIME", "DATAGRID"]:
                 return True
@@ -593,7 +593,7 @@ class PlominoForm(ATFolder):
     def hasGoogleVisualizationField(self):
         """return true if the form contains at least one GoogleVisualization field
         """
-        fields=self.getFormFields(includesubforms=True, applyhidewhen=False)
+        fields=self.getFormFields(includesubforms=True, applyhidewhen=True)
         for f in fields:
             if f.getFieldType() == "GOOGLEVISUALIZATION":
                 return True
@@ -661,7 +661,7 @@ class PlominoForm(ATFolder):
             index = db.getIndex()
             query={'PlominoViewFormula_'+searchview.getViewName() : True}
 
-            for f in self.getFormFields(includesubforms=True, applyhidewhen=False):
+            for f in self.getFormFields(includesubforms=True):
                 fieldname = f.id
                 #if fieldname is not an index -> search doesn't matter and returns all
                 submittedValue = REQUEST.get(fieldname)
