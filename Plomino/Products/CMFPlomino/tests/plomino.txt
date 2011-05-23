@@ -341,7 +341,7 @@ check if form and views are imported
 Import CSV file (API)
     
     >>> fileToImport = open(os.path.join(dir, "filestoimport", "allArticle.csv"))
-    >>> db.processImportAPI(formName = "frmBillet", separatorName = "tabulation", fileToImport = fileToImport)
+    >>> db.processImportAPI(formName = "frmBillet", separator = "\t", fileToImport = fileToImport)
     >>> fileToImport.close()
 
 Check the documents imported
