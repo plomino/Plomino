@@ -268,7 +268,7 @@ class PlominoDesignManager(Persistent):
             total_docs = len(self.plomino_documents)
             logger.info('Existing documents: '+ str(total_docs))
             for d in documents:
-                portal_catalog.catalog_object(d)
+                portal_catalog.catalog_object(d, "/".join(self.getPhysicalPath() + (d.id,)))
             msg = '%d documents re-cataloged' % total_docs
         else:
             logger.info('Database '+self.id+' does not allow portal catalog indexing.')
