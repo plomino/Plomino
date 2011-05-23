@@ -68,7 +68,7 @@
         </tal:inprogress>
     </dd>
     <dd class="portletItem" tal:condition="view/displayTree">
-    <strong>Browse</strong>
+    <strong i18n:translate="">Browse</strong>
     <dl class="collapsible collapsedOnLoad">
         <dt class="collapsibleHeader" i18n:translate="">Forms</dt>
         <dd class="collapsibleContent">
