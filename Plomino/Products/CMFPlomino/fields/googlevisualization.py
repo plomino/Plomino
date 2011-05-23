@@ -111,7 +111,7 @@ class GooglevisualizationField(BaseField):
         for row in datatable:
             j = 0
             for cell in row:
-                js = js + self.chartid+".setCell(" + str(i) + ", " + str(j) + ", " + cell + ");\n"
+                js = js + self.chartid+".setValue(" + str(i) + ", " + str(j) + ", " + cell + ");\n"
                 j = j + 1
             i = i + 1
         js = js + "}"
