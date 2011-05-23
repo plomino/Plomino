@@ -155,7 +155,11 @@ class PlominoDesignManager(Persistent):
         msg = 'Old index removed and replaced'
         report.append(msg)
         logger.info(msg)
-                
+        
+        # refresh portal_catalog
+        if self.getIndexInPortal():
+            self.refreshPortalCatalog()
+            
         # update Plone workflow state
         workflow_tool = getToolByName(self, 'portal_workflow')
         wfs = workflow_tool.getWorkflowsFor(self)
