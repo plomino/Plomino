@@ -916,7 +916,7 @@ class PlominoReplicationManager(Persistent):
         return infoMsg
 
     security.declareProtected(EDIT_PERMISSION, 'processImport')
-    def processImportAPI(self, formName, separatorName, fileToImport, file_encoding='utf-8'):
+    def processImportAPI(self, formName, separator, fileToImport, file_encoding='utf-8'):
         """
         Process import API method.
         """
@@ -931,11 +931,8 @@ class PlominoReplicationManager(Persistent):
             raise PlominoReplicationException, 'form ' + formName +  ' is unknown'
 
         #separator
-        if not separatorName:
+        if not separator:
             raise PlominoReplicationException, 'separator required'
-        separator = None
-        if PLOMINO_IMPORT_SEPARATORS.has_key(separatorName):
-            separator = PLOMINO_IMPORT_SEPARATORS[separatorName]
 
         #file
         if not fileToImport:
