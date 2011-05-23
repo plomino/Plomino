@@ -320,6 +320,9 @@ class PlominoForm(ATFolder):
         """
         fieldlist = self.portal_catalog.search({'portal_type' : ['PlominoField'], 'path': '/'.join(self.getPhysicalPath())})
         result = [f.getObject() for f in fieldlist]
+        if applyhidewhen:
+            layout = self.applyHideWhen(doc)
+            result = [f for f in result if """<span class="plominoFieldClass">%s</span>""" % f.id in layout]
         result.sort(key=lambda elt: elt.id.lower())
         if includesubforms:
             subformsseen = []

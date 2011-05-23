@@ -617,7 +617,8 @@ class PlominoDocument(ATFolder):
     def isNewDocument(self):
         """
         """
-        # when the context is an actual document, it is necessarily not new
+        if '/createDocument' in self.REQUEST['ACTUAL_URL']:
+            return True
         return False
 
     security.declarePublic('isEditMode')
