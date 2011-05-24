@@ -73,12 +73,10 @@ class PlominoIndex(UniqueObject, ZCatalog, ActionProviderBase):
     def createIndex(self, fieldname, refresh=True):
         """
         """
-        try:
+        if not fieldname in self.indexes():
             self._catalog.addIndex(fieldname,PlominoColumnIndex(fieldname))
             self.addColumn(fieldname)
-        except CatalogError:
-            # index already exists
-            pass
+            
         if refresh:
             self.refresh()
 
@@ -86,21 +84,20 @@ class PlominoIndex(UniqueObject, ZCatalog, ActionProviderBase):
     def createFieldIndex(self,fieldname, fieldtype, refresh=True):
         """
         """
-        try:
-            #self.addIndex(fieldname, 'KeywordIndex')
-            indextype=get_field_types()[fieldtype][1]
-            if indextype=='ZCTextIndex':
-                plaintext_extra = SimpleRecord( lexicon_id='plaintext_lexicon', index_type='Okapi BM25 Rank')
+        indextype=get_field_types()[fieldtype][1]
+        if indextype=='ZCTextIndex':
+            plaintext_extra = SimpleRecord( lexicon_id='plaintext_lexicon', index_type='Okapi BM25 Rank')
+            if not fieldname in self.indexes():
                 self.addIndex(fieldname, 'ZCTextIndex', plaintext_extra)
-                if fieldtype=='ATTACHMENT' and self.getParentDatabase().getIndexAttachments():
-                    self._catalog.addIndex('PlominoFiles_'+fieldname,PlominoFileIndex('PlominoFiles_'+fieldname, caller=self, extra=plaintext_extra))
-                    #self.addIndex('PlominoFiles_'+fieldname, 'ZCTextIndex', plaintext_extra)
-            else:
+            if fieldtype=='ATTACHMENT' and self.getParentDatabase().getIndexAttachments():
+                if not 'PlominoFiles_'+fieldname in self.indexes():
+                    self._catalog.addIndex('PlominoFiles_'+fieldname, PlominoFileIndex('PlominoFiles_'+fieldname, caller=self, extra=plaintext_extra))
+        else:
+            if not fieldname in self.indexes():
                 self.addIndex(fieldname, indextype)
+        if not fieldname in self.indexes():
             self.addColumn(fieldname)
-        except CatalogError:
-            # index already exists
-            pass
+
         if refresh:
             self.refresh()
 
@@ -108,11 +105,9 @@ class PlominoIndex(UniqueObject, ZCatalog, ActionProviderBase):
     def createSelectionIndex(self,fieldname, refresh=True):
         """
         """
-        try:
-            self._catalog.addIndex(fieldname,PlominoViewIndex(fieldname))
-        except CatalogError:
-            # index already exists
-            pass
+        if not fieldname in self.indexes():
+            self._catalog.addIndex(fieldname, PlominoViewIndex(fieldname))
+
         if refresh:
             self.refresh()
 
