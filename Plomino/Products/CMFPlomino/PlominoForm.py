@@ -284,7 +284,7 @@ class PlominoForm(ATFolder):
         errors=self.validateInputs(REQUEST)
         if len(errors)>0:
             if is_childform:
-                return """<script>alert('erreur');</script>"""
+                return """<html><body><span id="plomino_child_errors">%s</span></body></html>""" % " - ".join(errors)
             return self.notifyErrors(errors)
 
         # if child form
