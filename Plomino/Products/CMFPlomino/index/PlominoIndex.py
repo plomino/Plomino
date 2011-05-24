@@ -75,6 +75,7 @@ class PlominoIndex(UniqueObject, ZCatalog, ActionProviderBase):
         """
         if not fieldname in self.indexes():
             self._catalog.addIndex(fieldname,PlominoColumnIndex(fieldname))
+        if not self._catalog.schema.has_key(fieldname):
             self.addColumn(fieldname)
             
         if refresh:
@@ -95,7 +96,8 @@ class PlominoIndex(UniqueObject, ZCatalog, ActionProviderBase):
         else:
             if not fieldname in self.indexes():
                 self.addIndex(fieldname, indextype)
-        if not fieldname in self.indexes():
+
+        if not self._catalog.schema.has_key(fieldname):
             self.addColumn(fieldname)
 
         if refresh:
