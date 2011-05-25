@@ -33,6 +33,9 @@ from zope import event
 from Products.Archetypes.event import ObjectEditedEvent
 from zope.component import queryUtility
 
+import logging
+logger = logging.getLogger('Plomino')
+
 # Import conditionally, so we don't introduce a hard dependency
 try:
     from plone.i18n.normalizer.interfaces import IUserPreferredURLNormalizer
@@ -617,7 +620,8 @@ class PlominoDocument(ATFolder):
     def isNewDocument(self):
         """
         """
-        if '/createDocument' in self.REQUEST['ACTUAL_URL']:
+        req = getattr(self, 'REQUEST', None)
+        if req and '/createDocument' in req['ACTUAL_URL']:
             return True
         return False
 
