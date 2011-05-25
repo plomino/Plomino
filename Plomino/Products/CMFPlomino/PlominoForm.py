@@ -385,7 +385,7 @@ class PlominoForm(ATFolder):
             html_content = "<input type='hidden' name='Form' value='"+self.getFormName()+"' />" + html_content
 
         # insert the fields with proper value and rendering
-        for field in self.getFormFields(doc=doc, applyhidewhen=True):
+        for field in self.getFormFields(doc=doc, applyhidewhen=False):
             fieldName = field.id
             fieldblock='<span class="plominoFieldClass">'+fieldName+'</span>'
             if creation and not(fieldblock in html_content) and request is not None:
@@ -619,7 +619,11 @@ class PlominoForm(ATFolder):
         """ read submitted values in REQUEST and store them in document according
         fields definition
         """
-        for f in self.getFormFields(includesubforms=True, doc=doc, applyhidewhen=applyhidewhen):
+        all_fields = self.getFormFields(includesubforms=True, doc=doc, applyhidewhen=False)
+        if applyhidewhen:
+            displayed_fields = self.getFormFields(includesubforms=True, doc=doc, applyhidewhen=True)
+
+        for f in all_fields:
             mode = f.getFieldMode()
             fieldName = f.id
             if mode=="EDITABLE":
@@ -635,10 +639,10 @@ class PlominoForm(ATFolder):
                     #so we just let it unchanged, but with SELECTION or DOCLINK, we need to presume it was empty
                     #(as SELECT/checkbox/radio tags do not submit an empty value, they are just missing
                     #in the querystring)
-                    fieldtype = f.getFieldType()
-                    if fieldtype == "SELECTION" or fieldtype == "DOCLINK":
-                        doc.removeItem(fieldName)
-
+                    if applyhidewhen and f in displayed_fields:
+                        fieldtype = f.getFieldType()
+                        if fieldtype == "SELECTION" or fieldtype == "DOCLINK":
+                            doc.removeItem(fieldName)
 
     security.declareProtected(READ_PERMISSION, 'searchDocuments')
     def searchDocuments(self,REQUEST):
