@@ -10,6 +10,8 @@
 __author__ = """Eric BREHAULT <eric.brehault@makina-corpus.com>"""
 __docformat__ = 'plaintext'
 
+from DateTime import DateTime
+
 from zope.formlib import form
 from zope.interface import implements
 from zope import component
@@ -23,7 +25,7 @@ import simplejson as json
 
 from Products.Five.formlib.formbase import EditForm
 
-from Products.CMFPlomino.PlominoUtils import csv_to_array
+from Products.CMFPlomino.PlominoUtils import csv_to_array, DateToString
 from Products.CMFPlomino.PlominoDocument import TemporaryDocument
 
 from Products.CMFPlomino.interfaces import IPlominoField
@@ -96,6 +98,8 @@ class DatagridField(BaseField):
             value = []
         if isinstance(value, basestring):
             return value
+        if isinstance(value, DateTime):
+            value = DateToString(value)
         return json.dumps(value)
 
     def getLang(self):
@@ -121,7 +125,9 @@ class DatagridField(BaseField):
 
             mapped_fields = []
             if self.field_mapping:
-                mapped_fields = self.field_mapping.split(',')
+                mapped_fields = [
+                    f.strip() for f in self.field_mapping.split(',')]
+            # item names is set by `PlominoForm.createDocument`
             item_names = doc.getItem(self.context.id+'_itemnames')
 
             if mapped_fields:
