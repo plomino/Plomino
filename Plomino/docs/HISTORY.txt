@@ -1,6 +1,10 @@
 Changelog
 =========
 
+1.9.8.1 (2011-05-27)
+------------------
+* Fix applyHideWhen behaviour to avoid meaningless errors when applyHideWhen is not used for actual rendering.
+
 1.9.8 (2011-05-26)
 ------------------
 * Enable Plomino documents in sitemap
