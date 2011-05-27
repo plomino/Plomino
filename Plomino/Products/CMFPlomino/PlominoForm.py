@@ -378,7 +378,7 @@ class PlominoForm(ATFolder):
         """
 
         # remove the hidden content
-        html_content = self.applyHideWhen(doc)
+        html_content = self.applyHideWhen(doc, silent_error=False)
 
         #if editmode, we had a hidden field to handle the Form item value
         if editmode and not subform:
@@ -447,7 +447,7 @@ class PlominoForm(ATFolder):
         return html
 
     security.declareProtected(READ_PERMISSION, 'applyHideWhen')
-    def applyHideWhen(self, doc=None):
+    def applyHideWhen(self, doc=None, silent_error=True):
         """evaluate hide-when formula and return resulting layout
         """
         plone_tools = getToolByName(self, 'plone_utils')
@@ -465,7 +465,11 @@ class PlominoForm(ATFolder):
                     target = doc
                 result = self.runFormulaScript("hidewhen_"+self.id+"_"+hidewhen.id+"_formula", target, hidewhen.Formula)
             except PlominoScriptException, e:
-                e.reportError('%s hide-when formula failed' % hidewhen.id, request=getattr(self, 'REQUEST', None))
+                if not silent_error:
+                    # applyHideWhen is called by getFormFields and getSubForms, in those cases, error reporting
+                    # is not accurate,
+                    # we only need error reporting when actually rendering a page
+                    e.reportError('%s hide-when formula failed' % hidewhen.id, request=getattr(self, 'REQUEST', None))
                 #if error, we hide anyway
                 result = True
             start = '<span class="plominoHidewhenClass">start:'+hidewhenName+'</span>'
