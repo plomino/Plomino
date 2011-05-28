@@ -625,6 +625,12 @@ class PlominoDocument(ATFolder):
             return True
         return False
 
+    security.declarePublic('isDocument')
+    def isDocument(self):
+        """
+        """
+        return True
+
     security.declarePublic('isEditMode')
     def isEditMode(self):
         """

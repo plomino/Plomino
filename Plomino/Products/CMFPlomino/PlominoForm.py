@@ -806,6 +806,12 @@ class PlominoForm(ATFolder):
         # when the context is a form, it is necessarily a new doc
         return True
 
+    security.declarePublic('isDocument')
+    def isDocument(self):
+        """
+        """
+        return False
+    
     security.declarePublic('isEditMode')
     def isEditMode(self):
         """

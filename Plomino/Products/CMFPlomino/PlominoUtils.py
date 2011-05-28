@@ -186,6 +186,6 @@ def MissingValue():
 
 def isDocument(doc):
     if doc:
-        if not doc.isNewDocument():
-            return True
+        if hasattr(doc, 'isDocument'):
+            return doc.isDocument()
     return False
