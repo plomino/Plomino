@@ -366,7 +366,7 @@ class PlominoDocument(ATFolder):
         # execute the onOpenDocument code of the form
         valid = ''
         try:
-            if not form.getOnOpenDocument()=="":
+            if form.getOnOpenDocument():
                 #RunFormula(self, form.getOnOpenDocument())
                 valid = self.runFormulaScript("form_"+form.id+"_onopen", self, form.onOpenDocument)
         except PlominoScriptException, e:
