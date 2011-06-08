@@ -343,7 +343,7 @@ class PlominoForm(ATFolder):
         return [h.getObject() for h in list]
 
     security.declarePublic('getActions')
-    def getActions(self, target, hide=True):
+    def getActions(self, target, hide=True, form_id=None):
         """Get actions
         """
         all = self.portal_catalog.search({'portal_type' : ['PlominoAction'], 'path': '/'.join(self.getPhysicalPath())})
@@ -354,7 +354,7 @@ class PlominoForm(ATFolder):
             if hide:
                 try:
                     #result = RunFormula(target, obj_a.getHidewhen())
-                    result = self.runFormulaScript("action_"+self.id+"_"+obj_a.id+"_hidewhen", target, obj_a.Hidewhen)
+                    result = self.runFormulaScript("action_"+self.id+"_"+obj_a.id+"_hidewhen", target, obj_a.Hidewhen, True, form_id)
                 except PlominoScriptException, e:
                     e.reportError('"%s" hide-when formula failed' % obj_a.Title())
                     #if error, we hide anyway
@@ -373,7 +373,7 @@ class PlominoForm(ATFolder):
 
 
     security.declareProtected(READ_PERMISSION, 'displayDocument')
-    def displayDocument(self,doc,editmode=False, creation=False, subform=False, request=None):
+    def displayDocument(self, doc, editmode=False, creation=False, parent_form_id=False, request=None):
         """display the document using the form's layout
         """
 
@@ -381,7 +381,7 @@ class PlominoForm(ATFolder):
         html_content = self.applyHideWhen(doc, silent_error=False)
 
         #if editmode, we had a hidden field to handle the Form item value
-        if editmode and not subform:
+        if editmode and not parent_form_id:
             html_content = "<input type='hidden' name='Form' value='"+self.getFormName()+"' />" + html_content
 
         # insert the fields with proper value and rendering
@@ -398,7 +398,7 @@ class PlominoForm(ATFolder):
         for subformname in self.getSubforms(doc):
             subform = self.getParentDatabase().getForm(subformname)
             if subform:
-                subformrendering = subform.displayDocument(doc, editmode, creation, subform=True, request=request)
+                subformrendering = subform.displayDocument(doc, editmode, creation, parent_form_id=self.id, request=request)
                 html_content = html_content.replace('<span class="plominoSubformClass">'+subformname+'</span>', subformrendering)
 
         # insert the actions
@@ -406,15 +406,19 @@ class PlominoForm(ATFolder):
             target = self
         else:
             target = doc
-        actionsToDisplay=[a.id for a in self.getActions(target, hide=True)]
-        for action in self.getActions(target, False):
+        form_id = parent_form_id and parent_form_id or self.id
+        actionsToDisplay = [a.id for a in self.getActions(
+            target, hide=True, form_id=form_id)]
+        for action in self.getActions(target, False, form_id=form_id):
             actionName = action.id
             if actionName in actionsToDisplay:
                 actionDisplay = action.ActionDisplay
                 pt=self.getRenderingTemplate(actionDisplay+"Action")
                 if pt is None:
                     pt=self.getRenderingTemplate("LINKAction")
-                action_render = pt(plominoaction=action, plominotarget=target)
+                action_render = pt(plominoaction=action,
+                                   plominotarget=target,
+                                   plominoform_id=form_id)
             else:
                 action_render=''
             html_content = html_content.replace('<span class="plominoActionClass">'+actionName+'</span>', action_render)
@@ -576,7 +580,7 @@ class PlominoForm(ATFolder):
         if field:
             db = self.getParentDatabase()
             try:
-                fieldvalue = db.runFormulaScript("field_"+self.id+"_"+fieldname+"_formula", target, field.Formula)
+                fieldvalue = db.runFormulaScript("field_"+self.id+"_"+fieldname+"_formula", target, field.Formula, True, self)
             except PlominoScriptException, e:
                 e.reportError('%s field formula failed' % fieldname)
 

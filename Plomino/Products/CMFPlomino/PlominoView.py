@@ -278,7 +278,7 @@ class PlominoView(ATFolder):
             if hide:
                 try:
                     #result = RunFormula(target, obj_a.getHidewhen())
-                    result = self.runFormulaScript("action_"+obj_a.getParentNode().id+"_"+obj_a.id+"_hidewhen", target, obj_a.Hidewhen)
+                    result = self.runFormulaScript("action_"+obj_a.getParentNode().id+"_"+obj_a.id+"_hidewhen", target, obj_a.Hidewhen, True)
                 except PlominoScriptException, e:
                     e.reportError('"%s" action hide-when failed' % obj_a.Title())
                     #if error, we hide anyway

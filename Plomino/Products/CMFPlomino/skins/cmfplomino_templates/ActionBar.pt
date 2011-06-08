@@ -137,7 +137,7 @@ if (typeof(oDynamicTable)!="undefined") {
 </div>
 
 <tal:block metal:define-macro="LinkAction"> <a
-	tal:attributes="href python:plominoaction.executeAction(plominotarget)"
+	tal:attributes="href python:plominoaction.executeAction(plominotarget, plominoform_id)"
 	tal:content="python: plominoaction.Title()" /></tal:block>
 
 <tal:block metal:define-macro="SubmitAction"> <input type="submit"
@@ -153,8 +153,11 @@ if (typeof(oDynamicTable)!="undefined") {
   <input class="context"
   
 	type="button"
-	tal:attributes="onclick python:'location.href=\''+plominoaction.executeAction(plominotarget)+'\'';
-								value python: plominoaction.Title(); name python:plominoaction.id; id python:plominoaction.id;"/>
+	tal:attributes="onclick python:'location.href=\''+plominoaction.executeAction(plominotarget, plominoform_id)+'\'';
+                    id python:plominoaction.id;
+                    name python:plominoaction.id;
+					value python: plominoaction.Title();
+                    "/>
   </tal:button>
 </tal:block>
 

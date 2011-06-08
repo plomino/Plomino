@@ -1,4 +1,7 @@
-<tal:block tal:define="plominoaction python:options['plominoaction']; plominotarget python:options['plominotarget']">
+<tal:block tal:define="plominoaction python:options['plominoaction'];
+                       plominotarget python:options['plominotarget'];
+                       plominoform_id python:options['plominoform_id'];
+                       ">
 	<span metal:use-macro="here/ActionBar/macros/LinkAction" >
 		display action as a link
 	</span>
