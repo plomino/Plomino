@@ -343,7 +343,7 @@ class PlominoForm(ATFolder):
         return [h.getObject() for h in list]
 
     security.declarePublic('getActions')
-    def getActions(self, target, hide=True, form_id=None):
+    def getActions(self, target, hide=True, parent_id=None):
         """Get actions
         """
         all = self.portal_catalog.search({'portal_type' : ['PlominoAction'], 'path': '/'.join(self.getPhysicalPath())})
@@ -354,15 +354,15 @@ class PlominoForm(ATFolder):
             if hide:
                 try:
                     #result = RunFormula(target, obj_a.getHidewhen())
-                    result = self.runFormulaScript("action_"+self.id+"_"+obj_a.id+"_hidewhen", target, obj_a.Hidewhen, True, form_id)
+                    result = self.runFormulaScript("action_"+self.id+"_"+obj_a.id+"_hidewhen", target, obj_a.Hidewhen, True, parent_id)
                 except PlominoScriptException, e:
                     e.reportError('"%s" hide-when formula failed' % obj_a.Title())
                     #if error, we hide anyway
                     result = True
                 if not result:
-                    filtered.append(obj_a)
+                    filtered.append((obj_a, parent_id))
             else:
-                filtered.append(obj_a)
+                filtered.append((obj_a, parent_id))
         return filtered
 
     security.declarePublic('getFormName')
@@ -407,9 +407,9 @@ class PlominoForm(ATFolder):
         else:
             target = doc
         form_id = parent_form_id and parent_form_id or self.id
-        actionsToDisplay = [a.id for a in self.getActions(
-            target, hide=True, form_id=form_id)]
-        for action in self.getActions(target, False, form_id=form_id):
+        actionsToDisplay = [a.id for a, f_id in self.getActions(
+            target, hide=True, parent_id=form_id)]
+        for action, form_id in self.getActions(target, False, parent_id=form_id):
             actionName = action.id
             if actionName in actionsToDisplay:
                 actionDisplay = action.ActionDisplay
@@ -418,7 +418,7 @@ class PlominoForm(ATFolder):
                     pt=self.getRenderingTemplate("LINKAction")
                 action_render = pt(plominoaction=action,
                                    plominotarget=target,
-                                   plominoform_id=form_id)
+                                   plomino_parent_id=form_id)
             else:
                 action_render=''
             html_content = html_content.replace('<span class="plominoActionClass">'+actionName+'</span>', action_render)

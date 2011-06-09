@@ -267,7 +267,7 @@ class PlominoView(ATFolder):
         return [c.getObject() for c in columnslist]
 
     security.declarePublic('getActions')
-    def getActions(self, target, hide=True):
+    def getActions(self, target, hide=True, parent_id=None):
         """Get actions
         """
         all = self.portal_catalog.search({'portal_type' : ['PlominoAction'], 'path': '/'.join(self.getPhysicalPath())})
@@ -284,9 +284,9 @@ class PlominoView(ATFolder):
                     #if error, we hide anyway
                     result = True
                 if not result:
-                    filtered.append(obj_a)
+                    filtered.append((obj_a, parent_id))
             else:
-                filtered.append(obj_a)
+                filtered.append((obj_a, parent_id))
         return filtered
 
     security.declarePublic('getColumn')

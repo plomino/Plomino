@@ -72,21 +72,21 @@
     <dl class="collapsible collapsedOnLoad">
         <dt class="collapsibleHeader" i18n:translate="">Forms</dt>
         <dd class="collapsibleContent">
-            <tal:block tal:repeat="f python:db.getForms(sortbyid=True)">
+            <tal:block tal:repeat="form python:db.getForms(sortbyid=True)">
             <div>
             <dl class="collapsible inline collapsedOnLoad">
                 <dt class="collapsibleHeader">
-                    <tal:block tal:content="f/id">form id</tal:block>
-                    <a tal:attributes="href python:f.absolute_url_path()+'/base_edit'"><img src="edit.gif" /></a>
-                    <a tal:attributes="href python:f.absolute_url_path()+'/base_view'"><img src="document_icon.gif" /></a>
-                    <a tal:attributes="href python:f.absolute_url_path()+'/folder_contents'"><img src="folder_icon.gif" /></a>
+                    <tal:block tal:content="form/id">form id</tal:block>
+                    <a tal:attributes="href python:form.absolute_url_path()+'/base_edit'"><img src="edit.gif" /></a>
+                    <a tal:attributes="href python:form.absolute_url_path()+'/base_view'"><img src="document_icon.gif" /></a>
+                    <a tal:attributes="href python:form.absolute_url_path()+'/folder_contents'"><img src="folder_icon.gif" /></a>
                 </dt>
                 <dd class="collapsibleContent">
                     <!--Fields list-->
                             <ul>
                                 <li><span i18n:translate="">Fields</span>:
                                 <ul>
-                                <tal:fieldsforms tal:repeat="field python:f.getFormFields()">
+                                <tal:fieldsforms tal:repeat="field python:form.getFormFields()">
                                     <li>
                                     <tal:block tal:content="field/id">Field name</tal:block>
                                     <a href="" tal:attributes="href python:field.absolute_url_path()+'/base_edit'"><img src="edit.gif" /></a>
@@ -97,7 +97,7 @@
                                 </li>
                                 <li><span i18n:translate="">Hide when</span> : 
                                 <ul>
-                                <tal:hidewhens tal:repeat="h python:f.getHidewhenFormulas()">
+                                <tal:hidewhens tal:repeat="h python:form.getHidewhenFormulas()">
                                     <li>
                                     <tal:block tal:content="h/id">Hide when name</tal:block>
                                     <a href="" tal:attributes="href python:h.absolute_url_path()+'/base_edit'"><img src="edit.gif" /></a>
@@ -108,9 +108,9 @@
                                 </li>
                                 <li><span i18n:translate="">Actions</span> : 
                                 <ul>
-                                    <tal:actionsforms tal:repeat="action python:f.getActions(None, False)">
-                                        <li>
-                                        <tal:block tal:content="action/id">action name</tal:block>
+                                    <tal:actionsforms tal:repeat="action_tuple python:form.getActions(None, False, form.id)">
+                                        <li tal:define="action python:action_tuple[0]">
+                                        <tal:block tal:replace="action/id">action name</tal:block>
                                         <a href="" tal:attributes="href python:action.absolute_url()+'/base_edit'"><img src="edit.gif" /></a>
                                         <a href="" tal:attributes="href python:action.absolute_url()+'/base_view'"><img src="document_icon.gif" /></a>
                                         </li>
@@ -138,11 +138,11 @@
                             <ul>
                                 <li><span i18n:translate="">Columns</span> : 
                                 <ul>
-                                    <tal:colonnesviews tal:repeat="colonne python:plominoview.getColumns()">
+                                    <tal:colonnesviews tal:repeat="column python:plominoview.getColumns()">
                                     <li>
-                                    <tal:block tal:content="python:colonne.getColumnName()">column name</tal:block>
-                                        <a href="" tal:attributes="href python:colonne.absolute_url()+'/base_edit'"><img src="edit.gif" /></a>
-                                        <a href="" tal:attributes="href python:colonne.absolute_url()+'/base_view'"><img src="document_icon.gif" /></a>
+                                    <tal:block tal:content="python:column.getColumnName()">column name</tal:block>
+                                        <a href="" tal:attributes="href python:column.absolute_url()+'/base_edit'"><img src="edit.gif" /></a>
+                                        <a href="" tal:attributes="href python:column.absolute_url()+'/base_view'"><img src="document_icon.gif" /></a>
                                     </li>
                                 </tal:colonnesviews>
                                 </ul>
@@ -150,8 +150,8 @@
                                 <!--View actions-->
                                 <li><span i18n:translate="">Actions</span> :
                                 <ul>
-                                    <tal:actionsviews tal:repeat="action python:plominoview.getActions(None, False)">
-                                        <li>
+                                    <tal:actionsviews tal:repeat="action_tuple python:plominoview.getActions(None, False, plominoview.id)">
+                                        <li tal:define="action python:action_tuple[0]">
                                         <tal:block tal:content="action/id">action name</tal:block>
                                         <a href="" tal:attributes="href python:action.absolute_url()+'/base_edit'"><img src="edit.gif" /></a>
                                         <a href="" tal:attributes="href python:action.absolute_url()+'/base_view'"><img src="document_icon.gif" /></a>
