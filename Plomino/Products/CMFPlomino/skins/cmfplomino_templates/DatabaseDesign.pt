@@ -100,21 +100,21 @@
 									<span i18n:translate="">Columns</span> : 
 								</li>
 								<ul>
-									<tal:colonnesviews tal:repeat="colonne python:view.getColumns()">
+									<tal:columnsviews tal:repeat="column python:view.getColumns()">
 									<li>
-									<tal:block tal:content="python:colonne.getColumnName()">column name</tal:block>
-										<a href="" tal:attributes="href python:colonne.absolute_url()+'/base_edit'"><img src="edit.gif" /></a>
-										<a href="" tal:attributes="href python:colonne.absolute_url()+'/base_view'"><img src="document_icon.gif" /></a>
+									<tal:block tal:content="python:column.getColumnName()">column name</tal:block>
+										<a href="" tal:attributes="href python:column.absolute_url()+'/base_edit'"><img src="edit.gif" /></a>
+										<a href="" tal:attributes="href python:column.absolute_url()+'/base_view'"><img src="document_icon.gif" /></a>
 									</li>
-								</tal:colonnesviews>
+								</tal:columnsviews>
 								</ul>
 								<!--View actions-->
 								<li>
 									<span i18n:translate="">Actions</span> : 
 								</li>
 								<ul>
-									<tal:actionsviews tal:repeat="action python:view.getActions(None, False, view.id)">
-										<li>
+									<tal:actionsviews tal:repeat="action_tuple python:view.getActions(None, False, view.id)">
+										<li tal:define="action python:action_tuple[0]">
 										<tal:block tal:content="action/id">action name</tal:block>
 										<a href="" tal:attributes="href python:action.absolute_url()+'/base_edit'"><img src="edit.gif" /></a>
 										<a href="" tal:attributes="href python:action.absolute_url()+'/base_view'"><img src="document_icon.gif" /></a>
