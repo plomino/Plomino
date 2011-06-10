@@ -68,7 +68,7 @@
 		<tal:block
 			tal:repeat="a python:[(act, parent_id) for act, parent_id in owner.getActions(here, True, owner.id) if act.getInActionBar()==True]">
 			<tal:block
-				tal:define="plominoaction python:a;
+				tal:define="plominoaction python:a[0];
                             plominotarget python:here;
                             plomino_parent_id python:a[1]">
 				<tal:block metal:use-macro="here/ActionBar/macros/ButtonAction">
