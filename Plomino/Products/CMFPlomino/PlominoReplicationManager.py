@@ -427,11 +427,11 @@ class PlominoReplicationManager(Persistent):
     security.declarePrivate('exportDocumentPush')
     def exportDocumentPush(self, doc, remoteUrl, username, password):
         """ exports document to remoteUrl
-            send object as a .zexp stream via HTTP multipart POST
+            send object as a xml stream via HTTP multipart POST
         """
         id=doc.id
         xmlstring=self.exportAsXML(docids=[id])
-        result = authenticateAndPostToURL(remoteUrl+"/importFromXML", username, password, '%s.%s' % (id, 'xml'), xmlstring)
+        result = authenticateAndPostToURL(remoteUrl+"/importFromXML", username, password, '%s.%s' % (id, 'xml'), xmlstring.encode('utf-8'))
 
     security.declarePrivate('importableDoc')
     def importableDoc(self, docId, lastEditRemoteDocumentDate, lastReplicationDate, whowins):
@@ -1187,7 +1187,7 @@ class PlominoReplicationManager(Persistent):
         xml_files = []
         txn = transaction.get()
         if REQUEST:
-            sourcetype = REQUEST.get('sourcetype')
+            sourcetype = REQUEST.get('sourcetype', sourcetype)
         if sourcetype == 'sourceFile':
 # XXX: if REQUEST, we ignore arguments. Is that OK?
             if REQUEST:
