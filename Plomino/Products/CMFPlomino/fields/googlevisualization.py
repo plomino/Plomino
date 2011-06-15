@@ -28,18 +28,17 @@ class IGooglevisualizationField(IBaseField):
     jssettings = Text(title=u'Javascript settings',
                       description=u'Google Vizualization code',
                       default=u"""
-google.load('visualization', '1', {packages:['orgchart']});
+google.load('visualization', '1', {packages:['corechart']});
 google.setOnLoadCallback(gvisudata_drawChart);
 var gvisudata;
 
 function gvisudata_drawChart() {
 gvisudata = new google.visualization.DataTable();
-gvisudata.addColumn('string', 'Name');
-gvisudata.addColumn('string', 'Manager');
-gvisudata.addColumn('string', 'ToolTip');
+gvisudata.addColumn('string', 'Category');
+gvisudata.addColumn('number', 'Volume');
 gvisudata_getCells();
-var gvisudata_chart = new google.visualization.OrgChart(document.getElementById('gvisudata_div'));
-gvisudata_chart.draw(gvisudata, {allowHtml:true});
+var gvisudata_chart = new google.visualization.PieChart(document.getElementById('gvisudata_div'));
+gvisudata_chart.draw(gvisudata, {width: 400, height: 400, is3D: true});
 }
 """,
                       required=False)
