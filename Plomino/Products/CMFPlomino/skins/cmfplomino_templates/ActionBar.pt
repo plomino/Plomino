@@ -172,13 +172,13 @@ if (typeof(oDynamicTable)!="undefined") {
 </tal:block>
 
 <tal:block metal:define-macro="CloseAction"> <tal:block
-	tal:define="is_parent_form_or_view python:(hasattr(here.aq_parent,'getIsSearchForm') or hasattr(here.aq_parent,'getSelectionFormula'));">
-	<tal:backtoDB tal:condition="python:not(is_parent_form_or_view)">
+	tal:define="is_search_form_or_view python:(hasattr(here.aq_parent,'getIsSearchForm') or hasattr(here.aq_parent,'getSelectionFormula'));">
+	<tal:backtoDB tal:condition="python:not(is_search_form_or_view)">
 		<input type="button" class="context plominoClose" value="Close" name="plomino_close"
 			i18n:domain="CMFPlomino" i18n:attributes="value"
-			tal:attributes="onclick python:'location.href=\''+here.navigationParent(here)+'\''" />
+			tal:attributes="onclick python:'location.href=\''+here.getParentDatabase().absolute_url()+'\''" />
 	</tal:backtoDB>
-	<tal:backtoprevious tal:condition="python:is_parent_form_or_view">
+	<tal:backtoprevious tal:condition="python:is_search_form_or_view">
 		<input type="button" class="context plominoClose" value="Close" name="plomino_close"
 			i18n:domain="CMFPlomino" i18n:attributes="value"
 			onclick="history.go(-1)" />
