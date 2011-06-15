@@ -19,6 +19,8 @@ from dictionaryproperty import DictionaryProperty
 
 from Products.Five.formlib.formbase import EditForm
 
+from Products.CMFPlomino.PlominoUtils import asList
+
 from base import IBaseField, BaseField
 
 class IGooglevisualizationField(IBaseField):
@@ -103,6 +105,21 @@ class GooglevisualizationField(BaseField):
     def jscode(self, datatable):
         """ return Google visualization js code
         """
+        if type(datatable) is dict:
+            # if dict, we convert it to googleviz compliant array
+            labels = datatable.keys()
+            labels.sort()
+            tmp = []
+            for label in labels:
+                valuelist = ["'%s'" % label]
+                for e in asList(datatable[label]):
+                    if isinstance(e, basestring):
+                        valuelist.append("'%s'" % e)
+                    else:
+                        valuelist.append(str(e))
+                tmp.append(valuelist)
+            datatable = tmp
+            
         js = self.jssettings + "\n"
         js = js + "function " + self.chartid + "_getCells() {\n"
         js = js + self.chartid+".addRows(" + str(len(datatable)) + ");\n"
