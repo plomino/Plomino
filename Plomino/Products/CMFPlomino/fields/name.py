@@ -74,6 +74,7 @@ class NameField(BaseField):
                 s.append(m[0]+'|'+m[0])
             else:
                 s.append(m[1]+'|'+m[0])
+        s.sort(key=lambda n: n.split('|')[1].lower())
         return s
 
     def getFullname(self, userid):
