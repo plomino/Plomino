@@ -35,6 +35,9 @@ from exceptions import PlominoScriptException
 import PlominoDocument
 from PlominoDocument import TemporaryDocument
 
+import logging
+logger = logging.getLogger('Plomino')
+
 ##/code-section module-header
 
 schema = Schema((
@@ -384,21 +387,27 @@ class PlominoForm(ATFolder):
         if editmode and not parent_form_id:
             html_content = "<input type='hidden' name='Form' value='"+self.getFormName()+"' />" + html_content
 
+        seen = getattr(self, '_v_seen', [])
         # insert the fields with proper value and rendering
         for field in self.getFormFields(doc=doc, applyhidewhen=False):
             fieldName = field.id
             fieldblock='<span class="plominoFieldClass">'+fieldName+'</span>'
             if creation and not(fieldblock in html_content) and request is not None:
                 if request.has_key(fieldName):
-                    html_content = "<input type='hidden' name='"+fieldName+"' value='"+str(request.get(fieldName,''))+"' />" + html_content
+                    if fieldName not in seen:
+                        html_content = "<input type='hidden' name='"+fieldName+"' value='"+str(request.get(fieldName,''))+"' />" + html_content
             if fieldblock in html_content:
                 html_content = html_content.replace(fieldblock, field.getFieldRender(self, doc, editmode, creation, request=request))
+            seen.append(fieldName)
+            self._v_seen = seen
 
         # insert subforms
         for subformname in self.getSubforms(doc):
             subform = self.getParentDatabase().getForm(subformname)
             if subform:
-                subformrendering = subform.displayDocument(doc, editmode, creation, parent_form_id=self.id, request=request)
+                subformrendering = subform.displayDocument(
+                    doc, editmode, creation, parent_form_id=self.id,
+                    request=request)
                 html_content = html_content.replace('<span class="plominoSubformClass">'+subformname+'</span>', subformrendering)
 
         # insert the actions
