@@ -280,6 +280,9 @@ class PlominoForm(ATFolder):
         is_childform = False
         parent_field = REQUEST.get("Plomino_Parent_Field", None)
         parent_form = REQUEST.get("Plomino_Parent_Form", None)
+
+        # Check for None: the request might yield an empty string.
+        # TODO: try not to put misleading Plomino_* fields on the request.
         if parent_field is not None:
             is_childform = True
 
@@ -387,19 +390,23 @@ class PlominoForm(ATFolder):
         if editmode and not parent_form_id:
             html_content = "<input type='hidden' name='Form' value='"+self.getFormName()+"' />" + html_content
 
-        seen = getattr(self, '_v_seen', [])
+        seen = []
+        if request:
+            seen = request.get('Plomino_Fields_seen', [])
         # insert the fields with proper value and rendering
         for field in self.getFormFields(doc=doc, applyhidewhen=False):
             fieldName = field.id
             fieldblock='<span class="plominoFieldClass">'+fieldName+'</span>'
             if creation and not(fieldblock in html_content) and request is not None:
                 if request.has_key(fieldName):
+                    # logger.info('displayDocument> %s, %s'%(fieldName, `seen`))
                     if fieldName not in seen:
                         html_content = "<input type='hidden' name='"+fieldName+"' value='"+str(request.get(fieldName,''))+"' />" + html_content
             if fieldblock in html_content:
                 html_content = html_content.replace(fieldblock, field.getFieldRender(self, doc, editmode, creation, request=request))
             seen.append(fieldName)
-            self._v_seen = seen
+            if request:
+                request.set('Plomino_Fields_seen', seen)
 
         # insert subforms
         for subformname in self.getSubforms(doc):
@@ -552,7 +559,7 @@ class PlominoForm(ATFolder):
                 e.reportError('beforeCreate formula failed')
 
         if (not invalid) or self.hasDesignPermission(self):
-            return self.displayDocument(None, True, True, request=request)
+            return self.displayDocument(None, editmode=True, creation=True, request=request)
         else:
             self.REQUEST.RESPONSE.redirect(self.getParentDatabase().absolute_url()+"/ErrorMessages?disable_border=1&error="+invalid)
 
