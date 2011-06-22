@@ -1089,7 +1089,7 @@ class PlominoReplicationManager(Persistent):
         The targettype can be file or folder.
         """
         if REQUEST:
-            targettype=REQUEST.get('targettype')
+            targettype=REQUEST.get('targettype', 'file')
             targetfolder=REQUEST.get('targetfolder')
             str_docids=REQUEST.get("docids")
             if str_docids is not None:
@@ -1189,9 +1189,10 @@ class PlominoReplicationManager(Persistent):
         if REQUEST:
             sourcetype = REQUEST.get('sourcetype', sourcetype)
         if sourcetype == 'sourceFile':
-# XXX: if REQUEST, we ignore arguments. Is that OK?
             if REQUEST:
                 xml_files = [REQUEST.get("file")]
+            else:
+                xml_files = [xmlstring]
         elif sourcetype == 'folder':
             if REQUEST:
                 from_folder=REQUEST.get("from_folder")
@@ -1202,11 +1203,14 @@ class PlominoReplicationManager(Persistent):
         imports = 0
 
         for xml_file in xml_files:
-            if hasattr(xml_file, 'read'):
-                xmlstring = xml_file.read()
+            if isinstance(xml_file, basestring):
+                xmlstring = xml_file
             else:
-                fileobj = codecs.open(xml_file, 'r', 'utf-8')
-                xmlstring = fileobj.read().encode('utf-8')
+                if hasattr(xml_file, 'read'):
+                    xmlstring = xml_file.read()
+                else:
+                    fileobj = codecs.open(xml_file, 'r', 'utf-8')
+                    xmlstring = fileobj.read().encode('utf-8')
 
             xmldoc = parseString(xmlstring)
             documents = xmldoc.getElementsByTagName("document")
