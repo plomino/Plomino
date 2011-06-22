@@ -161,15 +161,7 @@ class PlominoDesignManager(Persistent):
             self.refreshPortalCatalog()
             
         # update Plone workflow state
-        workflow_tool = getToolByName(self, 'portal_workflow')
-        wfs = workflow_tool.getWorkflowsFor(self)
-        for wf in wfs:
-            if not isinstance( wf, DCWorkflowDefinition ):
-                continue
-            wf.updateRoleMappingsFor( self )
-        msg = 'Plone workflow update'
-        report.append(msg)
-        logger.info(msg)
+        self.refreshWorkflowState()
         
         self.setStatus("Ready")
         if REQUEST:
@@ -287,7 +279,19 @@ class PlominoDesignManager(Persistent):
         if REQUEST:
             self.writeMessageOnPage(msg, REQUEST, False)
             REQUEST.RESPONSE.redirect(self.absolute_url()+"/DatabaseDesign")
-        
+
+    security.declareProtected(DESIGN_PERMISSION, 'refreshWorkflowState')
+    def refreshWorkflowState(self):
+        """ Prevent Plone security inconsistencies when refreshing design
+        """
+        workflow_tool = getToolByName(self, 'portal_workflow')
+        wfs = workflow_tool.getWorkflowsFor(self)
+        for wf in wfs:
+            if not isinstance( wf, DCWorkflowDefinition ):
+                continue
+            wf.updateRoleMappingsFor( self )
+        logger.info('Plone workflow update')
+
     security.declareProtected(DESIGN_PERMISSION, 'exportDesign')
     def exportDesign(self, targettype='file', targetfolder='', dbsettings=True, designelements=None, REQUEST=None, **kw):
         """ Export design elements to XML.
@@ -409,6 +413,8 @@ class PlominoDesignManager(Persistent):
             no_refresh_documents = REQUEST.get('no_refresh_documents', 'No')
             if no_refresh_documents == 'No':
                 self.refreshDB()
+            else:
+                self.refreshWorkflowState()
             REQUEST.RESPONSE.redirect(self.absolute_url()+"/DatabaseDesign")
         else:
             REQUEST.RESPONSE.redirect(self.absolute_url()+"/DatabaseDesign?username="+username+"&password="+password+"&sourceURL="+sourceURL)
