@@ -119,9 +119,9 @@ class ElementPortletRenderer(base.Renderer):
     def available(self):
         element = self.getElement()
         if element and hasattr(element, "getFormField"):
-            availability_field = element.getFormField("Plomino_Portlet_Availabilty")
+            availability_field = element.getFormField("Plomino_Portlet_Availability")
             if availability_field:
-                return element.computeFieldValue("Plomino_Portlet_Availabilty", element)
+                return element.computeFieldValue("Plomino_Portlet_Availability", element)
         return True
 
     @property
