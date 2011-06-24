@@ -10,7 +10,7 @@
 __author__ = """Xavier PERROT <xavier.perrot@makina-corpus.com>"""
 __docformat__ = 'plaintext'
 
-from Globals import Persistent
+from Persistence import Persistent
 from Products.CMFPlomino.config import *
 
 from Products.CMFPlomino.exceptions import PlominoReplicationException
