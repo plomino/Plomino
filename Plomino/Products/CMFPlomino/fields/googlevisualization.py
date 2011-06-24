@@ -17,7 +17,7 @@ from zope.schema import Text, TextLine
 
 from dictionaryproperty import DictionaryProperty
 
-from Products.Five.formlib.formbase import EditForm
+from five.formlib.formbase import EditForm
 
 from Products.CMFPlomino.PlominoUtils import asList
 

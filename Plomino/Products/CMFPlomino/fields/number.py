@@ -18,7 +18,7 @@ from zope.schema.vocabulary import SimpleVocabulary
 
 from dictionaryproperty import DictionaryProperty
 
-from Products.Five.formlib.formbase import EditForm
+from five.formlib.formbase import EditForm
 from Products.CMFPlomino.PlominoUtils import PlominoTranslate
 
 from base import IBaseField, BaseField

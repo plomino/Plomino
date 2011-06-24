@@ -17,7 +17,7 @@ from zope.schema import TextLine
 
 from dictionaryproperty import DictionaryProperty
 
-from Products.Five.formlib.formbase import EditForm
+from five.formlib.formbase import EditForm
 
 from base import IBaseField, BaseField
 

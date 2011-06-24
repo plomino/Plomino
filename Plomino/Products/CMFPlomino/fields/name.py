@@ -17,7 +17,7 @@ from zope.schema import TextLine, Text, List, Choice
 from zope.schema.vocabulary import SimpleVocabulary
 from dictionaryproperty import DictionaryProperty
 
-from Products.Five.formlib.formbase import EditForm
+from five.formlib.formbase import EditForm
 from Products.CMFCore.utils import getToolByName
 
 from base import IBaseField, BaseField
