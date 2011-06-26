@@ -63,7 +63,7 @@ Add some minimal content to test access (view 1 displays all documents)
 
 Create the browser object we'll be using.
 
-    >>> from Products.Five.testbrowser import Browser
+    >>> from Testing.testbrowser import Browser
     >>> browser = Browser()
 
 Words in content showing Insufficient Privileges

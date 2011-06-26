@@ -1,6 +1,10 @@
 Changelog
 =========
 
+1.10 (2011-06-24)
+--------------------
+* Plone 4.1 compliancy
+
 1.9.8.1 (2011-05-27)
 --------------------
 * Fix applyHideWhen behaviour to avoid meaningless errors when applyHideWhen is not used for actual rendering.
