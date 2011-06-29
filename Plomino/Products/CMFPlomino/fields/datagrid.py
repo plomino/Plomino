@@ -25,7 +25,7 @@ import simplejson as json
 
 from five.formlib.formbase import EditForm
 
-from Products.CMFPlomino.PlominoUtils import csv_to_array, DateToString
+from Products.CMFPlomino.PlominoUtils import csv_to_array, DateToString, PlominoTranslate
 from Products.CMFPlomino.PlominoDocument import TemporaryDocument
 
 from Products.CMFPlomino.interfaces import IPlominoField
@@ -106,6 +106,24 @@ class DatagridField(BaseField):
         """
         """
         return get_language_path(self.context)
+
+    def getActionLabel(self, action_id):
+        """
+        """
+        db = self.context.getParentDatabase()
+        if action_id=="add":
+            label = PlominoTranslate("datagrid_add_button_label", db)
+            child_form_id = self.associated_form
+            if child_form_id is not None:
+                child_form = db.getForm(child_form_id)
+                if child_form:
+                    label += " "+child_form.Title()
+            return label
+        if action_id=="delete":
+            return PlominoTranslate("datagrid_delete_button_label", db)
+        if action_id=="edit":
+            return PlominoTranslate("datagrid_edit_button_label", db)
+        return ""
 
     def getFieldValue(self, form, doc, editmode, creation, request):
         """
