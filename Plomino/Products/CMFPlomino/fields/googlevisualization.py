@@ -17,7 +17,11 @@ from zope.schema import Text, TextLine
 
 from dictionaryproperty import DictionaryProperty
 
-from five.formlib.formbase import EditForm
+try:
+    from five.formlib.formbase import EditForm
+except:
+    #PLONE 3
+    from Products.Five.formlib.formbase import EditForm
 
 from Products.CMFPlomino.PlominoUtils import asList
 

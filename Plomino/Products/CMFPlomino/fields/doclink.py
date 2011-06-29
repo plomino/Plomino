@@ -17,7 +17,11 @@ from zope.schema import TextLine, Text, List, Choice
 from zope.schema.vocabulary import SimpleVocabulary
 from dictionaryproperty import DictionaryProperty
 
-from five.formlib.formbase import EditForm
+try:
+    from five.formlib.formbase import EditForm
+except:
+    #PLONE 3
+    from Products.Five.formlib.formbase import EditForm
 
 from base import IBaseField, BaseField
 from Products.CMFPlomino.exceptions import PlominoScriptException

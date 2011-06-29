@@ -23,7 +23,11 @@ from zope.schema.vocabulary import SimpleVocabulary
 
 import simplejson as json
 
-from five.formlib.formbase import EditForm
+try:
+    from five.formlib.formbase import EditForm
+except:
+    #PLONE 3
+    from Products.Five.formlib.formbase import EditForm
 
 from Products.CMFPlomino.PlominoUtils import csv_to_array, DateToString, PlominoTranslate
 from Products.CMFPlomino.PlominoDocument import TemporaryDocument
