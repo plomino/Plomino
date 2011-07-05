@@ -63,6 +63,7 @@ class PlominoIndex(UniqueObject, ZCatalog, ActionProviderBase):
         #self.createFieldIndex('getPlominoReaders', 'SELECTION')
         self.addIndex('Form', "FieldIndex")
         self.addIndex('id', "FieldIndex")
+        self.addColumn('id')
         self.addIndex('getPlominoReaders', "KeywordIndex")
         
         if FULLTEXT:
