@@ -17,14 +17,9 @@ from zope.schema import TextLine, Text, List, Choice
 from zope.schema.vocabulary import SimpleVocabulary
 from dictionaryproperty import DictionaryProperty
 
-try:
-    from five.formlib.formbase import EditForm
-except:
-    #PLONE 3
-    from Products.Five.formlib.formbase import EditForm
 from Products.CMFCore.utils import getToolByName
 
-from base import IBaseField, BaseField
+from base import IBaseField, BaseField, BaseForm
 
 import simplejson as json
 
@@ -122,7 +117,7 @@ class NameField(BaseField):
 for f in getFields(INameField).values():
     setattr(NameField, f.getName(), DictionaryProperty(f, 'parameters'))
 
-class SettingForm(EditForm):
+class SettingForm(BaseForm):
     """
     """
     form_fields = form.Fields(INameField)

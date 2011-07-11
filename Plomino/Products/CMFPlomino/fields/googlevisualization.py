@@ -17,15 +17,9 @@ from zope.schema import Text, TextLine
 
 from dictionaryproperty import DictionaryProperty
 
-try:
-    from five.formlib.formbase import EditForm
-except:
-    #PLONE 3
-    from Products.Five.formlib.formbase import EditForm
-
 from Products.CMFPlomino.PlominoUtils import asList
 
-from base import IBaseField, BaseField
+from base import IBaseField, BaseField, BaseForm
 
 class IGooglevisualizationField(IBaseField):
     """
@@ -141,7 +135,7 @@ class GooglevisualizationField(BaseField):
 for f in getFields(IGooglevisualizationField).values():
     setattr(GooglevisualizationField, f.getName(), DictionaryProperty(f, 'parameters'))
 
-class SettingForm(EditForm):
+class SettingForm(BaseForm):
     """
     """
     form_fields = form.Fields(IGooglevisualizationField)

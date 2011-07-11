@@ -17,13 +17,7 @@ from zope.schema import TextLine
 
 from dictionaryproperty import DictionaryProperty
 
-try:
-    from five.formlib.formbase import EditForm
-except:
-    #PLONE 3
-    from Products.Five.formlib.formbase import EditForm
-
-from base import IBaseField, BaseField
+from base import IBaseField, BaseField, BaseForm
 
 class IGooglechartField(IBaseField):
     """
@@ -64,7 +58,7 @@ class GooglechartField(BaseField):
 for f in getFields(IGooglechartField).values():
     setattr(GooglechartField, f.getName(), DictionaryProperty(f, 'parameters'))
 
-class SettingForm(EditForm):
+class SettingForm(BaseForm):
     """
     """
     form_fields = form.Fields(IGooglechartField)

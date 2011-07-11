@@ -17,13 +17,7 @@ from zope.schema import TextLine, Text, List, Choice
 from zope.schema.vocabulary import SimpleVocabulary
 from dictionaryproperty import DictionaryProperty
 
-try:
-    from five.formlib.formbase import EditForm
-except:
-    #PLONE 3
-    from Products.Five.formlib.formbase import EditForm
-
-from base import IBaseField, BaseField
+from base import IBaseField, BaseField, BaseForm
 from Products.CMFPlomino.exceptions import PlominoScriptException
 from Products.CMFPlomino.PlominoUtils import asUnicode
 
@@ -116,7 +110,7 @@ class SelectionField(BaseField):
 for f in getFields(ISelectionField).values():
     setattr(SelectionField, f.getName(), DictionaryProperty(f, 'parameters'))
 
-class SettingForm(EditForm):
+class SettingForm(BaseForm):
     """
     """
     form_fields = form.Fields(ISelectionField)

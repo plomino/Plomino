@@ -23,19 +23,13 @@ from zope.schema.vocabulary import SimpleVocabulary
 
 import simplejson as json
 
-try:
-    from five.formlib.formbase import EditForm
-except:
-    #PLONE 3
-    from Products.Five.formlib.formbase import EditForm
-
 from Products.CMFPlomino.PlominoUtils import csv_to_array, DateToString, PlominoTranslate
 from Products.CMFPlomino.PlominoDocument import TemporaryDocument
 
 from Products.CMFPlomino.interfaces import IPlominoField
 from Products.CMFPlomino.fields.dictionaryproperty import DictionaryProperty
 
-from Products.CMFPlomino.fields.base import IBaseField, BaseField
+from Products.CMFPlomino.fields.base import IBaseField, BaseField, BaseForm
 
 from Products.CMFPlomino.browser.javascript.dataTables.utils import get_language_path
 
@@ -208,7 +202,7 @@ component.provideUtility(DatagridField, IPlominoField, 'DATAGRID')
 for f in getFields(IDatagridField).values():
     setattr(DatagridField, f.getName(), DictionaryProperty(f, 'parameters'))
 
-class SettingForm(EditForm):
+class SettingForm(BaseForm):
     """
     """
     form_fields = form.Fields(IDatagridField)
