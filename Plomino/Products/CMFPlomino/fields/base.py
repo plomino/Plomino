@@ -40,9 +40,6 @@ class BaseField(object):
         # get annotation to store param values
         annotations = IAnnotations(context)
         self.parameters = annotations.get("PLOMINOFIELDCONFIG", None)
-        if not self.parameters:
-            annotations["PLOMINOFIELDCONFIG"] = PersistentDict()
-            self.parameters = annotations["PLOMINOFIELDCONFIG"]
         # allow access
         self.__allow_access_to_unprotected_subobjects__ = True
 

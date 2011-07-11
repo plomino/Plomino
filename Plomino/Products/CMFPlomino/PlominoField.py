@@ -33,6 +33,8 @@ from fields.name import INameField
 from fields.doclink import IDoclinkField
 from ZPublisher.HTTPRequest import FileUpload
 from zope import component
+from zope.annotation.interfaces import IAnnotations
+from persistent.dict import PersistentDict
 
 ##/code-section module-header
 
@@ -254,6 +256,10 @@ class PlominoField(BaseContent, BrowserDefaultMixin):
     def at_post_edit_script(self):
         """post edit
         """
+        annotations = IAnnotations(self)
+        settings = annotations.get("PLOMINOFIELDCONFIG", None)
+        if not settings:
+            annotations["PLOMINOFIELDCONFIG"] = PersistentDict()
         self.cleanFormulaScripts("field_"+self.getParentNode().id+"_"+self.id)
         db = self.getParentDatabase()
         if self.getToBeIndexed() and not db.DoNotReindex:
@@ -263,6 +269,10 @@ class PlominoField(BaseContent, BrowserDefaultMixin):
     def at_post_create_script(self):
         """post create
         """
+        annotations = IAnnotations(self)
+        settings = annotations.get("PLOMINOFIELDCONFIG", None)
+        if not settings:
+            annotations["PLOMINOFIELDCONFIG"] = PersistentDict()
         db = self.getParentDatabase()
         if self.getToBeIndexed() and not db.DoNotReindex:
             db.getIndex().createFieldIndex(self.id, self.getFieldType())
