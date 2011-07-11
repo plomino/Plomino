@@ -174,7 +174,7 @@ class PlominoDesignManager(Persistent):
         if changed_since:
             documents = [doc for doc in documents if doc.plomino_modification_time > changed_since]
             total_docs = len(documents)
-            logger.info('Re-indexing %d changed document' % total_docs)
+            logger.info('Re-indexing %d changed document(s) since %s' % (total_docs, str(changed_since)))
         else:
             total_docs = len(self.plomino_documents)
             logger.info('Existing documents: '+ str(total_docs))
@@ -214,7 +214,8 @@ class PlominoDesignManager(Persistent):
                 logger.info("Re-indexing %s: %d indexed successfully, %d errors(s)..." % (label, total, errors))
         if changed_since:
             msg = "Intermediary changes: %d modified documents re-indexed successfully, %d errors(s)" % (total, errors)
-        msg = "Re-indexing %s: %d documents indexed successfully, %d errors(s)" % (label, total, errors)
+        else:
+            msg = "Re-indexing %s: %d documents indexed successfully, %d errors(s)" % (label, total, errors)
         logger.info(msg)
         return msg
 
