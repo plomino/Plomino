@@ -18,6 +18,8 @@ from zope.schema.vocabulary import SimpleVocabulary
 
 from dictionaryproperty import DictionaryProperty
 
+from Products.CMFPlomino.PlominoUtils import StringToDate
+
 from base import IBaseField, BaseField, BaseForm
 import logging
 logger = logging.getLogger('Plomino')
