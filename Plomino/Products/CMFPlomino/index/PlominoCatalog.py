@@ -12,6 +12,7 @@ __docformat__ = 'plaintext'
 
 from Products.ZCatalog.ZCatalog import Catalog
 from Missing import MV
+from PlominoUtils import asUnicode
 
 try:
 	from DocumentTemplate.cDocumentTemplate import safe_callable
@@ -31,19 +32,20 @@ class PlominoCatalog(Catalog):
 	def recordify(self, object):
 		""" turns an object into a record tuple """
 		record = []
-		# the unique id is allways the first element
+		# the unique id is always the first element
 		for x in self.names:
-			if(x.startswith("PlominoViewColumn_")):
+			if x.startswith("PlominoViewColumn_"):
 				param = x.split('_')
-				viewname=param[1]
-				columnname=param[2]
+				viewname = param[1]
+				columnname = param[2]
 				if not object.isSelectedInView(viewname):
 					v = None
 				else:
-					v = object.computeColumnValue(viewname, columnname)
+					v = asUnicode(object.computeColumnValue(viewname, columnname))
 				record.append(v)
 			else:
 				attr=getattr(object, x, MV)
-				if(attr is not MV and safe_callable(attr)): attr=attr()
-				record.append(attr)
+				if attr is not MV and safe_callable(attr):
+                    attr=attr()
+				record.append(asUnicode(attr))
 		return tuple(record)
