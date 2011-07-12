@@ -27,25 +27,25 @@
 		<dl class="collapsible inline collapsedOnLoad">
         <dt class="collapsibleHeader" i18n:translate="">Forms</dt>
         <dd class="collapsibleContent">
-			<tal:block tal:repeat="f python:here.getForms(sortbyid=True)">
+			<tal:block tal:repeat="form python:here.getForms(sortbyid=True)">
 			<div>
 			<dl class="collapsible inline collapsedOnLoad">
 		        <dt class="collapsibleHeader">
-					<tal:block tal:content="f/id">form id</tal:block>
-					<a tal:attributes="href python:f.absolute_url_path()+'/base_edit'"><img src="edit.gif" /></a>
-					<a tal:attributes="href python:f.absolute_url_path()+'/base_view'"><img src="document_icon.gif" /></a>
-					<a tal:attributes="href python:f.absolute_url_path()+'/folder_contents'"><img src="folder_icon.gif" /></a>
+					<tal:block tal:content="form/id">form id</tal:block>
+					<a tal:attributes="href python:form.absolute_url_path()+'/base_edit'"><img src="edit.gif" /></a>
+					<a tal:attributes="href python:form.absolute_url_path()+'/base_view'"><img src="document_icon.gif" /></a>
+					<a tal:attributes="href python:form.absolute_url_path()+'/folder_contents'"><img src="folder_icon.gif" /></a>
 				</dt>
 		        <dd class="collapsibleContent">
 					<!--Fields list-->
 							<ul>
 								<li><span i18n:translate="">Fields</span>:</li>
-								<tal:fieldsforms tal:repeat="fields python:f.getFormFields()">
+								<tal:fieldsforms tal:repeat="field python:form.getFormFields()">
 								<ul>
 									<li>
-									<tal:block tal:content="fields/id">Field name</tal:block>
-									<a href="" tal:attributes="href python:fields.absolute_url_path()+'/base_edit'"><img src="edit.gif" /></a>
-									<a href="" tal:attributes="href python:fields.absolute_url_path()+'/base_view'"><img src="document_icon.gif" /></a>
+									<tal:block tal:content="field/id">Field name</tal:block> (<tal:block tal:content="python:field.getFieldType().title()">Field type</tal:block>)
+									<a href="" tal:attributes="href python:field.absolute_url_path()+'/base_edit'"><img src="edit.gif" /></a>
+									<a href="" tal:attributes="href python:field.absolute_url_path()+'/'+field.getFieldType().lower()+'settings'"><img src="document_icon.gif" /></a>
 									</li>
 								</ul>
 								</tal:fieldsforms>
@@ -53,7 +53,7 @@
 								<li>
 									<span i18n:translate="">Hide when</span> : 
 								</li>
-								<tal:hidewhens tal:repeat="h python:f.getHidewhenFormulas()">
+								<tal:hidewhens tal:repeat="h python:form.getHidewhenFormulas()">
 								<ul>
 									
 									<li>
@@ -68,8 +68,8 @@
 									<span i18n:translate="">Actions</span> : 
 								</li>
 								<ul>
-									<tal:actionsforms tal:repeat="action python:f.getActions(None, False)">
-										<li>
+									<tal:actionsforms tal:repeat="action_tuple python:form.getActions(None, False, form.id)">
+										<li tal:define="action python:action_tuple[0]">
 										<tal:block tal:content="action/id">action name</tal:block>
 										<a href="" tal:attributes="href python:action.absolute_url()+'/base_edit'"><img src="edit.gif" /></a>
 										<a href="" tal:attributes="href python:action.absolute_url()+'/base_view'"><img src="document_icon.gif" /></a>
@@ -100,21 +100,21 @@
 									<span i18n:translate="">Columns</span> : 
 								</li>
 								<ul>
-									<tal:colonnesviews tal:repeat="colonne python:view.getColumns()">
+									<tal:columnsviews tal:repeat="column python:view.getColumns()">
 									<li>
-									<tal:block tal:content="python:colonne.getColumnName()">column name</tal:block>
-										<a href="" tal:attributes="href python:colonne.absolute_url()+'/base_edit'"><img src="edit.gif" /></a>
-										<a href="" tal:attributes="href python:colonne.absolute_url()+'/base_view'"><img src="document_icon.gif" /></a>
+									<tal:block tal:content="python:column.getColumnName()">column name</tal:block>
+										<a href="" tal:attributes="href python:column.absolute_url()+'/base_edit'"><img src="edit.gif" /></a>
+										<a href="" tal:attributes="href python:column.absolute_url()+'/base_view'"><img src="document_icon.gif" /></a>
 									</li>
-								</tal:colonnesviews>
+								</tal:columnsviews>
 								</ul>
 								<!--View actions-->
 								<li>
 									<span i18n:translate="">Actions</span> : 
 								</li>
 								<ul>
-									<tal:actionsviews tal:repeat="action python:view.getActions(None, False)">
-										<li>
+									<tal:actionsviews tal:repeat="action_tuple python:view.getActions(None, False, view.id)">
+										<li tal:define="action python:action_tuple[0]">
 										<tal:block tal:content="action/id">action name</tal:block>
 										<a href="" tal:attributes="href python:action.absolute_url()+'/base_edit'"><img src="edit.gif" /></a>
 										<a href="" tal:attributes="href python:action.absolute_url()+'/base_view'"><img src="document_icon.gif" /></a>
@@ -320,5 +320,4 @@
 
 </body>
 </html>
-
 

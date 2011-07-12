@@ -622,3 +622,64 @@ msgid "Target URL"
 msgstr "Target URL"
 msgid "Include db settings"
 msgstr "Include db settings"
+
+msgid "CMFPlomino_label_DocumentId"
+msgstr "Document id formula"
+
+msgid "CMFPlomino_help_DocumentId"
+msgstr "Compute the document id at creation. Must be globally unique if intended to sync with other databases."
+
+msgid "CMFPlomino_label_HideDefaultActions"
+msgstr "Hide default actions"
+
+msgid "CMFPlomino_help_HideDefaultActions"
+msgstr "Edit, Save, Delete, Close actions will not be displayed in the action bar"
+
+msgid "CMFPlomino_label_HideViewDefaultActions"
+msgstr "Hide default actions"
+
+msgid "CMFPlomino_help_HideViewDefaultActions"
+msgstr "Delete, Close actions will not be displayed in the action bar"
+
+msgid "CMFPlomino_label_FulltextIndex"
+msgstr "Local full-text index"
+
+msgid "CMFPlomino_help_FulltextIndex"
+msgstr "If enabled, documents are full-text indexed into the Plomino index."
+
+msgid "CMFPlomino_label_IndexInPortal"
+msgstr "Index documents in Plone portal"
+
+msgid "CMFPlomino_help_IndexInPortal"
+msgstr "If enabled, documents are searchable in Plone search."
+
+msgid "CMFPlomino_label_DoNotListUsers"
+msgstr "Do not list portal users"
+
+msgid "CMFPlomino_help_DoNotListUsers"
+msgstr "If True, in ACL screen, users are entered using a free text field, if False, using a selection list. To be used when the amount of users is big."
+
+msgid "CMFPlomino_label_DoNotReindex"
+msgstr "Do not re-index documents on design changes"
+
+msgid "CMFPlomino_help_DoNotReindex"
+msgstr "If True, documents are not re-indexed automatically when views, columns or indexed fields are changed. Note: manual refresh db is then needed."
+
+msgid "CMFPlomino_label_ViewWidget"
+msgstr "Widget"
+
+msgid "CMFPlomino_help_ViewWidget"
+msgstr "Rendering mode"
+
+msgid "CMFPlomino_label_DynamicTableParameters"
+msgstr "Dynamic Table Parameters"
+
+msgid "CMFPlomino_help_DynamicTableParameters"
+msgstr "Change these options to customize the dynamic table."
+
+msgid "datagrid_add_button_label"
+msgstr "Add"
+msgid "datagrid_delete_button_label"
+msgstr "Delete"
+msgid "datagrid_edit_button_label"
+msgstr "Edit"
