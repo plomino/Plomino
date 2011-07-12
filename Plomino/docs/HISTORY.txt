@@ -1,6 +1,11 @@
 Changelog
 =========
 
+1.10.2 (2011-07-12)
+-------------------
+* Plone 4.1 compliancy fixes
+* Fix ConflictError issue: avoid writing annotations in fields objects constantly .
+
 1.10.1 (2011-06-29)
 -------------------
 * Plone 3 compliancy (broken after Plone 4.1 compliancy)
