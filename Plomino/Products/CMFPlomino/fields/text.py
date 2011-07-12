@@ -18,9 +18,7 @@ from zope.schema.vocabulary import SimpleVocabulary
 
 from dictionaryproperty import DictionaryProperty
 
-from Products.Five.formlib.formbase import EditForm
-
-from base import IBaseField, BaseField
+from base import IBaseField, BaseField, BaseForm
 
 class ITextField(IBaseField):
     """
@@ -43,8 +41,7 @@ class TextField(BaseField):
 for f in getFields(ITextField).values():
     setattr(TextField, f.getName(), DictionaryProperty(f, 'parameters'))
 
-class SettingForm(EditForm):
+class SettingForm(BaseForm):
     """
     """
     form_fields = form.Fields(ITextField)
-

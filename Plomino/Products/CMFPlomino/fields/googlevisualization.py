@@ -17,9 +17,9 @@ from zope.schema import Text, TextLine
 
 from dictionaryproperty import DictionaryProperty
 
-from Products.Five.formlib.formbase import EditForm
+from Products.CMFPlomino.PlominoUtils import asList
 
-from base import IBaseField, BaseField
+from base import IBaseField, BaseField, BaseForm
 
 class IGooglevisualizationField(IBaseField):
     """
@@ -28,18 +28,17 @@ class IGooglevisualizationField(IBaseField):
     jssettings = Text(title=u'Javascript settings',
                       description=u'Google Vizualization code',
                       default=u"""
-google.load('visualization', '1', {packages:['orgchart']});
+google.load('visualization', '1', {packages:['corechart']});
 google.setOnLoadCallback(gvisudata_drawChart);
 var gvisudata;
 
 function gvisudata_drawChart() {
 gvisudata = new google.visualization.DataTable();
-gvisudata.addColumn('string', 'Name');
-gvisudata.addColumn('string', 'Manager');
-gvisudata.addColumn('string', 'ToolTip');
+gvisudata.addColumn('string', 'Category');
+gvisudata.addColumn('number', 'Volume');
 gvisudata_getCells();
-var gvisudata_chart = new google.visualization.OrgChart(document.getElementById('gvisudata_div'));
-gvisudata_chart.draw(gvisudata, {allowHtml:true});
+var gvisudata_chart = new google.visualization.PieChart(document.getElementById('gvisudata_div'));
+gvisudata_chart.draw(gvisudata, {width: 400, height: 400, is3D: true});
 }
 """,
                       required=False)
@@ -104,6 +103,21 @@ class GooglevisualizationField(BaseField):
     def jscode(self, datatable):
         """ return Google visualization js code
         """
+        if type(datatable) is dict:
+            # if dict, we convert it to googleviz compliant array
+            labels = datatable.keys()
+            labels.sort()
+            tmp = []
+            for label in labels:
+                valuelist = ["'%s'" % label]
+                for e in asList(datatable[label]):
+                    if isinstance(e, basestring):
+                        valuelist.append("'%s'" % e)
+                    else:
+                        valuelist.append(str(e))
+                tmp.append(valuelist)
+            datatable = tmp
+            
         js = self.jssettings + "\n"
         js = js + "function " + self.chartid + "_getCells() {\n"
         js = js + self.chartid+".addRows(" + str(len(datatable)) + ");\n"
@@ -111,7 +125,7 @@ class GooglevisualizationField(BaseField):
         for row in datatable:
             j = 0
             for cell in row:
-                js = js + self.chartid+".setCell(" + str(i) + ", " + str(j) + ", " + cell + ");\n"
+                js = js + self.chartid+".setValue(" + str(i) + ", " + str(j) + ", " + cell + ");\n"
                 j = j + 1
             i = i + 1
         js = js + "}"
@@ -121,7 +135,7 @@ class GooglevisualizationField(BaseField):
 for f in getFields(IGooglevisualizationField).values():
     setattr(GooglevisualizationField, f.getName(), DictionaryProperty(f, 'parameters'))
 
-class SettingForm(EditForm):
+class SettingForm(BaseForm):
     """
     """
     form_fields = form.Fields(IGooglevisualizationField)

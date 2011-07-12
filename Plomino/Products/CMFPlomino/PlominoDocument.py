@@ -33,6 +33,9 @@ from zope import event
 from Products.Archetypes.event import ObjectEditedEvent
 from zope.component import queryUtility
 
+import logging
+logger = logging.getLogger('Plomino')
+
 # Import conditionally, so we don't introduce a hard dependency
 try:
     from plone.i18n.normalizer.interfaces import IUserPreferredURLNormalizer
@@ -295,7 +298,7 @@ class PlominoDocument(ATFolder):
 
         db=self.getParentDatabase()
         if form:
-            for f in form.getFormFields(includesubforms=True, doc=self):
+            for f in form.getFormFields(includesubforms=True, doc=self, applyhidewhen=False):
                 mode = f.getFieldMode()
                 fieldname = f.id
                 if mode in ["COMPUTED", "COMPUTEDONSAVE"] or (mode=="CREATION" and creation):
@@ -363,7 +366,7 @@ class PlominoDocument(ATFolder):
         # execute the onOpenDocument code of the form
         valid = ''
         try:
-            if not form.getOnOpenDocument()=="":
+            if form.getOnOpenDocument():
                 #RunFormula(self, form.getOnOpenDocument())
                 valid = self.runFormulaScript("form_"+form.id+"_onopen", self, form.onOpenDocument)
         except PlominoScriptException, e:
@@ -435,14 +438,20 @@ class PlominoDocument(ATFolder):
         ATFolder.manage_afterClone(self, item)
 
     security.declarePublic('__getattr__')
-    def __getattr__(self,name):
+    def __getattr__(self, name):
         """Overloads getattr to return item values as attibutes
         """
         if(self.items.has_key(name)):
             return self.items[name]
         else:
-            raise AttributeError, name
-            #return BaseObject.__getattr__(self, name)
+            if name not in ['__parent__', '__conform__', '__annotations__',
+                           '_v_at_subobjects', '__getnewargs__', 'aq_inner', 'im_self']:
+                try:
+                    return ATFolder.__getattr__(self, name)
+                except Exception, e:
+                    raise AttributeError, name
+            else:   
+                raise AttributeError, name
 
     security.declareProtected(READ_PERMISSION, 'isSelectedInView')
     def isSelectedInView(self,viewname):
@@ -617,8 +626,16 @@ class PlominoDocument(ATFolder):
     def isNewDocument(self):
         """
         """
-        # when the context is an actual document, it is necessarily not new
+        req = getattr(self, 'REQUEST', None)
+        if req and '/createDocument' in req['ACTUAL_URL']:
+            return True
         return False
+
+    security.declarePublic('isDocument')
+    def isDocument(self):
+        """
+        """
+        return True
 
     security.declarePublic('isEditMode')
     def isEditMode(self):

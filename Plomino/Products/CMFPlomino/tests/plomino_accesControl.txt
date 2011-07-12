@@ -42,6 +42,7 @@ Set plomino roles and permissions
 Add some minimal content to test access (view 1 displays all documents)
     >>> id = db.invokeFactory('PlominoForm', id='form1', Title='Form 1')
     >>> id = db.form1.invokeFactory('PlominoField', id='field1', Title='field1', FieldType="TEXT", FieldMode="EDITABLE")
+    >>> db.form1.field1.at_post_create_script()
     >>> from Products.CMFPlomino.fields.text import ITextField
     >>> adapted=ITextField(db.form1.field1)
     >>> adapted.widget="TEXT"
@@ -63,7 +64,10 @@ Add some minimal content to test access (view 1 displays all documents)
 
 Create the browser object we'll be using.
 
-    >>> from Products.Five.testbrowser import Browser
+    >>> try:
+    ...    from Testing.testbrowser import Browser
+    ... except:
+    ...    from Products.Five.testbrowser import Browser
     >>> browser = Browser()
 
 Words in content showing Insufficient Privileges

@@ -47,19 +47,22 @@
         <div tal:attributes="id string:${fieldname}_editform"></div>
         <p><a class="context add-row"
         		tal:attributes="id string:${fieldname}_addrow;
-				        		href string:../${associated_form}/OpenForm?Plomino_Parent_Field=${fieldname}&Plomino_Parent_Form=${formname};
+				        		href string:../${associated_form}/OpenBareForm?Plomino_Parent_Field=${fieldname}&Plomino_Parent_Form=${formname};
 				        		onclick string:return false"
+				tal:content="python:options['field'].getSettings().getActionLabel('add')"
              >Add row</a>
             <a class="context edit-row"
             tal:attributes="id string:${fieldname}_editrow;
-                            href string:../${associated_form}/OpenForm?Plomino_Parent_Field=${fieldname}&Plomino_Parent_Form=${formname};
+                            href string:../${associated_form}/OpenBareForm?Plomino_Parent_Field=${fieldname}&Plomino_Parent_Form=${formname};
         					onclick string:return false;
                             style python:{0: 'display:none'}.get(len(v), '')"
+            tal:content="python:options['field'].getSettings().getActionLabel('edit')"
             >Edit row</a>
             <a href="javascript:void(0)" class="context delete-row"
             tal:attributes="id string:${fieldname}_deleterow;
                             onclick string:return false;
                             style python:{0: 'display:none'}.get(len(v), '')" 
+            tal:content="python:options['field'].getSettings().getActionLabel('delete')"
             >Delete row</a>
         </p>
             

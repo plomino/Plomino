@@ -18,10 +18,9 @@ from zope.schema.vocabulary import SimpleVocabulary
 
 from dictionaryproperty import DictionaryProperty
 
-from Products.Five.formlib.formbase import EditForm
 from Products.CMFPlomino.PlominoUtils import StringToDate
 
-from base import IBaseField, BaseField
+from base import IBaseField, BaseField, BaseForm
 import logging
 logger = logging.getLogger('Plomino')
 
@@ -105,7 +104,7 @@ class DatetimeField(BaseField):
 for f in getFields(IDatetimeField).values():
     setattr(DatetimeField, f.getName(), DictionaryProperty(f, 'parameters'))
 
-class SettingForm(EditForm):
+class SettingForm(BaseForm):
     """
     """
     form_fields = form.Fields(IDatetimeField)

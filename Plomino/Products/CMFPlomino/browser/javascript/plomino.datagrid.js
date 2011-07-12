@@ -21,6 +21,24 @@ function datagrid_show_form(field_id, formurl, onsubmit) {
 		});
 		// Edit form submission
 		jq('form', editform).submit(function(){
+			var message = "";
+
+			jq.ajax({url: this.action+"?"+jq(this).serialize(),
+				async: false,
+				//context: jq('#plomino_form'),
+				error: function() {
+					alert("Error while validating.");
+				},
+				success: function(data) {
+					message = jq(data).filter('#plomino_child_errors').html();
+					return false;
+				}
+			});
+			
+			if(!(message == null || message=='')) {
+				alert(message);
+				return false;
+			}
 			jq.get(this.action, jq(this).serialize(), function(data, textStatus, XMLHttpRequest){
 				// Call back function with new row
 				var rowdata = new Array();

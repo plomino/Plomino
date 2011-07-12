@@ -10,6 +10,8 @@
 __author__ = """Eric BREHAULT <eric.brehault@makina-corpus.com>"""
 __docformat__ = 'plaintext'
 
+from DateTime import DateTime
+
 from zope.formlib import form
 from zope.interface import implements
 from zope import component
@@ -21,15 +23,13 @@ from zope.schema.vocabulary import SimpleVocabulary
 
 import simplejson as json
 
-from Products.Five.formlib.formbase import EditForm
-
-from Products.CMFPlomino.PlominoUtils import csv_to_array
+from Products.CMFPlomino.PlominoUtils import csv_to_array, DateToString, PlominoTranslate
 from Products.CMFPlomino.PlominoDocument import TemporaryDocument
 
 from Products.CMFPlomino.interfaces import IPlominoField
 from Products.CMFPlomino.fields.dictionaryproperty import DictionaryProperty
 
-from Products.CMFPlomino.fields.base import IBaseField, BaseField
+from Products.CMFPlomino.fields.base import IBaseField, BaseField, BaseForm
 
 from Products.CMFPlomino.browser.javascript.dataTables.utils import get_language_path
 
@@ -96,12 +96,32 @@ class DatagridField(BaseField):
             value = []
         if isinstance(value, basestring):
             return value
+        if isinstance(value, DateTime):
+            value = DateToString(value)
         return json.dumps(value)
 
     def getLang(self):
         """
         """
         return get_language_path(self.context)
+
+    def getActionLabel(self, action_id):
+        """
+        """
+        db = self.context.getParentDatabase()
+        if action_id=="add":
+            label = PlominoTranslate("datagrid_add_button_label", db)
+            child_form_id = self.associated_form
+            if child_form_id is not None:
+                child_form = db.getForm(child_form_id)
+                if child_form:
+                    label += " "+child_form.Title()
+            return label
+        if action_id=="delete":
+            return PlominoTranslate("datagrid_delete_button_label", db)
+        if action_id=="edit":
+            return PlominoTranslate("datagrid_edit_button_label", db)
+        return ""
 
     def getFieldValue(self, form, doc, editmode, creation, request):
         """
@@ -121,7 +141,9 @@ class DatagridField(BaseField):
 
             mapped_fields = []
             if self.field_mapping:
-                mapped_fields = self.field_mapping.split(',')
+                mapped_fields = [
+                    f.strip() for f in self.field_mapping.split(',')]
+            # item names is set by `PlominoForm.createDocument`
             item_names = doc.getItem(self.context.id+'_itemnames')
 
             if mapped_fields:
@@ -180,7 +202,7 @@ component.provideUtility(DatagridField, IPlominoField, 'DATAGRID')
 for f in getFields(IDatagridField).values():
     setattr(DatagridField, f.getName(), DictionaryProperty(f, 'parameters'))
 
-class SettingForm(EditForm):
+class SettingForm(BaseForm):
     """
     """
     form_fields = form.Fields(IDatagridField)

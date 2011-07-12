@@ -58,6 +58,9 @@ def migrate(db):
     if db.plomino_version=="1.8":
         # no migration needed here
         db.plomino_version = "1.9"
+    if db.plomino_version=="1.9":
+        msg = migrate_to_1_10(db)
+        messages.append(msg)
     return messages
 
 def migrate_to_130(db):
@@ -189,4 +192,16 @@ def migrate_to_175(db):
     db.plomino_documents.manage_pasteObjects(cookie)
     msg = "Migration to 1.7.5: Documents moved in BTreeFolder"
     db.plomino_version = "1.7.5"
+    return msg
+
+def migrate_to_1_10(db):
+    """ rename Plomino_Portlet_Availability fields
+    """
+    for form in db.getForms():
+        for field in form.getFormFields():
+            if field.id == "Plomino_Portlet_Availabilty":
+                form.manage_renameObject("Plomino_Portlet_Availabilty", "Plomino_Portlet_Availability")
+                field.setTitle("Plomino_Portlet_Availability")
+    msg = "Migration to 1.10: Rename Plomino_Portlet_Availability fields"
+    db.plomino_version = "1.10"
     return msg

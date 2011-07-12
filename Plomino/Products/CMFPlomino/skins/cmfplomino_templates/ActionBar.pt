@@ -20,9 +20,11 @@
 	</tal:defaultactions>
 	
 	<tal:block
-		tal:repeat="a python:[act for act in owner.getActions(here) if act.getInActionBar()==True]">
+		tal:repeat="a python:[(act, parent_id) for act, parent_id in owner.getActions(here, True, owner.id) if act.getInActionBar()==True]">
 		<tal:block
-			tal:define="plominoaction python:a; plominotarget python:here">
+			tal:define="plominoaction python:a[0];
+                        plominotarget python:here;
+                        plomino_parent_id python:a[1]">
 			<tal:block metal:use-macro="here/ActionBar/macros/ButtonAction">
 			display action as a link </tal:block>
 		</tal:block>
@@ -43,9 +45,11 @@
 		delete action</tal:block></tal:block>
 	</tal:defaultactions>
 		<tal:block
-			tal:repeat="a python:[act for act in owner.getActions(here) if act.getInActionBar()==True]">
+			tal:repeat="a python:[(act, parent_id) for act, parent_id in owner.getActions(here, True, owner.id) if act.getInActionBar()==True]">
 			<tal:block
-				tal:define="plominoaction python:a; plominotarget python:here">
+				tal:define="plominoaction python:a[0];
+                            plominotarget python:here;
+                            plomino_parent_id python:a[1]">
 				<tal:block metal:use-macro="here/ActionBar/macros/ButtonAction">
 				display action as a link </tal:block>
 			</tal:block>
@@ -62,9 +66,11 @@
 			value="Save" i18n:domain="CMFPlomino" i18n:attributes="value" />
 	</tal:defaultactions>
 		<tal:block
-			tal:repeat="a python:[act for act in owner.getActions(here) if act.getInActionBar()==True]">
+			tal:repeat="a python:[(act, parent_id) for act, parent_id in owner.getActions(here, True, owner.id) if act.getInActionBar()==True]">
 			<tal:block
-				tal:define="plominoaction python:a; plominotarget python:here">
+				tal:define="plominoaction python:a[0];
+                            plominotarget python:here;
+                            plomino_parent_id python:a[1]">
 				<tal:block metal:use-macro="here/ActionBar/macros/ButtonAction">
 				display action as a link </tal:block>
 			</tal:block>
@@ -81,9 +87,11 @@
 			i18n:domain="CMFPlomino" i18n:attributes="value" />
 	</tal:defaultactions>
 		<tal:block
-			tal:repeat="a python:[act for act in owner.getActions(here) if act.getInActionBar()==True]">
+			tal:repeat="a python:[(act, parent_id) for act, parent_id in owner.getActions(here, True, owner.id) if act.getInActionBar()==True]">
 			<tal:block
-				tal:define="plominoaction python:a; plominotarget python:here">
+				tal:define="plominoaction python:a[0];
+                            plominotarget python:here;
+                            plomino_parent_id python:a[1]">
 				<tal:block metal:use-macro="here/ActionBar/macros/ButtonAction">
 				display action as a link </tal:block>
 			</tal:block>
@@ -126,9 +134,11 @@ if (typeof(oDynamicTable)!="undefined") {
 			tal:attributes="onclick string:if(confirm('${msg} ?')){location.href='./manage_deleteDocuments?deldocs='+selecteddocuments()}" />
 	</tal:defaultactions>
 		<tal:block
-			tal:repeat="a python:[act for act in owner.getActions(here) if act.getInActionBar()==True]">
+			tal:repeat="a python:[(act, parent_id) for act, parent_id in owner.getActions(here, True, owner.id) if act.getInActionBar()==True]">
 			<tal:block
-				tal:define="plominoaction python:a; plominotarget python:here">
+				tal:define="plominoaction python:a[0];
+                            plominotarget python:here;
+                            plomino_parent_id python:a[1]">
 				<tal:block metal:use-macro="here/ActionBar/macros/ButtonAction">
 				display action as a link </tal:block>
 			</tal:block>
@@ -137,7 +147,7 @@ if (typeof(oDynamicTable)!="undefined") {
 </div>
 
 <tal:block metal:define-macro="LinkAction"> <a
-	tal:attributes="href python:plominoaction.executeAction(plominotarget)"
+	tal:attributes="href python:plominoaction.executeAction(plominotarget, plomino_parent_id)"
 	tal:content="python: plominoaction.Title()" /></tal:block>
 
 <tal:block metal:define-macro="SubmitAction"> <input type="submit"
@@ -153,19 +163,22 @@ if (typeof(oDynamicTable)!="undefined") {
   <input class="context"
   
 	type="button"
-	tal:attributes="onclick python:'location.href=\''+plominoaction.executeAction(plominotarget)+'\'';
-								value python: plominoaction.Title(); name python:plominoaction.id; id python:plominoaction.id;"/>
+	tal:attributes="onclick python:'location.href=\''+plominoaction.executeAction(plominotarget, plomino_parent_id)+'\'';
+                    id python:plominoaction.id;
+                    name python:plominoaction.id;
+					value python: plominoaction.Title();
+                    "/>
   </tal:button>
 </tal:block>
 
 <tal:block metal:define-macro="CloseAction"> <tal:block
-	tal:define="is_parent_form_or_view python:(hasattr(here.aq_parent,'getIsSearchForm') or hasattr(here.aq_parent,'getSelectionFormula'));">
-	<tal:backtoDB tal:condition="python:not(is_parent_form_or_view)">
+	tal:define="is_search_form_or_view python:(hasattr(here.aq_parent,'getIsSearchForm') or hasattr(here.aq_parent,'getSelectionFormula'));">
+	<tal:backtoDB tal:condition="python:not(is_search_form_or_view)">
 		<input type="button" class="context plominoClose" value="Close" name="plomino_close"
 			i18n:domain="CMFPlomino" i18n:attributes="value"
-			tal:attributes="onclick python:'location.href=\''+here.navigationParent(here)+'\''" />
+			tal:attributes="onclick python:'location.href=\''+here.getParentDatabase().absolute_url()+'\''" />
 	</tal:backtoDB>
-	<tal:backtoprevious tal:condition="python:is_parent_form_or_view">
+	<tal:backtoprevious tal:condition="python:is_search_form_or_view">
 		<input type="button" class="context plominoClose" value="Close" name="plomino_close"
 			i18n:domain="CMFPlomino" i18n:attributes="value"
 			onclick="history.go(-1)" />

@@ -17,10 +17,9 @@ from zope.schema import TextLine, Text, List, Choice
 from zope.schema.vocabulary import SimpleVocabulary
 from dictionaryproperty import DictionaryProperty
 
-from Products.Five.formlib.formbase import EditForm
 from Products.CMFCore.utils import getToolByName
 
-from base import IBaseField, BaseField
+from base import IBaseField, BaseField, BaseForm
 
 import simplejson as json
 
@@ -74,6 +73,7 @@ class NameField(BaseField):
                 s.append(m[0]+'|'+m[0])
             else:
                 s.append(m[1]+'|'+m[0])
+        s.sort(key=lambda n: n.split('|')[1].lower())
         return s
 
     def getFullname(self, userid):
@@ -117,7 +117,7 @@ class NameField(BaseField):
 for f in getFields(INameField).values():
     setattr(NameField, f.getName(), DictionaryProperty(f, 'parameters'))
 
-class SettingForm(EditForm):
+class SettingForm(BaseForm):
     """
     """
     form_fields = form.Fields(INameField)

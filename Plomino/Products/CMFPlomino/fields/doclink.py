@@ -17,9 +17,7 @@ from zope.schema import TextLine, Text, List, Choice
 from zope.schema.vocabulary import SimpleVocabulary
 from dictionaryproperty import DictionaryProperty
 
-from Products.Five.formlib.formbase import EditForm
-
-from base import IBaseField, BaseField
+from base import IBaseField, BaseField, BaseForm
 from Products.CMFPlomino.exceptions import PlominoScriptException
 
 import simplejson as json
@@ -172,7 +170,7 @@ class DoclinkField(BaseField):
 for f in getFields(IDoclinkField).values():
     setattr(DoclinkField, f.getName(), DictionaryProperty(f, 'parameters'))
 
-class SettingForm(EditForm):
+class SettingForm(BaseForm):
     """
     """
     form_fields = form.Fields(IDoclinkField)

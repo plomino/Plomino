@@ -27,7 +27,10 @@ Create some users
     
 
 Create the browser object we'll be using and log in as userEditor
-    >>> from Products.Five.testbrowser import Browser
+    >>> try:
+    ...    from Testing.testbrowser import Browser
+    ... except:
+    ...    from Products.Five.testbrowser import Browser
     >>> browser = Browser()
     >>> portal_url = self.portal.absolute_url()
     >>> browser.open(portal_url)

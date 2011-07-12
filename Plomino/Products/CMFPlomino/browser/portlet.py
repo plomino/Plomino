@@ -6,13 +6,21 @@ from zope import schema
 from Products.CMFPlomino.browser import PloneMessageFactory as _
 
 class IPortlet(Interface):
-    pass
+    display_tree = schema.Choice(title=_(u"Display design tree"),
+                             description=_(u"Embed the full design tree in the portlet."),
+                             vocabulary=schema.vocabulary.SimpleVocabulary.fromItems(
+                                    [('Yes', True), ('No', False)]),
+                             required=True)
 
 class Assignment(base.Assignment):
     implements(IPortlet)
 
     title = u'Plomino design portlet'
+    display_tree = True
 
+    def __init__(self, display_tree=True):
+        self.display_tree = display_tree
+        
 class Renderer(base.Renderer):
     render = ViewPageTemplateFile('design_portlet.pt')
 
@@ -38,13 +46,30 @@ class Renderer(base.Renderer):
     def available(self):
         return self.hasDesignPermission()
 
+    @property
+    def displayTree(self):
+        if hasattr(self.data, "display_tree"):
+            return self.data.display_tree
+        else:
+            return True
+
+
 class AddForm(base.AddForm):
+    label = _(u"Add a Plomino Element Portlet")
+    description = _(u"This portlet provides access to Plomino design features.")
+    
     form_fields = form.Fields(IPortlet)
 
     def create(self, data):
-        return Assignment()
+        return Assignment(**data)
 
-
+class EditForm(base.EditForm):
+    """
+    """
+    label = _(u"Edit the Plomino Design Portlet")
+    description = _(u"This portlet provides access to Plomino design features.")
+    form_fields = form.Fields(IPortlet)
+    
 class IElementPortlet(Interface):
     """Contains the template used to fill a template form
     """
@@ -94,9 +119,9 @@ class ElementPortletRenderer(base.Renderer):
     def available(self):
         element = self.getElement()
         if element and hasattr(element, "getFormField"):
-            availability_field = element.getFormField("Plomino_Portlet_Availabilty")
+            availability_field = element.getFormField("Plomino_Portlet_Availability")
             if availability_field:
-                return element.computeFieldValue("Plomino_Portlet_Availabilty", element)
+                return element.computeFieldValue("Plomino_Portlet_Availability", element)
         return True
 
     @property

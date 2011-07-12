@@ -18,10 +18,9 @@ from zope.schema.vocabulary import SimpleVocabulary
 
 from dictionaryproperty import DictionaryProperty
 
-from Products.Five.formlib.formbase import EditForm
 from Products.CMFPlomino.PlominoUtils import PlominoTranslate
 
-from base import IBaseField, BaseField
+from base import IBaseField, BaseField, BaseForm
 
 class INumberField(IBaseField):
     """
@@ -88,7 +87,7 @@ class NumberField(BaseField):
 for f in getFields(INumberField).values():
     setattr(NumberField, f.getName(), DictionaryProperty(f, 'parameters'))
 
-class SettingForm(EditForm):
+class SettingForm(BaseForm):
     """
     """
     form_fields = form.Fields(INumberField)

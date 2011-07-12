@@ -123,7 +123,7 @@ class PlominoAction(BaseContent, BrowserDefaultMixin):
     # Methods
 
     security.declareProtected(READ_PERMISSION, 'executeAction')
-    def executeAction(self,target):
+    def executeAction(self, target, form_id):
         """return the action resulting url
         """
         db = self.getParentDatabase()
@@ -140,10 +140,10 @@ class PlominoAction(BaseContent, BrowserDefaultMixin):
                 targetid="None"
             else:
                 targetid=target.id
-            return self.absolute_url() + '/runScript?target='+targetid
+            return self.absolute_url() + '/runScript?target=%s&form_id=%s'%(targetid, form_id)
         elif self.ActionType == "REDIRECT":
             try:
-                redirecturl=self.runFormulaScript("action_"+self.getParentNode().id+"_"+self.id+"_script", target, self.Content)
+                redirecturl=self.runFormulaScript("action_"+self.getParentNode().id+"_"+self.id+"_script", target, self.Content, True, form_id)
                 return str(redirecturl)
             except PlominoScriptException, e:
                 return "javascript:alert(\"Error: %s\")" % ('formula error in redirect action ' + self.Title())
@@ -151,11 +151,12 @@ class PlominoAction(BaseContent, BrowserDefaultMixin):
             return '.'
 
     security.declareProtected(READ_PERMISSION, 'runScript')
-    def runScript(self,REQUEST):
+    def runScript(self, REQUEST):
         """execute the python code
         """
         db = self.getParentDatabase()
         target = REQUEST.get('target')
+        form_id = REQUEST.get('form_id')
         if target == "None":
             plominoContext = db
         else:
@@ -166,7 +167,7 @@ class PlominoAction(BaseContent, BrowserDefaultMixin):
         plominoReturnURL = plominoContext.absolute_url()
         try:
             #RunFormula(plominoContext, "action_"+self.getParentNode().id+"_"+self.id, self.Content())
-            returnurl=self.runFormulaScript("action_"+self.getParentNode().id+"_"+self.id+"_script", plominoContext, self.Content)
+            returnurl=self.runFormulaScript("action_"+self.getParentNode().id+"_"+self.id+"_script", plominoContext, self.Content, True, form_id)
             if returnurl is None or returnurl=='':
                 returnurl=plominoReturnURL
             REQUEST.RESPONSE.redirect(returnurl)

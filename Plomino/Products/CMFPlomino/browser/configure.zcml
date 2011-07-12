@@ -9,9 +9,10 @@
       interface=".portlet.IPortlet"
       assignment=".portlet.Assignment"
       view_permission="zope2.View"
-      edit_permission="cmf.ManagePortal"
+      edit_permission="plomino.DESIGN_PERMISSION"
       renderer=".portlet.Renderer"
       addview=".portlet.AddForm"
+      editview=".portlet.EditForm"
     />
 
   <plone:portlet

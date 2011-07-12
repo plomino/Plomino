@@ -135,6 +135,26 @@ dd.plominoMessage a {
     margin-bottom: 1em;
     line-height: 1.25em;
 }
+
+dl.portlet-design-plomino dd.portletItem {
+    padding: 0 1em;
+}
+dl.portlet-design-plomino dl.collapsible a:link {
+    border: 0;
+}
+dl.portlet-design-plomino dt a:link,
+dl.portlet-design-plomino dt a:visited,
+dl.portlet-design-plomino dt a:hover {
+    display: inline;
+}
+.portlet-design-plomino dl.collapsible dd ul {
+    list-style-type: inherit;
+    list-style-position: inside;
+}
+.portlet-design-plomino dl.collapsible dd ul li ul {
+    list-style-type: circle;
+    list-style-position: inside;
+}
 /* </dtml-with> */
 
 
