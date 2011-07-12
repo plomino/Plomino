@@ -12,7 +12,7 @@ __docformat__ = 'plaintext'
 
 from Products.ZCatalog.ZCatalog import Catalog
 from Missing import MV
-from PlominoUtils import asUnicode
+from Products.CMFPlomino.PlominoUtils import asUnicode
 
 try:
     from DocumentTemplate.cDocumentTemplate import safe_callable
