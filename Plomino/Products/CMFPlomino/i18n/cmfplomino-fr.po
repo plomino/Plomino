@@ -160,7 +160,7 @@ msgstr "Sauvegarde du document"
 msgid "CMFPlomino_help_onSaveDocument"
 msgstr "Script exécuté à la sauvegarde d'un document"
 msgid "CMFPlomino_label_onDeleteDocument"
-msgstr "Suppression du document"
+msgstr "A la suppression du document"
 msgid "CMFPlomino_help_onDeleteDocument"
 msgstr "Script exécuté avant la suppression d'un document"
 msgid "CMFPlomino_label_FormLayout"
@@ -318,7 +318,7 @@ msgstr "Afficher l'action dans la barrre d'actions"
 #. Default: "Afficher l'action dans la barrre d'actions (oui/non)"
 #: PlominoAction.py
 msgid "CMFPlomino_help_ActionInActionBar"
-msgstr "Display action in action bar (yes/no)"
+msgstr "Afficher l'action dans la barrre d'actions (oui/non)"
 
 #. Default: "Categorized"
 #: PlominoView.py
@@ -346,7 +346,7 @@ msgstr "Id"
 msgid "CMFPlomino_help_view_id"
 msgstr "Si modifié après création, la base doit être rafraîchit."
 msgid "CMFPlomino_label_ViewTemplate"
-msgstr "View template"
+msgstr "Nom du template"
 msgid "CMFPlomino_help_ViewTemplate"
 msgstr "Laisser vide pour utiliser le template standard."
 
@@ -376,7 +376,7 @@ msgstr "Tri inversé"
 #. Default: "Reverse the sort ordering"
 #: PlominoView.py
 msgid "CMFPlomino_help_ReverseSorting"
-msgstr "Met le tri en ordre décroissant"
+msgstr "Inverse l'ordre de tri"
 
 #Action bar buttons
 msgid "Edit"
@@ -473,7 +473,7 @@ msgstr "Utilisateur effectivement utilisé lors de l'éxécution de l'agent"
 #. Default: "Cron"
 #: PlominoAgent.py
 msgid "CMFPlomino_label_Cron"
-msgstr "Cron"
+msgstr "Cron (deprecated)"
 
 #. Default: "Format : crontab UNIX"
 #: PlominoAgent.py
@@ -624,6 +624,61 @@ msgid "Target URL"
 msgstr "URL cible"
 msgid "Include db settings"
 msgstr "Inclure les paramètres généraux de la base"
+
+msgid "CMFPlomino_label_DocumentId"
+msgstr "Formule de calcul de l'ID du document"
+
+msgid "CMFPlomino_help_DocumentId"
+msgstr "Calcule l'ID du document à sa création. Doit être unique globalement s'il doit être synchronisé avec une autre base de données."
+
+msgid "CMFPlomino_label_HideDefaultActions"
+msgstr "Cacher les actions par défaut"
+
+msgid "CMFPlomino_help_HideDefaultActions"
+msgstr "Les actions par défaut (modifier,sauvegarder,supprimer,fermer) ne seront pas affichées dans la barre d'actions"
+
+msgid "CMFPlomino_label_HideViewDefaultActions"
+msgstr "Cacher les actions par défaut"
+
+msgid "CMFPlomino_help_HideViewDefaultActions"
+msgstr "Les actions par défaut (supprimer,fermer) ne seront pas affichées dans la barre d'actions"
+
+msgid "CMFPlomino_label_FulltextIndex"
+msgstr "Index local full-text"
+
+msgid "CMFPlomino_help_FulltextIndex"
+msgstr "Si activé, le contenu des documents sera indexé full-text (tous les champs)"
+
+msgid "CMFPlomino_label_IndexInPortal"
+msgstr "Indexer les documents dans le portail Plone"
+
+msgid "CMFPlomino_help_IndexInPortal"
+msgstr "Si activé les documents pourront être recherchés dans Plone"
+
+msgid "CMFPlomino_label_DoNotListUsers"
+msgstr "Ne pas afficher la liste des utilisateurs"
+
+msgid "CMFPlomino_help_DoNotListUsers"
+msgstr "Dans l'écran des ACL, les utilisateurs sont entrés en texte libre. Sinon c'est une liste déroulante des utilisateurs Plone existants. A utiliser en cas de nombre d'utilisateurs important"
+
+msgid "CMFPlomino_label_DoNotReindex"
+msgstr "Ne pas réindexer les documents lors des changements de design"
+
+msgid "CMFPlomino_help_DoNotReindex"
+msgstr "Si activé, les documents ne sont réindexés automatiquement lors d'un changement dans le design. La réindexation doit alors être manuelle."
+
+msgid "CMFPlomino_label_ViewWidget"
+msgstr "Widget"
+
+msgid "CMFPlomino_help_ViewWidget"
+msgstr "Mode de rendu"
+
+msgid "CMFPlomino_label_DynamicTableParameters"
+msgstr "Paramètres de la table dynamique"
+
+msgid "CMFPlomino_help_DynamicTableParameters"
+msgstr "Changer les options pour adapter le comportement de la table dynamique"
+
 msgid "datagrid_add_button_label"
 msgstr "Ajouter"
 msgid "datagrid_delete_button_label"
