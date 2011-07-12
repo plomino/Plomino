@@ -47,5 +47,14 @@ class PlominoCatalog(Catalog):
                 attr=getattr(object, x, MV)
                 if attr is not MV and safe_callable(attr):
                     attr=attr()
-                record.append(asUnicode(attr))
+                if type(attr) == type(''):
+                    attr = attr.decode('utf-8')
+                elif type(attr) == type([]) or type(attr) == type(()):
+                    new_value = []
+                    for v in attr:
+                        if type(v) == type(''):
+                            v = v.decode('utf-8')
+                        new_value.append(v)
+                    attr = new_value
+                record.append(attr)
         return tuple(record)
