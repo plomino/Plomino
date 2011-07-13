@@ -29,10 +29,6 @@
         <pre></pre>
     </div>
     <script type="text/javascript">
-        function refreshStatusMessages() {
-            container = jq("#plominoMessages");
-        	container.load("./statusmessage_load #plonePortalMessages");
-        }
         function showTraceback(el, formula_path) {
             msg = jq(el).children().filter(":first").html();
             popup = jq("#plominoTracebackPopup");
@@ -48,7 +44,9 @@
             });
         	popup.dialog({show: "blind", height: 430, width: 530});
         }
-        jq(document).ready(refreshStatusMessages);
+        jq(document).ready(function () {
+			jq("#plominoMessages").load("./statusmessage_load #plonePortalMessages");
+		});
     </script>
 
 </tal:block>
