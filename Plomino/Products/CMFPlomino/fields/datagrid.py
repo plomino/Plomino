@@ -164,7 +164,7 @@ class DatagridField(BaseField):
                 mapped = []
                 for row in fieldValue:
                     if len(row) < len(item_names):
-                        row = (row + ['']*len(item_names)-len(row))
+                        row = (row + ['']*(len(item_names)-len(row)))
                     row = dict(zip(item_names, row))
                     mapped.append(row)
                 fieldValue = mapped
