@@ -4,7 +4,7 @@
                        field python:options['field']">
 
         <script type="text/javascript" charset="utf-8"
-        tal:define="data python:field.getSettings().tojson(v);
+        tal:define="data python:field.getSettings().tojson(v, rendered=True);
                     param python:field.getSettings().getParameters();
         			langpath python:field.getSettings().getLang()"
         tal:content="structure string:
