@@ -108,7 +108,7 @@ def PlominoTranslate(message, context, domain='CMFPlomino'):
             message = message[0]
         except (TypeError, IndexError):
             pass
-    msg = translation_service.utranslate(msgid=message, domain=domain, context=context)
+    msg = translation_service.utranslate(domain=domain, msgid=message, context=context)
     return translation_service.encode(msg) # convert unicode to site encoding
 
 def htmlencode(s):
