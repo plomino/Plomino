@@ -79,6 +79,9 @@ table.plominoview a:hover {
 text-decoration: underline;
 }
 
+tr.datagrid_row_selected {
+    border: 1px solid black;
+}
 tr.datagrid_row_selected td {
     background-color: #B0BED9;
 }
