@@ -1,6 +1,12 @@
 Changelog
 =========
 
+1.10.3 (2011-07-19)
+-------------------
+* i18n fixes
+* fix translation method
+* display rendered values in datagrid in edit mode
+
 1.10.2 (2011-07-12)
 -------------------
 * Only use Unicode in the Plomino index,
