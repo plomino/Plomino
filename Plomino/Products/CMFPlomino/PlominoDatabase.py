@@ -351,6 +351,11 @@ class PlominoDatabase(ATFolder, PlominoAccessControl, PlominoDesignManager, Plom
         pt = getToolByName(self, 'portal_types')
         pt.constructContent('PlominoDocument', self.documents, docid)
         doc = self.documents.get(docid)
+        # new doc has been automatically index in portal_catalog by constructContent
+        # 1: we do not necessarily want it (depending on IndexInPortal value)
+        # 2: PlominoDocument.save() will index it with the correct path anyway
+        # so let's remove it for now
+        self.portal_catalog.uncatalog_object("/".join(doc.getPhysicalPath()))
         return doc
 
     security.declarePublic('getDocument')
@@ -389,6 +394,8 @@ class PlominoDatabase(ATFolder, PlominoAccessControl, PlominoDesignManager, Plom
                     e.reportError('Document has been deleted, but onDelete event failed.')
 
             self.getIndex().unindexDocument(doc)
+            if self.getIndexInPortal():
+                self.portal_catalog.uncatalog_object("/".join(self.getPhysicalPath() + (doc.id,)))
             event.notify(ObjectRemovedEvent(doc, self.documents, doc.id))
             self.documents._delOb(doc.id)
 
