@@ -423,6 +423,7 @@ class PlominoDocument(ATFolder):
         but it might be forced to a different form by passing the form id as
         request parameter, or by evaluating the parent view form formula
         """
+        default_form = self.getItem('Form')
         formname = None
         if hasattr(self, 'REQUEST'):
             formname = self.REQUEST.get("openwithform", None)
@@ -430,9 +431,13 @@ class PlominoDocument(ATFolder):
             if hasattr(self, 'evaluateViewForm'):
                 formname = self.evaluateViewForm(self)
         if not formname:
-            formname = self.getItem('Form')
-
-        return self.getParentDatabase().getForm(formname)
+            formname = default_form
+        form = self.getParentDatabase().getForm(formname)
+        if not form:
+            form = self.getParentDatabase().getForm(default_form)
+            if hasattr(self, "REQUEST"):
+                self.writeMessageOnPage("Form %s does not exist." % formname, self.REQUEST, True)
+        return form
 
     security.declarePrivate('manage_afterClone')
     def manage_afterClone(self,item):
