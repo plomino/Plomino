@@ -103,7 +103,7 @@ schema = Schema((
     ),
     BooleanField(
         name='IndexInPortal',
-        default=True,
+        default=False,
         widget=BooleanField._properties['widget'](
             label="Index documents in Plone portal",
             description="If enabled, documents are searchable in Plone search.",
