@@ -343,7 +343,7 @@ class PlominoView(ATFolder):
                 if field:
                     field.setToBeIndexed(True)
                     #field.at_post_edit_script()
-                    index.createFieldIndex(field.id, field.getFieldType())
+                    index.createFieldIndex(field.id, field.getFieldType(), refresh=refresh)
                 else:
                     column_obj.setFormula("'Non-existing field'")
                     index.createIndex('PlominoViewColumn_'+self.getViewName()+'_'+column_name, refresh=refresh)
