@@ -130,6 +130,10 @@ class PlominoDocument(ATFolder):
         """
         """
         items = self.items
+        if type(value) == type(''):
+            db = self.getParentDatabase()
+            translation_service = getToolByName(db, 'translation_service')
+            value = translation_service.asunicodetype(value)
         items[name] = value
         self.items = items
         self.plomino_modification_time = DateTime().toZone('UTC')
@@ -244,7 +248,7 @@ class PlominoDocument(ATFolder):
         return self.getParentDatabase().isCurrentUserAuthor(self)
 
     security.declareProtected(REMOVE_PERMISSION, 'delete')
-    def delete(self,REQUEST=None):
+    def delete(self, REQUEST=None):
         """delete the current doc
         """
         db = self.getParentDatabase()
@@ -254,7 +258,7 @@ class PlominoDocument(ATFolder):
             REQUEST.RESPONSE.redirect(return_url)
 
     security.declareProtected(EDIT_PERMISSION, 'saveDocument')
-    def saveDocument(self,REQUEST, creation=False):
+    def saveDocument(self, REQUEST, creation=False):
         """save a document using the form submitted content
         """
         db = self.getParentDatabase()
