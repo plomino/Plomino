@@ -435,7 +435,7 @@ class PlominoDocument(ATFolder):
         form = self.getParentDatabase().getForm(formname)
         if not form:
             form = self.getParentDatabase().getForm(default_form)
-            if hasattr(self, "REQUEST"):
+            if hasattr(self, "REQUEST") and formname:
                 self.writeMessageOnPage("Form %s does not exist." % formname, self.REQUEST, True)
         return form
 
