@@ -728,7 +728,7 @@ class PlominoForm(ATFolder):
             submittedValue = REQUEST.get(fieldname)
 
             # STEP 1: check mandatory fields
-            if submittedValue is None or submittedValue=='':
+            if not submittedValue:
                 if f.getMandatory()==True:
                     errors.append(fieldname+" "+PlominoTranslate("is mandatory",self))
             else:
