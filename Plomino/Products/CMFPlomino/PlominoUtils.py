@@ -21,6 +21,12 @@ import Missing
 from email import message_from_string
 from email.Header import Header
 
+try:
+   from plone.app.upgrade import v40
+   HAS_PLONE40 = True
+except ImportError:
+   HAS_PLONE40 = False
+
 import logging
 logger = logging.getLogger('Plomino')
 
@@ -74,10 +80,6 @@ def sendMail(db, recipients, title, html_message, sender=None, cc=None, bcc=None
     if sender is None:
         sender = db.getCurrentUser().getProperty("email")
 
-#    host.secureSend(message, recipients,
-#        sender, subject=title,
-#        subtype='html', charset=encoding)
-
     mail_message = message_from_string(asUnicode(message).encode('utf-8'))
     mail_message.set_charset('utf-8')
     mail_message.set_type("text/html")
@@ -85,9 +87,13 @@ def sendMail(db, recipients, title, html_message, sender=None, cc=None, bcc=None
         mail_message['CC']= Header(cc)
     if bcc:
         mail_message['BCC']= Header(bcc)
-    
-    host.send(mail_message, recipients, sender, asUnicode(title).encode('utf-8'), msg_type='text/html', immediate=immediate)
-
+    if HAS_PLONE40:
+        host.send(mail_message, recipients, sender, asUnicode(title).encode('utf-8'), msg_type='text/html', immediate=immediate)
+    else:
+        host.secureSend(message, recipients,
+                        sender, subject=title,
+                        subtype='html', charset='utf-8')
+        
 def userFullname(db, userid):
     """ return user fullname if exist, else return userid, and return Unknown if user not found
     """
