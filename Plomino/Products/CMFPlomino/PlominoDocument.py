@@ -208,7 +208,7 @@ class PlominoDocument(ATFolder):
         return result
 
     security.declarePublic('computeItem')
-    def computeItem(self, itemname, form=None, formid=None, store=True):
+    def computeItem(self, itemname, form=None, formid=None, store=True, report=True):
         """ return the item value according the formula of the field defined in
         the given form (use default doc form if None)
         and store the value in the doc (if store=True)
@@ -221,7 +221,7 @@ class PlominoDocument(ATFolder):
             else:
                 form = db.getForm(formid)
         if form:
-            result = form.computeFieldValue(itemname, self)
+            result = form.computeFieldValue(itemname, self, report=report)
             if store:
                 self.setItem(itemname, result)
         return result

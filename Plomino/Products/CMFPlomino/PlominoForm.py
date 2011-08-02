@@ -580,7 +580,7 @@ class PlominoForm(ATFolder):
         return field
 
     security.declarePublic('computeFieldValue')
-    def computeFieldValue(self, fieldname, target):
+    def computeFieldValue(self, fieldname, target, report=True):
         """evalute field formula over target
         """
         field = self.getFormField(fieldname)
@@ -590,7 +590,8 @@ class PlominoForm(ATFolder):
             try:
                 fieldvalue = db.runFormulaScript("field_"+self.id+"_"+fieldname+"_formula", target, field.Formula, True, self)
             except PlominoScriptException, e:
-                e.reportError('%s field formula failed' % fieldname)
+                if report:
+                    e.reportError('%s field formula failed' % fieldname)
 
         return fieldvalue
 
