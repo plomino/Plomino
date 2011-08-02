@@ -18,6 +18,8 @@ import urllib
 import csv
 from cStringIO import StringIO
 import Missing
+from email import message_from_string
+from email.Header import Header
 
 import logging
 logger = logging.getLogger('Plomino')
@@ -59,25 +61,33 @@ def Now():
     """
     return DateTime()
 
-def sendMail(db, recipients, title, html_message, sender=None):
+def sendMail(db, recipients, title, html_message, sender=None, cc=None, bcc=None, immediate=False):
     """Send an email
     """
     host = getToolByName(db, 'MailHost')
     plone_tools = getToolByName(db, 'plone_utils')
-    encoding = plone_tools.getSiteEncoding()
+
     message = '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">\n'
     message = message + "<html>"
     message = message + html_message
     message = message + "</html>"
     if sender is None:
         sender = db.getCurrentUser().getProperty("email")
-    # secureSend is deprecated in Plone 4 but as it takes care to produce
-    # the email.MIMEText.MIMEText and set headers etc. by itself, it remains
-    # for now the most robust approach
-    host.secureSend(message, recipients,
-        sender, subject=title,
-        subtype='html', charset=encoding)
+
+#    host.secureSend(message, recipients,
+#        sender, subject=title,
+#        subtype='html', charset=encoding)
+
+    mail_message = message_from_string(asUnicode(message).encode('utf-8'))
+    mail_message.set_charset('utf-8')
+    mail_message.set_type("text/html")
+    if cc:
+        mail_message['CC']= Header(cc)
+    if bcc:
+        mail_message['BCC']= Header(bcc)
     
+    host.send(mail_message, recipients, sender, asUnicode(title).encode('utf-8'), msg_type='text/html', immediate=immediate)
+
 def userFullname(db, userid):
     """ return user fullname if exist, else return userid, and return Unknown if user not found
     """
