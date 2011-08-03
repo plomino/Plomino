@@ -271,10 +271,11 @@ class PlominoView(ATFolder):
         """Get actions
         """
         all = self.portal_catalog.search({'portal_type' : ['PlominoAction'], 'path': '/'.join(self.getPhysicalPath())})
-
+        all = self.objectValues(spec='PlominoAction')
+        
         filtered = []
-        for a in all:
-            obj_a=a.getObject()
+        for obj_a in all:
+            #obj_a=a.getObject()
             if hide:
                 try:
                     #result = RunFormula(target, obj_a.getHidewhen())

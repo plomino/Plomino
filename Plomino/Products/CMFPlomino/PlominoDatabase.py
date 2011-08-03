@@ -297,8 +297,8 @@ class PlominoDatabase(ATFolder, PlominoAccessControl, PlominoDesignManager, Plom
     def getForms(self, sortbyid=False):
         """return the database forms list
         """
-        form_list = self.portal_catalog.search({'portal_type' : ['PlominoForm'], 'path': '/'.join(self.getPhysicalPath())})
-        form_obj_list = [a.getObject() for a in form_list]
+        form_list = self.objectValues(spec='PlominoForm')
+        form_obj_list = [a for a in form_list]
         if sortbyid:
             form_obj_list.sort(key=lambda elt: elt.id.lower())
         else:
@@ -309,8 +309,8 @@ class PlominoDatabase(ATFolder, PlominoAccessControl, PlominoDesignManager, Plom
     def getViews(self, sortbyid=False):
         """return the database views list
         """
-        view_list = self.portal_catalog.search({'portal_type' : ['PlominoView'], 'path': '/'.join(self.getPhysicalPath())})
-        view_obj_list = [a.getObject() for a in view_list]
+        view_list = self.objectValues(spec='PlominoView')
+        view_obj_list = [a for a in view_list]
         if sortbyid:
             view_obj_list.sort(key=lambda elt: elt.id.lower())
         else:
@@ -321,8 +321,8 @@ class PlominoDatabase(ATFolder, PlominoAccessControl, PlominoDesignManager, Plom
     def getAgents(self):
         """return the database agents list
         """
-        agent_list = self.portal_catalog.search({'portal_type' : ['PlominoAgent'], 'path': '/'.join(self.getPhysicalPath())})
-        agent_obj_list = [a.getObject() for a in agent_list]
+        agent_list = self.objectValues(spec='PlominoAgent')
+        agent_obj_list = [a for a in agent_list]
         agent_obj_list.sort(key=lambda elt: elt.id.lower())
         return agent_obj_list
 
