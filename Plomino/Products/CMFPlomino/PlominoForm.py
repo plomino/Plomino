@@ -735,7 +735,12 @@ class PlominoForm(ATFolder):
             # STEP 1: check mandatory fields
             if not submittedValue:
                 if f.getMandatory()==True:
-                    errors.append(fieldname+" "+PlominoTranslate("is mandatory",self))
+                    if fieldtype == "ATTACHMENT" and doc:
+                        existing_files = doc.getItem(fieldname)
+                        if not existing_files:
+                            errors.append(fieldname+" "+PlominoTranslate("is mandatory",self))
+                    else:
+                        errors.append(fieldname+" "+PlominoTranslate("is mandatory",self))
             else:
                 # STEP 2: check data types
                 errors = errors + f.validateFormat(submittedValue)
