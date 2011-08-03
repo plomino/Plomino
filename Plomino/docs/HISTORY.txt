@@ -1,6 +1,13 @@
 Changelog
 =========
 
+1.10.4 (2011-08-03)
+-------------------
+* (for Plone 4 only) use MailHost.send instead of secureSend
+* fix document portal indexation behaviour
+* fix permission issues with Document id formula
+* fix Mandatory field checking with File attachments fields
+
 1.10.3 (2011-07-19)
 -------------------
 * i18n fixes
