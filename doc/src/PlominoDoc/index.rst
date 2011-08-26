@@ -12,7 +12,7 @@ Plomino 1.9 user guide
 :Contact: eric.brehault@makina-corpus.com
 :Revision: Version 1.2 - February 2011
 :Date: 2011-02-22
-:Copyright: This document has been placed in the public domain.
+:Copyright: This document is published under the **Creative Commons by-sa-nc** licence.
 
 Contents:
 
