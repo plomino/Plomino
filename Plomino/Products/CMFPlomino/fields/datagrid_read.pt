@@ -19,5 +19,5 @@
         					} );
         				} );">
         </script>
-        <table class="display" TAL:ATTRIBUTES="id string:${fieldname}_datagrid"></table>
+        <table class="display" tal:attributes="id string:${fieldname}_datagrid"></table>
 </tal:block>
