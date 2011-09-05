@@ -458,7 +458,7 @@ class PlominoForm(ATFolder):
         html = html + """<div id="parent_field">%s</div>""" % doc.Plomino_Parent_Field
 
         for f in fields:
-            html = html + """<span id="%s" plomino="1">%s</span>""" % (f, doc.getRenderedItem(f, form=self))
+            html = html + """<span id="%s" class="plominochildfield">%s</span>""" % (f, doc.getRenderedItem(f, form=self))
 
         return html
 
