@@ -176,18 +176,15 @@
 														<td><span tal:content="python:here.hideIt(password)">password</span></td>
 														<td><span tal:content="python:here.displayItNice(repType,'REPLICATION_TYPES')">repType</span></td>
 														<td><span tal:content="python:here.displayItNice(whoWins,'CONFLICT_RESOLUTION_TYPE')">whoWins</span></td>
-														<td><span tal:content="restricttoview" tal:attributes="class string:plominoNoWrap">restricttoview</span></td>
-														<td><span tal:content="cron" tal:attributes="class string:plominoNoWrap">cron</span></td>
+														<td><span tal:content="restricttoview" class="plominoNoWrap">restricttoview</span></td>
+														<td><span tal:content="cron" class="plominoNoWrap">cron</span></td>
 													</tr>
 												</tal:view>
 												
-												<tal:edit tal:condition="python:mode=='edit' or mode=='add'">
-													<tr	tal:define="defaultRepType string:push;
-																	repType repType|defaultRepType;
-																	defaultWhoWins string:lastwins;
-																	whoWins whoWins|defaultWhoWins;"
-														tal:attributes="class classname">
-														<!-- <td>id</td> -->
+												<tal:edit tal:condition="python:mode=='edit' or mode=='add'"
+														tal:define="repType python:repType or 'push';
+																	whoWins python:whoWins or 'lastwins';">
+													<tr>
 														<td>
 															<input class="textType"
 																type="hidden"
@@ -401,8 +398,7 @@
 					<tal:vars tal:define="report here/getReport"
 						tal:condition="report">
 						<dl class="collapsible inline collapsedOnLoad">
-							<dt class="collapsibleHeader"
-								tal:content="string:Import report">Import report</dt>
+							<dt class="collapsibleHeader">Import report</dt>
 							<dd class="collapsibleContent">
 								<table class="listing">
 									<thead>

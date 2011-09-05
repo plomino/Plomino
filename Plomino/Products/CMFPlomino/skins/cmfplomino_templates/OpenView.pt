@@ -166,7 +166,7 @@
 	                                     <span i18n:name="end" tal:content="python:str(min(start+limit-1,count))">end</span>
 	                                     of <span i18n:name="total" tal:content="count">count</span>
 	                                </tal:count>
-	                                <tal:block tal:condition="python:start+limit<count">
+	                                <tal:block tal:condition="python:count>start+limit">
 										<a
 											tal:attributes="href python:request.physicalPathToURL(context.getPhysicalPath())+'?widget=BASIC&start='+str(nextstart)+'&limit='+str(limit)">Next
 										&gt;&gt;</a>
