@@ -276,8 +276,10 @@ class PlominoDocument(ATFolder):
         # refresh computed values, run onSave, reindex
         self.save(form, creation)
 
-        redirect = self.getItem("plominoredirecturl")
-        if redirect=='':
+        redirect = REQUEST.get('plominoredirecturl')
+        if not redirect:
+            redirect = self.getItem("plominoredirecturl")
+        if not redirect:
             redirect = self.absolute_url()
         REQUEST.RESPONSE.redirect(redirect)
 
@@ -342,7 +344,9 @@ class PlominoDocument(ATFolder):
         # execute the onSaveDocument code of the form
         if form and onSaveEvent:
             try:
-                self.runFormulaScript("form_"+form.id+"_onsave", self, form.onSaveDocument)
+                result = self.runFormulaScript("form_"+form.id+"_onsave", self, form.onSaveDocument)
+                if result and hasattr(self, 'REQUEST'):
+                    self.REQUEST.set('plominoredirecturl', result)
             except PlominoScriptException, e:
                 if hasattr(self, 'REQUEST'):
                     e.reportError('Document has been saved but onSave event failed.')
