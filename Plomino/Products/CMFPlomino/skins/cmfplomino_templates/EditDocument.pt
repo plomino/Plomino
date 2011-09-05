@@ -40,15 +40,8 @@
 <metal:css fill-slot="style_slot">
 <tal:test tal:condition="python:here.hasItem('Form')">
 	<tal:block tal:condition="python:here.getForm().hasDateTimeField()">
-      <style type="text/css"
-             media="all"
-             tal:content="structure string:<!-- @import url($portal_url/jscalendar/calendar-system.css); -->">
-      </style>
+      <link rel="stylesheet" type="text/css" media="all" tal:attributes="href string:$portal_url/jscalendar/calendar-system.css" />
 	</tal:block>
-	<tal:block tal:condition="python:here.getForm().hasGoogleVisualizationField()">
-        <style type="text/css" media="all" tal:content="structure string:<!-- @import url($portal_url/datatable.css); -->">
-        </style>
-    </tal:block>
 </tal:test>
 </metal:css>
 

@@ -13,13 +13,6 @@
     </tal:block>
 </metal:javascript_head>
 
-<metal:css fill-slot="style_slot">
-    <tal:block tal:condition="python:here.hasItem('Form') and here.getForm().hasGoogleVisualizationField()">
-        <style type="text/css" media="all" tal:content="structure string:<!-- @import url($portal_url/datatable.css); -->">
-        </style>
-    </tal:block>
-</metal:css>
-
 <metal:block fill-slot="top_slot"
              tal:define="is_designer python:here.hasDesignPermission()">
     <tal:notdesigner tal:condition="not:is_designer">
