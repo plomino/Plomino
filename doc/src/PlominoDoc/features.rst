@@ -532,18 +532,18 @@ If needed, you can create a specific search formula in the form
 **Parameters** tab.
 
 This formula is used to filter the result set of the default query, and 
-must return `True` or `False` for each document in the result set.
+must return ``True`` or ``False`` for each document in the result set.
 
-You can access the values submitted by the search form on the REQUEST
-object: `plominoContext.REQUEST.get('myfield')`.
+You can access the values submitted by the search form on the ``REQUEST``
+object: ``plominoContext.REQUEST.get('myfield')``.
 
 Example::
 
-    period=plominoContext.REQUEST.get('period') 
-    if period=='Ancien regime': 
+    period = plominoContext.REQUEST.get('period') 
+    if period == 'Ancien regime': 
         return plominoDocument.year 
-    if period=='Empire': 
-        return plominoDocument.year >=1804 and plominoDocument.year
+    if period == 'Empire': 
+        return plominoDocument.year >= 1804 and plominoDocument.year
 
 .. Note::
     Search formulas can be a lot slower than regular ZCatalog searches,
@@ -553,21 +553,21 @@ Search event
 ------------
 
 If you do not want the default filters of a search page (the view, the 
-query, and the formula), you can define an `onSearch` event on the form
+query, and the formula), you can define an ``onSearch`` event on the form
 **Events** tab. The formula of this event should return the required list 
 of documents. 
 
-You can access the values submitted by the search form on the REQUEST
-object: `plominoContext.REQUEST.get('myfield')`.
+You can access the values submitted by the search form on the ``REQUEST``
+object: ``plominoContext.REQUEST.get('myfield')``.
 
 Page
 ----
 
-Like a Search form, a Page form cannot be used to save documents;
-moreover Page forms do not display any action bar.
+Like a *Search* form, a *Page* form cannot be used to save documents;
+moreover *Page* forms do not display any action bar.
 
 Nevertheless, like any form, it can contain computed fields, actions
-(inserted in the form layout), or hide-when formulas, so it is a good
+(inserted in the form layout), and hide-when formulas, so it is a good
 way to build navigation pages, custom menus, or information pages (like
 reports, etc.).
 
@@ -593,14 +593,17 @@ Result if you are ``[dbadmin]``:
 Open with form
 --------------
 
-A Plomino document is displayed by default using the form corresponding to its 'Form' 
-item value (which contains the id of the forms used during the last document saving).
+The form used to render a document is determined by a number of mechanisms:
 
-But if the view where from the document is opened does define a Form formula, the 
-resulting form will be used instead.
+- By default, Plomino document is displayed using the form corresponding to
+  its ``Form`` item value (which contains the id of the form last used to
+  save the document).
 
-And to force the usage of a given form, the form id can be passed in the 
-request using the 'openwithform' parameter.
+- If the view from where the document is opened defines a ``Form`` formula,
+  the resulting form will be used instead.
+
+- And to force the usage of a given form, the form id can be passed in the
+  request using the ``openwithform`` parameter.
 
 Example:
 
