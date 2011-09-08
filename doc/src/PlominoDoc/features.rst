@@ -1,77 +1,55 @@
-------------------
+==================
 Features reference
-------------------
+==================
 
 Formulas
 ========
 
-Formulas are Python expressions.
+Formulas are Python scripts. Example::
 
-If it is a one line expression, the returned value corresponds to the
-Python expression evaluation. Example::
+    return plominoDocument.getItem('price') * 15
 
-    plominoDocument.price*15
-
-return the value ``price`` multiplied by 15.
-
-But if the expression consists of several lines, you must use ``return``
-to specify the value to return. Example::
-
-    total_price=plominoDocument.purchasePrice + plominoDocument.productionCosts 
-    taxes=total_price*0,196 
-    return taxes
-
-And if you just write::
-
-    total_price=plominoDocument.purchasePrice + plominoDocument.productionCosts
-    total_price*0,196
-
-no value would be returned.
+return the value of the ``price`` item multiplied by 15.
 
 .. Note::
-    a formula is not necessarily required to return a value -- you may
+    a formula does not necessarily need to return a value -- you may
     just need to make some changes in some documents (for instance if it
     is the formula in a Plomino action), so the return value would be
     irrelevant.
 
-``plominoDocument`` is a reserved keyword which corresponds to the
+``plominoDocument`` is a reserved name which corresponds to the
 current document on which the formula is evaluated.
 
-You can use ``plominoContext`` as a synonym of ``plominoDocument``,
-because in some cases the formula is executed on an object which is not
-a Plomino document (but a view, or a form, for instance).In those cases,
-``plominoContext`` will be prefered to avoird confusion.
+``plominoContext`` is a reserved name which corresponds to the
+context in which the formula is evaluated. In many cases this will be 
+the same as ``plominoDocument``, but in some cases the formula is executed
+on an object which is not a Plomino document (but a view, or a form, for
+instance). 
 
-The document items can be accessed as if they were attributes, or using
-the `getItem()` method: ``plominoDocument.validationDate`` is equivalent to: 
+Document items should be accessed using the ``getItem()`` method:
 ``plominoDocument.getItem('validationDate')``. 
 
-.. Note:: 
-    there is still a small difference, because if an item does not
-    exist, the attribute notation will produce an error, whereas
-    `getItem` will return an empty string ``''``.
-
-To change an item value, use the `setItem()` method: 
+To change an item value, use the ``setItem()`` method: 
 ``plominoDocument.setItem('firstname', 'Eric')``
 
 You can access the parent Plomino database of the document (or view, or
-form, according the context) using the `getParentDatabase()` method.
+form, according the context) using the ``getParentDatabase()`` method.
 
 You can also access the views and the other documents. Example::
 
-    db=plominoDocument.getParentDatabase() 
-    view=db.getView('pendingPurchases') 
-    total=0 
+    db = plominoDocument.getParentDatabase() 
+    view = db.getView('pendingPurchases') 
+    total = 0 
     for doc in view.getAllDocuments(): 
-        total=total+doc.price 
+        total = total + doc.getItem('price')
     return total
 
 (this example computes the total amount for the pending purchase requests).
 
 You can check the current user rights or roles. Example::
 
-    db=plominoDocument.getParentDatabase() 
-    user=db.getCurrentUser() 
+    db = plominoDocument.getParentDatabase() 
+    user = db.getCurrentUser() 
     if db.hasUserRole(user.id, '[Expert]'): 
         return True 
     elif db.isCurrentUserAuthor(doc): 
@@ -82,14 +60,14 @@ You can check the current user rights or roles. Example::
         return False
 
 You can change the author access rights on a given document by modifying
-its `Plomino_Authors` item.
+its ``Plomino_Authors`` item.
 
 This item is created automatically for any document and contains the
 user id of the document creator. If you want your document to be
 editable by users other than its creator, it can contain other ids as
 well. Example::
 
-    authors=plominoDocument.getItem('Plomino_Authors') 
+    authors = plominoDocument.getItem('Plomino_Authors') 
     authors.append('[Expert]') 
     if not 'inewton' in authors: 
         authors.append('inewton') 
@@ -195,15 +173,15 @@ Computed for display
 
 Example: create a computed for display field with this formula::
 
-    category=plominoDocument.bookCategory 
-    result="" 
-    if not category=='': 
-        index=plominoDocument.getParentDatabase().getIndex() 
-        autres=index.dbsearch({'bookCategory': category}, None) 
-        result="There are "+str(len(autres)-1)+" other books in the same category" 
-    return result
+    category = plominoDocument.getItem('bookCategory') 
+    if category: 
+        index = plominoDocument.getParentDatabase().getIndex() 
+        autres = index.dbsearch({'bookCategory': category}) 
+        result = "There are %s other books in the same category" % len(autres)-1
+        return result
+    return "" 
 
-and insert it in the frmBook form: 
+and insert it in the ``frmBook`` form: 
 
 .. image:: images/m434a6b5d.png 
 
@@ -393,14 +371,15 @@ Editable fields which are not part of the layout take their value
 from the REQUEST.
 
 So, for example, if you want to pass a parameter to another form:
-- in the origin document, put the parameter(s) in the link to the target form,
-  e.g. by adding ``?param1=value&param2=value`` to the URL. This will cause the
-  parameter to be part of the GET request which retrieves the target form. 
-- in the target form, create an editable field with the same id as the parameter
-  key (e.g. ``param1`` and ``param2`` above), but do not insert it in the form
-  layout. The field will get its value from the REQUEST.
-- then you can create `Computed on save` (or on display, or whatever) fields
-  which use the value of this field.
+- in the origin document, put the parameter(s) in the link to the target
+  form, e.g. by adding ``?param1=value&param2=value`` to the URL. This will
+  cause the parameter to be part of the ``GET`` request which retrieves the
+  target form. 
+- in the target form, create an editable field with the same id as the
+  parameter key (e.g. ``param1`` and ``param2`` above), but do not insert it
+  in the form layout. The field will get its value from the ``REQUEST``.  -
+  then you can create ``Computed on save`` (or on display, or whatever)
+  fields which use the value of this field.
 
 
 Forms
