@@ -683,3 +683,8 @@ msgid "datagrid_delete_button_label"
 msgstr "Delete"
 msgid "datagrid_edit_button_label"
 msgstr "Edit"
+
+msgid "&lt;&lt; Previous"
+msgstr "&lt;&lt; Previous"
+msgid "Next &gt;&gt;"
+msgstr "Next &gt;&gt;"

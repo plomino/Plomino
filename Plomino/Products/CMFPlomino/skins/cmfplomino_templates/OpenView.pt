@@ -2,7 +2,7 @@
 	xmlns:tal="http://xml.zope.org/namespaces/tal"
 	xmlns:metal="http://xml.zope.org/namespaces/metal"
 	xmlns:i18n="http://xml.zope.org/namespaces/i18n" lang="en"
-	metal:use-macro="here/main_template/macros/master" i18n:domain="plone">
+	metal:use-macro="here/main_template/macros/master" i18n:domain="CMFPlomino">
 <body>
 
 <metal:block fill-slot="top_slot"
@@ -157,19 +157,17 @@
 								<tr>
 									<th tal:attributes="colspan python:len(columns)+1"><tal:block
 										tal:condition="python:start>1">
-										<a
-											tal:attributes="href python:'/'.join(context.getPhysicalPath())+'?widget=BASIC&start='+str(previousstart)+'&limit='+str(limit)">&lt;&lt;
-										Previous</a>
+										<a i18n:translate=""
+											tal:attributes="href python:'/'.join(context.getPhysicalPath())+'?widget=BASIC&start='+str(previousstart)+'&limit='+str(limit)">&lt;&lt; Previous</a>
 									</tal:block>
-									<tal:count i18n:domain="CMFPlomino" i18n:translate="documents_count">
+									<tal:count i18n:translate="documents_count">
 									     Document(s) <span i18n:name="start" tal:content="python:str(start)">start</span> to
 	                                     <span i18n:name="end" tal:content="python:str(min(start+limit-1,count))">end</span>
 	                                     of <span i18n:name="total" tal:content="count">count</span>
 	                                </tal:count>
 	                                <tal:block tal:condition="python:count>start+limit">
-										<a
-											tal:attributes="href python:request.physicalPathToURL(context.getPhysicalPath())+'?widget=BASIC&start='+str(nextstart)+'&limit='+str(limit)">Next
-										&gt;&gt;</a>
+										<a i18n:translate=""
+											tal:attributes="href python:request.physicalPathToURL(context.getPhysicalPath())+'?widget=BASIC&start='+str(nextstart)+'&limit='+str(limit)">Next &gt;&gt;</a>
 									</tal:block></th>
 								</tr>
 							</tal:block>
@@ -242,7 +240,7 @@
 			        </table>
 			        
 			        <p style="clear: both;" class="discreet">
-			        	<a href="?widget=BASIC" i18n:domain="CMFPlomino" i18n:translate="plominoview_viewstatictable">View as static table</a>
+			        	<a href="?widget=BASIC" i18n:translate="plominoview_viewstatictable">View as static table</a>
 			        </p>
 				</tal:dynamic>
 				
@@ -254,7 +252,7 @@
 				</tal:block>
 			</tal:block>
 			<tal:block tal:condition="python:not(hasReadPermission==True)">
-				<p i18n:domain="CMFPlomino" i18n:translate="Please log in">Please log in</p>
+				<p i18n:translate="Please log in">Please log in</p>
 			</tal:block>
 			</form>
 		</tal:block>

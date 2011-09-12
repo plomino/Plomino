@@ -685,3 +685,8 @@ msgid "datagrid_delete_button_label"
 msgstr "Supprimer"
 msgid "datagrid_edit_button_label"
 msgstr "Modifier"
+
+msgid "&lt;&lt; Previous"
+msgstr "&lt;&lt; Précédents"
+msgid "Next &gt;&gt;"
+msgstr "Suivants &gt;&gt;"
