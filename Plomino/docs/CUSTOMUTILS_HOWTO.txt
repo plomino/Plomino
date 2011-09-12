@@ -31,6 +31,7 @@ Declare the module as safe so it can be called from PythonScripts
 
 And register it to Plomino in a configure.zcml:
   <utility
+        name="MyUtils"
         provides="Products.CMFPlomino.interfaces.IPlominoUtils"
         component="pims.skin.bla.UnepUtils"
         />
