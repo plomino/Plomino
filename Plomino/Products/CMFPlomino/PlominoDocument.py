@@ -595,32 +595,31 @@ class PlominoDocument(ATFolder):
                     self.deletefile(filename)
                 else:
                     return ("ERROR: "+filename+" already exists", "")
+            if(self.getParentDatabase().getStorageAttachments()==True):
+                tmpfile=File(filename, filename, submittedValue)
+                storage = FileSystemStorage();
+                storage.set(filename, self, tmpfile);
+                contenttype=storage.get(filename,self).getContentType()
+            elif HAS_BLOB:
+                if isinstance(submittedValue, FileUpload) or type(submittedValue) == file:
+                    submittedValue.seek(0)
+                    contenttype = guessMimetype(submittedValue, filename)
+                    submittedValue = submittedValue.read()
+                try:
+                    blob = BlobWrapper(contenttype)
+                except:
+                    # BEFORE PLONE 4.0.1
+                    blob = BlobWrapper()
+                file_obj = blob.getBlob().open('w')
+                file_obj.write(submittedValue)
+                file_obj.close()
+                blob.setFilename(filename)
+                blob.setContentType(contenttype)
+                self._setObject(filename, blob)
             else:
-                if(self.getParentDatabase().getStorageAttachments()==True):
-                    tmpfile=File(filename, filename, submittedValue)
-                    storage = FileSystemStorage();
-                    storage.set(filename, self, tmpfile);
-                    contenttype=storage.get(filename,self).getContentType()
-                elif HAS_BLOB:
-                    if isinstance(submittedValue, FileUpload) or type(submittedValue) == file:
-                        submittedValue.seek(0)
-                        contenttype = guessMimetype(submittedValue, filename)
-                        submittedValue = submittedValue.read()
-                    try:
-                        blob = BlobWrapper(contenttype)
-                    except:
-                        # BEFORE PLONE 4.0.1
-                        blob = BlobWrapper()
-                    file_obj = blob.getBlob().open('w')
-                    file_obj.write(submittedValue)
-                    file_obj.close()
-                    blob.setFilename(filename)
-                    blob.setContentType(contenttype)
-                    self._setObject(filename, blob)
-                else:
-                    self.manage_addFile(filename, submittedValue)
-                    contenttype=self[filename].getContentType()
-                return (filename, contenttype)
+                self.manage_addFile(filename, submittedValue)
+                contenttype=self[filename].getContentType()
+            return (filename, contenttype)
         else:
             return (None, "")
 
