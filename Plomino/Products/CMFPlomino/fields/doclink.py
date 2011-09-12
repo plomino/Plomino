@@ -83,11 +83,11 @@ class DoclinkField(BaseField):
                 return []
             else:
                 result = []
-                for d in v.getAllDocuments():
-                    val = getattr(d, v.getIndexKey(self.labelcolumn), '')
+                for b in v.getAllDocuments(getObject=False):
+                    val = getattr(b, v.getIndexKey(self.labelcolumn), '')
                     if not val:
                         val = ''
-                    result.append(val + "|" + d.getPath())
+                    result.append(val + "|" + b.getPath())
                 return result
         else:
             #if no doc provided (if OpenForm action), we use the PlominoForm
@@ -126,15 +126,15 @@ class DoclinkField(BaseField):
         """
         if self.sourceview is not None:
             sourceview = self.context.getParentDatabase().getView(self.sourceview)
-            alldocs = sourceview.getAllDocuments()
+            brains = sourceview.getAllDocuments(getObject=False)
             columns = [col for col in sourceview.getColumns() if not(col.getHiddenColumn())]
             column_ids = [col.id for col in columns]
 
             datatable = []
-            for doc in alldocs:
-                row = [doc.getPath()]
+            for b in brains:
+                row = [b.getPath()]
                 for col in column_ids:
-                    v = getattr(doc, sourceview.getIndexKey(col))
+                    v = getattr(b, sourceview.getIndexKey(col))
                     if not isinstance(v, str):
                         v = unicode(v).encode('utf-8').replace('\r', '')
                     row.append(v or '&nbsp;')

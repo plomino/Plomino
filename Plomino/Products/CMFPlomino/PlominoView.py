@@ -31,6 +31,9 @@ import PlominoDocument
 
 import simplejson as json
 
+import logging
+logger = logging.getLogger('Plomino')
+
 schema = Schema((
 
     StringField(
@@ -236,21 +239,36 @@ class PlominoView(ATFolder):
         return BaseObject.__bobo_traverse__(self, request, name)
 
     security.declarePublic('getAllDocuments')
-    def getAllDocuments(self, start=1, limit=0, only_allowed=True):
-        """Get all documents (as CatalogBrains, you have to use getObject()
-        to get the real PlominoDocument)
+    def getAllDocuments(self, start=1, limit=None, only_allowed=True, getObject=True):
+        """ Return all the documents matching the view.
         """
+        # Ignore 'start': batching should be done using PloneBatch.
         index = self.getParentDatabase().getIndex()
         sortindex = self.getSortColumn()
         if sortindex=='':
             sortindex=None
         else:
             sortindex=self.getIndexKey(sortindex)
-        results=index.dbsearch({'PlominoViewFormula_'+self.getViewName() : True}, sortindex, self.getReverseSorting(), only_allowed=only_allowed)
-        if limit==0:
-            return results
+        results=index.dbsearch(
+            {'PlominoViewFormula_'+self.getViewName() : True},
+            sortindex,
+            self.getReverseSorting(),
+            only_allowed=only_allowed,
+            limit=limit)
+        if getObject:
+            return [r.getObject() for r in results]
         else:
-            return results[start-1:start-1+limit]
+            return results
+        # XXX: Fix the generator.
+        # for r in results:
+        #     if getObject:
+        #         try:
+        #             obj = r.getObject()
+        #             yield obj
+        #         except:
+        #             logging.exception('Corrupt view: %s'%self.id, exc_info=True)
+        #     else:
+        #         yield r
 
     security.declarePublic('getColumns')
     def getColumns(self):
@@ -270,12 +288,10 @@ class PlominoView(ATFolder):
     def getActions(self, target, hide=True, parent_id=None):
         """Get actions
         """
-        all = self.portal_catalog.search({'portal_type' : ['PlominoAction'], 'path': '/'.join(self.getPhysicalPath())})
         all = self.objectValues(spec='PlominoAction')
         
         filtered = []
         for obj_a in all:
-            #obj_a=a.getObject()
             if hide:
                 try:
                     #result = RunFormula(target, obj_a.getHidewhen())
@@ -356,22 +372,22 @@ class PlominoView(ATFolder):
     def getCategorizedColumnValues(self,column_name):
         """return existing values for the given key and add the empty value
         """
-        alldocs = self.getAllDocuments()
-        allvalues = [getattr(doc, self.getIndexKey(column_name)) for doc in alldocs]
-        categories={}
+        brains = self.getAllDocuments(getObject=False)
+        allvalues = [getattr(b, self.getIndexKey(column_name)) for b in brains]
+        categories = {}
         for itemvalue in allvalues:
-            if type(itemvalue)==list:
+            if type(itemvalue) == list:
                 for v in itemvalue:
                     if not(v in categories):
-                        categories[v]=1
+                        categories[v] = 1
                     else:
-                        categories[v]+=1
+                        categories[v] += 1
             else:
                 if itemvalue is not None:
                     if not(itemvalue in categories):
-                        categories[itemvalue]=1
+                        categories[itemvalue] = 1
                     else:
-                        categories[itemvalue]+=1
+                        categories[itemvalue] += 1
         uniquevalues = categories.keys()
         uniquevalues.sort()
         return [(v, categories[v]) for v in uniquevalues]
@@ -402,11 +418,11 @@ class PlominoView(ATFolder):
         marked as summable
         """
         sums = {}
-        docs = self.getAllDocuments()
+        brains = self.getAllDocuments(getObject=False)
         for col in self.getColumns():
             if col.DisplaySum:
                 indexkey = self.getIndexKey(col.getColumnName())
-                values = [getattr(doc, indexkey) for doc in docs]
+                values = [getattr(b, indexkey) for b in brains]
                 try:
                     s = sum([v for v in values if v is not None])
                 except:
@@ -424,15 +440,14 @@ class PlominoView(ATFolder):
             try:
                 quoting = int(quoting)
             except:
+                logging.exception('Bad quoting: %s'%quoting, exc_info=True)
                 quoting=csv.QUOTE_NONNUMERIC
 
         if brain_docs is None:
-            docs = self.getAllDocuments()
-        else:
-            docs = brain_docs
-        result=""
-        columns=[c.id for c in self.getColumns()]
-        vname=self.getViewName()
+            brain_docs = self.getAllDocuments(getObject=False)
+
+        result = ""
+        columns = [c.id for c in self.getColumns()]
 
         stream = cStringIO.StringIO()
         writer = csv.writer(stream, delimiter=separator, quotechar=quotechar, quoting=quoting)
@@ -442,12 +457,12 @@ class PlominoView(ATFolder):
             titles = [c.title for c in self.getColumns()]
             writer.writerow(titles)
 
-        for doc in docs:
-            values=[]
+        for b in brain_docs:
+            values = []
             for cname in columns:
-                v=getattr(doc, self.getIndexKey(cname))
+                v = getattr(b, self.getIndexKey(cname))
                 if v is None:
-                    v=''
+                    v = ''
                 elif isinstance(v, basestring):
                     v = v.encode('utf-8')
                 else:
@@ -467,26 +482,24 @@ class PlominoView(ATFolder):
         IMPORTANT : brain_docs are supposed to be ZCatalog brains
         """
         if brain_docs is None:
-            docs = self.getAllDocuments()
-        else:
-            docs = brain_docs
-        result=""
-        columns=[c.id for c in self.getColumns()]
-        vname=self.getViewName()
+            brain_docs = self.getAllDocuments(getObject=False)
+
+        result = ""
+        columns = [c.id for c in self.getColumns()]
 
         rows = []
 
         # add column titles
-        if displayColumnsTitle=='True' :
+        if displayColumnsTitle == 'True':
             titles = [c.title.encode('utf-8') for c in self.getColumns()]
             rows.append(titles)
 
-        for doc in docs:
-            values=[]
+        for b in brain_docs:
+            values = []
             for cname in columns:
-                v=getattr(doc, self.getIndexKey(cname))
+                v = getattr(b, self.getIndexKey(cname))
                 if v is None:
-                    v=''
+                    v = ''
                 elif isinstance(v, basestring):
                     v = v.encode('utf-8')
                 else:
@@ -494,7 +507,7 @@ class PlominoView(ATFolder):
                 values.append(v)
             rows.append(values)
 
-        html ="""<html><head>
+        html = """<html><head>
     <meta http-equiv="Content-Type"
           content="text/html;charset=utf-8" />
 <body><table>"""
@@ -543,10 +556,10 @@ class PlominoView(ATFolder):
         categorized = self.getCategorized()
         
         columnids = [col.id for col in self.getColumns() if not getattr(col, 'HiddenColumn', False)]
-        for doc in self.getAllDocuments():
-            row = [doc.getPath().split('/')[-1]]
+        for b in self.getAllDocuments(getObject=False):
+            row = [b.getPath().split('/')[-1]]
             for colid in columnids:
-                v = getattr(doc, self.getIndexKey(colid), '')
+                v = getattr(b, self.getIndexKey(colid), '')
                 if isinstance(v, list):
                     v = [asUnicode(e).encode('utf-8').replace('\r', '') for e in v]
                 else:

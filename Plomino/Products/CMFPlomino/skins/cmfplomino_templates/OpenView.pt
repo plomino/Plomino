@@ -121,7 +121,7 @@
 							<!-- Regular view -->
 	
 							<tal:block
-								tal:define="listdocuments  python:here.getAllDocuments();
+								tal:define="listdocuments  python:here.getAllDocuments(getObject=False);
 													count python:len(listdocuments);
 													paramstart request/start|python:'1';
 													paramlimit request/limit|python:'100';

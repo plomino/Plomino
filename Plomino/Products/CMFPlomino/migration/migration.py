@@ -61,6 +61,9 @@ def migrate(db):
     if db.plomino_version=="1.9":
         msg = migrate_to_1_10(db)
         messages.append(msg)
+    if db.plomino_version=="1.10":
+        msg = migrate_to_1_11(db)
+        messages.append(msg)
     return messages
 
 def migrate_to_130(db):
@@ -204,4 +207,114 @@ def migrate_to_1_10(db):
                 field.setTitle("Plomino_Portlet_Availability")
     msg = "Migration to 1.10: Rename Plomino_Portlet_Availability fields"
     db.plomino_version = "1.10"
+    return msg
+
+def migrate_to_1_11(db):
+    """ getAllDocuments now returns documents, unless requested.
+    """
+    # # Field formulas
+    # # Selection formulas
+    # # Hidewhen formulas
+    # getHidewhenFormulas
+    # # Column formulas
+    # # Agents
+    # agent.Content
+    # # Script libraries
+    # File: use str() to get the content and manage_edit to set it.
+    # Page Template: read() and write()
+    from zope.interface import providedBy
+    from Products.CMFPlomino.fields.selection import ISelectionField
+    
+    forms = db.getForms()
+    for form in forms:
+        fields = form.getFormFields()
+        for field in fields:
+            f = field.getFormula()
+            if f:
+                logger.info("Migrated formula: %s\n"
+                            "Old version: %s"%(field, f))
+                field.setFormula(
+                    f.replace('getAllDocuments()', 'getAllDocuments(getObject=False)'))
+            f = field.getValidationFormula()
+            if f:
+                logger.info("Migrated validation formula: %s\n"
+                            "Old version: %s"%(field, f))
+                field.setValidationFormula(
+                    f.replace('getAllDocuments()', 'getAllDocuments(getObject=False)'))
+            settings = field.getSettings()
+            if ISelectionField in providedBy(settings).interfaces():
+                selectionlistformula = settings.selectionlistformula
+                if selectionlistformula:
+                    settings.selectionlistformula = selectionlistformula.replace(
+                        'getAllDocuments()', 'getAllDocuments(getObject=False)')
+        hidewhens = form.getHidewhenFormulas()
+        for hidewhen in hidewhens:
+            f = hidewhen.getFormula()
+            if f:
+                logger.info("Migrated hidewhen formula: %s\n"
+                            "Old version: %s"%(hidewhen, f))
+                hidewhen.setFormula(
+                    f.replace('getAllDocuments()', 'getAllDocuments(getObject=False)'))
+        actions = form.objectValues(spec='PlominoAction')
+        for action in actions:
+            f = action.getContent()
+            if f:
+                logger.info("Migrated action formula: %s\n"
+                            "Old version: %s"%(action, f))
+                action.setContent(
+                    f.replace('getAllDocuments()', 'getAllDocuments(getObject=False)'))
+            f = action.getHidewhen()
+            if f:
+                logger.info("Migrated action hidewhen: %s\n"
+                            "Old version: %s"%(action, f))
+                action.setHidewhen(
+                    f.replace('getAllDocuments()', 'getAllDocuments(getObject=False)'))
+    views = db.getViews()
+    for view in views:
+        columns = view.getColumns()
+        for column in columns:
+            f = column.getFormula()
+            if f:
+                logger.info("Migrated column formula: %s\n"
+                            "Old version: %s"%(column, f))
+                column.setFormula(
+                    f.replace('getAllDocuments()', 'getAllDocuments(getObject=False)'))
+        actions = view.objectValues(spec='PlominoAction')
+        for action in actions:
+            f = action.getContent()
+            if f:
+                logger.info("Migrated action formula: %s\n"
+                            "Old version: %s"%(action, f))
+                action.setContent(
+                    f.replace('getAllDocuments()', 'getAllDocuments(getObject=False)'))
+            f = action.getHidewhen()
+            if f:
+                logger.info("Migrated action hidewhen: %s\n"
+                            "Old version: %s"%(action, f))
+                action.setHidewhen(
+                    f.replace('getAllDocuments()', 'getAllDocuments(getObject=False)'))
+    agents = db.getAgents()
+    for agent in agents:
+        f = agent.getContent()
+        if f:
+            logger.info("Migrated agent formula: %s\n"
+                        "Old version: %s"%(agent, f))
+            agent.setContent(
+                f.replace('getAllDocuments()', 'getAllDocuments(getObject=False)'))
+    files = db.resources.objectValues('File')
+    for f in files:
+        if f.content_type.startswith('text'):
+            formula = str(f)
+            logger.info("Migrated script library formula: %s"%f.id())
+            f.manage_edit(f.title, f.content_type, filedata=formula.replace(
+                'getAllDocuments()', 'getAllDocuments(getObject=False)'))
+    templates = db.resources.objectValues('Page Template')
+    for template in templates:
+        f = template.read()
+        logger.info("Migrated template formula: %s"%template.id)
+        template.write(
+          f.replace('getAllDocuments()', 'getAllDocuments(getObject=False)'))
+
+    msg = "Migration to 1.11: getAllDocuments API change."
+    db.plomino_version = "1.11"
     return msg

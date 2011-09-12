@@ -351,8 +351,7 @@ Import CSV file (API)
     >>> fileToImport.close()
 
 Check the documents imported
-    >>> allDocumentsIndexes = db.allArticle.getAllDocuments()
-    >>> allDocuments = [d.getObject() for d in allDocumentsIndexes]
+    >>> allDocuments = db.allArticle.getAllDocuments()
     >>> test = [d.editDate.year() for d in allDocuments]
     >>> test.sort()
     >>> test

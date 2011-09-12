@@ -14,6 +14,7 @@ __docformat__ = 'plaintext'
 
 from AccessControl import ClassSecurityInfo
 from Products.Archetypes.atapi import *
+from Products.Archetypes.debug import deprecated
 from zope.interface import implements
 import interfaces
 from Products.ATContentTypes.content.folder import ATFolder
@@ -327,7 +328,7 @@ class PlominoDatabase(ATFolder, PlominoAccessControl, PlominoDesignManager, Plom
         return agent_obj_list
 
     security.declarePublic('getForm')
-    def getForm(self,formname):
+    def getForm(self, formname):
         """return a PlominoForm
         """
         obj = getattr(self, formname, None)
@@ -335,7 +336,7 @@ class PlominoDatabase(ATFolder, PlominoAccessControl, PlominoDesignManager, Plom
             return obj
 
     security.declarePublic('getView')
-    def getView(self,viewname):
+    def getView(self, viewname):
         """return a PlominoView
         """
         obj = getattr(self, viewname, None)
@@ -429,19 +430,22 @@ class PlominoDatabase(ATFolder, PlominoAccessControl, PlominoDesignManager, Plom
 
     security.declarePublic('getIndex')
     def getIndex(self):
-        """return the database index
+        """ Return the database index.
         """
         return getattr(self, 'plomino_index')
 
     security.declarePublic('getAllDocuments')
-    def getAllDocuments(self):
-        """return all the database documents
+    def getAllDocuments(self, getObject=None):
+        """ Return all the database documents.
         """
+        if getObject is not None:
+            deprecated("The getObject parameter is a temporary measure "
+                       "to ease migration to the new "
+                       "PlominoView.getAllDocuments signature. It will go "
+                       "away soon. Please update your code to remove it "
+                       "from PlominoDatabase.getAllDocuments calls."
+            )
         return self.documents.values()
-        #return [d.getObject() for d in self.portal_catalog.search({'portal_type' : ['PlominoDocument'], 'path': '/'.join(self.getPhysicalPath())})]
-#        index = self.getIndex()
-#        res = index.dbsearch({},None)
-#        return [d.getObject() for d in res]
 
     security.declarePublic('isDocumentsCountEnabled')
     def isDocumentsCountEnabled(self):

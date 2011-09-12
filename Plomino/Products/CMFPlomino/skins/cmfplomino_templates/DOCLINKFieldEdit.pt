@@ -30,20 +30,20 @@
 						tal:content="c/Title">Title</span>&nbsp;</th>
 				</tal:block>
 			</tr>
-			<tal:documents tal:define="listdocuments python:[d for d in v.getAllDocuments() if test(v.hasReadPermission(v.getParentDatabase().getDocument(d.getPath().split('/')[-1]))==True)];"
-						tal:repeat="doc listdocuments">
-				<tr tal:define="oddrow repeat/doc/odd"
+			<tal:documents tal:define="listdocuments python:[b for b in v.getAllDocuments(getObject=False) if v.hasReadPermission(b.getObject())];"
+						tal:repeat="brain listdocuments">
+				<tr tal:define="oddrow repeat/brain/odd"
 					tal:attributes="class python:test(oddrow, 'even', 'odd')">
 					<td><input type="checkbox" 
 					tal:attributes="name options/fieldname;
-							value python:doc.getPath();
-							checked python:test(current and doc.getPath() in current,1,0)">
+							value python:brain.getPath();
+							checked python:test(current and brain.getPath() in current,1,0)">
 					</td>
 					<tal:block tal:repeat="c columns">
 						<td tal:condition="not: c/HiddenColumn|nothing"><span
 							tal:define="cname c/id;
 										vname v/id;
-										cvalue python:getattr(doc, v.getIndexKey(cname));
+										cvalue python:getattr(brain, v.getIndexKey(cname));
 										"
 							tal:content="structure cvalue" /></td>
 					</tal:block>
