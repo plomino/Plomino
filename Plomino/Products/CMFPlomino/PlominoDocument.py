@@ -44,7 +44,7 @@ try:
 except ImportError:
     URL_NORMALIZER = False
     
-from PlominoUtils import DateToString, StringToDate, sendMail, asUnicode, asList
+from PlominoUtils import DateToString, StringToDate, sendMail, asUnicode, asList, PlominoTranslate
 from OFS.Image import File
 from ZPublisher.HTTPRequest import FileUpload
 try:
@@ -504,11 +504,20 @@ class PlominoDocument(ATFolder):
             fieldname=REQUEST.get('field')
             filename=REQUEST.get('filename')
         if fieldname is not None and filename is not None:
-            self.deletefile(filename)
             current_files=self.getItem(fieldname)
             if current_files.has_key(filename):
+                if len(current_files.keys()) == 1:
+                    # if it is the only file attached, we need to make sure the field
+                    # is not mandatory to allow deletion
+                    form = self.getForm()
+                    if form:
+                        field = form.getFormField(fieldname)
+                        if field and field.getMandatory():
+                            error = fieldname + " " + PlominoTranslate("is mandatory", self)
+                            return form.notifyErrors([error])
                 del current_files[filename]
                 self.setItem(fieldname, current_files)
+                self.deletefile(filename)
         if REQUEST is not None:
             REQUEST.RESPONSE.redirect(self.absolute_url()+"/EditDocument")
 
