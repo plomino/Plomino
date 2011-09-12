@@ -1,6 +1,12 @@
 Changelog
 =========
 
+1.11 (2011-09-12)
+-----------------
+* use onSave returned value to redirect to url after save
+* getAllDocuments() returns PlominoDocuments (and not brains anymore, unless getObject=False)
+* various fixes
+
 1.10.4 (2011-08-03)
 -------------------
 * (for Plone 4 only) use MailHost.send instead of secureSend
