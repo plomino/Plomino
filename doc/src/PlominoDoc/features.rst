@@ -1,77 +1,55 @@
-------------------
+==================
 Features reference
-------------------
+==================
 
 Formulas
 ========
 
-Formulas are Python expressions.
+Formulas are Python scripts. Example::
 
-If it is a one line expression, the returned value corresponds to the
-Python expression evaluation. Example::
+    return plominoDocument.getItem('price') * 15
 
-    plominoDocument.price*15
-
-return the value ``price`` multiplied by 15.
-
-But if the expression consists of several lines, you must use ``return``
-to specify the value to return. Example::
-
-    total_price=plominoDocument.purchasePrice + plominoDocument.productionCosts 
-    taxes=total_price*0,196 
-    return taxes
-
-And if you just write::
-
-    total_price=plominoDocument.purchasePrice + plominoDocument.productionCosts
-    total_price*0,196
-
-no value would be returned.
+return the value of the ``price`` item multiplied by 15.
 
 .. Note::
-    a formula is not necessarily required to return a value -- you may
+    a formula does not necessarily need to return a value -- you may
     just need to make some changes in some documents (for instance if it
     is the formula in a Plomino action), so the return value would be
     irrelevant.
 
-``plominoDocument`` is a reserved keyword which corresponds to the
+``plominoDocument`` is a reserved name which corresponds to the
 current document on which the formula is evaluated.
 
-You can use ``plominoContext`` as a synonym of ``plominoDocument``,
-because in some cases the formula is executed on an object which is not
-a Plomino document (but a view, or a form, for instance).In those cases,
-``plominoContext`` will be prefered to avoird confusion.
+``plominoContext`` is a reserved name which corresponds to the
+context in which the formula is evaluated. In many cases this will be 
+the same as ``plominoDocument``, but in some cases the formula is executed
+on an object which is not a Plomino document (but a view, or a form, for
+instance). 
 
-The document items can be accessed as if they were attributes, or using
-the `getItem()` method: ``plominoDocument.validationDate`` is equivalent to: 
+Document items should be accessed using the ``getItem()`` method:
 ``plominoDocument.getItem('validationDate')``. 
 
-.. Note:: 
-    there is still a small difference, because if an item does not
-    exist, the attribute notation will produce an error, whereas
-    `getItem` will return an empty string ``''``.
-
-To change an item value, use the `setItem()` method: 
+To change an item value, use the ``setItem()`` method: 
 ``plominoDocument.setItem('firstname', 'Eric')``
 
 You can access the parent Plomino database of the document (or view, or
-form, according the context) using the `getParentDatabase()` method.
+form, according the context) using the ``getParentDatabase()`` method.
 
 You can also access the views and the other documents. Example::
 
-    db=plominoDocument.getParentDatabase() 
-    view=db.getView('pendingPurchases') 
-    total=0 
+    db = plominoDocument.getParentDatabase() 
+    view = db.getView('pendingPurchases') 
+    total = 0 
     for doc in view.getAllDocuments(): 
-        total=total+doc.price 
+        total = total + doc.getItem('price')
     return total
 
 (this example computes the total amount for the pending purchase requests).
 
 You can check the current user rights or roles. Example::
 
-    db=plominoDocument.getParentDatabase() 
-    user=db.getCurrentUser() 
+    db = plominoDocument.getParentDatabase() 
+    user = db.getCurrentUser() 
     if db.hasUserRole(user.id, '[Expert]'): 
         return True 
     elif db.isCurrentUserAuthor(doc): 
@@ -82,14 +60,14 @@ You can check the current user rights or roles. Example::
         return False
 
 You can change the author access rights on a given document by modifying
-its `Plomino_Authors` item.
+its ``Plomino_Authors`` item.
 
 This item is created automatically for any document and contains the
 user id of the document creator. If you want your document to be
 editable by users other than its creator, it can contain other ids as
 well. Example::
 
-    authors=plominoDocument.getItem('Plomino_Authors') 
+    authors = plominoDocument.getItem('Plomino_Authors') 
     authors.append('[Expert]') 
     if not 'inewton' in authors: 
         authors.append('inewton') 
@@ -195,15 +173,15 @@ Computed for display
 
 Example: create a computed for display field with this formula::
 
-    category=plominoDocument.bookCategory 
-    result="" 
-    if not category=='': 
-        index=plominoDocument.getParentDatabase().getIndex() 
-        autres=index.dbsearch({'bookCategory': category}, None) 
-        result="There are "+str(len(autres)-1)+" other books in the same category" 
-    return result
+    category = plominoDocument.getItem('bookCategory') 
+    if category: 
+        index = plominoDocument.getParentDatabase().getIndex() 
+        autres = index.dbsearch({'bookCategory': category}) 
+        result = "There are %s other books in the same category" % len(autres)-1
+        return result
+    return "" 
 
-and insert it in the frmBook form: 
+and insert it in the ``frmBook`` form: 
 
 .. image:: images/m434a6b5d.png 
 
@@ -393,25 +371,58 @@ Editable fields which are not part of the layout take their value
 from the REQUEST.
 
 So, for example, if you want to pass a parameter to another form:
-- in the origin document, put the parameter(s) in the link to the target form,
-  e.g. by adding ``?param1=value&param2=value`` to the URL. This will cause the
-  parameter to be part of the GET request which retrieves the target form. 
-- in the target form, create an editable field with the same id as the parameter
-  key (e.g. ``param1`` and ``param2`` above), but do not insert it in the form
-  layout. The field will get its value from the REQUEST.
-- then you can create `Computed on save` (or on display, or whatever) fields
-  which use the value of this field.
+- in the origin document, put the parameter(s) in the link to the target
+  form, e.g. by adding ``?param1=value&param2=value`` to the URL. This will
+  cause the parameter to be part of the ``GET`` request which retrieves the
+  target form. 
+- in the target form, create an editable field with the same id as the
+  parameter key (e.g. ``param1`` and ``param2`` above), but do not insert it
+  in the form layout. The field will get its value from the ``REQUEST``.  -
+  then you can create ``Computed on save`` (or on display, or whatever)
+  fields which use the value of this field.
 
 
 Forms
 =====
+
+Layout
+------
+
+Accordions and lazy loading
+```````````````````````````
+
+In Plomino it is possible to *accordion* some parts of the page.  This means
+that the content of the accordioned part will not be visible unless you click
+on the headline to open the accordion. 
+
+It is also possible to avoid loading the content of the accordion until such 
+time as the accordion is opened. This is particularly useful if the content 
+it very big, or if there are many accordions on a page and the reader is
+interested in only a few of them.
+ 
+To turn part of a page into an accordion, use this structure (the header level
+can be from ``h2`` to ``h6``)::
+
+    <h5 class="???"><a href="#">Header</a></h5>
+    <div>Content</div>
+
+.. todo:: Make that an HTML block 
+
+.. todo:: What's possibilities for class?
+
+If the class is ``plomino-accordion-header`` and the ``href`` is not ``#``, the 
+content of the referenced page will be substituted for the following div. 
+
+.. Note:: Plomino does not currently offer UI support for this functionality. 
+   To use it, you have to generated the desired content via Python, or enter
+   it literally into the form layout. 
 
 Events
 ------
 
 In a Plomino form, you can use the following events:
 
-`onOpenDocument`
+``onOpenDocument``
     executed before document is opened (in both read mode and edit mode)
 
     If the formula for this event returns a false value, opening is
@@ -419,24 +430,24 @@ In a Plomino form, you can use the following events:
     opening fails, and the value is displayed as an error
     message.
 
-`onSaveDocument`
+``onSaveDocument``
     executed before document is saved
 
-`onDeleteDocument`
+``onDeleteDocument``
     executed before document is deleted
 
-`onCreateDocument`
+``onCreateDocument``
     executed before the document is saved for the first time
-    (`onSaveDocument` will also be executed, but after
-    `onCreateDocument`)
+    (``onSaveDocument`` will also be executed, but after
+    ``onCreateDocument``)
 
-`beforeCreateDocument`
+``beforeCreateDocument``
     executed before a blank form is opened.
     
 In the **Events** tab, you can enter the formulas for each event you
 need.
 
-Example: enter the following formula for the `onSaveDocument` event::
+Example: enter the following formula for the ``onSaveDocument`` event::
 
     date=DateToString(DateTime()) 
     db=plominoDocument.getParentDatabase() 
@@ -522,18 +533,18 @@ If needed, you can create a specific search formula in the form
 **Parameters** tab.
 
 This formula is used to filter the result set of the default query, and 
-must return `True` or `False` for each document in the result set.
+must return ``True`` or ``False`` for each document in the result set.
 
-You can access the values submitted by the search form on the REQUEST
-object: `plominoContext.REQUEST.get('myfield')`.
+You can access the values submitted by the search form on the ``REQUEST``
+object: ``plominoContext.REQUEST.get('myfield')``.
 
 Example::
 
-    period=plominoContext.REQUEST.get('period') 
-    if period=='Ancien regime': 
+    period = plominoContext.REQUEST.get('period') 
+    if period == 'Ancien regime': 
         return plominoDocument.year 
-    if period=='Empire': 
-        return plominoDocument.year >=1804 and plominoDocument.year
+    if period == 'Empire': 
+        return plominoDocument.year >= 1804 and plominoDocument.year
 
 .. Note::
     Search formulas can be a lot slower than regular ZCatalog searches,
@@ -543,21 +554,21 @@ Search event
 ------------
 
 If you do not want the default filters of a search page (the view, the 
-query, and the formula), you can define an `onSearch` event on the form
+query, and the formula), you can define an ``onSearch`` event on the form
 **Events** tab. The formula of this event should return the required list 
 of documents. 
 
-You can access the values submitted by the search form on the REQUEST
-object: `plominoContext.REQUEST.get('myfield')`.
+You can access the values submitted by the search form on the ``REQUEST``
+object: ``plominoContext.REQUEST.get('myfield')``.
 
 Page
 ----
 
-Like a Search form, a Page form cannot be used to save documents;
-moreover Page forms do not display any action bar.
+Like a *Search* form, a *Page* form cannot be used to save documents;
+moreover *Page* forms do not display any action bar.
 
 Nevertheless, like any form, it can contain computed fields, actions
-(inserted in the form layout), or hide-when formulas, so it is a good
+(inserted in the form layout), and hide-when formulas, so it is a good
 way to build navigation pages, custom menus, or information pages (like
 reports, etc.).
 
@@ -583,14 +594,17 @@ Result if you are ``[dbadmin]``:
 Open with form
 --------------
 
-A Plomino document is displayed by default using the form corresponding to its 'Form' 
-item value (which contains the id of the forms used during the last document saving).
+The form used to render a document is determined by a number of mechanisms:
 
-But if the view where from the document is opened does define a Form formula, the 
-resulting form will be used instead.
+- By default, Plomino document is displayed using the form corresponding to
+  its ``Form`` item value (which contains the id of the form last used to
+  save the document).
 
-And to force the usage of a given form, the form id can be passed in the 
-request using the 'openwithform' parameter.
+- If the view from where the document is opened defines a ``Form`` formula,
+  the resulting form will be used instead.
+
+- And to force the usage of a given form, the form id can be passed in the
+  request using the ``openwithform`` parameter.
 
 Example:
 
@@ -629,7 +643,7 @@ This formula will compute the name of the form to use when the documents
 are opened from the view.
 
 If you enter ``frmBorrowManagement`` in Form formula, all the documents
-opened from this view will be displayed using the `frmBorrowManagement`
+opened from this view will be displayed using the ``frmBorrowManagement``
 form.
 
 View template
@@ -644,7 +658,7 @@ To do so, add your Page Template in the resources folder, and enter its
 name in View Template in the view Parameters tab.
 
 A good approach is to copy the ZPT code from
-`CMFPlomino/skins/CMFPlomino/OpenView.pt` (in the Plomino sources) and
+``CMFPlomino/skins/CMFPlomino/OpenView.pt`` (in the Plomino sources) and
 append your modifications.
 
 .. Note:: good knowledge of ZPT is required.
@@ -795,24 +809,24 @@ the code, you can implement the code in an *agent*.
 Select ``Plomino: agent`` in the **Add item** Plone menu, and enter an
 identifier, a title and the code.
 
-If needed, you can provide the id of a user that will be used to run the
-agent (so the access rights of that user are applied when the agent is
-executed, not those of the current user).
-
 This might be useful to run archiving, cleaning, etc. without giving
 manager rights to regular users.
 
-The agent can be executed (from an action) using the `runAgent()` method::
+The agent can be executed (from an action) using the ``runAgent()`` method::
 
     db=plominoDocument.getParentDatabase() 
     db.MyAgent.runAgent()
 
-Note: this method can take `REQUEST` as parameter, which allows
+Note: this method can take ``REQUEST`` as parameter, which allows
 variables in the querystring to be read and redirection to be performed.
 
-If you install ZpCron on your Zope instance, an agent can also be
-scheduled. You specify when the agent should run using a cron-like
-format.
+If you install `ZpCron <http://old.zope.org/Members/janik/ZpCron>`_
+on your Zope instance, an agent can also be scheduled. You specify when the
+agent should run using a cron-like format.
+
+With ZpCron_, you can provide the id of a user that will be used to run the
+agent (so the access rights of that user are applied when the agent is
+executed, not those of the current user).
 
 Resources
 =========

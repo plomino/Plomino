@@ -4,7 +4,7 @@ Introduction
 
 The main objective of Plomino is to provide the ability to build
 business-specific applications in Plone without requiring development of
-Plone product.
+Plone extension products.
 
 Plomino allows you to create forms, to use those forms to view or edit
 structured contents, to filter and list those contents, to perform
