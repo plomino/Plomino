@@ -400,7 +400,8 @@ time as the accordion is opened. This is particularly useful if the content
 it very big, or if there are many accordions on a page and the reader is
 interested in only a few of them.
  
-To turn part of a page into an accordion, use this structure::
+To turn part of a page into an accordion, use this structure (the header level
+can be from ``h2`` to ``h6``)::
 
     <h5 class="???"><a href="#">Header</a></h5>
     <div>Content</div>
@@ -642,7 +643,7 @@ This formula will compute the name of the form to use when the documents
 are opened from the view.
 
 If you enter ``frmBorrowManagement`` in Form formula, all the documents
-opened from this view will be displayed using the `frmBorrowManagement`
+opened from this view will be displayed using the ``frmBorrowManagement``
 form.
 
 View template
@@ -657,7 +658,7 @@ To do so, add your Page Template in the resources folder, and enter its
 name in View Template in the view Parameters tab.
 
 A good approach is to copy the ZPT code from
-`CMFPlomino/skins/CMFPlomino/OpenView.pt` (in the Plomino sources) and
+``CMFPlomino/skins/CMFPlomino/OpenView.pt`` (in the Plomino sources) and
 append your modifications.
 
 .. Note:: good knowledge of ZPT is required.
@@ -808,24 +809,24 @@ the code, you can implement the code in an *agent*.
 Select ``Plomino: agent`` in the **Add item** Plone menu, and enter an
 identifier, a title and the code.
 
-If needed, you can provide the id of a user that will be used to run the
-agent (so the access rights of that user are applied when the agent is
-executed, not those of the current user).
-
 This might be useful to run archiving, cleaning, etc. without giving
 manager rights to regular users.
 
-The agent can be executed (from an action) using the `runAgent()` method::
+The agent can be executed (from an action) using the ``runAgent()`` method::
 
     db=plominoDocument.getParentDatabase() 
     db.MyAgent.runAgent()
 
-Note: this method can take `REQUEST` as parameter, which allows
+Note: this method can take ``REQUEST`` as parameter, which allows
 variables in the querystring to be read and redirection to be performed.
 
-If you install ZpCron on your Zope instance, an agent can also be
-scheduled. You specify when the agent should run using a cron-like
-format.
+If you install `ZpCron <http://old.zope.org/Members/janik/ZpCron>`_
+on your Zope instance, an agent can also be scheduled. You specify when the
+agent should run using a cron-like format.
+
+With ZpCron_, you can provide the id of a user that will be used to run the
+agent (so the access rights of that user are applied when the agent is
+executed, not those of the current user).
 
 Resources
 =========
