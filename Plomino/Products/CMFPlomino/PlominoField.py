@@ -36,6 +36,9 @@ from zope import component
 from zope.annotation.interfaces import IAnnotations
 from persistent.dict import PersistentDict
 
+import logging
+logger = logging.getLogger('Plomino')
+
 ##/code-section module-header
 
 schema = Schema((
@@ -252,14 +255,19 @@ class PlominoField(BaseContent, BrowserDefaultMixin):
             self.traceRenderingErr(e, self)
             return ""
 
-    security.declarePublic('at_post_edit_script')
-    def at_post_edit_script(self):
-        """post edit
+    def _setupConfigAnnotation(self):
+        """ Make sure that we can store the field config.
         """
         annotations = IAnnotations(self)
         settings = annotations.get("PLOMINOFIELDCONFIG", None)
         if not settings:
             annotations["PLOMINOFIELDCONFIG"] = PersistentDict()
+
+    security.declarePublic('at_post_edit_script')
+    def at_post_edit_script(self):
+        """ post edit
+        """
+        self._setupConfigAnnotation()
         self.cleanFormulaScripts("field_"+self.getParentNode().id+"_"+self.id)
         db = self.getParentDatabase()
         if self.getToBeIndexed() and not db.DoNotReindex:
@@ -269,10 +277,7 @@ class PlominoField(BaseContent, BrowserDefaultMixin):
     def at_post_create_script(self):
         """post create
         """
-        annotations = IAnnotations(self)
-        settings = annotations.get("PLOMINOFIELDCONFIG", None)
-        if not settings:
-            annotations["PLOMINOFIELDCONFIG"] = PersistentDict()
+        self._setupConfigAnnotation()
         db = self.getParentDatabase()
         if self.getToBeIndexed() and not db.DoNotReindex:
             db.getIndex().createFieldIndex(self.id, self.getFieldType())

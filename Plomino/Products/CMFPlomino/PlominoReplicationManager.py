@@ -258,7 +258,7 @@ class PlominoReplicationManager(Persistent):
                 restricttoview=replication['restricttoview']
                 if restricttoview is not None and not(restricttoview==''):
                     try:
-                        localDocuments=[d.getObject() for d in self.getView(restricttoview).getAllDocuments()]
+                        localDocuments = self.getView(restricttoview).getAllDocuments()
                     except PlominoReplicationException, e:
                         infoMsg = infoMsg + 'error while getting local documents : %s' % (e) + MSG_SEPARATOR
                         error = True
@@ -377,10 +377,7 @@ class PlominoReplicationManager(Persistent):
         if REQUEST is not None:
             restricttoview=REQUEST.get('restricttoview',None)
             if restricttoview is not None:
-                try:
-                    docs=[d.getObject() for d in self.getView(restricttoview).getAllDocuments()]
-                except:
-                    docs=[]
+                docs = self.getView(restricttoview).getAllDocuments()
             else:
                 docs = self.getAllDocuments()
         else:
@@ -1071,7 +1068,7 @@ class PlominoReplicationManager(Persistent):
         restricttoview = REQUEST.get("restricttoview", "")
         if restricttoview != "":
             sourceview = self.getView(restricttoview)
-            docids = [doc.getObject().id for doc in sourceview.getAllDocuments()]
+            docids = [b.id for b in sourceview.getAllDocuments(getObject=False)]
         else:
             docids = None
         if REQUEST.get('targettype') == "file":
@@ -1129,13 +1126,17 @@ class PlominoReplicationManager(Persistent):
                 os.makedirs(exportpath)
 
             for d in docs:
+                docfilepath = os.path.join(exportpath, (d.id+'.xml'))
+                #DBG if os.path.exists(docfilepath):
+                #DBG     logger.info("Skipping %s"%docfilepath)
+                #DBG     continue
+                logger.info("Exporting %s"%docfilepath)
                 xmldoc = impl.createDocument(None, "plominodatabase", None)
                 root = xmldoc.documentElement
                 root.setAttribute("id", d.id)
                 node = self.exportDocumentAsXML(xmldoc, d)
                 root.appendChild(node)
                 xmlstring = xmldoc.toxml()
-                docfilepath = os.path.join(exportpath, (d.id+'.xml'))
                 self.saveFile(docfilepath, xmlstring)
 
     @staticmethod

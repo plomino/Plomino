@@ -44,7 +44,7 @@ try:
 except ImportError:
     URL_NORMALIZER = False
     
-from PlominoUtils import DateToString, StringToDate, sendMail, asUnicode, asList
+from PlominoUtils import DateToString, StringToDate, sendMail, asUnicode, asList, PlominoTranslate
 from OFS.Image import File
 from ZPublisher.HTTPRequest import FileUpload
 try:
@@ -130,6 +130,10 @@ class PlominoDocument(ATFolder):
         """
         """
         items = self.items
+        if type(value) == type(''):
+            db = self.getParentDatabase()
+            translation_service = getToolByName(db, 'translation_service')
+            value = translation_service.asunicodetype(value)
         items[name] = value
         self.items = items
         self.plomino_modification_time = DateTime().toZone('UTC')
@@ -204,7 +208,7 @@ class PlominoDocument(ATFolder):
         return result
 
     security.declarePublic('computeItem')
-    def computeItem(self, itemname, form=None, formid=None, store=True):
+    def computeItem(self, itemname, form=None, formid=None, store=True, report=True):
         """ return the item value according the formula of the field defined in
         the given form (use default doc form if None)
         and store the value in the doc (if store=True)
@@ -217,7 +221,7 @@ class PlominoDocument(ATFolder):
             else:
                 form = db.getForm(formid)
         if form:
-            result = form.computeFieldValue(itemname, self)
+            result = form.computeFieldValue(itemname, self, report=report)
             if store:
                 self.setItem(itemname, result)
         return result
@@ -244,7 +248,7 @@ class PlominoDocument(ATFolder):
         return self.getParentDatabase().isCurrentUserAuthor(self)
 
     security.declareProtected(REMOVE_PERMISSION, 'delete')
-    def delete(self,REQUEST=None):
+    def delete(self, REQUEST=None):
         """delete the current doc
         """
         db = self.getParentDatabase()
@@ -254,7 +258,7 @@ class PlominoDocument(ATFolder):
             REQUEST.RESPONSE.redirect(return_url)
 
     security.declareProtected(EDIT_PERMISSION, 'saveDocument')
-    def saveDocument(self,REQUEST, creation=False):
+    def saveDocument(self, REQUEST, creation=False):
         """save a document using the form submitted content
         """
         db = self.getParentDatabase()
@@ -272,8 +276,10 @@ class PlominoDocument(ATFolder):
         # refresh computed values, run onSave, reindex
         self.save(form, creation)
 
-        redirect = self.getItem("plominoredirecturl")
-        if redirect=='':
+        redirect = REQUEST.get('plominoredirecturl')
+        if not redirect:
+            redirect = self.getItem("plominoredirecturl")
+        if not redirect:
             redirect = self.absolute_url()
         REQUEST.RESPONSE.redirect(redirect)
 
@@ -338,7 +344,9 @@ class PlominoDocument(ATFolder):
         # execute the onSaveDocument code of the form
         if form and onSaveEvent:
             try:
-                self.runFormulaScript("form_"+form.id+"_onsave", self, form.onSaveDocument)
+                result = self.runFormulaScript("form_"+form.id+"_onsave", self, form.onSaveDocument)
+                if result and hasattr(self, 'REQUEST'):
+                    self.REQUEST.set('plominoredirecturl', result)
             except PlominoScriptException, e:
                 if hasattr(self, 'REQUEST'):
                     e.reportError('Document has been saved but onSave event failed.')
@@ -419,6 +427,7 @@ class PlominoDocument(ATFolder):
         but it might be forced to a different form by passing the form id as
         request parameter, or by evaluating the parent view form formula
         """
+        default_form = self.getItem('Form')
         formname = None
         if hasattr(self, 'REQUEST'):
             formname = self.REQUEST.get("openwithform", None)
@@ -426,9 +435,13 @@ class PlominoDocument(ATFolder):
             if hasattr(self, 'evaluateViewForm'):
                 formname = self.evaluateViewForm(self)
         if not formname:
-            formname = self.getItem('Form')
-
-        return self.getParentDatabase().getForm(formname)
+            formname = default_form
+        form = self.getParentDatabase().getForm(formname)
+        if not form:
+            form = self.getParentDatabase().getForm(default_form)
+            if hasattr(self, "REQUEST") and formname:
+                self.writeMessageOnPage("Form %s does not exist." % formname, self.REQUEST, True)
+        return form
 
     security.declarePrivate('manage_afterClone')
     def manage_afterClone(self,item):
@@ -491,11 +504,20 @@ class PlominoDocument(ATFolder):
             fieldname=REQUEST.get('field')
             filename=REQUEST.get('filename')
         if fieldname is not None and filename is not None:
-            self.deletefile(filename)
             current_files=self.getItem(fieldname)
             if current_files.has_key(filename):
+                if len(current_files.keys()) == 1:
+                    # if it is the only file attached, we need to make sure the field
+                    # is not mandatory to allow deletion
+                    form = self.getForm()
+                    if form:
+                        field = form.getFormField(fieldname)
+                        if field and field.getMandatory():
+                            error = fieldname + " " + PlominoTranslate("is mandatory", self)
+                            return form.notifyErrors([error])
                 del current_files[filename]
                 self.setItem(fieldname, current_files)
+                self.deletefile(filename)
         if REQUEST is not None:
             REQUEST.RESPONSE.redirect(self.absolute_url()+"/EditDocument")
 
@@ -582,32 +604,31 @@ class PlominoDocument(ATFolder):
                     self.deletefile(filename)
                 else:
                     return ("ERROR: "+filename+" already exists", "")
+            if(self.getParentDatabase().getStorageAttachments()==True):
+                tmpfile=File(filename, filename, submittedValue)
+                storage = FileSystemStorage();
+                storage.set(filename, self, tmpfile);
+                contenttype=storage.get(filename,self).getContentType()
+            elif HAS_BLOB:
+                if isinstance(submittedValue, FileUpload) or type(submittedValue) == file:
+                    submittedValue.seek(0)
+                    contenttype = guessMimetype(submittedValue, filename)
+                    submittedValue = submittedValue.read()
+                try:
+                    blob = BlobWrapper(contenttype)
+                except:
+                    # BEFORE PLONE 4.0.1
+                    blob = BlobWrapper()
+                file_obj = blob.getBlob().open('w')
+                file_obj.write(submittedValue)
+                file_obj.close()
+                blob.setFilename(filename)
+                blob.setContentType(contenttype)
+                self._setObject(filename, blob)
             else:
-                if(self.getParentDatabase().getStorageAttachments()==True):
-                    tmpfile=File(filename, filename, submittedValue)
-                    storage = FileSystemStorage();
-                    storage.set(filename, self, tmpfile);
-                    contenttype=storage.get(filename,self).getContentType()
-                elif HAS_BLOB:
-                    if isinstance(submittedValue, FileUpload) or type(submittedValue) == file:
-                        submittedValue.seek(0)
-                        contenttype = guessMimetype(submittedValue, filename)
-                        submittedValue = submittedValue.read()
-                    try:
-                        blob = BlobWrapper(contenttype)
-                    except:
-                        # BEFORE PLONE 4.0.1
-                        blob = BlobWrapper()
-                    file_obj = blob.getBlob().open('w')
-                    file_obj.write(submittedValue)
-                    file_obj.close()
-                    blob.setFilename(filename)
-                    blob.setContentType(contenttype)
-                    self._setObject(filename, blob)
-                else:
-                    self.manage_addFile(filename, submittedValue)
-                    contenttype=self[filename].getContentType()
-                return (filename, contenttype)
+                self.manage_addFile(filename, submittedValue)
+                contenttype=self[filename].getContentType()
+            return (filename, contenttype)
         else:
             return (None, "")
 

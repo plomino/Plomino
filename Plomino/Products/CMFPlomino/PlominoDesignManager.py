@@ -368,11 +368,18 @@ class PlominoDesignManager(Persistent):
                 xmlstring = self.exportDesignAsXML(elementids=[], dbsettings=True)
                 self.saveFile(path, xmlstring.decode('utf-8'))
 
+
     @staticmethod
     def saveFile(path, content):
         fileobj = codecs.open(path, "w", "utf-8")
-        fileobj.write(content.decode('utf-8'))
+        try:
+          logger.info('saveFile> write with no decode')
+          fileobj.write(content)
+        except UnicodeDecodeError, e:
+          fileobj.write(content.decode('utf-8'))
+          logger.info('saveFile> write.decode("utf-8"): %s'%path)
         fileobj.close()
+
 
     security.declareProtected(DESIGN_PERMISSION, 'importDesign')
     def importDesign(self, REQUEST=None):

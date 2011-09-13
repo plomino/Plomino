@@ -33,12 +33,7 @@
 
 <metal:css fill-slot="style_slot">
     <tal:block tal:condition="python:here.hasDateTimeField()">
-        <style type="text/css" media="all" tal:content="structure string:<!-- @import url($portal_url/jscalendar/calendar-system.css); -->">
-      </style>
-    </tal:block>
-    <tal:block tal:condition="python:here.hasGoogleVisualizationField()">
-        <style type="text/css" media="all" tal:content="structure string:<!-- @import url($portal_url/datatable.css); -->">
-        </style>
+        <link rel="stylesheet" type="text/css" media="all" tal:attributes="href string:$portal_url/jscalendar/calendar-system.css" />
     </tal:block>
 </metal:css>
 

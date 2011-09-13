@@ -324,8 +324,10 @@ class PlominoForm(ATFolder):
     def getFormFields(self, includesubforms=False, doc=None, applyhidewhen=False):
         """get fields
         """
-        fieldlist = self.portal_catalog.search({'portal_type' : ['PlominoField'], 'path': '/'.join(self.getPhysicalPath())})
-        result = [f.getObject() for f in fieldlist]
+#        fieldlist = self.portal_catalog.search({'portal_type' : ['PlominoField'], 'path': '/'.join(self.getPhysicalPath())})
+#        result = [f.getObject() for f in fieldlist]
+        fieldlist = self.objectValues(spec='PlominoField')
+        result = [f for f in fieldlist]
         if applyhidewhen:
             layout = self.applyHideWhen(doc)
             result = [f for f in result if """<span class="plominoFieldClass">%s</span>""" % f.id in layout]
@@ -345,18 +347,20 @@ class PlominoForm(ATFolder):
     def getHidewhenFormulas(self):
         """Get hidden formulae
         """
-        list = self.portal_catalog.search({'portal_type' : ['PlominoHidewhen'], 'path': '/'.join(self.getPhysicalPath())})
-        return [h.getObject() for h in list]
+        #list = self.portal_catalog.search({'portal_type' : ['PlominoHidewhen'], 'path': '/'.join(self.getPhysicalPath())})
+        hidewhens = self.objectValues(spec='PlominoHidewhen')
+        return [h for h in hidewhens]
 
     security.declarePublic('getActions')
     def getActions(self, target, hide=True, parent_id=None):
         """Get actions
         """
-        all = self.portal_catalog.search({'portal_type' : ['PlominoAction'], 'path': '/'.join(self.getPhysicalPath())})
+        #all = self.portal_catalog.search({'portal_type' : ['PlominoAction'], 'path': '/'.join(self.getPhysicalPath())})
+        all = self.objectValues(spec='PlominoAction')
 
         filtered = []
-        for a in all:
-            obj_a=a.getObject()
+        for obj_a in all:
+            #obj_a=a.getObject()
             if hide:
                 try:
                     #result = RunFormula(target, obj_a.getHidewhen())
@@ -454,7 +458,7 @@ class PlominoForm(ATFolder):
         html = html + """<div id="parent_field">%s</div>""" % doc.Plomino_Parent_Field
 
         for f in fields:
-            html = html + """<span id="%s" plomino="1">%s</span>""" % (f, doc.getRenderedItem(f, form=self))
+            html = html + """<span id="%s" class="plominochildfield">%s</span>""" % (f, doc.getRenderedItem(f, form=self))
 
         return html
 
@@ -580,7 +584,7 @@ class PlominoForm(ATFolder):
         return field
 
     security.declarePublic('computeFieldValue')
-    def computeFieldValue(self, fieldname, target):
+    def computeFieldValue(self, fieldname, target, report=True):
         """evalute field formula over target
         """
         field = self.getFormField(fieldname)
@@ -590,7 +594,8 @@ class PlominoForm(ATFolder):
             try:
                 fieldvalue = db.runFormulaScript("field_"+self.id+"_"+fieldname+"_formula", target, field.Formula, True, self)
             except PlominoScriptException, e:
-                e.reportError('%s field formula failed' % fieldname)
+                if report:
+                    e.reportError('%s field formula failed' % fieldname)
 
         return fieldvalue
 
@@ -728,9 +733,14 @@ class PlominoForm(ATFolder):
             submittedValue = REQUEST.get(fieldname)
 
             # STEP 1: check mandatory fields
-            if submittedValue is None or submittedValue=='':
+            if not submittedValue:
                 if f.getMandatory()==True:
-                    errors.append(fieldname+" "+PlominoTranslate("is mandatory",self))
+                    if fieldtype == "ATTACHMENT" and doc:
+                        existing_files = doc.getItem(fieldname)
+                        if not existing_files:
+                            errors.append(fieldname+" "+PlominoTranslate("is mandatory",self))
+                    else:
+                        errors.append(fieldname+" "+PlominoTranslate("is mandatory",self))
             else:
                 # STEP 2: check data types
                 errors = errors + f.validateFormat(submittedValue)

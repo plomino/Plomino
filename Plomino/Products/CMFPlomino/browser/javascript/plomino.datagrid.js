@@ -42,7 +42,7 @@ function datagrid_show_form(field_id, formurl, onsubmit) {
 			jq.get(this.action, jq(this).serialize(), function(data, textStatus, XMLHttpRequest){
 				// Call back function with new row
 				var rowdata = new Array();
-				jq('span[plomino]', data).each(function(){
+				jq('span.plominochildfield', data).each(function(){
 					rowdata.push(this.innerHTML);
 				})
 				var raw = jq.evalJSON(jq('#raw_values', data).text());

@@ -10,6 +10,9 @@
 __author__ = """Eric BREHAULT <eric.brehault@makina-corpus.com>"""
 __docformat__ = 'plaintext'
 
+import logging
+logger = logging.getLogger('Plomino')
+
 from AccessControl import ClassSecurityInfo
 from Products.CMFPlomino.config import *
 from Products.CMFPlomino.PlominoField import get_field_types
@@ -132,9 +135,10 @@ class PlominoIndex(UniqueObject, ZCatalog, ActionProviderBase):
             # TODO DONE LATER (cataloging real path is better but it implies
             # to test all the side-effect and provide a migration script)
             #self.catalog_object(doc)
+            db = doc.getParentDatabase()
             self.catalog_object(doc,
-                                "/".join(doc.getParentDatabase().getPhysicalPath()) + "/" + doc.id,
-                                idxs=idxs, update_metadata=update_metadata)
+                "/".join(db.getPhysicalPath()) + "/" + doc.id,
+                idxs=idxs, update_metadata=update_metadata)
         except Exception, e:
             self.portal_skins.plone_scripts.plone_log('%s\non %s'%(`e`, doc.id))
             raise
@@ -158,7 +162,7 @@ class PlominoIndex(UniqueObject, ZCatalog, ActionProviderBase):
             self.getParentDatabase().setStatus("Ready")
 
     security.declareProtected(READ_PERMISSION, 'dbsearch')
-    def dbsearch(self, request, sortindex=None, reverse=0, only_allowed=True):
+    def dbsearch(self, request, sortindex=None, reverse=0, only_allowed=True, limit=None):
         """
         """
         user_groups_roles = ['Anonymous', '*']
@@ -168,7 +172,7 @@ class PlominoIndex(UniqueObject, ZCatalog, ActionProviderBase):
                            + self.getCurrentUserGroups() \
                            + self.getCurrentUserRoles()
         request['getPlominoReaders'] = user_groups_roles
-        return self.search(request, sortindex, reverse)
+        return self.search(request, sortindex, reverse, limit)
 
     security.declareProtected(READ_PERMISSION, 'getKeyUniqueValues')
     def getKeyUniqueValues(self,key):

@@ -14,6 +14,7 @@ __docformat__ = 'plaintext'
 
 from AccessControl import ClassSecurityInfo
 from Products.Archetypes.atapi import *
+from Products.Archetypes.debug import deprecated
 from zope.interface import implements
 import interfaces
 from Products.ATContentTypes.content.folder import ATFolder
@@ -103,7 +104,7 @@ schema = Schema((
     ),
     BooleanField(
         name='IndexInPortal',
-        default=True,
+        default=False,
         widget=BooleanField._properties['widget'](
             label="Index documents in Plone portal",
             description="If enabled, documents are searchable in Plone search.",
@@ -297,8 +298,8 @@ class PlominoDatabase(ATFolder, PlominoAccessControl, PlominoDesignManager, Plom
     def getForms(self, sortbyid=False):
         """return the database forms list
         """
-        form_list = self.portal_catalog.search({'portal_type' : ['PlominoForm'], 'path': '/'.join(self.getPhysicalPath())})
-        form_obj_list = [a.getObject() for a in form_list]
+        form_list = self.objectValues(spec='PlominoForm')
+        form_obj_list = [a for a in form_list]
         if sortbyid:
             form_obj_list.sort(key=lambda elt: elt.id.lower())
         else:
@@ -309,8 +310,8 @@ class PlominoDatabase(ATFolder, PlominoAccessControl, PlominoDesignManager, Plom
     def getViews(self, sortbyid=False):
         """return the database views list
         """
-        view_list = self.portal_catalog.search({'portal_type' : ['PlominoView'], 'path': '/'.join(self.getPhysicalPath())})
-        view_obj_list = [a.getObject() for a in view_list]
+        view_list = self.objectValues(spec='PlominoView')
+        view_obj_list = [a for a in view_list]
         if sortbyid:
             view_obj_list.sort(key=lambda elt: elt.id.lower())
         else:
@@ -321,13 +322,13 @@ class PlominoDatabase(ATFolder, PlominoAccessControl, PlominoDesignManager, Plom
     def getAgents(self):
         """return the database agents list
         """
-        agent_list = self.portal_catalog.search({'portal_type' : ['PlominoAgent'], 'path': '/'.join(self.getPhysicalPath())})
-        agent_obj_list = [a.getObject() for a in agent_list]
+        agent_list = self.objectValues(spec='PlominoAgent')
+        agent_obj_list = [a for a in agent_list]
         agent_obj_list.sort(key=lambda elt: elt.id.lower())
         return agent_obj_list
 
     security.declarePublic('getForm')
-    def getForm(self,formname):
+    def getForm(self, formname):
         """return a PlominoForm
         """
         obj = getattr(self, formname, None)
@@ -335,7 +336,7 @@ class PlominoDatabase(ATFolder, PlominoAccessControl, PlominoDesignManager, Plom
             return obj
 
     security.declarePublic('getView')
-    def getView(self,viewname):
+    def getView(self, viewname):
         """return a PlominoView
         """
         obj = getattr(self, viewname, None)
@@ -351,6 +352,11 @@ class PlominoDatabase(ATFolder, PlominoAccessControl, PlominoDesignManager, Plom
         pt = getToolByName(self, 'portal_types')
         pt.constructContent('PlominoDocument', self.documents, docid)
         doc = self.documents.get(docid)
+        # new doc has been automatically index in portal_catalog by constructContent
+        # 1: we do not necessarily want it (depending on IndexInPortal value)
+        # 2: PlominoDocument.save() will index it with the correct path anyway
+        # so let's remove it for now
+        self.portal_catalog.uncatalog_object("/".join(doc.getPhysicalPath()))
         return doc
 
     security.declarePublic('getDocument')
@@ -389,6 +395,8 @@ class PlominoDatabase(ATFolder, PlominoAccessControl, PlominoDesignManager, Plom
                     e.reportError('Document has been deleted, but onDelete event failed.')
 
             self.getIndex().unindexDocument(doc)
+            if self.getIndexInPortal():
+                self.portal_catalog.uncatalog_object("/".join(self.getPhysicalPath() + (doc.id,)))
             event.notify(ObjectRemovedEvent(doc, self.documents, doc.id))
             self.documents._delOb(doc.id)
 
@@ -422,19 +430,22 @@ class PlominoDatabase(ATFolder, PlominoAccessControl, PlominoDesignManager, Plom
 
     security.declarePublic('getIndex')
     def getIndex(self):
-        """return the database index
+        """ Return the database index.
         """
         return getattr(self, 'plomino_index')
 
     security.declarePublic('getAllDocuments')
-    def getAllDocuments(self):
-        """return all the database documents
+    def getAllDocuments(self, getObject=None):
+        """ Return all the database documents.
         """
+        if getObject is not None:
+            deprecated("The getObject parameter is a temporary measure "
+                       "to ease migration to the new "
+                       "PlominoView.getAllDocuments signature. It will go "
+                       "away soon. Please update your code to remove it "
+                       "from PlominoDatabase.getAllDocuments calls."
+            )
         return self.documents.values()
-        #return [d.getObject() for d in self.portal_catalog.search({'portal_type' : ['PlominoDocument'], 'path': '/'.join(self.getPhysicalPath())})]
-#        index = self.getIndex()
-#        res = index.dbsearch({},None)
-#        return [d.getObject() for d in res]
 
     security.declarePublic('isDocumentsCountEnabled')
     def isDocumentsCountEnabled(self):

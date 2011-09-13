@@ -84,7 +84,7 @@ rendering and the displayed action buttons according different parameters
 You can add any type of item in a document
     >>> doc1.setItem('country', 'Finland')
     >>> doc1.getItem('country')
-    'Finland'
+    u'Finland'
     >>> doc1.setItem('area', 338145)
 
 You can access item values as attributes:
@@ -106,7 +106,7 @@ Calling 'save' method will (re-)index the document in the Plomino index and will
     >>> doc1.setItem('field1', 'London calling')
     >>> doc1.save()
     >>> doc1.field2
-    'My favorite song is London calling'
+    u'My favorite song is London calling'
 
 
 Views
@@ -258,19 +258,19 @@ TODO: create a fake REQUEST to complete the test
 onOpenDocument is executed each time the document is opened:
     >>> db.frm1.setOnOpenDocument("""plominoDocument.setItem('field1', plominoDocument.field1+" by The Clash")\nplominoDocument.save()""")
     >>> doc1.field1
-    'London calling'
+    u'London calling'
     >>> content=doc1.openWithForm(db.frm1)
     >>> doc1.field1
-    'London calling by The Clash'
+    u'London calling by The Clash'
 
 onSaveDocument is executed each time the document is saved:
     >>> db.frm1.setOnSaveDocument("""newcountry='Chile'\nplominoDocument.setItem('country', newcountry)""")
     >>> db.cleanFormulaScripts("form_frm1")
     >>> doc1.country
-    'Finland'
+    u'Finland'
     >>> doc1.save(db.frm1)
     >>> doc1.country
-    'Chile'
+    u'Chile'
     
 Plomino index
 -------------
@@ -351,8 +351,7 @@ Import CSV file (API)
     >>> fileToImport.close()
 
 Check the documents imported
-    >>> allDocumentsIndexes = db.allArticle.getAllDocuments()
-    >>> allDocuments = [d.getObject() for d in allDocumentsIndexes]
+    >>> allDocuments = db.allArticle.getAllDocuments()
     >>> test = [d.editDate.year() for d in allDocuments]
     >>> test.sort()
     >>> test

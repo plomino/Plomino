@@ -89,7 +89,7 @@ class DatagridField(BaseField):
         except:
             return []
 
-    def tojson(self, value):
+    def tojson(self, value, rendered=False):
         """
         """
         if value is None or value == "":
@@ -98,6 +98,11 @@ class DatagridField(BaseField):
             return value
         if isinstance(value, DateTime):
             value = DateToString(value)
+        if isinstance(value, dict):
+            if rendered:
+                value = value['rendered']
+            else:
+                value = value['rawdata']
         return json.dumps(value)
 
     def getLang(self):
@@ -133,61 +138,59 @@ class DatagridField(BaseField):
         # if doc is not a PlominoDocument, no processing needed
         if not doc or doc.isNewDocument():
             return fieldValue
-
+        
+        rawValue = fieldValue
         mode = self.context.getFieldMode()
-        if not(mode=="EDITABLE" and editmode):
-            # Rendering for DISPLAY
-            # If editing, we don't do the rendering.
+        
+        mapped_fields = []
+        if self.field_mapping:
+            mapped_fields = [
+                f.strip() for f in self.field_mapping.split(',')]
+        # item names is set by `PlominoForm.createDocument`
+        item_names = doc.getItem(self.context.id+'_itemnames')
 
-            mapped_fields = []
-            if self.field_mapping:
-                mapped_fields = [
-                    f.strip() for f in self.field_mapping.split(',')]
-            # item names is set by `PlominoForm.createDocument`
-            item_names = doc.getItem(self.context.id+'_itemnames')
+        if mapped_fields:
+            if not item_names:
+                item_names = mapped_fields
 
-            if mapped_fields:
-                if not item_names:
-                    item_names = mapped_fields
+            # fieldValue is a array, where we must replace raw values with
+            # rendered values
+            child_form_id = self.associated_form
+            if child_form_id is not None:
+                db = self.context.getParentDatabase()
+                child_form = db.getForm(child_form_id)
+                # zip is procrustean: we get the longest of mapped_fields or
+                # fieldValue
+                mapped = []
+                for row in fieldValue:
+                    if len(row) < len(item_names):
+                        row = (row + ['']*(len(item_names)-len(row)))
+                    row = dict(zip(item_names, row))
+                    mapped.append(row)
+                fieldValue = mapped
+                fields = {}
+                for f in mapped_fields + item_names:
+                    fields[f] = None
+                fields = fields.keys()
+                field_objs = [child_form.getFormField(f) for f in fields]
+                # avoid bad field ids
+                field_objs = [f for f in field_objs if f is not None]
+                #DBG fields_to_render = [f.id for f in field_objs if f.getFieldType() not in ["DATETIME", "NUMBER", "TEXT", "RICHTEXT"]]
+                #DBG fields_to_render = [f.id for f in field_objs if f.getFieldType() not in ["DOCLINK", ]]
+                fields_to_render = [f.id for f in field_objs if f.getFieldMode() in ["DISPLAY", ] or f.getFieldType() not in ["TEXT", "RICHTEXT"]]
 
-                # fieldValue is a array, where we must replace raw values with
-                # rendered values
-                child_form_id = self.associated_form
-                if child_form_id is not None:
-                    db = self.context.getParentDatabase()
-                    child_form = db.getForm(child_form_id)
-                    # zip is procrustean: we get the longest of mapped_fields or
-                    # fieldValue
-                    mapped = []
+                if fields_to_render:
+                    rendered_values = []
                     for row in fieldValue:
-                        if len(row) < len(item_names):
-                            row = (row + ['']*len(item_names)-len(row))
-                        row = dict(zip(item_names, row))
-                        mapped.append(row)
-                    fieldValue = mapped
-                    fields = {}
-                    for f in mapped_fields + item_names:
-                        fields[f] = None
-                    fields = fields.keys()
-                    field_objs = [child_form.getFormField(f) for f in fields]
-                    # avoid bad field ids
-                    field_objs = [f for f in field_objs if f is not None]
-                    #DBG fields_to_render = [f.id for f in field_objs if f.getFieldType() not in ["DATETIME", "NUMBER", "TEXT", "RICHTEXT"]]
-                    #DBG fields_to_render = [f.id for f in field_objs if f.getFieldType() not in ["DOCLINK", ]]
-                    fields_to_render = [f.id for f in field_objs if f.getFieldMode() in ["DISPLAY", ] or f.getFieldType() not in ["TEXT", "RICHTEXT"]]
-
-                    if fields_to_render:
-                        rendered_values = []
-                        for row in fieldValue:
-                            row['Form'] = child_form_id
-                            row['Plomino_Parent_Document'] = doc.id 
-                            tmp = TemporaryDocument(db, child_form, row, real_doc=doc)
-                            tmp = tmp.__of__(db)
-                            for f in fields:
-                                if f in fields_to_render:
-                                    row[f] = tmp.getRenderedItem(f)
-                            rendered_values.append(row)
-                        fieldValue = rendered_values
+                        row['Form'] = child_form_id
+                        row['Plomino_Parent_Document'] = doc.id 
+                        tmp = TemporaryDocument(db, child_form, row, real_doc=doc)
+                        tmp = tmp.__of__(db)
+                        for f in fields:
+                            if f in fields_to_render:
+                                row[f] = tmp.getRenderedItem(f)
+                        rendered_values.append(row)
+                    fieldValue = rendered_values
 
             if mapped_fields and child_form_id:
                 mapped = []
@@ -195,7 +198,7 @@ class DatagridField(BaseField):
                     mapped.append([row[c] for c in mapped_fields])
                 fieldValue = mapped
 
-        return fieldValue
+        return {'rawdata': rawValue, 'rendered': fieldValue}
 
 component.provideUtility(DatagridField, IPlominoField, 'DATAGRID')
 

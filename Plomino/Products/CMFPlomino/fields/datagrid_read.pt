@@ -4,7 +4,7 @@
                        field python:options['field']">
 
         <script type="text/javascript" charset="utf-8"
-        tal:define="data python:field.getSettings().tojson(v);
+        tal:define="data python:field.getSettings().tojson(v, rendered=True);
                     param python:field.getSettings().getParameters();
         			langpath python:field.getSettings().getLang()"
         tal:content="structure string:
@@ -19,5 +19,5 @@
         					} );
         				} );">
         </script>
-        <table class="display" TAL:ATTRIBUTES="id string:${fieldname}_datagrid"></table>
+        <table class="display" tal:attributes="id string:${fieldname}_datagrid"></table>
 </tal:block>

@@ -1,6 +1,25 @@
 Changelog
 =========
 
+1.11 (2011-09-12)
+-----------------
+* use onSave returned value to redirect to url after save
+* getAllDocuments() returns PlominoDocuments (and not brains anymore, unless getObject=False)
+* various fixes
+
+1.10.4 (2011-08-03)
+-------------------
+* (for Plone 4 only) use MailHost.send instead of secureSend
+* fix document portal indexation behaviour
+* fix permission issues with Document id formula
+* fix Mandatory field checking with File attachments fields
+
+1.10.3 (2011-07-19)
+-------------------
+* i18n fixes
+* fix translation method
+* display rendered values in datagrid in edit mode
+
 1.10.2 (2011-07-12)
 -------------------
 * Only use Unicode in the Plomino index,
