@@ -965,8 +965,12 @@ class PlominoDesignManager(Persistent):
                         at_values[name] = v
                 child = child.nextSibling
 
+            if element_type == "PlominoForm":
+                at_values['FormLayout_text_format'] = "text/html"
+                
             if len(at_values) > 0:
                 obj.processForm(REQUEST=None, values=at_values)
+            
             if len(settings_values) > 0:
                 adapt = obj.getSettings()
                 for key in settings_values.keys():
