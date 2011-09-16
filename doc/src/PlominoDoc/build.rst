@@ -5,61 +5,67 @@ Build a simple Plomino application
 Create a Plomino database
 =========================
 
-To create a Plomino database, select ``Plomino: database`` in the **Add item** 
-Plone menu.
+To create a Plomino database, select ``Plomino: database`` in the 
+**Add item** Plone menu.
 
 .. image:: images/m440f207a.png
 
-Enter a title for the database (for instance: Books) and save it.
+Enter a title for the database (for instance *Books*) and save it.
 
 Add a form
 ==========
 
-To add a form, click **Add new... Form** in the Plomino design left portlet.
-Note: you can also select ``Plomino: form`` in the **Add item** Plone menu.
+Forms can be added using the Plomino Design portlet, which is usually
+displayed in the left-hand column, or using the Plone *Add* dropdown menu.
+
+To add a form, click **Add new... Form** in the portlet, or select
+``Plomino: form`` from the **Add item** Plone menu.
 
 .. image:: images/m4539359f.png
 
-Enter the form id. The form id is initialized with a generated value
-(for instance: ``plominoform.2008-01-31.9797530894``). It is preferable
-to replace it with a more meaningful id (for instance: ``frmBook``). It
-is a technical identifier, so use basic characters and numbers only
-(blank space and special characters are forbidden).
+On the add form, enter the form id. The form id is initialized with a
+generated value (for instance: ``plominoform.2008-01-31.9797530894``). It is
+preferable to replace it with a more meaningful id (for instance:
+``frmBook``). It is a technical identifier, so use basic characters and
+numbers only (blank space and special characters are forbidden).
 
-In Title, enter the form label, which will be displayed to the users
-(for instance: ``Book description``.
+In the *Title* field, enter the form label, which will be displayed to the
+users (for instance: ``Book description``.
 
 .. image:: images/m34f61fc7.png
 
-Save (you need to save it once before being able to add fields in your
-form).
+Save the form to create it (you need to save it before being able to add
+fields to your form).
 
-Create layout and add fields
-============================
+Create the layout and add fields
+================================
 
 Click on the **Edit** tab.
 
-Go to the Form layout section which contain sthe TinyMCE editor. If necessary,
-expand the editing area by dragging the bottom-right corner.
+Go to the *Form layout* section which contains the TinyMCE editor. If
+necessary, expand the editing area by dragging the bottom-right corner, or 
+clicking on the full-screen icon from the editor toolbar.
 
-Create your form layout using the standard editing tools (styles, tables, etc.).
+Create your form layout using the standard editing tools (styles, tables,
+etc.).
 
 .. image:: images/build-1.png
 
-To add a field, select a word in the form layout and click on the "Add/edit 
-Plomino field" button in the TinyMCE toolbar. 
+To add a field to the layout, select some word in the layout and click on
+the *Add/edit Plomino field* button in the TinyMCE toolbar. 
 
 .. image:: images/build-2.png
 
-The selected text will be used as the field id, and a pop-up window will allow
-to define the field main parameters:
+The selected text will be used as the field id, and a pop-up window will
+allow you to enter the field main parameters:
 
 .. image:: images/build-3.png
 
-For ``bookAuthor`` field, keep the default ('Text' and 'Editable') and click 
-Insert and then Close.
+For the  ``bookAuthor`` field, keep the default values ('Text' and
+'Editable'), click *Insert* and then *Close*.
 
-As you can see, the field is rendered with a blue dashed border in the layout.
+As you can see, the field is rendered with a blue dashed border in the
+layout.
 
 Do the same for the following fields:
 
@@ -67,22 +73,21 @@ Do the same for the following fields:
 - ``publicationYear``, type 'Number', 'Editable' 
 - ``summary``, type 'Rich text', 'Editable' 
 - ``cover``, type 'File attachment', 'Editable'
+- ``bookCategory``, choose type 'Selection list', 'Editable', but after
+  clicking *Insert*, click on *Specific settings*.
 
-For ``bookCategory``, choose type 'Selection list', 'Editable', but after 
-clicking Insert, click on Specific settings.
-
-It opens the field settings page in a new windows, where you can enter the 
-Selection list the possible values : 
+This opens the field settings page in a new window, where you can enter the
+possible values for the Selection list: 
 
 .. image:: images/build-4.png
 
-Click Apply, and go back to the Form window, close the field pop-up.
+Click *Apply*, go back to the Form window, and close the field pop-up.
 
-Now the form is built and its associated fields have been created.
+Now the form is built, and its associated fields have been created.
 
 .. image:: images/build-5.png
 
-Save the form (click Save button at the bottom of the page).
+Save the form (click the *Save* button at the bottom of the page).
 
 Use the form
 ============
@@ -91,17 +96,17 @@ You can now use this form to create documents.
 
 .. image:: images/build-6.png
 
-Go back to the Books database, the database welcome page now contains a
+Go back to the *Books* database. The database welcome page now contains a
 link to add a new document using the ``Book description`` form:
 
 .. image:: images/build-7.png
 
 Click on this link, and you get the form displayed as designed in the
-TinyMCE editor and including the fields as they have been defined: 
+TinyMCE editor, including the fields as they have been defined: 
 
 .. image:: images/build-8.png
 
-You can enter values and save, it will create a new document: 
+You can enter values and save, and a new document will be created: 
 
 .. image:: images/build-9.png 
 
@@ -109,7 +114,7 @@ You can enter values and save, it will create a new document:
 Explore the database design
 ===========================
 
-Go to the Books database and click the **Design** tab.
+Go to the *Books* database and click the *Design* tab.
 
 This tab displays all the design elements contained in the database: 
 
@@ -121,71 +126,96 @@ the page icon in read mode, and the folder icon in content mode.
 Change the document title
 =========================
 
-By default, all the documents created with a form have the same title as the form. 
+By default, all the documents created with a form have the same title as the
+form. 
 
-In the present case, the title is "Book description", and it will be the title
-of all the documents you would create with your form.
+In the present case, the title is "Book description", and it will be the
+title of all the documents you would create with your form.
 
-To display a more accurate title, go to the frmBook object, edit it, and enter 
-the following formula in 'Document title formula'::
+To display a more useful title, go to the ``frmBook`` object, edit it, and
+enter the following formula in the *Document title formula* field::
 
-    "Information about "+plominoDocument.bookTitle +" ("+plominoDocument.bookAuthor+")"
+    return "Information about %s (%s)" % (
+        plominoDocument.getItem('bookTitle'), 
+        plominoDocument.getItem('bookAuthor'))
 
-Save the form, go back to the document, make a change and save it (so it
-is refreshed), and you get the title as specified in the formula: 
+Save the form, go back to the document, make a change and save it. This
+will trigger calculation of the title formula. Now you will see the title
+has been set as specified in the formula: 
 
 .. image:: images/build-11.png
 
-'Document title' is computed by a formula. As all the entry points
-allowing formula usage in Plomino, it is a Python expression where
-``plominoDocument`` is the current document.
+The document title is computed by a formula. All Plomino formulas are 
+restricted Python scripts with certain variables and functions provided.
+In this case, the ``plominoDocument`` variable is used, which is the current
+document.
 
-All the document items values are accessible as object attributes
-(`plominoDocument.<field name>`).
+All the data items stored on the document by forms, or set using formulas, 
+are accessible using the ``getItem`` API: 
+(``plominoDocument.getItem(<field name>)``).
 
-For more information about formulas, see below.
+For more information about formulas, see Formulas_ below.
+
+.. _Formulas: ./features.html#Formulas
 
 Change the document id
 ======================
 
-The document id is displayed in the URL, by default it is a random meaningless
-identifier::
+The document id is used in the URL. By default, it is an opaque random
+identifier (``4e219e4ffff21b9753c94a0e006e95bf`` in the following)::
 
     http://localhost:8090/demo/books/plomino_documents/4e219e4ffff21b9753c94a0e006e95bf
 
-If you want to use meaningful ids, you can define a Document id formula.
-Go to the frmBook object, edit it, and enter the following formula in 'Document id formula'::
+If you want to use meaningful ids, you can define a *Document id formula*.
+Go to the ``frmBook`` object, edit it, and enter the following formula in
+'Document id formula'::
 
     plominoDocument.bookTitle +"-"+plominoDocument.bookAuthor
 
-Unlike the title, the id is computed at creation time, and it cannot be changed later.
-So the existing document will not use this formula even if we re-save it.
-But if you create a new document, you will get a id corresponding to your formula::
+Unlike the title, the id is computed at creation time, and it cannot be
+changed later.  So the existing document will not use this formula even if
+we re-save it.  But if you create a new document, you will get a id
+corresponding to your formula::
 
     http://localhost:8090/demo/books/plomino_documents/1919-john-dospassos
+
+.. Note: If you use this facility, you need to take care that document
+   ids are unique, well-formed, and resolve any issues that arise when 
+   replicating documents to other Plomino instances. Calculating your 
+   own document ids can be a considerable responsibility, depending on the
+   requirements of your application.
 
 
 Add a view
 ==========
 
-A view allows to list documents, so the users can find them.
-A view has a selection formula, which defines which documents must be listed, 
-and it contains some columns to display information about the documents.
+A view defines a collection of documents. Some views are used to present
+list of documents to users, and some are used from formulas to structure the
+Plomino application. 
 
-You can generate a view automatically from a form::
+A view has a selection formula, which defines which documents form part of
+the view, and it usually contains some columns to display information about
+the matching documents. These columns may compute derived information from
+data items on documents, or even from values looked up from other documents,
+Plone objects, or other sources. 
 
-Go to the frmBook form, and click on ``Generate view`` in the Design portlet 
-on the left.
+You can generate a view automatically from a form:
 
-It generates a view selecting all the documents which form is 'frmBook', it
-creates a column for each appropriate fields (files attachment, or rich text
-are not considered as appropriate for instance), and it also insert a "Add new"
-action.
+- Go to the ``frmBook`` form, and 
+- click on *Generate view* in the Design portlet on the left.
+
+This generates a view which:
+
+- selects all the documents that were created or last edited using the
+``frmBook`` form,
+- creates a column for each field on the form (file attachments and rich
+  text fields are skipped), and it also 
+- inserts an *Add new* action.
 
 .. image:: images/build-12.png
 
-The columns can be re-ordered by drag-and-drop in the Contents tab. The column
-labels can also be changed.
+The columns can be re-ordered by drag-and-drop in the *Contents* tab. The
+column labels can also be changed.
 
 
 Add a view manually
@@ -193,21 +223,21 @@ Add a view manually
 
 Go back to the Books database.
 
-Select ``Plomino: view`` in the **Add item** Plone menu. Enter an
-identifier (``all``) and a title ('All the books'):
+Select ``Plomino: view`` from the *Add item* Plone menu. Enter an
+identifier (``allBooks``) and a title ('All the books'):
 
 .. image:: images/m57ed2659.png
 
-Enter a selection formula too: this formula must return `True` or
-`False.` It is evaluated for each document, if the returned value is
-`True`, the document is displayed in the view, if `False`, it is
+Enter a selection formula too: this formula must return ``True`` or
+``False``. It is evaluated for each document; if the returned value is
+``True``, the document is included in the view; if ``False``, it is
 rejected.
 
 Enter the following expression::
 
     True
 
-(this expression always return `True`, so all the documents will be
+(this expression always return ``True``, so all the documents will be
 displayed).
 
 Save.
@@ -216,29 +246,29 @@ You get the following result:
 
 .. image:: images/m64d1e0e7.png
 
-We just see a link '**Go**' which allows us to access the document we
+We just see a link '*Go*' which allows us to access the document we
 have created. Now we need to add columns to this view.
 
-Select ``Plomino: column`` in the **Add item** Plone menu.
+Select ``Plomino: column`` from the *Add item* Plone menu.
 
 Enter an identifier and a title, and enter a formula to compute the
 column value, for instance::
 
-    plominoDocument.bookTitle
+    return plominoDocument.getItem('bookTitle')
 
 .. image:: images/b38e0e1.png
 
-Similarly, add a column to display bookAuthor.
+Similarly, add a column to display ``bookAuthor``.
 
-Columns can be ordered by going to the view's Contents tab and moving
-the columns where needed.
+Columns can be ordered by going to the view's *Contents* tab and moving the
+columns where needed.
 
 If you go back to the Books database root, the view is proposed in the
-Browse section: 
+*Browse* section: 
 
 .. image:: images/m12df968f.png
 
-Create more documents. When you click on the link 'All the books', the
+Create more documents. When you click on the link *All the books*, the
 view is displayed with its 2 columns (and its new documents): 
 
 .. image:: images/6de65017.png
@@ -246,8 +276,8 @@ view is displayed with its 2 columns (and its new documents):
 To improve browsing of the documents, it could be useful to sort the
 view.
 
-To do that, click on **Edit**, go to the **Sorting** tab and enter
-``col1`` in the **Sorting** column, then save: 
+To do that, click on *Edit*, go to the *Sorting* tab and enter
+``col1`` in the *Sorting* column, then save: 
 
 .. image:: images/193e0720.png
 
@@ -260,13 +290,14 @@ You can add as many views as necessary.
 You can build views able to filter the documents; for instance if you
 enter the following selection formula::
 
-    plominoDocument.publicationYear >=1800 and plominoDocument.publicationYear <1900
+    return (plominoDocument.getItem('publicationYear') >= 1800 and 
+        plominoDocument.getItem('publicationYear') < 1900)
 
 you will only list the XIXth century books.
 
 You can create categorised views: create a view with a first column
-which contains the `bookCategory` field value, and select
-**Categorised** in the **Sorting** tab: 
+which contains the ``bookCategory`` field value, and select *Categorised*
+in the *Sorting* tab: 
 
 .. image:: images/m233a2bba.png
 
