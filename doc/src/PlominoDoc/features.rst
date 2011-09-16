@@ -406,12 +406,43 @@ So, for example, if you want to pass a parameter to another form:
 Forms
 =====
 
+Layout
+------
+
+Accordions and lazy loading
+```````````````````````````
+
+In Plomino it is possible to *accordion* some parts of the page.  This means
+that the content of the accordioned part will not be visible unless you click
+on the headline to open the accordion. 
+
+It is also possible to avoid loading the content of the accordion until such 
+time as the accordion is opened. This is particularly useful if the content 
+it very big, or if there are many accordions on a page and the reader is
+interested in only a few of them.
+ 
+To turn part of a page into an accordion, use this structure::
+
+    <h5 class="???"><a href="#">Header</a></h5>
+    <div>Content</div>
+
+.. todo:: Make that an HTML block 
+
+.. todo:: What's possibilities for class?
+
+If the class is ``plomino-accordion-header`` and the ``href`` is not ``#``, the 
+content of the referenced page will be substituted for the following div. 
+
+.. Note:: Plomino does not currently offer UI support for this functionality. 
+   To use it, you have to generated the desired content via Python, or enter
+   it literally into the form layout. 
+
 Events
 ------
 
 In a Plomino form, you can use the following events:
 
-`onOpenDocument`
+``onOpenDocument``
     executed before document is opened (in both read mode and edit mode)
 
     If the formula for this event returns a false value, opening is
@@ -419,24 +450,24 @@ In a Plomino form, you can use the following events:
     opening fails, and the value is displayed as an error
     message.
 
-`onSaveDocument`
+``onSaveDocument``
     executed before document is saved
 
-`onDeleteDocument`
+``onDeleteDocument``
     executed before document is deleted
 
-`onCreateDocument`
+``onCreateDocument``
     executed before the document is saved for the first time
-    (`onSaveDocument` will also be executed, but after
-    `onCreateDocument`)
+    (``onSaveDocument`` will also be executed, but after
+    ``onCreateDocument``)
 
-`beforeCreateDocument`
+``beforeCreateDocument``
     executed before a blank form is opened.
     
 In the **Events** tab, you can enter the formulas for each event you
 need.
 
-Example: enter the following formula for the `onSaveDocument` event::
+Example: enter the following formula for the ``onSaveDocument`` event::
 
     date=DateToString(DateTime()) 
     db=plominoDocument.getParentDatabase() 
