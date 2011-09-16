@@ -1,6 +1,6 @@
-----------------
+================
 Fields reference
-----------------
+================
 
 General parameters
 ==================
@@ -43,7 +43,9 @@ Formula
     :Purpose:
         Depending on the field mode, this formula will compute the field
         value (if computed), or just its default initial value (if
-        editable).
+        editable). **Note:** If the field is called using ``computeItem``, 
+        from some event or from some other field formula, the current field
+        value will be overwritten even if it is an editable field.
 Field read template and field edit template
     :Value:
         .PT template id
@@ -222,7 +224,7 @@ Documents list formula
     :Purpose: 
           This formula must return a list of string values formatted as follows::
 
-            ```lable|path_to_document```
+            ``label|path_to_document``
 
           Notes:
           - it might a path to any kind of Plone object (even if the main purpose is to link to Plomino Documents),
