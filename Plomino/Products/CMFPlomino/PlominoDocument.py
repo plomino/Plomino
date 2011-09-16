@@ -553,6 +553,9 @@ class PlominoDocument(ATFolder):
     def getfile(self, filename=None, REQUEST=None):
         """
         """
+        if not self.isReader():
+            raise Unauthorized, "You cannot read this content"
+
         fss = self.getParentDatabase().getStorageAttachments()
         if REQUEST is not None:
             filename = REQUEST.get('filename')
