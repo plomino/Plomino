@@ -282,13 +282,20 @@ Google chart field
 
 Allow to draw static charts (or maps, etc.).
 
-Example:
+Example
+```````
 
-create a "computed for display" Googfle chart field, and enter the following formula::
-    cost=75
-    margin=25
-    return {'chd': 't:'+str(cost)+','+str(margin), 'chs': '250x100', 'cht': 'p3', 'chl': 'Cost|Margin'}
+create a "Computed for display" Google chart field, and enter the following
+formula::
 
+    cost = 75
+    margin = 25
+    return {
+        'chd': 't:%s,%s' % (str(cost),str(margin)),
+        'chs': '250x100',
+        'cht': 'p3',
+        'chl': 'Cost|Margin'
+        }
 
 .. image:: images/google-chart.jpg
 
