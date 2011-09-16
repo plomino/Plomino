@@ -1,6 +1,6 @@
---------
+========
 Concepts
---------
+========
 
 Plomino database
 ================
@@ -8,8 +8,8 @@ Plomino database
 A Plomino *application* is supported by a Plomino *database*.
 
 The Plomino database is the Plone object which contains the application
-data (i.e. the documents; see below), and its structure (i.e. the
-design; see below).
+data (i.e. the Documents_), and its structure (i.e. the
+Design_).
 
 Forms
 =====
