@@ -9,6 +9,8 @@ from Products.CMFPlomino.fields.datetime import IDatetimeField
 from Products.CMFPlomino.fields.name import INameField
 from Products.CMFPlomino.fields.doclink import IDoclinkField
 
+from Products.CMFPlomino.PlominoUtils import asUnicode
+
 import logging
 logger = logging.getLogger('Plomino migration')
 
@@ -62,6 +64,9 @@ def migrate(db):
         msg = migrate_to_1_10(db)
         messages.append(msg)
     if db.plomino_version=="1.10":
+        # no migration needed here
+        db.plomino_version = "1.10.3"
+    if db.plomino_version=="1.10.3":
         msg = migrate_to_1_11(db)
         messages.append(msg)
     return messages
@@ -304,7 +309,7 @@ def migrate_to_1_11(db):
     files = db.resources.objectValues('File')
     for f in files:
         if f.content_type.startswith('text'):
-            formula = str(f)
+            formula = asUnicode(f)
             logger.info("Migrated script library formula: %s"%f.id())
             f.manage_edit(f.title, f.content_type, filedata=formula.replace(
                 'getAllDocuments()', 'getAllDocuments(getObject=False)'))

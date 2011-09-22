@@ -15,6 +15,7 @@ from time import strptime
 from Products.CMFCore.utils import getToolByName
 import htmlentitydefs as entity
 import urllib
+import cgi
 import csv
 from cStringIO import StringIO
 import Missing
@@ -205,3 +206,6 @@ def isDocument(doc):
         if hasattr(doc, 'isDocument'):
             return doc.isDocument()
     return False
+
+def cgi_escape(s):
+    return cgi.escape(s)
