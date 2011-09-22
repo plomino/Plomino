@@ -327,6 +327,11 @@ class PlominoDocument(ATFolder):
             # update the document id
             if creation and form.getDocumentId():
                 self._renameAfterCreation()
+                # _renameAfterCreation index doc in portal_catalog
+                # 1: we do not necessarily want it (depending on IndexInPortal value)
+                # 2: we will index it with the correct path anyway
+                # so let's remove it for now
+                db.portal_catalog.uncatalog_object("/".join(self.getPhysicalPath()))
             
         # update the Plomino_Authors field with the current user name
         if asAuthor:
