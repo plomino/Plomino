@@ -72,7 +72,8 @@ class PlominoCoreUtils:
                'open_url',
                'asUnicode',
                'array_to_csv',
-               'isDocument']
+               'isDocument',
+               'cgi_escape']
 
 component.provideUtility(PlominoCoreUtils, interfaces.IPlominoUtils)
 
