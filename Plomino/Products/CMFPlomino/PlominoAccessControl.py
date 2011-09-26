@@ -311,22 +311,28 @@ class PlominoAccessControl(Persistent):
         """create the default Plomino access rights
         """
         self._addRole("PlominoReader")
-        self.setPlominoPermissions("PlominoReader", "PlominoReader")
         self._addRole("PlominoAuthor")
-        self.setPlominoPermissions("PlominoAuthor", "PlominoAuthor")
         self._addRole("PlominoEditor")
-        self.setPlominoPermissions("PlominoEditor", "PlominoEditor")
         self._addRole("PlominoDesigner")
-        self.setPlominoPermissions("PlominoDesigner", "PlominoDesigner")
         self._addRole("PlominoManager")
-        self.setPlominoPermissions("PlominoManager", "PlominoManager")
-        self.setPlominoPermissions("Manager", "PlominoManager")
-        self.setPlominoPermissions("Owner", "PlominoManager")
+        self.refreshPlominoRolesPermissions()
         self.AnomynousAccessRight="NoAccess"
         self.setPlominoPermissions("Anonymous", "NoAccess")
         self.AuthenticatedAccessRight="NoAccess"
         self.setPlominoPermissions("Authenticated", "NoAccess")
         self.ACL_initialized=1
+
+    security.declarePublic('refreshPlominoRolesPermissions')
+    def refreshPlominoRolesPermissions(self):
+        """create the default Plomino access rights
+        """
+        self.setPlominoPermissions("PlominoReader", "PlominoReader")
+        self.setPlominoPermissions("PlominoAuthor", "PlominoAuthor")
+        self.setPlominoPermissions("PlominoEditor", "PlominoEditor")
+        self.setPlominoPermissions("PlominoDesigner", "PlominoDesigner")
+        self.setPlominoPermissions("PlominoManager", "PlominoManager")
+        self.setPlominoPermissions("Manager", "PlominoManager")
+        self.setPlominoPermissions("Owner", "PlominoManager")
 
     security.declarePrivate('setPlominoPermissions')
     def setPlominoPermissions(self,right,p):

@@ -190,8 +190,9 @@ class PlominoDesignManager(Persistent):
         if self.getIndexInPortal():
             self.refreshPortalCatalog()
             
-        # update Plone workflow state
+        # update Plone workflow state and role permissions
         self.refreshWorkflowState()
+        self.refreshPlominoRolesPermissions()
         
         self.setStatus("Ready")
         return report
