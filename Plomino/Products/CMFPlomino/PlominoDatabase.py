@@ -19,7 +19,6 @@ from zope.interface import implements
 import interfaces
 from Products.ATContentTypes.content.folder import ATFolder
 from Products.CMFDynamicViewFTI.browserdefault import BrowserDefaultMixin
-import zc.async
 from exceptions import PlominoScriptException
 from Products.CMFPlomino.config import *
 
@@ -44,6 +43,7 @@ import Globals
 from dm.sharedresource import get_resource
 try:
     from plone.app.async.interfaces import IAsyncService
+    import zc.async
     ASYNC = True
 except:
     ASYNC = False
@@ -274,7 +274,7 @@ class PlominoDatabase(ATFolder, PlominoAccessControl, PlominoDesignManager, Plom
         if ASYNC:
             job = all_db_status.get(self.absolute_url_path(), None)
             if job:
-                return job.annotations.get('status', 'undefined')
+                return job.annotations.get('status', 'Waiting')
             else:
                 return "Ready"
         else:
