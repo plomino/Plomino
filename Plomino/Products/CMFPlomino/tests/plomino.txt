@@ -335,6 +335,7 @@ Import design from XML
     >>> xmlstring = f1.read()
     >>> db.importDesignFromXML(xmlstring)
     >>> db.refreshDB()
+    [...]
     >>> f1.close()
 
 check if form and views are imported
