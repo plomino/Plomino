@@ -39,8 +39,12 @@ import transaction
 from zope import event
 from Products.Archetypes.event import ObjectEditedEvent
 from zope.component import getUtility
-from plone.app.async.interfaces import IAsyncService
 from dm.sharedresource import get_resource
+try:
+    from plone.app.async.interfaces import IAsyncService
+    ASYNC = True
+except:
+    ASYNC = False
 
 from migration.migration import migrate
 from index.PlominoIndex import PlominoIndex
@@ -70,17 +74,31 @@ import logging
 logger = logging.getLogger('Plomino')
 
 def run_refreshdb(context):
+    # for async call
     context.refreshDB()
-    
+
 class PlominoDesignManager(Persistent):
     """Plomino design import/export features
     """
     security = ClassSecurityInfo()
 
     # Methods
-    security.declarePublic('refreshDBAsync')
-    def refreshDBAsync(self):
-        """refres db in asynchronous mode
+    security.declarePublic('manage_refreshDB')
+    def manage_refreshDB(self, REQUEST):
+        """launch refreshDB
+        """
+        if ASYNC:
+            self.refreshDB_async()
+            report = ['Database refreshing has been launched in asynchronous mode.']
+        else:
+            report = self.refreshDB()
+            
+        self.writeMessageOnPage(MSG_SEPARATOR.join(report), REQUEST, False)
+        REQUEST.RESPONSE.redirect(self.absolute_url()+"/DatabaseDesign")
+    
+    security.declarePublic('refreshDB_async')
+    def refreshDB_async(self):
+        """refresh db in asynchronous mode
         """
         async = getUtility(IAsyncService)
         job = async.queueJob(run_refreshdb, self)
@@ -88,7 +106,7 @@ class PlominoDesignManager(Persistent):
         all_db_status[self.absolute_url_path()] = job
         
     security.declareProtected(DESIGN_PERMISSION, 'refreshDB')
-    def refreshDB(self, REQUEST=None):
+    def refreshDB(self):
         """all actions to take when reseting a DB (after import for instance)
         """
         logger.info('Refreshing database '+self.id)
@@ -176,11 +194,7 @@ class PlominoDesignManager(Persistent):
         self.refreshWorkflowState()
         
         self.setStatus("Ready")
-        if REQUEST:
-            self.writeMessageOnPage(MSG_SEPARATOR.join(report), REQUEST, False)
-            REQUEST.RESPONSE.redirect(self.absolute_url()+"/DatabaseDesign")
-        else:
-            return report
+        return report
 
     security.declareProtected(DESIGN_PERMISSION, 'reindexDocuments')
     def reindexDocuments(self, plomino_index, items_only=False, views_only=False, update_metadata=1, changed_since=None):

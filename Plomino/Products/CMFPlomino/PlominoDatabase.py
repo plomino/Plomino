@@ -42,6 +42,11 @@ from Products.CMFPlone.interfaces import IHideFromBreadcrumbs
 import string
 import Globals
 from dm.sharedresource import get_resource
+try:
+    from plone.app.async.interfaces import IAsyncService
+    ASYNC = True
+except:
+    ASYNC = False
 
 from index.PlominoIndex import PlominoIndex
 from Products.CMFPlomino.PlominoUtils import *
@@ -266,21 +271,24 @@ class PlominoDatabase(ATFolder, PlominoAccessControl, PlominoDesignManager, Plom
         """return DB current status
         """
         all_db_status = get_resource("plomino_status", dict)
-#        return all_db_status.get(self.absolute_url_path(), "Ready")
-        job = all_db_status.get(self.absolute_url_path(), None)
-        if job:
-            return job.annotations.get('status', 'undefined')
+        if ASYNC:
+            job = all_db_status.get(self.absolute_url_path(), None)
+            if job:
+                return job.annotations.get('status', 'undefined')
+            else:
+                return "Ready"
         else:
-            return "Ready"
+            return all_db_status.get(self.absolute_url_path(), "Ready")                
 
     security.declarePublic('setStatus')
     def setStatus(self, status):
         """set DB current status
         """
-        import pdb;pdb.set_trace
-        zc.async.local.setLiveAnnotation("status", status)
-#        all_db_status = get_resource("plomino_status", dict)
-#        all_db_status[self.absolute_url_path()] = status
+        if ASYNC:
+            zc.async.local.setLiveAnnotation("status", status)
+        else:
+            all_db_status = get_resource("plomino_status", dict)
+            all_db_status[self.absolute_url_path()] = status
 
     security.declarePublic('checkBeforeOpenDatabase')
     def checkBeforeOpenDatabase(self):

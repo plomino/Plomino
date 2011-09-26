@@ -17,8 +17,12 @@ from Products.Archetypes.atapi import *
 from zope.interface import implements
 import interfaces
 from zope.component import getUtility
-from plone.app.async.interfaces import IAsyncService
-
+try:
+    from plone.app.async.interfaces import IAsyncService
+    ASYNC = True
+except:
+    ASYNC = False
+    
 from Products.CMFDynamicViewFTI.browserdefault import BrowserDefaultMixin
 from exceptions import PlominoScriptException
 from Products.CMFPlomino.config import *
