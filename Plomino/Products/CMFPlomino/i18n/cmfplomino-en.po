@@ -688,3 +688,8 @@ msgid "&lt;&lt; Previous"
 msgstr "&lt;&lt; Previous"
 msgid "Next &gt;&gt;"
 msgstr "Next &gt;&gt;"
+
+msgid "CMFPlomino_label_AgentRunAs"
+msgstr "Run as"
+msgid "CMFPlomino_help_AgentRunAs"
+msgstr "Run the agent using current user access rights, or using the developer access rights."

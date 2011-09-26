@@ -13,6 +13,7 @@ __author__ = """Eric BREHAULT and Xavier PERROT <eric.brehault@makina-corpus.org
 __docformat__ = 'plaintext'
 
 from AccessControl import ClassSecurityInfo
+from AccessControl.SecurityManagement import newSecurityManager
 from Products.Archetypes.atapi import *
 from zope.interface import implements
 import interfaces
@@ -50,6 +51,18 @@ schema = Schema((
             rows=25,
         ),
     ),
+    StringField(
+        name='RunAs',
+        default="CURRENT",
+        widget=SelectionWidget(
+            label="Run as",
+            description="Run the agent using current user access rights, or using the developer access rights.",
+            label_msgid='CMFPlomino_label_AgentRunAs',
+            description_msgid='CMFPlomino_help_AgentRunAs',
+            i18n_domain='CMFPlomino',
+        ),
+        vocabulary= [["CURRENT", "Current user"], ["OWNER", "Agent owner"]],
+    ),
 ),
 )
 
@@ -57,6 +70,7 @@ PlominoAgent_schema = BaseSchema.copy() + \
     schema.copy()
     
 def run_async(context):
+    # for async call
     context.runAgent()
 
 class PlominoAgent(BaseContent, BrowserDefaultMixin):
@@ -97,6 +111,10 @@ class PlominoAgent(BaseContent, BrowserDefaultMixin):
         if not REQUEST:
             REQUEST = getattr(self, 'REQUEST', None)
         try:
+            if self.getRunAs() == "OWNER":
+                user = self.getOwner()
+                newSecurityManager(None, user)
+
             r=self.runFormulaScript("agent_"+self.id, plominoContext, self.Content)
             if (REQUEST != None) and (REQUEST.get('REDIRECT', None)== "True"):
                 if r is not None:
