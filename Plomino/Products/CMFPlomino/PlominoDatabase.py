@@ -19,7 +19,7 @@ from zope.interface import implements
 import interfaces
 from Products.ATContentTypes.content.folder import ATFolder
 from Products.CMFDynamicViewFTI.browserdefault import BrowserDefaultMixin
-
+import zc.async
 from exceptions import PlominoScriptException
 from Products.CMFPlomino.config import *
 
@@ -266,14 +266,21 @@ class PlominoDatabase(ATFolder, PlominoAccessControl, PlominoDesignManager, Plom
         """return DB current status
         """
         all_db_status = get_resource("plomino_status", dict)
-        return all_db_status.get(self.absolute_url(), "Ready")
+#        return all_db_status.get(self.absolute_url_path(), "Ready")
+        job = all_db_status.get(self.absolute_url_path(), None)
+        if job:
+            return job.annotations.get('status', 'undefined')
+        else:
+            return "Ready"
 
     security.declarePublic('setStatus')
     def setStatus(self, status):
         """set DB current status
         """
-        all_db_status = get_resource("plomino_status", dict)
-        all_db_status[self.absolute_url()] = status
+        import pdb;pdb.set_trace
+        zc.async.local.setLiveAnnotation("status", status)
+#        all_db_status = get_resource("plomino_status", dict)
+#        all_db_status[self.absolute_url_path()] = status
 
     security.declarePublic('checkBeforeOpenDatabase')
     def checkBeforeOpenDatabase(self):

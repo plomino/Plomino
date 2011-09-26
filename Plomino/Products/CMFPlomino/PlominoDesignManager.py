@@ -38,6 +38,9 @@ import glob
 import transaction
 from zope import event
 from Products.Archetypes.event import ObjectEditedEvent
+from zope.component import getUtility
+from plone.app.async.interfaces import IAsyncService
+from dm.sharedresource import get_resource
 
 from migration.migration import migrate
 from index.PlominoIndex import PlominoIndex
@@ -66,14 +69,24 @@ extra_schema_attributes = ['excludeFromNav']
 import logging
 logger = logging.getLogger('Plomino')
 
-
+def run_refreshdb(context):
+    context.refreshDB()
+    
 class PlominoDesignManager(Persistent):
     """Plomino design import/export features
     """
     security = ClassSecurityInfo()
 
     # Methods
-
+    security.declarePublic('refreshDBAsync')
+    def refreshDBAsync(self):
+        """refres db in asynchronous mode
+        """
+        async = getUtility(IAsyncService)
+        job = async.queueJob(run_refreshdb, self)
+        all_db_status = get_resource("plomino_status", dict)
+        all_db_status[self.absolute_url_path()] = job
+        
     security.declareProtected(DESIGN_PERMISSION, 'refreshDB')
     def refreshDB(self, REQUEST=None):
         """all actions to take when reseting a DB (after import for instance)
@@ -82,7 +95,6 @@ class PlominoDesignManager(Persistent):
         report = []
 
         self.setStatus("Refreshing design")
-
         # migrate to current version
         messages = migrate(self)
         for msg in messages:
@@ -167,6 +179,8 @@ class PlominoDesignManager(Persistent):
         if REQUEST:
             self.writeMessageOnPage(MSG_SEPARATOR.join(report), REQUEST, False)
             REQUEST.RESPONSE.redirect(self.absolute_url()+"/DatabaseDesign")
+        else:
+            return report
 
     security.declareProtected(DESIGN_PERMISSION, 'reindexDocuments')
     def reindexDocuments(self, plomino_index, items_only=False, views_only=False, update_metadata=1, changed_since=None):
