@@ -125,8 +125,8 @@ class PlominoAgent(BaseContent, BrowserDefaultMixin):
                 REQUEST.RESPONSE.setHeader('content-type', 'text/plain; charset=utf-8')
             return e.message
 
-    security.declarePublic('runAgentAsync')
-    def runAgentAsync(self):
+    security.declarePublic('runAgent_async')
+    def runAgent_async(self):
         """run the agent in asynchronous mode
         """
         async = getUtility(IAsyncService)
