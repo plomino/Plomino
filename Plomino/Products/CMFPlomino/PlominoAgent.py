@@ -16,6 +16,8 @@ from AccessControl import ClassSecurityInfo
 from Products.Archetypes.atapi import *
 from zope.interface import implements
 import interfaces
+from zope.component import getUtility
+from plone.app.async.interfaces import IAsyncService
 
 from Products.CMFDynamicViewFTI.browserdefault import BrowserDefaultMixin
 from exceptions import PlominoScriptException
@@ -49,6 +51,9 @@ schema = Schema((
 
 PlominoAgent_schema = BaseSchema.copy() + \
     schema.copy()
+    
+def run_async(context):
+    context.runAgent()
 
 class PlominoAgent(BaseContent, BrowserDefaultMixin):
     """
@@ -85,6 +90,8 @@ class PlominoAgent(BaseContent, BrowserDefaultMixin):
         """
         plominoContext = self
         plominoReturnURL = self.getParentDatabase().absolute_url()
+        if not REQUEST:
+            REQUEST = getattr(self, 'REQUEST', None)
         try:
             r=self.runFormulaScript("agent_"+self.id, plominoContext, self.Content)
             if (REQUEST != None) and (REQUEST.get('REDIRECT', None)== "True"):
@@ -96,7 +103,13 @@ class PlominoAgent(BaseContent, BrowserDefaultMixin):
                 REQUEST.RESPONSE.setHeader('content-type', 'text/plain; charset=utf-8')
             return e.message
 
-
+    security.declarePublic('runAgentAsync')
+    def runAgentAsync(self):
+        """run the agent in asynchronous mode
+        """
+        async = getUtility(IAsyncService)
+        job = async.queueJob(run_async, self)
+        
 registerType(PlominoAgent, PROJECTNAME)
 # end of class PlominoAgent
 
