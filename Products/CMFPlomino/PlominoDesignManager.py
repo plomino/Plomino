@@ -22,6 +22,8 @@ from ZPublisher.HTTPRequest import FileUpload
 from OFS.ObjectManager import ObjectManager
 from DateTime import DateTime
 from Products.PageTemplates.ZopePageTemplate import manage_addPageTemplate
+from Products.PythonScripts.PythonScript import manage_addPythonScript
+from OFS.Image import manage_addImage
 from Products.CMFCore.utils import getToolByName
 from Products.DCWorkflow.DCWorkflow import DCWorkflowDefinition
 from Persistence import Persistent
@@ -571,7 +573,7 @@ class PlominoDesignManager(Persistent):
         for i in r.findall(formula):
             scriptname=i.strip()
             try:
-                script_code = str(self.resources._getOb(scriptname))
+                script_code = self.resources._getOb(scriptname).read()
             except:
                 script_code = "#ALERT: "+scriptname+" not found in resources"
             formula = formula.replace('#Plomino import '+scriptname, script_code)
@@ -628,7 +630,7 @@ class PlominoDesignManager(Persistent):
     def callScriptMethod(self, scriptname, methodname, *args):
         id="script_"+scriptname+"_"+methodname
         try:
-            script_code = str(self.resources._getOb(scriptname))
+            script_code = self.resources._getOb(scriptname).read()
         except:
             script_code = "#ALERT: "+scriptname+" not found in resources"
         formula=lambda:script_code+'\n\nreturn '+methodname+'(*args)'
@@ -1046,17 +1048,28 @@ class PlominoDesignManager(Persistent):
         resource_type = node.getAttribute('type')
         if hasattr(container, id):
             container.manage_delObjects([id])
-            
+
         if resource_type == "Page Template":
             obj = manage_addPageTemplate(container, id)
             obj.title = node.getAttribute('title')
             obj.write(node.firstChild.data)
+        elif resource_type == "Script (Python)":
+            manage_addPythonScript(container, id)
+            obj = container._getOb(id)
+            obj.ZPythonScript_setTitle(node.getAttribute('title'))
+            obj.write(node.firstChild.data)
+        elif resource_type == "Image":
+            id = manage_addImage(container, id,
+                    node.firstChild.data.decode('base64'),
+                    content_type=node.getAttribute('contenttype'))
         else:
             container.manage_addFile(id)
             obj = getattr(container, id)
             obj.meta_type = resource_type
             obj.title = node.getAttribute('title')
-            obj.update_data(node.firstChild.data.decode('base64'), content_type=node.getAttribute('contenttype'))
+            obj.update_data(
+                    node.firstChild.data.decode('base64'),
+                    content_type=node.getAttribute('contenttype'))
 
 
 
