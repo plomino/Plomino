@@ -309,7 +309,7 @@ def migrate_to_1_11(db):
     files = db.resources.objectValues('File')
     for f in files:
         if f.content_type.startswith('text'):
-            formula = asUnicode(f)
+            formula = asUnicode(f).encode('utf-8')
             logger.info("Migrated script library formula: %s"%f.id())
             f.manage_edit(f.title, f.content_type, filedata=formula.replace(
                 'getAllDocuments()', 'getAllDocuments(getObject=False)'))
