@@ -248,7 +248,7 @@ def migrate_to_1_11(db):
                             "Old version: %s"%(field, f))
                 field.setFormula(
                     f.replace('getAllDocuments()', 'getAllDocuments(getObject=False)'))
-            f = field.getValidationFormula()
+            f = field.ValidationFormula()
             if f:
                 logger.info("Migrated validation formula: %s\n"
                             "Old version: %s"%(field, f))
@@ -270,13 +270,13 @@ def migrate_to_1_11(db):
                     f.replace('getAllDocuments()', 'getAllDocuments(getObject=False)'))
         actions = form.objectValues(spec='PlominoAction')
         for action in actions:
-            f = action.getContent()
+            f = action.Content()
             if f:
                 logger.info("Migrated action formula: %s\n"
                             "Old version: %s"%(action, f))
                 action.setContent(
                     f.replace('getAllDocuments()', 'getAllDocuments(getObject=False)'))
-            f = action.getHidewhen()
+            f = action.Hidewhen()
             if f:
                 logger.info("Migrated action hidewhen: %s\n"
                             "Old version: %s"%(action, f))
@@ -294,13 +294,13 @@ def migrate_to_1_11(db):
                     f.replace('getAllDocuments()', 'getAllDocuments(getObject=False)'))
         actions = view.objectValues(spec='PlominoAction')
         for action in actions:
-            f = action.getContent()
+            f = action.Content()
             if f:
                 logger.info("Migrated action formula: %s\n"
                             "Old version: %s"%(action, f))
                 action.setContent(
                     f.replace('getAllDocuments()', 'getAllDocuments(getObject=False)'))
-            f = action.getHidewhen()
+            f = action.Hidewhen()
             if f:
                 logger.info("Migrated action hidewhen: %s\n"
                             "Old version: %s"%(action, f))
@@ -308,7 +308,7 @@ def migrate_to_1_11(db):
                     f.replace('getAllDocuments()', 'getAllDocuments(getObject=False)'))
     agents = db.getAgents()
     for agent in agents:
-        f = agent.getContent()
+        f = agent.Content()
         if f:
             logger.info("Migrated agent formula: %s\n"
                         "Old version: %s"%(agent, f))
