@@ -11,6 +11,10 @@ from Products.CMFPlomino.fields.doclink import IDoclinkField
 
 from Products.CMFPlomino.PlominoUtils import asUnicode
 
+from Products.PythonScripts.PythonScript import manage_addPythonScript
+from OFS.Image import manage_addImage
+import parser
+
 import logging
 logger = logging.getLogger('Plomino migration')
 
@@ -68,6 +72,9 @@ def migrate(db):
         db.plomino_version = "1.10.3"
     if db.plomino_version=="1.10.3":
         msg = migrate_to_1_11(db)
+        messages.append(msg)
+    if db.plomino_version=="1.11":
+        msg = migrate_to_1_12(db)
         messages.append(msg)
     return messages
 
@@ -323,4 +330,30 @@ def migrate_to_1_11(db):
 
     msg = "Migration to 1.11: getAllDocuments API change."
     db.plomino_version = "1.11"
+    return msg
+
+def migrate_to_1_12(db):
+    """ convert resources script lib File into PythonScripts 
+    """
+    libs = db.resources.objectValues('File')
+    for lib in libs:
+        lib_id = lib.id()
+        lib_data = lib.data
+        content_type = lib.getContentType() 
+        if 'image' in content_type:
+            db.resources.manage_delObjects(lib_id)
+            lib_id = manage_addImage(db.resources, lib_id, lib_data)
+        else:
+            try:
+                st = parser.suite(lib_data)
+                db.resources.manage_delObjects(lib_id)
+                blank = manage_addPythonScript(db.resources, lib_id)
+                sc = db.resources._getOb(lib_id)
+                sc.write(asUnicode(lib_data))
+            except:
+                # not valid python, we let it as File
+                pass
+    
+    msg = "Migration to 1.12: Convert resources script lib File into PythonScripts."
+    #db.plomino_version = "1.12"
     return msg
