@@ -234,7 +234,8 @@ def migrate_to_1_11(db):
     for form in forms:
         fields = form.getFormFields()
         for field in fields:
-            f = field.getFormula()
+            # NB: Don't use getFormula, this strips markup from strings.
+            f = field.Formula()
             if f:
                 logger.info("Migrated formula: %s\n"
                             "Old version: %s"%(field, f))
@@ -254,7 +255,7 @@ def migrate_to_1_11(db):
                         'getAllDocuments()', 'getAllDocuments(getObject=False)')
         hidewhens = form.getHidewhenFormulas()
         for hidewhen in hidewhens:
-            f = hidewhen.getFormula()
+            f = hidewhen.Formula()
             if f:
                 logger.info("Migrated hidewhen formula: %s\n"
                             "Old version: %s"%(hidewhen, f))
@@ -278,7 +279,7 @@ def migrate_to_1_11(db):
     for view in views:
         columns = view.getColumns()
         for column in columns:
-            f = column.getFormula()
+            f = column.Formula()
             if f:
                 logger.info("Migrated column formula: %s\n"
                             "Old version: %s"%(column, f))
