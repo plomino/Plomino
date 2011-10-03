@@ -11,9 +11,11 @@ from Products.CMFPlomino.fields.doclink import IDoclinkField
 
 from Products.CMFPlomino.PlominoUtils import asUnicode
 
+from Products.PythonScripts.PythonScript import PythonScript
 from Products.PythonScripts.PythonScript import manage_addPythonScript
 from OFS.Image import manage_addImage
 import parser
+import re
 
 import logging
 logger = logging.getLogger('Plomino migration')
@@ -344,15 +346,22 @@ def migrate_to_1_12(db):
             db.resources.manage_delObjects(lib_id)
             lib_id = manage_addImage(db.resources, lib_id, lib_data)
         else:
+            error_re = re.compile('^## Errors:$', re.MULTILINE)
+            ps = PythonScript('testing')
             try:
-                st = parser.suite(lib_data)
+                lib_data = asUnicode(lib_data)
+            except UnicodeDecodeError, e:
+                logger.info("Unknown encoding, skipping: %s" % lib_id)
+                continue
+            
+            ps.write(lib_data)
+            if not error_re.search(ps.read()):
                 db.resources.manage_delObjects(lib_id)
                 blank = manage_addPythonScript(db.resources, lib_id)
                 sc = db.resources._getOb(lib_id)
-                sc.write(asUnicode(lib_data))
-            except:
-                # not valid python, we let it as File
-                pass
+                sc.write(lib_data)
+                logger.info("Converted to Script: %s" % lib_id)
+                continue
     
     msg = "Migration to 1.12: Convert resources script lib File into PythonScripts."
     db.plomino_version = "1.12"
