@@ -1,6 +1,10 @@
 Changelog
 =========
 
+1.12.1 (2011-10-03)
+-----------------
+* fix migration script
+
 1.12 (2011-10-03)
 -----------------
 * fix reader access control on getfile
