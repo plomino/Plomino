@@ -355,5 +355,5 @@ def migrate_to_1_12(db):
                 pass
     
     msg = "Migration to 1.12: Convert resources script lib File into PythonScripts."
-    #db.plomino_version = "1.12"
+    db.plomino_version = "1.12"
     return msg

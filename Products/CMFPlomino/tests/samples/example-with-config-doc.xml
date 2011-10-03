@@ -1,6 +1,6 @@
 <plominodatabase id="configdocs">
   <design>
-    <dbsettings>
+    <dbsettings version="1.11">
       <AboutDescription type="Products.Archetypes.Field.TextField"><![CDATA[]]></AboutDescription>
       <UsingDescription type="Products.Archetypes.Field.TextField"><![CDATA[]]></UsingDescription>
       <IndexAttachments type="Products.Archetypes.Field.BooleanField">False</IndexAttachments>
