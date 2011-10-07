@@ -1,9 +1,10 @@
 Changelog
 =========
 
-1.12 (2011-10-03)
------------------
-* fix reader access control on getfile
+1.12.1 (2011-10-07)
+-------------------
+* fix transform exceptions in attached file indexing
+* fix editor permissions to allow file attachment deletion
 
 1.12 (2011-10-03)
 -----------------

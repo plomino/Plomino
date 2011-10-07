@@ -1,0 +1,287 @@
+<?xml version="1.0" ?>
+<plominodatabase id="csv-export-sample">
+<design>
+<dbsettings>
+<AboutDescription type="Products.Archetypes.Field.TextField">
+<![CDATA[]]>
+</AboutDescription>
+<UsingDescription type="Products.Archetypes.Field.TextField">
+<![CDATA[]]>
+</UsingDescription>
+<IndexAttachments type="Products.Archetypes.Field.BooleanField">False</IndexAttachments>
+<FulltextIndex type="Products.Archetypes.Field.BooleanField">False</FulltextIndex>
+<IndexInPortal type="Products.Archetypes.Field.BooleanField">False</IndexInPortal>
+<debugMode type="Products.Archetypes.Field.BooleanField">False</debugMode>
+<StorageAttachments type="Products.Archetypes.Field.BooleanField">False</StorageAttachments>
+<CountDocuments type="Products.Archetypes.Field.BooleanField">False</CountDocuments>
+<DateTimeFormat type="Products.Archetypes.Field.StringField">%Y-%m-%d</DateTimeFormat>
+<StartPage type="Products.Archetypes.Field.StringField">allfrmEmployee</StartPage>
+<DoNotListUsers type="Products.Archetypes.Field.BooleanField">False</DoNotListUsers>
+<DoNotReindex type="Products.Archetypes.Field.BooleanField">False</DoNotReindex>
+<excludeFromNav type="Products.Archetypes.Field.BooleanField">False</excludeFromNav>
+<acl AnomynousAccessRight="NoAccess" AuthenticatedAccessRight="NoAccess">
+<params id="UserRoles">
+<param>
+<value>
+<struct>
+</struct>
+</value>
+</param>
+</params>
+<params id="SpecificRights">
+<param>
+<value>
+<struct>
+<member>
+<name>specific_deletedocument</name>
+<value>
+<string>PlominoAuthor</string>
+</value>
+</member>
+</struct>
+</value>
+</param>
+</params>
+</acl>
+</dbsettings>
+<element id="export_csv" title="export_csv" type="PlominoAgent">
+<id type="Products.Archetypes.Field.StringField">export_csv</id>
+<Content type="Products.Archetypes.Field.TextField">
+<![CDATA[db = context.getParentDatabase()
+all = db.getAllDocuments()
+results = []
+for doc in all:
+  age = doc.age
+  if age >= 40:
+    age_range = "Senior"
+  else:
+    age_range = "Junior"
+  results.append([doc.employee, doc.country, age_range])
+
+context.REQUEST.RESPONSE.setHeader('content-type', 'text/csv; charset=utf-8')
+context.REQUEST.RESPONSE.setHeader("Content-Disposition", "attachment; filename=my_special_export.csv")
+context.REQUEST.RESPONSE.setBody(array_to_csv(results))]]>
+</Content>
+</element>
+<element id="frmEmployee" title="Employee" type="PlominoForm">
+<id type="Products.Archetypes.Field.StringField">frmEmployee</id>
+<onCreateDocument type="Products.Archetypes.Field.TextField">
+<![CDATA[]]>
+</onCreateDocument>
+<onOpenDocument type="Products.Archetypes.Field.TextField">
+<![CDATA[]]>
+</onOpenDocument>
+<onSaveDocument type="Products.Archetypes.Field.TextField">
+<![CDATA[]]>
+</onSaveDocument>
+<onDeleteDocument type="Products.Archetypes.Field.TextField">
+<![CDATA[]]>
+</onDeleteDocument>
+<onSearch type="Products.Archetypes.Field.TextField">
+<![CDATA[]]>
+</onSearch>
+<beforeCreateDocument type="Products.Archetypes.Field.TextField">
+<![CDATA[]]>
+</beforeCreateDocument>
+<FormLayout type="Products.Archetypes.Field.TextField">
+<![CDATA[<p>Name</p>
+<p>
+<b>
+<span class="plominoFieldClass">employee</span>
+</b>
+</p>
+<p>Country</p>
+<p>
+<b>
+<span class="plominoFieldClass">country</span>
+</b>
+</p>
+<p>Age</p>
+<p>
+<b>
+<span class="plominoFieldClass">age</span>
+</b>
+</p>]]>
+</FormLayout>
+<DocumentTitle type="Products.Archetypes.Field.TextField">
+<![CDATA[context.employee]]>
+</DocumentTitle>
+<DocumentId type="Products.Archetypes.Field.TextField">
+<![CDATA[context.employee]]>
+</DocumentId>
+<ActionBarPosition type="Products.Archetypes.Field.StringField">TOP</ActionBarPosition>
+<HideDefaultActions type="Products.Archetypes.Field.BooleanField">False</HideDefaultActions>
+<HideInMenu type="Products.Archetypes.Field.BooleanField">False</HideInMenu>
+<isSearchForm type="Products.Archetypes.Field.BooleanField">False</isSearchForm>
+<isPage type="Products.Archetypes.Field.BooleanField">False</isPage>
+<SearchView type="Products.Archetypes.Field.StringField">
+</SearchView>
+<SearchFormula type="Products.Archetypes.Field.TextField">
+<![CDATA[]]>
+</SearchFormula>
+<Position type="Products.Archetypes.Field.IntegerField"/>
+<excludeFromNav type="Products.Archetypes.Field.BooleanField">False</excludeFromNav>
+<elements>
+<element id="employee" title="employee" type="PlominoField">
+<id type="Products.Archetypes.Field.StringField">employee</id>
+<FieldType type="Products.Archetypes.Field.StringField">TEXT</FieldType>
+<FieldMode type="Products.Archetypes.Field.StringField">EDITABLE</FieldMode>
+<Formula type="Products.Archetypes.Field.TextField">
+<![CDATA[]]>
+</Formula>
+<FieldReadTemplate type="Products.Archetypes.Field.StringField">
+</FieldReadTemplate>
+<FieldEditTemplate type="Products.Archetypes.Field.StringField">
+</FieldEditTemplate>
+<Mandatory type="Products.Archetypes.Field.BooleanField">False</Mandatory>
+<ValidationFormula type="Products.Archetypes.Field.TextField">
+<![CDATA[]]>
+</ValidationFormula>
+<ToBeIndexed type="Products.Archetypes.Field.BooleanField">True</ToBeIndexed>
+</element>
+<element id="country" title="country" type="PlominoField">
+<id type="Products.Archetypes.Field.StringField">country</id>
+<FieldType type="Products.Archetypes.Field.StringField">TEXT</FieldType>
+<FieldMode type="Products.Archetypes.Field.StringField">EDITABLE</FieldMode>
+<Formula type="Products.Archetypes.Field.TextField">
+<![CDATA[]]>
+</Formula>
+<FieldReadTemplate type="Products.Archetypes.Field.StringField">
+</FieldReadTemplate>
+<FieldEditTemplate type="Products.Archetypes.Field.StringField">
+</FieldEditTemplate>
+<Mandatory type="Products.Archetypes.Field.BooleanField">False</Mandatory>
+<ValidationFormula type="Products.Archetypes.Field.TextField">
+<![CDATA[]]>
+</ValidationFormula>
+<ToBeIndexed type="Products.Archetypes.Field.BooleanField">True</ToBeIndexed>
+</element>
+<element id="age" title="age" type="PlominoField">
+<id type="Products.Archetypes.Field.StringField">age</id>
+<FieldType type="Products.Archetypes.Field.StringField">NUMBER</FieldType>
+<FieldMode type="Products.Archetypes.Field.StringField">EDITABLE</FieldMode>
+<Formula type="Products.Archetypes.Field.TextField">
+<![CDATA[]]>
+</Formula>
+<FieldReadTemplate type="Products.Archetypes.Field.StringField">
+</FieldReadTemplate>
+<FieldEditTemplate type="Products.Archetypes.Field.StringField">
+</FieldEditTemplate>
+<Mandatory type="Products.Archetypes.Field.BooleanField">False</Mandatory>
+<ValidationFormula type="Products.Archetypes.Field.TextField">
+<![CDATA[]]>
+</ValidationFormula>
+<ToBeIndexed type="Products.Archetypes.Field.BooleanField">True</ToBeIndexed>
+</element>
+</elements>
+</element>
+<element id="allfrmEmployee" title="All Employees" type="PlominoView">
+<id type="Products.Archetypes.Field.StringField">allfrmEmployee</id>
+<SelectionFormula type="Products.Archetypes.Field.TextField">
+<![CDATA[plominoDocument.Form=="frmEmployee"]]>
+</SelectionFormula>
+<SortColumn type="Products.Archetypes.Field.StringField">
+</SortColumn>
+<Categorized type="Products.Archetypes.Field.BooleanField">False</Categorized>
+<FormFormula type="Products.Archetypes.Field.TextField">
+<![CDATA[]]>
+</FormFormula>
+<ReverseSorting type="Products.Archetypes.Field.BooleanField">False</ReverseSorting>
+<ActionBarPosition type="Products.Archetypes.Field.StringField">TOP</ActionBarPosition>
+<HideDefaultActions type="Products.Archetypes.Field.BooleanField">False</HideDefaultActions>
+<HideInMenu type="Products.Archetypes.Field.BooleanField">False</HideInMenu>
+<Widget type="Products.Archetypes.Field.StringField">DYNAMICTABLE</Widget>
+<DynamicTableParameters type="Products.Archetypes.Field.TextField">
+<![CDATA['bPaginate': false,
+'bLengthChange': false,
+'bFilter': true,
+'bSort': true,
+'bInfo': true,
+'bAutoWidth': false]]>
+</DynamicTableParameters>
+<ViewTemplate type="Products.Archetypes.Field.StringField">
+</ViewTemplate>
+<Position type="Products.Archetypes.Field.IntegerField"/>
+<excludeFromNav type="Products.Archetypes.Field.BooleanField">False</excludeFromNav>
+<elements>
+<element id="employee" title="employee" type="PlominoColumn">
+<id type="Products.Archetypes.Field.StringField">employee</id>
+<SelectedField type="Products.Archetypes.Field.StringField">frmEmployee/employee</SelectedField>
+<Formula type="Products.Archetypes.Field.TextField">
+<![CDATA[]]>
+</Formula>
+<HiddenColumn type="Products.Archetypes.Field.BooleanField">False</HiddenColumn>
+<DisplaySum type="Products.Archetypes.Field.BooleanField">False</DisplaySum>
+</element>
+<element id="age" title="age" type="PlominoColumn">
+<id type="Products.Archetypes.Field.StringField">age</id>
+<SelectedField type="Products.Archetypes.Field.StringField">frmEmployee/age</SelectedField>
+<Formula type="Products.Archetypes.Field.TextField">
+<![CDATA[]]>
+</Formula>
+<HiddenColumn type="Products.Archetypes.Field.BooleanField">False</HiddenColumn>
+<DisplaySum type="Products.Archetypes.Field.BooleanField">False</DisplaySum>
+</element>
+<element id="country" title="country" type="PlominoColumn">
+<id type="Products.Archetypes.Field.StringField">country</id>
+<SelectedField type="Products.Archetypes.Field.StringField">frmEmployee/country</SelectedField>
+<Formula type="Products.Archetypes.Field.TextField">
+<![CDATA[]]>
+</Formula>
+<HiddenColumn type="Products.Archetypes.Field.BooleanField">False</HiddenColumn>
+<DisplaySum type="Products.Archetypes.Field.BooleanField">False</DisplaySum>
+</element>
+<element id="add_new" title="Add a new Employee" type="PlominoAction">
+<id type="Products.Archetypes.Field.StringField">add_new</id>
+<ActionType type="Products.Archetypes.Field.StringField">OPENFORM</ActionType>
+<ActionDisplay type="Products.Archetypes.Field.StringField">BUTTON</ActionDisplay>
+<Content type="Products.Archetypes.Field.TextField">
+<![CDATA[frmEmployee]]>
+</Content>
+<Hidewhen type="Products.Archetypes.Field.TextField">
+<![CDATA[]]>
+</Hidewhen>
+<InActionBar type="Products.Archetypes.Field.BooleanField">True</InActionBar>
+</element>
+<element id="export_1" title="Export CSV (1)" type="PlominoAction">
+<id type="Products.Archetypes.Field.StringField">export_1</id>
+<ActionType type="Products.Archetypes.Field.StringField">REDIRECT</ActionType>
+<ActionDisplay type="Products.Archetypes.Field.StringField">BUTTON</ActionDisplay>
+<Content type="Products.Archetypes.Field.TextField">
+<![CDATA[context.absolute_url()+"/exportCSV"]]>
+</Content>
+<Hidewhen type="Products.Archetypes.Field.TextField">
+<![CDATA[]]>
+</Hidewhen>
+<InActionBar type="Products.Archetypes.Field.BooleanField">True</InActionBar>
+</element>
+<element id="export_2" title="Export XLS (2)" type="PlominoAction">
+<id type="Products.Archetypes.Field.StringField">export_2</id>
+<ActionType type="Products.Archetypes.Field.StringField">REDIRECT</ActionType>
+<ActionDisplay type="Products.Archetypes.Field.StringField">
+</ActionDisplay>
+<Content type="Products.Archetypes.Field.TextField">
+<![CDATA[context.absolute_url()+"/exportXLS"]]>
+</Content>
+<Hidewhen type="Products.Archetypes.Field.TextField">
+<![CDATA[]]>
+</Hidewhen>
+<InActionBar type="Products.Archetypes.Field.BooleanField">True</InActionBar>
+</element>
+<element id="export_3" title="Export CSV (3)" type="PlominoAction">
+<id type="Products.Archetypes.Field.StringField">export_3</id>
+<ActionType type="Products.Archetypes.Field.StringField">REDIRECT</ActionType>
+<ActionDisplay type="Products.Archetypes.Field.StringField">
+</ActionDisplay>
+<Content type="Products.Archetypes.Field.TextField">
+<![CDATA[context.getParentDatabase().absolute_url()+"/export_csv/runAgent"]]>
+</Content>
+<Hidewhen type="Products.Archetypes.Field.TextField">
+<![CDATA[]]>
+</Hidewhen>
+<InActionBar type="Products.Archetypes.Field.BooleanField">True</InActionBar>
+</element>
+</elements>
+</element>
+</design>
+</plominodatabase>
