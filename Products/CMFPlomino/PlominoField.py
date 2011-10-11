@@ -199,6 +199,8 @@ class PlominoField(BaseContent, BrowserDefaultMixin):
                 if new_file is not None:
                     current_files[new_file]=contenttype
                 v=current_files
+            else:
+                v = None
         else:
             v = adapt.processInput(submittedValue)
         return v
