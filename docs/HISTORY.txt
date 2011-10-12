@@ -1,6 +1,19 @@
 Changelog
 =========
 
+1.12 (2011-10-03)
+-----------------
+* fix reader access control on getfile
+
+1.12 (2011-10-03)
+-----------------
+* fix reader access control on getfile
+* add cgi_escape to utils
+* create plomino_workflow and fix permissions
+* integrate plone.app.async support to enable asynchronous agent execution and asynchronous refreshdb 
+* allow to run agent as current user or as owner
+* don't use File for everything in /resources/; use Script (Python) for script libraries
+
 1.11 (2011-09-12)
 -----------------
 * use onSave returned value to redirect to url after save

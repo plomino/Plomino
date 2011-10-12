@@ -1,0 +1,664 @@
+<?xml version="1.0" ?>
+<plominodatabase id="jquery-example">
+<design>
+<dbsettings>
+<AboutDescription type="Products.Archetypes.Field.TextField">
+<![CDATA[]]>
+</AboutDescription>
+<UsingDescription type="Products.Archetypes.Field.TextField">
+<![CDATA[]]>
+</UsingDescription>
+<IndexAttachments type="Products.Archetypes.Field.BooleanField">False</IndexAttachments>
+<FulltextIndex type="Products.Archetypes.Field.BooleanField">False</FulltextIndex>
+<IndexInPortal type="Products.Archetypes.Field.BooleanField">False</IndexInPortal>
+<debugMode type="Products.Archetypes.Field.BooleanField">False</debugMode>
+<StorageAttachments type="Products.Archetypes.Field.BooleanField">False</StorageAttachments>
+<CountDocuments type="Products.Archetypes.Field.BooleanField">False</CountDocuments>
+<DateTimeFormat type="Products.Archetypes.Field.StringField">%Y/%m/%d</DateTimeFormat>
+<StartPage type="Products.Archetypes.Field.StringField">dynamicSearch</StartPage>
+<DoNotListUsers type="Products.Archetypes.Field.BooleanField">False</DoNotListUsers>
+<DoNotReindex type="Products.Archetypes.Field.BooleanField">False</DoNotReindex>
+<excludeFromNav type="Products.Archetypes.Field.BooleanField">False</excludeFromNav>
+<acl AnomynousAccessRight="NoAccess" AuthenticatedAccessRight="NoAccess">
+<params id="UserRoles">
+<param>
+<value>
+<struct>
+</struct>
+</value>
+</param>
+</params>
+<params id="SpecificRights">
+<param>
+<value>
+<struct>
+<member>
+<name>specific_deletedocument</name>
+<value>
+<string>PlominoAuthor</string>
+</value>
+</member>
+</struct>
+</value>
+</param>
+</params>
+</acl>
+</dbsettings>
+<element id="dynamicSearch" title="Search" type="PlominoForm">
+<id type="Products.Archetypes.Field.StringField">dynamicSearch</id>
+<onCreateDocument type="Products.Archetypes.Field.TextField">
+<![CDATA[]]>
+</onCreateDocument>
+<onOpenDocument type="Products.Archetypes.Field.TextField">
+<![CDATA[]]>
+</onOpenDocument>
+<onSaveDocument type="Products.Archetypes.Field.TextField">
+<![CDATA[]]>
+</onSaveDocument>
+<onDeleteDocument type="Products.Archetypes.Field.TextField">
+<![CDATA[]]>
+</onDeleteDocument>
+<onSearch type="Products.Archetypes.Field.TextField">
+<![CDATA[]]>
+</onSearch>
+<beforeCreateDocument type="Products.Archetypes.Field.TextField">
+<![CDATA[]]>
+</beforeCreateDocument>
+<FormLayout type="Products.Archetypes.Field.TextField">
+<![CDATA[<p>Location: <span class="plominoFieldClass">job_location</span>
+</p>
+<p>Skills: <span class="plominoFieldClass">job_skills</span>
+</p>
+<p>
+<span class="plominoFieldClass">display_results</span>
+</p>]]>
+</FormLayout>
+<DocumentTitle type="Products.Archetypes.Field.TextField">
+<![CDATA[]]>
+</DocumentTitle>
+<DocumentId type="Products.Archetypes.Field.TextField">
+<![CDATA[]]>
+</DocumentId>
+<ActionBarPosition type="Products.Archetypes.Field.StringField">TOP</ActionBarPosition>
+<HideDefaultActions type="Products.Archetypes.Field.BooleanField">False</HideDefaultActions>
+<HideInMenu type="Products.Archetypes.Field.BooleanField">False</HideInMenu>
+<isSearchForm type="Products.Archetypes.Field.BooleanField">False</isSearchForm>
+<isPage type="Products.Archetypes.Field.BooleanField">True</isPage>
+<SearchView type="Products.Archetypes.Field.StringField">
+</SearchView>
+<SearchFormula type="Products.Archetypes.Field.TextField">
+<![CDATA[]]>
+</SearchFormula>
+<Position type="Products.Archetypes.Field.IntegerField"/>
+<excludeFromNav type="Products.Archetypes.Field.BooleanField">False</excludeFromNav>
+<elements>
+<element id="job_location" title="job_location" type="PlominoField">
+<id type="Products.Archetypes.Field.StringField">job_location</id>
+<FieldType type="Products.Archetypes.Field.StringField">SELECTION</FieldType>
+<FieldMode type="Products.Archetypes.Field.StringField">EDITABLE</FieldMode>
+<Formula type="Products.Archetypes.Field.TextField">
+<![CDATA[]]>
+</Formula>
+<FieldReadTemplate type="Products.Archetypes.Field.StringField">
+</FieldReadTemplate>
+<FieldEditTemplate type="Products.Archetypes.Field.StringField">
+</FieldEditTemplate>
+<Mandatory type="Products.Archetypes.Field.BooleanField">False</Mandatory>
+<ValidationFormula type="Products.Archetypes.Field.TextField">
+<![CDATA[]]>
+</ValidationFormula>
+<ToBeIndexed type="Products.Archetypes.Field.BooleanField">True</ToBeIndexed>
+<params>
+<param>
+<value>
+<struct>
+<member>
+<name>dynamictableparam</name>
+<value>
+<string>'bPaginate': true,
+'bLengthChange': true,
+'bFilter': true,
+'bSort': true,
+'bInfo': true,
+'bAutoWidth': false</string>
+</value>
+</member>
+<member>
+<name>widget</name>
+<value>
+<string>CHECKBOX</string>
+</value>
+</member>
+<member>
+<name>selectionlist</name>
+<value>
+<array>
+<data>
+<value>
+<string>Africa</string>
+</value>
+<value>
+<string>Americas</string>
+</value>
+<value>
+<string>Asia</string>
+</value>
+<value>
+<string>Europe</string>
+</value>
+<value>
+<string>Middle east</string>
+</value>
+<value>
+<string>Pacific</string>
+</value>
+</data>
+</array>
+</value>
+</member>
+</struct>
+</value>
+</param>
+</params>
+</element>
+<element id="job_skills" title="job_skills" type="PlominoField">
+<id type="Products.Archetypes.Field.StringField">job_skills</id>
+<FieldType type="Products.Archetypes.Field.StringField">SELECTION</FieldType>
+<FieldMode type="Products.Archetypes.Field.StringField">EDITABLE</FieldMode>
+<Formula type="Products.Archetypes.Field.TextField">
+<![CDATA[]]>
+</Formula>
+<FieldReadTemplate type="Products.Archetypes.Field.StringField">
+</FieldReadTemplate>
+<FieldEditTemplate type="Products.Archetypes.Field.StringField">
+</FieldEditTemplate>
+<Mandatory type="Products.Archetypes.Field.BooleanField">False</Mandatory>
+<ValidationFormula type="Products.Archetypes.Field.TextField">
+<![CDATA[]]>
+</ValidationFormula>
+<ToBeIndexed type="Products.Archetypes.Field.BooleanField">True</ToBeIndexed>
+<params>
+<param>
+<value>
+<struct>
+<member>
+<name>dynamictableparam</name>
+<value>
+<string>'bPaginate': true,
+'bLengthChange': true,
+'bFilter': true,
+'bSort': true,
+'bInfo': true,
+'bAutoWidth': false</string>
+</value>
+</member>
+<member>
+<name>widget</name>
+<value>
+<string>CHECKBOX</string>
+</value>
+</member>
+<member>
+<name>selectionlist</name>
+<value>
+<array>
+<data>
+<value>
+<string>Chemistry</string>
+</value>
+<value>
+<string>Electronic</string>
+</value>
+<value>
+<string>Software</string>
+</value>
+</data>
+</array>
+</value>
+</member>
+</struct>
+</value>
+</param>
+</params>
+</element>
+<element id="display_results" title="display_results" type="PlominoField">
+<id type="Products.Archetypes.Field.StringField">display_results</id>
+<FieldType type="Products.Archetypes.Field.StringField">RICHTEXT</FieldType>
+<FieldMode type="Products.Archetypes.Field.StringField">DISPLAY</FieldMode>
+<Formula type="Products.Archetypes.Field.TextField">
+<![CDATA[searchurl = context.getParentDatabase().absolute_url_path() +"/filteredResults/OpenBareForm?"
+html="""
+<script>
+function get_results() {
+    criteria = jq('#plomino_form').serialize();
+    jq('#result_list').load("%s"+criteria+" #plomino_form");
+}
+jq(document).ready(function() {
+  jq('#plomino_form input').change(function() {
+  jq('#result_list').html("<img src='spinner.gif' />");
+  get_results();
+  });
+  get_results();
+});
+</script>
+<div id="result_list">
+</div>
+""" % searchurl
+
+return html]]>
+</Formula>
+<FieldReadTemplate type="Products.Archetypes.Field.StringField">
+</FieldReadTemplate>
+<FieldEditTemplate type="Products.Archetypes.Field.StringField">
+</FieldEditTemplate>
+<Mandatory type="Products.Archetypes.Field.BooleanField">False</Mandatory>
+<ValidationFormula type="Products.Archetypes.Field.TextField">
+<![CDATA[]]>
+</ValidationFormula>
+<ToBeIndexed type="Products.Archetypes.Field.BooleanField">False</ToBeIndexed>
+</element>
+</elements>
+</element>
+<element id="filteredResults" title="filteredResults" type="PlominoForm">
+<id type="Products.Archetypes.Field.StringField">filteredResults</id>
+<onCreateDocument type="Products.Archetypes.Field.TextField">
+<![CDATA[]]>
+</onCreateDocument>
+<onOpenDocument type="Products.Archetypes.Field.TextField">
+<![CDATA[]]>
+</onOpenDocument>
+<onSaveDocument type="Products.Archetypes.Field.TextField">
+<![CDATA[]]>
+</onSaveDocument>
+<onDeleteDocument type="Products.Archetypes.Field.TextField">
+<![CDATA[]]>
+</onDeleteDocument>
+<onSearch type="Products.Archetypes.Field.TextField">
+<![CDATA[]]>
+</onSearch>
+<beforeCreateDocument type="Products.Archetypes.Field.TextField">
+<![CDATA[]]>
+</beforeCreateDocument>
+<FormLayout type="Products.Archetypes.Field.TextField">
+<![CDATA[<p>
+<span class="plominoFieldClass">results</span>
+</p>]]>
+</FormLayout>
+<DocumentTitle type="Products.Archetypes.Field.TextField">
+<![CDATA[]]>
+</DocumentTitle>
+<DocumentId type="Products.Archetypes.Field.TextField">
+<![CDATA[]]>
+</DocumentId>
+<ActionBarPosition type="Products.Archetypes.Field.StringField">TOP</ActionBarPosition>
+<HideDefaultActions type="Products.Archetypes.Field.BooleanField">False</HideDefaultActions>
+<HideInMenu type="Products.Archetypes.Field.BooleanField">False</HideInMenu>
+<isSearchForm type="Products.Archetypes.Field.BooleanField">False</isSearchForm>
+<isPage type="Products.Archetypes.Field.BooleanField">True</isPage>
+<SearchView type="Products.Archetypes.Field.StringField">
+</SearchView>
+<SearchFormula type="Products.Archetypes.Field.TextField">
+<![CDATA[]]>
+</SearchFormula>
+<Position type="Products.Archetypes.Field.IntegerField"/>
+<excludeFromNav type="Products.Archetypes.Field.BooleanField">False</excludeFromNav>
+<elements>
+<element id="results" title="results" type="PlominoField">
+<id type="Products.Archetypes.Field.StringField">results</id>
+<FieldType type="Products.Archetypes.Field.StringField">RICHTEXT</FieldType>
+<FieldMode type="Products.Archetypes.Field.StringField">DISPLAY</FieldMode>
+<Formula type="Products.Archetypes.Field.TextField">
+<![CDATA[db = context.getParentDatabase()
+
+query = {'Form': 'frmJob'}
+
+# read submitted criteria
+any_criteria = False
+job_location = context.REQUEST.get("job_location")
+if job_location:
+  any_criteria = True
+  query['job_location']=job_location
+
+job_skills = context.REQUEST.get("job_skills")
+if job_skills:
+  any_criteria = True
+  query['job_skills']=job_skills
+
+# perform the search
+if any_criteria:
+  search_results = db.getIndex().dbsearch(query)
+else:
+  return """Please select at least one criteria..."""
+search_results_cnt = len(search_results)
+
+# format the output
+html = u''
+html += """ %(found)d result(s) found...<br />""" % { 'found': search_results_cnt}
+html += "<ul>"
+for result in search_results:
+  doc = result.getObject()
+  html += """<li>
+<a href="%(link)s">%(title)s</a> (%(location)s)
+<p>
+<span class="discreet">%(description)s</span>
+</p>
+<p>Skills: %(skills)s</p>
+</li>
+""" % {'link': doc.absolute_url_path(),
+'title': doc.getItem('job_title'),
+'description': doc.getItem('job_description'),
+'location': doc.getRenderedItem('job_location'),
+'skills': doc.getRenderedItem('job_skills'),
+}
+html += "</ul>"
+return html]]>
+</Formula>
+<FieldReadTemplate type="Products.Archetypes.Field.StringField">
+</FieldReadTemplate>
+<FieldEditTemplate type="Products.Archetypes.Field.StringField">
+</FieldEditTemplate>
+<Mandatory type="Products.Archetypes.Field.BooleanField">False</Mandatory>
+<ValidationFormula type="Products.Archetypes.Field.TextField">
+<![CDATA[]]>
+</ValidationFormula>
+<ToBeIndexed type="Products.Archetypes.Field.BooleanField">False</ToBeIndexed>
+</element>
+</elements>
+</element>
+<element id="frmJob" title="Job" type="PlominoForm">
+<id type="Products.Archetypes.Field.StringField">frmJob</id>
+<onCreateDocument type="Products.Archetypes.Field.TextField">
+<![CDATA[]]>
+</onCreateDocument>
+<onOpenDocument type="Products.Archetypes.Field.TextField">
+<![CDATA[]]>
+</onOpenDocument>
+<onSaveDocument type="Products.Archetypes.Field.TextField">
+<![CDATA[]]>
+</onSaveDocument>
+<onDeleteDocument type="Products.Archetypes.Field.TextField">
+<![CDATA[]]>
+</onDeleteDocument>
+<onSearch type="Products.Archetypes.Field.TextField">
+<![CDATA[]]>
+</onSearch>
+<beforeCreateDocument type="Products.Archetypes.Field.TextField">
+<![CDATA[]]>
+</beforeCreateDocument>
+<FormLayout type="Products.Archetypes.Field.TextField">
+<![CDATA[<p>Job title: <span class="plominoFieldClass">job_title</span>
+</p>
+<p>Location: <span class="plominoFieldClass">job_location</span>
+</p>
+<p>Requested skills: <span class="plominoFieldClass">job_skills</span>
+</p>
+<p>Description: <span class="plominoFieldClass">job_description</span>
+</p>]]>
+</FormLayout>
+<DocumentTitle type="Products.Archetypes.Field.TextField">
+<![CDATA[]]>
+</DocumentTitle>
+<DocumentId type="Products.Archetypes.Field.TextField">
+<![CDATA[]]>
+</DocumentId>
+<ActionBarPosition type="Products.Archetypes.Field.StringField">TOP</ActionBarPosition>
+<HideDefaultActions type="Products.Archetypes.Field.BooleanField">False</HideDefaultActions>
+<HideInMenu type="Products.Archetypes.Field.BooleanField">False</HideInMenu>
+<isSearchForm type="Products.Archetypes.Field.BooleanField">False</isSearchForm>
+<isPage type="Products.Archetypes.Field.BooleanField">False</isPage>
+<SearchView type="Products.Archetypes.Field.StringField">
+</SearchView>
+<SearchFormula type="Products.Archetypes.Field.TextField">
+<![CDATA[]]>
+</SearchFormula>
+<Position type="Products.Archetypes.Field.IntegerField"/>
+<excludeFromNav type="Products.Archetypes.Field.BooleanField">False</excludeFromNav>
+<elements>
+<element id="job_title" title="job_title" type="PlominoField">
+<id type="Products.Archetypes.Field.StringField">job_title</id>
+<FieldType type="Products.Archetypes.Field.StringField">TEXT</FieldType>
+<FieldMode type="Products.Archetypes.Field.StringField">EDITABLE</FieldMode>
+<Formula type="Products.Archetypes.Field.TextField">
+<![CDATA[]]>
+</Formula>
+<FieldReadTemplate type="Products.Archetypes.Field.StringField">
+</FieldReadTemplate>
+<FieldEditTemplate type="Products.Archetypes.Field.StringField">
+</FieldEditTemplate>
+<Mandatory type="Products.Archetypes.Field.BooleanField">False</Mandatory>
+<ValidationFormula type="Products.Archetypes.Field.TextField">
+<![CDATA[]]>
+</ValidationFormula>
+<ToBeIndexed type="Products.Archetypes.Field.BooleanField">True</ToBeIndexed>
+</element>
+<element id="job_location" title="job_location" type="PlominoField">
+<id type="Products.Archetypes.Field.StringField">job_location</id>
+<FieldType type="Products.Archetypes.Field.StringField">SELECTION</FieldType>
+<FieldMode type="Products.Archetypes.Field.StringField">EDITABLE</FieldMode>
+<Formula type="Products.Archetypes.Field.TextField">
+<![CDATA[]]>
+</Formula>
+<FieldReadTemplate type="Products.Archetypes.Field.StringField">
+</FieldReadTemplate>
+<FieldEditTemplate type="Products.Archetypes.Field.StringField">
+</FieldEditTemplate>
+<Mandatory type="Products.Archetypes.Field.BooleanField">False</Mandatory>
+<ValidationFormula type="Products.Archetypes.Field.TextField">
+<![CDATA[]]>
+</ValidationFormula>
+<ToBeIndexed type="Products.Archetypes.Field.BooleanField">True</ToBeIndexed>
+<params>
+<param>
+<value>
+<struct>
+<member>
+<name>dynamictableparam</name>
+<value>
+<string>'bPaginate': true,
+'bLengthChange': true,
+'bFilter': true,
+'bSort': true,
+'bInfo': true,
+'bAutoWidth': false</string>
+</value>
+</member>
+<member>
+<name>selectionlist</name>
+<value>
+<array>
+<data>
+<value>
+<string>Africa</string>
+</value>
+<value>
+<string>Americas</string>
+</value>
+<value>
+<string>Asia</string>
+</value>
+<value>
+<string>Europe</string>
+</value>
+<value>
+<string>Middle east</string>
+</value>
+<value>
+<string>Pacific</string>
+</value>
+</data>
+</array>
+</value>
+</member>
+</struct>
+</value>
+</param>
+</params>
+</element>
+<element id="job_skills" title="job_skills" type="PlominoField">
+<id type="Products.Archetypes.Field.StringField">job_skills</id>
+<FieldType type="Products.Archetypes.Field.StringField">SELECTION</FieldType>
+<FieldMode type="Products.Archetypes.Field.StringField">EDITABLE</FieldMode>
+<Formula type="Products.Archetypes.Field.TextField">
+<![CDATA[]]>
+</Formula>
+<FieldReadTemplate type="Products.Archetypes.Field.StringField">
+</FieldReadTemplate>
+<FieldEditTemplate type="Products.Archetypes.Field.StringField">
+</FieldEditTemplate>
+<Mandatory type="Products.Archetypes.Field.BooleanField">False</Mandatory>
+<ValidationFormula type="Products.Archetypes.Field.TextField">
+<![CDATA[]]>
+</ValidationFormula>
+<ToBeIndexed type="Products.Archetypes.Field.BooleanField">True</ToBeIndexed>
+<params>
+<param>
+<value>
+<struct>
+<member>
+<name>dynamictableparam</name>
+<value>
+<string>'bPaginate': true,
+'bLengthChange': true,
+'bFilter': true,
+'bSort': true,
+'bInfo': true,
+'bAutoWidth': false</string>
+</value>
+</member>
+<member>
+<name>selectionlist</name>
+<value>
+<array>
+<data>
+<value>
+<string>Chemistry</string>
+</value>
+<value>
+<string>Electronic</string>
+</value>
+<value>
+<string>Software</string>
+</value>
+</data>
+</array>
+</value>
+</member>
+</struct>
+</value>
+</param>
+</params>
+</element>
+<element id="job_description" title="job_description" type="PlominoField">
+<id type="Products.Archetypes.Field.StringField">job_description</id>
+<FieldType type="Products.Archetypes.Field.StringField">TEXT</FieldType>
+<FieldMode type="Products.Archetypes.Field.StringField">EDITABLE</FieldMode>
+<Formula type="Products.Archetypes.Field.TextField">
+<![CDATA[]]>
+</Formula>
+<FieldReadTemplate type="Products.Archetypes.Field.StringField">
+</FieldReadTemplate>
+<FieldEditTemplate type="Products.Archetypes.Field.StringField">
+</FieldEditTemplate>
+<Mandatory type="Products.Archetypes.Field.BooleanField">False</Mandatory>
+<ValidationFormula type="Products.Archetypes.Field.TextField">
+<![CDATA[]]>
+</ValidationFormula>
+<ToBeIndexed type="Products.Archetypes.Field.BooleanField">True</ToBeIndexed>
+<params>
+<param>
+<value>
+<struct>
+<member>
+<name>widget</name>
+<value>
+<string>TEXTAREA</string>
+</value>
+</member>
+</struct>
+</value>
+</param>
+</params>
+</element>
+</elements>
+</element>
+<element id="allfrmJob" title="All Jobs" type="PlominoView">
+<id type="Products.Archetypes.Field.StringField">allfrmJob</id>
+<SelectionFormula type="Products.Archetypes.Field.TextField">
+<![CDATA[plominoDocument.Form=="frmJob"]]>
+</SelectionFormula>
+<SortColumn type="Products.Archetypes.Field.StringField">
+</SortColumn>
+<Categorized type="Products.Archetypes.Field.BooleanField">False</Categorized>
+<FormFormula type="Products.Archetypes.Field.TextField">
+<![CDATA[]]>
+</FormFormula>
+<ReverseSorting type="Products.Archetypes.Field.BooleanField">False</ReverseSorting>
+<ActionBarPosition type="Products.Archetypes.Field.StringField">TOP</ActionBarPosition>
+<HideDefaultActions type="Products.Archetypes.Field.BooleanField">False</HideDefaultActions>
+<HideInMenu type="Products.Archetypes.Field.BooleanField">False</HideInMenu>
+<Widget type="Products.Archetypes.Field.StringField">BASIC</Widget>
+<DynamicTableParameters type="Products.Archetypes.Field.TextField">
+<![CDATA['bPaginate': false,
+'bLengthChange': false,
+'bFilter': true,
+'bSort': true,
+'bInfo': true,
+'bAutoWidth': false]]>
+</DynamicTableParameters>
+<ViewTemplate type="Products.Archetypes.Field.StringField">
+</ViewTemplate>
+<Position type="Products.Archetypes.Field.IntegerField"/>
+<excludeFromNav type="Products.Archetypes.Field.BooleanField">False</excludeFromNav>
+<elements>
+<element id="jobtitle" title="jobtitle" type="PlominoColumn">
+<id type="Products.Archetypes.Field.StringField">jobtitle</id>
+<SelectedField type="Products.Archetypes.Field.StringField">frmJob/job_title</SelectedField>
+<Formula type="Products.Archetypes.Field.TextField">
+<![CDATA[]]>
+</Formula>
+<HiddenColumn type="Products.Archetypes.Field.BooleanField">False</HiddenColumn>
+<DisplaySum type="Products.Archetypes.Field.BooleanField">False</DisplaySum>
+</element>
+<element id="jobdescription" title="jobdescription" type="PlominoColumn">
+<id type="Products.Archetypes.Field.StringField">jobdescription</id>
+<SelectedField type="Products.Archetypes.Field.StringField">frmJob/job_description</SelectedField>
+<Formula type="Products.Archetypes.Field.TextField">
+<![CDATA[]]>
+</Formula>
+<HiddenColumn type="Products.Archetypes.Field.BooleanField">False</HiddenColumn>
+<DisplaySum type="Products.Archetypes.Field.BooleanField">False</DisplaySum>
+</element>
+<element id="joblocation" title="joblocation" type="PlominoColumn">
+<id type="Products.Archetypes.Field.StringField">joblocation</id>
+<SelectedField type="Products.Archetypes.Field.StringField">frmJob/job_location</SelectedField>
+<Formula type="Products.Archetypes.Field.TextField">
+<![CDATA[]]>
+</Formula>
+<HiddenColumn type="Products.Archetypes.Field.BooleanField">False</HiddenColumn>
+<DisplaySum type="Products.Archetypes.Field.BooleanField">False</DisplaySum>
+</element>
+<element id="jobskills" title="jobskills" type="PlominoColumn">
+<id type="Products.Archetypes.Field.StringField">jobskills</id>
+<SelectedField type="Products.Archetypes.Field.StringField">frmJob/job_skills</SelectedField>
+<Formula type="Products.Archetypes.Field.TextField">
+<![CDATA[]]>
+</Formula>
+<HiddenColumn type="Products.Archetypes.Field.BooleanField">False</HiddenColumn>
+<DisplaySum type="Products.Archetypes.Field.BooleanField">False</DisplaySum>
+</element>
+<element id="add_new" title="Add a new Job" type="PlominoAction">
+<id type="Products.Archetypes.Field.StringField">add_new</id>
+<ActionType type="Products.Archetypes.Field.StringField">OPENFORM</ActionType>
+<ActionDisplay type="Products.Archetypes.Field.StringField">BUTTON</ActionDisplay>
+<Content type="Products.Archetypes.Field.TextField">
+<![CDATA[frmJob]]>
+</Content>
+<Hidewhen type="Products.Archetypes.Field.TextField">
+<![CDATA[]]>
+</Hidewhen>
+<InActionBar type="Products.Archetypes.Field.BooleanField">True</InActionBar>
+</element>
+</elements>
+</element>
+</design>
+</plominodatabase>

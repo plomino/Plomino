@@ -11,6 +11,12 @@ from Products.CMFPlomino.fields.doclink import IDoclinkField
 
 from Products.CMFPlomino.PlominoUtils import asUnicode
 
+from Products.PythonScripts.PythonScript import PythonScript
+from Products.PythonScripts.PythonScript import manage_addPythonScript
+from OFS.Image import manage_addImage
+import parser
+import re
+
 import logging
 logger = logging.getLogger('Plomino migration')
 
@@ -68,6 +74,9 @@ def migrate(db):
         db.plomino_version = "1.10.3"
     if db.plomino_version=="1.10.3":
         msg = migrate_to_1_11(db)
+        messages.append(msg)
+    if db.plomino_version=="1.11":
+        msg = migrate_to_1_12(db)
         messages.append(msg)
     return messages
 
@@ -234,13 +243,14 @@ def migrate_to_1_11(db):
     for form in forms:
         fields = form.getFormFields()
         for field in fields:
-            f = field.getFormula()
+            # NB: Don't use getFormula, this strips markup from strings.
+            f = field.Formula()
             if f:
                 logger.info("Migrated formula: %s\n"
                             "Old version: %s"%(field, f))
                 field.setFormula(
                     f.replace('getAllDocuments()', 'getAllDocuments(getObject=False)'))
-            f = field.getValidationFormula()
+            f = field.ValidationFormula()
             if f:
                 logger.info("Migrated validation formula: %s\n"
                             "Old version: %s"%(field, f))
@@ -254,7 +264,7 @@ def migrate_to_1_11(db):
                         'getAllDocuments()', 'getAllDocuments(getObject=False)')
         hidewhens = form.getHidewhenFormulas()
         for hidewhen in hidewhens:
-            f = hidewhen.getFormula()
+            f = hidewhen.Formula()
             if f:
                 logger.info("Migrated hidewhen formula: %s\n"
                             "Old version: %s"%(hidewhen, f))
@@ -262,13 +272,13 @@ def migrate_to_1_11(db):
                     f.replace('getAllDocuments()', 'getAllDocuments(getObject=False)'))
         actions = form.objectValues(spec='PlominoAction')
         for action in actions:
-            f = action.getContent()
+            f = action.Content()
             if f:
                 logger.info("Migrated action formula: %s\n"
                             "Old version: %s"%(action, f))
                 action.setContent(
                     f.replace('getAllDocuments()', 'getAllDocuments(getObject=False)'))
-            f = action.getHidewhen()
+            f = action.Hidewhen()
             if f:
                 logger.info("Migrated action hidewhen: %s\n"
                             "Old version: %s"%(action, f))
@@ -278,7 +288,7 @@ def migrate_to_1_11(db):
     for view in views:
         columns = view.getColumns()
         for column in columns:
-            f = column.getFormula()
+            f = column.Formula()
             if f:
                 logger.info("Migrated column formula: %s\n"
                             "Old version: %s"%(column, f))
@@ -286,13 +296,13 @@ def migrate_to_1_11(db):
                     f.replace('getAllDocuments()', 'getAllDocuments(getObject=False)'))
         actions = view.objectValues(spec='PlominoAction')
         for action in actions:
-            f = action.getContent()
+            f = action.Content()
             if f:
                 logger.info("Migrated action formula: %s\n"
                             "Old version: %s"%(action, f))
                 action.setContent(
                     f.replace('getAllDocuments()', 'getAllDocuments(getObject=False)'))
-            f = action.getHidewhen()
+            f = action.Hidewhen()
             if f:
                 logger.info("Migrated action hidewhen: %s\n"
                             "Old version: %s"%(action, f))
@@ -300,7 +310,7 @@ def migrate_to_1_11(db):
                     f.replace('getAllDocuments()', 'getAllDocuments(getObject=False)'))
     agents = db.getAgents()
     for agent in agents:
-        f = agent.getContent()
+        f = agent.Content()
         if f:
             logger.info("Migrated agent formula: %s\n"
                         "Old version: %s"%(agent, f))
@@ -309,7 +319,7 @@ def migrate_to_1_11(db):
     files = db.resources.objectValues('File')
     for f in files:
         if f.content_type.startswith('text'):
-            formula = asUnicode(f)
+            formula = asUnicode(f).encode('utf-8')
             logger.info("Migrated script library formula: %s"%f.id())
             f.manage_edit(f.title, f.content_type, filedata=formula.replace(
                 'getAllDocuments()', 'getAllDocuments(getObject=False)'))
@@ -322,4 +332,37 @@ def migrate_to_1_11(db):
 
     msg = "Migration to 1.11: getAllDocuments API change."
     db.plomino_version = "1.11"
+    return msg
+
+def migrate_to_1_12(db):
+    """ convert resources script lib File into PythonScripts 
+    """
+    libs = db.resources.objectValues('File')
+    for lib in libs:
+        lib_id = lib.id()
+        lib_data = lib.data
+        content_type = lib.getContentType() 
+        if 'image' in content_type:
+            db.resources.manage_delObjects(lib_id)
+            lib_id = manage_addImage(db.resources, lib_id, lib_data)
+        else:
+            error_re = re.compile('^## Errors:$', re.MULTILINE)
+            ps = PythonScript('testing')
+            try:
+                lib_data = asUnicode(lib_data)
+            except UnicodeDecodeError, e:
+                logger.info("Unknown encoding, skipping: %s" % lib_id)
+                continue
+            
+            ps.write(lib_data)
+            if not error_re.search(ps.read()):
+                db.resources.manage_delObjects(lib_id)
+                blank = manage_addPythonScript(db.resources, lib_id)
+                sc = db.resources._getOb(lib_id)
+                sc.write(lib_data)
+                logger.info("Converted to Script: %s" % lib_id)
+                continue
+    
+    msg = "Migration to 1.12: Convert resources script lib File into PythonScripts."
+    db.plomino_version = "1.12"
     return msg

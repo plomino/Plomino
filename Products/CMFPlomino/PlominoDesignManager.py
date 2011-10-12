@@ -826,6 +826,7 @@ class PlominoDesignManager(Persistent):
            dom_SpecificRights.firstChild.setAttribute('id', 'SpecificRights')
            acl.appendChild(dom_SpecificRights.documentElement)
            node.appendChild(acl)
+           node.setAttribute('version', obj.plomino_version)
 
         return node
 
@@ -1011,9 +1012,13 @@ class PlominoDesignManager(Persistent):
     def importDbSettingsFromXML(self, node):
         """
         """
+        version = node.getAttribute('version')
+        if version:
+            self.plomino_version = version
         child = node.firstChild
         while child is not None:
             name = child.nodeName
+            logger.info(name)
             if name=='acl':
                 anonymousaccessright = child.getAttribute('AnomynousAccessRight')
                 self.AnomynousAccessRight = anonymousaccessright

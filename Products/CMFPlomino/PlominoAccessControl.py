@@ -49,6 +49,7 @@ class PlominoAccessControl(Persistent):
         ADD_CONTENT_PERMISSION,
         permissions.View,
         permissions.AccessContentsInformation,
+        permissions.DeleteObjects
         #permissions.AddPortalContent,
         #permissions.ModifyPortalContent
         ],

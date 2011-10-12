@@ -570,7 +570,9 @@ class PlominoDocument(ATFolder):
                 file_obj = storage.get(filename, self)
             else:
                 #file_obj = getattr(self, filename)
-                file_obj = self[filename]
+                file_obj = self.get(filename, None)
+            if not file_obj:
+                return None
             if REQUEST is None:
                 return file_obj
             else:

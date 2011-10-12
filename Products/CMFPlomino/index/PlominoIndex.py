@@ -30,6 +30,8 @@ from Products.ZCTextIndex.ZCTextIndex import PLexicon
 from Products.CMFCore.ActionProviderBase import ActionProviderBase
 from Products.CMFCore.utils import UniqueObject, SimpleRecord
 from Products.CMFCore.utils import getToolByName
+from Products.PortalTransforms.utils import TransformException
+from Products.PortalTransforms.libtransforms.utils import MissingBinary
 
 from Products.CMFPlomino.index.PlominoCatalog import PlominoCatalog
 from Products.CMFPlomino.index.PlominoViewIndex import PlominoViewIndex
@@ -208,6 +210,9 @@ class PlominoIndex(UniqueObject, ZCatalog, ActionProviderBase):
                             data = ''
                     except TransformException:
                         data = ''
+                    except MissingBinary:
+                        data = ''
+                        
                     source+=data
 
         return source
