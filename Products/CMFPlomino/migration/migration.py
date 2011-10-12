@@ -335,7 +335,7 @@ def migrate_to_1_11(db):
     return msg
 
 def migrate_to_1_12(db):
-    """ convert resources script lib File into PythonScripts 
+    """ Convert resources script lib File into PythonScript and Image
     """
     libs = db.resources.objectValues('File')
     for lib in libs:
