@@ -90,7 +90,7 @@ class PlominoAgent(BaseContent, BrowserDefaultMixin):
         """
         self.cleanFormulaScripts("agent_"+self.id)
 
-    def __call__(self, *args):
+    def __call__(self, *args, **kwargs):
         """
         """
         plominoContext = self
