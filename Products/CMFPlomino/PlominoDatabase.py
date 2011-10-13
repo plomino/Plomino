@@ -54,6 +54,7 @@ from PlominoAccessControl import PlominoAccessControl
 from PlominoDesignManager import PlominoDesignManager
 from PlominoReplicationManager import PlominoReplicationManager
 from PlominoScheduler import PlominoScheduler
+from PlominoDocument import addPlominoDocument
 
 from Products.CMFCore.PortalFolder import PortalFolderBase as PortalFolder
 
@@ -259,12 +260,19 @@ class PlominoDatabase(ATFolder, PlominoAccessControl, PlominoDesignManager, Plom
         scripts.title='scripts'
         self._setObject('scripts', scripts)
 
-    def __bobo_traverse__(self, request, name):
-        # TODO: replace with IPublishTraverse or/and ITraverse
-        if hasattr(self, 'documents'):
-            if self.documents.has_key(name):
-                return aq_inner(getattr(self.documents, name)).__of__(self)
-        return BaseObject.__bobo_traverse__(self, request, name)
+    def __getitem__(self, index):
+        return self.documents[index]
+        
+#    def publishTraverse(self, request, name):
+#        if hasattr(self, 'documents'):
+#            if self.documents.has_key(name):
+#                return aq_inner(getattr(self.documents, name)).__of__(self)
+#    def __bobo_traverse__(self, request, name):
+#        # TODO: replace with IPublishTraverse or/and ITraverse
+#        if hasattr(self, 'documents'):
+#            if self.documents.has_key(name):
+#                return aq_inner(getattr(self.documents, name)).__of__(self)
+#        return BaseObject.__bobo_traverse__(self, request, name)
 
     security.declarePublic('getStatus')
     def getStatus(self):
@@ -364,8 +372,7 @@ class PlominoDatabase(ATFolder, PlominoAccessControl, PlominoDesignManager, Plom
         """
         if not docid:
             docid = make_uuid()
-        pt = getToolByName(self, 'portal_types')
-        pt.constructContent('PlominoDocument', self.documents, docid)
+        self.documents[docid] = addPlominoDocument(docid)
         doc = self.documents.get(docid)
         # new doc has been automatically index in portal_catalog by constructContent
         # 1: we do not necessarily want it (depending on IndexInPortal value)

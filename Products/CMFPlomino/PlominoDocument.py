@@ -1,23 +1,14 @@
 # -*- coding: utf-8 -*-
 #
 # File: PlominoDocument.py
-#
-# Copyright (c) 2008 by ['Eric BREHAULT']
-# Generator: ArchGenXML Version 2.0
-#            http://plone.org/products/archgenxml
-#
-# Zope Public License (ZPL)
-#
+
 
 __author__ = """Eric BREHAULT <eric.brehault@makina-corpus.org>"""
 __docformat__ = 'plaintext'
 
 from AccessControl import ClassSecurityInfo
-from Products.Archetypes.atapi import *
 from zope.interface import implements
 import interfaces
-from Products.ATContentTypes.content.folder import ATFolder
-from Products.CMFDynamicViewFTI.browserdefault import BrowserDefaultMixin
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import normalizeString
 
@@ -25,13 +16,15 @@ from exceptions import PlominoScriptException
 from Products.CMFPlomino.config import *
 
 from interfaces import *
-from Products.Archetypes.public import *
 from AccessControl import Unauthorized
+from AccessControl.class_init import InitializeClass
 from time import strptime
 from DateTime import DateTime
 from zope import event
-from Products.Archetypes.event import ObjectEditedEvent
 from zope.component import queryUtility
+from zope.interface import implements, Interface
+from zope.component.factory import Factory
+from plone.app.content.item import Item
 
 import logging
 logger = logging.getLogger('Plomino')
@@ -58,42 +51,20 @@ try:
 except Exception, e:
     HAS_BLOB = False
 
-schema = Schema((
-
-),
-)
-
-##code-section after-local-schema #fill in your manual code here
-##/code-section after-local-schema
-
-PlominoDocument_schema = getattr(ATFolder, 'schema', Schema(())).copy() + \
-    schema.copy()
-
-##code-section after-schema #fill in your manual code here
-##/code-section after-schema
-
-class PlominoDocument(ATFolder):
+class PlominoDocument(Item):
     """
     """
     security = ClassSecurityInfo()
     implements(interfaces.IPlominoDocument)
-
-    meta_type = 'PlominoDocument'
-    _at_rename_after_creation = False
-
-    schema = PlominoDocument_schema
-
-    ##code-section class-header #fill in your manual code here
-    ##/code-section class-header
-
-    # Methods
+    
+    portal_type = "PlominoDocument"
 
     security.declarePublic('__init__')
-    def __init__(self,oid,**kw):
+    def __init__(self, id):
         """initialization
         """
-        ATFolder.__init__(self, oid, **kw)
-        self.items={}
+        self.id = id
+        self.items = {}
         self.plomino_modification_time = DateTime().toZone('UTC')
 
     security.declarePublic('checkBeforeOpenDocument')
@@ -107,6 +78,10 @@ class PlominoDocument(ATFolder):
         else:
             raise Unauthorized, "You cannot read this content"
 
+#    def getPhysicalPath(self):
+#        db = self.getParentDatabase()
+#        return db.getPhysicalPath() + (self.id,)
+        
     def doc_path(self):
         #db = self.getParentDatabase()
         #return db.getPhysicalPath() + (self.id,)
@@ -364,7 +339,6 @@ class PlominoDocument(ATFolder):
             # update portal_catalog
             if db.getIndexInPortal():
                 db.portal_catalog.catalog_object(self, "/".join(db.getPhysicalPath() + (self.id,)))
-            event.notify(ObjectEditedEvent(self))
 
     security.declareProtected(READ_PERMISSION, 'openWithForm')
     def openWithForm(self,form,editmode=False):
@@ -455,21 +429,21 @@ class PlominoDocument(ATFolder):
         # changed from BaseFolder to ATFolder because now inherits fron ATFolder
         ATFolder.manage_afterClone(self, item)
 
-    security.declarePublic('__getattr__')
-    def __getattr__(self, name):
-        """Overloads getattr to return item values as attibutes
-        """
-        if(self.items.has_key(name)):
-            return self.items[name]
-        else:
-            if name not in ['__parent__', '__conform__', '__annotations__',
-                           '_v_at_subobjects', '__getnewargs__', 'aq_inner', 'im_self']:
-                try:
-                    return ATFolder.__getattr__(self, name)
-                except Exception, e:
-                    raise AttributeError, name
-            else:   
-                raise AttributeError, name
+#    security.declarePublic('__getattr__')
+#    def __getattr__(self, name):
+#        """Overloads getattr to return item values as attibutes
+#        """
+#        if(self.items.has_key(name)):
+#            return self.items[name]
+#        else:
+#            if name not in ['__parent__', '__conform__', '__annotations__',
+#                           '_v_at_subobjects', '__getnewargs__', 'aq_inner', 'im_self']:
+#                try:
+#                    return getattr(self, name)
+#                except Exception, e:
+#                    raise AttributeError, name
+#            else:   
+#                raise AttributeError, name
 
     security.declareProtected(READ_PERMISSION, 'isSelectedInView')
     def isSelectedInView(self,viewname):
@@ -713,11 +687,10 @@ class PlominoDocument(ATFolder):
             return IUserPreferredURLNormalizer(request).normalize(result)
 
         return queryUtility(IURLNormalizer).normalize(result)
-    
-registerType(PlominoDocument, PROJECTNAME)
-# end of class PlominoDocument
 
-##code-section module-footer #fill in your manual code here
+InitializeClass(PlominoDocument)
+addPlominoDocument = Factory(PlominoDocument)
+
 class TemporaryDocument(PlominoDocument):
 
     security = ClassSecurityInfo()
@@ -768,8 +741,6 @@ class TemporaryDocument(PlominoDocument):
         """
         """
         return self.real_id
-
-##/code-section module-footer
 
 
 
