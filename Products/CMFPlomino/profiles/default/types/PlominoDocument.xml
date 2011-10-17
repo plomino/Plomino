@@ -9,19 +9,26 @@
  <property name="content_meta_type">PlominoDocument</property>
  <property name="product">CMFPlomino</property>
  <property name="factory">addPlominoDocument</property>
- <property name="immediate_view">checkBeforeOpenDocument</property>
+ <property name="immediate_view">OpenDocument</property>
  <property name="global_allow">False</property>
  <property name="filter_content_types">True</property>
  <property name="allowed_content_types">
  </property>
  <property name="allow_discussion">False</property>
- <property name="default_view">checkBeforeOpenDocument</property>
+ <property name="default_view">OpenDocument</property>
  <property name="view_methods">
-  <element value="checkBeforeOpenDocument"/>
+  <element value="OpenDocument"/>
  </property>
  <property name="default_view_fallback">False</property>
  <alias from="(Default)" to="(dynamic view)"/>
-
+ <action title="View" 
+         action_id="view"
+         category="object" 
+         condition_expr="python:1"
+         url_expr="string:${object_url}/OpenDocument" 
+         visible="True">
+  <permission value="View"/>
+ </action>
  <action title="Edit" 
          action_id="edit"
          category="object" 
@@ -37,13 +44,5 @@
          url_expr="string:${object_url}/DocumentProperties" 
          visible="True">
   <permission value="CMFPlomino: Modify Database design"/>
- </action>
- <action title="View" 
-         action_id="view"
-         category="object" 
-         condition_expr="python:1"
-         url_expr="string:${object_url}/checkBeforeOpenDocument" 
-         visible="True">
-  <permission value="View"/>
  </action>
 </object>

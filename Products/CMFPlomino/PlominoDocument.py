@@ -25,6 +25,8 @@ from zope.component import queryUtility
 from zope.interface import implements, Interface
 from zope.component.factory import Factory
 from plone.app.content.item import Item
+from zope.annotation import IAttributeAnnotatable
+from zope.app.container.contained import Contained
 
 import logging
 logger = logging.getLogger('Plomino')
@@ -51,11 +53,11 @@ try:
 except Exception, e:
     HAS_BLOB = False
 
-class PlominoDocument(Item):
+class PlominoDocument(Item, Contained):
     """
     """
     security = ClassSecurityInfo()
-    implements(interfaces.IPlominoDocument)
+    implements(interfaces.IPlominoDocument, IAttributeAnnotatable)
     
     portal_type = "PlominoDocument"
 
@@ -77,10 +79,6 @@ class PlominoDocument(Item):
             return self.OpenDocument()
         else:
             raise Unauthorized, "You cannot read this content"
-
-#    def getPhysicalPath(self):
-#        db = self.getParentDatabase()
-#        return db.getPhysicalPath() + (self.id,)
         
     def doc_path(self):
         #db = self.getParentDatabase()
@@ -432,21 +430,21 @@ class PlominoDocument(Item):
         # changed from BaseFolder to ATFolder because now inherits fron ATFolder
         ATFolder.manage_afterClone(self, item)
 
-#    security.declarePublic('__getattr__')
-#    def __getattr__(self, name):
-#        """Overloads getattr to return item values as attibutes
-#        """
-#        if(self.items.has_key(name)):
-#            return self.items[name]
-#        else:
-#            if name not in ['__parent__', '__conform__', '__annotations__',
-#                           '_v_at_subobjects', '__getnewargs__', 'aq_inner', 'im_self']:
-#                try:
-#                    return getattr(self, name)
-#                except Exception, e:
-#                    raise AttributeError, name
-#            else:   
-#                raise AttributeError, name
+    security.declarePublic('__getattr__')
+    def __getattr__(self, name):
+        """Overloads getattr to return item values as attibutes
+        """
+        if(self.items.has_key(name)):
+            return self.items[name]
+        else:
+            if name not in ['__parent__', '__conform__', '__annotations__',
+                           '_v_at_subobjects', '__getnewargs__', 'aq_inner', 'im_self']:
+                try:
+                    return Item.__getattr__(self, name)
+                except Exception, e:
+                    raise AttributeError, name
+            else:   
+                raise AttributeError, name
 
     security.declareProtected(READ_PERMISSION, 'isSelectedInView')
     def isSelectedInView(self,viewname):

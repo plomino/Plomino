@@ -38,6 +38,9 @@ from OFS.ObjectManager import ObjectManager
 #from Products.BTreeFolder2.BTreeFolder2 import manage_addBTreeFolder
 from Products.CMFCore.CMFBTreeFolder import manage_addCMFBTreeFolder
 from Products.CMFPlone.interfaces import IHideFromBreadcrumbs
+from zope.publisher.interfaces import IPublishTraverse
+from zope.publisher.interfaces import NotFound
+
 import string
 import Globals
 from dm.sharedresource import get_resource
@@ -215,7 +218,7 @@ class PlominoDatabase(ATFolder, PlominoAccessControl, PlominoDesignManager, Plom
     """
     """
     security = ClassSecurityInfo()
-    implements(interfaces.IPlominoDatabase)
+    implements(interfaces.IPlominoDatabase, IPublishTraverse)
 
     meta_type = 'PlominoDatabase'
     _at_rename_after_creation = True
@@ -263,10 +266,13 @@ class PlominoDatabase(ATFolder, PlominoAccessControl, PlominoDesignManager, Plom
     def __getitem__(self, index):
         return self.documents[index]
         
-#    def publishTraverse(self, request, name):
-#        if hasattr(self, 'documents'):
-#            if self.documents.has_key(name):
-#                return aq_inner(getattr(self.documents, name)).__of__(self)
+    def publishTraverse(self, request, name):
+        if hasattr(self, 'documents'):
+            if self.documents.has_key(name):
+                return aq_inner(getattr(self.documents, name)).__of__(self)
+            else:
+                NotFound(self, name)
+
 #    def __bobo_traverse__(self, request, name):
 #        # TODO: replace with IPublishTraverse or/and ITraverse
 #        if hasattr(self, 'documents'):
