@@ -267,18 +267,13 @@ class PlominoDatabase(ATFolder, PlominoAccessControl, PlominoDesignManager, Plom
         return self.documents[index]
         
     def publishTraverse(self, request, name):
-        if hasattr(self, 'documents'):
-            if self.documents.has_key(name):
-                return aq_inner(getattr(self.documents, name)).__of__(self)
-            else:
-                NotFound(self, name)
-
-#    def __bobo_traverse__(self, request, name):
-#        # TODO: replace with IPublishTraverse or/and ITraverse
-#        if hasattr(self, 'documents'):
-#            if self.documents.has_key(name):
-#                return aq_inner(getattr(self.documents, name)).__of__(self)
-#        return BaseObject.__bobo_traverse__(self, request, name)
+        if hasattr(self, 'documents') and self.documents.has_key(name):
+            return aq_inner(getattr(self.documents, name)).__of__(self)
+        else:
+            try:
+                return getattr(self, name)
+            except AttributeError:
+                raise NotFound(self.context, name, request)
 
     security.declarePublic('getStatus')
     def getStatus(self):
