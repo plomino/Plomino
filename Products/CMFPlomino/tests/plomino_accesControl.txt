@@ -360,6 +360,9 @@ If we create a Plomino_Readers item, it will restrict the regular ACL settings.
     >>> browser.open(currentDocUrl)
     >>> InsufficientPrivileges in browser.url
     True
+    >>> browser.open(currentDocUrl+"/OpenDocument")
+    >>> InsufficientPrivileges in browser.url
+    True
     >>> doc.setItem('Plomino_Readers', ['userReader'])
     >>> browser.open(currentDocUrl)
     >>> InsufficientPrivileges in browser.url
