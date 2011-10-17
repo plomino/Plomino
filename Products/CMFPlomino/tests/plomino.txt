@@ -227,6 +227,8 @@ A Doclink field allows to create a reference to another document.
 	>>> db.frm2.setFormLayout("""<p>Related artist: <span class="plominoFieldClass">relatedartist</span></p>""")
     >>> result=u'<input type=\'hidden\' name=\'Form\' value=\'frm2\' /><p>Related artist: <span>\n\t\n\t\t<select name="relatedartist">\n\t\t\t\n\t\t\n\t\t\t\n\t\t\n\t\t\t\n\t\t\n\t\t\t\n\t\t</select>\n\t\n\t\n\t\n\t\n</span>\n</p>'
     >>> result=db.frm2.displayDocument(None, True, True)
+    >>> result
+    'bli'
     >>> """<option value="/plone/Members/test_user_1_/mydb/%s">London calling</option>""" % (doc1.id) in result
     True
     >>> """<option value="/plone/Members/test_user_1_/mydb/%s">bonjour</option>""" % (doc3.id) in result

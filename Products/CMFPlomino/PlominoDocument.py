@@ -24,7 +24,7 @@ from zope import event
 from zope.component import queryUtility
 from zope.interface import implements, Interface
 from zope.component.factory import Factory
-from plone.app.content.item import Item
+from Products.CMFCore.PortalContent import PortalContent
 from zope.annotation import IAttributeAnnotatable
 from zope.app.container.contained import Contained
 
@@ -53,7 +53,7 @@ try:
 except Exception, e:
     HAS_BLOB = False
 
-class PlominoDocument(Item, Contained):
+class PlominoDocument(PortalContent, Contained):
     """
     """
     security = ClassSecurityInfo()
@@ -298,13 +298,14 @@ class PlominoDocument(Item, Contained):
             self.setTitle(result)
 
             # update the document id
-            if creation and form.getDocumentId():
-                self._renameAfterCreation()
-                # _renameAfterCreation index doc in portal_catalog
-                # 1: we do not necessarily want it (depending on IndexInPortal value)
-                # 2: we will index it with the correct path anyway
-                # so let's remove it for now
-                db.portal_catalog.uncatalog_object("/".join(self.getPhysicalPath()))
+#            if creation and form.getDocumentId():
+#                #self._renameAfterCreation()
+#                db.documents.manage_renameObject(self.id, self.generateNewId())
+#                # _renameAfterCreation index doc in portal_catalog
+#                # 1: we do not necessarily want it (depending on IndexInPortal value)
+#                # 2: we will index it with the correct path anyway
+#                # so let's remove it for now
+##                db.portal_catalog.uncatalog_object("/".join(self.getPhysicalPath()))
             
         # update the Plomino_Authors field with the current user name
         if asAuthor:
@@ -440,7 +441,7 @@ class PlominoDocument(Item, Contained):
             if name not in ['__parent__', '__conform__', '__annotations__',
                            '_v_at_subobjects', '__getnewargs__', 'aq_inner', 'im_self']:
                 try:
-                    return Item.__getattr__(self, name)
+                    return PortalContent.__getattr__(self, name)
                 except Exception, e:
                     raise AttributeError, name
             else:   

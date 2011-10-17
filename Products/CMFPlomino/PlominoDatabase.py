@@ -38,6 +38,7 @@ from OFS.ObjectManager import ObjectManager
 #from Products.BTreeFolder2.BTreeFolder2 import manage_addBTreeFolder
 from Products.CMFCore.CMFBTreeFolder import manage_addCMFBTreeFolder
 from Products.CMFPlone.interfaces import IHideFromBreadcrumbs
+from zope.traversing.interfaces import ITraversable
 from zope.publisher.interfaces import IPublishTraverse
 from zope.publisher.interfaces import NotFound
 
@@ -218,7 +219,7 @@ class PlominoDatabase(ATFolder, PlominoAccessControl, PlominoDesignManager, Plom
     """
     """
     security = ClassSecurityInfo()
-    implements(interfaces.IPlominoDatabase, IPublishTraverse)
+    implements(interfaces.IPlominoDatabase, ITraversable, IPublishTraverse)
 
     meta_type = 'PlominoDatabase'
     _at_rename_after_creation = True
@@ -265,7 +266,13 @@ class PlominoDatabase(ATFolder, PlominoAccessControl, PlominoDesignManager, Plom
 
     def __getitem__(self, index):
         return self.documents[index]
-        
+
+    def traverse(self, name, ignored):
+        if hasattr(self, 'documents') and self.documents.has_key(name):
+            return aq_inner(getattr(self.documents, name)).__of__(self)
+        else:
+             return getattr(self, name)
+
     def publishTraverse(self, request, name):
         if hasattr(self, 'documents') and self.documents.has_key(name):
             return aq_inner(getattr(self.documents, name)).__of__(self)
@@ -379,7 +386,7 @@ class PlominoDatabase(ATFolder, PlominoAccessControl, PlominoDesignManager, Plom
         # 1: we do not necessarily want it (depending on IndexInPortal value)
         # 2: PlominoDocument.save() will index it with the correct path anyway
         # so let's remove it for now
-        self.portal_catalog.uncatalog_object("/".join(doc.getPhysicalPath()))
+#        self.portal_catalog.uncatalog_object("/".join(doc.getPhysicalPath()))
         return doc
 
     security.declarePublic('getDocument')

@@ -38,6 +38,7 @@ class PlominoAccessControl(Persistent):
         ADD_CONTENT_PERMISSION,
         permissions.View,
         permissions.AccessContentsInformation,
+        'Copy or Move',
         #permissions.AddPortalContent,
         #permissions.ModifyPortalContent
         ],
@@ -49,6 +50,7 @@ class PlominoAccessControl(Persistent):
         ADD_CONTENT_PERMISSION,
         permissions.View,
         permissions.AccessContentsInformation,
+        'Copy or Move',
         permissions.DeleteObjects
         #permissions.AddPortalContent,
         #permissions.ModifyPortalContent
@@ -63,6 +65,7 @@ class PlominoAccessControl(Persistent):
         ADD_DESIGN_PERMISSION,
         permissions.View,
         permissions.AccessContentsInformation,
+        'Copy or Move',
         permissions.AddPortalContent,
         permissions.ModifyPortalContent],
     "PlominoManager" : [
@@ -76,6 +79,7 @@ class PlominoAccessControl(Persistent):
         ACL_PERMISSION,
         permissions.View,
         permissions.AccessContentsInformation,
+        'Copy or Move',
         permissions.AddPortalContent,
         permissions.ModifyPortalContent]
     }

@@ -134,13 +134,16 @@ class PlominoIndex(UniqueObject, ZCatalog, ActionProviderBase):
         """
         #self.catalog_object(doc, "/".join(doc.getPhysicalPath()))
         try:
-            # TODO DONE LATER (cataloging real path is better but it implies
-            # to test all the side-effect and provide a migration script)
-            #self.catalog_object(doc)
-            db = doc.getParentDatabase()
             self.catalog_object(doc,
-                "/".join(db.getPhysicalPath()) + "/" + doc.id,
+                "/".join(doc.getPhysicalPath()),
                 idxs=idxs, update_metadata=update_metadata)
+#            # TODO DONE LATER (cataloging real path is better but it implies
+#            # to test all the side-effect and provide a migration script)
+#            #self.catalog_object(doc)
+#            db = doc.getParentDatabase()
+#            self.catalog_object(doc,
+#                "/".join(db.getPhysicalPath()) + "/" + doc.id,
+#                idxs=idxs, update_metadata=update_metadata)
         except Exception, e:
             self.portal_skins.plone_scripts.plone_log('%s\non %s'%(`e`, doc.id))
             raise

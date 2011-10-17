@@ -29,20 +29,20 @@ def test_suite():
         ztc.ZopeDocFileSuite(
             'tests/plomino.txt', package='Products.CMFPlomino',
             test_class=ExampleFunctionalTestCase,
-            optionflags=doctest.NORMALIZE_WHITESPACE | doctest.ELLIPSIS),
-            #optionflags=doctest.REPORT_ONLY_FIRST_FAILURE | doctest.NORMALIZE_WHITESPACE | doctest.ELLIPSIS),
+            #optionflags=doctest.NORMALIZE_WHITESPACE | doctest.ELLIPSIS),
+            optionflags=doctest.REPORT_ONLY_FIRST_FAILURE | doctest.NORMALIZE_WHITESPACE | doctest.ELLIPSIS),
 
-        ztc.ZopeDocFileSuite(
-            'tests/plomino_accesControl.txt', package='Products.CMFPlomino',
-            test_class=ExampleFunctionalTestCase,
-            optionflags=doctest.NORMALIZE_WHITESPACE | doctest.ELLIPSIS),
-            #optionflags=doctest.REPORT_ONLY_FIRST_FAILURE | doctest.NORMALIZE_WHITESPACE | doctest.ELLIPSIS),
-
-        ztc.ZopeDocFileSuite(
-            'tests/samples.txt', package='Products.CMFPlomino',
-            test_class=ExampleFunctionalTestCase,
-            optionflags=doctest.NORMALIZE_WHITESPACE | doctest.ELLIPSIS),
-            #optionflags=doctest.REPORT_ONLY_FIRST_FAILURE | doctest.NORMALIZE_WHITESPACE | doctest.ELLIPSIS),
+#        ztc.ZopeDocFileSuite(
+#            'tests/plomino_accesControl.txt', package='Products.CMFPlomino',
+#            test_class=ExampleFunctionalTestCase,
+#            optionflags=doctest.NORMALIZE_WHITESPACE | doctest.ELLIPSIS),
+#            #optionflags=doctest.REPORT_ONLY_FIRST_FAILURE | doctest.NORMALIZE_WHITESPACE | doctest.ELLIPSIS),
+#
+#        ztc.ZopeDocFileSuite(
+#            'tests/samples.txt', package='Products.CMFPlomino',
+#            test_class=ExampleFunctionalTestCase,
+#            optionflags=doctest.NORMALIZE_WHITESPACE | doctest.ELLIPSIS),
+#            #optionflags=doctest.REPORT_ONLY_FIRST_FAILURE | doctest.NORMALIZE_WHITESPACE | doctest.ELLIPSIS),
 
         # We could add more doctest files here as well, by copying the file
         # block above.
