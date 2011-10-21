@@ -25,6 +25,8 @@ def authenticateAndLoadURL(targetURL, username, password):
     """ authenticate and return URL page content
     """
     urlparts = urlparse.urlsplit(targetURL)
+    username = urllib.quote(username, safe='')
+    password = urllib.quote(password, safe='')
     u=urlparts[0]+"://"+username+":"+password+"@"+urlparts[1]+urlparts[2]+"?"+urlparts[3]
     f=urllib.urlopen(u)
     return f
