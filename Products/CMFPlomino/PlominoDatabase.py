@@ -373,7 +373,7 @@ class PlominoDatabase(ATFolder, PlominoAccessControl, PlominoDesignManager, Plom
         if not docid:
             docid = make_uuid()
         pt = getToolByName(self, 'portal_types')
-        pt.constructContent('PlominoDocument', self.documents, docid)
+        docid = pt.constructContent('PlominoDocument', self.documents, docid)
         doc = self.documents.get(docid)
         # new doc has been automatically index in portal_catalog by constructContent
         # 1: we do not necessarily want it (depending on IndexInPortal value)
