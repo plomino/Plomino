@@ -430,6 +430,24 @@ class PlominoView(ATFolder):
                 sums[col.id] = s
         return sums
 
+    def makeArray(self, brains, columns):
+        """ Turn a list of brains and column names into a list of values.
+        Encode values as utf-8.
+        """
+        rows = []
+        for b in brains:
+            row = []
+            for cname in columns:
+                v = getattr(b, self.getIndexKey(cname))
+                if v is None:
+                    v = ''
+                elif isinstance(v, basestring):
+                    v = v.encode('utf-8')
+                else:
+                    v = unicode(v).encode('utf-8')
+                row.append(v)
+        return rows
+
     security.declareProtected(READ_PERMISSION, 'exportCSV')
     def exportCSV(self, REQUEST=None, displayColumnsTitle='False', separator="\t", brain_docs = None, quotechar='"', quoting=csv.QUOTE_NONNUMERIC):
         """export columns values as CSV
@@ -446,7 +464,6 @@ class PlominoView(ATFolder):
         if brain_docs is None:
             brain_docs = self.getAllDocuments(getObject=False)
 
-        result = ""
         columns = [c.id for c in self.getColumns()]
 
         stream = cStringIO.StringIO()
@@ -457,18 +474,8 @@ class PlominoView(ATFolder):
             titles = [c.title for c in self.getColumns()]
             writer.writerow(titles)
 
-        for b in brain_docs:
-            values = []
-            for cname in columns:
-                v = getattr(b, self.getIndexKey(cname))
-                if v is None:
-                    v = ''
-                elif isinstance(v, basestring):
-                    v = v.encode('utf-8')
-                else:
-                    v = unicode(v).encode('utf-8')
-                values.append(v)
-            writer.writerow(values)
+        rows = makeArray(brain_docs, columns)
+        writer.writerows(rows)
 
         if REQUEST:
             REQUEST.RESPONSE.setHeader('content-type', 'text/csv; charset=utf-8')
@@ -477,35 +484,21 @@ class PlominoView(ATFolder):
 
     security.declareProtected(READ_PERMISSION, 'exportXLS')
     def exportXLS(self, REQUEST, displayColumnsTitle='False', brain_docs = None):
-        """export columns values in an HTML table
-        and set content-type to launch Excel
-        IMPORTANT : brain_docs are supposed to be ZCatalog brains
+        """ Export column values to an HTML table, and set content-type to
+        launch Excel.
+        IMPORTANT: brain_docs are supposed to be ZCatalog brains
         """
         if brain_docs is None:
             brain_docs = self.getAllDocuments(getObject=False)
 
-        result = ""
         columns = [c.id for c in self.getColumns()]
 
-        rows = []
+        rows = makeArray(brain_docs, columns)
 
         # add column titles
         if displayColumnsTitle == 'True':
             titles = [c.title.encode('utf-8') for c in self.getColumns()]
-            rows.append(titles)
-
-        for b in brain_docs:
-            values = []
-            for cname in columns:
-                v = getattr(b, self.getIndexKey(cname))
-                if v is None:
-                    v = ''
-                elif isinstance(v, basestring):
-                    v = v.encode('utf-8')
-                else:
-                    v = unicode(v).encode('utf-8')
-                values.append(v)
-            rows.append(values)
+            rows[0:0] = titles
 
         html = """<html><head>
     <meta http-equiv="Content-Type"
