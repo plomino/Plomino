@@ -15,6 +15,7 @@ from Products.CMFPlone.utils import normalizeString
 from exceptions import PlominoScriptException
 from Products.CMFPlomino.config import *
 
+import transaction
 from interfaces import *
 from AccessControl import Unauthorized
 from AccessControl.class_init import InitializeClass
@@ -60,7 +61,8 @@ class PlominoDocument(PortalContent, Contained):
     implements(interfaces.IPlominoDocument, IAttributeAnnotatable)
     
     portal_type = "PlominoDocument"
-
+    meta_type = "PlominoDocument"
+    
     security.declarePublic('__init__')
     def __init__(self, id):
         """initialization
@@ -298,14 +300,15 @@ class PlominoDocument(PortalContent, Contained):
             self.setTitle(result)
 
             # update the document id
-#            if creation and form.getDocumentId():
-#                #self._renameAfterCreation()
-#                db.documents.manage_renameObject(self.id, self.generateNewId())
-#                # _renameAfterCreation index doc in portal_catalog
-#                # 1: we do not necessarily want it (depending on IndexInPortal value)
-#                # 2: we will index it with the correct path anyway
-#                # so let's remove it for now
-##                db.portal_catalog.uncatalog_object("/".join(self.getPhysicalPath()))
+            if creation and form.getDocumentId():
+                #self._renameAfterCreation()
+                transaction.savepoint(optimistic=True)
+                db.documents.manage_renameObject(self.id, self.generateNewId())
+                # _renameAfterCreation index doc in portal_catalog
+                # 1: we do not necessarily want it (depending on IndexInPortal value)
+                # 2: we will index it with the correct path anyway
+                # so let's remove it for now
+#                db.portal_catalog.uncatalog_object("/".join(self.getPhysicalPath()))
             
         # update the Plomino_Authors field with the current user name
         if asAuthor:
