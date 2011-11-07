@@ -38,9 +38,6 @@ from OFS.ObjectManager import ObjectManager
 #from Products.BTreeFolder2.BTreeFolder2 import manage_addBTreeFolder
 from Products.CMFCore.CMFBTreeFolder import manage_addCMFBTreeFolder
 from Products.CMFPlone.interfaces import IHideFromBreadcrumbs
-from zope.traversing.interfaces import ITraversable
-from zope.publisher.interfaces import IPublishTraverse
-from zope.publisher.interfaces import NotFound
 
 import string
 import Globals
@@ -219,7 +216,7 @@ class PlominoDatabase(ATFolder, PlominoAccessControl, PlominoDesignManager, Plom
     """
     """
     security = ClassSecurityInfo()
-    implements(interfaces.IPlominoDatabase, ITraversable, IPublishTraverse)
+    implements(interfaces.IPlominoDatabase)
 
     meta_type = 'PlominoDatabase'
     _at_rename_after_creation = True
@@ -264,23 +261,12 @@ class PlominoDatabase(ATFolder, PlominoAccessControl, PlominoDesignManager, Plom
         scripts.title='scripts'
         self._setObject('scripts', scripts)
 
-    def __getitem__(self, index):
-        return self.documents[index]
-
-    def traverse(self, name, ignored):
-        if hasattr(self, 'documents') and self.documents.has_key(name):
-            return aq_inner(getattr(self.documents, name)).__of__(self)
-        else:
-             return getattr(self, name)
-
-    def publishTraverse(self, request, name):
-        if hasattr(self, 'documents') and self.documents.has_key(name):
-            return aq_inner(getattr(self.documents, name)).__of__(self)
-        else:
-            try:
-                return getattr(self, name)
-            except AttributeError:
-                raise NotFound(self.context, name, request)
+    def __bobo_traverse__(self, request, name):
+        # TODO: replace with IPublishTraverse or/and ITraverse
+        if hasattr(self, 'documents'):
+            if self.documents.has_key(name):
+                return aq_inner(getattr(self.documents, name)).__of__(self)
+        return BaseObject.__bobo_traverse__(self, request, name)
 
     security.declarePublic('getStatus')
     def getStatus(self):
