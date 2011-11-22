@@ -309,6 +309,14 @@ class PlominoDatabase(ATFolder, PlominoAccessControl, PlominoDesignManager, Plom
         else:
             raise Unauthorized, "You cannot read this content"
 
+    security.declarePublic('getForm')
+    def getForm(self, formname):
+        """return a PlominoForm
+        """
+        obj = getattr(self, formname, None)
+        if obj and obj.Type() == 'PlominoForm':
+            return obj
+
     security.declarePublic('getForms')
     def getForms(self, sortbyid=False):
         """return the database forms list
@@ -320,6 +328,14 @@ class PlominoDatabase(ATFolder, PlominoAccessControl, PlominoDesignManager, Plom
         else:
             form_obj_list.sort(key=lambda elt: elt.getPosition())
         return form_obj_list
+
+    security.declarePublic('getView')
+    def getView(self, viewname):
+        """return a PlominoView
+        """
+        obj = getattr(self, viewname, None)
+        if obj and obj.Type() == 'PlominoView':
+            return obj
 
     security.declarePublic('getViews')
     def getViews(self, sortbyid=False):
@@ -333,6 +349,14 @@ class PlominoDatabase(ATFolder, PlominoAccessControl, PlominoDesignManager, Plom
             view_obj_list.sort(key=lambda elt: elt.getPosition())
         return view_obj_list
 
+    security.declarePublic('getAgent')
+    def getAgent(self, agentname):
+        """return a PlominoAgent
+        """
+        obj = getattr(self, agentname, None)
+        if obj and obj.Type() == 'PlominoAgent':
+            return obj
+
     security.declarePublic('getAgents')
     def getAgents(self):
         """return the database agents list
@@ -342,22 +366,6 @@ class PlominoDatabase(ATFolder, PlominoAccessControl, PlominoDesignManager, Plom
         agent_obj_list.sort(key=lambda elt: elt.id.lower())
         return agent_obj_list
 
-    security.declarePublic('getForm')
-    def getForm(self, formname):
-        """return a PlominoForm
-        """
-        obj = getattr(self, formname, None)
-        if obj and obj.Type() == 'PlominoForm':
-            return obj
-
-    security.declarePublic('getView')
-    def getView(self, viewname):
-        """return a PlominoView
-        """
-        obj = getattr(self, viewname, None)
-        if obj and obj.Type() == 'PlominoView':
-            return obj
-
     security.declareProtected(CREATE_PERMISSION, 'createDocument')
     def createDocument(self, docid=None):
         """invoke PlominoDocument factory
@@ -365,7 +373,7 @@ class PlominoDatabase(ATFolder, PlominoAccessControl, PlominoDesignManager, Plom
         if not docid:
             docid = make_uuid()
         pt = getToolByName(self, 'portal_types')
-        pt.constructContent('PlominoDocument', self.documents, docid)
+        docid = pt.constructContent('PlominoDocument', self.documents, docid)
         doc = self.documents.get(docid)
         # new doc has been automatically index in portal_catalog by constructContent
         # 1: we do not necessarily want it (depending on IndexInPortal value)
