@@ -13,19 +13,19 @@ class DictionaryProperty(object):
     (based on zope/schema/fieldproperty.py) 
     """
 
-    def __init__(self, field, dictionnary, name=None):
+    def __init__(self, field, dictionary, name=None):
         if name is None:
             name = field.__name__
 
         self.__field = field
         self.__name = name
-        self.__dictionnary = dictionnary
+        self.__dictionary = dictionary
 
     def __get__(self, inst, klass):
         if inst is None:
             return self
 
-        value = getattr(inst, self.__dictionnary).get(self.__name, _marker)
+        value = getattr(inst, self.__dictionary).get(self.__name, _marker)
         if value is _marker:
             field = self.__field.bind(inst)
             value = getattr(field, 'default', _marker)
@@ -39,7 +39,7 @@ class DictionaryProperty(object):
         field.validate(value)
         if field.readonly and inst.__dict__.has_key(self.__name):
             raise ValueError(self.__name, 'field is readonly')
-        getattr(inst, self.__dictionnary)[self.__name] = value
+        getattr(inst, self.__dictionary)[self.__name] = value
 
     def __getattr__(self, name):
         return getattr(self.__field, name)

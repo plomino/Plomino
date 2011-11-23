@@ -170,10 +170,13 @@ class PlominoIndex(UniqueObject, ZCatalog, ActionProviderBase):
         user_groups_roles = ['Anonymous', '*']
         user_id = self.getCurrentUser().getUserName()
         if user_id != "Anonymous User":
-            user_groups_roles += [user_id] \
-                           + self.getCurrentUserGroups() \
-                           + self.getCurrentUserRoles()
+            user_groups_roles += (
+                [user_id] + 
+                self.getCurrentUserGroups() + 
+                self.getCurrentUserRoles()
+                )
         request['getPlominoReaders'] = user_groups_roles
+        #DBG logger.info('dbsearch> %s, %s, %s, %s'%(`request`, sortindex, reverse, limit)) 
         return self.search(request, sortindex, reverse, limit)
 
     security.declareProtected(READ_PERMISSION, 'getKeyUniqueValues')
