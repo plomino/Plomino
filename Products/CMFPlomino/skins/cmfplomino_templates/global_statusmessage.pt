@@ -29,6 +29,7 @@
         <pre></pre>
     </div>
     <script type="text/javascript">
+    <!--
         function showTraceback(el, formula_path) {
             msg = jq(el).children().filter(":first").html();
             popup = jq("#plominoTracebackPopup");
@@ -47,6 +48,7 @@
         jq(document).ready(function () {
 			jq("#plominoMessages").load("./statusmessage_load #plonePortalMessages");
 		});
+	-->
     </script>
 
 </tal:block>
