@@ -47,6 +47,8 @@ try:
     ASYNC = True
 except:
     ASYNC = False
+from plone.memoize.interfaces import ICacheChooser
+from zope.component import queryUtility
 
 from index.PlominoIndex import PlominoIndex
 from Products.CMFPlomino.PlominoUtils import *
@@ -486,8 +488,21 @@ class PlominoDatabase(ATFolder, PlominoAccessControl, PlominoDesignManager, Plom
             # documents will not be ordered in site map
             return 0
         return ATFolder.getObjectPosition(self, id)
-            
+
+    @property
+    def cache(self):
+        chooser = queryUtility(ICacheChooser)
+        if chooser is None:
+            return None
         
+        return chooser(self.absolute_url_path())
+
+    def getCache(self, key):
+        return self.cache.get(key)
+
+    def setCache(self, key, value):
+        self.cache[key] = value
+
 registerType(PlominoDatabase, PROJECTNAME)
 # end of class PlominoDatabase
 
