@@ -49,6 +49,7 @@ except:
     ASYNC = False
 from plone.memoize.interfaces import ICacheChooser
 from zope.component import queryUtility
+from zope.annotation.interfaces import IAnnotations
 
 from index.PlominoIndex import PlominoIndex
 from Products.CMFPlomino.PlominoUtils import *
@@ -59,6 +60,7 @@ from PlominoScheduler import PlominoScheduler
 
 from Products.CMFCore.PortalFolder import PortalFolderBase as PortalFolder
 
+PLOMINO_REQUEST_CACHE_KEY = "plomino.cache"
 ##/code-section module-header
 
 schema = Schema((
@@ -489,19 +491,44 @@ class PlominoDatabase(ATFolder, PlominoAccessControl, PlominoDesignManager, Plom
             return 0
         return ATFolder.getObjectPosition(self, id)
 
-    @property
-    def cache(self):
+    def _cache(self):
         chooser = queryUtility(ICacheChooser)
         if chooser is None:
             return None
-        
         return chooser(self.absolute_url_path())
 
     def getCache(self, key):
-        return self.cache.get(key)
+        """ get cached value in the cache provided by plone.memoize 
+        """
+        return self._cache().get(key)
 
     def setCache(self, key, value):
-        self.cache[key] = value
+        """ set cached value in the cache provided by plone.memoize 
+        """
+        self._cache()[key] = value
+
+    def getRequestCache(self, key):
+        """ get cached value in an annotation on the current request
+        Note: it will available within this request only, it will be destroyed
+        once the request is terminated.
+        """
+        if not hasattr(self, 'REQUEST'):
+            return None
+        annotations = IAnnotations(self.REQUEST)
+        cache = annotations.get(PLOMINO_REQUEST_CACHE_KEY)
+        if cache:
+            return cache.get(key)
+
+    def setRequestCache(self, key, value):
+        """ set cached value in an annotation on the current request 
+        """
+        if not hasattr(self, 'REQUEST'):
+            return None
+        annotations = IAnnotations(self.REQUEST)
+        cache = annotations.get(PLOMINO_REQUEST_CACHE_KEY)
+        if not cache:
+            cache = annotations[PLOMINO_REQUEST_CACHE_KEY] = dict()
+        cache[key] = value
 
 registerType(PlominoDatabase, PROJECTNAME)
 # end of class PlominoDatabase
