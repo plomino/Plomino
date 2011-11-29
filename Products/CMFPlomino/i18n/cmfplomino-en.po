@@ -693,3 +693,8 @@ msgid "CMFPlomino_label_AgentRunAs"
 msgstr "Run as"
 msgid "CMFPlomino_help_AgentRunAs"
 msgstr "Run the agent using current user access rights, or using the developer access rights."
+
+msgid "CMFPlomino_label_onOpenView"
+msgstr "On open view"
+msgid "CMFPlomino_help_onOpenView"
+msgstr "Action to take when the view is opened. If a string is returned, it is considered as an error message, and the openning is not allowed."
