@@ -1,6 +1,13 @@
 Changelog
 =========
 
+1.13 (2011-11-30)
+-----------------
+* onOpenView event
+* getCache and setCache which use plone.memoize to cache data
+* getRequestCache and setRequestCache to cache data into the request
+* Allow keyword args for agent __call__
+
 1.12.1 (2011-10-07)
 -------------------
 * fix transform exceptions in attached file indexing
