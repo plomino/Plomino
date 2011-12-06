@@ -44,9 +44,9 @@ def StringToDate(str_d, format='%Y-%m-%d'):
     try:
         dt = strptime(str_d, format)
     except ValueError, e:
-        logger.info('StringToDate> %s, %s'%(str(str_d), `e`))
         # XXX: Just let DateTime guess.
         dt = strptime(DateTime(str_d).ISO(), '%Y-%m-%d %H:%M:%S')
+        logger.info('StringToDate> %s, %s, %s, guessed: %s'%(str(str_d), format, `e`, `dt`))
     if len(dt)>=5:
         return DateTime(dt[0], dt[1], dt[2], dt[3], dt[4])
     else:
