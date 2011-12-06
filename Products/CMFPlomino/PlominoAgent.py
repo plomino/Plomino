@@ -110,8 +110,8 @@ class PlominoAgent(BaseContent, BrowserDefaultMixin):
         return result
 
     security.declarePublic('runAgent')
-    def runAgent(self,REQUEST=None):
-        """execute the python code
+    def runAgent(self, REQUEST=None):
+        """ Execute the agent formula.
         """
         plominoContext = self
         plominoReturnURL = self.getParentDatabase().absolute_url()
