@@ -695,3 +695,8 @@ msgid "CMFPlomino_label_AgentRunAs"
 msgstr "Exécuter en tant que"
 msgid "CMFPlomino_help_AgentRunAs"
 msgstr "Exécute l'agent avec les droits de l'utilisateur courant, ou avec les droits du développeur qui a rédigé l'agent."
+
+msgid "CMFPlomino_label_onOpenView"
+msgstr "Ouverture de la vue"
+msgid "CMFPlomino_help_onOpenView"
+msgstr "Script exécuté à l'ouverture d'un document. Si une chaîne est renvoyée, on considère qu'il s'agit d'un message d'erreur et la vue ne s'ouvre pas."

@@ -376,6 +376,9 @@ class PlominoDocument(ATFolder):
         if editmode:
             if not db.isCurrentUserAuthor(self):
                 raise Unauthorized, "You cannot edit this document."
+        else:
+            if not self.isReader():
+                raise Unauthorized, "You cannot read this content"
 
         # execute the onOpenDocument code of the form
         valid = ''

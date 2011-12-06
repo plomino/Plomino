@@ -182,6 +182,16 @@ schema = Schema((
         ),
 #        schemata="Parameters",
     ),
+    TextField(
+        name='onOpenView',
+        widget=TextAreaWidget(
+            label="On open view",
+            description="Action to take when the view is opened. If a string is returned, it is considered as an error message, and the openning is not allowed.",
+            label_msgid='CMFPlomino_label_onOpenView',
+            description_msgid='CMFPlomino_help_onOpenView',
+            i18n_domain='CMFPlomino',
+        ),
+    ),
     IntegerField(
         name='Position',
         widget=IntegerField._properties['widget'](
@@ -215,10 +225,20 @@ class PlominoView(ATFolder):
     security.declarePublic('checkBeforeOpenView')
     def checkBeforeOpenView(self):
         """check read permission and open view NOTE: if READ_PERMISSION set
-        on the 'view' actionb itself, it causes error 'maximum recursion
+        on the 'view' action itself, it causes error 'maximum recursion
         depth exceeded' if user hasn't permission
         """
         if self.checkUserPermission(READ_PERMISSION):
+            valid = ''
+            try:
+                if self.getOnOpenView():
+                    valid = self.runFormulaScript("view_"+self.id+"_onopen", self, self.getOnOpenView)
+            except PlominoScriptException, e:
+                e.reportError('onOpenView event failed')
+            
+            if valid:
+                return self.ErrorMessages(errors=[valid])
+
             if not self.getViewTemplate()=="":
                 pt=self.resources._getOb(self.getViewTemplate())
                 return pt.__of__(self)()
