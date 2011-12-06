@@ -211,18 +211,22 @@
 				<td>
 				<select name="designelements" multiple="true" lines="6">
 					<tal:block tal:condition="sourceURL">
+                        <option value="">== Forms ==</option>
 						<tal:block tal:repeat="f python:here.getRemoteForms(sourceURL, username, password)">
 							<option tal:attributes="value f;"
 								tal:content="python:f+' (Form)'">value</option>
 						</tal:block>
+                        <option value="">== Views ==</option>
 						<tal:block tal:repeat="v python:here.getRemoteViews(sourceURL, username, password)">
 							<option tal:attributes="value v;"
 								tal:content="python:v+' (View)'">value</option>
 						</tal:block>
+                        <option value="">== Agents ==</option>
 						<tal:block tal:repeat="a python:here.getRemoteAgents(sourceURL, username, password)">
 							<option tal:attributes="value a;"
 								tal:content="python:a+' (Agent)'">value</option>
 						</tal:block>
+                        <option value="">== Resources ==</option>
 						<tal:block tal:repeat="v python:here.getRemoteResources(sourceURL, username, password)">
 							<option tal:attributes="value v;"
 								tal:content="python:v+' (Resource)'">value</option>
