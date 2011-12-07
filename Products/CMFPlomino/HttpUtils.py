@@ -32,6 +32,7 @@ def authenticateAndLoadURL(targetURL, username, password):
     f=urllib.urlopen(u)
     return f
 
+
 def authenticateAndPostToURL(targetURL, username, password, filename, filecontent):
     """ authenticate and post files to URL
     """
