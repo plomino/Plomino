@@ -96,10 +96,13 @@ class PlominoAgent(BaseContent, BrowserDefaultMixin):
         plominoContext = self
         try:
             if self.getRunAs() == "OWNER":
-                user = self.getOwner()
-                newSecurityManager(None, user)
+                owner = self.getOwner()
+                # user = self.getCurrentUser()
+                newSecurityManager(None, owner)
 
             result = self.runFormulaScript("agent_"+self.id, plominoContext, self.Content, True, *args)
+            # if self.getRunAs() == "OWNER":
+            #     newSecurityManager(None, user)
         except PlominoScriptException, e:
             e.reportError('Agent failed')
             result = None
@@ -107,8 +110,8 @@ class PlominoAgent(BaseContent, BrowserDefaultMixin):
         return result
 
     security.declarePublic('runAgent')
-    def runAgent(self,REQUEST=None):
-        """execute the python code
+    def runAgent(self, REQUEST=None):
+        """ Execute the agent formula.
         """
         plominoContext = self
         plominoReturnURL = self.getParentDatabase().absolute_url()

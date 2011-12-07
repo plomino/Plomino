@@ -367,10 +367,11 @@ class PlominoDocument(ATFolder):
             event.notify(ObjectEditedEvent(self))
 
     security.declareProtected(READ_PERMISSION, 'openWithForm')
-    def openWithForm(self,form,editmode=False):
-        """display the document using the given form's layout - first,
-        check if the user has proper access rights
+    def openWithForm(self, form, editmode=False):
+        """ Display the document using the given form's layouts.
+        First, check if the user has proper access rights.
         """
+
         db = self.getParentDatabase()
         if editmode:
             if not db.isCurrentUserAuthor(self):
@@ -431,11 +432,9 @@ class PlominoDocument(ATFolder):
 
     security.declarePublic('getForm')
     def getForm(self):
-        """by default, we use the form corresponding to the Form item value
-        but it might be forced to a different form by passing the form id as
-        request parameter, or by evaluating the parent view form formula
+        """ Return form: look in REQUEST, then try to acquire from view, and
+        finally fall back to document Form item.
         """
-        default_form = self.getItem('Form')
         formname = None
         if hasattr(self, 'REQUEST'):
             formname = self.REQUEST.get("openwithform", None)
@@ -443,10 +442,9 @@ class PlominoDocument(ATFolder):
             if hasattr(self, 'evaluateViewForm'):
                 formname = self.evaluateViewForm(self)
         if not formname:
-            formname = default_form
+            formname = self.getItem('Form')
         form = self.getParentDatabase().getForm(formname)
         if not form:
-            form = self.getParentDatabase().getForm(default_form)
             if hasattr(self, "REQUEST") and formname:
                 self.writeMessageOnPage("Form %s does not exist." % formname, self.REQUEST, True)
         return form
