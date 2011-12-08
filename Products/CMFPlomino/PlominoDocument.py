@@ -33,6 +33,8 @@ from zope import event
 from Products.Archetypes.event import ObjectEditedEvent
 from zope.component import queryUtility
 
+import simplejson as json
+
 import logging
 logger = logging.getLogger('Plomino')
 
@@ -206,6 +208,35 @@ class PlominoDocument(ATFolder):
                 return result
 
         return result
+
+    security.declarePublic('getJSON')
+    def getJSON(self, REQUEST=None, item=None, formid=None):
+        """return item value as JSON
+        (return all items if item=None)
+        """
+        if not self.isReader():
+            raise Unauthorized, "You cannot read this content"
+        
+        if REQUEST:
+            item = REQUEST.get('item', item)
+            formid = REQUEST.get('formid', formid)
+        if not item:
+            return json.dumps(self.items)
+        
+        if not formid:
+            form = self.getForm()
+        else:
+            form = self.getParentDatabase().getForm(formid)
+        if form:
+            field = form.getFormField(item)
+            if field:
+                adapt = field.getSettings()
+                fieldvalue = adapt.getFieldValue(form, self, False, False, REQUEST)
+            else:
+                fieldvalue = self.getItem(item)
+        else:
+            fieldvalue = self.getItem(item)
+        return json.dumps(fieldvalue) 
 
     security.declarePublic('computeItem')
     def computeItem(self, itemname, form=None, formid=None, store=True, report=True):
