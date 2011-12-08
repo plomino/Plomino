@@ -57,6 +57,7 @@ from PlominoAccessControl import PlominoAccessControl
 from PlominoDesignManager import PlominoDesignManager
 from PlominoReplicationManager import PlominoReplicationManager
 from PlominoScheduler import PlominoScheduler
+from exceptions import PlominoCacheException
 
 from Products.CMFCore.PortalFolder import PortalFolderBase as PortalFolder
 
@@ -499,7 +500,7 @@ class PlominoDatabase(ATFolder, PlominoAccessControl, PlominoDesignManager, Plom
 
     def getCache(self, key):
         """ get cached value in the cache provided by plone.memoize 
-        """
+        """ 
         return self._cache().get(key)
 
     def setCache(self, key, value):
@@ -507,6 +508,21 @@ class PlominoDatabase(ATFolder, PlominoAccessControl, PlominoDesignManager, Plom
         """
         self._cache()[key] = value
 
+    def cleanCache(self, key=None):
+        """ invalidate the cache
+        (if key is None, all cached values are cleaned)
+        """
+        cache = self._cache()
+        if hasattr(cache, 'ramcache'):
+            if key:
+                cachekey = dict(key=cache._make_key(key))
+            else:
+                cachekey = None
+            cache.ramcache.invalidate(self.absolute_url_path(), cachekey)
+        else:
+            # we are probably not using zope.ramcache
+            raise PlominoCacheException, 'Cache cleaning not implemented'
+        
     def getRequestCache(self, key):
         """ get cached value in an annotation on the current request
         Note: it will available within this request only, it will be destroyed
