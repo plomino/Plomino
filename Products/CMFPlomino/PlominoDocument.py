@@ -209,8 +209,8 @@ class PlominoDocument(ATFolder):
 
         return result
 
-    security.declarePublic('getJSON')
-    def getJSON(self, REQUEST=None, item=None, formid=None):
+    security.declarePublic('tojson')
+    def tojson(self, REQUEST=None, item=None, formid=None):
         """return item value as JSON
         (return all items if item=None)
         """
