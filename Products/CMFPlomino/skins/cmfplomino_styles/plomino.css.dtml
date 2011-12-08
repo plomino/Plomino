@@ -36,6 +36,12 @@
 	border-width:thin;
 	}
 
+.plominoCacheClass {
+	color: #dc7f7f;
+	border-style:dashed;
+	border-width:thin;
+	}
+
 .plominoNoWrap {
 	white-space: nowrap;	
 }
