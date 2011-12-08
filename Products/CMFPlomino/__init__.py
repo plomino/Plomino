@@ -110,6 +110,7 @@ def initialize(context):
     import PlominoDocument
     import PlominoHidewhen
     import PlominoAgent
+    import PlominoCache
 
     # Initialize portal content
     all_content_types, all_constructors, all_ftis = process_types(
