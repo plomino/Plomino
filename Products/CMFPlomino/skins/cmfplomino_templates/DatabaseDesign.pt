@@ -37,47 +37,52 @@
                     <a tal:attributes="href python:form.absolute_url_path()+'/folder_contents'"><img src="folder_icon.gif" /></a>
                 </dt>
                 <dd class="collapsibleContent">
-                    <!--Fields list-->
-                            <ul>
-                                <li><span i18n:translate="">Fields</span>:</li>
-                                <tal:fieldsforms tal:repeat="field python:form.getFormFields()">
-                                <ul>
-                                    <li>
-                                    <tal:block tal:content="field/id">Field name</tal:block> (<tal:block tal:content="python:field.getFieldType().title()">Field type</tal:block>)
-                                    <a href="" tal:attributes="href python:field.absolute_url_path()+'/base_edit'"><img src="edit.gif" /></a>
-                                    <a href="" tal:attributes="href python:field.absolute_url_path()+'/'+field.getFieldType().lower()+'settings'"><img src="document_icon.gif" /></a>
-                                    </li>
-                                </ul>
-                                </tal:fieldsforms>
-                                
-                                <li>
-                                    <span i18n:translate="">Hide when</span> : 
-                                </li>
-                                <tal:hidewhens tal:repeat="h python:form.getHidewhenFormulas()">
-                                <ul>
-                                    
-                                    <li>
-                                    <tal:block tal:content="h/id">Hide when name</tal:block>
-                                    <a href="" tal:attributes="href python:h.absolute_url_path()+'/base_edit'"><img src="edit.gif" /></a>
-                                    <a href="" tal:attributes="href python:h.absolute_url_path()+'/base_view'"><img src="document_icon.gif" /></a>
-                                    </li>
-                                
-                                </ul>
-                                </tal:hidewhens>
-                                <li>
-                                    <span i18n:translate="">Actions</span> : 
-                                </li>
-                                <ul>
-                                    <tal:actionsforms tal:repeat="action_tuple python:form.getActions(None, False, form.id)">
-                                        <li tal:define="action python:action_tuple[0]">
-                                        <tal:block tal:content="action/id">action name</tal:block>
-                                        <a href="" tal:attributes="href python:action.absolute_url()+'/base_edit'"><img src="edit.gif" /></a>
-                                        <a href="" tal:attributes="href python:action.absolute_url()+'/base_view'"><img src="document_icon.gif" /></a>
-                                        </li>
-                                    </tal:actionsforms>
-                                </ul>
-                                
-                            </ul>
+                    <ul>
+                        <li><span i18n:translate="">Fields</span>:
+	                        <tal:fieldsforms tal:repeat="field python:form.getFormFields()">
+	                        <ul>
+	                            <li>
+	                            <tal:block tal:content="field/id">Field name</tal:block> (<tal:block tal:content="python:field.getFieldType().title()">Field type</tal:block>)
+	                            <a href="" tal:attributes="href python:field.absolute_url_path()+'/base_edit'"><img src="edit.gif" /></a>
+	                            <a href="" tal:attributes="href python:field.absolute_url_path()+'/'+field.getFieldType().lower()+'settings'"><img src="document_icon.gif" /></a>
+	                            </li>
+	                        </ul>
+	                        </tal:fieldsforms></li>
+                        
+                        <li>
+                            <span i18n:translate="">Hide when</span> : 
+	                        <tal:hidewhens tal:repeat="h python:form.getHidewhenFormulas()">
+	                        <ul>
+	                            <li>
+	                            <tal:block tal:content="h/id">Hide when name</tal:block>
+	                            <a href="" tal:attributes="href python:h.absolute_url_path()+'/base_edit'"><img src="edit.gif" /></a>
+	                            <a href="" tal:attributes="href python:h.absolute_url_path()+'/base_view'"><img src="document_icon.gif" /></a>
+	                            </li>
+	                        </ul>
+	                        </tal:hidewhens></li>
+	                    <li>
+                            <span i18n:translate="">Actions</span> : 
+	                        <ul>
+	                            <tal:actionsforms tal:repeat="action_tuple python:form.getActions(None, False, form.id)">
+	                                <li tal:define="action python:action_tuple[0]">
+	                                <tal:block tal:content="action/id">action name</tal:block>
+	                                <a href="" tal:attributes="href python:action.absolute_url()+'/base_edit'"><img src="edit.gif" /></a>
+	                                <a href="" tal:attributes="href python:action.absolute_url()+'/base_view'"><img src="document_icon.gif" /></a>
+	                                </li>
+	                            </tal:actionsforms>
+	                        </ul></li>
+                        <li>
+                            <span i18n:translate="">Caches</span> : 
+	                        <tal:caches tal:repeat="c python:form.getCacheFormulas()">
+	                        <ul>
+	                            <li>
+	                            <tal:block tal:content="c/id">Cache name</tal:block>
+	                            <a href="" tal:attributes="href python:c.absolute_url_path()+'/base_edit'"><img src="edit.gif" /></a>
+	                            <a href="" tal:attributes="href python:c.absolute_url_path()+'/base_view'"><img src="document_icon.gif" /></a>
+	                            </li>
+	                        </ul>
+	                        </tal:caches></li>
+                    </ul>
                 </dd></dl></div>
             </tal:block>
 </dd></dl><br/>
