@@ -39,7 +39,7 @@
 						<tal:block tal:condition="python:here.isDocumentsCountEnabled()">
 							<a href="#" 
 								tal:attributes="href v/absolute_url_path"
-								tal:content="python:v.Title() + ' (%d)' % len([b for b in v.getAllDocuments() if v.hasReadPermission(b.getObject())])">view link</a>
+								tal:content="python:v.Title() + ' (%d)' % len([o for o in v.getAllDocuments() if v.hasReadPermission(o)])">view link</a>
 						</tal:block>
 						<br/>
 					</p>
