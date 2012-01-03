@@ -1,0 +1,319 @@
+<?xml version="1.0" ?>
+<plominodatabase id="datagrids">
+<design>
+<dbsettings>
+<AboutDescription type="Products.Archetypes.Field.TextField">
+<![CDATA[]]>
+</AboutDescription>
+<UsingDescription type="Products.Archetypes.Field.TextField">
+<![CDATA[]]>
+</UsingDescription>
+<IndexAttachments type="Products.Archetypes.Field.BooleanField">False</IndexAttachments>
+<FulltextIndex type="Products.Archetypes.Field.BooleanField">False</FulltextIndex>
+<IndexInPortal type="Products.Archetypes.Field.BooleanField">True</IndexInPortal>
+<debugMode type="Products.Archetypes.Field.BooleanField">False</debugMode>
+<StorageAttachments type="Products.Archetypes.Field.BooleanField">False</StorageAttachments>
+<CountDocuments type="Products.Archetypes.Field.BooleanField">False</CountDocuments>
+<DateTimeFormat type="Products.Archetypes.Field.StringField">%Y/%m/%d</DateTimeFormat>
+<StartPage type="Products.Archetypes.Field.StringField">
+</StartPage>
+<DoNotListUsers type="Products.Archetypes.Field.BooleanField">False</DoNotListUsers>
+<DoNotReindex type="Products.Archetypes.Field.BooleanField">False</DoNotReindex>
+<excludeFromNav type="Products.Archetypes.Field.BooleanField">False</excludeFromNav>
+<acl AnomynousAccessRight="NoAccess" AuthenticatedAccessRight="PlominoEditor">
+<params id="UserRoles">
+<param>
+<value>
+<struct>
+</struct>
+</value>
+</param>
+</params>
+<params id="SpecificRights">
+<param>
+<value>
+<struct>
+<member>
+<name>specific_deletedocument</name>
+<value>
+<string>PlominoAuthor</string>
+</value>
+</member>
+</struct>
+</value>
+</param>
+</params>
+</acl>
+</dbsettings>
+<element id="dgItem" title="Item" type="PlominoForm">
+<id type="Products.Archetypes.Field.StringField">dgItem</id>
+<onCreateDocument type="Products.Archetypes.Field.TextField">
+<![CDATA[]]>
+</onCreateDocument>
+<onOpenDocument type="Products.Archetypes.Field.TextField">
+<![CDATA[]]>
+</onOpenDocument>
+<onSaveDocument type="Products.Archetypes.Field.TextField">
+<![CDATA[]]>
+</onSaveDocument>
+<onDeleteDocument type="Products.Archetypes.Field.TextField">
+<![CDATA[]]>
+</onDeleteDocument>
+<onSearch type="Products.Archetypes.Field.TextField">
+<![CDATA[]]>
+</onSearch>
+<beforeCreateDocument type="Products.Archetypes.Field.TextField">
+<![CDATA[]]>
+</beforeCreateDocument>
+<FormLayout type="Products.Archetypes.Field.TextField">
+<![CDATA[<p>Name: <span class="plominoFieldClass">item_name</span>
+</p>
+<p>Quantity: <span class="plominoFieldClass">item_quantity</span>
+</p>]]>
+</FormLayout>
+<DocumentTitle type="Products.Archetypes.Field.TextField">
+<![CDATA[]]>
+</DocumentTitle>
+<DocumentId type="Products.Archetypes.Field.TextField">
+<![CDATA[]]>
+</DocumentId>
+<ActionBarPosition type="Products.Archetypes.Field.StringField">TOP</ActionBarPosition>
+<HideDefaultActions type="Products.Archetypes.Field.BooleanField">False</HideDefaultActions>
+<HideInMenu type="Products.Archetypes.Field.BooleanField">True</HideInMenu>
+<isSearchForm type="Products.Archetypes.Field.BooleanField">False</isSearchForm>
+<isPage type="Products.Archetypes.Field.BooleanField">False</isPage>
+<SearchView type="Products.Archetypes.Field.StringField">
+</SearchView>
+<SearchFormula type="Products.Archetypes.Field.TextField">
+<![CDATA[]]>
+</SearchFormula>
+<Position type="Products.Archetypes.Field.IntegerField"/>
+<excludeFromNav type="Products.Archetypes.Field.BooleanField">False</excludeFromNav>
+<elements>
+<element id="item_name" title="item_name" type="PlominoField">
+<id type="Products.Archetypes.Field.StringField">item_name</id>
+<FieldType type="Products.Archetypes.Field.StringField">TEXT</FieldType>
+<FieldMode type="Products.Archetypes.Field.StringField">EDITABLE</FieldMode>
+<Formula type="Products.Archetypes.Field.TextField">
+<![CDATA[]]>
+</Formula>
+<FieldReadTemplate type="Products.Archetypes.Field.StringField">
+</FieldReadTemplate>
+<FieldEditTemplate type="Products.Archetypes.Field.StringField">
+</FieldEditTemplate>
+<Mandatory type="Products.Archetypes.Field.BooleanField">False</Mandatory>
+<ValidationFormula type="Products.Archetypes.Field.TextField">
+<![CDATA[]]>
+</ValidationFormula>
+<ToBeIndexed type="Products.Archetypes.Field.BooleanField">True</ToBeIndexed>
+</element>
+<element id="item_quantity" title="item_quantity" type="PlominoField">
+<id type="Products.Archetypes.Field.StringField">item_quantity</id>
+<FieldType type="Products.Archetypes.Field.StringField">NUMBER</FieldType>
+<FieldMode type="Products.Archetypes.Field.StringField">EDITABLE</FieldMode>
+<Formula type="Products.Archetypes.Field.TextField">
+<![CDATA[]]>
+</Formula>
+<FieldReadTemplate type="Products.Archetypes.Field.StringField">
+</FieldReadTemplate>
+<FieldEditTemplate type="Products.Archetypes.Field.StringField">
+</FieldEditTemplate>
+<Mandatory type="Products.Archetypes.Field.BooleanField">False</Mandatory>
+<ValidationFormula type="Products.Archetypes.Field.TextField">
+<![CDATA[]]>
+</ValidationFormula>
+<ToBeIndexed type="Products.Archetypes.Field.BooleanField">False</ToBeIndexed>
+</element>
+</elements>
+</element>
+<element id="frmOrder" title="Order" type="PlominoForm">
+<id type="Products.Archetypes.Field.StringField">frmOrder</id>
+<onCreateDocument type="Products.Archetypes.Field.TextField">
+<![CDATA[]]>
+</onCreateDocument>
+<onOpenDocument type="Products.Archetypes.Field.TextField">
+<![CDATA[]]>
+</onOpenDocument>
+<onSaveDocument type="Products.Archetypes.Field.TextField">
+<![CDATA[]]>
+</onSaveDocument>
+<onDeleteDocument type="Products.Archetypes.Field.TextField">
+<![CDATA[]]>
+</onDeleteDocument>
+<onSearch type="Products.Archetypes.Field.TextField">
+<![CDATA[]]>
+</onSearch>
+<beforeCreateDocument type="Products.Archetypes.Field.TextField">
+<![CDATA[]]>
+</beforeCreateDocument>
+<FormLayout type="Products.Archetypes.Field.TextField">
+<![CDATA[<p>Order reference: <span class="plominoFieldClass">order_reference</span>
+</p>
+<p>Items list:</p>
+<p>
+<span class="plominoFieldClass">items_list</span>
+</p>]]>
+</FormLayout>
+<DocumentTitle type="Products.Archetypes.Field.TextField">
+<![CDATA[plominoDocument.order_reference]]>
+</DocumentTitle>
+<DocumentId type="Products.Archetypes.Field.TextField">
+<![CDATA[]]>
+</DocumentId>
+<ActionBarPosition type="Products.Archetypes.Field.StringField">TOP</ActionBarPosition>
+<HideDefaultActions type="Products.Archetypes.Field.BooleanField">False</HideDefaultActions>
+<HideInMenu type="Products.Archetypes.Field.BooleanField">False</HideInMenu>
+<isSearchForm type="Products.Archetypes.Field.BooleanField">False</isSearchForm>
+<isPage type="Products.Archetypes.Field.BooleanField">False</isPage>
+<SearchView type="Products.Archetypes.Field.StringField">
+</SearchView>
+<SearchFormula type="Products.Archetypes.Field.TextField">
+<![CDATA[]]>
+</SearchFormula>
+<Position type="Products.Archetypes.Field.IntegerField"/>
+<excludeFromNav type="Products.Archetypes.Field.BooleanField">False</excludeFromNav>
+<elements>
+<element id="order_reference" title="order_reference" type="PlominoField">
+<id type="Products.Archetypes.Field.StringField">order_reference</id>
+<FieldType type="Products.Archetypes.Field.StringField">TEXT</FieldType>
+<FieldMode type="Products.Archetypes.Field.StringField">EDITABLE</FieldMode>
+<Formula type="Products.Archetypes.Field.TextField">
+<![CDATA[]]>
+</Formula>
+<FieldReadTemplate type="Products.Archetypes.Field.StringField">
+</FieldReadTemplate>
+<FieldEditTemplate type="Products.Archetypes.Field.StringField">
+</FieldEditTemplate>
+<Mandatory type="Products.Archetypes.Field.BooleanField">False</Mandatory>
+<ValidationFormula type="Products.Archetypes.Field.TextField">
+<![CDATA[]]>
+</ValidationFormula>
+<ToBeIndexed type="Products.Archetypes.Field.BooleanField">True</ToBeIndexed>
+</element>
+<element id="items_list" title="items_list" type="PlominoField">
+<id type="Products.Archetypes.Field.StringField">items_list</id>
+<FieldType type="Products.Archetypes.Field.StringField">DATAGRID</FieldType>
+<FieldMode type="Products.Archetypes.Field.StringField">EDITABLE</FieldMode>
+<Formula type="Products.Archetypes.Field.TextField">
+<![CDATA[]]>
+</Formula>
+<FieldReadTemplate type="Products.Archetypes.Field.StringField">
+</FieldReadTemplate>
+<FieldEditTemplate type="Products.Archetypes.Field.StringField">
+</FieldEditTemplate>
+<Mandatory type="Products.Archetypes.Field.BooleanField">False</Mandatory>
+<ValidationFormula type="Products.Archetypes.Field.TextField">
+<![CDATA[]]>
+</ValidationFormula>
+<ToBeIndexed type="Products.Archetypes.Field.BooleanField">True</ToBeIndexed>
+<params>
+<param>
+<value>
+<struct>
+<member>
+<name>associated_form</name>
+<value>
+<string>dgItem</string>
+</value>
+</member>
+<member>
+<name>jssettings</name>
+<value>
+<string>&quot;aoColumns&quot;: [
+    { &quot;sTitle&quot;: &quot;Name&quot; },
+    { &quot;sTitle&quot;: &quot;Quantity&quot; }
+],
+&quot;bPaginate&quot;: false,
+&quot;bLengthChange&quot;: false,
+&quot;bFilter&quot;: false,
+&quot;bSort&quot;: false,
+&quot;bInfo&quot;: false,
+&quot;bAutoWidth&quot;: false
+</string>
+</value>
+</member>
+<member>
+<name>field_mapping</name>
+<value>
+<string>item_name,item_quantity</string>
+</value>
+</member>
+</struct>
+</value>
+</param>
+</params>
+</element>
+<element id="dg" title="dg" type="PlominoField">
+<id type="Products.Archetypes.Field.StringField">dg</id>
+<FieldType type="Products.Archetypes.Field.StringField">DATAGRID</FieldType>
+<FieldMode type="Products.Archetypes.Field.StringField">EDITABLE</FieldMode>
+<Formula type="Products.Archetypes.Field.TextField">
+<![CDATA[]]>
+</Formula>
+<FieldReadTemplate type="Products.Archetypes.Field.StringField">
+</FieldReadTemplate>
+<FieldEditTemplate type="Products.Archetypes.Field.StringField">
+</FieldEditTemplate>
+<Mandatory type="Products.Archetypes.Field.BooleanField">False</Mandatory>
+<ValidationFormula type="Products.Archetypes.Field.TextField">
+<![CDATA[]]>
+</ValidationFormula>
+<ToBeIndexed type="Products.Archetypes.Field.BooleanField">False</ToBeIndexed>
+</element>
+</elements>
+</element>
+<element id="all" title="Orders" type="PlominoView">
+<id type="Products.Archetypes.Field.StringField">all</id>
+<SelectionFormula type="Products.Archetypes.Field.TextField">
+<![CDATA[True]]>
+</SelectionFormula>
+<SortColumn type="Products.Archetypes.Field.StringField">
+</SortColumn>
+<Categorized type="Products.Archetypes.Field.BooleanField">False</Categorized>
+<FormFormula type="Products.Archetypes.Field.TextField">
+<![CDATA[]]>
+</FormFormula>
+<ReverseSorting type="Products.Archetypes.Field.BooleanField">False</ReverseSorting>
+<ActionBarPosition type="Products.Archetypes.Field.StringField">TOP</ActionBarPosition>
+<HideDefaultActions type="Products.Archetypes.Field.BooleanField">False</HideDefaultActions>
+<HideInMenu type="Products.Archetypes.Field.BooleanField">False</HideInMenu>
+<Widget type="Products.Archetypes.Field.StringField">BASIC</Widget>
+<DynamicTableParameters type="Products.Archetypes.Field.TextField">
+<![CDATA['bPaginate': false,
+'bLengthChange': false,
+'bFilter': true,
+'bSort': true,
+'bInfo': false,
+'bAutoWidth': false]]>
+</DynamicTableParameters>
+<ViewTemplate type="Products.Archetypes.Field.StringField">
+</ViewTemplate>
+<Position type="Products.Archetypes.Field.IntegerField"/>
+<excludeFromNav type="Products.Archetypes.Field.BooleanField">False</excludeFromNav>
+<elements>
+<element id="order_ref" title="Reference" type="PlominoColumn">
+<id type="Products.Archetypes.Field.StringField">order_ref</id>
+<SelectedField type="Products.Archetypes.Field.StringField">frmOrder/order_reference</SelectedField>
+<Formula type="Products.Archetypes.Field.TextField">
+<![CDATA[]]>
+</Formula>
+<HiddenColumn type="Products.Archetypes.Field.BooleanField">False</HiddenColumn>
+<DisplaySum type="Products.Archetypes.Field.BooleanField">False</DisplaySum>
+</element>
+<element id="add_new" title="Add an order" type="PlominoAction">
+<id type="Products.Archetypes.Field.StringField">add_new</id>
+<ActionType type="Products.Archetypes.Field.StringField">OPENFORM</ActionType>
+<ActionDisplay type="Products.Archetypes.Field.StringField">
+</ActionDisplay>
+<Content type="Products.Archetypes.Field.TextField">
+<![CDATA[frmOrder]]>
+</Content>
+<Hidewhen type="Products.Archetypes.Field.TextField">
+<![CDATA[]]>
+</Hidewhen>
+<InActionBar type="Products.Archetypes.Field.BooleanField">True</InActionBar>
+</element>
+</elements>
+</element>
+</design>
+</plominodatabase>

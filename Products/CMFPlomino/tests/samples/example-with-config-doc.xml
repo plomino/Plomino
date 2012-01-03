@@ -250,6 +250,57 @@ except:
         </element>
       </elements>
     </element>
+    <element id="bydepartment" title="by department" type="PlominoView">
+<id type="Products.Archetypes.Field.StringField">bydepartment</id>
+<SelectionFormula type="Products.Archetypes.Field.TextField">
+<![CDATA[plominoDocument.Form=="frmExample"]]>
+</SelectionFormula>
+<SortColumn type="Products.Archetypes.Field.StringField">
+</SortColumn>
+<Categorized type="Products.Archetypes.Field.BooleanField">True</Categorized>
+<FormFormula type="Products.Archetypes.Field.TextField">
+<![CDATA[]]>
+</FormFormula>
+<ReverseSorting type="Products.Archetypes.Field.BooleanField">False</ReverseSorting>
+<ActionBarPosition type="Products.Archetypes.Field.StringField">TOP</ActionBarPosition>
+<HideDefaultActions type="Products.Archetypes.Field.BooleanField">False</HideDefaultActions>
+<HideInMenu type="Products.Archetypes.Field.BooleanField">False</HideInMenu>
+<Widget type="Products.Archetypes.Field.StringField">DYNAMICTABLE</Widget>
+<DynamicTableParameters type="Products.Archetypes.Field.TextField">
+<![CDATA['bPaginate': false,
+'bLengthChange': false,
+'bFilter': true,
+'bSort': true,
+'bInfo': false,
+'bAutoWidth': false]]>
+</DynamicTableParameters>
+<ViewTemplate type="Products.Archetypes.Field.StringField">
+</ViewTemplate>
+<Position type="Products.Archetypes.Field.IntegerField"/>
+<excludeFromNav type="Products.Archetypes.Field.BooleanField">False</excludeFromNav>
+<elements>
+<element id="department" title="Department" type="PlominoColumn">
+<id type="Products.Archetypes.Field.StringField">department</id>
+<SelectedField type="Products.Archetypes.Field.StringField">
+</SelectedField>
+<Formula type="Products.Archetypes.Field.TextField">
+<![CDATA[plominoDocument.department]]>
+</Formula>
+<HiddenColumn type="Products.Archetypes.Field.BooleanField">False</HiddenColumn>
+<DisplaySum type="Products.Archetypes.Field.BooleanField">False</DisplaySum>
+</element>
+<element id="price" title="Total price" type="PlominoColumn">
+<id type="Products.Archetypes.Field.StringField">price</id>
+<SelectedField type="Products.Archetypes.Field.StringField">
+</SelectedField>
+<Formula type="Products.Archetypes.Field.TextField">
+<![CDATA[plominoDocument.pricewithVAT]]>
+</Formula>
+<HiddenColumn type="Products.Archetypes.Field.BooleanField">False</HiddenColumn>
+<DisplaySum type="Products.Archetypes.Field.BooleanField">False</DisplaySum>
+</element>
+</elements>
+</element>
     <element id="configview" title="Parameters list" type="PlominoView">
       <id type="Products.Archetypes.Field.StringField">configview</id>
       <SelectionFormula type="Products.Archetypes.Field.TextField"><![CDATA[plominoDocument.Form=="frmConfig"]]></SelectionFormula>

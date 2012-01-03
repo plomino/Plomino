@@ -1,0 +1,163 @@
+<?xml version="1.0" ?>
+<plominodatabase id="custom-field-template">
+<design>
+<dbsettings>
+<AboutDescription type="Products.Archetypes.Field.TextField">
+<![CDATA[]]>
+</AboutDescription>
+<UsingDescription type="Products.Archetypes.Field.TextField">
+<![CDATA[]]>
+</UsingDescription>
+<IndexAttachments type="Products.Archetypes.Field.BooleanField">False</IndexAttachments>
+<FulltextIndex type="Products.Archetypes.Field.BooleanField">False</FulltextIndex>
+<IndexInPortal type="Products.Archetypes.Field.BooleanField">False</IndexInPortal>
+<debugMode type="Products.Archetypes.Field.BooleanField">False</debugMode>
+<StorageAttachments type="Products.Archetypes.Field.BooleanField">False</StorageAttachments>
+<CountDocuments type="Products.Archetypes.Field.BooleanField">False</CountDocuments>
+<DateTimeFormat type="Products.Archetypes.Field.StringField">%Y-%m-%d</DateTimeFormat>
+<StartPage type="Products.Archetypes.Field.StringField">
+</StartPage>
+<DoNotListUsers type="Products.Archetypes.Field.BooleanField">False</DoNotListUsers>
+<DoNotReindex type="Products.Archetypes.Field.BooleanField">False</DoNotReindex>
+<excludeFromNav type="Products.Archetypes.Field.BooleanField">False</excludeFromNav>
+<acl AnomynousAccessRight="NoAccess" AuthenticatedAccessRight="NoAccess">
+<params id="UserRoles">
+<param>
+<value>
+<struct>
+</struct>
+</value>
+</param>
+</params>
+<params id="SpecificRights">
+<param>
+<value>
+<struct>
+<member>
+<name>specific_deletedocument</name>
+<value>
+<string>PlominoAuthor</string>
+</value>
+</member>
+</struct>
+</value>
+</param>
+</params>
+</acl>
+</dbsettings>
+<resource id="custom_select" title="" type="Page Template">
+<![CDATA[<span tal:define="selection options/selection
+				">
+	<select tal:attributes="name options/fieldname"
+                        onchange="alert('Best wishes for '+this.value);">
+                 <tal:loop tal:repeat="v selection">
+			<option tal:define="current options/fieldvalue;l python:v.split('|')"
+				tal:attributes="value python:l[1]; selected python:test(current==l[1],1,0)"
+				tal:content="python:l[0]">value</option>
+		</tal:loop>
+</select>
+</span>]]>
+</resource>
+<element id="frmDemo" title="Demo" type="PlominoForm">
+<id type="Products.Archetypes.Field.StringField">frmDemo</id>
+<onCreateDocument type="Products.Archetypes.Field.TextField">
+<![CDATA[]]>
+</onCreateDocument>
+<onOpenDocument type="Products.Archetypes.Field.TextField">
+<![CDATA[]]>
+</onOpenDocument>
+<onSaveDocument type="Products.Archetypes.Field.TextField">
+<![CDATA[]]>
+</onSaveDocument>
+<onDeleteDocument type="Products.Archetypes.Field.TextField">
+<![CDATA[]]>
+</onDeleteDocument>
+<onSearch type="Products.Archetypes.Field.TextField">
+<![CDATA[]]>
+</onSearch>
+<beforeCreateDocument type="Products.Archetypes.Field.TextField">
+<![CDATA[]]>
+</beforeCreateDocument>
+<FormLayout type="Products.Archetypes.Field.TextField">
+<![CDATA[<p>This selection field used a custom field template: <span class="plominoFieldClass">my_field</span>
+</p>
+<p>
+<span class="discreet">It is based on the standard Selection field template, and just add an alert pop-up on the onChange event.</span>
+</p>]]>
+</FormLayout>
+<DocumentTitle type="Products.Archetypes.Field.TextField">
+<![CDATA[]]>
+</DocumentTitle>
+<DocumentId type="Products.Archetypes.Field.TextField">
+<![CDATA[]]>
+</DocumentId>
+<ActionBarPosition type="Products.Archetypes.Field.StringField">TOP</ActionBarPosition>
+<HideDefaultActions type="Products.Archetypes.Field.BooleanField">False</HideDefaultActions>
+<HideInMenu type="Products.Archetypes.Field.BooleanField">False</HideInMenu>
+<isSearchForm type="Products.Archetypes.Field.BooleanField">False</isSearchForm>
+<isPage type="Products.Archetypes.Field.BooleanField">True</isPage>
+<SearchView type="Products.Archetypes.Field.StringField">
+</SearchView>
+<SearchFormula type="Products.Archetypes.Field.TextField">
+<![CDATA[]]>
+</SearchFormula>
+<Position type="Products.Archetypes.Field.IntegerField"/>
+<excludeFromNav type="Products.Archetypes.Field.BooleanField">False</excludeFromNav>
+<elements>
+<element id="my_field" title="my_field" type="PlominoField">
+<id type="Products.Archetypes.Field.StringField">my_field</id>
+<FieldType type="Products.Archetypes.Field.StringField">SELECTION</FieldType>
+<FieldMode type="Products.Archetypes.Field.StringField">EDITABLE</FieldMode>
+<Formula type="Products.Archetypes.Field.TextField">
+<![CDATA[]]>
+</Formula>
+<FieldReadTemplate type="Products.Archetypes.Field.StringField">
+</FieldReadTemplate>
+<FieldEditTemplate type="Products.Archetypes.Field.StringField">custom_select</FieldEditTemplate>
+<Mandatory type="Products.Archetypes.Field.BooleanField">False</Mandatory>
+<ValidationFormula type="Products.Archetypes.Field.TextField">
+<![CDATA[]]>
+</ValidationFormula>
+<ToBeIndexed type="Products.Archetypes.Field.BooleanField">False</ToBeIndexed>
+<params>
+<param>
+<value>
+<struct>
+<member>
+<name>dynamictableparam</name>
+<value>
+<string>'bPaginate': true,
+'bLengthChange': true,
+'bFilter': true,
+'bSort': true,
+'bInfo': true,
+'bAutoWidth': false</string>
+</value>
+</member>
+<member>
+<name>selectionlist</name>
+<value>
+<array>
+<data>
+<value>
+<string>2010</string>
+</value>
+<value>
+<string>2011</string>
+</value>
+<value>
+<string>2012</string>
+</value>
+</data>
+</array>
+</value>
+</member>
+</struct>
+</value>
+</param>
+</params>
+</element>
+</elements>
+</element>
+</design>
+</plominodatabase>
