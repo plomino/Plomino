@@ -18,6 +18,7 @@ from Products.Archetypes.debug import deprecated
 from zope.interface import implements
 import interfaces
 from Products.ATContentTypes.content.folder import ATFolder
+from Products.CMFCore.PortalFolder import PortalFolderBase as PortalFolder
 from Products.CMFDynamicViewFTI.browserdefault import BrowserDefaultMixin
 from exceptions import PlominoScriptException
 from Products.CMFPlomino.config import *
@@ -270,6 +271,13 @@ class PlominoDatabase(ATFolder, PlominoAccessControl, PlominoDesignManager, Plom
             if self.documents.has_key(name):
                 return aq_inner(getattr(self.documents, name)).__of__(self)
         return BaseObject.__bobo_traverse__(self, request, name)
+    
+    def allowedContentTypes(self):
+        # Make sure PlominoDocument is hidden in Plone "Add..." menu
+        # as getNotAddableTypes is not used anymore in Plone 4
+        filterOut = ['PlominoDocument']
+        types = PortalFolder.allowedContentTypes(self)
+        return [ ctype for ctype in types if ctype.getId() not in filterOut ]
 
     security.declarePublic('getStatus')
     def getStatus(self):
