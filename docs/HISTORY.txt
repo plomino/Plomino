@@ -1,6 +1,13 @@
 Changelog
 =========
 
+1.13.1 (2012-01-11)
+-------------------
+* Fix agent security when running as owner
+* New content-type addable in PlominoForm: PlominoCache, to indicate cache fragments
+* Fix exportCSV and exportXLS for views
+* Fix OpenDatabase when doc counting is active
+
 1.13 (2011-11-30)
 -----------------
 * onOpenView event

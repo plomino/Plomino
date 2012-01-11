@@ -1,7 +1,7 @@
 from setuptools import setup, find_packages
 import os
 
-version = '1.13'
+version = '1.13.1'
 
 setup(name='Plomino',
       version=version,
@@ -14,7 +14,7 @@ setup(name='Plomino',
         "Framework :: Plone",
         "Programming Language :: Python",
         ],
-      keywords='RAD, dynamic forms, Lotus Domino',
+      keywords='RAD, dynamic forms, web application builder',
       author='Eric BREHAULT',
       author_email='eric.brehault@makina-corpus.org',
       url='http://www.plomino.net',
