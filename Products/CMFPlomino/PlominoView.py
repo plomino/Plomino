@@ -466,6 +466,7 @@ class PlominoView(ATFolder):
                 else:
                     v = unicode(v).encode('utf-8')
                 row.append(v)
+            rows.append(row)
         return rows
 
     security.declareProtected(READ_PERMISSION, 'exportCSV')
@@ -494,7 +495,7 @@ class PlominoView(ATFolder):
             titles = [c.title for c in self.getColumns()]
             writer.writerow(titles)
 
-        rows = makeArray(brain_docs, columns)
+        rows = self.makeArray(brain_docs, columns)
         writer.writerows(rows)
 
         if REQUEST:
@@ -513,7 +514,7 @@ class PlominoView(ATFolder):
 
         columns = [c.id for c in self.getColumns()]
 
-        rows = makeArray(brain_docs, columns)
+        rows = self.makeArray(brain_docs, columns)
 
         # add column titles
         if displayColumnsTitle == 'True':
