@@ -852,7 +852,7 @@ class PlominoForm(ATFolder):
                 REQUEST.RESPONSE.redirect(self.absolute_url_path())
             return
         view_title = "All " + self.Title()
-        formula = 'plominoDocument.Form=="%s"' % self.id
+        formula = 'plominoDocument.getItem("Form")=="%s"' % self.id
         db.invokeFactory('PlominoView',
                          id=view_id,
                          title=view_title,

@@ -17,7 +17,7 @@ from AccessControl import ClassSecurityInfo
 from Products.CMFPlomino.config import *
 from Products.CMFPlomino.PlominoField import get_field_types
 
-from Products.ZCatalog.ZCatalog import ZCatalog
+from Products.CMFCore.CatalogTool import CatalogTool
 from Products.ZCatalog.Catalog import CatalogError
 
 from Products.CMFPlone.UnicodeSplitter import CaseNormalizer
@@ -27,7 +27,6 @@ from Products.CMFPlone.UnicodeSplitter import Splitter
 #from Products.ZCTextIndex.Lexicon import StopWordRemover
 from Products.ZCTextIndex.ZCTextIndex import PLexicon
 
-from Products.CMFCore.ActionProviderBase import ActionProviderBase
 from Products.CMFCore.utils import UniqueObject, SimpleRecord
 from Products.CMFCore.utils import getToolByName
 from Products.PortalTransforms.utils import TransformException
@@ -38,18 +37,12 @@ from Products.CMFPlomino.index.PlominoViewIndex import PlominoViewIndex
 from Products.CMFPlomino.index.PlominoColumnIndex import PlominoColumnIndex
 from Products.CMFPlomino.index.PlominoFileIndex import PlominoFileIndex
 
-class PlominoIndex(UniqueObject, ZCatalog, ActionProviderBase):
+class PlominoIndex(UniqueObject, CatalogTool):
     """Plomino index
     """
     security = ClassSecurityInfo()
 
-    #id = 'plomino_index'
-
-    manage_options = ( ZCatalog.manage_options +
-        ActionProviderBase.manage_options +
-        ({ 'label' : 'Overview', 'action' : 'manage_overview' }
-        ,
-        ))
+    id = 'plomino_index'
 
     # Methods
 
@@ -58,7 +51,7 @@ class PlominoIndex(UniqueObject, ZCatalog, ActionProviderBase):
         """
         """
         self.no_refresh = True
-        ZCatalog.__init__(self, self.getId())
+        CatalogTool.__init__(self)
         self._catalog = PlominoCatalog()
         # TODO: use TextindexNG3
         #lexicon = PLexicon('plaintext_lexicon', '', Splitter(), CaseNormalizer(), StopWordRemover())

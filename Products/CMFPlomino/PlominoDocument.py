@@ -456,6 +456,9 @@ class PlominoDocument(PortalContent, Contained):
                 self.writeMessageOnPage("Form %s does not exist." % formname, self.REQUEST, True)
         return form
 
+    def _getCatalogTool(self):
+        return self.getParentDatabase().getIndex()
+
     security.declarePrivate('manage_afterClone')
     def manage_afterClone(self,item):
         """after cloning
