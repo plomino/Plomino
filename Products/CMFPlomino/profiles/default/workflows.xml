@@ -26,5 +26,8 @@
   <type type_id="PlominoAgent">
    <bound-workflow workflow_id="plomino_workflow" />
   </type>
+  <type type_id="PlominoCache">
+   <bound-workflow workflow_id="plomino_workflow" />
+  </type>
  </bindings>
 </object>

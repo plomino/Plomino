@@ -72,6 +72,8 @@ class PlominoRenderingException(Exception):
 class PlominoReplicationException(Exception):
     pass
 
-
 class PlominoDesignException(Exception):
+    pass
+
+class PlominoCacheException(Exception):
     pass

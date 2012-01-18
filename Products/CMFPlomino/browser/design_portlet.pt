@@ -82,7 +82,6 @@
                     <a tal:attributes="href python:form.absolute_url_path()+'/folder_contents'"><img src="folder_icon.gif" /></a>
                 </dt>
                 <dd class="collapsibleContent">
-                    <!--Fields list-->
                             <ul>
                                 <li><span i18n:translate="">Fields</span>:
                                 <ul>
@@ -117,6 +116,17 @@
                                     </tal:actionsforms>
                                 </ul>
                                 </li>
+                                <li><span i18n:translate="">Caches</span> : 
+			                        <tal:caches tal:repeat="c python:form.getCacheFormulas()">
+			                        <ul>
+			                            <li>
+			                            <tal:block tal:content="c/id">Cache name</tal:block>
+			                            <a href="" tal:attributes="href python:c.absolute_url_path()+'/base_edit'"><img src="edit.gif" /></a>
+			                            <a href="" tal:attributes="href python:c.absolute_url_path()+'/base_view'"><img src="document_icon.gif" /></a>
+			                            </li>
+			                        </ul>
+			                        </tal:caches></li>
+                                
                             </ul>
                 </dd></dl></div>
             </tal:block>

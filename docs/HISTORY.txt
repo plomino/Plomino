@@ -1,6 +1,20 @@
 Changelog
 =========
 
+1.13.1 (2012-01-11)
+-------------------
+* Fix agent security when running as owner
+* New content-type addable in PlominoForm: PlominoCache, to indicate cache fragments
+* Fix exportCSV and exportXLS for views
+* Fix OpenDatabase when doc counting is active
+
+1.13 (2011-11-30)
+-----------------
+* onOpenView event
+* getCache and setCache which use plone.memoize to cache data
+* getRequestCache and setRequestCache to cache data into the request
+* Allow keyword args for agent __call__
+
 1.12.1 (2011-10-07)
 -------------------
 * fix transform exceptions in attached file indexing

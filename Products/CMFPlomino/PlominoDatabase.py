@@ -18,6 +18,7 @@ from Products.Archetypes.debug import deprecated
 from zope.interface import implements
 import interfaces
 from Products.ATContentTypes.content.folder import ATFolder
+from Products.CMFCore.PortalFolder import PortalFolderBase as PortalFolder
 from Products.CMFDynamicViewFTI.browserdefault import BrowserDefaultMixin
 from exceptions import PlominoScriptException
 from Products.CMFPlomino.config import *
@@ -48,6 +49,9 @@ try:
     ASYNC = True
 except:
     ASYNC = False
+from plone.memoize.interfaces import ICacheChooser
+from zope.component import queryUtility
+from zope.annotation.interfaces import IAnnotations
 
 from index.PlominoIndex import PlominoIndex
 from Products.CMFPlomino.PlominoUtils import *
@@ -56,9 +60,11 @@ from PlominoDesignManager import PlominoDesignManager
 from PlominoReplicationManager import PlominoReplicationManager
 from PlominoScheduler import PlominoScheduler
 from PlominoDocument import addPlominoDocument
+from exceptions import PlominoCacheException
 
 from Products.CMFCore.PortalFolder import PortalFolderBase as PortalFolder
 
+PLOMINO_REQUEST_CACHE_KEY = "plomino.cache"
 ##/code-section module-header
 
 schema = Schema((
@@ -267,6 +273,13 @@ class PlominoDatabase(ATFolder, PlominoAccessControl, PlominoDesignManager, Plom
             if self.documents.has_key(name):
                 return aq_inner(getattr(self.documents, name)).__of__(self)
         return BaseObject.__bobo_traverse__(self, request, name)
+    
+    def allowedContentTypes(self):
+        # Make sure PlominoDocument is hidden in Plone "Add..." menu
+        # as getNotAddableTypes is not used anymore in Plone 4
+        filterOut = ['PlominoDocument']
+        types = PortalFolder.allowedContentTypes(self)
+        return [ ctype for ctype in types if ctype.getId() not in filterOut ]
 
     security.declarePublic('getStatus')
     def getStatus(self):
@@ -311,6 +324,14 @@ class PlominoDatabase(ATFolder, PlominoAccessControl, PlominoDesignManager, Plom
         else:
             raise Unauthorized, "You cannot read this content"
 
+    security.declarePublic('getForm')
+    def getForm(self, formname):
+        """return a PlominoForm
+        """
+        obj = getattr(self, formname, None)
+        if obj and obj.Type() == 'PlominoForm':
+            return obj
+
     security.declarePublic('getForms')
     def getForms(self, sortbyid=False):
         """return the database forms list
@@ -322,6 +343,14 @@ class PlominoDatabase(ATFolder, PlominoAccessControl, PlominoDesignManager, Plom
         else:
             form_obj_list.sort(key=lambda elt: elt.getPosition())
         return form_obj_list
+
+    security.declarePublic('getView')
+    def getView(self, viewname):
+        """return a PlominoView
+        """
+        obj = getattr(self, viewname, None)
+        if obj and obj.Type() == 'PlominoView':
+            return obj
 
     security.declarePublic('getViews')
     def getViews(self, sortbyid=False):
@@ -335,6 +364,14 @@ class PlominoDatabase(ATFolder, PlominoAccessControl, PlominoDesignManager, Plom
             view_obj_list.sort(key=lambda elt: elt.getPosition())
         return view_obj_list
 
+    security.declarePublic('getAgent')
+    def getAgent(self, agentname):
+        """return a PlominoAgent
+        """
+        obj = getattr(self, agentname, None)
+        if obj and obj.Type() == 'PlominoAgent':
+            return obj
+
     security.declarePublic('getAgents')
     def getAgents(self):
         """return the database agents list
@@ -343,22 +380,6 @@ class PlominoDatabase(ATFolder, PlominoAccessControl, PlominoDesignManager, Plom
         agent_obj_list = [a for a in agent_list]
         agent_obj_list.sort(key=lambda elt: elt.id.lower())
         return agent_obj_list
-
-    security.declarePublic('getForm')
-    def getForm(self, formname):
-        """return a PlominoForm
-        """
-        obj = getattr(self, formname, None)
-        if obj and obj.Type() == 'PlominoForm':
-            return obj
-
-    security.declarePublic('getView')
-    def getView(self, viewname):
-        """return a PlominoView
-        """
-        obj = getattr(self, viewname, None)
-        if obj and obj.Type() == 'PlominoView':
-            return obj
 
     security.declareProtected(CREATE_PERMISSION, 'createDocument')
     def createDocument(self, docid=None):
@@ -479,8 +500,61 @@ class PlominoDatabase(ATFolder, PlominoAccessControl, PlominoDesignManager, Plom
             # documents will not be ordered in site map
             return 0
         return ATFolder.getObjectPosition(self, id)
-            
+
+    def _cache(self):
+        chooser = queryUtility(ICacheChooser)
+        if chooser is None:
+            return None
+        return chooser(self.absolute_url_path())
+
+    def getCache(self, key):
+        """ get cached value in the cache provided by plone.memoize 
+        """ 
+        return self._cache().get(key)
+
+    def setCache(self, key, value):
+        """ set cached value in the cache provided by plone.memoize 
+        """
+        self._cache()[key] = value
+
+    def cleanCache(self, key=None):
+        """ invalidate the cache
+        (if key is None, all cached values are cleaned)
+        """
+        cache = self._cache()
+        if hasattr(cache, 'ramcache'):
+            if key:
+                cachekey = dict(key=cache._make_key(key))
+            else:
+                cachekey = None
+            cache.ramcache.invalidate(self.absolute_url_path(), cachekey)
+        else:
+            # we are probably not using zope.ramcache
+            raise PlominoCacheException, 'Cache cleaning not implemented'
         
+    def getRequestCache(self, key):
+        """ get cached value in an annotation on the current request
+        Note: it will available within this request only, it will be destroyed
+        once the request is terminated.
+        """
+        if not hasattr(self, 'REQUEST'):
+            return None
+        annotations = IAnnotations(self.REQUEST)
+        cache = annotations.get(PLOMINO_REQUEST_CACHE_KEY)
+        if cache:
+            return cache.get(key)
+
+    def setRequestCache(self, key, value):
+        """ set cached value in an annotation on the current request 
+        """
+        if not hasattr(self, 'REQUEST'):
+            return None
+        annotations = IAnnotations(self.REQUEST)
+        cache = annotations.get(PLOMINO_REQUEST_CACHE_KEY)
+        if not cache:
+            cache = annotations[PLOMINO_REQUEST_CACHE_KEY] = dict()
+        cache[key] = value
+
 registerType(PlominoDatabase, PROJECTNAME)
 # end of class PlominoDatabase
 

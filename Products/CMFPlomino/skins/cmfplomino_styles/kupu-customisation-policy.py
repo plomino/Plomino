@@ -84,7 +84,8 @@ PARAGRAPH_STYLES = (
     "Plomino Field|span|plominoFieldClass",
     "Plomino Action|span|plominoActionClass",
     "Plomino Hide-when formula|span|plominoHidewhenClass",
-    "Plomino Subform|span|plominoSubformClass"
+    "Plomino Subform|span|plominoSubformClass",
+    "Plomino Cache|span|plominoCacheClass"
 #    'Fancy|div|fancyClass',
 #    'Plain|div|plainClass',
 )
