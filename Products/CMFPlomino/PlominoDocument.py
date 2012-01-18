@@ -25,7 +25,8 @@ from zope import event
 from zope.component import queryUtility
 from zope.interface import implements, Interface
 from zope.component.factory import Factory
-from Products.CMFCore.PortalContent import PortalContent
+from Products.CMFCore.PortalFolder import PortalFolder
+from Products.CMFCore.CMFCatalogAware import CatalogAware
 from zope.annotation import IAttributeAnnotatable
 from zope.app.container.contained import Contained
 
@@ -56,7 +57,7 @@ try:
 except Exception, e:
     HAS_BLOB = False
 
-class PlominoDocument(PortalContent, Contained):
+class PlominoDocument(CatalogAware, PortalFolder, Contained):
     """
     """
     security = ClassSecurityInfo()
