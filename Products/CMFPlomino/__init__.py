@@ -111,12 +111,22 @@ def initialize(context):
     import PlominoHidewhen
     import PlominoAgent
     import PlominoCache
+    from PlominoDocument import addPlominoDocument
 
     # Initialize portal content
     all_content_types, all_constructors, all_ftis = process_types(
         listTypes(PROJECTNAME),
         PROJECTNAME)
-
+    
+    all_content_types += (PlominoDocument,)
+    all_constructors += (addPlominoDocument,)
+    all_ftis += ({
+                'allowed_content_types':[],
+                'allow_discussion': 0,
+                'immediate_view':'checkBeforeOpenDocument',
+                'global_allow':0,
+                'filter_content_types':1,
+                },)
     cmfutils.ContentInit(
         PROJECTNAME + ' Content',
         content_types      = all_content_types,
@@ -124,7 +134,7 @@ def initialize(context):
         extra_constructors = all_constructors,
         fti                = all_ftis,
         ).initialize(context)
-
+    
     # Give it some extra permissions to control them on a per class limit
     for i in range(0,len(all_content_types)):
         klassname=all_content_types[i].__name__

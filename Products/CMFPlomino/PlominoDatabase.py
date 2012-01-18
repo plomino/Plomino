@@ -389,11 +389,6 @@ class PlominoDatabase(ATFolder, PlominoAccessControl, PlominoDesignManager, Plom
             docid = make_uuid()
         self.documents[docid] = addPlominoDocument(docid)
         doc = self.documents.get(docid)
-        # new doc has been automatically index in portal_catalog by constructContent
-        # 1: we do not necessarily want it (depending on IndexInPortal value)
-        # 2: PlominoDocument.save() will index it with the correct path anyway
-        # so let's remove it for now
-#        self.portal_catalog.uncatalog_object("/".join(doc.getPhysicalPath()))
         return doc
 
     security.declarePublic('getDocument')

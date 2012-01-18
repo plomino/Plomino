@@ -86,9 +86,6 @@ class PlominoDocument(CatalogAware, PortalFolder, Contained):
             raise Unauthorized, "You cannot read this content"
         
     def doc_path(self):
-        #db = self.getParentDatabase()
-        #return db.getPhysicalPath() + (self.id,)
-        # here we return actual path, we do not hide plomino_documents anymore
         return self.getPhysicalPath()
 
     def doc_url(self):
@@ -303,7 +300,6 @@ class PlominoDocument(CatalogAware, PortalFolder, Contained):
         """refresh values according form, and reindex the document
         """
         # we process computed fields (refresh the value)
-        # TODO: manage computed fields dependencies
         if form is None:
             form = self.getForm()
         else:
@@ -333,14 +329,9 @@ class PlominoDocument(CatalogAware, PortalFolder, Contained):
 
             # update the document id
             if creation and form.getDocumentId():
-                #self._renameAfterCreation()
                 transaction.savepoint(optimistic=True)
+                import pdb;pdb.set_trace()
                 db.documents.manage_renameObject(self.id, self.generateNewId())
-                # _renameAfterCreation index doc in portal_catalog
-                # 1: we do not necessarily want it (depending on IndexInPortal value)
-                # 2: we will index it with the correct path anyway
-                # so let's remove it for now
-#                db.portal_catalog.uncatalog_object("/".join(self.getPhysicalPath()))
             
         # update the Plomino_Authors field with the current user name
         if asAuthor:
@@ -728,6 +719,7 @@ class PlominoDocument(CatalogAware, PortalFolder, Contained):
 
 InitializeClass(PlominoDocument)
 addPlominoDocument = Factory(PlominoDocument)
+addPlominoDocument.__name__ = "addPlominoDocument"
 
 class TemporaryDocument(PlominoDocument):
 
