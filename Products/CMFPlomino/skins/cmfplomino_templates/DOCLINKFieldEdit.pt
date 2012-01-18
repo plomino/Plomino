@@ -1,12 +1,14 @@
 <span tal:define="widget python:options['field'].getSettings('widget');
 				selection python:options['selection'];
 				name python:options['fieldname'];
-				current python:options['fieldvalue']
+				current python:options['fieldvalue'];
+				lcurrent python:test(hasattr(current,'split'),[current],current);
+				lcurrent_ids python:[path.split('/')[-1] for path in lcurrent];
 				">
 	<tal:widget tal:condition="python:test(widget=='SELECT')">
 		<select tal:attributes="name name"><tal:loop tal:repeat="v selection">
 			<option tal:define="l python:v.split('|')"
-				tal:attributes="value python:l[1]; selected python:test(current==l[1],1,0)"
+				tal:attributes="value python:l[1]; selected python:test(lcurrent and (lcurrent[0]==l[1] or lcurrent_ids[0]==l[1]),1,0)"
 				tal:content="python:l[0]">value</option>
 		</tal:loop></select>
 	</tal:widget>
@@ -14,7 +16,7 @@
 		<select tal:attributes="name name" multiple="true" lines="4"><tal:loop tal:repeat="v selection">
 				<tal:block tal:define="l python:v.split('|')">
 					<option 
-						tal:attributes="value python:l[1]; selected python:test(current and l[1] in current,1,0)"
+						tal:attributes="value python:l[1]; selected python:test(lcurrent and (l[1] in lcurrent or l[1] in lcurrent_ids),1,0)"
 						tal:content="python:l[0]">value</option>
 				</tal:block>
 		</tal:loop></select>
@@ -37,7 +39,7 @@
 					<td><input type="checkbox" 
 					tal:attributes="name options/fieldname;
 							value python:brain.getPath();
-							checked python:test(current and brain.getPath() in current,1,0)">
+							checked python:test(current and brain.id in lcurrent_ids,1,0)">
 					</td>
 					<tal:block tal:repeat="c columns">
 						<td tal:condition="not: c/HiddenColumn|nothing"><span
@@ -57,7 +59,7 @@
 	    			data python:options['field'].getSettings().tojson(selection);
 	    			cols python:options['field'].getSettings().getJQueryColumns();
 	    			params python:options['field'].getSettings('dynamictableparam');
-	    			selected python:'|'.join(current);
+	    			selected python:'|'.join(lcurrent_ids+lcurrent);
 	    			">
         <script type='text/javascript' tal:content="structure string:
 			var o_${fieldid}_DynamicTable;
@@ -104,7 +106,7 @@
 	    			data python:options['field'].getSettings().tojson(selection);
 	    			cols python:options['field'].getSettings().getJQueryColumns();
 	    			params python:options['field'].getSettings('dynamictableparam');
-	    			selected python:isinstance(current, basestring) and current or '|'.join(current);
+	    			selected python:isinstance(current, basestring) and current or '|'.join(lcurrent_ids+lcurrent);
 	    			colindex python:options['field'].getSettings().getColumnLabelIndex();
 	    			">
         <script type='text/javascript' tal:content="structure string:

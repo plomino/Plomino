@@ -63,6 +63,7 @@ class PlominoIndex(UniqueObject, CatalogTool):
         self.addIndex('id', "FieldIndex")
         self.addColumn('id')
         self.addIndex('getPlominoReaders', "KeywordIndex")
+        self.addIndex('path', "ExtendedPathIndex")
         
         if FULLTEXT:
             self.createFieldIndex('SearchableText', 'RICHTEXT')
@@ -125,14 +126,9 @@ class PlominoIndex(UniqueObject, CatalogTool):
     def indexDocument(self, doc, idxs=None, update_metadata=1):
         """
         """
-        #self.catalog_object(doc, "/".join(doc.getPhysicalPath()))
         try:
-            # TODO DONE LATER (cataloging real path is better but it implies
-            # to test all the side-effect and provide a migration script)
-            #self.catalog_object(doc)
-            db = doc.getParentDatabase()
             self.catalog_object(doc,
-                "/".join(db.getPhysicalPath()) + "/" + doc.id,
+                "/".join(doc.getPhysicalPath()),
                 idxs=idxs, update_metadata=update_metadata)
         except Exception, e:
             self.portal_skins.plone_scripts.plone_log('%s\non %s'%(`e`, doc.id))
@@ -142,10 +138,7 @@ class PlominoIndex(UniqueObject, CatalogTool):
     def unindexDocument(self,doc):
         """
         """
-        # TODO DONE LATER (cataloging real path is better but it implies
-        # to test all the side-effect and provide a migration script)
-        #self.uncatalog_object("/".join(doc.getPhysicalPath()
-        self.uncatalog_object("/".join(doc.getParentDatabase().getPhysicalPath()) + "/" + doc.id)
+        self.uncatalog_object("/".join(doc.getPhysicalPath()))
 
     security.declarePublic('refresh')
     def refresh(self):

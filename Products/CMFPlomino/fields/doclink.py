@@ -46,7 +46,7 @@ class IDoclinkField(IBaseField):
                     required=False)
 
     documentslistformula = Text(title=u'Documents list formula',
-                      description=u'Formula to compute the linkable documents list (must return a list of label|path_to_doc)',
+                      description=u'Formula to compute the linkable documents list (must return a list of label|docid_or_path)',
                       required=False)
     separator = TextLine(title=u'Separator',
                       description=u'Only apply if multi-valued',
@@ -69,7 +69,7 @@ class DoclinkField(BaseField):
     implements(IDoclinkField)
 
     def getSelectionList(self, doc):
-        """return the documents list, format: label|path_to_doc, use value is used as label if no label
+        """return the documents list, format: label|docid_or_path, use value is used as label if no label
         """
 
         #if formula available, use formula, else use view entries
@@ -87,7 +87,7 @@ class DoclinkField(BaseField):
                     val = getattr(b, v.getIndexKey(self.labelcolumn), '')
                     if not val:
                         val = ''
-                    result.append(val + "|" + b.getPath())
+                    result.append(val + "|" + b.id)
                 return result
         else:
             #if no doc provided (if OpenForm action), we use the PlominoForm
@@ -132,7 +132,7 @@ class DoclinkField(BaseField):
 
             datatable = []
             for b in brains:
-                row = [b.getPath()]
+                row = [b.id]
                 for col in column_ids:
                     v = getattr(b, sourceview.getIndexKey(col))
                     if not isinstance(v, str):
