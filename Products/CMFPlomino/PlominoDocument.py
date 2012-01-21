@@ -330,7 +330,6 @@ class PlominoDocument(CatalogAware, PortalFolder, Contained):
             # update the document id
             if creation and form.getDocumentId():
                 transaction.savepoint(optimistic=True)
-                import pdb;pdb.set_trace()
                 db.documents.manage_renameObject(self.id, self.generateNewId())
             
         # update the Plomino_Authors field with the current user name
