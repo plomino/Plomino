@@ -1,12 +1,12 @@
 Plomino Installation
 --------------------
 
-edit your buildout.cfg and add Plomino in the eggs list:
+edit your ``buildout.cfg`` and add ``Products.CMFPlomino`` to the eggs list::
 
     eggs =
         ...
-        Plomino
+        Products.CMFPlomino
 
-Then you have to run your buildout:
+Then you have to run your buildout::
 
     $ ./bin/buildout -N
