@@ -23,6 +23,11 @@ from email import message_from_string
 from email.Header import Header
 
 try:
+    import json
+except:
+    import simplejson as json
+
+try:
    from plone.app.upgrade import v40
    HAS_PLONE40 = True
 except ImportError:
@@ -209,3 +214,9 @@ def isDocument(doc):
 
 def cgi_escape(s):
     return cgi.escape(s)
+
+def json_dumps(obj):
+    return json.dumps(obj)
+
+def json_loads(json_string):
+    return json.loads(json_string)
