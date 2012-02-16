@@ -1,6 +1,12 @@
 Changelog
 =========
 
+
+1.13.2 (2012-02-16)
+-------------------
+* Add JSON utils: json_dumps and json_loads
+* Add CSS class containing the element id on the Plomino element portlet
+
 1.13.1 (2012-01-11)
 -------------------
 * Fix agent security when running as owner
