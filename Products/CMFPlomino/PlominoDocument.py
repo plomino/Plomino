@@ -11,6 +11,7 @@ from zope.interface import implements
 import interfaces
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import normalizeString
+from OFS.ObjectManager import BadRequestException
 
 from exceptions import PlominoScriptException
 from Products.CMFPlomino.config import *
@@ -18,7 +19,10 @@ from Products.CMFPlomino.config import *
 import transaction
 from interfaces import *
 from AccessControl import Unauthorized
-from AccessControl.class_init import InitializeClass
+try:
+    from AccessControl.class_init import InitializeClass
+except:
+    from App.class_init import InitializeClass
 from time import strptime
 from DateTime import DateTime
 from zope import event
@@ -329,8 +333,10 @@ class PlominoDocument(CatalogAware, PortalFolder, Contained):
 
             # update the document id
             if creation and form.getDocumentId():
-                transaction.savepoint(optimistic=True)
-                db.documents.manage_renameObject(self.id, self.generateNewId())
+                new_id = self.generateNewId()
+                if new_id:
+                    transaction.savepoint(optimistic=True)
+                    db.documents.manage_renameObject(self.id, new_id)
             
         # update the Plomino_Authors field with the current user name
         if asAuthor:
@@ -683,8 +689,8 @@ class PlominoDocument(CatalogAware, PortalFolder, Contained):
 
     def generateNewId(self):
         """ compute the id using the Document id formula
-        (overwrite Archetypes generateNewId, and provides same behaviour, 
-        but use Document id formula instead of title)
+        (the value returned by the formula is normalized and completed
+        with '-1', '-2', ..., if the id already exists)
         """
         form = self.getForm()
         if not form:
@@ -712,9 +718,30 @@ class PlominoDocument(CatalogAware, PortalFolder, Contained):
 
         request = getattr(self, 'REQUEST', None)
         if request is not None:
-            return IUserPreferredURLNormalizer(request).normalize(result)
+            new_id = IUserPreferredURLNormalizer(request).normalize(result)
+        else:
+            new_id = queryUtility(IURLNormalizer).normalize(result)
+        
+        # check if the id already exists
+        documents = self.getParentDatabase().documents
+        try:
+            documents._checkId(new_id)
+        except BadRequestException:
+            # id exists, we need to append an index
+            existing_similar_ids = [id 
+                            for id in documents.objectIds()
+                            if id.startswith(new_id+"-")]
+            max_index = 0
+            for id in existing_similar_ids:
+                str_index = id[len(new_id)+1:]
+                try:
+                    index = int(str_index)
+                except ValueError:
+                    index = 0
+                max_index = max(max_index, index)
+            new_id = "%s-%d" % (new_id, max_index + 1)
+        return new_id
 
-        return queryUtility(IURLNormalizer).normalize(result)
 
 InitializeClass(PlominoDocument)
 addPlominoDocument = Factory(PlominoDocument)
