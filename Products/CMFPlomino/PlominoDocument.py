@@ -218,6 +218,7 @@ class PlominoDocument(ATFolder):
             raise Unauthorized, "You cannot read this content"
         
         if REQUEST:
+            REQUEST.RESPONSE.setHeader('content-type', 'application/json; charset=utf-8')
             item = REQUEST.get('item', item)
             formid = REQUEST.get('formid', formid)
         if not item:
