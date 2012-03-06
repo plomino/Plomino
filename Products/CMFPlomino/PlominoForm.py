@@ -915,6 +915,32 @@ class PlominoForm(ATFolder):
         else:
             return False
 
+    security.declarePublic('tojson')
+    def tojson(self, REQUEST=None, item=None):
+        """return field value as JSON, return all fields values if item=None
+        (Note: we use 'item' instead of 'field' to match the
+        PlominoDocument.tojson method signature)
+        """
+        if REQUEST:
+            REQUEST.RESPONSE.setHeader('content-type', 'application/json; charset=utf-8')
+            item = REQUEST.get('item', item)
+        
+        result = None
+        if not item:
+            fields = self.getFormFields()
+            result = {}
+            for field in fields:
+                adapt = field.getSettings()
+                fieldvalue = adapt.getFieldValue(self, None, False, False, REQUEST)
+                result[field.id] = fieldvalue
+        else:
+            field = self.getFormField(item)
+            if field:
+                adapt = field.getSettings()
+                result = adapt.getFieldValue(self, None, False, False, REQUEST)
+        
+        return json.dumps(result) 
+
 registerType(PlominoForm, PROJECTNAME)
 # end of class PlominoForm
 
