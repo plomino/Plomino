@@ -133,7 +133,7 @@
 			<tr>
 				<td valign="top"><b><tal:block tal:content="r" /></b></td>
 				<td>
-					<tal:block tal:repeat="u python:here.getUsersForRoles(r)">
+					<tal:block tal:repeat="u python:here.getUsersForRole(r)">
 						<span tal:content="u">user</span><br/>
 					</tal:block>
 				</td>
