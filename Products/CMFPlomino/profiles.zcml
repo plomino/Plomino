@@ -5,9 +5,6 @@
 
   <include package="Products.GenericSetup" file="meta.zcml" />
 
-  <!-- ##code-section profiles.zcml-top #fill in your manual code here -->
-  <!-- ##/code-section profiles.zcml-top -->
-
   <genericsetup:registerProfile
       name="default"
       title="CMFPlomino"
@@ -16,7 +13,4 @@
       provides="Products.GenericSetup.interfaces.EXTENSION"
       />
   
-  <!-- ##code-section profiles.zcml #fill in your manual code here -->
-  <!-- ##/code-section profiles.zcml -->
-
 </configure>
