@@ -48,7 +48,7 @@ class Renderer(base.Renderer):
 
     @property
     def displayTree(self):
-        if self.parentdatabase().objectCount() > 30:
+        if len(self.parentdatabase().objectIds()) > 30:
             return False
         if hasattr(self.data, "display_tree"):
             return self.data.display_tree
