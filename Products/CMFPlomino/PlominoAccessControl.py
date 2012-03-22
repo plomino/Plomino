@@ -18,6 +18,7 @@ from AccessControl import getSecurityManager
 from Products.CMFCore.utils import getToolByName
 from Products.DCWorkflow.DCWorkflow import DCWorkflowDefinition
 from Persistence import Persistent
+import warnings
 
 class PlominoAccessControl(Persistent):
     """Plomino access control utilities
@@ -111,10 +112,20 @@ class PlominoAccessControl(Persistent):
     def getUsersForRoles(self,role):
         """return the users having the given Plomino user role
         """
+        warnings.warn("getUsersForRoles is deprecated, use getUsersForRole (which return a list).", DeprecationWarning, 2)
         if self.UserRoles.has_key(role):
             return self.UserRoles[role]
         else:
             return ''
+
+    security.declarePublic('getUsersForRole')
+    def getUsersForRole(self,role):
+        """return the users having the given Plomino user role
+        """
+        if self.UserRoles.has_key(role):
+            return self.UserRoles[role].keys()
+        else:
+            return []
 
     security.declarePublic('hasUserRole')
     def hasUserRole(self,user,role):

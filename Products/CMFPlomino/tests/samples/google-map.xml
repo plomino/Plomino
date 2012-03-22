@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" ?>
 <plominodatabase id="google-map">
 <design>
 <dbsettings>
@@ -10,12 +10,14 @@
 </UsingDescription>
 <IndexAttachments type="Products.Archetypes.Field.BooleanField">False</IndexAttachments>
 <FulltextIndex type="Products.Archetypes.Field.BooleanField">False</FulltextIndex>
-<debugMode type="Products.Archetypes.Field.BooleanField">True</debugMode>
+<IndexInPortal type="Products.Archetypes.Field.BooleanField">False</IndexInPortal>
+<debugMode type="Products.Archetypes.Field.BooleanField">False</debugMode>
 <StorageAttachments type="Products.Archetypes.Field.BooleanField">False</StorageAttachments>
 <CountDocuments type="Products.Archetypes.Field.BooleanField">False</CountDocuments>
 <DateTimeFormat type="Products.Archetypes.Field.StringField">%Y/%m/%d</DateTimeFormat>
 <StartPage type="Products.Archetypes.Field.StringField">mapdisplay</StartPage>
 <DoNotListUsers type="Products.Archetypes.Field.BooleanField">False</DoNotListUsers>
+<DoNotReindex type="Products.Archetypes.Field.BooleanField">False</DoNotReindex>
 <excludeFromNav type="Products.Archetypes.Field.BooleanField">False</excludeFromNav>
 <acl AnomynousAccessRight="PlominoReader" AuthenticatedAccessRight="NoAccess">
 <params id="UserRoles">
@@ -56,6 +58,9 @@
 <onDeleteDocument type="Products.Archetypes.Field.TextField">
 <![CDATA[]]>
 </onDeleteDocument>
+<onSearch type="Products.Archetypes.Field.TextField">
+<![CDATA[]]>
+</onSearch>
 <beforeCreateDocument type="Products.Archetypes.Field.TextField">
 <![CDATA[]]>
 </beforeCreateDocument>
@@ -70,6 +75,9 @@
 <DocumentTitle type="Products.Archetypes.Field.TextField">
 <![CDATA[plominoDocument.place_name]]>
 </DocumentTitle>
+<DocumentId type="Products.Archetypes.Field.TextField">
+<![CDATA[]]>
+</DocumentId>
 <ActionBarPosition type="Products.Archetypes.Field.StringField">TOP</ActionBarPosition>
 <HideDefaultActions type="Products.Archetypes.Field.BooleanField">False</HideDefaultActions>
 <HideInMenu type="Products.Archetypes.Field.BooleanField">False</HideInMenu>
@@ -94,7 +102,7 @@
 </FieldReadTemplate>
 <FieldEditTemplate type="Products.Archetypes.Field.StringField">
 </FieldEditTemplate>
-<Mandatory type="Products.Archetypes.Field.BooleanField">False</Mandatory>
+<Mandatory type="Products.Archetypes.Field.BooleanField">True</Mandatory>
 <ValidationFormula type="Products.Archetypes.Field.TextField">
 <![CDATA[]]>
 </ValidationFormula>
@@ -111,11 +119,11 @@
 </FieldReadTemplate>
 <FieldEditTemplate type="Products.Archetypes.Field.StringField">
 </FieldEditTemplate>
-<Mandatory type="Products.Archetypes.Field.BooleanField">False</Mandatory>
+<Mandatory type="Products.Archetypes.Field.BooleanField">True</Mandatory>
 <ValidationFormula type="Products.Archetypes.Field.TextField">
 <![CDATA[]]>
 </ValidationFormula>
-<ToBeIndexed type="Products.Archetypes.Field.BooleanField">False</ToBeIndexed>
+<ToBeIndexed type="Products.Archetypes.Field.BooleanField">True</ToBeIndexed>
 <params>
 <param>
 <value>
@@ -142,11 +150,11 @@
 </FieldReadTemplate>
 <FieldEditTemplate type="Products.Archetypes.Field.StringField">
 </FieldEditTemplate>
-<Mandatory type="Products.Archetypes.Field.BooleanField">False</Mandatory>
+<Mandatory type="Products.Archetypes.Field.BooleanField">True</Mandatory>
 <ValidationFormula type="Products.Archetypes.Field.TextField">
 <![CDATA[]]>
 </ValidationFormula>
-<ToBeIndexed type="Products.Archetypes.Field.BooleanField">False</ToBeIndexed>
+<ToBeIndexed type="Products.Archetypes.Field.BooleanField">True</ToBeIndexed>
 <params>
 <param>
 <value>
@@ -178,6 +186,9 @@
 <onDeleteDocument type="Products.Archetypes.Field.TextField">
 <![CDATA[]]>
 </onDeleteDocument>
+<onSearch type="Products.Archetypes.Field.TextField">
+<![CDATA[]]>
+</onSearch>
 <beforeCreateDocument type="Products.Archetypes.Field.TextField">
 <![CDATA[]]>
 </beforeCreateDocument>
@@ -192,6 +203,9 @@
 <DocumentTitle type="Products.Archetypes.Field.TextField">
 <![CDATA[]]>
 </DocumentTitle>
+<DocumentId type="Products.Archetypes.Field.TextField">
+<![CDATA[]]>
+</DocumentId>
 <ActionBarPosition type="Products.Archetypes.Field.StringField">BOTTOM</ActionBarPosition>
 <HideDefaultActions type="Products.Archetypes.Field.BooleanField">False</HideDefaultActions>
 <HideInMenu type="Products.Archetypes.Field.BooleanField">False</HideInMenu>
@@ -211,7 +225,7 @@
 <FieldMode type="Products.Archetypes.Field.StringField">DISPLAY</FieldMode>
 <Formula type="Products.Archetypes.Field.TextField">
 <![CDATA[db = plominoDocument.getParentDatabase()
-all = db.getAllDocuments()
+all = db.getAllDocuments(getObject=False)
 result = []
 for doc in all:
   lat = doc.lat
@@ -220,7 +234,7 @@ for doc in all:
     description = doc.place_name.decode('utf-8', 'ignore')
   except:
     description = "(encoding error)"
-  result.append(['%d' % lat, '%d' % lon, "'%s'" % description])
+  result.append(['%f' % lat, '%f' % lon, "'%s'" % description])
 return result]]>
 </Formula>
 <FieldReadTemplate type="Products.Archetypes.Field.StringField">
@@ -313,7 +327,6 @@ gvisudata_chart.draw(gvisudata, {allowHtml:true, showTip:true});
 </Formula>
 <HiddenColumn type="Products.Archetypes.Field.BooleanField">False</HiddenColumn>
 <DisplaySum type="Products.Archetypes.Field.BooleanField">False</DisplaySum>
-<ContainsHTML type="Products.Archetypes.Field.BooleanField">False</ContainsHTML>
 </element>
 <element id="add_new" title="Add new location" type="PlominoAction">
 <id type="Products.Archetypes.Field.StringField">add_new</id>
@@ -327,6 +340,24 @@ gvisudata_chart.draw(gvisudata, {allowHtml:true, showTip:true});
 <![CDATA[]]>
 </Hidewhen>
 <InActionBar type="Products.Archetypes.Field.BooleanField">True</InActionBar>
+</element>
+<element id="lat" title="lat" type="PlominoColumn">
+<id type="Products.Archetypes.Field.StringField">lat</id>
+<SelectedField type="Products.Archetypes.Field.StringField">frmLocation/lat</SelectedField>
+<Formula type="Products.Archetypes.Field.TextField">
+<![CDATA[]]>
+</Formula>
+<HiddenColumn type="Products.Archetypes.Field.BooleanField">False</HiddenColumn>
+<DisplaySum type="Products.Archetypes.Field.BooleanField">False</DisplaySum>
+</element>
+<element id="lon" title="lon" type="PlominoColumn">
+<id type="Products.Archetypes.Field.StringField">lon</id>
+<SelectedField type="Products.Archetypes.Field.StringField">frmLocation/lon</SelectedField>
+<Formula type="Products.Archetypes.Field.TextField">
+<![CDATA[]]>
+</Formula>
+<HiddenColumn type="Products.Archetypes.Field.BooleanField">False</HiddenColumn>
+<DisplaySum type="Products.Archetypes.Field.BooleanField">False</DisplaySum>
 </element>
 </elements>
 </element>

@@ -73,7 +73,9 @@ class PlominoCoreUtils:
                'asUnicode',
                'array_to_csv',
                'isDocument',
-               'cgi_escape']
+               'cgi_escape',
+               'json_dumps',
+               'json_loads']
 
 component.provideUtility(PlominoCoreUtils, interfaces.IPlominoUtils)
 

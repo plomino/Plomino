@@ -1,0 +1,463 @@
+<?xml version="1.0" ?>
+<plominodatabase id="configdb">
+<design>
+<dbsettings version="1.13">
+<AboutDescription type="Products.Archetypes.Field.TextField">
+<![CDATA[]]>
+</AboutDescription>
+<UsingDescription type="Products.Archetypes.Field.TextField">
+<![CDATA[]]>
+</UsingDescription>
+<IndexAttachments type="Products.Archetypes.Field.BooleanField">False</IndexAttachments>
+<FulltextIndex type="Products.Archetypes.Field.BooleanField">False</FulltextIndex>
+<IndexInPortal type="Products.Archetypes.Field.BooleanField">False</IndexInPortal>
+<debugMode type="Products.Archetypes.Field.BooleanField">True</debugMode>
+<StorageAttachments type="Products.Archetypes.Field.BooleanField">False</StorageAttachments>
+<CountDocuments type="Products.Archetypes.Field.BooleanField">False</CountDocuments>
+<DateTimeFormat type="Products.Archetypes.Field.StringField">%Y-%m-%d</DateTimeFormat>
+<StartPage type="Products.Archetypes.Field.StringField">hpProjects</StartPage>
+<DoNotListUsers type="Products.Archetypes.Field.BooleanField">False</DoNotListUsers>
+<DoNotReindex type="Products.Archetypes.Field.BooleanField">False</DoNotReindex>
+<excludeFromNav type="Products.Archetypes.Field.BooleanField">False</excludeFromNav>
+<acl AnomynousAccessRight="NoAccess" AuthenticatedAccessRight="PlominoAuthor">
+<params id="UserRoles">
+<param>
+<value>
+<struct>
+<member>
+<name>[qas_reviewer]</name>
+<value>
+<struct>
+<member>
+<name>sean</name>
+<value>
+<int>1</int>
+</value>
+</member>
+</struct>
+</value>
+</member>
+<member>
+<name>[evaluation_office]</name>
+<value>
+<struct>
+<member>
+<name>admin</name>
+<value>
+<int>1</int>
+</value>
+</member>
+<member>
+<name>MichaelSpilsbury</name>
+<value>
+<int>1</int>
+</value>
+</member>
+<member>
+<name>sean</name>
+<value>
+<int>1</int>
+</value>
+</member>
+</struct>
+</value>
+</member>
+<member>
+<name>[can_delete]</name>
+<value>
+<struct>
+<member>
+<name>DavidMicro</name>
+<value>
+<int>1</int>
+</value>
+</member>
+</struct>
+</value>
+</member>
+<member>
+<name>[qas_member]</name>
+<value>
+<struct>
+<member>
+<name>PinyaSarasas</name>
+<value>
+<int>1</int>
+</value>
+</member>
+<member>
+<name>CarolNgori</name>
+<value>
+<int>1</int>
+</value>
+</member>
+<member>
+<name>QAS</name>
+<value>
+<int>1</int>
+</value>
+</member>
+<member>
+<name>admin</name>
+<value>
+<int>1</int>
+</value>
+</member>
+<member>
+<name>SeanTester</name>
+<value>
+<int>1</int>
+</value>
+</member>
+<member>
+<name>sean</name>
+<value>
+<int>1</int>
+</value>
+</member>
+<member>
+<name>jean</name>
+<value>
+<int>1</int>
+</value>
+</member>
+</struct>
+</value>
+</member>
+<member>
+<name>[managing_division]</name>
+<value>
+<struct>
+<member>
+<name>Managing_Division</name>
+<value>
+<int>1</int>
+</value>
+</member>
+<member>
+<name>sean</name>
+<value>
+<int>1</int>
+</value>
+</member>
+<member>
+<name>MalaKantaria</name>
+<value>
+<int>1</int>
+</value>
+</member>
+</struct>
+</value>
+</member>
+</struct>
+</value>
+</param>
+</params>
+<params id="SpecificRights">
+<param>
+<value>
+<struct>
+<member>
+<name>specific_deletedocument</name>
+<value>
+<string>PlominoAuthor</string>
+</value>
+</member>
+</struct>
+</value>
+</param>
+</params>
+</acl>
+</dbsettings>
+<element id="migrate_configdocs" title="migrate_configdocs" type="PlominoAgent">
+<id type="Products.Archetypes.Field.StringField">migrate_configdocs</id>
+<Content type="Products.Archetypes.Field.TextField">
+<![CDATA[db = context.getParentDatabase()
+config_form = db.getForm('configuration_holder')
+for doc in db.getView('configview').getAllDocuments():
+    config_id = doc.getItem('configId')
+    if not config_id:
+        continue
+    config_value = doc.getItem('configValues')
+    if not config_value:
+        continue
+    if config_id.startswith('frmConfig_'):
+        continue
+    if config_id not in config_form.objectIds():
+        config_form.invokeFactory('PlominoField', Title=config_id, id=config_id, FieldType="TEXT", FieldMode="EDITABLE")
+    field = config_form.getFormField(config_id)
+    formula = """return \"\"\"%s\"\"\" """ % config_value
+    field.setFormula(formula)
+    field.at_post_edit_script()
+    
+]]>
+</Content>
+<RunAs type="Products.Archetypes.Field.StringField">CURRENT</RunAs>
+</element>
+<resource id="scriptConfig" title="" type="Script (Python)">
+<![CDATA[## Script (Python) "scriptConfig"
+##bind container=container
+##bind context=context
+##bind namespace=
+##bind script=script
+##bind subpath=traverse_subpath
+##parameters=
+##title=
+##
+def getConfigValue(db, key, default=""):
+  """ Look up a config by name, return the value as a string.
+  """
+  config_form = db.getForm('configuration_holder')
+  if key not in config_form.objectIds():
+    return default
+  return config_form.computeFieldValue(key, config_form)
+
+def getConfigValuesAsList(db, key, default=[]):
+  """ Look up a config document by name, return the value as a list, splitting the string on newlines.
+  """
+  value_string = getConfigValue(db, key, default=None)
+  if value_string is None:
+    db.portal_skins.plone_scripts.plone_log('getConfigValue> Absent key: %s'%key)
+    return default
+  value_string = value_string.strip()
+  return value_string.replace('\r', '').split('\n')
+
+def getConfigValuesAsDict(db, key, separator='|'):
+  """ Look up a config document by name, return the value as a dictionary, splitting each line on `separator`.
+  """
+  # TODO: Use csv module to parse the value, treating the first line as a header row.
+  value_list = getConfigValuesAsList(db, key)
+  d = {}
+  for row in value_list:
+    (label, key) = row.split(separator)
+    d[key] = label
+  return d
+]]>
+</resource>
+<element id="configuration_holder" title="Configuration" type="PlominoForm">
+<id type="Products.Archetypes.Field.StringField">configuration_holder</id>
+<onCreateDocument type="Products.Archetypes.Field.TextField">
+<![CDATA[]]>
+</onCreateDocument>
+<onOpenDocument type="Products.Archetypes.Field.TextField">
+<![CDATA[]]>
+</onOpenDocument>
+<onSaveDocument type="Products.Archetypes.Field.TextField">
+<![CDATA[]]>
+</onSaveDocument>
+<onDeleteDocument type="Products.Archetypes.Field.TextField">
+<![CDATA[]]>
+</onDeleteDocument>
+<onSearch type="Products.Archetypes.Field.TextField">
+<![CDATA[]]>
+</onSearch>
+<beforeCreateDocument type="Products.Archetypes.Field.TextField">
+<![CDATA[]]>
+</beforeCreateDocument>
+<FormLayout type="Products.Archetypes.Field.TextField">
+<![CDATA[<p>
+<span class="plominoFieldClass">frmConfig_go_to_field</span>
+</p>
+<p>
+<span class="plominoFieldClass">frmConfig_update</span>
+</p>
+<p>Config id: <span class="plominoFieldClass">frmConfig_config_id</span>
+</p>
+<p>Config value:</p>
+<p>
+<span class="plominoFieldClass">frmConfig_config_value</span>
+</p>
+<p>
+<span class="plominoActionClass">frmConfig_save_button</span> <span class="plominoFieldClass">frmConfig_delete_button</span>
+</p>]]>
+</FormLayout>
+<DocumentTitle type="Products.Archetypes.Field.TextField">
+<![CDATA[]]>
+</DocumentTitle>
+<DocumentId type="Products.Archetypes.Field.TextField">
+<![CDATA[]]>
+</DocumentId>
+<ActionBarPosition type="Products.Archetypes.Field.StringField">BOTTOM</ActionBarPosition>
+<HideDefaultActions type="Products.Archetypes.Field.BooleanField">False</HideDefaultActions>
+<HideInMenu type="Products.Archetypes.Field.BooleanField">False</HideInMenu>
+<isSearchForm type="Products.Archetypes.Field.BooleanField">False</isSearchForm>
+<isPage type="Products.Archetypes.Field.BooleanField">True</isPage>
+<SearchView type="Products.Archetypes.Field.StringField">
+</SearchView>
+<SearchFormula type="Products.Archetypes.Field.TextField">
+<![CDATA[]]>
+</SearchFormula>
+<Position type="Products.Archetypes.Field.IntegerField"/>
+<excludeFromNav type="Products.Archetypes.Field.BooleanField">False</excludeFromNav>
+<elements>
+<element id="frmConfig_config_id" title="frmConfig_config_id" type="PlominoField">
+<id type="Products.Archetypes.Field.StringField">frmConfig_config_id</id>
+<FieldType type="Products.Archetypes.Field.StringField">TEXT</FieldType>
+<FieldMode type="Products.Archetypes.Field.StringField">EDITABLE</FieldMode>
+<Formula type="Products.Archetypes.Field.TextField">
+<![CDATA[]]>
+</Formula>
+<FieldReadTemplate type="Products.Archetypes.Field.StringField">
+</FieldReadTemplate>
+<FieldEditTemplate type="Products.Archetypes.Field.StringField">
+</FieldEditTemplate>
+<Mandatory type="Products.Archetypes.Field.BooleanField">False</Mandatory>
+<ValidationFormula type="Products.Archetypes.Field.TextField">
+<![CDATA[]]>
+</ValidationFormula>
+<ToBeIndexed type="Products.Archetypes.Field.BooleanField">False</ToBeIndexed>
+</element>
+<element id="frmConfig_config_value" title="frmConfig_config_value" type="PlominoField">
+<id type="Products.Archetypes.Field.StringField">frmConfig_config_value</id>
+<FieldType type="Products.Archetypes.Field.StringField">TEXT</FieldType>
+<FieldMode type="Products.Archetypes.Field.StringField">EDITABLE</FieldMode>
+<Formula type="Products.Archetypes.Field.TextField">
+<![CDATA[config_id = context.REQUEST.get('frmConfig_config_id')
+config_value = context.REQUEST.get('frmConfig_config_value')
+if config_value:
+    return config_value
+if config_id:
+    if config_id not in context.objectIds():
+        return ""
+    if config_id.endswith('_formula'):
+        return context.getFormField(config_id).getFormula()
+    return context.computeFieldValue(config_id, context)
+]]>
+</Formula>
+<FieldReadTemplate type="Products.Archetypes.Field.StringField">
+</FieldReadTemplate>
+<FieldEditTemplate type="Products.Archetypes.Field.StringField">
+</FieldEditTemplate>
+<Mandatory type="Products.Archetypes.Field.BooleanField">False</Mandatory>
+<ValidationFormula type="Products.Archetypes.Field.TextField">
+<![CDATA[]]>
+</ValidationFormula>
+<ToBeIndexed type="Products.Archetypes.Field.BooleanField">False</ToBeIndexed>
+<params>
+<param>
+<value>
+<struct>
+<member>
+<name>widget</name>
+<value>
+<string>TEXTAREA</string>
+</value>
+</member>
+<member>
+<name>size</name>
+<value>
+<string>10</string>
+</value>
+</member>
+</struct>
+</value>
+</param>
+</params>
+</element>
+<element id="frmConfig_save_button" title="Save" type="PlominoAction">
+<id type="Products.Archetypes.Field.StringField">frmConfig_save_button</id>
+<ActionType type="Products.Archetypes.Field.StringField">SAVE</ActionType>
+<ActionDisplay type="Products.Archetypes.Field.StringField">SUBMIT</ActionDisplay>
+<Content type="Products.Archetypes.Field.TextField">
+<![CDATA[]]>
+</Content>
+<Hidewhen type="Products.Archetypes.Field.TextField">
+<![CDATA[]]>
+</Hidewhen>
+<InActionBar type="Products.Archetypes.Field.BooleanField">False</InActionBar>
+</element>
+<element id="frmConfig_update" title="frmConfig_update" type="PlominoField">
+<id type="Products.Archetypes.Field.StringField">frmConfig_update</id>
+<FieldType type="Products.Archetypes.Field.StringField">RICHTEXT</FieldType>
+<FieldMode type="Products.Archetypes.Field.StringField">DISPLAY</FieldMode>
+<Formula type="Products.Archetypes.Field.TextField">
+<![CDATA[db = context.getParentDatabase()
+config_id = context.REQUEST.get('frmConfig_config_id')
+if not config_id:
+    return ''
+config_value = context.REQUEST.get('frmConfig_config_value')
+if not config_value:
+    return ''
+message = ''
+if config_id.startswith('frmConfig_'):
+    db.writeMessageOnPage("Invalid id", context.REQUEST, error=True)
+    return ""
+if config_id not in context.objectIds():
+    message = "The new configuration %s has been created." % config_id
+    context.invokeFactory('PlominoField', Title=config_id, id=config_id, FieldType="TEXT", FieldMode="EDITABLE")
+else:
+    message = "The configuration %s has been updated." % config_id
+field = context.getFormField(config_id)
+if config_id.endswith('_formula'):
+    formula = config_value
+else:
+    formula = """return \"\"\"%s\"\"\" """ % config_value
+field.setFormula(formula)
+field.at_post_edit_script()
+db.writeMessageOnPage(message, context.REQUEST)]]>
+</Formula>
+<FieldReadTemplate type="Products.Archetypes.Field.StringField">
+</FieldReadTemplate>
+<FieldEditTemplate type="Products.Archetypes.Field.StringField">
+</FieldEditTemplate>
+<Mandatory type="Products.Archetypes.Field.BooleanField">False</Mandatory>
+<ValidationFormula type="Products.Archetypes.Field.TextField">
+<![CDATA[]]>
+</ValidationFormula>
+<ToBeIndexed type="Products.Archetypes.Field.BooleanField">False</ToBeIndexed>
+</element>
+<element id="frmConfig_go_to_field" title="frmConfig_go_to_field" type="PlominoField">
+<id type="Products.Archetypes.Field.StringField">frmConfig_go_to_field</id>
+<FieldType type="Products.Archetypes.Field.StringField">RICHTEXT</FieldType>
+<FieldMode type="Products.Archetypes.Field.StringField">DISPLAY</FieldMode>
+<Formula type="Products.Archetypes.Field.TextField">
+<![CDATA[html="""<select onchange="location.href='%s?frmConfig_config_id='+this.value">
+<option value="">Go to...</option>""" % context.absolute_url()
+for field in context.getFormFields():
+    if field.id.startswith('frmConfig_'):
+        continue
+    html += """<option value='%s'>%s</option>""" % (field.id, field.id)
+html += """</select>"""
+return html
+]]>
+</Formula>
+<FieldReadTemplate type="Products.Archetypes.Field.StringField">
+</FieldReadTemplate>
+<FieldEditTemplate type="Products.Archetypes.Field.StringField">
+</FieldEditTemplate>
+<Mandatory type="Products.Archetypes.Field.BooleanField">False</Mandatory>
+<ValidationFormula type="Products.Archetypes.Field.TextField">
+<![CDATA[]]>
+</ValidationFormula>
+<ToBeIndexed type="Products.Archetypes.Field.BooleanField">False</ToBeIndexed>
+</element>
+<element id="frmConfig_delete_button" title="frmConfig_delete_button" type="PlominoField">
+<id type="Products.Archetypes.Field.StringField">frmConfig_delete_button</id>
+<FieldType type="Products.Archetypes.Field.StringField">RICHTEXT</FieldType>
+<FieldMode type="Products.Archetypes.Field.StringField">DISPLAY</FieldMode>
+<Formula type="Products.Archetypes.Field.TextField">
+<![CDATA[db = context.getParentDatabase()
+config_id = context.REQUEST.get('frmConfig_config_id')
+if not config_id:
+    return ''
+if config_id.startswith('frmConfig_'):
+    return ''
+if config_id not in context.objectIds():
+    return ""
+html = """<input type='button' onclick="location.href='%s/%s/delete_confirmation'" value="Delete" />""" % (context.absolute_url(), config_id)
+return html]]>
+</Formula>
+<FieldReadTemplate type="Products.Archetypes.Field.StringField">
+</FieldReadTemplate>
+<FieldEditTemplate type="Products.Archetypes.Field.StringField">
+</FieldEditTemplate>
+<Mandatory type="Products.Archetypes.Field.BooleanField">False</Mandatory>
+<ValidationFormula type="Products.Archetypes.Field.TextField">
+<![CDATA[]]>
+</ValidationFormula>
+<ToBeIndexed type="Products.Archetypes.Field.BooleanField">False</ToBeIndexed>
+</element>
+</elements>
+</element>
+</design>
+</plominodatabase>
