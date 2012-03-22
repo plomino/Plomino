@@ -30,7 +30,10 @@ from zope.component import queryUtility
 from zope.interface import implements, Interface
 from zope.component.factory import Factory
 from Products.CMFCore.PortalFolder import PortalFolder
-from Products.CMFCore.CMFCatalogAware import CatalogAware
+try:
+    from Products.CMFCore.CMFCatalogAware import CatalogAware
+except:
+    from Products.CMFCore.CMFCatalogAware import CMFCatalogAware as CatalogAware
 from zope.annotation import IAttributeAnnotatable
 from zope.app.container.contained import Contained
 
