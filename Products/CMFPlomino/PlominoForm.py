@@ -396,21 +396,34 @@ class PlominoForm(ATFolder):
 
         # remove the hidden content
         html_content = self.applyHideWhen(doc, silent_error=False)
-        
+
+        # get the field lists
+        fields = self.getFormFields(doc=doc, applyhidewhen=False)
+        fields_in_layout = []
+        fieldids_not_in_layout = []
+        for field in fields:
+            fieldblock='<span class="plominoFieldClass">'+field.id+'</span>'
+            if fieldblock in html_content:
+                fields_in_layout.append([field, fieldblock])
+            else:
+                fieldids_not_in_layout.append(field.id)
+
+        # inject request parameters as input hidden for fields not part of the layout
+        if creation and request is not None:
+            for field_id in fieldids_not_in_layout:
+                if request.has_key(field_id):
+                    html_content = "<input type='hidden' name='"+field_id+"' value='"+str(request.get(field_id,''))+"' />" + html_content
+
         # evaluate cache formulae and insert already cached fragment
         (html_content, to_be_cached) = self.applyCache(html_content, doc)
 
-        #if editmode, we had a hidden field to handle the Form item value
+        #if editmode, we add a hidden field to handle the Form item value
         if editmode and not parent_form_id:
             html_content = "<input type='hidden' name='Form' value='"+self.getFormName()+"' />" + html_content
 
         # insert the fields with proper value and rendering
-        for field in self.getFormFields(doc=doc, applyhidewhen=False):
-            fieldName = field.id
-            fieldblock='<span class="plominoFieldClass">'+fieldName+'</span>'
-            if creation and not(fieldblock in html_content) and request is not None:
-                if request.has_key(fieldName):
-                    html_content = "<input type='hidden' name='"+fieldName+"' value='"+str(request.get(fieldName,''))+"' />" + html_content
+        for (field, fieldblock) in fields_in_layout:
+            # check if fieldblock still here after cache replace
             if fieldblock in html_content:
                 html_content = html_content.replace(fieldblock, field.getFieldRender(self, doc, editmode, creation, request=request))
 
