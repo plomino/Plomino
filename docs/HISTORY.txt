@@ -1,6 +1,13 @@
 Changelog
 =========
 
+1.14 (2012-03-26)
+-------------------
+* PlominoDocument is not Archetypes-based anymore, it uses pure CMF now.
+* 'Plomino' package is renamed 'Products.CMFPlomino'.
+* Plone 4.2 compliancy.
+* Fix design portlet on Plone 3.
+
 1.13.3 (2012-03-06)
 -------------------
 * JSON API improvements
