@@ -7,7 +7,6 @@ setup(name='Plomino',
       version=version,
       description="Create specific applications in Plone without developing. Created by Makina Corpus.",
       long_description=open("README.rst").read() + "\n" +
-                       open(os.path.join("docs", "INSTALL.txt")).read() + "\n" +
                        open(os.path.join("docs", "HISTORY.txt")).read(),
       # Get more strings from http://pypi.python.org/pypi?%3Aaction=list_classifiers
       classifiers=[
@@ -20,7 +19,6 @@ setup(name='Plomino',
       url='http://www.plomino.net',
       license='ZPL',
       packages=find_packages(exclude=['ez_setup']),
-      namespace_packages=['Products'],
       include_package_data=True,
       zip_safe=False,
       install_requires=[
