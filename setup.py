@@ -3,7 +3,7 @@ import os
 
 version = '1.13.3'
 
-setup(name='Plomino',
+setup(name='Products.CMFPlomino',
       version=version,
       description="Create specific applications in Plone without developing. Created by Makina Corpus.",
       long_description=open("README.rst").read() + "\n" +
