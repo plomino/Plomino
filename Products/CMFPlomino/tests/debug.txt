@@ -1,5 +1,0 @@
-
-    >>> #import pdb; pdb.set_trace()
-    >>> self.setRoles(['Manager'])
-    >>> id=self.portal.invokeFactory('PlominoDatabase', id='mydb')
-    >>> db=self.portal.mydb

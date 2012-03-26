@@ -1,7 +1,7 @@
 from setuptools import setup, find_packages
 import os
 
-version = '1.13.3'
+version = '1.13.4'
 
 setup(name='Plomino',
       version=version,
@@ -26,9 +26,7 @@ setup(name='Plomino',
       install_requires=[
           'setuptools',
           # -*- Extra requirements: -*-
-          'simplejson',
-          'dm.sharedresource',
-          'collective.js.jqueryui',
+          'Products.CMFPlomino',
       ],
       entry_points="""
       # -*- Entry points: -*-

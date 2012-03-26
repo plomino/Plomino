@@ -1,3 +1,13 @@
+OBSOLETE
+========
+
+The **Plomino** package has been renamed
+`Products.CMFPlomino <http://pypi.python.org/pypi/Products.CMFPlomino>`_
+Please update your buildout eggs section.
+
+Note: This egg is empty, it just declares a dependency to Products.CMFPlomino
+(so buildout searching for 'Plomino' gets the accurate egg).
+
 Introduction
 ============
 
