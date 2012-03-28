@@ -110,22 +110,21 @@ class PlominoAgent(BaseContent, BrowserDefaultMixin):
         return result
 
     security.declarePublic('runAgent')
-    def runAgent(self, REQUEST=None):
+    def runAgent(self, *args):
         """ Execute the agent formula.
         """
         plominoContext = self
         plominoReturnURL = self.getParentDatabase().absolute_url()
-        if not REQUEST:
-            REQUEST = getattr(self, 'REQUEST', None)
+        REQUEST = getattr(self, 'REQUEST', None)
         try:
             if self.getRunAs() == "OWNER":
                 user = self.getOwner()
                 newSecurityManager(None, user)
 
-            r=self.runFormulaScript("agent_"+self.id, plominoContext, self.Content)
+            result = self.runFormulaScript("agent_"+self.id, plominoContext, self.Content, True, *args)
             if (REQUEST != None) and (REQUEST.get('REDIRECT', None)== "True"):
-                if r is not None:
-                    plominoReturnURL=r
+                if result is not None:
+                    plominoReturnURL = result
                 REQUEST.RESPONSE.redirect(plominoReturnURL)
         except PlominoScriptException, e:
             if REQUEST:
@@ -133,11 +132,11 @@ class PlominoAgent(BaseContent, BrowserDefaultMixin):
             return e.message
 
     security.declarePublic('runAgent_async')
-    def runAgent_async(self):
+    def runAgent_async(self, *args):
         """run the agent in asynchronous mode
         """
         async = getUtility(IAsyncService)
-        job = async.queueJob(run_async, self)
+        job = async.queueJob(run_async, self, *args)
         
 registerType(PlominoAgent, PROJECTNAME)
 # end of class PlominoAgent
