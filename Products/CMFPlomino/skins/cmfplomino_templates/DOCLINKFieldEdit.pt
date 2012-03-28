@@ -3,7 +3,7 @@
 				name python:options['fieldname'];
 				current python:options['fieldvalue'];
 				lcurrent python:test(hasattr(current,'split'),[current],current);
-				lcurrent_ids python:[path.split('/')[-1] for path in lcurrent];
+				lcurrent_ids python:[p.split('/')[-1] for p in lcurrent];
 				">
 	<tal:widget tal:condition="python:test(widget=='SELECT')">
 		<select tal:attributes="name name"><tal:loop tal:repeat="v selection">
