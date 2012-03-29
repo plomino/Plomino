@@ -29,7 +29,8 @@ from zope import event
 from zope.component import queryUtility
 from zope.interface import implements, Interface
 from zope.component.factory import Factory
-from Products.CMFCore.PortalFolder import PortalFolder
+from Products.CMFCore.CMFBTreeFolder import CMFBTreeFolder
+from Products.BTreeFolder2.BTreeFolder2 import BTreeFolder2Base
 try:
     from Products.CMFCore.CMFCatalogAware import CatalogAware
 except:
@@ -64,7 +65,7 @@ try:
 except Exception, e:
     HAS_BLOB = False
 
-class PlominoDocument(CatalogAware, PortalFolder, Contained):
+class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
     """
     """
     security = ClassSecurityInfo()
@@ -77,6 +78,7 @@ class PlominoDocument(CatalogAware, PortalFolder, Contained):
     def __init__(self, id):
         """initialization
         """
+        CMFBTreeFolder.__init__(self, id)
         self.id = id
         self.items = {}
         self.plomino_modification_time = DateTime().toZone('UTC')

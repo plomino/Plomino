@@ -1,6 +1,10 @@
 Changelog
 =========
 
+1.14.1 (2012-03-29)
+-------------------
+* Use CMFBTreeFolder instead of basic PortalFolder for PlominoDocuments so existing (<1.14) attached files keep accessible.
+
 1.14 (2012-03-26)
 -------------------
 * PlominoDocument is not Archetypes-based anymore, it uses pure CMF now.

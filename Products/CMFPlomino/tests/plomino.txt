@@ -287,11 +287,11 @@ The Plomino index is a ZCatalog indexing views selection formula, view columns, 
     1
     >>> db.getIndex().dbsearch({'question': 'where'})[0].getObject()==doc5
     True
-    >>> doc5.setItem('question', u'çé')
+    >>> doc5.setItem('question', u'\xe7\xe9')
     >>> doc5.save()
     >>> len(db.getIndex().dbsearch({'question': 'where'}))
     0
-    >>> len(db.getIndex().dbsearch({'question': u'çé'}))
+    >>> len(db.getIndex().dbsearch({'question': u'\xe7\xe9'}))
     1
 
 An index and a metadata are created for each view column
