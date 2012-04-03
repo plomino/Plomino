@@ -186,7 +186,8 @@ class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
             if field:
                 result = field.getFieldRender(form, self, False)
                 if field.getFieldType()=='ATTACHMENT' and convertattachments:
-                    result = result + ' ' + db.getIndex().convertFileToText(self,itemname)
+                    result += ' ' + db.getIndex().convertFileToText(self,itemname).decode('utf-8')
+                    result = result.encode('utf-8')
                 return result
 
         return result
