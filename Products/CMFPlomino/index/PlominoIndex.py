@@ -175,36 +175,38 @@ class PlominoIndex(UniqueObject, CatalogTool):
     def convertFileToText(self, doc, field):
         """ (adapted from Plone3 ATContentTypes file class)
         """
-        source   = ''
+        result = ''
         mimetype = 'text/plain'
-        encoding = 'utf-8'
 
         if hasattr(doc.getItem(field), 'keys'):
-            files=doc.getItem(field)
-            # stage 1: get the searchable text and convert it to utf8
-            sp    = getToolByName(self, 'portal_properties').site_properties
+            # `files` will always be a dictionary with a single key.
+            files = doc.getItem(field)
+            filename = files.keys()[0]
+
+            # Get the searchable text and convert it to the site encoding
+            sp = getToolByName(self, 'portal_properties').site_properties
             stEnc = getattr(sp, 'default_charset', 'utf-8')
 
             # get the file and try to convert it to utf8 text
             ptTool = getToolByName(self, 'portal_transforms')
-            for filename in files.keys():
-                f=doc.getfile(filename=filename)
-                if f:
-                    mt = files[filename]
-                    try:
-                        result = ptTool.convertTo('text/plain', str(f), mimetype=mt)
-                        if result:
-                            data = result.getData()
-                        else:
-                            data = ''
-                    except TransformException:
-                        data = ''
-                    except MissingBinary:
-                        data = ''
-                        
-                    source+=data
 
-        return source
+            f = doc.getfile(filename=filename)
+            if f:
+                mimetype = files[filename]
+                try:
+                    textstream = ptTool.convertTo('text/plain', str(f), mimetype=mimetype)
+                    if text:
+                        data = textstream.getData()
+                    else:
+                        data = ''
+                except TransformException:
+                    logger.info('convertFileToText> Transform failed', exc_info=True) 
+                    data = ''
+                except MissingBinary:
+                    logger.info('convertFileToText> Transform failed', exc_info=True) 
+                    data = ''
+
+        return result
 
 
 
