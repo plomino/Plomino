@@ -1161,6 +1161,8 @@ class PlominoReplicationManager(Persistent):
         # export attached files
         for f in doc.getFilenames():
             attached_file = doc.getfile(f)
+            if not attached_file:
+                continue
             fnode = xmldoc.createElement('attachment')
             fnode.setAttribute('id', f)
             fnode.setAttribute('contenttype', getattr(attached_file, 'content_type',''))
