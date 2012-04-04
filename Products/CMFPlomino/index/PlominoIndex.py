@@ -176,35 +176,25 @@ class PlominoIndex(UniqueObject, CatalogTool):
         """ (adapted from Plone3 ATContentTypes file class)
         """
         result = ''
-        mimetype = 'text/plain'
 
         if hasattr(doc.getItem(field), 'keys'):
             # `files` will always be a dictionary with a single key.
             files = doc.getItem(field)
             filename = files.keys()[0]
 
-            # Get the searchable text and convert it to the site encoding
-            sp = getToolByName(self, 'portal_properties').site_properties
-            stEnc = getattr(sp, 'default_charset', 'utf-8')
-
-            # get the file and try to convert it to utf8 text
-            ptTool = getToolByName(self, 'portal_transforms')
-
             f = doc.getfile(filename=filename)
             if f:
+                textstream = None
                 mimetype = files[filename]
                 try:
+                    ptTool = getToolByName(self, 'portal_transforms')
                     textstream = ptTool.convertTo('text/plain', str(f), mimetype=mimetype)
-                    if text:
-                        data = textstream.getData()
-                    else:
-                        data = ''
                 except TransformException:
                     logger.info('convertFileToText> Transform failed', exc_info=True) 
-                    data = ''
                 except MissingBinary:
                     logger.info('convertFileToText> Transform failed', exc_info=True) 
-                    data = ''
+                if textstream:
+                    result = textstream.getData()
 
         return result
 
