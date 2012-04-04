@@ -1251,12 +1251,10 @@ class PlominoReplicationManager(Persistent):
 
     security.declareProtected(CREATE_PERMISSION, 'importDocumentFromXML')
     def importDocumentFromXML(self, node):
-        docid = node.getAttribute('id')
+        docid = node.getAttribute('id').encode('utf-8')
         lastmodified = DateTime(node.getAttribute('lastmodified'))
         pt = getToolByName(self, 'portal_types')
-        pt.constructContent('PlominoDocument', self.documents, docid)
-        #self.invokeFactory(type_name='PlominoDocument', id=docid)
-        doc = self.documents.get(docid)
+        doc = self.createDocument(docid)
 
         # restore items
         itemnode = node.getElementsByTagName("params")[0]
