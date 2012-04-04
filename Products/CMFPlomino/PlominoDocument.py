@@ -6,6 +6,7 @@
 __author__ = """Eric BREHAULT <eric.brehault@makina-corpus.org>"""
 __docformat__ = 'plaintext'
 
+from Products.Archetypes.config import RENAME_AFTER_CREATION_ATTEMPTS
 from AccessControl import ClassSecurityInfo
 from zope.interface import implements
 import interfaces
@@ -703,11 +704,46 @@ class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
         else:
             return False
 
+
+    security.declarePrivate('_findUniqueId')
+    def _findUniqueId(self, id):
+        """Find a unique id in the parent folder, based on the given id, by
+        appending -n, where n is a number between 1 and the constant
+        RENAME_AFTER_CREATION_ATTEMPTS, set in config.py. If no id can be
+        found, return None.
+
+        Copied from Archetypes/BaseObject.py
+        """
+        check_id = getattr(self, 'check_id', None)
+        if check_id is None:
+            parent = aq_parent(aq_inner(self))
+            parent_ids = parent.objectIds()
+            check_id = lambda id, required: id in parent_ids
+
+        invalid_id = check_id(id, required=1)
+        if not invalid_id:
+            return id
+
+        idx = 1
+        while idx <= RENAME_AFTER_CREATION_ATTEMPTS:
+            new_id = "%s-%d" % (id, idx)
+            if not check_id(new_id, required=1):
+                return new_id
+            idx += 1
+
+        return None
+
+
     def generateNewId(self):
         """ compute the id using the Document id formula
         (the value returned by the formula is normalized and completed
         with '-1', '-2', ..., if the id already exists)
         """
+
+        # Don't do anything without the plone.i18n package
+        if not URL_NORMALIZER:
+            return None
+
         form = self.getForm()
         if not form:
             return None
@@ -724,16 +760,12 @@ class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
         if not result:
             return None
 
-        # Don't do anything without the plone.i18n package
-        if not URL_NORMALIZER:
-            return None
-
         if not isinstance(result, unicode):
             charset = self.getCharset()
             result = unicode(result, charset)
 
         request = getattr(self, 'REQUEST', None)
-        if request is not None:
+        if request:
             new_id = IUserPreferredURLNormalizer(request).normalize(result)
         else:
             new_id = queryUtility(IURLNormalizer).normalize(result)
@@ -743,19 +775,7 @@ class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
         try:
             documents._checkId(new_id)
         except BadRequestException:
-            # id exists, we need to append an index
-            existing_similar_ids = [id 
-                            for id in documents.objectIds()
-                            if id.startswith(new_id+"-")]
-            max_index = 0
-            for id in existing_similar_ids:
-                str_index = id[len(new_id)+1:]
-                try:
-                    index = int(str_index)
-                except ValueError:
-                    index = 0
-                max_index = max(max_index, index)
-            new_id = "%s-%d" % (new_id, max_index + 1)
+            new_id = self._findUniqueId(new_id)
         return new_id
 
 
