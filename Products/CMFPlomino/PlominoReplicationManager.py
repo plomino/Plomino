@@ -1187,9 +1187,12 @@ class PlominoReplicationManager(Persistent):
         """
         logger.info("Start documents import")
         self.setStatus("Importing documents (0%)")
-        xml_files = [xmlstring]
         txn = transaction.get()
-        if not xmlstring:
+        if xmlstring:
+            xmlstring_arg = True
+            xml_files = [xmlstring]
+        else:
+            xmlstring_arg = False
             if REQUEST:
                 sourcetype = REQUEST.get('sourcetype', sourcetype)
             if sourcetype == 'sourceFile':
@@ -1206,7 +1209,7 @@ class PlominoReplicationManager(Persistent):
         imports = 0
 
         for xml_file in xml_files:
-            if not xmlstring:
+            if not xmlstring_arg:
                 if hasattr(xml_file, 'read'):
                     xmlstring = xml_file.read()
                 else:
@@ -1253,7 +1256,6 @@ class PlominoReplicationManager(Persistent):
     def importDocumentFromXML(self, node):
         docid = node.getAttribute('id').encode('ascii')
         lastmodified = DateTime(node.getAttribute('lastmodified'))
-        pt = getToolByName(self, 'portal_types')
         doc = self.createDocument(docid)
 
         # restore items
