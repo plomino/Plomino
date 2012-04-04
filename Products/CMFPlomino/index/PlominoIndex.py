@@ -17,7 +17,7 @@ from AccessControl import ClassSecurityInfo
 from Products.CMFPlomino.config import *
 from Products.CMFPlomino.PlominoField import get_field_types
 
-from Products.ZCatalog.ZCatalog import ZCatalog
+from Products.CMFCore.CatalogTool import CatalogTool
 from Products.ZCatalog.Catalog import CatalogError
 
 from Products.CMFPlone.UnicodeSplitter import CaseNormalizer
@@ -27,7 +27,6 @@ from Products.CMFPlone.UnicodeSplitter import Splitter
 #from Products.ZCTextIndex.Lexicon import StopWordRemover
 from Products.ZCTextIndex.ZCTextIndex import PLexicon
 
-from Products.CMFCore.ActionProviderBase import ActionProviderBase
 from Products.CMFCore.utils import UniqueObject, SimpleRecord
 from Products.CMFCore.utils import getToolByName
 from Products.PortalTransforms.utils import TransformException
@@ -38,18 +37,12 @@ from Products.CMFPlomino.index.PlominoViewIndex import PlominoViewIndex
 from Products.CMFPlomino.index.PlominoColumnIndex import PlominoColumnIndex
 from Products.CMFPlomino.index.PlominoFileIndex import PlominoFileIndex
 
-class PlominoIndex(UniqueObject, ZCatalog, ActionProviderBase):
+class PlominoIndex(UniqueObject, CatalogTool):
     """Plomino index
     """
     security = ClassSecurityInfo()
 
-    #id = 'plomino_index'
-
-    manage_options = ( ZCatalog.manage_options +
-        ActionProviderBase.manage_options +
-        ({ 'label' : 'Overview', 'action' : 'manage_overview' }
-        ,
-        ))
+    id = 'plomino_index'
 
     # Methods
 
@@ -58,7 +51,7 @@ class PlominoIndex(UniqueObject, ZCatalog, ActionProviderBase):
         """
         """
         self.no_refresh = True
-        ZCatalog.__init__(self, self.getId())
+        CatalogTool.__init__(self)
         self._catalog = PlominoCatalog()
         # TODO: use TextindexNG3
         #lexicon = PLexicon('plaintext_lexicon', '', Splitter(), CaseNormalizer(), StopWordRemover())
@@ -70,6 +63,7 @@ class PlominoIndex(UniqueObject, ZCatalog, ActionProviderBase):
         self.addIndex('id', "FieldIndex")
         self.addColumn('id')
         self.addIndex('getPlominoReaders', "KeywordIndex")
+        self.addIndex('path', "ExtendedPathIndex")
         
         if FULLTEXT:
             self.createFieldIndex('SearchableText', 'RICHTEXT')
@@ -132,14 +126,9 @@ class PlominoIndex(UniqueObject, ZCatalog, ActionProviderBase):
     def indexDocument(self, doc, idxs=None, update_metadata=1):
         """
         """
-        #self.catalog_object(doc, "/".join(doc.getPhysicalPath()))
         try:
-            # TODO DONE LATER (cataloging real path is better but it implies
-            # to test all the side-effect and provide a migration script)
-            #self.catalog_object(doc)
-            db = doc.getParentDatabase()
             self.catalog_object(doc,
-                "/".join(db.getPhysicalPath()) + "/" + doc.id,
+                "/".join(doc.getPhysicalPath()),
                 idxs=idxs, update_metadata=update_metadata)
         except Exception, e:
             self.portal_skins.plone_scripts.plone_log('%s\non %s'%(`e`, doc.id))
@@ -149,10 +138,7 @@ class PlominoIndex(UniqueObject, ZCatalog, ActionProviderBase):
     def unindexDocument(self,doc):
         """
         """
-        # TODO DONE LATER (cataloging real path is better but it implies
-        # to test all the side-effect and provide a migration script)
-        #self.uncatalog_object("/".join(doc.getPhysicalPath()
-        self.uncatalog_object("/".join(doc.getParentDatabase().getPhysicalPath()) + "/" + doc.id)
+        self.uncatalog_object("/".join(doc.getPhysicalPath()))
 
     security.declarePublic('refresh')
     def refresh(self):
@@ -170,10 +156,13 @@ class PlominoIndex(UniqueObject, ZCatalog, ActionProviderBase):
         user_groups_roles = ['Anonymous', '*']
         user_id = self.getCurrentUser().getUserName()
         if user_id != "Anonymous User":
-            user_groups_roles += [user_id] \
-                           + self.getCurrentUserGroups() \
-                           + self.getCurrentUserRoles()
+            user_groups_roles += (
+                [user_id] + 
+                self.getCurrentUserGroups() + 
+                self.getCurrentUserRoles()
+                )
         request['getPlominoReaders'] = user_groups_roles
+        #DBG logger.info('dbsearch> %s, %s, %s, %s'%(`request`, sortindex, reverse, limit)) 
         return self.search(request, sortindex, reverse, limit)
 
     security.declareProtected(READ_PERMISSION, 'getKeyUniqueValues')

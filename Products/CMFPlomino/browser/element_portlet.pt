@@ -1,7 +1,7 @@
-<dl class="portlet portlet-plomino"
-	tal:define="header view/data/header;
+<dl tal:define="header view/data/header;
 				element_layout view/elementLayout;
-				element_id view/data/element_id;">
+				element_id view/data/element_id;"
+	tal:attributes="class string:portlet portlet-plomino portlet-plomino-$element_id">
 	
 	<tal:block tal:condition="view/hasGoogleVisualizationField">
         <script type='text/javascript' src='http://www.google.com/jsapi'></script>

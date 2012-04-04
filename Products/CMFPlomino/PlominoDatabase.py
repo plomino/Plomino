@@ -18,6 +18,7 @@ from Products.Archetypes.debug import deprecated
 from zope.interface import implements
 import interfaces
 from Products.ATContentTypes.content.folder import ATFolder
+from Products.CMFCore.PortalFolder import PortalFolderBase as PortalFolder
 from Products.CMFDynamicViewFTI.browserdefault import BrowserDefaultMixin
 from exceptions import PlominoScriptException
 from Products.CMFPlomino.config import *
@@ -38,6 +39,7 @@ from OFS.ObjectManager import ObjectManager
 #from Products.BTreeFolder2.BTreeFolder2 import manage_addBTreeFolder
 from Products.CMFCore.CMFBTreeFolder import manage_addCMFBTreeFolder
 from Products.CMFPlone.interfaces import IHideFromBreadcrumbs
+
 import string
 import Globals
 from dm.sharedresource import get_resource
@@ -47,6 +49,9 @@ try:
     ASYNC = True
 except:
     ASYNC = False
+from plone.memoize.interfaces import ICacheChooser
+from zope.component import queryUtility
+from zope.annotation.interfaces import IAnnotations
 
 from index.PlominoIndex import PlominoIndex
 from Products.CMFPlomino.PlominoUtils import *
@@ -54,9 +59,12 @@ from PlominoAccessControl import PlominoAccessControl
 from PlominoDesignManager import PlominoDesignManager
 from PlominoReplicationManager import PlominoReplicationManager
 from PlominoScheduler import PlominoScheduler
+from PlominoDocument import addPlominoDocument
+from exceptions import PlominoCacheException
 
 from Products.CMFCore.PortalFolder import PortalFolderBase as PortalFolder
 
+PLOMINO_REQUEST_CACHE_KEY = "plomino.cache"
 ##/code-section module-header
 
 schema = Schema((
@@ -265,6 +273,13 @@ class PlominoDatabase(ATFolder, PlominoAccessControl, PlominoDesignManager, Plom
             if self.documents.has_key(name):
                 return aq_inner(getattr(self.documents, name)).__of__(self)
         return BaseObject.__bobo_traverse__(self, request, name)
+    
+    def allowedContentTypes(self):
+        # Make sure PlominoDocument is hidden in Plone "Add..." menu
+        # as getNotAddableTypes is not used anymore in Plone 4
+        filterOut = ['PlominoDocument']
+        types = PortalFolder.allowedContentTypes(self)
+        return [ ctype for ctype in types if ctype.getId() not in filterOut ]
 
     security.declarePublic('getStatus')
     def getStatus(self):
@@ -372,14 +387,8 @@ class PlominoDatabase(ATFolder, PlominoAccessControl, PlominoDesignManager, Plom
         """
         if not docid:
             docid = make_uuid()
-        pt = getToolByName(self, 'portal_types')
-        pt.constructContent('PlominoDocument', self.documents, docid)
+        self.documents[docid] = addPlominoDocument(docid)
         doc = self.documents.get(docid)
-        # new doc has been automatically index in portal_catalog by constructContent
-        # 1: we do not necessarily want it (depending on IndexInPortal value)
-        # 2: PlominoDocument.save() will index it with the correct path anyway
-        # so let's remove it for now
-        self.portal_catalog.uncatalog_object("/".join(doc.getPhysicalPath()))
         return doc
 
     security.declarePublic('getDocument')
@@ -486,8 +495,61 @@ class PlominoDatabase(ATFolder, PlominoAccessControl, PlominoDesignManager, Plom
             # documents will not be ordered in site map
             return 0
         return ATFolder.getObjectPosition(self, id)
-            
+
+    def _cache(self):
+        chooser = queryUtility(ICacheChooser)
+        if chooser is None:
+            return None
+        return chooser(self.absolute_url_path())
+
+    def getCache(self, key):
+        """ get cached value in the cache provided by plone.memoize 
+        """ 
+        return self._cache().get(key)
+
+    def setCache(self, key, value):
+        """ set cached value in the cache provided by plone.memoize 
+        """
+        self._cache()[key] = value
+
+    def cleanCache(self, key=None):
+        """ invalidate the cache
+        (if key is None, all cached values are cleaned)
+        """
+        cache = self._cache()
+        if hasattr(cache, 'ramcache'):
+            if key:
+                cachekey = dict(key=cache._make_key(key))
+            else:
+                cachekey = None
+            cache.ramcache.invalidate(self.absolute_url_path(), cachekey)
+        else:
+            # we are probably not using zope.ramcache
+            raise PlominoCacheException, 'Cache cleaning not implemented'
         
+    def getRequestCache(self, key):
+        """ get cached value in an annotation on the current request
+        Note: it will available within this request only, it will be destroyed
+        once the request is terminated.
+        """
+        if not hasattr(self, 'REQUEST'):
+            return None
+        annotations = IAnnotations(self.REQUEST)
+        cache = annotations.get(PLOMINO_REQUEST_CACHE_KEY)
+        if cache:
+            return cache.get(key)
+
+    def setRequestCache(self, key, value):
+        """ set cached value in an annotation on the current request 
+        """
+        if not hasattr(self, 'REQUEST'):
+            return None
+        annotations = IAnnotations(self.REQUEST)
+        cache = annotations.get(PLOMINO_REQUEST_CACHE_KEY)
+        if not cache:
+            cache = annotations[PLOMINO_REQUEST_CACHE_KEY] = dict()
+        cache[key] = value
+
 registerType(PlominoDatabase, PROJECTNAME)
 # end of class PlominoDatabase
 

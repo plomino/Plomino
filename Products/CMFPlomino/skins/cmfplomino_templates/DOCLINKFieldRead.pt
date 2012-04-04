@@ -1,11 +1,12 @@
-<tal:block tal:define="selection options/selection;
+<tal:block tal:define="selection python:options['selection'];
 			lselection python:[f.split('|') for f in selection];
-			current options/fieldvalue;
+			current python:options['fieldvalue'];
 			lcurrent python:test(hasattr(current,'split'),[current],current);
-			labeled python:[e for e in lselection if e[1] in lcurrent]
+			lcurrent_ids python:[p.split('/')[-1] for p in lcurrent];
+			labeled python:[e for e in lselection if e[1] in lcurrent or e[1] in lcurrent_ids]
 	"><tal:loop tal:repeat="v labeled">
 	<a tal:content="python:v[0]"
-	    tal:attributes="href python:request.physicalPathToURL(v[1].split('/'))">link to doc</a>
+	    tal:attributes="href python:test('/' in v[1], request.physicalPathToURL(v[1].split('/')), options['field'].getParentDatabase().getDocument(v[1]).doc_url())">link to doc</a>
 	<tal:sep tal:condition="not:repeat/v/end" tal:content="structure python:options['field'].getSettings('separator')">separator</tal:sep>
 </tal:loop>
 </tal:block>

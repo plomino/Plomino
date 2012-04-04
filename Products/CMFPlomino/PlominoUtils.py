@@ -23,6 +23,11 @@ from email import message_from_string
 from email.Header import Header
 
 try:
+    import json
+except:
+    import simplejson as json
+
+try:
    from plone.app.upgrade import v40
    HAS_PLONE40 = True
 except ImportError:
@@ -44,9 +49,9 @@ def StringToDate(str_d, format='%Y-%m-%d'):
     try:
         dt = strptime(str_d, format)
     except ValueError, e:
-        logger.info('StringToDate> %s, %s'%(str(str_d), `e`))
         # XXX: Just let DateTime guess.
         dt = strptime(DateTime(str_d).ISO(), '%Y-%m-%d %H:%M:%S')
+        logger.info('StringToDate> %s, %s, %s, guessed: %s'%(str(str_d), format, `e`, `dt`))
     if len(dt)>=5:
         return DateTime(dt[0], dt[1], dt[2], dt[3], dt[4])
     else:
@@ -125,7 +130,10 @@ def PlominoTranslate(message, context, domain='CMFPlomino'):
             message = message[0]
         except (TypeError, IndexError):
             pass
-    msg = translation_service.utranslate(domain=domain, msgid=message, context=context)
+    if HAS_PLONE40:
+        msg = translation_service.utranslate(domain=domain, msgid=message, context=context)
+    else:
+        msg = translation_service.utranslate(message, domain=domain, context=context)
     return translation_service.encode(msg) # convert unicode to site encoding
 
 def htmlencode(s):
@@ -209,3 +217,9 @@ def isDocument(doc):
 
 def cgi_escape(s):
     return cgi.escape(s)
+
+def json_dumps(obj):
+    return json.dumps(obj)
+
+def json_loads(json_string):
+    return json.loads(json_string)

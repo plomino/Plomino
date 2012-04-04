@@ -1,9 +1,44 @@
 Changelog
 =========
 
-1.12 (2011-10-03)
+1.14.1 (2012-03-29)
+-------------------
+* Use CMFBTreeFolder instead of basic PortalFolder for PlominoDocuments so existing (<1.14) attached files keep accessible.
+
+1.14 (2012-03-26)
+-------------------
+* PlominoDocument is not Archetypes-based anymore, it uses pure CMF now.
+* 'Plomino' package is renamed 'Products.CMFPlomino'.
+* Plone 4.2 compliancy.
+* Fix design portlet on Plone 3.
+
+1.13.3 (2012-03-06)
+-------------------
+* JSON API improvements
+
+1.13.2 (2012-02-16)
+-------------------
+* Add JSON utils: json_dumps and json_loads
+* Add CSS class containing the element id on the Plomino element portlet
+
+1.13.1 (2012-01-11)
+-------------------
+* Fix agent security when running as owner
+* New content-type addable in PlominoForm: PlominoCache, to indicate cache fragments
+* Fix exportCSV and exportXLS for views
+* Fix OpenDatabase when doc counting is active
+
+1.13 (2011-11-30)
 -----------------
-* fix reader access control on getfile
+* onOpenView event
+* getCache and setCache which use plone.memoize to cache data
+* getRequestCache and setRequestCache to cache data into the request
+* Allow keyword args for agent __call__
+
+1.12.1 (2011-10-07)
+-------------------
+* fix transform exceptions in attached file indexing
+* fix editor permissions to allow file attachment deletion
 
 1.12 (2011-10-03)
 -----------------

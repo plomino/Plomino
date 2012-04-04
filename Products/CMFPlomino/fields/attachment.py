@@ -20,8 +20,7 @@ from dictionaryproperty import DictionaryProperty
 from base import IBaseField, BaseField
 
 class IAttachmentField(IBaseField):
-    """
-    Number field schema
+    """ Attachment field schema
     """
 
 class AttachmentField(BaseField):

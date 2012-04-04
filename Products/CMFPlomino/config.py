@@ -42,6 +42,7 @@ ADD_CONTENT_PERMISSIONS = {
     'PlominoDocument': ADD_CONTENT_PERMISSION,
     'PlominoHidewhen': ADD_DESIGN_PERMISSION,
     'PlominoAgent': ADD_DESIGN_PERMISSION,
+    'PlominoCache': ADD_DESIGN_PERMISSION,
 }
 
 setDefaultRoles(ADD_DESIGN_PERMISSION, ('Manager','Owner'))

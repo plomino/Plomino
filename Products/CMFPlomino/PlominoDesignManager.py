@@ -460,47 +460,42 @@ class PlominoDesignManager(Persistent):
 
     security.declareProtected(DESIGN_PERMISSION, 'getViewsList')
     def getViewsList(self):
-        """return the database views ids in a string
+        """ Return the database views ids in a string
         """
         views = self.getViews()
-        ids = ""
-        for v in views:
-            ids=ids+v.id+"/"
-        return ids
+        ids = [v.id for v in views]
+        ids.sort()
+        return '/'.join(ids)
 
     security.declareProtected(DESIGN_PERMISSION, 'getFormsList')
     def getFormsList(self):
-        """return the database forms ids in a string
+        """ Return the database forms ids in a string
         """
         forms = self.getForms()
-        ids = ""
-        for f in forms:
-            ids=ids+f.id+"/"
-        return ids
+        ids = [f.id for f in forms]
+        ids.sort()
+        return '/'.join(ids)
 
     security.declareProtected(DESIGN_PERMISSION, 'getAgentsList')
     def getAgentsList(self):
-        """return the database agents ids in a string
+        """ Return the database agents ids in a string
         """
         agents = self.getAgents()
-        ids = ""
-        for a in agents:
-            ids=ids+a.id+"/"
-        return ids
+        ids = [a.id for a in agents]
+        ids.sort()
+        return '/'.join(ids)
 
     security.declareProtected(DESIGN_PERMISSION, 'getResourcesList')
     def getResourcesList(self):
-        """return the database resources objects ids in a string
+        """ Return the database resources objects ids in a string
         """
-        res = self.resources.objectIds()
-        ids = ""
-        for i in res:
-            ids=ids+i+"/"
-        return ids
+        ids = self.resources.objectIds()
+        ids.sort()
+        return '/'.join(ids)
 
     security.declareProtected(DESIGN_PERMISSION, 'getRemoteViews')
     def getRemoteViews(self, sourceURL, username, password):
-        """get views ids list from remote database
+        """ Get views ids list from remote database
         """
         views = authenticateAndLoadURL(sourceURL+"/getViewsList", username, password).read()
         ids = views.split('/')
@@ -509,7 +504,7 @@ class PlominoDesignManager(Persistent):
 
     security.declareProtected(DESIGN_PERMISSION, 'getRemoteForms')
     def getRemoteForms(self, sourceURL, username, password):
-        """get forms ids list from remote database
+        """ Get forms ids list from remote database
         """
         forms = authenticateAndLoadURL(sourceURL+"/getFormsList", username, password).read()
         ids = forms.split('/')
@@ -518,7 +513,7 @@ class PlominoDesignManager(Persistent):
 
     security.declareProtected(DESIGN_PERMISSION, 'getRemoteAgents')
     def getRemoteAgents(self, sourceURL, username, password):
-        """get agents ids list from remote database
+        """ Get agents ids list from remote database
         """
         agents = authenticateAndLoadURL(sourceURL+"/getAgentsList", username, password).read()
         ids = agents.split('/')
@@ -527,7 +522,7 @@ class PlominoDesignManager(Persistent):
 
     security.declareProtected(DESIGN_PERMISSION, 'getRemoteResources')
     def getRemoteResources(self, sourceURL, username, password):
-        """get resources ids list from remote database
+        """ Get resources ids list from remote database
         """
         res = authenticateAndLoadURL(sourceURL+"/getResourcesList", username, password).read()
         ids = res.split('/')

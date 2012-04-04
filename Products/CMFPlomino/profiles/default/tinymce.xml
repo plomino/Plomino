@@ -6,6 +6,7 @@
    <element value="Plomino Action|span|plominoActionClass"/>
    <element value="Plomino Hide-when formula|span|plominoHidewhenClass"/>
    <element value="Plomino Subform|span|plominoSubformClass"/>
+   <element value="Plomino Cache|span|plominoCacheClass"/>
   </styles>
  </layout>
 </object>

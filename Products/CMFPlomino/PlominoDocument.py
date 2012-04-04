@@ -1,37 +1,44 @@
 # -*- coding: utf-8 -*-
 #
 # File: PlominoDocument.py
-#
-# Copyright (c) 2008 by ['Eric BREHAULT']
-# Generator: ArchGenXML Version 2.0
-#            http://plone.org/products/archgenxml
-#
-# Zope Public License (ZPL)
-#
+
 
 __author__ = """Eric BREHAULT <eric.brehault@makina-corpus.org>"""
 __docformat__ = 'plaintext'
 
 from AccessControl import ClassSecurityInfo
-from Products.Archetypes.atapi import *
 from zope.interface import implements
 import interfaces
-from Products.ATContentTypes.content.folder import ATFolder
-from Products.CMFDynamicViewFTI.browserdefault import BrowserDefaultMixin
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import normalizeString
+from OFS.ObjectManager import BadRequestException
 
 from exceptions import PlominoScriptException
 from Products.CMFPlomino.config import *
 
+import transaction
 from interfaces import *
-from Products.Archetypes.public import *
 from AccessControl import Unauthorized
+try:
+    from AccessControl.class_init import InitializeClass
+except:
+    from App.class_init import InitializeClass
 from time import strptime
 from DateTime import DateTime
 from zope import event
-from Products.Archetypes.event import ObjectEditedEvent
 from zope.component import queryUtility
+from zope.interface import implements, Interface
+from zope.component.factory import Factory
+from Products.CMFCore.CMFBTreeFolder import CMFBTreeFolder
+from Products.BTreeFolder2.BTreeFolder2 import BTreeFolder2Base
+try:
+    from Products.CMFCore.CMFCatalogAware import CatalogAware
+except:
+    from Products.CMFCore.CMFCatalogAware import CMFCatalogAware as CatalogAware
+from zope.annotation import IAttributeAnnotatable
+from zope.app.container.contained import Contained
+
+import simplejson as json
 
 import logging
 logger = logging.getLogger('Plomino')
@@ -58,42 +65,22 @@ try:
 except Exception, e:
     HAS_BLOB = False
 
-schema = Schema((
-
-),
-)
-
-##code-section after-local-schema #fill in your manual code here
-##/code-section after-local-schema
-
-PlominoDocument_schema = getattr(ATFolder, 'schema', Schema(())).copy() + \
-    schema.copy()
-
-##code-section after-schema #fill in your manual code here
-##/code-section after-schema
-
-class PlominoDocument(ATFolder):
+class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
     """
     """
     security = ClassSecurityInfo()
-    implements(interfaces.IPlominoDocument)
-
-    meta_type = 'PlominoDocument'
-    _at_rename_after_creation = False
-
-    schema = PlominoDocument_schema
-
-    ##code-section class-header #fill in your manual code here
-    ##/code-section class-header
-
-    # Methods
-
+    implements(interfaces.IPlominoDocument, IAttributeAnnotatable)
+    
+    portal_type = "PlominoDocument"
+    meta_type = "PlominoDocument"
+    
     security.declarePublic('__init__')
-    def __init__(self,oid,**kw):
+    def __init__(self, id):
         """initialization
         """
-        ATFolder.__init__(self, oid, **kw)
-        self.items={}
+        CMFBTreeFolder.__init__(self, id)
+        self.id = id
+        self.items = {}
         self.plomino_modification_time = DateTime().toZone('UTC')
 
     security.declarePublic('checkBeforeOpenDocument')
@@ -106,11 +93,8 @@ class PlominoDocument(ATFolder):
             return self.OpenDocument()
         else:
             raise Unauthorized, "You cannot read this content"
-
+        
     def doc_path(self):
-        #db = self.getParentDatabase()
-        #return db.getPhysicalPath() + (self.id,)
-        # here we return actual path, we do not hide plomino_documents anymore
         return self.getPhysicalPath()
 
     def doc_url(self):
@@ -187,25 +171,65 @@ class PlominoDocument(ATFolder):
 
     security.declarePublic('getRenderedItem')
     def getRenderedItem(self, itemname, form=None, formid=None, convertattachments=False):
-        """ return the item value rendered according the field defined in the given form
-        (use default doc form if None)
+        """ Return the item rendered according to the corresponding field. 
+
+        The used form can be, in order of precedence:
+        - passed as the `form` parameter,
+        - specified with the `formid` parameter and looked up,
+        - looked up from the document.
+
+        If no form or field is found, return the empty string.
+
+        If `convertattachments` is True, then we assume that field
+        attachments are text and append them to the rendered value. 
         """
-        result = ''
         db = self.getParentDatabase()
+        result = ''
         if not form:
-            if not formid:
-                form = self.getForm()
-            else:
+            if formid:
                 form = db.getForm(formid)
+            else:
+                form = self.getForm()
         if form:
             field = form.getFormField(itemname)
             if field:
                 result = field.getFieldRender(form, self, False)
                 if field.getFieldType()=='ATTACHMENT' and convertattachments:
-                    result = result + ' ' + db.getIndex().convertFileToText(self,itemname)
+                    result += ' ' + db.getIndex().convertFileToText(self, itemname).decode('utf-8')
+                    result = result.encode('utf-8')
                 return result
 
         return result
+
+    security.declarePublic('tojson')
+    def tojson(self, REQUEST=None, item=None, formid=None):
+        """return item value as JSON
+        (return all items if item=None)
+        """
+        if not self.isReader():
+            raise Unauthorized, "You cannot read this content"
+        
+        if REQUEST:
+            REQUEST.RESPONSE.setHeader('content-type', 'application/json; charset=utf-8')
+            item = REQUEST.get('item', item)
+            formid = REQUEST.get('formid', formid)
+        if not item:
+            return json.dumps(self.items)
+        
+        if not formid:
+            form = self.getForm()
+        else:
+            form = self.getParentDatabase().getForm(formid)
+        if form:
+            field = form.getFormField(item)
+            if field:
+                adapt = field.getSettings()
+                fieldvalue = adapt.getFieldValue(form, self, False, False, REQUEST)
+            else:
+                fieldvalue = self.getItem(item)
+        else:
+            fieldvalue = self.getItem(item)
+        return json.dumps(fieldvalue) 
 
     security.declarePublic('computeItem')
     def computeItem(self, itemname, form=None, formid=None, store=True, report=True):
@@ -296,7 +320,6 @@ class PlominoDocument(ATFolder):
         """refresh values according form, and reindex the document
         """
         # we process computed fields (refresh the value)
-        # TODO: manage computed fields dependencies
         if form is None:
             form = self.getForm()
         else:
@@ -326,12 +349,10 @@ class PlominoDocument(ATFolder):
 
             # update the document id
             if creation and form.getDocumentId():
-                self._renameAfterCreation()
-                # _renameAfterCreation index doc in portal_catalog
-                # 1: we do not necessarily want it (depending on IndexInPortal value)
-                # 2: we will index it with the correct path anyway
-                # so let's remove it for now
-                db.portal_catalog.uncatalog_object("/".join(self.getPhysicalPath()))
+                new_id = self.generateNewId()
+                if new_id:
+                    transaction.savepoint(optimistic=True)
+                    db.documents.manage_renameObject(self.id, new_id)
             
         # update the Plomino_Authors field with the current user name
         if asAuthor:
@@ -364,17 +385,20 @@ class PlominoDocument(ATFolder):
             # update portal_catalog
             if db.getIndexInPortal():
                 db.portal_catalog.catalog_object(self, "/".join(db.getPhysicalPath() + (self.id,)))
-            event.notify(ObjectEditedEvent(self))
 
     security.declareProtected(READ_PERMISSION, 'openWithForm')
-    def openWithForm(self,form,editmode=False):
-        """display the document using the given form's layout - first,
-        check if the user has proper access rights
+    def openWithForm(self, form, editmode=False):
+        """ Display the document using the given form's layouts.
+        First, check if the user has proper access rights.
         """
+
         db = self.getParentDatabase()
         if editmode:
             if not db.isCurrentUserAuthor(self):
                 raise Unauthorized, "You cannot edit this document."
+        else:
+            if not self.isReader():
+                raise Unauthorized, "You cannot read this content"
 
         # execute the onOpenDocument code of the form
         valid = ''
@@ -428,11 +452,9 @@ class PlominoDocument(ATFolder):
 
     security.declarePublic('getForm')
     def getForm(self):
-        """by default, we use the form corresponding to the Form item value
-        but it might be forced to a different form by passing the form id as
-        request parameter, or by evaluating the parent view form formula
+        """ Return form: look in REQUEST, then try to acquire from view, and
+        finally fall back to document Form item.
         """
-        default_form = self.getItem('Form')
         formname = None
         if hasattr(self, 'REQUEST'):
             formname = self.REQUEST.get("openwithform", None)
@@ -440,13 +462,15 @@ class PlominoDocument(ATFolder):
             if hasattr(self, 'evaluateViewForm'):
                 formname = self.evaluateViewForm(self)
         if not formname:
-            formname = default_form
+            formname = self.getItem('Form')
         form = self.getParentDatabase().getForm(formname)
         if not form:
-            form = self.getParentDatabase().getForm(default_form)
             if hasattr(self, "REQUEST") and formname:
                 self.writeMessageOnPage("Form %s does not exist." % formname, self.REQUEST, True)
         return form
+
+    def _getCatalogTool(self):
+        return self.getParentDatabase().getIndex()
 
     security.declarePrivate('manage_afterClone')
     def manage_afterClone(self,item):
@@ -465,7 +489,7 @@ class PlominoDocument(ATFolder):
             if name not in ['__parent__', '__conform__', '__annotations__',
                            '_v_at_subobjects', '__getnewargs__', 'aq_inner', 'im_self']:
                 try:
-                    return ATFolder.__getattr__(self, name)
+                    return PortalContent.__getattr__(self, name)
                 except Exception, e:
                     raise AttributeError, name
             else:   
@@ -681,8 +705,8 @@ class PlominoDocument(ATFolder):
 
     def generateNewId(self):
         """ compute the id using the Document id formula
-        (overwrite Archetypes generateNewId, and provides same behaviour, 
-        but use Document id formula instead of title)
+        (the value returned by the formula is normalized and completed
+        with '-1', '-2', ..., if the id already exists)
         """
         form = self.getForm()
         if not form:
@@ -710,14 +734,35 @@ class PlominoDocument(ATFolder):
 
         request = getattr(self, 'REQUEST', None)
         if request is not None:
-            return IUserPreferredURLNormalizer(request).normalize(result)
+            new_id = IUserPreferredURLNormalizer(request).normalize(result)
+        else:
+            new_id = queryUtility(IURLNormalizer).normalize(result)
+        
+        # check if the id already exists
+        documents = self.getParentDatabase().documents
+        try:
+            documents._checkId(new_id)
+        except BadRequestException:
+            # id exists, we need to append an index
+            existing_similar_ids = [id 
+                            for id in documents.objectIds()
+                            if id.startswith(new_id+"-")]
+            max_index = 0
+            for id in existing_similar_ids:
+                str_index = id[len(new_id)+1:]
+                try:
+                    index = int(str_index)
+                except ValueError:
+                    index = 0
+                max_index = max(max_index, index)
+            new_id = "%s-%d" % (new_id, max_index + 1)
+        return new_id
 
-        return queryUtility(IURLNormalizer).normalize(result)
-    
-registerType(PlominoDocument, PROJECTNAME)
-# end of class PlominoDocument
 
-##code-section module-footer #fill in your manual code here
+InitializeClass(PlominoDocument)
+addPlominoDocument = Factory(PlominoDocument)
+addPlominoDocument.__name__ = "addPlominoDocument"
+
 class TemporaryDocument(PlominoDocument):
 
     security = ClassSecurityInfo()
@@ -768,8 +813,6 @@ class TemporaryDocument(PlominoDocument):
         """
         """
         return self.real_id
-
-##/code-section module-footer
 
 
 

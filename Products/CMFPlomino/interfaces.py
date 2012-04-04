@@ -41,3 +41,7 @@ class IPlominoAgent(Interface):
 class IPlominoUtils(Interface):
     """Marker interface for PlominoUtils
     """
+
+class IPlominoCache(Interface):
+    """Marker interface for PlominoCache
+    """

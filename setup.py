@@ -1,12 +1,12 @@
 from setuptools import setup, find_packages
 import os
 
-version = '1.12'
+version = '1.14.1'
 
-setup(name='Plomino',
+setup(name='Products.CMFPlomino',
       version=version,
       description="Create specific applications in Plone without developing. Created by Makina Corpus.",
-      long_description=open("README.txt").read() + "\n" +
+      long_description=open("README.rst").read() + "\n" +
                        open(os.path.join("docs", "INSTALL.txt")).read() + "\n" +
                        open(os.path.join("docs", "HISTORY.txt")).read(),
       # Get more strings from http://pypi.python.org/pypi?%3Aaction=list_classifiers
@@ -14,7 +14,7 @@ setup(name='Plomino',
         "Framework :: Plone",
         "Programming Language :: Python",
         ],
-      keywords='RAD, dynamic forms, Lotus Domino',
+      keywords='RAD, dynamic forms, web application builder',
       author='Eric BREHAULT',
       author_email='eric.brehault@makina-corpus.org',
       url='http://www.plomino.net',

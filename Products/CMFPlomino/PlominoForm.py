@@ -67,7 +67,7 @@ schema = Schema((
         name='onOpenDocument',
         widget=TextAreaWidget(
             label="On open document",
-            description="Action to take when the document is opned",
+            description="Action to take when the document is opened",
             label_msgid='CMFPlomino_label_onOpenDocument',
             description_msgid='CMFPlomino_help_onOpenDocument',
             i18n_domain='CMFPlomino',
@@ -375,6 +375,13 @@ class PlominoForm(ATFolder):
                 filtered.append((obj_a, parent_id))
         return filtered
 
+    security.declarePublic('getCacheFormulas')
+    def getCacheFormulas(self):
+        """Get cache formulae
+        """
+        cacheformula = self.objectValues(spec='PlominoCache')
+        return [c for c in cacheformula]
+    
     security.declarePublic('getFormName')
     def getFormName(self):
         """Return the form name
@@ -390,17 +397,33 @@ class PlominoForm(ATFolder):
         # remove the hidden content
         html_content = self.applyHideWhen(doc, silent_error=False)
 
-        #if editmode, we had a hidden field to handle the Form item value
+        # get the field lists
+        fields = self.getFormFields(doc=doc, applyhidewhen=False)
+        fields_in_layout = []
+        fieldids_not_in_layout = []
+        for field in fields:
+            fieldblock='<span class="plominoFieldClass">'+field.id+'</span>'
+            if fieldblock in html_content:
+                fields_in_layout.append([field, fieldblock])
+            else:
+                fieldids_not_in_layout.append(field.id)
+
+        # inject request parameters as input hidden for fields not part of the layout
+        if creation and request is not None:
+            for field_id in fieldids_not_in_layout:
+                if request.has_key(field_id):
+                    html_content = "<input type='hidden' name='"+field_id+"' value='"+str(request.get(field_id,''))+"' />" + html_content
+
+        # evaluate cache formulae and insert already cached fragment
+        (html_content, to_be_cached) = self.applyCache(html_content, doc)
+
+        #if editmode, we add a hidden field to handle the Form item value
         if editmode and not parent_form_id:
             html_content = "<input type='hidden' name='Form' value='"+self.getFormName()+"' />" + html_content
 
         # insert the fields with proper value and rendering
-        for field in self.getFormFields(doc=doc, applyhidewhen=False):
-            fieldName = field.id
-            fieldblock='<span class="plominoFieldClass">'+fieldName+'</span>'
-            if creation and not(fieldblock in html_content) and request is not None:
-                if request.has_key(fieldName):
-                    html_content = "<input type='hidden' name='"+fieldName+"' value='"+str(request.get(fieldName,''))+"' />" + html_content
+        for (field, fieldblock) in fields_in_layout:
+            # check if fieldblock still here after cache replace
             if fieldblock in html_content:
                 html_content = html_content.replace(fieldblock, field.getFieldRender(self, doc, editmode, creation, request=request))
 
@@ -434,7 +457,9 @@ class PlominoForm(ATFolder):
             else:
                 action_render=''
             html_content = html_content.replace('<span class="plominoActionClass">'+actionName+'</span>', action_render)
-
+        
+        # store fragment to cache
+        html_content = self.updateCache(html_content, to_be_cached)
         return html_content
 
     security.declareProtected(READ_PERMISSION, 'childDocument')
@@ -496,12 +521,12 @@ class PlominoForm(ATFolder):
                     style = ' style="display: none"'
                 else:
                     style = ''
-                html_content = re.sub(start,'<div class="hidewhen-' + hidewhenName + '"' + style + '>', html_content)
-                html_content = re.sub(end,'</div>', html_content)
+                html_content = re.sub(start,'<div class="hidewhen-' + hidewhenName + '"' + style + '>', html_content, re.MULTILINE+re.DOTALL)
+                html_content = re.sub(end,'</div>', html_content, re.MULTILINE+re.DOTALL)
             else:
                 if result:
                     regexp = start+'.*?'+end
-                    html_content = re.sub(regexp,'', html_content)
+                    html_content = re.sub(regexp,'', html_content, re.MULTILINE+re.DOTALL)
                 else:
                     html_content = html_content.replace(start, '')
                     html_content = html_content.replace(end, '')
@@ -534,6 +559,64 @@ class PlominoForm(ATFolder):
                 result[hidewhen.id] = isHidden 
 
         return json.dumps(result)
+
+    security.declareProtected(READ_PERMISSION, 'applyCache')
+    def applyCache(self, html_content, doc=None):
+        """evaluate cache formula and return resulting layout
+        """
+        
+        to_be_cached = {}
+        for cacheformula in self.getCacheFormulas():
+            cacheid = cacheformula.id
+            try:
+                if doc is None:
+                    target = self
+                else:
+                    target = doc
+                cachekey = self.runFormulaScript("cache_"+self.id+"_"+cacheid+"_formula", target, cacheformula.Formula)
+            except PlominoScriptException, e:
+                e.reportError('%s cache formula failed' % cacheid, request=getattr(self, 'REQUEST', None))
+                cachekey = None
+                
+            start = '<span class="plominoCacheClass">start:'+cacheid+'</span>'
+            end = '<span class="plominoCacheClass">end:'+cacheid+'</span>'
+
+            if cachekey:
+                cachekey = 'fragment_'+cachekey
+                fragment = self.getParentDatabase().getCache(cachekey)
+                if fragment:
+                    # the fragment was in cache, we insert it
+                    regexp = start+'.*?'+end
+                    html_content = re.sub(regexp, fragment, html_content, re.MULTILINE+re.DOTALL)
+                else:
+                    # the fragment is not cached yet, we let the marker
+                    # they will be used after rendering to extract the fragment
+                    # and store it in cache
+                    to_be_cached[cacheid] = cachekey
+            else:
+                # no cache needed: we just remove the markers, the fragment
+                # will processed regularly with no caching
+                html_content = html_content.replace(start, '')
+                html_content = html_content.replace(end, '')
+
+        return (html_content, to_be_cached)
+
+    security.declareProtected(READ_PERMISSION, 'updateCache')
+    def updateCache(self, html_content, to_be_cached):
+        """
+        """
+        db = self.getParentDatabase()
+        for cacheid in to_be_cached.keys():
+            start = '<span class="plominoCacheClass">start:'+cacheid+'</span>'
+            end = '<span class="plominoCacheClass">end:'+cacheid+'</span>'
+            regexp = start+'(.*?)'+end
+            search_fragment = re.findall(regexp, html_content, re.MULTILINE+re.DOTALL)
+            if len(search_fragment) > 0:
+                fragment = search_fragment[0]
+                db.setCache(to_be_cached[cacheid], fragment)
+            html_content = html_content.replace(start, '')
+            html_content = html_content.replace(end, '')
+        return html_content
 
     security.declarePublic('formLayout')
     def formLayout(self, request=None):
@@ -782,7 +865,7 @@ class PlominoForm(ATFolder):
                 REQUEST.RESPONSE.redirect(self.absolute_url_path())
             return
         view_title = "All " + self.Title()
-        formula = 'plominoDocument.Form=="%s"' % self.id
+        formula = 'plominoDocument.getItem("Form")=="%s"' % self.id
         db.invokeFactory('PlominoView',
                          id=view_id,
                          title=view_title,
@@ -844,6 +927,32 @@ class PlominoForm(ATFolder):
             return command in ['openform', 'edit']
         else:
             return False
+
+    security.declarePublic('tojson')
+    def tojson(self, REQUEST=None, item=None):
+        """return field value as JSON, return all fields values if item=None
+        (Note: we use 'item' instead of 'field' to match the
+        PlominoDocument.tojson method signature)
+        """
+        if REQUEST:
+            REQUEST.RESPONSE.setHeader('content-type', 'application/json; charset=utf-8')
+            item = REQUEST.get('item', item)
+        
+        result = None
+        if not item:
+            fields = self.getFormFields()
+            result = {}
+            for field in fields:
+                adapt = field.getSettings()
+                fieldvalue = adapt.getFieldValue(self, None, False, False, REQUEST)
+                result[field.id] = fieldvalue
+        else:
+            field = self.getFormField(item)
+            if field:
+                adapt = field.getSettings()
+                result = adapt.getFieldValue(self, None, False, False, REQUEST)
+        
+        return json.dumps(result) 
 
 registerType(PlominoForm, PROJECTNAME)
 # end of class PlominoForm

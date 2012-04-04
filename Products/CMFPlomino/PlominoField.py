@@ -199,6 +199,8 @@ class PlominoField(BaseContent, BrowserDefaultMixin):
                 if new_file is not None:
                     current_files[new_file]=contenttype
                 v=current_files
+            else:
+                v = None
         else:
             v = adapt.processInput(submittedValue)
         return v
@@ -269,6 +271,7 @@ class PlominoField(BaseContent, BrowserDefaultMixin):
         """
         self._setupConfigAnnotation()
         self.cleanFormulaScripts("field_"+self.getParentNode().id+"_"+self.id)
+        self.cleanFormulaScripts("field_"+self.getParentNode().id+"_"+self.id+"_ValidationFormula")
         db = self.getParentDatabase()
         if self.getToBeIndexed() and not db.DoNotReindex:
             db.getIndex().createFieldIndex(self.id, self.getFieldType())

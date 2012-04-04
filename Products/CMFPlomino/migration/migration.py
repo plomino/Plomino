@@ -78,6 +78,12 @@ def migrate(db):
     if db.plomino_version=="1.11":
         msg = migrate_to_1_12(db)
         messages.append(msg)
+    if db.plomino_version=="1.12":
+        # no migration needed here
+        db.plomino_version = "1.13"
+    if db.plomino_version=="1.13":
+        # no migration needed here
+        db.plomino_version = "1.14"
     return messages
 
 def migrate_to_130(db):
