@@ -1251,7 +1251,7 @@ class PlominoReplicationManager(Persistent):
 
     security.declareProtected(CREATE_PERMISSION, 'importDocumentFromXML')
     def importDocumentFromXML(self, node):
-        docid = node.getAttribute('id').encode('utf-8')
+        docid = node.getAttribute('id').encode('ascii')
         lastmodified = DateTime(node.getAttribute('lastmodified'))
         pt = getToolByName(self, 'portal_types')
         doc = self.createDocument(docid)
