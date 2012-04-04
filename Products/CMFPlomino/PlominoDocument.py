@@ -171,22 +171,31 @@ class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
 
     security.declarePublic('getRenderedItem')
     def getRenderedItem(self, itemname, form=None, formid=None, convertattachments=False):
-        """ return the item value rendered according the field defined in the given form
-        (use default doc form if None)
+        """ Return the item rendered according to the corresponding field. 
+
+        The used form can be, in order of precedence:
+        - passed as the `form` parameter,
+        - specified with the `formid` parameter and looked up,
+        - looked up from the document.
+
+        If no form or field is found, return the empty string.
+
+        If `convertattachments` is True, then we assume that field
+        attachments are text and append them to the rendered value. 
         """
-        result = ''
         db = self.getParentDatabase()
+        result = ''
         if not form:
-            if not formid:
-                form = self.getForm()
-            else:
+            if formid:
                 form = db.getForm(formid)
+            else:
+                form = self.getForm()
         if form:
             field = form.getFormField(itemname)
             if field:
                 result = field.getFieldRender(form, self, False)
                 if field.getFieldType()=='ATTACHMENT' and convertattachments:
-                    result += ' ' + db.getIndex().convertFileToText(self,itemname).decode('utf-8')
+                    result += ' ' + db.getIndex().convertFileToText(self, itemname).decode('utf-8')
                     result = result.encode('utf-8')
                 return result
 
