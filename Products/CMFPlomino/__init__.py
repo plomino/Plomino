@@ -45,13 +45,23 @@ from config import *
 
 DirectoryView.registerDirectory('skins', product_globals)
 
-
-##code-section custom-init-head #fill in your manual code here
 from AccessControl.Permission import registerPermissions
 from Products.PythonScripts.Utility import allow_module
 from zope import component
 import interfaces
 from zope.interface import implements
+
+class isPlomino(object):
+
+    def __call__(self):
+        return hasattr(self.context, 'getParentDatabase')
+
+class isDesignMode(object):
+
+    def __call__(self):
+        if not hasattr(self.context, 'getParentDatabase'):
+            return False
+        return self.context.hasDesignPermission()
 
 class PlominoCoreUtils:
     implements(interfaces.IPlominoUtils)

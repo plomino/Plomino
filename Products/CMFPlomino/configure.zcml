@@ -7,7 +7,21 @@
   
   <include package=".fields"/>
   <include package=".browser"/>
-  
+
+  <browser:view
+      for="*"
+      name="isPlominoContext"
+      permission="zope.Public"
+      class=".isPlomino"
+    />
+
+  <browser:view
+      for="*"
+      name="isPlominoDesignContext"
+      permission="zope.Public"
+      class=".isDesignMode"
+    />
+
   <subscriber
     for="Products.CMFPlomino.interfaces.IPlominoDocument zope.app.container.interfaces.IObjectRemovedEvent"
     handler="Products.CMFPlomino.events.PlominoDocumentRemoveEventHandler"
