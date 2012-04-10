@@ -687,7 +687,7 @@ class PlominoForm(ATFolder):
         """return true if the form contains at least one DateTime field
         or a datagrid (as a datagrid may contain a date)
         """
-        fields=self.getFormFields(includesubforms=True, applyhidewhen=True)
+        fields = self.getFormFields(includesubforms=True, applyhidewhen=True)
         for f in fields:
             if f.getFieldType() in ["DATETIME", "DATAGRID"]:
                 return True
@@ -697,7 +697,7 @@ class PlominoForm(ATFolder):
     def hasGoogleVisualizationField(self):
         """return true if the form contains at least one GoogleVisualization field
         """
-        fields=self.getFormFields(includesubforms=True, applyhidewhen=True)
+        fields = self.getFormFields(includesubforms=True, applyhidewhen=True)
         for f in fields:
             if f.getFieldType() == "GOOGLEVISUALIZATION":
                 return True

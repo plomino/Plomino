@@ -35,7 +35,7 @@ from ZPublisher.HTTPRequest import FileUpload
 import csv
 
 import logging
-logger=logging.getLogger("Replication")
+logger = logging.getLogger("Replication")
 
 REMOTE_DOC_ID_SEPARATOR = '#'
 REMOTE_DOC_DATE_SEPARATOR = '@'
