@@ -1,0 +1,33 @@
+<tal:block metal:define-macro="messages">
+<div id="plominoValidationPopup" style="display: none;" title="Validation failed" i18n:domain="CMFPlomino" i18n:attributes="title">
+    <strong></strong>
+</div>
+<script>
+jq("#plomino_form").submit(function(){
+    var validation_callback = function(data) {
+			if(data['success']) {
+				jq(this).addClass('plomino-valid');
+				jq(this).submit();
+			} else {
+				popup = jq("#plominoValidationPopup");
+				message = "";
+				jq.each(data['errors'], function(index, value) {
+					message = message + value + "<br/>";
+				});
+				jq("#plominoValidationPopup strong").html(message);
+				popup.dialog({show: "blind", height: 350, width: 530});
+			}
+		}
+	if(jq(this).hasClass('plomino-valid')) {
+		return true;
+	} else {
+		jq.post(
+			this.action+"/../validation_errors",
+			jq(this).serialize(),
+			validation_callback.bind(this),
+			"json");
+		return false;
+	}
+});
+</script>
+</tal:block>

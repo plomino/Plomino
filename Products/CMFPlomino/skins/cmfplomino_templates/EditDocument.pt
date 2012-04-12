@@ -62,6 +62,7 @@
 	<form tal:attributes="name python:here.getForm().id;
 	                      action python:here.doc_url()+'/saveDocument'"
 	      id="plomino_form" method="POST" enctype="multipart/form-data">
+	 	<tal:validation metal:use-macro="here/validation_messages/macros/messages">display form actions </tal:validation>
 	<tal:block tal:define="myF python:here.getForm();
 							b myF/ActionBarPosition|nothing">
 		<div tal:replace="structure provider:plone.abovecontenttitle" />

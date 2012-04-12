@@ -806,8 +806,20 @@ class PlominoForm(ATFolder):
 
         return self.OpenForm(searchresults=results)
 
+    security.declarePublic('validation_errors')
+    def validation_errors(self, REQUEST):
+        """check submitted values
+        """
+        errors=self.validateInputs(REQUEST)
+        if len(errors)>0:
+            return self.errors_json(errors=json.dumps({'success': False,'errors':errors}))
+        else:
+            return self.errors_json(errors=json.dumps({'success': True}))
+        
     security.declarePublic('validateInputs')
     def validateInputs(self, REQUEST, doc=None):
+        """
+        """
         errors=[]
         fields = self.getFormFields(includesubforms=True, doc=doc, applyhidewhen=True)
         for f in fields:
