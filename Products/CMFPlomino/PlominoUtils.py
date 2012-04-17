@@ -133,7 +133,7 @@ def PlominoTranslate(message, context, domain='CMFPlomino'):
     if HAS_PLONE40:
         msg = translation_service.utranslate(domain=domain, msgid=message, context=context)
     else:
-        msg = translation_service.utranslate(message, domain=domain, context=context)
+        msg = translation_service.utranslate(msgid=message, domain=domain, context=context)
     return translation_service.encode(msg) # convert unicode to site encoding
 
 def htmlencode(s):
