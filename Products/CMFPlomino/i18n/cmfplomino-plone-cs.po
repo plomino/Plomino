@@ -1,0 +1,59 @@
+# [Šváb Jakub <svab@jtbank.cz>], 2012.
+msgid ""
+msgstr ""
+"Project-Id-Version: CMFPlomino\n"
+"POT-Creation-Date: Thu Sep 28 15:52:32 2006\n"
+"PO-Revision-Date: 2012-04-17 12:00+0300\n"
+"Last-Translator: Šváb Jakub <svab@jtbank.cz>\n"
+"Language-Team: Šváb Jakub <svab@jtbank.cz>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0\n"
+"Language-Code: cs\n"
+"Language-Name: Czech\n"
+"Preferred-Encodings: latin1 utf-8\n"
+"Domain: plone\n"
+
+msgid "PlominoAction"
+msgstr "Plomino: Akce"
+
+msgid "PlominoColumn"
+msgstr "Plomino: Sloupec"
+
+
+msgid "PlominoDatabase"
+msgstr "Plomino: Databaze"
+
+msgid "PlominoDocument"
+msgstr "Plomino: Dokument"
+
+msgid "PlominoField"
+msgstr "Plomino: Pole"
+
+msgid "PlominoForm"
+msgstr "Plomino: Formular"
+
+msgid "PlominoHidewhen"
+msgstr "Plomino: Skryj kdyz"
+
+msgid "PlominoView"
+msgstr "Plomino: Pohled"
+
+msgid "Forms"
+msgstr "Formulare"
+
+msgid "Views"
+msgstr "Pohledy"
+
+msgid "ACL"
+msgstr "Pristupova prava"
+
+msgid "About"
+msgstr "O databazi"
+
+msgid "Using"
+msgstr "Pouziti"
+
+msgid "Compose"
+msgstr "Vytvorit"
