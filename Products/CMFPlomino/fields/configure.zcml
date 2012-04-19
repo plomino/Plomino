@@ -96,7 +96,12 @@
         provides=".attachment.IAttachmentField"
         factory=".attachment.AttachmentField"
         />
-        
+   <browser:page
+        name="attachmentsettings"
+        for="Products.CMFPlomino.interfaces.IPlominoField"
+        class=".attachment.SettingForm"
+        permission="plomino.DESIGN_PERMISSION"
+        />
    <adapter
         for="Products.CMFPlomino.interfaces.IPlominoField"
         provides=".googlechart.IGooglechartField"

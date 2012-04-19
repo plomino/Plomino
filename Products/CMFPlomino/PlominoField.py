@@ -195,6 +195,11 @@ class PlominoField(BaseContent, BrowserDefaultMixin):
                 current_files=doc.getItem(fieldname)
                 if current_files=='':
                     current_files={}
+                else:
+                    if adapt.type == "SINGLE":
+                        for filename in current_files.keys():
+                            doc.deletefile(filename)
+                        current_files={}
                 (new_file, contenttype) = doc.setfile(submittedValue)
                 if new_file is not None:
                     current_files[new_file]=contenttype
