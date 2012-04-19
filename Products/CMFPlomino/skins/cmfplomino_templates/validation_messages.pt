@@ -21,9 +21,14 @@ jq("#plomino_form").submit(function(){
 	if(jq(this).hasClass('plomino-valid')) {
 		return true;
 	} else {
+	    form_values = jq(this).serialize();
+	    files = jq(this).find("input[type='file']");
+	    files.each(function(index, object) {
+	        form_values = form_values + "&" + object.name +"="+ jq.URLEncode(jq(object).val());
+	    });
 		jq.post(
 			this.action+"/../validation_errors",
-			jq(this).serialize(),
+			form_values,
 			validation_callback.bind(this),
 			"json");
 		return false;
