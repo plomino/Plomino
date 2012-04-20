@@ -99,6 +99,7 @@ And the SettingForm must built based on the field's schema: (no customization ne
 
 Then in configure.zcml, declare the field as adapter for PlominoField:
 (assuming that previous code is in romannumber.py)
+   <include package="Products.CMFPlomino.fields"/>
    <adapter
         for="Products.CMFPlomino.interfaces.IPlominoField"
         provides=".romannumber.IRomanNumberField"
