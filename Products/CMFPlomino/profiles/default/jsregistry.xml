@@ -70,5 +70,23 @@
              id="++resource++plomino.javascript/plomino.debug.js"
              inline="False"
              insert-after="jquery-integration.js"
-             />    
+             />
+ <javascript cacheable="True"
+             compression="safe"
+             cookable="True"
+             enabled="True"
+             expression="context/@@isPlominoDesignContext"
+             id="++resource++plomino.javascript/plomino.codemirror.js"
+             inline="False"
+             insert-after="jquery-integration.js"
+             />
+ <javascript cacheable="True"
+             compression="safe"
+             cookable="True"
+             enabled="True"
+             expression="object/@@isPlominoDesignContext"
+             id="++resource++codemirror/convertTextAreas.js"
+             inline="False"
+             insert-after="++resource++plomino.javascript/plomino.codemirror.js"
+             />
 </object>

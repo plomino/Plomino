@@ -23,3 +23,9 @@ def upgrade_to_28(context):
     # (it should have been done earlier, as plomino.debug.js was added in
     # version 1.8)
     context.runImportStepFromProfile(default_profile, 'jsregistry')
+
+def upgrade_to_29(context):
+    # register plomino.codemirror.js and 
+    # (it should have been done earlier, as plomino.debug.js was added in
+    # version 1.8)
+    context.runImportStepFromProfile(default_profile, 'jsregistry')

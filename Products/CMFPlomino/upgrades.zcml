@@ -3,7 +3,6 @@
     xmlns:genericsetup="http://namespaces.zope.org/genericsetup"
     i18n_domain="CMFPlomino">
 
-
   <genericsetup:upgradeStep
       source="22"
       destination="23"
@@ -20,6 +19,15 @@
       description=""
       profile="Products.CMFPlomino:default"
       handler=".upgrades.upgrade_to_28"
+      />
+
+  <genericsetup:upgradeStep
+      source="28"
+      destination="29"
+      title="Enable codemirror"
+      description=""
+      profile="Products.CMFPlomino:default"
+      handler=".upgrades.upgrade_to_29"
       />
 
 </configure>

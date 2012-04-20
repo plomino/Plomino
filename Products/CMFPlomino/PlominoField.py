@@ -321,7 +321,11 @@ class PlominoField(BaseContent, BrowserDefaultMixin):
         if self.FieldType == "RICHTEXT":
             return "text/html"
         return "text/plain"
-        
+    
+    @property
+    def formula_ids(self):
+        return {'Formula':  "field_"+self.getParentNode().id+"_"+self.id,
+                'ValidationFormula': "field_"+self.getParentNode().id+"_"+self.id+"_ValidationFormula"}
 registerType(PlominoField, PROJECTNAME)
 # end of class PlominoField
 
