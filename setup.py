@@ -29,6 +29,7 @@ setup(name='Products.CMFPlomino',
           'simplejson',
           'dm.sharedresource',
           'collective.js.jqueryui',
+          'collective.codemirror',
       ],
       entry_points="""
       # -*- Entry points: -*-

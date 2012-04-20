@@ -3,8 +3,8 @@ jq(document).ready(function() {
 	                 'plominoagent',
 	                 'plominocache',
 	                 'plominocolumn',
-	                 'plominofield',
 	                 'plominohidewhen',
+	                 'plominofield',
 	                 'plominoview'];
 	jq(plomino_types).each(function(index, type) {
 		jq("#"+type+"-base-edit textarea").each(function() {
@@ -15,6 +15,15 @@ jq(document).ready(function() {
 		});
 	});
 	
+	// enable on all PlominoField settings page
+	// TODO: SAVE
+	jq(".portaltype-plominofield #content-core textarea").each(function() {
+		this.onCodeMirrorSave = function() {
+			alert("Ctrl+S not implemented here.");
+		};
+		jq(this).addClass('codemirror-python');
+	});
+
 	// plominoform textareas must be processed more precisely
 	plomino_form_areas = ['DocumentTitle',
 	                      'DocumentId',
