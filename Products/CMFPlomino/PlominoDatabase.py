@@ -293,7 +293,7 @@ class PlominoDatabase(ATFolder, PlominoAccessControl, PlominoDesignManager, Plom
             else:
                 return "Ready"
         else:
-            return all_db_status.get(self.absolute_url_path(), "Ready")                
+            return all_db_status.get(self.absolute_url_path(), "Ready")
 
     security.declarePublic('setStatus')
     def setStatus(self, status):
