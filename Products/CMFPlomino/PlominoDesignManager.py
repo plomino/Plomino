@@ -54,21 +54,23 @@ from exceptions import PlominoScriptException, PlominoDesignException
 from PlominoUtils import asUnicode
 from Products.CMFPlomino import get_utils
 # get AT specific schemas for each Plomino class
-from Products.CMFPlomino.PlominoForm import schema as form_schema
 from Products.CMFPlomino.PlominoAction import schema as action_schema
-from Products.CMFPlomino.PlominoField import schema as field_schema
-from Products.CMFPlomino.PlominoHidewhen import schema as hidewhen_schema
 from Products.CMFPlomino.PlominoAgent import schema as agent_schema
-from Products.CMFPlomino.PlominoView import schema as view_schema
+from Products.CMFPlomino.PlominoCache import schema as cache_schema
 from Products.CMFPlomino.PlominoColumn import schema as column_schema
+from Products.CMFPlomino.PlominoField import schema as field_schema
+from Products.CMFPlomino.PlominoForm import schema as form_schema
+from Products.CMFPlomino.PlominoHidewhen import schema as hidewhen_schema
+from Products.CMFPlomino.PlominoView import schema as view_schema
 
-plomino_schemas = {'PlominoForm': form_schema, 
-                   'PlominoAction': action_schema,
-                   'PlominoField': field_schema,
-                   'PlominoHidewhen': hidewhen_schema,
+plomino_schemas = {'PlominoAction': action_schema,
                    'PlominoAgent': agent_schema,
+                   'PlominoCache': cache_schema,
+                   'PlominoColumn': column_schema,
+                   'PlominoField': field_schema,
+                   'PlominoForm': form_schema, 
+                   'PlominoHidewhen': hidewhen_schema,
                    'PlominoView': view_schema,
-                   'PlominoColumn': column_schema
                    }
 extra_schema_attributes = ['excludeFromNav']
 
