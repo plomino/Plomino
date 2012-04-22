@@ -63,7 +63,7 @@ try:
     from plone.app.blob.field import BlobWrapper
     from plone.app.blob.utils import guessMimetype
     HAS_BLOB = True
-except Exception, e:
+except ImportError, e:
     HAS_BLOB = False
 
 class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
