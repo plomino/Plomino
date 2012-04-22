@@ -63,9 +63,9 @@
                 <form id="plomino_form" tal:attributes="name here/id;
                                      action string:${myF/absolute_url}/createDocument"
                     method="POST" enctype="multipart/form-data">
+                    <tal:validation metal:use-macro="here/validation_messages/macros/messages">display form actions </tal:validation>
                     <tal:block tal:condition="python:test(hasCreatePermissionOnDatabase==True and hasCreatePermissionOnForm==True)">
                         <div tal:replace="structure provider:plone.abovecontenttitle" />
-    
                         <tal:block tal:define="owner python:myF"
                             tal:condition="python:test((b and  myF.ActionBarPosition=='BOTTOM'),False, True)">
                             <span metal:use-macro="here/ActionBar/macros/OpenFormActionBar">

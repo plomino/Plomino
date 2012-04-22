@@ -1,0 +1,2 @@
+<tal:block define="_dummy python:request.response.setHeader('content-type','application/json;;charset=utf-8')" />
+<tal:block tal:replace="python:options['errors']" />

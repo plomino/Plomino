@@ -282,6 +282,19 @@ class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
             return_url = REQUEST.get('returnurl')
             REQUEST.RESPONSE.redirect(return_url)
 
+    security.declareProtected(EDIT_PERMISSION, 'validation_errors')
+    def validation_errors(self, REQUEST):
+        """check submitted values
+        """
+        db = self.getParentDatabase()
+        form = db.getForm(REQUEST.get('Form'))
+
+        errors=form.validateInputs(REQUEST, doc=self)
+        if len(errors)>0:
+            return self.errors_json(errors=json.dumps({'success': False,'errors':errors}))
+        else:
+            return self.errors_json(errors=json.dumps({'success': True}))
+        
     security.declareProtected(EDIT_PERMISSION, 'saveDocument')
     def saveDocument(self, REQUEST, creation=False):
         """save a document using the form submitted content

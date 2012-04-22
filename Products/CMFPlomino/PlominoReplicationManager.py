@@ -1188,6 +1188,7 @@ class PlominoReplicationManager(Persistent):
         logger.info("Start documents import")
         self.setStatus("Importing documents (0%)")
         txn = transaction.get()
+        xml_files = []
         if xmlstring:
             xmlstring_arg = True
             xml_files = [xmlstring]
@@ -1197,8 +1198,9 @@ class PlominoReplicationManager(Persistent):
                 sourcetype = REQUEST.get('sourcetype', sourcetype)
             if sourcetype == 'sourceFile':
                 if REQUEST:
-                    xmlfile = [REQUEST.get("file")]
-                xml_files = [xmlfile]
+                    xml_files = [REQUEST.get("file")]
+                elif file:
+                    xml_files = [file]
             elif sourcetype == 'folder':
                 if REQUEST:
                     from_folder=REQUEST.get("from_folder")
