@@ -365,10 +365,10 @@ class PlominoDatabase(ATFolder, PlominoAccessControl, PlominoDesignManager, Plom
         return view_obj_list
 
     security.declarePublic('getAgent')
-    def getAgent(self, agentname):
-        """return a PlominoAgent
+    def getAgent(self, agentid):
+        """ Return a PlominoAgent, or None.
         """
-        obj = getattr(self, agentname, None)
+        obj = getattr(self, agentid, None)
         if obj and obj.Type() == 'PlominoAgent':
             return obj
 
