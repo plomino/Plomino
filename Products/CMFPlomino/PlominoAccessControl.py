@@ -128,16 +128,16 @@ class PlominoAccessControl(Persistent):
             return []
 
     security.declarePublic('hasUserRole')
-    def hasUserRole(self,user,role):
-        """test if the given user has the given Plomino user role
+    def hasUserRole(self, userid, role):
+        """ Returns ``True`` if the given userid has the given Plomino user role.
         """
         if self.UserRoles.has_key(role):
             role_people = self.UserRoles[role].keys()
-            if user in role_people:
+            if userid in role_people:
                 return True
             else:
                 groupstool = self.portal_groups
-                usergroups = [g.id for g in groupstool.getGroupsByUserId(user)]
+                usergroups = [g.id for g in groupstool.getGroupsByUserId(userid)]
                 test = False
                 for u in role_people:
                     if u in usergroups:
