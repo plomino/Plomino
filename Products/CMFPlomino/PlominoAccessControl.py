@@ -173,12 +173,13 @@ class PlominoAccessControl(Persistent):
         try:
             userid = self.getCurrentUser().getMemberId()
             rights = self.get_local_roles_for_userid(userid)
-            if not rights:
-                # no specific rights for this user, we first check group rights
-                groupstool = self.portal_groups
-                usergroups = [g.id for g in groupstool.getGroupsByUserId(userid)]
-                for g in usergroups:
-                    rights = rights + self.get_local_roles_for_userid(g)
+
+            # we append group rights
+            groupstool = self.portal_groups
+            usergroups = [g.id for g in groupstool.getGroupsByUserId(userid)]
+            for g in usergroups:
+                rights = rights + self.get_local_roles_for_userid(g)
+
             if not rights:
                 # still no specific rights, so return the rights configured
                 # as AuthenticatedAccessRight
