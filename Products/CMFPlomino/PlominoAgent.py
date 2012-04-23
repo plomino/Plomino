@@ -132,11 +132,11 @@ class PlominoAgent(BaseContent, BrowserDefaultMixin):
             return e.message
 
     security.declarePublic('runAgent_async')
-    def runAgent_async(self, *args):
+    def run_async(context, *args, **kwargs):
         """run the agent in asynchronous mode
         """
         async = getUtility(IAsyncService)
-        job = async.queueJob(run_async, self, *args)
+        job = async.queueJob(run_async, self, *args, **kwargs)
         
 registerType(PlominoAgent, PROJECTNAME)
 # end of class PlominoAgent
