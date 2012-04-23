@@ -374,12 +374,12 @@ class PlominoDatabase(ATFolder, PlominoAccessControl, PlominoDesignManager, Plom
 
     security.declarePublic('getAgents')
     def getAgents(self):
-        """return the database agents list
+        """ Returns all the PlominoAgent objects stored in the database.
         """
-        agent_list = self.objectValues(spec='PlominoAgent')
-        agent_obj_list = [a for a in agent_list]
-        agent_obj_list.sort(key=lambda elt: elt.id.lower())
-        return agent_obj_list
+        # Convert from LazyList to (sortable) plain list.
+        agent_list = list(self.objectValues(spec='PlominoAgent'))
+        agent_list.sort(key=lambda agent: agent.id.lower())
+        return agent_list
 
     security.declareProtected(CREATE_PERMISSION, 'createDocument')
     def createDocument(self, docid=None):
