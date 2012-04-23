@@ -471,7 +471,7 @@ class PlominoDatabase(ATFolder, PlominoAccessControl, PlominoDesignManager, Plom
         return getattr(self, 'plomino_index')
 
     security.declarePublic('getAllDocuments')
-    def getAllDocuments(self, getObject=None):
+    def getAllDocuments(self, getObject=True):
         """ Return all the database documents.
         """
         if getObject is not None:
