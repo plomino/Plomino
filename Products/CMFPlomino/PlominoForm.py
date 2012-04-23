@@ -384,7 +384,7 @@ class PlominoForm(ATFolder):
     
     security.declarePublic('getFormName')
     def getFormName(self):
-        """Return the form name
+        """ Return the form name
         """
         return self.id
 
@@ -562,10 +562,10 @@ class PlominoForm(ATFolder):
 
     security.declareProtected(READ_PERMISSION, 'applyCache')
     def applyCache(self, html_content, doc=None):
-        """evaluate cache formula and return resulting layout
+        """ Evaluate cache formula and return resulting layout
         """
-        
         to_be_cached = {}
+
         for cacheformula in self.getCacheFormulas():
             cacheid = cacheformula.id
             try:
@@ -573,11 +573,14 @@ class PlominoForm(ATFolder):
                     target = self
                 else:
                     target = doc
-                cachekey = self.runFormulaScript("cache_"+self.id+"_"+cacheid+"_formula", target, cacheformula.Formula)
+                cachekey = self.runFormulaScript(
+                        "cache_"+self.id+"_"+cacheid+"_formula",
+                        target,
+                        cacheformula.Formula)
             except PlominoScriptException, e:
                 e.reportError('%s cache formula failed' % cacheid, request=getattr(self, 'REQUEST', None))
                 cachekey = None
-                
+
             start = '<span class="plominoCacheClass">start:'+cacheid+'</span>'
             end = '<span class="plominoCacheClass">end:'+cacheid+'</span>'
 
