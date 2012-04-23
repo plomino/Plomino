@@ -383,7 +383,8 @@ class PlominoDatabase(ATFolder, PlominoAccessControl, PlominoDesignManager, Plom
 
     security.declareProtected(CREATE_PERMISSION, 'createDocument')
     def createDocument(self, docid=None):
-        """invoke PlominoDocument factory
+        """ Invoke PlominoDocument factory.
+        Returns a new empty document.
         """
         if not docid:
             docid = make_uuid()
@@ -393,7 +394,8 @@ class PlominoDatabase(ATFolder, PlominoAccessControl, PlominoDesignManager, Plom
 
     security.declarePublic('getDocument')
     def getDocument(self, docid):
-        """return a PlominoDocument
+        """ Return a PlominoDocument, or None. 
+        If ``docid`` contains a "/", assume it's a path not a docid.
         """
         if not docid:
             return None
@@ -404,7 +406,8 @@ class PlominoDatabase(ATFolder, PlominoAccessControl, PlominoDesignManager, Plom
 
     security.declareProtected(READ_PERMISSION, 'getParentDatabase')
     def getParentDatabase(self):
-        """ Acquired by Plomino objects
+        """ Normally used via acquisition by Plomino formulas operating on
+        documents, forms, etc.
         """
         obj = self
         while getattr(obj, 'meta_type', '') != 'PlominoDatabase':
@@ -412,8 +415,8 @@ class PlominoDatabase(ATFolder, PlominoAccessControl, PlominoDesignManager, Plom
         return obj
 
     security.declareProtected(REMOVE_PERMISSION, 'deleteDocument')
-    def deleteDocument(self,doc):
-        """delete the document from database
+    def deleteDocument(self, doc):
+        """ Delete the document from database.
         """
         if not self.isCurrentUserAuthor(doc):
             raise Unauthorized, "You cannot delete this document."
@@ -433,9 +436,10 @@ class PlominoDatabase(ATFolder, PlominoAccessControl, PlominoDesignManager, Plom
             self.documents._delOb(doc.id)
 
     security.declareProtected(REMOVE_PERMISSION, 'deleteDocuments')
-    def deleteDocuments(self,ids=None, massive=True):
-        """delete documents from database
-        if massive, onDelete formula and index updating are not performed (use refreshDB to update)
+    def deleteDocuments(self, ids=None, massive=True):
+        """ Batch delete documents from database.
+        If ``massive`` is True, the ``onDelete`` formula and index
+        updating are not performed (use ``refreshDB`` to update).
         """
         if ids is None:
             ids=[doc.id for doc in self.getAllDocuments()]
