@@ -627,6 +627,10 @@ class PlominoDesignManager(Persistent):
 
     security.declarePublic('callScriptMethod')
     def callScriptMethod(self, scriptname, methodname, *args):
+        """ Calls a method named ``methodname`` in a file named
+        ``scriptname``, stored in the ``resources`` folder. If the called
+        method allows it, you may pass some arguments.
+        """
         id="script_"+scriptname+"_"+methodname
         try:
             script_code = self.resources._getOb(scriptname).read()
