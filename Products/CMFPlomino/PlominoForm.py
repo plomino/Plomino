@@ -377,14 +377,14 @@ class PlominoForm(ATFolder):
 
     security.declarePublic('getCacheFormulas')
     def getCacheFormulas(self):
-        """Get cache formulae
+        """ Get cache formulas
         """
-        cacheformula = self.objectValues(spec='PlominoCache')
-        return [c for c in cacheformula]
+        cacheformulas = self.objectValues(spec='PlominoCache')
+        return [c for c in cacheformulas]
     
     security.declarePublic('getFormName')
     def getFormName(self):
-        """Return the form name
+        """ Return the form name
         """
         return self.id
 
@@ -562,10 +562,10 @@ class PlominoForm(ATFolder):
 
     security.declareProtected(READ_PERMISSION, 'applyCache')
     def applyCache(self, html_content, doc=None):
-        """evaluate cache formula and return resulting layout
+        """ Evaluate cache formula and return resulting layout
         """
-        
         to_be_cached = {}
+
         for cacheformula in self.getCacheFormulas():
             cacheid = cacheformula.id
             try:
@@ -573,11 +573,14 @@ class PlominoForm(ATFolder):
                     target = self
                 else:
                     target = doc
-                cachekey = self.runFormulaScript("cache_"+self.id+"_"+cacheid+"_formula", target, cacheformula.Formula)
+                cachekey = self.runFormulaScript(
+                        "cache_"+self.id+"_"+cacheid+"_formula",
+                        target,
+                        cacheformula.Formula)
             except PlominoScriptException, e:
                 e.reportError('%s cache formula failed' % cacheid, request=getattr(self, 'REQUEST', None))
                 cachekey = None
-                
+
             start = '<span class="plominoCacheClass">start:'+cacheid+'</span>'
             end = '<span class="plominoCacheClass">end:'+cacheid+'</span>'
 
@@ -687,7 +690,7 @@ class PlominoForm(ATFolder):
         """return true if the form contains at least one DateTime field
         or a datagrid (as a datagrid may contain a date)
         """
-        fields=self.getFormFields(includesubforms=True, applyhidewhen=True)
+        fields = self.getFormFields(includesubforms=True, applyhidewhen=True)
         for f in fields:
             if f.getFieldType() in ["DATETIME", "DATAGRID"]:
                 return True
@@ -697,7 +700,7 @@ class PlominoForm(ATFolder):
     def hasGoogleVisualizationField(self):
         """return true if the form contains at least one GoogleVisualization field
         """
-        fields=self.getFormFields(includesubforms=True, applyhidewhen=True)
+        fields = self.getFormFields(includesubforms=True, applyhidewhen=True)
         for f in fields:
             if f.getFieldType() == "GOOGLEVISUALIZATION":
                 return True

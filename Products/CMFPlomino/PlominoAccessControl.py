@@ -128,16 +128,16 @@ class PlominoAccessControl(Persistent):
             return []
 
     security.declarePublic('hasUserRole')
-    def hasUserRole(self,user,role):
-        """test if the given user has the given Plomino user role
+    def hasUserRole(self, userid, role):
+        """ Returns ``True`` if the given userid has the given Plomino user role.
         """
         if self.UserRoles.has_key(role):
             role_people = self.UserRoles[role].keys()
-            if user in role_people:
+            if userid in role_people:
                 return True
             else:
                 groupstool = self.portal_groups
-                usergroups = [g.id for g in groupstool.getGroupsByUserId(user)]
+                usergroups = [g.id for g in groupstool.getGroupsByUserId(userid)]
                 test = False
                 for u in role_people:
                     if u in usergroups:
@@ -154,7 +154,7 @@ class PlominoAccessControl(Persistent):
 
     security.declarePublic('getCurrentUser')
     def getCurrentUser(self):
-        """get the current user
+        """ Returns the current user.
         """
         membershiptool = getToolByName(self, 'portal_membership')
         return membershiptool.getAuthenticatedMember()
@@ -168,28 +168,30 @@ class PlominoAccessControl(Persistent):
     
     security.declarePublic('getCurrentUserRights')
     def getCurrentUserRights(self):
-        """get the current user Plomino rights
+        """ Returns the current user Plomino rights.
         """
         try:
             userid = self.getCurrentUser().getMemberId()
             rights = self.get_local_roles_for_userid(userid)
-            if len(rights)==0:
+            if not rights:
                 # no specific rights for this user, we first check group rights
                 groupstool = self.portal_groups
                 usergroups = [g.id for g in groupstool.getGroupsByUserId(userid)]
                 for g in usergroups:
                     rights = rights + self.get_local_roles_for_userid(g)
-            if len(rights)==0:
-                # still no specific rights, so return AuthenticatedAccessRight
+            if not rights:
+                # still no specific rights, so return the rights configured
+                # as AuthenticatedAccessRight
                 default_right = getattr(self, "AuthenticatedAccessRight", "NoAccess")
                 rights = [default_right]
             return rights
         except Exception:
+            # XXX: Log the exception.
             return [getattr(self, "AnomynousAccessRight", "NoAccess")]
 
     security.declarePublic('hasCurrentUserRight')
     def hasCurrentUserRight(self, right):
-        """ test if current user as the given right or upper
+        """ Test whether the current user has the given role, or a higher role.
         """
         rights = self.getCurrentUserRights()
         levels = [self.PLOMINO_RIGHTS_PRIORITY.index(r) for r in rights if r in self.PLOMINO_RIGHTS_PRIORITY]

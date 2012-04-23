@@ -63,7 +63,7 @@ try:
     from plone.app.blob.field import BlobWrapper
     from plone.app.blob.utils import guessMimetype
     HAS_BLOB = True
-except Exception, e:
+except ImportError, e:
     HAS_BLOB = False
 
 class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
@@ -415,15 +415,20 @@ class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
                 raise Unauthorized, "You cannot read this content"
 
         # execute the onOpenDocument code of the form
-        valid = ''
+        onOpenDocument_error = ''
         try:
             if form.getOnOpenDocument():
                 #RunFormula(self, form.getOnOpenDocument())
-                valid = self.runFormulaScript("form_"+form.id+"_onopen", self, form.onOpenDocument)
+                onOpenDocument_error = self.runFormulaScript(
+                        "form_"+form.id+"_onopen",
+                        self,
+                        form.onOpenDocument)
         except PlominoScriptException, e:
             e.reportError('onOpen event failed')
 
-        if not valid:
+        if onOpenDocument_error:
+            html_content = onOpenDocument_error
+        else:
             # we use the specified form's layout
             request = getattr(self, 'REQUEST', None)
             if not request:
@@ -438,8 +443,6 @@ class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
             html_content = form.displayDocument(self,
                                 editmode=editmode,
                                 request=request)
-        else:
-            html_content = valid
 
         plone_tools = getToolByName(db, 'plone_utils')
         encoding = plone_tools.getSiteEncoding()

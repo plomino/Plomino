@@ -293,7 +293,7 @@ class PlominoDatabase(ATFolder, PlominoAccessControl, PlominoDesignManager, Plom
             else:
                 return "Ready"
         else:
-            return all_db_status.get(self.absolute_url_path(), "Ready")                
+            return all_db_status.get(self.absolute_url_path(), "Ready")
 
     security.declarePublic('setStatus')
     def setStatus(self, status):
@@ -365,25 +365,26 @@ class PlominoDatabase(ATFolder, PlominoAccessControl, PlominoDesignManager, Plom
         return view_obj_list
 
     security.declarePublic('getAgent')
-    def getAgent(self, agentname):
-        """return a PlominoAgent
+    def getAgent(self, agentid):
+        """ Return a PlominoAgent, or None.
         """
-        obj = getattr(self, agentname, None)
+        obj = getattr(self, agentid, None)
         if obj and obj.Type() == 'PlominoAgent':
             return obj
 
     security.declarePublic('getAgents')
     def getAgents(self):
-        """return the database agents list
+        """ Returns all the PlominoAgent objects stored in the database.
         """
-        agent_list = self.objectValues(spec='PlominoAgent')
-        agent_obj_list = [a for a in agent_list]
-        agent_obj_list.sort(key=lambda elt: elt.id.lower())
-        return agent_obj_list
+        # Convert from LazyList to (sortable) plain list.
+        agent_list = list(self.objectValues(spec='PlominoAgent'))
+        agent_list.sort(key=lambda agent: agent.id.lower())
+        return agent_list
 
     security.declareProtected(CREATE_PERMISSION, 'createDocument')
     def createDocument(self, docid=None):
-        """invoke PlominoDocument factory
+        """ Invoke PlominoDocument factory.
+        Returns a new empty document.
         """
         if not docid:
             docid = make_uuid()
@@ -393,7 +394,8 @@ class PlominoDatabase(ATFolder, PlominoAccessControl, PlominoDesignManager, Plom
 
     security.declarePublic('getDocument')
     def getDocument(self, docid):
-        """return a PlominoDocument
+        """ Return a PlominoDocument, or None. 
+        If ``docid`` contains a "/", assume it's a path not a docid.
         """
         if not docid:
             return None
@@ -404,7 +406,8 @@ class PlominoDatabase(ATFolder, PlominoAccessControl, PlominoDesignManager, Plom
 
     security.declareProtected(READ_PERMISSION, 'getParentDatabase')
     def getParentDatabase(self):
-        """ Acquired by Plomino objects
+        """ Normally used via acquisition by Plomino formulas operating on
+        documents, forms, etc.
         """
         obj = self
         while getattr(obj, 'meta_type', '') != 'PlominoDatabase':
@@ -412,8 +415,8 @@ class PlominoDatabase(ATFolder, PlominoAccessControl, PlominoDesignManager, Plom
         return obj
 
     security.declareProtected(REMOVE_PERMISSION, 'deleteDocument')
-    def deleteDocument(self,doc):
-        """delete the document from database
+    def deleteDocument(self, doc):
+        """ Delete the document from database.
         """
         if not self.isCurrentUserAuthor(doc):
             raise Unauthorized, "You cannot delete this document."
@@ -433,9 +436,10 @@ class PlominoDatabase(ATFolder, PlominoAccessControl, PlominoDesignManager, Plom
             self.documents._delOb(doc.id)
 
     security.declareProtected(REMOVE_PERMISSION, 'deleteDocuments')
-    def deleteDocuments(self,ids=None, massive=True):
-        """delete documents from database
-        if massive, onDelete formula and index updating are not performed (use refreshDB to update)
+    def deleteDocuments(self, ids=None, massive=True):
+        """ Batch delete documents from database.
+        If ``massive`` is True, the ``onDelete`` formula and index
+        updating are not performed (use ``refreshDB`` to update).
         """
         if ids is None:
             ids=[doc.id for doc in self.getAllDocuments()]
@@ -467,7 +471,7 @@ class PlominoDatabase(ATFolder, PlominoAccessControl, PlominoDesignManager, Plom
         return getattr(self, 'plomino_index')
 
     security.declarePublic('getAllDocuments')
-    def getAllDocuments(self, getObject=None):
+    def getAllDocuments(self, getObject=True):
         """ Return all the database documents.
         """
         if getObject is not None:

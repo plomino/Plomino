@@ -54,21 +54,23 @@ from exceptions import PlominoScriptException, PlominoDesignException
 from PlominoUtils import asUnicode
 from Products.CMFPlomino import get_utils
 # get AT specific schemas for each Plomino class
-from Products.CMFPlomino.PlominoForm import schema as form_schema
 from Products.CMFPlomino.PlominoAction import schema as action_schema
-from Products.CMFPlomino.PlominoField import schema as field_schema
-from Products.CMFPlomino.PlominoHidewhen import schema as hidewhen_schema
 from Products.CMFPlomino.PlominoAgent import schema as agent_schema
-from Products.CMFPlomino.PlominoView import schema as view_schema
+from Products.CMFPlomino.PlominoCache import schema as cache_schema
 from Products.CMFPlomino.PlominoColumn import schema as column_schema
+from Products.CMFPlomino.PlominoField import schema as field_schema
+from Products.CMFPlomino.PlominoForm import schema as form_schema
+from Products.CMFPlomino.PlominoHidewhen import schema as hidewhen_schema
+from Products.CMFPlomino.PlominoView import schema as view_schema
 
-plomino_schemas = {'PlominoForm': form_schema, 
-                   'PlominoAction': action_schema,
-                   'PlominoField': field_schema,
-                   'PlominoHidewhen': hidewhen_schema,
+plomino_schemas = {'PlominoAction': action_schema,
                    'PlominoAgent': agent_schema,
+                   'PlominoCache': cache_schema,
+                   'PlominoColumn': column_schema,
+                   'PlominoField': field_schema,
+                   'PlominoForm': form_schema, 
+                   'PlominoHidewhen': hidewhen_schema,
                    'PlominoView': view_schema,
-                   'PlominoColumn': column_schema
                    }
 extra_schema_attributes = ['excludeFromNav']
 
@@ -94,10 +96,10 @@ class PlominoDesignManager(Persistent):
             report = ['Database refreshing has been launched in asynchronous mode.']
         else:
             report = self.refreshDB()
-            
+
         self.writeMessageOnPage(MSG_SEPARATOR.join(report), REQUEST, False)
         REQUEST.RESPONSE.redirect(self.absolute_url()+"/DatabaseDesign")
-    
+
     security.declarePublic('refreshDB_async')
     def refreshDB_async(self):
         """refresh db in asynchronous mode
@@ -106,7 +108,7 @@ class PlominoDesignManager(Persistent):
         job = async.queueJob(run_refreshdb, self)
         all_db_status = get_resource("plomino_status", dict)
         all_db_status[self.absolute_url_path()] = job
-        
+
     security.declareProtected(DESIGN_PERMISSION, 'refreshDB')
     def refreshDB(self):
         """all actions to take when reseting a DB (after import for instance)
@@ -170,12 +172,12 @@ class PlominoDesignManager(Persistent):
         if self.FulltextIndex:
             index.createFieldIndex('SearchableText', 'RICHTEXT')
         logger.info('Views indexing initialized')
-        
+
         # re-index documents
         start_time = DateTime().toZone('UTC')
         msg = self.reindexDocuments(index)
         report.append(msg)
-        
+
         # as it takes time, re-indexed documents changed since re-indexing started
         msg = self.reindexDocuments(index, changed_since=start_time)
         report.append(msg)
@@ -187,20 +189,22 @@ class PlominoDesignManager(Persistent):
         msg = 'Old index removed and replaced'
         report.append(msg)
         logger.info(msg)
-        
+
         # refresh portal_catalog
         if self.getIndexInPortal():
             self.refreshPortalCatalog()
-            
+
         # update Plone workflow state and role permissions
         self.refreshWorkflowState()
         self.refreshPlominoRolesPermissions()
-        
+
         self.setStatus("Ready")
         return report
 
     security.declareProtected(DESIGN_PERMISSION, 'reindexDocuments')
     def reindexDocuments(self, plomino_index, items_only=False, views_only=False, update_metadata=1, changed_since=None):
+        """ Reindex all documents in a given index.
+        """
         documents = self.getAllDocuments()
         if changed_since:
             documents = [doc for doc in documents if doc.plomino_modification_time > changed_since]
@@ -239,7 +243,7 @@ class PlominoDesignManager(Persistent):
                 errors = errors + 1
                 logger.info("Ouch! \n%s\n%s" % (e, `d`))
             counter = counter + 1
-            if counter == 10:
+            if counter == 100:
                 self.setStatus("Re-indexing %s (%d%%)" % (label, int(100*(total+errors)/total_docs)))
                 counter = 0
                 logger.info("Re-indexing %s: %d indexed successfully, %d errors(s)..." % (label, total, errors))
@@ -306,7 +310,7 @@ class PlominoDesignManager(Persistent):
                     portal_catalog.uncatalog_object(d.getPath())
                 logger.info('Related portal catalog entries have been removed.')
             msg = 'Database is not cataloged'
-        
+
         logger.info(msg)
         if REQUEST:
             self.writeMessageOnPage(msg, REQUEST, False)
@@ -623,6 +627,10 @@ class PlominoDesignManager(Persistent):
 
     security.declarePublic('callScriptMethod')
     def callScriptMethod(self, scriptname, methodname, *args):
+        """ Calls a method named ``methodname`` in a file named
+        ``scriptname``, stored in the ``resources`` folder. If the called
+        method allows it, you may pass some arguments.
+        """
         id="script_"+scriptname+"_"+methodname
         try:
             script_code = self.resources._getOb(scriptname).read()
@@ -994,10 +1002,10 @@ class PlominoDesignManager(Persistent):
 
             if element_type == "PlominoForm":
                 at_values['FormLayout_text_format'] = "text/html"
-                
+
             if len(at_values) > 0:
                 obj.processForm(REQUEST=None, values=at_values)
-            
+
             if len(settings_values) > 0:
                 adapt = obj.getSettings()
                 for key in settings_values.keys():
