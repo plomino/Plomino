@@ -154,7 +154,7 @@ class PlominoAccessControl(Persistent):
 
     security.declarePublic('getCurrentUser')
     def getCurrentUser(self):
-        """get the current user
+        """ Returns the current user.
         """
         membershiptool = getToolByName(self, 'portal_membership')
         return membershiptool.getAuthenticatedMember()
@@ -168,23 +168,25 @@ class PlominoAccessControl(Persistent):
     
     security.declarePublic('getCurrentUserRights')
     def getCurrentUserRights(self):
-        """get the current user Plomino rights
+        """ Returns the current user Plomino rights.
         """
         try:
             userid = self.getCurrentUser().getMemberId()
             rights = self.get_local_roles_for_userid(userid)
-            if len(rights)==0:
+            if not rights:
                 # no specific rights for this user, we first check group rights
                 groupstool = self.portal_groups
                 usergroups = [g.id for g in groupstool.getGroupsByUserId(userid)]
                 for g in usergroups:
                     rights = rights + self.get_local_roles_for_userid(g)
-            if len(rights)==0:
-                # still no specific rights, so return AuthenticatedAccessRight
+            if not rights:
+                # still no specific rights, so return the rights configured
+                # as AuthenticatedAccessRight
                 default_right = getattr(self, "AuthenticatedAccessRight", "NoAccess")
                 rights = [default_right]
             return rights
         except Exception:
+            # XXX: Log the exception.
             return [getattr(self, "AnomynousAccessRight", "NoAccess")]
 
     security.declarePublic('hasCurrentUserRight')
