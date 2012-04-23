@@ -191,7 +191,7 @@ class PlominoAccessControl(Persistent):
 
     security.declarePublic('hasCurrentUserRight')
     def hasCurrentUserRight(self, right):
-        """ test if current user as the given right or upper
+        """ Test whether the current user has the given role, or a higher role.
         """
         rights = self.getCurrentUserRights()
         levels = [self.PLOMINO_RIGHTS_PRIORITY.index(r) for r in rights if r in self.PLOMINO_RIGHTS_PRIORITY]
