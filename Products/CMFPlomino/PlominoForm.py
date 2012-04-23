@@ -377,10 +377,10 @@ class PlominoForm(ATFolder):
 
     security.declarePublic('getCacheFormulas')
     def getCacheFormulas(self):
-        """Get cache formulae
+        """ Get cache formulas
         """
-        cacheformula = self.objectValues(spec='PlominoCache')
-        return [c for c in cacheformula]
+        cacheformulas = self.objectValues(spec='PlominoCache')
+        return [c for c in cacheformulas]
     
     security.declarePublic('getFormName')
     def getFormName(self):
