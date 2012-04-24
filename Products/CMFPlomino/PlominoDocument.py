@@ -86,9 +86,10 @@ class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
 
     security.declarePublic('checkBeforeOpenDocument')
     def checkBeforeOpenDocument(self):
-        """check read permission and open view  NOTE: if READ_PERMISSION
-        set on the 'view' action itself, it causes error 'maximum
-        recursion depth exceeded' if user hasn't permission
+        """ Check read permission and open view.
+        .. NOTE:: if ``READ_PERMISSION`` is set on the ``view`` action
+            itself, it causes an error ('maximum recursion depth exceeded')
+            if user hasn't permission.
         """
         if self.isReader():
             return self.OpenDocument()
@@ -418,13 +419,12 @@ class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
         onOpenDocument_error = ''
         try:
             if form.getOnOpenDocument():
-                #RunFormula(self, form.getOnOpenDocument())
                 onOpenDocument_error = self.runFormulaScript(
                         "form_"+form.id+"_onopen",
                         self,
                         form.onOpenDocument)
         except PlominoScriptException, e:
-            e.reportError('onOpen event failed')
+            e.reportError('onOpenDocument event failed')
 
         if onOpenDocument_error:
             html_content = onOpenDocument_error
