@@ -69,9 +69,11 @@ schema = Schema((
 PlominoAgent_schema = BaseSchema.copy() + \
     schema.copy()
 
+
 def run_async(context, *args, **kwargs):
     # for async call
     context.runAgent(*args, **kwargs)
+
 
 class PlominoAgent(BaseContent, BrowserDefaultMixin):
     """
@@ -137,7 +139,8 @@ class PlominoAgent(BaseContent, BrowserDefaultMixin):
         """
         async = getUtility(IAsyncService)
         job = async.queueJob(run_async, context, *args, **kwargs)
-        
+
+
 registerType(PlominoAgent, PROJECTNAME)
 # end of class PlominoAgent
 
