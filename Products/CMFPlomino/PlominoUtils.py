@@ -36,6 +36,27 @@ except ImportError:
 import logging
 logger = logging.getLogger('Plomino')
 
+severity_map = {
+        'info': logging.INFO,
+        'warning': logging.WARNING,
+        'debug': logging.DEBUG
+        }
+
+
+def Log(message, summary='', severity='info', exc_info=False):
+    """ Write a message to the event log. Useful from formulas.
+    Optionally include a traceback.
+    """
+    # Pass in severity as a string, because we don't want to import
+    # ``logging`` from scripts.
+    logger.log(
+            severity_map.get(severity, 'info'),
+            'App: %s\n%s',
+            summary,
+            message,
+            exc_info=exc_info)
+
+
 def DateToString(d, format='%Y-%m-%d'):
     """ Return the date as string using the given format
     """
