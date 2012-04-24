@@ -136,7 +136,7 @@ class PlominoAgent(BaseContent, BrowserDefaultMixin):
         """run the agent in asynchronous mode
         """
         async = getUtility(IAsyncService)
-        job = async.queueJob(run_async, self, *args, **kwargs)
+        job = async.queueJob(run_async, context, *args, **kwargs)
         
 registerType(PlominoAgent, PROJECTNAME)
 # end of class PlominoAgent
