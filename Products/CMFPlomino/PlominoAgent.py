@@ -68,10 +68,10 @@ schema = Schema((
 
 PlominoAgent_schema = BaseSchema.copy() + \
     schema.copy()
-    
-def run_async(context):
+
+def run_async(context, *args, **kwargs):
     # for async call
-    context.runAgent()
+    context.runAgent(*args, **kwargs)
 
 class PlominoAgent(BaseContent, BrowserDefaultMixin):
     """
@@ -132,7 +132,7 @@ class PlominoAgent(BaseContent, BrowserDefaultMixin):
             return e.message
 
     security.declarePublic('runAgent_async')
-    def run_async(context, *args, **kwargs):
+    def runAgent_async(context, *args, **kwargs):
         """run the agent in asynchronous mode
         """
         async = getUtility(IAsyncService)
