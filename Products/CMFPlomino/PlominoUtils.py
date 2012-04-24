@@ -63,7 +63,6 @@ def DateToString(d, format='%Y-%m-%d'):
     # XXX: Should use db.getDateTimeFormat
     return d.strftime(format)
 
-
 def StringToDate(str_d, format='%Y-%m-%d'):
     """ Parse the string using the given format and return the date 
     """
@@ -74,30 +73,26 @@ def StringToDate(str_d, format='%Y-%m-%d'):
         # XXX: Just let DateTime guess.
         dt = strptime(DateTime(str_d).ISO(), '%Y-%m-%d %H:%M:%S')
         logger.info('StringToDate> %s, %s, %s, guessed: %s'%(str(str_d), format, `e`, `dt`))
-    if len(dt) >= 5:
+    if len(dt)>=5:
         return DateTime(dt[0], dt[1], dt[2], dt[3], dt[4])
     else:
         return DateTime(dt[0], dt[1], dt[2])
 
-
 def DateRange(d1, d2):
-    """ Return all the dates from ``d1`` to ``d2`` (inclusive).
-    Dates are ``DateTime`` instances.
+    """return all the days from the d1 date to the d2 date (included)
     """
     duration = int(d2-d1)
-    result = []
-    current = d1
+    result=[]
+    current=d1
     for d in range(duration+1):
         result.append(current)
         current = current+1
     return result
 
-
 def Now():
     """ current date and tile
     """
     return DateTime()
-
 
 def sendMail(db, recipients, title, html_message, sender=None, cc=None, bcc=None, immediate=False):
     """Send an email
@@ -125,90 +120,85 @@ def sendMail(db, recipients, title, html_message, sender=None, cc=None, bcc=None
         host.secureSend(message, recipients,
                         sender, subject=title,
                         subtype='html', charset='utf-8')
-
-
+        
 def userFullname(db, userid):
-    """ Try to return user fullname, else return userid.
-    Return "Unknown" if user not found.
+    """ return user fullname if exist, else return userid, and return Unknown if user not found
     """
-    user = getToolByName(db, 'portal_membership').getMemberById(userid)
-
-    if not user:
+    user=getToolByName(db, 'portal_membership').getMemberById(userid)
+    if not(user is None):
+        fullname=user.getProperty('fullname')
+        if fullname=='':
+            return userid
+        else:
+            return fullname
+    else:
         return "Unknown"
 
-    fullname = user.getProperty('fullname')
-    if fullname:
-        return fullname
-    else:
-        return userid
-
-
 def userInfo(db, userid):
-    """ Return user object.
+    """ return user object
     """
-    return getToolByName(db, 'portal_membership').getMemberById(userid)
+    user=getToolByName(db, 'portal_membership').getMemberById(userid)
+    return user
 
-def PlominoTranslate(msgid, context, domain='CMFPlomino'):
-    """ Look up the translation for ``msgid`` in the current language.
+def PlominoTranslate(message, context, domain='CMFPlomino'):
+    """
     """
     plone_tools = getToolByName(context, 'plone_utils')
     encoding = plone_tools.getSiteEncoding()
     translation_service = getToolByName(context, 'translation_service')
-    # When will message be an exception?
-    if isinstance(msgid, Exception):
+    if isinstance(message, Exception):
         try:
-            msgid = msgid[0]
+            message = message[0]
         except (TypeError, IndexError):
             pass
     if HAS_PLONE40:
-        msg = translation_service.utranslate(domain=domain, msgid=msgid, context=context)
+        msg = translation_service.utranslate(domain=domain, msgid=message, context=context)
     else:
-        msg = translation_service.utranslate(msgid=msgid, domain=domain, context=context)
+        msg = translation_service.utranslate(msgid=message, domain=domain, context=context)
     return translation_service.encode(msg) # convert unicode to site encoding
 
-
 def htmlencode(s):
-    """ Replace characters with their corresponding HTML entities.
+    """ replace unicode characters with their corresponding html entities
     """
-    t = ""
-    if type(s) != unicode:
-        s = translation_service.asunicodetype(s)
-    for c in s:
-        name = entity.codepoint2name.get(ord(c))
-        if name:
-            t += "&%s;" % name
+
+    t=""
+    for i in s:
+        if ord(i) in entity.codepoint2name:
+            name = entity.codepoint2name.get(ord(i))
+            entityCode = entity.name2codepoint.get(name)
+            t +="&#" + str(entityCode)
         else:
-            t += c
+            t+=i
     return t
 
-
 def urlencode(h):
-    """ Call urllib.urlencode
+    """ call urllib.urlencode
     """
     return urllib.urlencode(h)
 
-
 def asList(x):
-    """ If not list, return x in a single-element list.
-    .. note:: If ``x`` is ``None``, this will return ``[None]``.
+    """ if not list, return x in a single-element list
+    XXX: Don't call asList if x may be None, as [None] probably is not what you
+    want.
     """
     if hasattr(x, 'append'):
         return x
     else:
         return [x]
 
-
-def asUnicode(s):
-    """ Make sure ``s`` is unicode; encode according to site encoding if
-    needed.
+def asUnicode(x):
     """
-    return translation_service.asunicodetype(s)
-
+    """
+    if type(x) is str:
+        return x.decode('utf-8')
+    if type(x) is unicode:
+        return x
+    return unicode(x)
 
 def csv_to_array(csvcontent, delimiter='\t', quotechar='"'):
-    """ ``csvcontent`` may be a string or a file.
+    """ csvcontent might be a string or a file
     """
-    if not csvcontent:
+    if csvcontent is None:
         return []
     if type(csvcontent) is str:
         csvfile = StringIO(csvcontent)
@@ -216,34 +206,29 @@ def csv_to_array(csvcontent, delimiter='\t', quotechar='"'):
         csvfile = csvcontent.blob.open()
     else:
         csvfile = csvcontent
-    # XXX: why not just return the list-like ``_csv.reader`` object?
     return [l for l in csv.reader(csvfile, delimiter=delimiter, quotechar=quotechar)]
 
-
-def array_to_csv(array, delimiter='\t', quotechar='"'):
-    """ Convert ``array`` (a list of lists) to a CSV string.
+def array_to_csv(values, delimiter='\t', quotechar='"'):
+    """
     """
     s = StringIO()
     writer = csv.writer(s, delimiter=delimiter, quotechar=quotechar, quoting=csv.QUOTE_NONNUMERIC)
-    writer.writerows(array)
+    writer.writerows(values)
     return s.getvalue()
 
-
 def open_url(url, asFile=False):
-    """ Retrieve content from ``url``.
+    """ retrieve content from url
     """
-    f = urllib.urlopen(url)
+    f=urllib.urlopen(url)
     if asFile:
         return f.fp
     else:
         return f.read()
 
-
 def MissingValue():
-    """ Useful to test search results value (as ``Missing.Value`` cannot be imported in scripts).
+    """ Useful to test search results value (as Missing.Value cannot be imported in scripts)
     """
     return Missing.Value
-
 
 def isDocument(doc):
     if doc:
@@ -251,15 +236,11 @@ def isDocument(doc):
             return doc.isDocument()
     return False
 
-
 def cgi_escape(s):
     return cgi.escape(s)
-
 
 def json_dumps(obj):
     return json.dumps(obj)
 
-
 def json_loads(json_string):
     return json.loads(json_string)
-
