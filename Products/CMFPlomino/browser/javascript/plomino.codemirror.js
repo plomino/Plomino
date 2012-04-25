@@ -11,7 +11,8 @@ jq(document).ready(function() {
 			this.onCodeMirrorSave = function() { 
 				jq("#"+type+"-base-edit").submit();
 			};
-			jq(this).addClass('codemirror-python');
+			jq(this).addClass('codemirror-python')
+			jq(this).attr('data-codemirror-mode', "python");
 		});
 	});
 	
@@ -22,6 +23,7 @@ jq(document).ready(function() {
 			alert("Ctrl+S not implemented here.");
 		};
 		jq(this).addClass('codemirror-python');
+		jq(this).attr('data-codemirror-mode', "python");
 	});
 
 	// plominoform textareas must be processed more precisely
@@ -41,6 +43,7 @@ jq(document).ready(function() {
 				jq("#plominoform-base-edit").submit();
 			};
 			jq(this).addClass('codemirror-python');
+			jq(this).attr('data-codemirror-mode', "python");
 		});
 	});
 });
