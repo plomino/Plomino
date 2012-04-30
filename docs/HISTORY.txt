@@ -1,6 +1,10 @@
 Changelog
 =========
 
+1.14.3 (unreleased)
+-------------------
+* Depends on collective.js.datatables [toutpt]
+
 1.14.2 (2012-04-12)
 -------------------
 * Display validation errors in a nice popup.
