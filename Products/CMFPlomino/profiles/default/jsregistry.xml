@@ -2,17 +2,6 @@
 <object name="portal_javascripts" meta_type="JavaScripts Registry">
           
  <javascript enabled="1" id="jquery.js" />
-     
- <javascript cacheable="True"
-             compression="safe"
-             cookable="True"
-             enabled="True"
-             expression=""
-             id="++resource++plomino.javascript/jquery.dataTables.js"
-             inline="False"
-             insert-after="jquery.js"
-             insert-before="jquery-integration.js"
-             />
 
  <javascript cacheable="True"
              compression="safe"
