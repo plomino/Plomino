@@ -1,9 +1,12 @@
 Changelog
 =========
 
-1.14.3 (unreleased)
+1.14.3 (2012-05-03)
 -------------------
+* codemirror integration
 * Depends on collective.js.datatables [toutpt]
+* fix buildout for Plone 3
+* fix popups for Plone 3
 
 1.14.2 (2012-04-12)
 -------------------
