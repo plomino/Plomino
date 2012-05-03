@@ -1,7 +1,7 @@
 from setuptools import setup, find_packages
 import os
 
-version = '1.14.2'
+version = '1.14.3'
 
 setup(name='Products.CMFPlomino',
       version=version,
@@ -29,6 +29,7 @@ setup(name='Products.CMFPlomino',
           'simplejson',
           'dm.sharedresource',
           'collective.js.jqueryui',
+          'collective.js.datatables',
           'collective.codemirror',
       ],
       entry_points="""

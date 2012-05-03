@@ -27,3 +27,17 @@ def upgrade_to_28(context):
 def upgrade_to_30(context):
     # register plomino.codemirror.js and 
     context.runImportStepFromProfile(default_profile, 'jsregistry')
+
+def upgrade_to_31(context):
+    qi = getToolByName(context, 'portal_quickinstaller')
+    if not qi.isProductInstalled('collective.js.datatables'):
+        qi.installProducts(products=['collective.js.datatables'])
+    #remove datatables from plomino
+    jsregistry = getToolByName(context, 'portal_javascripts')
+    jsid = "++resource++plomino.javascript/jquery.dataTables.js"
+    jsregistry.unregisterResource(jsid)
+    jsregistry.cookResources()
+    cssregistry = getToolByName(context, 'portal_css')
+    cssid = "datatable.css"
+    cssregistry.unregisterResource(cssid)
+    cssregistry.cookResources()
