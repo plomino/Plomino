@@ -30,4 +30,13 @@
       handler=".upgrades.upgrade_to_30"
       />
 
+  <genericsetup:upgradeStep
+      source="30"
+      destination="31"
+      title="Use collective.js.datatables"
+      description=""
+      profile="Products.CMFPlomino:default"
+      handler=".upgrades.upgrade_to_31"
+      />
+
 </configure>
