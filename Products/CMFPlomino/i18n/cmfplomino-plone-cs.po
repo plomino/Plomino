@@ -1,4 +1,4 @@
-# [Šváb Jakub <svab@jtbank.cz>], 2012.
+﻿# [Šváb Jakub <svab@jtbank.cz>], 2012.
 msgid ""
 msgstr ""
 "Project-Id-Version: CMFPlomino\n"
@@ -23,7 +23,7 @@ msgstr "Plomino: Sloupec"
 
 
 msgid "PlominoDatabase"
-msgstr "Plomino: Databaze"
+msgstr "Plomino: Databáze"
 
 msgid "PlominoDocument"
 msgstr "Plomino: Dokument"
@@ -32,28 +32,28 @@ msgid "PlominoField"
 msgstr "Plomino: Pole"
 
 msgid "PlominoForm"
-msgstr "Plomino: Formular"
+msgstr "Plomino: Formulář"
 
 msgid "PlominoHidewhen"
-msgstr "Plomino: Skryj kdyz"
+msgstr "Plomino: Skryj pokud"
 
 msgid "PlominoView"
 msgstr "Plomino: Pohled"
 
 msgid "Forms"
-msgstr "Formulare"
+msgstr "Formuláře"
 
 msgid "Views"
 msgstr "Pohledy"
 
 msgid "ACL"
-msgstr "Pristupova prava"
+msgstr "Přístupová práva"
 
 msgid "About"
-msgstr "O databazi"
+msgstr "O databázi"
 
 msgid "Using"
-msgstr "Pouziti"
+msgstr "Použití"
 
 msgid "Compose"
-msgstr "Vytvorit"
+msgstr "Vytvořit"
