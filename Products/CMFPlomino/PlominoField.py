@@ -17,7 +17,7 @@ from Products.Archetypes.atapi import *
 from zope.interface import implements
 import interfaces
 
-from Products.CMFPlomino import fields
+from Products.CMFPlomino import fields, plomino_profiler
 
 from Products.CMFDynamicViewFTI.browserdefault import BrowserDefaultMixin
 
@@ -211,6 +211,7 @@ class PlominoField(BaseContent, BrowserDefaultMixin):
         return v
 
     security.declareProtected(READ_PERMISSION, 'getFieldRender')
+    @plomino_profiler('fields')
     def getFieldRender(self, form, doc, editmode, creation=False, request=None):
         """Rendering the field
         """

@@ -189,4 +189,22 @@
 </dd></dl>
     
     </dd>
+	<dd class="portletItem">
+        <strong i18n:translate="Database">Profiling</strong>
+        <script tal:define="profiling_level python:here.REQUEST.cookies.get('plomino_profiler', '')" tal:content="string:var profiling_level='${profiling_level}';"></script>
+        <script>
+function set_profiling(v) {
+	location.href="./set_profiling_level?level="+v;
+}
+jq(document).ready(function() {
+	jq('#profiling_level').val(profiling_level);
+});
+        </script>
+        <select id="profiling_level" onchange="set_profiling(this.value)">
+        <option value="">None</option>
+        <option value="form">Form</option>
+        <option value="form:fields">Form and fields</option>
+        <option value="form:fields:formulas">Form, fields, and formulas</option>
+        </select>
+    </dd>
 </dl>

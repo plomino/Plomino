@@ -182,6 +182,10 @@
             </tal:block>
 
         </tal:block>
+        <tal:profiling tal:define="profiling python:here.REQUEST.cookies.get('plomino_profiler')" tal:condition="profiling">
+			<tal:macro metal:use-macro="here/profiling/macros/durations">display durations</tal:macro>
+		</tal:profiling>
+		
     </tal:main-macro>
 </metal:main>
 

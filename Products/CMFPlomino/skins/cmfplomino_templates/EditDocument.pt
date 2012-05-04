@@ -99,6 +99,10 @@
 		<h3>No form defined to display this document.</h3>
 		<br/>A Plomino document always needs a Plomino form in order to be displayed or edited.
 	</tal:test>
+	<tal:profiling tal:define="profiling python:here.REQUEST.cookies.get('plomino_profiler')" tal:condition="profiling">
+			<tal:macro metal:use-macro="here/profiling/macros/durations">display durations</tal:macro>
+	</tal:profiling>
+		
     </tal:main-macro>
 </metal:main>
 
