@@ -212,7 +212,7 @@ class PlominoField(BaseContent, BrowserDefaultMixin):
 
     security.declareProtected(READ_PERMISSION, 'getFieldRender')
     def getFieldRender(self, form, doc, editmode, creation=False, request=None):
-        """Rendering the field
+        """ Rendering the field
         """
         mode = self.getFieldMode()
         fieldname = self.id

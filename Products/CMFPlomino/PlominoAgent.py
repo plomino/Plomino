@@ -112,33 +112,41 @@ class PlominoAgent(BaseContent, BrowserDefaultMixin):
         return result
 
     security.declarePublic('runAgent')
-    def runAgent(self, *args):
+    def runAgent(self, *args, **kwargs):
         """ Execute the agent formula.
         """
         plominoContext = self
         plominoReturnURL = self.getParentDatabase().absolute_url()
-        REQUEST = getattr(self, 'REQUEST', None)
+        request = getattr(self, 'REQUEST', None)
         try:
             if self.getRunAs() == "OWNER":
                 user = self.getOwner()
                 newSecurityManager(None, user)
 
             result = self.runFormulaScript("agent_"+self.id, plominoContext, self.Content, True, *args)
-            if (REQUEST != None) and (REQUEST.get('REDIRECT', None)== "True"):
+            if request and (request.get('REDIRECT', None) == "True"):
                 if result is not None:
                     plominoReturnURL = result
-                REQUEST.RESPONSE.redirect(plominoReturnURL)
+                request.RESPONSE.redirect(plominoReturnURL)
         except PlominoScriptException, e:
-            if REQUEST:
-                REQUEST.RESPONSE.setHeader('content-type', 'text/plain; charset=utf-8')
+            # Exception logged already in runFormulaScript
+            if request and request.get('RESPONSE'):
+                request.RESPONSE.setHeader('content-type', 'text/plain; charset=utf-8')
             return e.message
 
     security.declarePublic('runAgent_async')
     def runAgent_async(context, *args, **kwargs):
-        """run the agent in asynchronous mode
+        """ Run the agent in asynchronous mode. 
+        Pass a dictionary based on the current request.
         """
+        request = dict(getattr(context, 'REQUEST', {}))
+        if request:
+            for k,v in request.items():
+                if type(v) not in [str, unicode]:
+                    del request[k]
+
         async = getUtility(IAsyncService)
-        job = async.queueJob(run_async, context, *args, **kwargs)
+        async.queueJob(run_async, context, original_request=request, *args, **kwargs)
 
 
 registerType(PlominoAgent, PROJECTNAME)
