@@ -56,13 +56,11 @@ def Log(message, summary='', severity='info', exc_info=False):
             message,
             exc_info=exc_info)
 
-
 def DateToString(d, format='%Y-%m-%d'):
     """ Return the date as string using the given format
     """
     # XXX: Should use db.getDateTimeFormat
     return d.strftime(format)
-
 
 def StringToDate(str_d, format='%Y-%m-%d'):
     """ Parse the string using the given format and return the date 
@@ -79,7 +77,6 @@ def StringToDate(str_d, format='%Y-%m-%d'):
     else:
         return DateTime(dt[0], dt[1], dt[2])
 
-
 def DateRange(d1, d2):
     """ Return all the dates from ``d1`` to ``d2`` (inclusive).
     Dates are ``DateTime`` instances.
@@ -92,12 +89,10 @@ def DateRange(d1, d2):
         current = current+1
     return result
 
-
 def Now():
     """ current date and tile
     """
     return DateTime()
-
 
 def sendMail(db, recipients, title, html_message, sender=None, cc=None, bcc=None, immediate=False):
     """Send an email
@@ -167,14 +162,16 @@ def PlominoTranslate(msgid, context, domain='CMFPlomino'):
         msg = translation_service.utranslate(msgid=msgid, domain=domain, context=context)
     return translation_service.encode(msg) # convert unicode to site encoding
 
-
 def htmlencode(s):
     """ Replace characters with their corresponding HTML entities.
     """
     t = ""
     if type(s) != unicode:
-        translation_service = getToolByName(context, 'translation_service')
-        s = translation_service.asunicodetype(s)
+        from Products.CMFPlone.utils import safe_unicode
+        s = safe_unicode(s)
+        # Doesn't work unless utils becomes a persistent tool.
+        # translation_service = getToolByName(context, 'translation_service')
+        # s = translation_service.asunicodetype(s)
     for c in s:
         name = entity.codepoint2name.get(ord(c))
         if name:
@@ -183,12 +180,10 @@ def htmlencode(s):
             t += c
     return t
 
-
 def urlencode(h):
     """ Call urllib.urlencode
     """
     return urllib.urlencode(h)
-
 
 def asList(x):
     """ If not list, return x in a single-element list.
@@ -204,8 +199,11 @@ def asUnicode(s):
     """ Make sure ``s`` is unicode; encode according to site encoding if
     needed.
     """
-    translation_service = getToolByName(context, 'translation_service')
-    return translation_service.asunicodetype(s)
+    from Products.CMFPlone.utils import safe_unicode
+    return safe_unicode(s)
+    # Doesn't work unless utils becomes a persistent tool.
+    # translation_service = getToolByName(context, 'translation_service')
+    # return translation_service.asunicodetype(s)
 
 
 def csv_to_array(csvcontent, delimiter='\t', quotechar='"'):
@@ -241,12 +239,10 @@ def open_url(url, asFile=False):
     else:
         return f.read()
 
-
 def MissingValue():
     """ Useful to test search results value (as ``Missing.Value`` cannot be imported in scripts).
     """
     return Missing.Value
-
 
 def isDocument(doc):
     if doc:
@@ -254,15 +250,11 @@ def isDocument(doc):
             return doc.isDocument()
     return False
 
-
 def cgi_escape(s):
     return cgi.escape(s)
-
 
 def json_dumps(obj):
     return json.dumps(obj)
 
-
 def json_loads(json_string):
     return json.loads(json_string)
-
