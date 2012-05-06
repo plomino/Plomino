@@ -148,6 +148,7 @@ def userInfo(db, userid):
     """
     return getToolByName(db, 'portal_membership').getMemberById(userid)
 
+
 def PlominoTranslate(msgid, context, domain='CMFPlomino'):
     """ Look up the translation for ``msgid`` in the current language.
     """
@@ -172,6 +173,7 @@ def htmlencode(s):
     """
     t = ""
     if type(s) != unicode:
+        translation_service = getToolByName(context, 'translation_service')
         s = translation_service.asunicodetype(s)
     for c in s:
         name = entity.codepoint2name.get(ord(c))
@@ -202,6 +204,7 @@ def asUnicode(s):
     """ Make sure ``s`` is unicode; encode according to site encoding if
     needed.
     """
+    translation_service = getToolByName(context, 'translation_service')
     return translation_service.asunicodetype(s)
 
 
