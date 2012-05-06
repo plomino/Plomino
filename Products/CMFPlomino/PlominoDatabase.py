@@ -475,7 +475,7 @@ class PlominoDatabase(ATFolder, PlominoAccessControl, PlominoDesignManager, Plom
         """ Return all the database documents.
         """
         if getObject == False:
-            # XXX: TODO: Rerurn brains
+            # XXX: TODO: Return brains
             pass
         return self.documents.values()
 
