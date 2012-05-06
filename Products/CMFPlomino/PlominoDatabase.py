@@ -474,13 +474,9 @@ class PlominoDatabase(ATFolder, PlominoAccessControl, PlominoDesignManager, Plom
     def getAllDocuments(self, getObject=True):
         """ Return all the database documents.
         """
-        if getObject is not None:
-            deprecated("The getObject parameter is a temporary measure "
-                       "to ease migration to the new "
-                       "PlominoView.getAllDocuments signature. It will go "
-                       "away soon. Please update your code to remove it "
-                       "from PlominoDatabase.getAllDocuments calls."
-            )
+        if getObject == False:
+            # XXX: TODO: Rerurn brains
+            pass
         return self.documents.values()
 
     security.declarePublic('isDocumentsCountEnabled')
