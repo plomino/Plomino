@@ -32,8 +32,8 @@
     <!--
         function showTraceback(el, formula_path) {
             msg = jq(el).children().filter(":first").html();
-            popup = jq("#plominoTracebackPopup");
-            jq("#plominoTracebackPopup strong").html(msg);
+            popup = jq("#plominoTracebackPopup").clone();
+            jq(popup).children("strong").html(msg);
             jq.get(formula_path, function(data) {
                 offset = 4;
                 code = "";
@@ -41,7 +41,7 @@
                     line = index + offset
                     code = code + line + ": " + value + '\n';
                 });
-            	jq("#plominoTracebackPopup pre").html(jq("<div/>").text(code).html());
+            	jq(popup).children("pre").html(jq("<div/>").text(code).html());
             });
         	popup.dialog({show: "blind", height: 430, width: 530});
         }

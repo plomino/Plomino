@@ -1,7 +1,8 @@
 <?xml version="1.0"?>
 <metadata>
-  <version>30</version>
+  <version>31</version>
   <dependencies>
     <dependency>profile-collective.js.jqueryui:default</dependency>
+    <dependency>profile-collective.js.datatables:default</dependency>
   </dependencies>
 </metadata>

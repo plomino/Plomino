@@ -1,6 +1,8 @@
 <tal:block metal:define-macro="messages">
+<div id="plominoValidationMessages">
 <div id="plominoValidationPopup" style="display: none;" title="Validation failed" i18n:domain="CMFPlomino" i18n:attributes="title">
     <strong></strong>
+</div>
 </div>
 <script>
 jq("#plomino_form").submit(function(){
@@ -9,12 +11,12 @@ jq("#plomino_form").submit(function(){
 				jq(this).addClass('plomino-valid');
 				jq(this).submit();
 			} else {
-				popup = jq("#plominoValidationPopup");
+				popup = jq("#plominoValidationPopup").clone();
 				message = "";
 				jq.each(data['errors'], function(index, value) {
 					message = message + value + "<br/>";
 				});
-				jq("#plominoValidationPopup strong").html(message);
+				jq(popup).children("strong").html(message);
 				popup.dialog({show: "blind", height: 350, width: 530});
 			}
 		}
