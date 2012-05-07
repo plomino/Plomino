@@ -607,6 +607,7 @@ class PlominoDesignManager(Persistent):
                 logger.info('python errors at '+str(context)+' in '+script_id+': ' + str(contextual_ps.errors))
             return result
         except Exception, e:
+            logger.info("Plomino Script Exception: %s, %s"%(`formula_getter`, script_id), exc_info=True)
             raise PlominoScriptException(context, e, formula_getter, script_id)
 
     security.declarePrivate('traceRenderingErr')
