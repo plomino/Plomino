@@ -1,4 +1,3 @@
-﻿# [Šváb Jakub <svab@jtbank.cz>], 2012.
 msgid ""
 msgstr ""
 "Project-Id-Version: CMFPlomino\n"
@@ -704,9 +703,6 @@ msgstr "Celý design"
 
 msgid "or elements"
 msgstr "nebo jednotlivé prvky"
-
-msgid "Refresh"
-msgstr "Obnovit"
 
 msgid "Do not refresh database after design update:"
 msgstr "Neobnovuj databázi po updatu designu:"
