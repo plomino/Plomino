@@ -706,9 +706,6 @@ msgstr "Entire design"
 msgid "or elements"
 msgstr "or elements"
 
-msgid "Refresh"
-msgstr "Refresh"
-
 msgid "Do not refresh database after design update:"
 msgstr "Do not refresh database after design update:"
 
