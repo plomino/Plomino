@@ -1088,6 +1088,14 @@ class PlominoDesignManager(Persistent):
         profiling = annotations.get("plomino.profiling")
         if not profiling:
             return {}
+        if 'formulas' in profiling.keys():
+            grouped_formulas = {}
+            for (id, duration) in profiling['formulas']:
+                grouped = grouped_formulas.setdefault(id, [0, 0])
+                grouped[0] = grouped[0] + 1
+                grouped[1] = grouped[0] + duration
+                grouped_formulas[id] = grouped
+            profiling['distinct formulas'] = [["%s (%d times)" % (id, totals[0]), totals[1]] for (id, totals) in grouped_formulas.items()]
         for (aspect, durations) in profiling.items():
             maximum = max([d[1] for d in durations])
             durations.sort(key=lambda d: d[1], reverse=True)
