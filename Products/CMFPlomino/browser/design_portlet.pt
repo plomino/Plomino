@@ -190,7 +190,7 @@
     
     </dd>
 	<dd class="portletItem">
-        <strong i18n:translate="Database">Profiling</strong>
+        <strong i18n:translate="Profiling">Profiling</strong>
         <script tal:define="profiling_level python:here.REQUEST.cookies.get('plomino_profiler', '')" tal:content="string:var profiling_level='${profiling_level}';"></script>
         <script>
 function set_profiling(v) {
