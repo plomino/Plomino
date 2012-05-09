@@ -425,15 +425,18 @@ class PlominoForm(ATFolder):
         for (field, fieldblock) in fields_in_layout:
             # check if fieldblock still here after cache replace
             if fieldblock in html_content:
-                html_content = html_content.replace(fieldblock, field.getFieldRender(self, doc, editmode, creation, request=request))
+                html_content = html_content.replace(
+                        fieldblock,
+                        field.getFieldRender(self, doc, editmode, creation,
+                                request=request))
 
         # insert subforms
         for subformname in self.getSubforms(doc):
             subform = self.getParentDatabase().getForm(subformname)
             if subform:
                 subformrendering = subform.displayDocument(
-                    doc, editmode, creation, parent_form_id=self.id,
-                    request=request)
+                        doc, editmode, creation, parent_form_id=self.id,
+                        request=request)
                 html_content = html_content.replace('<span class="plominoSubformClass">'+subformname+'</span>', subformrendering)
 
         # insert the actions

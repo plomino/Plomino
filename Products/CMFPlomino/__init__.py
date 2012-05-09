@@ -67,7 +67,8 @@ class PlominoCoreUtils:
     implements(interfaces.IPlominoUtils)
     
     module = "Products.CMFPlomino.PlominoUtils"
-    methods = ['DateToString',
+    methods = ['Log',
+               'DateToString',
                'StringToDate',
                'DateRange',
                'sendMail',
