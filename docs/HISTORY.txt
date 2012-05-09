@@ -1,6 +1,11 @@
 Changelog
 =========
 
+1.14.4 (2012-05-09)
+-------------------
+* Plone 3 compliancy: define __nonzero__ method on PlominoDocument (as it is not defined in Plone 3 by CMFBTreeFolder2)
+* Czech translation (contributed by Jakub Svab)
+
 1.14.3 (2012-05-03)
 -------------------
 * codemirror integration
