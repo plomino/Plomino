@@ -794,6 +794,11 @@ class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
             new_id = self._findUniqueId(new_id)
         return new_id
 
+    def __nonzero__(self):
+        # Needed for Plone 3 compliancy
+        # (as BTreeFolder2 1.0 does not define __nonzero__)
+        return True
+
 
 InitializeClass(PlominoDocument)
 addPlominoDocument = Factory(PlominoDocument)
