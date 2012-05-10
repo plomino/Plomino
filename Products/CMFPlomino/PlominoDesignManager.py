@@ -41,7 +41,6 @@ import transaction
 from zope import event
 from Products.Archetypes.event import ObjectEditedEvent
 from zope.component import getUtility
-from zope.annotation.interfaces import IAnnotations
 from dm.sharedresource import get_resource
 try:
     from plone.app.async.interfaces import IAsyncService
@@ -1081,6 +1080,10 @@ class PlominoDesignManager(Persistent):
             obj.update_data(
                     node.firstChild.data.decode('base64'),
                     content_type=node.getAttribute('contenttype'))
+
+    def is_profiling(self):
+        from Products.CMFPlomino import PROFILING
+        return PROFILING
 
     def profiling_results(self):
         profiling = self.getCache("plomino.profiling")

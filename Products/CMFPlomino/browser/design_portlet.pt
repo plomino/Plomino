@@ -189,22 +189,19 @@
 </dd></dl>
     
     </dd>
-	<dd class="portletItem">
+	<dd tal:condition="python:here.is_profiling()" class="portletItem">
         <strong i18n:translate="Profiling">Profiling</strong>
-        <script tal:define="profiling_level python:here.REQUEST.cookies.get('plomino_profiler', '')" tal:content="string:var profiling_level='${profiling_level}';"></script>
         <script>
 function set_profiling(v) {
 	location.href="./set_profiling_level?level="+v;
 }
-jq(document).ready(function() {
-	jq('#profiling_level').val(profiling_level);
-});
         </script>
-        <select id="profiling_level" onchange="set_profiling(this.value)">
+        <br/><select id="profiling_level" onchange="set_profiling(this.value)"
+        	tal:define="profiling_level python:here.REQUEST.cookies.get('plomino_profiler', '')">
         <option value="">None</option>
-        <option value="form">Form</option>
-        <option value="form:fields">Form and fields</option>
-        <option value="form:fields:formulas">Form, fields, and formulas</option>
+        <option tal:attributes="selected python:profiling_level=='form'" value="form">Form</option>
+        <option tal:attributes="selected python:profiling_level=='form:fields'" value="form:fields">Form and fields</option>
+        <option tal:attributes="selected python:profiling_level=='form:fields:formulas'" value="form:fields:formulas">Form, fields, and formulas</option>
         </select>
     </dd>
 </dl>
