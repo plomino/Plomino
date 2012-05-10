@@ -1,0 +1,16 @@
+<tal:block metal:define-macro="durations">
+<h2>PROFILING</h2>
+<tal:aspects tal:repeat="aspect python:here.profiling_results().items()">
+	<div><dl class="collapsible inline collapsedOnLoad">
+	    <dt class="collapsibleHeader" tal:content="python:'%s (%d)' % (aspect[0], len(aspect[1])) ">aspect name</dt>
+	    <dd class="collapsibleContent">
+			<tal:durations tal:repeat="duration python:aspect[1]">
+				<div tal:content="python:'%s: %f ms' % (duration[0], duration[1])">id: time</div>
+				<div style="border:1px solid blue; width: 100%">
+					<div tal:attributes="style python:'width:%d%%;;background-color:blue' % duration[2]">&nbsp;</div>
+				</div>
+			</tal:durations>
+		</dd>
+	</dl></div>
+</tal:aspects>
+</tal:block>

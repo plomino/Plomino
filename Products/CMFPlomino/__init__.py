@@ -72,11 +72,11 @@ class plomino_profiler:
     def __init__(self, aspect=None):
         self.aspect = aspect
     
-    def get_storage(self, request):
-        annotations = IAnnotations(request)
-        storage = annotations.get("plomino.profiling")
+    def get_storage(self, context):
+        storage = context.getCache("plomino.profiling")
         if not storage:
-            storage = annotations["plomino.profiling"] = dict()
+            storage = dict()
+            context.setCache("plomino.profiling", storage)
         return storage
 
     def __call__(self, f):
@@ -91,7 +91,7 @@ class plomino_profiler:
                     id = args[1]
                 else:
                     id = obj.id
-                profiling = self.get_storage(request)
+                profiling = self.get_storage(obj)
                 aspect_times = profiling.get(self.aspect, [])
                 aspect_times.append([id, duration])
                 profiling[self.aspect] = aspect_times

@@ -1082,10 +1082,8 @@ class PlominoDesignManager(Persistent):
                     node.firstChild.data.decode('base64'),
                     content_type=node.getAttribute('contenttype'))
 
-
     def profiling_results(self):
-        annotations = IAnnotations(self.REQUEST)
-        profiling = annotations.get("plomino.profiling")
+        profiling = self.getCache("plomino.profiling")
         if not profiling:
             return {}
         if 'formulas' in profiling.keys():
@@ -1100,6 +1098,7 @@ class PlominoDesignManager(Persistent):
             maximum = max([d[1] for d in durations])
             durations.sort(key=lambda d: d[1], reverse=True)
             profiling[aspect] = [[d[0], d[1], int(100*d[1]/maximum)] for d in durations]
+        self.cleanCache("plomino.profiling")
         return profiling
 
     security.declarePublic('set_profiling_level')
