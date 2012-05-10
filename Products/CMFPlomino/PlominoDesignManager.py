@@ -53,6 +53,7 @@ from index.PlominoIndex import PlominoIndex
 from exceptions import PlominoScriptException, PlominoDesignException
 from PlominoUtils import asUnicode
 from Products.CMFPlomino import get_utils
+from Products.CMFPlomino import plomino_profiler
 # get AT specific schemas for each Plomino class
 from Products.CMFPlomino.PlominoAction import schema as action_schema
 from Products.CMFPlomino.PlominoAgent import schema as agent_schema
@@ -590,6 +591,7 @@ class PlominoDesignManager(Persistent):
         return ps
 
     security.declarePublic('runFormulaScript')
+    @plomino_profiler('formulas')
     def runFormulaScript(self, script_id, context, formula_getter, with_args=False, *args):
         try:
             ps = self.getFormulaScript(script_id)
@@ -1080,5 +1082,32 @@ class PlominoDesignManager(Persistent):
                     node.firstChild.data.decode('base64'),
                     content_type=node.getAttribute('contenttype'))
 
+    def is_profiling(self):
+        from Products.CMFPlomino import PROFILING
+        return PROFILING
 
+    def profiling_results(self):
+        profiling = self.getCache("plomino.profiling")
+        if not profiling:
+            return {}
+        if 'formulas' in profiling.keys():
+            grouped_formulas = {}
+            for (id, duration) in profiling['formulas']:
+                grouped = grouped_formulas.setdefault(id, [0, 0])
+                grouped[0] = grouped[0] + 1
+                grouped[1] = grouped[0] + duration
+                grouped_formulas[id] = grouped
+            profiling['distinct formulas'] = [["%s (%d times)" % (id, totals[0]), totals[1]] for (id, totals) in grouped_formulas.items()]
+        for (aspect, durations) in profiling.items():
+            maximum = max([d[1] for d in durations])
+            durations.sort(key=lambda d: d[1], reverse=True)
+            profiling[aspect] = [[d[0], d[1], int(100*d[1]/maximum)] for d in durations]
+        self.cleanCache("plomino.profiling")
+        return profiling
 
+    security.declarePublic('set_profiling_level')
+    def set_profiling_level(self, REQUEST):
+        """
+        """
+        level = REQUEST.get('level', '')
+        REQUEST.RESPONSE.setCookie('plomino_profiler', level, path='/')

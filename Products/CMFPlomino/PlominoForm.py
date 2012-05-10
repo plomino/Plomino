@@ -20,6 +20,7 @@ import interfaces
 from Products.ATContentTypes.content.folder import ATFolder
 from Products.CMFDynamicViewFTI.browserdefault import BrowserDefaultMixin
 
+from Products.CMFPlomino import plomino_profiler
 from Products.CMFPlomino.config import *
 from Products.CMFPlomino.PlominoUtils import PlominoTranslate, DateToString
 from Products.CMFPlomino.exceptions import PlominoDesignException
@@ -390,6 +391,7 @@ class PlominoForm(ATFolder):
 
 
     security.declareProtected(READ_PERMISSION, 'displayDocument')
+    @plomino_profiler('form')
     def displayDocument(self, doc, editmode=False, creation=False, parent_form_id=False, request=None):
         """display the document using the form's layout
         """
