@@ -767,7 +767,7 @@ class PlominoForm(ATFolder):
             except PlominoScriptException, e:
                 if self.REQUEST:
                     e.reportError('Search event failed.')
-                    self.OpenForm(searchresults=[])
+                    return self.OpenForm(searchresults=[])
         else:
             # Allow Plomino to filter by view, default query, and formula
             db = self.getParentDatabase()
