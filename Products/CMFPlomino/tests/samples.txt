@@ -121,7 +121,7 @@ Scenario
     >>> browser.open(base_url+'/example-with-config-doc')
     >>> browser.getLink('Example form').click()
     >>> browser.getControl(name='department').value = ['Development']
-    >>> browser.getControl(name='price').value = '10'
+    >>> browser.getControl(name='price').value = '100'
     >>> browser.getControl('Save').click()
     >>> '11.96' in browser.contents
     True
