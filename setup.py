@@ -32,6 +32,10 @@ setup(name='Products.CMFPlomino',
           'collective.js.datatables',
           'collective.codemirror',
       ],
+      extras_require={
+                      'test': ['plone.app.testing',
+                               'Products.PloneTestCase'],
+      },
       entry_points="""
       # -*- Entry points: -*-
 
