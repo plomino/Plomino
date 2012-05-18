@@ -797,7 +797,10 @@ class PlominoForm(ATFolder):
                         if fieldname == "Plomino_SearchableText":
                             fieldname = "SearchableText"
                         query[fieldname]=v
-            results=index.dbsearch(query, None)
+            sortindex = searchview.getSortColumn()
+            if not sortindex:
+                sortindex = None
+            results=index.dbsearch(query, sortindex=sortindex, reverse=searchview.getReverseSorting())
 
             #filter search with searchformula
             searchformula=self.getSearchFormula()
