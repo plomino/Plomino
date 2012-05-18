@@ -1,6 +1,11 @@
 Changelog
 =========
 
+1.15 (2012-05-18)
+-----------------
+* Performance profiling utility.
+* Sort search results according search view sorting settings.
+
 1.14.4 (2012-05-09)
 -------------------
 * Plone 3 compliancy: define __nonzero__ method on PlominoDocument (as it is not defined in Plone 3 by CMFBTreeFolder2)

@@ -1,7 +1,7 @@
 from setuptools import setup, find_packages
 import os
 
-version = '1.14.4'
+version = '1.15'
 
 setup(name='Products.CMFPlomino',
       version=version,
