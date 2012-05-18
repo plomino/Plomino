@@ -84,6 +84,9 @@ def migrate(db):
     if db.plomino_version=="1.13":
         # no migration needed here
         db.plomino_version = "1.14"
+    if db.plomino_version=="1.14":
+        msg = migrate_to_1_15(db)
+        messages.append(msg)
     return messages
 
 def migrate_to_130(db):
@@ -371,4 +374,14 @@ def migrate_to_1_12(db):
     
     msg = "Migration to 1.12: Convert resources script lib File into PythonScripts."
     db.plomino_version = "1.12"
+    return msg
+
+def migrate_to_1_15(db):
+    """ init BTreeFolder
+    """
+    for doc in db.getAllDocuments():
+        if not doc._tree:
+            doc._initBTrees()
+    msg = "Migration to 1.15: Documents properly initialized as BTreeFolder"
+    db.plomino_version = "1.15"
     return msg
