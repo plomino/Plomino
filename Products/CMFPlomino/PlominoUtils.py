@@ -199,6 +199,8 @@ def asUnicode(s):
     """ Make sure ``s`` is unicode; encode according to site encoding if
     needed.
     """
+    if not isinstance(s, basestring):
+        return unicode(s)
     from Products.CMFPlone.utils import safe_unicode
     return safe_unicode(s)
     # Doesn't work unless utils becomes a persistent tool.
