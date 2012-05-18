@@ -489,13 +489,6 @@ class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
     def _getCatalogTool(self):
         return self.getParentDatabase().getIndex()
 
-    security.declarePrivate('manage_afterClone')
-    def manage_afterClone(self,item):
-        """after cloning
-        """
-        # changed from BaseFolder to ATFolder because now inherits fron ATFolder
-        ATFolder.manage_afterClone(self, item)
-
     security.declarePublic('__getattr__')
     def __getattr__(self, name):
         """Overloads getattr to return item values as attibutes
