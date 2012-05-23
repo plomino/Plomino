@@ -1,6 +1,10 @@
 Changelog
 =========
 
+1.15.1 (2012-05-23)
+-------------------
+* Migration fix: initialize and refresh documents as BTreeFolder properly
+
 1.15 (2012-05-18)
 -----------------
 * Performance profiling utility.
