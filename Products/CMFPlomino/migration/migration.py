@@ -14,6 +14,7 @@ from Products.CMFPlomino.PlominoUtils import asUnicode
 from Products.PythonScripts.PythonScript import PythonScript
 from Products.PythonScripts.PythonScript import manage_addPythonScript
 from OFS.Image import manage_addImage
+from Acquisition import aq_base
 import parser
 import re
 
@@ -86,6 +87,9 @@ def migrate(db):
         db.plomino_version = "1.14"
     if db.plomino_version=="1.14":
         msg = migrate_to_1_15(db)
+        messages.append(msg)
+    if db.plomino_version=="1.15":
+        msg = migrate_to_1_15_1(db)
         messages.append(msg)
     return messages
 
@@ -384,4 +388,26 @@ def migrate_to_1_15(db):
             doc._initBTrees()
     msg = "Migration to 1.15: Documents properly initialized as BTreeFolder"
     db.plomino_version = "1.15"
+    return msg
+
+def migrate_to_1_15_1(db):
+    """ re-fill BTreeFolders with existing file attachments
+    """
+    for doc in db.getAllDocuments():
+        doc = aq_base(doc)
+        has = doc.__dict__.has_key
+        if has('_tree') and not has('_objects'):
+            # not so old document, no fix needed here
+            continue
+        if not has('_tree'):
+            doc._initBTrees()
+        for info in doc._objects:
+            name = info['id']
+            doc._setOb(name, aq_base(getattr(doc, name)))
+            delattr(doc, name)
+        if has('_objects'):
+            delattr(doc, '_objects')
+
+    msg = "Migration to 1.15.1: re-fill BTreeFolders with existing file attachments "
+    db.plomino_version = "1.15.1"
     return msg
