@@ -25,15 +25,15 @@ below).
     >>> id=self.folder.invokeFactory('PlominoDatabase', id='mydb')
     >>> db=self.folder.mydb
     >>> db.at_post_create_script()
-    >>> id=db.invokeFactory('PlominoForm', id='frm1', Title='Form 1')
-    >>> id=db.invokeFactory('PlominoForm', id='frm2', Title='Form 2')
-    >>> id=db.invokeFactory('PlominoForm', id='frm3', Title='Search Form')
-    >>> id=db.invokeFactory('PlominoView', id='view1', Title='View 1', SelectionFormula='True')
+    >>> id=db.invokeFactory('PlominoForm', id='frm1', title='Form 1')
+    >>> id=db.invokeFactory('PlominoForm', id='frm2', title='Form 2')
+    >>> id=db.invokeFactory('PlominoForm', id='frm3', title='Search Form')
+    >>> id=db.invokeFactory('PlominoView', id='view1', title='View 1', SelectionFormula='True')
     >>> db.view1.at_post_create_script()
-    >>> id=db.view1.invokeFactory('PlominoColumn', id='col1', Title='Col 1', Formula='plominoDocument.field1')
+    >>> id=db.view1.invokeFactory('PlominoColumn', id='col1', title='Col 1', Formula='plominoDocument.field1')
     >>> db.view1.col1.at_post_create_script()
     >>> db.view1.setSortColumn('col1')
-    >>> id=db.invokeFactory('PlominoView', id='view2', Title='View 2', SelectionFormula="plominoDocument.field1=='bonjour'")
+    >>> id=db.invokeFactory('PlominoView', id='view2', title='View 2', SelectionFormula="plominoDocument.field1=='bonjour'")
     >>> db.view2.at_post_create_script()
     >>> db.frm1 == self.folder.mydb.getForm('frm1')
     True
@@ -63,14 +63,14 @@ The application designer designs the layout he needs for the form, and he
 inserts the fields wherever he wants.
 A form can also contain some action buttons to trigger specific processing.
 
-    >>> id=db.frm1.invokeFactory('PlominoField', id='field1', Title='field1', FieldType="TEXT", FieldMode="EDITABLE")
+    >>> id=db.frm1.invokeFactory('PlominoField', id='field1', title='field1', FieldType="TEXT", FieldMode="EDITABLE")
     >>> from Products.CMFPlomino.fields.text import ITextField
     >>> db.frm1.setFormLayout("""<p>please enter a value for field1: <span class="plominoFieldClass">field1</span></p>""")
     >>> db.frm1.displayDocument(None, True, True)
     u"<input type='hidden' name='Form' value='frm1' /><p>please enter a value for field1: <span>\n\t\n\t\n</span>\n</p>"
 
 A form can contain editable fields and also computed fields:
-    >>> id=db.frm1.invokeFactory('PlominoField', id='field2', Title='field2', FieldType="TEXT", FieldMode="COMPUTED", Formula="'My favorite song is '+plominoDocument.field1")
+    >>> id=db.frm1.invokeFactory('PlominoField', id='field2', title='field2', FieldType="TEXT", FieldMode="COMPUTED", Formula="'My favorite song is '+plominoDocument.field1")
     >>> db.frm1.setFormLayout("""<p>please enter a value for field1: <span class="plominoFieldClass">field1</span></p><p>Comment: <span class="plominoFieldClass">field2</span></p>""")
 
 Documents
@@ -91,7 +91,7 @@ You can access item values as attributes:
     >>> doc1.area
     338145
 
-A document can displayed or edited with a form. Only items which match a form field
+A document can be displayed or edited with a form. Only items which match a form field
 will be considered:
     >>> doc1.setItem('field1', 'where is my mind?')
     >>> db.frm1.displayDocument(doc1, editmode=False)
@@ -108,7 +108,33 @@ Calling 'save' method will (re-)index the document in the Plomino index and will
     >>> doc1.field2
     u'My favorite song is London calling'
 
+The document title formula allows to compute the document title. By default, the title is the form's title.
+	>>> doc1.Title()
+	'Form 1'
+	>>> db.frm1.setDocumentTitle("""'A document about ' + plominoDocument.getItem('field1', "nothing")""")
+	>>> db.frm1.at_post_edit_script()
+	>>> doc1.save()
+	>>> doc1.Title()
+	u'A document about London calling'
 
+The document id formula allows to compute the document's id. Note: it will be normalized according Plone rules
+(ascii only, lower case, spaces replaced by dash, and incremented index if the id already exists).
+The document id formula is evaluated at creation, so it only applies to new documents.
+	>>> db.frm1.setDocumentId("""'A document about ' + plominoDocument.getItem('field1', "nothing")""")
+	>>> db.frm1.at_post_edit_script()
+	>>> doc11 = db.createDocument()
+	>>> doc11.setItem('Form', 'frm1')
+	>>> doc11.setItem('field1', 'Rythm is love')
+	>>> doc11.save(creation=True)
+	>>> doc11.id
+	'a-document-about-rythm-is-love'
+	>>> doc12 = db.createDocument()
+	>>> doc12.setItem('Form', 'frm1')
+	>>> doc12.setItem('field1', 'Rythm is love')
+	>>> doc12.save(creation=True)
+	>>> doc12.id
+	'a-document-about-rythm-is-love-1'
+	
 Views
 ---------------
 A view allows to display a list of documents. A view contains columns which content is computed using data stored in the documents.
@@ -120,7 +146,7 @@ A view has a selection formula which filters the documents the application desig
     >>> doc3.setItem('Form', 'frm1')
     >>> doc3.save()
     >>> len(db.view1.getAllDocuments())
-    3
+    5
     >>> len(db.view2.getAllDocuments())
     1
     >>> len(db.view1.getDocumentsByKey('hello'))
