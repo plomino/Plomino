@@ -196,7 +196,7 @@ def asList(x):
 
 
 def asUnicode(s):
-    """ Make sure ``s`` is unicode; encode according to site encoding if
+    """ Make sure ``s`` is unicode; decode according to site encoding if
     needed.
     """
     if not isinstance(s, basestring):
