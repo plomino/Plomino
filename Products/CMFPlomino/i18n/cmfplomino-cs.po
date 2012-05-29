@@ -208,16 +208,16 @@ msgid "CMFPlomino_help_field_id"
 msgstr "Id pole"
 
 msgid "CMFPlomino_label_FieldReadTemplate"
-msgstr "Field read template"
+msgstr "Šablona pole pro čtení"
 
 msgid "CMFPlomino_help_FieldReadTemplate"
-msgstr "Custom rendering template in read mode"
+msgstr "Šablona pro vlastní rendering v čtecím modu"
 
 msgid "CMFPlomino_label_FieldEditTemplate"
-msgstr "Field edit template"
+msgstr "Šablona pole pro editaci"
 
 msgid "CMFPlomino_help_FieldEditTemplate"
-msgstr "Custom rendering template in edit mode"
+msgstr "Šablona pro vlastní rendering v editačním modu"
 
 msgid "CMFPlomino_label_FieldMandatory"
 msgstr "Povinné"
