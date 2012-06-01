@@ -13,8 +13,16 @@ Features
 * adapt the application behaviour depending on the user access rights and roles
 * import/export your application structure and/or your application data
 
+Tests
+=====
+
+Plomino is continuously tested on Travis: |travisstatus|_
+
+.. |travisstatus| image:: https://secure.travis-ci.org/plomino/Plomino.png?branch=github-main
+.. _travisstatus:  http://travis-ci.org/plomino/Plomino
+
 Credits
-========
+=======
 
 Authors
 -------
