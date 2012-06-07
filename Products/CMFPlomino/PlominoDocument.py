@@ -40,6 +40,7 @@ from zope.annotation import IAttributeAnnotatable
 from zope.app.container.contained import Contained
 
 import simplejson as json
+from copy import deepcopy
 
 import logging
 logger = logging.getLogger('Plomino')
@@ -129,7 +130,7 @@ class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
         """
         """
         if(self.items.has_key(name)):
-            return self.items[name]
+            return deepcopy(self.items[name])
         else:
             return default
 
