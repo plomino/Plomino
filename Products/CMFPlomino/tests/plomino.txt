@@ -85,7 +85,19 @@ You can add any type of item in a document
     >>> doc1.setItem('country', 'Finland')
     >>> doc1.getItem('country')
     u'Finland'
+
+getItem returns a copy, not a reference on the item:
+    >>> country = doc1.getItem('country')
+    >>> country = country + " (Europe)"
+    >>> country
+    u'Finland (Europe)'
+    >>> doc1.getItem('country')
+    u'Finland'
+
+To change the value of an item, we use the setItem method:
     >>> doc1.setItem('area', 338145)
+    >>> doc1.getItem('area')
+    338145
 
 You can access item values as attributes:
     >>> doc1.area
