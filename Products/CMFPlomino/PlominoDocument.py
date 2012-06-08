@@ -41,6 +41,7 @@ from zope.app.container.contained import Contained
 
 import simplejson as json
 from copy import deepcopy
+from persistent.dict import PersistentDict
 
 import logging
 logger = logging.getLogger('Plomino')
@@ -82,7 +83,7 @@ class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
         """
         CMFBTreeFolder.__init__(self, id)
         self.id = id
-        self.items = {}
+        self.items = PersistentDict()
         self.plomino_modification_time = DateTime().toZone('UTC')
 
     security.declarePublic('checkBeforeOpenDocument')
