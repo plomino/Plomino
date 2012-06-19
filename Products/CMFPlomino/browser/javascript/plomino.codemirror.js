@@ -20,7 +20,7 @@ jq(document).ready(function() {
 	// TODO: SAVE
 	jq(".portaltype-plominofield #content-core textarea").each(function() {
 		this.onCodeMirrorSave = function() {
-			alert("Ctrl+S not implemented here.");
+			jq("input[name='form.actions.apply']").click();
 		};
 		jq(this).addClass('codemirror-python');
 		jq(this).attr('data-codemirror-mode', "python");
