@@ -64,7 +64,7 @@
 										</th>
 										<th>
 											<div class="widget">
-												<label for="remote URL" i18n:translate="CMFPlomino_replication_remoteUrl">remote URL</label>
+												<label for="remote URL" i18n:translate="CMFPlomino_replication_remoteUrl">Remote URL</label>
 												<span class="fieldRequired"
 									                title="Required"
 									                i18n:translate="label_required"
