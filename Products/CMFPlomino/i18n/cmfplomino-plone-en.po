@@ -22,7 +22,6 @@ msgstr "Plomino: Action"
 msgid "PlominoColumn"
 msgstr "Plomino: Column"
 
-
 msgid "PlominoDatabase"
 msgstr "Plomino: Database"
 

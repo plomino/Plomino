@@ -17,29 +17,28 @@ msgstr ""
 "Domain: plone\n"
 
 msgid "PlominoAction"
-msgstr "Plomino: Action"
+msgstr ""
 
 msgid "PlominoColumn"
-msgstr "Plomino: Column"
-
+msgstr ""
 
 msgid "PlominoDatabase"
-msgstr "Plomino: Database"
+msgstr ""
 
 msgid "PlominoDocument"
-msgstr "Plomino: Document"
+msgstr ""
 
 msgid "PlominoField"
-msgstr "Plomino: Field"
+msgstr ""
 
 msgid "PlominoForm"
-msgstr "Plomino: Form"
+msgstr ""
 
 msgid "PlominoHidewhen"
-msgstr "Plomino: Hide when"
+msgstr ""
 
 msgid "PlominoView"
-msgstr "Plomino: View"
+msgstr ""
 
 msgid "Forms"
 msgstr ""
