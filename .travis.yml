@@ -7,7 +7,7 @@ before_install:
   - tar -xzf download-and-eggs-plone-4.1.4.tgz
 install:
   - python bootstrap.py
-  - bin/buildout -t 30 -Nc travis.cfg
+  - bin/buildout -t 10 -Nc travis.cfg
 script:
   - bin/test -s Products.CMFPlomino
 notifications:
