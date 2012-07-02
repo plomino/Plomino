@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: CMFPlomino\n"
-"POT-Creation-Date: Thu Sep 28 15:52:32 2006\n"
+"POT-Creation-Date: 2012-07-02 12:01+0000\n"
 "PO-Revision-Date: 2012-04-17 12:00+0300\n"
 "Last-Translator: Šváb Jakub <svab@jtbank.cz>\n"
 "Language-Team: Šváb Jakub <svab@jtbank.cz>\n"
@@ -14,366 +14,548 @@ msgstr ""
 "Preferred-Encodings: latin1 utf-8\n"
 "Domain: CMFPlomino\n"
 
-#. Default: "About this database"
-#: PlominoDatabase.py
-msgid "CMFPlomino_label_AboutDescription"
-msgstr "O této databázi"
+#. Default: " must be a float (submitted value was: "
+msgid " must be a float (submitted value was: "
+msgstr " musí být plovoucí (zadaná hodnota byla: "
 
-#. Default: "Describe the database, its objectives, its targetted audience, etc..."
+#. Default: " must be an integer (submitted value was: "
+msgid " must be an integer (submitted value was: "
+msgstr " musí být celé číslo (zadaná hodnota byla: "
+
+#: ../skins/cmfplomino_templates/OpenView.pt:160
+msgid "&lt;&lt; Previous"
+msgstr "&lt;&lt; Předchozí"
+
+#: ../skins/cmfplomino_templates/DatabaseDesign.pt:160
+msgid "(clean scripts, re-index documents, and check Plomino version migration)"
+msgstr "(vyčisti skripty, reindexuj dokumenty, a zkontroluj migraci verze Plomino)"
+
+#: ../skins/cmfplomino_templates/DatabaseDesign.pt:164
+msgid "(if the database allows portal catalog indexing, documents are re-indexed, else they are removed from the catalog)"
+msgstr "(pokud databáze umožňuje indexování portálového katalogu, dokumenty budou reindexovány, pokud ne budou z katalogu odstraněny)"
+
+#: ../skins/cmfplomino_templates/DatabaseDesign.pt:162
+msgid "(save all documents with their current form: computed fields and computed on save fields will be re-computed and stored, and documents are re-indexed)"
+msgstr "(ulož všechny dokumenty s jejich aktuálním formulářem: vygenerovaná pole a pole vygenerovaná při uložení budou znovu vygenerována a uložena a dokumenty budou reindexovány)"
+
+#: ../browser/design_portlet.pt:16
+msgid "Access control"
+msgstr "Správa přístupových práv"
+
+#: ../browser/design_portlet.pt:39
+msgid "Action"
+msgstr "Akce"
+
+#: ../browser/design_portlet.pt:108
+#: ../skins/cmfplomino_templates/DatabaseDesign.pt:64
+msgid "Actions"
+msgstr "Akce"
+
+#: ../browser/portlet.py:60
+msgid "Add a Plomino Element Portlet"
+msgstr ""
+
+#: ../skins/cmfplomino_templates/OpenDatabase.pt:60
+msgid "Add new content"
+msgstr "Přidej nový"
+
+#: ../browser/design_portlet.pt:21
+msgid "Add new..."
+msgstr "Přidej nový..."
+
+#: ../browser/design_portlet.pt:27
+msgid "Agent"
+msgstr "Agent"
+
+#: ../browser/design_portlet.pt:178
+#: ../skins/cmfplomino_templates/DatabaseDesign.pt:137
+msgid "Agents"
+msgstr "Agenti"
+
+#. Default: "Attach file"
+msgid "Attach file"
+msgstr "Připoj soubor"
+
+# OpenDatabase
+#: ../browser/design_portlet.pt:71
+#: ../skins/cmfplomino_templates/OpenDatabase.pt:32
+msgid "Browse"
+msgstr "Prohledávat"
+
+#. Default: "Describe the database, its objectives, its targeted audience, etc..."
 #: PlominoDatabase.py
+#, fuzzy
 msgid "CMFPlomino_help_AboutDescription"
 msgstr "Popište databázi, její účel, cílovou skupinu, apod..."
 
-#. Default: "Using this database"
-#: PlominoDatabase.py
-msgid "CMFPlomino_label_UsingDescription"
-msgstr "Použití této databáze"
-
-#. Default: "Describe how to use the database"
-#: PlominoDatabase.py
-msgid "CMFPlomino_help_UsingDescription"
-msgstr "Popište jak tuto databázi používat"
-
-#. Default: "Index file attachments"
-#: PlominoDatabase.py
-msgid "CMFPlomino_label_IndexAttachments"
-msgstr "Indexuj připojené soubory"
-
-#. Default: "If enabled, files attached in File Attachments fields will be indexed. It might increase the index size."
-#: PlominoDatabase.py
-msgid "CMFPlomino_help_IndexAttachments"
-msgstr "Indexuj soubory vložené do polí typu Soubor. Může se zvětšit velikost indexu."
-
-#. Default: "Debug mode"
-#: PlominoDatabase.py
-msgid "CMFPlomino_label_debugMode"
-msgstr "Debug mód"
-
-#. Default: "If enabled, script and formula errors are logged."
-#: PlominoDatabase.py
-msgid "CMFPlomino_help_debugMode"
-msgstr "Loguj chyby skriptů a vzorců."
-
-#. Default: "Use File System Storage for attachments"
-#: PlominoDatabase.py
-msgid "CMFPlomino_label_StorageAttachments"
-msgstr "Použij File System Storage pro připojené soubory"
-
-#. Default: "File System Storage must be installed on the portal"
-#: PlominoDatabase.py
-msgid "CMFPlomino_help_StorageAttachments"
-msgstr "Na portalu musí být nainstalovaný File System Storage."
-
-#. Default: "Count the number of documents"
-#: PlominoDatabase.py
-msgid "CMFPlomino_label_ShowDocumentsNumbers"
-msgstr "Spočítej dokumenty"
-
-#. Default: "If enabled, count the number of documents for each view. Display might be slower."
-#: PlominoDatabase.py
-msgid "CMFPlomino_help_ShowDocumentsNumbers"
-msgstr "Spočítej dokumenty v každém pohledu. Může se tak zpomalit zobrazení."
-
-#. Default: "Date/time format"
-#: PlominoDatabase.py
-msgid "CMFPlomino_label_DateTimeFormat"
-msgstr "Formát Data/času "
-
-#. Default: "Format example: %Y-%m-%d"
-#: PlominoDatabase.py
-msgid "CMFPlomino_help_DateTimeFormat"
-msgstr "Např.: %Y-%m-%d"
-
-#. Default: "Start page"
-#: PlominoDatabase.py
-msgid "CMFPlomino_label_StartPage"
-msgstr "Úvodní stránka"
-
-#. Default: "Element to display instead of the regular database menu."
-#: PlominoDatabase.py
-msgid "CMFPlomino_help_StartPage"
-msgstr "Zobraz vybraný dokument misto databázového menu."
-
-#. Default: "Id"
-#: PlominoAction.py
-msgid "CMFPlomino_label_action_id"
-msgstr "Id"
-
-#. Default: "The action id"
-#: PlominoAction.py
-msgid "CMFPlomino_help_action_id"
-msgstr "Id akce"
-
-#. Default: "How the action is shown"
-#: PlominoAction.py
-msgid "CMFPlomino_help_ActionDisplay"
-msgstr "Jak je akce zobrazena"
-
-#. Default: "Select the type for this action"
-#: PlominoAction.py
-msgid "CMFPlomino_help_ActionType"
-msgstr "Vyber typ pro tuto akci"
-
-#. Default: "Categorised on first column"
-#: PlominoView.py
-msgid "CMFPlomino_help_Categorized"
-msgstr "Kategorizuj na prvním sloupci"
-
-#: PlominoForm.py
-msgid "CMFPlomino_label_FormId"
-msgstr "Id"
-
-msgid "CMFPlomino_help_FormId"
-msgstr "Id formuláře"
-
-msgid "CMFPlomino_label_DocumentTitle"
-msgstr "Vzorec pro nadpis dokumentu"
-
-msgid "CMFPlomino_help_DocumentTitle"
-msgstr "Vytvoř nadpis dokumentu"
-
-msgid "CMFPlomino_label_SearchForm"
-msgstr "Formulář pro vyhledávání"
-
-msgid "CMFPlomino_help_SearchForm"
-msgstr "Formulář pro vyhledávání lze použít pouze pro vyhledávaní dokumentů, nedá se uložit."
-
-msgid "CMFPlomino_label_isPage"
-msgstr "Stránka"
-
-msgid "CMFPlomino_help_isPage"
-msgstr "Stránka se nedá uložit a nemá lištu akcí. Tuto stránku lze použít jako uvítací, pro vysvětlivky, reporty, navigaci atd."
-
-msgid "CMFPlomino_label_SearchView"
-msgstr "Pohled Výsledky vyhledávání"
-
-msgid "CMFPlomino_help_SearchView"
-msgstr "Pohled pro zobrazení výsledků vyhledávání."
-
-msgid "CMFPlomino_label_SearchFormula"
-msgstr "Vzorec pro vyhledávání"
-
-msgid "CMFPlomino_help_SearchFormula"
-msgstr "Pokud chcete použít defaultní ZCatalog vyhledávání nechte prázdné."
-
-msgid "CMFPlomino_label_onCreateDocument"
-msgstr "Při vytvoření dokumentu"
-
-msgid "CMFPlomino_help_onCreateDocument"
-msgstr "Akce, která se spustí při vytvoření dokumentu"
-
-msgid "CMFPlomino_label_onOpenDocument"
-msgstr "Při otevření dokumentu"
-
-msgid "CMFPlomino_help_onOpenDocument"
-msgstr "Akce, která se spustí při otevření dokumentu"
-
-msgid "CMFPlomino_label_onSaveDocument"
-msgstr "Při uložení dokumentu"
-
-msgid "CMFPlomino_help_onSaveDocument"
-msgstr "Akce, která se spustí při uložení dokumentu"
-
-msgid "CMFPlomino_label_onDeleteDocument"
-msgstr "Při smazání dokumentu"
-
-msgid "CMFPlomino_help_onDeleteDocument"
-msgstr "Akce, která se spustí před smazáním dokumentu"
-
-msgid "CMFPlomino_label_FormLayout"
-msgstr "Layout formuláře"
-
-msgid "CMFPlomino_help_FormLayout"
-msgstr "Layout formuláře. Text ve stylu 'Plominofield' koresponduje s obsahem pole"
-
-#: PlominoForm.py
-#: PlominoView.py
-msgid "CMFPlomino_label_ActionBarPosition"
-msgstr "Umístění lišty akcí"
-
+#. Default: "Select the position of the action bar"
 msgid "CMFPlomino_help_ActionBarPosition"
 msgstr "Vyberte umístění lišty akcí"
-
-msgid "CMFPlomino_label_HideInMenu"
-msgstr "Skryj v menu"
-
-msgid "CMFPlomino_help_HideInMenu"
-msgstr "Neobjeví se v hlavním menu databáze"
-
-#: PlominoField.py
-msgid "CMFPlomino_label_field_id"
-msgstr "Id"
-
-msgid "CMFPlomino_help_field_id"
-msgstr "Id pole"
-
-msgid "CMFPlomino_label_FieldReadTemplate"
-msgstr "Šablona pole pro čtení"
-
-msgid "CMFPlomino_help_FieldReadTemplate"
-msgstr "Šablona pro vlastní rendering v čtecím modu"
-
-msgid "CMFPlomino_label_FieldEditTemplate"
-msgstr "Šablona pole pro editaci"
-
-msgid "CMFPlomino_help_FieldEditTemplate"
-msgstr "Šablona pro vlastní rendering v editačním modu"
-
-msgid "CMFPlomino_label_FieldMandatory"
-msgstr "Povinné"
-
-msgid "CMFPlomino_help_FieldMandatory"
-msgstr "Je toto pole povinné? (Nevyplněné pole nebude povoleno)"
-
-msgid "CMFPlomino_label_FieldValidation"
-msgstr "Vzorec pro validaci"
-
-msgid "CMFPlomino_help_FieldValidation"
-msgstr "Vyhodnoť zadání validace"
-
-msgid "CMFPlomino_label_FieldIndex"
-msgstr "Přidej k indexu"
-
-msgid "CMFPlomino_help_FieldIndex"
-msgstr "Pole bude vyhledatelné"
-
-msgid "CMFPlomino_label_FieldType"
-msgstr "Druh pole"
-
-msgid "CMFPlomino_help_FieldType"
-msgstr "Druh tohoto pole"
-
-msgid "CMFPlomino_label_FieldMode"
-msgstr "Mód pole"
-
-msgid "CMFPlomino_help_FieldMode"
-msgstr "Jak bude vytvořen obsah"
-
-msgid "CMFPlomino_label_FieldFormula"
-msgstr "Vzorec"
-
-msgid "CMFPlomino_help_FieldFormula"
-msgstr "Jak bude vygenerovaný obsah pole"
-
-msgid "CMFPlomino_label_SelectionList"
-msgstr "Seznam"
-
-msgid "CMFPlomino_help_SelectionList"
-msgstr "Seznam hodnot, ze kterých lze vybírat, jedna na řádku. Použijte | pro oddělení označení a hodnoty."
-
-msgid "CMFPlomino_label_SelectionListFormula"
-msgstr "Vzorec pro seznam"
-
-msgid "CMFPlomino_help_SelectionListFormula"
-msgstr "Vzorec pro vygenerování jednotlivých položek seznamu"
-
-#: PlominoHidewhen.py
-msgid "CMFPlomino_label_hidewhen_id"
-msgstr "Id"
-
-msgid "CMFPlomino_help_hidewhen_id"
-msgstr "id Skryj-když"
-
-msgid "CMFPlomino_label_HidewhenFormula"
-msgstr "Vzorec"
-
-msgid "CMFPlomino_help_HidewhenFormula"
-msgstr "Pokud bude True, blok se skryje."
-
-#. Default: "Id"
-#: PlominoColumn.py
-msgid "CMFPlomino_label_column_id"
-msgstr "Id"
-
-#. Default: "Column id"
-#: PlominoColumn.py
-msgid "CMFPlomino_help_column_id"
-msgstr "Id sloupce"
-
-msgid "CMFPlomino_label_ColumnFormula"
-msgstr "Vzorec"
-
-msgid "CMFPlomino_help_ColumnFormula"
-msgstr "Python kód generující hodnotu sloupce."
-
-#. Default: "Position"
-#: PlominoColumn.py
-msgid "CMFPlomino_label_ColumnPosition"
-msgstr "Umístění"
-
-#. Default: "Position in view"
-#: PlominoColumn.py
-msgid "CMFPlomino_help_ColumnPosition"
-msgstr "Umístění v pohledu"
-
-#. Default: "Hidden column"
-#: PlominoColumn.py
-msgid "CMFPlomino_label_HiddenColumn"
-msgstr "Skrytý sloupec"
-
-#. Default: "Position in menu"
-msgid "CMFPlomino_help_Position"
-msgstr "Umístění v menu"
-
-#. Default: "The view selection formula is a line of Python code which should return True or False. The formula will be evaluated for each document in the database to decide if the document must be displayed in the view or not. plominoDocument is a reserved name in formulae, it returns the current Plomino document. Each document field value can be accessed directly as an attribute of the document: plominoDocument.<fieldname>"
-#: PlominoView.py
-msgid "CMFPlomino_help_SelectionFormula"
-msgstr "Vzorec pro výběr pohledu je řádek Python kodu, který by měl vrátit buď True nebo False. Vzorec vyhodnotí každý dokument v databázi, jestli tento dokument musí být zobrazen v pohledu nebo ne. plominoDocument je reverzní jméno ve vzorci, vrátí stávající Plomino document. Hodnota každého pole v dokumentu je přístupná přímo jako příznak dokumentu: plominoDocument.<fieldname>"
-
-#. Default: "Column used to sort the view"
-#: PlominoView.py
-msgid "CMFPlomino_help_SortColumn"
-msgstr "Sloupec pro seřazení položek v pohledu"
-
-#. Default: "Action display"
-#: PlominoAction.py
-msgid "CMFPlomino_label_ActionDisplay"
-msgstr "Zobrazení akce"
-
-#. Default: "Action type"
-#: PlominoAction.py
-msgid "CMFPlomino_label_ActionType"
-msgstr "Typ akce"
-
-#. Default: "Parameter or code"
-#: PlominoAction.py
-msgid "CMFPlomino_label_ActionContent"
-msgstr "Parametr nebo kód"
 
 #. Default: "Code or parameter depending on the action type"
 #: PlominoAction.py
 msgid "CMFPlomino_help_ActionContent"
 msgstr "Kód nebo parametr závisející na typu akce"
 
-#. Default: "Hide-when formula"
+#. Default: "How the action is shown"
 #: PlominoAction.py
-msgid "CMFPlomino_label_ActionHidewhen"
-msgstr "Vzorec Skryj-když"
+msgid "CMFPlomino_help_ActionDisplay"
+msgstr "Jak je akce zobrazena"
 
 #. Default: "Action is hidden if formula return True"
 #: PlominoAction.py
 msgid "CMFPlomino_help_ActionHidewhen"
 msgstr "Akce se skryje, pokud vzorec vrátí True"
 
+#. Default: "Display action in action bar (yes/no)"
+#: PlominoAction.py
+msgid "CMFPlomino_help_ActionInActionBar"
+msgstr "Zobraz akci v liště akcí (ano/ne)"
+
+#. Default: "Select the type for this action"
+#: PlominoAction.py
+msgid "CMFPlomino_help_ActionType"
+msgstr "Vyber typ pro tuto akci"
+
+#. Default: "Code to execute"
+#: PlominoAgent.py
+msgid "CMFPlomino_help_AgentContent"
+msgstr "Kód pro provedení příkazu"
+
+#. Default: "Run the agent using current user access rights, or using the developer access rights."
+msgid "CMFPlomino_help_AgentRunAs"
+msgstr "Spusť agenta pod přístupovými právy aktuálního uživatele nebo přístupovými právy vývojáře."
+
+#. Default: "Effective user used to run the agent"
+#: PlominoAgent.py
+msgid "CMFPlomino_help_AgentUser"
+msgstr "Uživatel určený pro spuštění agenta"
+
+#. Default: "Categorized on first column"
+#: PlominoView.py
+#, fuzzy
+msgid "CMFPlomino_help_Categorized"
+msgstr "Kategorizuj na prvním sloupci"
+
+#. Default: "Python code returning the column value."
+msgid "CMFPlomino_help_ColumnFormula"
+msgstr "Python kód generující hodnotu sloupce."
+
+#. Default: "Position in view"
+#: PlominoColumn.py
+msgid "CMFPlomino_help_ColumnPosition"
+msgstr "Umístění v pohledu"
+
+#. Default: "Format : crontab UNIX"
+#: PlominoAgent.py
+msgid "CMFPlomino_help_Cron"
+msgstr "Formát : crontab UNIX"
+
+#. Default: "Format example: %Y-%m-%d"
+#: PlominoDatabase.py
+msgid "CMFPlomino_help_DateTimeFormat"
+msgstr "Např.: %Y-%m-%d"
+
+#. Default: "If True, in ACL screen, users are entered using a free text field, if False, using a selection list. To be used when the amount of users is big."
+msgid "CMFPlomino_help_DoNotListUsers"
+msgstr "Pokud True, na ACL obrazovce se uživatelé vkládají prostřednictvím textového pole, pokud False, prostřednictvím výběru ze seznamu. Použijte při vysokém počtu uživatelů."
+
+#. Default: "If True, documents are not re-indexed automatically when views, columns or indexed fields are changed. Note: manual refresh db is then needed."
+msgid "CMFPlomino_help_DoNotReindex"
+msgstr "Pokud True, nejsou při změně pohledů, sloupců nebo indexovaných polí dokumenty automaticky reindexovány. Poznámka: je potřeba db manuálně obnovit"
+
+#. Default: "Compute the document id at creation. (Undergoes normalization.)"
+msgid "CMFPlomino_help_DocumentId"
+msgstr "Vygeneruj id dokumentu při jeho vytvoření. (podléhá normalizaci.)"
+
+#. Default: "Compute the document title"
+msgid "CMFPlomino_help_DocumentTitle"
+msgstr "Vytvoř nadpis dokumentu"
+
+#. Default: "Change these options to customize the dynamic table."
+msgid "CMFPlomino_help_DynamicTableParameters"
+msgstr "Pro přizpůsobení dynamické tabulky změň tyto možnosti."
+
+#. Default: "Custom rendering template in edit mode"
+msgid "CMFPlomino_help_FieldEditTemplate"
+msgstr "Šablona pro vlastní rendering v editačním modu"
+
+#. Default: "How to calculate field content"
+msgid "CMFPlomino_help_FieldFormula"
+msgstr "Jak bude vygenerovaný obsah pole"
+
+#. Default: "The field will be searchable"
+msgid "CMFPlomino_help_FieldIndex"
+msgstr "Pole bude vyhledatelné"
+
+#. Default: "Is this field mandatory? (empty value will not be allowed)"
+msgid "CMFPlomino_help_FieldMandatory"
+msgstr "Je toto pole povinné? (Nevyplněné pole nebude povoleno)"
+
+#. Default: "How content will be generated"
+msgid "CMFPlomino_help_FieldMode"
+msgstr "Jak bude vytvořen obsah"
+
+#. Default: "Custom rendering template in read mode"
+msgid "CMFPlomino_help_FieldReadTemplate"
+msgstr "Šablona pro vlastní rendering v čtecím modu"
+
+#. Default: "The kind of this field"
+msgid "CMFPlomino_help_FieldType"
+msgstr "Druh tohoto pole"
+
+#. Default: "Evaluate the input validation"
+msgid "CMFPlomino_help_FieldValidation"
+msgstr "Vyhodnoť zadání validace"
+
+#. Default: "Documents open from the view will used the following formula (they use their own form if empty)"
+#: PlominoView.py
+msgid "CMFPlomino_help_FormFormula"
+msgstr "Documenty otevřené z pohledu použijí následující vzorec (pokud se ponechá prázdné dokumenty použijí svůj vlastní formulář)"
+
+#. Default: "The form id"
+msgid "CMFPlomino_help_FormId"
+msgstr "Id formuláře"
+
+#. Default: "The form layout. text with 'Plominofield' style correspond to the contained field elements"
+msgid "CMFPlomino_help_FormLayout"
+msgstr "Layout formuláře. Text ve stylu 'Plominofield' koresponduje s obsahem pole"
+
+#. Default: "If enabled, documents are full-text indexed into the Plomino index."
+msgid "CMFPlomino_help_FulltextIndex"
+msgstr "Pokud zaškrtnuto, dokumenty se full-textově indexují do Plomino indexu."
+
+#. Default: "Edit, Save, Delete, Close actions will not be displayed in the action bar"
+msgid "CMFPlomino_help_HideDefaultActions"
+msgstr "Akce Editovat, Uložit, Smazat a Zavřít se neobjeví v liště akcí"
+
+#. Default: "It will not appear in the database main menu"
+msgid "CMFPlomino_help_HideInMenu"
+msgstr "Neobjeví se v hlavním menu databáze"
+
+#. Default: "Delete, Close actions will not be displayed in the action bar"
+msgid "CMFPlomino_help_HideViewDefaultActions"
+msgstr "Akce Smazat a Zavřít se neobjeví v liště akcí"
+
+#. Default: "If returning True, the block will be hidden."
+msgid "CMFPlomino_help_HidewhenFormula"
+msgstr "Pokud bude True, blok se skryje."
+
+#. Default: "If enabled, files attached in File Attachments fields will be indexed. It might increase the index size."
+#: PlominoDatabase.py
+msgid "CMFPlomino_help_IndexAttachments"
+msgstr "Indexuj soubory vložené do polí typu Soubor. Může se zvětšit velikost indexu."
+
+#. Default: "If enabled, documents are searchable in Plone search."
+msgid "CMFPlomino_help_IndexInPortal"
+msgstr "Pokud zaškrtnuto, dokumenty je možné vyhledat ve vyhledávání v Plone."
+
+#. Default: "Position in menu"
+msgid "CMFPlomino_help_Position"
+msgstr "Umístění v menu"
+
+#. Default: "Reverse the sort ordering"
+#: PlominoView.py
+msgid "CMFPlomino_help_ReverseSorting"
+msgstr "Obrať seřazení"
+
+#. Default: "Scheduled agent"
+#: PlominoAgent.py
+msgid "CMFPlomino_help_Scheduled"
+msgstr "Naplánovaný agent"
+
+#. Default: "A search form is only used to search documents, it cannot be saved."
+msgid "CMFPlomino_help_SearchForm"
+msgstr "Formulář pro vyhledávání lze použít pouze pro vyhledávaní dokumentů, nedá se uložit."
+
+#. Default: "Leave blank to use default ZCatalog search"
+msgid "CMFPlomino_help_SearchFormula"
+msgstr "Pokud chcete použít defaultní ZCatalog vyhledávání nechte prázdné."
+
+#. Default: "View used to display the search results"
+msgid "CMFPlomino_help_SearchView"
+msgstr "Pohled pro zobrazení výsledků vyhledávání."
+
+#. Default: "The view selection formula is a line of Python code which should return True or False. The formula will be evaluated for each document in the database to decide if the document must be displayed in the view or not. plominoDocument is a reserved name in formulae, it returns the current Plomino document. Each document field value can be accessed directly as an attribute of the document: plominoDocument.<fieldname>"
+#: PlominoView.py
+msgid "CMFPlomino_help_SelectionFormula"
+msgstr "Vzorec pro výběr pohledu je řádek Python kodu, který by měl vrátit buď True nebo False. Vzorec vyhodnotí každý dokument v databázi, jestli tento dokument musí být zobrazen v pohledu nebo ne. plominoDocument je reverzní jméno ve vzorci, vrátí stávající Plomino document. Hodnota každého pole v dokumentu je přístupná přímo jako příznak dokumentu: plominoDocument.<fieldname>"
+
+#. Default: "List of selectable values, one for line. Use | to separate label and value."
+msgid "CMFPlomino_help_SelectionList"
+msgstr "Seznam hodnot, ze kterých lze vybírat, jedna na řádku. Použijte | pro oddělení označení a hodnoty."
+
+#. Default: "Formula to compute the selection list elements"
+msgid "CMFPlomino_help_SelectionListFormula"
+msgstr "Vzorec pro vygenerování jednotlivých položek seznamu"
+
+#. Default: "If enabled, count the number of documents for each view. Display might be slower."
+#: PlominoDatabase.py
+msgid "CMFPlomino_help_ShowDocumentsNumbers"
+msgstr "Spočítej dokumenty v každém pohledu. Může se tak zpomalit zobrazení."
+
+#. Default: "Column used to sort the view"
+#: PlominoView.py
+msgid "CMFPlomino_help_SortColumn"
+msgstr "Sloupec pro seřazení položek v pohledu"
+
+#. Default: "Element to display instead of the regular database menu."
+#: PlominoDatabase.py
+msgid "CMFPlomino_help_StartPage"
+msgstr "Zobraz vybraný dokument misto databázového menu."
+
+#. Default: "File System Storage must be installed on the portal"
+#: PlominoDatabase.py
+msgid "CMFPlomino_help_StorageAttachments"
+msgstr "Na portalu musí být nainstalovaný File System Storage."
+
+#. Default: "Describe how to use the database"
+#: PlominoDatabase.py
+msgid "CMFPlomino_help_UsingDescription"
+msgstr "Popište jak tuto databázi používat"
+
+#. Default: "Leave blank to use default"
+msgid "CMFPlomino_help_ViewTemplate"
+msgstr "Pokud chcete použít default ponechte prázdné"
+
+#. Default: "Rendering mode"
+msgid "CMFPlomino_help_ViewWidget"
+msgstr "Rendering mód"
+
+#. Default: "The action id"
+#: PlominoAction.py
+msgid "CMFPlomino_help_action_id"
+msgstr "Id akce"
+
+#. Default: "The agent id"
+#: PlominoAgent.py
+msgid "CMFPlomino_help_agent_id"
+msgstr "id Agenta"
+
+#. Default: "Column id"
+#: PlominoColumn.py
+msgid "CMFPlomino_help_column_id"
+msgstr "Id sloupce"
+
+#. Default: "If enabled, script and formula errors are logged."
+#: PlominoDatabase.py
+msgid "CMFPlomino_help_debugMode"
+msgstr "Loguj chyby skriptů a vzorců."
+
+#. Default: "The field id"
+msgid "CMFPlomino_help_field_id"
+msgstr "Id pole"
+
+#. Default: "The hide-when id"
+msgid "CMFPlomino_help_hidewhen_id"
+msgstr "id Skryj-když"
+
+#. Default: "A page cannot be saved and does not provide any action bar. It can be useful to build a welcome page, explanations, reports, navigation, etc."
+msgid "CMFPlomino_help_isPage"
+msgstr "Stránka se nedá uložit a nemá lištu akcí. Tuto stránku lze použít jako uvítací, pro vysvětlivky, reporty, navigaci atd."
+
+#. Default: "Action to take when the document is created"
+msgid "CMFPlomino_help_onCreateDocument"
+msgstr "Akce, která se spustí při vytvoření dokumentu"
+
+#. Default: "Action to take before deleting the document"
+msgid "CMFPlomino_help_onDeleteDocument"
+msgstr "Akce, která se spustí před smazáním dokumentu"
+
+#. Default: "Action to take when the document is opened"
+msgid "CMFPlomino_help_onOpenDocument"
+msgstr "Akce, která se spustí při otevření dokumentu"
+
+#. Default: "Action to take when the view is opened. If a string is returned, it is considered as an error message, and the opening is not allowed."
+msgid "CMFPlomino_help_onOpenView"
+msgstr "Akce, která se spustí při otevření pohledu. Pokud se vrátí string, je považován za chybovou hlášku a otevření pohledu není povoleno."
+
+#. Default: "Action to take when saving the document"
+msgid "CMFPlomino_help_onSaveDocument"
+msgstr "Akce, která se spustí při uložení dokumentu"
+
+#. Default: "If changed after creation, database refresh is needed"
+msgid "CMFPlomino_help_view_id"
+msgstr "Pokud se změní po vytvoření, je nutné obnovit databázi"
+
+#. Default: "About this database"
+#: PlominoDatabase.py
+msgid "CMFPlomino_label_AboutDescription"
+msgstr "O této databázi"
+
+#. Default: "Position of the action bar"
+#: PlominoForm.py
+#: PlominoView.py
+msgid "CMFPlomino_label_ActionBarPosition"
+msgstr "Umístění lišty akcí"
+
+#. Default: "Parameter or code"
+#: PlominoAction.py
+msgid "CMFPlomino_label_ActionContent"
+msgstr "Parametr nebo kód"
+
+#. Default: "Action display"
+#: PlominoAction.py
+msgid "CMFPlomino_label_ActionDisplay"
+msgstr "Zobrazení akce"
+
+#. Default: "Hide-when formula"
+#: PlominoAction.py
+msgid "CMFPlomino_label_ActionHidewhen"
+msgstr "Vzorec Skryj-když"
+
 #. Default: "Display action in action bar"
 #: PlominoAction.py
 msgid "CMFPlomino_label_ActionInActionBar"
 msgstr "Zobraz akci v liště akcí"
 
-#. Default: "Display action in action bar (yes/no)"
+#. Default: "Action type"
 #: PlominoAction.py
-msgid "CMFPlomino_help_ActionInActionBar"
-msgstr "Zobraz akci v liště akcí (ano/ne)"
+msgid "CMFPlomino_label_ActionType"
+msgstr "Typ akce"
+
+#. Default: "Code"
+#: PlominoAgent.py
+msgid "CMFPlomino_label_AgentContent"
+msgstr "Kód"
+
+#. Default: "Run as"
+msgid "CMFPlomino_label_AgentRunAs"
+msgstr "Spusť jako"
+
+#. Default: "Agent user"
+#: PlominoAgent.py
+msgid "CMFPlomino_label_AgentUser"
+msgstr "Agent uživatel"
 
 #. Default: "Categorized"
 #: PlominoView.py
 msgid "CMFPlomino_label_Categorized"
 msgstr "Kategorizováno"
 
+#. Default: "Formula"
+msgid "CMFPlomino_label_ColumnFormula"
+msgstr "Vzorec"
+
+#. Default: "Position"
+#: PlominoColumn.py
+msgid "CMFPlomino_label_ColumnPosition"
+msgstr "Umístění"
+
+#. Default: "Cron"
+#: PlominoAgent.py
+msgid "CMFPlomino_label_Cron"
+msgstr "Cron"
+
+#. Default: "Date/time format"
+#: PlominoDatabase.py
+msgid "CMFPlomino_label_DateTimeFormat"
+msgstr "Formát Data/času "
+
 #. Default: "Description"
 #: PlominoAction.py
 msgid "CMFPlomino_label_Description"
 msgstr "Popis"
+
+#. Default: "Do not list portal users"
+msgid "CMFPlomino_label_DoNotListUsers"
+msgstr "Nevypisuj uživatele portálu"
+
+#. Default: "Do not re-index documents on design changes"
+msgid "CMFPlomino_label_DoNotReindex"
+msgstr "Při změně designu neprováděj reindexaci dokumentů"
+
+#. Default: "Document id formula"
+msgid "CMFPlomino_label_DocumentId"
+msgstr "Vzorec pro id dokumentu"
+
+#. Default: "Document title formula"
+msgid "CMFPlomino_label_DocumentTitle"
+msgstr "Vzorec pro nadpis dokumentu"
+
+#. Default: "Dynamic Table Parameters"
+msgid "CMFPlomino_label_DynamicTableParameters"
+msgstr "Parametery Dynamické Tabulky"
+
+#. Default: "Field edit template"
+msgid "CMFPlomino_label_FieldEditTemplate"
+msgstr "Šablona pole pro editaci"
+
+#. Default: "Formula"
+msgid "CMFPlomino_label_FieldFormula"
+msgstr "Vzorec"
+
+#. Default: "Add to index"
+msgid "CMFPlomino_label_FieldIndex"
+msgstr "Přidej k indexu"
+
+#. Default: "Mandatory"
+msgid "CMFPlomino_label_FieldMandatory"
+msgstr "Povinné"
+
+#. Default: "Field mode"
+msgid "CMFPlomino_label_FieldMode"
+msgstr "Mód pole"
+
+#. Default: "Field read template"
+msgid "CMFPlomino_label_FieldReadTemplate"
+msgstr "Šablona pole pro čtení"
+
+#. Default: "Field type"
+msgid "CMFPlomino_label_FieldType"
+msgstr "Druh pole"
+
+#. Default: "Validation formula"
+msgid "CMFPlomino_label_FieldValidation"
+msgstr "Vzorec pro validaci"
+
+#. Default: "Form Formula"
+#: PlominoView.py
+msgid "CMFPlomino_label_FormFormula"
+msgstr "Vzorec pro formulář"
+
+#. Default: "Id"
+#: PlominoForm.py
+msgid "CMFPlomino_label_FormId"
+msgstr "Id"
+
+#. Default: "Form layout"
+msgid "CMFPlomino_label_FormLayout"
+msgstr "Layout formuláře"
+
+#. Default: "Local full-text index"
+msgid "CMFPlomino_label_FulltextIndex"
+msgstr "Místní full-text index"
+
+#. Default: "Hidden column"
+#: PlominoColumn.py
+msgid "CMFPlomino_label_HiddenColumn"
+msgstr "Skrytý sloupec"
+
+#. Default: "Hide default actions"
+msgid "CMFPlomino_label_HideDefaultActions"
+msgstr "Skryj defaultní akce"
+
+#. Default: "Hide in menu"
+msgid "CMFPlomino_label_HideInMenu"
+msgstr "Skryj v menu"
+
+#. Default: "Hide default actions"
+msgid "CMFPlomino_label_HideViewDefaultActions"
+msgstr "Skryj defaultní akce"
+
+#. Default: "Formula"
+msgid "CMFPlomino_label_HidewhenFormula"
+msgstr "Vzorec"
+
+#. Default: "Index file attachments"
+#: PlominoDatabase.py
+msgid "CMFPlomino_label_IndexAttachments"
+msgstr "Indexuj připojené soubory"
+
+#. Default: "Index documents in Plone portal"
+msgid "CMFPlomino_label_IndexInPortal"
+msgstr "Indexuj dokumenty na Plone portálu"
 
 #. Default: "Label"
 #: PlominoAction.py
@@ -385,423 +567,543 @@ msgstr "Označení"
 msgid "CMFPlomino_label_Position"
 msgstr "Umístění"
 
-#: PlominoView.py
-msgid "CMFPlomino_label_view_id"
-msgstr "Id"
-
-msgid "CMFPlomino_help_view_id"
-msgstr "Pokud se změní po vytvoření, je nutné obnovit databázi"
-
-msgid "CMFPlomino_label_ViewTemplate"
-msgstr "Zobraz vzor"
-
-msgid "CMFPlomino_help_ViewTemplate"
-msgstr "Pokud chcete použít default ponechte prázdné"
-
-msgid "CMFPlomino_label_SelectionFormula"
-msgstr "Vzorec pro výběru"
-
-#. Default: "Sort column"
-#: PlominoView.py
-msgid "CMFPlomino_label_SortColumn"
-msgstr "Seřaď sloupec"
-
-#. Default: "Form Formula"
-#: PlominoView.py
-msgid "CMFPlomino_label_FormFormula"
-msgstr "Vzorec pro formulář"
-
-#. Default: "Documents open from the view will used the following formula (they use their own form if empty)"
-#: PlominoView.py
-msgid "CMFPlomino_help_FormFormula"
-msgstr "Documenty otevřené z pohledu použijí následující vzorec (pokud se ponechá prázdné dokumenty použijí svůj vlastní formulář)"
-
 #. Default: "Reverse Sorting"
 #: PlominoView.py
 msgid "CMFPlomino_label_ReverseSorting"
 msgstr "Seřaď v obráceném pořadí"
-
-#. Default: "Reverse the sort ordering"
-#: PlominoView.py
-msgid "CMFPlomino_help_ReverseSorting"
-msgstr "Obrať seřazení"
-
-#Action bar buttons
-msgid "Edit"
-msgstr "Editovat"
-
-msgid "Close"
-msgstr "Zavřít"
-
-msgid "Delete"
-msgstr "Smazat"
-
-msgid "Save"
-msgstr "Uložit"
-
-msgid "Attach file"
-msgstr "Připoj soubor"
-
-msgid "attachments_label"
-msgstr "Přílohy:"
-
-# View labels
-msgid "go_link"
-msgstr "Přejít na"
-
-# OpenDatabase
-msgid "Browse"
-msgstr "Prohledávat"
-
-msgid "Search"
-msgstr "Vyhledat"
-
-msgid "Add new content"
-msgstr "Přidej nový"
-
-# ErrorsMessages
-msgid "Validation failed"
-msgstr "Validace selhala"
-
-msgid "Go back"
-msgstr "Zpět"
-
-msgid "Continue"
-msgstr "Pokračuj"
-
-#Gantt view labels
-msgid "From"
-msgstr "Od"
-
-msgid "To"
-msgstr "Do"
-
-msgid "Refresh"
-msgstr "Obnovit"
-
-#. Default: "Id"
-#: PlominoAgent.py
-msgid "CMFPlomino_label_agent_id"
-msgstr "Id"
-
-#. Default: "The agent id"
-#: PlominoAgent.py
-msgid "CMFPlomino_help_agent_id"
-msgstr "id Agenta"
-
-#. Default: "Code"
-#: PlominoAgent.py
-msgid "CMFPlomino_label_AgentContent"
-msgstr "Kód"
-
-#. Default: "Code to execute"
-#: PlominoAgent.py
-msgid "CMFPlomino_help_AgentContent"
-msgstr "Kód pro provedení příkazu"
 
 #. Default: "Scheduled"
 #: PlominoAgent.py
 msgid "CMFPlomino_label_Scheduled"
 msgstr "Naplánováno"
 
-#. Default: "Scheduled agent"
-#: PlominoAgent.py
-msgid "CMFPlomino_help_Scheduled"
-msgstr "Naplánovaný agent"
-
-
-#. Default: "Agent user"
-#: PlominoAgent.py
-msgid "CMFPlomino_label_AgentUser"
-msgstr "Agent uživatel"
-
-#. Default: "Effective user used to run the agent"
-#: PlominoAgent.py
-msgid "CMFPlomino_help_AgentUser"
-msgstr "Uživatel určený pro spuštění agenta"
-
-#. Default: "Cron"
-#: PlominoAgent.py
-msgid "CMFPlomino_label_Cron"
-msgstr "Cron"
-
-#. Default: "Format : crontab UNIX"
-#: PlominoAgent.py
-msgid "CMFPlomino_help_Cron"
-msgstr "Formát : crontab UNIX"
-
-# Error messages
-msgid "is mandatory"
-msgstr "je povinné"
-
-msgid " must be an integer (submitted value was: "
-msgstr " musí být celé číslo (zadaná hodnota byla: "
-
-msgid " must be a float (submitted value was: "
-msgstr " musí být plovoucí (zadaná hodnota byla: "
-
-# Not categorized
-msgid "Not categorized"
-msgstr "Není kategorizováno"
-
-# Please log in
-msgid "Please log in"
-msgstr "Prosím zadejte své uživatelské jméno a heslo"
-
-# Do you really want to delete those documents
-msgid "Do you really want to delete those documents"
-msgstr "Opravdu chcete smazat tyto dokumenty"
-
-# Do you really want to delete this document
-msgid "Do you really want to delete this document"
-msgstr "Opravdu chcete smazat tento dokument"
-
-# Documents x to y of z
-msgid "documents_count"
-msgstr "Document(y) ${start} od ${end} z ${total}"
-
-#. Default: "View as static table"
-#: OpenView.pt
-msgid "plominoview_viewstatictable"
-msgstr "Zobraz jako statickou tabulku"
-
-# Design page and Design portlet
-msgid "Database"
-msgstr "Databáze"
-
-msgid "Design"
-msgstr "Design"
-
-msgid "Parameters"
-msgstr "Parametry"
-
-msgid "Access control"
-msgstr "Správa přístupových práv"
-
-msgid "Add new..."
-msgstr "Přidej nový..."
-
-msgid "Form"
-msgstr "Formulář"
-
-msgid "View"
-msgstr "Pohled"
-
-msgid "Agent"
-msgstr "Agent"
-
-msgid "Field"
-msgstr "Pole"
-
-msgid "Action"
-msgstr "Akce"
-
-msgid "Hide when"
-msgstr "Skryj když"
-
-msgid "or"
-msgstr "Nebo"
-
-msgid "Generate view"
-msgstr "Generuj pohled"
-
-msgid "Column"
-msgstr "Sloupec"
-
-msgid "Status"
-msgstr "Status"
-
-msgid "Ready"
-msgstr "Připraven"
-
-msgid "Plomino database version"
-msgstr "Verze Plomino databáze"
-
-msgid "Forms"
-msgstr "Formuláře"
-
-msgid "Fields"
-msgstr "Pole"
-
-msgid "Actions"
-msgstr "Akce"
-
-msgid "Views"
-msgstr "Pohledy"
-
-msgid "Columns"
-msgstr "Sloupce"
-
-msgid "Agents"
-msgstr "Agenti"
-
-msgid "Others"
-msgstr "Ostatní"
-
-msgid "Resources folder (ZMI)"
-msgstr "Zdrojový adresář (ZMI)"
-
-msgid "Index (ZMI)"
-msgstr "Index (ZMI)"
-
-msgid "Documents folder"
-msgstr "Adresář pro dokumenty"
-
-msgid "Refresh database"
-msgstr "Obnovit databázi"
-
-msgid "(clean scripts, re-index documents, and check Plomino version migration)"
-msgstr "(vyčisti skripty, reindexuj dokumenty, a zkontroluj migraci verze Plomino)"
-
-msgid "Re-compute documents"
-msgstr "Znovu vygeneruj dokumenty"
-
-msgid "(save all documents with their current form: computed fields and computed on save fields will be re-computed and stored, and documents are re-indexed)"
-msgstr "(ulož všechny dokumenty s jejich aktuálním formulářem: vygenerovaná pole a pole vygenerovaná při uložení budou znovu vygenerována a uložena a dokumenty budou reindexovány)"
-
-msgid "Re-index documents in portal catalog"
-msgstr "Reindexuj dokumenty v portálovém katalogu"
-
-msgid "(if the database allows portal catalog indexing, documents are re-indexed, else they are removed from the catalog)"
-msgstr "(pokud databáze umožňuje indexování portálového katalogu, dokumenty budou reindexovány, pokud ne budou z katalogu odstraněny)"
-
-msgid "Import/Export design"
-msgstr "Importovat/Exportovat design"
-
-msgid "Import"
-msgstr "Importovat"
-
-msgid "Export"
-msgstr "Exportovat"
-
-msgid "From file"
-msgstr "Ze souboru"
-
-msgid "Plomino XML file"
-msgstr "soubor Plomino XML"
-
-msgid "From server folder"
-msgstr "Z adresáře na serveru"
-
-msgid "Path"
-msgstr "Cesta"
-
-msgid "From remote server"
-msgstr "Ze vzdáleného serveru"
-
-msgid "Source URL"
-msgstr "Zdrojová URL"
-
-msgid "Username"
-msgstr "Uživatelské jméno"
-
-msgid "Password"
-msgstr "Heslo"
-
-msgid "Entire design"
-msgstr "Celý design"
-
-msgid "or elements"
-msgstr "nebo jednotlivé prvky"
-
-msgid "Do not refresh database after design update:"
-msgstr "Neobnovuj databázi po updatu designu:"
-
-msgid "Replace mode:"
-msgstr "Mód nahradit:"
-
-msgid "To XML file"
-msgstr "Do XML souboru"
-
-msgid "To server folder"
-msgstr "Do adresáře na serveru"
-
-msgid "To remote server"
-msgstr "Na vzdálený server"
-
-msgid "Target URL"
-msgstr "Cílová URL"
-
-msgid "Include db settings"
-msgstr "Zahrň db nastavení"
-
-msgid "CMFPlomino_label_DocumentId"
-msgstr "Vzorec pro id dokumentu"
-
-msgid "CMFPlomino_help_DocumentId"
-msgstr "Vygeneruj id dokumentu při jeho vytvoření. (podléhá normalizaci.)"
-
-msgid "CMFPlomino_label_HideDefaultActions"
-msgstr "Skryj defaultní akce"
-
-msgid "CMFPlomino_help_HideDefaultActions"
-msgstr "Akce Editovat, Uložit, Smazat a Zavřít se neobjeví v liště akcí"
-
-msgid "CMFPlomino_label_HideViewDefaultActions"
-msgstr "Skryj defaultní akce"
-
-msgid "CMFPlomino_help_HideViewDefaultActions"
-msgstr "Akce Smazat a Zavřít se neobjeví v liště akcí"
-
-msgid "CMFPlomino_label_FulltextIndex"
-msgstr "Místní full-text index"
-
-msgid "CMFPlomino_help_FulltextIndex"
-msgstr "Pokud zaškrtnuto, dokumenty se full-textově indexují do Plomino indexu."
-
-msgid "CMFPlomino_label_IndexInPortal"
-msgstr "Indexuj dokumenty na Plone portálu"
-
-msgid "CMFPlomino_help_IndexInPortal"
-msgstr "Pokud zaškrtnuto, dokumenty je možné vyhledat ve vyhledávání v Plone."
-
-msgid "CMFPlomino_label_DoNotListUsers"
-msgstr "Nevypisuj uživatele portálu"
-
-msgid "CMFPlomino_help_DoNotListUsers"
-msgstr "Pokud True, na ACL obrazovce se uživatelé vkládají prostřednictvím textového pole, pokud False, prostřednictvím výběru ze seznamu. Použijte při vysokém počtu uživatelů."
-
-msgid "CMFPlomino_label_DoNotReindex"
-msgstr "Při změně designu neprováděj reindexaci dokumentů"
-
-msgid "CMFPlomino_help_DoNotReindex"
-msgstr "Pokud True, nejsou při změně pohledů, sloupců nebo indexovaných polí dokumenty automaticky reindexovány. Poznámka: je potřeba db manuálně obnovit"
-
+#. Default: "Search form"
+msgid "CMFPlomino_label_SearchForm"
+msgstr "Formulář pro vyhledávání"
+
+#. Default: "Search formula"
+msgid "CMFPlomino_label_SearchFormula"
+msgstr "Vzorec pro vyhledávání"
+
+#. Default: "Search view"
+msgid "CMFPlomino_label_SearchView"
+msgstr "Pohled Výsledky vyhledávání"
+
+#. Default: "Selection formula"
+msgid "CMFPlomino_label_SelectionFormula"
+msgstr "Vzorec pro výběru"
+
+#. Default: "Selection list"
+msgid "CMFPlomino_label_SelectionList"
+msgstr "Seznam"
+
+#. Default: "Selection list formula"
+msgid "CMFPlomino_label_SelectionListFormula"
+msgstr "Vzorec pro seznam"
+
+#. Default: "Count the number of documents"
+#: PlominoDatabase.py
+msgid "CMFPlomino_label_ShowDocumentsNumbers"
+msgstr "Spočítej dokumenty"
+
+#. Default: "Sort column"
+#: PlominoView.py
+msgid "CMFPlomino_label_SortColumn"
+msgstr "Seřaď sloupec"
+
+#. Default: "Start page"
+#: PlominoDatabase.py
+msgid "CMFPlomino_label_StartPage"
+msgstr "Úvodní stránka"
+
+#. Default: "Use File System Storage for attachments"
+#: PlominoDatabase.py
+msgid "CMFPlomino_label_StorageAttachments"
+msgstr "Použij File System Storage pro připojené soubory"
+
+#. Default: "Using this database"
+#: PlominoDatabase.py
+msgid "CMFPlomino_label_UsingDescription"
+msgstr "Použití této databáze"
+
+#. Default: "View template"
+msgid "CMFPlomino_label_ViewTemplate"
+msgstr "Zobraz vzor"
+
+#. Default: "Widget"
 msgid "CMFPlomino_label_ViewWidget"
 msgstr "Widget"
 
-msgid "CMFPlomino_help_ViewWidget"
-msgstr "Rendering mód"
+#. Default: "Id"
+#: PlominoAction.py
+msgid "CMFPlomino_label_action_id"
+msgstr "Id"
 
-msgid "CMFPlomino_label_DynamicTableParameters"
-msgstr "Parametery Dynamické Tabulky"
+#. Default: "Id"
+#: PlominoAgent.py
+msgid "CMFPlomino_label_agent_id"
+msgstr "Id"
 
-msgid "CMFPlomino_help_DynamicTableParameters"
-msgstr "Pro přizpůsobení dynamické tabulky změň tyto možnosti."
+#. Default: "Id"
+#: PlominoColumn.py
+msgid "CMFPlomino_label_column_id"
+msgstr "Id"
 
-msgid "datagrid_add_button_label"
-msgstr "Přidat"
+#. Default: "Debug mode"
+#: PlominoDatabase.py
+msgid "CMFPlomino_label_debugMode"
+msgstr "Debug mód"
 
-msgid "datagrid_delete_button_label"
-msgstr "Smazat"
+#. Default: "Id"
+#: PlominoField.py
+msgid "CMFPlomino_label_field_id"
+msgstr "Id"
 
-msgid "datagrid_edit_button_label"
-msgstr "Editovat"
+#. Default: "Id"
+#: PlominoHidewhen.py
+msgid "CMFPlomino_label_hidewhen_id"
+msgstr "Id"
 
-msgid "&lt;&lt; Previous"
-msgstr "&lt;&lt; Předchozí"
+#. Default: "Page"
+msgid "CMFPlomino_label_isPage"
+msgstr "Stránka"
 
-msgid "Next &gt;&gt;"
-msgstr "Následující &gt;&gt;"
+#. Default: "On create document"
+msgid "CMFPlomino_label_onCreateDocument"
+msgstr "Při vytvoření dokumentu"
 
-msgid "CMFPlomino_label_AgentRunAs"
-msgstr "Spusť jako"
+#. Default: "On delete document"
+msgid "CMFPlomino_label_onDeleteDocument"
+msgstr "Při smazání dokumentu"
 
-msgid "CMFPlomino_help_AgentRunAs"
-msgstr "Spusť agenta pod přístupovými právy aktuálního uživatele nebo přístupovými právy vývojáře."
+#. Default: "On open document"
+msgid "CMFPlomino_label_onOpenDocument"
+msgstr "Při otevření dokumentu"
 
+#. Default: "On open view"
 msgid "CMFPlomino_label_onOpenView"
 msgstr "Při otevření pohledu"
 
-msgid "CMFPlomino_help_onOpenView"
-msgstr "Akce, která se spustí při otevření pohledu. Pokud se vrátí string, je považován za chybovou hlášku a otevření pohledu není povoleno."
+#. Default: "On save document"
+msgid "CMFPlomino_label_onSaveDocument"
+msgstr "Při uložení dokumentu"
+
+#. Default: "Id"
+#: PlominoView.py
+msgid "CMFPlomino_label_view_id"
+msgstr "Id"
+
+#. Default: "Cron"
+#: ../skins/cmfplomino_templates/DatabaseReplication.pt:48
+msgid "CMFPlomino_replication_cron"
+msgstr ""
+
+#. Default: "Name"
+#: ../skins/cmfplomino_templates/DatabaseReplication.pt:40
+msgid "CMFPlomino_replication_name"
+msgstr ""
+
+#. Default: "Password"
+#: ../skins/cmfplomino_templates/DatabaseReplication.pt:44
+msgid "CMFPlomino_replication_password"
+msgstr ""
+
+#. Default: "Remote URL"
+#: ../skins/cmfplomino_templates/DatabaseReplication.pt:42
+msgid "CMFPlomino_replication_remoteUrl"
+msgstr ""
+
+#. Default: "Replication type"
+#: ../skins/cmfplomino_templates/DatabaseReplication.pt:45
+msgid "CMFPlomino_replication_repType"
+msgstr ""
+
+#. Default: "Scheduled"
+#: ../skins/cmfplomino_templates/DatabaseReplication.pt:41
+msgid "CMFPlomino_replication_scheduled"
+msgstr ""
+
+#. Default: "Selection"
+#: ../skins/cmfplomino_templates/DatabaseReplication.pt:39
+msgid "CMFPlomino_replication_selection"
+msgstr ""
+
+#. Default: "User"
+#: ../skins/cmfplomino_templates/DatabaseReplication.pt:43
+msgid "CMFPlomino_replication_user"
+msgstr ""
+
+#. Default: "Restrict to view"
+#: ../skins/cmfplomino_templates/DatabaseReplication.pt:47
+msgid "CMFPlomino_replication_viewrestriction"
+msgstr ""
+
+#. Default: "Conflict resolution"
+#: ../skins/cmfplomino_templates/DatabaseReplication.pt:46
+msgid "CMFPlomino_replication_whoWins"
+msgstr ""
+
+#: ../browser/design_portlet.pt:119
+#: ../skins/cmfplomino_templates/DatabaseDesign.pt:75
+msgid "Caches"
+msgstr ""
+
+#: ../skins/cmfplomino_templates/ActionBar.pt:177
+msgid "Close"
+msgstr "Zavřít"
+
+#: ../browser/design_portlet.pt:52
+msgid "Column"
+msgstr "Sloupec"
+
+#: ../browser/design_portlet.pt:149
+#: ../skins/cmfplomino_templates/DatabaseDesign.pt:105
+msgid "Columns"
+msgstr "Sloupce"
+
+#: ../skins/cmfplomino_templates/DisplayMessage.pt:13
+msgid "Continue"
+msgstr "Pokračuj"
+
+# Design page and Design portlet
+#: ../browser/design_portlet.pt:10
+msgid "Database"
+msgstr "Databáze"
+
+#: ../browser/portlet.py:81
+msgid "Database path"
+msgstr ""
+
+#: ../skins/cmfplomino_templates/ActionBar.pt:130
+msgid "Delete"
+msgstr "Smazat"
+
+#: ../browser/design_portlet.pt:7
+msgid "Design"
+msgstr "Design"
+
+#: ../browser/portlet.py:9
+msgid "Display design tree"
+msgstr ""
+
+#: ../skins/cmfplomino_templates/DatabaseDesign.pt:245
+msgid "Do not refresh database after design update:"
+msgstr "Neobnovuj databázi po updatu designu:"
+
+# Do you really want to delete this document
+#. Default: "Do you really want to delete this document"
+msgid "Do you really want to delete this document"
+msgstr "Opravdu chcete smazat tento dokument"
+
+# Do you really want to delete those documents
+#. Default: "Do you really want to delete those documents"
+msgid "Do you really want to delete those documents"
+msgstr "Opravdu chcete smazat tyto dokumenty"
+
+#: ../skins/cmfplomino_templates/DatabaseDesign.pt:154
+msgid "Documents folder"
+msgstr "Adresář pro dokumenty"
+
+# Action bar buttons
+#: ../skins/cmfplomino_templates/ActionBar.pt:6
+msgid "Edit"
+msgstr "Editovat"
+
+#: ../browser/portlet.py:170
+msgid "Edit a Plomino Element Portlet"
+msgstr ""
+
+#: ../browser/portlet.py:71
+msgid "Edit the Plomino Design Portlet"
+msgstr ""
+
+#: ../browser/portlet.py:84
+msgid "Element ID"
+msgstr ""
+
+#: ../browser/portlet.py:10
+msgid "Embed the full design tree in the portlet."
+msgstr ""
+
+#: ../skins/cmfplomino_templates/DatabaseDesign.pt:211
+msgid "Entire design"
+msgstr "Celý design"
+
+#: ../skins/cmfplomino_templates/DatabaseDesign.pt:169
+msgid "Export"
+msgstr "Exportovat"
+
+#: ../browser/design_portlet.pt:35
+msgid "Field"
+msgstr "Pole"
+
+#: ../browser/design_portlet.pt:86
+#: ../skins/cmfplomino_templates/DatabaseDesign.pt:41
+msgid "Fields"
+msgstr "Pole"
+
+#: ../browser/design_portlet.pt:23
+msgid "Form"
+msgstr "Formulář"
+
+#. Default: "Forms"
+msgid "Forms"
+msgstr "Formuláře"
+
+# Gantt view labels
+#. Default: "From"
+msgid "From"
+msgstr "Od"
+
+#: ../skins/cmfplomino_templates/DatabaseDesign.pt:178
+msgid "From file"
+msgstr "Ze souboru"
+
+#: ../skins/cmfplomino_templates/DatabaseDesign.pt:194
+msgid "From remote server"
+msgstr "Ze vzdáleného serveru"
+
+#: ../skins/cmfplomino_templates/DatabaseDesign.pt:186
+msgid "From server folder"
+msgstr "Z adresáře na serveru"
+
+#: ../browser/design_portlet.pt:43
+msgid "Generate view"
+msgstr "Generuj pohled"
+
+#: ../skins/cmfplomino_templates/ErrorMessages.pt:24
+msgid "Go back"
+msgstr "Zpět"
+
+#: ../browser/design_portlet.pt:37
+#: ../skins/cmfplomino_templates/DatabaseDesign.pt:53
+msgid "Hide when"
+msgstr "Skryj když"
+
+#: ../browser/portlet.py:85
+msgid "ID of the form to be displayed"
+msgstr ""
+
+#: ../skins/cmfplomino_templates/DatabaseDesign.pt:169
+msgid "Import"
+msgstr "Importovat"
+
+#: ../skins/cmfplomino_templates/DatabaseDesign.pt:167
+msgid "Import/Export design"
+msgstr "Importovat/Exportovat design"
+
+#: ../skins/cmfplomino_templates/DatabaseDesign.pt:317
+msgid "Include db settings"
+msgstr "Zahrň db nastavení"
+
+#: ../skins/cmfplomino_templates/DatabaseDesign.pt:153
+msgid "Index (ZMI)"
+msgstr "Index (ZMI)"
+
+#: ../skins/cmfplomino_templates/OpenView.pt:169
+msgid "Next &gt;&gt;"
+msgstr "Následující &gt;&gt;"
+
+# Not categorized
+#. Default: "Not categorized"
+msgid "Not categorized"
+msgstr "Není kategorizováno"
+
+#: ../skins/cmfplomino_templates/DatabaseDesign.pt:150
+msgid "Others"
+msgstr "Ostatní"
+
+#: ../browser/design_portlet.pt:12
+msgid "Parameters"
+msgstr "Parametry"
+
+#: ../skins/cmfplomino_templates/DatabaseDesign.pt:207
+msgid "Password"
+msgstr "Heslo"
+
+#: ../skins/cmfplomino_templates/DatabaseDesign.pt:189
+msgid "Path"
+msgstr "Cesta"
+
+#: ../browser/portlet.py:82
+msgid "Path of the database where the element is stored"
+msgstr ""
+
+# Please log in
+#: ../skins/cmfplomino_templates/OpenBareForm.pt:47
+#: ../skins/cmfplomino_templates/OpenDatabase.pt:76
+#: ../skins/cmfplomino_templates/OpenForm.pt:94
+msgid "Please log in"
+msgstr "Prosím zadejte své uživatelské jméno a heslo"
+
+#: ../skins/cmfplomino_templates/DatabaseDesign.pt:181
+msgid "Plomino XML file"
+msgstr "soubor Plomino XML"
+
+#: ../skins/cmfplomino_templates/DatabaseDesign.pt:26
+msgid "Plomino database version"
+msgstr "Verze Plomino databáze"
+
+#: ../browser/portlet.py:78
+msgid "Portlet header"
+msgstr ""
+
+#: ../browser/design_portlet.pt:193
+msgid "Profiling"
+msgstr ""
+
+#: ../skins/cmfplomino_templates/DatabaseDesign.pt:161
+msgid "Re-compute documents"
+msgstr "Znovu vygeneruj dokumenty"
+
+#: ../skins/cmfplomino_templates/DatabaseDesign.pt:163
+msgid "Re-index documents in portal catalog"
+msgstr "Reindexuj dokumenty v portálovém katalogu"
+
+#. Default: "Ready"
+msgid "Ready"
+msgstr "Připraven"
+
+#: ../skins/cmfplomino_templates/DatabaseDesign.pt:241
+msgid "Refresh"
+msgstr "Obnovit"
+
+#: ../skins/cmfplomino_templates/DatabaseDesign.pt:157
+msgid "Refresh database"
+msgstr "Obnovit databázi"
+
+#: ../skins/cmfplomino_templates/DatabaseDesign.pt:249
+msgid "Replace mode:"
+msgstr "Mód nahradit:"
+
+#: ../skins/cmfplomino_templates/DatabaseDesign.pt:152
+msgid "Resources folder (ZMI)"
+msgstr "Zdrojový adresář (ZMI)"
+
+#: ../skins/cmfplomino_templates/ActionBar.pt:40
+msgid "Save"
+msgstr "Uložit"
+
+#: ../skins/cmfplomino_templates/ActionBar.pt:86
+#: ../skins/cmfplomino_templates/OpenDatabase.pt:48
+msgid "Search"
+msgstr "Vyhledat"
+
+#: ../skins/cmfplomino_templates/DatabaseDesign.pt:197
+msgid "Source URL"
+msgstr "Zdrojová URL"
+
+#: ../browser/design_portlet.pt:60
+msgid "Status"
+msgstr "Status"
+
+#: ../skins/cmfplomino_templates/DatabaseDesign.pt:278
+msgid "Target URL"
+msgstr "Cílová URL"
+
+#: ../browser/portlet.py:161
+msgid "This portlet displays an element of a Plomino database."
+msgstr ""
+
+#: ../browser/portlet.py:61
+msgid "This portlet provides access to Plomino design features."
+msgstr ""
+
+#: ../browser/portlet.py:79
+msgid "Title of the rendered portlet"
+msgstr ""
+
+#. Default: "To"
+msgid "To"
+msgstr "Do"
+
+#: ../skins/cmfplomino_templates/DatabaseDesign.pt:263
+msgid "To XML file"
+msgstr "Do XML souboru"
+
+#: ../skins/cmfplomino_templates/DatabaseDesign.pt:275
+msgid "To remote server"
+msgstr "Na vzdálený server"
+
+#: ../skins/cmfplomino_templates/DatabaseDesign.pt:267
+msgid "To server folder"
+msgstr "Do adresáře na serveru"
+
+#: ../skins/cmfplomino_templates/DatabaseDesign.pt:203
+msgid "Username"
+msgstr "Uživatelské jméno"
+
+# ErrorsMessages
+#: ../skins/cmfplomino_templates/ErrorMessages.pt:17
+#: ../skins/cmfplomino_templates/validation_messages.pt:3
+msgid "Validation failed"
+msgstr "Validace selhala"
+
+#: ../browser/design_portlet.pt:25
+msgid "View"
+msgstr "Pohled"
+
+#. Default: "Views"
+msgid "Views"
+msgstr "Pohledy"
+
+#. Default: "Attachments:"
+msgid "attachments_label"
+msgstr "Přílohy:"
+
+#. Default: "Add"
+msgid "datagrid_add_button_label"
+msgstr "Přidat"
+
+#. Default: "Delete"
+msgid "datagrid_delete_button_label"
+msgstr "Smazat"
+
+#. Default: "Edit"
+msgid "datagrid_edit_button_label"
+msgstr "Editovat"
+
+# Documents x to y of z
+#. Default: "Document(s) ${start} to ${end} of ${total}"
+#: ../skins/cmfplomino_templates/OpenView.pt:166
+msgid "documents_count"
+msgstr "Document(y) ${start} od ${end} z ${total}"
+
+# View labels
+#. Default: "Go"
+msgid "go_link"
+msgstr "Přejít na"
+
+# Error messages
+#. Default: "is mandatory"
+msgid "is mandatory"
+msgstr "je povinné"
+
+#. Default: "(Required)"
+#: ../skins/cmfplomino_templates/DatabaseReplication.pt:68
+msgid "label_required"
+msgstr ""
+
+#: ../browser/design_portlet.pt:42
+msgid "or"
+msgstr "Nebo"
+
+#: ../skins/cmfplomino_templates/DatabaseDesign.pt:215
+msgid "or elements"
+msgstr "nebo jednotlivé prvky"
+
+#. Default: "View as static table"
+#: ../skins/cmfplomino_templates/OpenView.pt:243
+msgid "plominoview_viewstatictable"
+msgstr "Zobraz jako statickou tabulku"
+
+#. Default: "Content listing"
+#: ../skins/cmfplomino_templates/OpenView.pt:53
+msgid "summary_content_listing"
+msgstr ""
+
+#. Default: "Required"
+#: ../skins/cmfplomino_templates/DatabaseReplication.pt:68
+msgid "title_required"
+msgstr ""
+
