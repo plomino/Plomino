@@ -1,17 +1,11 @@
 language: python
 python:
   - 2.7
-before_install:
-  - mkdir eggs
-  - wget https://github.com/downloads/plone/Products.CMFPlone/download-and-eggs-plone-4.1.4.tgz
-  - tar -xzf download-and-eggs-plone-4.1.4.tgz
 install:
   - python bootstrap.py
-  - bin/buildout -t 10 -Nc travis.cfg
+  - bin/buildout -Nc travis.cfg
 script:
   - bin/test -s Products.CMFPlomino
 notifications:
   irc:
     - "irc.freenode.org#plomino"
-  email:
-    - eric.brehault@makina-corpus.com
