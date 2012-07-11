@@ -42,7 +42,6 @@ from Products.CMFPlone.interfaces import IHideFromBreadcrumbs
 
 import string
 import Globals
-from dm.sharedresource import get_resource
 try:
     from plone.app.async.interfaces import IAsyncService
     import zc.async
@@ -285,25 +284,13 @@ class PlominoDatabase(ATFolder, PlominoAccessControl, PlominoDesignManager, Plom
     def getStatus(self):
         """return DB current status
         """
-        all_db_status = get_resource("plomino_status", dict)
-        if ASYNC:
-            job = all_db_status.get(self.absolute_url_path(), None)
-            if job:
-                return job.annotations.get('status', 'Waiting')
-            else:
-                return "Ready"
-        else:
-            return all_db_status.get(self.absolute_url_path(), "Ready")
+        return getattr(self, "plomino_status", "Ready")
 
     security.declarePublic('setStatus')
     def setStatus(self, status):
         """set DB current status
         """
-        if ASYNC:
-            zc.async.local.setLiveAnnotation("status", status)
-        else:
-            all_db_status = get_resource("plomino_status", dict)
-            all_db_status[self.absolute_url_path()] = status
+        self.plomino_status = status
 
     security.declarePublic('checkBeforeOpenDatabase')
     def checkBeforeOpenDatabase(self):

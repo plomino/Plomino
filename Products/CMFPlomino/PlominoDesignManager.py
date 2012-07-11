@@ -41,7 +41,6 @@ import transaction
 from zope import event
 from Products.Archetypes.event import ObjectEditedEvent
 from zope.component import getUtility
-from dm.sharedresource import get_resource
 try:
     from plone.app.async.interfaces import IAsyncService
     ASYNC = True
@@ -107,8 +106,7 @@ class PlominoDesignManager(Persistent):
         """
         async = getUtility(IAsyncService)
         job = async.queueJob(run_refreshdb, self)
-        all_db_status = get_resource("plomino_status", dict)
-        all_db_status[self.absolute_url_path()] = job
+        self.setStatus("Waiting")
 
     security.declareProtected(DESIGN_PERMISSION, 'refreshDB')
     def refreshDB(self):
