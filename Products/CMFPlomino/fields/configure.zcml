@@ -137,4 +137,10 @@
         class=".datagrid.SettingForm"
         permission="plomino.DESIGN_PERMISSION"
         />
+        
+   <!-- vocabularies -->
+   <utility
+        name="Products.CMFPlomino.fields.datagrid.get_forms"
+        component=".datagrid.get_forms"
+        />
 </configure>
