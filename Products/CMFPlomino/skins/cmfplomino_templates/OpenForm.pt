@@ -124,12 +124,13 @@
 
 
                     <span tal:content="structure python:here.formLayout(request)" /> <tal:results
-                        tal:define="anyresults python:options.has_key('searchresults');
-                                            searchviewname python:here.getSearchView();
-                                            searchviewobj python:here.getParentDatabase().getView(searchviewname);
-                                            ">
-                        <table tal:condition="anyresults"
-                            tal:define="columns python:searchviewobj.getColumns()"
+                        tal:define="searchviewname python:here.getSearchView();
+                                    searchviewobj python:here.getParentDatabase().getView(searchviewname);
+                                    ">
+                        <tal:noview tal:condition="not:searchviewobj" tal:define="error python:here.writeMessageOnPage(searchviewname+' view does not exist.', here.REQUEST, error=True);" />
+                        <tal:viewok tal:condition="searchviewobj">
+                        <table tal:define="results python:options.get('searchresults');
+                                           columns python:searchviewobj.getColumns()"
                             id="sortable" class="listing" summary="Content listing"
                             i18n:attributes="summary summary_content_listing;">
                             <tr>
@@ -139,7 +140,7 @@
                                         tal:content="c/Title">Title</span>&nbsp;</th>
                                 </tal:block>
                             </tr>
-                            <tal:block tal:repeat="doc options/searchresults">
+                            <tal:block tal:condition="results" tal:repeat="doc results">
 
                                 <tr tal:define="oddrow repeat/doc/odd;
                                 docurl python:'../'+searchviewname+'/'+doc.getPath().split('/')[-1]"
@@ -156,6 +157,7 @@
                                 </tr>
                             </tal:block>
                         </table>
+                        </tal:viewok>
                     </tal:results> <tal:block tal:define="owner python:myF"
                         tal:condition="python:test((b and myF.ActionBarPosition!='TOP'),True, False)">
                         <span metal:use-macro="here/ActionBar/macros/SearchFormActionBar">
