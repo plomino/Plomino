@@ -25,7 +25,6 @@ from Products.CMFPlomino.config import *
 from Products.CMFPlomino.PlominoUtils import PlominoTranslate, DateToString
 from Products.CMFPlomino.exceptions import PlominoDesignException
 
-##code-section module-header #fill in your manual code here
 import sys
 import re
 import simplejson as json
@@ -38,8 +37,6 @@ from PlominoDocument import TemporaryDocument
 
 import logging
 logger = logging.getLogger('Plomino')
-
-##/code-section module-header
 
 schema = Schema((
 
@@ -160,7 +157,6 @@ schema = Schema((
             description_msgid='CMFPlomino_help_ActionBarPosition',
             i18n_domain='CMFPlomino',
         ),
-#        schemata="Parameters",
         vocabulary=[["TOP", "At the top of the page"], ["BOTTOM", "At the bottom of the page"], ["BOTH", "At the top and at the bottom of the page "]],
     ),
     BooleanField(
@@ -173,7 +169,6 @@ schema = Schema((
             description_msgid='CMFPlomino_help_HideDefaultActions',
             i18n_domain='CMFPlomino',
         ),
-#        schemata="Parameters",
     ),
     BooleanField(
         name='HideInMenu',
@@ -185,7 +180,6 @@ schema = Schema((
             description_msgid='CMFPlomino_help_HideInMenu',
             i18n_domain='CMFPlomino',
         ),
-#        schemata="Parameters",
     ),
     BooleanField(
         name='isSearchForm',
@@ -197,7 +191,6 @@ schema = Schema((
             description_msgid='CMFPlomino_help_SearchForm',
             i18n_domain='CMFPlomino',
         ),
-#        schemata="Parameters",
     ),
     BooleanField(
         name='isPage',
@@ -209,18 +202,18 @@ schema = Schema((
             description_msgid='CMFPlomino_help_isPage',
             i18n_domain='CMFPlomino',
         ),
-#        schemata="Parameters",
     ),
     StringField(
         name='SearchView',
-        widget=StringField._properties['widget'](
+        widget=SelectionWidget(
             label="Search view",
             description="View used to display the search results",
+            format='select',
             label_msgid='CMFPlomino_label_SearchView',
             description_msgid='CMFPlomino_help_SearchView',
             i18n_domain='CMFPlomino',
         ),
-#        schemata="Parameters",
+        vocabulary='_getDatabaseViews',
     ),
     TextField(
         name='SearchFormula',
@@ -231,7 +224,6 @@ schema = Schema((
             description_msgid='CMFPlomino_help_SearchFormula',
             i18n_domain='CMFPlomino',
         ),
-#        schemata="Parameters",
     ),
     IntegerField(
         name='Position',
@@ -242,19 +234,12 @@ schema = Schema((
             description_msgid="CMFPlomino_help_Position",
             i18n_domain='CMFPlomino',
         ),
-#        schemata="Parameters",
     ),
 ),
 )
 
-##code-section after-local-schema #fill in your manual code here
-##/code-section after-local-schema
-
 PlominoForm_schema = getattr(ATFolder, 'schema', Schema(())).copy() + \
     schema.copy()
-
-##code-section after-schema #fill in your manual code here
-##/code-section after-schema
 
 class PlominoForm(ATFolder):
     """
@@ -266,11 +251,6 @@ class PlominoForm(ATFolder):
     _at_rename_after_creation = False
 
     schema = PlominoForm_schema
-
-    ##code-section class-header #fill in your manual code here
-    ##/code-section class-header
-
-    # Methods
 
     security.declareProtected(CREATE_PERMISSION, 'createDocument')
     def createDocument(self,REQUEST):
@@ -977,10 +957,11 @@ class PlominoForm(ATFolder):
         
         return json.dumps(result) 
 
-registerType(PlominoForm, PROJECTNAME)
-# end of class PlominoForm
+    def _getDatabaseViews(self):
+        db = self.getParentDatabase()
+        views = db.getViews()
+        return [''] +  [v.id for v in views]
 
-##code-section module-footer #fill in your manual code here
-##/code-section module-footer
+registerType(PlominoForm, PROJECTNAME)
 
 
