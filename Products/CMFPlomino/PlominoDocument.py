@@ -218,7 +218,7 @@ class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
             item = REQUEST.get('item', item)
             formid = REQUEST.get('formid', formid)
         if not item:
-            return json.dumps(self.items)
+            return json.dumps(self.items.data)
         
         if not formid:
             form = self.getForm()
