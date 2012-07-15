@@ -60,13 +60,15 @@ schema = Schema((
     ),
     StringField(
         name='SortColumn',
-        widget=StringField._properties['widget'](
+        widget=SelectionWidget(
             label="Sort column",
             description="Column used to sort the view",
+            format='select',
             label_msgid='CMFPlomino_label_SortColumn',
             description_msgid='CMFPlomino_help_SortColumn',
             i18n_domain='CMFPlomino',
         ),
+        vocabulary="_getcolumn_ids",
         schemata="Sorting",
     ),
     BooleanField(
@@ -603,7 +605,9 @@ class PlominoView(ATFolder):
                 key = ''
         return key
 
-
+    def _getcolumn_ids(self):
+        return [''] +  [c.id for c in self.getColumns()]
+        
 registerType(PlominoView, PROJECTNAME)
 # end of class PlominoView
 
