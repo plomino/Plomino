@@ -13,14 +13,12 @@ __docformat__ = 'plaintext'
 from DateTime import DateTime
 
 from zope.formlib import form
-from zope.interface import implements, alsoProvides
+from zope.interface import implements
 from zope import component
 from zope.pagetemplate.pagetemplatefile import PageTemplateFile
 
 from zope.schema import getFields
 from zope.schema import Text, TextLine, Choice
-from zope.schema.vocabulary import SimpleVocabulary
-from zope.schema.interfaces import IVocabularyFactory
 
 import simplejson as json
 
@@ -37,18 +35,11 @@ from Products.CMFPlomino.browser.javascript.dataTables.utils import get_language
 import logging
 logger = logging.getLogger('Plomino')
 
-def get_forms(obj):
-    db = obj.context.getParentDatabase()
-    forms = db.getForms()
-    return SimpleVocabulary.fromItems([(form.id, form.id) for form in forms])
-
-alsoProvides(get_forms, IVocabularyFactory)
-
 class IDatagridField(IBaseField):
     """
     Text field schema
     """
-    associated_form = Choice(vocabulary='Products.CMFPlomino.fields.datagrid.get_forms',
+    associated_form = Choice(vocabulary='Products.CMFPlomino.fields.vocabularies.get_forms',
                 title=u'Associated form',
                 description=u'Form to use to create/edit rows',
                 required=False)

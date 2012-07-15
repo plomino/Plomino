@@ -37,7 +37,8 @@ class IDoclinkField(IBaseField):
                     default="SELECT",
                     required=True)
 
-    sourceview = TextLine(title=u'Source view',
+    sourceview = Choice(vocabulary='Products.CMFPlomino.fields.vocabularies.get_views',
+                    title=u'Source view',
                     description=u'View containing the linkable documents',
                     required=False)
 
