@@ -17,6 +17,7 @@ from Products.Archetypes.atapi import *
 from zope.interface import implements
 import interfaces
 from Products.ATContentTypes.content.folder import ATFolder
+from Products.CMFPlone.PloneBatch import Batch
 from Products.CMFDynamicViewFTI.browserdefault import BrowserDefaultMixin
 
 from Products.CMFPlomino.config import *
@@ -264,7 +265,6 @@ class PlominoView(ATFolder):
     def getAllDocuments(self, start=1, limit=None, only_allowed=True, getObject=True):
         """ Return all the documents matching the view.
         """
-        # Ignore 'start': batching should be done using PloneBatch.
         index = self.getParentDatabase().getIndex()
         sortindex = self.getSortColumn()
         if sortindex=='':
@@ -277,6 +277,8 @@ class PlominoView(ATFolder):
             self.getReverseSorting(),
             only_allowed=only_allowed,
             limit=limit)
+        if start > 1:
+            results = Batch(results, limit, start)
         if getObject:
             return [r.getObject() for r in results]
         else:
@@ -297,13 +299,6 @@ class PlominoView(ATFolder):
         """Get colums
         """
         columnslist = self.portal_catalog.search({'portal_type' : ['PlominoColumn'], 'path': '/'.join(self.getPhysicalPath())}, sort_index='getObjPositionInParent')
-        #orderedcolumns = []
-        #for c in columnslist:
-        #    c_obj = c.getObject()
-        #    if not(c_obj is None):
-        #        orderedcolumns.append([c_obj.Position, c_obj])
-        #orderedcolumns.sort()
-        #return [i[1] for i in orderedcolumns]
         return [c.getObject() for c in columnslist]
 
     security.declarePublic('getActions')
@@ -565,14 +560,20 @@ class PlominoView(ATFolder):
             return results
 
     security.declarePublic('tojson')
-    def tojson(self):
+    def tojson(self, REQUEST=None):
         """Returns a JSON representation of view data 
         """
         data = []
         categorized = self.getCategorized()
-        
+        start = 1
+        limit = None
+        if REQUEST:
+            start = int(REQUEST.get('iDisplayStart', 1))
+            iDisplayLength = REQUEST.get('iDisplayLength', None)
+            if iDisplayLength:
+                limit = int(iDisplayLength)
         columnids = [col.id for col in self.getColumns() if not getattr(col, 'HiddenColumn', False)]
-        for b in self.getAllDocuments(getObject=False):
+        for b in self.getAllDocuments(start=start, limit=limit, getObject=False):
             row = [b.getPath().split('/')[-1]]
             for colid in columnids:
                 v = getattr(b, self.getIndexKey(colid), '')
