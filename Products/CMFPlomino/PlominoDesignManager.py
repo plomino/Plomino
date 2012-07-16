@@ -1010,7 +1010,7 @@ class PlominoDesignManager(Persistent):
             if len(settings_values) > 0:
                 adapt = obj.getSettings()
                 for key in settings_values.keys():
-                    setattr(adapt, key, settings_values[key])
+                    getattr(adapt, 'parameters')[key] = settings_values[key]
 
     security.declareProtected(DESIGN_PERMISSION, 'importDbSettingsFromXML')
     def importDbSettingsFromXML(self, node):
