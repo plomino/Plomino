@@ -282,7 +282,8 @@ class PlominoView(ATFolder):
             sortindex=sortindex,
             reverse=reverse,
             only_allowed=only_allowed)
-        results = Batch(items=results, pagesize=limit, pagenumber=int(start/limit)+1)
+        if limit:
+            results = Batch(items=results, pagesize=limit, pagenumber=int(start/limit)+1)
         if getObject:
             return [r.getObject() for r in results]
         else:
