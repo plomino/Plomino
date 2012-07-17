@@ -579,7 +579,7 @@ class PlominoView(ATFolder):
             iDisplayLength = REQUEST.get('iDisplayLength', None)
             if iDisplayLength:
                 limit = int(iDisplayLength)
-            search = REQUEST.get('sSearch').lower()
+            search = REQUEST.get('sSearch', '').lower()
             if search:
                 search = " ".join([term+'*' for term in search.split(' ')])
             sort_column = REQUEST.get('iSortCol_0')
