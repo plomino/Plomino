@@ -22,7 +22,7 @@ from Products.CMFDynamicViewFTI.browserdefault import BrowserDefaultMixin
 
 from Products.CMFPlomino import plomino_profiler
 from Products.CMFPlomino.config import *
-from Products.CMFPlomino.PlominoUtils import PlominoTranslate, DateToString
+from Products.CMFPlomino.PlominoUtils import PlominoTranslate, DateToString, asUnicode
 from Products.CMFPlomino.exceptions import PlominoDesignException
 
 import sys
@@ -760,7 +760,7 @@ class PlominoForm(ATFolder):
             for f in self.getFormFields(includesubforms=True):
                 fieldname = f.id
                 #if fieldname is not an index -> search doesn't matter and returns all
-                submittedValue = REQUEST.get(fieldname)
+                submittedValue = asUnicode(REQUEST.get(fieldname))
                 if submittedValue is not None:
                     if not submittedValue=='':
                         # if non-text field, convert the value
