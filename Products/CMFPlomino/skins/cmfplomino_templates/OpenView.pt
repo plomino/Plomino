@@ -190,6 +190,7 @@
 												'bJQueryUI': true,
 												'bProcessing': true,
 												'sAjaxSource': 'tojson',
+												'bServerSide': true,
 												${params},
 												'aoColumnDefs': [ {
 														'aTargets': ['_all'],

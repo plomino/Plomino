@@ -17,7 +17,7 @@ from Products.Archetypes.atapi import *
 from zope.interface import implements
 import interfaces
 from Products.ATContentTypes.content.folder import ATFolder
-from Products.CMFPlone.PloneBatch import Batch
+from plone.app.content.batching import Batch
 from Products.CMFDynamicViewFTI.browserdefault import BrowserDefaultMixin
 
 from Products.CMFPlomino.config import *
@@ -262,23 +262,27 @@ class PlominoView(ATFolder):
         return BaseObject.__bobo_traverse__(self, request, name)
 
     security.declarePublic('getAllDocuments')
-    def getAllDocuments(self, start=1, limit=None, only_allowed=True, getObject=True):
+    def getAllDocuments(self, start=1, limit=None, only_allowed=True, getObject=True, fulltext_query=None, sortindex=None, reverse=None):
         """ Return all the documents matching the view.
         """
         index = self.getParentDatabase().getIndex()
-        sortindex = self.getSortColumn()
-        if sortindex=='':
-            sortindex=None
-        else:
-            sortindex=self.getIndexKey(sortindex)
+        if not sortindex:
+            sortindex = self.getSortColumn()
+            if sortindex=='':
+                sortindex=None
+            else:
+                sortindex=self.getIndexKey(sortindex)
+        if not reverse:
+            reverse = self.getReverseSorting()
+        query = {'PlominoViewFormula_'+self.getViewName() : True}
+        if fulltext_query:
+            query['SearchableText'] = fulltext_query
         results=index.dbsearch(
-            {'PlominoViewFormula_'+self.getViewName() : True},
-            sortindex,
-            self.getReverseSorting(),
-            only_allowed=only_allowed,
-            limit=limit)
-        if start > 1:
-            results = Batch(results, limit, start)
+            query,
+            sortindex=sortindex,
+            reverse=reverse,
+            only_allowed=only_allowed)
+        results = Batch(items=results, pagesize=limit, pagenumber=int(start/limit)+1)
         if getObject:
             return [r.getObject() for r in results]
         else:
@@ -567,13 +571,33 @@ class PlominoView(ATFolder):
         categorized = self.getCategorized()
         start = 1
         limit = None
+        search = None
+        sort_index = None
         if REQUEST:
             start = int(REQUEST.get('iDisplayStart', 1))
             iDisplayLength = REQUEST.get('iDisplayLength', None)
             if iDisplayLength:
                 limit = int(iDisplayLength)
+            search = REQUEST.get('sSearch').lower()
+            if search:
+                search = " ".join([term+'*' for term in search.split(' ')])
+            sort_column = REQUEST.get('iSortCol_0')
+            if sort_column:
+                sort_index = self.getIndexKey(self.getColumns()[int(sort_column)-1].id)
+            reverse = REQUEST.get('sSortDir_0', None)
+            if reverse=='desc':
+                reverse = 0
+            if reverse=='asc':
+                reverse = 1 
         columnids = [col.id for col in self.getColumns() if not getattr(col, 'HiddenColumn', False)]
-        for b in self.getAllDocuments(start=start, limit=limit, getObject=False):
+        results = self.getAllDocuments(start=start,
+                                       limit=limit,
+                                       getObject=False,
+                                       fulltext_query=search,
+                                       sortindex=sort_index,
+                                       reverse=reverse)
+        total = display_total = results.size
+        for b in results:
             row = [b.getPath().split('/')[-1]]
             for colid in columnids:
                 v = getattr(b, self.getIndexKey(colid), '')
@@ -582,7 +606,6 @@ class PlominoView(ATFolder):
                 else:
                     v = asUnicode(v).encode('utf-8').replace('\r', '')
                 row.append(v or '&nbsp;')
-
             if categorized:
                 for cat in asList(row[1]):
                     entry = [c for c in row]
@@ -590,7 +613,7 @@ class PlominoView(ATFolder):
                     data.append(entry)
             else:
                 data.append(row)
-        return json.dumps({ 'aaData': data })
+        return json.dumps({ 'iTotalRecords': total, 'iTotalDisplayRecords': display_total, 'aaData': data })
 
     security.declarePublic('getIndexKey')
     def getIndexKey(self, columnName):
