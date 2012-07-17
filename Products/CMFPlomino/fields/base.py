@@ -15,6 +15,7 @@ from zope.annotation.interfaces import IAnnotations
 from persistent.dict import PersistentDict
 
 from Products.CMFPlomino.exceptions import PlominoScriptException
+from Products.CMFPlomino.PlominoUtils import asUnicode
 try:
     from five.formlib.formbase import EditForm
 except:
@@ -93,7 +94,7 @@ class BaseField(object):
                         else:
                             fieldValue = ""
                     else: 
-                        fieldValue = request.get(fieldName, '')
+                        fieldValue = asUnicode(request.get(fieldName, ''))
             else:
                 fieldValue = doc.getItem(fieldName)
 
