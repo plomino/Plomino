@@ -105,7 +105,7 @@ schema = Schema((
     ),
     BooleanField(
         name='FulltextIndex',
-        default=False,
+        default=True,
         widget=BooleanField._properties['widget'](
             label="Local full-text index",
             description="If enabled, documents are full-text indexed into the Plomino index.",
