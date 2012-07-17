@@ -571,7 +571,7 @@ class PlominoView(ATFolder):
         data = []
         categorized = self.getCategorized()
         start = 1
-        limit = None
+        limit = -1
         search = None
         sort_index = None
         if REQUEST:
@@ -590,14 +590,16 @@ class PlominoView(ATFolder):
                 reverse = 0
             if reverse=='asc':
                 reverse = 1 
-        columnids = [col.id for col in self.getColumns() if not getattr(col, 'HiddenColumn', False)]
+        if limit < 1:
+            limit = None
         results = self.getAllDocuments(start=start,
                                        limit=limit,
                                        getObject=False,
                                        fulltext_query=search,
                                        sortindex=sort_index,
                                        reverse=reverse)
-        total = display_total = results.size
+        total = display_total = len(results)
+        columnids = [col.id for col in self.getColumns() if not getattr(col, 'HiddenColumn', False)]
         for b in results:
             row = [b.getPath().split('/')[-1]]
             for colid in columnids:
