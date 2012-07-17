@@ -22,6 +22,7 @@ from Products.CMFPlomino.exceptions import PlominoReplicationException
 from Products.CMFPlomino.PlominoUtils import StringToDate
 import re
 from Persistence import Persistent
+from persistent.dict import PersistentDict
 from xml.dom.minidom import getDOMImplementation
 from xml.dom.minidom import parseString
 import xmlrpclib
@@ -1269,7 +1270,7 @@ class PlominoReplicationManager(Persistent):
             # convert xmlrpclib.DateTime into DateTime
             if items[k].__class__.__name__=='DateTime':
                 items[k]=StringToDate(items[k].value[:19], format="%Y-%m-%dT%H:%M:%S")
-        doc.items = items
+        doc.items = PersistentDict(items)
 
         # restore files
         for fnode in node.getElementsByTagName("attachment"):
