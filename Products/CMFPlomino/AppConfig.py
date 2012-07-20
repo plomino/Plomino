@@ -25,20 +25,14 @@ ACL_PERMISSION = 'CMFPlomino: Control Database ACL'
 
 FIELD_TYPES={"TEXT": ["Text", "FieldIndex"],
              "NUMBER": ["Number", "FieldIndex"],
-             #"FLOAT": ["Float", "FieldIndex"],
              "RICHTEXT": ["Rich text", "ZCTextIndex"],
              "DATETIME": ["Date/Time", "DateIndex"],
              "NAME": ["Name", "FieldIndex"],
-             #"NAMES": ["Names", "ZCTextIndex"],
              "SELECTION": ["Selection list", "KeywordIndex"],
-             #"MULTISELECTION": ["Multi-Selection list", "KeywordIndex"],
-             #"CHECKBOX": ["Check boxes", "KeywordIndex"],
-             #"RADIO": ["Radio buttons", "ZCTextIndex"],
              "ATTACHMENT": ["File attachment", "ZCTextIndex"],
              "DOCLINK": ["Doclink", "KeywordIndex"],
              "GOOGLECHART": ["Google chart", "FieldIndex"],
              "GOOGLEVISUALIZATION": ["Google visualization", "FieldIndex"],
-             #"DATAGRID": ["Datagrid", "ZCTextIndex"],
              }
 
 FIELD_MODES = [["EDITABLE", "Editable"], ["COMPUTED", "Computed"], ["CREATION", "Computed on creation"], ["DISPLAY", "Computed for display"], ["COMPUTEDONSAVE", "Computed on save"],]
