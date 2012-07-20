@@ -190,6 +190,10 @@ msgstr "How to calculate field content"
 msgid "CMFPlomino_help_FieldIndex"
 msgstr "The field will be searchable"
 
+#. Default: "The way the field values will be indexed"
+msgid "CMFPlomino_help_FieldIndexType"
+msgstr ""
+
 #. Default: "Is this field mandatory? (empty value will not be allowed)"
 msgid "CMFPlomino_help_FieldMandatory"
 msgstr "Is this field mandatory? (empty value will not be allowed)"
@@ -490,6 +494,10 @@ msgstr "Formula"
 #. Default: "Add to index"
 msgid "CMFPlomino_label_FieldIndex"
 msgstr "Add to index"
+
+#. Default: "Index type"
+msgid "CMFPlomino_label_FieldIndexType"
+msgstr ""
 
 #. Default: "Mandatory"
 msgid "CMFPlomino_label_FieldMandatory"

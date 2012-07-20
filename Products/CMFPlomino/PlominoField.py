@@ -24,7 +24,6 @@ from Products.CMFDynamicViewFTI.browserdefault import BrowserDefaultMixin
 from Products.CMFPlomino.config import *
 from PlominoDocument import TemporaryDocument
 
-##code-section module-header #fill in your manual code here
 from Products.CMFPlomino.PlominoUtils import StringToDate
 from fields.selection import ISelectionField
 from fields.text import ITextField
@@ -38,8 +37,6 @@ from persistent.dict import PersistentDict
 
 import logging
 logger = logging.getLogger('Plomino')
-
-##/code-section module-header
 
 schema = Schema((
 
@@ -141,24 +138,30 @@ schema = Schema((
             i18n_domain='CMFPlomino',
         ),
     ),
+    StringField(
+        name='IndexType',
+        default="DEFAULT",
+        widget=SelectionWidget(
+            label="Index type",
+            description="The way the field values will be indexed",
+            label_msgid='CMFPlomino_label_FieldIndexType',
+            description_msgid='CMFPlomino_help_FieldIndexType',
+            i18n_domain='CMFPlomino',
+        ),
+        vocabulary='type_vocabulary',
+    ),
 ),
 )
-
-##code-section after-local-schema #fill in your manual code here
-##/code-section after-local-schema
 
 PlominoField_schema = BaseSchema.copy() + \
     schema.copy()
 
-##code-section after-schema #fill in your manual code here
 def get_field_types():
     field_types = FIELD_TYPES
     for plugin_field in component.getUtilitiesFor(interfaces.IPlominoField):
         params = plugin_field[1].plomino_field_parameters
         field_types[str(plugin_field[0])] = [params['label'], params['index_type']]
     return field_types
-
-##/code-section after-schema
 
 class PlominoField(BaseContent, BrowserDefaultMixin):
     """
@@ -170,11 +173,6 @@ class PlominoField(BaseContent, BrowserDefaultMixin):
     _at_rename_after_creation = False
 
     schema = PlominoField_schema
-
-    ##code-section class-header #fill in your manual code here
-    ##/code-section class-header
-
-    # Methods
 
     security.declarePublic('validateFormat')
     def validateFormat(self, submittedValue):
@@ -328,10 +326,3 @@ class PlominoField(BaseContent, BrowserDefaultMixin):
         return {'Formula':  "field_"+self.getParentNode().id+"_"+self.id,
                 'ValidationFormula': "field_"+self.getParentNode().id+"_"+self.id+"_ValidationFormula"}
 registerType(PlominoField, PROJECTNAME)
-# end of class PlominoField
-
-##code-section module-footer #fill in your manual code here
-##/code-section module-footer
-
-
-

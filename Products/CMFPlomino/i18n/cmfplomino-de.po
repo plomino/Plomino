@@ -85,7 +85,7 @@ msgstr "Eine Datei anhängen"
 msgid "Browse"
 msgstr "Ansichten"
 
-#. Default: "Describe the database, its objectives, its targeted audience, etc..."
+#. Default: "Describe the database, its objectives, its targetted audience, etc..."
 #: PlominoDatabase.py
 #, fuzzy
 msgid "CMFPlomino_help_AboutDescription"
@@ -135,7 +135,7 @@ msgstr ""
 msgid "CMFPlomino_help_AgentUser"
 msgstr "Der zur Ausführung des Agenten verwendete Benutzer (dieser muss die notwendigen Berechtigungen haben)"
 
-#. Default: "Categorized on first column"
+#. Default: "Categorised on first column"
 #: PlominoView.py
 #, fuzzy
 msgid "CMFPlomino_help_Categorized"
@@ -191,6 +191,10 @@ msgstr "Formel zur Berechnung der Feldwerte"
 #. Default: "The field will be searchable"
 msgid "CMFPlomino_help_FieldIndex"
 msgstr "Das Feld kann als Suchkriterium verwendet werden"
+
+#. Default: "The way the field values will be indexed"
+msgid "CMFPlomino_help_FieldIndexType"
+msgstr ""
 
 #. Default: "Is this field mandatory? (empty value will not be allowed)"
 msgid "CMFPlomino_help_FieldMandatory"
@@ -492,6 +496,10 @@ msgstr "Formel"
 #. Default: "Add to index"
 msgid "CMFPlomino_label_FieldIndex"
 msgstr "Den Inhalt des Feldes im Katalog indizieren"
+
+#. Default: "Index type"
+msgid "CMFPlomino_label_FieldIndexType"
+msgstr ""
 
 #. Default: "Mandatory"
 msgid "CMFPlomino_label_FieldMandatory"

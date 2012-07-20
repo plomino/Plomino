@@ -85,7 +85,7 @@ msgstr "Pridėti priedą"
 msgid "Browse"
 msgstr "Naršyti"
 
-#. Default: "Describe the database, its objectives, its targeted audience, etc..."
+#. Default: "Describe the database, its objectives, its targetted audience, etc..."
 #: PlominoDatabase.py
 #, fuzzy
 msgid "CMFPlomino_help_AboutDescription"
@@ -134,7 +134,7 @@ msgstr ""
 msgid "CMFPlomino_help_AgentUser"
 msgstr "Veikiantis naudotojas, skirtas paleisti agentą"
 
-#. Default: "Categorized on first column"
+#. Default: "Categorised on first column"
 #: PlominoView.py
 #, fuzzy
 msgid "CMFPlomino_help_Categorized"
@@ -190,6 +190,10 @@ msgstr "Kaip apskaičiuoti lauko turinį"
 #. Default: "The field will be searchable"
 msgid "CMFPlomino_help_FieldIndex"
 msgstr "Bus galima ieškoti lauko reikšmių"
+
+#. Default: "The way the field values will be indexed"
+msgid "CMFPlomino_help_FieldIndexType"
+msgstr ""
 
 #. Default: "Is this field mandatory? (empty value will not be allowed)"
 msgid "CMFPlomino_help_FieldMandatory"
@@ -491,6 +495,10 @@ msgstr "Formulė"
 #. Default: "Add to index"
 msgid "CMFPlomino_label_FieldIndex"
 msgstr "Prideti prie indekso"
+
+#. Default: "Index type"
+msgid "CMFPlomino_label_FieldIndexType"
+msgstr ""
 
 #. Default: "Mandatory"
 msgid "CMFPlomino_label_FieldMandatory"
