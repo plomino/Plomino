@@ -43,7 +43,7 @@
          visible="True">
   <permission value="Modify portal content"/>
  </action>
- <action title="view" 
+ <action title="View" 
          action_id="view"
          category="object" 
          condition_expr="python:1"

@@ -39,4 +39,12 @@
       handler=".upgrades.upgrade_to_31"
       />
 
+  <genericsetup:upgradeStep
+      source="31"
+      destination="32"
+      title="Fix PlominoView type view title"
+      description=""
+      profile="Products.CMFPlomino:default"
+      handler=".upgrades.upgrade_to_32"
+      />
 </configure>

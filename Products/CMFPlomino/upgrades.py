@@ -41,3 +41,7 @@ def upgrade_to_31(context):
     cssid = "datatable.css"
     cssregistry.unregisterResource(cssid)
     cssregistry.cookResources()
+
+def upgrade_to_32(context):
+    # refresh PlominoView type settings 
+    context.runImportStepFromProfile(default_profile, 'typeinfo')
