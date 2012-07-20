@@ -30,8 +30,6 @@ from Products.CMFPlomino.fields.dictionaryproperty import DictionaryProperty
 
 from Products.CMFPlomino.fields.base import IBaseField, BaseField, BaseForm
 
-from Products.CMFPlomino.browser.javascript.dataTables.utils import get_language_path
-
 import logging
 logger = logging.getLogger('Plomino')
 
@@ -104,11 +102,6 @@ class DatagridField(BaseField):
             else:
                 value = value['rawdata']
         return json.dumps(value)
-
-    def getLang(self):
-        """
-        """
-        return get_language_path(self.context)
 
     def getActionLabel(self, action_id):
         """

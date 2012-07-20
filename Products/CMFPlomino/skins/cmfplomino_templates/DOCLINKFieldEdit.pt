@@ -76,7 +76,7 @@
 			            return nRow;
 			        },
        				'oLanguage': {
-       					'sUrl': '${context/DataTables/getLanguagePath}'
+       					'sUrl': '@@collective.js.datatables.translation'
 					},
 			        ${params}
 			    });
@@ -155,7 +155,7 @@
 					        	${name}_add_row(oSettings.aoData[i]._aData);
 			        },
        				'oLanguage': {
-       					'sUrl': '${context/DataTables/getLanguagePath}'
+       					'sUrl': '@@collective.js.datatables.translation'
 					},
 					'sDom': '<\'wrapper\'rtilp>',
 			        ${params}

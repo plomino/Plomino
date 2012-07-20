@@ -208,7 +208,7 @@
 												},
 												'fnFooterCallback': generateTableFooter,
 												'oLanguage': {
-													'sUrl': '${context/DataTables/getLanguagePath}'
+													'sUrl': '@@collective.js.datatables.translation'
 												}
 											});
 

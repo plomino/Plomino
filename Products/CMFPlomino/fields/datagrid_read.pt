@@ -5,8 +5,7 @@
 
         <script type="text/javascript" charset="utf-8"
         tal:define="data python:field.getSettings().tojson(v, rendered=True);
-                    param python:field.getSettings().getParameters();
-        			langpath python:field.getSettings().getLang()"
+                    param python:field.getSettings().getParameters();"
         tal:content="structure string:
         				jq(document).ready(function() {
         					jq('#${fieldname}_datagrid').dataTable( {
@@ -14,7 +13,7 @@
         						'bJQueryUI': true,
         						${param},
         						'oLanguage': {
-        							'sUrl': '${langpath}'
+        							'sUrl': '@@collective.js.datatables.translation'
         						}
         					} );
         				} );">

@@ -30,18 +30,5 @@
         name="plomino.javascript"
         directory="javascript"
         />
-
-    <browser:resourceDirectory
-        name="dataTables.lang"
-        directory="javascript/dataTables/lang"
-        />
-        
-    <browser:page
-        name="DataTables"
-        for="*"
-        class=".javascript.dataTables.utils.DataTables"
-        permission="zope.Public"
-        allowed_attributes="getLanguagePath"
-        />
         
 </configure>

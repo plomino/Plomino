@@ -78,7 +78,7 @@
 						'bAutoWidth': false,
 						'sDom': '<\'wrapper\'lrtip>',
 	       				'oLanguage': {	
-	       					'sUrl': '${context/DataTables/getLanguagePath}'
+	       					'sUrl': '@@collective.js.datatables.translation'
 						},
 				        'fnInitComplete': function(oSettings) {
 					 		jq('#${fieldname}_datagrid').closest('div.wrapper').hide();

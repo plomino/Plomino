@@ -10,8 +10,7 @@
                                      value data"/>
        
         <script type="text/javascript" charset="utf-8"
-        	tal:define="param python:field.getSettings().getParameters();
-        				langpath python:field.getSettings().getLang()"
+        	tal:define="param python:field.getSettings().getParameters();"
         	tal:content="structure string:var ${fieldname}_datatable;
         		jq(document).ready(function() {
 		        	${fieldname}_datatable = jq('#${fieldname}_datagrid').dataTable( {
@@ -25,7 +24,7 @@
 		        			});
 		        		},
         				'oLanguage': {
-        					'sUrl': '${langpath}'
+        					'sUrl': '@@collective.js.datatables.translation'
 						}
 		        	} );
         	
