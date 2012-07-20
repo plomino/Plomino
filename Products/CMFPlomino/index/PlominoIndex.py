@@ -82,10 +82,11 @@ class PlominoIndex(UniqueObject, CatalogTool):
             self.refresh()
 
     security.declareProtected(DESIGN_PERMISSION, 'createFieldIndex')
-    def createFieldIndex(self,fieldname, fieldtype, refresh=True):
+    def createFieldIndex(self,fieldname, fieldtype, refresh=True, indextype='DEFAULT'):
         """
         """
-        indextype=get_field_types()[fieldtype][1]
+        if indextype == 'DEFAULT':
+            indextype=get_field_types()[fieldtype][1]
         if indextype=='ZCTextIndex':
             plaintext_extra = SimpleRecord( lexicon_id='plaintext_lexicon', index_type='Okapi BM25 Rank')
             if not fieldname in self.indexes():
@@ -162,8 +163,16 @@ class PlominoIndex(UniqueObject, CatalogTool):
                 self.getCurrentUserRoles()
                 )
         request['getPlominoReaders'] = user_groups_roles
-        #DBG logger.info('dbsearch> %s, %s, %s, %s'%(`request`, sortindex, reverse, limit)) 
-        return self.search(request, sortindex, reverse, limit)
+        try:
+            results = self.search(request, sortindex, reverse, limit)
+        except AttributeError:
+            # attempting to sort using a non-sortable index raise an
+            # AttributeError about 'documentToKeyMap'
+            if hasattr(self, 'REQUEST'):
+                self.writeMessageOnPage("The %s index does not allow sorting" % sortindex,
+                                        self.REQUEST, error=True)
+            results = self.search(request, None, reverse, limit)                
+        return results
 
     security.declareProtected(READ_PERMISSION, 'getKeyUniqueValues')
     def getKeyUniqueValues(self,key):

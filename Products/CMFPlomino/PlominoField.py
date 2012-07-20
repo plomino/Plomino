@@ -148,7 +148,7 @@ schema = Schema((
             description_msgid='CMFPlomino_help_FieldIndexType',
             i18n_domain='CMFPlomino',
         ),
-        vocabulary='type_vocabulary',
+        vocabulary='index_vocabulary',
     ),
 ),
 )
@@ -278,7 +278,7 @@ class PlominoField(BaseContent, BrowserDefaultMixin):
         self.cleanFormulaScripts("field_"+self.getParentNode().id+"_"+self.id+"_ValidationFormula")
         db = self.getParentDatabase()
         if self.getToBeIndexed() and not db.DoNotReindex:
-            db.getIndex().createFieldIndex(self.id, self.getFieldType())
+            db.getIndex().createFieldIndex(self.id, self.getFieldType(), indextype=self.getIndexType())
 
     security.declarePublic('at_post_create_script')
     def at_post_create_script(self):
@@ -287,7 +287,7 @@ class PlominoField(BaseContent, BrowserDefaultMixin):
         self._setupConfigAnnotation()
         db = self.getParentDatabase()
         if self.getToBeIndexed() and not db.DoNotReindex:
-            db.getIndex().createFieldIndex(self.id, self.getFieldType())
+            db.getIndex().createFieldIndex(self.id, self.getFieldType(), indextype=self.getIndexType())
 
     security.declarePublic('getSettings')
     def getSettings(self, key=None):
@@ -312,6 +312,22 @@ class PlominoField(BaseContent, BrowserDefaultMixin):
         l = [[f, ALL_FIELD_TYPES[f][0]] for f in ALL_FIELD_TYPES.keys()]
         l.sort(key=lambda f:f[1])
         return l
+    
+    def index_vocabulary(self):
+        default_index = get_field_types()[self.getFieldType()][1]
+        indexes = [['DEFAULT', 'Default ('+default_index+')']]
+        index_ids = [i['name'] for i in
+                        self.getParentDatabase().getIndex().Indexes.filtered_meta_types()]
+        for id in index_ids:
+            label = id
+            if id=="FieldIndex":
+                label += " (match exact value)"
+            if id=="ZCTextIndex":
+                label += " (match any contained words)"
+            if id=="KeywordIndex":
+                label += " (match list elements)"
+            indexes.append([id, label])
+        return indexes
 
     def getContentType(self, fieldname=None):
         # Make sure RICHTEXT fields are considered as html

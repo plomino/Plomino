@@ -159,7 +159,7 @@ class PlominoDesignManager(Persistent):
         for f_obj in self.getForms() :
             for f in f_obj.getFormFields():
                 if f.getToBeIndexed() :
-                    index.createFieldIndex(f.id, f.getFieldType())
+                    index.createFieldIndex(f.id, f.getFieldType(), indextype=f.getIndexType())
         logger.info('Field indexing initialized')
 
         #declare all the view formulas and columns index entries
