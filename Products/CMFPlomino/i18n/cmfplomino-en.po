@@ -192,7 +192,7 @@ msgstr "The field will be searchable"
 
 #. Default: "The way the field values will be indexed"
 msgid "CMFPlomino_help_FieldIndexType"
-msgstr ""
+msgstr "The way the field values will be indexed"
 
 #. Default: "Is this field mandatory? (empty value will not be allowed)"
 msgid "CMFPlomino_help_FieldMandatory"
@@ -497,7 +497,7 @@ msgstr "Add to index"
 
 #. Default: "Index type"
 msgid "CMFPlomino_label_FieldIndexType"
-msgstr ""
+msgstr "Index type"
 
 #. Default: "Mandatory"
 msgid "CMFPlomino_label_FieldMandatory"
