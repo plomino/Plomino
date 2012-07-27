@@ -427,9 +427,9 @@ class PlominoReplicationManager(Persistent):
         """ exports document to remoteUrl
             send object as a xml stream via HTTP multipart POST
         """
-        id=doc.id
-        xmlstring=self.exportAsXML(docids=[id])
-        result = authenticateAndPostToURL(remoteUrl+"/importFromXML", username, password, '%s.%s' % (id, 'xml'), xmlstring.encode('utf-8'))
+        i = doc.id
+        xmlstring=self.exportAsXML(docids=[i])
+        result = authenticateAndPostToURL(remoteUrl+"/importFromXML", username, password, '%s.%s' % (i, 'xml'), xmlstring.encode('utf-8'))
 
     security.declarePrivate('importableDoc')
     def importableDoc(self, docId, lastEditRemoteDocumentDate, lastReplicationDate, whowins):
@@ -464,11 +464,11 @@ class PlominoReplicationManager(Persistent):
         return res
 
     security.declarePrivate('importDocumentPull')
-    def importDocumentPull(self, id, remoteUrl, username, password):
+    def importDocumentPull(self, i, remoteUrl, username, password):
         """ imports document from remoteurl
             send object as a .zexp stream via HTTP multipart POST
         """
-        f=authenticateAndLoadURL(remoteUrl+"/exportAsXML?docids="+id, username, password)
+        f=authenticateAndLoadURL(remoteUrl+"/exportAsXML?docids="+i, username, password)
         self.importFromXML(xmlstring=f.read())
 
     security.declareProtected(EDIT_PERMISSION, 'getReplications')
@@ -504,14 +504,14 @@ class PlominoReplicationManager(Persistent):
         return res
 
     security.declareProtected(EDIT_PERMISSION, 'getReplication')
-    def getReplication(self, id):
+    def getReplication(self, i):
         """returns the replication Id being edited
         """
         res = None
-        #replication list
+        # replication list
         replications = self.getReplications()
-        #serach id
-        searchId = str(id)
+        # search id
+        searchId = str(i)
         if replications.has_key(searchId):
             res = replications[searchId]
         return res
@@ -735,7 +735,7 @@ class PlominoReplicationManager(Persistent):
             raise PlominoReplicationException, "Request is required" 
 
         #params
-        id = REQUEST.get('replicationId', None)
+        i = REQUEST.get('replicationId', None)
         name = REQUEST.get('name', None)
         remoteUrl = REQUEST.get('remoteUrl', None)
         username = REQUEST.get('username', None)
@@ -747,13 +747,13 @@ class PlominoReplicationManager(Persistent):
         cron = REQUEST.get('cron', None)
         mode = REQUEST.get('mode', None)
 
-        return self.buildReplication(id, name, remoteUrl, username, password, repType, whoWins, scheduled, cron, restricttoview, mode)
+        return self.buildReplication(i, name, remoteUrl, username, password, repType, whoWins, scheduled, cron, restricttoview, mode)
 
     security.declarePrivate('createReplication')
-    def buildReplication(self, id, name, remoteUrl, username, password, repType, whoWins, scheduled, cron, restricttoview, mode):
+    def buildReplication(self, i, name, remoteUrl, username, password, repType, whoWins, scheduled, cron, restricttoview, mode):
         """return an empty replication
         """
-        return self.checkReplication({'id': id,
+        return self.checkReplication({'id': i,
                                     'name' : name,
                                     'remoteUrl' : remoteUrl,
                                     'username' : username,
@@ -1098,7 +1098,7 @@ class PlominoReplicationManager(Persistent):
         if docids is None:
             docs = self.getAllDocuments()
         else:
-            docs = [self.getDocument(id) for id in docids]
+            docs = [self.getDocument(i) for i in docids]
 
         if targettype == 'file':
             xmldoc = impl.createDocument(None, "plominodatabase", None)
