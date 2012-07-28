@@ -26,6 +26,7 @@ from Persistence import Persistent
 from persistent.dict import PersistentDict
 from xml.dom.minidom import getDOMImplementation
 from xml.dom.minidom import parseString
+from xml.parsers.expat import ExpatError
 import xmlrpclib
 import codecs
 import os

@@ -30,6 +30,7 @@ from Persistence import Persistent
 from webdav.Lockable import wl_isLocked
 from xml.dom.minidom import getDOMImplementation
 from xml.dom.minidom import parseString
+from xml.parsers.expat import ExpatError
 import xmlrpclib
 from cStringIO import StringIO
 import traceback
