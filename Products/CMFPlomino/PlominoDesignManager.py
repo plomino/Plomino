@@ -51,6 +51,7 @@ from migration.migration import migrate
 from index.PlominoIndex import PlominoIndex
 from exceptions import PlominoScriptException, PlominoDesignException
 from PlominoUtils import asUnicode
+from PlominoUtils import escape_xml_illegal_chars
 from Products.CMFPlomino import get_utils
 from Products.CMFPlomino import plomino_profiler
 # get AT specific schemas for each Plomino class
@@ -806,7 +807,10 @@ class PlominoDesignManager(Persistent):
                 if len(items)>0:
                     # export field settings
                     str_items = xmlrpclib.dumps((items,), allow_none=1)
-                    dom_items = parseString(str_items)
+                    try: 
+                        dom_items = parseString(str_items)
+                    except ExpatError:
+                        dom_items = parseString(escape_xml_illegal_chars(str_items))
                     node.appendChild(dom_items.documentElement)
         if not isDatabase:
             elementslist = obj.objectIds()

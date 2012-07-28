@@ -20,6 +20,7 @@ from HttpUtils import authenticateAndLoadURL, authenticateAndPostToURL
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlomino.exceptions import PlominoReplicationException
 from Products.CMFPlomino.PlominoUtils import StringToDate
+from Products.CMFPlomino.PlominoUtils import escape_xml_illegal_chars
 import re
 from Persistence import Persistent
 from persistent.dict import PersistentDict
@@ -1156,7 +1157,10 @@ class PlominoReplicationManager(Persistent):
 
         # export items
         str_items = xmlrpclib.dumps((doc.items,), allow_none=True)
-        dom_items = parseString(str_items)
+        try:
+            dom_items = parseString(str_items)
+        except ExpatError:
+            dom_items = parseString(escape_xml_illegal_chars(str_items))
         node.appendChild(dom_items.documentElement)
 
         # export attached files
