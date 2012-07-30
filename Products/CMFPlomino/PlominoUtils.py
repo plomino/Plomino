@@ -10,18 +10,23 @@
 __author__ = """Eric BREHAULT <eric.brehault@makina-corpus.com>"""
 __docformat__ = 'plaintext'
 
-from DateTime import DateTime
+# Standard
+from email.Header import Header
+from email import message_from_string
 from time import strptime
-from Products.CMFCore.utils import getToolByName
-import htmlentitydefs as entity
-import urllib
 import cgi
 import csv
-from cStringIO import StringIO
-import Missing
-from email import message_from_string
-from email.Header import Header
 import decimal
+import htmlentitydefs as entity
+import Missing
+import urllib
+
+# Zope
+from cStringIO import StringIO
+from DateTime import DateTime
+
+# Plone
+from Products.CMFCore.utils import getToolByName
 
 try:
     import json
