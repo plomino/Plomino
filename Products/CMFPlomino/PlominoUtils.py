@@ -21,6 +21,7 @@ from cStringIO import StringIO
 import Missing
 from email import message_from_string
 from email.Header import Header
+import decimal
 
 try:
     import json
@@ -260,3 +261,13 @@ def json_dumps(obj):
 
 def json_loads(json_string):
     return json.loads(json_string)
+
+def decimal(v):
+    """ Expose the standard library's Decimal class. Useful for finances.
+    """
+    try:
+        v = decimal.Decimal(v)
+        return v
+    except decimal.InvalidOperation:
+        return 'ERROR'
+
