@@ -142,7 +142,8 @@ class PlominoCoreUtils:
                'isDocument',
                'cgi_escape',
                'json_dumps',
-               'json_loads']
+               'json_loads',
+               'decimal']
 
 component.provideUtility(PlominoCoreUtils, interfaces.IPlominoUtils)
 
