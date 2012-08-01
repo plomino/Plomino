@@ -16,7 +16,7 @@ from email import message_from_string
 from time import strptime
 import cgi
 import csv
-import decimal
+import decimal as stdlib_decimal
 import htmlentitydefs as entity
 import Missing
 import urllib
@@ -271,8 +271,8 @@ def decimal(v):
     """ Expose the standard library's Decimal class. Useful for finances.
     """
     try:
-        v = decimal.Decimal(v)
+        v = stdlib_decimal.Decimal(v)
         return v
-    except decimal.InvalidOperation:
+    except stdlib_decimal.InvalidOperation:
         return 'ERROR'
 
