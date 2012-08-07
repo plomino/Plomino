@@ -10,24 +10,21 @@
 __author__ = """Eric BREHAULT <eric.brehault@makina-corpus.com>"""
 __docformat__ = 'plaintext'
 
-# Standard
+from AccessControl import ClassSecurityInfo
+from Acquisition import Implicit
+from cStringIO import StringIO
+from DateTime import DateTime
 from email.Header import Header
 from email import message_from_string
+from Products.CMFCore.utils import getToolByName
 from time import strptime
-import re
 import cgi
 import csv
-import decimal as stdlib_decimal
+import decimal as std_decimal
+import Globals
 import htmlentitydefs as entity
 import Missing
 import urllib
-
-# Zope
-from cStringIO import StringIO
-from DateTime import DateTime
-
-# Plone
-from Products.CMFCore.utils import getToolByName
 
 try:
     import json
@@ -268,22 +265,19 @@ def json_dumps(obj):
 def json_loads(json_string):
     return json.loads(json_string)
 
+class plomino_decimal(std_decimal.Decimal, Implicit):
+    security = ClassSecurityInfo()
+    security.declareObjectPublic()
+    security.declarePublic('as_tuple')
+    security.declarePublic('quantize')
+
+Globals.InitializeClass(plomino_decimal)
+
 def decimal(v):
     """ Expose the standard library's Decimal class. Useful for finances.
     """
     try:
-        v = stdlib_decimal.Decimal(v)
+        v = plomino_decimal(v)
         return v
-    except stdlib_decimal.InvalidOperation:
+    except std_decimal.InvalidOperation:
         return 'ERROR'
-
-# From http://lsimons.wordpress.com/2011/03/17/stripping-illegal-characters-out-of-xml-in-python/
-_illegal_xml_chars_RE = re.compile(u'[\x00-\x08\x0b\x0c\x0e-\x1F\uD800-\uDFFF\uFFFE\uFFFF]')
-def escape_xml_illegal_chars(val, replacement='?'):
-    """Filter out characters that are illegal in XML.
-    
-    Looks for any character in val that is not allowed in XML
-    and replaces it with replacement ('?' by default).
-    """
-    return _illegal_xml_chars_RE.sub(replacement, val)
-
