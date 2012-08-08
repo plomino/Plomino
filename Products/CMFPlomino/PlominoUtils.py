@@ -10,13 +10,10 @@
 __author__ = """Eric BREHAULT <eric.brehault@makina-corpus.com>"""
 __docformat__ = 'plaintext'
 
-from AccessControl import ClassSecurityInfo
-from Acquisition import Implicit
+# Standard
 from cStringIO import StringIO
-from DateTime import DateTime
 from email.Header import Header
 from email import message_from_string
-from Products.CMFCore.utils import getToolByName
 from time import strptime
 import cgi
 import csv
@@ -25,6 +22,14 @@ import Globals
 import htmlentitydefs as entity
 import Missing
 import urllib
+
+# Zope
+from AccessControl import ClassSecurityInfo
+from Acquisition import Implicit
+from DateTime import DateTime
+
+# Plone
+from Products.CMFCore.utils import getToolByName
 
 try:
     import json
@@ -264,6 +269,15 @@ def json_dumps(obj):
 
 def json_loads(json_string):
     return json.loads(json_string)
+
+# From http://lsimons.wordpress.com/2011/03/17/stripping-illegal-characters-out-of-xml-in-python/
+_illegal_xml_chars_RE = re.compile(u'[\x00-\x08\x0b\x0c\x0e-\x1F\uD800-\uDFFF\uFFFE\uFFFF]')
+def escape_xml_illegal_chars(val, replacement='?'):
+    """Filter out characters that are illegal in XML.
+    Looks for any character in val that is not allowed in XML
+    and replaces it with replacement ('?' by default).
+    """
+    return _illegal_xml_chars_RE.sub(replacement, val)
 
 class plomino_decimal(std_decimal.Decimal, Implicit):
     security = ClassSecurityInfo()
