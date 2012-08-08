@@ -21,6 +21,7 @@ import decimal as std_decimal
 import Globals
 import htmlentitydefs as entity
 import Missing
+import re
 import urllib
 
 # Zope
