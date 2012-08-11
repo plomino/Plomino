@@ -1,12 +1,13 @@
 from plone.app.testing import PloneSandboxLayer
 from plone.app.testing import PLONE_FIXTURE
 from plone.app.testing import IntegrationTesting, FunctionalTesting
+from plone.app.testing import selenium_layers
 
 from plone.testing import z2
 
 class Plomino(PloneSandboxLayer):
 
-    defaultBases = (PLONE_FIXTURE,)
+    defaultBases = (selenium_layers.SELENIUM_FIXTURE, PLONE_FIXTURE)
 
     def setUpZope(self, app, configurationContext):
         # Load ZCML
@@ -29,3 +30,4 @@ class Plomino(PloneSandboxLayer):
 PLOMINO_FIXTURE = Plomino()
 PLOMINO_INTEGRATION_TESTING = IntegrationTesting(bases=(PLOMINO_FIXTURE,), name="Plomino:Integration")
 PLOMINO_FUNCTIONAL_TESTING = FunctionalTesting(bases=(PLOMINO_FIXTURE,), name="Plomino:Functional")
+PLOMINO_SELENIUM_TESTING = FunctionalTesting(bases=(PLOMINO_FIXTURE,), name="Plomino:Selenium")

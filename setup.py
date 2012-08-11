@@ -34,7 +34,8 @@ setup(name='Products.CMFPlomino',
       ],
       extras_require={
                       'test': ['plone.app.testing',
-                               'Products.PloneTestCase'],
+                               'Products.PloneTestCase',
+                               'selenium'],
       },
       entry_points="""
       # -*- Entry points: -*-
