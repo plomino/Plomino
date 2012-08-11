@@ -30,6 +30,7 @@ setup(name='Products.CMFPlomino',
           'collective.js.jqueryui',
           'collective.js.datatables',
           'collective.codemirror',
+          'Plone',
       ],
       extras_require={
                       'test': ['plone.app.testing',
