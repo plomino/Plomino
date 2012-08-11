@@ -19,6 +19,8 @@ class Plomino(PloneSandboxLayer):
     def setUpPloneSite(self, portal):
         # Install into Plone site using portal_setup
         self.applyProfile(portal, 'Products.CMFPlomino:default')
+        portal.invokeFactory('PlominoDatabase', id='mydb')
+        portal.mydb.at_post_create_script()
 
     def tearDownZope(self, app):
         # Uninstall product
