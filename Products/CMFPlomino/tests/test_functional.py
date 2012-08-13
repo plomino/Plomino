@@ -27,12 +27,18 @@ class IntegrationTest(unittest.TestCase):
         selenium_layers.click(sel, '//a[contains(text(), "Test Hide")]')
         selenium_layers.type(sel, 'a', '123')
         selenium_layers.click(sel, "//option[@value='A']")
+        # Submitting now should warn us that 'c' has no value
+        selenium_layers.submit(sel, 'plomino_form')
+        popup = sel.find_element_by_id('plominoValidationPopup')
+        sel.find_element_by_xpath("//strong[contains(text(), 'c is mandatory')]")
+        # But when we fill it in, it should work
         selenium_layers.type(sel, 'c', 'A value for c!')
         selenium_layers.submit(sel, 'plomino_form')
-        self.assertRaises(sel.find_element_by_id('plominoValidationPopup'), NoSuchElementException)
-
-        # Simulate form submission with all visible and required fields filled
         # Empty hidden required fields should not trigger an error
+        # XXX Here we should check nonzero length on mydb.plomino_documents.objectIds()
+        # but for some reasons (isolated transacitons?) it doesn't show up
+        self.assertTrue('plomino_documents' in sel.current_url)
+
 
 
 

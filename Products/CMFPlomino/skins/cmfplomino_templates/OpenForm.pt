@@ -20,8 +20,27 @@
     <script type="text/javascript" tal:condition="here/hasDynamicHidewhen">
     	function refreshHidewhen() {
         	var onsuccess = function(data, textStatus, xhr) {
-            	for (var hw in data)
-                	jq('.hidewhen-' + hw).css('display', data[hw]?'none':'block');
+                // Hide appropriate divs and build a list of hidden field names
+                var hidden_fields = [];
+                for (var hw in data) {
+                    jq('.hidewhen-' + hw).css('display', data[hw]?'none':'block');
+                    if (data[hw]) {
+                        jq('.hidewhen-' + hw +' input').each(function() {
+                          hidden_fields.push(jq(this).attr('name'));
+                        })
+                    }
+                }
+                // Include info in the form to tell apart hidden and shown fields
+                var form = jq('.hidewhen-' + hw).parents('form');
+                var field = form.find('input[name="hideWhen_hidden_fields"]');
+                if (!field.length) {
+                    field = jq('<input />');
+                    form.append(field.attr({
+                        'type':'hidden',
+                        'name': 'hideWhen_hidden_fields'
+                    }));
+                }
+                field.attr('value', JSON.stringify(hidden_fields));
         	}
         	jq.post('computehidewhens', jq('#plomino_form').serialize(), onsuccess, 'json');
     	}

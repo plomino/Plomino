@@ -813,8 +813,11 @@ class PlominoForm(ATFolder):
         """
         errors=[]
         fields = self.getFormFields(includesubforms=True, doc=doc, applyhidewhen=True)
+        js_hidden_fields = json.loads(REQUEST.form.get('hideWhen_hidden_fields', '[]'))
         for f in fields:
             fieldname = f.id
+            if fieldname in js_hidden_fields:
+                continue # Ignore fields that were hidden by JavaScript
             fieldtype = f.getFieldType()
             submittedValue = REQUEST.get(fieldname)
 
