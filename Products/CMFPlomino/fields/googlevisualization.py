@@ -21,6 +21,19 @@ from Products.CMFPlomino.PlominoUtils import asList
 
 from base import IBaseField, BaseField, BaseForm
 
+js_func_template = """\
+%(js_settings)s
+
+function %(chartid)s_getCells() {
+    %(chartid)s.addRows(%(num_rows));
+    %(rows)s
+}"""
+
+js_row_template = """\
+    %(chartid)s.setValue(%(row_nr)s, %(col_nr)s, %(cell)s);
+"""
+
+
 class IGooglevisualizationField(IBaseField):
     """
     Google chart field schema
@@ -118,17 +131,24 @@ class GooglevisualizationField(BaseField):
                 tmp.append(valuelist)
             datatable = tmp
             
-        js = self.jssettings + "\n"
-        js = js + "function " + self.chartid + "_getCells() {\n"
-        js = js + self.chartid+".addRows(" + str(len(datatable)) + ");\n"
+        rows = []
         i = 0
         for row in datatable:
             j = 0
             for cell in row:
-                js = js + self.chartid+".setValue(" + str(i) + ", " + str(j) + ", " + cell + ");\n"
+                rows.append(js_row_template % {
+                        'chartid': self.chartid,
+                        'row_nr': str(i),
+                        'col_nr': str(j),
+                        'cell': cell})
                 j = j + 1
             i = i + 1
-        js = js + "}"
+
+        js = js_func_template % {
+                'js_settings': self.js_settings,
+                'chartid': self.chartid,
+                'num_rows': str(len(datatable)),
+                'rows': ''.join(rows)}
         return js
 
 
