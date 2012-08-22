@@ -1,5 +1,7 @@
 from plone.app.testing import PloneSandboxLayer
 from plone.app.testing import PLONE_FIXTURE
+from plone.app.testing import TEST_USER_ID, TEST_USER_NAME
+from plone.app.testing import login, setRoles
 from plone.app.testing import IntegrationTesting, FunctionalTesting
 from plone.app.testing import selenium_layers
 
@@ -20,8 +22,13 @@ class Plomino(PloneSandboxLayer):
     def setUpPloneSite(self, portal):
         # Install into Plone site using portal_setup
         self.applyProfile(portal, 'Products.CMFPlomino:default')
+
+        setRoles(portal, TEST_USER_ID, ['Manager'])
+        login(portal, TEST_USER_NAME)
+
         portal.invokeFactory('PlominoDatabase', id='mydb')
         portal.mydb.at_post_create_script()
+        setRoles(portal, TEST_USER_ID, ['Member'])
 
     def tearDownZope(self, app):
         # Uninstall product
