@@ -7,7 +7,7 @@ from plone.app.testing import selenium_layers
 
 from plone.testing import z2
 
-class Plomino(PloneSandboxLayer):
+class PlominoSelenium(PloneSandboxLayer):
 
     defaultBases = (selenium_layers.SELENIUM_FIXTURE, PLONE_FIXTURE)
 
@@ -34,7 +34,5 @@ class Plomino(PloneSandboxLayer):
         # Uninstall product
         z2.uninstallProduct(app, 'Products.CMFPlomino')
 
-PLOMINO_FIXTURE = Plomino()
-PLOMINO_INTEGRATION_TESTING = IntegrationTesting(bases=(PLOMINO_FIXTURE,), name="Plomino:Integration")
-PLOMINO_FUNCTIONAL_TESTING = FunctionalTesting(bases=(PLOMINO_FIXTURE,), name="Plomino:Functional")
-PLOMINO_SELENIUM_TESTING = FunctionalTesting(bases=(PLOMINO_FIXTURE,), name="Plomino:Selenium")
+PLOMINO_SELENIUM_FIXTURE = PlominoSelenium()
+PLOMINO_SELENIUM_TESTING = FunctionalTesting(bases=(PLOMINO_SELENIUM_FIXTURE,), name="Plomino:Selenium")

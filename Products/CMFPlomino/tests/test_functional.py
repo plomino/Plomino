@@ -9,13 +9,13 @@ from plone.app.testing import TEST_USER_NAME, TEST_USER_PASSWORD
 
 from selenium.common.exceptions import NoSuchElementException
 
-from Products.CMFPlomino.testing import PLOMINO_FUNCTIONAL_TESTING
+from Products.CMFPlomino.testing import PLOMINO_SELENIUM_TESTING
 
 DIRPATH = join(dirname(__file__), 'filestoimport')
 
 class IntegrationTest(unittest.TestCase):
 
-    layer = PLOMINO_FUNCTIONAL_TESTING
+    layer = PLOMINO_SELENIUM_TESTING
 
     def test_hide_when(self):
         "Dummy test"
