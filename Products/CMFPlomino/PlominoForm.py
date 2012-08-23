@@ -813,7 +813,10 @@ class PlominoForm(ATFolder):
         """
         errors=[]
         fields = self.getFormFields(includesubforms=True, doc=doc, applyhidewhen=True)
-        js_hidden_fields = json.loads(REQUEST.form.get('hideWhen_hidden_fields', '[]'))
+        if hasattr(REQUEST, 'form'): # check needed to make plomino.txt doctests pass
+            js_hidden_fields = json.loads(REQUEST.form.get('hideWhen_hidden_fields', '[]'))
+        else:
+            js_hidden_fields = []
         for f in fields:
             fieldname = f.id
             if fieldname in js_hidden_fields:
