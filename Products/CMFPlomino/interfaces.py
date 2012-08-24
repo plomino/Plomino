@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-
+from zope.interface.interface import Attribute
 from zope.interface import Interface
 
 class IPlominoDatabase(Interface):
@@ -46,9 +46,11 @@ class IPlominoCache(Interface):
     """Marker interface for PlominoCache
     """
 
-class IXMLImportExport(Interface):
-    "Provides import/export to/from XML"
-    def export_xml():
-        "Returns an XML string representing custom exportable properties"
+class IXMLImportExportSubscriber(Interface):
+    """Provides import/export to/from XML.
+       Subscribers to IXMLExportEvent MUST implement this interface"""
+    def __call__():
+        """Attahces an XML string representing custom exportable properties
+           to the 'xml_strings' attribute of the event"""
     def import_xml(xml_string):
-        "Applies information contained in xml string (as returned by export_xml)"
+        "Applies information contained in xml string (as returned by __call__)"

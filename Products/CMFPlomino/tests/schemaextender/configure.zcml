@@ -6,6 +6,8 @@
   <adapter factory=".extender.PlominoExtender"
            provides="archetypes.schemaextender.interfaces.ISchemaExtender" /> 
 
-  <adapter factory=".importexport.ExtendedFieldImportExporter" />
+  <subscriber for="Products.CMFPlomino.interfaces.IPlominoField" 
+              factory=".importexport.ExtendedFieldImportExporter"
+              provides="Products.CMFPlomino.interfaces.IXMLImportExportSubscriber" />
 
 </configure>

@@ -1,15 +1,13 @@
-from Products.CMFPlomino.interfaces import IXMLImportExport
-from Products.CMFPlomino.interfaces import IPlominoField
-from zope.component import adapts
 from zope.interface import implements
 from xml.dom.minidom import getDOMImplementation
 from xml.dom.minidom import parseString
 
+from Products.CMFPlomino.interfaces import IXMLImportExportSubscriber
+
 from archetypes.schemaextender.interfaces import IExtensionField
 
 class ExtendedFieldImportExporter(object):
-    adapts(IPlominoField)
-    implements(IXMLImportExport)
+    implements(IXMLImportExportSubscriber)
     def __init__(self, context):
         self.context = context
     @property

@@ -1,10 +1,9 @@
 import unittest
 from Products.CMFPlomino.testing import PLOMINO_FIXTURE
 from plone.app.testing import IntegrationTesting
-from plone.testing import Layer
 from plone.app.testing import PloneSandboxLayer
 
-from Products.CMFPlomino.interfaces import IXMLImportExport
+from Products.CMFPlomino.tests.schemaextender.importexport import ExtendedFieldImportExporter
 
 class SchemaExtenderLayer(PloneSandboxLayer):
 
@@ -38,7 +37,7 @@ class IntegrationTest(unittest.TestCase):
     def test_adapter(self):
         self.create_field()
         field = self.layer['portal'].mydb.frm1.a_field
-        adapter = IXMLImportExport(field)
+        adapter = ExtendedFieldImportExporter(field)
         xml = adapter.export_xml()
         self.assertTrue("A value for the custom field" in xml)
         xml = xml.replace("A value for the custom field", "A NEW VALUE")
