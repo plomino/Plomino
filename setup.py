@@ -33,9 +33,11 @@ setup(name='Products.CMFPlomino',
           'Products.CMFPlone',
       ],
       extras_require={
-                      'test': ['plone.app.testing',
-                               'Products.PloneTestCase',
-                               'selenium'],
+        'test': ['plone.app.testing',
+                 'Products.PloneTestCase',
+                 'selenium',
+                 'archetypes.schemaextender' # to test import/export of extended fields
+        ],
       },
       entry_points="""
       # -*- Entry points: -*-

@@ -45,3 +45,10 @@ class IPlominoUtils(Interface):
 class IPlominoCache(Interface):
     """Marker interface for PlominoCache
     """
+
+class IXMLImportExport(Interface):
+    "Provides import/export to/from XML"
+    def export_xml():
+        "Returns an XML string representing custom exportable properties"
+    def import_xml(xml_string):
+        "Applies information contained in xml string (as returned by export_xml)"

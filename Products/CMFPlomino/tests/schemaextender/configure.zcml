@@ -1,0 +1,11 @@
+<configure
+    xmlns="http://namespaces.zope.org/zope">
+
+  <include package="archetypes.schemaextender" />
+
+  <adapter factory=".extender.PlominoExtender"
+           provides="archetypes.schemaextender.interfaces.ISchemaExtender" /> 
+
+  <adapter factory=".importexport.ExtendedFieldImportExporter" />
+
+</configure>
