@@ -10,9 +10,6 @@
 __author__ = """Xavier PERROT <xavier.perrot@makina-corpus.com>"""
 __docformat__ = 'plaintext'
 
-from Products.CMFPlomino.config import *
-from Products.CMFPlomino.PlominoDocument import PlominoDocument
-
 def PlominoDocumentRemoveEventHandler(obj, event):
     """remove event handler for plomino documents
     comments from plone/app/linkintegrity/handlers.py
