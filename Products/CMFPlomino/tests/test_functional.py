@@ -7,7 +7,7 @@ import unittest2 as unittest
 from plone.app.testing import selenium_layers
 from plone.app.testing import TEST_USER_NAME, TEST_USER_PASSWORD
 
-from selenium.common.exceptions import NoSuchElementException
+from selenium.webdriver.support.ui import WebDriverWait
 
 from Products.CMFPlomino.testing import PLOMINO_SELENIUM_TESTING
 
@@ -28,7 +28,10 @@ class IntegrationTest(unittest.TestCase):
         selenium_layers.type(sel, '__ac_name', TEST_USER_NAME)
         selenium_layers.type(sel, '__ac_password', TEST_USER_PASSWORD)
         selenium_layers.click(sel, '//form[@id="login_form"]//input[@type="submit"]')
-        selenium_layers.click(sel, '//a[contains(text(), "Test Hide")]')
+        link_xpath = '//a[contains(text(), "Test Hide")]'
+        element = WebDriverWait(sel, 10).until(
+            lambda driver : driver.find_element_by_xpath(link_xpath))
+        element.click()
         selenium_layers.type(sel, 'a', '123')
         selenium_layers.click(sel, "//option[@value='A']")
         # Submitting now should warn us that 'c' has no value
