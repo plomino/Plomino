@@ -15,6 +15,7 @@ from cStringIO import StringIO
 from email.Header import Header
 from email import message_from_string
 from time import strptime
+from types import StringTypes
 import cgi
 import csv
 import decimal as std_decimal
@@ -291,6 +292,8 @@ Globals.InitializeClass(plomino_decimal)
 def decimal(v):
     """ Expose the standard library's Decimal class. Useful for finances.
     """
+    if type(v) not in StringTypes:
+        v = str(v)
     try:
         v = plomino_decimal(v)
         return v
