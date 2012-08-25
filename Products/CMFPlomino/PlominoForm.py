@@ -472,14 +472,18 @@ class PlominoForm(ATFolder):
 
         return html
 
+    security.declarePrivate('_get_html_content')
+    def _get_html_content(self):
+        plone_tools = getToolByName(self, 'plone_utils')
+        encoding = plone_tools.getSiteEncoding()
+        html_content = self.getField('FormLayout').getRaw(self).decode(encoding)
+        return html_content.replace('\n', '')
+
     security.declareProtected(READ_PERMISSION, 'applyHideWhen')
     def applyHideWhen(self, doc=None, silent_error=True):
         """evaluate hide-when formula and return resulting layout
         """
-        plone_tools = getToolByName(self, 'plone_utils')
-        encoding = plone_tools.getSiteEncoding()
-        html_content = self.getField('FormLayout').getRaw(self).decode(encoding)
-        html_content = html_content.replace('\n', '')
+        html_content = self._get_html_content()
 
         # remove the hidden content
         for hidewhen in self.getHidewhenFormulas():
@@ -698,10 +702,7 @@ class PlominoForm(ATFolder):
         if applyhidewhen:
             html_content = self.applyHideWhen(doc)
         else:
-            plone_tools = getToolByName(self, 'plone_utils')
-            encoding = plone_tools.getSiteEncoding()
-            html_content = self.getField('FormLayout').getRaw(self).decode(encoding)
-            html_content = html_content.replace('\n', '')
+            html_content = self._get_html_content()
 
         r = re.compile('<span class="plominoSubformClass">([^<]+)</span>')
         return [i.strip() for i in r.findall(html_content)]
@@ -807,20 +808,32 @@ class PlominoForm(ATFolder):
         else:
             return self.errors_json(errors=json.dumps({'success': True}))
         
+
+    security.declarePrivate('_get_js_hidden_fields')
+    def _get_js_hidden_fields(self, REQUEST, doc):
+        hidden_fields = []
+        hidewhens = json.loads(self.getHidewhenAsJSON(REQUEST))
+        html_content = self._get_html_content()
+        for hidewhenName, doit in hidewhens.items():
+            if not doit: # Only consider True hidewhens
+                continue
+            start = '<span class="plominoHidewhenClass">start:'+hidewhenName+'</span>'
+            end = '<span class="plominoHidewhenClass">end:'+hidewhenName+'</span>'
+            for hiddensection in re.findall(start + '(.*?)' + end, html_content):
+                hidden_fields += re.findall(
+                    '<span class="plominoFieldClass">([^<]+)</span>', hiddensection )
+        return hidden_fields
+
     security.declarePublic('validateInputs')
     def validateInputs(self, REQUEST, doc=None):
         """
         """
         errors=[]
         fields = self.getFormFields(includesubforms=True, doc=doc, applyhidewhen=True)
-        if hasattr(REQUEST, 'form'): # check needed to make plomino.txt doctests pass
-            js_hidden_fields = json.loads(REQUEST.form.get('hideWhen_hidden_fields', '[]'))
-        else:
-            js_hidden_fields = []
+        hidden_fields = self._get_js_hidden_fields(REQUEST, doc)
+        fields = [field for field in fields if field.getId() not in hidden_fields]
         for f in fields:
             fieldname = f.id
-            if fieldname in js_hidden_fields:
-                continue # Ignore fields that were hidden by JavaScript
             fieldtype = f.getFieldType()
             submittedValue = REQUEST.get(fieldname)
 
@@ -969,5 +982,3 @@ class PlominoForm(ATFolder):
         return [''] +  [v.id for v in views]
 
 registerType(PlominoForm, PROJECTNAME)
-
-
