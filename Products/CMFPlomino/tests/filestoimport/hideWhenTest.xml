@@ -148,6 +148,27 @@ return v!='B']]></Formula>
           <isDynamicHidewhen type="Products.Archetypes.Field.BooleanField">True</isDynamicHidewhen>
         </element>
       </elements>
+     </element>
+     <element id="with_subform" title="Dynamic Hidewhen in a subform" type="PlominoForm">
+       <id type="Products.Archetypes.Field.StringField">with_subform</id>
+       <onCreateDocument type="Products.Archetypes.Field.TextField"><![CDATA[]]></onCreateDocument>
+       <onOpenDocument type="Products.Archetypes.Field.TextField"><![CDATA[]]></onOpenDocument>
+       <onSaveDocument type="Products.Archetypes.Field.TextField"><![CDATA[]]></onSaveDocument>
+       <onDeleteDocument type="Products.Archetypes.Field.TextField"><![CDATA[]]></onDeleteDocument>
+       <onSearch type="Products.Archetypes.Field.TextField"><![CDATA[]]></onSearch>
+       <beforeCreateDocument type="Products.Archetypes.Field.TextField"><![CDATA[]]></beforeCreateDocument>
+       <FormLayout type="Products.Archetypes.Field.TextField"><![CDATA[<p><span class="plominoSubformClass">form1</span></p>]]></FormLayout>
+       <DocumentTitle type="Products.Archetypes.Field.TextField"><![CDATA[]]></DocumentTitle>
+       <DocumentId type="Products.Archetypes.Field.TextField"><![CDATA[]]></DocumentId>
+       <ActionBarPosition type="Products.Archetypes.Field.StringField">TOP</ActionBarPosition>
+       <HideDefaultActions type="Products.Archetypes.Field.BooleanField">False</HideDefaultActions>
+       <HideInMenu type="Products.Archetypes.Field.BooleanField">False</HideInMenu>
+       <isSearchForm type="Products.Archetypes.Field.BooleanField">False</isSearchForm>
+       <isPage type="Products.Archetypes.Field.BooleanField">False</isPage>
+       <SearchView type="Products.Archetypes.Field.StringField"/>
+       <SearchFormula type="Products.Archetypes.Field.TextField"><![CDATA[]]></SearchFormula>
+       <Position type="Products.Archetypes.Field.IntegerField"/>
+       <excludeFromNav type="Products.Archetypes.Field.BooleanField">False</excludeFromNav>
     </element>
   </design>
 </plominodatabase>

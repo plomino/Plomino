@@ -1,13 +1,13 @@
 from os.path import dirname, join
 from datetime import datetime
+from urllib import quote
+from base64 import encodestring
 import time
 
 import unittest2 as unittest
 
 from plone.app.testing import selenium_layers
 from plone.app.testing import TEST_USER_NAME, TEST_USER_PASSWORD
-
-from selenium.webdriver.support.ui import WebDriverWait
 
 from Products.CMFPlomino.testing import PLOMINO_SELENIUM_TESTING
 
@@ -17,26 +17,40 @@ class IntegrationTest(unittest.TestCase):
 
     layer = PLOMINO_SELENIUM_TESTING
 
-    def test_hide_when(self):
-        "Dummy test"
+    def get_auth_cookie(self, username, password):
+        return quote(encodestring(
+            '%s:%s' % (username.encode('hex'), password.encode('hex'))
+        ).rstrip())
+
+    def authenticate(self, sel, username=TEST_USER_NAME, password=TEST_USER_PASSWORD):
+        # Selenium requires to be on an HTML page for this to work
+        sel.add_cookie({'name':'__ac', 'value':self.get_auth_cookie(username, password)})
+
+    def test_hidewhen(self):
         # Import our sample database
         mydb = self.layer['portal'].mydb
         sel = self.layer['selenium']
         import_file('hideWhenTest.xml', mydb)
-        # Navigate to the Plomino db
-        selenium_layers.open(sel, mydb.absolute_url())
-        selenium_layers.type(sel, '__ac_name', TEST_USER_NAME)
-        selenium_layers.type(sel, '__ac_password', TEST_USER_PASSWORD)
-        selenium_layers.click(sel, '//form[@id="login_form"]//input[@type="submit"]')
-        link_xpath = '//a[contains(text(), "Test Hide")]'
-        element = WebDriverWait(sel, 10).until(
-            lambda driver : driver.find_element_by_xpath(link_xpath))
-        element.click()
+        selenium_layers.open(sel, self.layer['portal'].absolute_url())
+        self.authenticate(sel)
+        selenium_layers.open(sel, mydb.form1.absolute_url())
+        self.do_check_dynamic_hidewhen(sel)
+
+    def test_nested_hidewhen(self):
+        mydb = self.layer['portal'].mydb
+        sel = self.layer['selenium']
+        import_file('hideWhenTest.xml', mydb)
+        selenium_layers.open(sel, self.layer['portal'].absolute_url())
+        self.authenticate(sel)
+        selenium_layers.open(sel, mydb.with_subform.absolute_url())
+        self.do_check_dynamic_hidewhen(sel)
+
+    def do_check_dynamic_hidewhen(self, sel):
         selenium_layers.type(sel, 'a', '123')
         selenium_layers.click(sel, "//option[@value='A']")
         # Submitting now should warn us that 'c' has no value
         sel.find_element_by_xpath("//input[@name='plomino_save']").click()
-        popup = sel.find_element_by_id('plominoValidationPopup')
+        sel.find_element_by_id('plominoValidationPopup')
         sel.find_element_by_xpath("//strong[contains(text(), 'c is mandatory')]")
         self.close_error_popup()
         # But when we fill it in, it should work

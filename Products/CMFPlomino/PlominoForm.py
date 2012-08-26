@@ -529,6 +529,10 @@ class PlominoForm(ATFolder):
         for hidewhen in self.getHidewhenFormulas():
            if getattr(hidewhen, 'isDynamicHidewhen', False):
                return True
+        for subformname in self.getSubforms():
+            form = self.getParentDatabase().getForm(subformname)
+            if form.hasDynamicHidewhen():
+                return True
         return False
 
     security.declareProtected(READ_PERMISSION, 'getHidewhenAsJSON')
@@ -546,6 +550,10 @@ class PlominoForm(ATFolder):
                     #if error, we hide anyway
                     isHidden = True
                 result[hidewhen.id] = isHidden 
+        for subformname in self.getSubforms():
+            form = self.getParentDatabase().getForm(subformname)
+            form_hidewhens = json.loads(form.getHidewhenAsJSON(REQUEST))
+            result.update(form_hidewhens)
 
         return json.dumps(result)
 
@@ -822,6 +830,9 @@ class PlominoForm(ATFolder):
             for hiddensection in re.findall(start + '(.*?)' + end, html_content):
                 hidden_fields += re.findall(
                     '<span class="plominoFieldClass">([^<]+)</span>', hiddensection )
+        for subformname in self.getSubforms(doc):
+            subform = self.getParentDatabase().getForm(subformname)
+            hidden_fields += subform._get_js_hidden_fields(REQUEST, doc)
         return hidden_fields
 
     security.declarePublic('validateInputs')
