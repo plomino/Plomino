@@ -4,9 +4,6 @@ python:
 install:
   - python bootstrap.py
   - bin/buildout -Nc travis.cfg
-before_script:
-  - "export DISPLAY=:99.0"
-  - "sh -e /etc/init.d/xvfb start"
 script:
   - bin/test -s Products.CMFPlomino
 notifications:
