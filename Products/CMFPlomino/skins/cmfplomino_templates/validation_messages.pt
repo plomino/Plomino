@@ -6,6 +6,7 @@
 </div>
 <script>
 jq("#plomino_form").submit(function(){
+	var form = this;
     var validation_callback = function(data) {
 			if(data['success']) {
 				jq(this).addClass('plomino-valid');
@@ -18,6 +19,8 @@ jq("#plomino_form").submit(function(){
 				});
 				jq(popup).children("strong").html(message);
 				popup.dialog({show: "blind", height: 350, width: 530});
+				// Avoid Plone message "You already submitted this form", since we didn't
+				jq(form).find('input[type="submit"]').removeClass('submitting');
 			}
 		}
 	if(jq(this).hasClass('plomino-valid')) {
