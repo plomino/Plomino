@@ -224,39 +224,41 @@ class PlominoField(BaseContent, BrowserDefaultMixin):
         fieldvalue = adapt.getFieldValue(form, doc, editmode, creation, request)
 
         # get the rendering template
-        pt=None
+        pt = None
         if mode=="EDITABLE" and editmode:
-            templatemode="Edit"
+            templatemode = "Edit"
+            t = self.getFieldEditTemplate()
             # if custom template, use it
-            if not self.getFieldEditTemplate()=="":
-                pt=getattr(self.resources, self.getFieldEditTemplate()).__of__(self)
+            if t:
+                pt = getattr(self.resources, t).__of__(self)
         else:
-            templatemode="Read"
+            templatemode = "Read"
             # if custom template, use it
-            if not self.getFieldReadTemplate()=="":
-                pt=getattr(self.resources, self.getFieldReadTemplate()).__of__(self)
+            t = self.getFieldReadTemplate()
+            if t:
+                pt = getattr(self.resources, t).__of__(self)
 
-        # if no custom template provided, get the template associated to the field type
-        if pt is None:
+        # If no custom template provided, get the template associated with the field type
+        if not pt:
             if templatemode=="Read" and hasattr(adapt, 'read_template'):
                 pt = adapt.read_template
             elif templatemode=="Edit" and hasattr(adapt, 'edit_template'):
                 pt = adapt.edit_template
             else:
                 fieldType = self.FieldType
-                pt=self.getRenderingTemplate(fieldType+"Field"+templatemode)
-                if pt is None:
-                    pt=self.getRenderingTemplate("DefaultField"+templatemode)
+                pt = self.getRenderingTemplate(fieldType+"Field"+templatemode)
+                if not pt:
+                    pt = self.getRenderingTemplate("DefaultField"+templatemode)
 
         selection = self.getSettings().getSelectionList(target)
 
         try:
             return pt(fieldname=fieldname,
-                fieldvalue=fieldvalue,
-                selection=selection,
-                field=self,
-                doc=target
-                )
+                    fieldvalue=fieldvalue,
+                    selection=selection,
+                    field=self,
+                    doc=target
+                    )
         except Exception, e:
             self.traceRenderingErr(e, self)
             return ""
