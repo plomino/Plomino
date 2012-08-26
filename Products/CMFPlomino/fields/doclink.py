@@ -125,7 +125,7 @@ class DoclinkField(BaseField):
     def tojson(self, selectionlist):
         """Return a JSON table storing documents to be displayed
         """
-        if self.sourceview is not None:
+        if self.sourceview:
             sourceview = self.context.getParentDatabase().getView(self.sourceview)
             brains = sourceview.getAllDocuments(getObject=False)
             columns = [col for col in sourceview.getColumns() if not(col.getHiddenColumn())]
