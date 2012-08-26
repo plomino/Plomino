@@ -569,7 +569,7 @@ class PlominoView(ATFolder):
 
     security.declarePublic('tojson')
     def tojson(self, REQUEST=None):
-        """Returns a JSON representation of view data 
+        """ Returns a JSON representation of view data 
         """
         data = []
         categorized = self.getCategorized()
@@ -623,8 +623,10 @@ class PlominoView(ATFolder):
 
     security.declarePublic('getIndexKey')
     def getIndexKey(self, columnName):
-        """Returns an index key depending of which one exists.
-        It can be a computed index (PlominoViewColumn_) or a link to a column. 
+        """ Returns an index key if one exists.
+
+        We try to find a computed index ('PlominoViewColumn_*'); 
+        if not found, we look for a field.
         """
         key = 'PlominoViewColumn_%s_%s' % (self.getViewName(), columnName)
         if key not in self.getParentDatabase().plomino_index.Indexes:
@@ -640,6 +642,3 @@ class PlominoView(ATFolder):
         
 registerType(PlominoView, PROJECTNAME)
 # end of class PlominoView
-
-
-
