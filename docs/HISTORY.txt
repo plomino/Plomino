@@ -1,6 +1,14 @@
 Changelog
 =========
 
+1.16 (2012-08-27)
+-----------------
+* server-side pagination and filtering for dynamic views
+* new Plomino utils: decimal and escape_xml_illegal_chars
+* offer selection lists instead of free text entries in various design parameters (source view, sorting column, ...)
+* re-sync all .po
+* Fix getItem to return a deepcopy
+
 1.15.1 (2012-05-23)
 -------------------
 * Migration fix: initialize and refresh documents as BTreeFolder properly
