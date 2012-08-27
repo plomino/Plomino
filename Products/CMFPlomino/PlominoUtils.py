@@ -289,7 +289,7 @@ class plomino_decimal(std_decimal.Decimal, Implicit):
 
 Globals.InitializeClass(plomino_decimal)
 
-def decimal(v):
+def decimal(v='0'):
     """ Expose the standard library's Decimal class. Useful for finances.
     """
     if type(v) not in StringTypes:
