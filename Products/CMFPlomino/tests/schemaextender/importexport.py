@@ -35,5 +35,9 @@ class ExtendedFieldImportExporter(object):
             if fieldnode.nodeName !='field':
                 continue
             field = schema[fieldnode.getAttribute('name')]
-            field.set(self.context, fieldnode.childNodes[0].toxml())
+            if fieldnode.childNodes: # The node might be empty
+                value = fieldnode.childNodes[0].wholeText
+            else:
+                value = ''
+            field.set(self.context, value)
 

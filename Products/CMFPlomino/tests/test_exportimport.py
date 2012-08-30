@@ -53,3 +53,22 @@ class IntegrationTest(unittest.TestCase):
         mydb.importDesignFromXML(xml)
         field = self.layer['portal'].mydb.frm1.a_field
         self.assertEqual(field.Schema()['extension_field'].get(field), "A NEW VALUE")
+
+    def test_export_extended_empty_fields(self):
+        # Ensure that empty fields are imported/exported correctly as well.
+        self.create_field()
+        mydb = self.layer['portal'].mydb
+        frm1 = mydb.frm1
+        frm1.invokeFactory('PlominoField', id='another_field', Title='I am extended too',
+                            FieldType="TEXT", FieldMode="EDITABLE")
+        fieldobj = frm1.another_field
+        fieldobj.at_post_create_script()
+        fieldobj.Schema()['extension_field'].set(fieldobj, '')
+
+        xml = mydb.exportDesignAsXML()
+        fieldobj.Schema()['extension_field'].set(fieldobj,
+            'Overwrite me in the next line!')
+        mydb.importDesignFromXML(xml)
+
+        field = self.layer['portal'].mydb.frm1.another_field
+        self.assertEqual(field.Schema()['extension_field'].get(field), "")
