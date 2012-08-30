@@ -1,6 +1,6 @@
 import unittest
 from Products.CMFPlomino.testing import PLOMINO_FIXTURE
-from plone.app.testing import IntegrationTesting
+from plone.app.testing import FunctionalTesting
 from plone.app.testing import PloneSandboxLayer
 
 from Products.CMFPlomino.tests.schemaextender.importexport import ExtendedFieldImportExporter
@@ -16,9 +16,9 @@ class SchemaExtenderLayer(PloneSandboxLayer):
         self.loadZCML(package=Products.CMFPlomino.tests.schemaextender)
 
 SCHEMAEXTENDER_FIXTURE = SchemaExtenderLayer()
-PLOMINO_SCHEMAEXTENDER_TESTING = IntegrationTesting(bases=(SCHEMAEXTENDER_FIXTURE,PLOMINO_FIXTURE), name="Plomino:SchemaExtender")
+PLOMINO_SCHEMAEXTENDER_TESTING = FunctionalTesting(bases=(SCHEMAEXTENDER_FIXTURE,PLOMINO_FIXTURE), name="Plomino:SchemaExtender")
 
-class IntegrationTest(unittest.TestCase):
+class ExportImportTest(unittest.TestCase):
 
     layer = PLOMINO_SCHEMAEXTENDER_TESTING
 
@@ -35,7 +35,6 @@ class IntegrationTest(unittest.TestCase):
         schema['extension_field'].set(fieldobj, 'A value for the custom field')
 
     def test_adapter(self):
-        self.create_field()
         field = self.layer['portal'].mydb.frm1.a_field
         adapter = ExtendedFieldImportExporter(field)
         xml = adapter.export_xml()
@@ -45,7 +44,6 @@ class IntegrationTest(unittest.TestCase):
         self.assertEqual(field.Schema()['extension_field'].get(field), "A NEW VALUE")
 
     def test_export_extended_fields(self):
-        self.create_field()
         mydb = self.layer['portal'].mydb
         xml = mydb.exportDesignAsXML()
         self.assertTrue('A value for the custom field' in xml)
@@ -56,7 +54,6 @@ class IntegrationTest(unittest.TestCase):
 
     def test_export_extended_empty_fields(self):
         # Ensure that empty fields are imported/exported correctly as well.
-        self.create_field()
         mydb = self.layer['portal'].mydb
         frm1 = mydb.frm1
         frm1.invokeFactory('PlominoField', id='another_field', Title='I am extended too',
@@ -72,3 +69,6 @@ class IntegrationTest(unittest.TestCase):
 
         field = self.layer['portal'].mydb.frm1.another_field
         self.assertEqual(field.Schema()['extension_field'].get(field), "")
+
+    def setUp(self):
+        self.create_field()
