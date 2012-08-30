@@ -21,6 +21,8 @@ PLOMINO_SCHEMAEXTENDER_TESTING = FunctionalTesting(bases=(SCHEMAEXTENDER_FIXTURE
 class ExportImportTest(unittest.TestCase):
 
     layer = PLOMINO_SCHEMAEXTENDER_TESTING
+    FIELD_CONTENT = '>>A value for the custom field'
+    XML_FIELD_CONTENT = FIELD_CONTENT.replace('>', '&gt;')
 
     def create_field(self):
         mydb = self.layer['portal'].mydb
@@ -32,22 +34,22 @@ class ExportImportTest(unittest.TestCase):
         fieldobj.at_post_create_script()
         schema = fieldobj.Schema()
         self.assertTrue('extension_field' in schema.keys())
-        schema['extension_field'].set(fieldobj, 'A value for the custom field')
+        schema['extension_field'].set(fieldobj, self.FIELD_CONTENT)
 
     def test_adapter(self):
         field = self.layer['portal'].mydb.frm1.a_field
         adapter = ExtendedFieldImportExporter(field)
         xml = adapter.export_xml()
-        self.assertTrue("A value for the custom field" in xml)
-        xml = xml.replace("A value for the custom field", "A NEW VALUE")
+        self.assertTrue(self.XML_FIELD_CONTENT in xml)
+        xml = xml.replace(self.XML_FIELD_CONTENT, "A NEW VALUE")
         adapter.import_xml(xml)
         self.assertEqual(field.Schema()['extension_field'].get(field), "A NEW VALUE")
 
     def test_export_extended_fields(self):
         mydb = self.layer['portal'].mydb
         xml = mydb.exportDesignAsXML()
-        self.assertTrue('A value for the custom field' in xml)
-        xml = xml.replace("A value for the custom field", "A NEW VALUE")
+        self.assertTrue(self.XML_FIELD_CONTENT in xml)
+        xml = xml.replace(self.XML_FIELD_CONTENT, "A NEW VALUE")
         mydb.importDesignFromXML(xml)
         field = self.layer['portal'].mydb.frm1.a_field
         self.assertEqual(field.Schema()['extension_field'].get(field), "A NEW VALUE")
