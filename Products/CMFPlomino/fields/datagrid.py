@@ -18,6 +18,7 @@ from zope import component
 from zope.pagetemplate.pagetemplatefile import PageTemplateFile
 
 from zope.schema import getFields
+from zope.schema.vocabulary import SimpleVocabulary
 from zope.schema import Text, TextLine, Choice
 
 from jsonutil import jsonutil as json
@@ -37,6 +38,13 @@ class IDatagridField(IBaseField):
     """
     Text field schema
     """
+    widget = Choice(vocabulary=SimpleVocabulary.fromItems([("Always dynamic", "REGULAR"),
+                                                           ("Static in read mode", "READ_STATIC"),
+                                                           ]),
+                    title=u'Widget',
+                    description=u'Field rendering',
+                    default="REGULAR",
+                    required=True)
     associated_form = Choice(vocabulary='Products.CMFPlomino.fields.vocabularies.get_forms',
                 title=u'Associated form',
                 description=u'Form to use to create/edit rows',
@@ -87,7 +95,7 @@ class DatagridField(BaseField):
         except:
             return []
 
-    def tojson(self, value, rendered=False):
+    def rows(self, value, rendered=False):
         """
         """
         if value is None or value == "":
@@ -101,7 +109,13 @@ class DatagridField(BaseField):
                 value = value['rendered']
             else:
                 value = value['rawdata']
-        return json.dumps(value)
+        return value
+
+    def tojson(self, value, rendered=False):
+        """
+        """
+        rows = self.rows(value, rendered)
+        return json.dumps(rows)
 
     def getActionLabel(self, action_id):
         """

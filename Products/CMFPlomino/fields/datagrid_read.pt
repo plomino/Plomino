@@ -1,8 +1,10 @@
 <tal:block tal:define="fieldname python:options['fieldname'];
                        v options/fieldvalue;
                        datatable_api here/REQUEST/datatable_api|nothing;
-                       field python:options['field']">
+                       field python:options['field'];
+                       widget python:field.getSettings('widget');">
 
+    <tal:dynamic tal:condition="python:widget!='READ_STATIC'">
         <script type="text/javascript" charset="utf-8"
         tal:define="data python:field.getSettings().tojson(v, rendered=True);
                     param python:field.getSettings().getParameters();"
@@ -19,4 +21,12 @@
         				} );">
         </script>
         <table class="display" tal:attributes="id string:${fieldname}_datagrid"></table>
+    </tal:dynamic>
+    <tal:read_static tal:condition="python:widget=='READ_STATIC'">
+        <table class="plain" tal:define="rows python:field.getSettings().rows(v, rendered=True);">
+            <tr tal:repeat="row rows">
+                <td tal:repeat="cell row" tal:content="cell">cell content</td>
+            </tr>
+        </table>
+    </tal:read_static>
 </tal:block>
