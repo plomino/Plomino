@@ -30,10 +30,14 @@ setup(name='Products.CMFPlomino',
           'collective.js.jqueryui',
           'collective.js.datatables',
           'collective.codemirror',
+          'Products.CMFPlone',
       ],
       extras_require={
-                      'test': ['plone.app.testing',
-                               'Products.PloneTestCase'],
+        'test': ['plone.app.testing',
+                 'Products.PloneTestCase',
+                 'selenium',
+                 'archetypes.schemaextender' # to test import/export of extended fields
+        ],
       },
       entry_points="""
       # -*- Entry points: -*-

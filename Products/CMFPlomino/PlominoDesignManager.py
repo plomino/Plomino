@@ -32,16 +32,15 @@ from xml.dom.minidom import getDOMImplementation
 from xml.dom.minidom import parseString
 from xml.parsers.expat import ExpatError
 import xmlrpclib
-from cStringIO import StringIO
 import traceback
 import codecs
 import os
 import sys
 import glob
 import transaction
-from zope import event
-from Products.Archetypes.event import ObjectEditedEvent
+from zope import component
 from zope.component import getUtility
+from zope.dottedname.resolve import resolve
 try:
     from plone.app.async.interfaces import IAsyncService
     ASYNC = True
@@ -55,6 +54,7 @@ from PlominoUtils import asUnicode
 from PlominoUtils import escape_xml_illegal_chars
 from Products.CMFPlomino import get_utils
 from Products.CMFPlomino import plomino_profiler
+from Products.CMFPlomino.interfaces import IXMLImportExportSubscriber
 # get AT specific schemas for each Plomino class
 from Products.CMFPlomino.PlominoAction import schema as action_schema
 from Products.CMFPlomino.PlominoAgent import schema as agent_schema
@@ -837,6 +837,15 @@ class PlominoDesignManager(Persistent):
            node.appendChild(acl)
            node.setAttribute('version', obj.plomino_version)
 
+        subscribers = component.subscribers((obj,), IXMLImportExportSubscriber)
+        for subscriber in subscribers:
+            name = subscriber.__module__ + '.' + subscriber.__class__.__name__
+            doc = parseString(subscriber.export_xml())
+            customnode = doc.childNodes[0]
+            customnode.setAttribute("ExportImportClass", name)
+            wrapper = doc.createElement("CustomData")
+            wrapper.appendChild(customnode)
+            node.appendChild(wrapper)
         return node
 
     security.declareProtected(DESIGN_PERMISSION, 'exportResourceAsXML')
@@ -992,10 +1001,14 @@ class PlominoDesignManager(Persistent):
                                             uv.append(e)
                                     v = uv
                             settings_values[key] = v
+                elif name == "CustomData":
+                    # Only one non.text child is expected
+                    customnode = [el for el in child.childNodes if el.nodeName!='#text'][0]
+                    classname = customnode.getAttribute('ExportImportClass')
+                    importer = resolve(classname)(obj)
+                    importer.import_xml(customnode.toxml())
                 else:
                     if child.hasChildNodes():
-                        field = obj.Schema().getField(name)
-
                         # Get cdata content if available, else get text node
                         cdatas = [n for n in child.childNodes if n.nodeType == n.CDATA_SECTION_NODE]
                         if len(cdatas) > 0:
