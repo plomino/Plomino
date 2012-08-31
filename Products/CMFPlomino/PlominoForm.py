@@ -305,8 +305,6 @@ class PlominoForm(ATFolder):
     def getFormFields(self, includesubforms=False, doc=None, applyhidewhen=False):
         """get fields
         """
-#        fieldlist = self.portal_catalog.search({'portal_type' : ['PlominoField'], 'path': '/'.join(self.getPhysicalPath())})
-#        result = [f.getObject() for f in fieldlist]
         fieldlist = self.objectValues(spec='PlominoField')
         result = [f for f in fieldlist]
         if applyhidewhen:
@@ -328,7 +326,6 @@ class PlominoForm(ATFolder):
     def getHidewhenFormulas(self):
         """Get hidden formulae
         """
-        #list = self.portal_catalog.search({'portal_type' : ['PlominoHidewhen'], 'path': '/'.join(self.getPhysicalPath())})
         hidewhens = self.objectValues(spec='PlominoHidewhen')
         return [h for h in hidewhens]
 
@@ -336,15 +333,12 @@ class PlominoForm(ATFolder):
     def getActions(self, target, hide=True, parent_id=None):
         """Get actions
         """
-        #all = self.portal_catalog.search({'portal_type' : ['PlominoAction'], 'path': '/'.join(self.getPhysicalPath())})
         all = self.objectValues(spec='PlominoAction')
 
         filtered = []
         for obj_a in all:
-            #obj_a=a.getObject()
             if hide:
                 try:
-                    #result = RunFormula(target, obj_a.getHidewhen())
                     result = self.runFormulaScript("action_"+self.id+"_"+obj_a.id+"_hidewhen", target, obj_a.Hidewhen, True, parent_id)
                 except PlominoScriptException, e:
                     e.reportError('"%s" hide-when formula failed' % obj_a.Title())
