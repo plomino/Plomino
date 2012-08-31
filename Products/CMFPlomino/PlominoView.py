@@ -30,7 +30,7 @@ import csv, cStringIO
 from Acquisition import aq_inner
 import PlominoDocument
 
-import simplejson as json
+from jsonutil import jsonutil as json
 
 import logging
 logger = logging.getLogger('Plomino')

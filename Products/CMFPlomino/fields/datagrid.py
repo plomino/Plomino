@@ -20,7 +20,7 @@ from zope.pagetemplate.pagetemplatefile import PageTemplateFile
 from zope.schema import getFields
 from zope.schema import Text, TextLine, Choice
 
-import simplejson as json
+from jsonutil import jsonutil as json
 
 from Products.CMFPlomino.PlominoUtils import csv_to_array, DateToString, PlominoTranslate
 from Products.CMFPlomino.PlominoDocument import TemporaryDocument

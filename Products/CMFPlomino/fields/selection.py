@@ -21,7 +21,7 @@ from base import IBaseField, BaseField, BaseForm
 from Products.CMFPlomino.exceptions import PlominoScriptException
 from Products.CMFPlomino.PlominoUtils import asUnicode
 
-import simplejson as json
+from jsonutil import jsonutil as json
 
 class ISelectionField(IBaseField):
     """

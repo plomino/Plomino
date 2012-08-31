@@ -27,6 +27,7 @@ setup(name='Products.CMFPlomino',
           'setuptools',
           # -*- Extra requirements: -*-
           'simplejson',
+          'jsonutil',
           'collective.js.jqueryui',
           'collective.js.datatables',
           'collective.codemirror',

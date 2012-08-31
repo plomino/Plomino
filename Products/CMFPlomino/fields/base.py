@@ -24,7 +24,7 @@ except:
 
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 
-import simplejson as json
+from jsonutil import jsonutil as json
 
 class IBaseField(Interface):
     """
