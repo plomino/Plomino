@@ -1060,7 +1060,7 @@ class PlominoDesignManager(Persistent):
         """
         id = str(node.getAttribute('id'))
         resource_type = node.getAttribute('type')
-        if hasattr(container, id):
+        if id in container.objectIds():
             container.manage_delObjects([id])
 
         if resource_type == "Page Template":

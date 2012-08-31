@@ -44,6 +44,13 @@ dG9yPSd8Jyk6CiAgYWxsID0gZ2V0Q29uZmlnVmFsdWVzQXNMaXN0KGRiLCBrZXkpCiAgZCA9IHt9
 CiAgZm9yIHJvdyBpbiBhbGw6CiAgICAobGFiZWwsIGtleSkgPSByb3cuc3BsaXQoc2VwYXJhdG9y
 KQogICAgZFtrZXldID0gbGFiZWwKICByZXR1cm4gZA==
 ]]></resource>
+    <resource id="TEXTFieldEdit" title="Customized TEXTFieldEdit" type="Page Template"><![CDATA[<span tal:define="widget python:options['field'].getSettings('widget');
+        size python:options['field'].getSettings('size')">
+  <tal:widget tal:condition="python:test(widget=='TEXT')">I'm customized!<input type="text" tal:attributes="name options/fieldname; value options/fieldvalue; class string:span${size}" /></tal:widget>
+  <tal:widget tal:condition="python:test(widget=='TEXTAREA')">
+    <textarea tal:attributes="name options/fieldname; rows size" tal:content="options/fieldvalue">text</textarea>
+  </tal:widget>
+</span>]]></resource>
     <element id="frmConfig" title="Parameters" type="PlominoForm">
       <id type="Products.Archetypes.Field.StringField">frmConfig</id>
       <onCreateDocument type="Products.Archetypes.Field.TextField"><![CDATA[]]></onCreateDocument>
