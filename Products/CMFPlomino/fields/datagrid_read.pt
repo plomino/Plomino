@@ -6,12 +6,11 @@
 
     <tal:dynamic tal:condition="python:widget!='READ_STATIC'">
         <script type="text/javascript" charset="utf-8"
-        tal:define="data python:field.getSettings().tojson(v, rendered=True);
-                    param python:field.getSettings().getParameters();"
+        tal:define="param python:field.getSettings().getParameters();"
         tal:content="structure string:
         				jq(document).ready(function() {
         					jq('#${fieldname}_datagrid').dataTable( {
-        						'aaData': ${data},
+        						'sAjaxSource': 'tojson?item=${fieldname}&rendered=true&datatables=true',
         						'bJQueryUI': true,
         						${param},
         						'oLanguage': {
