@@ -302,7 +302,7 @@ class PlominoForm(ATFolder):
             REQUEST.RESPONSE.redirect(db.absolute_url())
 
     security.declarePublic('getFormFields')
-    def getFormFields(self, includesubforms=False, doc=None, applyhidewhen=False):
+    def getFormFields(self, includesubforms=False, doc=None, applyhidewhen=False, removeDynamicHideWhen=False):
         """get fields
         """
 #        fieldlist = self.portal_catalog.search({'portal_type' : ['PlominoField'], 'path': '/'.join(self.getPhysicalPath())})
@@ -310,7 +310,7 @@ class PlominoForm(ATFolder):
         fieldlist = self.objectValues(spec='PlominoField')
         result = [f for f in fieldlist]
         if applyhidewhen:
-            layout = self.applyHideWhen(doc)
+            layout = self.applyHideWhen(doc, removeDynamicHideWhen=removeDynamicHideWhen)
             result = [f for f in result if """<span class="plominoFieldClass">%s</span>""" % f.id in layout]
         result.sort(key=lambda elt: elt.id.lower())
         if includesubforms:
@@ -320,7 +320,10 @@ class PlominoForm(ATFolder):
                     continue
                 subform = self.getParentDatabase().getForm(subformname)
                 if subform:
-                    result=result + subform.getFormFields(includesubforms=True, doc=doc, applyhidewhen=applyhidewhen)
+                    result=result + subform.getFormFields(includesubforms=True,
+                                                          doc=doc,
+                                                          applyhidewhen=applyhidewhen,
+                                                          removeDynamicHideWhen=removeDynamicHideWhen)
                 subformsseen.append(subformname)
         return result
 
@@ -473,7 +476,7 @@ class PlominoForm(ATFolder):
         return html
 
     security.declareProtected(READ_PERMISSION, 'applyHideWhen')
-    def applyHideWhen(self, doc=None, silent_error=True):
+    def applyHideWhen(self, doc=None, silent_error=True, removeDynamicHideWhen=False):
         """evaluate hide-when formula and return resulting layout
         """
         plone_tools = getToolByName(self, 'plone_utils')
@@ -501,7 +504,7 @@ class PlominoForm(ATFolder):
             start = '<span class="plominoHidewhenClass">start:'+hidewhenName+'</span>'
             end = '<span class="plominoHidewhenClass">end:'+hidewhenName+'</span>'
 
-            if getattr(hidewhen, 'isDynamicHidewhen', False):
+            if getattr(hidewhen, 'isDynamicHidewhen', False) and not removeDynamicHideWhen:
                 if result:
                     style = ' style="display: none"'
                 else:
@@ -713,7 +716,7 @@ class PlominoForm(ATFolder):
         """
         all_fields = self.getFormFields(includesubforms=True, doc=doc, applyhidewhen=False)
         if applyhidewhen:
-            displayed_fields = self.getFormFields(includesubforms=True, doc=doc, applyhidewhen=True)
+            displayed_fields = self.getFormFields(includesubforms=True, doc=doc, applyhidewhen=True, removeDynamicHideWhen=True)
 
         for f in all_fields:
             mode = f.getFieldMode()
@@ -812,7 +815,7 @@ class PlominoForm(ATFolder):
         """
         """
         errors=[]
-        fields = self.getFormFields(includesubforms=True, doc=doc, applyhidewhen=True)
+        fields = self.getFormFields(includesubforms=True, doc=doc, applyhidewhen=True, removeDynamicHideWhen=True)
         for f in fields:
             fieldname = f.id
             fieldtype = f.getFieldType()
