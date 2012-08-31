@@ -27,7 +27,7 @@ from Products.CMFPlomino.exceptions import PlominoDesignException
 
 import sys
 import re
-import simplejson as json
+from jsonutil import jsonutil as json
 
 from Products.CMFCore.utils import getToolByName
 

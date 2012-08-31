@@ -20,7 +20,7 @@ from dictionaryproperty import DictionaryProperty
 from base import IBaseField, BaseField, BaseForm
 from Products.CMFPlomino.exceptions import PlominoScriptException
 
-import simplejson as json
+from jsonutil import jsonutil as json
 
 class IDoclinkField(IBaseField):
     """
