@@ -33,10 +33,7 @@ from DateTime import DateTime
 # Plone
 from Products.CMFCore.utils import getToolByName
 
-try:
-    import json
-except:
-    import simplejson as json
+from jsonutil import jsonutil as json
 
 try:
    from plone.app.upgrade import v40

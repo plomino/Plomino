@@ -39,7 +39,8 @@ except:
 from zope.annotation import IAttributeAnnotatable
 from zope.app.container.contained import Contained
 
-import simplejson as json
+from jsonutil import jsonutil as json
+
 from copy import deepcopy
 from persistent.dict import PersistentDict
 
