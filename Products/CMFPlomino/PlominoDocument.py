@@ -219,7 +219,7 @@ class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
             formid = REQUEST.get('formid', formid)
         if not item:
             return json.dumps(self.items.data)
-        
+
         if not formid:
             form = self.getForm()
         else:
@@ -403,6 +403,24 @@ class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
             if db.getIndexInPortal():
                 db.portal_catalog.catalog_object(self, "/".join(db.getPhysicalPath() + (self.id,)))
 
+    def _onOpenDocument(self, form=None):
+        """ execute the onOpenDocument code of the form
+        """
+        if not form:
+            form = self.getForm()
+
+        onOpenDocument_error = ''
+        try:
+            if form.getOnOpenDocument():
+                onOpenDocument_error = self.runFormulaScript(
+                        "form_"+form.id+"_onopen",
+                        self,
+                        form.onOpenDocument)
+                return onOpenDocument_error
+        except PlominoScriptException, e:
+            e.reportError('onOpenDocument event failed')
+
+
     security.declareProtected(READ_PERMISSION, 'openWithForm')
     def openWithForm(self, form, editmode=False):
         """ Display the document using the given form's layouts.
@@ -417,16 +435,7 @@ class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
             if not self.isReader():
                 raise Unauthorized, "You cannot read this content"
 
-        # execute the onOpenDocument code of the form
-        onOpenDocument_error = ''
-        try:
-            if form.getOnOpenDocument():
-                onOpenDocument_error = self.runFormulaScript(
-                        "form_"+form.id+"_onopen",
-                        self,
-                        form.onOpenDocument)
-        except PlominoScriptException, e:
-            e.reportError('onOpenDocument event failed')
+        onOpenDocument_error = self._onOpenDocument(form)
 
         if onOpenDocument_error:
             html_content = onOpenDocument_error
@@ -596,6 +605,10 @@ class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
         """
         if not self.isReader():
             raise Unauthorized, "You cannot read this content"
+
+        onOpenDocument_error = self._onOpenDocument()
+        if onOpenDocument_error:
+            raise Unauthorized, onOpenDocument_error
 
         fss = self.getParentDatabase().getStorageAttachments()
         if REQUEST is not None:
