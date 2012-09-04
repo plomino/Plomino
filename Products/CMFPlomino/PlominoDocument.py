@@ -39,7 +39,8 @@ except:
 from zope.annotation import IAttributeAnnotatable
 from zope.app.container.contained import Contained
 
-import simplejson as json
+from jsonutil import jsonutil as json
+
 from copy import deepcopy
 from persistent.dict import PersistentDict
 
@@ -206,20 +207,27 @@ class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
         return result
 
     security.declarePublic('tojson')
-    def tojson(self, REQUEST=None, item=None, formid=None):
+    def tojson(self, REQUEST=None, item=None, formid=None, rendered=False):
         """return item value as JSON
         (return all items if item=None)
         """
         if not self.isReader():
             raise Unauthorized, "You cannot read this content"
         
+        datatables_format = False
         if REQUEST:
             REQUEST.RESPONSE.setHeader('content-type', 'application/json; charset=utf-8')
             item = REQUEST.get('item', item)
             formid = REQUEST.get('formid', formid)
+            rendered_str = REQUEST.get('rendered', None)
+            if rendered_str:
+                rendered = True
+            datatables_format_str = REQUEST.get('datatables', None)
+            if datatables_format_str:
+                datatables_format = True
         if not item:
             return json.dumps(self.items.data)
-        
+
         if not formid:
             form = self.getForm()
         else:
@@ -227,12 +235,23 @@ class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
         if form:
             field = form.getFormField(item)
             if field:
-                adapt = field.getSettings()
-                fieldvalue = adapt.getFieldValue(form, self, False, False, REQUEST)
+                if field.getFieldType() == 'DATAGRID':
+                    adapt = field.getSettings()
+                    fieldvalue = adapt.getFieldValue(form, self, False, False, REQUEST)
+                    fieldvalue = adapt.rows(fieldvalue, rendered=rendered)
+                    if datatables_format:
+                        fieldvalue = { 'iTotalRecords': len(fieldvalue), 'aaData': fieldvalue }
+                else:
+                    if rendered:
+                        fieldvalue = self.getRenderedItem(item, form)
+                    else:
+                        adapt = field.getSettings()
+                        fieldvalue = adapt.getFieldValue(form, self, False, False, REQUEST)
             else:
                 fieldvalue = self.getItem(item)
         else:
             fieldvalue = self.getItem(item)
+
         return json.dumps(fieldvalue) 
 
     security.declarePublic('computeItem')
@@ -403,6 +422,24 @@ class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
             if db.getIndexInPortal():
                 db.portal_catalog.catalog_object(self, "/".join(db.getPhysicalPath() + (self.id,)))
 
+    def _onOpenDocument(self, form=None):
+        """ execute the onOpenDocument code of the form
+        """
+        if not form:
+            form = self.getForm()
+
+        onOpenDocument_error = ''
+        try:
+            if form.getOnOpenDocument():
+                onOpenDocument_error = self.runFormulaScript(
+                        "form_"+form.id+"_onopen",
+                        self,
+                        form.onOpenDocument)
+                return onOpenDocument_error
+        except PlominoScriptException, e:
+            e.reportError('onOpenDocument event failed')
+
+
     security.declareProtected(READ_PERMISSION, 'openWithForm')
     def openWithForm(self, form, editmode=False):
         """ Display the document using the given form's layouts.
@@ -417,16 +454,7 @@ class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
             if not self.isReader():
                 raise Unauthorized, "You cannot read this content"
 
-        # execute the onOpenDocument code of the form
-        onOpenDocument_error = ''
-        try:
-            if form.getOnOpenDocument():
-                onOpenDocument_error = self.runFormulaScript(
-                        "form_"+form.id+"_onopen",
-                        self,
-                        form.onOpenDocument)
-        except PlominoScriptException, e:
-            e.reportError('onOpenDocument event failed')
+        onOpenDocument_error = self._onOpenDocument(form)
 
         if onOpenDocument_error:
             html_content = onOpenDocument_error
@@ -596,6 +624,10 @@ class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
         """
         if not self.isReader():
             raise Unauthorized, "You cannot read this content"
+
+        onOpenDocument_error = self._onOpenDocument()
+        if onOpenDocument_error:
+            raise Unauthorized, onOpenDocument_error
 
         fss = self.getParentDatabase().getStorageAttachments()
         if REQUEST is not None:

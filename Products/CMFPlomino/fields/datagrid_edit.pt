@@ -1,7 +1,6 @@
 <tal:block tal:define="fieldname python:options['fieldname'];
                        v options/fieldvalue;
                        data python:options['field'].getSettings().tojson(v);
-                       rendered_data python:options['field'].getSettings().tojson(v, rendered=True);
                        formname python:options['field'].getParentNode().id;
                        associated_form python:options['field'].getSettings().associated_form;
                        field python:options['field']">
@@ -14,7 +13,7 @@
         	tal:content="structure string:var ${fieldname}_datatable;
         		jq(document).ready(function() {
 		        	${fieldname}_datatable = jq('#${fieldname}_datagrid').dataTable( {
-		        		'aaData': ${rendered_data},
+		        		'sAjaxSource': 'tojson?item=${fieldname}&rendered=true&datatables=true',
 		        		'bJQueryUI': true,
 		        		${param},
 		        		'fnDrawCallback': function() {

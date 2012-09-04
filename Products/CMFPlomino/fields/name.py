@@ -21,7 +21,7 @@ from Products.CMFCore.utils import getToolByName
 
 from base import IBaseField, BaseField, BaseForm
 
-import simplejson as json
+from jsonutil import jsonutil as json
 
 class INameField(IBaseField):
     """

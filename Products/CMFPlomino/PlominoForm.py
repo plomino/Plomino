@@ -27,7 +27,7 @@ from Products.CMFPlomino.exceptions import PlominoDesignException
 
 import sys
 import re
-import simplejson as json
+from jsonutil import jsonutil as json
 
 from Products.CMFCore.utils import getToolByName
 
@@ -254,7 +254,7 @@ class PlominoForm(ATFolder):
 
     security.declareProtected(CREATE_PERMISSION, 'createDocument')
     def createDocument(self,REQUEST):
-        """ Create a document using the form's submitted content.
+        """create a document using the forms submitted content
         """
         db = self.getParentDatabase()
 
@@ -302,15 +302,13 @@ class PlominoForm(ATFolder):
             REQUEST.RESPONSE.redirect(db.absolute_url())
 
     security.declarePublic('getFormFields')
-    def getFormFields(self, includesubforms=False, doc=None, applyhidewhen=False, removeDynamicHideWhen=False):
+    def getFormFields(self, includesubforms=False, doc=None, applyhidewhen=False):
         """get fields
         """
-#        fieldlist = self.portal_catalog.search({'portal_type' : ['PlominoField'], 'path': '/'.join(self.getPhysicalPath())})
-#        result = [f.getObject() for f in fieldlist]
         fieldlist = self.objectValues(spec='PlominoField')
         result = [f for f in fieldlist]
         if applyhidewhen:
-            layout = self.applyHideWhen(doc, removeDynamicHideWhen=removeDynamicHideWhen)
+            layout = self.applyHideWhen(doc)
             result = [f for f in result if """<span class="plominoFieldClass">%s</span>""" % f.id in layout]
         result.sort(key=lambda elt: elt.id.lower())
         if includesubforms:
@@ -320,10 +318,7 @@ class PlominoForm(ATFolder):
                     continue
                 subform = self.getParentDatabase().getForm(subformname)
                 if subform:
-                    result=result + subform.getFormFields(includesubforms=True,
-                                                          doc=doc,
-                                                          applyhidewhen=applyhidewhen,
-                                                          removeDynamicHideWhen=removeDynamicHideWhen)
+                    result=result + subform.getFormFields(includesubforms=True, doc=doc, applyhidewhen=applyhidewhen)
                 subformsseen.append(subformname)
         return result
 
@@ -331,7 +326,6 @@ class PlominoForm(ATFolder):
     def getHidewhenFormulas(self):
         """Get hidden formulae
         """
-        #list = self.portal_catalog.search({'portal_type' : ['PlominoHidewhen'], 'path': '/'.join(self.getPhysicalPath())})
         hidewhens = self.objectValues(spec='PlominoHidewhen')
         return [h for h in hidewhens]
 
@@ -339,15 +333,12 @@ class PlominoForm(ATFolder):
     def getActions(self, target, hide=True, parent_id=None):
         """Get actions
         """
-        #all = self.portal_catalog.search({'portal_type' : ['PlominoAction'], 'path': '/'.join(self.getPhysicalPath())})
         all = self.objectValues(spec='PlominoAction')
 
         filtered = []
         for obj_a in all:
-            #obj_a=a.getObject()
             if hide:
                 try:
-                    #result = RunFormula(target, obj_a.getHidewhen())
                     result = self.runFormulaScript("action_"+self.id+"_"+obj_a.id+"_hidewhen", target, obj_a.Hidewhen, True, parent_id)
                 except PlominoScriptException, e:
                     e.reportError('"%s" hide-when formula failed' % obj_a.Title())
@@ -475,14 +466,18 @@ class PlominoForm(ATFolder):
 
         return html
 
-    security.declareProtected(READ_PERMISSION, 'applyHideWhen')
-    def applyHideWhen(self, doc=None, silent_error=True, removeDynamicHideWhen=False):
-        """evaluate hide-when formula and return resulting layout
-        """
+    security.declarePrivate('_get_html_content')
+    def _get_html_content(self):
         plone_tools = getToolByName(self, 'plone_utils')
         encoding = plone_tools.getSiteEncoding()
         html_content = self.getField('FormLayout').getRaw(self).decode(encoding)
-        html_content = html_content.replace('\n', '')
+        return html_content.replace('\n', '')
+
+    security.declareProtected(READ_PERMISSION, 'applyHideWhen')
+    def applyHideWhen(self, doc=None, silent_error=True):
+        """evaluate hide-when formula and return resulting layout
+        """
+        html_content = self._get_html_content()
 
         # remove the hidden content
         for hidewhen in self.getHidewhenFormulas():
@@ -504,7 +499,7 @@ class PlominoForm(ATFolder):
             start = '<span class="plominoHidewhenClass">start:'+hidewhenName+'</span>'
             end = '<span class="plominoHidewhenClass">end:'+hidewhenName+'</span>'
 
-            if getattr(hidewhen, 'isDynamicHidewhen', False) and not removeDynamicHideWhen:
+            if getattr(hidewhen, 'isDynamicHidewhen', False):
                 if result:
                     style = ' style="display: none"'
                 else:
@@ -528,6 +523,10 @@ class PlominoForm(ATFolder):
         for hidewhen in self.getHidewhenFormulas():
            if getattr(hidewhen, 'isDynamicHidewhen', False):
                return True
+        for subformname in self.getSubforms():
+            form = self.getParentDatabase().getForm(subformname)
+            if form.hasDynamicHidewhen():
+                return True
         return False
 
     security.declareProtected(READ_PERMISSION, 'getHidewhenAsJSON')
@@ -545,6 +544,10 @@ class PlominoForm(ATFolder):
                     #if error, we hide anyway
                     isHidden = True
                 result[hidewhen.id] = isHidden 
+        for subformname in self.getSubforms():
+            form = self.getParentDatabase().getForm(subformname)
+            form_hidewhens = json.loads(form.getHidewhenAsJSON(REQUEST))
+            result.update(form_hidewhens)
 
         return json.dumps(result)
 
@@ -701,10 +704,7 @@ class PlominoForm(ATFolder):
         if applyhidewhen:
             html_content = self.applyHideWhen(doc)
         else:
-            plone_tools = getToolByName(self, 'plone_utils')
-            encoding = plone_tools.getSiteEncoding()
-            html_content = self.getField('FormLayout').getRaw(self).decode(encoding)
-            html_content = html_content.replace('\n', '')
+            html_content = self._get_html_content()
 
         r = re.compile('<span class="plominoSubformClass">([^<]+)</span>')
         return [i.strip() for i in r.findall(html_content)]
@@ -716,7 +716,7 @@ class PlominoForm(ATFolder):
         """
         all_fields = self.getFormFields(includesubforms=True, doc=doc, applyhidewhen=False)
         if applyhidewhen:
-            displayed_fields = self.getFormFields(includesubforms=True, doc=doc, applyhidewhen=True, removeDynamicHideWhen=True)
+            displayed_fields = self.getFormFields(includesubforms=True, doc=doc, applyhidewhen=True)
 
         for f in all_fields:
             mode = f.getFieldMode()
@@ -810,12 +810,33 @@ class PlominoForm(ATFolder):
         else:
             return self.errors_json(errors=json.dumps({'success': True}))
         
+
+    security.declarePrivate('_get_js_hidden_fields')
+    def _get_js_hidden_fields(self, REQUEST, doc):
+        hidden_fields = []
+        hidewhens = json.loads(self.getHidewhenAsJSON(REQUEST))
+        html_content = self._get_html_content()
+        for hidewhenName, doit in hidewhens.items():
+            if not doit: # Only consider True hidewhens
+                continue
+            start = '<span class="plominoHidewhenClass">start:'+hidewhenName+'</span>'
+            end = '<span class="plominoHidewhenClass">end:'+hidewhenName+'</span>'
+            for hiddensection in re.findall(start + '(.*?)' + end, html_content):
+                hidden_fields += re.findall(
+                    '<span class="plominoFieldClass">([^<]+)</span>', hiddensection )
+        for subformname in self.getSubforms(doc):
+            subform = self.getParentDatabase().getForm(subformname)
+            hidden_fields += subform._get_js_hidden_fields(REQUEST, doc)
+        return hidden_fields
+
     security.declarePublic('validateInputs')
     def validateInputs(self, REQUEST, doc=None):
         """
         """
         errors=[]
-        fields = self.getFormFields(includesubforms=True, doc=doc, applyhidewhen=True, removeDynamicHideWhen=True)
+        fields = self.getFormFields(includesubforms=True, doc=doc, applyhidewhen=True)
+        hidden_fields = self._get_js_hidden_fields(REQUEST, doc)
+        fields = [field for field in fields if field.getId() not in hidden_fields]
         for f in fields:
             fieldname = f.id
             fieldtype = f.getFieldType()
@@ -966,5 +987,3 @@ class PlominoForm(ATFolder):
         return [''] +  [v.id for v in views]
 
 registerType(PlominoForm, PROJECTNAME)
-
-
