@@ -1,6 +1,6 @@
 /*
  * Author: Romaric BREIL <romaric.breil@supinfo.com>
- * 
+ *
  * Those functions allow to manage Plomino datagrid fields.
  */
 
@@ -12,15 +12,21 @@
  *  	form (second request, when the user clicks on the submit button of the sub-form)
  */
 function datagrid_show_form(field_id, formurl, onsubmit) {
-	jq("#" + field_id + "_editform").load(formurl + ' #plomino_form', function() {
-		var editform = jq(this);
-		var popup = jq(this);
-		// Edit-form close button
-		jq("input[name=plomino_close]", this).removeAttr('onclick').click(function() {
+    var field_selector = "#" + field_id + "_editform";
+    jq(field_selector).html(
+        '<iframe style="overflow:hidden;height:100%;width:100%" height="100%" width="100%"></iframe>'
+    );
+    var iframe = jq("#" + field_id + "_editform iframe");
+    iframe.attr('src', formurl);
+    iframe.load(function() {
+        var popup = jq(field_selector);
+        var body = iframe[0].contentDocument.body;
+        // Edit-form close button
+		jq("input[name=plomino_close]", body).removeAttr('onclick').click(function() {
 			popup.dialog('close');
 		});
 		// Edit form submission
-		jq('form', editform).submit(function(){
+		jq('form', body).submit(function(){
 			var message = "";
 
 			jq.ajax({url: this.action+"?"+jq(this).serialize(),
@@ -34,7 +40,7 @@ function datagrid_show_form(field_id, formurl, onsubmit) {
 					return false;
 				}
 			});
-			
+
 			if(!(message == null || message=='')) {
 				alert(message);
 				return false;
@@ -52,8 +58,8 @@ function datagrid_show_form(field_id, formurl, onsubmit) {
 			return false;
 		});
 		// Prepare and display the dialog
-		jq('.documentActions', editform).remove();
-		popup.dialog("option", "title", jq('.documentFirstHeading', editform).remove().text());
+		jq('.documentActions', body).remove();
+		popup.dialog("option", "title", jq('.documentFirstHeading', body).remove().text());
 		popup.dialog('open');
 	});
 }

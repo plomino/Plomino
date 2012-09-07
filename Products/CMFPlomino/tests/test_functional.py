@@ -45,6 +45,16 @@ class IntegrationTest(unittest.TestCase):
         selenium_layers.open(sel, mydb.with_subform.absolute_url())
         self.do_check_dynamic_hidewhen(sel)
 
+    def test_overlay_hidewhen(self):
+        mydb = self.layer['portal'].mydb
+        sel = self.layer['selenium']
+        import_file('hideWhenTest.xml', mydb)
+        selenium_layers.open(sel, self.layer['portal'].absolute_url())
+        self.authenticate(sel)
+        selenium_layers.open(sel, mydb.with_overlay.absolute_url())
+        self.do_check_dynamic_hidewhen(sel)
+
+
     def do_check_dynamic_hidewhen(self, sel):
         selenium_layers.type(sel, 'a', '123')
         selenium_layers.click(sel, "//option[@value='A']")
