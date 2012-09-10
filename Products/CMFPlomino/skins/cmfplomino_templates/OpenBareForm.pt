@@ -11,7 +11,7 @@
     <div tal:replace="structure provider:plone.resourceregistries.styles" />
     <div tal:replace="structure provider:plone.resourceregistries.scripts" />
 </head>
-<body>
+<body class="OpenBareForm">
 <div id="content">
     <tal:block
           tal:define="myF python:here;
