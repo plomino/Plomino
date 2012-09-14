@@ -619,7 +619,7 @@ class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
         return ' '.join(values)
 
     security.declareProtected(READ_PERMISSION, 'getfile')
-    def getfile(self, filename=None, REQUEST=None):
+    def getfile(self, filename=None, REQUEST=None, asFile=False):
         """
         """
         if not self.isReader():
@@ -641,11 +641,12 @@ class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
                 file_obj = self.get(filename, None)
             if not file_obj:
                 return None
-            if REQUEST is None:
+            if asFile:
                 return file_obj
-            else:
+            if REQUEST:
                 REQUEST.RESPONSE.setHeader('content-type', file_obj.getContentType())
                 REQUEST.RESPONSE.setHeader("Content-Disposition", "inline; filename="+filename)
+            else:
                 if fss:
                     return file_obj.getData()
                 else:
