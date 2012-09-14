@@ -11,11 +11,17 @@ from plone.app.testing import TEST_USER_NAME, TEST_USER_PASSWORD
 
 from Products.CMFPlomino.testing import PLOMINO_SELENIUM_TESTING
 
+from selenium.common.exceptions import WebDriverException
+
 DIRPATH = join(dirname(__file__), 'filestoimport')
 
 class IntegrationTest(unittest.TestCase):
 
     layer = PLOMINO_SELENIUM_TESTING
+
+    def setUp(self):
+        super(IntegrationTest, self).setUp()
+        self.layer['selenium'].set_window_size(900,600)
 
     def get_auth_cookie(self, username, password):
         return quote(encodestring(
@@ -54,7 +60,23 @@ class IntegrationTest(unittest.TestCase):
         selenium_layers.open(sel, mydb.with_overlay.absolute_url())
         selenium_layers.click(sel, "a#a_datagrid_addrow")
         sel.switch_to_frame(0)
-        self.do_check_dynamic_hidewhen(sel)
+        selenium_layers.type(sel, 'a', '123')
+        selenium_layers.click(sel, "//option[@value='A']")
+        # Submitting now should warn us that 'c' has no value
+        sel.find_element_by_xpath("//input[@name='plomino_save']").click()
+        # An alert should pop up. We dismiss it
+        sel.switch_to_alert().accept()
+        # But when we fill it in, it should work
+        selenium_layers.type(sel, 'c', 'A value for c!')
+        sel.find_element_by_xpath("//input[@name='plomino_save']").click()
+        # At this point the usual selenium wait-for-page-loaded doesn't work
+        # because we intercept the submit event and do ajax validation
+        self.wait_ajax_calls()
+        sel.switch_to_window('')
+        rows = sel.find_elements_by_css_selector(
+            "table#a_datagrid_datagrid tbody tr")
+        # There should be one row in the datagrid
+        self.assertEqual(len(rows), 1)
 
 
     def do_check_dynamic_hidewhen(self, sel):
@@ -73,7 +95,7 @@ class IntegrationTest(unittest.TestCase):
         self.wait_ajax_calls()
         # Empty hidden required fields should not trigger an error
         # XXX Here we should check nonzero length on mydb.plomino_documents.objectIds()
-        # but for some reasons (isolated transacitons?) it doesn't show up
+        # but for some reasons (isolated transactions?) it doesn't show up
         self.assertTrue('plomino_documents' in sel.current_url)
 
     def close_error_popup(self):

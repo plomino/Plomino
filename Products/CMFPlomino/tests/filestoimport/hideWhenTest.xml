@@ -194,6 +194,10 @@ return v!='B']]></Formula>
 "bAutoWidth": false
 </string></value>
 </member>
+<member>
+<name>field_mapping</name>
+<value><string>a,b,c,d</string></value>
+</member>
 </struct></value>
 </param>
 </params>
