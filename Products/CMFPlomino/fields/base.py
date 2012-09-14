@@ -12,10 +12,10 @@ __docformat__ = 'plaintext'
 
 from zope.interface import Interface, implements
 from zope.annotation.interfaces import IAnnotations
-from persistent.dict import PersistentDict
+from Acquisition import aq_base
 
-from Products.CMFPlomino.exceptions import PlominoScriptException
 from Products.CMFPlomino.PlominoUtils import asUnicode
+from Products.CMFPlomino.PlominoDocument import TemporaryDocument
 try:
     from five.formlib.formbase import EditForm
 except:
@@ -75,9 +75,27 @@ class BaseField(object):
             target = doc
 
         fieldValue = None
+        # XXX This is super-ugly, sorry. The reason I do this is that
+        # I changed some logic upper in the call chain to give a
+        # properly populated TemporaryDocument to hideWhens
+        # to avoid users coding defensively with unneeded
+        # try: catch blocks.
+        # A proper solution would probably be to factor out the logic
+        # that finds a field value and use that logic to populate
+        # the TemporaryDocument.
+        # But *right now* (that is better than never) I see this solution
+        # works without breaking any test.
+        temporary_doc_in_overlay = (
+            isinstance(aq_base(doc), TemporaryDocument) and
+            hasattr(self.context, 'REQUEST') and
+            'Plomino_Parent_Form' in self.context.REQUEST.form
+        )
+        if temporary_doc_in_overlay:
+            request = self.context.REQUEST
         if mode=="EDITABLE":
-            if doc is None:
-                if creation and not self.context.Formula()=="":
+            if doc is None or temporary_doc_in_overlay:
+                # The aforemntioned ugliness ends here
+                if creation and self.context.Formula():
                     fieldValue = form.computeFieldValue(fieldName, target)
                 elif request is None:
                     fieldValue = ""
@@ -93,7 +111,7 @@ class BaseField(object):
                             fieldValue = data[datagrid_fields.index(fieldName)]
                         else:
                             fieldValue = ""
-                    else: 
+                    else:
                         fieldValue = asUnicode(request.get(fieldName, ''))
             else:
                 fieldValue = doc.getItem(fieldName)
@@ -119,5 +137,5 @@ class BaseField(object):
 class BaseForm(EditForm):
     """
     """
-    
+
     template = ViewPageTemplateFile('settings_edit.pt')

@@ -77,6 +77,16 @@ class IntegrationTest(unittest.TestCase):
             "table#a_datagrid_datagrid tbody tr")
         # There should be one row in the datagrid
         self.assertEqual(len(rows), 1)
+        # XXX This belongs to another test
+        # Ensure the newly added record is editable
+        sel.find_elements_by_css_selector(
+            "table#a_datagrid_datagrid tbody tr")[0].click()
+        sel.find_element_by_css_selector('#a_datagrid_editrow').click()
+        sel.switch_to_frame(0)
+        field_a = sel.find_element_by_xpath("//input[@name='a']")
+        field_value = sel.execute_script(
+            "return jQuery(arguments[0]).attr('value')", field_a)
+        self.assertEqual(field_value, '123')
 
 
     def do_check_dynamic_hidewhen(self, sel):
