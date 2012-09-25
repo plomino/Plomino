@@ -646,11 +646,10 @@ class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
             if REQUEST:
                 REQUEST.RESPONSE.setHeader('content-type', file_obj.getContentType())
                 REQUEST.RESPONSE.setHeader("Content-Disposition", "inline; filename="+filename)
+            if fss:
+                return file_obj.getData()
             else:
-                if fss:
-                    return file_obj.getData()
-                else:
-                    return file_obj.data
+                return file_obj.data
         else:
             return None
 
