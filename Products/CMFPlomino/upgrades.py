@@ -45,3 +45,7 @@ def upgrade_to_31(context):
 def upgrade_to_32(context):
     # refresh PlominoView type settings 
     context.runImportStepFromProfile(default_profile, 'typeinfo')
+
+def upgrade_to_33(context):
+    # refresh js
+    context.runImportStepFromProfile(default_profile, 'jsregistry')
