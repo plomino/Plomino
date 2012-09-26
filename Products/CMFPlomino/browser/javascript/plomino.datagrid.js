@@ -14,7 +14,7 @@
 function datagrid_show_form(field_id, formurl, onsubmit) {
     var field_selector = "#" + field_id + "_editform";
     jq(field_selector).html(
-        '<iframe style="overflow:hidden;height:100%;width:100%" height="100%" width="100%"></iframe>'
+        '<iframe style="height:100%;width:100%" height="100%" width="100%"></iframe>'
     );
     var iframe = jq("#" + field_id + "_editform iframe");
     iframe.attr('src', formurl);
