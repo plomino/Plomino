@@ -13,6 +13,7 @@ import interfaces
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import normalizeString
 from OFS.ObjectManager import BadRequestException
+from Products.CMFCore.exceptions import BadRequest
 
 from exceptions import PlominoScriptException
 from Products.CMFPlomino.config import *
@@ -677,11 +678,14 @@ class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
             if """\\""" in filename:
                 filename=filename.split("\\")[-1]
             filename = ".".join([normalizeString(s, encoding='utf-8') for s in filename.split('.')])
-            if filename in self.objectIds():
-                if overwrite:
-                    self.deletefile(filename)
-                else:
-                    return ("ERROR: "+filename+" already exists", "")
+            if overwrite and filename in self.objectIds():
+                self.deletefile(filename)
+            try:
+                self._checkId(filename)
+            except BadRequest:
+                # if filename is a reserved id, we rename it
+                filename = DateTime().toZone('UTC').strftime("%Y%m%d%H%M%S") + "_" + filename
+            
             if(self.getParentDatabase().getStorageAttachments()==True):
                 tmpfile=File(filename, filename, submittedValue)
                 storage = FileSystemStorage();
