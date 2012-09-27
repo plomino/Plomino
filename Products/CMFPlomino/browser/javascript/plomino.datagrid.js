@@ -9,7 +9,7 @@
  * - field_id: id of the datagrid field
  * - formurl: url of the form
  * - onsubmit(newrow, rawdata): function called when the server returned the result of the
- *  	form (second request, when the user clicks on the submit button of the sub-form)
+ *   form (second request, when the user clicks on the submit button of the sub-form)
  */
 function datagrid_show_form(field_id, formurl, onsubmit) {
     var field_selector = "#" + field_id + "_editform";
@@ -41,7 +41,7 @@ function datagrid_show_form(field_id, formurl, onsubmit) {
 				}
 			});
 
-			if(!(message == null || message=='')) {
+			if(!(message === null || message === '')) {
 				alert(message);
                 // Avoid Plone message "You already submitted this form", since we didn't
                 jQuery(this).find('input[type="submit"].submitting').removeClass('submitting');
@@ -49,10 +49,10 @@ function datagrid_show_form(field_id, formurl, onsubmit) {
 			}
 			jq.get(this.action, jq(this).serialize(), function(data, textStatus, XMLHttpRequest){
 				// Call back function with new row
-				var rowdata = new Array();
+				var rowdata = [];
 				jq('span.plominochildfield', data).each(function(){
 					rowdata.push(this.innerHTML);
-				})
+				});
 				var raw = jq.evalJSON(jq('#raw_values', data).text());
 				onsubmit(rowdata, raw);
 			});
@@ -174,7 +174,7 @@ function datagrid_delete_row(table, field_id) {
 	var row = datagrid_get_selected_row(table);
 	if (row) {
 		// find the correct index of the row in the field
-		var row_index = datagrid_get_field_index(table, row)
+		var row_index = datagrid_get_field_index(table, row);
 
 		// delete the row in the datagrid
 		table.fnDeleteRow(row, undefined, true);
