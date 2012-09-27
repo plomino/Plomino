@@ -122,9 +122,6 @@ function datagrid_get_field_index(table, row) {
  */
 function datagrid_add_row(table, field_id, formurl) {
 	datagrid_show_form(field_id, formurl, function(rowdata, raw) {
-		// update the datagrid
-		table.fnAddData(rowdata);
-
 		// update the field
 		var field = jq('#' + field_id + '_gridvalue');
 		var field_data = jq.evalJSON(field.val());
@@ -134,6 +131,9 @@ function datagrid_add_row(table, field_id, formurl) {
 		// show buttons
 		jq('#' + field_id + '_editrow').show();
 		jq('#' + field_id + '_deleterow').show();
+
+		// update the datagrid
+		table.fnAddData(rowdata);
 	});
 }
 
