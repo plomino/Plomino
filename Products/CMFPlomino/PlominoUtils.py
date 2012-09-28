@@ -193,6 +193,12 @@ def urlencode(h):
     """
     return urllib.urlencode(h)
 
+def cgi_escape(s):
+    return cgi.escape(s)
+
+def normalizeString(text, context=None, encoding=None):
+    return utils_normalizeString(text, context, encoding)
+
 def asList(x):
     """ If not list, return x in a single-element list.
     .. note:: If ``x`` is ``None``, this will return ``[None]``.
@@ -259,9 +265,6 @@ def isDocument(doc):
         if hasattr(doc, 'isDocument'):
             return doc.isDocument()
     return False
-
-def cgi_escape(s):
-    return cgi.escape(s)
 
 def json_dumps(obj):
     return json.dumps(obj)

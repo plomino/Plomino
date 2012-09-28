@@ -132,6 +132,7 @@ class PlominoCoreUtils:
                'userInfo',
                'htmlencode',
                'Now',
+               'normalizeString',
                'asList',
                'urlencode',
                'csv_to_array',
