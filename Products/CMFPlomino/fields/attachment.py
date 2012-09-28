@@ -18,6 +18,8 @@ from dictionaryproperty import DictionaryProperty
 
 from base import IBaseField, BaseField, BaseForm
 
+from Products.CMFPlone.utils import normalizeString
+
 class IAttachmentField(IBaseField):
     """ Attachment field schema
     """
@@ -33,6 +35,15 @@ class AttachmentField(BaseField):
     """
     """
     implements(IAttachmentField)
+    
+    def processInput(self, strValue):
+        """
+        """
+        # only called in during validation
+        if not strValue:
+            return None
+        strValue = normalizeString(strValue)
+        return {strValue: 'application/unknow'}
 
 
 for f in getFields(IAttachmentField).values():
