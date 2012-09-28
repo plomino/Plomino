@@ -10,20 +10,23 @@
 __author__ = """Eric BREHAULT <eric.brehault@makina-corpus.com>"""
 __docformat__ = 'plaintext'
 
-# Standard
+# From the standard library
 from cStringIO import StringIO
 from email.Header import Header
 from email import message_from_string
 from time import strptime
-from types import StringTypes
+from types import NoneType, StringTypes
 import cgi
 import csv
 import decimal as std_decimal
 import Globals
-import htmlentitydefs as entity
+import htmlentitydefs
 import Missing
 import re
 import urllib
+
+# 3rd party Python 
+from jsonutil import jsonutil as json
 
 # Zope
 from AccessControl import ClassSecurityInfo
@@ -32,8 +35,7 @@ from DateTime import DateTime
 
 # Plone
 from Products.CMFCore.utils import getToolByName
-
-from jsonutil import jsonutil as json
+from Products.CMFPlone.utils import normalizeString as utils_normalizeString
 
 try:
    from plone.app.upgrade import v40
@@ -181,7 +183,7 @@ def htmlencode(s):
         # translation_service = getToolByName(context, 'translation_service')
         # s = translation_service.asunicodetype(s)
     for c in s:
-        name = entity.codepoint2name.get(ord(c))
+        name = htmlentitydefs.codepoint2name.get(ord(c))
         if name:
             t += "&%s;" % name
         else:

@@ -6,44 +6,52 @@
 __author__ = """Eric BREHAULT <eric.brehault@makina-corpus.org>"""
 __docformat__ = 'plaintext'
 
-from Products.Archetypes.config import RENAME_AFTER_CREATION_ATTEMPTS
+# From the standard library
+from copy import deepcopy
+from time import strptime
+
+# 3rd party Python 
+from jsonutil import jsonutil as json
+
+# Zope
 from AccessControl import ClassSecurityInfo
-from zope.interface import implements
-import interfaces
-from Products.CMFCore.utils import getToolByName
-from Products.CMFPlone.utils import normalizeString
-from OFS.ObjectManager import BadRequestException
-from Products.CMFCore.exceptions import BadRequest
-
-from exceptions import PlominoScriptException
-from Products.CMFPlomino.config import *
-
-import transaction
-from interfaces import *
 from AccessControl import Unauthorized
+from DateTime import DateTime
+from interfaces import *
+from persistent.dict import PersistentDict
+from zope.annotation import IAttributeAnnotatable
+from zope.app.container.contained import Contained
+from zope.component.factory import Factory
+from zope.component import queryUtility
+from zope import event
+from zope.interface import implements
+from zope.interface import Interface
+import transaction
+
 try:
     from AccessControl.class_init import InitializeClass
 except:
     from App.class_init import InitializeClass
-from time import strptime
-from DateTime import DateTime
-from zope import event
-from zope.component import queryUtility
-from zope.interface import implements, Interface
-from zope.component.factory import Factory
-from Products.CMFCore.CMFBTreeFolder import CMFBTreeFolder
+
+# CMF/Plone
+from OFS.ObjectManager import BadRequestException
+from Products.Archetypes.config import RENAME_AFTER_CREATION_ATTEMPTS
 from Products.BTreeFolder2.BTreeFolder2 import BTreeFolder2Base
+from Products.CMFCore.CMFBTreeFolder import CMFBTreeFolder
+from Products.CMFCore.exceptions import BadRequest
+from Products.CMFCore.utils import getToolByName
+from Products.CMFPlone.utils import normalizeString
+
 try:
     from Products.CMFCore.CMFCatalogAware import CatalogAware
 except:
     from Products.CMFCore.CMFCatalogAware import CMFCatalogAware as CatalogAware
-from zope.annotation import IAttributeAnnotatable
-from zope.app.container.contained import Contained
 
-from jsonutil import jsonutil as json
+# Plomino
+from exceptions import PlominoScriptException
+from Products.CMFPlomino.config import *
+import interfaces
 
-from copy import deepcopy
-from persistent.dict import PersistentDict
 
 import logging
 logger = logging.getLogger('Plomino')
@@ -71,8 +79,12 @@ except ImportError, e:
     HAS_BLOB = False
 
 class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
+    """ These represent the contents in a Plomino database.
+
+    A document contains *items* that may or may not correspond to fields on
+    one or more forms.
     """
-    """
+
     security = ClassSecurityInfo()
     implements(interfaces.IPlominoDocument, IAttributeAnnotatable)
     
@@ -81,7 +93,7 @@ class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
     
     security.declarePublic('__init__')
     def __init__(self, id):
-        """initialization
+        """ Initialization
         """
         CMFBTreeFolder.__init__(self, id)
         self.id = id
@@ -91,6 +103,7 @@ class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
     security.declarePublic('checkBeforeOpenDocument')
     def checkBeforeOpenDocument(self):
         """ Check read permission and open view.
+
         .. NOTE:: if ``READ_PERMISSION`` is set on the ``view`` action
             itself, it causes an error ('maximum recursion depth exceeded')
             if user hasn't permission.
