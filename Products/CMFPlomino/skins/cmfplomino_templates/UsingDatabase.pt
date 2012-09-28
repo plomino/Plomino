@@ -16,17 +16,15 @@
 		<div tal:replace="structure provider:plone.abovecontenttitle" />
 
 		<h1 class="documentFirstHeading"><tal:block replace="structure python:getattr(here, here.getIcon(1))"/><span tal:content="here/Title">database title</span></h1>
-		
+
 		<div tal:replace="structure provider:plone.belowcontenttitle" />
 
 		<div tal:replace="structure provider:plone.abovecontentbody" />
-		
+
 		<tal:permission tal:define="dummy here/checkReadPermission"/>
-			
+
 		<p tal:content="structure here/UsingDescription">UsingDescription</p>
 
-
-    
         <div tal:replace="structure provider:plone.belowcontentbody" />
 
     </tal:main-macro>

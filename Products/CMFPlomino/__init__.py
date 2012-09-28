@@ -22,12 +22,13 @@ __docformat__ = 'plaintext'
 
 # There are three ways to inject custom code here:
 #
-#   - To set global configuration variables, create a file AppConfig.py.
-#       This will be imported in config.py, which in turn is imported in
+#   - To set global configuration variables, edit AppConfig.py.
+#       This is imported in config.py, which in turn is imported in
 #       each generated class and in this file.
 #   - To perform custom initialisation after types have been registered,
 #       use the protected code section at the bottom of initialize().
 
+# From the standard library
 import logging
 logger = logging.getLogger('CMFPlomino')
 logger.debug('Installing Product')
@@ -35,6 +36,15 @@ logger.debug('Installing Product')
 import os
 import os.path
 from time import time
+
+# Zope
+from AccessControl.Permission import registerPermissions
+from Globals import DevelopmentMode
+from zope import component
+from zope.interface import implements
+
+# CMF/Plone
+from Products.PythonScripts.Utility import allow_module
 from Products.Archetypes import listTypes
 from Products.Archetypes.atapi import *
 from Products.Archetypes.utils import capitalize
@@ -42,23 +52,24 @@ from Products.CMFCore import DirectoryView
 from Products.CMFCore import permissions as cmfpermissions
 from Products.CMFCore import utils as cmfutils
 from Products.CMFPlone.utils import ToolInit
+
+# Plomino
 from config import *
+import interfaces
 
 DirectoryView.registerDirectory('skins', product_globals)
 
-from AccessControl.Permission import registerPermissions
-from Products.PythonScripts.Utility import allow_module
-from zope import component
-import interfaces
-from zope.interface import implements
-from Globals import DevelopmentMode
-
 class isPlomino(object):
+    """ Return True if called on any Plomino object.
+    """
 
     def __call__(self):
         return hasattr(self.context, 'getParentDatabase')
 
 class isDesignMode(object):
+    """ Return True if called on a Plomino object by a user who has design
+    permission in that context.
+    """
 
     def __call__(self):
         if not hasattr(self.context, 'getParentDatabase'):
@@ -69,18 +80,18 @@ if DevelopmentMode:
     PROFILING = True
 
     class plomino_profiler:
-        """"Decorator which helps to control what aspects to profile
+        """ Decorator which helps to control what aspects to profile
         """
         def __init__(self, aspect=None):
             self.aspect = aspect
-        
+
         def get_storage(self, context):
             storage = context.getCache("plomino.profiling")
             if not storage:
                 storage = dict()
                 context.setCache("plomino.profiling", storage)
             return storage
-    
+
         def __call__(self, f):
             def newf(*args, **kwds):
                 obj = args[0]
@@ -115,13 +126,13 @@ else:
         def __call__(self, f):
             def newf(*args, **kwds):
                 return f(*args, **kwds)
-            
+
             newf.__doc__ = f.__doc__
             return newf
 
 class PlominoCoreUtils:
     implements(interfaces.IPlominoUtils)
-    
+
     module = "Products.CMFPlomino.PlominoUtils"
     methods = ['Log',
                'DateToString',
@@ -188,7 +199,7 @@ def initialize(context):
     all_content_types, all_constructors, all_ftis = process_types(
         listTypes(PROJECTNAME),
         PROJECTNAME)
-    
+
     all_content_types += (PlominoDocument.PlominoDocument,)
     all_constructors += (addPlominoDocument,)
     all_ftis += ({
@@ -208,7 +219,7 @@ def initialize(context):
         extra_constructors = all_constructors,
         fti                = all_ftis,
         ).initialize(context)
-    
+
     # Give it some extra permissions to control them on a per class limit
     for i in range(0,len(all_content_types)):
         klassname=all_content_types[i].__name__

@@ -869,8 +869,7 @@ class PlominoReplicationManager(Persistent):
 
     security.declareProtected(EDIT_PERMISSION, 'processImport')
     def processImport(self, REQUEST):
-        """
-        Process the importation.
+        """ Process the importation.
         """
         #result message
         infoMsg = ''
@@ -917,8 +916,7 @@ class PlominoReplicationManager(Persistent):
 
     security.declareProtected(EDIT_PERMISSION, 'processImport')
     def processImportAPI(self, formName, separator, fileToImport, file_encoding='utf-8'):
-        """
-        Process import API method.
+        """ Process import API method.
         """
 
         #form name
@@ -950,9 +948,11 @@ class PlominoReplicationManager(Persistent):
 
     security.declareProtected(EDIT_PERMISSION, 'parseFile')
     def parseFile(self, fileToImport, formName, separator, file_encoding='utf-8'):
+        """ Read CSV file. 
+        Assume that we have a header line. 
+        Each line represents a document. Set `Form` to formName.
         """
-        """
-        res= []
+        res = []
         try:
             if not fileToImport:
                 raise PlominoReplicationException, 'file not set'
@@ -960,17 +960,17 @@ class PlominoReplicationManager(Persistent):
             if not separator:
                 raise PlominoReplicationException, 'separator not set'
 
-            #use the python cvs module
+            # Use the python CSV module
             reader = csv.DictReader(fileToImport.readlines(), delimiter=separator)
 
-            #add the form name and copy reader values
+            # Add the form name and copy reader values
             for line in reader:
                 docInfos = {}
 
-                #add form name
+                # add form name
                 docInfos['Form'] = formName
 
-                #copy col values
+                # copy col values
                 for col in line:
                     v = line[col]
                     if v is None:
