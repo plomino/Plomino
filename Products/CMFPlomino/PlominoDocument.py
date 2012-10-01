@@ -391,14 +391,17 @@ class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
             title_formula = form.getDocumentTitle()
             if title_formula:
                 try:
-                    result = self.runFormulaScript("form_"+form.id+"_title", self, form.DocumentTitle)
+                    title = self.runFormulaScript("form_"+form.id+"_title", self, form.DocumentTitle)
+                    if title != self.Title():
+                        self.setTitle(title)
                 except PlominoScriptException, e:
                     e.reportError('Title formula failed')
-                    result = ""
-                if (not result) and creation:
-                    result = form.Title()
-                if result != self.Title():
-                    self.setTitle(result)
+            elif creation:
+                title = form.Title()
+                if title != self.Title():
+                    # We may be calling save with 'creation=True' on
+                    # existing documents.
+                    self.setTitle(title)
 
             # update the document id
             if creation and form.getDocumentId():
