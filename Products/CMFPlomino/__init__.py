@@ -95,7 +95,7 @@ if DevelopmentMode:
         def __call__(self, f):
             def newf(*args, **kwds):
                 obj = args[0]
-                request = getattr(obj, 'REQUEST')
+                request = getattr(obj, 'REQUEST', None)
                 if request and self.aspect in request.cookies.get('plomino_profiler', ''):
                     start = time()
                     f_result = f(*args, **kwds)
