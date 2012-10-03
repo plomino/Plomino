@@ -12,16 +12,16 @@
  *   form (second request, when the user clicks on the submit button of the sub-form)
  */
 function datagrid_show_form(field_id, formurl, onsubmit) {
-    var field_selector = "#" + field_id + "_editform";
-    jq(field_selector).html(
-        '<iframe style="height:100%;width:100%" height="100%" width="100%"></iframe>'
-    );
-    var iframe = jq("#" + field_id + "_editform iframe");
-    iframe.attr('src', formurl);
-    iframe.load(function() {
-        var popup = jq(field_selector);
-        var body = iframe[0].contentDocument.body;
-        // Edit-form close button
+	var field_selector = "#" + field_id + "_editform";
+	jq(field_selector).html(
+		'<iframe style="height:100%;width:100%" height="100%" width="100%"></iframe>'
+	);
+	var iframe = jq("#" + field_id + "_editform iframe");
+	iframe.attr('src', formurl);
+	iframe.load(function() {
+		var popup = jq(field_selector);
+		var body = iframe[0].contentDocument.body;
+		// Edit-form close button
 		jq("input[name=plomino_close]", body).removeAttr('onclick').click(function() {
 			popup.dialog('close');
 		});
@@ -43,8 +43,8 @@ function datagrid_show_form(field_id, formurl, onsubmit) {
 
 			if(!(message === null || message === '')) {
 				alert(message);
-                // Avoid Plone message "You already submitted this form", since we didn't
-                jQuery(this).find('input[type="submit"].submitting').removeClass('submitting');
+				// Avoid Plone message "You already submitted this form", since we didn't
+				jQuery(this).find('input[type="submit"].submitting').removeClass('submitting');
 				return false;
 			}
 			jq.get(this.action, jq(this).serialize(), function(data, textStatus, XMLHttpRequest){
@@ -152,12 +152,12 @@ function datagrid_edit_row(table, field_id, formurl) {
 		var row_index = datagrid_get_field_index(table, row);
 		formurl += '&Plomino_datagrid_rowdata=' + jq.URLEncode(jq.toJSON(field_data[row_index]));
 		datagrid_show_form(field_id, formurl, function(rowdata, raw) {
-			// update the datagrid
-			table.fnUpdate(rowdata, row);
-
 			// update the field
 			field_data[row_index] = raw;
 			field.val(jq.toJSON(field_data));
+
+			// update the datagrid
+			table.fnUpdate(rowdata, row);
 		});
 	}
 	else {
@@ -176,14 +176,14 @@ function datagrid_delete_row(table, field_id) {
 		// find the correct index of the row in the field
 		var row_index = datagrid_get_field_index(table, row);
 
-		// delete the row in the datagrid
-		table.fnDeleteRow(row, undefined, true);
-
 		// update the field
 		var field = jq('#' + field_id + '_gridvalue');
 		var field_data = jq.evalJSON(field.val());
 		field_data.splice(row_index, 1);
 		field.val(jq.toJSON(field_data));
+
+		// delete the row in the datagrid
+		table.fnDeleteRow(row, undefined, true);
 	}
 	else {
 		alert('You must select a row to delete.');
