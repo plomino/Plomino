@@ -160,6 +160,12 @@ class PlominoAccessControl(Persistent):
         membershiptool = getToolByName(self, 'portal_membership')
         return membershiptool.getAuthenticatedMember()
 
+    security.declarePublic('getCurrentUserId')
+    def getCurrentUserId(self):
+        """ Returns the current user id.
+        """
+        return self.getCurrentUser().getMemberId()
+
     security.declarePublic('getCurrentUserGroups')
     def getCurrentUserGroups(self):
         """get the current user groups
