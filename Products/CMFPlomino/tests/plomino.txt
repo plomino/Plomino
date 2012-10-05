@@ -116,7 +116,7 @@ will be considered:
 
 Calling 'save' method will (re-)index the document in the Plomino index and will evaluate the computed fields according its form
     >>> doc1.setItem('field1', 'London calling')
-    >>> doc1.save()
+    >>> doc1.save(creation=True)
     >>> doc1.field2
     u'My favorite song is London calling'
 
