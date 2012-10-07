@@ -155,7 +155,9 @@ class PlominoCoreUtils:
                'cgi_escape',
                'json_dumps',
                'json_loads',
-               'decimal']
+               'decimal',
+               'actual_path',
+               'actual_context']
 
 component.provideUtility(PlominoCoreUtils, interfaces.IPlominoUtils)
 

@@ -301,3 +301,28 @@ def decimal(v='0'):
         return v
     except std_decimal.InvalidOperation:
         return 'ERROR'
+
+def actual_path(context):
+    """ return the actual path from the request
+    Useful in portlet context
+    """
+    if not hasattr(context, "REQUEST"):
+        return None
+    url = context.REQUEST.get("ACTUAL_URL")
+    return context.REQUEST.physicalPathFromURL(url)
+
+def actual_context(context, search="PlominoDocument"):
+    """ return the actual context from the request
+    Useful in portlet context
+    """
+    path = actual_path(context)
+    if not path:
+        return None
+    current_context = context.unrestrictedTraverse(path)
+    while len(path)>0 and current_context.__class__.__name__!=search:
+        path = path[:-1]
+        current_context = context.unrestrictedTraverse(path)
+    if current_context.__class__.__name__ == search:
+        return current_context
+    else:
+        return None
