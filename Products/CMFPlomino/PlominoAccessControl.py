@@ -405,36 +405,36 @@ class PlominoAccessControl(Persistent):
         return getSecurityManager().checkPermission(perm, obj)
 
     security.declareProtected(ACL_PERMISSION, 'addACLEntry')
-    def addACLEntry(self, request):
+    def addACLEntry(self, REQUEST):
         """ Add an entry in the ACL
         """
         # TODO: Remove assumption that we have a request.
-        user = request.get('newuser')
-        accessright = request.get('accessright')
+        user = REQUEST.get('newuser')
+        accessright = REQUEST.get('accessright')
         self.manage_setLocalRoles(user, [accessright])
-        request.RESPONSE.redirect('./DatabaseACL')
+        REQUEST.RESPONSE.redirect('./DatabaseACL')
 
     security.declareProtected(ACL_PERMISSION, 'removeACLEntries')
-    def removeACLEntries(self, request):
+    def removeACLEntries(self, REQUEST):
         """ Remove entries from the ACL
         """
         # TODO: Remove assumption that we have a request.
-        users = request.get('users')
+        users = REQUEST.get('users')
         if type(users) == str:
             users = [users]
 
         self.manage_delLocalRoles(users)
-        request.RESPONSE.redirect('./DatabaseACL')
+        REQUEST.RESPONSE.redirect('./DatabaseACL')
 
     security.declareProtected(ACL_PERMISSION, 'setGenericAccess')
-    def setGenericAccess(self, request):
+    def setGenericAccess(self, REQUEST):
         """ Set the generic users access rights
         """
-        anonymousaccessright = request.get('anonymousaccessright')
+        anonymousaccessright = REQUEST.get('anonymousaccessright')
         self.AnomynousAccessRight = anonymousaccessright
         self.setPlominoPermissions("Anonymous", anonymousaccessright)
 
-        authenticatedaccessright = request.get('authenticatedaccessright')
+        authenticatedaccessright = REQUEST.get('authenticatedaccessright')
         self.AuthenticatedAccessRight = authenticatedaccessright
         self.setPlominoPermissions("Authenticated", authenticatedaccessright)
 
@@ -446,14 +446,14 @@ class PlominoAccessControl(Persistent):
                 continue
             wf.updateRoleMappingsFor(self)
 
-        request.RESPONSE.redirect('./DatabaseACL')
+        REQUEST.RESPONSE.redirect('./DatabaseACL')
 
     security.declareProtected(ACL_PERMISSION, 'addPlominoUserRole')
-    def addPlominoUserRole(self, request):
+    def addPlominoUserRole(self, REQUEST):
         """ Add a user role in the ACL
         """
         # TODO: Remove assumption that we have a request.
-        newrole = request.get('newrole')
+        newrole = REQUEST.get('newrole')
         # roles names must be enclosed in brackets so they can be
         # distinguished from users names in Authors fields
         newrole = '['+newrole+']'
@@ -461,42 +461,42 @@ class PlominoAccessControl(Persistent):
         if not roles.has_key(newrole):
             roles[newrole] = {}
             self.UserRoles = roles
-        request.RESPONSE.redirect('./DatabaseACL')
+        REQUEST.RESPONSE.redirect('./DatabaseACL')
 
     security.declareProtected(ACL_PERMISSION, 'removePlominoUserRole')
-    def removePlominoUserRole(self, request):
+    def removePlominoUserRole(self, REQUEST):
         """ Remove a user role from the ACL
         """
         # TODO: Remove assumption that we have a request.
-        role = request.get('role')
+        role = REQUEST.get('role')
         roles = self.UserRoles
         if roles.has_key(role):
             del roles[role]
             self.UserRoles = roles
-        request.RESPONSE.redirect('./DatabaseACL')
+        REQUEST.RESPONSE.redirect('./DatabaseACL')
 
     security.declareProtected(ACL_PERMISSION, 'addPlominoRoleToUser')
-    def addPlominoRoleToUser(self, request):
+    def addPlominoRoleToUser(self, REQUEST):
         """ Give a role to a user
         """
         # TODO: Remove assumption that we have a request.
-        role = request.get('role')
-        user = request.get('user')
+        role = REQUEST.get('role')
+        user = REQUEST.get('user')
         roles = self.UserRoles
         if roles.has_key(role):
             userslist = roles[role]
             userslist[user] = 1
             roles[role] = userslist
             self.UserRoles = roles
-        request.RESPONSE.redirect('./DatabaseACL')
+        REQUEST.RESPONSE.redirect('./DatabaseACL')
 
     security.declareProtected(ACL_PERMISSION, 'removePlominoRoleFromUser')
-    def removePlominoRoleFromUser(self, request):
+    def removePlominoRoleFromUser(self, REQUEST):
         """ Remove a role from a user
         """
         # TODO: Remove assumption that we have a request.
-        role = request.get('role')
-        user = request.get('user')
+        role = REQUEST.get('role')
+        user = REQUEST.get('user')
         roles = self.UserRoles
         if roles.has_key(role):
             userslist = roles[role]
@@ -504,7 +504,7 @@ class PlominoAccessControl(Persistent):
                 del userslist[user]
                 roles[role] = userslist
                 self.UserRoles = roles
-        request.RESPONSE.redirect('./DatabaseACL')
+        REQUEST.RESPONSE.redirect('./DatabaseACL')
 
     security.declarePublic('getPortalMembers')
     def getPortalMembers(self):
@@ -553,13 +553,13 @@ class PlominoAccessControl(Persistent):
         self.specific_rights = s
 
     security.declareProtected(ACL_PERMISSION, 'manage_specificrights')
-    def manage_specificrights(self, request):
+    def manage_specificrights(self, REQUEST):
         """
         """
-        deletedocument = request.get('specific_deletedocument', None)
+        deletedocument = REQUEST.get('specific_deletedocument', None)
         if deletedocument:
             self.setSpecificRights('specific_deletedocument', deletedocument)
-        request.RESPONSE.redirect('./DatabaseACL')
+        REQUEST.RESPONSE.redirect('./DatabaseACL')
 
     security.declareProtected(ACL_PERMISSION, 'getWorkflowStates')
     def getWorkflowStates(self):
