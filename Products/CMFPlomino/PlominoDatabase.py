@@ -32,7 +32,6 @@ import interfaces
 # CMF
 from Products.CMFCore.CMFBTreeFolder import manage_addCMFBTreeFolder
 from Products.CMFCore.PortalFolder import PortalFolderBase as PortalFolder
-from Products.CMFCore.PortalFolder import PortalFolderBase as PortalFolder
 from Products.CMFCore.utils import getToolByName
 from Products.CMFDynamicViewFTI.browserdefault import BrowserDefaultMixin
 
