@@ -12,56 +12,59 @@
 __author__ = """Eric BREHAULT <eric.brehault@makina-corpus.org>"""
 __docformat__ = 'plaintext'
 
-from AccessControl import ClassSecurityInfo
-from Products.Archetypes.atapi import *
-from Products.Archetypes.debug import deprecated
-from zope.interface import implements
-import interfaces
-from Products.ATContentTypes.content.folder import ATFolder
-from Products.CMFCore.PortalFolder import PortalFolderBase as PortalFolder
-from Products.CMFDynamicViewFTI.browserdefault import BrowserDefaultMixin
-from exceptions import PlominoScriptException
-from Products.CMFPlomino.config import *
+# Standard
+import Globals
+import string
 
-##code-section module-header #fill in your manual code here
-from Products.Archetypes.public import *
-from Products.Archetypes.utils import make_uuid
-from Products.Archetypes.BaseObject import BaseObject
-
-from zope import event
-from zope.interface import directlyProvides
-from zope.app.container.contained import ObjectRemovedEvent
+# Zope
 from AccessControl import ClassSecurityInfo
 from Acquisition import aq_inner
-from Products.CMFCore.utils import getToolByName
 from OFS.Folder import *
 from OFS.ObjectManager import ObjectManager
-#from Products.BTreeFolder2.BTreeFolder2 import manage_addBTreeFolder
+from zope.annotation.interfaces import IAnnotations
+from zope.app.container.contained import ObjectRemovedEvent
+from zope.component import queryUtility
+from zope import event
+from zope.interface import directlyProvides
+from zope.interface import implements
+import interfaces
+
+# CMF
 from Products.CMFCore.CMFBTreeFolder import manage_addCMFBTreeFolder
+from Products.CMFCore.PortalFolder import PortalFolderBase as PortalFolder
+from Products.CMFCore.PortalFolder import PortalFolderBase as PortalFolder
+from Products.CMFCore.utils import getToolByName
+from Products.CMFDynamicViewFTI.browserdefault import BrowserDefaultMixin
+
+# Plone
+from plone.memoize.interfaces import ICacheChooser
+from Products.Archetypes.atapi import *
+from Products.Archetypes.BaseObject import BaseObject
+from Products.Archetypes.debug import deprecated
+from Products.Archetypes.public import *
+from Products.Archetypes.utils import make_uuid
+from Products.ATContentTypes.content.folder import ATFolder
+#from Products.BTreeFolder2.BTreeFolder2 import manage_addBTreeFolder
 from Products.CMFPlone.interfaces import IHideFromBreadcrumbs
 
-import string
-import Globals
+# Plomino
+from exceptions import PlominoCacheException
+from exceptions import PlominoScriptException
+from index.PlominoIndex import PlominoIndex
+from PlominoAccessControl import PlominoAccessControl
+from PlominoDesignManager import PlominoDesignManager
+from PlominoDocument import addPlominoDocument
+from PlominoReplicationManager import PlominoReplicationManager
+from PlominoScheduler import PlominoScheduler
+from Products.CMFPlomino.config import *
+from Products.CMFPlomino.PlominoUtils import *
+
 try:
     from plone.app.async.interfaces import IAsyncService
     import zc.async
     ASYNC = True
 except:
     ASYNC = False
-from plone.memoize.interfaces import ICacheChooser
-from zope.component import queryUtility
-from zope.annotation.interfaces import IAnnotations
-
-from index.PlominoIndex import PlominoIndex
-from Products.CMFPlomino.PlominoUtils import *
-from PlominoAccessControl import PlominoAccessControl
-from PlominoDesignManager import PlominoDesignManager
-from PlominoReplicationManager import PlominoReplicationManager
-from PlominoScheduler import PlominoScheduler
-from PlominoDocument import addPlominoDocument
-from exceptions import PlominoCacheException
-
-from Products.CMFCore.PortalFolder import PortalFolderBase as PortalFolder
 
 PLOMINO_REQUEST_CACHE_KEY = "plomino.cache"
 ##/code-section module-header
