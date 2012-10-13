@@ -25,7 +25,7 @@ Create the utility methods in your extension module (e.g.
 
 Create a class to declare them::
 
-    class UnepUtils:
+    class TheUtils:
         module = "mypackage.mymodule"
         methods = ['jsonify', 'dejsonify']
 
@@ -39,7 +39,7 @@ And register it with Plomino in a ``configure.zcml`` file::
   <utility
         name="MyUtils"
         provides="Products.CMFPlomino.interfaces.IPlominoUtils"
-        component="mypackage.mymodule"
+        component="mypackage.mymodule.TheUtils"
         />
 
 Now, ``jsonify`` and ``dejsonify`` can be used in any Plomino formula.

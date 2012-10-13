@@ -12,25 +12,32 @@
 __author__ = """Eric BREHAULT <eric.brehault@makina-corpus.org>"""
 __docformat__ = 'plaintext'
 
+# From the standard library
+import cStringIO
+import csv
+
+# 3rd party Python 
+from jsonutil import jsonutil as json
+
+# Zope 
 from AccessControl import ClassSecurityInfo
+from AccessControl import Unauthorized
+from Acquisition import aq_inner
 from Products.Archetypes.atapi import *
-from zope.interface import implements
-import interfaces
 from Products.ATContentTypes.content.folder import ATFolder
+from zope.interface import implements
+
+# Plone
 from plone.app.content.batching import Batch
 from Products.CMFDynamicViewFTI.browserdefault import BrowserDefaultMixin
 
-from Products.CMFPlomino.config import *
-from PlominoUtils import asUnicode, asList
+# Plomino
 from exceptions import PlominoScriptException
+from PlominoUtils import asUnicode, asList
+from Products.CMFPlomino.config import *
 from validator import isValidPlominoId
-
-from AccessControl import Unauthorized
-import csv, cStringIO
-from Acquisition import aq_inner
+import interfaces
 import PlominoDocument
-
-from jsonutil import jsonutil as json
 
 import logging
 logger = logging.getLogger('Plomino')

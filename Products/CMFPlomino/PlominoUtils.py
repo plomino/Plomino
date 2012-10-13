@@ -10,20 +10,23 @@
 __author__ = """Eric BREHAULT <eric.brehault@makina-corpus.com>"""
 __docformat__ = 'plaintext'
 
-# Standard
+# From the standard library
 from cStringIO import StringIO
 from email.Header import Header
 from email import message_from_string
 from time import strptime
-from types import StringTypes
+from types import NoneType, StringTypes
 import cgi
 import csv
 import decimal as std_decimal
 import Globals
-import htmlentitydefs as entity
+import htmlentitydefs
 import Missing
 import re
 import urllib
+
+# 3rd party Python 
+from jsonutil import jsonutil as json
 
 # Zope
 from AccessControl import ClassSecurityInfo
@@ -32,8 +35,7 @@ from DateTime import DateTime
 
 # Plone
 from Products.CMFCore.utils import getToolByName
-
-from jsonutil import jsonutil as json
+from Products.CMFPlone.utils import normalizeString as utils_normalizeString
 
 try:
    from plone.app.upgrade import v40
@@ -181,7 +183,7 @@ def htmlencode(s):
         # translation_service = getToolByName(context, 'translation_service')
         # s = translation_service.asunicodetype(s)
     for c in s:
-        name = entity.codepoint2name.get(ord(c))
+        name = htmlentitydefs.codepoint2name.get(ord(c))
         if name:
             t += "&%s;" % name
         else:
@@ -192,6 +194,12 @@ def urlencode(h):
     """ Call urllib.urlencode
     """
     return urllib.urlencode(h)
+
+def cgi_escape(s):
+    return cgi.escape(s)
+
+def normalizeString(text, context=None, encoding=None):
+    return utils_normalizeString(text, context, encoding)
 
 def asList(x):
     """ If not list, return x in a single-element list.
@@ -260,9 +268,6 @@ def isDocument(doc):
             return doc.isDocument()
     return False
 
-def cgi_escape(s):
-    return cgi.escape(s)
-
 def json_dumps(obj):
     return json.dumps(obj)
 
@@ -296,3 +301,28 @@ def decimal(v='0'):
         return v
     except std_decimal.InvalidOperation:
         return 'ERROR'
+
+def actual_path(context):
+    """ return the actual path from the request
+    Useful in portlet context
+    """
+    if not hasattr(context, "REQUEST"):
+        return None
+    url = context.REQUEST.get("ACTUAL_URL")
+    return context.REQUEST.physicalPathFromURL(url)
+
+def actual_context(context, search="PlominoDocument"):
+    """ return the actual context from the request
+    Useful in portlet context
+    """
+    path = actual_path(context)
+    if not path:
+        return None
+    current_context = context.unrestrictedTraverse(path)
+    while len(path)>0 and current_context.__class__.__name__!=search:
+        path = path[:-1]
+        current_context = context.unrestrictedTraverse(path)
+    if current_context.__class__.__name__ == search:
+        return current_context
+    else:
+        return None

@@ -1040,7 +1040,6 @@ class PlominoDesignManager(Persistent):
         child = node.firstChild
         while child is not None:
             name = child.nodeName
-            logger.info(name)
             if name=='acl':
                 anonymousaccessright = child.getAttribute('AnomynousAccessRight')
                 self.AnomynousAccessRight = anonymousaccessright

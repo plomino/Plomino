@@ -6,43 +6,52 @@
 __author__ = """Eric BREHAULT <eric.brehault@makina-corpus.org>"""
 __docformat__ = 'plaintext'
 
-from Products.Archetypes.config import RENAME_AFTER_CREATION_ATTEMPTS
+# From the standard library
+from copy import deepcopy
+from time import strptime
+
+# 3rd party Python 
+from jsonutil import jsonutil as json
+
+# Zope
 from AccessControl import ClassSecurityInfo
-from zope.interface import implements
-import interfaces
-from Products.CMFCore.utils import getToolByName
-from Products.CMFPlone.utils import normalizeString
-from OFS.ObjectManager import BadRequestException
-
-from exceptions import PlominoScriptException
-from Products.CMFPlomino.config import *
-
-import transaction
-from interfaces import *
 from AccessControl import Unauthorized
+from DateTime import DateTime
+from interfaces import *
+from persistent.dict import PersistentDict
+from zope.annotation import IAttributeAnnotatable
+from zope.app.container.contained import Contained
+from zope.component.factory import Factory
+from zope.component import queryUtility
+from zope import event
+from zope.interface import implements
+from zope.interface import Interface
+import transaction
+
 try:
     from AccessControl.class_init import InitializeClass
 except:
     from App.class_init import InitializeClass
-from time import strptime
-from DateTime import DateTime
-from zope import event
-from zope.component import queryUtility
-from zope.interface import implements, Interface
-from zope.component.factory import Factory
-from Products.CMFCore.CMFBTreeFolder import CMFBTreeFolder
+
+# CMF/Plone
+from OFS.ObjectManager import BadRequestException
+from Products.Archetypes.config import RENAME_AFTER_CREATION_ATTEMPTS
 from Products.BTreeFolder2.BTreeFolder2 import BTreeFolder2Base
+from Products.CMFCore.CMFBTreeFolder import CMFBTreeFolder
+from Products.CMFCore.exceptions import BadRequest
+from Products.CMFCore.utils import getToolByName
+from Products.CMFPlone.utils import normalizeString
+
 try:
     from Products.CMFCore.CMFCatalogAware import CatalogAware
 except:
     from Products.CMFCore.CMFCatalogAware import CMFCatalogAware as CatalogAware
-from zope.annotation import IAttributeAnnotatable
-from zope.app.container.contained import Contained
 
-from jsonutil import jsonutil as json
+# Plomino
+from exceptions import PlominoScriptException
+from Products.CMFPlomino.config import *
+import interfaces
 
-from copy import deepcopy
-from persistent.dict import PersistentDict
 
 import logging
 logger = logging.getLogger('Plomino')
@@ -70,8 +79,12 @@ except ImportError, e:
     HAS_BLOB = False
 
 class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
+    """ These represent the contents in a Plomino database.
+
+    A document contains *items* that may or may not correspond to fields on
+    one or more forms.
     """
-    """
+
     security = ClassSecurityInfo()
     implements(interfaces.IPlominoDocument, IAttributeAnnotatable)
 
@@ -80,7 +93,7 @@ class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
 
     security.declarePublic('__init__')
     def __init__(self, id):
-        """initialization
+        """ Initialization
         """
         CMFBTreeFolder.__init__(self, id)
         self.id = id
@@ -90,6 +103,7 @@ class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
     security.declarePublic('checkBeforeOpenDocument')
     def checkBeforeOpenDocument(self):
         """ Check read permission and open view.
+
         .. NOTE:: if ``READ_PERMISSION`` is set on the ``view`` action
             itself, it causes an error ('maximum recursion depth exceeded')
             if user hasn't permission.
@@ -374,14 +388,23 @@ class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
                     pass
 
             # compute the document title
-            try:
-                result = self.runFormulaScript("form_"+form.id+"_title", self, form.DocumentTitle)
-            except PlominoScriptException, e:
-                e.reportError('Title formula failed')
-                result = ""
-            if not result:
-                result = form.Title()
-            self.setTitle(result)
+            title_formula = form.getDocumentTitle()
+            if title_formula:
+                # Use the formula if we have one
+                try:
+                    title = self.runFormulaScript("form_"+form.id+"_title", self, form.DocumentTitle)
+                    if title != self.Title():
+                        self.setTitle(title)
+                except PlominoScriptException, e:
+                    e.reportError('Title formula failed')
+            elif creation:
+                # If we have no formula and we're creating, use Form's title
+                title = form.Title()
+                if title != self.Title():
+                    # We may be calling save with 'creation=True' on
+                    # existing documents, in which case we may already have
+                    # a title.
+                    self.setTitle(title)
 
             # update the document id
             if creation and form.getDocumentId():
@@ -619,7 +642,7 @@ class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
         return ' '.join(values)
 
     security.declareProtected(READ_PERMISSION, 'getfile')
-    def getfile(self, filename=None, REQUEST=None):
+    def getfile(self, filename=None, REQUEST=None, asFile=False):
         """
         """
         if not self.isReader():
@@ -641,15 +664,15 @@ class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
                 file_obj = self.get(filename, None)
             if not file_obj:
                 return None
-            if REQUEST is None:
+            if asFile:
                 return file_obj
-            else:
+            if REQUEST:
                 REQUEST.RESPONSE.setHeader('content-type', file_obj.getContentType())
                 REQUEST.RESPONSE.setHeader("Content-Disposition", "inline; filename="+filename)
-                if fss:
-                    return file_obj.getData()
-                else:
-                    return file_obj.data
+            if fss:
+                return file_obj.getData()
+            else:
+                return file_obj.data
         else:
             return None
 
@@ -677,11 +700,14 @@ class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
             if """\\""" in filename:
                 filename=filename.split("\\")[-1]
             filename = ".".join([normalizeString(s, encoding='utf-8') for s in filename.split('.')])
-            if filename in self.objectIds():
-                if overwrite:
-                    self.deletefile(filename)
-                else:
-                    return ("ERROR: "+filename+" already exists", "")
+            if overwrite and filename in self.objectIds():
+                self.deletefile(filename)
+            try:
+                self._checkId(filename)
+            except BadRequest:
+                # if filename is a reserved id, we rename it
+                filename = DateTime().toZone('UTC').strftime("%Y%m%d%H%M%S") + "_" + filename
+            
             if(self.getParentDatabase().getStorageAttachments()==True):
                 tmpfile=File(filename, filename, submittedValue)
                 storage = FileSystemStorage();
