@@ -1157,7 +1157,7 @@ class PlominoReplicationManager(Persistent):
         node.setAttribute('lastmodified', doc.getLastModified(asString=True))
 
         # export items
-        str_items = xmlrpclib.dumps((doc.items,), allow_none=True)
+        str_items = xmlrpclib.dumps((doc.items.data,), allow_none=True)
         try:
             dom_items = parseString(str_items)
         except ExpatError:
