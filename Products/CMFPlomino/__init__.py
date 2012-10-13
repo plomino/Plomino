@@ -59,6 +59,24 @@ import interfaces
 
 DirectoryView.registerDirectory('skins', product_globals)
 
+from zope.interface import implementer
+from zope.interface import Interface
+from zope.component import provideAdapter
+from souper.interfaces import IStorageLocator
+from souper.soup import SoupData
+
+@implementer(IStorageLocator)
+class StorageLocator(object):
+    def __init__(self, context):
+       self.context = context
+
+    def storage(self, soup_name):
+       if soup_name not in self.context:
+           self.context[soup_name] = SoupData()
+       return self.context[soup_name]
+
+provideAdapter(StorageLocator, adapts=[Interface])
+
 class isPlomino(object):
     """ Return True if called on any Plomino object.
     """

@@ -51,6 +51,14 @@ except:
 from plone.memoize.interfaces import ICacheChooser
 from zope.component import queryUtility
 from zope.annotation.interfaces import IAnnotations
+from souper.soup import get_soup
+from souper.interfaces import ICatalogFactory
+from souper.soup import NodeAttributeIndexer
+from zope.component import provideUtility
+from repoze.catalog.catalog import Catalog
+from repoze.catalog.indexes.field import CatalogFieldIndex
+from repoze.catalog.indexes.text import CatalogTextIndex
+from repoze.catalog.indexes.keyword import CatalogKeywordIndex
 
 from index.PlominoIndex import PlominoIndex
 from Products.CMFPlomino.PlominoUtils import *
@@ -241,9 +249,9 @@ class PlominoDatabase(ATFolder, PlominoAccessControl, PlominoDesignManager, Plom
         self.plomino_version = VERSION
         self.setStatus("Ready")
         PlominoAccessControl.__init__(self)
-        #manage_addBTreeFolder(self, id='plomino_documents')
-        manage_addCMFBTreeFolder(self, id='plomino_documents')
-        directlyProvides(self.documents, IHideFromBreadcrumbs)
+        #manage_addCMFBTreeFolder(self, id='plomino_documents')
+        soup = get_soup('plomino_documents', self)
+        #directlyProvides(self.documents, IHideFromBreadcrumbs)
 
     @property
     def documents(self):
@@ -257,8 +265,8 @@ class PlominoDatabase(ATFolder, PlominoAccessControl, PlominoDesignManager, Plom
         """DB initialization
         """
         self.initializeACL()
-        index = PlominoIndex(FULLTEXT=self.FulltextIndex)
-        self._setObject('plomino_index', index)
+#        index = PlominoIndex(FULLTEXT=self.FulltextIndex)
+#        self._setObject('plomino_index', index)
         resources = Folder('resources')
         resources.title='resources'
         self._setObject('resources', resources)
