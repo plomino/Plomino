@@ -280,7 +280,7 @@ class PlominoForm(ATFolder):
             tmp.setItem("Plomino_Parent_Field", parent_field)
             tmp.setItem("Plomino_Parent_Form", parent_form)
             tmp.setItem(parent_field+"_itemnames", [
-                f.getId() for f in self.getFormFields() 
+                f.getId() for f in self.getFormFields()
                 if not f.getFieldMode() == 'DISPLAY'])
             return self.ChildForm(temp_doc=tmp)
 
@@ -308,6 +308,7 @@ class PlominoForm(ATFolder):
         fieldlist = self.objectValues(spec='PlominoField')
         result = [f for f in fieldlist]
         if applyhidewhen:
+            doc = doc or TemporaryDocument(self.getParentDatabase(), self, self.REQUEST)
             layout = self.applyHideWhen(doc)
             result = [f for f in result if """<span class="plominoFieldClass">%s</span>""" % f.id in layout]
         result.sort(key=lambda elt: elt.id.lower())
@@ -356,7 +357,7 @@ class PlominoForm(ATFolder):
         """
         cacheformulas = self.objectValues(spec='PlominoCache')
         return [c for c in cacheformulas]
-    
+
     security.declarePublic('getFormName')
     def getFormName(self):
         """ Return the form name
@@ -436,7 +437,7 @@ class PlominoForm(ATFolder):
             else:
                 action_render=''
             html_content = html_content.replace('<span class="plominoActionClass">'+actionName+'</span>', action_render)
-        
+
         # store fragment to cache
         html_content = self.updateCache(html_content, to_be_cached)
         return html_content
@@ -543,7 +544,7 @@ class PlominoForm(ATFolder):
                     e.reportError('%s hide-when formula failed' % hidewhen.id)
                     #if error, we hide anyway
                     isHidden = True
-                result[hidewhen.id] = isHidden 
+                result[hidewhen.id] = isHidden
         for subformname in self.getSubforms():
             form = self.getParentDatabase().getForm(subformname)
             form_hidewhens = json.loads(form.getHidewhenAsJSON(REQUEST))
@@ -631,8 +632,12 @@ class PlominoForm(ATFolder):
             except PlominoScriptException, e:
                 e.reportError('beforeCreate formula failed')
 
+        tmp = None
+        if hasattr(self, 'REQUEST'):
+            # hideWhens need a TemporaryDocument
+            tmp = TemporaryDocument(self.getParentDatabase(), self, self.REQUEST)
         if (not invalid) or self.hasDesignPermission(self):
-            return self.displayDocument(None, editmode=True, creation=True, request=request)
+            return self.displayDocument(tmp, editmode=True, creation=True, request=request)
         else:
             self.REQUEST.RESPONSE.redirect(self.getParentDatabase().absolute_url()+"/ErrorMessages?disable_border=1&error="+invalid)
 
@@ -681,9 +686,18 @@ class PlominoForm(ATFolder):
         """return true if the form contains at least one DateTime field
         or a datagrid (as a datagrid may contain a date)
         """
-        fields = self.getFormFields(includesubforms=True, applyhidewhen=True)
+        return self._has_fieldtypes(["DATETIME", "DATAGRID"])
+
+    security.declarePrivate('_has_fieldtypes')
+    def _has_fieldtypes(self, types):
+        "Tyeps is an array of strings. Check if any of those types is present"
+        tmp = None
+        if hasattr(self, 'REQUEST'):
+            # hideWhens need a TemporaryDocument
+            tmp = TemporaryDocument(self.getParentDatabase(), self, self.REQUEST)
+        fields = self.getFormFields(includesubforms=True, doc=tmp, applyhidewhen=True)
         for f in fields:
-            if f.getFieldType() in ["DATETIME", "DATAGRID"]:
+            if f.getFieldType() in types:
                 return True
         return False
 
@@ -691,17 +705,15 @@ class PlominoForm(ATFolder):
     def hasGoogleVisualizationField(self):
         """return true if the form contains at least one GoogleVisualization field
         """
-        fields = self.getFormFields(includesubforms=True, applyhidewhen=True)
-        for f in fields:
-            if f.getFieldType() == "GOOGLEVISUALIZATION":
-                return True
-        return False
+        return self._has_fieldtypes(["GOOGLEVISUALIZATION"])
 
     security.declarePublic('getSubforms')
     def getSubforms(self, doc=None, applyhidewhen=True):
         """return the names of the subforms embedded in the form
         """
         if applyhidewhen:
+            if doc == None and hasattr(self, 'REQUEST'):
+                doc = TemporaryDocument(self.getParentDatabase(), self, self.REQUEST)
             html_content = self.applyHideWhen(doc)
         else:
             html_content = self._get_html_content()
@@ -809,7 +821,7 @@ class PlominoForm(ATFolder):
             return self.errors_json(errors=json.dumps({'success': False,'errors':errors}))
         else:
             return self.errors_json(errors=json.dumps({'success': True}))
-        
+
 
     security.declarePrivate('_get_js_hidden_fields')
     def _get_js_hidden_fields(self, REQUEST, doc):
@@ -899,7 +911,7 @@ class PlominoForm(ATFolder):
                          SelectionFormula=formula)
         view_obj = getattr(db, view_id)
         view_obj.at_post_create_script()
-        
+
         fields = self.getFormFields(includesubforms=True)
         acceptable_types = ["TEXT", "NUMBER", "NAME", "SELECTION", "DATETIME"]
         fields = [f for f in fields if f.getFieldMode()=="EDITABLE" and f.FieldType in acceptable_types]
@@ -918,10 +930,10 @@ class PlominoForm(ATFolder):
                                   ActionType="OPENFORM",
                                   ActionDisplay="BUTTON",
                                   Content=self.id)
-        
+
         if REQUEST:
             REQUEST.RESPONSE.redirect(view_obj.absolute_url_path())
-        
+
     security.declarePublic('getPosition')
     def getPosition(self):
         """Return the form position in the database
@@ -943,7 +955,7 @@ class PlominoForm(ATFolder):
         """
         """
         return False
-    
+
     security.declarePublic('isEditMode')
     def isEditMode(self):
         """
@@ -964,7 +976,7 @@ class PlominoForm(ATFolder):
         if REQUEST:
             REQUEST.RESPONSE.setHeader('content-type', 'application/json; charset=utf-8')
             item = REQUEST.get('item', item)
-        
+
         result = None
         if not item:
             fields = self.getFormFields()
@@ -978,8 +990,8 @@ class PlominoForm(ATFolder):
             if field:
                 adapt = field.getSettings()
                 result = adapt.getFieldValue(self, None, False, False, REQUEST)
-        
-        return json.dumps(result) 
+
+        return json.dumps(result)
 
     def _getDatabaseViews(self):
         db = self.getParentDatabase()

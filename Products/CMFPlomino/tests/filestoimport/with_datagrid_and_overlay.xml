@@ -1,0 +1,136 @@
+<plominodatabase id="test_overlay_form">
+  <design>
+    <dbsettings version="1.15.1">
+      <AboutDescription type="Products.Archetypes.Field.TextField"><![CDATA[]]></AboutDescription>
+      <UsingDescription type="Products.Archetypes.Field.TextField"><![CDATA[]]></UsingDescription>
+      <IndexAttachments type="Products.Archetypes.Field.BooleanField">False</IndexAttachments>
+      <FulltextIndex type="Products.Archetypes.Field.BooleanField">True</FulltextIndex>
+      <IndexInPortal type="Products.Archetypes.Field.BooleanField">False</IndexInPortal>
+      <debugMode type="Products.Archetypes.Field.BooleanField">False</debugMode>
+      <StorageAttachments type="Products.Archetypes.Field.BooleanField">False</StorageAttachments>
+      <CountDocuments type="Products.Archetypes.Field.BooleanField">False</CountDocuments>
+      <DateTimeFormat type="Products.Archetypes.Field.StringField">%Y-%m-%d</DateTimeFormat>
+      <StartPage type="Products.Archetypes.Field.StringField"/>
+      <DoNotListUsers type="Products.Archetypes.Field.BooleanField">False</DoNotListUsers>
+      <DoNotReindex type="Products.Archetypes.Field.BooleanField">False</DoNotReindex>
+      <excludeFromNav type="Products.Archetypes.Field.BooleanField">False</excludeFromNav>
+      <acl AnomynousAccessRight="NoAccess" AuthenticatedAccessRight="NoAccess">
+        <params id="UserRoles">
+<param>
+<value><struct>
+</struct></value>
+</param>
+</params>
+        <params id="SpecificRights">
+<param>
+<value><struct>
+<member>
+<name>specific_deletedocument</name>
+<value><string>PlominoAuthor</string></value>
+</member>
+</struct></value>
+</param>
+</params>
+      </acl>
+    </dbsettings>
+    <element id="overlay_form" title="A form to appear overlayed" type="PlominoForm">
+      <id type="Products.Archetypes.Field.StringField">overlay_form</id>
+      <onCreateDocument type="Products.Archetypes.Field.TextField"><![CDATA[]]></onCreateDocument>
+      <onOpenDocument type="Products.Archetypes.Field.TextField"><![CDATA[]]></onOpenDocument>
+      <onSaveDocument type="Products.Archetypes.Field.TextField"><![CDATA[]]></onSaveDocument>
+      <onDeleteDocument type="Products.Archetypes.Field.TextField"><![CDATA[]]></onDeleteDocument>
+      <onSearch type="Products.Archetypes.Field.TextField"><![CDATA[]]></onSearch>
+      <beforeCreateDocument type="Products.Archetypes.Field.TextField"><![CDATA[]]></beforeCreateDocument>
+      <FormLayout type="Products.Archetypes.Field.TextField"><![CDATA[<p>Here is a date field.</p>
+<p>We expect the widget to work in an overlay too: <span class="plominoFieldClass">some_datetime</span></p>]]></FormLayout>
+      <DocumentTitle type="Products.Archetypes.Field.TextField"><![CDATA[]]></DocumentTitle>
+      <DocumentId type="Products.Archetypes.Field.TextField"><![CDATA[]]></DocumentId>
+      <ActionBarPosition type="Products.Archetypes.Field.StringField">TOP</ActionBarPosition>
+      <HideDefaultActions type="Products.Archetypes.Field.BooleanField">False</HideDefaultActions>
+      <HideInMenu type="Products.Archetypes.Field.BooleanField">False</HideInMenu>
+      <isSearchForm type="Products.Archetypes.Field.BooleanField">False</isSearchForm>
+      <isPage type="Products.Archetypes.Field.BooleanField">False</isPage>
+      <SearchView type="Products.Archetypes.Field.StringField"/>
+      <SearchFormula type="Products.Archetypes.Field.TextField"><![CDATA[]]></SearchFormula>
+      <Position type="Products.Archetypes.Field.IntegerField"/>
+      <excludeFromNav type="Products.Archetypes.Field.BooleanField">False</excludeFromNav>
+      <elements>
+        <element id="some_datetime" title="A date" type="PlominoField">
+          <id type="Products.Archetypes.Field.StringField">some_datetime</id>
+          <FieldType type="Products.Archetypes.Field.StringField">DATETIME</FieldType>
+          <FieldMode type="Products.Archetypes.Field.StringField">EDITABLE</FieldMode>
+          <Formula type="Products.Archetypes.Field.TextField"><![CDATA[]]></Formula>
+          <FieldReadTemplate type="Products.Archetypes.Field.StringField"/>
+          <FieldEditTemplate type="Products.Archetypes.Field.StringField"/>
+          <Mandatory type="Products.Archetypes.Field.BooleanField">False</Mandatory>
+          <ValidationFormula type="Products.Archetypes.Field.TextField"><![CDATA[]]></ValidationFormula>
+          <ToBeIndexed type="Products.Archetypes.Field.BooleanField">False</ToBeIndexed>
+          <IndexType type="Products.Archetypes.Field.StringField">DEFAULT</IndexType>
+        </element>
+      </elements>
+    </element>
+    <element id="with_datagrid_overlay" title="A form with a datagrid" type="PlominoForm">
+      <id type="Products.Archetypes.Field.StringField">with_datagrid_overlay</id>
+      <onCreateDocument type="Products.Archetypes.Field.TextField"><![CDATA[]]></onCreateDocument>
+      <onOpenDocument type="Products.Archetypes.Field.TextField"><![CDATA[]]></onOpenDocument>
+      <onSaveDocument type="Products.Archetypes.Field.TextField"><![CDATA[]]></onSaveDocument>
+      <onDeleteDocument type="Products.Archetypes.Field.TextField"><![CDATA[]]></onDeleteDocument>
+      <onSearch type="Products.Archetypes.Field.TextField"><![CDATA[]]></onSearch>
+      <beforeCreateDocument type="Products.Archetypes.Field.TextField"><![CDATA[]]></beforeCreateDocument>
+      <FormLayout type="Products.Archetypes.Field.TextField"><![CDATA[<p><span class="plominoFieldClass">a_datagrid_field</span></p>]]></FormLayout>
+      <DocumentTitle type="Products.Archetypes.Field.TextField"><![CDATA[]]></DocumentTitle>
+      <DocumentId type="Products.Archetypes.Field.TextField"><![CDATA[]]></DocumentId>
+      <ActionBarPosition type="Products.Archetypes.Field.StringField">TOP</ActionBarPosition>
+      <HideDefaultActions type="Products.Archetypes.Field.BooleanField">False</HideDefaultActions>
+      <HideInMenu type="Products.Archetypes.Field.BooleanField">False</HideInMenu>
+      <isSearchForm type="Products.Archetypes.Field.BooleanField">False</isSearchForm>
+      <isPage type="Products.Archetypes.Field.BooleanField">False</isPage>
+      <SearchView type="Products.Archetypes.Field.StringField"/>
+      <SearchFormula type="Products.Archetypes.Field.TextField"><![CDATA[]]></SearchFormula>
+      <Position type="Products.Archetypes.Field.IntegerField"/>
+      <excludeFromNav type="Products.Archetypes.Field.BooleanField">False</excludeFromNav>
+      <elements>
+        <element id="a_datagrid_field" title="A datagrid field" type="PlominoField">
+          <id type="Products.Archetypes.Field.StringField">a_datagrid_field</id>
+          <FieldType type="Products.Archetypes.Field.StringField">DATAGRID</FieldType>
+          <FieldMode type="Products.Archetypes.Field.StringField">EDITABLE</FieldMode>
+          <Formula type="Products.Archetypes.Field.TextField"><![CDATA[]]></Formula>
+          <FieldReadTemplate type="Products.Archetypes.Field.StringField"/>
+          <FieldEditTemplate type="Products.Archetypes.Field.StringField"/>
+          <Mandatory type="Products.Archetypes.Field.BooleanField">False</Mandatory>
+          <ValidationFormula type="Products.Archetypes.Field.TextField"><![CDATA[]]></ValidationFormula>
+          <ToBeIndexed type="Products.Archetypes.Field.BooleanField">False</ToBeIndexed>
+          <IndexType type="Products.Archetypes.Field.StringField">DEFAULT</IndexType>
+          <params>
+<param>
+<value><struct>
+<member>
+<name>jssettings</name>
+<value><string>"aoColumns": [
+    { "sTitle": "Data" },
+   // { "sTitle": "Column 2", "sClass": "center" }
+],
+"bPaginate": false,
+"bLengthChange": false,
+"bFilter": false,
+"bSort": false,
+"bInfo": false,
+"bAutoWidth": false
+</string></value>
+</member>
+<member>
+<name>field_mapping</name>
+<value><string>some_datetime</string></value>
+</member>
+<member>
+<name>associated_form</name>
+<value><string>overlay_form</string></value>
+</member>
+</struct></value>
+</param>
+</params>
+        </element>
+      </elements>
+    </element>
+  </design>
+</plominodatabase>
