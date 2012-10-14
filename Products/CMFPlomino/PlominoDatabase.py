@@ -451,7 +451,7 @@ class PlominoDatabase(ATFolder, PlominoAccessControl, PlominoDesignManager, Plom
             if self.getIndexInPortal():
                 self.portal_catalog.uncatalog_object("/".join(self.getPhysicalPath() + (doc.id,)))
             event.notify(ObjectRemovedEvent(doc, self.documents(), doc.id))
-            self.documents()._delOb(doc.id)
+            del self.documents()[doc.record]
 
     security.declareProtected(REMOVE_PERMISSION, 'deleteDocuments')
     def deleteDocuments(self, ids=None, massive=True):
@@ -463,7 +463,10 @@ class PlominoDatabase(ATFolder, PlominoAccessControl, PlominoDesignManager, Plom
             ids=[doc.id for doc in self.getAllDocuments()]
 
         if massive:
-            ObjectManager.manage_delObjects(self.documents(), ids)
+            s = self.documents()
+            for i in ids:
+                r = s.get(i)
+                del s[r]
         else:
             for id in ids:
                 try:
