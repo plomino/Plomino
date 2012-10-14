@@ -545,7 +545,7 @@ class PlominoDocument(Acquisition.Implicit):
     def __getattr__(self, name):
         """Overloads getattr to return item values as attibutes
         """
-        if(self.items.has_key(name)):
+        if self.items.has_key(name):
             return self.items[name]
         else:
             if name not in ['__parent__', '__conform__', '__annotations__',
