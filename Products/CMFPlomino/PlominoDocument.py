@@ -96,6 +96,7 @@ class PlominoDocument(Acquisition.Implicit):
     def __init__(self, record):
         """ Initialization
         """
+        self.record = record
         self.id = record.intid
         self.items = record.attrs
 
@@ -159,10 +160,8 @@ class PlominoDocument(Acquisition.Implicit):
     def removeItem(self,name):
         """
         """
-        if(self.items.has_key(name)):
-            items = self.items
-            del items[name]
-            self.items = items
+        if self.items.has_key(name):
+            del self.items[name]
 
     security.declarePublic('getItems')
     def getItems(self):
