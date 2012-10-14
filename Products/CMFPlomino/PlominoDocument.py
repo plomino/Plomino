@@ -20,7 +20,11 @@ from DateTime import DateTime
 from interfaces import *
 from persistent.dict import PersistentDict
 from zope.annotation import IAttributeAnnotatable
-from zope.app.container.contained import Contained
+# 4.3 compatibility
+try:
+    from zope.container.contained import Contained
+except ImportError:
+    from zope.app.container.contained import Contained
 from zope.component.factory import Factory
 from zope.component import queryUtility
 from zope import event
