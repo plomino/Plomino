@@ -176,15 +176,15 @@ class PlominoDocument(Acquisition.Implicit):
         return self.getItem(name).__class__.__name__
 
     security.declarePublic('getLastModified')
-    def getLastModified(self,asString=False):
+    def getLastModified(self, asString=False):
         """
         """
-        if not hasattr(self, 'plomino_modification_time'):
-            self.plomino_modification_time = self.bobobase_modification_time().toZone('UTC')
+        if not self.items.has_key('plomino_modification_time'):
+            self.items['plomino_modification_time'] = self.bobobase_modification_time().toZone('UTC')
         if asString:
-            return str(self.plomino_modification_time)
+            return str(self.items['plomino_modification_time'])
         else:
-            return self.plomino_modification_time
+            return self.items['plomino_modification_time']
 
     security.declarePublic('getRenderedItem')
     def getRenderedItem(self, itemname, form=None, formid=None, convertattachments=False):
