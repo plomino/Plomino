@@ -30,7 +30,11 @@ from Products.Archetypes.BaseObject import BaseObject
 
 from zope import event
 from zope.interface import directlyProvides
-from zope.app.container.contained import ObjectRemovedEvent
+# 4.3 compatibility
+try:
+    from zope.container.contained import ObjectRemovedEvent
+except ImportError:
+    from zope.app.container.contained import ObjectRemovedEvent
 from AccessControl import ClassSecurityInfo
 from Acquisition import aq_inner
 from Products.CMFCore.utils import getToolByName
@@ -234,7 +238,7 @@ class PlominoDatabase(ATFolder, PlominoAccessControl, PlominoDesignManager, Plom
     # Methods
 
     security.declarePublic('__init__')
-    def __init__(self,oid,**kw):
+    def __init__(self, oid, **kw):
         """
         """
         ATFolder.__init__(self, oid, **kw)
@@ -260,10 +264,10 @@ class PlominoDatabase(ATFolder, PlominoAccessControl, PlominoDesignManager, Plom
         index = PlominoIndex(FULLTEXT=self.FulltextIndex)
         self._setObject('plomino_index', index)
         resources = Folder('resources')
-        resources.title='resources'
+        resources.title = 'resources'
         self._setObject('resources', resources)
         scripts = Folder('scripts')
-        scripts.title='scripts'
+        scripts.title = 'scripts'
         self._setObject('scripts', scripts)
 
     def __bobo_traverse__(self, request, name):
@@ -272,7 +276,7 @@ class PlominoDatabase(ATFolder, PlominoAccessControl, PlominoDesignManager, Plom
             if self.documents.has_key(name):
                 return aq_inner(getattr(self.documents, name)).__of__(self)
         return BaseObject.__bobo_traverse__(self, request, name)
-    
+
     def allowedContentTypes(self):
         # Make sure PlominoDocument is hidden in Plone "Add..." menu
         # as getNotAddableTypes is not used anymore in Plone 4
@@ -300,7 +304,7 @@ class PlominoDatabase(ATFolder, PlominoAccessControl, PlominoDesignManager, Plom
 #            if hasattr(self, 'REQUEST') and not self.checkUserPermission(DESIGN_PERMISSION):
 #                self.REQUEST["disable_border"]=True
             try:
-                if self.StartPage:        
+                if self.StartPage:
                     if hasattr(self, self.getStartPage()):
                         target = getattr(self, self.getStartPage())
                     return getattr(target, target.defaultView())()
@@ -412,7 +416,7 @@ class PlominoDatabase(ATFolder, PlominoAccessControl, PlominoDesignManager, Plom
             form = doc.getForm()
             if form:
                 try:
-                    self.runFormulaScript("form_"+form.id+"_ondelete", doc, form.onDeleteDocument)
+                    self.runFormulaScript("form_" + form.id + "_ondelete", doc, form.onDeleteDocument)
                 except PlominoScriptException, e:
                     e.reportError('Document has been deleted, but onDelete event failed.')
 
@@ -429,7 +433,7 @@ class PlominoDatabase(ATFolder, PlominoAccessControl, PlominoDesignManager, Plom
         updating are not performed (use ``refreshDB`` to update).
         """
         if ids is None:
-            ids=[doc.id for doc in self.getAllDocuments()]
+            ids = [doc.id for doc in self.getAllDocuments()]
 
         if massive:
             ObjectManager.manage_delObjects(self.documents, ids)
@@ -491,7 +495,7 @@ class PlominoDatabase(ATFolder, PlominoAccessControl, PlominoDesignManager, Plom
 
     def getCache(self, key):
         """ get cached value in the cache provided by plone.memoize 
-        """ 
+        """
         return self._cache().get(key)
 
     def setCache(self, key, value):
@@ -513,7 +517,7 @@ class PlominoDatabase(ATFolder, PlominoAccessControl, PlominoDesignManager, Plom
         else:
             # we are probably not using zope.ramcache
             raise PlominoCacheException, 'Cache cleaning not implemented'
-        
+
     def getRequestCache(self, key):
         """ get cached value in an annotation on the current request
         Note: it will available within this request only, it will be destroyed
