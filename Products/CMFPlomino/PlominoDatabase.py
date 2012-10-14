@@ -27,7 +27,7 @@ from OFS.Folder import *
 from OFS.ObjectManager import ObjectManager
 from zope.annotation.interfaces import IAnnotations
 from zope.app.container.contained import ObjectRemovedEvent
-from zope.component import queryUtility
+from zope.component import queryUtility, getUtility
 from zope import event
 from zope.interface import directlyProvides
 from zope.interface import implements
@@ -254,15 +254,16 @@ class PlominoDatabase(ATFolder, PlominoAccessControl, PlominoDesignManager, Plom
         PlominoAccessControl.__init__(self)
         #manage_addCMFBTreeFolder(self, id='plomino_documents')
         #directlyProvides(self.documents, IHideFromBreadcrumbs)
-        self.db_name = '%s_%s' % (self.getId(), self.UID())
-        provideUtility(PlominoCatalogFactory(), name=self.db_name)
 
     def documents(self):
         # returns plomino_documents BTreeFolder
         # note: default to {} to avoid errors for db having version <1.7.5 not
         # refreshed yet
         #return getattr(self, 'plomino_documents', {})
-        document_soup = get_soup(self.db_name, self)
+        db_name = '%s_%s' % (self.getId(), self.UID())
+        document_soup = get_soup(db_name, self)
+        if not document_soup.storage.catalog:
+            provideUtility(PlominoCatalogFactory(), name=db_name)
         return document_soup
 
     security.declarePublic('at_post_create_script')
@@ -270,8 +271,8 @@ class PlominoDatabase(ATFolder, PlominoAccessControl, PlominoDesignManager, Plom
         """DB initialization
         """
         self.initializeACL()
-#        index = PlominoIndex(FULLTEXT=self.FulltextIndex)
-#        self._setObject('plomino_index', index)
+        index = PlominoIndex(FULLTEXT=self.FulltextIndex)
+        self._setObject('plomino_index', index)
         resources = Folder('resources')
         resources.title='resources'
         self._setObject('resources', resources)
@@ -401,21 +402,24 @@ class PlominoDatabase(ATFolder, PlominoAccessControl, PlominoDesignManager, Plom
         """
         if not docid:
             return None
+
+        if type(docid) is int:
+            try:
+                record = self.documents().get(docid)
+            except KeyError:
+                return None
+
         if "/" in docid:
             # let's assume it is a path
             docid = docid.split("/")[-1]
-        try:
-            record = self.documents().get(docid)
-        except KeyError:
-            results = list(self.documents().query(Eq('docid', docid)))
-            if len(results) == 1:
-                record = results[0]
-            elif len(results) == 0:
-                record = None
-            else:
-                raise PlominoConstraintException
-        if record:
+
+        results = list(self.documents().query(Eq('docid', docid)))
+        if results and len(results) == 1:
+            record = results[0]
             return PlominoDocument(record).__of__(self)
+        else:
+            raise PlominoConstraintException, "Multiple (%s) records for %s"%(len(results), docid)
+
 
     security.declareProtected(READ_PERMISSION, 'getParentDatabase')
     def getParentDatabase(self):
@@ -490,7 +494,7 @@ class PlominoDatabase(ATFolder, PlominoAccessControl, PlominoDesignManager, Plom
         if getObject == False:
             # XXX: TODO: Return brains
             pass
-        return self.documents().values()
+        return [self.getDocument(k) for k in self.documents().data.keys()]
 
     security.declarePublic('isDocumentsCountEnabled')
     def isDocumentsCountEnabled(self):
