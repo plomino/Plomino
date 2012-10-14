@@ -512,7 +512,8 @@ class PlominoDatabase(ATFolder, PlominoAccessControl, PlominoDesignManager, Plom
     def getObjectPosition(self, id):
         """
         """
-        if id in self.documents():
+        # TODO: How does Plomino use folder ordering? Ordered soup?
+        if id in self.documents().data:
             # documents will not be ordered in site map
             return 0
         return ATFolder.getObjectPosition(self, id)

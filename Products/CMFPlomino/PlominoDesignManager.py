@@ -212,7 +212,7 @@ class PlominoDesignManager(Persistent):
             total_docs = len(documents)
             logger.info('Re-indexing %d changed document(s) since %s' % (total_docs, str(changed_since)))
         else:
-            total_docs = len(self.plomino_documents)
+            total_docs = len(self.documents().data)
             logger.info('Existing documents: '+ str(total_docs))
         total = 0
         counter = 0
