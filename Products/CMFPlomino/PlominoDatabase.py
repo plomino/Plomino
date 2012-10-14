@@ -252,11 +252,8 @@ class PlominoDatabase(ATFolder, PlominoAccessControl, PlominoDesignManager, Plom
         self.plomino_version = VERSION
         self.setStatus("Ready")
         PlominoAccessControl.__init__(self)
-        #manage_addCMFBTreeFolder(self, id='plomino_documents')
-        #directlyProvides(self.documents, IHideFromBreadcrumbs)
 
     def documents(self):
-        # returns plomino_documents BTreeFolder
         # note: default to {} to avoid errors for db having version <1.7.5 not
         # refreshed yet
         #return getattr(self, 'plomino_documents', {})
