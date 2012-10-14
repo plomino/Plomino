@@ -336,8 +336,8 @@ class PlominoDocument(Acquisition.Implicit):
         db = self.getParentDatabase()
         form = db.getForm(REQUEST.get('Form'))
 
-        errors=form.validateInputs(REQUEST, doc=self)
-        if len(errors)>0:
+        errors = form.validateInputs(REQUEST, doc=self)
+        if errors:
             return form.notifyErrors(errors)
 
         self.setItem('Form', form.getFormName())
