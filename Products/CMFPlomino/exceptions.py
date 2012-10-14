@@ -77,3 +77,6 @@ class PlominoDesignException(Exception):
 
 class PlominoCacheException(Exception):
     pass
+
+class PlominoConstraintException(Exception):
+    pass

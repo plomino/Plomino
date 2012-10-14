@@ -16,6 +16,10 @@ __docformat__ = 'plaintext'
 import Globals
 import string
 
+# Third-party
+from souper.soup import get_soup, Record
+from repoze.catalog.query import Eq
+
 # Zope
 from AccessControl import ClassSecurityInfo
 from Acquisition import aq_inner
@@ -48,13 +52,16 @@ from Products.CMFPlone.interfaces import IHideFromBreadcrumbs
 
 # Plomino
 from exceptions import PlominoCacheException
+from exceptions import PlominoCacheException, PlominoConstraintException
 from exceptions import PlominoScriptException
 from index.PlominoIndex import PlominoIndex
 from PlominoAccessControl import PlominoAccessControl
 from PlominoDesignManager import PlominoDesignManager
 from PlominoDocument import addPlominoDocument
+from PlominoDocument import addPlominoDocument, PlominoDocument
 from PlominoReplicationManager import PlominoReplicationManager
 from PlominoScheduler import PlominoScheduler
+from plone.memoize.interfaces import ICacheChooser
 from Products.CMFPlomino.config import *
 from Products.CMFPlomino.PlominoUtils import *
 
@@ -243,24 +250,26 @@ class PlominoDatabase(ATFolder, PlominoAccessControl, PlominoDesignManager, Plom
         self.plomino_version = VERSION
         self.setStatus("Ready")
         PlominoAccessControl.__init__(self)
-        #manage_addBTreeFolder(self, id='plomino_documents')
-        manage_addCMFBTreeFolder(self, id='plomino_documents')
-        directlyProvides(self.documents, IHideFromBreadcrumbs)
+        #manage_addCMFBTreeFolder(self, id='plomino_documents')
+        #directlyProvides(self.documents, IHideFromBreadcrumbs)
 
     @property
     def documents(self):
         # returns plomino_documents BTreeFolder
         # note: default to {} to avoid errors for db having version <1.7.5 not
         # refreshed yet
-        return getattr(self, 'plomino_documents', {})
+        #return getattr(self, 'plomino_documents', {})
+        name = '%s_%s' % (self.getId(), self.UID())
+        document_soup = get_soup(name, self)
+        return document_soup
 
     security.declarePublic('at_post_create_script')
     def at_post_create_script(self):
         """DB initialization
         """
         self.initializeACL()
-        index = PlominoIndex(FULLTEXT=self.FulltextIndex)
-        self._setObject('plomino_index', index)
+#        index = PlominoIndex(FULLTEXT=self.FulltextIndex)
+#        self._setObject('plomino_index', index)
         resources = Folder('resources')
         resources.title='resources'
         self._setObject('resources', resources)
@@ -268,12 +277,13 @@ class PlominoDatabase(ATFolder, PlominoAccessControl, PlominoDesignManager, Plom
         scripts.title='scripts'
         self._setObject('scripts', scripts)
 
-    def __bobo_traverse__(self, request, name):
-        # TODO: replace with IPublishTraverse or/and ITraverse
-        if hasattr(self, 'documents'):
-            if self.documents.has_key(name):
-                return aq_inner(getattr(self.documents, name)).__of__(self)
-        return BaseObject.__bobo_traverse__(self, request, name)
+#    def __bobo_traverse__(self, request, name):
+#        # TODO: replace with IPublishTraverse or/and ITraverse
+#        import pdb;pdb.set_trace()
+#        doc = self.getDocument(name)
+#        if doc:
+#            return doc
+#        return BaseObject.__bobo_traverse__(self, request, name)
     
     def allowedContentTypes(self):
         # Make sure PlominoDocument is hidden in Plone "Add..." menu
@@ -377,9 +387,11 @@ class PlominoDatabase(ATFolder, PlominoAccessControl, PlominoDesignManager, Plom
         """
         if not docid:
             docid = make_uuid()
-        self.documents[docid] = addPlominoDocument(docid)
-        doc = self.documents.get(docid)
-        return doc
+        record = Record()
+        record.attrs['docid'] = docid
+        import pdb;pdb.set_trace()
+        self.documents.add(record)
+        return PlominoDocument(record)
 
     security.declarePublic('getDocument')
     def getDocument(self, docid):
@@ -391,7 +403,18 @@ class PlominoDatabase(ATFolder, PlominoAccessControl, PlominoDesignManager, Plom
         if "/" in docid:
             # let's assume it is a path
             docid = docid.split("/")[-1]
-        return self.documents.get(docid)
+        try:
+            record = self.documents.get(docid)
+        except KeyError:
+            results = list(self.documents.query(Eq('docid', docid)))
+            if len(results) == 1:
+                record = results[0]
+            elif len(results) == 0:
+                record = None
+            else:
+                raise PlominoConstraintException
+        if record:
+            return PlominoDocument(record)
 
     security.declareProtected(READ_PERMISSION, 'getParentDatabase')
     def getParentDatabase(self):
