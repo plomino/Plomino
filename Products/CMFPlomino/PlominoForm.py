@@ -269,7 +269,7 @@ class PlominoForm(ATFolder):
 
         # validate submitted values
         errors=self.validateInputs(REQUEST)
-        if len(errors)>0:
+        if errors:
             if is_childform:
                 return """<html><body><span id="plomino_child_errors">%s</span></body></html>""" % " - ".join(errors)
             return self.notifyErrors(errors)
