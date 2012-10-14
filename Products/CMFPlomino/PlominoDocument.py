@@ -129,11 +129,11 @@ class PlominoDocument(Acquisition.Implicit):
             return "/".join(short_path)
 
     security.declarePublic('setItem')
-    def setItem(self,name,value):
+    def setItem(self, name, value):
         """
         """
         items = self.items
-        if type(value) == type(''):
+        if type(value) == str:
             db = self.getParentDatabase()
             translation_service = getToolByName(db, 'translation_service')
             value = translation_service.asunicodetype(value)
