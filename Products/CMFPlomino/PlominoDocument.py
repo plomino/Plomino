@@ -78,7 +78,7 @@ try:
 except ImportError, e:
     HAS_BLOB = False
 
-class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
+class PlominoDocument:
     """ These represent the contents in a Plomino database.
 
     A document contains *items* that may or may not correspond to fields on
@@ -92,13 +92,11 @@ class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
     meta_type = "PlominoDocument"
     
     security.declarePublic('__init__')
-    def __init__(self, id):
+    def __init__(self, record):
         """ Initialization
         """
-        CMFBTreeFolder.__init__(self, id)
-        self.id = id
-        self.items = PersistentDict()
-        self.plomino_modification_time = DateTime().toZone('UTC')
+        self.id = record.intid
+        self.items = record.attrs
 
     security.declarePublic('checkBeforeOpenDocument')
     def checkBeforeOpenDocument(self):
