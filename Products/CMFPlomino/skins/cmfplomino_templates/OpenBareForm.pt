@@ -4,7 +4,26 @@
       xmlns:i18n="http://xml.zope.org/namespaces/i18n"
       lang="en"
       i18n:domain="plone">
-<body>
+<head tal:define="view context/@@plone;
+                  ajax_load request/ajax_load | nothing;
+                  ajax_include_head request/ajax_include_head | nothing;"
+      tal:condition="python: not ajax_load or ajax_include_head">
+    <div tal:replace="structure provider:plone.resourceregistries.styles" />
+    <div tal:replace="structure provider:plone.resourceregistries.scripts" />
+    <script type="text/javascript" tal:condition="here/hasDynamicHidewhen">
+        function refreshHidewhen() {
+            var onsuccess = function(data, textStatus, xhr) {
+                for (var hw in data)
+                    jq('.hidewhen-' + hw).css('display', data[hw]?'none':'block');
+            }
+            jq.post('computehidewhens', jq('#plomino_form').serialize(), onsuccess, 'json');
+        }
+        jq(document).ready( function() {
+            jq('#plomino_form :input').change(refreshHidewhen);
+        });
+    </script>
+</head>
+<body class="OpenBareForm">
 <div id="content">
     <tal:block
           tal:define="myF python:here;
@@ -20,7 +39,7 @@
                                    action string:${myF/absolute_url}/createDocument"
                   method="POST" enctype="multipart/form-data">
                   <tal:block tal:condition="python:test(hasCreatePermissionOnDatabase==True and hasCreatePermissionOnForm==True)">
-  
+
                       <tal:block tal:define="owner python:myF"
                           tal:condition="python:test((b and  myF.ActionBarPosition=='BOTTOM'),False, True)">
                           <span metal:use-macro="here/ActionBar/macros/OpenFormActionBar">
@@ -120,7 +139,7 @@
               </form>
 
           </tal:block>
-          
+
           <tal:block tal:condition="python:ispage">
               <h1 class="documentFirstHeading" tal:content="here/Title">Title</h1>
               <form id="plomino_form" tal:attributes="name here/id">

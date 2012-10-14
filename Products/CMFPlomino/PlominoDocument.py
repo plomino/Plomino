@@ -67,7 +67,7 @@ try:
     URL_NORMALIZER = True
 except ImportError:
     URL_NORMALIZER = False
-    
+
 from PlominoUtils import DateToString, StringToDate, sendMail, asUnicode, asList, PlominoTranslate
 from OFS.Image import File
 from ZPublisher.HTTPRequest import FileUpload
@@ -91,10 +91,10 @@ class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
 
     security = ClassSecurityInfo()
     implements(interfaces.IPlominoDocument, IAttributeAnnotatable)
-    
+
     portal_type = "PlominoDocument"
     meta_type = "PlominoDocument"
-    
+
     security.declarePublic('__init__')
     def __init__(self, id):
         """ Initialization
@@ -116,7 +116,7 @@ class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
             return self.OpenDocument()
         else:
             raise Unauthorized, "You cannot read this content"
-        
+
     def doc_path(self):
         return self.getPhysicalPath()
 
@@ -131,7 +131,7 @@ class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
             return self.REQUEST.physicalPathToURL(short_path)
         else:
             return "/".join(short_path)
-    
+
     security.declarePublic('setItem')
     def setItem(self,name,value):
         """
@@ -194,7 +194,7 @@ class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
 
     security.declarePublic('getRenderedItem')
     def getRenderedItem(self, itemname, form=None, formid=None, convertattachments=False):
-        """ Return the item rendered according to the corresponding field. 
+        """ Return the item rendered according to the corresponding field.
 
         The used form can be, in order of precedence:
         - passed as the `form` parameter,
@@ -204,7 +204,7 @@ class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
         If no form or field is found, return the empty string.
 
         If `convertattachments` is True, then we assume that field
-        attachments are text and append them to the rendered value. 
+        attachments are text and append them to the rendered value.
         """
         db = self.getParentDatabase()
         result = ''
@@ -217,7 +217,7 @@ class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
             field = form.getFormField(itemname)
             if field:
                 result = field.getFieldRender(form, self, False)
-                if (field.getFieldType() == 'ATTACHMENT' and 
+                if (field.getFieldType() == 'ATTACHMENT' and
                     convertattachments):
                     result += ' ' + db.getIndex().convertFileToText(self, itemname).decode('utf-8')
                     result = result.encode('utf-8')
@@ -231,7 +231,7 @@ class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
         """
         if not self.isReader():
             raise Unauthorized, "You cannot read this content"
-        
+
         datatables_format = False
         if REQUEST:
             REQUEST.RESPONSE.setHeader('content-type', 'application/json; charset=utf-8')
@@ -270,7 +270,7 @@ class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
         else:
             fieldvalue = self.getItem(item)
 
-        return json.dumps(fieldvalue) 
+        return json.dumps(fieldvalue)
 
     security.declarePublic('computeItem')
     def computeItem(self, itemname, form=None, formid=None, store=True, report=True):
@@ -305,7 +305,7 @@ class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
         """
         """
         return self.getParentDatabase().isCurrentUserReader(self)
-        
+
     security.declarePublic('isAuthor')
     def isAuthor(self):
         """
@@ -334,7 +334,7 @@ class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
             return self.errors_json(errors=json.dumps({'success': False,'errors':errors}))
         else:
             return self.errors_json(errors=json.dumps({'success': True}))
-        
+
     security.declareProtected(EDIT_PERMISSION, 'saveDocument')
     def saveDocument(self, REQUEST, creation=False):
         """save a document using the form submitted content
@@ -365,7 +365,7 @@ class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
     security.declareProtected(EDIT_PERMISSION, 'refresh')
     def refresh(self, form=None):
         """ re-compute fields and re-index document
-        (onSave event is not called, and authors are not updated 
+        (onSave event is not called, and authors are not updated
         """
         self.save(form, creation=False, refresh_index=True, asAuthor=False, onSaveEvent=False)
 
@@ -416,7 +416,7 @@ class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
                 if new_id:
                     transaction.savepoint(optimistic=True)
                     db.documents.manage_renameObject(self.id, new_id)
-            
+
         # update the Plomino_Authors field with the current user name
         if asAuthor:
             authors = self.getItem('Plomino_Authors')
@@ -503,7 +503,7 @@ class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
 
         plone_tools = getToolByName(db, 'plone_utils')
         encoding = plone_tools.getSiteEncoding()
-        html_content = html_content.encode(encoding) 
+        html_content = html_content.encode(encoding)
 
         return html_content
 
@@ -559,7 +559,7 @@ class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
                     return PortalContent.__getattr__(self, name)
                 except Exception, e:
                     raise AttributeError, name
-            else:   
+            else:
                 raise AttributeError, name
 
     security.declareProtected(READ_PERMISSION, 'isSelectedInView')
@@ -625,7 +625,7 @@ class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
 
         for itemname in self.items.keys():
             item_value = self.getItem(itemname)
-            if type(item_value) is list: 
+            if type(item_value) is list:
                 for v in item_value:
                     if type(v) is list:
                         values = values + [asUnicode(k) for k in v]
@@ -842,7 +842,7 @@ class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
             new_id = IUserPreferredURLNormalizer(request).normalize(result)
         else:
             new_id = queryUtility(IURLNormalizer).normalize(result)
-        
+
         # check if the id already exists
         documents = self.getParentDatabase().documents
         try:
@@ -882,7 +882,7 @@ class TemporaryDocument(PlominoDocument):
         """ Temporary docs are able to acquire from the db
         """
         return self._parent
-        
+
     security.declarePublic('isEditMode')
     def isEditMode(self):
         """
@@ -904,7 +904,7 @@ class TemporaryDocument(PlominoDocument):
         """
         """
         return self._REQUEST
-    
+
     security.declarePublic('id')
     @property
     def id(self):
