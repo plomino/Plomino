@@ -27,6 +27,7 @@ from zope import event
 from zope.interface import implements
 from zope.interface import Interface
 import transaction
+import Acquisition
 
 try:
     from AccessControl.class_init import InitializeClass
@@ -78,7 +79,7 @@ try:
 except ImportError, e:
     HAS_BLOB = False
 
-class PlominoDocument:
+class PlominoDocument(Acquisition.Implicit):
     """ These represent the contents in a Plomino database.
 
     A document contains *items* that may or may not correspond to fields on
@@ -550,7 +551,7 @@ class PlominoDocument:
             if name not in ['__parent__', '__conform__', '__annotations__',
                            '_v_at_subobjects', '__getnewargs__', 'aq_inner', 'im_self']:
                 try:
-                    return PortalContent.__getattr__(self, name)
+                    return getattr(self.getParentDatabase(), name)
                 except Exception, e:
                     raise AttributeError, name
             else:

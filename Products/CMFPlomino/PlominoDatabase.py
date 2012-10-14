@@ -392,7 +392,7 @@ class PlominoDatabase(ATFolder, PlominoAccessControl, PlominoDesignManager, Plom
         record = Record()
         record.attrs['docid'] = docid
         self.documents().add(record)
-        return PlominoDocument(record)
+        return PlominoDocument(record).__of__(self)
 
     security.declarePublic('getDocument')
     def getDocument(self, docid):
@@ -415,7 +415,7 @@ class PlominoDatabase(ATFolder, PlominoAccessControl, PlominoDesignManager, Plom
             else:
                 raise PlominoConstraintException
         if record:
-            return PlominoDocument(record)
+            return PlominoDocument(record).__of__(self)
 
     security.declareProtected(READ_PERMISSION, 'getParentDatabase')
     def getParentDatabase(self):
