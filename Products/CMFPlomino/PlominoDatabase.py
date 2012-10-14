@@ -445,8 +445,8 @@ class PlominoDatabase(ATFolder, PlominoAccessControl, PlominoDesignManager, Plom
             self.getIndex().unindexDocument(doc)
             if self.getIndexInPortal():
                 self.portal_catalog.uncatalog_object("/".join(self.getPhysicalPath() + (doc.id,)))
-            event.notify(ObjectRemovedEvent(doc, self.documents, doc.id))
-            self.documents._delOb(doc.id)
+            event.notify(ObjectRemovedEvent(doc, self.documents(), doc.id))
+            self.documents()._delOb(doc.id)
 
     security.declareProtected(REMOVE_PERMISSION, 'deleteDocuments')
     def deleteDocuments(self, ids=None, massive=True):
@@ -458,7 +458,7 @@ class PlominoDatabase(ATFolder, PlominoAccessControl, PlominoDesignManager, Plom
             ids=[doc.id for doc in self.getAllDocuments()]
 
         if massive:
-            ObjectManager.manage_delObjects(self.documents, ids)
+            ObjectManager.manage_delObjects(self.documents(), ids)
         else:
             for id in ids:
                 try:
@@ -490,7 +490,7 @@ class PlominoDatabase(ATFolder, PlominoAccessControl, PlominoDesignManager, Plom
         if getObject == False:
             # XXX: TODO: Return brains
             pass
-        return self.documents.values()
+        return self.documents().values()
 
     security.declarePublic('isDocumentsCountEnabled')
     def isDocumentsCountEnabled(self):
@@ -504,7 +504,7 @@ class PlominoDatabase(ATFolder, PlominoAccessControl, PlominoDesignManager, Plom
     def getObjectPosition(self, id):
         """
         """
-        if id in self.documents:
+        if id in self.documents():
             # documents will not be ordered in site map
             return 0
         return ATFolder.getObjectPosition(self, id)
