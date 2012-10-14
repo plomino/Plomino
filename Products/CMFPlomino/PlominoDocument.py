@@ -49,7 +49,7 @@ except:
     from Products.CMFCore.CMFCatalogAware import CMFCatalogAware as CatalogAware
 
 # Plomino
-from exceptions import PlominoScriptException
+from exceptions import PlominoConstraintException, PlominoScriptException
 from Products.CMFPlomino.config import *
 import interfaces
 
@@ -410,7 +410,7 @@ class PlominoDocument(Acquisition.Implicit):
                 new_id = self.generateNewId()
                 if new_id:
                     transaction.savepoint(optimistic=True)
-                    db.documents.manage_renameObject(self.id, new_id)
+                    self.setItem('docid', new_id)
 
         # update the Plomino_Authors field with the current user name
         if asAuthor:
@@ -839,11 +839,14 @@ class PlominoDocument(Acquisition.Implicit):
             new_id = queryUtility(IURLNormalizer).normalize(result)
 
         # check if the id already exists
-        documents = self.getParentDatabase().documents
-        try:
-            documents._checkId(new_id)
-        except BadRequestException:
-            new_id = self._findUniqueId(new_id)
+        count = 0
+        while True:
+            count += 1
+            new_id = "%s-%s" % (new_id, count)
+            results = list(self.documents().query(Eq('docid', new_id)))
+            if not results:
+                break
+
         return new_id
 
     def __nonzero__(self):

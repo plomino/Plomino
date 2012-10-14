@@ -268,7 +268,7 @@ class PlominoForm(ATFolder):
             is_childform = True
 
         # validate submitted values
-        errors=self.validateInputs(REQUEST)
+        errors = self.validateInputs(REQUEST)
         if errors:
             if is_childform:
                 return """<html><body><span id="plomino_child_errors">%s</span></body></html>""" % " - ".join(errors)
@@ -288,18 +288,19 @@ class PlominoForm(ATFolder):
         doc.setItem('Form', self.getFormName())
 
         # execute the onCreateDocument code of the form
-        valid = ''
+        invalid = False
         try:
-            valid = self.runFormulaScript("form_"+self.id+"_oncreate", doc, self.onCreateDocument)
+            invalid = self.runFormulaScript("form_"+self.id+"_oncreate", doc, self.onCreateDocument)
         except PlominoScriptException, e:
             e.reportError('Document is created, but onCreate formula failed')
 
-        if valid is None or valid=='':
-            doc.saveDocument(REQUEST, creation=True)
-        else:
-            db.documents._delOb(doc.id)
+        if invalid:
+            s = db.documents()
+            del s[doc.record]
             db.writeMessageOnPage(valid, REQUEST, False)
             REQUEST.RESPONSE.redirect(db.absolute_url())
+        else:
+            doc.saveDocument(REQUEST, creation=True)
 
     security.declarePublic('getFormFields')
     def getFormFields(self, includesubforms=False, doc=None, applyhidewhen=False):

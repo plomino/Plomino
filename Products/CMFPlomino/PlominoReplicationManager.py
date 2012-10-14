@@ -1235,6 +1235,7 @@ class PlominoReplicationManager(Persistent):
             for d in documents:
                 docid = d.getAttribute('id')
                 try:
+                    doc = db.getDocument(docid)
                     if self.documents.has_key(docid):
                         self.documents._delOb(docid)
                     self.importDocumentFromXML(d)
