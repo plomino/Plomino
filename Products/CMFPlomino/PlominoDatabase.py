@@ -408,17 +408,18 @@ class PlominoDatabase(ATFolder, PlominoAccessControl, PlominoDesignManager, Plom
                 record = self.documents().get(docid)
             except KeyError:
                 return None
-
-        if "/" in docid:
+        elif "/" in docid:
             # let's assume it is a path
             docid = docid.split("/")[-1]
+            results = list(self.documents().query(Eq('docid', docid)))
+            if not results:
+                return None
+            if len(results) == 1:
+                record = results[0]
+            else:
+                raise PlominoConstraintException, "Multiple (%s) records for docid: %s"%(len(results), docid)
 
-        results = list(self.documents().query(Eq('docid', docid)))
-        if results and len(results) == 1:
-            record = results[0]
-            return PlominoDocument(record).__of__(self)
-        else:
-            raise PlominoConstraintException, "Multiple (%s) records for %s"%(len(results), docid)
+        return PlominoDocument(record).__of__(self)
 
 
     security.declareProtected(READ_PERMISSION, 'getParentDatabase')
