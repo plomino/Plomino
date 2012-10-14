@@ -31,6 +31,7 @@ from zope.component import queryUtility
 from zope import event
 from zope.interface import directlyProvides
 from zope.interface import implements
+from zope.component import provideUtility
 import interfaces
 
 # CMF
@@ -62,6 +63,7 @@ from PlominoDocument import addPlominoDocument, PlominoDocument
 from PlominoReplicationManager import PlominoReplicationManager
 from PlominoScheduler import PlominoScheduler
 from plone.memoize.interfaces import ICacheChooser
+from Products.CMFPlomino import PlominoCatalogFactory
 from Products.CMFPlomino.config import *
 from Products.CMFPlomino.PlominoUtils import *
 
@@ -252,15 +254,15 @@ class PlominoDatabase(ATFolder, PlominoAccessControl, PlominoDesignManager, Plom
         PlominoAccessControl.__init__(self)
         #manage_addCMFBTreeFolder(self, id='plomino_documents')
         #directlyProvides(self.documents, IHideFromBreadcrumbs)
+        self.db_name = '%s_%s' % (self.getId(), self.UID())
+        provideUtility(PlominoCatalogFactory(), name=self.db_name)
 
-    @property
     def documents(self):
         # returns plomino_documents BTreeFolder
         # note: default to {} to avoid errors for db having version <1.7.5 not
         # refreshed yet
         #return getattr(self, 'plomino_documents', {})
-        name = '%s_%s' % (self.getId(), self.UID())
-        document_soup = get_soup(name, self)
+        document_soup = get_soup(self.db_name, self)
         return document_soup
 
     security.declarePublic('at_post_create_script')
@@ -389,8 +391,7 @@ class PlominoDatabase(ATFolder, PlominoAccessControl, PlominoDesignManager, Plom
             docid = make_uuid()
         record = Record()
         record.attrs['docid'] = docid
-        import pdb;pdb.set_trace()
-        self.documents.add(record)
+        self.documents().add(record)
         return PlominoDocument(record)
 
     security.declarePublic('getDocument')
@@ -404,9 +405,9 @@ class PlominoDatabase(ATFolder, PlominoAccessControl, PlominoDesignManager, Plom
             # let's assume it is a path
             docid = docid.split("/")[-1]
         try:
-            record = self.documents.get(docid)
+            record = self.documents().get(docid)
         except KeyError:
-            results = list(self.documents.query(Eq('docid', docid)))
+            results = list(self.documents().query(Eq('docid', docid)))
             if len(results) == 1:
                 record = results[0]
             elif len(results) == 0:

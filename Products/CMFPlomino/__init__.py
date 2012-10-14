@@ -59,6 +59,24 @@ import interfaces
 
 DirectoryView.registerDirectory('skins', product_globals)
 
+from souper.interfaces import ICatalogFactory
+from souper.soup import NodeAttributeIndexer
+from zope.component import provideUtility
+from zope.interface import implementer
+from repoze.catalog.catalog import Catalog
+from repoze.catalog.indexes.field import CatalogFieldIndex
+from repoze.catalog.indexes.text import CatalogTextIndex
+from repoze.catalog.indexes.keyword import CatalogKeywordIndex
+
+@implementer(ICatalogFactory)
+class PlominoCatalogFactory(object):
+
+    def __call__(self, context=None):
+        catalog = Catalog()
+        docid_indexer = NodeAttributeIndexer('docid')
+        catalog[u'docid'] = CatalogFieldIndex(docid_indexer)
+        return catalog
+
 class isPlomino(object):
     """ Return True if called on any Plomino object.
     """
