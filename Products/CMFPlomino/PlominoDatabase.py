@@ -22,7 +22,11 @@ from Acquisition import aq_inner
 from OFS.Folder import *
 from OFS.ObjectManager import ObjectManager
 from zope.annotation.interfaces import IAnnotations
-from zope.app.container.contained import ObjectRemovedEvent
+# 4.3 compatibility
+try:
+    from zope.container.contained import ObjectRemovedEvent
+except ImportError:
+    from zope.app.container.contained import ObjectRemovedEvent
 from zope.component import queryUtility
 from zope import event
 from zope.interface import directlyProvides
