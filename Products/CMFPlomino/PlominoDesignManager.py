@@ -261,9 +261,8 @@ class PlominoDesignManager(Persistent):
         """
         logger.info('Re-compute documents in '+self.id)
         documents = self.getAllDocuments()
-        total_docs = len(self.plomino_documents)
-        logger.info('Existing documents: '+ str(total_docs))
         total_docs = len(documents)
+        logger.info('Existing documents: '+ str(total_docs))
         total = 0
         counter = 0
         errors = 0
@@ -298,7 +297,7 @@ class PlominoDesignManager(Persistent):
         if self.getIndexInPortal():
             logger.info('Refresh documents from '+self.id+' in portal catalog')
             documents = self.getAllDocuments()
-            total_docs = len(self.plomino_documents)
+            total_docs = len(self.documents().data)
             logger.info('Existing documents: '+ str(total_docs))
             for d in documents:
                 portal_catalog.catalog_object(d, "/".join(self.getPhysicalPath() + (d.id,)))
