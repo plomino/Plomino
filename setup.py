@@ -31,6 +31,7 @@ setup(name='Products.CMFPlomino',
           'collective.js.jqueryui',
           'collective.js.datatables',
           'collective.codemirror',
+          'plomino.tinymce',
           'Products.CMFPlone',
       ],
       extras_require={
