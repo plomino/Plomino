@@ -531,11 +531,11 @@ class PlominoForm(ATFolder):
         return False
 
     security.declareProtected(READ_PERMISSION, 'getHidewhenAsJSON')
-    def getHidewhenAsJSON(self, REQUEST):
+    def getHidewhenAsJSON(self, REQUEST, parent_form=None):
         """Return a JSON object to dynamically show or hide hidewhens (works only with isDynamicHidewhen)
         """
         result = {}
-        target = TemporaryDocument(self.getParentDatabase(), self, REQUEST)
+        target = TemporaryDocument(self.getParentDatabase(), parent_form or self, REQUEST)
         for hidewhen in self.getHidewhenFormulas():
             if getattr(hidewhen, 'isDynamicHidewhen', False):
                 try:
@@ -547,7 +547,7 @@ class PlominoForm(ATFolder):
                 result[hidewhen.id] = isHidden
         for subformname in self.getSubforms():
             form = self.getParentDatabase().getForm(subformname)
-            form_hidewhens = json.loads(form.getHidewhenAsJSON(REQUEST))
+            form_hidewhens = json.loads(form.getHidewhenAsJSON(REQUEST, parent_form=parent_form or self))
             result.update(form_hidewhens)
 
         return json.dumps(result)
