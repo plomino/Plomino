@@ -1,9 +1,13 @@
 Changelog
 =========
 
-1.17 (unreleased)
+1.16.1 (2012-10-16)
 -----------------
+* integrate jsonutils to manage decimal [neaj]
+* use iframe in overlay for datagrid popup [silviot]
 * working on Plone4.3 support [alert]
+* hide-when fixes [manuelep]
+* static display for datagrids in read mode [ebrehault]
 
 1.16 (2012-08-27)
 -----------------
