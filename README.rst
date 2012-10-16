@@ -33,6 +33,7 @@ Contributors
 ------------
 
 * Jean Jordaan <jean.jordaan@gmail.com>
+* Silvio Tomatis <silviot@gmail.com>
 
 Companies
 ---------

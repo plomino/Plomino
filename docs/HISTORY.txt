@@ -2,7 +2,7 @@ Changelog
 =========
 
 1.16.1 (2012-10-16)
------------------
+-------------------
 * integrate jsonutils to manage decimal [neaj]
 * use iframe in overlay for datagrid popup [silviot]
 * working on Plone4.3 support [alert]
