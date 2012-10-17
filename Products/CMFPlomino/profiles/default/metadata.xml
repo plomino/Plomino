@@ -4,5 +4,6 @@
   <dependencies>
     <dependency>profile-collective.js.jqueryui:default</dependency>
     <dependency>profile-collective.js.datatables:default</dependency>
+    <dependency>profile-plomino.tinymce:default</dependency>
   </dependencies>
 </metadata>
