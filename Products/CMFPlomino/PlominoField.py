@@ -191,15 +191,15 @@ class PlominoField(BaseContent, BrowserDefaultMixin):
         if fieldtype=="ATTACHMENT" and process_attachments:
             if isinstance(submittedValue, FileUpload):
                 current_files=doc.getItem(fieldname)
-                if current_files=='':
-                    current_files={}
-                else:
-                    if adapt.type == "SINGLE":
-                        for filename in current_files.keys():
-                            doc.deletefile(filename)
-                        current_files={}
+                if not current_files:
+                    current_files = {}
                 (new_file, contenttype) = doc.setfile(submittedValue)
                 if new_file is not None:
+                    if adapt.type == "SINGLE":
+                        for filename in current_files.keys():
+                            if filename != new_file:
+                                doc.deletefile(filename)
+                        current_files={}
                     current_files[new_file]=contenttype
                 v=current_files
             else:
