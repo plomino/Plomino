@@ -11,10 +11,13 @@ class Plomino(PloneSandboxLayer):
     defaultBases = (PLONE_FIXTURE, )
     def setUpZope(self, app, configurationContext):
         # Load ZCML
+        import plomino.tinymce
         import Products.CMFPlomino
+        self.loadZCML(package=plomino.tinymce)
         self.loadZCML(package=Products.CMFPlomino)
 
         # Install product and call its initialize() function
+        z2.installProduct(app, 'plomino.tinymce')
         z2.installProduct(app, 'Products.CMFPlomino')
 
     def setUpPloneSite(self, portal):

@@ -69,7 +69,7 @@ def setup_product():
 
 ztc.installProduct('CMFPlomino')
 setup_product()
-ptc.setupPloneSite(products=['CMFPlomino'], extension_profiles=['Products.CMFPlomino:default'])
+ptc.setupPloneSite(products=['CMFPlomino', 'plomino.tinymce'], extension_profiles=['Products.CMFPlomino:default'])
 
 class ExampleFunctionalTestCase(ptc.FunctionalTestCase):
     """We use this class for functional integration tests that use doctest
