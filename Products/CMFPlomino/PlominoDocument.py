@@ -258,7 +258,9 @@ class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
                     fieldvalue = adapt.getFieldValue(form, self, False, False, REQUEST)
                     fieldvalue = adapt.rows(fieldvalue, rendered=rendered)
                     if datatables_format:
-                        fieldvalue = { 'iTotalRecords': len(fieldvalue), 'aaData': fieldvalue }
+                        fieldvalue = {'iTotalRecords': len(fieldvalue),
+                                      'iTotalDisplayRecords': len(result),
+                                      'aaData': fieldvalue }
                 else:
                     if rendered:
                         fieldvalue = self.getRenderedItem(item, form)

@@ -973,10 +973,14 @@ class PlominoForm(ATFolder):
         (Note: we use 'item' instead of 'field' to match the
         PlominoDocument.tojson method signature)
         """
+        datatables_format = False
         if REQUEST:
             REQUEST.RESPONSE.setHeader('content-type', 'application/json; charset=utf-8')
             item = REQUEST.get('item', item)
-
+            datatables_format_str = REQUEST.get('datatables', None)
+            if datatables_format_str:
+                datatables_format = True
+                
         result = None
         if not item:
             fields = self.getFormFields()
@@ -990,6 +994,10 @@ class PlominoForm(ATFolder):
             if field:
                 adapt = field.getSettings()
                 result = adapt.getFieldValue(self, None, False, False, REQUEST)
+                if datatables_format:
+                    result = {'iTotalRecords': len(result),
+                              'iTotalDisplayRecords': len(result),
+                              'aaData': result }
 
         return json.dumps(result)
 
