@@ -869,6 +869,7 @@ class TemporaryDocument(PlominoDocument):
 
     def __init__(self, parent, form, REQUEST, real_doc=None):
         self._parent=parent
+        self._REQUEST=REQUEST
         if real_doc is not None:
             self.items=real_doc.items.copy()
             self.real_id=real_doc.id
@@ -877,7 +878,6 @@ class TemporaryDocument(PlominoDocument):
             self.real_id="TEMPDOC"
         self.setItem('Form', form.getFormName())
         form.readInputs(self, REQUEST)
-        self._REQUEST=REQUEST
 
     security.declarePublic('getParentDatabase')
     def getParentDatabase(self):
