@@ -94,7 +94,7 @@ class BaseField(object):
             request = self.context.REQUEST
         if mode=="EDITABLE":
             if doc is None or temporary_doc_in_overlay:
-                # The aforemntioned ugliness ends here
+                # The aforementioned ugliness ends here
                 if creation and self.context.Formula():
                     fieldValue = form.computeFieldValue(fieldName, target)
                 elif request is None:
@@ -116,10 +116,10 @@ class BaseField(object):
             else:
                 fieldValue = doc.getItem(fieldName)
 
-        if mode=="DISPLAY" or mode=="COMPUTED":
+        elif mode=="DISPLAY" or mode=="COMPUTED":
             fieldValue = form.computeFieldValue(fieldName, target)
 
-        if mode=="CREATION":
+        elif mode=="CREATION":
             if creation:
                 # Note: on creation, there is no doc, we use form as target
                 # in formula
@@ -127,11 +127,12 @@ class BaseField(object):
             else:
                 fieldValue = doc.getItem(fieldName)
 
-        if mode=="COMPUTEDONSAVE" and doc:
+        elif mode=="COMPUTEDONSAVE" and doc:
             fieldValue = doc.getItem(fieldName)
 
         if fieldValue is None:
             fieldValue = ""
+
         return fieldValue
 
 class BaseForm(EditForm):
