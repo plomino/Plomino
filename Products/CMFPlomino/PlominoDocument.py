@@ -663,7 +663,8 @@ class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
         if not self.isReader():
             raise Unauthorized, "You cannot read this content"
 
-        onOpenDocument_error = self._onOpenDocument()
+        form = self.getParentDatabase().getForm(self.Form)
+        onOpenDocument_error = self._onOpenDocument(form=form)
         if onOpenDocument_error:
             raise Unauthorized, onOpenDocument_error
 
