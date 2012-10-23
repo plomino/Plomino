@@ -226,9 +226,17 @@ class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
 
     security.declarePublic('tojson')
     def tojson(self, REQUEST=None, item=None, formid=None, rendered=False):
-        """return item value as JSON
-        (return all items if item=None)
+        """ Return item value as JSON.
+
+        Return all items if item=None.
+        Values on the REQUEST overrides parameters.
+
+        If the requested item corresponds to a field on the found form, 
+        the field value is returned. If not, it falls back to a plain item
+        lookup on the document.
         """
+        # TODO: Don't always return the entire dataset.
+
         if not self.isReader():
             raise Unauthorized, "You cannot read this content"
 
@@ -243,35 +251,36 @@ class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
             datatables_format_str = REQUEST.get('datatables', None)
             if datatables_format_str:
                 datatables_format = True
-        if not item:
-            return json.dumps(self.items.data)
-
-        if not formid:
-            form = self.getForm()
-        else:
-            form = self.getParentDatabase().getForm(formid)
-        if form:
-            field = form.getFormField(item)
-            if field:
-                if field.getFieldType() == 'DATAGRID':
-                    adapt = field.getSettings()
-                    fieldvalue = adapt.getFieldValue(form, self, False, False, REQUEST)
-                    fieldvalue = adapt.rows(fieldvalue, rendered=rendered)
-                else:
-                    if rendered:
-                        fieldvalue = self.getRenderedItem(item, form)
-                    else:
+        if item:
+            if formid:
+                form = self.getParentDatabase().getForm(formid)
+            else:
+                form = self.getForm()
+            if form:
+                field = form.getFormField(item)
+                if field:
+                    if field.getFieldType() == 'DATAGRID':
                         adapt = field.getSettings()
                         fieldvalue = adapt.getFieldValue(form, self, False, False, REQUEST)
+                        fieldvalue = adapt.rows(fieldvalue, rendered=rendered)
+                    else:
+                        if rendered:
+                            fieldvalue = self.getRenderedItem(item, form)
+                        else:
+                            adapt = field.getSettings()
+                            fieldvalue = adapt.getFieldValue(form, self, False, False, REQUEST)
+                else:
+                    fieldvalue = self.getItem(item)
             else:
                 fieldvalue = self.getItem(item)
         else:
-            fieldvalue = self.getItem(item)
-        
+            fieldvalue = self.items.data
+
         if datatables_format:
             fieldvalue = {'iTotalRecords': len(fieldvalue),
                           'iTotalDisplayRecords': len(fieldvalue),
                           'aaData': fieldvalue }
+
         return json.dumps(fieldvalue)
 
     security.declarePublic('computeItem')
