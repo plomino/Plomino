@@ -274,6 +274,7 @@ class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
                             adapt = field.getSettings()
                             fieldvalue = adapt.getFieldValue(form, self, False, False, REQUEST)
                 else:
+                    logger.info("Failed to find %s on %s, fallback to getItem."%(item, form.id))
                     fieldvalue = self.getItem(item)
             else:
                 fieldvalue = self.getItem(item)
