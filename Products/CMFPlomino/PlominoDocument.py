@@ -663,6 +663,9 @@ class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
         if not self.isReader():
             raise Unauthorized, "You cannot read this content"
 
+        # Check access based on doc's current form. Plomino may be busy
+        # rendering a different doc, using some requested form, which 
+        # probably doesn't apply to this document.
         form = self.getParentDatabase().getForm(self.Form)
         onOpenDocument_error = self._onOpenDocument(form=form)
         if onOpenDocument_error:
@@ -878,9 +881,9 @@ class TemporaryDocument(PlominoDocument):
     security = ClassSecurityInfo()
 
     def __init__(self, parent, form, REQUEST, real_doc=None):
-        self._parent=parent
-        self._REQUEST=REQUEST
-        if real_doc is not None:
+        self._parent = parent
+        self.REQUEST = REQUEST
+        if real_doc:
             self.items=real_doc.items.copy()
             self.real_id=real_doc.id
         else:
@@ -907,8 +910,15 @@ class TemporaryDocument(PlominoDocument):
         """
         if self.real_id=="TEMPDOC":
             return True
-        else:
+        return False
+
+    security.declarePublic('isDocument')
+    def isDocument(self):
+        """ Return True if we're representing an existing document.
+        """
+        if self.id == 'TEMPDOC':
             return False
+        return True
 
     security.declarePublic('REQUEST')
     @property
