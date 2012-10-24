@@ -29,7 +29,7 @@
     <tal:read_static tal:condition="python:widget=='READ_STATIC'">
         <table class="plain" tal:define="rows python:field.getSettings().rows(v, rendered=True);">
             <tr tal:repeat="row rows">
-                <td tal:repeat="cell row" tal:content="cell">cell content</td>
+                <td tal:repeat="cell row" tal:content="structure cell">cell content</td>
             </tr>
         </table>
     </tal:read_static>
