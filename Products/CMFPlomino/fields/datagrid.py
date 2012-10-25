@@ -117,6 +117,16 @@ class DatagridField(BaseField):
         rows = self.rows(value, rendered)
         return json.dumps(rows)
 
+    def request_items_aoData(self, request):
+        """ Return a string representing REQUEST.items as aoData.push calls.
+        """
+        aoData_templ = "aoData.push(%s); "
+        aoDatas = []
+        for k,v in request.form.items():
+            j = json.dumps({'name': k, 'value': v})
+            aoDatas.append(aoData_templ % j)
+        return '\n'.join(aoDatas)
+
     def getActionLabel(self, action_id):
         """
         """
