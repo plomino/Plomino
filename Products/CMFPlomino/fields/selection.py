@@ -24,41 +24,49 @@ from Products.CMFPlomino.PlominoUtils import asUnicode
 from jsonutil import jsonutil as json
 
 class ISelectionField(IBaseField):
+    """ Selection field schema
     """
-    Selection field schema
-    """
-    widget = Choice(vocabulary=SimpleVocabulary.fromItems([("Selection list", "SELECT"),
-                                                           ("Multi-selection list", "MULTISELECT"),
-                                                           ("Checkboxes", "CHECKBOX"),
-                                                           ("Radio buttons", "RADIO"),
-                                                           ("Dynamic picklist", "PICKLIST")
-                                                           ]),
-                    title=u'Widget',
-                    description=u'Field rendering',
-                    default="SELECT",
-                    required=True)
-    selectionlist = List(title=u'Selection list',
-                      description=u'List of values to select, one per line. Use | to separate label and value',
-                      required=False,
-                      default=[],
-                      value_type=TextLine(title=u'Entry'))
-    selectionlistformula = Text(title=u'Selection list formula',
-                      description=u'Formula to compute the selection list elements',
-                      required=False)
-    separator = TextLine(title=u'Separator',
-                      description=u'Only apply if multi-valued',
-                      required=False)
+    widget = Choice(
+            vocabulary = SimpleVocabulary.fromItems([
+                ("Selection list", "SELECT"),
+                ("Multi-selection list", "MULTISELECT"),
+                ("Checkboxes", "CHECKBOX"),
+                ("Radio buttons", "RADIO"),
+                ("Dynamic picklist", "PICKLIST")
+                ]),
+            title = u'Widget',
+            description = u'Field rendering',
+            default = "SELECT",
+            required = True)
+
+    selectionlist = List(
+            title = u'Selection list',
+            description = u'List of values to select, one per line. Use | to separate label and value',
+            required = False,
+            default = [],
+            value_type = TextLine(title=u'Entry'))
+
+    selectionlistformula = Text(
+            title = u'Selection list formula',
+            description = u'Formula to compute the selection list elements',
+            required = False)
+
+    separator = TextLine(
+            title = u'Separator',
+            description = u'Only apply if multi-valued',
+            required = False)
+
     dynamictableparam = Text(
-        title=u"Dynamic Table Parameters",
-        description=u"Change these options to customize the dynamic table.",
-        default=u"""
+            title = u"Dynamic Table Parameters",
+            description = u"Change these options to customize the dynamic table.",
+            default = u"""
 'bPaginate': true,
 'bLengthChange': true,
 'bFilter': true,
 'bSort': true,
 'bInfo': true,
 'bAutoWidth': false"""
-    )
+            )
 
 class SelectionField(BaseField):
     """
@@ -66,39 +74,38 @@ class SelectionField(BaseField):
     implements(ISelectionField)
 
     def getSelectionList(self, doc):
-        """return the values list, format: label|value, use label as value if no label
+        """ Return the values list.
+        Format: label|value, use label as value if no label.
         """
-
         #if formula available, use formula, else use manual entries
         f = self.selectionlistformula
-        if f=='' or f is None:
-            s = self.selectionlist
-            if s=='':
-                return []
-        else:
+        if f:
             #if no doc provided (if OpenForm action), we use the PlominoForm
-            if doc is None:
-                obj = self.context
-            else:
+            if doc:
                 obj = doc
+            else:
+                obj = self.context
             try:
                 s = self.context.runFormulaScript("field_"+self.context.getParentNode().id+"_"+self.context.id+"_SelectionListFormula", obj, lambda: f)
             except PlominoScriptException, e:
                 e.reportError('%s field selection list formula failed' % self.context.id, path=self.context.absolute_url_path()+'/getSettings?key=selectionlistformula')
-                s = None
-            if s is None:
-                s = []
+                s = [] 
+        else:
+            s = self.selectionlist
+            if not s:
+                return []
 
         # if values not specified, use label as value
-        proper = []
+        label_value = []
         for v in s:
             v = asUnicode(v)
             l = v.split('|')
-            if len(l)==2:
-                proper.append(v)
+            if len(l) == 2:
+                label_value.append(v)
             else:
-                proper.append(v+'|'+v)
-        return proper
+                label_value.append(v+'|'+v)
+
+        return label_value
 
     def tojson(self, selection):
         """Return a JSON table storing documents to be displayed
