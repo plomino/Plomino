@@ -89,6 +89,7 @@ class BaseField(object):
             isinstance(aq_base(doc), TemporaryDocument) and
             hasattr(self.context, 'REQUEST') and
             'Plomino_Parent_Form' in self.context.REQUEST.form
+            and not self.context.REQUEST.get('ACTUAL_URL').endswith('/createDocument')
         )
         if temporary_doc_in_overlay:
             request = self.context.REQUEST
