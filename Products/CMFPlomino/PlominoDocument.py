@@ -430,12 +430,9 @@ class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
 
         # update the Plomino_Authors field with the current user name
         if asAuthor:
-            authors = self.getItem('Plomino_Authors')
+            authors = asList(self.getItem('Plomino_Authors') or [])
             name = db.getCurrentUser().getUserName()
-            if authors == '':
-                authors = []
-                authors.append(name)
-            elif name in authors:
+            if name in authors:
                 pass
             else:
                 authors.append(name)
