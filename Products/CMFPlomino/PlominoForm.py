@@ -449,7 +449,7 @@ class PlominoForm(ATFolder):
         parent_form = self.getParentDatabase().getForm(doc.Plomino_Parent_Form)
         parent_field = parent_form.getFormField(doc.Plomino_Parent_Field)
         fields = parent_field.getSettings().field_mapping.split(',')
-
+        
         raw_values = []
         for f in fields:
             v = doc.getItem(f)

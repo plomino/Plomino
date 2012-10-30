@@ -23,50 +23,49 @@ from Products.CMFPlomino.PlominoUtils import asUnicode
 
 from jsonutil import jsonutil as json
 
+
 class ISelectionField(IBaseField):
     """ Selection field schema
     """
     widget = Choice(
-            vocabulary = SimpleVocabulary.fromItems([
-                ("Selection list", "SELECT"),
-                ("Multi-selection list", "MULTISELECT"),
-                ("Checkboxes", "CHECKBOX"),
-                ("Radio buttons", "RADIO"),
-                ("Dynamic picklist", "PICKLIST")
-                ]),
-            title = u'Widget',
-            description = u'Field rendering',
-            default = "SELECT",
-            required = True)
-
+        vocabulary=SimpleVocabulary.fromItems([
+            ("Selection list", "SELECT"),
+            ("Multi-selection list", "MULTISELECT"),
+            ("Checkboxes", "CHECKBOX"),
+            ("Radio buttons", "RADIO"),
+            ("Dynamic picklist", "PICKLIST")
+        ]),
+        title=u'Widget',
+        description=u'Field rendering',
+        default="SELECT",
+        required=True)
     selectionlist = List(
-            title = u'Selection list',
-            description = u'List of values to select, one per line. Use | to separate label and value',
-            required = False,
-            default = [],
-            value_type = TextLine(title=u'Entry'))
-
+        title=u'Selection list',
+        description=u'List of values to select, one per line. Use | to separate label and value',
+        required=False,
+        default=[],
+        value_type=TextLine(title=u'Entry'))
     selectionlistformula = Text(
-            title = u'Selection list formula',
-            description = u'Formula to compute the selection list elements',
-            required = False)
-
+        title=u'Selection list formula',
+        description=u'Formula to compute the selection list elements',
+        required=False)
     separator = TextLine(
-            title = u'Separator',
-            description = u'Only apply if multi-valued',
-            required = False)
+        title=u'Separator',
+        description=u'Only apply if multi-valued',
+        required=False)
 
     dynamictableparam = Text(
-            title = u"Dynamic Table Parameters",
-            description = u"Change these options to customize the dynamic table.",
-            default = u"""
+        title=u"Dynamic Table Parameters",
+        description=u"Change these options to customize the dynamic table.",
+        default=u"""
 'bPaginate': true,
 'bLengthChange': true,
 'bFilter': true,
 'bSort': true,
 'bInfo': true,
 'bAutoWidth': false"""
-            )
+    )
+
 
 class SelectionField(BaseField):
     """
@@ -86,10 +85,10 @@ class SelectionField(BaseField):
             else:
                 obj = self.context
             try:
-                s = self.context.runFormulaScript("field_"+self.context.getParentNode().id+"_"+self.context.id+"_SelectionListFormula", obj, lambda: f)
+                s = self.context.runFormulaScript("field_" + self.context.getParentNode().id + "_" + self.context.id + "_SelectionListFormula", obj, lambda: f)
             except PlominoScriptException, e:
-                e.reportError('%s field selection list formula failed' % self.context.id, path=self.context.absolute_url_path()+'/getSettings?key=selectionlistformula')
-                s = [] 
+                e.reportError('%s field selection list formula failed' % self.context.id, path=self.context.absolute_url_path() + '/getSettings?key=selectionlistformula')
+                s = []
         else:
             s = self.selectionlist
             if not s:
@@ -103,9 +102,17 @@ class SelectionField(BaseField):
             if len(l) == 2:
                 label_value.append(v)
             else:
-                label_value.append(v+'|'+v)
+                label_value.append(v + '|' + v)
 
         return label_value
+
+    def processInput(self, values):
+        """
+        """
+        values = BaseField.processInput(self, values)
+        if type(values) == list:
+            values = [asUnicode(v) for v in values]
+        return values
 
     def tojson(self, selection):
         """Return a JSON table storing documents to be displayed
@@ -117,8 +124,8 @@ class SelectionField(BaseField):
 for f in getFields(ISelectionField).values():
     setattr(SelectionField, f.getName(), DictionaryProperty(f, 'parameters'))
 
+
 class SettingForm(BaseForm):
     """
     """
     form_fields = form.Fields(ISelectionField)
-
