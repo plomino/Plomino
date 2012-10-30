@@ -595,7 +595,7 @@ class PlominoDesignManager(Persistent):
             if not ps:
                 ps = self.compileFormulaScript(script_id, formula_getter(), with_args)
                 if self.debugMode and hasattr(ps, 'errors') and ps.errors:
-                    logger.info('ps.errors : ' + str(ps.errors))
+                    logger.info('ps.errors : ' + "\n".join(ps.errors))
             contextual_ps=ps.__of__(context)
             result = None
             if with_args:
