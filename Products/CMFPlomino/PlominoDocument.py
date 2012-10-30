@@ -893,6 +893,10 @@ class TemporaryDocument(PlominoDocument):
             self.real_id="TEMPDOC"
         self.setItem('Form', form.getFormName())
         form.readInputs(self, REQUEST)
+<<<<<<< HEAD
+=======
+        self.REQUEST=REQUEST
+>>>>>>> Fix temporaryDocument REQUEST
 
     security.declarePublic('getParentDatabase')
     def getParentDatabase(self):
@@ -921,13 +925,6 @@ class TemporaryDocument(PlominoDocument):
         if self.id == 'TEMPDOC':
             return False
         return True
-
-    security.declarePublic('REQUEST')
-    @property
-    def REQUEST(self):
-        """
-        """
-        return self._REQUEST
 
     security.declarePublic('id')
     @property
