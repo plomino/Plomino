@@ -203,13 +203,11 @@ def normalizeString(text, context=None, encoding=None):
 
 def asList(x):
     """ If not list, return x in a single-element list.
-    .. note:: If ``x`` is ``None``, this will return ``[None]``.
+    .. note:: This will wrap falsy values like ``None`` or ``''`` in a list.
     """
-    if hasattr(x, 'append'):
+    if isinstance(x, list):
         return x
-    else:
-        return [x]
-
+    return list(x)
 
 def asUnicode(s):
     """ Make sure ``s`` is unicode; decode according to site encoding if

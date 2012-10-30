@@ -10,15 +10,23 @@
 __author__ = """Eric BREHAULT <eric.brehault@makina-corpus.com>"""
 __docformat__ = 'plaintext'
 
+# Standard 
+import warnings
+
+# Zope
 from AccessControl import ClassSecurityInfo
-from Products.CMFPlomino.config import *
-from Products.CMFCore import permissions
-from AccessControl.PermissionRole import rolesForPermissionOn
+from Persistence import Persistent
+
+# Plone
 from AccessControl import getSecurityManager
+from AccessControl.PermissionRole import rolesForPermissionOn
+from Products.CMFCore import permissions
 from Products.CMFCore.utils import getToolByName
 from Products.DCWorkflow.DCWorkflow import DCWorkflowDefinition
-from Persistence import Persistent
-import warnings
+
+# Plomino
+from Products.CMFPlomino.config import *
+from Products.CMFPlomino.PlominoUtils import asList
 
 class PlominoAccessControl(Persistent):
     """Plomino access control utilities
@@ -281,7 +289,7 @@ class PlominoAccessControl(Persistent):
         # if he is just a PlominoAuthor, check if he is author of this very document
         if 'PlominoAuthor' in current_rights:
 
-            authors = doc.getItem('Plomino_Authors')
+            authors = asList(doc.getItem('Plomino_Authors') or [])
             if not authors:
                 return False
 
