@@ -228,12 +228,14 @@ class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
     def tojson(self, REQUEST=None, item=None, formid=None, rendered=False):
         """ Return item value as JSON.
 
-        Return all items if item=None.
+        Return all items if `item=None`.
         Values on the REQUEST overrides parameters.
 
         If the requested item corresponds to a field on the found form, 
         the field value is returned. If not, it falls back to a plain item
         lookup on the document.
+
+        `formid="None"` specifies plain item lookup.
         """
         # TODO: Don't always return the entire dataset.
 
@@ -252,7 +254,9 @@ class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
             if datatables_format_str:
                 datatables_format = True
         if item:
-            if formid:
+            if formid == "None":
+                form = None
+            elif formid:
                 form = self.getParentDatabase().getForm(formid)
             else:
                 form = self.getForm()
@@ -270,6 +274,7 @@ class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
                             adapt = field.getSettings()
                             fieldvalue = adapt.getFieldValue(form, self, False, False, REQUEST)
                 else:
+                    logger.info("Failed to find %s on %s, fallback to getItem."%(item, form.id))
                     fieldvalue = self.getItem(item)
             else:
                 fieldvalue = self.getItem(item)
