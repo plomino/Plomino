@@ -1,10 +1,11 @@
 import traceback
-
+import re
 from PlominoUtils import asUnicode
 from Products.CMFCore.utils import getToolByName
 
 import logging
 logger = logging.getLogger('Plomino')
+
 
 class PlominoScriptException(Exception):
 
@@ -27,25 +28,32 @@ class PlominoScriptException(Exception):
         """trace errors from Scripts
         """
         msg = []
-
         formatted_lines = traceback.format_exc().splitlines()
-        index = 0
         for (i, line) in enumerate(formatted_lines):
-            if self.script_id in line:
-                index = i
-        if index == len(formatted_lines)-1:
-            msg = [formatted_lines[index]]
-        else:
-            msg = [formatted_lines[index], formatted_lines[-1]]
-        msg.append("Context is <%s> %s" % (self.context.__class__.__name__, self.context_url))
+            if ("Script (Python)" in line
+                    and i < len(formatted_lines) - 1):
+                msg.append(line[line.index(',') + 1:])
+        msg.append(formatted_lines[-1])
+        msg.append("Context is <%s> %s" % (
+            self.context.__class__.__name__,
+            self.context_url))
         if self.context.getParentDatabase().debugMode:
             code = ["Code : "]
             line_number = 4
-            for l in self.formula().replace('\r', '').split('\n'):
+            formula = self.formula()
+            r = re.compile('#Plomino import (.+)[\r\n]')
+            for i in r.findall(formula):
+                scriptname = i.strip()
+                try:
+                    script_code = self.context.resources._getOb(scriptname).read()
+                except:
+                    script_code = "#ALERT: " + scriptname + " not found in resources"
+                formula = formula.replace('#Plomino import ' + scriptname, script_code)
+            for l in formula.replace('\r', '').split('\n'):
                 code.append("%d: %s" % (line_number, l))
                 line_number += 1
-            logger.error('\n'.join(msg+code))
-            
+            logger.error('\n'.join(msg + code))
+
         return "\r\n".join(msg)
 
     def reportError(self, label, path=None, request=None):
@@ -65,15 +73,20 @@ class PlominoScriptException(Exception):
             report += " - Plomino traceback " + traceback.replace('\n', '\n<br/>')
             plone_tools = getToolByName(self.context.getParentDatabase().aq_inner, 'plone_utils')
             plone_tools.addPortalMessage(report, 'error', request)
-            
+
+
 class PlominoRenderingException(Exception):
     pass
+
 
 class PlominoReplicationException(Exception):
     pass
 
+
 class PlominoDesignException(Exception):
     pass
 
+
 class PlominoCacheException(Exception):
     pass
+
