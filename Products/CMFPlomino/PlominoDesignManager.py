@@ -536,7 +536,10 @@ class PlominoDesignManager(Persistent):
 
     security.declarePublic('getFormulaScript')
     def getFormulaScript(self, script_id):
-        return self.scripts._getOb(script_id)
+        if self.scripts.hasObject(script_id):
+            return self.scripts._getOb(script_id)
+        else:
+            return None
 
     security.declarePublic('cleanFormulaScripts')
     def cleanFormulaScripts(self, script_id_pattern=None):
