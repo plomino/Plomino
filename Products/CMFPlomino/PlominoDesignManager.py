@@ -536,11 +536,7 @@ class PlominoDesignManager(Persistent):
 
     security.declarePublic('getFormulaScript')
     def getFormulaScript(self, script_id):
-        if hasattr(self.scripts, script_id):
-            ps=getattr(self.scripts, script_id)
-            return ps
-        else:
-            return None
+        return self.scripts._getOb(script_id)
 
     security.declarePublic('cleanFormulaScripts')
     def cleanFormulaScripts(self, script_id_pattern=None):
@@ -553,8 +549,8 @@ class PlominoDesignManager(Persistent):
     security.declarePublic('compileFormulaScript')
     def compileFormulaScript(self, script_id, formula, with_args=False):
         ps = self.getFormulaScript(script_id)
-        if ps is None:
-            ps=PythonScript(script_id)
+        if not ps:
+            ps = PythonScript(script_id)
             self.scripts._setObject(script_id, ps)
         ps = self.getFormulaScript(script_id)
 
@@ -571,10 +567,11 @@ class PlominoDesignManager(Persistent):
 
         r = re.compile('#Plomino import (.+)[\r\n]')
         for i in r.findall(formula):
-            scriptname=i.strip()
+            scriptname = i.strip()
             try:
                 script_code = self.resources._getOb(scriptname).read()
             except:
+                logger.warning("compileFormulaScript> %s not found in resources" % scriptname)
                 script_code = "#ALERT: "+scriptname+" not found in resources"
             formula = formula.replace('#Plomino import '+scriptname, script_code)
 
@@ -595,7 +592,7 @@ class PlominoDesignManager(Persistent):
     def runFormulaScript(self, script_id, context, formula_getter, with_args=False, *args):
         try:
             ps = self.getFormulaScript(script_id)
-            if ps is None:
+            if not ps:
                 ps = self.compileFormulaScript(script_id, formula_getter(), with_args)
                 if self.debugMode and hasattr(ps, 'errors') and ps.errors:
                     logger.info('ps.errors : ' + str(ps.errors))
@@ -629,19 +626,20 @@ class PlominoDesignManager(Persistent):
             logger.error(msg)
 
     security.declarePublic('callScriptMethod')
-    def callScriptMethod(self, scriptname, methodname, *args):
-        """ Calls a method named ``methodname`` in a file named
-        ``scriptname``, stored in the ``resources`` folder. If the called
-        method allows it, you may pass some arguments.
+    def callScriptMethod(self, scriptname, funcname, *args):
+        """ Calls a function named ``funcname`` in a file named
+        ``scriptname``, stored in the ``resources`` folder.
+        If the called function allows it, you may pass some arguments.
         """
-        id="script_"+scriptname+"_"+methodname
+        script_id = "script_"+scriptname+"_"+funcname
         try:
             script_code = self.resources._getOb(scriptname).read()
         except:
+            logger.warning("callScriptMethod> %s not found in resources" % scriptname)
             script_code = "#ALERT: "+scriptname+" not found in resources"
-        formula=lambda:script_code+'\n\nreturn '+methodname+'(*args)'
+        formula = lambda: script_code+'\n\nreturn '+funcname+'(*args)'
 
-        return self.runFormulaScript(id, self, formula, True, *args)
+        return self.runFormulaScript(script_id, self, formula, True, *args)
 
     security.declarePublic('writeMessageOnPage')
     def writeMessageOnPage(self, infoMsg, REQUEST, error = False):
