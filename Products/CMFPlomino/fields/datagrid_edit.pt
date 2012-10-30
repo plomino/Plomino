@@ -1,4 +1,4 @@
-<tal:block tal:define="field python:options['field']
+<tal:block tal:define="field python:options['field'];
                        fieldname python:options['fieldname'];
                        request field/REQUEST;
                        v options/fieldvalue;
