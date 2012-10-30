@@ -690,7 +690,9 @@ class PlominoForm(ATFolder):
 
     security.declarePrivate('_has_fieldtypes')
     def _has_fieldtypes(self, types):
-        "Tyeps is an array of strings. Check if any of those types is present"
+        """ ``types`` is an array of strings.
+        Check if any of those types are present.
+        """
         tmp = None
         if hasattr(self, 'REQUEST'):
             # hideWhens need a TemporaryDocument
@@ -994,10 +996,11 @@ class PlominoForm(ATFolder):
             if field:
                 adapt = field.getSettings()
                 result = adapt.getFieldValue(self, None, False, False, REQUEST)
-                if datatables_format:
-                    result = {'iTotalRecords': len(result),
-                              'iTotalDisplayRecords': len(result),
-                              'aaData': result }
+
+        if datatables_format:
+            result = {'iTotalRecords': len(result),
+                      'iTotalDisplayRecords': len(result),
+                      'aaData': result }
 
         return json.dumps(result)
 
