@@ -25,6 +25,7 @@ except:
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 
 from jsonutil import jsonutil as json
+from urllib import unquote
 
 class IBaseField(Interface):
     """
@@ -106,7 +107,7 @@ class BaseField(object):
                         # datagrid form case
                         parent_form = request.get("Plomino_Parent_Form", None)
                         parent_field = request.get("Plomino_Parent_Field", None)
-                        data = json.loads(row_data_json)
+                        data = json.loads(unquote(row_data_json).decode('unicode_escape'))
                         datagrid_fields = db.getForm(parent_form).getFormField(parent_field).getSettings().field_mapping.split(',')
                         if fieldName in datagrid_fields:
                             fieldValue = data[datagrid_fields.index(fieldName)]
