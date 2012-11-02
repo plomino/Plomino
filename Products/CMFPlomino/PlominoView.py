@@ -557,18 +557,20 @@ class PlominoView(ATFolder):
 
     security.declarePublic('getDocumentsByKey')
     def getDocumentsByKey(self, key, getObject=True):
-        """Get documents which sorted column value match the given key
+        """ Get documents where the sorted column value matches the given key.
         """
         index = self.getParentDatabase().getIndex()
         sortindex = self.getSortColumn()
-        if sortindex=='':
+        if not sortindex:
             return []
-        else:
-            sortindex=self.getIndexKey(sortindex)
-            results=index.dbsearch({'PlominoViewFormula_'+self.getViewName() : True,
-                                    sortindex : key
-                                    },
-                                   sortindex, self.getReverseSorting())
+
+        sortindex = self.getIndexKey(sortindex)
+        results = index.dbsearch({
+            'PlominoViewFormula_'+self.getViewName() : True, 
+            sortindex : key
+            },
+            sortindex, self.getReverseSorting())
+
         if getObject:
             return [d.getObject() for d in results]
         else:

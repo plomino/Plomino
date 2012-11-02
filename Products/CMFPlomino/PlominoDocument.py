@@ -334,7 +334,7 @@ class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
         """
         db = self.getParentDatabase()
         db.deleteDocument(self)
-        if not REQUEST is None:
+        if REQUEST:
             return_url = REQUEST.get('returnurl')
             REQUEST.RESPONSE.redirect(return_url)
 
@@ -886,11 +886,11 @@ class TemporaryDocument(PlominoDocument):
         self._parent = parent
         self.REQUEST = REQUEST
         if real_doc:
-            self.items=real_doc.items.copy()
-            self.real_id=real_doc.id
+            self.items = real_doc.items.copy()
+            self.real_id = real_doc.id
         else:
-            self.items={}
-            self.real_id="TEMPDOC"
+            self.items = {}
+            self.real_id = "TEMPDOC"
         self.setItem('Form', form.getFormName())
         form.readInputs(self, REQUEST)
 
@@ -910,7 +910,7 @@ class TemporaryDocument(PlominoDocument):
     def isNewDocument(self):
         """
         """
-        if self.real_id=="TEMPDOC":
+        if self.real_id == "TEMPDOC":
             return True
         return False
 
