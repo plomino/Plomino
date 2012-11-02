@@ -44,9 +44,15 @@ class PlominoScriptException(Exception):
             r = re.compile('#Plomino import (.+)[\r\n]')
             for i in r.findall(formula):
                 scriptname = i.strip()
-                try:
-                    script_code = self.context.resources._getOb(scriptname).read()
-                except:
+                script_code = self.context.resources._getOb(scriptname, None)
+                if script_code:
+                    try:
+                        script_code = script_code.read()
+                    except:
+                        msg = "#ALERT: " + scriptname + " invalid"
+                        logger.error(msg, exc_info=True)
+                        script_code = msg
+                else:
                     script_code = "#ALERT: " + scriptname + " not found in resources"
                 formula = formula.replace('#Plomino import ' + scriptname, script_code)
             for l in formula.replace('\r', '').split('\n'):
