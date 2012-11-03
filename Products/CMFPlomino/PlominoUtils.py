@@ -207,7 +207,7 @@ def asList(x):
     """
     if isinstance(x, list):
         return x
-    return list(x)
+    return [x]
 
 def asUnicode(s):
     """ Make sure ``s`` is unicode; decode according to site encoding if
