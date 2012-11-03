@@ -55,7 +55,7 @@ PLOMINO_IMPORT_SEPARATORS = {'semicolon (;)' : ';',
                              'end of line' : '\n',
                              'dash (-)' : '-'}
 
-# From http://hg.tryton.org/trytond/file/tip/trytond/protocols/xmlrpc.py
+# From http://hg.tryton.org/trytond/file/7fefd5066a68/trytond/protocols/xmlrpc.py
 # vvv FROM HERE
 from decimal import Decimal
 
