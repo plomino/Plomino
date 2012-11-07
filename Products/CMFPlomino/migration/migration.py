@@ -218,7 +218,9 @@ def migrate_to_173(db):
 def migrate_to_175(db):
     """ documents stores in BTreeFolder
     """
-    manage_addBTreeFolder(db, id='plomino_documents')
+    # plomino_documents might exist if the migration runs after an XML import
+    if 'plomino_documents' not in db.objectIds():
+        manage_addBTreeFolder(db, id='plomino_documents')
     directlyProvides(db.plomino_documents, IHideFromBreadcrumbs)
     docids = [id for id in db.objectIds() if getattr(db, id).portal_type == "PlominoDocument"]
     cookie = db.manage_cutObjects(ids=docids)
