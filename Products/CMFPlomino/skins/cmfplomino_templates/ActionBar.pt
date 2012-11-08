@@ -5,7 +5,7 @@
 			tal:condition="python:test(here.hasEditPermission(here)==True and here.hasEditPermission(here.getParentDatabase())==True and here.isAuthor())">
 		<input type="button" class="context plominoEdit" value="Edit" name="plomino_edit"
 			i18n:domain="CMFPlomino" i18n:attributes="value"
-			tal:attributes="onclick python:'location.href=\''+here.navigationParent(here)+'/'+here.id+'/EditDocument\''" />
+			tal:attributes="onclick python:'location.href=\''+here.navigationParent(here)+'/'+here.docid+'/EditDocument\''" />
 		</tal:block>
 
 		<tal:block

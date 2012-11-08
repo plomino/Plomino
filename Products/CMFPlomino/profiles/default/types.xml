@@ -20,9 +20,6 @@
  <object name="PlominoColumn"
          meta_type="Factory-based Type Information with dynamic views"/>
 
- <object name="PlominoDocument"
-         meta_type="Factory-based Type Information with dynamic views"/>
-
  <object name="PlominoHidewhen"
          meta_type="Factory-based Type Information with dynamic views"/>
 

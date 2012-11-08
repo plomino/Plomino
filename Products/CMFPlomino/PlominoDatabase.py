@@ -27,11 +27,13 @@ from OFS.Folder import *
 from OFS.ObjectManager import ObjectManager
 from zope.annotation.interfaces import IAnnotations
 from zope.app.container.contained import ObjectRemovedEvent
-from zope.component import queryUtility, getUtility
+from zope.component import queryUtility, getUtility, queryMultiAdapter
 from zope import event
 from zope.interface import directlyProvides
 from zope.interface import implements
 from zope.component import provideUtility
+from zope.publisher.interfaces import IPublishTraverse, NotFound
+from zope.traversing.interfaces import ITraversable, TraversalError
 import interfaces
 
 # CMF
@@ -215,9 +217,6 @@ schema = Schema((
 ),
 )
 
-##code-section after-local-schema #fill in your manual code here
-##/code-section after-local-schema
-
 PlominoDatabase_schema = getattr(ATFolder, 'schema', Schema(())).copy() + \
     getattr(PlominoAccessControl, 'schema', Schema(())).copy() + \
     getattr(PlominoDesignManager, 'schema', Schema(())).copy() + \
@@ -225,8 +224,6 @@ PlominoDatabase_schema = getattr(ATFolder, 'schema', Schema(())).copy() + \
     getattr(PlominoScheduler, 'schema', Schema(())).copy() + \
     schema.copy()
 
-##code-section after-schema #fill in your manual code here
-##/code-section after-schema
 
 class PlominoDatabase(ATFolder, PlominoAccessControl, PlominoDesignManager, PlominoReplicationManager, PlominoScheduler):
     """
@@ -239,8 +236,6 @@ class PlominoDatabase(ATFolder, PlominoAccessControl, PlominoDesignManager, Plom
 
     schema = PlominoDatabase_schema
 
-    ##code-section class-header #fill in your manual code here
-    ##/code-section class-header
 
     # Methods
 
@@ -277,14 +272,34 @@ class PlominoDatabase(ATFolder, PlominoAccessControl, PlominoDesignManager, Plom
         scripts.title='scripts'
         self._setObject('scripts', scripts)
 
-#    def __bobo_traverse__(self, request, name):
-#        # TODO: replace with IPublishTraverse or/and ITraverse
-#        import pdb;pdb.set_trace()
-#        doc = self.getDocument(name)
-#        if doc:
-#            return doc
-#        return BaseObject.__bobo_traverse__(self, request, name)
+    def __bobo_traverse__(self, request, name):
+        # TODO: replace with IPublishTraverse or/and ITraverse
+        doc = self.getDocument(name)
+        if doc:
+            return doc
+        return BaseObject.__bobo_traverse__(self, request, name)
+
+    # def traverse(self, name, furtherPath):
+    #     """ used for path traversal, i.e. in zope page templates """
+    #     doc = self.getDocument(name)
+    #     if not doc:
+    #         raise TraversalError(self, name)
+    #     if not furtherPath:
+    #         return doc
+    #     else:
+    #         return getattr(doc, furtherPath)
     
+    # def publishTraverse(self, request, name):
+    #     """ used for traversal via publisher, i.e. when using as a url """
+
+    #     doc = self.getDocument(name)
+    #     if not doc:
+    #         import pdb; pdb.set_trace()
+    #         adapter = queryMultiAdapter((self, request), IPublishTraverse)
+    #         return adapter.publishTraverse(self, name)
+    #     else:
+    #         return doc
+
     def allowedContentTypes(self):
         # Make sure PlominoDocument is hidden in Plone "Add..." menu
         # as getNotAddableTypes is not used anymore in Plone 4
@@ -390,7 +405,7 @@ class PlominoDatabase(ATFolder, PlominoAccessControl, PlominoDesignManager, Plom
         record = Record()
         record.attrs['docid'] = docid
         self.documents().add(record)
-        return PlominoDocument(record).__of__(self)
+        return PlominoDocument(record, self).__of__(self)
 
     security.declarePublic('getDocument')
     def getDocument(self, docid):
@@ -405,9 +420,10 @@ class PlominoDatabase(ATFolder, PlominoAccessControl, PlominoDesignManager, Plom
                 record = self.documents().get(docid)
             except KeyError:
                 return None
-        elif "/" in docid:
-            # let's assume it is a path
-            docid = docid.split("/")[-1]
+        else:
+            if "/" in docid:
+                # let's assume it is a path
+                docid = docid.split("/")[-1]
             results = list(self.documents().query(Eq('docid', docid)))
             if not results:
                 return None
@@ -416,7 +432,7 @@ class PlominoDatabase(ATFolder, PlominoAccessControl, PlominoDesignManager, Plom
             else:
                 raise PlominoConstraintException, "Multiple (%s) records for docid: %s"%(len(results), docid)
 
-        return PlominoDocument(record).__of__(self)
+        return PlominoDocument(record, self).__of__(self)
 
 
     security.declareProtected(READ_PERMISSION, 'getParentDatabase')

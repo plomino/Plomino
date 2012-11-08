@@ -209,28 +209,14 @@ def initialize(context):
     import PlominoField
     import PlominoView
     import PlominoColumn
-    import PlominoDocument
     import PlominoHidewhen
     import PlominoAgent
     import PlominoCache
-    from PlominoDocument import addPlominoDocument
 
     # Initialize portal content
     all_content_types, all_constructors, all_ftis = process_types(
         listTypes(PROJECTNAME),
         PROJECTNAME)
-
-    all_content_types += (PlominoDocument.PlominoDocument,)
-    all_constructors += (addPlominoDocument,)
-    all_ftis += ({
-                'meta_type': 'PlominoDocument',
-                'allowed_content_types':[],
-                'allow_discussion': 0,
-                'immediate_view':'checkBeforeOpenDocument',
-                'global_allow':0,
-                'filter_content_types':1,
-                },)
-#EXAMPLE: {'factory': 'addPlominoAction', 'product': 'CMFPlomino', 'immediate_view': 'base_edit', 'content_icon': 'document_icon.gif', 'global_allow': True, 'filter_content_types': False, 'actions': ({'action': <Products.CMFCore.Expression.Expression object at 0x6bee8c0>, 'title': 'View', 'id': 'view', 'permissions': ('View',)}, {'action': <Products.CMFCore.Expression.Expression object at 0x6bee758>, 'title': 'Edit', 'id': 'edit', 'condition': <Products.CMFCore.Expression.Expression object at 0x6e247d0>, 'permissions': ('Modify portal content',)}, {'action': <Products.CMFCore.Expression.Expression object at 0x6d9dd70>, 'title': 'Properties', 'id': 'metadata', 'permissions': ('Modify portal content',)}), 'fti_meta_type': 'Factory-based Type Information with dynamic views', 'default_view': 'base_view', 'meta_type': 'PlominoAction', 'allow_discussion': False, 'view_methods': ('base_view',), 'aliases': {'sharing': 'folder_localrole_form', 'gethtml': '', '(Default)': '(dynamic view)', 'edit': 'base_edit', 'mkdir': '', 'properties': 'base_metadata', 'view': '(selected layout)'}, 'id': 'PlominoAction', 'description': '\n    '}
 
     cmfutils.ContentInit(
         PROJECTNAME + ' Content',

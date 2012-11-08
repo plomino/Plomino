@@ -29,9 +29,6 @@
  <assignment name="plomino-design-portlet" category="content_type"
     key="PlominoAgent" manager="plone.leftcolumn"
     type="plomino.designportlet"/>
- <assignment name="plomino-design-portlet" category="content_type"
-    key="PlominoDocument" manager="plone.leftcolumn"
-    type="plomino.designportlet"/>
     
   <portlet
     addview="plomino.elementportlet"

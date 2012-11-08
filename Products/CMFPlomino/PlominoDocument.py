@@ -93,12 +93,19 @@ class PlominoDocument(Acquisition.Implicit):
     meta_type = "PlominoDocument"
 
     security.declarePublic('__init__')
-    def __init__(self, record):
+    def __init__(self, record, db):
         """ Initialization
         """
         self.record = record
         self.id = record.intid
         self.items = record.attrs
+        self._parent = db.aq_inner
+
+    def getParentDatabase(self):
+        return self._parent
+
+    def getParentNode(self):
+        return self._parent
 
     security.declarePublic('checkBeforeOpenDocument')
     def checkBeforeOpenDocument(self):
@@ -109,9 +116,16 @@ class PlominoDocument(Acquisition.Implicit):
             if user hasn't permission.
         """
         if self.isReader():
-            return self.OpenDocument()
+            skin=self.getParentDatabase().portal_skins.cmfplomino_templates
+            pt = getattr(skin, 'OpenDocument').__of__(self)
+            pt.REQUEST = self.REQUEST
+            
+            return pt()
         else:
             raise Unauthorized, "You cannot read this content"
+
+    def getPhysicalPath(self):
+        return self.getParentDatabase().getPhysicalPath() + (self.getItem('docid'), )
 
     def doc_path(self):
         return self.getPhysicalPath()
@@ -239,7 +253,7 @@ class PlominoDocument(Acquisition.Implicit):
             if datatables_format_str:
                 datatables_format = True
         if not item:
-            return json.dumps(self.items.data)
+            return json.dumps(dict(self.items.items()))
 
         if not formid:
             form = self.getForm()
@@ -545,6 +559,10 @@ class PlominoDocument(Acquisition.Implicit):
     def __getattr__(self, name):
         """Overloads getattr to return item values as attibutes
         """
+        logger.error(name)
+        #if name in ["getCurrentSkinName", "__bobo_traverse__"]:
+        #    import pdb; pdb.set_trace()
+        #    self.__parent__ = self.__parent__.aq_inner
         if self.items.has_key(name):
             return self.items[name]
         else:
