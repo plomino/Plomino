@@ -264,8 +264,9 @@ class PlominoView(ATFolder):
         return self.id
 
     def __bobo_traverse__(self, request, name):
-        if self.documents.has_key(name):
-            return aq_inner(getattr(self.documents, name)).__of__(self)
+        doc = self.getParentDatabase().getDocument(name)
+        if doc:
+            return aq_inner(doc).__of__(self)
         return BaseObject.__bobo_traverse__(self, request, name)
 
     security.declarePublic('getAllDocuments')

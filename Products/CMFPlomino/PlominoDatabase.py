@@ -14,6 +14,7 @@ __docformat__ = 'plaintext'
 
 # Standard
 import Globals
+import string
 
 # Third-party
 from souper.soup import get_soup, Record
@@ -21,6 +22,7 @@ from repoze.catalog.query import Eq
 
 # Zope
 from AccessControl import ClassSecurityInfo
+from Acquisition import aq_inner
 from OFS.Folder import *
 from OFS.ObjectManager import ObjectManager
 from zope.annotation.interfaces import IAnnotations
