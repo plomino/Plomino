@@ -133,6 +133,11 @@ class PlominoDocument(Acquisition.Implicit):
         else:
             raise Unauthorized, "You cannot read this content"
 
+    def index_html(self):
+        """ return the default view
+        """
+        return self.checkBeforeOpenDocument()
+
     def getPhysicalPath(self):
         return self.getParentDatabase().getPhysicalPath() + (self.getItem('docid'), )
 

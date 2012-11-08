@@ -14,7 +14,6 @@ __docformat__ = 'plaintext'
 
 # Standard
 import Globals
-import string
 
 # Third-party
 from souper.soup import get_soup, Record
@@ -22,7 +21,6 @@ from repoze.catalog.query import Eq
 
 # Zope
 from AccessControl import ClassSecurityInfo
-from Acquisition import aq_inner
 from OFS.Folder import *
 from OFS.ObjectManager import ObjectManager
 from zope.annotation.interfaces import IAnnotations
@@ -32,8 +30,6 @@ from zope import event
 from zope.interface import directlyProvides
 from zope.interface import implements
 from zope.component import provideUtility
-from zope.publisher.interfaces import IPublishTraverse, NotFound
-from zope.traversing.interfaces import ITraversable, TraversalError
 import interfaces
 
 # CMF
@@ -278,27 +274,6 @@ class PlominoDatabase(ATFolder, PlominoAccessControl, PlominoDesignManager, Plom
         if doc:
             return doc
         return BaseObject.__bobo_traverse__(self, request, name)
-
-    # def traverse(self, name, furtherPath):
-    #     """ used for path traversal, i.e. in zope page templates """
-    #     doc = self.getDocument(name)
-    #     if not doc:
-    #         raise TraversalError(self, name)
-    #     if not furtherPath:
-    #         return doc
-    #     else:
-    #         return getattr(doc, furtherPath)
-    
-    # def publishTraverse(self, request, name):
-    #     """ used for traversal via publisher, i.e. when using as a url """
-
-    #     doc = self.getDocument(name)
-    #     if not doc:
-    #         import pdb; pdb.set_trace()
-    #         adapter = queryMultiAdapter((self, request), IPublishTraverse)
-    #         return adapter.publishTraverse(self, name)
-    #     else:
-    #         return doc
 
     def allowedContentTypes(self):
         # Make sure PlominoDocument is hidden in Plone "Add..." menu
