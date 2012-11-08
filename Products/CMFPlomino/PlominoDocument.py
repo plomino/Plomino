@@ -92,6 +92,8 @@ class PlominoDocument(Acquisition.Implicit):
     portal_type = "PlominoDocument"
     meta_type = "PlominoDocument"
 
+    __allow_access_to_unprotected_subobjects__ = 1
+
     security.declarePublic('__init__')
     def __init__(self, record, db):
         """ Initialization
@@ -100,6 +102,14 @@ class PlominoDocument(Acquisition.Implicit):
         self.id = record.intid
         self.items = record.attrs
         self._parent = db.aq_inner
+
+    security.declarePublic('__getattr__')
+    def __getattr__(self, name):
+        """Overloads getattr to return item values as attibutes
+        """
+        if self.items.has_key(name):
+            return self.items[name]
+        raise AttributeError, name
 
     def getParentDatabase(self):
         return self._parent
@@ -119,7 +129,6 @@ class PlominoDocument(Acquisition.Implicit):
             skin=self.getParentDatabase().portal_skins.cmfplomino_templates
             pt = getattr(skin, 'OpenDocument').__of__(self)
             pt.REQUEST = self.REQUEST
-            
             return pt()
         else:
             raise Unauthorized, "You cannot read this content"
@@ -367,7 +376,7 @@ class PlominoDocument(Acquisition.Implicit):
         if not redirect:
             redirect = self.getItem("plominoredirecturl")
         if not redirect:
-            redirect = self.absolute_url()
+            redirect = self.doc_url()
         REQUEST.RESPONSE.redirect(redirect)
 
 
@@ -554,26 +563,6 @@ class PlominoDocument(Acquisition.Implicit):
 
     def _getCatalogTool(self):
         return self.getParentDatabase().getIndex()
-
-    security.declarePublic('__getattr__')
-    def __getattr__(self, name):
-        """Overloads getattr to return item values as attibutes
-        """
-        logger.error(name)
-        #if name in ["getCurrentSkinName", "__bobo_traverse__"]:
-        #    import pdb; pdb.set_trace()
-        #    self.__parent__ = self.__parent__.aq_inner
-        if self.items.has_key(name):
-            return self.items[name]
-        else:
-            if name not in ['__parent__', '__conform__', '__annotations__',
-                           '_v_at_subobjects', '__getnewargs__', 'aq_inner', 'im_self']:
-                try:
-                    return getattr(self.getParentDatabase(), name)
-                except Exception, e:
-                    raise AttributeError, name
-            else:
-                raise AttributeError, name
 
     security.declareProtected(READ_PERMISSION, 'isSelectedInView')
     def isSelectedInView(self,viewname):
@@ -884,7 +873,7 @@ class TemporaryDocument(PlominoDocument):
     def __init__(self, parent, form, REQUEST, real_doc=None):
         self._parent=parent
         if real_doc is not None:
-            self.items=real_doc.items.copy()
+            self.items=deepcopy(real_doc.items)
             self.real_id=real_doc.id
         else:
             self.items={}
