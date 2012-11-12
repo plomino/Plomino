@@ -590,12 +590,11 @@ class PlominoDesignManager(Persistent):
     security.declarePublic('runFormulaScript')
     @plomino_profiler('formulas')
     def runFormulaScript(self, script_id, context, formula_getter, with_args=False, *args):
+        compilation_errors = []
+        ps = self.getFormulaScript(script_id)
+        if not ps:
+            ps = self.compileFormulaScript(script_id, formula_getter(), with_args)
         try:
-            ps = self.getFormulaScript(script_id)
-            if not ps:
-                ps = self.compileFormulaScript(script_id, formula_getter(), with_args)
-                if self.debugMode and hasattr(ps, 'errors') and ps.errors:
-                    logger.info('ps.errors : ' + "\n".join(ps.errors))
             contextual_ps=ps.__of__(context)
             result = None
             if with_args:
@@ -606,8 +605,10 @@ class PlominoDesignManager(Persistent):
                 logger.info('python errors at '+str(context)+' in '+script_id+': ' + str(contextual_ps.errors))
             return result
         except Exception, e:
+            if ps and getattr(ps, 'errors', None):
+                compilation_errors = ps.errors
             logger.info("Plomino Script Exception: %s, %s"%(`formula_getter`, script_id), exc_info=True)
-            raise PlominoScriptException(context, e, formula_getter, script_id)
+            raise PlominoScriptException(context, e, formula_getter, script_id, compilation_errors)
 
     security.declarePrivate('traceRenderingErr')
     def traceRenderingErr(self, e, context):

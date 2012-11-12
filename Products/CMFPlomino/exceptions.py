@@ -9,13 +9,14 @@ logger = logging.getLogger('Plomino')
 
 class PlominoScriptException(Exception):
 
-    def __init__(self, context, exception_obj, formula, script_id):
+    def __init__(self, context, exception_obj, formula, script_id, compilation_errors):
         """
         """
         self.context = context
         self.context_url = context.absolute_url_path()
         self.formula = formula
         self.script_id = script_id
+        self.compilation_errors = compilation_errors
         self.message = asUnicode(self.traceErr())
 
     def __str__(self):
@@ -34,6 +35,7 @@ class PlominoScriptException(Exception):
                     and i < len(formatted_lines) - 1):
                 msg.append(line[line.index(',') + 1:])
         msg.append(formatted_lines[-1])
+        msg = msg + list(self.compilation_errors)
         msg.append("Context is <%s> %s" % (
             self.context.__class__.__name__,
             self.context_url))
