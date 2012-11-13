@@ -22,6 +22,15 @@
             jq('#plomino_form :input').change(refreshHidewhen);
         });
     </script>
+    <tal:block tal:condition="python:here.hasDateTimeField()">
+        <script type="text/javascript" charset="iso-8859-1"
+            tal:attributes="src string:${here/portal_url}/jscalendar/calendar_stripped.js">
+        </script>
+        <script type="text/javascript" charset="iso-8859-1"
+            tal:attributes="src string:${here/portal_url}/jscalendar/calendar-en.js">
+      </script>
+      <link rel="stylesheet" type="text/css" media="all" tal:attributes="href string:${here/portal_url}/jscalendar/calendar-system.css" />
+    </tal:block>
 </head>
 <body class="OpenBareForm">
 <div id="content">
