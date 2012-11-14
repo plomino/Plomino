@@ -55,6 +55,44 @@ PLOMINO_IMPORT_SEPARATORS = {'semicolon (;)' : ';',
                              'end of line' : '\n',
                              'dash (-)' : '-'}
 
+# From http://hg.tryton.org/trytond/file/7fefd5066a68/trytond/protocols/xmlrpc.py
+# vvv FROM HERE
+from decimal import Decimal
+
+def dump_struct(self, value, write, escape=xmlrpclib.escape):
+    converted_value = {}
+    for k, v in value.items():
+        if type(k) in (int, long):
+            k = str(int(k))
+        elif type(k) == float:
+            k = repr(k)
+        converted_value[k] = v
+    return self.dump_struct(converted_value, write, escape=escape)
+
+def dump_decimal(self, value, write):
+    value = {'__class__': 'Decimal',
+        'decimal': str(value),
+        }
+    self.dump_struct(value, write)
+
+xmlrpclib.Marshaller.dispatch[Decimal] = dump_decimal
+
+def end_struct(self, data):
+    mark = self._marks.pop()
+    # map structs to Python dictionaries
+    dct = {}
+    items = self._stack[mark:]
+    for i in range(0, len(items), 2):
+        dct[xmlrpclib._stringify(items[i])] = items[i + 1]
+    if '__class__' in dct:
+        if dct['__class__'] == 'Decimal':
+            dct = Decimal(dct['decimal'])
+    self._stack[mark:] = [dct]
+    self._value = 0
+
+xmlrpclib.Unmarshaller.dispatch['struct'] = end_struct
+# ^^^ TO HERE 
+
 class PlominoReplicationManager(Persistent):
     """Plomino replication push/pull features
     """
