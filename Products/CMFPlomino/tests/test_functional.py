@@ -32,14 +32,6 @@ class IntegrationTest(unittest.TestCase):
         # Selenium requires to be on an HTML page for this to work
         sel.add_cookie({'name':'__ac', 'value':self.get_auth_cookie(username, password)})
 
-    def waitForElement(self, sel, selector, timeout="30000"):
-        """Continue checking for the element matching the provided CSS
-        selector."""
-        self.wait_for_condition("""css="%s" """ % selector, timeout)
-
-    def wait(self,sel, timeout="30000"):
-        sel.wait_for_page_to_load(timeout)
-
     def test_hidewhen(self):
         # Import our sample database
         mydb = self.layer['portal'].mydb
@@ -67,9 +59,7 @@ class IntegrationTest(unittest.TestCase):
         self.authenticate(sel)
         selenium_layers.open(sel, mydb.with_overlay.absolute_url())
         selenium_layers.click(sel, "a#a_datagrid_addrow")
-        self.wait(sel)
         sel.switch_to_frame(0)
-        self.waitForElement("input[name='a']")
         selenium_layers.type(sel, 'a', '123')
         selenium_layers.click(sel, "//option[@value='A']")
         # Submitting now should warn us that 'c' has no value
@@ -92,9 +82,7 @@ class IntegrationTest(unittest.TestCase):
         sel.find_elements_by_css_selector(
             "table#a_datagrid_datagrid tbody tr")[0].click()
         sel.find_element_by_css_selector('#a_datagrid_editrow').click()
-        self.wait(sel)
         sel.switch_to_frame(0)
-        self.waitForElement("input[name='a']")
         field_a = sel.find_element_by_xpath("//input[@name='a']")
         field_value = sel.execute_script(
             "return jQuery(arguments[0]).attr('value')", field_a)
