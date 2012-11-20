@@ -306,7 +306,9 @@
                         <option tal:attributes="value a/id;"
                             tal:content="python:a.id+' (Agent)'">value</option>
                     </tal:block>
-                    <tal:block tal:repeat="v python:['resources/'+i for i in here.resources.objectIds()]">
+                    <tal:block tal:define="resources python:['resources/'+i for i in here.resources.objectIds()];                         
+                    dummy python:resources.sort()" 
+                    tal:repeat="v python:resources">
                         <option tal:attributes="value v;"
                             tal:content="python:v+' (Resource)'">value</option>
                     </tal:block>
