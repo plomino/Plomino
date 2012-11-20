@@ -214,7 +214,7 @@
             <tr><td></td>
                 <td i18n:translate="">or elements</td>
                 <td>
-                <select name="designelements" multiple="true" lines="6">
+                <select name="designelements" multiple="true" size="10">
                     <tal:block tal:condition="sourceURL">
                         <option value="">== Forms ==</option>
                         <tal:block tal:repeat="f python:here.getRemoteForms(sourceURL, username, password)">
@@ -293,7 +293,7 @@
             <tr>
                 <td colspan="2" i18n:translate="">or elements</td>
                 <td>
-                <select name="designelements" multiple="true" lines="6">
+                <select name="designelements" multiple="true" size="10">
                     <tal:block tal:repeat="f python:here.getForms()">
                         <option tal:attributes="value f/id;"
                             tal:content="python:f.id+' (Form)'">value</option>
