@@ -47,14 +47,14 @@ class IDoclinkField(IBaseField):
                     required=False)
 
     documentslistformula = Text(title=u'Documents list formula',
-                      description=u'Formula to compute the linkable documents list (must return a list of label|docid_or_path)',
+                      description=u"Formula to compute the linkable documents list (must return a list of 'label|docid_or_path')",
                       required=False)
     separator = TextLine(title=u'Separator',
-                      description=u'Only apply if multi-valued',
+                      description=u'Only apply if multiple values will be displayed',
                       required=False)
     dynamictableparam = Text(
         title=u"Dynamic Table Parameters",
-        description=u"Change these options to customize the dynamic table.",
+        description=u"Change these options to customize the dynamic table",
         default=u"""
 'bPaginate': true,
 'bLengthChange': true,

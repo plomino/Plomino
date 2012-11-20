@@ -31,7 +31,7 @@ class INameField(IBaseField):
                                                            ("Multi valued", "MULTI")
                                                            ]),
                     title=u'Type',
-                    description=u'Single or multi valued name field',
+                    description=u'Single or multi-valued name field',
                     default="SINGLE",
                     required=True)
     selector = Choice(vocabulary=SimpleVocabulary.fromItems([("Select in a list", "LIST"),
@@ -39,14 +39,14 @@ class INameField(IBaseField):
                                                            ("Search", "SEARCH")
                                                            ]),
                     title=u'Selection mode',
-                    description=u'How the name is selected.',
+                    description=u'How the name is selected',
                     default="LIST",
                     required=True)
     restricttogroup = TextLine(title=u'Restrict to group',
-                      description=u'The field will only display member of the following group. Empty = no group restriction.',
+                      description=u'The field will only display members of the specified group (empty = no group restriction).',
                       required=False)
     separator = TextLine(title=u'Separator',
-                      description=u'Only apply if multi-valued',
+                      description=u'Only apply if multiple values will be dislayed',
                       required=False)
 
 class NameField(BaseField):

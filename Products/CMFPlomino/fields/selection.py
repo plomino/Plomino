@@ -41,7 +41,7 @@ class ISelectionField(IBaseField):
         required=True)
     selectionlist = List(
         title=u'Selection list',
-        description=u'List of values to select, one per line. Use | to separate label and value',
+        description=u"List of values to select, one per line, formatted as 'label|value'",
         required=False,
         default=[],
         value_type=TextLine(title=u'Entry'))
@@ -51,12 +51,12 @@ class ISelectionField(IBaseField):
         required=False)
     separator = TextLine(
         title=u'Separator',
-        description=u'Only apply if multi-valued',
+        description=u'Only apply if multiple values will be displayed',
         required=False)
 
     dynamictableparam = Text(
         title=u"Dynamic Table Parameters",
-        description=u"Change these options to customize the dynamic table.",
+        description=u"Change these options to customize the dynamic table",
         default=u"""
 'bPaginate': true,
 'bLengthChange': true,
