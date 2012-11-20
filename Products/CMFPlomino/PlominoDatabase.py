@@ -326,7 +326,7 @@ class PlominoDatabase(ATFolder, PlominoAccessControl, PlominoDesignManager, Plom
             return obj
 
     security.declarePublic('getForms')
-    def getForms(self, sortbyid=False):
+    def getForms(self, sortbyid=True):
         """return the database forms list
         """
         form_list = self.objectValues(spec='PlominoForm')
@@ -346,7 +346,7 @@ class PlominoDatabase(ATFolder, PlominoAccessControl, PlominoDesignManager, Plom
             return obj
 
     security.declarePublic('getViews')
-    def getViews(self, sortbyid=False):
+    def getViews(self, sortbyid=True):
         """return the database views list
         """
         view_list = self.objectValues(spec='PlominoView')
