@@ -37,8 +37,8 @@ class IntegrationTest(unittest.TestCase):
         selector."""
         self.wait_for_condition("""css="%s" """ % selector, timeout)
 
-    def wait(self, timeout="30000"):
-        self.selenium.wait_for_page_to_load(timeout)
+    def wait(self,sel, timeout="30000"):
+        sel.wait_for_page_to_load(timeout)
 
     def test_hidewhen(self):
         # Import our sample database
@@ -67,7 +67,7 @@ class IntegrationTest(unittest.TestCase):
         self.authenticate(sel)
         selenium_layers.open(sel, mydb.with_overlay.absolute_url())
         selenium_layers.click(sel, "a#a_datagrid_addrow")
-        self.wait()
+        self.wait(sel)
         sel.switch_to_frame(0)
         self.waitForElement("input[name='a']")
         selenium_layers.type(sel, 'a', '123')
@@ -92,7 +92,7 @@ class IntegrationTest(unittest.TestCase):
         sel.find_elements_by_css_selector(
             "table#a_datagrid_datagrid tbody tr")[0].click()
         sel.find_element_by_css_selector('#a_datagrid_editrow').click()
-        self.wait()
+        self.wait(sel)
         sel.switch_to_frame(0)
         self.waitForElement("input[name='a']")
         field_a = sel.find_element_by_xpath("//input[@name='a']")
