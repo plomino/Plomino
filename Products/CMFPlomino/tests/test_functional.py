@@ -106,7 +106,6 @@ class IntegrationTest(unittest.TestCase):
         selenium_layers.click(sel, "//option[@value='A']")
         # Submitting now should warn us that 'c' has no value
         sel.find_element_by_xpath("//input[@name='plomino_save']").click()
-        import pdb; pdb.set_trace( )
         sel.find_element_by_id('plominoValidationPopup')
         sel.find_element_by_xpath("//strong[contains(text(), 'c is mandatory')]")
         self.close_error_popup()
