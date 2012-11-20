@@ -46,7 +46,7 @@ class PlominoScriptException(Exception):
             r = re.compile('#Plomino import (.+)[\r\n]')
             for i in r.findall(formula):
                 scriptname = i.strip()
-                script_code = self.context.resources._getOb(scriptname, None)
+                script_code = self.context.getParentDatabase().resources._getOb(scriptname, None)
                 if script_code:
                     try:
                         script_code = script_code.read()

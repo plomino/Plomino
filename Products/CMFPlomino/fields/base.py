@@ -95,9 +95,9 @@ class BaseField(object):
         if temporary_doc_in_overlay:
             request = self.context.REQUEST
         if mode=="EDITABLE":
-            if doc is None or temporary_doc_in_overlay:
+            if creation or temporary_doc_in_overlay:
                 # The aforementioned ugliness ends here
-                if creation and self.context.Formula():
+                if self.context.Formula():
                     fieldValue = form.computeFieldValue(fieldName, target)
                 elif request is None:
                     fieldValue = ""
