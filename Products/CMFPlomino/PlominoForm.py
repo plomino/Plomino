@@ -676,7 +676,7 @@ class PlominoForm(ATFolder):
             try:
                 fieldvalue = db.runFormulaScript("field_"+self.id+"_"+fieldname+"_formula", target, field.Formula, True, self)
             except PlominoScriptException, e:
-    +           logger.warning('%s field formula failed' % fieldname, exc_info=True)
+                logger.warning('%s field formula failed' % fieldname, exc_info=True)
                 if report:
                     e.reportError('%s field formula failed' % fieldname)
 
