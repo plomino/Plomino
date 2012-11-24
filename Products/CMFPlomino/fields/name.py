@@ -32,30 +32,33 @@ from base import IBaseField, BaseField, BaseForm
 from dictionaryproperty import DictionaryProperty
 
 class INameField(IBaseField):
+    """ Name field schema
     """
-    Name field schema
-    """
-    type = Choice(vocabulary=SimpleVocabulary.fromItems([("Single valued", "SINGLE"),
-                                                           ("Multi valued", "MULTI")
-                                                           ]),
-                    title=u'Type',
-                    description=u'Single or multi-valued name field',
-                    default="SINGLE",
-                    required=True)
-    selector = Choice(vocabulary=SimpleVocabulary.fromItems([("Select in a list", "LIST"),
-                                                           ("Fill a field", "FIELD"),
-                                                           ("Search", "SEARCH")
-                                                           ]),
-                    title=u'Selection mode',
-                    description=u'How the name is selected',
-                    default="LIST",
-                    required=True)
-    restricttogroup = TextLine(title=u'Restrict to group',
-                      description=u'The field will only display members of the specified group (empty = no group restriction).',
-                      required=False)
-    separator = TextLine(title=u'Separator',
-                      description=u'Only apply if multiple values will be dislayed',
-                      required=False)
+    type = Choice(
+            vocabulary=SimpleVocabulary.fromItems(
+                [("Single valued", "SINGLE"),
+                    ("Multi valued", "MULTI")]),
+                title=u'Type',
+                description=u'Single or multi-valued name field',
+                default="SINGLE",
+                required=True)
+    selector = Choice(
+            vocabulary=SimpleVocabulary.fromItems(
+                [("Select in a list", "LIST"),
+                    ("Fill a field", "FIELD"),
+                    ("Search", "SEARCH")]),
+                title=u'Selection mode',
+                description=u'How the name is selected',
+                default="LIST",
+                required=True)
+    restricttogroup = TextLine(
+                title=u'Restrict to group',
+                description=u'The field will only display members of the specified group (empty = no group restriction)',
+                required=False)
+    separator = TextLine(
+                title=u'Separator',
+                description=u'Only apply if multiple values will be displayed',
+                required=False)
 
 class NameField(BaseField):
     """
