@@ -179,7 +179,7 @@ def htmlencode(s):
     if type(s) != unicode:
         from Products.CMFPlone.utils import safe_unicode
         s = safe_unicode(s)
-        # Doesn't work unless utils becomes a persistent tool.
+        # The following doesn't work unless utils becomes a persistent tool:
         # translation_service = getToolByName(context, 'translation_service')
         # s = translation_service.asunicodetype(s)
     for c in s:
