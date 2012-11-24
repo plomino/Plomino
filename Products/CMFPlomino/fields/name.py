@@ -61,69 +61,70 @@ class INameField(IBaseField):
                 required=False)
 
 class NameField(BaseField):
-    """
+    """ Field representing a Plomino user's name.
     """
     implements(INameField)
 
-    def getSelectionList(self, doc):
-        """return the Plone users list, format: fullname|userid
+    def _getNamesIds(self)
+        """ Return Plone members as [(name, userid), ...]
+
+        Honor the restricttogroup field and the portal's DoNotListUsers
+        property.
         """
-        if self.restricttogroup and self.restricttogroup != '':
+        if self.restricttogroup:
             group = self.context.portal_groups.getGroupById(self.restricttogroup)
-            if group is not None:
-                all = [(m.getProperty('id'), m.getProperty("fullname")) for m in group.getGroupMembers()]
+            if group:
+                names_ids = [(m.getProperty("fullname"), m.getProperty('id')) for m in group.getGroupMembers()]
             else:
-                all = []
+                names_ids = []
         elif not(self.context.getParentDatabase().getDoNotListUsers()):
-            all = [(m.getId(), m.getProperty("fullname")) for m in self.context.getPortalMembers()]
+            names_ids = [(m.getProperty("fullname"), m.getId()) for m in self.context.getPortalMembers()]
         else:
             return None
+
+        names_ids.sort(key=lambda (username, userid): username.lower())
+        return names_ids
+
+    def getSelectionList(self, doc=None):
+        """ Fullname/ID list in selectionlist format: fullname|userid
+        """
+        names_ids = self._getNamesIds()
         s=['|']
-        for m in all:
-            if m[1]=='':
-                s.append(m[0]+'|'+m[0])
+        for username, userid in names_ids:
+            if not username:
+                s.append(userid+'|'+userid)
             else:
-                s.append(m[1]+'|'+m[0])
-        s.sort(key=lambda n: n.split('|')[1].lower())
+                s.append(username+'|'+userid)
         return s
 
     def getFullname(self, userid):
-        """ return member fullname if available
+        """ Return member fullname if available
         """
-        if userid is None or userid == "":
+        if not userid:
             return ''
-        user=getToolByName(self.context, 'portal_membership').getMemberById(userid)
-        if not(user is None):
-            fullname=user.getProperty('fullname')
-            if fullname=='':
-                return userid
-            else:
+
+        mt = getToolByName(self.context, 'portal_membership')
+        user = mt.getMemberById(userid)
+        if user:
+            fullname = user.getProperty('fullname')
+            if fullname:
                 return fullname
+            else:
+                return userid
         else:
+            logger.debug("Looking up full name for nonexistent member.")
             return userid
 
     def getFilteredNames(self, filter):
-        """Return a JSON list of users, filtered by id or name.
+        """ Return a JSON list of users, filtered by id or name.
         """
+        names_ids = self._getNamesIds()
         if filter:
-            if self.restricttogroup and self.restricttogroup != '':
-                group = self.context.portal_groups.getGroupById(self.restricttogroup)
-                if group is not None:
-                    all = [(m.getProperty('id'), m.getProperty("fullname")) for m in group.getGroupMembers()]
-                else:
-                    all = []
-            elif not(self.context.getParentDatabase().getDoNotListUsers()):
-                all = [(m.getId(), m.getProperty("fullname")) for m in self.context.getPortalMembers()]
-            else:
-                all = []
-        else:
-            all = []
+            names_ids = [
+                    (username, userid) for (username, userid) in names_ids
+                    if filter in username or filter in userid]
 
-        result  = [l for l in all if filter in l[0] or filter in l[1]]
-        result.sort()
-
-        return json.dumps(result)
-
+        return json.dumps(names_ids)
 
 for f in getFields(INameField).values():
     setattr(NameField, f.getName(), DictionaryProperty(f, 'parameters'))
