@@ -10,18 +10,26 @@
 __author__ = """Eric BREHAULT <eric.brehault@makina-corpus.com>"""
 __docformat__ = 'plaintext'
 
+# stdlib
+import logging
+logger = logging.getLogger('Plomino')
+
+# Zope
 from zope.formlib import form
 from zope.interface import implements
 from zope.schema import getFields
 from zope.schema import TextLine, Text, List, Choice
 from zope.schema.vocabulary import SimpleVocabulary
-from dictionaryproperty import DictionaryProperty
 
+# 3rd party
+from jsonutil import jsonutil as json
+
+# CMF
 from Products.CMFCore.utils import getToolByName
 
+# Plomino
 from base import IBaseField, BaseField, BaseForm
-
-from jsonutil import jsonutil as json
+from dictionaryproperty import DictionaryProperty
 
 class INameField(IBaseField):
     """
