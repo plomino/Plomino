@@ -65,7 +65,7 @@ class NameField(BaseField):
     """
     implements(INameField)
 
-    def _getNamesIds(self)
+    def _getNamesIds(self):
         """ Return Plone members as [(name, userid), ...]
 
         Honor the restricttogroup field and the portal's DoNotListUsers
