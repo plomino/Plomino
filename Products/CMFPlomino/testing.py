@@ -36,12 +36,12 @@ class Plomino(PloneSandboxLayer):
         z2.uninstallProduct(app, 'Products.CMFPlomino')
 
 PLOMINO_FIXTURE = Plomino()
-PLOMINO_FUNCTIONAL_TESTING = FunctionalTesting(bases=(PLOMINO_FIXTURE,), name="Plomino:Functional")
+# PLOMINO_FUNCTIONAL_TESTING = FunctionalTesting(bases=(PLOMINO_FIXTURE,), name="Plomino:Functional")
 
-class PlominoSelenium(PloneSandboxLayer):
+# class PlominoSelenium(PloneSandboxLayer):
 
-    defaultBases = (selenium_layers.SELENIUM_FIXTURE, PLOMINO_FIXTURE)
+#     defaultBases = (selenium_layers.SELENIUM_FIXTURE, PLOMINO_FIXTURE)
 
 
-PLOMINO_SELENIUM_FIXTURE = PlominoSelenium()
-PLOMINO_SELENIUM_TESTING = FunctionalTesting(bases=(PLOMINO_SELENIUM_FIXTURE,), name="Plomino:Selenium")
+# PLOMINO_SELENIUM_FIXTURE = PlominoSelenium()
+# PLOMINO_SELENIUM_TESTING = FunctionalTesting(bases=(PLOMINO_SELENIUM_FIXTURE,), name="Plomino:Selenium")
