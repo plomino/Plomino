@@ -306,7 +306,7 @@ class PlominoForm(ATFolder):
         """get fields
         """
         fieldlist = self.objectValues(spec='PlominoField')
-        result = [f for f in fieldlist]
+        result = [f for f in fieldlist] # Convert from LazyMap to list
         if applyhidewhen:
             doc = doc or TemporaryDocument(self.getParentDatabase(), self, self.REQUEST)
             layout = self.applyHideWhen(doc)
@@ -966,7 +966,7 @@ class PlominoForm(ATFolder):
         # if REQUEST exists, test the current command
         if hasattr(self, 'REQUEST'):
             command=self.REQUEST.URL.split('/')[-1].lower()
-            return command in ['openform', 'edit']
+            return command in ['openform', 'editdocument', 'edit', 'savedocument']
         else:
             return False
 
