@@ -32,7 +32,6 @@ from jsonutil import jsonutil as json
 from Products.CMFCore.utils import getToolByName
 
 from exceptions import PlominoScriptException
-import PlominoDocument
 from PlominoDocument import TemporaryDocument
 
 import logging
@@ -252,6 +251,17 @@ class PlominoForm(ATFolder):
 
     schema = PlominoForm_schema
 
+    def getForm(self, formname=None):
+        """ In case we're being called via acquisition.
+        """
+        if formname:
+            return self.getParentDatabase().getForm(self, formname)
+
+        form = self
+        while getattr(form, 'meta_type', '') != 'PlominoForm':
+            form = obj.aq_parent
+        return form
+
     security.declareProtected(CREATE_PERMISSION, 'createDocument')
     def createDocument(self,REQUEST):
         """create a document using the forms submitted content
@@ -303,9 +313,10 @@ class PlominoForm(ATFolder):
 
     security.declarePublic('getFormFields')
     def getFormFields(self, includesubforms=False, doc=None, applyhidewhen=False):
-        """get fields
+        """ Get fields
         """
-        fieldlist = self.objectValues(spec='PlominoField')
+        form = self.getForm()
+        fieldlist = form.objectValues(spec='PlominoField')
         result = [f for f in fieldlist]
         if applyhidewhen:
             doc = doc or TemporaryDocument(self.getParentDatabase(), self, self.REQUEST)
@@ -651,7 +662,9 @@ class PlominoForm(ATFolder):
     def getFormField(self, fieldname, includesubforms=True):
         """return the field
         """
-        field = getattr(self, fieldname, None)
+        form = self.getForm()
+
+        field = getattr(form, fieldname, None)
         # if field is not in main form, we search in the subforms
         if not field:
             all_fields = self.getFormFields(includesubforms=includesubforms)
