@@ -317,7 +317,7 @@ class PlominoForm(ATFolder):
         """
         form = self.getForm()
         fieldlist = form.objectValues(spec='PlominoField')
-        result = [f for f in fieldlist]
+        result = [f for f in fieldlist] # Convert from LazyMap to list
         if applyhidewhen:
             doc = doc or TemporaryDocument(self.getParentDatabase(), self, self.REQUEST)
             layout = self.applyHideWhen(doc)
@@ -974,14 +974,9 @@ class PlominoForm(ATFolder):
 
     security.declarePublic('isEditMode')
     def isEditMode(self):
+        """ When rendering a form without a document, it's always in edit mode.
         """
-        """
-        # if REQUEST exists, test the current command
-        if hasattr(self, 'REQUEST'):
-            command=self.REQUEST.URL.split('/')[-1].lower()
-            return command in ['openform', 'edit']
-        else:
-            return False
+        return True
 
     security.declarePublic('tojson')
     def tojson(self, REQUEST=None, item=None):
