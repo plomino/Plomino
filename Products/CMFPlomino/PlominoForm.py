@@ -961,14 +961,9 @@ class PlominoForm(ATFolder):
 
     security.declarePublic('isEditMode')
     def isEditMode(self):
+        """ When rendering a form without a document, it's always in edit mode.
         """
-        """
-        # if REQUEST exists, test the current command
-        if hasattr(self, 'REQUEST'):
-            command=self.REQUEST.URL.split('/')[-1].lower()
-            return command in ['openform', 'editdocument', 'edit', 'savedocument']
-        else:
-            return False
+        return True
 
     security.declarePublic('tojson')
     def tojson(self, REQUEST=None, item=None):
