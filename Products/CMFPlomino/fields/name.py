@@ -76,11 +76,11 @@ class NameField(BaseField):
             if group:
                 names_ids = [(m.getProperty("fullname"), m.getProperty('id')) for m in group.getGroupMembers()]
             else:
-                names_ids = []
-        elif not(self.context.getParentDatabase().getDoNotListUsers()):
-            names_ids = [(m.getProperty("fullname"), m.getId()) for m in self.context.getPortalMembers()]
-        else:
+                return []
+        elif self.context.getParentDatabase().getDoNotListUsers():
             return None
+        else:
+            names_ids = [(m.getProperty("fullname"), m.getId()) for m in self.context.getPortalMembers()]
 
         names_ids.sort(key=lambda (username, userid): username.lower())
         return names_ids

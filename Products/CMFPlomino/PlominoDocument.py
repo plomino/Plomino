@@ -785,12 +785,12 @@ class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
 
     security.declarePublic('isEditMode')
     def isEditMode(self):
-        """
+        """ Return True if the URL says we're editing a document.
         """
         # if REQUEST exists, test the current command
         if hasattr(self, 'REQUEST'):
-            command=self.REQUEST.URL.split('/')[-1].lower()
-            return command in ['editdocument', 'edit']
+            command = self.REQUEST.URL.split('/')[-1].lower()
+            return command in ['editdocument', 'edit', 'savedocument']
         else:
             return False
 
