@@ -1,6 +1,10 @@
 Changelog
 =========
 
+1.16.2 (2012-12-12)
+-------------------
+* various fixes for datagrids
+
 1.16.1 (2012-10-16)
 -------------------
 * integrate jsonutils to manage decimal [neaj]
