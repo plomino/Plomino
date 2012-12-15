@@ -7,107 +7,129 @@
       i18n:domain="plone">
 <body>
 
-<metal:javascript_head fill-slot="javascript_head_slot">
-<tal:test tal:condition="python:here.hasItem('Form')">
-	<tal:block tal:condition="python:here.getForm().hasDateTimeField()">
-	    <script type="text/javascript"
-	              charset="iso-8859-1"
-	              tal:attributes="src string:$portal_url/jscalendar/calendar_stripped.js">
-	    </script>
-		<script type="text/javascript"
-              charset="iso-8859-1"
-              tal:attributes="src string:$portal_url/jscalendar/calendar-en.js">
-      </script>
-	</tal:block>
-    <tal:block tal:condition="python:here.getForm().hasGoogleVisualizationField()">
-        <script type='text/javascript' src='http://www.google.com/jsapi'></script>
-    </tal:block>
-    <script type="text/javascript" tal:condition="python:here.getForm().hasDynamicHidewhen()">
-    	function refreshHidewhen() {
-        	var onsuccess = function(data, textStatus, xhr) {
-            	for (var hw in data)
-                	jq('.hidewhen-' + hw).css('display', data[hw]?'none':'block');
-        	}
-        	jq.post('computehidewhens', jq('#plomino_form').serialize(), onsuccess, 'json');
-    	}
-    	jq(document).ready( function() {
-    		jq('#plomino_form :input').change(refreshHidewhen);
-    	});
-	</script>
-</tal:test>
-</metal:javascript_head>
+<tal:comment condition="nothing"> If we have a form, conditionally include:
+- calendar JS
+- Google JS
+</tal:comment>
+<metal:javascript_head_slot fill-slot="javascript_head_slot"
+    tal:define="
+        has_form python:here.hasItem('Form');
+        this_form python:here.getForm();
+        hasDateTimeField python:this_form.hasDateTimeField();
+        hasDynamicHidewhen python:this_form.hasDynamicHidewhen();
+        hasGoogleVisualizationField python:this_form.hasGoogleVisualizationField()
+        ">
+    <tal:has_form condition="has_form">
+        <tal:has_date condition="hasDateTimeField">
+            <script type="text/javascript"
+                    charset="iso-8859-1"
+                    tal:attributes="src string:$portal_url/jscalendar/calendar_stripped.js">
+            </script>
+            <script type="text/javascript"
+                    charset="iso-8859-1"
+                    tal:attributes="src string:$portal_url/jscalendar/calendar-en.js">
+          </script>
+        </tal:has_date>
+        <tal:has_googleviz condition="hasGoogleVisualizationField">
+            <script type='text/javascript' src='http://www.google.com/jsapi'></script>
+        </tal:has_googleviz>
+        <script type="text/javascript" tal:condition="hasDynamicHidewhen">
+            function refreshHidewhen() {
+                var onsuccess = function(data, textStatus, xhr) {
+                    for (var hw in data)
+                        jq('.hidewhen-' + hw).css('display', data[hw]?'none':'block');
+                }
+                jq.post('computehidewhens', jq('#plomino_form').serialize(), onsuccess, 'json');
+            }
+            jq(document).ready( function() {
+                jq('#plomino_form :input').change(refreshHidewhen);
+            });
+        </script>
+    </tal:has_form>
+</metal:javascript_head_slot>
 
-<metal:css fill-slot="style_slot">
-<tal:test tal:condition="python:here.hasItem('Form')">
-	<tal:block tal:condition="python:here.getForm().hasDateTimeField()">
-      <link rel="stylesheet" type="text/css" media="all" tal:attributes="href string:$portal_url/jscalendar/calendar-system.css" />
-	</tal:block>
-</tal:test>
-</metal:css>
+<tal:comment condition="nothing"> Include calendar CSS if we have datatime fields.
+</tal:comment>
+<metal:css_style_slot fill-slot="style_slot"
+    tal:define="
+        has_form python:here.hasItem('Form');
+        this_form python:here.getForm();
+        hasDateTimeField python:this_form.hasDateTimeField();
+        hasDynamicHidewhen python:this_form.hasDynamicHidewhen();
+        hasGoogleVisualizationField python:this_form.hasGoogleVisualizationField()
+        ">
+    <tal:has_form condition="has_form">
+        <tal:has_date condition="hasDateTimeField">
+            <link rel="stylesheet" type="text/css" media="all" tal:attributes="href string:$portal_url/jscalendar/calendar-system.css" />
+        </tal:has_date>
+    </tal:has_form>
+</metal:css_style_slot>
 
-<metal:block fill-slot="top_slot"
-             tal:define="is_designer python:here.hasDesignPermission()" >
-    <tal:notdesigner tal:condition="not:is_designer">
-        <tal:hide tal:condition="not:is_designer"
-             tal:define="dummy python:request.set('disable_border', 1);" />
-    </tal:notdesigner>
-</metal:block>
+<tal:comment condition="nothing"> Disable border if no Plomino design permission.
+</tal:comment>
+<metal:top_slot fill-slot="top_slot"
+                tal:define="is_designer python:here.hasDesignPermission()" >
+    <tal:not_designer condition="not:is_designer">
+        <tal:hide define="dummy python:request.set('disable_border', 1);" />
+    </tal:not_designer>
+</metal:top_slot>
 
 <metal:main fill-slot="main">
-    <tal:main-macro metal:define-macro="main"
-           tal:define="kssClassesView context/@@kss_field_decorator_view;
-                       getKssClasses nocall:kssClassesView/getKssClassesInlineEditable;
-                       templateId template/getId;">
-	<tal:test tal:condition="python:here.hasItem('Form')">
-	<form tal:attributes="name python:here.getForm().id;
-	                      action python:here.doc_url()+'/saveDocument'"
-	      id="plomino_form" method="POST" enctype="multipart/form-data">
-	 	<tal:validation metal:use-macro="here/validation_messages/macros/messages">display form actions </tal:validation>
-	<tal:block tal:define="myF python:here.getForm();
-							b myF/ActionBarPosition|nothing">
-		<div tal:replace="structure provider:plone.abovecontenttitle" />
+    <tal:TODO condition="nothing"> Do we need to redefine 'this_form' here? </tal:TODO>
+    <tal:main-macro 
+        metal:define-macro="main"
+        define="kssClassesView context/@@kss_field_decorator_view;
+                getKssClasses nocall:kssClassesView/getKssClassesInlineEditable;
+                templateId template/getId;
+                has_form python:here.hasItem('Form');
+                this_form python:here.getForm()
+                ">
+    <tal:has_form condition="has_form">
+        <form tal:attributes="name python:here.getForm().id;
+                              action python:here.doc_url()+'/saveDocument'"
+              id="plomino_form" method="POST" enctype="multipart/form-data">
+            <tal:validation metal:use-macro="here/validation_messages/macros/messages">display form actions</tal:validation>
+            <tal:form define="b this_form/ActionBarPosition|nothing">
+                <div tal:replace="structure provider:plone.abovecontenttitle" />
+                <tal:form_actions_top
+                    define="owner python:this_form"
+                    condition= "python:test((b and this_form.ActionBarPosition=='BOTTOM'), False, True)">
+                    <span metal:use-macro="here/ActionBar/macros/EditDocumentActionBar" >
+                        display form actions above form fields
+                    </span><br/>
+                </tal:form_actions_top>
 
-					<tal:block
-						tal:define="owner python:myF"
-						tal:condition= "python:test((b and  myF.ActionBarPosition=='BOTTOM'),False, True)"
-						>
-			    		<span metal:use-macro="here/ActionBar/macros/EditDocumentActionBar" >
-							display form actions
-						</span><br/>
-					</tal:block>
-		<h1 class="documentFirstHeading" tal:content="here/Title">Title</h1>
-		<div tal:replace="structure provider:plone.belowcontenttitle" />
+                <h1 class="documentFirstHeading" tal:content="here/Title">Title</h1>
+                <div tal:replace="structure provider:plone.belowcontenttitle" />
+                <div tal:replace="structure provider:plone.abovecontentbody" />
+                <span tal:content="structure python:here.editWithForm(this_form)" />
 
-		<div tal:replace="structure provider:plone.abovecontentbody" />
-			
-		<span tal:content="structure python:here.editWithForm(myF)" />
+                <tal:form_actions_bottom
+                    define="owner python:this_form"
+                    condition="python:test((b and this_form.ActionBarPosition!='TOP'), True, False)">
+                    <span metal:use-macro="here/ActionBar/macros/EditDocumentActionBar" >
+                        display form actions below form fields
+                    </span>
+                </tal:form_actions_bottom>
 
-			<tal:block
-				tal:define="owner python:myF"
-				tal:condition="python:test((b and  myF.ActionBarPosition!='TOP'),True, False)"
-				>
-				    		<span metal:use-macro="here/ActionBar/macros/EditDocumentActionBar" >
-								display form actions
-							</span>
-						</tal:block>
-    
-        <div tal:replace="structure provider:plone.belowcontentbody" />
-    </tal:block>
-    </form>
-	</tal:test>
-	<tal:test tal:condition="python:not(here.hasItem('Form'))">
-		<h3>No form defined to display this document.</h3>
-		<br/>A Plomino document always needs a Plomino form in order to be displayed or edited.
-	</tal:test>
-	<tal:profiling tal:define="profiling python:here.is_profiling() and here.REQUEST.cookies.get('plomino_profiler')" tal:condition="profiling">
-			<tal:macro metal:use-macro="here/profiling/macros/durations">display durations</tal:macro>
-	</tal:profiling>
-		
+                <div tal:replace="structure provider:plone.belowcontentbody" />
+            </tal:form>
+        </form>
+    </tal:has_form>
+
+    <tal:no_form condition="not:has_form">
+        <h3>No form defined to display this document.</h3>
+        <br/>A Plomino document always needs a Plomino form in order to be displayed or edited.
+    </tal:no_form>
+
+    <tal:profiling
+        define="profiling python:here.is_profiling() and here.REQUEST.cookies.get('plomino_profiler')"
+        condition="profiling">
+        <tal:macro metal:use-macro="here/profiling/macros/durations">display durations</tal:macro>
+    </tal:profiling>
+
     </tal:main-macro>
 </metal:main>
 
 </body>
 </html>
-
-
-
