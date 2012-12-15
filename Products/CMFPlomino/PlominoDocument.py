@@ -30,6 +30,7 @@ from zope.component import queryUtility
 from zope import event
 from zope.interface import implements
 from zope.interface import Interface
+from ZPublisher.HTTPRequest import FileUpload
 import transaction
 
 try:
@@ -39,6 +40,7 @@ except:
 
 # CMF/Plone
 from OFS.ObjectManager import BadRequestException
+from OFS.Image import File
 from Products.Archetypes.config import RENAME_AFTER_CREATION_ATTEMPTS
 from Products.BTreeFolder2.BTreeFolder2 import BTreeFolder2Base
 from Products.CMFCore.CMFBTreeFolder import CMFBTreeFolder
@@ -48,17 +50,28 @@ from Products.CMFPlone.utils import normalizeString
 
 try:
     from Products.CMFCore.CMFCatalogAware import CatalogAware
-except:
+except ImportError, e:
     from Products.CMFCore.CMFCatalogAware import CMFCatalogAware as CatalogAware
+
+try:
+    from iw.fss.FileSystemStorage import FileSystemStorage, FSSFileInfo
+except ImportError, e:
+    pass
+
+try:
+    from plone.app.blob.field import BlobWrapper
+    from plone.app.blob.utils import guessMimetype
+    HAS_BLOB = True
+except ImportError, e:
+    HAS_BLOB = False
 
 # Plomino
 from exceptions import PlominoScriptException
 from Products.CMFPlomino.config import *
 import interfaces
 
-
 import logging
-logger = logging.getLogger('Plomino')
+_logger = logging.getLogger('Plomino')
 
 # Import conditionally, so we don't introduce a hard dependency
 try:
@@ -69,24 +82,14 @@ except ImportError:
     URL_NORMALIZER = False
 
 from PlominoUtils import DateToString, StringToDate, sendMail, asUnicode, asList, PlominoTranslate
-from OFS.Image import File
-from ZPublisher.HTTPRequest import FileUpload
-try:
-    from iw.fss.FileSystemStorage import FileSystemStorage, FSSFileInfo
-except Exception, e:
-    pass
-try:
-    from plone.app.blob.field import BlobWrapper
-    from plone.app.blob.utils import guessMimetype
-    HAS_BLOB = True
-except ImportError, e:
-    HAS_BLOB = False
+
 
 class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
     """ These represent the contents in a Plomino database.
 
-    A document contains *items* that may or may not correspond to fields on
-    one or more forms.
+    A document contains *items*.
+    An item may or may not correspond to fields on one or more forms.
+    They may be manipulated by Formulas.
     """
 
     security = ClassSecurityInfo()
@@ -121,23 +124,23 @@ class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
         return self.getPhysicalPath()
 
     def doc_url(self):
-        """ return valid and nice url:
+        """ Return valid and nice url:
         - hide plomino_documents
         - use physicalPathToURL if REQUEST available
         """
         path = self.doc_path()
-        short_path = [p for p in path if p!="plomino_documents"]
+        short_path = [p for p in path if p != "plomino_documents"]
         if hasattr(self, "REQUEST"):
             return self.REQUEST.physicalPathToURL(short_path)
         else:
             return "/".join(short_path)
 
     security.declarePublic('setItem')
-    def setItem(self,name,value):
-        """
+    def setItem(self, name, value):
+        """ Set item on document, converting str to unicode.
         """
         items = self.items
-        if type(value) == type(''):
+        if isinstance(value, str):
             db = self.getParentDatabase()
             translation_service = getToolByName(db, 'translation_service')
             value = translation_service.asunicodetype(value)
@@ -147,43 +150,43 @@ class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
 
     security.declarePublic('getItem')
     def getItem(self,name, default=''):
+        """ Get item from document.
         """
-        """
-        if(self.items.has_key(name)):
+        if self.items.has_key(name):
             return deepcopy(self.items[name])
         else:
             return default
 
     security.declarePublic('hasItem')
-    def hasItem(self,name):
-        """
+    def hasItem(self, name):
+        """ Check if doc has item 'name'.
         """
         return self.items.has_key(name)
 
     security.declarePublic('removeItem')
     def removeItem(self,name):
+        """ Delete item 'name', if it exists.
         """
-        """
-        if(self.items.has_key(name)):
+        if self.items.has_key(name):
             items = self.items
             del items[name]
             self.items = items
 
     security.declarePublic('getItems')
     def getItems(self):
-        """
+        """ Return all item names.
         """
         return self.items.keys()
 
     security.declarePublic('getItemClassname')
-    def getItemClassname(self,name):
-        """
+    def getItemClassname(self, name):
+        """ Return class name of the item.
         """
         return self.getItem(name).__class__.__name__
 
     security.declarePublic('getLastModified')
-    def getLastModified(self,asString=False):
-        """
+    def getLastModified(self, asString=False):
+        """ Return last modified date, setting it if absent.
         """
         if not hasattr(self, 'plomino_modification_time'):
             self.plomino_modification_time = self.bobobase_modification_time().toZone('UTC')
@@ -196,7 +199,7 @@ class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
     def getRenderedItem(self, itemname, form=None, formid=None, convertattachments=False):
         """ Return the item rendered according to the corresponding field.
 
-        The used form can be, in order of precedence:
+        The form used can be, in order of precedence:
         - passed as the `form` parameter,
         - specified with the `formid` parameter and looked up,
         - looked up from the document.
@@ -237,7 +240,7 @@ class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
 
         `formid="None"` specifies plain item lookup.
         """
-        # TODO: Don't always return the entire dataset.
+        # TODO: Don't always return the entire dataset: allow batching.
 
         if not self.isReader():
             raise Unauthorized, "You cannot read this content"
@@ -265,16 +268,16 @@ class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
                 if field:
                     if field.getFieldType() == 'DATAGRID':
                         adapt = field.getSettings()
-                        fieldvalue = adapt.getFieldValue(form, self, False, False, REQUEST)
+                        fieldvalue = adapt.getFieldValue(form, doc=self, request=REQUEST)
                         fieldvalue = adapt.rows(fieldvalue, rendered=rendered)
                     else:
                         if rendered:
                             fieldvalue = self.getRenderedItem(item, form)
                         else:
                             adapt = field.getSettings()
-                            fieldvalue = adapt.getFieldValue(form, self, False, False, REQUEST)
+                            fieldvalue = adapt.getFieldValue(form, doc=self, request=REQUEST)
                 else:
-                    logger.info("Failed to find %s on %s, fallback to getItem."%(item, form.id))
+                    _logger.info("Failed to find %s on %s, fallback to getItem."%(item, form.id))
                     fieldvalue = self.getItem(item)
             else:
                 fieldvalue = self.getItem(item)
@@ -353,13 +356,13 @@ class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
 
     security.declareProtected(EDIT_PERMISSION, 'saveDocument')
     def saveDocument(self, REQUEST, creation=False):
-        """save a document using the form submitted content
+        """ Save a document using the form submitted content
         """
         db = self.getParentDatabase()
         form = db.getForm(REQUEST.get('Form'))
 
-        errors=form.validateInputs(REQUEST, doc=self)
-        if len(errors)>0:
+        errors = form.validateInputs(REQUEST, doc=self)
+        if errors:
             return form.notifyErrors(errors)
 
         self.setItem('Form', form.getFormName())
@@ -522,14 +525,14 @@ class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
 
 
     security.declareProtected(EDIT_PERMISSION, 'editWithForm')
-    def editWithForm(self,form):
-        """
+    def editWithForm(self, form):
+        """ Shorthand for opening the form in edit mode.
         """
         return self.openWithForm(form, True)
 
     security.declarePublic('send')
-    def send(self,recipients,title,form=None):
-        """Send current doc by mail
+    def send(self, recipients, title, form=None):
+        """ Send current doc by mail.
         """
         db = self.getParentDatabase()
         if form is None:

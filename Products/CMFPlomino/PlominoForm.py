@@ -895,6 +895,7 @@ class PlominoForm(ATFolder):
                     except PlominoScriptException, e:
                         e.reportError('%s validation formula failed' % f.id)
                     if not s=='':
+                        import pdb; pdb.set_trace()
                         errors.append(s)
 
         return errors
@@ -998,13 +999,13 @@ class PlominoForm(ATFolder):
             result = {}
             for field in fields:
                 adapt = field.getSettings()
-                fieldvalue = adapt.getFieldValue(self, None, False, False, REQUEST)
+                fieldvalue = adapt.getFieldValue(self, request=REQUEST)
                 result[field.id] = fieldvalue
         else:
             field = self.getFormField(item)
             if field:
                 adapt = field.getSettings()
-                result = adapt.getFieldValue(self, None, False, False, REQUEST)
+                result = adapt.getFieldValue(self, request=REQUEST)
 
         if datatables_format:
             result = {'iTotalRecords': len(result),
