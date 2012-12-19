@@ -23,16 +23,16 @@ DESIGN_PERMISSION = 'CMFPlomino: Modify Database design'
 security.declarePublic('ACL_PERMISSION')
 ACL_PERMISSION = 'CMFPlomino: Control Database ACL'
 
-FIELD_TYPES={"TEXT": ["Text", "FieldIndex"],
-             "NUMBER": ["Number", "FieldIndex"],
-             "RICHTEXT": ["Rich text", "ZCTextIndex"],
-             "DATETIME": ["Date/Time", "DateIndex"],
-             "NAME": ["Name", "FieldIndex"],
-             "SELECTION": ["Selection list", "KeywordIndex"],
-             "ATTACHMENT": ["File attachment", "ZCTextIndex"],
-             "DOCLINK": ["Doclink", "KeywordIndex"],
-             "GOOGLECHART": ["Google chart", "FieldIndex"],
-             "GOOGLEVISUALIZATION": ["Google visualization", "FieldIndex"],
+FIELD_TYPES={"TEXT": ["Text", "field"],
+             "NUMBER": ["Number", "field"],
+             "RICHTEXT": ["Rich text", "text"],
+             "DATETIME": ["Date/Time", "field"],
+             "NAME": ["Name", "field"],
+             "SELECTION": ["Selection list", "keyword"],
+             "ATTACHMENT": ["File attachment", "text"],
+             "DOCLINK": ["Doclink", "keyword"],
+             "GOOGLECHART": ["Google chart", "field"],
+             "GOOGLEVISUALIZATION": ["Google visualization", "field"],
              }
 
 FIELD_MODES = [["EDITABLE", "Editable"], ["COMPUTED", "Computed"], ["CREATION", "Computed on creation"], ["DISPLAY", "Computed for display"], ["COMPUTEDONSAVE", "Computed on save"],]

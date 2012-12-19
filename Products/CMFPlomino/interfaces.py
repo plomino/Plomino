@@ -46,6 +46,10 @@ class IPlominoCache(Interface):
     """Marker interface for PlominoCache
     """
 
+class IPlominoIndex(Interface):
+    """
+    """
+
 class IXMLImportExportSubscriber(Interface):
     """Provides import/export to/from XML.
        Subscribers to IXMLExportEvent MUST implement this interface"""

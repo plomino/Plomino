@@ -32,7 +32,6 @@ from zope import event
 from zope.interface import directlyProvides
 from zope.interface import implements
 from zope.component import provideUtility
-import interfaces
 
 # CMF
 from Products.CMFCore.CMFBTreeFolder import manage_addCMFBTreeFolder
@@ -55,7 +54,9 @@ from Products.CMFPlone.interfaces import IHideFromBreadcrumbs
 from exceptions import PlominoCacheException
 from exceptions import PlominoCacheException, PlominoConstraintException
 from exceptions import PlominoScriptException
+import interfaces
 from index.PlominoIndex import PlominoIndex
+from Products.CMFPlomino import PlominoCatalogFactory
 from PlominoAccessControl import PlominoAccessControl
 from PlominoDesignManager import PlominoDesignManager
 from PlominoDocument import addPlominoDocument
@@ -63,7 +64,6 @@ from PlominoDocument import addPlominoDocument, PlominoDocument
 from PlominoReplicationManager import PlominoReplicationManager
 from PlominoScheduler import PlominoScheduler
 from plone.memoize.interfaces import ICacheChooser
-from Products.CMFPlomino import PlominoCatalogFactory
 from Products.CMFPlomino.config import *
 from Products.CMFPlomino.PlominoUtils import *
 
@@ -245,36 +245,37 @@ class PlominoDatabase(ATFolder, PlominoAccessControl, PlominoDesignManager, Plom
         self.plomino_version = VERSION
         self.setStatus("Ready")
         PlominoAccessControl.__init__(self)
-
-    def documents(self):
-        # note: default to {} to avoid errors for db having version <1.7.5 not
-        # refreshed yet
-        #return getattr(self, 'plomino_documents', {})
-        db_name = '%s_%s' % (self.getId(), self.UID())
-        document_soup = get_soup(db_name, self)
-        if not document_soup.storage.catalog:
-            provideUtility(PlominoCatalogFactory(), name=db_name)
-        return document_soup
+        self._initialized = False
 
     security.declarePublic('at_post_create_script')
     def at_post_create_script(self):
         """DB initialization
         """
         self.initializeACL()
-        index = PlominoIndex(FULLTEXT=self.FulltextIndex)
-        self._setObject('plomino_index', index)
         resources = Folder('resources')
         resources.title='resources'
         self._setObject('resources', resources)
         scripts = Folder('scripts')
         scripts.title='scripts'
         self._setObject('scripts', scripts)
+        provideUtility(PlominoCatalogFactory(), name=self.full_id())
+        interfaces.IPlominoIndex(self).initialize()
+        self._initialized = True
+
+    def documents(self):
+        """
+        """
+        document_soup = get_soup(self.full_id(), self)
+        # if not document_soup.storage.catalog:
+        #     provideUtility(PlominoCatalogFactory(), name=self.full_id())
+        return document_soup
 
     def __bobo_traverse__(self, request, name):
         # TODO: replace with IPublishTraverse or/and ITraverse
-        doc = self.getDocument(name)
-        if doc:
-            return doc
+        if self._initialized:
+            doc = self.getDocument(name)
+            if doc:
+                return doc
         return BaseObject.__bobo_traverse__(self, request, name)
 
     def allowedContentTypes(self):
@@ -437,7 +438,6 @@ class PlominoDatabase(ATFolder, PlominoAccessControl, PlominoDesignManager, Plom
                 except PlominoScriptException, e:
                     e.reportError('Document has been deleted, but onDelete event failed.')
 
-            self.getIndex().unindexDocument(doc)
             if self.getIndexInPortal():
                 self.portal_catalog.uncatalog_object("/".join(self.getPhysicalPath() + (doc.id,)))
             event.notify(ObjectRemovedEvent(doc, self.documents(), doc.id))
@@ -475,11 +475,16 @@ class PlominoDatabase(ATFolder, PlominoAccessControl, PlominoDesignManager, Plom
             self.deleteDocuments(ids=ids, massive=False)
         REQUEST.RESPONSE.redirect('.')
 
+    def full_id(self):
+        return '%s_%s' % (self.getId(), self.UID())
+
     security.declarePublic('getIndex')
     def getIndex(self):
         """ Return the database index.
         """
-        return getattr(self, 'plomino_index')
+        if not self._initialized:
+            interfaces.IPlominoIndex(self).initialize()
+        return interfaces.IPlominoIndex(self)
 
     security.declarePublic('getAllDocuments')
     def getAllDocuments(self, getObject=True):

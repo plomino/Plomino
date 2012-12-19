@@ -167,7 +167,7 @@ class PlominoDocument(Acquisition.Implicit):
             value = translation_service.asunicodetype(value)
         items[name] = value
         self.items = items
-        self.plomino_modification_time = DateTime().toZone('UTC')
+        # self.plomino_modification_time = DateTime().toZone('UTC')
 
     security.declarePublic('getItem')
     def getItem(self,name, default=''):
@@ -203,17 +203,17 @@ class PlominoDocument(Acquisition.Implicit):
         """
         return self.getItem(name).__class__.__name__
 
-    security.declarePublic('getLastModified')
-    def getLastModified(self, asString=False):
-        """
-        """
-        if not self.items.has_key('plomino_modification_time'):
-            self.items['plomino_modification_time'] = self.bobobase_modification_time().toZone('UTC')
-        # TODO: implement setattr to make self.something modify the record?
-        if asString:
-            return str(self.items['plomino_modification_time'])
-        else:
-            return self.items['plomino_modification_time']
+    # security.declarePublic('getLastModified')
+    # def getLastModified(self, asString=False):
+    #     """
+    #     """
+    #     if not self.items.has_key('plomino_modification_time'):
+    #         self.items['plomino_modification_time'] = self.bobobase_modification_time().toZone('UTC')
+    #     # TODO: implement setattr to make self.something modify the record?
+    #     if asString:
+    #         return str(self.items['plomino_modification_time'])
+    #     else:
+    #         return self.items['plomino_modification_time']
 
     security.declarePublic('getRenderedItem')
     def getRenderedItem(self, itemname, form=None, formid=None, convertattachments=False):
@@ -313,15 +313,6 @@ class PlominoDocument(Acquisition.Implicit):
             if store:
                 self.setItem(itemname, result)
         return result
-
-    security.declarePublic('getPlominoReaders')
-    def getPlominoReaders(self):
-        """
-        """
-        if self.hasItem('Plomino_Readers'):
-            return asList(self.Plomino_Readers)
-        else:
-            return ['*']
 
     security.declarePublic('isReader')
     def isReader(self):
@@ -465,9 +456,11 @@ class PlominoDocument(Acquisition.Implicit):
                     doc_path = self.REQUEST.physicalPathToURL(self.doc_path())
                     self.REQUEST.RESPONSE.redirect(doc_path)
 
+        # add Plomino_Readers if missing 
+        if not self.hasItem('Plomino_Readers'):
+            self.setItem('Plomino_Readers', ['*'])
         if refresh_index:
-            # update index
-            db.getIndex().indexDocument(self)
+            self.getParentDatabase().documents().reindex([self.record])
             # update portal_catalog
             if db.getIndexInPortal():
                 db.portal_catalog.catalog_object(self, "/".join(db.getPhysicalPath() + (self.id,)))

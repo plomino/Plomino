@@ -152,7 +152,7 @@ class PlominoDesignManager(Persistent):
 
         #create new blank index (without fulltext)
         index = PlominoIndex(FULLTEXT=False).__of__(self)
-        index.no_refresh = True
+        self.no_refresh = True
         msg = 'New index created'
         report.append(msg)
         logger.info(msg)
@@ -182,7 +182,7 @@ class PlominoDesignManager(Persistent):
         # as it takes time, re-indexed documents changed since re-indexing started
         msg = self.reindexDocuments(index, changed_since=start_time)
         report.append(msg)
-        index.no_refresh = False
+        self.no_refresh = False
 
         # destroy the old index and rename the new one
         self.manage_delObjects("plomino_index")
@@ -232,7 +232,7 @@ class PlominoDesignManager(Persistent):
             try:
                 idxs = []
                 if items_only:
-                    items = d.getItems() + ['id', 'getPlominoReaders']
+                    items = d.getItems() + ['id']
                     idxs = [idx for idx in indexes if idx in items]
                 if views_only:
                     idx = view_indexes
@@ -877,7 +877,7 @@ class PlominoDesignManager(Persistent):
         """
         logger.info("Start design import")
         self.setStatus("Importing design")
-        self.getIndex().no_refresh = True
+        self.no_refresh = True
         txn = transaction.get()
         xml_strings = []
         count = 0
@@ -943,7 +943,7 @@ class PlominoDesignManager(Persistent):
         logger.info("(%d elements imported)" % total)
         self.setStatus("Ready")
         txn.commit()
-        self.getIndex().no_refresh = False
+        self.no_refresh = False
 
     security.declareProtected(DESIGN_PERMISSION, 'importElementFromXML')
     def importElementFromXML(self, container, node):

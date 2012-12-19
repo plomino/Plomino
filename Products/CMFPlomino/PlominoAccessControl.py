@@ -230,7 +230,7 @@ class PlominoAccessControl(Persistent):
         """
         isreader = False
         if self.checkUserPermission(READ_PERMISSION, doc):
-            allowed_readers = doc.getPlominoReaders()
+            allowed_readers = doc.getItem("Plomino_Readers", ['*'])
             if '*' in allowed_readers or self.checkUserPermission(ACL_PERMISSION):
                 isreader = True
             else:

@@ -7,9 +7,6 @@
 # Zope Public License (ZPL)
 #
 
-__author__ = """Xavier PERROT <xavier.perrot@makina-corpus.com>"""
-__docformat__ = 'plaintext'
-
 def PlominoDocumentRemoveEventHandler(obj, event):
     """remove event handler for plomino documents
     comments from plone/app/linkintegrity/handlers.py

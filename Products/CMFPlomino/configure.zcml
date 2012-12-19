@@ -32,5 +32,9 @@
     handler="Products.CMFPlomino.events.PlominoDocumentRemoveEventHandler"
         />
 
-
+  <adapter
+    for="Products.CMFPlomino.interfaces.IPlominoDatabase"
+    provides=".interfaces.IPlominoIndex"
+    factory=".index.PlominoIndex.PlominoIndex"
+    />
 </configure>
