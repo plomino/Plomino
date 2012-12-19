@@ -125,7 +125,7 @@
                             <!-- Regular view -->
 
                             <tal:block
-                                tal:define="listdocuments  python:here.getAllDocuments(getObject=False);
+                                tal:define="listdocuments python:here.getAllDocuments(getObject=False);
                                             count python:len(listdocuments);
                                             paramstart request/start|python:'1';
                                             paramlimit request/limit|python:'100';
@@ -136,23 +136,20 @@
                                             previousstart python:max(0,start-100);
                                             ">
 
-                                <tal:loop
-                                    tal:repeat="doc python:listdocuments[start-1:start-1+limit]">
+                                <tal:loop tal:define="column_ids python:[c.id for c in columns if not c.HiddenColumn]"
+                                    tal:repeat="doc python:here.makeDict(listdocuments[start-1:start-1+limit], column_ids, with_id=True)">
                                     <tr tal:define="oddrow repeat/doc/odd;
-                                                    docurl python:doc.getPath().split('/')[-1]"
+                                                    docurl python:doc['docid']"
                                         tal:attributes="class python:test(oddrow, 'even', 'odd');">
                                         <td>
                                             <input
                                                 tal:condition="remove_permission"
                                                 type="checkbox"
                                                 name="sdoc"
-                                                tal:attributes="value python:doc.getPath().split('/')[-1]" /></td>
-                                        <tal:block tal:repeat="c columns">
-                                            <td tal:condition="not: c/HiddenColumn|nothing"><a tal:attributes="href string:${docurl}"><span
-                                                tal:define="cname c/id;
-                                                            vname here/id;
-                                                            cvalue python:getattr(doc, here.getIndexKey(cname), '');"
-                                                tal:content="structure cvalue" ></span></a></td>
+                                                tal:attributes="value docurl" /></td>
+                                        <tal:block tal:repeat="col python:column_ids">
+                                            <td><a tal:attributes="href string:${docurl}"><span
+                                                tal:content="structure python:doc.get(col, '')" ></span></a></td>
                                         </tal:block>
                                     </tr>
                                 </tal:loop>

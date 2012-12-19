@@ -273,7 +273,8 @@ class PlominoView(ATFolder):
     def getAllDocuments(self, start=1, limit=None, only_allowed=True, getObject=True, fulltext_query=None, sortindex=None, reverse=None):
         """ Return all the documents matching the view.
         """
-        index = self.getParentDatabase().getIndex()
+        db = self.getParentDatabase()
+        index = db.getIndex()
         if not sortindex:
             sortindex = self.getSortColumn()
             if sortindex=='':
@@ -282,9 +283,9 @@ class PlominoView(ATFolder):
                 sortindex=self.getIndexKey(sortindex)
         if not reverse:
             reverse = self.getReverseSorting()
-        query = {'PlominoViewFormula_'+self.getViewName() : True}
+        query = "PlominoViewFormula_%s == 1" % self.getViewName()
         if fulltext_query:
-            query['SearchableText'] = fulltext_query
+            query += " and '%s' in SearchableText" % fulltext_query
         results=index.dbsearch(
             query,
             sortindex=sortindex,
@@ -293,7 +294,7 @@ class PlominoView(ATFolder):
         if limit:
             results = Batch(items=results, pagesize=limit, pagenumber=int(start/limit)+1)
         if getObject:
-            return [r.getObject() for r in results]
+            return [db.getDocument(None, r) for r in results]
         else:
             return results
         # XXX: Fix the generator.
@@ -366,7 +367,7 @@ class PlominoView(ATFolder):
         """post create
         """
         db = self.getParentDatabase()
-        db.getIndex().createSelectionIndex('PlominoViewFormula_'+self.getViewName())
+        db.getIndex().createSelectionIndex(self.getViewName())
         if not db.DoNotReindex:
             self.getParentDatabase().getIndex().refresh()
 
@@ -381,7 +382,7 @@ class PlominoView(ATFolder):
             index = db.getIndex()
             
         if column_obj.Formula:
-            index.createIndex('PlominoViewColumn_'+self.getViewName()+'_'+column_name, refresh=refresh)
+            index.createColumnIndex(self.getViewName(), column_name, refresh=refresh)
         else:
             fieldpath = column_obj.SelectedField.split('/')
             form = self.getParentDatabase().getForm(fieldpath[0])
@@ -396,10 +397,10 @@ class PlominoView(ATFolder):
                                            indextype=field.getIndexType())
                 else:
                     column_obj.setFormula("'Non-existing field'")
-                    index.createIndex('PlominoViewColumn_'+self.getViewName()+'_'+column_name, refresh=refresh)
+                    index.createColumnIndex(self.getViewName(), column_name, refresh=refresh)
             else:
                 column_obj.setFormula("'Non-existing form'")
-                index.createIndex('PlominoViewColumn_'+self.getViewName()+'_'+column_name, refresh=refresh)
+                index.createColumnIndex(self.getViewName(), column_name, refresh=refresh)
 
     security.declarePublic('getCategorizedColumnValues')
     def getCategorizedColumnValues(self,column_name):
@@ -463,24 +464,33 @@ class PlominoView(ATFolder):
                 sums[col.id] = s
         return sums
 
-    def makeArray(self, brains, columns):
-        """ Turn a list of brains and column names into a list of values.
+    def makeDict(self, brains, columns, with_id=False):
+        """ Turn a list of brains and column names into a list of dict.
         Encode values as utf-8.
         """
         rows = []
         for b in brains:
-            row = []
+            row = {}
+            if with_id:
+                row['docid'] = b.attrs['docid']
             for cname in columns:
-                v = getattr(b, self.getIndexKey(cname))
+                index = self.getIndexKey(cname)
+                v = self.getParentDatabase().getIndex().getIndexedValue(index, b.intid) 
                 if v is None:
                     v = ''
                 elif isinstance(v, basestring):
                     v = v.encode('utf-8')
                 else:
                     v = unicode(v).encode('utf-8')
-                row.append(v)
+                row[cname] = v
             rows.append(row)
         return rows
+
+    def makeArray(self, brains, columns, with_id=False):
+        """ Turn a list of brains and column names into a list of values.
+        Encode values as utf-8.
+        """
+        return [row.values() for row in self.makeDict(brains, columns, with_id)]
 
     security.declareProtected(READ_PERMISSION, 'exportCSV')
     def exportCSV(self, REQUEST=None, displayColumnsTitle='False', separator="\t", brain_docs = None, quotechar='"', quoting=csv.QUOTE_NONNUMERIC):
@@ -637,7 +647,7 @@ class PlominoView(ATFolder):
         if not found, we look for a field.
         """
         key = 'PlominoViewColumn_%s_%s' % (self.getViewName(), columnName)
-        if key not in self.getParentDatabase().plomino_index.Indexes:
+        if key not in self.getParentDatabase().getIndex().indexes():
             fieldPath = self.getColumn(columnName).SelectedField.split('/')
             if len(fieldPath) > 1:
                 key = fieldPath[1]

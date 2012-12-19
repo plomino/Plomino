@@ -101,7 +101,10 @@ class PlominoDocument(Acquisition.Implicit):
         self.record = record
         self.id = record.intid
         self.items = record.attrs
-        self._parent = db.aq_inner
+        if hasattr(db, 'aq_inner'):
+            self._parent = db.aq_inner
+        else:
+            self._parent = db 
 
     security.declarePublic('__getattr__')
     def __getattr__(self, name):
@@ -563,7 +566,7 @@ class PlominoDocument(Acquisition.Implicit):
         return self.getParentDatabase().getIndex()
 
     security.declareProtected(READ_PERMISSION, 'isSelectedInView')
-    def isSelectedInView(self,viewname):
+    def isSelectedInView(self, viewname):
         """
         """
         db = self.getParentDatabase()
@@ -578,7 +581,7 @@ class PlominoDocument(Acquisition.Implicit):
         return result
 
     security.declareProtected(READ_PERMISSION, 'computeColumnValue')
-    def computeColumnValue(self,viewname,columnname):
+    def computeColumnValue(self, viewname, columnname):
         """
         """
         db = self.getParentDatabase()

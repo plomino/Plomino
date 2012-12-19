@@ -386,12 +386,15 @@ class PlominoDatabase(ATFolder, PlominoAccessControl, PlominoDesignManager, Plom
         return PlominoDocument(record, self).__of__(self)
 
     security.declarePublic('getDocument')
-    def getDocument(self, docid):
+    def getDocument(self, docid=None, record=None):
         """ Return a PlominoDocument, or None. 
         If ``docid`` contains a "/", assume it's a path not a docid.
         """
         if not docid:
-            return None
+            if record:
+                return PlominoDocument(record, self).__of__(self)
+            else:
+                return None
 
         if type(docid) is int:
             try:

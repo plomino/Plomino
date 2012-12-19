@@ -14,6 +14,7 @@ import logging
 logger = logging.getLogger('Plomino')
 
 from Products.CMFPlomino.config import *
+from Products.CMFPlomino.PlominoDocument import PlominoDocument
 from Products.CMFPlomino.PlominoField import get_field_types
 
 from Products.CMFCore.utils import getToolByName
@@ -54,12 +55,12 @@ class PlominoIndex(object):
         return self.context.documents().storage.catalog.keys()
 
     security.declareProtected(DESIGN_PERMISSION, 'createColumnIndex')
-    def createColumnIndex(self, id, refresh=True):
+    def createColumnIndex(self, viewid, columnid, refresh=True):
         """
         """
         if not id in self.indexes():
-            column_indexer = NodeAttributeIndexer(id)
-            self.context.documents().catalog[id] = CatalogFieldIndex(column_indexer)
+            column_indexer = ColumnIndexer(viewid, columnid, self.context)
+            self.context.documents().catalog['PlominoViewColumn_'+viewid+'_'+columnid] = CatalogFieldIndex(column_indexer)
             
             if refresh:
                 self.refresh()
@@ -87,8 +88,8 @@ class PlominoIndex(object):
         """
         """
         if not id in self.indexes():
-            view_indexer = NodeAttributeIndexer(id)
-            self.context.documents().catalog[id] = CatalogFieldIndex(view_indexer)
+            view_indexer = ViewSelectionIndexer(id, self.context)
+            self.context.documents().catalog['PlominoViewFormula_' + id] = CatalogFieldIndex(view_indexer)
 
             if refresh:
                 self.refresh()
@@ -133,13 +134,24 @@ class PlominoIndex(object):
                                 limit=limit,
                                 sort_type=sortindex,
                                 reverse=reverse)             
-        return results
+        return list(results)
 
     security.declareProtected(READ_PERMISSION, 'getKeyUniqueValues')
-    def getKeyUniqueValues(self,key):
+    def getIndexedValue(self, index, recordid=None, record=None):
         """
         """
-        return self.uniqueValuesFor(key)
+        if not recordid:
+            if not record:
+                return None
+            else:
+                recordid = record.intid
+        return self.context.documents().storage.catalog[index]._rev_index[recordid]
+
+    security.declareProtected(READ_PERMISSION, 'getKeyUniqueValues')
+    def getKeyUniqueValues(self, key):
+        """
+        """
+        return list(self.context.documents().storage.catalog[key]._fwd_index.keys()) 
 
     security.declarePublic('convertFileToText')
     def convertFileToText(self, doc, field):
@@ -167,3 +179,24 @@ class PlominoIndex(object):
                     result = textstream.getData()
 
         return result
+
+class ViewSelectionIndexer(object):
+
+    def __init__(self, viewname, db):
+        self.viewname = viewname
+        self.db = db
+
+    def __call__(self, context, default):
+        doc = self.db.getDocument(None, context)
+        return doc.isSelectedInView(self.viewname)
+
+class ColumnIndexer(object):
+
+    def __init__(self, viewid, columnid, db):
+        self.viewid = viewid
+        self.columnid = columnid
+        self.db = db
+
+    def __call__(self, context, default):
+        doc = self.db.getDocument(None, context)
+        return doc.computeColumnValue(self.viewid, self.columnid)
