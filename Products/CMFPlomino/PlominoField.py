@@ -317,18 +317,12 @@ class PlominoField(BaseContent, BrowserDefaultMixin):
     
     def index_vocabulary(self):
         default_index = get_field_types()[self.getFieldType()][1]
-        indexes = [['DEFAULT', 'Default ('+default_index+')']]
-        index_ids = [i['name'] for i in
-                        self.getParentDatabase().getIndex().Indexes.filtered_meta_types()]
-        for id in index_ids:
-            label = id
-            if id=="FieldIndex":
-                label += " (match exact value)"
-            if id=="ZCTextIndex":
-                label += " (match any contained words)"
-            if id=="KeywordIndex":
-                label += " (match list elements)"
-            indexes.append([id, label])
+        indexes = [
+            ['DEFAULT', 'Default ('+default_index+')'],
+            ['field', 'field (match exact value)'],
+            ['text', 'text (match any contained words)'],
+            ['keyword', 'keyword (match list elements)'],
+            ]
         return indexes
 
     def getContentType(self, fieldname=None):
