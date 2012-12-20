@@ -47,12 +47,12 @@ class PlominoIndex(object):
 
         if FULLTEXT:
             fulltext_indexer = NodeAttributeIndexer('SearchableText')
-            catalog[u'SearchableText'] = CatalogFieldIndex(fulltext_indexer)
+            catalog[u'SearchableText'] = CatalogTextIndex(fulltext_indexer)
 
         self.context.no_refresh = False
 
     def indexes(self):
-        return self.context.documents().storage.catalog.keys()
+        return self.context.documents().catalog.keys()
 
     security.declareProtected(DESIGN_PERMISSION, 'createColumnIndex')
     def createColumnIndex(self, viewid, columnid, refresh=True):
@@ -145,13 +145,13 @@ class PlominoIndex(object):
                 return None
             else:
                 recordid = record.intid
-        return self.context.documents().storage.catalog[index]._rev_index[recordid]
+        return self.context.documents().catalog[index]._rev_index[recordid]
 
     security.declareProtected(READ_PERMISSION, 'getKeyUniqueValues')
     def getKeyUniqueValues(self, key):
         """
         """
-        return list(self.context.documents().storage.catalog[key]._fwd_index.keys()) 
+        return list(self.context.documents().catalog[key]._fwd_index.keys()) 
 
     security.declarePublic('convertFileToText')
     def convertFileToText(self, doc, field):

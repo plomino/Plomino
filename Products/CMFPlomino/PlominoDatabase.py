@@ -266,8 +266,6 @@ class PlominoDatabase(ATFolder, PlominoAccessControl, PlominoDesignManager, Plom
         """
         """
         document_soup = get_soup(self.full_id(), self)
-        # if not document_soup.storage.catalog:
-        #     provideUtility(PlominoCatalogFactory(), name=self.full_id())
         return document_soup
 
     def __bobo_traverse__(self, request, name):

@@ -41,6 +41,7 @@ import transaction
 from zope import component
 from zope.component import getUtility
 from zope.dottedname.resolve import resolve
+from souper.interfaces import ICatalogFactory
 try:
     from plone.app.async.interfaces import IAsyncService
     ASYNC = True
@@ -151,7 +152,8 @@ class PlominoDesignManager(Persistent):
         logger.info(msg)
 
         #create new blank index (without fulltext)
-        index = PlominoIndex(FULLTEXT=False).__of__(self)
+        self.storage.catalog = getUtility(ICatalogFactory, name=self.full_id())(self.documents().context)
+        self.getIndex().initialize()
         self.no_refresh = True
         msg = 'New index created'
         report.append(msg)

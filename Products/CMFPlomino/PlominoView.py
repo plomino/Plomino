@@ -622,9 +622,10 @@ class PlominoView(ATFolder):
         total = display_total = len(results)
         columnids = [col.id for col in self.getColumns() if not getattr(col, 'HiddenColumn', False)]
         for b in results:
-            row = [b.getPath().split('/')[-1]]
+            row = [b.attrs['docid']]
             for colid in columnids:
-                v = getattr(b, self.getIndexKey(colid), '')
+                index = self.getIndexKey(colid)
+                v = self.getParentDatabase().getIndex().getIndexedValue(index, b.intid) 
                 if isinstance(v, list):
                     v = [asUnicode(e).encode('utf-8').replace('\r', '') for e in v]
                 else:
