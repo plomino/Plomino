@@ -157,7 +157,8 @@ class PlominoCoreUtils:
                'json_loads',
                'decimal',
                'actual_path',
-               'actual_context']
+               'actual_context',
+               'is_email']
 
 component.provideUtility(PlominoCoreUtils, interfaces.IPlominoUtils)
 
