@@ -48,7 +48,7 @@
     </tal:has_form>
 </metal:javascript_head_slot>
 
-<tal:comment condition="nothing"> Include calendar CSS if we have datatime fields.
+<tal:comment condition="nothing"> Include calendar CSS if we have datetime fields.
 </tal:comment>
 <metal:css_style_slot fill-slot="style_slot"
     tal:define="

@@ -834,10 +834,10 @@ class PlominoForm(ATFolder):
 
     security.declarePublic('validation_errors')
     def validation_errors(self, REQUEST):
-        """check submitted values
+        """ Check submitted values
         """
-        errors=self.validateInputs(REQUEST)
-        if len(errors)>0:
+        errors = self.validateInputs(REQUEST)
+        if errors:
             return self.errors_json(errors=json.dumps({'success': False,'errors':errors}))
         else:
             return self.errors_json(errors=json.dumps({'success': True}))

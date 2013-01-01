@@ -343,16 +343,19 @@ class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
 
     security.declareProtected(EDIT_PERMISSION, 'validation_errors')
     def validation_errors(self, REQUEST):
-        """check submitted values
+        """ Check submitted values
         """
         db = self.getParentDatabase()
         form = db.getForm(REQUEST.get('Form'))
-
-        errors=form.validateInputs(REQUEST, doc=self)
-        if len(errors)>0:
-            return self.errors_json(errors=json.dumps({'success': False,'errors':errors}))
+        errors = form.validateInputs(REQUEST, doc=self)
+        if errors:
+            return self.errors_json(
+                    errors=json.dumps(
+                        {'success': False, 'errors': errors})
+                    )
         else:
-            return self.errors_json(errors=json.dumps({'success': True}))
+            return self.errors_json(
+                    errors=json.dumps({'success': True}))
 
     security.declareProtected(EDIT_PERMISSION, 'saveDocument')
     def saveDocument(self, REQUEST, creation=False):
@@ -528,7 +531,7 @@ class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
     def editWithForm(self, form):
         """ Shorthand for opening the form in edit mode.
         """
-        return self.openWithForm(form, True)
+        return self.openWithForm(form, editmode=True)
 
     security.declarePublic('send')
     def send(self, recipients, title, form=None):
