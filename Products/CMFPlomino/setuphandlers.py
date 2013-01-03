@@ -36,8 +36,10 @@ def updateRoleMappings(context):
     shortContext = context._profile_path.split(os.path.sep)[-3]
     if shortContext != 'CMFPlomino': # avoid infinite recursions
         return
-    wft = getToolByName(context.getSite(), 'portal_workflow')
-    wft.updateRoleMappings()
+    # THIS STEP MUST BE REMOVED
+    # (but as it is permanent we need to unregister it properly)
+    # wft = getToolByName(context.getSite(), 'portal_workflow')
+    # wft.updateRoleMappings()
 
 def postInstall(context):
     """Called as at the end of the setup process. """
@@ -46,27 +48,8 @@ def postInstall(context):
     if shortContext != 'CMFPlomino': # avoid infinite recursions
         return
     site = context.getSite()
-
-    #run kupu customisation script
-    if hasattr(site.portal_properties, 'kupu_library_tool'):
-        logger.info('run Kupu Customisation Script')
-        skin=site.portal_skins.cmfplomino_styles
-        script = getattr(skin,'kupu-customisation-policy', None)
-        if script:
-            script()
-            logger.info('runKupuCustomisationScript done')
-        else:
-            logger.info('runKupuCustomisationScript : kupu-customisation-policy not found')
-
-    #customise FCKedior configuration
-    if hasattr(site.portal_properties, 'fckeditor_properties'):
-        properties = site.portal_properties.fckeditor_properties
-        styles = getattr(properties, 'fck_menu_styles') + FCK_STYLES
-        properties.manage_changeProperties(fck_menu_styles = styles)
-
-    # tidy up old jquery reference
-    jsregistry = getToolByName(site, 'portal_javascripts')
-    jsregistry.unregisterResource('++resource++plomino.javascript/jquery-v1.4.2.js')
+    # THIS STEP MUST BE REMOVED
+    # (but as it is permanent we need to unregister it properly)
 
 ##code-section FOOT
 ##/code-section FOOT

@@ -178,7 +178,7 @@
                 <div tal:replace="structure provider:plone.belowcontenttitle" />
                 <div tal:replace="structure provider:plone.abovecontentbody" />
                 <form id="plomino_form" tal:attributes="name here/id">
-                    <span tal:content="structure python:here.formLayout(request)" />
+                    <span tal:content="structure python:here.openBlankForm(request)" />
                 </form>
                 <div tal:replace="structure provider:plone.belowcontentbody" />
             </tal:block>
