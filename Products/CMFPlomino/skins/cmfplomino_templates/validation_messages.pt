@@ -5,39 +5,52 @@
 </div>
 </div>
 <script>
+var plomino_clicked_name = null;
+function rememberClickedInputName(event) {
+    plomino_clicked_name = this.name;
+}
+
+(function($) { $(function() {
+    $("#plomino_form input[type='submit']").each(function() {
+        $(this).click(rememberClickedInputName);
+    });
+}); })(jQuery);
+
 jq("#plomino_form").submit(function(){
 	var form = this;
     var validation_callback = function(data) {
-			if(data['success']) {
-				jq(this).addClass('plomino-valid');
-				jq(this).submit();
-			} else {
-				popup = jq("#plominoValidationPopup").clone();
-				message = "";
-				jq.each(data['errors'], function(index, value) {
-					message = message + value + "<br/>";
-				});
-				jq(popup).children("strong").html(message);
-				popup.dialog({show: "blind", height: 350, width: 530});
-				// Avoid Plone message "You already submitted this form", since we didn't
-				jq(form).find('input[type="submit"]').removeClass('submitting');
-			}
-		}
-	if(jq(this).hasClass('plomino-valid')) {
-		return true;
-	} else {
-	    form_values = jq(this).serialize();
-	    files = jq(this).find("input[type='file']");
-	    files.each(function(index, object) {
-	        form_values = form_values + "&" + object.name +"="+ jq.URLEncode(jq(object).val());
-	    });
-		jq.post(
-			this.action+"/../validation_errors",
-			form_values,
-			validation_callback.bind(this),
-			"json");
-		return false;
-	}
+        // Avoid Plone message "You already submitted this form", since we didn't
+        jq(form).find('input[type="submit"]').removeClass('submitting');
+        if(data['success']) {
+            jq(this).addClass('plomino-valid');
+            if (plomino_clicked_name != null) {
+                jq("#plomino_form input[name='"+plomino_clicked_name+"']").click();
+            }
+        } else {
+            popup = jq("#plominoValidationPopup").clone();
+            message = "";
+            jq.each(data['errors'], function(index, value) {
+                message = message + value + "<br/>";
+            });
+            jq(popup).children("strong").html(message);
+            popup.dialog({show: "blind", height: 350, width: 530});
+        }
+    }
+    if(jq(this).hasClass('plomino-valid')) {
+        return true;
+    } else {
+        form_values = jq(this).serialize();
+        files = jq(this).find("input[type='file']");
+        files.each(function(index, object) {
+            form_values = form_values + "&" + object.name +"="+ jq.URLEncode(jq(object).val());
+        });
+        jq.post(
+            this.action+"/../validation_errors",
+            form_values,
+            validation_callback.bind(this),
+            "json");
+        return false;
+    }
 });
 </script>
 </tal:block>
