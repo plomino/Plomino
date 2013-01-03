@@ -417,10 +417,15 @@ class PlominoDatabase(ATFolder, PlominoAccessControl, PlominoDesignManager, Plom
             # execute the onDeleteDocument code of the form
             form = doc.getForm()
             if form:
+                message = None
                 try:
-                    self.runFormulaScript("form_"+form.id+"_ondelete", doc, form.onDeleteDocument)
+                    message = self.runFormulaScript("form_"+form.id+"_ondelete", doc, form.onDeleteDocument)
                 except PlominoScriptException, e:
                     e.reportError('Document has been deleted, but onDelete event failed.')
+                if message:
+                    # Abort deletion
+                    doc.writeMessageOnPage(message, REQUEST, False)
+                    REQUEST.RESPONSE.redirect(doc.absolute_url())
 
             self.getIndex().unindexDocument(doc)
             if self.getIndexInPortal():
@@ -435,7 +440,7 @@ class PlominoDatabase(ATFolder, PlominoAccessControl, PlominoDesignManager, Plom
         updating are not performed (use ``refreshDB`` to update).
         """
         if ids is None:
-            ids=[doc.id for doc in self.getAllDocuments()]
+            ids = [doc.id for doc in self.getAllDocuments()]
 
         if massive:
             ObjectManager.manage_delObjects(self.documents, ids)
