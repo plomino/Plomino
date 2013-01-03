@@ -420,7 +420,8 @@ class PlominoForm(ATFolder):
                 html_content = html_content.replace(
                         fieldblock,
                         field.getFieldRender(self, doc, editmode, creation,
-                                request=request))
+                                request=request)
+                        )
 
         # insert subforms
         for subformname in self.getSubforms(doc):
@@ -684,7 +685,7 @@ class PlominoForm(ATFolder):
 
     security.declarePublic('computeFieldValue')
     def computeFieldValue(self, fieldname, target, report=True):
-        """evalute field formula over target
+        """ Evaluate field formula over target.
         """
         field = self.getFormField(fieldname)
         fieldvalue = None
