@@ -63,9 +63,12 @@ class BaseField(object):
         """
         return None
 
-    def getFieldValue(self, form, doc, editmode, creation, request):
+    def getFieldValue(self, form, doc=None, editmode_obsolete=False,
+            creation=False, request=None):
+        """ Return the field as rendered by ``form`` on ``doc``.
+
         """
-        """
+        # XXX: The editmode_obsolete parameter is unused.
         fieldName = self.context.id
         mode = self.context.getFieldMode()
 
@@ -89,9 +92,9 @@ class BaseField(object):
         temporary_doc_in_overlay = (
             isinstance(aq_base(doc), TemporaryDocument) and
             hasattr(self.context, 'REQUEST') and
-            'Plomino_Parent_Form' in self.context.REQUEST.form
-            and not self.context.REQUEST.get('ACTUAL_URL').endswith('/createDocument')
-        )
+            'Plomino_Parent_Form' in self.context.REQUEST.form and not
+            self.context.REQUEST.get('ACTUAL_URL').endswith('/createDocument')
+            )
         if temporary_doc_in_overlay:
             request = self.context.REQUEST
         if mode=="EDITABLE":

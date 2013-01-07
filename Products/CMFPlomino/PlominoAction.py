@@ -124,7 +124,7 @@ class PlominoAction(BaseContent, BrowserDefaultMixin):
 
     security.declareProtected(READ_PERMISSION, 'executeAction')
     def executeAction(self, target, form_id):
-        """return the action resulting url
+        """ Return the URL for this action.
         """
         db = self.getParentDatabase()
         if self.ActionType == "OPENFORM":
@@ -147,7 +147,7 @@ class PlominoAction(BaseContent, BrowserDefaultMixin):
                 return str(redirecturl)
             except PlominoScriptException, e:
                 return "javascript:alert(\"Error: %s\")" % ('formula error in redirect action ' + self.Title())
-        else:
+        else: # "CLOSE", "SAVE"
             return '.'
 
     security.declareProtected(READ_PERMISSION, 'runScript')

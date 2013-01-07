@@ -11,7 +11,7 @@ __author__ = """Eric BREHAULT <eric.brehault@makina-corpus.com>"""
 __docformat__ = 'plaintext'
 
 import logging
-logger = logging.getLogger('Plomino')
+_logger = logging.getLogger('Plomino')
 
 from AccessControl import ClassSecurityInfo
 from Products.CMFPlomino.config import *
@@ -175,7 +175,7 @@ class PlominoIndex(UniqueObject, CatalogTool):
         return results
 
     security.declareProtected(READ_PERMISSION, 'getKeyUniqueValues')
-    def getKeyUniqueValues(self,key):
+    def getKeyUniqueValues(self, key):
         """
         """
         return self.uniqueValuesFor(key)
@@ -183,6 +183,8 @@ class PlominoIndex(UniqueObject, CatalogTool):
     security.declarePublic('convertFileToText')
     def convertFileToText(self, doc, field):
         """ (adapted from Plone3 ATContentTypes file class)
+
+        If conversion fails, returns ''.
         """
         result = ''
 
@@ -199,9 +201,9 @@ class PlominoIndex(UniqueObject, CatalogTool):
                     ptTool = getToolByName(self, 'portal_transforms')
                     textstream = ptTool.convertTo('text/plain', str(f), mimetype=mimetype)
                 except TransformException:
-                    logger.info('convertFileToText> Transform failed', exc_info=True) 
+                    _logger.info('convertFileToText> Transform failed', exc_info=True) 
                 except MissingBinary:
-                    logger.info('convertFileToText> Transform failed', exc_info=True) 
+                    _logger.info('convertFileToText> Transform failed', exc_info=True) 
                 if textstream:
                     result = textstream.getData()
 

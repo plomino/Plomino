@@ -145,20 +145,20 @@ class DatagridField(BaseField):
             return PlominoTranslate("datagrid_edit_button_label", db)
         return ""
 
-    def getFieldValue(self, form, doc, editmode, creation, request):
+    def getFieldValue(self, form, doc=None, editmode_obsolete=False, creation=False, request=None):
         """
         """
-        fieldValue = BaseField.getFieldValue(self, form, doc, editmode, creation, request)
+        fieldValue = BaseField.getFieldValue(self, form, doc, editmode_obsolete, creation, request)
         if not fieldValue:
             return fieldValue
 
         # if doc is not a PlominoDocument, no processing needed
         if not doc or doc.isNewDocument():
             return fieldValue
-        
+
         rawValue = fieldValue
         mode = self.context.getFieldMode()
-        
+
         mapped_fields = []
         if self.field_mapping:
             mapped_fields = [
@@ -173,7 +173,7 @@ class DatagridField(BaseField):
             # fieldValue is a array, where we must replace raw values with
             # rendered values
             child_form_id = self.associated_form
-            if child_form_id is not None:
+            if child_form_id:
                 db = self.context.getParentDatabase()
                 child_form = db.getForm(child_form_id)
                 # zip is procrustean: we get the longest of mapped_fields or

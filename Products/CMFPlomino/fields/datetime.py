@@ -84,10 +84,10 @@ class DatetimeField(BaseField):
                 format = self.context.getParentDatabase().getDateTimeFormat()
             return StringToDate(submittedValue, format)
 
-    def getFieldValue(self, form, doc, editmode, creation, request):
+    def getFieldValue(self, form, doc=None, editmode_obsolete=False, creation=False, request=None):
         """
         """
-        fieldValue = BaseField.getFieldValue(self, form, doc, editmode, creation, request)
+        fieldValue = BaseField.getFieldValue(self, form, doc, editmode_obsolete, creation, request)
 
         mode = self.context.getFieldMode()
         if mode=="EDITABLE" and request:
