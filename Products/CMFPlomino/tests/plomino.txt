@@ -248,6 +248,7 @@ Number field:
 
     >>> id=db.frm2.invokeFactory('PlominoField', id='price', Title='price', FieldType="NUMBER", FieldMode="EDITABLE")
     >>> db.frm2.price.at_post_create_script()
+    >>> db.frm2.setFormLayout("""<p>Price: <span class="plominoFieldClass">price</span></p>""")
     >>> from Products.CMFPlomino.fields.number import INumberField
     >>> adapted=INumberField(db.frm2.price)
     >>> adapted.type = u'INTEGER'
@@ -260,6 +261,9 @@ Number field:
     []
     >>> adapted.validate("4.5")
     []
+    >>> REQUEST={'price': "zero"}
+    >>> db.frm2.validateInputs(REQUEST)
+    ['price must be a float (submitted value was: zero)']
 
 Rich-text field:
 

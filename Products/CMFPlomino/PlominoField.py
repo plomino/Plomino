@@ -182,7 +182,7 @@ class PlominoField(BaseContent, BrowserDefaultMixin):
         return adapt.validate(submittedValue)
 
     security.declarePublic('processInput')
-    def processInput(self, submittedValue, doc, process_attachments):
+    def processInput(self, submittedValue, doc, process_attachments, validation_mode=False):
         """process submitted value according the field type
         """
         fieldtype = self.getFieldType()
@@ -205,7 +205,15 @@ class PlominoField(BaseContent, BrowserDefaultMixin):
             else:
                 v = None
         else:
-            v = adapt.processInput(submittedValue)
+            try:
+                v = adapt.processInput(submittedValue)
+            except Exception, e:
+                if validation_mode:
+                    # when validating, submitted values are potentially bad
+                    # but it must not break getHideWhens, getFormFields, etc.
+                    v = submittedValue
+                else:
+                    raise e
         return v
 
     security.declareProtected(READ_PERMISSION, 'getFieldRender')

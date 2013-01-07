@@ -888,7 +888,7 @@ class TemporaryDocument(PlominoDocument):
 
     security = ClassSecurityInfo()
 
-    def __init__(self, parent, form, REQUEST, real_doc=None):
+    def __init__(self, parent, form, REQUEST, real_doc=None, validation_mode=False):
         self._parent = parent
         self.REQUEST = REQUEST
         if real_doc:
@@ -898,7 +898,7 @@ class TemporaryDocument(PlominoDocument):
             self.items = {}
             self.real_id = "TEMPDOC"
         self.setItem('Form', form.getFormName())
-        form.readInputs(self, REQUEST)
+        form.readInputs(self, REQUEST, validation_mode=validation_mode)
 
     security.declarePublic('getParentDatabase')
     def getParentDatabase(self):

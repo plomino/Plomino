@@ -290,7 +290,7 @@ class PlominoForm(ATFolder):
             tmp.setItem("Plomino_Parent_Field", parent_field)
             tmp.setItem("Plomino_Parent_Form", parent_form)
             tmp.setItem(parent_field+"_itemnames", [
-                f.getId() for f in self.getFormFields()
+                f.getId() for f in self.getFormFields(request=REQUEST)
                 if not f.getFieldMode() == 'DISPLAY'])
             return self.ChildForm(temp_doc=tmp)
 
@@ -312,25 +312,27 @@ class PlominoForm(ATFolder):
             REQUEST.RESPONSE.redirect(db.absolute_url())
 
     security.declarePublic('getFormFields')
-    def getFormFields(self, includesubforms=False, doc=None, applyhidewhen=False):
+    def getFormFields(self, includesubforms=False, doc=None, applyhidewhen=False, validation_mode=False, request=None):
         """ Get fields
         """
+        if not request and hasattr(self, 'REQUEST'):
+            request = self.REQUEST
         form = self.getForm()
         fieldlist = form.objectValues(spec='PlominoField')
         result = [f for f in fieldlist] # Convert from LazyMap to list
         if applyhidewhen:
-            doc = doc or TemporaryDocument(self.getParentDatabase(), self, self.REQUEST)
+            doc = doc or TemporaryDocument(self.getParentDatabase(), self, request, validation_mode=validation_mode)
             layout = self.applyHideWhen(doc)
             result = [f for f in result if """<span class="plominoFieldClass">%s</span>""" % f.id in layout]
         result.sort(key=lambda elt: elt.id.lower())
         if includesubforms:
             subformsseen = []
-            for subformname in self.getSubforms(doc, applyhidewhen):
+            for subformname in self.getSubforms(doc, applyhidewhen, validation_mode=validation_mode):
                 if subformname in subformsseen:
                     continue
                 subform = self.getParentDatabase().getForm(subformname)
                 if subform:
-                    result=result + subform.getFormFields(includesubforms=True, doc=doc, applyhidewhen=applyhidewhen)
+                    result=result + subform.getFormFields(includesubforms=True, doc=doc, applyhidewhen=applyhidewhen, validation_mode=validation_mode, request=request)
                 subformsseen.append(subformname)
         return result
 
@@ -386,7 +388,7 @@ class PlominoForm(ATFolder):
         html_content = self.applyHideWhen(doc, silent_error=False)
 
         # get the field lists
-        fields = self.getFormFields(doc=doc, applyhidewhen=False)
+        fields = self.getFormFields(doc=doc, applyhidewhen=False, request=request)
         fields_in_layout = []
         fieldids_not_in_layout = []
         for field in fields:
@@ -547,11 +549,11 @@ class PlominoForm(ATFolder):
         return False
 
     security.declareProtected(READ_PERMISSION, 'getHidewhenAsJSON')
-    def getHidewhenAsJSON(self, REQUEST, parent_form=None):
+    def getHidewhenAsJSON(self, REQUEST, parent_form=None, validation_mode=False):
         """Return a JSON object to dynamically show or hide hidewhens (works only with isDynamicHidewhen)
         """
         result = {}
-        target = TemporaryDocument(self.getParentDatabase(), parent_form or self, REQUEST)
+        target = TemporaryDocument(self.getParentDatabase(), parent_form or self, REQUEST, validation_mode=validation_mode)
         for hidewhen in self.getHidewhenFormulas():
             if getattr(hidewhen, 'isDynamicHidewhen', False):
                 try:
@@ -563,7 +565,7 @@ class PlominoForm(ATFolder):
                 result[hidewhen.id] = isHidden
         for subformname in self.getSubforms():
             form = self.getParentDatabase().getForm(subformname)
-            form_hidewhens = json.loads(form.getHidewhenAsJSON(REQUEST, parent_form=parent_form or self))
+            form_hidewhens = json.loads(form.getHidewhenAsJSON(REQUEST, parent_form=parent_form or self), validation_mode=validation_mode)
             result.update(form_hidewhens)
 
         return json.dumps(result)
@@ -729,12 +731,18 @@ class PlominoForm(ATFolder):
         return self._has_fieldtypes(["GOOGLEVISUALIZATION"])
 
     security.declarePublic('getSubforms')
-    def getSubforms(self, doc=None, applyhidewhen=True):
+    def getSubforms(self, doc=None, applyhidewhen=True, validation_mode=False):
         """ Return the names of the subforms embedded in the form.
         """
         if applyhidewhen:
             if doc == None and hasattr(self, 'REQUEST'):
-                doc = TemporaryDocument(self.getParentDatabase(), self, self.REQUEST)
+                try:
+                    doc = TemporaryDocument(self.getParentDatabase(), self, self.REQUEST, validation_mode=validation_mode)
+                except:
+                    # TemporaryDocument might fail if field validation is wrong
+                    # and as we need getFormFields during field validation, we
+                    # need to continue so the error is nicely returned to the user
+                    doc = None
             html_content = self.applyHideWhen(doc)
         else:
             html_content = self._get_html_content()
@@ -743,13 +751,13 @@ class PlominoForm(ATFolder):
         return [i.strip() for i in r.findall(html_content)]
 
     security.declarePublic('readInputs')
-    def readInputs(self, doc, REQUEST, process_attachments=False, applyhidewhen=True):
+    def readInputs(self, doc, REQUEST, process_attachments=False, applyhidewhen=True, validation_mode=False):
         """ read submitted values in REQUEST and store them in document according
         fields definition
         """
-        all_fields = self.getFormFields(includesubforms=True, doc=doc, applyhidewhen=False)
+        all_fields = self.getFormFields(includesubforms=True, doc=doc, applyhidewhen=False, validation_mode=False, request=REQUEST)
         if applyhidewhen:
-            displayed_fields = self.getFormFields(includesubforms=True, doc=doc, applyhidewhen=True)
+            displayed_fields = self.getFormFields(includesubforms=True, doc=doc, applyhidewhen=True, validation_mode=False, request=REQUEST)
 
         for f in all_fields:
             mode = f.getFieldMode()
@@ -760,7 +768,7 @@ class PlominoForm(ATFolder):
                     if submittedValue=='':
                         doc.removeItem(fieldName)
                     else:
-                        v = f.processInput(submittedValue, doc, process_attachments)
+                        v = f.processInput(submittedValue, doc, process_attachments, validation_mode=validation_mode)
                         doc.setItem(fieldName, v)
                 else:
                     #the field was not submitted, probably because it is not part of the form (hide-when, ...)
@@ -793,7 +801,7 @@ class PlominoForm(ATFolder):
             index = db.getIndex()
             query={'PlominoViewFormula_'+searchview.getViewName() : True}
 
-            for f in self.getFormFields(includesubforms=True):
+            for f in self.getFormFields(includesubforms=True, request=REQUEST):
                 fieldname = f.id
                 #if fieldname is not an index -> search doesn't matter and returns all
                 submittedValue = asUnicode(REQUEST.get(fieldname))
@@ -845,15 +853,9 @@ class PlominoForm(ATFolder):
 
 
     security.declarePrivate('_get_js_hidden_fields')
-    def _get_js_hidden_fields(self, REQUEST, doc):
+    def _get_js_hidden_fields(self, REQUEST, doc, validation_mode=False):
         hidden_fields = []
-        try:
-            hidewhens = json.loads(self.getHidewhenAsJSON(REQUEST))
-        except:
-            # getHidewhenAsJSON could fail because field validation is wrong,
-            # and as we need getHidewhenAsJSON in validateInputs, we must not
-            # raise error here, we will raise it later (when the form is submitted)
-            return []
+        hidewhens = json.loads(self.getHidewhenAsJSON(REQUEST, validation_mode=validation_mode))
         html_content = self._get_html_content()
         for hidewhenName, doit in hidewhens.items():
             if not doit: # Only consider True hidewhens
@@ -873,8 +875,8 @@ class PlominoForm(ATFolder):
         """
         """
         errors=[]
-        fields = self.getFormFields(includesubforms=True, doc=doc, applyhidewhen=True)
-        hidden_fields = self._get_js_hidden_fields(REQUEST, doc)
+        fields = self.getFormFields(includesubforms=True, doc=doc, applyhidewhen=True, validation_mode=True, request=REQUEST)
+        hidden_fields = self._get_js_hidden_fields(REQUEST, doc, validation_mode=True)
         fields = [field for field in fields if field.getId() not in hidden_fields]
         for f in fields:
             fieldname = f.id
@@ -896,7 +898,7 @@ class PlominoForm(ATFolder):
 
         if len(errors)==0:
             # STEP 3: check validation formula
-            tmp = TemporaryDocument(self.getParentDatabase(), self, REQUEST, doc)
+            tmp = TemporaryDocument(self.getParentDatabase(), self, REQUEST, doc, validation_mode=True)
             for f in fields:
                 formula = f.getValidationFormula()
                 if not formula=='':
@@ -1006,7 +1008,7 @@ class PlominoForm(ATFolder):
                 
         result = None
         if not item:
-            fields = self.getFormFields()
+            fields = self.getFormFields(request=REQUEST)
             result = {}
             for field in fields:
                 adapt = field.getSettings()
