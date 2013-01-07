@@ -32,7 +32,6 @@ from jsonutil import jsonutil as json
 from Products.CMFCore.utils import getToolByName
 
 from exceptions import PlominoScriptException
-import PlominoDocument
 from PlominoDocument import TemporaryDocument
 
 import logging
@@ -252,6 +251,17 @@ class PlominoForm(ATFolder):
 
     schema = PlominoForm_schema
 
+    def getForm(self, formname=None):
+        """ In case we're being called via acquisition.
+        """
+        if formname:
+            return self.getParentDatabase().getForm(self, formname)
+
+        form = self
+        while getattr(form, 'meta_type', '') != 'PlominoForm':
+            form = obj.aq_parent
+        return form
+
     security.declareProtected(CREATE_PERMISSION, 'createDocument')
     def createDocument(self,REQUEST):
         """create a document using the forms submitted content
@@ -303,10 +313,11 @@ class PlominoForm(ATFolder):
 
     security.declarePublic('getFormFields')
     def getFormFields(self, includesubforms=False, doc=None, applyhidewhen=False):
-        """get fields
+        """ Get fields
         """
-        fieldlist = self.objectValues(spec='PlominoField')
-        result = [f for f in fieldlist]
+        form = self.getForm()
+        fieldlist = form.objectValues(spec='PlominoField')
+        result = [f for f in fieldlist] # Convert from LazyMap to list
         if applyhidewhen:
             doc = doc or TemporaryDocument(self.getParentDatabase(), self, self.REQUEST)
             layout = self.applyHideWhen(doc)
@@ -651,7 +662,9 @@ class PlominoForm(ATFolder):
     def getFormField(self, fieldname, includesubforms=True):
         """return the field
         """
-        field = getattr(self, fieldname, None)
+        form = self.getForm()
+
+        field = getattr(form, fieldname, None)
         # if field is not in main form, we search in the subforms
         if not field:
             all_fields = self.getFormFields(includesubforms=includesubforms)
@@ -961,14 +974,9 @@ class PlominoForm(ATFolder):
 
     security.declarePublic('isEditMode')
     def isEditMode(self):
+        """ When rendering a form without a document, it's always in edit mode.
         """
-        """
-        # if REQUEST exists, test the current command
-        if hasattr(self, 'REQUEST'):
-            command=self.REQUEST.URL.split('/')[-1].lower()
-            return command in ['openform', 'edit']
-        else:
-            return False
+        return True
 
     security.declarePublic('tojson')
     def tojson(self, REQUEST=None, item=None):
