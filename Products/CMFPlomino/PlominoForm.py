@@ -400,14 +400,18 @@ class PlominoForm(ATFolder):
         if creation and request is not None:
             for field_id in fieldids_not_in_layout:
                 if request.has_key(field_id):
-                    html_content = "<input type='hidden' name='"+field_id+"' value='"+str(request.get(field_id,''))+"' />" + html_content
+                    html_content = """
+                        <input type='hidden' name='%s' value='%s' />%s""" % (
+                            field_id,
+                            str(request.get(field_id,'')),
+                            html_content)
 
         # evaluate cache formulae and insert already cached fragment
         (html_content, to_be_cached) = self.applyCache(html_content, doc)
 
         #if editmode, we add a hidden field to handle the Form item value
         if editmode and not parent_form_id:
-            html_content = "<input type='hidden' name='Form' value='"+self.getFormName()+"' />" + html_content
+            html_content = "<input type='hidden' name='Form' value='%s' />%s"% (self.getFormName(), html_content)
 
         # insert the fields with proper value and rendering
         for (field, fieldblock) in fields_in_layout:
@@ -416,7 +420,8 @@ class PlominoForm(ATFolder):
                 html_content = html_content.replace(
                         fieldblock,
                         field.getFieldRender(self, doc, editmode, creation,
-                                request=request))
+                                request=request)
+                        )
 
         # insert subforms
         for subformname in self.getSubforms(doc):
@@ -680,7 +685,7 @@ class PlominoForm(ATFolder):
 
     security.declarePublic('computeFieldValue')
     def computeFieldValue(self, fieldname, target, report=True):
-        """evalute field formula over target
+        """ Evaluate field formula over target.
         """
         field = self.getFormField(fieldname)
         fieldvalue = None
@@ -697,14 +702,14 @@ class PlominoForm(ATFolder):
 
     security.declarePublic('hasDateTimeField')
     def hasDateTimeField(self):
-        """return true if the form contains at least one DateTime field
-        or a datagrid (as a datagrid may contain a date)
+        """ Return True if the form contains at least one DateTime field
+        or a datagrid (as a datagrid may contain a date).
         """
         return self._has_fieldtypes(["DATETIME", "DATAGRID"])
 
     security.declarePrivate('_has_fieldtypes')
     def _has_fieldtypes(self, types):
-        """ ``types`` is an array of strings.
+        """ ``types`` is a list of strings.
         Check if any of those types are present.
         """
         tmp = None
@@ -719,13 +724,13 @@ class PlominoForm(ATFolder):
 
     security.declarePublic('hasGoogleVisualizationField')
     def hasGoogleVisualizationField(self):
-        """return true if the form contains at least one GoogleVisualization field
+        """ Return true if the form contains at least one GoogleVisualization field
         """
         return self._has_fieldtypes(["GOOGLEVISUALIZATION"])
 
     security.declarePublic('getSubforms')
     def getSubforms(self, doc=None, applyhidewhen=True):
-        """return the names of the subforms embedded in the form
+        """ Return the names of the subforms embedded in the form.
         """
         if applyhidewhen:
             if doc == None and hasattr(self, 'REQUEST'):
@@ -830,10 +835,10 @@ class PlominoForm(ATFolder):
 
     security.declarePublic('validation_errors')
     def validation_errors(self, REQUEST):
-        """check submitted values
+        """ Check submitted values
         """
-        errors=self.validateInputs(REQUEST)
-        if len(errors)>0:
+        errors = self.validateInputs(REQUEST)
+        if errors:
             return self.errors_json(errors=json.dumps({'success': False,'errors':errors}))
         else:
             return self.errors_json(errors=json.dumps({'success': True}))
@@ -842,14 +847,7 @@ class PlominoForm(ATFolder):
     security.declarePrivate('_get_js_hidden_fields')
     def _get_js_hidden_fields(self, REQUEST, doc):
         hidden_fields = []
-        try:
-            hidewhens = json.loads(self.getHidewhenAsJSON(REQUEST))
-        except:
-            # getHidewhenAsJSON could fail because field validation is wrong,
-            # and as we need getHidewhenAsJSON in validateInputs, we must not
-            # raise error here, we will raise it later (when the form is submitted)
-            return []
-
+        hidewhens = json.loads(self.getHidewhenAsJSON(REQUEST))
         html_content = self._get_html_content()
         for hidewhenName, doit in hidewhens.items():
             if not doit: # Only consider True hidewhens
@@ -902,6 +900,7 @@ class PlominoForm(ATFolder):
                     except PlominoScriptException, e:
                         e.reportError('%s validation formula failed' % f.id)
                     if not s=='':
+                        import pdb; pdb.set_trace()
                         errors.append(s)
 
         return errors
@@ -1005,13 +1004,13 @@ class PlominoForm(ATFolder):
             result = {}
             for field in fields:
                 adapt = field.getSettings()
-                fieldvalue = adapt.getFieldValue(self, None, False, False, REQUEST)
+                fieldvalue = adapt.getFieldValue(self, request=REQUEST)
                 result[field.id] = fieldvalue
         else:
             field = self.getFormField(item)
             if field:
                 adapt = field.getSettings()
-                result = adapt.getFieldValue(self, None, False, False, REQUEST)
+                result = adapt.getFieldValue(self, request=REQUEST)
 
         if datatables_format:
             result = {'iTotalRecords': len(result),
