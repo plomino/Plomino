@@ -463,7 +463,7 @@ class PlominoDocument(Acquisition.Implicit):
         if not self.hasItem('Plomino_Readers'):
             self.setItem('Plomino_Readers', ['*'])
         if refresh_index:
-            self.getParentDatabase().documents().reindex([self.record])
+            self.getParentDatabase().getIndex().indexDocument(self)
             # update portal_catalog
             if db.getIndexInPortal():
                 db.portal_catalog.catalog_object(self, "/".join(db.getPhysicalPath() + (self.id,)))

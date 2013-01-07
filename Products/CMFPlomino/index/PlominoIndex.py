@@ -51,6 +51,9 @@ class PlominoIndex(object):
 
         self.context.no_refresh = False
 
+    def indexDocument(self, doc):
+        self.context.documents().reindex([doc.record])
+
     def indexes(self):
         return self.context.documents().catalog.keys()
 
@@ -145,7 +148,7 @@ class PlominoIndex(object):
                 return None
             else:
                 recordid = record.intid
-        return self.context.documents().catalog[index]._rev_index[recordid]
+        return self.context.documents().catalog[index]._rev_index.get(recordid, None)
 
     security.declareProtected(READ_PERMISSION, 'getKeyUniqueValues')
     def getKeyUniqueValues(self, key):

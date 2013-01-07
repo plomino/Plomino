@@ -39,7 +39,7 @@ import sys
 import glob
 import transaction
 from zope import component
-from zope.component import getUtility
+from zope.component import getUtility, provideUtility
 from zope.dottedname.resolve import resolve
 from souper.interfaces import ICatalogFactory
 try:
@@ -53,8 +53,7 @@ from index.PlominoIndex import PlominoIndex
 from exceptions import PlominoScriptException, PlominoDesignException
 from PlominoUtils import asUnicode
 from PlominoUtils import escape_xml_illegal_chars
-from Products.CMFPlomino import get_utils
-from Products.CMFPlomino import plomino_profiler
+from Products.CMFPlomino import get_utils, plomino_profiler, PlominoCatalogFactory
 from Products.CMFPlomino.interfaces import IXMLImportExportSubscriber
 # get AT specific schemas for each Plomino class
 from Products.CMFPlomino.PlominoAction import schema as action_schema
@@ -152,8 +151,10 @@ class PlominoDesignManager(Persistent):
         logger.info(msg)
 
         #create new blank index (without fulltext)
-        self.storage.catalog = getUtility(ICatalogFactory, name=self.full_id())(self.documents().context)
-        self.getIndex().initialize()
+        provideUtility(PlominoCatalogFactory(), name=self.full_id())
+        self.documents().storage.catalog = getUtility(ICatalogFactory, name=self.full_id())(self.documents().context)
+        index = self.getIndex()
+        index.initialize()
         self.no_refresh = True
         msg = 'New index created'
         report.append(msg)
@@ -168,7 +169,7 @@ class PlominoDesignManager(Persistent):
 
         #declare all the view formulas and columns index entries
         for v_obj in self.getViews():
-            index.createSelectionIndex('PlominoViewFormula_'+v_obj.getViewName())
+            index.createSelectionIndex(v_obj.getViewName())
             for c in v_obj.getColumns():
                 v_obj.declareColumn(c.getColumnName(), c, index=index)
         # add fulltext if needed
@@ -182,16 +183,9 @@ class PlominoDesignManager(Persistent):
         report.append(msg)
 
         # as it takes time, re-indexed documents changed since re-indexing started
-        msg = self.reindexDocuments(index, changed_since=start_time)
-        report.append(msg)
+        #msg = self.reindexDocuments(index, changed_since=start_time)
+        #report.append(msg)
         self.no_refresh = False
-
-        # destroy the old index and rename the new one
-        self.manage_delObjects("plomino_index")
-        self._setObject('plomino_index', index.aq_base)
-        msg = 'Old index removed and replaced'
-        report.append(msg)
-        logger.info(msg)
 
         # refresh portal_catalog
         if self.getIndexInPortal():
@@ -205,17 +199,12 @@ class PlominoDesignManager(Persistent):
         return report
 
     security.declareProtected(DESIGN_PERMISSION, 'reindexDocuments')
-    def reindexDocuments(self, plomino_index, items_only=False, views_only=False, update_metadata=1, changed_since=None):
+    def reindexDocuments(self, plomino_index, items_only=False, views_only=False, update_metadata=1):
         """ Reindex all documents in a given index.
         """
         documents = self.getAllDocuments()
-        if changed_since:
-            documents = [doc for doc in documents if doc.plomino_modification_time > changed_since]
-            total_docs = len(documents)
-            logger.info('Re-indexing %d changed document(s) since %s' % (total_docs, str(changed_since)))
-        else:
-            total_docs = len(self.documents().data)
-            logger.info('Existing documents: '+ str(total_docs))
+        total_docs = len(self.documents().data)
+        logger.info('Existing documents: '+ str(total_docs))
         total = 0
         counter = 0
         errors = 0
@@ -239,7 +228,7 @@ class PlominoDesignManager(Persistent):
                 if views_only:
                     idx = view_indexes
                 txn = transaction.get()
-                plomino_index.indexDocument(d, idxs=idxs, update_metadata=update_metadata)
+                plomino_index.indexDocument(d)
                 txn.commit()
                 total = total + 1
             except Exception, e:
@@ -250,10 +239,8 @@ class PlominoDesignManager(Persistent):
                 self.setStatus("Re-indexing %s (%d%%)" % (label, int(100*(total+errors)/total_docs)))
                 counter = 0
                 logger.info("Re-indexing %s: %d indexed successfully, %d errors(s)..." % (label, total, errors))
-        if changed_since:
-            msg = "Intermediary changes: %d modified documents re-indexed successfully, %d errors(s)" % (total, errors)
-        else:
-            msg = "Re-indexing %s: %d documents indexed successfully, %d errors(s)" % (label, total, errors)
+
+        msg = "Re-indexing %s: %d documents indexed successfully, %d errors(s)" % (label, total, errors)
         logger.info(msg)
         return msg
 
