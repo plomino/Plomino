@@ -25,6 +25,8 @@ jq("#plomino_form").submit(function(){
             jq(this).addClass('plomino-valid');
             if (plomino_clicked_name != null) {
                 jq("#plomino_form input[name='"+plomino_clicked_name+"']").click();
+                } else {
+                jq(this).submit();
             }
         } else {
             popup = jq("#plominoValidationPopup").clone();
