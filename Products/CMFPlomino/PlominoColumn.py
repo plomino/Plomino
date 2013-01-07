@@ -104,7 +104,7 @@ class PlominoColumn(BaseContent, BrowserDefaultMixin):
     # Methods
     security.declarePublic('getFormFields')
     def getFormFields(self):
-        """get a list of fields in the base
+        """ Get a list of all the fields in the database
         """
         fields = []
         for form in self.getParentView().getParentDatabase().getForms():
@@ -114,13 +114,13 @@ class PlominoColumn(BaseContent, BrowserDefaultMixin):
 
     security.declarePublic('getColumnName')
     def getColumnName(self):
-        """get column name
+        """ Get column name
         """
         return self.id
 
     security.declarePublic('getParentView')
     def getParentView(self):
-        """get parent view
+        """ Get parent view
         """
         return self.getParentNode()
 
