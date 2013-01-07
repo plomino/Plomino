@@ -847,7 +847,13 @@ class PlominoForm(ATFolder):
     security.declarePrivate('_get_js_hidden_fields')
     def _get_js_hidden_fields(self, REQUEST, doc):
         hidden_fields = []
-        hidewhens = json.loads(self.getHidewhenAsJSON(REQUEST))
+        try:
+            hidewhens = json.loads(self.getHidewhenAsJSON(REQUEST))
+        except:
+            # getHidewhenAsJSON could fail because field validation is wrong,
+            # and as we need getHidewhenAsJSON in validateInputs, we must not
+            # raise error here, we will raise it later (when the form is submitted)
+            return []
         html_content = self._get_html_content()
         for hidewhenName, doit in hidewhens.items():
             if not doit: # Only consider True hidewhens
