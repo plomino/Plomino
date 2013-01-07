@@ -5,12 +5,27 @@
 </div>
 </div>
 <script>
+var plomino_clicked_name = null;
+function rememberClickedInputName(event) {
+    plomino_clicked_name = this.name;
+}
+
+(function($) { $(function() {
+    $("#plomino_form input[type='submit']").each(function() {
+        $(this).click(rememberClickedInputName);
+    });
+}); })(jQuery);
+
 jq("#plomino_form").submit(function(){
     var form = this;
     var validation_callback = function(data) {
+        // Avoid Plone message "You already submitted this form", since we didn't
+        jq(form).find('input[type="submit"]').removeClass('submitting');
         if(data['success']) {
             jq(this).addClass('plomino-valid');
-            jq(this).submit();
+            if (plomino_clicked_name != null) {
+                jq("#plomino_form input[name='"+plomino_clicked_name+"']").click();
+            }
         } else {
             popup = jq("#plominoValidationPopup").clone();
             message = "";
@@ -19,8 +34,6 @@ jq("#plomino_form").submit(function(){
             });
             jq(popup).children("strong").html(message);
             popup.dialog({show: "blind", height: 350, width: 530});
-            // Avoid Plone message "You already submitted this form", since we didn't
-            jq(form).find('input[type="submit"]').removeClass('submitting');
         }
     }
     if(jq(this).hasClass('plomino-valid')) {

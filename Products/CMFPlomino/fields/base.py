@@ -10,22 +10,26 @@
 __author__ = """Eric BREHAULT <eric.brehault@makina-corpus.org>"""
 __docformat__ = 'plaintext'
 
+# stdlib
+from urllib import unquote
+
+# Zope
 from zope.interface import Interface, implements
 from zope.annotation.interfaces import IAnnotations
 from Acquisition import aq_base
-
-from Products.CMFPlomino.PlominoUtils import asUnicode
-from Products.CMFPlomino.PlominoDocument import TemporaryDocument
 try:
     from five.formlib.formbase import EditForm
 except:
     #PLONE 3
     from Products.Five.formlib.formbase import EditForm
-
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 
+# Plomino
+from Products.CMFPlomino.PlominoUtils import asUnicode
+from Products.CMFPlomino.PlominoDocument import TemporaryDocument
+
+# 3rd party
 from jsonutil import jsonutil as json
-from urllib import unquote
 
 class IBaseField(Interface):
     """

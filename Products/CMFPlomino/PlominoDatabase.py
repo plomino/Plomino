@@ -147,7 +147,7 @@ schema = Schema((
         default=False,
         widget=BooleanField._properties['widget'](
             label="Use File System Storage for attachments",
-            description="File System Storage must be installed on the portal",
+            description="File System Storage must be installed on the portal. With current Plone versions (4.x), blobstorage will be used by default.",
             label_msgid='CMFPlomino_label_StorageAttachments',
             description_msgid='CMFPlomino_help_StorageAttachments',
             i18n_domain='CMFPlomino',
@@ -190,7 +190,7 @@ schema = Schema((
         default=False,
         widget=BooleanField._properties['widget'](
             label="Do not list portal users",
-            description="If True, in ACL screen, users are entered using a free text field, if False, using a selection list. Use True when the amount of users is big.",
+            description="If True, in ACL screen, users are entered using a free text field, if False, using a selection list. Use True when the amount of users is large.",
             description_msgid="CMFPlomino_help_DoNotListUsers",
             label_msgid="CMFPlomino_label_DoNotListUsers",
             i18n_domain='CMFPlomino',
@@ -417,10 +417,15 @@ class PlominoDatabase(ATFolder, PlominoAccessControl, PlominoDesignManager, Plom
             # execute the onDeleteDocument code of the form
             form = doc.getForm()
             if form:
+                message = None
                 try:
-                    self.runFormulaScript("form_"+form.id+"_ondelete", doc, form.onDeleteDocument)
+                    message = self.runFormulaScript("form_"+form.id+"_ondelete", doc, form.onDeleteDocument)
                 except PlominoScriptException, e:
                     e.reportError('Document has been deleted, but onDelete event failed.')
+                if message:
+                    # Abort deletion
+                    doc.writeMessageOnPage(message, REQUEST, False)
+                    REQUEST.RESPONSE.redirect(doc.absolute_url())
 
             self.getIndex().unindexDocument(doc)
             if self.getIndexInPortal():
@@ -435,7 +440,7 @@ class PlominoDatabase(ATFolder, PlominoAccessControl, PlominoDesignManager, Plom
         updating are not performed (use ``refreshDB`` to update).
         """
         if ids is None:
-            ids=[doc.id for doc in self.getAllDocuments()]
+            ids = [doc.id for doc in self.getAllDocuments()]
 
         if massive:
             ObjectManager.manage_delObjects(self.documents, ids)
