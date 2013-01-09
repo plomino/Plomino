@@ -32,9 +32,9 @@
             <dl class="collapsible inline collapsedOnLoad">
                 <dt class="collapsibleHeader">
                     <tal:block tal:content="form/id">form id</tal:block>
-                    <a tal:attributes="href python:form.absolute_url_path()+'/base_edit'"><img src="edit.gif" /></a>
-                    <a tal:attributes="href python:form.absolute_url_path()+'/base_view'"><img src="document_icon.gif" /></a>
-                    <a tal:attributes="href python:form.absolute_url_path()+'/folder_contents'"><img src="folder_icon.gif" /></a>
+                    <a tal:attributes="href python:form.absolute_url_path()+'/base_edit'"><img tal:attributes="src string:${here/portal_url}/edit.png" /></a>
+                    <a tal:attributes="href python:form.absolute_url_path()+'/view'"><img tal:attributes="src string:${here/portal_url}/document_icon.png" /></a>
+                    <a tal:attributes="href python:form.absolute_url_path()+'/folder_contents'"><img tal:attributes="src string:${here/portal_url}/folder_icon.png" /></a>
                 </dt>
                 <dd class="collapsibleContent">
                     <ul>
@@ -43,8 +43,8 @@
 	                        <ul>
 	                            <li>
 	                            <tal:block tal:content="field/id">Field name</tal:block> (<tal:block tal:content="python:field.getFieldType().title()">Field type</tal:block>)
-	                            <a href="" tal:attributes="href python:field.absolute_url_path()+'/base_edit'"><img src="edit.gif" /></a>
-	                            <a href="" tal:attributes="href python:field.absolute_url_path()+'/'+field.getFieldType().lower()+'settings'"><img src="document_icon.gif" /></a>
+	                            <a href="" tal:attributes="href python:field.absolute_url_path()+'/base_edit'"><img tal:attributes="src string:${here/portal_url}/edit.png" /></a>
+	                            <a href="" tal:attributes="href python:field.absolute_url_path()+'/'+field.getFieldType().lower()+'settings'"><img tal:attributes="src string:${here/portal_url}/document_icon.png" /></a>
 	                            </li>
 	                        </ul>
 	                        </tal:fieldsforms></li>
@@ -55,8 +55,7 @@
 	                        <ul>
 	                            <li>
 	                            <tal:block tal:content="h/id">Hide when name</tal:block>
-	                            <a href="" tal:attributes="href python:h.absolute_url_path()+'/base_edit'"><img src="edit.gif" /></a>
-	                            <a href="" tal:attributes="href python:h.absolute_url_path()+'/base_view'"><img src="document_icon.gif" /></a>
+	                            <a href="" tal:attributes="href python:h.absolute_url_path()+'/base_edit'"><img tal:attributes="src string:${here/portal_url}/edit.png" /></a>
 	                            </li>
 	                        </ul>
 	                        </tal:hidewhens></li>
@@ -66,8 +65,7 @@
 	                            <tal:actionsforms tal:repeat="action_tuple python:form.getActions(None, False, form.id)">
 	                                <li tal:define="action python:action_tuple[0]">
 	                                <tal:block tal:content="action/id">action name</tal:block>
-	                                <a href="" tal:attributes="href python:action.absolute_url()+'/base_edit'"><img src="edit.gif" /></a>
-	                                <a href="" tal:attributes="href python:action.absolute_url()+'/base_view'"><img src="document_icon.gif" /></a>
+	                                <a href="" tal:attributes="href python:action.absolute_url()+'/base_edit'"><img tal:attributes="src string:${here/portal_url}/edit.png" /></a>
 	                                </li>
 	                            </tal:actionsforms>
 	                        </ul></li>
@@ -77,8 +75,7 @@
 	                        <ul>
 	                            <li>
 	                            <tal:block tal:content="c/id">Cache name</tal:block>
-	                            <a href="" tal:attributes="href python:c.absolute_url_path()+'/base_edit'"><img src="edit.gif" /></a>
-	                            <a href="" tal:attributes="href python:c.absolute_url_path()+'/base_view'"><img src="document_icon.gif" /></a>
+	                            <a href="" tal:attributes="href python:c.absolute_url_path()+'/base_edit'"><img tal:attributes="src string:${here/portal_url}/edit.png" /></a>
 	                            </li>
 	                        </ul>
 	                        </tal:caches></li>
@@ -93,10 +90,10 @@
             <div><dl class="collapsible inline collapsedOnLoad">
                 <dt class="collapsibleHeader">
                     <tal:block tal:content="view/id">view name</tal:block>
-                    <a tal:attributes="href python:view.absolute_url_path()+'/base_edit'"><img src="edit.gif" /></a>
-                    <a tal:attributes="href python:view.absolute_url_path()+'/base_view'"><img src="document_icon.gif" /></a>
-                    <a tal:attributes="href python:view.absolute_url_path()+'/folder_contents'"><img src="folder_icon.gif" /></a>
-                    <a tal:attributes="href python:view.absolute_url_path()+'/exportCSV'"><img src="download_icon.gif" /></a>
+                    <a tal:attributes="href python:view.absolute_url_path()+'/base_edit'"><img tal:attributes="src string:${here/portal_url}/edit.png" /></a>
+                    <a tal:attributes="href python:view.absolute_url_path()+'/view'"><img tal:attributes="src string:${here/portal_url}/document_icon.png" /></a>
+                    <a tal:attributes="href python:view.absolute_url_path()+'/folder_contents'"><img tal:attributes="src string:${here/portal_url}/folder_icon.png" /></a>
+                    <a tal:attributes="href python:view.absolute_url_path()+'/exportCSV'"><img tal:attributes="src string:${here/portal_url}/download_icon.png" /></a>
                 </dt>
                 <dd class="collapsibleContent">
                             <!--View columns-->
@@ -108,8 +105,7 @@
                                     <tal:columnsviews tal:repeat="column python:view.getColumns()">
                                     <li>
                                     <tal:block tal:content="python:column.getColumnName()">column name</tal:block>
-                                        <a href="" tal:attributes="href python:column.absolute_url()+'/base_edit'"><img src="edit.gif" /></a>
-                                        <a href="" tal:attributes="href python:column.absolute_url()+'/base_view'"><img src="document_icon.gif" /></a>
+                                        <a href="" tal:attributes="href python:column.absolute_url()+'/base_edit'"><img tal:attributes="src string:${here/portal_url}/edit.png" /></a>
                                     </li>
                                 </tal:columnsviews>
                                 </ul>
@@ -121,8 +117,7 @@
                                     <tal:actionsviews tal:repeat="action_tuple python:view.getActions(None, False, view.id)">
                                         <li tal:define="action python:action_tuple[0]">
                                         <tal:block tal:content="action/id">action name</tal:block>
-                                        <a href="" tal:attributes="href python:action.absolute_url()+'/base_edit'"><img src="edit.gif" /></a>
-                                        <a href="" tal:attributes="href python:action.absolute_url()+'/base_view'"><img src="document_icon.gif" /></a>
+                                        <a href="" tal:attributes="href python:action.absolute_url()+'/base_edit'"><img tal:attributes="src string:${here/portal_url}/edit.png" /></a>
                                         </li>
                                     </tal:actionsviews>
                                 </ul>
@@ -140,8 +135,8 @@
             <tal:blockagents tal:repeat="agent python:here.getAgents()">
             <li>
                 <tal:block tal:content="agent/id">agent name</tal:block>
-                <a href="" tal:attributes="href python:agent.absolute_url()+'/base_edit'"><img src="edit.gif" /></a>
-                <a href="" target="_new" tal:attributes="href python:agent.absolute_url()+'/runAgent'"><img src="workflow_icon.gif"/></a>
+                <a href="" tal:attributes="href python:agent.absolute_url()+'/base_edit'"><img tal:attributes="src string:${here/portal_url}/edit.png" /></a>
+                <a href="" target="_new" tal:attributes="href python:agent.absolute_url()+'/runAgent'"><img tal:attributes="src string:${here/portal_url}/workflow_icon.png"/></a>
             </li>
             </tal:blockagents>
             </ul>
