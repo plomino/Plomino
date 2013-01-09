@@ -28,7 +28,11 @@ from Products.ATContentTypes.content.folder import ATFolder
 from zope.interface import implements
 
 # Plone
-from plone.app.content.batching import Batch
+try:
+    from plone.batching.batch import Batch
+except:
+    # < 4.3 compatibility
+    from plone.app.content.batching import Batch
 from Products.CMFDynamicViewFTI.browserdefault import BrowserDefaultMixin
 
 # Plomino
