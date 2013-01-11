@@ -152,7 +152,7 @@
           <tal:block tal:condition="python:ispage">
               <h1 class="documentFirstHeading" tal:content="here/Title">Title</h1>
               <form id="plomino_form" tal:attributes="name here/id">
-                  <span tal:content="structure python:here.formLayout(request)" />
+                  <span tal:content="structure python:here.openBlankForm(request)" />
               </form>
           </tal:block>
 
