@@ -195,6 +195,11 @@ def urlencode(h):
     """
     return urllib.urlencode(h)
 
+def urlquote(s):
+    """ Call urllib.quote
+    """
+    return urllib.quote(s)
+
 def cgi_escape(s):
     return cgi.escape(s)
 

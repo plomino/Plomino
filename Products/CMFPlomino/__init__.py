@@ -158,7 +158,8 @@ class PlominoCoreUtils:
                'decimal',
                'actual_path',
                'actual_context',
-               'is_email']
+               'is_email',
+               'urlquote']
 
 component.provideUtility(PlominoCoreUtils, interfaces.IPlominoUtils)
 
