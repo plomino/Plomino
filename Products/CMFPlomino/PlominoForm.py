@@ -651,7 +651,7 @@ class PlominoForm(ATFolder):
                 e.reportError('beforeCreate formula failed')
 
         tmp = None
-        if hasattr(self, 'REQUEST'):
+        if not self.isPage and hasattr(self, 'REQUEST'):
             # hideWhens need a TemporaryDocument
             tmp = TemporaryDocument(self.getParentDatabase(), self, self.REQUEST)
         if (not invalid) or self.hasDesignPermission(self):
