@@ -892,7 +892,7 @@ class TemporaryDocument(PlominoDocument):
         self._parent = parent
         self.REQUEST = REQUEST
         if real_doc:
-            self.items = real_doc.items.copy()
+            self.items = PersistentDict(real_doc.items)
             self.real_id = real_doc.id
         else:
             self.items = {}
