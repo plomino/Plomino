@@ -907,7 +907,7 @@ class PlominoForm(ATFolder):
                         s = self.runFormulaScript("field_"+self.id+"_"+f.id+"_ValidationFormula", tmp, f.ValidationFormula)
                     except PlominoScriptException, e:
                         e.reportError('%s validation formula failed' % f.id)
-                    if not s=='':
+                    if s:
                         errors.append(s)
 
         return errors
