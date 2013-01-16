@@ -1,6 +1,11 @@
 Changelog
 =========
 
+1.16.4 (2013-01-16)
+-------------------
+* Avoid transaction save when viewing a document [silviot]
+* clean up pdb
+
 1.16.3 (2013-01-11)
 -------------------
 * new Plomino util function: is_email
