@@ -66,7 +66,11 @@ class IDatagridField(IBaseField):
 "bFilter": false,
 "bSort": false,
 "bInfo": false,
-"bAutoWidth": false
+"bAutoWidth": false,
+"plominoDialogOptions": {
+        "width": 400,
+        "height": 300
+    }
 """,
                       required=False)
 
