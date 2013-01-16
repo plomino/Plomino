@@ -64,11 +64,11 @@ function datagrid_show_form(field_id, formurl, onsubmit) {
 		popup.dialog("option", "title", jq('.documentFirstHeading', body).remove().text());
 		var table = jq("#" + field_id + "_datagrid");
 		var options = table.dataTable().fnSettings().oInit;
-		if(options.plominoDialogOptions && options.plominoDialogOptions.width) {
-			popup.dialog("option", "width", options.plominoDialogOptions.width);
-		}
-		if(options.plominoDialogOptions && options.plominoDialogOptions.height) {
-			popup.dialog("option", "height", options.plominoDialogOptions.height);
+		if(options.plominoDialogOptions) {
+			keys = Object.keys(options.plominoDialogOptions);
+			for(var k in keys) {
+				popup.dialog("option", keys[k], options.plominoDialogOptions[keys[k]]);
+			}
 		}
 		popup.dialog('open');
 	});
