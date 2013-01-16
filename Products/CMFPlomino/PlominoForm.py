@@ -908,7 +908,6 @@ class PlominoForm(ATFolder):
                     except PlominoScriptException, e:
                         e.reportError('%s validation formula failed' % f.id)
                     if not s=='':
-                        import pdb; pdb.set_trace()
                         errors.append(s)
 
         return errors
