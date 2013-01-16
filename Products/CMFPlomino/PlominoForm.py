@@ -565,7 +565,7 @@ class PlominoForm(ATFolder):
                 result[hidewhen.id] = isHidden
         for subformname in self.getSubforms():
             form = self.getParentDatabase().getForm(subformname)
-            form_hidewhens = json.loads(form.getHidewhenAsJSON(REQUEST, parent_form=parent_form or self), validation_mode=validation_mode)
+            form_hidewhens = json.loads(form.getHidewhenAsJSON(REQUEST, parent_form=parent_form or self, validation_mode=validation_mode))
             result.update(form_hidewhens)
 
         return json.dumps(result)
