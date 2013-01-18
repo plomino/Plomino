@@ -401,7 +401,7 @@ class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
         else:
             self.setItem('Form', form.getFormName())
 
-        db=self.getParentDatabase()
+        db = self.getParentDatabase()
         if form:
             for f in form.getFormFields(includesubforms=True, doc=self, applyhidewhen=False):
                 mode = f.getFieldMode()

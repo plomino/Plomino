@@ -1,3 +1,5 @@
 <span>
-	<input type="text" tal:attributes="name options/fieldname; value options/fieldvalue" />
+    <input type="text" 
+           tal:attributes="name options/fieldname;
+                           value options/fieldvalue" />
 </span>

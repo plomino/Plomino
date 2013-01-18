@@ -494,7 +494,7 @@ class PlominoForm(ATFolder):
 
     security.declareProtected(READ_PERMISSION, 'applyHideWhen')
     def applyHideWhen(self, doc=None, silent_error=True):
-        """evaluate hide-when formula and return resulting layout
+        """ Evaluate hide-when formula and return resulting layout
         """
         html_content = self._get_html_content()
 
@@ -640,7 +640,7 @@ class PlominoForm(ATFolder):
 
     security.declarePublic('openBlankForm')
     def openBlankForm(self, request=None):
-        """check beforeCreateDocument then open the form
+        """ Check beforeCreateDocument, then open the form
         """
         # execute the beforeCreateDocument code of the form
         invalid = False

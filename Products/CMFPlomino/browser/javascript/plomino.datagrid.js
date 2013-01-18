@@ -75,7 +75,7 @@ function datagrid_show_form(field_id, formurl, onsubmit) {
 }
 
 /*
- * Deselect every rows.
+ * Deselect all rows.
  * - table: JQuery DataTables object (returned by the initialisation method)
  */
 function datagrid_deselect_rows(table) {
