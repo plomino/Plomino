@@ -677,12 +677,19 @@ class PlominoForm(ATFolder):
             all_fields = self.getFormFields(includesubforms=includesubforms)
             matching_fields = [f for f in all_fields if f.id == fieldname]
             if matching_fields:
-                if len(matching_fields) == 1:
-                    field = matching_fields[0]
-                else:
-                    raise (PlominoDesignException,
-                        'Ambiguous fieldname: %s' %`[
-                            '/'.join(f.getPhysicalPath()) for f in matching_fields]`)
+                field = matching_fields[0]
+                if len(matching_fields) > 1:
+                    matches = {}
+                    for f in matching_fields:
+                        fpath = '/'.join(f.getPhysicalPath())
+                        c = matches.setdefault(fpath, 0)
+                        matches[fpath] = c+1
+                    report = ', '.join(
+                            ['%s (occurs %s times)'%(f,c)
+                                for f,c in matches.items()])
+                    logger.warning('Ambiguous fieldname: %s, picked %s'%(
+                        report,
+                        '/'.join(field.getPhysicalPath())))
         return field
 
     security.declarePublic('computeFieldValue')
