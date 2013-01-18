@@ -312,7 +312,7 @@ class PlominoForm(ATFolder):
             REQUEST.RESPONSE.redirect(db.absolute_url())
 
     security.declarePublic('getFormFields')
-    def getFormFields(self, includesubforms=False, doc=None, applyhidewhen=False, validation_mode=False, request=None):
+    def getFormFields(self, includesubforms=False, doc=None, applyhidewhen=False, validation_mode=False, request=None, deduplicate=True):
         """ Get fields
         """
         if not request and hasattr(self, 'REQUEST'):
@@ -321,19 +321,47 @@ class PlominoForm(ATFolder):
         fieldlist = form.objectValues(spec='PlominoField')
         result = [f for f in fieldlist] # Convert from LazyMap to list
         if applyhidewhen:
-            doc = doc or TemporaryDocument(self.getParentDatabase(), self, request, validation_mode=validation_mode)
+            doc = doc or TemporaryDocument(
+                    self.getParentDatabase(), self, request,
+                    validation_mode=validation_mode)
             layout = self.applyHideWhen(doc)
             result = [f for f in result if """<span class="plominoFieldClass">%s</span>""" % f.id in layout]
         result.sort(key=lambda elt: elt.id.lower())
         if includesubforms:
             subformsseen = []
-            for subformname in self.getSubforms(doc, applyhidewhen, validation_mode=validation_mode):
+            for subformname in self.getSubforms(
+                    doc, applyhidewhen, validation_mode=validation_mode):
                 if subformname in subformsseen:
                     continue
                 subform = self.getParentDatabase().getForm(subformname)
                 if subform:
-                    result=result + subform.getFormFields(includesubforms=True, doc=doc, applyhidewhen=applyhidewhen, validation_mode=validation_mode, request=request)
+                    result = result + subform.getFormFields(
+                            includesubforms=True,
+                            doc=doc,
+                            applyhidewhen=applyhidewhen,
+                            validation_mode=validation_mode,
+                            request=request,
+                            deduplicate=False)
                 subformsseen.append(subformname)
+
+        if deduplicate:
+            # Deduplicate, preserving order
+            seen = {}
+            deduped = []
+            for f in result:
+                fpath = '/'.join(f.getPhysicalPath())
+                if fpath in seen:
+                    seen[fpath] = seen[fpath]+1
+                    continue
+                seen[fpath] = 1
+                deduped.append(f)
+            result = deduped
+
+            report = ', '.join(
+                    ['%s (occurs %s times)'%(f,c) for f,c in seen.items() if c > 1])
+            if report:
+                logger.debug('Ambiguous fieldnames: %s'%report)
+
         return result
 
     security.declarePublic('getHidewhenFormulas')
@@ -388,7 +416,7 @@ class PlominoForm(ATFolder):
         html_content = self.applyHideWhen(doc, silent_error=False)
 
         # get the field lists
-        fields = self.getFormFields(doc=doc, applyhidewhen=False, request=request)
+        fields = self.getFormFields(doc=doc, request=request)
         fields_in_layout = []
         fieldids_not_in_layout = []
         for field in fields:
@@ -667,7 +695,7 @@ class PlominoForm(ATFolder):
 
     security.declarePublic('getFormField')
     def getFormField(self, fieldname, includesubforms=True):
-        """return the field
+        """ Return the field
         """
         form = self.getForm()
 
@@ -678,18 +706,6 @@ class PlominoForm(ATFolder):
             matching_fields = [f for f in all_fields if f.id == fieldname]
             if matching_fields:
                 field = matching_fields[0]
-                if len(matching_fields) > 1:
-                    matches = {}
-                    for f in matching_fields:
-                        fpath = '/'.join(f.getPhysicalPath())
-                        c = matches.setdefault(fpath, 0)
-                        matches[fpath] = c+1
-                    report = ', '.join(
-                            ['%s (occurs %s times)'%(f,c)
-                                for f,c in matches.items()])
-                    logger.warning('Ambiguous fieldname: %s, picked %s'%(
-                        report,
-                        '/'.join(field.getPhysicalPath())))
         return field
 
     security.declarePublic('computeFieldValue')
@@ -762,9 +778,9 @@ class PlominoForm(ATFolder):
         """ read submitted values in REQUEST and store them in document according
         fields definition
         """
-        all_fields = self.getFormFields(includesubforms=True, doc=doc, applyhidewhen=False, validation_mode=False, request=REQUEST)
+        all_fields = self.getFormFields(includesubforms=True, doc=doc, request=REQUEST)
         if applyhidewhen:
-            displayed_fields = self.getFormFields(includesubforms=True, doc=doc, applyhidewhen=True, validation_mode=False, request=REQUEST)
+            displayed_fields = self.getFormFields(includesubforms=True, doc=doc, applyhidewhen=True, request=REQUEST)
 
         for f in all_fields:
             mode = f.getFieldMode()
