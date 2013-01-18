@@ -37,7 +37,7 @@
                     } );
             
                     jq('#${fieldname}_addrow').click(function() {
-                        datagrid_add_row(${fieldname}_datatable, '${fieldname}', this.hrefkj/);
+                        datagrid_add_row(${fieldname}_datatable, '${fieldname}', this.href);
                     });
                     jq('#${fieldname}_editrow').click(function() {
                         datagrid_edit_row(${fieldname}_datatable, '${fieldname}', this.href);
