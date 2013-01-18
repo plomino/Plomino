@@ -347,19 +347,21 @@ class PlominoForm(ATFolder):
         if deduplicate:
             # Deduplicate, preserving order
             seen = {}
+            report = False
             deduped = []
             for f in result:
                 fpath = '/'.join(f.getPhysicalPath())
                 if fpath in seen:
                     seen[fpath] = seen[fpath]+1
+                    report = True
                     continue
                 seen[fpath] = 1
                 deduped.append(f)
             result = deduped
 
-            report = ', '.join(
-                    ['%s (occurs %s times)'%(f,c) for f,c in seen.items() if c > 1])
             if report:
+                report = ', '.join(
+                        ['%s (occurs %s times)'%(f,c) for f,c in seen.items() if c > 1])
                 logger.debug('Ambiguous fieldnames: %s'%report)
 
         return result
@@ -775,8 +777,8 @@ class PlominoForm(ATFolder):
 
     security.declarePublic('readInputs')
     def readInputs(self, doc, REQUEST, process_attachments=False, applyhidewhen=True, validation_mode=False):
-        """ read submitted values in REQUEST and store them in document according
-        fields definition
+        """ Read submitted values in REQUEST and store them in document
+        according to fields definition.
         """
         all_fields = self.getFormFields(includesubforms=True, doc=doc, request=REQUEST)
         if applyhidewhen:
@@ -794,10 +796,12 @@ class PlominoForm(ATFolder):
                         v = f.processInput(submittedValue, doc, process_attachments, validation_mode=validation_mode)
                         doc.setItem(fieldName, v)
                 else:
-                    #the field was not submitted, probably because it is not part of the form (hide-when, ...)
-                    #so we just let it unchanged, but with SELECTION or DOCLINK, we need to presume it was empty
-                    #(as SELECT/checkbox/radio tags do not submit an empty value, they are just missing
-                    #in the querystring)
+                    # The field was not submitted, probably because it is
+                    # not part of the form (hide-when, ...) so we just leave
+                    # it unchanged. But with SELECTION or DOCLINK, we need
+                    # to presume it was empty (as SELECT/checkbox/radio tags
+                    # do not submit an empty value, they are just missing
+                    # in the querystring)
                     if applyhidewhen and f in displayed_fields:
                         fieldtype = f.getFieldType()
                         if fieldtype == "SELECTION" or fieldtype == "DOCLINK":
@@ -805,7 +809,7 @@ class PlominoForm(ATFolder):
 
     security.declareProtected(READ_PERMISSION, 'searchDocuments')
     def searchDocuments(self,REQUEST):
-        """search documents in the view matching the submitted form fields values
+        """ Search documents in the view matching the submitted form fields values
         """
         if self.onSearch:
             # Manually generate a result set
