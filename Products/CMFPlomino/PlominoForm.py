@@ -687,7 +687,7 @@ class PlominoForm(ATFolder):
                     report = ', '.join(
                             ['%s (occurs %s times)'%(f,c)
                                 for f,c in matches.items()])
-                    logger.debug('Ambiguous fieldname: %s, picked %s'%(
+                    logger.warning('Ambiguous fieldname: %s, picked %s'%(
                         report,
                         '/'.join(field.getPhysicalPath())))
         return field
