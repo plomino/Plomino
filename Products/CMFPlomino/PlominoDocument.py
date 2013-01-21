@@ -403,7 +403,7 @@ class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
 
         db = self.getParentDatabase()
         if form:
-            for f in form.getFormFields(includesubforms=True, doc=self, applyhidewhen=False):
+            for f in form.getFormFields(includesubforms=True, doc=self):
                 mode = f.getFieldMode()
                 fieldname = f.id
                 if mode in ["COMPUTED", "COMPUTEDONSAVE"] or (mode=="CREATION" and creation):
