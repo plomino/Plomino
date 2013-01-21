@@ -312,7 +312,7 @@ class PlominoForm(ATFolder):
             REQUEST.RESPONSE.redirect(db.absolute_url())
 
     security.declarePublic('getFormFields')
-    def getFormFields(self, includesubforms=False, doc=None, applyhidewhen=False, validation_mode=False, request=None):
+    def getFormFields(self, includesubforms=False, doc=None, applyhidewhen=False, validation_mode=False, request=None, deduplicate=True):
         """ Get fields
         """
         if not request and hasattr(self, 'REQUEST'):
@@ -321,19 +321,49 @@ class PlominoForm(ATFolder):
         fieldlist = form.objectValues(spec='PlominoField')
         result = [f for f in fieldlist] # Convert from LazyMap to list
         if applyhidewhen:
-            doc = doc or TemporaryDocument(self.getParentDatabase(), self, request, validation_mode=validation_mode)
+            doc = doc or TemporaryDocument(
+                    self.getParentDatabase(), self, request,
+                    validation_mode=validation_mode)
             layout = self.applyHideWhen(doc)
             result = [f for f in result if """<span class="plominoFieldClass">%s</span>""" % f.id in layout]
         result.sort(key=lambda elt: elt.id.lower())
         if includesubforms:
             subformsseen = []
-            for subformname in self.getSubforms(doc, applyhidewhen, validation_mode=validation_mode):
+            for subformname in self.getSubforms(
+                    doc, applyhidewhen, validation_mode=validation_mode):
                 if subformname in subformsseen:
                     continue
                 subform = self.getParentDatabase().getForm(subformname)
                 if subform:
-                    result=result + subform.getFormFields(includesubforms=True, doc=doc, applyhidewhen=applyhidewhen, validation_mode=validation_mode, request=request)
+                    result = result + subform.getFormFields(
+                            includesubforms=True,
+                            doc=doc,
+                            applyhidewhen=applyhidewhen,
+                            validation_mode=validation_mode,
+                            request=request,
+                            deduplicate=False)
                 subformsseen.append(subformname)
+
+        if deduplicate:
+            # Deduplicate, preserving order
+            seen = {}
+            report = False
+            deduped = []
+            for f in result:
+                fpath = '/'.join(f.getPhysicalPath())
+                if fpath in seen:
+                    seen[fpath] = seen[fpath]+1
+                    report = True
+                    continue
+                seen[fpath] = 1
+                deduped.append(f)
+            result = deduped
+
+            if report:
+                report = ', '.join(
+                        ['%s (occurs %s times)'%(f,c) for f,c in seen.items() if c > 1])
+                logger.debug('Ambiguous fieldnames: %s'%report)
+
         return result
 
     security.declarePublic('getHidewhenFormulas')
@@ -388,7 +418,7 @@ class PlominoForm(ATFolder):
         html_content = self.applyHideWhen(doc, silent_error=False)
 
         # get the field lists
-        fields = self.getFormFields(doc=doc, applyhidewhen=False, request=request)
+        fields = self.getFormFields(doc=doc, request=request)
         fields_in_layout = []
         fieldids_not_in_layout = []
         for field in fields:
@@ -667,7 +697,7 @@ class PlominoForm(ATFolder):
 
     security.declarePublic('getFormField')
     def getFormField(self, fieldname, includesubforms=True):
-        """return the field
+        """ Return the field
         """
         form = self.getForm()
 
@@ -677,12 +707,7 @@ class PlominoForm(ATFolder):
             all_fields = self.getFormFields(includesubforms=includesubforms)
             matching_fields = [f for f in all_fields if f.id == fieldname]
             if matching_fields:
-                if len(matching_fields) == 1:
-                    field = matching_fields[0]
-                else:
-                    raise (PlominoDesignException,
-                        'Ambiguous fieldname: %s' %`[
-                            '/'.join(f.getPhysicalPath()) for f in matching_fields]`)
+                field = matching_fields[0]
         return field
 
     security.declarePublic('computeFieldValue')
@@ -752,12 +777,12 @@ class PlominoForm(ATFolder):
 
     security.declarePublic('readInputs')
     def readInputs(self, doc, REQUEST, process_attachments=False, applyhidewhen=True, validation_mode=False):
-        """ read submitted values in REQUEST and store them in document according
-        fields definition
+        """ Read submitted values in REQUEST and store them in document
+        according to fields definition.
         """
-        all_fields = self.getFormFields(includesubforms=True, doc=doc, applyhidewhen=False, validation_mode=False, request=REQUEST)
+        all_fields = self.getFormFields(includesubforms=True, doc=doc, request=REQUEST)
         if applyhidewhen:
-            displayed_fields = self.getFormFields(includesubforms=True, doc=doc, applyhidewhen=True, validation_mode=False, request=REQUEST)
+            displayed_fields = self.getFormFields(includesubforms=True, doc=doc, applyhidewhen=True, request=REQUEST)
 
         for f in all_fields:
             mode = f.getFieldMode()
@@ -771,10 +796,12 @@ class PlominoForm(ATFolder):
                         v = f.processInput(submittedValue, doc, process_attachments, validation_mode=validation_mode)
                         doc.setItem(fieldName, v)
                 else:
-                    #the field was not submitted, probably because it is not part of the form (hide-when, ...)
-                    #so we just let it unchanged, but with SELECTION or DOCLINK, we need to presume it was empty
-                    #(as SELECT/checkbox/radio tags do not submit an empty value, they are just missing
-                    #in the querystring)
+                    # The field was not submitted, probably because it is
+                    # not part of the form (hide-when, ...) so we just leave
+                    # it unchanged. But with SELECTION or DOCLINK, we need
+                    # to presume it was empty (as SELECT/checkbox/radio tags
+                    # do not submit an empty value, they are just missing
+                    # in the querystring)
                     if applyhidewhen and f in displayed_fields:
                         fieldtype = f.getFieldType()
                         if fieldtype == "SELECTION" or fieldtype == "DOCLINK":
@@ -782,7 +809,7 @@ class PlominoForm(ATFolder):
 
     security.declareProtected(READ_PERMISSION, 'searchDocuments')
     def searchDocuments(self,REQUEST):
-        """search documents in the view matching the submitted form fields values
+        """ Search documents in the view matching the submitted form fields values
         """
         if self.onSearch:
             # Manually generate a result set
