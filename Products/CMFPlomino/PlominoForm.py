@@ -315,7 +315,8 @@ class PlominoForm(ATFolder):
     def getFormFields(self, includesubforms=False, doc=None, applyhidewhen=False, validation_mode=False, request=None, deduplicate=True):
         """ Get fields
         """
-        cache_key = "getFormFields_" + hash(doc)
+        db = self.getParentDatabase()
+        cache_key = "getFormFields_%d_%d" % (hash(self), hash(doc))
         cache = db.getRequestCache(cache_key)
         if cache:
             return cache
@@ -326,7 +327,7 @@ class PlominoForm(ATFolder):
         result = [f for f in fieldlist] # Convert from LazyMap to list
         if applyhidewhen:
             doc = doc or TemporaryDocument(
-                    self.getParentDatabase(), self, request,
+                    db, self, request,
                     validation_mode=validation_mode)
             layout = self.applyHideWhen(doc)
             result = [f for f in result if """<span class="plominoFieldClass">%s</span>""" % f.id in layout]
@@ -337,7 +338,7 @@ class PlominoForm(ATFolder):
                     doc, applyhidewhen, validation_mode=validation_mode):
                 if subformname in subformsseen:
                     continue
-                subform = self.getParentDatabase().getForm(subformname)
+                subform = db.getForm(subformname)
                 if subform:
                     result = result + subform.getFormFields(
                             includesubforms=True,
