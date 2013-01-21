@@ -315,6 +315,10 @@ class PlominoForm(ATFolder):
     def getFormFields(self, includesubforms=False, doc=None, applyhidewhen=False, validation_mode=False, request=None, deduplicate=True):
         """ Get fields
         """
+        cache_key = "getFormFields_" + hash(doc)
+        cache = db.getRequestCache(cache_key)
+        if cache:
+            return cache
         if not request and hasattr(self, 'REQUEST'):
             request = self.REQUEST
         form = self.getForm()
@@ -364,6 +368,7 @@ class PlominoForm(ATFolder):
                         ['%s (occurs %s times)'%(f,c) for f,c in seen.items() if c > 1])
                 logger.debug('Ambiguous fieldnames: %s'%report)
 
+        db.setRequestCache(cache_key, result)
         return result
 
     security.declarePublic('getHidewhenFormulas')
