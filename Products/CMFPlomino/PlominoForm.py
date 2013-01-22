@@ -316,7 +316,14 @@ class PlominoForm(ATFolder):
         """ Get fields
         """
         db = self.getParentDatabase()
-        cache_key = "getFormFields_%d_%d" % (hash(self), hash(doc))
+        cache_key = "getFormFields_%d_%d_%d_%d_%d_%d" % (
+                                        hash(self),
+                                        hash(doc),
+                                        includesubforms,
+                                        applyhidewhen,
+                                        validation_mode,
+                                        deduplicate
+                                        )
         cache = db.getRequestCache(cache_key)
         if cache:
             return cache
