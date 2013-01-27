@@ -840,14 +840,10 @@ class PlominoReplicationManager(Persistent):
         self.setReplicationDate(remoteUrl, repType, now)
 
     security.declarePublic('hideIt')
-    def hideIt(self, it, hideCar = PASSWORD_DISPLAY_CAR):
-        """return an hidden string to display
+    def hideIt(self, hidden, mask=PASSWORD_DISPLAY_CAR):
+        """ Return a hidden string to display
         """
-        if it:
-            count = len(it)
-        else:
-            count = 0
-        return hideCar*count
+        return mask * 12
 
     security.declarePublic('displayItNice')
     def displayItNice(self, it, hashMapName):
