@@ -672,6 +672,7 @@ class PlominoReplicationManager(Persistent):
     def setReplication(self, replication):
         """ Add the replication to the replication hashmap.
         """
+        # Raises exception if check fails:
         replication = self.checkReplication(replication)
         replications = self.getReplications()        
         replications[str(replication['id'])] = replication
@@ -679,28 +680,31 @@ class PlominoReplicationManager(Persistent):
 
     security.declareProtected(EDIT_PERMISSION, 'getReplicationsDates')
     def getReplicationsDates(self):
-        """returns a hash map representing replication history
-        key : url
-        value : hash map {push, pull} 
+        """ Returns a hashmap representing replication history.
+        key: url
+        value: hash map {push, pull} 
         """
-        if not (hasattr(self,'replicationsDates')):
+        if not hasattr(self, 'replicationsDates'):
             self.replicationsDates = {}
         return self.replicationsDates
 
     security.declareProtected(EDIT_PERMISSION, 'setReplicationsDates')
     def setReplicationsDates(self, repDates):
-        """sets the replications hashmap 
+        """ Sets the replications hashmap 
         """
         self.replicationsDates = repDates
         return self.replicationsDates
 
     security.declarePrivate('getReplicationDate')
     def getReplicationDate(self, remoteUrl, replicationtype):
-        """returns the replication date for id and type
+        """ Returns the replication date for id and type
         """
-        #test params
+        # test params
         if not replicationtype in REPLICATION_TYPES.keys():
-            raise PlominoReplicationException, 'Unknown replication type "' + replication['repType'] + '" (' + str(REPLICATION_TYPES.keys()) + ' expected)'
+            raise PlominoReplicationException, (
+                    'Unknown replication type "%s" (%s expected)' % (
+                        replication['repType'],
+                        ', '.join(REPLICATION_TYPES.keys())))
 
         #push pull not allowed
         if replicationtype == 'pushpull':
@@ -933,15 +937,15 @@ class PlominoReplicationManager(Persistent):
         if not replication.has_key('repType'):
             errors.append("'repType' (replication type) not set")
         elif not replication['repType'] in REPLICATION_TYPES.keys():
-            errors.append('Unknown replication type: %s '
+            errors.append('Unknown replication type: "%s" '
                     '(%s expected)' % (
                         replication['repType'],
                         ', '.join(REPLICATION_TYPES.keys())))
         if not replication.has_key('whoWins'):
             errors.append("'whoWins' (conflict resolution type) not set")
         elif not replication['whoWins'] in CONFLICT_RESOLUTION_TYPE.keys():
-            errors.append('Unknown conflict resolution type: '
-                    '%s (%s expected)' % (
+            errors.append('Unknown conflict resolution type: "%s" '
+                    '(%s expected)' % (
                         replication['whoWins'],
                         ', '.join(CONFLICT_RESOLUTION_TYPE.keys())))
         if not replication.has_key('scheduled'):
@@ -958,12 +962,14 @@ class PlominoReplicationManager(Persistent):
             errors.append("'id' required when referring to "
                     "existing replication")
         if not replication['mode'] in REPLICATION_MODES.keys():
-            errors.append('Unknown replication mode: '
-                    '%s (%s expected)' % (
+            errors.append('Unknown replication mode: "%s" '
+                    '(%s expected)' % (
                         replication['mode'],
                         ', '.join(REPLICATION_MODES.keys())))
         if errors:
-            raise PlominoReplicationException, 'Replication configuration issues: %s' % '\n'.join(errors)
+            raise PlominoReplicationException, (
+                    'Replication configuration issues: %s' %
+                    '\n'.join(errors))
         else:
             return replication
 
