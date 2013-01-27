@@ -19,7 +19,7 @@ import interfaces
 
 from Products.CMFDynamicViewFTI.browserdefault import BrowserDefaultMixin
 
-from Products.CMFPlomino.config import PROJECTNAME
+from Products.CMFPlomino.config import *
 from exceptions import PlominoScriptException
 
 ##code-section module-header #fill in your manual code here
