@@ -706,11 +706,13 @@ class PlominoReplicationManager(Persistent):
                         replication['repType'],
                         ', '.join(REPLICATION_TYPES.keys())))
 
-        #push pull not allowed
+        # pushpull not allowed
         if replicationtype == 'pushpull':
-            raise PlominoReplicationException, 'Unable to return two dates for push pull. Choose push or pull.'
+            raise PlominoReplicationException, (
+                    'Unable to return two dates for push pull. '
+                    'Choose push or pull.')
 
-        #get hash map
+        # get hashmap
         repDates = self.getReplicationsDates()
 
         #test if remoteurl is in
@@ -724,53 +726,64 @@ class PlominoReplicationManager(Persistent):
 
     security.declarePrivate('setReplicationDate')
     def setReplicationDate(self, remoteUrl, replicationtype, date):
-        """sets the replication date for url and type
+        """ Sets the replication date for URL and type
         """
         if not replicationtype in REPLICATION_TYPES.keys():
-            raise PlominoReplicationException, 'Unknown replication type "' + replication['repType'] + '" (' + str(REPLICATION_TYPES.keys()) + ' expected)'
+            raise PlominoReplicationException, (
+                    'Unknown replication type "%s" (%s expected)' % (
+                        replication['repType'],
+                        ', '.join(REPLICATION_TYPES.keys())))
 
-        #get hash map
+        # get hashmap
         repDates = self.getReplicationsDates()
 
-        #get url dates
+        # get url dates
         if repDates.has_key(remoteUrl):
             repDate = repDates[remoteUrl]
         else:
-            repDate = {'push' : None, 'pull' : None}
+            repDate = {'push': None, 'pull': None}
 
-        #add parameters
+        # add parameters
         if replicationtype == 'pushpull':
             repDate['push'] = date
             repDate['pull'] = date
         else:
             repDate[replicationtype] = date
 
-        #add it
+        # add it
         repDates[remoteUrl] = repDate
 
-        #set
+        # set
         self.setReplicationsDates(repDates)
 
     security.declarePublic('displayDates')
     def displayDates(self, remoteUrl, context):
-        """returns a string for displaying dates on template
+        """ Returns a string for displaying dates on template
         """
-        #init
+        # init
         res = ''
 
-        #date formater
-        util = getToolByName(context, 'translation_service')
+        # date formatter
+        translation_service = getToolByName(context, 'translation_service')
 
         #dates
         datePush = self.getReplicationDate(remoteUrl, 'push')
         datePull = self.getReplicationDate(remoteUrl, 'pull')
         if datePush:
-            datePush = util.ulocalized_time(datePush, True, context, domain='plonelocales')
+            datePush = translation_service.ulocalized_time(
+                    datePush, 
+                    long_format=True,
+                    context=context,
+                    domain='plonelocales')
             res = 'last push : ' + str(datePush) + ', '
         else: 
             res = 'no last push, '
         if datePull:
-            datePull = util.ulocalized_time(datePull, True, context, domain='plonelocales')
+            datePull = translation_service.ulocalized_time(
+                    datePull,
+                    long_format=True,
+                    context=context,
+                    domain='plonelocales')
             res = res + 'last pull : ' + str(datePull)
         else: 
             res = res + 'no last pull'    
@@ -778,48 +791,50 @@ class PlominoReplicationManager(Persistent):
 
     security.declarePrivate('setReplicationMode')
     def setReplicationMode(self, remoteId, mode):
-        """sets the replication mode for url 
+        """ Sets the replication mode for URL 
         """
-        #test params
-        if (mode != 'view') and (mode != 'edit') and (mode != 'add'):
-            raise PlominoReplicationException, "Replication mode expected : view, edit or add"
+        # test params
+        if mode not in ('view', 'edit', 'add'):
+            raise PlominoReplicationException, (
+                    "Replication mode expected : view, edit or add")
 
         replicationEditingId = self.getReplicationEditingId()
+        if replicationEditingId and mode == 'edit':
+            raise PlominoReplicationException, (
+                    "Multiple replication editing forbidden")
 
-        if (replicationEditingId) and (mode =='edit'):
-            raise PlominoReplicationException, "Multiple replication editing forbidden"
+        if replicationEditingId and mode =='add':
+            raise PlominoReplicationException, (
+                    "Unable to add, another replication already "
+                    "being edited or added")
 
-        if (replicationEditingId) and (mode =='add'):
-            raise PlominoReplicationException, "Unable to add, another replication already editing or adding"
-
-        #current replication
+        # current replication
         replication = self.getReplication(replicId)
         if not replication:
-            raise PlominoReplicationException, "Replication unknown (%s)" % (str(replicId))
+            raise PlominoReplicationException, (
+                    "Replication unknown (%s)" % replicId)
 
-        #add parameter
+        # add parameter
         replication['mode'] = mode
 
-        #set
+        # set
         self.setReplication(replication)
 
     security.declarePublic('startReplicationRemote')
-    def startReplicationRemote(self, REQUEST = None):
-        """flags the begining of the transaction        
+    def startReplicationRemote(self, REQUEST=None):
+        """ Flags the start of the transaction (remote).
         """
-        if not REQUEST is None:
-            remoteUrl = REQUEST.get('RemoteUrl',None)
-            repType = REQUEST.get('repType',None)
+        if REQUEST:
+            remoteUrl = REQUEST.get('RemoteUrl', None)
+            repType = REQUEST.get('repType', None)
         else:
             remoteUrl = self.absolute_url()
             repType = 'push'
-
         self.startReplication(remoteUrl, repType)
 
-
     security.declarePublic('startReplication')
-    def startReplication(self,remoteUrl, repType):
-        """flags the beginning of the transaction        
+    def startReplication(self, remoteUrl, repType):
+        """ Flags the start of the transaction (local).
         """
         now = DateTime().toZone('UTC')
         self.setReplicationDate(remoteUrl, repType, now)
