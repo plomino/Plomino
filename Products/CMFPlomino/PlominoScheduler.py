@@ -10,27 +10,29 @@
 __author__ = """Xavier PERROT <xavier.perrot@makina-corpus.com>"""
 __docformat__ = 'plaintext'
 
-from Persistence import Persistent
-from Products.CMFPlomino.config import *
-
-from Products.CMFPlomino.exceptions import PlominoReplicationException
+# Third party
 try:
     from Products.ZpCron.crontab import CronTab
     from Products.ZpCron.Product import ZpCron
 except:
     pass
-import StringIO
+
+# Zope
+from Persistence import Persistent
+
+# Plomino
+from Products.CMFPlomino.config import *
+from Products.CMFPlomino.exceptions import PlominoReplicationException
+
 
 class PlominoScheduler(Persistent):
-    """Plomino scheduler features
+    """ Plomino scheduler features
     """
     security = ClassSecurityInfo()
 
-
     security.declarePrivate('managePlominoCronTab')
-    def managePlominoCronTab(self, onDelete = False):
-        """
-        delete / set the cron configuration for 
+    def managePlominoCronTab(self, onDelete=False):
+        """ Delete / set the cron configuration for
         - agents
         - base replication
         """
@@ -41,8 +43,8 @@ class PlominoScheduler(Persistent):
         except:
             cronObj = None
 
-        if (cronObj):
-            #buid hashmap
+        if cronObj:
+            #build hashmap
             tabCron = self.parseCronTab(cronObj)
 
             #base url
@@ -56,21 +58,34 @@ class PlominoScheduler(Persistent):
 
             #rebuild base agents commands
             for agent in self.getAgents():
-                if (agent.getScheduled()) and not(onDelete and agent.id == self.id):
-                    userAgent = self.acl_users.absolute_url(1) + ':' + agent.getAgentUser()
+                if (agent.getScheduled() and not
+                        (onDelete and agent.id == self.id)):
+                    userAgent = '%s:%s' % (
+                            self.acl_users.absolute_url(1),
+                            agent.getAgentUser())
                     if not userAgent.startswith('/'):
                         userAgent = '/' + userAgent
-                    newTabCron[agent.absolute_url(1) + '/runAgent'] = {'user':userAgent,'cron':agent.getCron(),}
+                    newTabCron[agent.absolute_url(1) + '/runAgent'] = {
+                            'user': userAgent,
+                            'cron': agent.getCron()
+                            }
 
             #rebuild replication commands
             replications = self.getReplications()
             for replicationId in replications:
                 replication = self.getReplication(replicationId)
                 if replication['scheduled']:
-                    username = self.acl_users.absolute_url(1) + ':' + replication['username']
+                    username = '%s:%s' % (
+                            self.acl_users.absolute_url(1)
+                            replication['username'])
                     if not username.startswith('/'):
                         username = '/' + username
-                    newTabCron[baseUrl + '/replicate?replicationId='+replicationId] = {'user':username,'cron':replication['cron'],}
+                    newTabCron[
+                            '%s/replicate?replicationId=%s' % (
+                                baseUrl, replicationId)] = {
+                                        'user': username,
+                                        'cron': replication['cron']
+                                        }
 
             #write file
             fileContent = ''
@@ -88,10 +103,9 @@ class PlominoScheduler(Persistent):
 
     security.declarePrivate('parseCronTab')
     def parseCronTab(self,cronObj):
-        """
-        buid a hashmap representing file
-        key : action url (command)
-        value : date, user, cron, params
+        """ Build a hashmap representing file
+        key: action url (command)
+        value: date, user, cron, params
         """
         #initialization
         res = {}
@@ -129,6 +143,8 @@ class PlominoScheduler(Persistent):
             elif line[0].isdigit() or line[0]=='*':
                 line = line.split(None, 5)
                 #user
-                res[line[5]]={'user':currentUser,
-                              'cron':' '.join(line[:5]),}
+                res[line[5]] = {
+                        'user': currentUser,
+                        'cron': ' '.join(line[:5])
+                        }
         return res

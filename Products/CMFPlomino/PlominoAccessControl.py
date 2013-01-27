@@ -232,24 +232,25 @@ class PlominoAccessControl(Persistent):
 
     security.declarePublic('isCurrentUserReader')
     def isCurrentUserReader(self, doc):
-        """does the current user have read permission on db
-        (so Plone security is preserved)
-        and if Plomino_Readers defined on the doc, is he part of it ?
+        """ Does the current user have read permission on the db
+        (so Plone security is preserved)?
+        If Plomino_Readers is defined on the doc, is he part of it ?
         """
         isreader = False
         if self.checkUserPermission(READ_PERMISSION, doc):
-            allowed_readers = doc.getPlominoReaders()
+            allowed_readers = set(doc.getPlominoReaders())
             if '*' in allowed_readers or self.checkUserPermission(ACL_PERMISSION):
                 isreader = True
             else:
                 username = self.getCurrentUser().getUserName()
                 if username == "Anonymous User":
-                    user_groups_roles = ['Anonymous']
+                    user_groups_roles = set(['Anonymous'])
                 else:
-                    user_groups_roles = ['Anonymous', username] \
-                                   + self.getCurrentUserGroups() \
-                                   + self.getCurrentUserRoles()
-                if len([name for name in allowed_readers if name in user_groups_roles]) > 0:
+                    user_groups_roles = set(
+                            ['Anonymous', username]
+                            + self.getCurrentUserGroups()
+                            + self.getCurrentUserRoles())
+                if allowed_readers.intersection(user_groups_roles):
                     isreader = True
         return isreader
 

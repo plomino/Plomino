@@ -19,14 +19,24 @@ import interfaces
 
 from Products.CMFDynamicViewFTI.browserdefault import BrowserDefaultMixin
 
-from Products.CMFPlomino.config import *
+from Products.CMFPlomino.config import PROJECTNAME
 from exceptions import PlominoScriptException
 
 ##code-section module-header #fill in your manual code here
-from Products.Archetypes.public import *
 
-ACTION_TYPES = [["OPENFORM", "Open form"], ["OPENVIEW", "Open view"], ["CLOSE", "Close"], ["SAVE", "Save"], ["PYTHON", "Python script"], ["REDIRECT", "Redirect formula"]]
-ACTION_DISPLAY = [["LINK", "Link"], ["SUBMIT", "Submit button"], ["BUTTON", "Button"]]
+ACTION_TYPES = [
+        ["OPENFORM", "Open form"],
+        ["OPENVIEW", "Open view"],
+        ["CLOSE", "Close"],
+        ["SAVE", "Save"],
+        ["PYTHON", "Python script"],
+        ["REDIRECT", "Redirect formula"]
+        ]
+ACTION_DISPLAY = [
+        ["LINK", "Link"],
+        ["SUBMIT", "Submit button"],
+        ["BUTTON", "Button"]
+        ]
 ##/code-section module-header
 
 schema = Schema((
@@ -106,6 +116,7 @@ PlominoAction_schema = BaseSchema.copy() + \
 ##code-section after-schema #fill in your manual code here
 ##/code-section after-schema
 
+
 class PlominoAction(BaseContent, BrowserDefaultMixin):
     """
     """
@@ -137,17 +148,29 @@ class PlominoAction(BaseContent, BrowserDefaultMixin):
             return db.absolute_url() + '/checkBeforeOpenDatabase'
         elif self.ActionType == "PYTHON":
             if target is None:
-                targetid="None"
+                targetid = "None"
             else:
-                targetid=target.id
-            return self.absolute_url() + '/runScript?target=%s&form_id=%s'%(targetid, form_id)
+                targetid = target.id
+            return '%s/runScript?target=%s&form_id=%s' % (
+                    self.absolute_url(),
+                    targetid,
+                    form_id)
         elif self.ActionType == "REDIRECT":
             try:
-                redirecturl=self.runFormulaScript("action_"+self.getParentNode().id+"_"+self.id+"_script", target, self.Content, True, form_id)
+                redirecturl = self.runFormulaScript(
+                        'action_%s_%s_script' % (
+                            self.getParentNode().id,
+                            self.id),
+                        target,
+                        self.Content,
+                        True,
+                        form_id)
                 return str(redirecturl)
             except PlominoScriptException, e:
-                return "javascript:alert(\"Error: %s\")" % ('formula error in redirect action ' + self.Title())
-        else: # "CLOSE", "SAVE"
+                return ('javascript:alert('
+                        '"Error: formula error in redirect action %s")' %
+                        self.Title())
+        else:  # "CLOSE", "SAVE"
             return '.'
 
     security.declareProtected(READ_PERMISSION, 'runScript')
@@ -166,10 +189,16 @@ class PlominoAction(BaseContent, BrowserDefaultMixin):
 
         plominoReturnURL = plominoContext.absolute_url()
         try:
-            #RunFormula(plominoContext, "action_"+self.getParentNode().id+"_"+self.id, self.Content())
-            returnurl=self.runFormulaScript("action_"+self.getParentNode().id+"_"+self.id+"_script", plominoContext, self.Content, True, form_id)
-            if returnurl is None or returnurl=='':
-                returnurl=plominoReturnURL
+            returnurl = self.runFormulaScript(
+                        'action_%s_%s_script' % (
+                            self.getParentNode().id,
+                            self.id),
+                        plominoContext,
+                        self.Content,
+                        True,
+                        form_id)
+            if not returnurl:
+                returnurl = plominoReturnURL
             REQUEST.RESPONSE.redirect(returnurl)
         except PlominoScriptException, e:
             e.reportError('"%s" action failed' % self.Title())
@@ -177,9 +206,10 @@ class PlominoAction(BaseContent, BrowserDefaultMixin):
 
     security.declarePublic('at_post_edit_script')
     def at_post_edit_script(self):
-        """post edit
+        """ Standard AT post edit hook.
         """
-        self.cleanFormulaScripts("action_"+self.getParentNode().id+"_"+self.id)
+        self.cleanFormulaScripts(
+                'action_%s_%s' % (self.getParentNode().id, self.id))
 
 
 registerType(PlominoAction, PROJECTNAME)
@@ -187,6 +217,3 @@ registerType(PlominoAction, PROJECTNAME)
 
 ##code-section module-footer #fill in your manual code here
 ##/code-section module-footer
-
-
-

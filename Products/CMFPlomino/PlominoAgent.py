@@ -12,24 +12,31 @@
 __author__ = """Eric BREHAULT and Xavier PERROT <eric.brehault@makina-corpus.org>"""
 __docformat__ = 'plaintext'
 
-from AccessControl import ClassSecurityInfo
-from AccessControl.SecurityManagement import newSecurityManager
-from Products.Archetypes.atapi import *
-from zope.interface import implements
-import interfaces
-from zope.component import getUtility
+# Standard
+
+# Third party
 try:
     from plone.app.async.interfaces import IAsyncService
     ASYNC = True
 except:
     ASYNC = False
-    
+
+# Zope
+from AccessControl import ClassSecurityInfo
+from AccessControl.SecurityManagement import newSecurityManager
+from zope.component import getUtility
+from zope.interface import implements
+
+# CMF / Archetypes / Plone
+from Products.Archetypes.atapi import *
 from Products.CMFDynamicViewFTI.browserdefault import BrowserDefaultMixin
+
+# Plomino
 from exceptions import PlominoScriptException
 from Products.CMFPlomino.config import *
+import interfaces
 
 schema = Schema((
-
     StringField(
         name='id',
         widget=StringField._properties['widget'](
@@ -56,18 +63,20 @@ schema = Schema((
         default="CURRENT",
         widget=SelectionWidget(
             label="Run as",
-            description="Run the agent using current user access rights, or using the developer access rights.",
+            description="Run the agent using current user access rights, "
+                "or using the developer access rights.",
             label_msgid='CMFPlomino_label_AgentRunAs',
             description_msgid='CMFPlomino_help_AgentRunAs',
             i18n_domain='CMFPlomino',
         ),
-        vocabulary= [["CURRENT", "Current user"], ["OWNER", "Agent owner"]],
+        vocabulary=[
+            ["CURRENT", "Current user"],
+            ["OWNER", "Agent owner"]],
     ),
 ),
 )
 
-PlominoAgent_schema = BaseSchema.copy() + \
-    schema.copy()
+PlominoAgent_schema = BaseSchema.copy() + schema.copy()
 
 
 def run_async(context, *args, **kwargs):
@@ -90,7 +99,7 @@ class PlominoAgent(BaseContent, BrowserDefaultMixin):
     def at_post_edit_script(self):
         """
         """
-        self.cleanFormulaScripts("agent_"+self.id)
+        self.cleanFormulaScripts("agent_" + self.id)
 
     def __call__(self, *args):
         """
@@ -102,7 +111,12 @@ class PlominoAgent(BaseContent, BrowserDefaultMixin):
                 # user = self.getCurrentUser()
                 newSecurityManager(None, owner)
 
-            result = self.runFormulaScript("agent_"+self.id, plominoContext, self.Content, True, *args)
+            result = self.runFormulaScript(
+                    "agent_"+self.id,
+                    plominoContext,
+                    self.Content,
+                    True,
+                    *args)
             # if self.getRunAs() == "OWNER":
             #     newSecurityManager(None, user)
         except PlominoScriptException, e:
@@ -123,7 +137,12 @@ class PlominoAgent(BaseContent, BrowserDefaultMixin):
                 user = self.getOwner()
                 newSecurityManager(None, user)
 
-            result = self.runFormulaScript("agent_"+self.id, plominoContext, self.Content, True, *args)
+            result = self.runFormulaScript(
+                    "agent_"+self.id,
+                    plominoContext,
+                    self.Content,
+                    True,
+                    *args)
             if request and (request.get('REDIRECT', None) == "True"):
                 if result is not None:
                     plominoReturnURL = result
@@ -131,22 +150,29 @@ class PlominoAgent(BaseContent, BrowserDefaultMixin):
         except PlominoScriptException, e:
             # Exception logged already in runFormulaScript
             if request and request.get('RESPONSE'):
-                request.RESPONSE.setHeader('content-type', 'text/plain; charset=utf-8')
+                request.RESPONSE.setHeader(
+                        'content-type',
+                        'text/plain; charset=utf-8')
             return e.message
 
     security.declarePublic('runAgent_async')
     def runAgent_async(context, *args, **kwargs):
-        """ Run the agent in asynchronous mode. 
+        """ Run the agent in asynchronous mode.
         Pass a dictionary based on the current request.
         """
         request = dict(getattr(context, 'REQUEST', {}))
         if request:
-            for k,v in request.items():
+            for k, v in request.items():
                 if type(v) not in [str, unicode]:
                     del request[k]
 
         async = getUtility(IAsyncService)
-        async.queueJob(run_async, context, original_request=request, *args, **kwargs)
+        async.queueJob(
+                run_async,
+                context,
+                original_request=request,
+                *args,
+                **kwargs)
 
 
 registerType(PlominoAgent, PROJECTNAME)
@@ -154,6 +180,3 @@ registerType(PlominoAgent, PROJECTNAME)
 
 ##code-section module-footer #fill in your manual code here
 ##/code-section module-footer
-
-
-

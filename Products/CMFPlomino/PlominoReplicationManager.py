@@ -10,50 +10,62 @@
 __author__ = """Xavier PERROT  - Eric BREHAULT <eric.brehault@makina-corpus.org>"""
 __docformat__ = 'plaintext'
 
-from Products.CMFPlomino.config import *
-
-from DateTime import DateTime
-from cStringIO import StringIO
-from Acquisition import *
-from index.PlominoIndex import PlominoIndex
-from HttpUtils import authenticateAndLoadURL, authenticateAndPostToURL
-from Products.CMFCore.utils import getToolByName
-from Products.CMFPlomino.exceptions import PlominoReplicationException
-from Products.CMFPlomino.PlominoUtils import StringToDate
-from Products.CMFPlomino.PlominoUtils import escape_xml_illegal_chars
-import re
-from Persistence import Persistent
-from persistent.dict import PersistentDict
+# Standard
 from xml.dom.minidom import getDOMImplementation
 from xml.dom.minidom import parseString
 from xml.parsers.expat import ExpatError
-import xmlrpclib
 import codecs
-import os
-import sys
-import glob
-import transaction
-
-from ZPublisher.HTTPRequest import FileUpload
 import csv
+import glob
+import os
+import transaction
+import xmlrpclib
 
 import logging
 logger = logging.getLogger("Replication")
+
+# Zope
+from Acquisition import *
+from DateTime import DateTime
+from Persistence import Persistent
+from persistent.dict import PersistentDict
+from ZPublisher.HTTPRequest import FileUpload
+
+# CMF / Archetypes / Plone
+from Products.CMFCore.utils import getToolByName
+
+# Plomino
+from Products.CMFPlomino.config import *
+from HttpUtils import authenticateAndLoadURL
+from HttpUtils import authenticateAndPostToURL
+from Products.CMFPlomino.exceptions import PlominoReplicationException
+from Products.CMFPlomino.PlominoUtils import StringToDate
+from Products.CMFPlomino.PlominoUtils import escape_xml_illegal_chars
 
 REMOTE_DOC_ID_SEPARATOR = '#'
 REMOTE_DOC_DATE_SEPARATOR = '@'
 REMOTE_DOC_IDS_HEADER = 'REMOTE_DOC_IDS'
 REMOTE_URL_ADDED = 'url to replicate with'
-REPLICATION_TYPES = {'push' : 'push', 'pull' : 'pull', 'pushpull' : 'push and pull'}
-CONFLICT_RESOLUTION_TYPE = {'localwins' : 'local wins', 'remotewins' : 'remote wins', 'lastwins' : 'last wins'}
-REPLICATION_MODES = {'view' : 'view', 'edit' : 'edit', 'add' : 'add'}
+REPLICATION_TYPES = {
+        'push': 'push',
+        'pull': 'pull',
+        'pushpull': 'push and pull'}
+CONFLICT_RESOLUTION_TYPE = {
+        'localwins': 'local wins',
+        'remotewins': 'remote wins',
+        'lastwins': 'last wins'}
+REPLICATION_MODES = {
+        'view': 'view',
+        'edit': 'edit',
+        'add': 'add'}
 PASSWORD_DISPLAY_CAR = '*'
-PLOMINO_IMPORT_SEPARATORS = {'semicolon (;)' : ';',
-                             'comma (,)' : ',', 
-                             'tabulation' : '\t', 
-                             'white space' : ' ',
-                             'end of line' : '\n',
-                             'dash (-)' : '-'}
+PLOMINO_IMPORT_SEPARATORS = {
+        'semicolon (;)': ';',
+        'comma (,)': ',',
+        'tabulation': '\t',
+        'white space': ' ',
+        'end of line': '\n',
+        'dash (-)': '-'}
 
 # From http://hg.tryton.org/trytond/file/7fefd5066a68/trytond/protocols/xmlrpc.py
 # vvv FROM HERE
@@ -94,30 +106,28 @@ xmlrpclib.Unmarshaller.dispatch['struct'] = end_struct
 # ^^^ TO HERE 
 
 class PlominoReplicationManager(Persistent):
-    """Plomino replication push/pull features
+    """ Plomino replication push/pull features
     """
     security = ClassSecurityInfo()
 
     # Methods
     security.declareProtected(EDIT_PERMISSION, 'manage_replications')
     def manage_replications(self, REQUEST=None):
-        """replication form manager
+        """ Replication form manager
         """
         #init
         infoMsg = ''
         error = False
         actionType = REQUEST.get('actionType', None)
 
-        if actionType=='add':
-
+        if actionType == 'add':
             if not self.getReplicationEditingId():
                 #new replication
                 replication = self.newReplication()
                 replication['mode'] = 'add'
                 self.setReplication(replication)
 
-        elif actionType=='cancel':
-
+        elif actionType == 'cancel':
             #get the current replication editing
             replicationEditingId = self.getReplicationEditingId()
             #get replication
@@ -130,33 +140,39 @@ class PlominoReplicationManager(Persistent):
                     self.setReplication(replication)
 
         elif actionType=='save':
-
             #save params
             try:
-                infoMsg = infoMsg + self.saveReplication(REQUEST) + MSG_SEPARATOR
+                infoMsg = (infoMsg +
+                        self.saveReplication(REQUEST) +
+                        MSG_SEPARATOR)
             except PlominoReplicationException, e:
-                infoMsg = infoMsg + 'error while saving : %s' % (e) + MSG_SEPARATOR 
+                infoMsg = '%s error while saving: %s %s' % (
+                        infoMsg,
+                        e,
+                        MSG_SEPARATOR)
                 error = True    
         else:
             #actions on selection
             replicIds = REQUEST.get('selection', None)
             if replicIds:
                 #check if simple url
-                if type(replicIds)==str:
-                    replicIds=[replicIds]
+                if type(replicIds) == str:
+                    replicIds = [replicIds]
 
-                #get the replications
+                # get the replications
                 replications = self.getReplications()
 
                 if actionType=='replicate':
                     #launch replications
                     for replicId in replicIds:
-
                         error = False
                         try:
                             infoMsg = self.replicate(replicId)
                         except PlominoReplicationException, e:
-                            infoMsg = 'error while replicating ' + replicId + ' : %s' % (e) + MSG_SEPARATOR
+                            infoMsg = 'error while replicating %s: %s%s' % (
+                                    replicId,
+                                    e,
+                                    MSG_SEPARATOR)
                             error = True
 
                         #write message
@@ -170,7 +186,10 @@ class PlominoReplicationManager(Persistent):
                     try:
                         infoMsg = self.deleteReplications(replicIds)
                     except PlominoReplicationException, e:
-                        infoMsg = infoMsg + 'error while deleting all : %s' % (e) + MSG_SEPARATOR
+                        infoMsg = '%s error while deleting all: %s %s' % (
+                                infoMsg,
+                                e,
+                                MSG_SEPARATOR)
                         error = True
 
                 elif actionType=='edit':
@@ -183,10 +202,15 @@ class PlominoReplicationManager(Persistent):
                         self.setReplication(replication)
 
                 else:
-                    infoMsg = infoMsg + actionType + ' : unmanaged action' + MSG_SEPARATOR
+                    infoMsg = '%s %s: unmanaged action %s' % (
+                            infoMsg,
+                            actionType,
+                            MSG_SEPARATOR)
                     error = True
             else:
-                infoMsg = infoMsg + 'empty selection' + MSG_SEPARATOR
+                infoMsg = '%s empty selection %s' % (
+                        infoMsg,
+                        MSG_SEPARATOR)
                 error = True
 
         #write message
@@ -209,9 +233,16 @@ class PlominoReplicationManager(Persistent):
         for replicationId in replicationIds:
             try:
                 replications.pop(replicationId)
-                infoMsg = infoMsg + 'replication ' + str(replicationId) + ' deleted' + MSG_SEPARATOR
+                infoMsg = '%s replication %s deleted %s' % (
+                        infoMsg,
+                        str(replicationId),
+                        MSG_SEPARATOR)
             except PlominoReplicationException, e:
-                infoMsg = infoMsg + 'error while deletion of replication ' + replicationId + ' : %s' % (e) + MSG_SEPARATOR
+                infoMsg = '%s error deleting replication %s: %s %s' % (
+                        infoMsg,
+                        replicationId,
+                        e
+                        MSG_SEPARATOR)
                 error = True
 
         if error:
@@ -229,7 +260,9 @@ class PlominoReplicationManager(Persistent):
         try:
             replication = self.buidReplicationFromRequest(REQUEST)
         except PlominoReplicationException, e:
-            infoMsg = 'error while checking parameters : %s' % (e) + MSG_SEPARATOR
+            infoMsg = 'error while checking parameters: %s %s' % (
+                    e,
+                    MSG_SEPARATOR)
             raise PlominoReplicationException, infoMsg 
 
         #mode
@@ -257,7 +290,10 @@ class PlominoReplicationManager(Persistent):
         try:
             infoMsg = replication['remoteUrl'] + ' : ' + self.launchReplication(replication)
         except PlominoReplicationException, e:
-            infoMsg = 'error while replicating ' + replication['remoteUrl'] + ' : %s' % (e) + MSG_SEPARATOR
+            infoMsg = 'error while replicating %s: %s %s' % (
+                    replication['remoteUrl']
+                    e,
+                    MSG_SEPARATOR)
             error = True
 
         #launch replication
@@ -282,7 +318,10 @@ class PlominoReplicationManager(Persistent):
         try:
             self.checkReplication(replication)
         except PlominoReplicationException, e:
-            infoMsg = infoMsg + 'error while cheking parameters : %s' % (e) + MSG_SEPARATOR
+            infoMsg = '%s error while cheking parameters: %s %s' % (
+                    infoMsg,
+                    e,
+                    MSG_SEPARATOR)
             error = True
 
         #get remote documents ->  id:lastEditDate
@@ -290,51 +329,89 @@ class PlominoReplicationManager(Persistent):
             try:
                 remoteDocuments = self.getRemoteDocuments(replication)
             except PlominoReplicationException, e:
-                infoMsg = infoMsg + 'error while getting remote documents : %s' % (e) + MSG_SEPARATOR
+                infoMsg = '%serror while getting remote documents: %s%s' % (
+                        infoMsg,
+                        e,
+                        MSG_SEPARATOR)
                 error = True
 
         #get local documents
         if not error:
             if replication.has_key('restricttoview'):
                 restricttoview=replication['restricttoview']
-                if restricttoview is not None and not(restricttoview==''):
+                if restricttoview:
                     try:
-                        localDocuments = self.getView(restricttoview).getAllDocuments()
+                        view = self.getView(restricttoview)
+                        localDocuments = view.getAllDocuments()
                     except PlominoReplicationException, e:
-                        infoMsg = infoMsg + 'error while getting local documents : %s' % (e) + MSG_SEPARATOR
+                        infoMsg = '%serror while getting local documents: %s%s' % (
+                                infoMsg,
+                                e,
+                                MSG_SEPARATOR)
                         error = True
                 else:
                     localDocuments = self.getAllDocuments()
             else:
                 localDocuments = self.getAllDocuments()
 
-        #flag replication begin on remote
+        # flag replication begin on remote
         if not error:
             try:
                 authenticateAndLoadURL(replication['remoteUrl'] + '/startReplicationRemote?RemoteUrl='+ self.absolute_url() +'&repType='+replication['repType'],replication['username'],replication['password'])
+
+                authenticateAndLoadURL(
+                        '%s/startReplicationRemote'
+                        '?RemoteUrl=%s'
+                        '&repType=%s' % (
+                            replication['remoteUrl'],
+                            self.absolute_url()
+                            replication['repType']),
+                        replication['username'],
+                        replication['password'])
             except Exception, e:
-                infoMsg = infoMsg + 'error while flagging replication on remote : %s' % (e) + MSG_SEPARATOR
+                infoMsg = '%serror while flagging replication on remote: %s%s' % (
+                        infoMsg,
+                        e,
+                        MSG_SEPARATOR)
                 error = True
 
         #flag replication begin on local
-        lastReplicationDatePull = self.getReplicationDate(replication['remoteUrl'],'pull')
-        lastReplicationDatePush = self.getReplicationDate(replication['remoteUrl'],'push')
-        self.startReplication(replication['remoteUrl'],replication['repType'])   
+        lastReplicationDatePull = self.getReplicationDate(
+                replication['remoteUrl'],
+                'pull')
+        lastReplicationDatePush = self.getReplicationDate(
+                replication['remoteUrl'],
+                'push')
+        self.startReplication(
+                replication['remoteUrl'],
+                replication['repType'])   
 
 
         #push documents
         if not error:
-            if replication['repType']=='push' or replication['repType']=='pushpull':
+            if replication['repType'] in ('push', 'pushpull'):
                 for doc in localDocuments:
                     #check if document can be exported
-                    if self.exportableDoc(doc, remoteDocuments, lastReplicationDatePush, replication['whoWins']):
+                    if self.exportableDoc(
+                            doc,
+                            remoteDocuments,
+                            lastReplicationDatePush,
+                            replication['whoWins']):
                         #export
                         try:
-                            self.exportDocumentPush(doc, replication['remoteUrl'], replication['username'], replication['password'])
+                            self.exportDocumentPush(
+                                    doc,
+                                    replication['remoteUrl'],
+                                    replication['username'],
+                                    replication['password'])
                             #infoMsg = infoMsg + 'document ' + doc.getId() + ' : push done' + MSG_SEPARATOR
                             nbDocPushed = nbDocPushed + 1
                         except PlominoReplicationException, e:
-                            infoMsg = infoMsg + doc.getId() + ' push error : %s' % (e) + MSG_SEPARATOR
+                            infoMsg = '%s %s push error: %s%s' % (
+                                    infoMsg,
+                                    doc.getId(),
+                                    e,
+                                    MSG_SEPARATOR)
                             error = True
                     else:
                         #infoMsg = infoMsg + 'document ' + doc.getId() + ' : not pushed (not an error)' + MSG_SEPARATOR
@@ -342,17 +419,29 @@ class PlominoReplicationManager(Persistent):
 
         #pull documents
         if not error:
-            if replication['repType']=='pull' or replication['repType']=='pushpull':
+            if replication['repType'] in ('pull', 'pushpull'):
                 for docId in remoteDocuments:
                     #check if document can be imported
-                    if self.importableDoc(docId, remoteDocuments[docId], lastReplicationDatePull, replication['whoWins']):
+                    if self.importableDoc(
+                            docId,
+                            remoteDocuments[docId],
+                            lastReplicationDatePull,
+                            replication['whoWins']):
                         #import
                         try:
-                            self.importDocumentPull(docId, replication['remoteUrl'], replication['username'], replication['password'])
+                            self.importDocumentPull(
+                                    docId,
+                                    replication['remoteUrl'],
+                                    replication['username'],
+                                    replication['password'])
                             #infoMsg = infoMsg + 'document ' + docId + ' : pull done' + MSG_SEPARATOR
                             nbDocPulled = nbDocPulled + 1
                         except PlominoReplicationException, e:                            
-                            infoMsg = infoMsg + docId + ' pull error : %s' % (e) + MSG_SEPARATOR
+                            infoMsg = '%s%s pull error: %s%s' % (
+                                    infoMsg, 
+                                    docId,
+                                    e
+                                    MSG_SEPARATOR)
                             error = True
                     else:
                         #infoMsg = infoMsg + 'document ' + docId + ' : not pulled (not an error)' + MSG_SEPARATOR
@@ -384,17 +473,20 @@ class PlominoReplicationManager(Persistent):
 
     security.declareProtected(EDIT_PERMISSION, 'getRemoteDocuments')
     def getRemoteDocuments(self, replication):
-        """return the database documents
+        """ Return the database documents
         """
         self.checkReplication(replication)
 
         #get remote documents
-        url=replication['remoteUrl'] + '/getDocumentsIds'
+        url = replication['remoteUrl'] + '/getDocumentsIds'
         if replication.has_key('restricttoview'):
             restricttoview=replication['restricttoview']
-            if restricttoview is not None and not(restricttoview==''):
-                url=url+"?restricttoview="+restricttoview
-        remoteDocumentsIds = authenticateAndLoadURL(url, replication['username'], replication['password']).read()
+            if restricttoview:
+                url = url + "?restricttoview=" + restricttoview
+        remoteDocumentsIds = authenticateAndLoadURL(
+                url,
+                replication['username'],
+                replication['password']).read()
 
         #check if starts with REMOTE_DOC_IDS_HEADER
         if not remoteDocumentsIds.startswith(REMOTE_DOC_IDS_HEADER):
@@ -408,12 +500,12 @@ class PlominoReplicationManager(Persistent):
         result={}
         for d in docs:
             (docid, modifdate) = d.split(REMOTE_DOC_DATE_SEPARATOR)
-            result[docid]=DateTime(modifdate)
+            result[docid] = DateTime(modifdate)
         return result
 
     security.declareProtected(READ_PERMISSION, 'getDocumentsIds')
     def getDocumentsIds(self, REQUEST=None):
-        """return the database documents ids in a string
+        """ Return the database document ids in a string
         """
         if REQUEST is not None:
             restricttoview=REQUEST.get('restricttoview',None)
@@ -425,12 +517,16 @@ class PlominoReplicationManager(Persistent):
             docs = self.getAllDocuments()
         ids = REMOTE_DOC_IDS_HEADER+REMOTE_DOC_ID_SEPARATOR
         for d in docs:
-            ids=ids+d.id+REMOTE_DOC_DATE_SEPARATOR+d.getLastModified(asString=True)+REMOTE_DOC_ID_SEPARATOR
+            ids = (ids +
+                    d.id +
+                    REMOTE_DOC_DATE_SEPARATOR +
+                    d.getLastModified(asString=True) +
+                    REMOTE_DOC_ID_SEPARATOR)
         return ids
 
     security.declarePrivate('exportableDoc')
     def exportableDoc(self, doc, remoteDocuments, lastReplicationDate, whowins):
-        """check if document can be exported to remoteUrl
+        """ Check if document can be exported to remoteUrl
         """
         #initialization
         res = False
@@ -451,11 +547,17 @@ class PlominoReplicationManager(Persistent):
             #check dates
             if not lastReplicationDate:
                 #no replication before
-                res = (whowins == 'localwins') or ((whowins == 'lastwins') and (lastEditRemoteDocumentDate < lastEditDocumentDate))
+                res = (whowins == 'localwins') or (
+                        (whowins == 'lastwins') and 
+                        (lastEditRemoteDocumentDate < lastEditDocumentDate)
+                        )
             elif (lastEditDocumentDate > lastReplicationDate):
                 #check conflict
                 if (lastEditRemoteDocumentDate > lastReplicationDate):
-                    res = (whowins == 'localwins') or ((whowins == 'lastwins') and (lastEditRemoteDocumentDate < lastEditDocumentDate))
+                    res = (whowins == 'localwins') or (
+                            (whowins == 'lastwins') and 
+                            (lastEditRemoteDocumentDate < lastEditDocumentDate)
+                            )
                 else:
                    res = True
 
@@ -469,11 +571,16 @@ class PlominoReplicationManager(Persistent):
         """
         i = doc.id
         xmlstring=self.exportAsXML(docids=[i])
-        result = authenticateAndPostToURL(remoteUrl+"/importFromXML", username, password, '%s.%s' % (i, 'xml'), xmlstring.encode('utf-8'))
+        result = authenticateAndPostToURL(
+                remoteUrl+"/importFromXML",
+                username,
+                password,
+                '%s.%s' % (i, 'xml'),
+                xmlstring.encode('utf-8'))
 
     security.declarePrivate('importableDoc')
     def importableDoc(self, docId, lastEditRemoteDocumentDate, lastReplicationDate, whowins):
-        """check if document can be imported to remoteUrl
+        """ Check if document can be imported to remoteUrl
         """
         res = False
 
@@ -492,11 +599,17 @@ class PlominoReplicationManager(Persistent):
             #check dates
             if not lastReplicationDate:
                 #no replication before
-                res = (whowins == 'remotewins') or ((whowins == 'lastwins') and (lastEditRemoteDocumentDate > lastEditDocumentDate))
+                res = (whowins == 'remotewins') or (
+                        (whowins == 'lastwins') and
+                        (lastEditRemoteDocumentDate > lastEditDocumentDate)
+                        )
             elif (lastEditRemoteDocumentDate > lastReplicationDate):
                 #check conflict
                 if (lastEditDocumentDate > lastReplicationDate):
-                    res = (whowins == 'remotewins') or ((whowins == 'lastwins') and (lastEditRemoteDocumentDate > lastEditDocumentDate))
+                    res = (whowins == 'remotewins') or (
+                            (whowins == 'lastwins') and 
+                            (lastEditRemoteDocumentDate > lastEditDocumentDate)
+                            )
                 else:
                    res = True
 
@@ -508,68 +621,60 @@ class PlominoReplicationManager(Persistent):
         """ imports document from remoteurl
             send object as a .zexp stream via HTTP multipart POST
         """
-        f=authenticateAndLoadURL(remoteUrl+"/exportAsXML?docids="+i, username, password)
+        f = authenticateAndLoadURL(
+                remoteUrl+"/exportAsXML?docids="+i,
+                username,
+                password)
         self.importFromXML(xmlstring=f.read())
 
     security.declareProtected(EDIT_PERMISSION, 'getReplications')
     def getReplications(self):
-        """returns a hash map representing replication history
-        key : id
-        value : replication hash map 
+        """ Returns a hashmap representing replication history.
+        key: id
+        value: replication hash map 
         """
-        if not (hasattr(self,'replicationHistory')):
+        if not hasattr(self,'replicationHistory'):
             self.replicationHistory = {}
         return self.replicationHistory
 
     security.declareProtected(EDIT_PERMISSION, 'setReplications')
     def setReplications(self, replications):
-        """sets the replications hashmap 
+        """ Sets the replications hashmap.
         """
-        self.replicationHistory = replications
-
-        self.managePlominoCronTab()
-
+        self.replicationHistory = replications 
+        self.managePlominoCronTab() 
         return self.replicationHistory
 
     security.declareProtected(EDIT_PERMISSION, 'getReplicationEditingId')
     def getReplicationEditingId(self):
-        """returns the replication Id being edited
+        """ Returns the replication id being edited.
         """
         res = None
         replications = self.getReplications()
         for replicationId in replications:
             replication = self.getReplication(replicationId)
-            if replication['mode'] == 'edit' or replication['mode'] == 'add':
+            if replication['mode'] in ('edit', 'add'):
                 res = replicationId            
         return res
 
     security.declareProtected(EDIT_PERMISSION, 'getReplication')
-    def getReplication(self, i):
-        """returns the replication Id being edited
+    def getReplication(self, search_id):
+        """ Returns the replication id being edited.
         """
         res = None
-        # replication list
         replications = self.getReplications()
-        # search id
-        searchId = str(i)
-        if replications.has_key(searchId):
-            res = replications[searchId]
+        search_id = str(search_id)
+        if replications.has_key(search_id):
+            res = replications[search_id]
         return res
-
 
     security.declarePrivate('setReplication')
     def setReplication(self, replication):
-        """add the replication to the the replication hash map
+        """ Add the replication to the replication hashmap.
         """
-        #check replication
         replication = self.checkReplication(replication)
-                        
-        #replication list
         replications = self.getReplications()        
-
         replications[str(replication['id'])] = replication
-
-        #set
         self.setReplications(replications)
 
     security.declareProtected(EDIT_PERMISSION, 'getReplicationsDates')
@@ -807,67 +912,64 @@ class PlominoReplicationManager(Persistent):
 
     security.declarePrivate('checkReplication')
     def checkReplication(self, replication):
-        """tests the replication params
+        """ Test the replication parameters.
         """
-        try:
-            if not replication:
-                raise PlominoReplicationException, "replication empty"
-
-            if not replication.has_key('id'):
-                raise PlominoReplicationException, "id not set"
-            if not replication.has_key('name'):
-                raise PlominoReplicationException, "name not set"
-            if not replication.has_key('remoteUrl'):
-                raise PlominoReplicationException, "remote Url not set"
-            if not replication.has_key('username'):
-                raise PlominoReplicationException, "username not set"
-            if not replication.has_key('password'):
-                raise PlominoReplicationException, "password not set"
-            if not replication.has_key('repType'):
-                raise PlominoReplicationException, "replication type not set"
-            if not replication.has_key('whoWins'):
-                raise PlominoReplicationException, "conflict resolution type not set"
-            if not replication.has_key('scheduled'):
-                raise PlominoReplicationException, "scheduled type not set"
-            if not replication.has_key('restricttoview'):
-                raise PlominoReplicationException, "restricttoview not set"
-            if not replication.has_key('cron'):
-                raise PlominoReplicationException, "cron not set"
-            if not replication.has_key('mode'):
-                raise PlominoReplicationException, "mode not set"
-
-            if replication['mode'] != 'add' and not replication['id']:
-                raise PlominoReplicationException, "id required"
-
-            #name not checked
-
-            if not replication['remoteUrl']:
-                raise PlominoReplicationException, 'Remote URL required'
-            if replication['remoteUrl'] == self.absolute_url():
-                raise PlominoReplicationException, 'Replication on current base forbidden'
-
-            #user name and pwd not checked
-
-            if not replication['repType'] in REPLICATION_TYPES.keys():
-                raise PlominoReplicationException, 'Unknown replication type "' + replication['repType'] + '" (' + str(REPLICATION_TYPES.keys()) + ' expected)'
-
-            if not replication['whoWins'] in CONFLICT_RESOLUTION_TYPE.keys():
-                raise PlominoReplicationException, 'Unknown conflict resolution type "' + replication['whoWins'] + '" (' + str(CONFLICT_RESOLUTION_TYPE.keys()) + ' expected)'
-
-            if replication['scheduled'] and (not replication['cron'] or len(replication['cron'])==0):
-                raise PlominoReplicationException, 'Cron required if scheduled'
-
-            if not replication['mode'] in REPLICATION_MODES.keys():
-                raise PlominoReplicationException, 'Unknown replication mode "' + replication['mode'] + '" (' + str(REPLICATION_MODES.keys()) + ' expected)'
-
+        errors = []
+        if not replication:
+            errors.append("Replication empty")
+        if not replication.has_key('id'):
+            errors.append("'id' not set")
+        if not replication.has_key('name'):
+            errors.append("'name' not set")
+        if not replication.has_key('remoteUrl'):
+            errors.append("'remoteUrl' not set.")
+        elif replication['remoteUrl'] == self.absolute_url():
+            errors.append('Replication to current base forbidden')
+        if not replication.has_key('username'):
+            errors.append("'username' not set")
+        if not replication.has_key('password'):
+            errors.append("'password' not set")
+        #user name and pwd not checked
+        if not replication.has_key('repType'):
+            errors.append("'repType' (replication type) not set")
+        elif not replication['repType'] in REPLICATION_TYPES.keys():
+            errors.append('Unknown replication type: %s '
+                    '(%s expected)' % (
+                        replication['repType'],
+                        ', '.join(REPLICATION_TYPES.keys())))
+        if not replication.has_key('whoWins'):
+            errors.append("'whoWins' (conflict resolution type) not set")
+        elif not replication['whoWins'] in CONFLICT_RESOLUTION_TYPE.keys():
+            errors.append('Unknown conflict resolution type: '
+                    '%s (%s expected)' % (
+                        replication['whoWins'],
+                        ', '.join(CONFLICT_RESOLUTION_TYPE.keys())))
+        if not replication.has_key('scheduled'):
+            errors.append("'scheduled' type not set")
+        elif not replication.get('cron', None):
+            errors.append('Cron required if scheduled')
+        if not replication.has_key('restricttoview'):
+            errors.append("'restricttoview' not set")
+        if not replication.has_key('cron'):
+            errors.append("'cron' not set")
+        if not replication.has_key('mode'):
+            errors.append("'mode' not set")
+        if replication['mode'] != 'add' and not replication['id']:
+            errors.append("'id' required when referring to "
+                    "existing replication")
+        if not replication['mode'] in REPLICATION_MODES.keys():
+            errors.append('Unknown replication mode: '
+                    '%s (%s expected)' % (
+                        replication['mode'],
+                        ', '.join(REPLICATION_MODES.keys())))
+        if errors:
+            raise PlominoReplicationException, 'Replication configuration issues: %s' % '\n'.join(errors)
+        else:
             return replication
-
-        except PlominoReplicationException, e:
-            raise PlominoReplicationException, 'replication has problem : %s' % (e)
 
     security.declareProtected(EDIT_PERMISSION, 'manage_importation')
     def manage_importation(self, REQUEST=None):
-        """CSV import form manager
+        """ CSV import form manager.
         """
 
         #init
