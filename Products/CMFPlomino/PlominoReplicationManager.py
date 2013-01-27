@@ -846,46 +846,54 @@ class PlominoReplicationManager(Persistent):
         return mask * 12
 
     security.declarePublic('displayItNice')
-    def displayItNice(self, it, hashMapName):
-        """return a nice display title for type passed
+    def displayItNice(self, key, hashmap_name):
+        """ Return a nice display title for type passed.
         """
         res = None
-        if hashMapName == 'REPLICATION_TYPES':
-            hashmap = REPLICATION_TYPES
-        elif hashMapName == 'CONFLICT_RESOLUTION_TYPE':
-            hashmap = CONFLICT_RESOLUTION_TYPE
-        elif hashMapName == 'REPLICATION_MODES':
-            hashmap = REPLICATION_MODES
-        else:
-            hashmap = None
+        hashmap = {
+            'REPLICATION_TYPES': REPLICATION_TYPES,
+            'CONFLICT_RESOLUTION_TYPE': CONFLICT_RESOLUTION_TYPE,
+            'REPLICATION_MODES': REPLICATION_MODES}.get(
+                    hashmap_name, None)
         if hashmap:
-            if hashmap.has_key(it):
-                res = hashmap[it]         
+            if hashmap.has_key(key):
+                res = hashmap[key]         
         return res
 
     security.declarePublic('resetReplications')
     def resetReplications(self):
-        """reset the replication hashmap
+        """ Reset the replication hashmap
         """
         self.replicationHistory = {}
         self.replicationsDates = {}
 
     security.declarePrivate('getNewId')
     def getNewId(self):
-        """return a new id
+        """ Return a new id
         """
         res = 0
         replications = self.getReplications()
-        for replicId in replications:
-            if replicId > res:
-                res = int(replicId)
+        for r_id in replications:
+            if r_id > res:
+                res = int(r_id)
         return res + 1
 
     security.declarePrivate('newReplication')
     def newReplication(self):
-        """return an empty replication
+        """ Return an empty replication
         """
-        return self.buildReplication(self.getNewId(),'', REMOTE_URL_ADDED, '', '', 'pull', 'localwins', False, '', '', 'view')
+        return self.buildReplication(
+                self.getNewId(),
+                '',  # name
+                REMOTE_URL_ADDED,
+                '',  # username
+                '',  # password
+                'pull',
+                'localwins',
+                False,  # scheduled
+                '',  # cron
+                '',  # restricttoview
+                'view')
 
     security.declarePrivate('createReplication')
     def buidReplicationFromRequest(self, REQUEST = None):
