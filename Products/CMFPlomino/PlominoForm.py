@@ -579,13 +579,13 @@ class PlominoForm(ATFolder):
                     field_html % (
                         i,
                         doc.getRenderedItem(i, form=self)
-                        )
+                        ))
 
-        return html % { 
-            'raw_values': json.dumps(raw_values),
-            'parent_field': doc.Plomino_Parent_Field,
-            'fields': ''.join(field_items)
-            }
+        return html % {
+                'raw_values': json.dumps(raw_values),
+                'parent_field': doc.Plomino_Parent_Field,
+                'fields': ''.join(field_items)
+                }
 
     security.declarePrivate('_get_html_content')
     def _get_html_content(self):
