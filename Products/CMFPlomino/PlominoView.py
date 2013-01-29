@@ -63,7 +63,11 @@ schema = Schema((
         name='SelectionFormula',
         widget=TextAreaWidget(
             label="Selection formula",
-            description="The view selection formula is a line of Python code which should return True or False. The formula will be evaluated for each document in the database to decide if the document must be displayed in the view or not. plominoDocument is a reserved name in formulae, it returns the current Plomino document. Each document field value can be accessed directly as an attribute of the document: plominoDocument.<fieldname>",
+            description="""The view selection formula is a line of Python
+code which should return True or False. The formula will be evaluated for
+each document in the database to decide if the document must be displayed in
+the view or not. 'plominoDocument' is a reserved name in formulae: it
+returns the current Plomino document.""",
             label_msgid='CMFPlomino_label_SelectionFormula',
             description_msgid='CMFPlomino_help_SelectionFormula',
             i18n_domain='CMFPlomino',
