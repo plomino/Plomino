@@ -147,7 +147,6 @@ class ElementPortletRenderer(base.Renderer):
     def elementLayout(self):
         """Get the element layout to be displayed by the portlet
         """
-        #import pdb; pdb.set_trace()
         element = self.getElement()
         if element:
             return element.formLayout(self.request)

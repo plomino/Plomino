@@ -548,6 +548,16 @@ class PlominoDatabase(ATFolder, PlominoAccessControl, PlominoDesignManager, Plom
             cache = annotations[PLOMINO_REQUEST_CACHE_KEY] = dict()
         cache[key] = value
 
+    def cleanRequestCache(self, key=None):
+        if not hasattr(self, 'REQUEST'):
+            return None
+        annotations = IAnnotations(self.REQUEST)
+        if key:
+            cache = annotations.get(PLOMINO_REQUEST_CACHE_KEY)
+            del cache[key]
+        else: 
+            del annotations[PLOMINO_REQUEST_CACHE_KEY]
+
 registerType(PlominoDatabase, PROJECTNAME)
 # end of class PlominoDatabase
 

@@ -94,6 +94,10 @@ def migrate(db):
     if db.plomino_version=="1.15.1":
         # no migration needed here
         db.plomino_version = "1.16"
+    # TO BE ADDED FOR NEXT RELEASE
+    # if db.plomino_version=="1.16":
+    #     msg = migrate_to_1_17(db)
+    #     messages.append(msg)
     return messages
 
 def migrate_to_130(db):
@@ -415,4 +419,16 @@ def migrate_to_1_15_1(db):
 
     msg = "Migration to 1.15.1: re-fill BTreeFolders with existing file attachments "
     db.plomino_version = "1.15.1"
+    return msg
+
+def migrate_to_1_17(db):
+    """ items must be stored in PersistentDict
+    """
+    from persistent.dict import PersistentDict
+    for doc in db.getAllDocuments():
+        items = doc.items
+        if type(items) is not PersistentDict:
+            doc.items = PersistentDict(items)
+    msg = "Migration to 1.17: items stored in PersistentDict"
+    db.plomino_version = "1.17"
     return msg

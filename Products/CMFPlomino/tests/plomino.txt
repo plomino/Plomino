@@ -219,6 +219,7 @@ Selection field:
     >>> adapted.selectionlist=[u'The Beatles', u'The Doors', u'The Pixies']
     >>> adapted.widget="SELECT"
 	>>> db.frm2.setFormLayout("""<p>choose: <span class="plominoFieldClass">artistsfield</span></p>""")
+    >>> db.cleanRequestCache()
     >>> db.frm2.displayDocument(None, True, True).replace('\n', '').replace('\t', '')
     u'<input type=\'hidden\' name=\'Form\' value=\'frm2\' /><p>choose: <span><select name="artistsfield"><option value="The Beatles">The Beatles</option><option value="The Doors">The Doors</option><option value="The Pixies">The Pixies</option></select></span></p>'
     >>> adapted.widget="CHECKBOX"
@@ -262,6 +263,7 @@ Number field:
     >>> adapted.validate("4.5")
     []
     >>> REQUEST={'price': "zero"}
+    >>> db.cleanRequestCache()
     >>> db.frm2.validateInputs(REQUEST)
     ['price must be a float (submitted value was: zero)']
 
@@ -271,6 +273,7 @@ Rich-text field:
     >>> db.frm2.setFormLayout("""<p>My comments: <span class="plominoFieldClass">comments</span></p>""")
     >>> doc4.setItem('comments', """I am not sure it is <b>correct</b><br/>.\nSo please, check <a href='http://www.google.com'>here</a>""")
     >>> doc4.save()
+    >>> db.cleanRequestCache()
     >>> db.frm2.displayDocument(doc4).replace('\n', '')
     u"<p>My comments: I am not sure it is <b>correct</b><br/>.So please, check <a href='http://www.google.com'>here</a></p>"
     >>> REQUEST={'comments': """I am not sure it is <b>correct</b><br/>.\nSo please, check <a href='http://www.google.com'>here</a>"""}
@@ -286,6 +289,7 @@ A name field allow to select a user in the Plone portal members list.
     >>> adapted=INameField(db.frm2.buyer)
     >>> adapted.type=u'MULTI'
 	>>> db.frm2.setFormLayout("""<p>Who: <span class="plominoFieldClass">buyer</span></p>""")
+    >>> db.cleanRequestCache()
     >>> db.frm2.displayDocument(None, True, True)
     u'<input type=\'hidden\' name=\'Form\' value=\'frm2\' /><p>Who: <span>...<select multiple="true" lines="4" name="buyer">...<option value=""></option>...<option value="test_user_1_">test_user_1_</option>...</select>...</span>\n</p>'
 
@@ -301,6 +305,7 @@ A Doclink field allows to create a reference to another document.
     >>> adapted.labelcolumn=u'col1'
 	>>> db.frm2.setFormLayout("""<p>Related artist: <span class="plominoFieldClass">relatedartist</span></p>""")
     >>> result=u'<input type=\'hidden\' name=\'Form\' value=\'frm2\' /><p>Related artist: <span>\n\t\n\t\t<select name="relatedartist">\n\t\t\t\n\t\t\n\t\t\t\n\t\t\n\t\t\t\n\t\t\n\t\t\t\n\t\t</select>\n\t\n\t\n\t\n\t\n</span>\n</p>'
+    >>> db.cleanRequestCache()
     >>> result=db.frm2.displayDocument(None, True, True)
     >>> """<option value="%s">London calling</option>""" % (doc1.id) in result
     True
@@ -318,6 +323,7 @@ A field can be computed:
     >>> db.frm2.setFormLayout("""<p><span class="plominoFieldClass">welcome</span></p>""")
     >>> doc4.setItem('buyer',"test_user_1_")
     >>> doc4.save()
+    >>> db.cleanRequestCache()
     >>> db.frm2.displayDocument(doc4)
     u'<p>Welcome test_user_1_\n</p>'
 
