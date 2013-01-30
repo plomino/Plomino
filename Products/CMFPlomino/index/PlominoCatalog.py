@@ -10,14 +10,18 @@
 __author__ = """Eric BREHAULT <eric.brehault@makina-corpus.com>"""
 __docformat__ = 'plaintext'
 
+# Zope
 from Products.ZCatalog.ZCatalog import Catalog
 from Missing import MV
+
+# Plomino
 from Products.CMFPlomino.PlominoUtils import asUnicode
 
 try:
     from DocumentTemplate.cDocumentTemplate import safe_callable
 except ImportError:
     # Fallback to python implementation to avoid dependancy on DocumentTemplate
+    import types
     def safe_callable(ob):
         # Works with ExtensionClasses and Acquisition.
         if hasattr(ob, '__class__'):
@@ -25,34 +29,34 @@ except ImportError:
         else:
             return callable(ob)
 
+
 class PlominoCatalog(Catalog):
-    """Plomino catalog (just overloads recordify method)
+    """ Plomino catalog (just overloads recordify method)
     """
 
-    def recordify(self, object):
-        """ turns an object into a record tuple """
+    def recordify(self, obj):
+        """ Turns an obj into a record tuple """
         record = []
         # the unique id is always the first element
-        for x in self.names:
-            if x.startswith("PlominoViewColumn_"):
-                param = x.split('_')
-                viewname = param[1]
-                columnname = param[2]
-                if not object.isSelectedInView(viewname):
+        for name in self.names:
+            if name.startswith("PlominoViewColumn_"):
+                marker, viewname, columnname = name.split('_')
+                if not obj.isSelectedInView(viewname):
                     v = None
                 else:
-                    v = asUnicode(object.computeColumnValue(viewname, columnname))
+                    v = asUnicode(
+                            obj.computeColumnValue(viewname, columnname))
                 record.append(v)
             else:
-                attr=getattr(object, x, MV)
+                attr = getattr(obj, name, MV)
                 if attr is not MV and safe_callable(attr):
-                    attr=attr()
-                if type(attr) == type(''):
+                    attr = attr()
+                if isinstance(attr, str):
                     attr = attr.decode('utf-8')
-                elif type(attr) == type([]) or type(attr) == type(()):
+                elif isinstance(attr, (list, tuple)):
                     new_value = []
                     for v in attr:
-                        if type(v) == type(''):
+                        if isinstance(v, str):
                             v = v.decode('utf-8')
                         new_value.append(v)
                     attr = new_value

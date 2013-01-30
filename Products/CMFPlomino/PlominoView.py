@@ -16,10 +16,10 @@ __docformat__ = 'plaintext'
 import cStringIO
 import csv
 
-# 3rd party Python 
+# 3rd party Python
 from jsonutil import jsonutil as json
 
-# Zope 
+# Zope
 from AccessControl import ClassSecurityInfo
 from AccessControl import Unauthorized
 from Acquisition import aq_inner
@@ -33,7 +33,6 @@ try:
 except:
     # < 4.3 compatibility
     from plone.app.content.batching import Batch
-from Products.CMFDynamicViewFTI.browserdefault import BrowserDefaultMixin
 
 # Plomino
 from exceptions import PlominoScriptException
@@ -41,18 +40,17 @@ from PlominoUtils import asUnicode, asList
 from Products.CMFPlomino.config import *
 from validator import isValidPlominoId
 import interfaces
-import PlominoDocument
 
 import logging
 logger = logging.getLogger('Plomino')
 
 schema = Schema((
-
     StringField(
         name='id',
         widget=StringField._properties['widget'](
             label="Id",
-            description="If changed after creation, database refresh is needed",
+            description="If changed after creation, "
+                "database refresh is needed",
             label_msgid='CMFPlomino_label_view_id',
             description_msgid='CMFPlomino_help_view_id',
             i18n_domain='CMFPlomino',
@@ -103,7 +101,9 @@ returns the current Plomino document.""",
         name='FormFormula',
         widget=TextAreaWidget(
             label="Form formula",
-            description="Documents open from the view will use the form defined by the following formula (they use their own form if empty)",
+            description="Documents open from the view will use the form "
+                    "defined by the following formula "
+                    "(they use their own form if empty)",
             label_msgid='CMFPlomino_label_FormFormula',
             description_msgid='CMFPlomino_help_FormFormula',
             i18n_domain='CMFPlomino',
@@ -132,7 +132,10 @@ returns the current Plomino document.""",
             i18n_domain='CMFPlomino',
         ),
 #        schemata="Parameters",
-        vocabulary=[["TOP", "At the top of the page"], ["BOTTOM", "At the bottom of the page"], ["BOTH", "At the top and at the bottom of the page "]],
+        vocabulary=[
+            ["TOP", "At the top of the page"],
+            ["BOTTOM", "At the bottom of the page"],
+            ["BOTH", "At the top and at the bottom of the page "]],
     ),
     BooleanField(
         name='HideDefaultActions',
@@ -168,7 +171,9 @@ returns the current Plomino document.""",
             description_msgid='CMFPlomino_help_ViewWidget',
             i18n_domain='CMFPlomino',
         ),
-        vocabulary= [["BASIC", "Basic html"], ["DYNAMICTABLE", "Dynamic table"]],
+        vocabulary= [
+            ["BASIC", "Basic html"],
+            ["DYNAMICTABLE", "Dynamic table"]],
 #        schemata="Parameters",
     ),
     TextField(
@@ -204,7 +209,9 @@ returns the current Plomino document.""",
         name='onOpenView',
         widget=TextAreaWidget(
             label="On open view",
-            description="Action to take when the view is opened. If a string is returned, it is considered as an error message, and the openning is not allowed.",
+            description="Action to take when the view is opened. "
+                "If a string is returned, it is considered an error "
+                "message, and the opening is not allowed.",
             label_msgid='CMFPlomino_label_onOpenView',
             description_msgid='CMFPlomino_help_onOpenView',
             i18n_domain='CMFPlomino',
@@ -227,6 +234,17 @@ returns the current Plomino document.""",
 PlominoView_schema = getattr(ATFolder, 'schema', Schema(())).copy() + \
     schema.copy()
 
+
+XLS_TABLE = """<html><head>
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+<body><table>
+%s
+</table></body></html>"""
+
+TR = """<tr>%s</tr>"""
+TD = """<td>%s</td>"""
+
+
 class PlominoView(ATFolder):
     """
     """
@@ -242,23 +260,28 @@ class PlominoView(ATFolder):
 
     security.declarePublic('checkBeforeOpenView')
     def checkBeforeOpenView(self):
-        """check read permission and open view NOTE: if READ_PERMISSION set
-        on the 'view' action itself, it causes error 'maximum recursion
-        depth exceeded' if user hasn't permission
+        """ Check read permission and open view.
+
+        NOTE: if READ_PERMISSION is set on the 'view' action itself, it
+        causes error 'maximum recursion depth exceeded' if user hasn't
+        permission.
         """
         if self.checkUserPermission(READ_PERMISSION):
             valid = ''
             try:
                 if self.getOnOpenView():
-                    valid = self.runFormulaScript("view_"+self.id+"_onopen", self, self.getOnOpenView)
+                    valid = self.runFormulaScript(
+                            'view_%s_onopen' % self.id,
+                            self,
+                            self.getOnOpenView)
             except PlominoScriptException, e:
                 e.reportError('onOpenView event failed')
-            
+
             if valid:
                 return self.ErrorMessages(errors=[valid])
 
-            if not self.getViewTemplate()=="":
-                pt=self.resources._getOb(self.getViewTemplate())
+            if self.getViewTemplate():
+                pt = self.resources._getOb(self.getViewTemplate())
                 return pt.__of__(self)()
             else:
                 return self.OpenView()
@@ -289,7 +312,7 @@ class PlominoView(ATFolder):
                 sortindex=self.getIndexKey(sortindex)
         if not reverse:
             reverse = self.getReverseSorting()
-        query = {'PlominoViewFormula_'+self.getViewName() : True}
+        query = {'PlominoViewFormula_'+self.getViewName(): True}
         if fulltext_query:
             query['SearchableText'] = fulltext_query
         results=index.dbsearch(
@@ -298,7 +321,10 @@ class PlominoView(ATFolder):
             reverse=reverse,
             only_allowed=only_allowed)
         if limit:
-            results = Batch(items=results, pagesize=limit, pagenumber=int(start/limit)+1)
+            results = Batch(
+                    items=results,
+                    pagesize=limit,
+                    pagenumber=int(start/limit)+1)
         if getObject:
             return [r.getObject() for r in results]
         else:
@@ -318,44 +344,57 @@ class PlominoView(ATFolder):
     def getColumns(self):
         """Get colums
         """
-        columnslist = self.portal_catalog.search({'portal_type' : ['PlominoColumn'], 'path': '/'.join(self.getPhysicalPath())}, sort_index='getObjPositionInParent')
+        columnslist = self.portal_catalog.search(
+                {'portal_type': ['PlominoColumn'],
+                    'path': '/'.join(self.getPhysicalPath())},
+                sort_index='getObjPositionInParent')
         return [c.getObject() for c in columnslist]
 
     security.declarePublic('getActions')
     def getActions(self, target, hide=True, parent_id=None):
         """Get actions
         """
-        all = self.objectValues(spec='PlominoAction')
+        actions = self.objectValues(spec='PlominoAction')
         
         filtered = []
-        for obj_a in all:
+        for action in actions:
             if hide:
                 try:
-                    #result = RunFormula(target, obj_a.getHidewhen())
-                    result = self.runFormulaScript("action_"+obj_a.getParentNode().id+"_"+obj_a.id+"_hidewhen", target, obj_a.Hidewhen, True)
+                    #result = RunFormula(target, action.getHidewhen())
+                    result = self.runFormulaScript(
+                            'action_%s_%s_hidewhen' % (
+                                action.getParentNode().id,
+                                action.id),
+                            target,
+                            action.Hidewhen,
+                            True)
                 except PlominoScriptException, e:
-                    e.reportError('"%s" action hide-when failed' % obj_a.Title())
-                    #if error, we hide anyway
+                    e.reportError(
+                            '"%s" action hide-when failed' % action.Title())
+                    # if error, we hide anyway
                     result = True
                 if not result:
-                    filtered.append((obj_a, parent_id))
+                    filtered.append((action, parent_id))
             else:
-                filtered.append((obj_a, parent_id))
+                filtered.append((action, parent_id))
         return filtered
 
     security.declarePublic('getColumn')
     def getColumn(self,column_name):
-        """Get a single column
+        """ Get a single column
         """
         return getattr(self, column_name)
 
     security.declarePublic('evaluateViewForm')
     def evaluateViewForm(self,doc):
-        """compute the form to be used to open documents
+        """ Compute the form to be used to open documents
         """
         try:
             #result = RunFormula(doc, self.getFormFormula())
-            result = self.runFormulaScript("view_"+self.id+"_formformula", doc, self.FormFormula)
+            result = self.runFormulaScript(
+                    'view_%s_formformula' % self.id,
+                    doc,
+                    self.FormFormula)
         except PlominoScriptException, e:
             e.reportError('"%s" form formula failed' % self.Title())
             result = ""
@@ -370,10 +409,11 @@ class PlominoView(ATFolder):
 
     security.declarePublic('at_post_create_script')
     def at_post_create_script(self):
-        """post create
+        """ Post create
         """
         db = self.getParentDatabase()
-        db.getIndex().createSelectionIndex('PlominoViewFormula_'+self.getViewName())
+        db.getIndex().createSelectionIndex(
+                'PlominoViewFormula_'+self.getViewName())
         if not db.DoNotReindex:
             self.getParentDatabase().getIndex().refresh()
 
@@ -388,7 +428,11 @@ class PlominoView(ATFolder):
             index = db.getIndex()
             
         if column_obj.Formula:
-            index.createIndex('PlominoViewColumn_'+self.getViewName()+'_'+column_name, refresh=refresh)
+            index.createIndex(
+                    'PlominoViewColumn_%s_%s' % (
+                        self.getViewName()
+                        column_name),
+                    refresh=refresh)
         else:
             fieldpath = column_obj.SelectedField.split('/')
             form = self.getParentDatabase().getForm(fieldpath[0])
@@ -397,65 +441,70 @@ class PlominoView(ATFolder):
                 if field:
                     field.setToBeIndexed(True)
                     #field.at_post_edit_script()
-                    index.createFieldIndex(field.id,
-                                           field.getFieldType(),
-                                           refresh=refresh,
-                                           indextype=field.getIndexType())
+                    index.createFieldIndex(
+                            field.id,
+                            field.getFieldType(),
+                            refresh=refresh,
+                            indextype=field.getIndexType())
                 else:
                     column_obj.setFormula("'Non-existing field'")
-                    index.createIndex('PlominoViewColumn_'+self.getViewName()+'_'+column_name, refresh=refresh)
+                    index.createIndex(
+                            'PlominoViewColumn_%s_%s' % (
+                                self.getViewName(), column_name),
+                            refresh=refresh)
             else:
                 column_obj.setFormula("'Non-existing form'")
-                index.createIndex('PlominoViewColumn_'+self.getViewName()+'_'+column_name, refresh=refresh)
+                index.createIndex(
+                        'PlominoViewColumn_%s_%s' % (
+                            self.getViewName(), column_name),
+                        refresh=refresh)
 
     security.declarePublic('getCategorizedColumnValues')
-    def getCategorizedColumnValues(self,column_name):
-        """return existing values for the given key and add the empty value
+    def getCategorizedColumnValues(self, column_name):
+        """ Return existing values for the given key and add the empty value
         """
         brains = self.getAllDocuments(getObject=False)
-        allvalues = [getattr(b, self.getIndexKey(column_name)) for b in brains]
+        column_values = [
+                getattr(b, self.getIndexKey(column_name)) for b in brains]
         categories = {}
-        for itemvalue in allvalues:
-            if type(itemvalue) == list:
-                for v in itemvalue:
-                    if not(v in categories):
-                        categories[v] = 1
-                    else:
+        for value in column_values:
+            if isinstance(value, list):
+                for v in value:
+                    if v in categories:
                         categories[v] += 1
-            else:
-                if itemvalue is not None:
-                    if not(itemvalue in categories):
-                        categories[itemvalue] = 1
                     else:
-                        categories[itemvalue] += 1
+                        categories[v] = 1
+            else:
+                if value is not None:
+                    if value in categories:
+                        categories[value] += 1
+                    else:
+                        categories[value] = 1
         uniquevalues = categories.keys()
         uniquevalues.sort()
         return [(v, categories[v]) for v in uniquevalues]
 
-
     security.declarePublic('getCategoryViewEntries')
-    def getCategoryViewEntries(self,category_column_name,category_value):
-        """get category view entry
+    def getCategoryViewEntries(self, category_column_name, category_value):
+        """ Get category view entry
         """
         index = self.getParentDatabase().getIndex()
         sortindex = self.getSortColumn()
-        if sortindex=='':
-            sortindex=None
+        if sortindex == '':
+            sortindex = None
         else:
-            sortindex=self.getIndexKey(sortindex)
+            sortindex = self.getIndexKey(sortindex)
 
         return index.dbsearch(
-            {
-                'PlominoViewFormula_'+self.getViewName() : True,
-                self.getIndexKey(category_column_name) : category_value
-            },
-            sortindex,
-            self.getReverseSorting())
+                {'PlominoViewFormula_'+self.getViewName(): True,
+                    self.getIndexKey(category_column_name): category_value},
+                sortindex,
+                self.getReverseSorting())
 
     security.declarePublic('getColumnSums')
     def getColumnSums(self):
-        """return the sum of non null values for each column
-        marked as summable
+        """ Return the sum of non-null values for each column marked as
+        summable.
         """
         sums = {}
         brains = self.getAllDocuments(getObject=False)
@@ -466,6 +515,7 @@ class PlominoView(ATFolder):
                 try:
                     s = sum([v for v in values if v is not None])
                 except:
+                    logger.error('PlominoView', exc_info=True)
                     s = 0
                 sums[col.id] = s
         return sums
@@ -490,25 +540,35 @@ class PlominoView(ATFolder):
         return rows
 
     security.declareProtected(READ_PERMISSION, 'exportCSV')
-    def exportCSV(self, REQUEST=None, displayColumnsTitle='False', separator="\t", brain_docs = None, quotechar='"', quoting=csv.QUOTE_NONNUMERIC):
-        """export columns values as CSV
-        IMPORTANT : brain_docs are supposed to be ZCatalog brains
+    def exportCSV(self,
+            REQUEST=None,
+            displayColumnsTitle='False',
+            separator="\t",
+            brain_docs=None,
+            quotechar='"',
+            quoting=csv.QUOTE_NONNUMERIC):
+        """ Export columns values as CSV.
+
+        IMPORTANT: brain_docs are supposed to be ZCatalog brains
         """
-        if type(quoting) is str:
+        if isinstance(quoting, basestring):
             #convert to int when passed via querystring
             try:
                 quoting = int(quoting)
             except:
                 logging.exception('Bad quoting: %s'%quoting, exc_info=True)
-                quoting=csv.QUOTE_NONNUMERIC
+                quoting = csv.QUOTE_NONNUMERIC
 
-        if brain_docs is None:
+        if not brain_docs:
             brain_docs = self.getAllDocuments(getObject=False)
 
         columns = [c.id for c in self.getColumns()]
 
         stream = cStringIO.StringIO()
-        writer = csv.writer(stream, delimiter=separator, quotechar=quotechar, quoting=quoting)
+        writer = csv.writer(stream,
+                delimiter=separator,
+                quotechar=quotechar,
+                quoting=quoting)
 
         # add column titles
         if displayColumnsTitle=='True' :
@@ -519,14 +579,18 @@ class PlominoView(ATFolder):
         writer.writerows(rows)
 
         if REQUEST:
-            REQUEST.RESPONSE.setHeader('content-type', 'text/csv; charset=utf-8')
-            REQUEST.RESPONSE.setHeader("Content-Disposition", "attachment; filename="+self.id+".csv")
+            REQUEST.RESPONSE.setHeader(
+                    'content-type', 'text/csv; charset=utf-8')
+            REQUEST.RESPONSE.setHeader(
+                    'Content-Disposition', 'attachment; filename='+self.id+'.csv')
         return stream.getvalue()
 
     security.declareProtected(READ_PERMISSION, 'exportXLS')
-    def exportXLS(self, REQUEST, displayColumnsTitle='False', brain_docs = None):
+    def exportXLS(self, REQUEST, displayColumnsTitle='False', 
+            brain_docs=None):
         """ Export column values to an HTML table, and set content-type to
         launch Excel.
+
         IMPORTANT: brain_docs are supposed to be ZCatalog brains
         """
         if brain_docs is None:
@@ -541,26 +605,25 @@ class PlominoView(ATFolder):
             titles = [c.title.encode('utf-8') for c in self.getColumns()]
             rows[0:0] = titles
 
-        html = """<html><head>
-    <meta http-equiv="Content-Type"
-          content="text/html;charset=utf-8" />
-<body><table>"""
-        for row in rows:
-            html = html + "<tr>" + ''.join(["<td>%s</td>" % v for v in row]) + "</tr>\n"
+        html = XLS_TABLE % (
+                ''.join([TR % 
+                    ''.join([TD % v for v in row]) for row in rows]))
 
-        html = html + "</table>\n</body></html>"
-        REQUEST.RESPONSE.setHeader('content-type', 'application/vnd.ms-excel; charset=utf-8')
-        REQUEST.RESPONSE.setHeader("Content-Disposition", "inline; filename="+self.id+".xls")
+        REQUEST.RESPONSE.setHeader(
+                'content-type', 'application/vnd.ms-excel; charset=utf-8')
+        REQUEST.RESPONSE.setHeader(
+                'Content-Disposition', 'inline; filename='+self.id+'.xls')
         return html
 
 
     security.declarePublic('getPosition')
     def getPosition(self):
-        """Return the view position in the database
+        """ Return the view position in the database
         """
-        try :
+        try:
             return self.Position
-        except Exception :
+        except Exception:
+            logger.error('PlominoView', exc_info=True)
             return None
 
     security.declarePublic('getDocumentsByKey')
@@ -573,11 +636,11 @@ class PlominoView(ATFolder):
             return []
 
         sortindex = self.getIndexKey(sortindex)
-        results = index.dbsearch({
-            'PlominoViewFormula_'+self.getViewName() : True, 
-            sortindex : key
-            },
-            sortindex, self.getReverseSorting())
+        results = index.dbsearch(
+                    {'PlominoViewFormula_%s' % self.getViewName(): True, 
+                    sortindex: key},
+                sortindex,
+                self.getReverseSorting())
 
         if getObject:
             return [d.getObject() for d in results]
@@ -595,31 +658,35 @@ class PlominoView(ATFolder):
         search = None
         sort_index = None
         if REQUEST:
+            columns = 
             start = int(REQUEST.get('iDisplayStart', 1))
             iDisplayLength = REQUEST.get('iDisplayLength', None)
             if iDisplayLength:
                 limit = int(iDisplayLength)
             search = REQUEST.get('sSearch', '').lower()
             if search:
-                search = " ".join([term+'*' for term in search.split(' ')])
+                search = ' '.join([term+'*' for term in search.split(' ')])
             sort_column = REQUEST.get('iSortCol_0')
             if sort_column:
-                sort_index = self.getIndexKey(self.getColumns()[int(sort_column)-1].id)
+                sort_index = self.getIndexKey(
+                        self.getColumns()[int(sort_column)-1].id)
             reverse = REQUEST.get('sSortDir_0', None)
-            if reverse=='desc':
+            if reverse == 'desc':
                 reverse = 0
-            if reverse=='asc':
+            if reverse == 'asc':
                 reverse = 1 
         if limit < 1:
             limit = None
-        results = self.getAllDocuments(start=start,
-                                       limit=limit,
-                                       getObject=False,
-                                       fulltext_query=search,
-                                       sortindex=sort_index,
-                                       reverse=reverse)
+        results = self.getAllDocuments(
+                start=start,
+                limit=limit,
+                getObject=False,
+                fulltext_query=search,
+                sortindex=sort_index,
+                reverse=reverse)
         total = display_total = len(results)
-        columnids = [col.id for col in self.getColumns() if not getattr(col, 'HiddenColumn', False)]
+        columnids = [col.id for col in self.getColumns() 
+                if not getattr(col, 'HiddenColumn', False)]
         for b in results:
             row = [b.getPath().split('/')[-1]]
             for colid in columnids:
@@ -636,7 +703,10 @@ class PlominoView(ATFolder):
                     data.append(entry)
             else:
                 data.append(row)
-        return json.dumps({ 'iTotalRecords': total, 'iTotalDisplayRecords': display_total, 'aaData': data })
+        return json.dumps(
+                    {'iTotalRecords': total,
+                    'iTotalDisplayRecords': display_total,
+                    'aaData': data })
 
     security.declarePublic('getIndexKey')
     def getIndexKey(self, columnName):
@@ -646,7 +716,7 @@ class PlominoView(ATFolder):
         if not found, we look for a field.
         """
         key = 'PlominoViewColumn_%s_%s' % (self.getViewName(), columnName)
-        if key not in self.getParentDatabase().plomino_index.Indexes:
+        if not key in self.getParentDatabase().plomino_index.Indexes:
             fieldPath = self.getColumn(columnName).SelectedField.split('/')
             if len(fieldPath) > 1:
                 key = fieldPath[1]

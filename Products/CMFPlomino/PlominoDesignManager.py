@@ -65,15 +65,16 @@ from Products.CMFPlomino.PlominoForm import schema as form_schema
 from Products.CMFPlomino.PlominoHidewhen import schema as hidewhen_schema
 from Products.CMFPlomino.PlominoView import schema as view_schema
 
-plomino_schemas = {'PlominoAction': action_schema,
-                   'PlominoAgent': agent_schema,
-                   'PlominoCache': cache_schema,
-                   'PlominoColumn': column_schema,
-                   'PlominoField': field_schema,
-                   'PlominoForm': form_schema,
-                   'PlominoHidewhen': hidewhen_schema,
-                   'PlominoView': view_schema,
-                   }
+plomino_schemas = {
+        'PlominoAction': action_schema,
+        'PlominoAgent': agent_schema,
+        'PlominoCache': cache_schema,
+        'PlominoColumn': column_schema,
+        'PlominoField': field_schema,
+        'PlominoForm': form_schema,
+        'PlominoHidewhen': hidewhen_schema,
+        'PlominoView': view_schema,
+        }
 
 extra_schema_attributes = ['excludeFromNav']
 

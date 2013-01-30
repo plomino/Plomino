@@ -10,9 +10,10 @@
 __author__ = """Xavier PERROT <xavier.perrot@makina-corpus.com>"""
 __docformat__ = 'plaintext'
 
+
 def PlominoDocumentRemoveEventHandler(obj, event):
-    """remove event handler for plomino documents
-    comments from plone/app/linkintegrity/handlers.py
+    """ Remove event handler for Plomino documents.
+    Comments from plone/app/linkintegrity/handlers.py
     """
     # if the object the event was fired on doesn't have a `REQUEST` attribute
     # we can safely assume no direct user action was involved and therefore

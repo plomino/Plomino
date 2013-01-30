@@ -86,7 +86,6 @@ def dump_decimal(self, value, write):
         'decimal': str(value),
         }
     self.dump_struct(value, write)
-
 xmlrpclib.Marshaller.dispatch[Decimal] = dump_decimal
 
 def end_struct(self, data):
@@ -101,9 +100,9 @@ def end_struct(self, data):
             dct = Decimal(dct['decimal'])
     self._stack[mark:] = [dct]
     self._value = 0
-
 xmlrpclib.Unmarshaller.dispatch['struct'] = end_struct
-# ^^^ TO HERE 
+# ^^^ TO HERE
+
 
 class PlominoReplicationManager(Persistent):
     """ Plomino replication push/pull features
@@ -139,7 +138,7 @@ class PlominoReplicationManager(Persistent):
                     replication['mode'] == 'view'
                     self.setReplication(replication)
 
-        elif actionType=='save':
+        elif actionType == 'save':
             #save params
             try:
                 infoMsg = (infoMsg +
@@ -162,7 +161,7 @@ class PlominoReplicationManager(Persistent):
                 # get the replications
                 replications = self.getReplications()
 
-                if actionType=='replicate':
+                if actionType == 'replicate':
                     #launch replications
                     for replicId in replicIds:
                         error = False
@@ -182,7 +181,7 @@ class PlominoReplicationManager(Persistent):
                     error = False
                     infoMsg = ''
 
-                elif actionType=='delete':
+                elif actionType == 'delete':
                     try:
                         infoMsg = self.deleteReplications(replicIds)
                     except PlominoReplicationException, e:
@@ -192,7 +191,7 @@ class PlominoReplicationManager(Persistent):
                                 MSG_SEPARATOR)
                         error = True
 
-                elif actionType=='edit':
+                elif actionType == 'edit':
 
                     #set mode to edit
                     if not self.getReplicationEditingId():
@@ -221,9 +220,8 @@ class PlominoReplicationManager(Persistent):
 
     security.declareProtected(EDIT_PERMISSION, 'deleteReplications')
     def deleteReplications(self, replicationIds):
-        """delete remoteUrl list        
+        """ Delete remoteUrl list
         """
-        #init
         infoMsg = ''
         error = False
 
@@ -241,7 +239,7 @@ class PlominoReplicationManager(Persistent):
                 infoMsg = '%s error deleting replication %s: %s %s' % (
                         infoMsg,
                         replicationId,
-                        e
+                        e,
                         MSG_SEPARATOR)
                 error = True
 
@@ -255,56 +253,48 @@ class PlominoReplicationManager(Persistent):
 
     security.declareProtected(EDIT_PERMISSION, 'saveReplication')
     def saveReplication(self, REQUEST=None):
-        """save replication        
+        """ Save replication        
         """
         try:
-            replication = self.buidReplicationFromRequest(REQUEST)
+            replication = self.buildReplicationFromRequest(REQUEST)
         except PlominoReplicationException, e:
             infoMsg = 'error while checking parameters: %s %s' % (
                     e,
                     MSG_SEPARATOR)
             raise PlominoReplicationException, infoMsg 
 
-        #mode
         replication['mode'] = 'view'
-
-        #save
         self.setReplication(replication)
-
-        #result
         return "replication saved"
 
     security.declareProtected(EDIT_PERMISSION, 'replicate')
     def replicate(self, replicationId=None):
-        """launch replication with just remote url passed
+        """ Launch replication with just remote URL passed
         """
-        #check param
         if not replicationId:
             raise PlominoReplicationException, 'Replication id required'
 
-        #get replication
         replication = self.getReplication(replicationId)
         if not replication:
             raise PlominoReplicationException, 'Unknown replication id'
 
         try:
-            infoMsg = replication['remoteUrl'] + ' : ' + self.launchReplication(replication)
+            infoMsg = '%s: %s' % (
+                    replication['remoteUrl'],
+                    self.launchReplication(replication))
         except PlominoReplicationException, e:
             infoMsg = 'error while replicating %s: %s %s' % (
-                    replication['remoteUrl']
+                    replication['remoteUrl'],
                     e,
                     MSG_SEPARATOR)
             error = True
 
-        #launch replication
         return infoMsg        
 
     security.declareProtected(EDIT_PERMISSION, 'launchReplication')
     def launchReplication(self, replication):
-        """launch replication with params
+        """ Launch replication with params
         """
-
-        #init
         infoMsg = ''
         error = False
         nbDocPushed = 0
@@ -314,7 +304,6 @@ class PlominoReplicationManager(Persistent):
         lastReplicationDatePush = None
         lastReplicationDatePull = None
 
-        #check replication
         try:
             self.checkReplication(replication)
         except PlominoReplicationException, e:
@@ -324,7 +313,7 @@ class PlominoReplicationManager(Persistent):
                     MSG_SEPARATOR)
             error = True
 
-        #get remote documents ->  id:lastEditDate
+        # get remote documents. id: lastEditDate
         if not error:
             try:
                 remoteDocuments = self.getRemoteDocuments(replication)
@@ -335,10 +324,10 @@ class PlominoReplicationManager(Persistent):
                         MSG_SEPARATOR)
                 error = True
 
-        #get local documents
+        # get local documents
         if not error:
             if replication.has_key('restricttoview'):
-                restricttoview=replication['restricttoview']
+                restricttoview = replication['restricttoview']
                 if restricttoview:
                     try:
                         view = self.getView(restricttoview)
@@ -357,14 +346,12 @@ class PlominoReplicationManager(Persistent):
         # flag replication begin on remote
         if not error:
             try:
-                authenticateAndLoadURL(replication['remoteUrl'] + '/startReplicationRemote?RemoteUrl='+ self.absolute_url() +'&repType='+replication['repType'],replication['username'],replication['password'])
-
                 authenticateAndLoadURL(
                         '%s/startReplicationRemote'
                         '?RemoteUrl=%s'
                         '&repType=%s' % (
                             replication['remoteUrl'],
-                            self.absolute_url()
+                            self.absolute_url(),
                             replication['repType']),
                         replication['username'],
                         replication['password'])
@@ -440,7 +427,7 @@ class PlominoReplicationManager(Persistent):
                             infoMsg = '%s%s pull error: %s%s' % (
                                     infoMsg, 
                                     docId,
-                                    e
+                                    e,
                                     MSG_SEPARATOR)
                             error = True
                     else:
@@ -477,7 +464,7 @@ class PlominoReplicationManager(Persistent):
         """
         self.checkReplication(replication)
 
-        #get remote documents
+        # get remote documents
         url = replication['remoteUrl'] + '/getDocumentsIds'
         if replication.has_key('restricttoview'):
             restricttoview=replication['restricttoview']
@@ -488,34 +475,34 @@ class PlominoReplicationManager(Persistent):
                 replication['username'],
                 replication['password']).read()
 
-        #check if starts with REMOTE_DOC_IDS_HEADER
+        # check if starts with REMOTE_DOC_IDS_HEADER
         if not remoteDocumentsIds.startswith(REMOTE_DOC_IDS_HEADER):
             raise PlominoReplicationException, "Connection error"
 
-        #string ids
+        # string ids
         docs = remoteDocumentsIds.split(REMOTE_DOC_ID_SEPARATOR)
-        #remove header
+        # remove header
         docs.pop(0)
         docs.pop()
-        result={}
+        result = {}
         for d in docs:
-            (docid, modifdate) = d.split(REMOTE_DOC_DATE_SEPARATOR)
-            result[docid] = DateTime(modifdate)
+            (docid, modification_date) = d.split(REMOTE_DOC_DATE_SEPARATOR)
+            result[docid] = DateTime(modification_date)
         return result
 
     security.declareProtected(READ_PERMISSION, 'getDocumentsIds')
     def getDocumentsIds(self, REQUEST=None):
         """ Return the database document ids in a string
         """
-        if REQUEST is not None:
-            restricttoview=REQUEST.get('restricttoview',None)
-            if restricttoview is not None:
+        if REQUEST:
+            restricttoview = REQUEST.get('restricttoview', None)
+            if restricttoview:
                 docs = self.getView(restricttoview).getAllDocuments()
             else:
                 docs = self.getAllDocuments()
         else:
             docs = self.getAllDocuments()
-        ids = REMOTE_DOC_IDS_HEADER+REMOTE_DOC_ID_SEPARATOR
+        ids = REMOTE_DOC_IDS_HEADER + REMOTE_DOC_ID_SEPARATOR
         for d in docs:
             ids = (ids +
                     d.id +
@@ -528,98 +515,97 @@ class PlominoReplicationManager(Persistent):
     def exportableDoc(self, doc, remoteDocuments, lastReplicationDate, whowins):
         """ Check if document can be exported to remoteUrl
         """
-        #initialization
-        res = False
+        # initialization
+        result = False
         lastEditRemoteDocumentDate = None
 
-        #search for doc in remoteDocuments
+        # search for doc in remoteDocuments
         if doc.id in remoteDocuments:
             lastEditRemoteDocumentDate = remoteDocuments[doc.id]
 
-        #no remoteDoc found -> export 
+        # no remoteDoc found -> export 
         if not lastEditRemoteDocumentDate:
-            res = True
+            result = True
         else:
-            #zope modification time (plone modification time is not 
-            #set while document modified thru script)
-            #TODO : UTC
+            # Zope modification time (Plone modification time is not 
+            # set while document modified via script)
+            # TODO: UTC
             lastEditDocumentDate = doc.getLastModified()
-            #check dates
+            # check dates
             if not lastReplicationDate:
-                #no replication before
-                res = (whowins == 'localwins') or (
+                # no replication before
+                result = (whowins == 'localwins') or (
                         (whowins == 'lastwins') and 
                         (lastEditRemoteDocumentDate < lastEditDocumentDate)
                         )
             elif (lastEditDocumentDate > lastReplicationDate):
                 #check conflict
                 if (lastEditRemoteDocumentDate > lastReplicationDate):
-                    res = (whowins == 'localwins') or (
+                    result = (whowins == 'localwins') or (
                             (whowins == 'lastwins') and 
                             (lastEditRemoteDocumentDate < lastEditDocumentDate)
                             )
                 else:
-                   res = True
+                   result = True
 
-        #result
-        return res
+        return result
 
     security.declarePrivate('exportDocumentPush')
     def exportDocumentPush(self, doc, remoteUrl, username, password):
-        """ exports document to remoteUrl
-            send object as a xml stream via HTTP multipart POST
+        """ Exports document to remoteUrl.
+            Send object as a XML stream via HTTP multipart POST.
         """
         i = doc.id
-        xmlstring=self.exportAsXML(docids=[i])
+        xmlstring = self.exportAsXML(docids=[i])
         result = authenticateAndPostToURL(
                 remoteUrl+"/importFromXML",
                 username,
                 password,
-                '%s.%s' % (i, 'xml'),
-                xmlstring.encode('utf-8'))
+                '%s.xml' % i,  # filename
+                xmlstring.encode('utf-8')  # content
+                )
 
     security.declarePrivate('importableDoc')
     def importableDoc(self, docId, lastEditRemoteDocumentDate, lastReplicationDate, whowins):
         """ Check if document can be imported to remoteUrl
         """
-        res = False
+        result = False
 
-        #search for doc locally
+        # search for doc locally
         localDoc = self.getDocument(docId)
                 
-        #if no local doc found -> import 
-        if localDoc is None:
-            res = True 
+        # if no local doc found -> import 
+        if not localDoc:
+            result = True 
         else:
-            #zope modification time (plone modification time is not 
-            #set while document modified thru script)
-            #TODO : UTC
+            # Zope modification time (Plone modification time is not 
+            # set while document modified via script)
+            # TODO: UTC
             lastEditDocumentDate = localDoc.getLastModified()
 
             #check dates
             if not lastReplicationDate:
                 #no replication before
-                res = (whowins == 'remotewins') or (
+                result = (whowins == 'remotewins') or (
                         (whowins == 'lastwins') and
                         (lastEditRemoteDocumentDate > lastEditDocumentDate)
                         )
             elif (lastEditRemoteDocumentDate > lastReplicationDate):
                 #check conflict
                 if (lastEditDocumentDate > lastReplicationDate):
-                    res = (whowins == 'remotewins') or (
+                    result = (whowins == 'remotewins') or (
                             (whowins == 'lastwins') and 
                             (lastEditRemoteDocumentDate > lastEditDocumentDate)
                             )
                 else:
-                   res = True
+                   result = True
 
-        #result
-        return res
+        return result
 
     security.declarePrivate('importDocumentPull')
     def importDocumentPull(self, i, remoteUrl, username, password):
-        """ imports document from remoteurl
-            send object as a .zexp stream via HTTP multipart POST
+        """ Imports document from remoteurl.
+            Send object as a .zexp stream via HTTP multipart POST
         """
         f = authenticateAndLoadURL(
                 remoteUrl+"/exportAsXML?docids="+i,
@@ -649,24 +635,24 @@ class PlominoReplicationManager(Persistent):
     def getReplicationEditingId(self):
         """ Returns the replication id being edited.
         """
-        res = None
+        result = None
         replications = self.getReplications()
-        for replicationId in replications:
-            replication = self.getReplication(replicationId)
+        for i in replications:
+            replication = self.getReplication(i)
             if replication['mode'] in ('edit', 'add'):
-                res = replicationId            
-        return res
+                result = i
+        return result
 
     security.declareProtected(EDIT_PERMISSION, 'getReplication')
     def getReplication(self, search_id):
-        """ Returns the replication id being edited.
+        """ Returns the replication being edited.
         """
-        res = None
+        result = None
         replications = self.getReplications()
         search_id = str(search_id)
         if replications.has_key(search_id):
-            res = replications[search_id]
-        return res
+            result = replications[search_id]
+        return result
 
     security.declarePrivate('setReplication')
     def setReplication(self, replication):
@@ -689,10 +675,10 @@ class PlominoReplicationManager(Persistent):
         return self.replicationsDates
 
     security.declareProtected(EDIT_PERMISSION, 'setReplicationsDates')
-    def setReplicationsDates(self, repDates):
+    def setReplicationsDates(self, replication_dates):
         """ Sets the replications hashmap 
         """
-        self.replicationsDates = repDates
+        self.replicationsDates = replication_dates
         return self.replicationsDates
 
     security.declarePrivate('getReplicationDate')
@@ -713,16 +699,16 @@ class PlominoReplicationManager(Persistent):
                     'Choose push or pull.')
 
         # get hashmap
-        repDates = self.getReplicationsDates()
+        replication_dates = self.getReplicationsDates()
 
         #test if remoteurl is in
-        if not repDates.has_key(remoteUrl):
+        if not replication_dates.has_key(remoteUrl):
             return None
-        elif not repDates[remoteUrl].has_key(replicationtype):
+        elif not replication_dates[remoteUrl].has_key(replicationtype):
             return None
         else:
             #return date
-            return repDates[remoteUrl][replicationtype]
+            return replication_dates[remoteUrl][replicationtype]
 
     security.declarePrivate('setReplicationDate')
     def setReplicationDate(self, remoteUrl, replicationtype, date):
@@ -735,11 +721,11 @@ class PlominoReplicationManager(Persistent):
                         ', '.join(REPLICATION_TYPES.keys())))
 
         # get hashmap
-        repDates = self.getReplicationsDates()
+        replication_dates = self.getReplicationsDates()
 
         # get url dates
-        if repDates.has_key(remoteUrl):
-            repDate = repDates[remoteUrl]
+        if replication_dates.has_key(remoteUrl):
+            repDate = replication_dates[remoteUrl]
         else:
             repDate = {'push': None, 'pull': None}
 
@@ -750,18 +736,14 @@ class PlominoReplicationManager(Persistent):
         else:
             repDate[replicationtype] = date
 
-        # add it
-        repDates[remoteUrl] = repDate
-
-        # set
-        self.setReplicationsDates(repDates)
+        replication_dates[remoteUrl] = repDate 
+        self.setReplicationsDates(replication_dates)
 
     security.declarePublic('displayDates')
     def displayDates(self, remoteUrl, context):
         """ Returns a string for displaying dates on template
         """
-        # init
-        res = ''
+        result = ''
 
         # date formatter
         translation_service = getToolByName(context, 'translation_service')
@@ -775,19 +757,19 @@ class PlominoReplicationManager(Persistent):
                     long_format=True,
                     context=context,
                     domain='plonelocales')
-            res = 'last push : ' + str(datePush) + ', '
+            result = 'last push : ' + str(datePush) + ', '
         else: 
-            res = 'no last push, '
+            result = 'no last push, '
         if datePull:
             datePull = translation_service.ulocalized_time(
                     datePull,
                     long_format=True,
                     context=context,
                     domain='plonelocales')
-            res = res + 'last pull : ' + str(datePull)
+            result = res + 'last pull : ' + str(datePull)
         else: 
-            res = res + 'no last pull'    
-        return res
+            result = res + 'no last pull'    
+        return result
 
     security.declarePrivate('setReplicationMode')
     def setReplicationMode(self, remoteId, mode):
@@ -814,10 +796,7 @@ class PlominoReplicationManager(Persistent):
             raise PlominoReplicationException, (
                     "Replication unknown (%s)" % replicId)
 
-        # add parameter
         replication['mode'] = mode
-
-        # set
         self.setReplication(replication)
 
     security.declarePublic('startReplicationRemote')
@@ -849,7 +828,7 @@ class PlominoReplicationManager(Persistent):
     def displayItNice(self, key, hashmap_name):
         """ Return a nice display title for type passed.
         """
-        res = None
+        result = None
         hashmap = {
             'REPLICATION_TYPES': REPLICATION_TYPES,
             'CONFLICT_RESOLUTION_TYPE': CONFLICT_RESOLUTION_TYPE,
@@ -857,8 +836,8 @@ class PlominoReplicationManager(Persistent):
                     hashmap_name, None)
         if hashmap:
             if hashmap.has_key(key):
-                res = hashmap[key]         
-        return res
+                result = hashmap[key]         
+        return result
 
     security.declarePublic('resetReplications')
     def resetReplications(self):
@@ -871,12 +850,12 @@ class PlominoReplicationManager(Persistent):
     def getNewId(self):
         """ Return a new id
         """
-        res = 0
+        result = 0
         replications = self.getReplications()
         for r_id in replications:
-            if r_id > res:
-                res = int(r_id)
-        return res + 1
+            if r_id > result:
+                result = int(r_id)
+        return result + 1
 
     security.declarePrivate('newReplication')
     def newReplication(self):
@@ -896,8 +875,8 @@ class PlominoReplicationManager(Persistent):
                 'view')
 
     security.declarePrivate('createReplication')
-    def buidReplicationFromRequest(self, REQUEST = None):
-        """returns a replication from request
+    def buildReplicationFromRequest(self, REQUEST = None):
+        """ Returns a replication from request
         """
         if not REQUEST:
             raise PlominoReplicationException, "Request is required" 
@@ -915,23 +894,26 @@ class PlominoReplicationManager(Persistent):
         cron = REQUEST.get('cron', None)
         mode = REQUEST.get('mode', None)
 
-        return self.buildReplication(i, name, remoteUrl, username, password, repType, whoWins, scheduled, cron, restricttoview, mode)
+        return self.buildReplication(i, name, remoteUrl, username, password,
+                repType, whoWins, scheduled, cron, restricttoview, mode)
 
     security.declarePrivate('createReplication')
     def buildReplication(self, i, name, remoteUrl, username, password, repType, whoWins, scheduled, cron, restricttoview, mode):
-        """return an empty replication
+        """ Return an empty replication
         """
-        return self.checkReplication({'id': i,
-                                    'name' : name,
-                                    'remoteUrl' : remoteUrl,
-                                    'username' : username,
-                                    'password' : password,
-                                    'repType' : repType,
-                                    'whoWins' : whoWins,
-                                    'scheduled' : scheduled,
-                                    'restricttoview':restricttoview,
-                                    'cron':cron,
-                                    'mode':mode})
+        return self.checkReplication({
+                    'id': i,
+                    'name': name,
+                    'remoteUrl': remoteUrl,
+                    'username': username,
+                    'password': password,
+                    'repType': repType,
+                    'whoWins': whoWins,
+                    'scheduled': scheduled,
+                    'restricttoview': restricttoview,
+                    'cron': cron,
+                    'mode': mode
+                    })
 
     security.declarePrivate('checkReplication')
     def checkReplication(self, replication):
@@ -996,39 +978,31 @@ class PlominoReplicationManager(Persistent):
     def manage_importation(self, REQUEST=None):
         """ CSV import form manager.
         """
-
-        #init
-        infoMsg = ''
         error = False
         actionType = REQUEST.get('actionType', None)
-
-        #clear report
         self.resetReport()
 
-        if actionType=='import':
-
-            #get file name
+        if actionType == 'import':
+            # get file name
             try:
                 infoMsg = self.processImport(REQUEST)
             except PlominoReplicationException, e:
-                infoMsg = infoMsg + 'error while importing : %s' % (e) + MSG_SEPARATOR 
+                infoMsg = 'error while importing: %s%s' % (
+                        e, MSG_SEPARATOR)
                 error = True
-
-        elif actionType=='reset_report':
+        elif actionType == 'reset_report':
             self.resetReport()
         else:
-            infoMsg = infoMsg + actionType + ' : unmanaged action' + MSG_SEPARATOR
+            infoMsg = '%s: unmanaged action%s' % (
+                    actionType, MSG_SEPARATOR)
             error = True
 
-        #write message
         self.writeMessageOnPage(infoMsg, REQUEST, error)
-
-        #redirect
         REQUEST.RESPONSE.redirect(self.absolute_url()+'/DatabaseReplication')
 
     security.declarePublic('getSeparators')
     def getSeparators(self):
-        """returns the separator list
+        """ Returns the separator list
         """
         return PLOMINO_IMPORT_SEPARATORS
 
@@ -1036,80 +1010,83 @@ class PlominoReplicationManager(Persistent):
     def processImport(self, REQUEST):
         """ Process the importation.
         """
-        #result message
-        infoMsg = ''
+        if not REQUEST:
+            return 'REQUEST required'
 
-        if REQUEST:
-            formName = REQUEST.get('formSelected',None)
-            separatorName = REQUEST.get('separator',None)
-            fileToImport = REQUEST.get('import_file',None)
-            file_encoding = REQUEST.get('file_encoding', "utf-8")
+        formName = REQUEST.get('formSelected', None)
+        separatorName = REQUEST.get('separator', None)
+        fileToImport = REQUEST.get('import_file', None)
+        file_encoding = REQUEST.get('file_encoding', "utf-8")
 
-        #form name
+        # form name
         if not formName:
             raise PlominoReplicationException, 'form required'
 
-        #form obj
-        formObj = self.getForm(formName)
-        if not formObj:
-            raise PlominoReplicationException, 'form ' + formName +  ' is unknown'
+        # form obj
+        form = self.getForm(formName)
+        if not form:
+            raise PlominoReplicationException, (
+                    "Form '%s' not found" % formName )
 
-        #separator
-        if not separatorName:
-            raise PlominoReplicationException, 'separator required'
+        # separator
         separator = None
         if PLOMINO_IMPORT_SEPARATORS.has_key(separatorName):
-            separator = PLOMINO_IMPORT_SEPARATORS[separatorName]
+            separator = PLOMINO_IMPORT_SEPARATORS(separatorName, None)
+        if not separator:
+            raise PlominoReplicationException, 'separator not found'
 
-        #file
+        # file
         if not fileToImport:
             raise PlominoReplicationException, 'file required'
 
-        #check type
+        # check type
         if not isinstance(fileToImport, FileUpload):
             raise PlominoReplicationException, 'unrecognized file uploaded'
 
-        #parse
-        fileContent = self.parseFile(fileToImport, formName, separator, file_encoding)
+        # parse
+        fileContent = self.parseFile(
+            fileToImport, formName, separator, file_encoding)
 
-        #import
         nbDocDone, nbDocFailed = self.importCsv(fileContent)
 
-        #message
-        infoMsg = fileToImport.filename + ' processed : ' + str(nbDocDone) + ' document(s) imported, ' + str(nbDocFailed) + ' document(s) failed.'
+        infoMsg = ("%s processed: %s document(s) imported, "
+            "%s document(s) failed." % (
+                fileToImport.filename,
+                nbDocDone,
+                nbDocFailed))
+
         return infoMsg
 
     security.declareProtected(EDIT_PERMISSION, 'processImport')
     def processImportAPI(self, formName, separator, fileToImport, file_encoding='utf-8'):
         """ Process import API method.
         """
-
-        #form name
+        # form name
         if not formName:
             raise PlominoReplicationException, 'form required'
 
-        #form obj
+        # form obj
         formObj = self.getForm(formName)
         if not formObj:
-            raise PlominoReplicationException, 'form ' + formName +  ' is unknown'
+            raise PlominoReplicationException, (
+                'form %s not found' % formName)
 
-        #separator
+        # separator
         if not separator:
             raise PlominoReplicationException, 'separator required'
 
-        #file
+        # file
         if not fileToImport:
             raise PlominoReplicationException, 'file required'
 
-        #check type
-        #if not isinstance(fileToImport, File):
-         #   raise PlominoReplicationException, 'unrecognized file uploaded'
-
-        #parse and import
-        fileContent = self.parseFile(fileToImport, formName, separator, file_encoding)
+        # parse and import
+        fileContent = self.parseFile(fileToImport, formName, separator,
+                file_encoding)
 
         nbDocDone, nbDocFailed = self.importCsv(fileContent)        
-        logger.info('Import processed : ' + str(nbDocDone) + ' document(s) imported, ' + str(nbDocFailed) + ' document(s) failed.')       
+        logger.info(
+                'Import processed: %s document(s) imported, '
+                '%s document(s) failed.' % (nbDocDone, nbDocFailed))
 
     security.declareProtected(EDIT_PERMISSION, 'parseFile')
     def parseFile(self, fileToImport, formName, separator, file_encoding='utf-8'):
@@ -1117,7 +1094,7 @@ class PlominoReplicationManager(Persistent):
         Assume that we have a header line. 
         Each line represents a document. Set `Form` to formName.
         """
-        res = []
+        result = []
         try:
             if not fileToImport:
                 raise PlominoReplicationException, 'file not set'
@@ -1126,7 +1103,9 @@ class PlominoReplicationManager(Persistent):
                 raise PlominoReplicationException, 'separator not set'
 
             # Use the python CSV module
-            reader = csv.DictReader(fileToImport.readlines(), delimiter=separator)
+            reader = csv.DictReader(
+                    fileToImport.readlines(),
+                    delimiter=separator)
 
             # Add the form name and copy reader values
             for line in reader:
@@ -1138,26 +1117,22 @@ class PlominoReplicationManager(Persistent):
                 # copy col values
                 for col in line:
                     v = line[col]
-                    if v is None:
+                    if not v:
                         v = u''
                     docInfos[col] = v.decode(file_encoding)
 
-                #add doc infos to res
-                res.append(docInfos)
+                # add doc infos to result
+                result.append(docInfos)
 
-            #result
-            return res
+            return result
 
         except PlominoReplicationException, e:
             raise PlominoReplicationException, 'error while parsing file (%s)' % (e)            
 
     security.declareProtected(EDIT_PERMISSION, 'importCsv')
     def importCsv(self, fileContent):
+        """ Import CSV from content parsed.
         """
-        Import csv from content parsed.
-        """
-
-        #import
         nbDocDone = 0
         nbDocFailed = 0
         counter = 0
@@ -1167,13 +1142,17 @@ class PlominoReplicationManager(Persistent):
         txn = transaction.get()
         for docInfos in fileContent:
             try:
-                #create doc
+                # create doc
                 doc = self.createDocument()
-                #fill it
+                # fill it
                 form = self.getForm(docInfos['Form'])
-                form.readInputs(doc, docInfos, process_attachments=False, applyhidewhen=False)
+                form.readInputs(
+                        doc,
+                        docInfos,
+                        process_attachments=False,
+                        applyhidewhen=False)
                 doc.setItem('Form', docInfos['Form'])
-                #add items that don't correspond to any field 
+                # add items that don't correspond to any field 
                 computedItems = doc.getItems()
                 for info in docInfos:
                     if info not in computedItems:
@@ -1181,44 +1160,47 @@ class PlominoReplicationManager(Persistent):
                         if isinstance(v, str):
                             v.decode('utf-8')
                         doc.setItem(info, v)
-                #save
                 doc.save(creation=True, refresh_index=True)
-                #count
+                # count
                 nbDocDone = nbDocDone + 1
 
             except PlominoReplicationException, e:
                 nbDocFailed = nbDocFailed + 1
                 self.addToReport(i, e, True)
-            #next 
+
+            # next 
             i = i + 1
-            counter = counter + 1
-            if counter == 100:
+            if not nbDocDone % 100:
                 txn.savepoint(optimistic=True)
-                counter = 0
-                logger.info("%d documents imported successfully, %d errors(s) ...(still running)" % (nbDocDone, nbDocFailed))
+                logger.info(
+                        "%d documents imported successfully, "
+                        "%d errors(s) ...(still running)" % (
+                            nbDocDone, nbDocFailed))
         txn.commit()
-        logger.info("Importation finished: %d documents imported successfully, %d document(s) not imported" % (nbDocDone, nbDocFailed)) 
-        
+        logger.info(
+                "Importation finished: %d documents imported successfully, "
+                "%d document(s) not imported" % (nbDocDone, nbDocFailed)) 
+
         #result sent
         return (nbDocDone, nbDocFailed)
 
     security.declarePublic('getReport')
     def getReport(self):
-        """returns last importation report
+        """ Returns last importation report
         """
-        if not (hasattr(self,'importReport')):
+        if not (hasattr(self, 'importReport')):
             self.importReport = None
         return self.importReport
 
     security.declareProtected(EDIT_PERMISSION, 'resetReport')
     def resetReport(self):
-        """clears report
+        """ Clears report
         """
         self.importReport = None
 
     security.declareProtected(EDIT_PERMISSION, 'addToReport')
-    def addToReport(self, lineNumber, infoMessage, error = False):
-        """ adds entry to report
+    def addToReport(self, lineNumber, infoMessage, error=False):
+        """ Adds entry to report
         """
         if not self.getReport():
             self.importReport = []
@@ -1227,16 +1209,19 @@ class PlominoReplicationManager(Persistent):
         else:
             state = 'success'
 
-        self.importReport.append({'line' : lineNumber, 'state' : state, 'infoMsg' : infoMessage})
+        self.importReport.append({
+                    'line': lineNumber,
+                    'state': state,
+                    'infoMsg': infoMessage})
 
     security.declareProtected(READ_PERMISSION, 'manage_exportAsXML')
     def manage_exportAsXML(self, REQUEST):
         """
         """
         restricttoview = REQUEST.get("restricttoview", "")
-        if restricttoview != "":
-            sourceview = self.getView(restricttoview)
-            docids = [b.id for b in sourceview.getAllDocuments(getObject=False)]
+        if restricttoview:
+            v = self.getView(restricttoview)
+            docids = [b.id for b in v.getAllDocuments(getObject=False)]
         else:
             docids = None
         if REQUEST.get('targettype') == "file":
@@ -1245,30 +1230,33 @@ class PlominoReplicationManager(Persistent):
                 label = restricttoview
             else:
                 label = "all"
-            REQUEST.RESPONSE.setHeader("Content-Disposition", "attachment; filename=%s-%s-documents.xml" % (self.id, label))
+            REQUEST.RESPONSE.setHeader(
+                    "Content-Disposition",
+                    "attachment; filename=%s-%s-documents.xml" % (
+                        self.id, label))
         return self.exportAsXML(docids, REQUEST=REQUEST)
 
     security.declareProtected(READ_PERMISSION, 'exportAsXML')
     def exportAsXML(self, docids=None, targettype='file', targetfolder='', REQUEST=None):
         """ Export documents to XML.
         The targettype can be file or folder.
+        If supplied, the values on REQUEST override keyword parameters.
         """
         if REQUEST:
-            targettype=REQUEST.get('targettype', 'file')
-            targetfolder=REQUEST.get('targetfolder')
-            str_docids=REQUEST.get("docids")
-            if str_docids is not None:
+            targettype = REQUEST.get('targettype', 'file')
+            targetfolder = REQUEST.get('targetfolder')
+            str_docids = REQUEST.get("docids")
+            if str_docids:
                 docids = str_docids.split("@")
 
-        impl = getDOMImplementation()
-
-        if docids is None:
+        if docids:
             docs = self.getAllDocuments()
         else:
             docs = [self.getDocument(i) for i in docids]
 
+        dom = getDOMImplementation()
         if targettype == 'file':
-            xmldoc = impl.createDocument(None, "plominodatabase", None)
+            xmldoc = dom.createDocument(None, "plominodatabase", None)
             root = xmldoc.documentElement
             root.setAttribute("id", self.id)
 
@@ -1281,25 +1269,24 @@ class PlominoReplicationManager(Persistent):
             return xmldoc.toxml()
 
         if targettype == 'folder':
-
             if REQUEST:
-                targetfolder=REQUEST.get('targetfolder')
+                targetfolder = REQUEST.get('targetfolder')
 
-            exportpath = os.path.join(targetfolder,(self.id))
+            exportpath = os.path.join(targetfolder, self.id)
             if os.path.isdir(exportpath):
                 # remove previous export
-                for f in glob.glob(os.path.join(exportpath,"*.xml")):
+                for f in glob.glob(os.path.join(exportpath, "*.xml")):
                     os.remove(f)
             else:
                 os.makedirs(exportpath)
 
             for d in docs:
-                docfilepath = os.path.join(exportpath, (d.id+'.xml'))
+                docfilepath = os.path.join(exportpath, (d.id + '.xml'))
                 #DBG if os.path.exists(docfilepath):
                 #DBG     logger.info("Skipping %s"%docfilepath)
                 #DBG     continue
-                logger.info("Exporting %s"%docfilepath)
-                xmldoc = impl.createDocument(None, "plominodatabase", None)
+                logger.info("Exporting %s" % docfilepath)
+                xmldoc = dom.createDocument(None, "plominodatabase", None)
                 root = xmldoc.documentElement
                 root.setAttribute("id", d.id)
                 node = self.exportDocumentAsXML(xmldoc, d)
@@ -1336,8 +1323,11 @@ class PlominoReplicationManager(Persistent):
                 continue
             fnode = xmldoc.createElement('attachment')
             fnode.setAttribute('id', f)
-            fnode.setAttribute('contenttype', getattr(attached_file, 'content_type',''))
-            data = xmldoc.createCDATASection(str(attached_file).encode('base64'))
+            fnode.setAttribute(
+                    'contenttype',
+                    getattr(attached_file, 'content_type',''))
+            data = xmldoc.createCDATASection(
+                    str(attached_file).encode('base64'))
             fnode.appendChild(data)
             node.appendChild(fnode)
 
@@ -1348,45 +1338,54 @@ class PlominoReplicationManager(Persistent):
         """
         """
         (imports, errors) = self.importFromXML(REQUEST=REQUEST)
-        self.writeMessageOnPage("%d documents imported successfully, %d document(s) not imported" % (imports, errors), REQUEST, False)
+        self.writeMessageOnPage(
+                "%d documents imported successfully, "
+                "%d document(s) not imported" % (
+                    imports, errors),
+                REQUEST, error=False)
         REQUEST.RESPONSE.redirect(self.absolute_url()+"/DatabaseReplication")
 
     security.declareProtected(REMOVE_PERMISSION, 'importFromXML')
-    def importFromXML(self, xmlstring=None, sourcetype='sourceFile', file=None, from_folder=None, REQUEST=None):
+    def importFromXML(self, xmlstring=None, sourcetype='sourceFile', from_file=None, from_folder=None, REQUEST=None):
         """ Import documents from XML.
         The sourcetype can be sourceFile or sourceFolder.
         """
         logger.info("Start documents import")
         self.setStatus("Importing documents (0%)")
         txn = transaction.get()
-        xml_files = []
+        xml_sources = []
         if xmlstring:
             xmlstring_arg = True
-            xml_files = [xmlstring]
+            xml_sources = [xmlstring]
         else:
             xmlstring_arg = False
             if REQUEST:
                 sourcetype = REQUEST.get('sourcetype', sourcetype)
             if sourcetype == 'sourceFile':
                 if REQUEST:
-                    xml_files = [REQUEST.get("file")]
-                elif file:
-                    xml_files = [file]
+                    xml_sources = [REQUEST.get("file")]
+                elif from_file:
+                    xml_sources = [from_file]
             elif sourcetype == 'folder':
                 if REQUEST:
-                    from_folder=REQUEST.get("from_folder")
-                xml_files = glob.glob(os.path.join(from_folder, '*.xml'))
+                    from_folder = REQUEST.get("from_folder")
+                xml_sources = glob.glob(os.path.join(from_folder, '*.xml'))
 
         files_counter = 0
         errors = 0
         imports = 0
 
-        for xml_file in xml_files:
-            if not xmlstring_arg:
-                if hasattr(xml_file, 'read'):
-                    xmlstring = xml_file.read()
+        # xml_sources contains either:
+        # - a string, or
+        # - file objects and/or filenames.
+        for source in xml_sources:
+            if xmlstring_arg:
+                xmlstring = source
+            else:
+                if hasattr(source, 'read'):
+                    xmlstring = source.read()
                 else:
-                    fileobj = codecs.open(xml_file, 'r', 'utf-8')
+                    fileobj = codecs.open(source, 'r', 'utf-8')
                     xmlstring = fileobj.read().encode('utf-8')
 
             xmldoc = parseString(xmlstring)
@@ -1409,18 +1408,25 @@ class PlominoReplicationManager(Persistent):
                     errors = errors + 1
                 docs_counter = docs_counter + 1
                 if docs_counter == 100:
-                    self.setStatus("Importing documents (%d%%)" % int(100*docs_counter/total_docs))
+                    self.setStatus("Importing documents (%d%%)" % 
+                            100 * docs_counter / total_docs)
                     txn.savepoint(optimistic=True)
                     docs_counter = 0
-                    logger.info("%d documents imported successfully, %d errors(s) ...(still running)" % (imports, errors))
+                    logger.info("%d documents imported successfully, "
+                            "%d errors(s) ... (still running)" % (
+                                imports, errors))
             if files_counter == 100:
                 self.setStatus("Importing documents (%s)" % files_counter)
                 txn.savepoint(optimistic=True)
                 files_counter = 0
-                logger.info("%d documents imported successfully, %d errors(s) ...(still running)" % (imports, errors))
+                logger.info("%d documents imported successfully, "
+                        "%d errors(s) ... (still running)" % (
+                            imports, errors))
 
         self.setStatus("Ready")
-        logger.info("Importation finished: %d documents imported successfully, %d document(s) not imported" % (imports, errors))
+        logger.info("Importation finished: "
+                "%d documents imported successfully, "
+                "%d document(s) not imported" % (imports, errors))
         txn.commit()
 
         return (imports, errors)
@@ -1438,15 +1444,21 @@ class PlominoReplicationManager(Persistent):
         items = result[0]
         for k in items.keys():
             # convert xmlrpclib.DateTime into DateTime
-            if items[k].__class__.__name__=='DateTime':
-                items[k]=StringToDate(items[k].value[:19], format="%Y-%m-%dT%H:%M:%S")
+            if items[k].__class__.__name__ == 'DateTime':
+                items[k] = StringToDate(
+                        items[k].value[:19],
+                        format="%Y-%m-%dT%H:%M:%S")
         doc.items = PersistentDict(items)
 
         # restore files
         for fnode in node.getElementsByTagName("attachment"):
             filename = str(fnode.getAttribute('id'))
             contenttype = str(fnode.getAttribute('contenttype'))
-            doc.setfile(fnode.firstChild.data.decode('base64'), filename=filename, overwrite=True, contenttype=contenttype)
+            doc.setfile(
+                    fnode.firstChild.data.decode('base64'),
+                    filename=filename,
+                    overwrite=True,
+                    contenttype=contenttype)
         doc.save(onSaveEvent=False)
         doc.plomino_modification_time = lastmodified
 

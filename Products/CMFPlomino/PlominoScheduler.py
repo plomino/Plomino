@@ -76,7 +76,7 @@ class PlominoScheduler(Persistent):
                 replication = self.getReplication(replicationId)
                 if replication['scheduled']:
                     username = '%s:%s' % (
-                            self.acl_users.absolute_url(1)
+                            self.acl_users.absolute_url(1),
                             replication['username'])
                     if not username.startswith('/'):
                         username = '/' + username
@@ -139,8 +139,8 @@ class PlominoScheduler(Persistent):
                     if user.startswith('"') and user.endswith('"'):
                         user = user[1:-1]
                     currentUser = user
-            # first caract is * or num -> cron line
-            elif line[0].isdigit() or line[0]=='*':
+            # first character is * or num -> cron line
+            elif line[0].isdigit() or line[0] == '*':
                 line = line.split(None, 5)
                 #user
                 res[line[5]] = {

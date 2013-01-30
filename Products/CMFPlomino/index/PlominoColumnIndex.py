@@ -10,19 +10,21 @@
 __author__ = """Eric BREHAULT <eric.brehault@makina-corpus.com>"""
 __docformat__ = 'plaintext'
 
+# Zope
+from ZODB.POSException import ConflictError
 from Products.PluginIndexes.common.UnIndex import UnIndex
 
-class PlominoColumnIndex(UnIndex):
 
-    """Index for Plomino columns.
+class PlominoColumnIndex(UnIndex):
+    """ Index for Plomino columns.
     """
 
-    meta_type="PlominoColumnIndex"
+    meta_type = "PlominoColumnIndex"
 
-    query_options = ["query","range"]
+    query_options = ["query", "range"]
 
     def index_object(self, documentId, obj, threshold=None):
-        """Index an object.
+        """ Index an object.
 
         'documentId' is the integer ID of the document.
         'obj' is the object to be indexed.
@@ -33,12 +35,12 @@ class PlominoColumnIndex(UnIndex):
         returnStatus = 0
         parentdb = self.getParentDatabase()
         doc = obj.__of__(parentdb)
-        if(self.id.startswith("PlominoViewColumn_")):
+        if self.id.startswith("PlominoViewColumn_"):
             param = self.id.split('_')
-            viewname=param[1]
+            viewname = param[1]
             if not doc.isSelectedInView(viewname):
                 return 0
-            columnname=param[2]
+            columnname = param[2]
             newValue = doc.computeColumnValue(viewname, columnname)
         else:
             return 0
@@ -47,7 +49,7 @@ class PlominoColumnIndex(UnIndex):
         if newValue != oldValue:
             if oldValue is not None:
                 self.removeForwardIndexEntry(oldValue, documentId)
-                if type(oldValue) is list:
+                if isinstance(oldValue, list):
                     for kw in oldValue:
                         self.removeForwardIndexEntry(kw, documentId)
                 if newValue is None:
@@ -58,8 +60,8 @@ class PlominoColumnIndex(UnIndex):
                     except:
                         pass
             if newValue is not None:
-                self.insertForwardIndexEntry( newValue, documentId )
-                if type(newValue) is list:
+                self.insertForwardIndexEntry(newValue, documentId)
+                if isinstance(newValue, list):
                     for kw in newValue:
                         self.insertForwardIndexEntry(kw, documentId)
                 self._unindex[documentId] = newValue

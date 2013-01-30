@@ -40,31 +40,36 @@ LINKABLE_BLACKLIST = (
     'Link',
     'TempFolder',
 )
-RESOURCES = dict(
-    linkable = ('blacklist', LINKABLE_BLACKLIST),
-    mediaobject = ('whitelist', ('Image',)),
-    collection = ('whitelist', ('Plone Site', 'Folder', 'Large Plone Folder')),
-    containsanchors = ('whitelist', ('Document', 'News Item', 'Event')),
-    )
+RESOURCES = {
+    'linkable': ('blacklist', LINKABLE_BLACKLIST),
+    'mediaobject': ('whitelist', ('Image',)),
+    'collection': ('whitelist', 
+            ('Plone Site', 'Folder', 'Large Plone Folder')),
+    'containsanchors': ('whitelist', ('Document', 'News Item', 'Event')),
+    }
 
 EXCLUDED_HTML = [
-  {'tags': ('center','tt','big','small','basefont','font',),
-   'attributes':(),
-   'keep': 1 },
+    {'tags': ('center', 'tt', 'big', 'small', 'basefont', 'font', ), 
+     'attributes': (),
+     'keep': 1},
 
-  {'tags':(),
-  'attributes': ('lang','valign','halign','border','frame',
-      'rules','cellspacing','cellpadding','bgcolor'),
-   'keep': 1},
+    {'tags': (),
+     'attributes': ('lang', 'valign', 'halign', 'border', 'frame', 
+             'rules', 'cellspacing', 'cellpadding', 'bgcolor'),
+     'keep': 1},
 
-  {'tags': ('table','th','td'),
-   'attributes': ('width','height'),
-   'keep': 1},
+    {'tags': ('table', 'th', 'td'), 
+     'attributes': ('width', 'height'), 
+     'keep': 1},
 
-   {'tags': '', 'attributes': '' } # Must be dummy entry at end.
+    # Must be dummy entry at end.
+    {'tags': '',
+     'attributes': ''}
 ]
 
-STYLE_WHITELIST = ['text-align', 'list-style-type', 'float', 'plominoFieldClass', 'plominoActionClass', 'plominoHidewhenClass', 'plominoSubformClass']
+STYLE_WHITELIST = ['text-align', 'list-style-type', 'float',
+        'plominoFieldClass', 'plominoActionClass', 'plominoHidewhenClass',
+        'plominoSubformClass']
 CLASS_BLACKLIST = ['MsoNormal', 'MsoTitle', 'MsoHeader', 'MsoFootnoteText',
         'Bullet1', 'Bullet2']
 
@@ -129,14 +134,14 @@ typetool = getToolByName(context, 'portal_types')
 # this picks the wrong preview URL, you might want to change these
 # expressions.
 PREVIEW_EXPR = 'string:${object_url}/%s'
-PREVIEW = [ { 'portal_type': type,
+PREVIEW = [
+    {'portal_type': type,
     'expression': PREVIEW_EXPR % image,
     'normal': None,
     'scalefield': image.split('_',1)[0],
     'classes': '',
     'mediatype': 'image',
-    }
-            for (type, image) in tool.getPreviewable() ]
+    } for (type, image) in tool.getPreviewable()]
 # e.g. PREVIEW=[{'portal_type': 'Image',
 #                'expression':'string:${object_url}/image_thumb'
 #                'normal': 'string:$object_url',
@@ -158,7 +163,7 @@ types = tool.zmi_get_resourcetypes()
 tool.deleteResourceTypes([ t.name for t in types])
 
 print "add resources"
-for k,(mode,types) in RESOURCES.items():
+for k, (mode, types) in RESOURCES.items():
     tool.addResourceType(k, typefilter(types), mode=mode)
 
 mappings = tool.zmi_get_resourcetypes()
@@ -179,17 +184,17 @@ for lib in tool.zmi_get_libraries():
     keys.sort()
     print lib['id']
     for k in (keys):
-        print '   ',k, lib[k]
+        print '   ', k, lib[k]
 
 tool.zmi_set_default_library(DEFAULT_LIBRARY)
 
 print "configure kupu"
 tool.configure_kupu(
-    table_classnames = TABLE_CLASSNAMES,
+    table_classnames=TABLE_CLASSNAMES,
     parastyles=PARAGRAPH_STYLES,
-    html_exclusions = EXCLUDED_HTML,
-    style_whitelist = STYLE_WHITELIST,
-    class_blacklist = CLASS_BLACKLIST,
+    html_exclusions=EXCLUDED_HTML,
+    style_whitelist=STYLE_WHITELIST,
+    class_blacklist=CLASS_BLACKLIST,
     installBeforeUnload=INSTALL_BEFOREUNLOAD,
     linkbyuid=LINKBYUID,
     captioning=CAPTIONING,

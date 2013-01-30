@@ -41,7 +41,8 @@ class ISelectionField(IBaseField):
         required=True)
     selectionlist = List(
         title=u'Selection list',
-        description=u"List of values to select, one per line, formatted as 'label|value'",
+        description=u"List of values to select, one per line, "
+                "formatted as 'label|value'",
         required=False,
         default=[],
         value_type=TextLine(title=u'Entry'))
@@ -85,9 +86,18 @@ class SelectionField(BaseField):
             else:
                 obj = self.context
             try:
-                s = self.context.runFormulaScript("field_" + self.context.getParentNode().id + "_" + self.context.id + "_SelectionListFormula", obj, lambda: f)
+                s = self.context.runFormulaScript(
+                        'field_%s_%s_SelectionListFormula' % (
+                            self.context.getParentNode().id,
+                            self.context.id),
+                        obj,
+                        lambda: f)
             except PlominoScriptException, e:
-                e.reportError('%s field selection list formula failed' % self.context.id, path=self.context.absolute_url_path() + '/getSettings?key=selectionlistformula')
+                p = self.context.absolute_url_path()
+                e.reportError(
+                        '%s field selection list formula failed' % 
+                        self.context.id,
+                        path=p+'/getSettings?key=selectionlistformula')
                 s = []
         else:
             s = self.selectionlist

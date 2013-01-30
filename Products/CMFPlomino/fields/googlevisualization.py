@@ -10,19 +10,20 @@
 __author__ = """Eric BREHAULT <eric.brehault@makina-corpus.com>"""
 __docformat__ = 'plaintext'
 
+# Standard
+import logging
+logger = logging.getLogger('Plomino')
+
+# Zope
 from zope.formlib import form
 from zope.interface import implements
 from zope.schema import getFields
 from zope.schema import Text, TextLine
 
-from dictionaryproperty import DictionaryProperty
-
-from Products.CMFPlomino.PlominoUtils import asList
-
+# Plomino
 from base import IBaseField, BaseField, BaseForm
-
-import logging
-logger = logging.getLogger('Plomino')
+from dictionaryproperty import DictionaryProperty
+from Products.CMFPlomino.PlominoUtils import asList
 
 js_func_template = """\
 %(jssettings)s
@@ -41,9 +42,10 @@ class IGooglevisualizationField(IBaseField):
     """
     Google chart field schema
     """
-    jssettings = Text(title=u'Javascript settings',
-                      description=u'Google Vizualization code',
-                      default=u"""
+    jssettings = Text(
+            title=u'Javascript settings',
+            description=u'Google Vizualization code',
+            default=u"""
 google.load('visualization', '1', {packages:['corechart']});
 google.setOnLoadCallback(gvisudata_drawChart);
 var gvisudata;
@@ -57,15 +59,18 @@ var gvisudata_chart = new google.visualization.PieChart(document.getElementById(
 gvisudata_chart.draw(gvisudata, {width: 400, height: 400, is3D: true});
 }
 """,
-                      required=False)
-    chartid = TextLine(title=u'Chart id',
-                      description=u'Used to name the javascript variable/functions and the DIV element',
-                      required=True,
-                      default=u'gvisudata')
+            required=False)
+    chartid = TextLine(
+            title=u'Chart id',
+            description=u'Used to name the javascript variable/functions "
+                    "and the DIV element',
+            required=True,
+            default=u'gvisudata')
+
 
 class GooglevisualizationField(BaseField):
-    """ GooglevisualizationField allows to render a datatable using the Google
-    Visualization tools.
+    """ GooglevisualizationField allows to render a datatable using the
+    Google Visualization tools.
 
     The field value should be list of lists. Each child list contains the
     values for the columns declared in the Google Vizualization javascript
@@ -157,7 +162,9 @@ class GooglevisualizationField(BaseField):
 
 
 for f in getFields(IGooglevisualizationField).values():
-    setattr(GooglevisualizationField, f.getName(), DictionaryProperty(f, 'parameters'))
+    setattr(GooglevisualizationField,
+            f.getName(),
+            DictionaryProperty(f, 'parameters'))
 
 class SettingForm(BaseForm):
     """

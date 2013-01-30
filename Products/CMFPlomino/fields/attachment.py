@@ -10,27 +10,32 @@
 __author__ = """Eric BREHAULT <eric.brehault@makina-corpus.com>"""
 __docformat__ = 'plaintext'
 
+# Zope
 from zope.formlib import form
 from zope.interface import implements
 from zope.schema import getFields, Choice
 from zope.schema.vocabulary import SimpleVocabulary
+
+# CMF / Archetypes / Plone
+from Products.CMFPlone.utils import normalizeString
+
+# Plomino
+from base import IBaseField, BaseField, BaseForm
 from dictionaryproperty import DictionaryProperty
 
-from base import IBaseField, BaseField, BaseForm
-
-from Products.CMFPlone.utils import normalizeString
 
 class IAttachmentField(IBaseField):
     """ Attachment field schema
     """
-    type = Choice(vocabulary=SimpleVocabulary.fromItems([("Single file", "SINGLE"),
-                                                           ("Multiple files", "MULTI")
-                                                           ]),
-                    title=u'Type',
-                    description=u'Single or multiple file(s)',
-                    default="MULTI",
-                    required=True)
-    
+    type = Choice(
+            vocabulary=SimpleVocabulary.fromItems(
+                [("Single file", "SINGLE"), ("Multiple files", "MULTI") ]),
+                title=u'Type',
+                description=u'Single or multiple file(s)',
+                default="MULTI",
+                required=True)
+
+
 class AttachmentField(BaseField):
     """
     """
@@ -47,7 +52,9 @@ class AttachmentField(BaseField):
 
 
 for f in getFields(IAttachmentField).values():
-    setattr(AttachmentField, f.getName(), DictionaryProperty(f, 'parameters'))
+    setattr(AttachmentField,
+            f.getName(),
+            DictionaryProperty(f, 'parameters'))
 
 class SettingForm(BaseForm):
     """

@@ -10,52 +10,61 @@
 __author__ = """Eric BREHAULT <eric.brehault@makina-corpus.com>"""
 __docformat__ = 'plaintext'
 
+# Third party
+from jsonutil import jsonutil as json
+
+# Zope
 from zope.formlib import form
 from zope.interface import implements
 from zope.schema import getFields
-from zope.schema import TextLine, Text, List, Choice
+from zope.schema import TextLine, Text, Choice
 from zope.schema.vocabulary import SimpleVocabulary
-from dictionaryproperty import DictionaryProperty
 
+# Plomino
 from base import IBaseField, BaseField, BaseForm
+from dictionaryproperty import DictionaryProperty
 from Products.CMFPlomino.exceptions import PlominoScriptException
 
-from jsonutil import jsonutil as json
-
 class IDoclinkField(IBaseField):
+    """ Selection field schema
     """
-    Selection field schema
-    """
-    widget = Choice(vocabulary=SimpleVocabulary.fromItems([("Selection list", "SELECT"),
-                                                           ("Multi-selection list", "MULTISELECT"),
-                                                           ("Embedded view", "VIEW"),
-                                                           ("Dynamic table", "DYNAMICTABLE"),
-                                                           ("Dynamic picklist", "PICKLIST")
-                                                           ]),
-                    title=u'Widget',
-                    description=u'Field rendering',
-                    default="SELECT",
-                    required=True)
+    widget = Choice(
+            vocabulary=SimpleVocabulary.fromItems(
+                [("Selection list", "SELECT"),
+                    ("Multi-selection list", "MULTISELECT"),
+                    ("Embedded view", "VIEW"),
+                    ("Dynamic table", "DYNAMICTABLE"),
+                    ("Dynamic picklist", "PICKLIST")
+                    ]),
+                title=u'Widget',
+                description=u'Field rendering',
+                default="SELECT",
+                required=True)
 
-    sourceview = Choice(vocabulary='Products.CMFPlomino.fields.vocabularies.get_views',
-                    title=u'Source view',
-                    description=u'View containing the linkable documents',
-                    required=False)
+    sourceview = Choice(
+            vocabulary='Products.CMFPlomino.fields.vocabularies.get_views',
+            title=u'Source view',
+            description=u'View containing the linkable documents',
+            required=False)
 
-    labelcolumn = TextLine(title=u'Label column',
-                    description=u'View column used as label',
-                    required=False)
+    labelcolumn = TextLine(
+            title=u'Label column',
+            description=u'View column used as label',
+            required=False)
 
-    documentslistformula = Text(title=u'Documents list formula',
-                      description=u"Formula to compute the linkable documents list (must return a list of 'label|docid_or_path')",
-                      required=False)
-    separator = TextLine(title=u'Separator',
-                      description=u'Only apply if multiple values will be displayed',
-                      required=False)
+    documentslistformula = Text(
+            title=u'Documents list formula',
+            description=u"Formula to compute the linkable documents list "
+                    "(must return a list of 'label|docid_or_path')",
+            required=False)
+    separator = TextLine(
+            title=u'Separator',
+            description=u'Only apply if multiple values will be displayed',
+            required=False)
     dynamictableparam = Text(
-        title=u"Dynamic Table Parameters",
-        description=u"Change these options to customize the dynamic table",
-        default=u"""
+            title=u"Dynamic Table Parameters",
+            description=u"Change these options to customize the dynamic table",
+            default=u"""
 'bPaginate': true,
 'bLengthChange': true,
 'bFilter': true,
@@ -70,13 +79,14 @@ class DoclinkField(BaseField):
     implements(IDoclinkField)
 
     def getSelectionList(self, doc):
-        """return the documents list, format: label|docid_or_path, use value is used as label if no label
+        """ Return the documents list, format: label|docid_or_path, use
+        value is used as label if no label.
         """
 
         #if formula available, use formula, else use view entries
         f = self.documentslistformula
-        if f is None or len(f)==0:
-            if self.sourceview is not None:
+        if not f:
+            if self.sourceview:
                 v = self.context.getParentDatabase().getView(self.sourceview)
             else:
                 v = None
@@ -97,9 +107,18 @@ class DoclinkField(BaseField):
             else:
                 obj = doc
             try:
-                s = self.context.runFormulaScript("field_"+self.context.getParentNode().id+"_"+self.context.id+"_DocumentListFormula", obj, lambda: f)
+                s = self.context.runFormulaScript(
+                        'field_%s_%s_DocumentListFormula' % (
+                            self.context.getParentNode().id,
+                            self.context.id),
+                        obj,
+                        lambda: f)
             except PlominoScriptException, e:
-                e.reportError('%s doclink field selection list formula failed' % self.context.id, path=self.context.absolute_url_path()+'/getSettings?key=documentslistformula')
+                p = self.context.absolute_url_path()
+                e.reportError(
+                        '%s doclink field selection list formula failed' %
+                        self.context.id,
+                        path=p+'/getSettings?key=documentslistformula')
                 s = None
             if s is None:
                 s = []
@@ -108,7 +127,7 @@ class DoclinkField(BaseField):
         proper = []
         for v in s:
             l = v.split('|')
-            if len(l)==2:
+            if len(l) == 2:
                 proper.append(v)
             else:
                 proper.append(v+'|'+v)
@@ -126,9 +145,11 @@ class DoclinkField(BaseField):
         """Return a JSON table storing documents to be displayed
         """
         if self.sourceview:
-            sourceview = self.context.getParentDatabase().getView(self.sourceview)
+            sourceview = self.context.getParentDatabase().getView(
+                    self.sourceview)
             brains = sourceview.getAllDocuments(getObject=False)
-            columns = [col for col in sourceview.getColumns() if not(col.getHiddenColumn())]
+            columns = [col for col in sourceview.getColumns() 
+                    if not(col.getHiddenColumn())]
             column_ids = [col.id for col in columns]
 
             datatable = []
@@ -146,25 +167,34 @@ class DoclinkField(BaseField):
         return json.dumps(datatable)
 
     def getJQueryColumns(self):
-        """Returns a JSON representation of columns headers, designed for JQuery DataTables
+        """ Returns a JSON representation of columns headers.
+        
+        Designed for JQuery DataTables.
         """
         if self.sourceview is not None:
-            sourceview = self.context.getParentDatabase().getView(self.sourceview)
-            columns = [col for col in sourceview.getColumns() if not(col.getHiddenColumn())]
+            sourceview = self.context.getParentDatabase().getView(
+                    self.sourceview)
+            columns = [col for col in sourceview.getColumns() 
+                    if not(col.getHiddenColumn())]
             column_labels = [col.Title() for col in columns]
         else:
             column_labels = [""]
 
         column_dicts = [{"sTitle": col} for col in column_labels]
-        column_dicts.insert(0, {"bVisible": False, "bSearchable": False})
+        column_dicts.insert(
+                0,
+                {"bVisible": False, "bSearchable": False})
 
         return json.dumps(column_dicts)
 
     def getColumnLabelIndex(self):
-        """Return the column index used to display the document label
+        """ Return the column index used to display the document label
         """
         if self.sourceview:
-            return [col.id for col in self.context.getParentDatabase().getView(self.sourceview).getColumns()].index(self.labelcolumn);
+            return [col.id for col in
+                    self.context.getParentDatabase().getView(
+                        self.sourceview).getColumns()].index(
+                                self.labelcolumn);
         else:
             return 0
 

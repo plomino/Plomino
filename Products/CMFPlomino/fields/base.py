@@ -13,6 +13,9 @@ __docformat__ = 'plaintext'
 # stdlib
 from urllib import unquote
 
+# 3rd party
+from jsonutil import jsonutil as json
+
 # Zope
 from zope.interface import Interface, implements
 from zope.annotation.interfaces import IAnnotations
@@ -28,12 +31,11 @@ from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from Products.CMFPlomino.PlominoUtils import asUnicode
 from Products.CMFPlomino.PlominoDocument import TemporaryDocument
 
-# 3rd party
-from jsonutil import jsonutil as json
 
 class IBaseField(Interface):
     """
     """
+
 
 class BaseField(object):
     """
@@ -52,7 +54,7 @@ class BaseField(object):
     def validate(self, strValue):
         """
         """
-        errors=[]
+        errors = []
         return errors
 
     def processInput(self, strValue):
@@ -101,7 +103,7 @@ class BaseField(object):
             )
         if temporary_doc_in_overlay:
             request = self.context.REQUEST
-        if mode=="EDITABLE":
+        if mode == "EDITABLE":
             if doc is None or creation or temporary_doc_in_overlay:
                 # The aforementioned ugliness ends here
                 if self.context.Formula():
@@ -112,12 +114,22 @@ class BaseField(object):
                     row_data_json = request.get("Plomino_datagrid_rowdata", None)
                     if row_data_json is not None:
                         # datagrid form case
-                        parent_form = request.get("Plomino_Parent_Form", None)
-                        parent_field = request.get("Plomino_Parent_Field", None)
-                        data = json.loads(unquote(row_data_json).decode('unicode_escape'))
-                        datagrid_fields = db.getForm(parent_form).getFormField(parent_field).getSettings().field_mapping.split(',')
+                        parent_form = request.get(
+                                "Plomino_Parent_Form", None)
+                        parent_field = request.get(
+                                "Plomino_Parent_Field", None)
+                        data = json.loads(
+                                unquote(
+                                    row_data_json).decode(
+                                        'unicode_escape'))
+                        datagrid_fields = (
+                                db.getForm(parent_form)
+                                .getFormField(parent_field)
+                                .getSettings()
+                                .field_mapping.split(','))
                         if fieldName in datagrid_fields:
-                            fieldValue = data[datagrid_fields.index(fieldName)]
+                            fieldValue = data[
+                                    datagrid_fields.index(fieldName)]
                         else:
                             fieldValue = ""
                     else:
@@ -125,10 +137,10 @@ class BaseField(object):
             else:
                 fieldValue = doc.getItem(fieldName)
 
-        elif mode=="DISPLAY" or mode=="COMPUTED":
+        elif mode in ["DISPLAY", "COMPUTED"]:
             fieldValue = form.computeFieldValue(fieldName, target)
 
-        elif mode=="CREATION":
+        elif mode == "CREATION":
             if creation:
                 # Note: on creation, there is no doc, we use form as target
                 # in formula
@@ -136,13 +148,14 @@ class BaseField(object):
             else:
                 fieldValue = doc.getItem(fieldName)
 
-        elif mode=="COMPUTEDONSAVE" and doc:
+        elif mode == "COMPUTEDONSAVE" and doc:
             fieldValue = doc.getItem(fieldName)
 
         if fieldValue is None:
             fieldValue = ""
 
         return fieldValue
+
 
 class BaseForm(EditForm):
     """

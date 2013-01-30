@@ -8,6 +8,7 @@ from Products.Five import fiveconfigure
 from Products.PloneTestCase import PloneTestCase as ptc
 from Products.PloneTestCase.layer import onsetup
 
+
 def test_suite():
     """This sets up a test suite that actually runs the tests in the class
     above

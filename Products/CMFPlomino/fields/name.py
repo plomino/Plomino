@@ -18,7 +18,7 @@ logger = logging.getLogger('Plomino')
 from zope.formlib import form
 from zope.interface import implements
 from zope.schema import getFields
-from zope.schema import TextLine, Text, List, Choice
+from zope.schema import TextLine, Choice
 from zope.schema.vocabulary import SimpleVocabulary
 
 # 3rd party
@@ -30,6 +30,7 @@ from Products.CMFCore.utils import getToolByName
 # Plomino
 from base import IBaseField, BaseField, BaseForm
 from dictionaryproperty import DictionaryProperty
+
 
 class INameField(IBaseField):
     """ Name field schema
@@ -72,15 +73,20 @@ class NameField(BaseField):
         property.
         """
         if self.restricttogroup:
-            group = self.context.portal_groups.getGroupById(self.restricttogroup)
+            group = self.context.portal_groups.getGroupById(
+                    self.restricttogroup)
             if group:
-                names_ids = [(m.getProperty("fullname"), m.getProperty('id')) for m in group.getGroupMembers()]
+                names_ids = [
+                        (m.getProperty("fullname"), m.getProperty('id'))
+                        for m in group.getGroupMembers()]
             else:
                 return []
         elif self.context.getParentDatabase().getDoNotListUsers():
             return None
         else:
-            names_ids = [(m.getProperty("fullname"), m.getId()) for m in self.context.getPortalMembers()]
+            names_ids = [
+                    (m.getProperty("fullname"), m.getId())
+                    for m in self.context.getPortalMembers()]
 
         names_ids.sort(key=lambda (username, userid): username.lower())
         return names_ids
