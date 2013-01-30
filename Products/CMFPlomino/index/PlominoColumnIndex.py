@@ -10,6 +10,8 @@
 __author__ = """Eric BREHAULT <eric.brehault@makina-corpus.com>"""
 __docformat__ = 'plaintext'
 
+# Zope
+from ZODB.POSException import ConflictError
 from Products.PluginIndexes.common.UnIndex import UnIndex
 
 class PlominoColumnIndex(UnIndex):
