@@ -18,6 +18,7 @@ try:
     from DocumentTemplate.cDocumentTemplate import safe_callable
 except ImportError:
     # Fallback to python implementation to avoid dependancy on DocumentTemplate
+    import types
     def safe_callable(ob):
         # Works with ExtensionClasses and Acquisition.
         if hasattr(ob, '__class__'):
