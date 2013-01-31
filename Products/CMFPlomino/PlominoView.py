@@ -418,8 +418,8 @@ class PlominoView(ATFolder):
             self.getParentDatabase().getIndex().refresh()
 
     security.declarePublic('declareColumn')
-    def declareColumn(self,column_name,column_obj, index=None):
-        """declare column
+    def declareColumn(self, column_name, column_obj, index=None):
+        """ Declare column
         """
         db = self.getParentDatabase()
         refresh = not(db.DoNotReindex)
@@ -430,7 +430,7 @@ class PlominoView(ATFolder):
         if column_obj.Formula:
             index.createIndex(
                     'PlominoViewColumn_%s_%s' % (
-                        self.getViewName()
+                        self.getViewName(),
                         column_name),
                     refresh=refresh)
         else:
@@ -658,7 +658,6 @@ class PlominoView(ATFolder):
         search = None
         sort_index = None
         if REQUEST:
-            columns = 
             start = int(REQUEST.get('iDisplayStart', 1))
             iDisplayLength = REQUEST.get('iDisplayLength', None)
             if iDisplayLength:

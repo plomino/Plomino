@@ -32,13 +32,13 @@ class IDatetimeField(IBaseField):
     DateTime field schema
     """
     format = TextLine(
-            title=u'Format',
-            description=u'Date/time format (if different than "
-                    "database default format)',
+            title=u"Format",
+            description=u"Date/time format (if different than "
+                    "database default format)",
             required=False)
     startingyear = TextLine(
-            title=u'Starting year',
-            description=u'Oldest year selectable in the calendar widget',
+            title=u"Starting year",
+            description=u"Oldest year selectable in the calendar widget",
             required=False)
 
 
