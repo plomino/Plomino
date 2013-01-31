@@ -34,7 +34,7 @@ def test_suite():
             #optionflags=doctest.REPORT_ONLY_FIRST_FAILURE | doctest.NORMALIZE_WHITESPACE | doctest.ELLIPSIS),
 
         ztc.ZopeDocFileSuite(
-            'tests/plomino_accesControl.txt', package='Products.CMFPlomino',
+            'tests/plomino_accessControl.txt', package='Products.CMFPlomino',
             test_class=ExampleFunctionalTestCase,
             optionflags=doctest.NORMALIZE_WHITESPACE | doctest.ELLIPSIS),
             #optionflags=doctest.REPORT_ONLY_FIRST_FAILURE | doctest.NORMALIZE_WHITESPACE | doctest.ELLIPSIS),
