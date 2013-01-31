@@ -860,7 +860,7 @@ class PlominoForm(ATFolder):
             db = self.getParentDatabase()
             try:
                 fieldvalue = db.runFormulaScript(
-                        'field_%s_%s_fieldname' % (self.id, fieldname),
+                        'field_%s_%s_formula' % (self.id, fieldname),
                         target,
                         field.Formula,
                         True,
