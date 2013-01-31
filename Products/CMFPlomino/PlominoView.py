@@ -418,8 +418,8 @@ class PlominoView(ATFolder):
             self.getParentDatabase().getIndex().refresh()
 
     security.declarePublic('declareColumn')
-    def declareColumn(self,column_name,column_obj, index=None):
-        """declare column
+    def declareColumn(self, column_name, column_obj, index=None):
+        """ Declare column
         """
         db = self.getParentDatabase()
         refresh = not(db.DoNotReindex)
