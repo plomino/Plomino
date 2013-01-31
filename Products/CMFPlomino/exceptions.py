@@ -1,14 +1,18 @@
+# stdlib
 import traceback
 import re
-from PlominoUtils import asUnicode
-from Products.CMFCore.utils import getToolByName
 
 import logging
 logger = logging.getLogger('Plomino')
 
+# CMF
+from Products.CMFCore.utils import getToolByName
+
+# Plomino
+from PlominoUtils import asUnicode
+
 
 class PlominoScriptException(Exception):
-
     def __init__(self, context, exception_obj, formula, script_id, compilation_errors):
         """
         """
@@ -26,7 +30,7 @@ class PlominoScriptException(Exception):
         return msg
 
     def traceErr(self):
-        """trace errors from Scripts
+        """ Trace errors from Scripts
         """
         msg = []
         formatted_lines = traceback.format_exc().splitlines()
@@ -46,7 +50,8 @@ class PlominoScriptException(Exception):
             r = re.compile('#Plomino import (.+)[\r\n]')
             for i in r.findall(formula):
                 scriptname = i.strip()
-                script_code = self.context.getParentDatabase().resources._getOb(scriptname, None)
+                db = self.context.getParentDatabase()
+                script_code = db.resources._getOb(scriptname, None)
                 if script_code:
                     try:
                         script_code = script_code.read()
@@ -55,8 +60,9 @@ class PlominoScriptException(Exception):
                         logger.error(msg, exc_info=True)
                         script_code = msg
                 else:
-                    script_code = "#ALERT: " + scriptname + " not found in resources"
-                formula = formula.replace('#Plomino import ' + scriptname, script_code)
+                    script_code = "#ALERT: %s not found in resources" % scriptname
+                formula = formula.replace(
+                        '#Plomino import ' + scriptname, script_code)
             for l in formula.replace('\r', '').split('\n'):
                 code.append("%d: %s" % (line_number, l))
                 line_number += 1
@@ -72,14 +78,17 @@ class PlominoScriptException(Exception):
             request = getattr(self.context, 'REQUEST', None)
         if request:
             if not path:
-                if self.formula and hasattr(self.formula, 'absolute_url_path'):
+                if (self.formula and 
+                        hasattr(self.formula, 'absolute_url_path')):
                     path = self.formula.absolute_url_path()
             if path:
                 report += " - Plomino formula %s" % path
 
             traceback = self.message.replace("<", "&lt;").replace(">", "&gt;")
             report += " - Plomino traceback " + traceback.replace('\n', '\n<br/>')
-            plone_tools = getToolByName(self.context.getParentDatabase().aq_inner, 'plone_utils')
+            plone_tools = getToolByName(
+                    self.context.getParentDatabase().aq_inner,
+                    'plone_utils')
             plone_tools.addPortalMessage(report, 'error', request)
 
 
@@ -97,4 +106,5 @@ class PlominoDesignException(Exception):
 
 class PlominoCacheException(Exception):
     pass
+
 

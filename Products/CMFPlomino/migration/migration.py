@@ -1,25 +1,29 @@
-from zope.interface import directlyProvides
-from Products.BTreeFolder2.BTreeFolder2 import manage_addBTreeFolder
-from Products.CMFPlone.interfaces import IHideFromBreadcrumbs
-
-from Products.CMFPlomino.fields.text import ITextField
-from Products.CMFPlomino.fields.selection import ISelectionField
-from Products.CMFPlomino.fields.number import INumberField
-from Products.CMFPlomino.fields.datetime import IDatetimeField
-from Products.CMFPlomino.fields.name import INameField
-from Products.CMFPlomino.fields.doclink import IDoclinkField
-
-from Products.CMFPlomino.PlominoUtils import asUnicode
-
-from Products.PythonScripts.PythonScript import PythonScript
-from Products.PythonScripts.PythonScript import manage_addPythonScript
-from OFS.Image import manage_addImage
-from Acquisition import aq_base
-import parser
+# Standard
 import re
 
 import logging
 logger = logging.getLogger('Plomino migration')
+
+
+# Zope
+from Acquisition import aq_base
+from OFS.Image import manage_addImage
+from Products.BTreeFolder2.BTreeFolder2 import manage_addBTreeFolder
+from Products.PythonScripts.PythonScript import manage_addPythonScript
+from Products.PythonScripts.PythonScript import PythonScript
+from zope.interface import directlyProvides
+
+# CMF / Archetypes / Plone
+from Products.CMFPlone.interfaces import IHideFromBreadcrumbs
+
+# Plomino
+from Products.CMFPlomino.fields.doclink import IDoclinkField
+from Products.CMFPlomino.fields.name import INameField
+from Products.CMFPlomino.fields.number import INumberField
+from Products.CMFPlomino.fields.selection import ISelectionField
+from Products.CMFPlomino.fields.text import ITextField
+from Products.CMFPlomino.PlominoUtils import asUnicode
+
 
 def migrate(db):
     """
@@ -28,74 +32,74 @@ def migrate(db):
     if not(hasattr(db, "plomino_version")):
         msg = migrate_to_130(db)
         messages.append(msg)
-    if db.plomino_version=="1.3.0":
+    if db.plomino_version == "1.3.0":
         # no migration needed here
         db.plomino_version = "1.4.0"
-    if db.plomino_version=="1.4.0":
+    if db.plomino_version == "1.4.0":
         msg = migrate_to_15(db)
         messages.append(msg)
-    if db.plomino_version=="1.5":
+    if db.plomino_version == "1.5":
         msg = migrate_to_16(db)
         messages.append(msg)
-    if db.plomino_version=="1.6":
+    if db.plomino_version == "1.6":
         msg = migrate_to_161(db)
         messages.append(msg)
-    if db.plomino_version=="1.6.1":
+    if db.plomino_version == "1.6.1":
         # no migration needed here
         db.plomino_version = "1.6.2"
-    if db.plomino_version=="1.6.2":
+    if db.plomino_version == "1.6.2":
         # no migration needed here
         db.plomino_version = "1.6.3"
-    if db.plomino_version=="1.6.3":
+    if db.plomino_version == "1.6.3":
         msg = migrate_to_164(db)
         messages.append(msg)
-    if db.plomino_version=="1.6.4":
+    if db.plomino_version == "1.6.4":
         msg = migrate_to_17(db)
         messages.append(msg)
-    if db.plomino_version=="1.7":
+    if db.plomino_version == "1.7":
         msg = migrate_to_173(db)
         messages.append(msg)
-    if db.plomino_version=="1.7.3":
+    if db.plomino_version == "1.7.3":
         # no migration needed here
         db.plomino_version = "1.7.4"
-    if db.plomino_version=="1.7.4":
+    if db.plomino_version == "1.7.4":
         msg = migrate_to_175(db)
         messages.append(msg)
-    if db.plomino_version=="1.7.5":
+    if db.plomino_version == "1.7.5":
         # no migration needed here
         db.plomino_version = "1.8"
-    if db.plomino_version=="1.8":
+    if db.plomino_version == "1.8":
         # no migration needed here
         db.plomino_version = "1.9"
-    if db.plomino_version=="1.9":
+    if db.plomino_version == "1.9":
         msg = migrate_to_1_10(db)
         messages.append(msg)
-    if db.plomino_version=="1.10":
+    if db.plomino_version == "1.10":
         # no migration needed here
         db.plomino_version = "1.10.3"
-    if db.plomino_version=="1.10.3":
+    if db.plomino_version == "1.10.3":
         msg = migrate_to_1_11(db)
         messages.append(msg)
-    if db.plomino_version=="1.11":
+    if db.plomino_version == "1.11":
         msg = migrate_to_1_12(db)
         messages.append(msg)
-    if db.plomino_version=="1.12":
+    if db.plomino_version == "1.12":
         # no migration needed here
         db.plomino_version = "1.13"
-    if db.plomino_version=="1.13":
+    if db.plomino_version == "1.13":
         # no migration needed here
         db.plomino_version = "1.14"
-    if db.plomino_version=="1.14":
+    if db.plomino_version == "1.14":
         msg = migrate_to_1_15(db)
         messages.append(msg)
-    if db.plomino_version=="1.15":
+    if db.plomino_version == "1.15":
         msg = migrate_to_1_15_1(db)
         messages.append(msg)
-    if db.plomino_version=="1.15.1":
+    if db.plomino_version == "1.15.1":
         # no migration needed here
         db.plomino_version = "1.16"
     # TO BE ADDED FOR NEXT RELEASE
-    # if db.plomino_version=="1.16":
+    # if db.plomino_version == "1.16":
     #     msg = migrate_to_1_17(db)
     #     messages.append(msg)
     return messages
@@ -136,7 +140,8 @@ def migrate_to_130(db):
                 v = getattr(field, "SelectionListFormula", None)
                 if v is not None:
                     adapt.selectionlistformula = v.raw
-                adapt.separator = getattr(field, "DisplayModList", getattr(field, "OtherDisplayMod", None))
+                adapt.separator = getattr(field, "DisplayModList",
+                        getattr(field, "OtherDisplayMod", None))
                 if type == "SELECTION":
                     adapt.widget = "SELECT"
                 elif type == "MULTISELECTION":
@@ -165,13 +170,13 @@ def migrate_to_15(db):
     return msg
 
 def migrate_to_16(db):
-    """ attribute Position in column is replaced by AtFolder sorting
+    """ Attribute position in column is replaced by ATFolder sorting
     """
     for v_obj in db.getViews():
         # sort columns by their Position
         orderedcolumns = []
         for c in v_obj.getColumns():
-            if not(c is None):
+            if not c is None:
                 orderedcolumns.append([c.Position, c])
         orderedcolumns.sort()
 
@@ -226,7 +231,8 @@ def migrate_to_175(db):
     if 'plomino_documents' not in db.objectIds():
         manage_addBTreeFolder(db, id='plomino_documents')
     directlyProvides(db.plomino_documents, IHideFromBreadcrumbs)
-    docids = [id for id in db.objectIds() if getattr(db, id).portal_type == "PlominoDocument"]
+    docids = [id for id in db.objectIds() 
+            if getattr(db, id).portal_type == "PlominoDocument"]
     cookie = db.manage_cutObjects(ids=docids)
     db.plomino_documents.manage_pasteObjects(cookie)
     msg = "Migration to 1.7.5: Documents moved in BTreeFolder"
@@ -239,7 +245,9 @@ def migrate_to_1_10(db):
     for form in db.getForms():
         for field in form.getFormFields():
             if field.id == "Plomino_Portlet_Availabilty":
-                form.manage_renameObject("Plomino_Portlet_Availabilty", "Plomino_Portlet_Availability")
+                form.manage_renameObject(
+                        "Plomino_Portlet_Availabilty",
+                        "Plomino_Portlet_Availability")
                 field.setTitle("Plomino_Portlet_Availability")
     msg = "Migration to 1.10: Rename Plomino_Portlet_Availability fields"
     db.plomino_version = "1.10"
@@ -271,19 +279,24 @@ def migrate_to_1_11(db):
                 logger.info("Migrated formula: %s\n"
                             "Old version: %s"%(field, f))
                 field.setFormula(
-                    f.replace('getAllDocuments()', 'getAllDocuments(getObject=False)'))
+                    f.replace(
+                        'getAllDocuments()',
+                        'getAllDocuments(getObject=False)'))
             f = field.ValidationFormula()
             if f:
                 logger.info("Migrated validation formula: %s\n"
                             "Old version: %s"%(field, f))
                 field.setValidationFormula(
-                    f.replace('getAllDocuments()', 'getAllDocuments(getObject=False)'))
+                    f.replace(
+                        'getAllDocuments()',
+                        'getAllDocuments(getObject=False)'))
             settings = field.getSettings()
             if ISelectionField in providedBy(settings).interfaces():
-                selectionlistformula = settings.selectionlistformula
-                if selectionlistformula:
-                    settings.selectionlistformula = selectionlistformula.replace(
-                        'getAllDocuments()', 'getAllDocuments(getObject=False)')
+                f = settings.selectionlistformula
+                if f:
+                    settings.selectionlistformula = f.replace(
+                        'getAllDocuments()', 
+                        'getAllDocuments(getObject=False)')
         hidewhens = form.getHidewhenFormulas()
         for hidewhen in hidewhens:
             f = hidewhen.Formula()
@@ -291,7 +304,9 @@ def migrate_to_1_11(db):
                 logger.info("Migrated hidewhen formula: %s\n"
                             "Old version: %s"%(hidewhen, f))
                 hidewhen.setFormula(
-                    f.replace('getAllDocuments()', 'getAllDocuments(getObject=False)'))
+                    f.replace(
+                        'getAllDocuments()',
+                        'getAllDocuments(getObject=False)'))
         actions = form.objectValues(spec='PlominoAction')
         for action in actions:
             f = action.Content()
@@ -299,13 +314,17 @@ def migrate_to_1_11(db):
                 logger.info("Migrated action formula: %s\n"
                             "Old version: %s"%(action, f))
                 action.setContent(
-                    f.replace('getAllDocuments()', 'getAllDocuments(getObject=False)'))
+                    f.replace(
+                        'getAllDocuments()',
+                        'getAllDocuments(getObject=False)'))
             f = action.Hidewhen()
             if f:
                 logger.info("Migrated action hidewhen: %s\n"
                             "Old version: %s"%(action, f))
                 action.setHidewhen(
-                    f.replace('getAllDocuments()', 'getAllDocuments(getObject=False)'))
+                    f.replace(
+                        'getAllDocuments()',
+                        'getAllDocuments(getObject=False)'))
     views = db.getViews()
     for view in views:
         columns = view.getColumns()
@@ -315,7 +334,9 @@ def migrate_to_1_11(db):
                 logger.info("Migrated column formula: %s\n"
                             "Old version: %s"%(column, f))
                 column.setFormula(
-                    f.replace('getAllDocuments()', 'getAllDocuments(getObject=False)'))
+                    f.replace(
+                        'getAllDocuments()',
+                        'getAllDocuments(getObject=False)'))
         actions = view.objectValues(spec='PlominoAction')
         for action in actions:
             f = action.Content()
@@ -323,13 +344,17 @@ def migrate_to_1_11(db):
                 logger.info("Migrated action formula: %s\n"
                             "Old version: %s"%(action, f))
                 action.setContent(
-                    f.replace('getAllDocuments()', 'getAllDocuments(getObject=False)'))
+                    f.replace(
+                        'getAllDocuments()',
+                        'getAllDocuments(getObject=False)'))
             f = action.Hidewhen()
             if f:
                 logger.info("Migrated action hidewhen: %s\n"
                             "Old version: %s"%(action, f))
                 action.setHidewhen(
-                    f.replace('getAllDocuments()', 'getAllDocuments(getObject=False)'))
+                    f.replace(
+                        'getAllDocuments()',
+                        'getAllDocuments(getObject=False)'))
     agents = db.getAgents()
     for agent in agents:
         f = agent.Content()
@@ -337,20 +362,26 @@ def migrate_to_1_11(db):
             logger.info("Migrated agent formula: %s\n"
                         "Old version: %s"%(agent, f))
             agent.setContent(
-                f.replace('getAllDocuments()', 'getAllDocuments(getObject=False)'))
+                f.replace(
+                    'getAllDocuments()',
+                    'getAllDocuments(getObject=False)'))
     files = db.resources.objectValues('File')
     for f in files:
         if f.content_type.startswith('text'):
             formula = asUnicode(f).encode('utf-8')
             logger.info("Migrated script library formula: %s"%f.id())
-            f.manage_edit(f.title, f.content_type, filedata=formula.replace(
-                'getAllDocuments()', 'getAllDocuments(getObject=False)'))
+            f.manage_edit(f.title, f.content_type,
+                    filedata=formula.replace(
+                        'getAllDocuments()',
+                        'getAllDocuments(getObject=False)'))
     templates = db.resources.objectValues('Page Template')
     for template in templates:
         f = template.read()
         logger.info("Migrated template formula: %s"%template.id)
         template.write(
-          f.replace('getAllDocuments()', 'getAllDocuments(getObject=False)'))
+          f.replace(
+              'getAllDocuments()',
+              'getAllDocuments(getObject=False)'))
 
     msg = "Migration to 1.11: getAllDocuments API change."
     db.plomino_version = "1.11"
@@ -379,7 +410,7 @@ def migrate_to_1_12(db):
             ps.write(lib_data)
             if not error_re.search(ps.read()):
                 db.resources.manage_delObjects(lib_id)
-                blank = manage_addPythonScript(db.resources, lib_id)
+                ignored = manage_addPythonScript(db.resources, lib_id)
                 sc = db.resources._getOb(lib_id)
                 sc.write(lib_data)
                 logger.info("Converted to Script: %s" % lib_id)
@@ -427,7 +458,7 @@ def migrate_to_1_17(db):
     from persistent.dict import PersistentDict
     for doc in db.getAllDocuments():
         items = doc.items
-        if type(items) is not PersistentDict:
+        if not isinstance(items, PersistentDict):
             doc.items = PersistentDict(items)
     msg = "Migration to 1.17: items stored in PersistentDict"
     db.plomino_version = "1.17"

@@ -21,6 +21,7 @@ import urllib, urllib2, httplib, urlparse, mimetypes
 from base64 import encodestring
 from string import replace
 
+
 def authenticateAndLoadURL(targetURL, username, password):
     """ Authenticate and return URL page content
     """
@@ -28,13 +29,19 @@ def authenticateAndLoadURL(targetURL, username, password):
     # Normally, characters like '/' are safe in URLs. Not in passwords.
     username = urllib.quote(username, safe='')
     password = urllib.quote(password, safe='')
-    u=urlparts[0]+"://"+username+":"+password+"@"+urlparts[1]+urlparts[2]+"?"+urlparts[3]
-    f=urllib.urlopen(u)
+    u = '%(proto)s://%(user)s:%(password)s@%(domain)s%(path)s?%(params)s' % {
+            'proto': urlparts[0],
+            'user': username,
+            'password': password,
+            'domain': urlparts[1],
+            'path': urlparts[2],
+            'params': urlparts[3],
+            }
+    f = urllib.urlopen(u)
     return f
 
-
 def authenticateAndPostToURL(targetURL, username, password, filename, filecontent):
-    """ authenticate and post files to URL
+    """ Authenticate and post files to URL
     """
     content_type, body = encode_file(filename, filecontent)
     urlparts = urlparse.urlsplit(targetURL)
@@ -42,9 +49,11 @@ def authenticateAndPostToURL(targetURL, username, password, filename, fileconten
     conn = httplib.HTTPConnection(urlparts[1])
     headers = {'content-type': content_type,
                'content-length': str(len(body)),
-               "AUTHORIZATION": "Basic %s" % replace(encodestring("%s:%s" % (username, password)),"\012", "")
+               "AUTHORIZATION": "Basic %s" % replace(
+                   encodestring("%s:%s" % (username, password)),
+                   "\012", "")
                }
-    conn.request("POST",urlparts[2], None, headers)
+    conn.request("POST", urlparts[2], None, headers)
     conn.send(body)
     response = conn.getresponse()
     return (response.status, response.reason)

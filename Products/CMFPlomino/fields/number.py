@@ -14,7 +14,7 @@ __docformat__ = 'plaintext'
 from zope.formlib import form
 from zope.interface import implements
 from zope.schema import getFields
-from zope.schema import TextLine, Text, Choice
+from zope.schema import TextLine, Choice
 from zope.schema.vocabulary import SimpleVocabulary
 
 from dictionaryproperty import DictionaryProperty
@@ -26,17 +26,21 @@ from base import IBaseField, BaseField, BaseForm
 class INumberField(IBaseField):
     """ Number field schema
     """
-    type = Choice(vocabulary=SimpleVocabulary.fromItems([("Integer", "INTEGER"), ("Float", "FLOAT")]),
-                    title=u'Type',
-                    description=u'Number type',
-                    default="INTEGER",
-                    required=True)
-    size = TextLine(title=u'Size',
-                      description=u'Length',
-                      required=False)
-    format = TextLine(title=u'Format',
-                      description=u'Number formatting (example: %1.2f)',
-                      required=False)
+    type = Choice(
+            vocabulary=SimpleVocabulary.fromItems(
+                [("Integer", "INTEGER"), ("Float", "FLOAT")]),
+            title=u'Type',
+            description=u'Number type',
+            default="INTEGER",
+            required=True)
+    size = TextLine(
+            title=u'Size',
+            description=u'Length',
+            required=False)
+    format = TextLine(
+            title=u'Format',
+            description=u'Number formatting (example: %1.2f)',
+            required=False)
     
 class NumberField(BaseField):
     """
@@ -46,27 +50,37 @@ class NumberField(BaseField):
     def validate(self, submittedValue):
         """
         """
-        errors=[]
+        errors = []
         fieldname = self.context.id
-        if self.type=="INTEGER":
+        if self.type == "INTEGER":
             try:
                 v = long(submittedValue)
             except:
-                errors.append(fieldname+PlominoTranslate(" must be an integer (submitted value was: ", self.context)+submittedValue+")")
-        if self.type=="FLOAT":
+                errors.append(
+                        fieldname + 
+                        PlominoTranslate(
+                            " must be an integer (submitted value was: ",
+                            self.context) +
+                        submittedValue + ")")
+        if self.type == "FLOAT":
             try:
                 v = float(submittedValue)
             except:
-                errors.append(fieldname+PlominoTranslate(" must be a float (submitted value was: ", self.context)+submittedValue+")")
+                errors.append(
+                        fieldname +
+                        PlominoTranslate(
+                            " must be a float (submitted value was: ",
+                            self.context) + 
+                        submittedValue + ")")
 
         return errors
 
     def processInput(self, submittedValue):
         """
         """
-        if self.type=="INTEGER":
+        if self.type == "INTEGER":
             return long(submittedValue)
-        elif self.type=="FLOAT":
+        elif self.type == "FLOAT":
             return float(submittedValue)
         else:
             return submittedValue

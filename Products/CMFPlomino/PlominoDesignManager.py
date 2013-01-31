@@ -10,52 +10,52 @@
 __author__ = """Eric BREHAULT <eric.brehault@makina-corpus.com>"""
 __docformat__ = 'plaintext'
 
-from Products.CMFPlomino.config import *
-
-from Acquisition import *
-from HttpUtils import authenticateAndLoadURL, authenticateAndPostToURL
-from Products.PythonScripts.PythonScript import PythonScript
-import re
-from ZPublisher.HTTPResponse import HTTPResponse
-from ZPublisher.HTTPRequest import HTTPRequest
-from ZPublisher.HTTPRequest import FileUpload
-from OFS.ObjectManager import ObjectManager
-from DateTime import DateTime
-from Products.PageTemplates.ZopePageTemplate import manage_addPageTemplate
-from Products.PythonScripts.PythonScript import manage_addPythonScript
-from OFS.Image import manage_addImage
-from Products.CMFCore.utils import getToolByName
-from Products.DCWorkflow.DCWorkflow import DCWorkflowDefinition
-from Persistence import Persistent
+# stdlib
 from webdav.Lockable import wl_isLocked
 from xml.dom.minidom import getDOMImplementation
 from xml.dom.minidom import parseString
 from xml.parsers.expat import ExpatError
-import xmlrpclib
-import traceback
 import codecs
-import os
-import sys
 import glob
-import transaction
-from zope import component
+import os
+import re
+import sys
+import traceback
+import xmlrpclib
+
+# Zope
+from Acquisition import *
+from DateTime import DateTime
+from HttpUtils import authenticateAndLoadURL, authenticateAndPostToURL
+from Persistence import Persistent
+from Products.PageTemplates.ZopePageTemplate import manage_addPageTemplate
+from Products.PythonScripts.PythonScript import manage_addPythonScript
+from Products.PythonScripts.PythonScript import PythonScript
 from zope.component import getUtility
 from zope.dottedname.resolve import resolve
-try:
-    from plone.app.async.interfaces import IAsyncService
-    ASYNC = True
-except:
-    ASYNC = False
+from zope import component
+from ZPublisher.HTTPRequest import FileUpload
+from ZPublisher.HTTPRequest import HTTPRequest
+from ZPublisher.HTTPResponse import HTTPResponse
+import transaction
 
-from migration.migration import migrate
-from index.PlominoIndex import PlominoIndex
+# CMF
+from OFS.Image import manage_addImage
+from OFS.ObjectManager import ObjectManager
+from Products.CMFCore.utils import getToolByName
+from Products.DCWorkflow.DCWorkflow import DCWorkflowDefinition
+
+# Plomino
 from exceptions import PlominoScriptException, PlominoDesignException
+from index.PlominoIndex import PlominoIndex
+from migration.migration import migrate
 from PlominoUtils import asUnicode
 from PlominoUtils import escape_xml_illegal_chars
+from Products.CMFPlomino.config import *
 from Products.CMFPlomino import get_utils
 from Products.CMFPlomino import plomino_profiler
-from Products.CMFPlomino.interfaces import IXMLImportExportSubscriber
 # get AT specific schemas for each Plomino class
+from Products.CMFPlomino.interfaces import IXMLImportExportSubscriber
 from Products.CMFPlomino.PlominoAction import schema as action_schema
 from Products.CMFPlomino.PlominoAgent import schema as agent_schema
 from Products.CMFPlomino.PlominoCache import schema as cache_schema
@@ -65,23 +65,35 @@ from Products.CMFPlomino.PlominoForm import schema as form_schema
 from Products.CMFPlomino.PlominoHidewhen import schema as hidewhen_schema
 from Products.CMFPlomino.PlominoView import schema as view_schema
 
-plomino_schemas = {'PlominoAction': action_schema,
-                   'PlominoAgent': agent_schema,
-                   'PlominoCache': cache_schema,
-                   'PlominoColumn': column_schema,
-                   'PlominoField': field_schema,
-                   'PlominoForm': form_schema, 
-                   'PlominoHidewhen': hidewhen_schema,
-                   'PlominoView': view_schema,
-                   }
+plomino_schemas = {
+        'PlominoAction': action_schema,
+        'PlominoAgent': agent_schema,
+        'PlominoCache': cache_schema,
+        'PlominoColumn': column_schema,
+        'PlominoField': field_schema,
+        'PlominoForm': form_schema,
+        'PlominoHidewhen': hidewhen_schema,
+        'PlominoView': view_schema,
+        }
+
 extra_schema_attributes = ['excludeFromNav']
 
 import logging
 logger = logging.getLogger('Plomino')
 
+
+STR_FORMULA = """plominoContext = context
+plominoDocument = context
+%(import_list)s
+
+%(formula)s
+"""
+
+
 def run_refreshdb(context):
     # for async call
     context.refreshDB()
+
 
 class PlominoDesignManager(Persistent):
     """Plomino design import/export features
@@ -95,16 +107,17 @@ class PlominoDesignManager(Persistent):
         """
         if ASYNC:
             self.refreshDB_async()
-            report = ['Database refreshing has been launched in asynchronous mode.']
+            report = ['Database refreshing has been launched '
+                    'in asynchronous mode.']
         else:
             report = self.refreshDB()
 
         self.writeMessageOnPage(MSG_SEPARATOR.join(report), REQUEST, False)
-        REQUEST.RESPONSE.redirect(self.absolute_url()+"/DatabaseDesign")
+        REQUEST.RESPONSE.redirect(self.absolute_url() + "/DatabaseDesign")
 
     security.declarePublic('refreshDB_async')
     def refreshDB_async(self):
-        """refresh db in asynchronous mode
+        """ Refresh db in asynchronous mode
         """
         async = getUtility(IAsyncService)
         job = async.queueJob(run_refreshdb, self)
@@ -114,7 +127,7 @@ class PlominoDesignManager(Persistent):
     def refreshDB(self):
         """all actions to take when reseting a DB (after import for instance)
         """
-        logger.info('Refreshing database '+self.id)
+        logger.info('Refreshing database ' + self.id)
         report = []
 
         self.setStatus("Refreshing design")
@@ -127,14 +140,14 @@ class PlominoDesignManager(Persistent):
         #check folders
         if not hasattr(self, 'resources'):
             resources = Folder('resources')
-            resources.title='resources'
+            resources.title = 'resources'
             self._setObject('resources', resources)
         msg = 'Resources folder OK'
         report.append(msg)
         logger.info(msg)
         if not hasattr(self, 'scripts'):
             scripts = Folder('scripts')
-            scripts.title='scripts'
+            scripts.title = 'scripts'
             self._setObject('scripts', scripts)
         self.cleanFormulaScripts()
         msg = 'Scripts folder OK and clean'
@@ -143,7 +156,10 @@ class PlominoDesignManager(Persistent):
 
         # clean portal_catalog
         portal_catalog = self.portal_catalog
-        catalog_entries = portal_catalog.search({'portal_type' : ['PlominoDocument'], 'path': '/'.join(self.getPhysicalPath())})
+        catalog_entries = portal_catalog.search({
+            'portal_type': ['PlominoDocument'],
+            'path': '/'.join(self.getPhysicalPath())
+            })
         for d in catalog_entries:
             portal_catalog.uncatalog_object(d.getPath())
         msg = 'Portal catalog clean'
@@ -158,15 +174,19 @@ class PlominoDesignManager(Persistent):
         logger.info(msg)
 
         #declare all indexed fields
-        for f_obj in self.getForms() :
+        for f_obj in self.getForms():
             for f in f_obj.getFormFields():
-                if f.getToBeIndexed() :
-                    index.createFieldIndex(f.id, f.getFieldType(), indextype=f.getIndexType())
+                if f.getToBeIndexed():
+                    index.createFieldIndex(
+                            f.id,
+                            f.getFieldType(),
+                            indextype=f.getIndexType())
         logger.info('Field indexing initialized')
 
         #declare all the view formulas and columns index entries
         for v_obj in self.getViews():
-            index.createSelectionIndex('PlominoViewFormula_'+v_obj.getViewName())
+            index.createSelectionIndex(
+                    'PlominoViewFormula_' + v_obj.getViewName())
             for c in v_obj.getColumns():
                 v_obj.declareColumn(c.getColumnName(), c, index=index)
         # add fulltext if needed
@@ -179,7 +199,7 @@ class PlominoDesignManager(Persistent):
         msg = self.reindexDocuments(index)
         report.append(msg)
 
-        # as it takes time, re-indexed documents changed since re-indexing started
+        # Re-indexed documents that have changed since indexing started
         msg = self.reindexDocuments(index, changed_since=start_time)
         report.append(msg)
         index.no_refresh = False
@@ -208,24 +228,27 @@ class PlominoDesignManager(Persistent):
         """
         documents = self.getAllDocuments()
         if changed_since:
-            documents = [doc for doc in documents if doc.plomino_modification_time > changed_since]
+            documents = [doc for doc in documents
+                    if doc.plomino_modification_time > changed_since]
             total_docs = len(documents)
-            logger.info('Re-indexing %d changed document(s) since %s' % (total_docs, str(changed_since)))
+            logger.info('Re-indexing %d changed document(s) since %s' % (
+                total_docs, str(changed_since)))
         else:
             total_docs = len(self.plomino_documents)
-            logger.info('Existing documents: '+ str(total_docs))
+            logger.info('Existing documents: ' + str(total_docs))
         total = 0
         counter = 0
         errors = 0
         label = "documents"
         if items_only:
-            label = "items" 
+            label = "items"
         if views_only:
-            label = "views" 
+            label = "views"
         self.setStatus("Re-indexing %s (0%%)" % label)
 
         indexes = plomino_index.indexes()
-        view_indexes = [idx for idx in indexes if idx.startswith("PlominoView")]
+        view_indexes = [idx for idx in indexes
+                if idx.startswith("PlominoView")]
         if 'SearchableText' in indexes:
             view_indexes.append('SearchableText')
         for d in documents:
@@ -237,21 +260,32 @@ class PlominoDesignManager(Persistent):
                 if views_only:
                     idx = view_indexes
                 txn = transaction.get()
-                plomino_index.indexDocument(d, idxs=idxs, update_metadata=update_metadata)
+                plomino_index.indexDocument(
+                        d,
+                        idxs=idxs,
+                        update_metadata=update_metadata)
                 txn.commit()
                 total = total + 1
             except Exception, e:
                 errors = errors + 1
-                logger.info("Ouch! \n%s\n%s" % (e, `d`))
+                logger.info("Ouch! \n%s\n%s" % (e, repr(d)))
             counter = counter + 1
             if counter == 100:
-                self.setStatus("Re-indexing %s (%d%%)" % (label, int(100*(total+errors)/total_docs)))
+                self.setStatus("Re-indexing %s (%d%%)" % (
+                    label,
+                    int(100 * (total + errors) / total_docs)))
                 counter = 0
-                logger.info("Re-indexing %s: %d indexed successfully, %d errors(s)..." % (label, total, errors))
+                logger.info("Re-indexing %s: "
+                        "%d indexed successfully, %d errors(s)..." % (
+                            label, total, errors))
         if changed_since:
-            msg = "Intermediary changes: %d modified documents re-indexed successfully, %d errors(s)" % (total, errors)
+            msg = ("Intermediary changes: "
+                    "%d modified documents re-indexed successfully, "
+                    "%d errors(s)" % (total, errors))
         else:
-            msg = "Re-indexing %s: %d documents indexed successfully, %d errors(s)" % (label, total, errors)
+            msg = ("Re-indexing %s: "
+                    "%d documents indexed successfully, "
+                    "%d errors(s)" % (label, total, errors))
         logger.info(msg)
         return msg
 
@@ -259,10 +293,10 @@ class PlominoDesignManager(Persistent):
     def recomputeAllDocuments(self, REQUEST=None):
         """
         """
-        logger.info('Re-compute documents in '+self.id)
+        logger.info('Re-compute documents in ' + self.id)
         documents = self.getAllDocuments()
         total_docs = len(self.plomino_documents)
-        logger.info('Existing documents: '+ str(total_docs))
+        logger.info('Existing documents: ' + str(total_docs))
         total_docs = len(documents)
         total = 0
         counter = 0
@@ -276,13 +310,19 @@ class PlominoDesignManager(Persistent):
                 total = total + 1
             except Exception, e:
                 errors = errors + 1
-                logger.info("Ouch! \n%s\n%s" % (e, `d`))
+                logger.info("Ouch! \n%s\n%s" % (e, repr(d)))
             counter = counter + 1
             if counter == 10:
-                self.setStatus("Re-compute documents (%d%%)" % int(100*(total+errors)/total_docs))
+                self.setStatus(
+                        "Re-compute documents (%d%%)" %
+                        int(100 * (total + errors) / total_docs))
                 counter = 0
-                logger.info("Re-compute documents: %d computed successfully, %d errors(s) ..." % (total, errors))
-        msg = "Re-compute documents: %d documents computed successfully, %d errors(s)" % (total, errors)
+                logger.info("Re-compute documents: "
+                        "%d computed successfully, "
+                        "%d errors(s) ..." % (total, errors))
+        msg = ("Re-compute documents: "
+                "%d documents computed successfully, "
+                "%d errors(s)" % (total, errors))
         logger.info(msg)
         self.setStatus("Ready")
         if REQUEST:
@@ -296,20 +336,29 @@ class PlominoDesignManager(Persistent):
         msg = ""
         portal_catalog = self.portal_catalog
         if self.getIndexInPortal():
-            logger.info('Refresh documents from '+self.id+' in portal catalog')
+            logger.info(
+                    'Refresh documents from %s in portal catalog' % self.id)
             documents = self.getAllDocuments()
             total_docs = len(self.plomino_documents)
-            logger.info('Existing documents: '+ str(total_docs))
+            logger.info('Existing documents: ' + str(total_docs))
             for d in documents:
-                portal_catalog.catalog_object(d, "/".join(self.getPhysicalPath() + (d.id,)))
+                portal_catalog.catalog_object(
+                        d,
+                        "/".join(self.getPhysicalPath() + (d.id,)))
             msg = '%d documents re-cataloged' % total_docs
         else:
-            logger.info('Database '+self.id+' does not allow portal catalog indexing.')
-            catalog_entries = portal_catalog.search({'portal_type' : ['PlominoDocument'], 'path': '/'.join(self.getPhysicalPath())})
+            logger.info(
+                    'Database %s does not allow portal catalog indexing.' %
+                    self.id)
+            catalog_entries = portal_catalog.search({
+                'portal_type': ['PlominoDocument'],
+                'path': '/'.join(self.getPhysicalPath())
+                })
             if catalog_entries:
                 for d in catalog_entries:
                     portal_catalog.uncatalog_object(d.getPath())
-                logger.info('Related portal catalog entries have been removed.')
+                logger.info(
+                        'Related portal catalog entries have been removed.')
             msg = 'Database is not cataloged'
 
         logger.info(msg)
@@ -324,9 +373,9 @@ class PlominoDesignManager(Persistent):
         workflow_tool = getToolByName(self, 'portal_workflow')
         wfs = workflow_tool.getWorkflowsFor(self)
         for wf in wfs:
-            if not isinstance( wf, DCWorkflowDefinition ):
+            if not isinstance(wf, DCWorkflowDefinition):
                 continue
-            wf.updateRoleMappingsFor( self )
+            wf.updateRoleMappingsFor(self)
         logger.info('Plone workflow update')
 
     security.declareProtected(DESIGN_PERMISSION, 'exportDesign')
@@ -335,10 +384,10 @@ class PlominoDesignManager(Persistent):
         The targettype can be file, server, or folder.
         """
         if REQUEST:
-            entire=REQUEST.get('entire')
-            targettype=REQUEST.get('targettype')
-            targetfolder=REQUEST.get('targetfolder')
-            dbsettings=REQUEST.get('dbsettings')
+            entire = REQUEST.get('entire')
+            targettype = REQUEST.get('targettype')
+            targetfolder = REQUEST.get('targetfolder')
+            dbsettings = REQUEST.get('dbsettings')
 
         if dbsettings == "Yes":
             dbsettings = True
@@ -346,112 +395,134 @@ class PlominoDesignManager(Persistent):
             dbsettings = False
 
         if not designelements is None:
-            if entire=="Yes":
+            if entire == "Yes":
                 designelements = None
             else:
-                designelements=REQUEST.get('designelements')
+                designelements = REQUEST.get('designelements')
                 if designelements:
-                    if type(designelements)==str:
-                        designelements=[designelements]
+                    if type(designelements) == str:
+                        designelements = [designelements]
 
         if targettype in ["server", "file"]:
-            xmlstring = self.exportDesignAsXML(elementids=designelements, dbsettings=dbsettings)
+            xmlstring = self.exportDesignAsXML(
+                    elementids=designelements,
+                    dbsettings=dbsettings)
 
             if targettype == "server":
                 if REQUEST:
-                    targetURL=REQUEST.get('targetURL')
-                    username=REQUEST.get('username')
-                    password=REQUEST.get('password')
-                result=authenticateAndPostToURL(targetURL+"/importDesignFromXML", username, password, 'exportDesignAsXML.xml', xmlstring)
-                REQUEST.RESPONSE.redirect(self.absolute_url()+"/DatabaseDesign")
+                    targetURL = REQUEST.get('targetURL')
+                    username = REQUEST.get('username')
+                    password = REQUEST.get('password')
+                result = authenticateAndPostToURL(
+                        targetURL+"/importDesignFromXML",
+                        username,
+                        password,
+                        'exportDesignAsXML.xml',
+                        xmlstring)
+                REQUEST.RESPONSE.redirect(
+                        self.absolute_url()+"/DatabaseDesign")
             elif targettype == "file":
                 if REQUEST:
                     REQUEST.RESPONSE.setHeader('content-type', 'text/xml')
-                    REQUEST.RESPONSE.setHeader("Content-Disposition", "attachment; filename="+self.id+".xml")
+                    REQUEST.RESPONSE.setHeader(
+                            "Content-Disposition",
+                            "attachment; filename=%s.xml" % self.id)
                 return xmlstring
         elif targettype == "folder":
             if not designelements:
-                designelements = ([o.id for o in self.getForms()] +
-                                  [o.id for o in self.getViews()] +
-                                  [o.id for o in self.getAgents()] +
-                                  ["resources/"+id for id in self.resources.objectIds()])
-            exportpath = os.path.join(targetfolder,(self.id))
-            resources_exportpath = os.path.join(exportpath,('resources'))
+                designelements = (
+                        [o.id for o in self.getForms()] +
+                        [o.id for o in self.getViews()] +
+                        [o.id for o in self.getAgents()] +
+                        ["resources/"+id for id in self.resources.objectIds()]
+                        )
+            exportpath = os.path.join(targetfolder, self.id)
+            resources_exportpath = os.path.join(exportpath, 'resources')
             if os.path.isdir(exportpath):
                 # remove previous export
-                for f in glob.glob(os.path.join(exportpath,"*.xml")):
+                for f in glob.glob(os.path.join(exportpath, "*.xml")):
                     os.remove(f)
                 if os.path.isdir(resources_exportpath):
-                    for f in glob.glob(os.path.join(resources_exportpath,"*.xml")):
+                    for f in glob.glob(
+                            os.path.join(resources_exportpath, "*.xml")):
                         os.remove(f)
             else:
                 os.makedirs(exportpath)
-            if len([id for id in designelements if id.startswith('resources/')]) > 0:
+            if [id for id in designelements if id.startswith('resources/')]:
                 if not os.path.isdir(resources_exportpath):
                     os.makedirs(resources_exportpath)
 
             for id in designelements:
                 if id.startswith('resources/'):
-                    path = os.path.join(resources_exportpath, (id.split('/')[-1]+'.xml'))
-                    xmlstring = self.exportDesignAsXML(elementids=[id], dbsettings=False)
+                    path = os.path.join(
+                            resources_exportpath,
+                            id.split('/')[-1]+'.xml')
+                    xmlstring = self.exportDesignAsXML(
+                            elementids=[id],
+                            dbsettings=False)
                     self.saveFile(path, xmlstring)
                 else:
                     path = os.path.join(exportpath, (id+'.xml'))
-                    xmlstring = self.exportDesignAsXML(elementids=[id], dbsettings=False)
+                    xmlstring = self.exportDesignAsXML(
+                            elementids=[id],
+                            dbsettings=False)
                     self.saveFile(path, xmlstring)
             if dbsettings:
                 path = os.path.join(exportpath, ('dbsettings.xml'))
-                xmlstring = self.exportDesignAsXML(elementids=[], dbsettings=True)
+                xmlstring = self.exportDesignAsXML(
+                        elementids=[],
+                        dbsettings=True)
                 self.saveFile(path, xmlstring.decode('utf-8'))
-
 
     @staticmethod
     def saveFile(path, content):
         fileobj = codecs.open(path, "w", "utf-8")
         try:
-          logger.info('saveFile> write with no decode')
-          fileobj.write(content)
+            logger.info('saveFile> write with no decode')
+            fileobj.write(content)
         except UnicodeDecodeError, e:
-          fileobj.write(content.decode('utf-8'))
-          logger.info('saveFile> write.decode("utf-8"): %s'%path)
+            fileobj.write(content.decode('utf-8'))
+            logger.info('saveFile> write.decode("utf-8"): %s' % path)
         fileobj.close()
-
 
     security.declareProtected(DESIGN_PERMISSION, 'importDesign')
     def importDesign(self, REQUEST=None):
         """import design elements in current database
         """
-        submit_import=REQUEST.get('submit_import')
-        entire=REQUEST.get('entire')
-        sourcetype=REQUEST.get('sourcetype')
-        sourceURL=REQUEST.get('sourceURL')
-        username=REQUEST.get('username')
-        password=REQUEST.get('password')
-        replace_design=REQUEST.get('replace_design')
+        submit_import = REQUEST.get('submit_import')
+        entire = REQUEST.get('entire')
+        sourcetype = REQUEST.get('sourcetype')
+        sourceURL = REQUEST.get('sourceURL')
+        username = REQUEST.get('username')
+        password = REQUEST.get('password')
+        replace_design = REQUEST.get('replace_design')
         replace = replace_design == "Yes"
         if submit_import:
-            if sourcetype=="server":
-                export_url=sourceURL+"/exportDesignAsXML"
-                if not entire=="Yes":
-                    designelements=REQUEST.get('designelements')
+            if sourcetype == "server":
+                export_url = sourceURL+"/exportDesignAsXML"
+                if not entire == "Yes":
+                    designelements = REQUEST.get('designelements')
                     if designelements:
-                        if type(designelements)==str:
-                            designelements=[designelements]
-                        export_url=export_url+"?elementids="+"@".join(designelements)
-                xmlstring=authenticateAndLoadURL(export_url, username, password).read()
+                        if type(designelements) == str:
+                            designelements = [designelements]
+                        export_url = "%s?elementids=%s" % (
+                                export_url,
+                                "@".join(designelements)
+                                )
+                xmlstring = authenticateAndLoadURL(
+                        export_url, username, password).read()
                 self.importDesignFromXML(xmlstring, replace=replace)
 
-            elif sourcetype =="folder":
+            elif sourcetype == "folder":
                 path = REQUEST.get('sourcefolder')
                 self.importDesignFromXML(from_folder=path, replace=replace)
-
             else:
-                fileToImport = REQUEST.get('sourceFile',None)
+                fileToImport = REQUEST.get('sourceFile', None)
                 if not fileToImport:
                     raise PlominoDesignException, 'file required'
                 if not isinstance(fileToImport, FileUpload):
                     raise PlominoDesignException, 'unrecognized file uploaded'
-                xmlstring=fileToImport.read()
+                xmlstring = fileToImport.read()
                 self.importDesignFromXML(xmlstring, replace=replace)
 
             no_refresh_documents = REQUEST.get('no_refresh_documents', 'No')
@@ -461,7 +532,16 @@ class PlominoDesignManager(Persistent):
                 self.refreshWorkflowState()
             REQUEST.RESPONSE.redirect(self.absolute_url()+"/DatabaseDesign")
         else:
-            REQUEST.RESPONSE.redirect(self.absolute_url()+"/DatabaseDesign?username="+username+"&password="+password+"&sourceURL="+sourceURL)
+            REQUEST.RESPONSE.redirect(
+                    "%s/DatabaseDesign"
+                    "?username=%s"
+                    "&password=%s"
+                    "&sourceURL=%s" % (
+                        self.absolute_url(),
+                        username,
+                        password,
+                        sourceURL)
+                    )
 
     security.declareProtected(DESIGN_PERMISSION, 'getViewsList')
     def getViewsList(self):
@@ -502,7 +582,10 @@ class PlominoDesignManager(Persistent):
     def getRemoteViews(self, sourceURL, username, password):
         """ Get views ids list from remote database
         """
-        views = authenticateAndLoadURL(sourceURL+"/getViewsList", username, password).read()
+        views = authenticateAndLoadURL(
+                sourceURL+"/getViewsList",
+                username,
+                password).read()
         ids = views.split('/')
         ids.pop()
         return ids
@@ -511,7 +594,10 @@ class PlominoDesignManager(Persistent):
     def getRemoteForms(self, sourceURL, username, password):
         """ Get forms ids list from remote database
         """
-        forms = authenticateAndLoadURL(sourceURL+"/getFormsList", username, password).read()
+        forms = authenticateAndLoadURL(
+                sourceURL+"/getFormsList",
+                username,
+                password).read()
         ids = forms.split('/')
         ids.pop()
         return ids
@@ -520,7 +606,10 @@ class PlominoDesignManager(Persistent):
     def getRemoteAgents(self, sourceURL, username, password):
         """ Get agents ids list from remote database
         """
-        agents = authenticateAndLoadURL(sourceURL+"/getAgentsList", username, password).read()
+        agents = authenticateAndLoadURL(
+                sourceURL+"/getAgentsList",
+                username,
+                password).read()
         ids = agents.split('/')
         ids.pop()
         return ids
@@ -529,7 +618,10 @@ class PlominoDesignManager(Persistent):
     def getRemoteResources(self, sourceURL, username, password):
         """ Get resources ids list from remote database
         """
-        res = authenticateAndLoadURL(sourceURL+"/getResourcesList", username, password).read()
+        res = authenticateAndLoadURL(
+                sourceURL+"/getResourcesList",
+                username,
+                password).read()
         ids = res.split('/')
         ids.pop()
         return ['resources/'+i for i in ids]
@@ -555,15 +647,17 @@ class PlominoDesignManager(Persistent):
         ps = self.getFormulaScript(script_id)
 
         if with_args:
-            ps._params="*args"
-        str_formula="plominoContext = context\n"
-        str_formula=str_formula+"plominoDocument = context\n"
-        #str_formula=str_formula+"from Products.CMFPlomino.PlominoUtils import "+SAFE_UTILS+'\n'
+            ps._params = "*args"
+        #str_formula = str_formula+"from Products.CMFPlomino.PlominoUtils import "+SAFE_UTILS+'\n'
         safe_utils = get_utils()
         import_list = []
         for module in safe_utils:
-            import_list.append("from %s import %s" % (module, ", ".join(safe_utils[module])))
-        str_formula=str_formula+";".join(import_list)+'\n'
+            import_list.append(
+                    "from %s import %s" % (
+                        module,
+                        ", ".join(safe_utils[module]))
+                    )
+        import_list = ";".join(import_list)
 
         r = re.compile('#Plomino import (.+)[\r\n]')
         for i in r.findall(formula):
@@ -572,16 +666,19 @@ class PlominoDesignManager(Persistent):
                 script_code = self.resources._getOb(scriptname).read()
             except:
                 logger.warning("compileFormulaScript> %s not found in resources" % scriptname)
-                script_code = "#ALERT: "+scriptname+" not found in resources"
-            formula = formula.replace('#Plomino import '+scriptname, script_code)
+                script_code = (
+                        "#ALERT: %s not found in resources" % scriptname)
+            formula = formula.replace(
+                    '#Plomino import '+scriptname,
+                    script_code)
 
-        if formula.strip().count('\n')>0:
-            str_formula=str_formula+formula
-        else:
-            if formula.startswith('return '):
-                str_formula=str_formula+formula
-            else:
-                str_formula=str_formula+"return "+formula
+        if (formula.strip().count('\n') == 0 and
+                not formula.startswith('return ')):
+            formula = "return " + formula
+        str_formula = STR_FORMULA % {
+                'import_list': import_list,
+                'formula': formula
+                }
         ps.write(str_formula)
         if self.debugMode:
             logger.info(script_id + " compiled")
@@ -593,33 +690,51 @@ class PlominoDesignManager(Persistent):
         compilation_errors = []
         ps = self.getFormulaScript(script_id)
         if not ps:
-            ps = self.compileFormulaScript(script_id, formula_getter(), with_args)
+            ps = self.compileFormulaScript(
+                    script_id,
+                    formula_getter(),
+                    with_args)
         try:
-            contextual_ps=ps.__of__(context)
+            contextual_ps = ps.__of__(context)
             result = None
             if with_args:
                 result = contextual_ps(*args)
             else:
                 result = contextual_ps()
-            if self.debugMode and hasattr(contextual_ps, 'errors') and contextual_ps.errors:
-                logger.info('python errors at '+str(context)+' in '+script_id+': ' + str(contextual_ps.errors))
+            if (self.debugMode and
+                    hasattr(contextual_ps, 'errors') and
+                    contextual_ps.errors):
+                logger.info('python errors at %s in %s: %s' % (
+                    str(context),
+                    script_id,
+                    str(contextual_ps.errors)))
             return result
         except Exception, e:
             if ps and getattr(ps, 'errors', None):
                 compilation_errors = ps.errors
-            logger.info("Plomino Script Exception: %s, %s"%(`formula_getter`, script_id), exc_info=True)
-            raise PlominoScriptException(context, e, formula_getter, script_id, compilation_errors)
+            logger.info("Plomino Script Exception: %s, %s" % (
+                    repr(formula_getter),
+                    script_id),
+                exc_info=True)
+            raise PlominoScriptException(
+                    context,
+                    e,
+                    formula_getter,
+                    script_id,
+                    compilation_errors)
 
     security.declarePrivate('traceRenderingErr')
     def traceRenderingErr(self, e, context):
-        """trace rendering errors
+        """ Trace rendering errors
         """
         if self.debugMode:
             #traceback
             formatted_lines = traceback.format_exc().splitlines()
             msg = "\n".join(formatted_lines[-3:]).strip()
             #code / value
-            msg = msg + "\nPlomino rendering error with context: " + '/'.join(context.getPhysicalPath())
+            msg = "%s\nPlomino rendering error with context: %s" % (
+                msg,
+                '/'.join(context.getPhysicalPath()))
         else:
             msg = None
 
@@ -632,21 +747,22 @@ class PlominoDesignManager(Persistent):
         ``scriptname``, stored in the ``resources`` folder.
         If the called function allows it, you may pass some arguments.
         """
-        script_id = "script_"+scriptname+"_"+funcname
+        script_id = 'script_%s_%s' % (scriptname, funcname)
         try:
             script_code = self.resources._getOb(scriptname).read()
         except:
-            logger.warning("callScriptMethod> %s not found in resources" % scriptname)
-            script_code = "#ALERT: "+scriptname+" not found in resources"
-        formula = lambda: script_code+'\n\nreturn '+funcname+'(*args)'
+            logger.warning(
+                "callScriptMethod> %s not found in resources" % scriptname)
+            script_code = "#ALERT: " + scriptname + " not found in resources"
+        formula = lambda: script_code + '\n\nreturn ' + funcname + '(*args)'
 
         return self.runFormulaScript(script_id, self, formula, True, *args)
 
     security.declarePublic('writeMessageOnPage')
-    def writeMessageOnPage(self, infoMsg, REQUEST, error = False):
-        """adds portal message        
+    def writeMessageOnPage(self, infoMsg, REQUEST, error=False):
+        """ Adds portal message
         """
-        #message
+        # message
         plone_tools = getToolByName(self, 'plone_utils')
         if plone_tools is not None:
             #portal message type
@@ -655,10 +771,10 @@ class PlominoDesignManager(Persistent):
             else:
                 msgType = 'info'
 
-            #split message   
+            # split message
             infoMsg = infoMsg.split(MSG_SEPARATOR)
 
-            #display it
+            # display it
             for msg in infoMsg:
                 if msg:
                     plone_tools.addPortalMessage(msg, msgType, REQUEST)
@@ -667,27 +783,28 @@ class PlominoDesignManager(Persistent):
     def getRenderingTemplate(self, templatename, request=None):
         """
         """
-        skin=self.portal_skins.cmfplomino_templates
+        skin = self.portal_skins.cmfplomino_templates
         if hasattr(skin, templatename):
             pt = getattr(skin, templatename)
             if request:
                 pt.REQUEST = request
             else:
                 request = getattr(pt, 'REQUEST', None)
-                proper_request = request and pt.REQUEST.__class__.__name__=='HTTPRequest'
+                proper_request = (request and
+                        pt.REQUEST.__class__.__name__=='HTTPRequest')
                 if not proper_request:
                     # XXX What *else* could REQUEST be here?
                     # we are not in an actual web context, but we a need a
                     # request object to have the template working
                     response = HTTPResponse(stdout=sys.stdout)
-                    env = {'SERVER_NAME':'fake_server',
-                           'SERVER_PORT':'80',
-                           'REQUEST_METHOD':'GET'}
+                    env = {'SERVER_NAME': 'fake_server',
+                           'SERVER_PORT': '80',
+                           'REQUEST_METHOD': 'GET'}
                     pt.REQUEST = HTTPRequest(sys.stdin, env, response)
 
             # we also need a RESPONSE
             if not pt.REQUEST.has_key('RESPONSE'):
-                pt.REQUEST['RESPONSE']=HTTPResponse()
+                pt.REQUEST['RESPONSE'] = HTTPResponse()
 
             return pt
         else:
@@ -703,12 +820,16 @@ class PlominoDesignManager(Persistent):
         root.setAttribute("id", self.id)
 
         if REQUEST:
-            str_elementids=REQUEST.get("elementids")
+            str_elementids = REQUEST.get("elementids")
             if str_elementids is not None:
                 elementids = str_elementids.split("@")
 
         if elementids is None:
-            elements = self.getForms() + self.getViews() + self.getAgents() + [o for o in self.resources.getChildNodes()] 
+            elements = (self.getForms()
+                    + self.getViews()
+                    + self.getAgents()
+                    + [o for o in self.resources.getChildNodes()] 
+                    )
         else:
             elements = []
             for id in elementids:
@@ -742,14 +863,19 @@ class PlominoDesignManager(Persistent):
         s = doc.toxml()
 
         if REQUEST:
-            REQUEST.RESPONSE.setHeader('content-type', "text/xml;charset=utf-8")
+            REQUEST.RESPONSE.setHeader(
+                    'content-type', "text/xml;charset=utf-8")
 
         # Usage of lxml to make a pretty output
         try:
             from lxml import etree
             parser = etree.XMLParser(strip_cdata=False, encoding="utf-8")
-            return etree.tostring(etree.XML(s, parser), encoding="utf-8", pretty_print=True)
+            return etree.tostring(
+                    etree.XML(s, parser),
+                    encoding="utf-8",
+                    pretty_print=True)
         except ImportError:
+            # XXX: Blunt object replace:
             return s.encode('utf-8').replace("><", ">\n<")
 
     security.declareProtected(DESIGN_PERMISSION, 'exportElementAsXML')
@@ -773,8 +899,10 @@ class PlominoDesignManager(Persistent):
             fieldNode.setAttribute('type', field_type)
             v = f.get(obj)
             if v is not None:
-                if field_type=="Products.Archetypes.Field.TextField":
-                    text = xmldoc.createCDATASection(f.getRaw(obj).decode('utf-8'))
+                if field_type == "Products.Archetypes.Field.TextField":
+                    text = xmldoc.createCDATASection(
+                            f.getRaw(obj).decode('utf-8')
+                            )
                 else:
                     text = xmldoc.createTextNode(str(f.get(obj)))
                 fieldNode.appendChild(text)
@@ -789,13 +917,15 @@ class PlominoDesignManager(Persistent):
                 fieldNode.setAttribute('type', field_type)
                 v = f.get(obj)
                 if v is not None:
-                    if field_type=="Products.Archetypes.Field.TextField":
-                        text = xmldoc.createCDATASection(f.getRaw(obj).decode('utf-8'))
+                    if field_type == "Products.Archetypes.Field.TextField":
+                        text = xmldoc.createCDATASection(
+                                f.getRaw(obj).decode('utf-8')
+                                )
                     else:
                         text = xmldoc.createTextNode(str(f.get(obj)))
                     fieldNode.appendChild(text)
                 node.appendChild(fieldNode)
-#        
+
         if obj.Type() == "PlominoField":
             adapt = obj.getSettings()
             if adapt is not None:
@@ -804,41 +934,54 @@ class PlominoDesignManager(Persistent):
                     if hasattr(adapt, k):
                         items[k] = adapt.parameters[k]
                 #items = dict(adapt.parameters)
-                if len(items)>0:
+                if items:
                     # export field settings
                     str_items = xmlrpclib.dumps((items,), allow_none=1)
-                    try: 
+                    try:
                         dom_items = parseString(str_items)
                     except ExpatError:
-                        dom_items = parseString(escape_xml_illegal_chars(str_items))
+                        dom_items = parseString(
+                                escape_xml_illegal_chars(str_items))
                     node.appendChild(dom_items.documentElement)
         if not isDatabase:
             elementslist = obj.objectIds()
-            if len(elementslist)>0:
+            if elementslist:
                 elements = xmldoc.createElement('elements')
-                for id in elementslist:
-                    elementNode = self.exportElementAsXML(xmldoc, getattr(obj, id))
+                for i in elementslist:
+                    elementNode = self.exportElementAsXML(
+                            xmldoc,
+                            getattr(obj, i))
                     elements.appendChild(elementNode)
                 node.appendChild(elements)
 
         if isDatabase:
-           acl = xmldoc.createElement('acl')
-           acl.setAttribute('AnomynousAccessRight', obj.AnomynousAccessRight)
-           acl.setAttribute('AuthenticatedAccessRight', obj.AuthenticatedAccessRight)
-           str_UserRoles = xmlrpclib.dumps((obj.UserRoles,), allow_none=1)
-           dom_UserRoles = parseString(str_UserRoles)
-           dom_UserRoles.firstChild.setAttribute('id', 'UserRoles')
-           acl.appendChild(dom_UserRoles.documentElement)
-           str_SpecificRights = xmlrpclib.dumps((obj.getSpecificRights(),), allow_none=1)
-           dom_SpecificRights = parseString(str_SpecificRights)
-           dom_SpecificRights.firstChild.setAttribute('id', 'SpecificRights')
-           acl.appendChild(dom_SpecificRights.documentElement)
-           node.appendChild(acl)
-           node.setAttribute('version', obj.plomino_version)
+            acl = xmldoc.createElement('acl')
+            acl.setAttribute(
+                    'AnomynousAccessRight', obj.AnomynousAccessRight)
+            acl.setAttribute(
+                    'AuthenticatedAccessRight', obj.AuthenticatedAccessRight)
+            str_UserRoles = xmlrpclib.dumps((obj.UserRoles,), allow_none=1)
+            dom_UserRoles = parseString(str_UserRoles)
+            dom_UserRoles.firstChild.setAttribute('id', 'UserRoles')
+            acl.appendChild(dom_UserRoles.documentElement)
+            str_SpecificRights = xmlrpclib.dumps(
+                    (obj.getSpecificRights(),),
+                    allow_none=1)
+            dom_SpecificRights = parseString(str_SpecificRights)
+            dom_SpecificRights.firstChild.setAttribute(
+                    'id', 'SpecificRights')
+            acl.appendChild(dom_SpecificRights.documentElement)
+            node.appendChild(acl)
+            node.setAttribute('version', obj.plomino_version)
 
-        subscribers = component.subscribers((obj,), IXMLImportExportSubscriber)
+        subscribers = component.subscribers(
+                (obj,),
+                IXMLImportExportSubscriber)
+
         for subscriber in subscribers:
-            name = subscriber.__module__ + '.' + subscriber.__class__.__name__
+            name = (subscriber.__module__ 
+                    + '.' 
+                    + subscriber.__class__.__name__)
             doc = parseString(subscriber.export_xml())
             customnode = doc.childNodes[0]
             customnode.setAttribute("ExportImportClass", name)

@@ -18,34 +18,36 @@ logger = logging.getLogger('CMFPlomino: setuphandlers')
 from Products.CMFPlomino.config import PROJECTNAME
 from Products.CMFPlomino.config import DEPENDENCIES
 import os
-from Products.CMFCore.utils import getToolByName
-import transaction
 ##code-section HEAD
 from Products.CMFPlomino.config import FCK_STYLES
 ##/code-section HEAD
+
 
 def isNotCMFPlominoProfile(context):
     return context.readDataFile("CMFPlomino_marker.txt") is None
 
 
-
 def updateRoleMappings(context):
     """after workflow changed update the roles mapping. this is like pressing
     the button 'Update Security Setting' and portal_workflow"""
-    if isNotCMFPlominoProfile(context): return 
+    if isNotCMFPlominoProfile(context):
+        return
     shortContext = context._profile_path.split(os.path.sep)[-3]
-    if shortContext != 'CMFPlomino': # avoid infinite recursions
+    if shortContext != 'CMFPlomino':  # avoid infinite recursions
         return
     # THIS STEP MUST BE REMOVED
     # (but as it is permanent we need to unregister it properly)
     # wft = getToolByName(context.getSite(), 'portal_workflow')
     # wft.updateRoleMappings()
 
+
 def postInstall(context):
-    """Called as at the end of the setup process. """
-    if isNotCMFPlominoProfile(context): return
+    """ Called as at the end of the setup process.
+    """
+    if isNotCMFPlominoProfile(context):
+        return
     shortContext = context._profile_path.split(os.path.sep)[-3]
-    if shortContext != 'CMFPlomino': # avoid infinite recursions
+    if shortContext != 'CMFPlomino':  # avoid infinite recursions
         return
     site = context.getSite()
     # THIS STEP MUST BE REMOVED

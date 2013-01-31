@@ -8,7 +8,6 @@ __docformat__ = 'plaintext'
 
 # From the standard library
 from copy import deepcopy
-from time import strptime
 
 # 3rd party Python 
 from jsonutil import jsonutil as json
@@ -27,9 +26,7 @@ except ImportError:
     from zope.app.container.contained import Contained
 from zope.component.factory import Factory
 from zope.component import queryUtility
-from zope import event
 from zope.interface import implements
-from zope.interface import Interface
 from ZPublisher.HTTPRequest import FileUpload
 import transaction
 
@@ -42,7 +39,6 @@ except:
 from OFS.ObjectManager import BadRequestException
 from OFS.Image import File
 from Products.Archetypes.config import RENAME_AFTER_CREATION_ATTEMPTS
-from Products.BTreeFolder2.BTreeFolder2 import BTreeFolder2Base
 from Products.CMFCore.CMFBTreeFolder import CMFBTreeFolder
 from Products.CMFCore.exceptions import BadRequest
 from Products.CMFCore.utils import getToolByName
@@ -81,7 +77,7 @@ try:
 except ImportError:
     URL_NORMALIZER = False
 
-from PlominoUtils import DateToString, StringToDate, sendMail, asUnicode, asList, PlominoTranslate
+from PlominoUtils import sendMail, asUnicode, asList, PlominoTranslate
 
 
 class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
@@ -221,8 +217,10 @@ class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
             if field:
                 result = field.getFieldRender(form, self, False)
                 if (field.getFieldType() == 'ATTACHMENT' and
-                    convertattachments):
-                    result += ' ' + db.getIndex().convertFileToText(self, itemname).decode('utf-8')
+                        convertattachments):
+                    result += ' ' + db.getIndex().convertFileToText(
+                            self,
+                            itemname).decode('utf-8')
                     result = result.encode('utf-8')
 
         return result
@@ -247,7 +245,8 @@ class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
 
         datatables_format = False
         if REQUEST:
-            REQUEST.RESPONSE.setHeader('content-type', 'application/json; charset=utf-8')
+            REQUEST.RESPONSE.setHeader(
+                    'content-type', 'application/json; charset=utf-8')
             item = REQUEST.get('item', item)
             formid = REQUEST.get('formid', formid)
             rendered_str = REQUEST.get('rendered', None)
@@ -268,16 +267,20 @@ class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
                 if field:
                     if field.getFieldType() == 'DATAGRID':
                         adapt = field.getSettings()
-                        fieldvalue = adapt.getFieldValue(form, doc=self, request=REQUEST)
-                        fieldvalue = adapt.rows(fieldvalue, rendered=rendered)
+                        fieldvalue = adapt.getFieldValue(
+                                form, doc=self, request=REQUEST)
+                        fieldvalue = adapt.rows(
+                                fieldvalue, rendered=rendered)
                     else:
                         if rendered:
                             fieldvalue = self.getRenderedItem(item, form)
                         else:
                             adapt = field.getSettings()
-                            fieldvalue = adapt.getFieldValue(form, doc=self, request=REQUEST)
+                            fieldvalue = adapt.getFieldValue(
+                                    form, doc=self, request=REQUEST)
                 else:
-                    _logger.info("Failed to find %s on %s, fallback to getItem."%(item, form.id))
+                    _logger.info("Failed to find %s on %s, "
+                            "fallback to getItem."%(item, form.id))
                     fieldvalue = self.getItem(item)
             else:
                 fieldvalue = self.getItem(item)
@@ -285,9 +288,10 @@ class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
             fieldvalue = self.items.data
 
         if datatables_format:
-            fieldvalue = {'iTotalRecords': len(fieldvalue),
-                          'iTotalDisplayRecords': len(fieldvalue),
-                          'aaData': fieldvalue }
+            fieldvalue = {
+                    'iTotalRecords': len(fieldvalue),
+                    'iTotalDisplayRecords': len(fieldvalue),
+                    'aaData': fieldvalue }
 
         return json.dumps(fieldvalue)
 
@@ -333,7 +337,7 @@ class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
 
     security.declareProtected(REMOVE_PERMISSION, 'delete')
     def delete(self, REQUEST=None):
-        """delete the current doc
+        """ Delete the current doc
         """
         db = self.getParentDatabase()
         db.deleteDocument(self)
@@ -350,9 +354,7 @@ class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
         errors = form.validateInputs(REQUEST, doc=self)
         if errors:
             return self.errors_json(
-                    errors=json.dumps(
-                        {'success': False, 'errors': errors})
-                    )
+                    errors=json.dumps({'success': False, 'errors': errors}))
         else:
             return self.errors_json(
                     errors=json.dumps({'success': True}))
@@ -386,17 +388,22 @@ class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
 
     security.declareProtected(EDIT_PERMISSION, 'refresh')
     def refresh(self, form=None):
-        """ re-compute fields and re-index document
-        (onSave event is not called, and authors are not updated
+        """ Re-compute fields and re-index document.
+        (onSave event is not called, and authors are not updated)
         """
-        self.save(form, creation=False, refresh_index=True, asAuthor=False, onSaveEvent=False)
+        self.save(
+                form,
+                creation=False,
+                refresh_index=True,
+                asAuthor=False,
+                onSaveEvent=False)
 
     security.declareProtected(EDIT_PERMISSION, 'save')
     def save(self, form=None, creation=False, refresh_index=True, asAuthor=True, onSaveEvent=True):
         """refresh values according form, and reindex the document
         """
         # we process computed fields (refresh the value)
-        if form is None:
+        if form:
             form = self.getForm()
         else:
             self.setItem('Form', form.getFormName())
@@ -406,19 +413,21 @@ class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
             for f in form.getFormFields(includesubforms=True, doc=self):
                 mode = f.getFieldMode()
                 fieldname = f.id
-                if mode in ["COMPUTED", "COMPUTEDONSAVE"] or (mode=="CREATION" and creation):
+                # computed for display field are not stored
+                if (mode in ["COMPUTED", "COMPUTEDONSAVE"] or 
+                        (creation and mode=="CREATION")):
                     result = form.computeFieldValue(fieldname, self)
                     self.setItem(fieldname, result)
-                else:
-                    # computed for display field are not stored
-                    pass
 
             # compute the document title
             title_formula = form.getDocumentTitle()
             if title_formula:
                 # Use the formula if we have one
                 try:
-                    title = self.runFormulaScript("form_"+form.id+"_title", self, form.DocumentTitle)
+                    title = self.runFormulaScript(
+                            'form_%s_title' % form.id,
+                            self,
+                            form.DocumentTitle)
                     if title != self.Title():
                         self.setTitle(title)
                 except PlominoScriptException, e:
@@ -441,23 +450,25 @@ class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
 
         # update the Plomino_Authors field with the current user name
         if asAuthor:
+            # getItem('Plomino_Authors', []) might return '' or None
             authors = asList(self.getItem('Plomino_Authors') or [])
             name = db.getCurrentUser().getUserName()
-            if name in authors:
-                pass
-            else:
+            if not name in authors:
                 authors.append(name)
             self.setItem('Plomino_Authors', authors)
 
         # execute the onSaveDocument code of the form
         if form and onSaveEvent:
             try:
-                result = self.runFormulaScript("form_"+form.id+"_onsave", self, form.onSaveDocument)
+                result = self.runFormulaScript(
+                        'form_%s_onsave' % form.id,
+                        self,
+                        form.onSaveDocument)
                 if result and hasattr(self, 'REQUEST'):
                     self.REQUEST.set('plominoredirecturl', result)
             except PlominoScriptException, e:
                 if hasattr(self, 'REQUEST'):
-                    e.reportError('Document has been saved but onSave event failed.')
+                    e.reportError('Document saved, but onSave event failed.')
                     doc_path = self.REQUEST.physicalPathToURL(self.doc_path())
                     self.REQUEST.RESPONSE.redirect(doc_path)
 
@@ -466,7 +477,9 @@ class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
             db.getIndex().indexDocument(self)
             # update portal_catalog
             if db.getIndexInPortal():
-                db.portal_catalog.catalog_object(self, "/".join(db.getPhysicalPath() + (self.id,)))
+                db.portal_catalog.catalog_object(
+                        self,
+                        "/".join(db.getPhysicalPath() + [self.id]))
 
     def _onOpenDocument(self, form=None):
         """ execute the onOpenDocument code of the form
@@ -478,7 +491,7 @@ class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
         try:
             if form.getOnOpenDocument():
                 onOpenDocument_error = self.runFormulaScript(
-                        "form_"+form.id+"_onopen",
+                        'form_%s_onopen' % form.id,
                         self,
                         form.onOpenDocument)
                 return onOpenDocument_error
@@ -512,9 +525,9 @@ class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
                 from ZPublisher.HTTPResponse import HTTPResponse
                 from ZPublisher.HTTPRequest import HTTPRequest
                 response = HTTPResponse(stdout=sys.stdout)
-                env = {'SERVER_NAME':'fake_server',
-                       'SERVER_PORT':'80',
-                       'REQUEST_METHOD':'GET'}
+                env = {'SERVER_NAME': 'fake_server',
+                       'SERVER_PORT': '80',
+                       'REQUEST_METHOD': 'GET'}
                 request = HTTPRequest(sys.stdin, env, response)
             html_content = form.displayDocument(self,
                                 editmode=editmode,
@@ -523,9 +536,7 @@ class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
         plone_tools = getToolByName(db, 'plone_utils')
         encoding = plone_tools.getSiteEncoding()
         html_content = html_content.encode(encoding)
-
         return html_content
-
 
     security.declareProtected(EDIT_PERMISSION, 'editWithForm')
     def editWithForm(self, form):
@@ -545,8 +556,8 @@ class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
 
     security.declarePublic('getForm')
     def getForm(self):
-        """ Return form: look in REQUEST, then try to acquire from view, and
-        finally fall back to document Form item.
+        """ Return form: look in REQUEST, then try to acquire from view, 
+        and finally fall back to document Form item.
         """
         formname = None
         if hasattr(self, 'REQUEST'):
@@ -559,7 +570,10 @@ class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
         form = self.getParentDatabase().getForm(formname)
         if not form:
             if hasattr(self, "REQUEST") and formname:
-                self.writeMessageOnPage("Form %s does not exist." % formname, self.REQUEST, True)
+                self.writeMessageOnPage(
+                        "Form %s does not exist." % formname,
+                        self.REQUEST,
+                        True)
         return form
 
     def _getCatalogTool(self):
@@ -567,22 +581,24 @@ class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
 
     security.declarePublic('__getattr__')
     def __getattr__(self, name):
-        """Overloads getattr to return item values as attibutes
+        """ Overloads getattr to return item values as attributes
         """
-        if(self.items.has_key(name)):
+        if self.items.has_key(name):
             return self.items[name]
         else:
-            if name not in ['__parent__', '__conform__', '__annotations__',
-                           '_v_at_subobjects', '__getnewargs__', 'aq_inner', 'im_self']:
+            if name in ['__parent__', '__conform__', '__annotations__',
+                    '_v_at_subobjects', '__getnewargs__', 'aq_inner',
+                    'im_self']:
+                raise AttributeError, name
+            else:
                 try:
                     return PortalContent.__getattr__(self, name)
                 except Exception, e:
+                    _logger.error('PlominoDocument', exc_info=True)
                     raise AttributeError, name
-            else:
-                raise AttributeError, name
 
     security.declareProtected(READ_PERMISSION, 'isSelectedInView')
-    def isSelectedInView(self,viewname):
+    def isSelectedInView(self, viewname):
         """
         """
         db = self.getParentDatabase()
@@ -591,7 +607,10 @@ class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
         if v:
             try:
                 #result = RunFormula(self, v.SelectionFormula())
-                result = self.runFormulaScript("view_"+v.id+"_selection", self, v.SelectionFormula)
+                result = self.runFormulaScript(
+                        'view_%s_selection' % v.id,
+                        self,
+                        v.SelectionFormula)
             except PlominoScriptException, e:
                 e.reportError('%s view selection formula failed' % viewname)
         return result
@@ -605,62 +624,74 @@ class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
         try:
             c = v.getColumn(columnname)
             #result = RunFormula(self, c.Formula())
-            result = self.runFormulaScript("column_"+v.id+"_"+c.id+"_formula", self, c.Formula)
+            result = self.runFormulaScript(
+                    'column_%s_%s_formula' % (v.id, c.id),
+                    self,
+                    c.Formula)
         except PlominoScriptException, e:
-            e.reportError('"%s" column formula failed in %s view' % (c.Title(), viewname))
+            e.reportError('"%s" column formula failed in %s view' % (
+                c.Title(), viewname))
             result = None
         return result
 
     security.declareProtected(EDIT_PERMISSION, 'deleteAttachment')
     def deleteAttachment(self, REQUEST=None, fieldname=None, filename=None):
-        """remove file object and update corresponding item value
+        """ Remove file object and update corresponding item value
         """
-        if REQUEST is not None:
-            fieldname=REQUEST.get('field')
-            filename=REQUEST.get('filename')
-        if fieldname is not None and filename is not None:
-            current_files=self.getItem(fieldname)
+        if REQUEST:
+            fieldname = REQUEST.get('field')
+            filename = REQUEST.get('filename')
+        if fieldname and filename:
+            current_files = self.getItem(fieldname)
             if current_files.has_key(filename):
                 if len(current_files.keys()) == 1:
-                    # if it is the only file attached, we need to make sure the field
-                    # is not mandatory to allow deletion
+                    # if it is the only file attached, we need to make sure
+                    # the field is not mandatory, to allow deletion
                     form = self.getForm()
                     if form:
                         field = form.getFormField(fieldname)
                         if field and field.getMandatory():
-                            error = fieldname + " " + PlominoTranslate("is mandatory", self)
+                            error = "%s %s" % (
+                                    fieldname,
+                                    PlominoTranslate("is mandatory", self))
                             return form.notifyErrors([error])
                 del current_files[filename]
                 self.setItem(fieldname, current_files)
                 self.deletefile(filename)
-        if REQUEST is not None:
+        if REQUEST:
             REQUEST.RESPONSE.redirect(self.absolute_url()+"/EditDocument")
 
     security.declarePublic('SearchableText')
     def SearchableText(self):
         values = []
-        index_attachments=self.getParentDatabase().getIndexAttachments()
+        index_attachments = self.getParentDatabase().getIndexAttachments()
         form = self.getForm()
 
         for itemname in self.items.keys():
             item_value = self.getItem(itemname)
-            if type(item_value) is list:
+            if isinstance(item_value, list):
                 for v in item_value:
-                    if type(v) is list:
+                    if isinstance(v, list):
                         values = values + [asUnicode(k) for k in v]
                     else:
                         values.append(asUnicode(v))
             else:
                 values.append(asUnicode(item_value))
-            # if selection or attachment field, we try to index rendered values too
+            # if selection or attachment field, we try to index rendered
+            # values too
             try:
                 if form:
                     field = form.getFormField(itemname)
                     if field and field.getFieldType() in ["SELECTION", "ATTACHMENT"]:
-                        v = asUnicode(self.getRenderedItem(itemname,form=form, convertattachments=index_attachments))
+                        v = asUnicode(
+                                self.getRenderedItem(
+                                    itemname,
+                                    form=form,
+                                    convertattachments=index_attachments))
                         if v:
                             values.append(v)
             except:
+                _logger.error('Exception during indexing', exc_info=True)
                 pass
         return ' '.join(values)
 
@@ -680,9 +711,9 @@ class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
             raise Unauthorized, onOpenDocument_error
 
         fss = self.getParentDatabase().getStorageAttachments()
-        if REQUEST is not None:
+        if REQUEST:
             filename = REQUEST.get('filename')
-        if filename is not None:
+        if filename:
             if fss:
                 storage = FileSystemStorage()
                 file_obj = storage.get(filename, self)
@@ -694,8 +725,10 @@ class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
             if asFile:
                 return file_obj
             if REQUEST:
-                REQUEST.RESPONSE.setHeader('content-type', file_obj.getContentType())
-                REQUEST.RESPONSE.setHeader("Content-Disposition", "inline; filename="+filename)
+                REQUEST.RESPONSE.setHeader(
+                        'content-type', file_obj.getContentType())
+                REQUEST.RESPONSE.setHeader(
+                        "Content-Disposition", "inline; filename="+filename)
             if fss:
                 return file_obj.getData()
             else:
@@ -709,39 +742,47 @@ class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
         """
         fss = self.getParentDatabase().getStorageAttachments()
         if fss:
-            return [o.getTitle() for o in self.__dict__.values() if isinstance(o, FSSFileInfo)]
+            return [o.getTitle() for o in self.__dict__.values() 
+                    if isinstance(o, FSSFileInfo)]
         else:
             #return [o.getId() for o in self.getChildNodes() if isinstance(o, File)]
             if HAS_BLOB:
-                return [id for id in self.objectIds() if isinstance(self[id], BlobWrapper)]
+                return [id for id in self.objectIds()
+                        if isinstance(self[id], BlobWrapper)]
             else:
-                return [id for id in self.objectIds() if isinstance(self[id], File)]
+                return [id for id in self.objectIds()
+                        if isinstance(self[id], File)]
 
     security.declareProtected(EDIT_PERMISSION, 'setfile')
     def setfile(self, submittedValue, filename='', overwrite=False, contenttype=''):
         """
         """
-        if filename=='':
-            filename=submittedValue.filename
-        if filename!='':
+        if filename == '':
+            filename = submittedValue.filename
+        if filename:
             if """\\""" in filename:
-                filename=filename.split("\\")[-1]
-            filename = ".".join([normalizeString(s, encoding='utf-8') for s in filename.split('.')])
+                filename = filename.split("\\")[-1]
+            filename = '.'.join(
+                    [normalizeString(s, encoding='utf-8') 
+                        for s in filename.split('.')])
             if overwrite and filename in self.objectIds():
                 self.deletefile(filename)
             try:
                 self._checkId(filename)
             except BadRequest:
                 # if filename is a reserved id, we rename it
-                filename = DateTime().toZone('UTC').strftime("%Y%m%d%H%M%S") + "_" + filename
+                filename = '%s_%s' % (
+                        DateTime().toZone('UTC').strftime("%Y%m%d%H%M%S"),
+                        filename)
             
-            if(self.getParentDatabase().getStorageAttachments()==True):
-                tmpfile=File(filename, filename, submittedValue)
-                storage = FileSystemStorage();
+            if self.getParentDatabase().getStorageAttachments():
+                tmpfile = File(filename, filename, submittedValue)
+                storage = FileSystemStorage()
                 storage.set(filename, self, tmpfile);
                 contenttype=storage.get(filename,self).getContentType()
             elif HAS_BLOB:
-                if isinstance(submittedValue, FileUpload) or type(submittedValue) == file:
+                if (isinstance(submittedValue, FileUpload) or 
+                        type(submittedValue) == file):
                     submittedValue.seek(0)
                     contenttype = guessMimetype(submittedValue, filename)
                     submittedValue = submittedValue.read()
@@ -767,7 +808,7 @@ class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
     def deletefile(self, filename):
         """
         """
-        if(self.getParentDatabase().getStorageAttachments()):
+        if self.getParentDatabase().getStorageAttachments():
             storage = FileSystemStorage();
             storage.unset(filename, self);
         else:
@@ -800,10 +841,9 @@ class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
         else:
             return False
 
-
     security.declarePrivate('_findUniqueId')
     def _findUniqueId(self, id):
-        """Find a unique id in the parent folder, based on the given id, by
+        """ Find a unique id in the parent folder, based on the given id, by
         appending -n, where n is a number between 1 and the constant
         RENAME_AFTER_CREATION_ATTEMPTS, set in config.py. If no id can be
         found, return None.
@@ -849,7 +889,8 @@ class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
 
         result = None
         try:
-            result = self.runFormulaScript("form_"+form.id+"_docid", self, form.DocumentId)
+            result = self.runFormulaScript(
+                    'form_%s_docid' % form.id, self, form.DocumentId)
         except PlominoScriptException, e:
             e.reportError('Document id formula failed')
 
@@ -934,6 +975,4 @@ class TemporaryDocument(PlominoDocument):
         """
         """
         return self.real_id
-
-
 

@@ -10,35 +10,37 @@
 __author__ = """Eric BREHAULT <eric.brehault@makina-corpus.com>"""
 __docformat__ = 'plaintext'
 
+# Standard
 import logging
 _logger = logging.getLogger('Plomino')
 
+# Zope
 from AccessControl import ClassSecurityInfo
-from Products.CMFPlomino.config import *
-from Products.CMFPlomino.PlominoField import get_field_types
-
-from Products.CMFCore.CatalogTool import CatalogTool
-from Products.ZCatalog.Catalog import CatalogError
-
-from Products.CMFPlone.UnicodeSplitter import CaseNormalizer
-from Products.CMFPlone.UnicodeSplitter import Splitter
 #from Products.ZCTextIndex.Lexicon import CaseNormalizer
 #from Products.ZCTextIndex.Lexicon import Splitter
 #from Products.ZCTextIndex.Lexicon import StopWordRemover
 from Products.ZCTextIndex.ZCTextIndex import PLexicon
 
-from Products.CMFCore.utils import UniqueObject, SimpleRecord
+# CMF / Archetypes / Plone
+from Products.CMFCore.CatalogTool import CatalogTool
 from Products.CMFCore.utils import getToolByName
-from Products.PortalTransforms.utils import TransformException
+from Products.CMFCore.utils import UniqueObject, SimpleRecord
+from Products.CMFPlone.UnicodeSplitter import CaseNormalizer
+from Products.CMFPlone.UnicodeSplitter import Splitter
 from Products.PortalTransforms.libtransforms.utils import MissingBinary
+from Products.PortalTransforms.utils import TransformException
 
+# Plomino
+from Products.CMFPlomino.config import *
 from Products.CMFPlomino.index.PlominoCatalog import PlominoCatalog
-from Products.CMFPlomino.index.PlominoViewIndex import PlominoViewIndex
 from Products.CMFPlomino.index.PlominoColumnIndex import PlominoColumnIndex
 from Products.CMFPlomino.index.PlominoFileIndex import PlominoFileIndex
+from Products.CMFPlomino.index.PlominoViewIndex import PlominoViewIndex
+from Products.CMFPlomino.PlominoField import get_field_types
+
 
 class PlominoIndex(UniqueObject, CatalogTool):
-    """Plomino index
+    """ Plomino index
     """
     security = ClassSecurityInfo()
 
@@ -47,7 +49,7 @@ class PlominoIndex(UniqueObject, CatalogTool):
     # Methods
 
     security.declarePublic('__init__')
-    def __init__(self, FULLTEXT = False):
+    def __init__(self, FULLTEXT=False):
         """
         """
         self.no_refresh = True
@@ -55,7 +57,11 @@ class PlominoIndex(UniqueObject, CatalogTool):
         self._catalog = PlominoCatalog()
         # TODO: use TextindexNG3
         #lexicon = PLexicon('plaintext_lexicon', '', Splitter(), CaseNormalizer(), StopWordRemover())
-        lexicon = PLexicon('plaintext_lexicon', '', Splitter(), CaseNormalizer())
+        lexicon = PLexicon(
+                'plaintext_lexicon',
+                '',
+                Splitter(),
+                CaseNormalizer())
         self._setObject('plaintext_lexicon', lexicon)
         #self.createFieldIndex('Form', 'SELECTION')
         #self.createFieldIndex('getPlominoReaders', 'SELECTION')
@@ -64,7 +70,7 @@ class PlominoIndex(UniqueObject, CatalogTool):
         self.addColumn('id')
         self.addIndex('getPlominoReaders', "KeywordIndex")
         self.addIndex('path', "ExtendedPathIndex")
-        
+
         if FULLTEXT:
             self.createFieldIndex('SearchableText', 'RICHTEXT')
         self.no_refresh = False
@@ -74,26 +80,36 @@ class PlominoIndex(UniqueObject, CatalogTool):
         """
         """
         if not fieldname in self.indexes():
-            self._catalog.addIndex(fieldname,PlominoColumnIndex(fieldname))
+            self._catalog.addIndex(fieldname, PlominoColumnIndex(fieldname))
         if not self._catalog.schema.has_key(fieldname):
             self.addColumn(fieldname)
-            
+
         if refresh:
             self.refresh()
 
     security.declareProtected(DESIGN_PERMISSION, 'createFieldIndex')
-    def createFieldIndex(self,fieldname, fieldtype, refresh=True, indextype='DEFAULT'):
+    def createFieldIndex(self, fieldname, fieldtype, refresh=True,
+            indextype='DEFAULT'):
         """
         """
         if indextype == 'DEFAULT':
-            indextype=get_field_types()[fieldtype][1]
-        if indextype=='ZCTextIndex':
-            plaintext_extra = SimpleRecord( lexicon_id='plaintext_lexicon', index_type='Okapi BM25 Rank')
+            indextype = get_field_types()[fieldtype][1]
+        if indextype == 'ZCTextIndex':
+            plaintext_extra = SimpleRecord(
+                    lexicon_id='plaintext_lexicon',
+                    index_type='Okapi BM25 Rank')
             if not fieldname in self.indexes():
                 self.addIndex(fieldname, 'ZCTextIndex', plaintext_extra)
-            if fieldtype=='ATTACHMENT' and self.getParentDatabase().getIndexAttachments():
+            if (fieldtype=='ATTACHMENT' and
+                    self.getParentDatabase().getIndexAttachments()):
                 if not 'PlominoFiles_'+fieldname in self.indexes():
-                    self._catalog.addIndex('PlominoFiles_'+fieldname, PlominoFileIndex('PlominoFiles_'+fieldname, caller=self, extra=plaintext_extra))
+                    self._catalog.addIndex(
+                            'PlominoFiles_%s' % fieldname,
+                            PlominoFileIndex(
+                                'PlominoFiles_%s' % fieldname,
+                                caller=self,
+                                extra=plaintext_extra)
+                            )
         else:
             if not fieldname in self.indexes():
                 self.addIndex(fieldname, indextype)
@@ -132,7 +148,9 @@ class PlominoIndex(UniqueObject, CatalogTool):
                 "/".join(doc.getPhysicalPath()),
                 idxs=idxs, update_metadata=update_metadata)
         except Exception, e:
-            self.portal_skins.plone_scripts.plone_log('%s\non %s'%(`e`, doc.id))
+            _logger.info(
+                    'indexDocument> %s\non %s' % (repr(e), doc.id),
+                    exc_info=True) 
             raise
 
     security.declareProtected(READ_PERMISSION, 'unindexDocument')
@@ -151,17 +169,17 @@ class PlominoIndex(UniqueObject, CatalogTool):
             self.getParentDatabase().setStatus("Ready")
 
     security.declareProtected(READ_PERMISSION, 'dbsearch')
-    def dbsearch(self, request, sortindex=None, reverse=0, only_allowed=True, limit=None):
+    def dbsearch(self, request, sortindex=None, reverse=0,
+            only_allowed=True, limit=None):
         """
         """
         user_groups_roles = ['Anonymous', '*']
         user_id = self.getCurrentUser().getUserName()
         if user_id != "Anonymous User":
             user_groups_roles += (
-                [user_id] + 
-                self.getCurrentUserGroups() + 
-                self.getCurrentUserRoles()
-                )
+                    [user_id] + 
+                    self.getCurrentUserGroups() + 
+                    self.getCurrentUserRoles())
         request['getPlominoReaders'] = user_groups_roles
         try:
             results = self.search(request, sortindex, reverse, limit)
@@ -169,8 +187,10 @@ class PlominoIndex(UniqueObject, CatalogTool):
             # attempting to sort using a non-sortable index raise an
             # AttributeError about 'documentToKeyMap'
             if hasattr(self, 'REQUEST'):
-                self.writeMessageOnPage("The %s index does not allow sorting" % sortindex,
-                                        self.REQUEST, error=True)
+                self.writeMessageOnPage(
+                        "The %s index does not allow sorting" % sortindex,
+                        self.REQUEST,
+                        error=True)
             results = self.search(request, None, reverse, limit)                
         return results
 
@@ -182,7 +202,7 @@ class PlominoIndex(UniqueObject, CatalogTool):
 
     security.declarePublic('convertFileToText')
     def convertFileToText(self, doc, field):
-        """ (adapted from Plone3 ATContentTypes file class)
+        """ Adapted from Plone3 ATContentTypes file class.
 
         If conversion fails, returns ''.
         """
@@ -199,15 +219,18 @@ class PlominoIndex(UniqueObject, CatalogTool):
                 mimetype = files[filename]
                 try:
                     ptTool = getToolByName(self, 'portal_transforms')
-                    textstream = ptTool.convertTo('text/plain', str(f), mimetype=mimetype)
+                    textstream = ptTool.convertTo(
+                            'text/plain', str(f), mimetype=mimetype)
                 except TransformException:
-                    _logger.info('convertFileToText> Transform failed', exc_info=True) 
+                    _logger.info(
+                            'convertFileToText> Transform failed',
+                            exc_info=True) 
                 except MissingBinary:
-                    _logger.info('convertFileToText> Transform failed', exc_info=True) 
+                    _logger.info(
+                            'convertFileToText> Transform failed',
+                            exc_info=True) 
                 if textstream:
                     result = textstream.getData()
 
         return result
-
-
 
