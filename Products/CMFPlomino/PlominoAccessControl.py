@@ -10,7 +10,7 @@
 __author__ = """Eric BREHAULT <eric.brehault@makina-corpus.com>"""
 __docformat__ = 'plaintext'
 
-# Standard 
+# Standard
 import warnings
 
 # Zope
@@ -28,91 +28,92 @@ from Products.DCWorkflow.DCWorkflow import DCWorkflowDefinition
 from Products.CMFPlomino.config import *
 from Products.CMFPlomino.PlominoUtils import asList
 
+
 class PlominoAccessControl(Persistent):
-    """Plomino access control utilities
+    """ Plomino access control utilities
     """
     security = ClassSecurityInfo()
 
     PLOMINO_PERMISSIONS = {
-    "NoAccess" : [],
-    "PlominoReader" : [
-        READ_PERMISSION,
-        permissions.View,
-        permissions.AccessContentsInformation],
-    "PlominoAuthor" : [
-        READ_PERMISSION,
-        EDIT_PERMISSION,
-        REMOVE_PERMISSION,
-        CREATE_PERMISSION,
-        ADD_CONTENT_PERMISSION,
-        permissions.View,
-        permissions.AccessContentsInformation,
-        'Copy or Move',
-        #permissions.AddPortalContent,
-        #permissions.ModifyPortalContent
-        ],
-    "PlominoEditor" : [
-        READ_PERMISSION,
-        EDIT_PERMISSION,
-        REMOVE_PERMISSION,
-        CREATE_PERMISSION,
-        ADD_CONTENT_PERMISSION,
-        permissions.View,
-        permissions.AccessContentsInformation,
-        'Copy or Move',
-        permissions.DeleteObjects
-        #permissions.AddPortalContent,
-        #permissions.ModifyPortalContent
-        ],
-    "PlominoDesigner" : [
-        READ_PERMISSION,
-        EDIT_PERMISSION,
-        REMOVE_PERMISSION,
-        CREATE_PERMISSION,
-        DESIGN_PERMISSION,
-        ADD_CONTENT_PERMISSION,
-        ADD_DESIGN_PERMISSION,
-        permissions.View,
-        permissions.AccessContentsInformation,
-        'Copy or Move',
-        permissions.AddPortalContent,
-        permissions.ModifyPortalContent],
-    "PlominoManager" : [
-        READ_PERMISSION,
-        EDIT_PERMISSION,
-        REMOVE_PERMISSION,
-        CREATE_PERMISSION,
-        DESIGN_PERMISSION,
-        ADD_CONTENT_PERMISSION,
-        ADD_DESIGN_PERMISSION,
-        ACL_PERMISSION,
-        permissions.View,
-        permissions.AccessContentsInformation,
-        'Copy or Move',
-        permissions.AddPortalContent,
-        permissions.ModifyPortalContent]
+            "NoAccess": [],
+            "PlominoReader": [
+                READ_PERMISSION,
+                permissions.View,
+                permissions.AccessContentsInformation],
+            "PlominoAuthor": [
+                READ_PERMISSION,
+                EDIT_PERMISSION,
+                REMOVE_PERMISSION,
+                CREATE_PERMISSION,
+                ADD_CONTENT_PERMISSION,
+                permissions.View,
+                permissions.AccessContentsInformation,
+                'Copy or Move',
+                #permissions.AddPortalContent,
+                #permissions.ModifyPortalContent
+                ],
+            "PlominoEditor": [
+                READ_PERMISSION,
+                EDIT_PERMISSION,
+                REMOVE_PERMISSION,
+                CREATE_PERMISSION,
+                ADD_CONTENT_PERMISSION,
+                permissions.View,
+                permissions.AccessContentsInformation,
+                'Copy or Move',
+                permissions.DeleteObjects
+                #permissions.AddPortalContent,
+                #permissions.ModifyPortalContent
+                ],
+            "PlominoDesigner": [
+                READ_PERMISSION,
+                EDIT_PERMISSION,
+                REMOVE_PERMISSION,
+                CREATE_PERMISSION,
+                DESIGN_PERMISSION,
+                ADD_CONTENT_PERMISSION,
+                ADD_DESIGN_PERMISSION,
+                permissions.View,
+                permissions.AccessContentsInformation,
+                'Copy or Move',
+                permissions.AddPortalContent,
+                permissions.ModifyPortalContent],
+            "PlominoManager": [
+                READ_PERMISSION,
+                EDIT_PERMISSION,
+                REMOVE_PERMISSION,
+                CREATE_PERMISSION,
+                DESIGN_PERMISSION,
+                ADD_CONTENT_PERMISSION,
+                ADD_DESIGN_PERMISSION,
+                ACL_PERMISSION,
+                permissions.View,
+                permissions.AccessContentsInformation,
+                'Copy or Move',
+                permissions.AddPortalContent,
+                permissions.ModifyPortalContent]
     }
 
-    PLOMINO_RIGHTS_PRIORITY = ["NoAccess",
-                               "PlominoReader",
-                               "PlominoAuthor",
-                               "PlominoEditor",
-                               "PlominoDesigner",
-                               "PlominoManager",
-                               "Owner"]
+    PLOMINO_RIGHTS_PRIORITY = [
+            "NoAccess",
+            "PlominoReader",
+            "PlominoAuthor",
+            "PlominoEditor",
+            "PlominoDesigner",
+            "PlominoManager",
+            "Owner"]
 
     # Methods
-
     security.declarePublic('__init__')
     def __init__(self):
         """
         """
-        self.ACL_initialized=0
-        self.UserRoles={}
+        self.ACL_initialized = 0
+        self.UserRoles = {}
 
     security.declarePublic('getUserRoles')
     def getUserRoles(self):
-        """return the db Plomino roles
+        """ Return the Plomino roles for the database
         """
         return self.UserRoles.keys()
 
@@ -121,15 +122,17 @@ class PlominoAccessControl(Persistent):
         """ Return the users with the given Plomino user role
         """
         # XXX: method name is plural but takes singular role parameter?
-        warnings.warn("getUsersForRoles is deprecated, use getUsersForRole (which return a list).", DeprecationWarning, 2)
+        warnings.warn("getUsersForRoles is deprecated, "
+                "use getUsersForRole (which return a list).",
+                DeprecationWarning, 2)
         if self.UserRoles.has_key(role):
             return self.UserRoles[role]
 
         return ''
 
     security.declarePublic('getUsersForRole')
-    def getUsersForRole(self,role):
-        """return the users having the given Plomino user role
+    def getUsersForRole(self, role):
+        """ Return the users having the given Plomino user role
         """
         if self.UserRoles.has_key(role):
             return self.UserRoles[role].keys()
@@ -156,8 +159,8 @@ class PlominoAccessControl(Persistent):
             return False
 
     security.declarePublic('getUsersForRight')
-    def getUsersForRight(self,right):
-        """return the users having the given Plomino access right
+    def getUsersForRight(self, right):
+        """ Return the users having the given Plomino access right
         """
         return self.users_with_local_role(right)
 
@@ -176,7 +179,7 @@ class PlominoAccessControl(Persistent):
 
     security.declarePublic('getCurrentUserGroups')
     def getCurrentUserGroups(self):
-        """get the current user groups
+        """ Get the current user groups
         """
         user = self.getCurrentUser()
         return user.getGroups()
@@ -201,8 +204,9 @@ class PlominoAccessControl(Persistent):
                 default_right = getattr(self, "AuthenticatedAccessRight", "NoAccess")
                 rights = [default_right]
             return rights
-        except Exception:
+        except Exception, e:
             # XXX: Log the exception.
+            warnings.warn("Access error: %s" % e)
             return [getattr(self, "AnomynousAccessRight", "NoAccess")]
 
     security.declarePublic('hasCurrentUserRight')
@@ -210,8 +214,9 @@ class PlominoAccessControl(Persistent):
         """ Test whether the current user has the given role, or a higher role.
         """
         rights = self.getCurrentUserRights()
-        levels = [self.PLOMINO_RIGHTS_PRIORITY.index(r) for r in rights if r in self.PLOMINO_RIGHTS_PRIORITY]
-        if len(levels)>0:
+        levels = [self.PLOMINO_RIGHTS_PRIORITY.index(r) for r in rights 
+                if r in self.PLOMINO_RIGHTS_PRIORITY]
+        if levels:
             maxlevel = max(levels)
             return maxlevel >= self.PLOMINO_RIGHTS_PRIORITY.index(right)
         else:
@@ -219,7 +224,7 @@ class PlominoAccessControl(Persistent):
 
     security.declarePublic('getCurrentUserRoles')
     def getCurrentUserRoles(self):
-        """get current user roles
+        """ Get current user roles
         """
         userid = self.getCurrentUser().getUserName()
         allroles = self.getUserRoles()
@@ -229,27 +234,28 @@ class PlominoAccessControl(Persistent):
                 roles.append(r)
         return roles
 
-
     security.declarePublic('isCurrentUserReader')
     def isCurrentUserReader(self, doc):
-        """does the current user have read permission on db
-        (so Plone security is preserved)
-        and if Plomino_Readers defined on the doc, is he part of it ?
+        """ Does the current user have read permission on the db
+        (so Plone security is preserved)?
+        If Plomino_Readers is defined on the doc, is he part of it?
         """
         isreader = False
         if self.checkUserPermission(READ_PERMISSION, doc):
-            allowed_readers = doc.getPlominoReaders()
-            if '*' in allowed_readers or self.checkUserPermission(ACL_PERMISSION):
+            allowed_readers = set(doc.getPlominoReaders())
+            if ('*' in allowed_readers or 
+                    self.checkUserPermission(ACL_PERMISSION)):
                 isreader = True
             else:
                 username = self.getCurrentUser().getUserName()
                 if username == "Anonymous User":
-                    user_groups_roles = ['Anonymous']
+                    user_groups_roles = set(['Anonymous'])
                 else:
-                    user_groups_roles = ['Anonymous', username] \
-                                   + self.getCurrentUserGroups() \
-                                   + self.getCurrentUserRoles()
-                if len([name for name in allowed_readers if name in user_groups_roles]) > 0:
+                    user_groups_roles = set(
+                            ['Anonymous', username] +
+                            self.getCurrentUserGroups() +
+                            self.getCurrentUserRoles())
+                if allowed_readers.intersection(user_groups_roles):
                     isreader = True
         return isreader
 
@@ -286,7 +292,8 @@ class PlominoAccessControl(Persistent):
             if r in current_rights:
                 return True
 
-        # if he is just a PlominoAuthor, check if he is author of this very document
+        # if he is just a PlominoAuthor, check if he is author of this very
+        # document
         if 'PlominoAuthor' in current_rights:
 
             authors = asList(doc.getItem('Plomino_Authors') or [])
@@ -399,13 +406,13 @@ class PlominoAccessControl(Persistent):
         """ Note: be careful, Zope 'roles' are different than Plomino
         'roles'. Plomino access rights are implemented using Zope roles
         and Plomino roles are just a dictionary handled by Plomino db
-        with no impact in the Zope security
+        with no impact on Zope security.
         """
         self.manage_role(right, permissions=self.PLOMINO_PERMISSIONS[p])
 
     security.declarePublic('checkUserPermission')
     def checkUserPermission(self, perm, obj=None):
-        """check user's permission
+        """ Check user's permission
         """
         if obj is None:
             obj = self
@@ -464,7 +471,7 @@ class PlominoAccessControl(Persistent):
         newrole = REQUEST.get('newrole')
         # roles names must be enclosed in brackets so they can be
         # distinguished from users names in Authors fields
-        newrole = '['+newrole+']'
+        newrole = '[%s]' % newrole
         roles = self.UserRoles
         if not roles.has_key(newrole):
             roles[newrole] = {}
@@ -546,7 +553,8 @@ class PlominoAccessControl(Persistent):
         """
         """
         if not hasattr(self, 'specific_rights'):
-            self.specific_rights = {'specific_deletedocument': 'PlominoAuthor'}
+            self.specific_rights = {
+                    'specific_deletedocument': 'PlominoAuthor'}
         if key:
             return self.specific_rights.get(key, None)
         else:
@@ -572,7 +580,7 @@ class PlominoAccessControl(Persistent):
     security.declareProtected(ACL_PERMISSION, 'getWorkflowStates')
     def getWorkflowStates(self):
         """
-        """  
+        """
         wftool = self._getWorkflowTool()
         if not wftool:
             return {}
@@ -635,4 +643,3 @@ class PlominoAccessControl(Persistent):
         """ Called from templates to check access permission
         """
         pass
-

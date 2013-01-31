@@ -24,7 +24,8 @@ __docformat__ = 'plaintext'
 
 from Products.CMFCore.permissions import setDefaultRoles
 ##code-section config-head #fill in your manual code here
-from Products.CMFPlomino.AppConfig import ADD_DESIGN_PERMISSION, ADD_CONTENT_PERMISSION
+from Products.CMFPlomino.AppConfig import ADD_DESIGN_PERMISSION
+from Products.CMFPlomino.AppConfig import ADD_CONTENT_PERMISSION
 ##/code-section config-head
 
 
@@ -45,8 +46,8 @@ ADD_CONTENT_PERMISSIONS = {
     'PlominoCache': ADD_DESIGN_PERMISSION,
 }
 
-setDefaultRoles(ADD_DESIGN_PERMISSION, ('Manager','Owner'))
-setDefaultRoles(ADD_CONTENT_PERMISSION, ('Manager','Owner'))
+setDefaultRoles(ADD_DESIGN_PERMISSION, ('Manager', 'Owner'))
+setDefaultRoles(ADD_CONTENT_PERMISSION, ('Manager', 'Owner'))
 
 product_globals = globals()
 

@@ -15,7 +15,7 @@ from cStringIO import StringIO
 from email.Header import Header
 from email import message_from_string
 from time import strptime
-from types import NoneType, StringTypes
+from types import StringTypes
 import cgi
 import csv
 import decimal as std_decimal
@@ -38,10 +38,10 @@ from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import normalizeString as utils_normalizeString
 
 try:
-   from plone.app.upgrade import v40
-   HAS_PLONE40 = True
+    from plone.app.upgrade import v40
+    HAS_PLONE40 = True
 except ImportError:
-   HAS_PLONE40 = False
+    HAS_PLONE40 = False
 
 import logging
 logger = logging.getLogger('Plomino')
@@ -73,7 +73,7 @@ def DateToString(d, format='%Y-%m-%d'):
     return d.strftime(format)
 
 def StringToDate(str_d, format='%Y-%m-%d'):
-    """ Parse the string using the given format and return the date 
+    """ Parse the string using the given format and return the date
     """
     # XXX: Should use db.getDateTimeFormat
     try:
@@ -81,7 +81,11 @@ def StringToDate(str_d, format='%Y-%m-%d'):
     except ValueError, e:
         # XXX: Just let DateTime guess.
         dt = strptime(DateTime(str_d).ISO(), '%Y-%m-%dT%H:%M:%S')
-        logger.info('StringToDate> %s, %s, %s, guessed: %s'%(str(str_d), format, `e`, `dt`))
+        logger.info('StringToDate> %s, %s, %s, guessed: %s' % (
+            str(str_d),
+            format,
+            repr(e),
+            repr(dt)))
     if len(dt) >= 5:
         return DateTime(dt[0], dt[1], dt[2], dt[3], dt[4])
     else:
@@ -91,12 +95,12 @@ def DateRange(d1, d2):
     """ Return all the dates from ``d1`` to ``d2`` (inclusive).
     Dates are ``DateTime`` instances.
     """
-    duration = int(d2-d1)
+    duration = int(d2 - d1)
     result = []
     current = d1
-    for d in range(duration+1):
+    for d in range(duration + 1):
         result.append(current)
-        current = current+1
+        current = current + 1
     return result
 
 def Now():
@@ -108,13 +112,12 @@ def sendMail(db, recipients, title, html_message, sender=None, cc=None, bcc=None
     """Send an email
     """
     host = getToolByName(db, 'MailHost')
-    plone_tools = getToolByName(db, 'plone_utils')
 
     message = '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">\n'
     message = message + "<html>"
     message = message + html_message
     message = message + "</html>"
-    if sender is None:
+    if not sender:
         sender = db.getCurrentUser().getProperty("email")
 
     mail_message = message_from_string(asUnicode(message).encode('utf-8'))
@@ -125,11 +128,15 @@ def sendMail(db, recipients, title, html_message, sender=None, cc=None, bcc=None
     if bcc:
         mail_message['BCC']= Header(bcc)
     if HAS_PLONE40:
-        host.send(mail_message, recipients, sender, asUnicode(title).encode('utf-8'), msg_type='text/html', immediate=immediate)
+        host.send(mail_message, recipients, sender,
+                asUnicode(title).encode('utf-8'),
+                msg_type='text/html',
+                immediate=immediate)
     else:
-        host.secureSend(message, recipients,
-                        sender, subject=title,
-                        subtype='html', charset='utf-8')
+        host.secureSend(message, recipients, sender, 
+                subject=title,
+                subtype='html',
+                charset='utf-8')
 
 
 def userFullname(db, userid):
@@ -158,7 +165,6 @@ def PlominoTranslate(msgid, context, domain='CMFPlomino'):
     """ Look up the translation for ``msgid`` in the current language.
     """
     plone_tools = getToolByName(context, 'plone_utils')
-    encoding = plone_tools.getSiteEncoding()
     translation_service = getToolByName(context, 'translation_service')
     # When will message be an exception?
     if isinstance(msgid, Exception):
@@ -167,10 +173,13 @@ def PlominoTranslate(msgid, context, domain='CMFPlomino'):
         except (TypeError, IndexError):
             pass
     if HAS_PLONE40:
-        msg = translation_service.utranslate(domain=domain, msgid=msgid, context=context)
+        msg = translation_service.utranslate(
+                domain=domain, msgid=msgid, context=context)
     else:
-        msg = translation_service.utranslate(msgid=msgid, domain=domain, context=context)
-    return translation_service.encode(msg) # convert unicode to site encoding
+        msg = translation_service.utranslate(
+                msgid=msgid, domain=domain, context=context)
+    # this converts unicode to site encoding:
+    return translation_service.encode(msg)
 
 def htmlencode(s):
     """ Replace characters with their corresponding HTML entities.
@@ -232,21 +241,25 @@ def csv_to_array(csvcontent, delimiter='\t', quotechar='"'):
     """
     if not csvcontent:
         return []
-    if type(csvcontent) is str:
+    if isinstance(csvcontent, basestring):
         csvfile = StringIO(csvcontent)
     elif hasattr(csvcontent, 'blob'):
         csvfile = csvcontent.blob.open()
     else:
         csvfile = csvcontent
     # XXX: why not just return the list-like ``_csv.reader`` object?
-    return [l for l in csv.reader(csvfile, delimiter=delimiter, quotechar=quotechar)]
+    return [l for l in csv.reader(
+        csvfile, delimiter=delimiter, quotechar=quotechar)]
 
 
 def array_to_csv(array, delimiter='\t', quotechar='"'):
     """ Convert ``array`` (a list of lists) to a CSV string.
     """
     s = StringIO()
-    writer = csv.writer(s, delimiter=delimiter, quotechar=quotechar, quoting=csv.QUOTE_NONNUMERIC)
+    writer = csv.writer(s,
+            delimiter=delimiter,
+            quotechar=quotechar,
+            quoting=csv.QUOTE_NONNUMERIC)
     writer.writerows(array)
     return s.getvalue()
 
@@ -278,7 +291,8 @@ def json_loads(json_string):
     return json.loads(json_string)
 
 # From http://lsimons.wordpress.com/2011/03/17/stripping-illegal-characters-out-of-xml-in-python/
-_illegal_xml_chars_RE = re.compile(u'[\x00-\x08\x0b\x0c\x0e-\x1F\uD800-\uDFFF\uFFFE\uFFFF]')
+_illegal_xml_chars_RE = re.compile(
+    u'[\x00-\x08\x0b\x0c\x0e-\x1F\uD800-\uDFFF\uFFFE\uFFFF]')
 def escape_xml_illegal_chars(val, replacement='?'):
     """Filter out characters that are illegal in XML.
     Looks for any character in val that is not allowed in XML
@@ -331,7 +345,9 @@ def actual_context(context, search="PlominoDocument"):
         return None
 
 def is_email(email):
-    if re.match("^.+\\@(\\[?)[a-zA-Z0-9\\-\\.]+\\.([a-zA-Z]{2,3}|[0-9]{1,3})(\\]?)$", email) != None:
+    if re.match(
+            '^.+\\@(\\[?)[a-zA-Z0-9\\-\\.]+\\.'
+            '([a-zA-Z]{2,3}|[0-9]{1,3})(\\]?)$', email):
         return True
     else:
         return False

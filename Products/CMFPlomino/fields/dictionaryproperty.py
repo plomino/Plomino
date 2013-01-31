@@ -8,9 +8,10 @@
 #
 _marker = object()
 
+
 class DictionaryProperty(object):
-    """Computed attributes based on schema fields stored in a dictionary
-    (based on zope/schema/fieldproperty.py) 
+    """ Computed attributes based on schema fields stored in a dictionary
+    (based on zope/schema/fieldproperty.py)
     """
 
     def __init__(self, field, dictionary, name=None):

@@ -36,15 +36,12 @@ import interfaces
 # CMF
 from Products.CMFCore.CMFBTreeFolder import manage_addCMFBTreeFolder
 from Products.CMFCore.PortalFolder import PortalFolderBase as PortalFolder
-from Products.CMFCore.utils import getToolByName
-from Products.CMFDynamicViewFTI.browserdefault import BrowserDefaultMixin
 
 # Plone
 from plone.memoize.interfaces import ICacheChooser
 from Products.Archetypes.atapi import *
 from Products.Archetypes.BaseObject import BaseObject
 from Products.Archetypes.debug import deprecated
-from Products.Archetypes.public import *
 from Products.Archetypes.utils import make_uuid
 from Products.ATContentTypes.content.folder import ATFolder
 #from Products.BTreeFolder2.BTreeFolder2 import manage_addBTreeFolder
@@ -73,13 +70,13 @@ PLOMINO_REQUEST_CACHE_KEY = "plomino.cache"
 ##/code-section module-header
 
 schema = Schema((
-
     TextField(
         name='AboutDescription',
         allowable_content_types=('text/html',),
         widget=RichWidget(
             label="About this database",
-            description="Describe the database, its objectives, its targetted audience, etc...",
+            description="Describe the database, its objectives, "
+                "its targeted audience, etc...",
             label_msgid='CMFPlomino_label_AboutDescription',
             description_msgid='CMFPlomino_help_AboutDescription',
             i18n_domain='CMFPlomino',
@@ -103,7 +100,9 @@ schema = Schema((
         default=False,
         widget=BooleanField._properties['widget'](
             label="Index file attachments",
-            description="If enabled, files attached in File Attachments fields will be indexed. It might increase the index size.",
+            description="If enabled, files attached in "
+                "File Attachment fields will be indexed. "
+                "It might increase the index size.",
             label_msgid='CMFPlomino_label_IndexAttachments',
             description_msgid='CMFPlomino_help_IndexAttachments',
             i18n_domain='CMFPlomino',
@@ -114,7 +113,8 @@ schema = Schema((
         default=True,
         widget=BooleanField._properties['widget'](
             label="Local full-text index",
-            description="If enabled, documents are full-text indexed into the Plomino index.",
+            description="If enabled, documents are full-text indexed "
+                "in the Plomino index.",
             label_msgid='CMFPlomino_label_FulltextIndex',
             description_msgid='CMFPlomino_help_FulltextIndex',
             i18n_domain='CMFPlomino',
@@ -125,7 +125,8 @@ schema = Schema((
         default=False,
         widget=BooleanField._properties['widget'](
             label="Index documents in Plone portal",
-            description="If enabled, documents are searchable in Plone search.",
+            description="If enabled, documents are searchable "
+            "in Plone search.",
             label_msgid='CMFPlomino_label_IndexInPortal',
             description_msgid='CMFPlomino_help_IndexInPortal',
             i18n_domain='CMFPlomino',
@@ -147,7 +148,9 @@ schema = Schema((
         default=False,
         widget=BooleanField._properties['widget'](
             label="Use File System Storage for attachments",
-            description="File System Storage must be installed on the portal. With current Plone versions (4.x), blobstorage will be used by default.",
+            description="File System Storage must be installed on the portal. "
+                "With current Plone versions (4.x), "
+                "blobstorage will be used by default.",
             label_msgid='CMFPlomino_label_StorageAttachments',
             description_msgid='CMFPlomino_help_StorageAttachments',
             i18n_domain='CMFPlomino',
@@ -158,7 +161,8 @@ schema = Schema((
         default=False,
         widget=BooleanField._properties['widget'](
             label="Count the number of documents",
-            description="If enabled, count the number of documents for each view. Display might be slower.",
+            description="If enabled, count the number of documents "
+                "for each view. Display might be slower.",
             description_msgid="CMFPlomino_help_ShowDocumentsNumbers",
             label_msgid="CMFPlomino_label_ShowDocumentsNumbers",
             i18n_domain='CMFPlomino',
@@ -190,7 +194,9 @@ schema = Schema((
         default=False,
         widget=BooleanField._properties['widget'](
             label="Do not list portal users",
-            description="If True, in ACL screen, users are entered using a free text field, if False, using a selection list. Use True when the amount of users is large.",
+            description="If True, in ACL screen, users are entered using "
+                "a free text field, if False, using a selection list. "
+                "Use True when the amount of users is large.",
             description_msgid="CMFPlomino_help_DoNotListUsers",
             label_msgid="CMFPlomino_label_DoNotListUsers",
             i18n_domain='CMFPlomino',
@@ -201,7 +207,9 @@ schema = Schema((
         default=False,
         widget=BooleanField._properties['widget'](
             label="Do not re-index documents on design changes",
-            description="If True, documents are not re-indexed automatically when views, columns or indexed fields are changed. Note: manual refresh db is then needed.",
+            description="If True, documents are not re-indexed "
+                "automatically when views, columns or indexed fields "
+                "are changed. Note: manual refresh db is then needed.",
             description_msgid="CMFPlomino_help_DoNotReindex",
             label_msgid="CMFPlomino_label_DoNotReindex",
             i18n_domain='CMFPlomino',
@@ -223,6 +231,7 @@ PlominoDatabase_schema = getattr(ATFolder, 'schema', Schema(())).copy() + \
 ##code-section after-schema #fill in your manual code here
 ##/code-section after-schema
 
+
 class PlominoDatabase(ATFolder, PlominoAccessControl, PlominoDesignManager, PlominoReplicationManager, PlominoScheduler):
     """
     """
@@ -240,7 +249,7 @@ class PlominoDatabase(ATFolder, PlominoAccessControl, PlominoDesignManager, Plom
     # Methods
 
     security.declarePublic('__init__')
-    def __init__(self,oid,**kw):
+    def __init__(self, oid, **kw):
         """
         """
         ATFolder.__init__(self, oid, **kw)
@@ -260,16 +269,17 @@ class PlominoDatabase(ATFolder, PlominoAccessControl, PlominoDesignManager, Plom
 
     security.declarePublic('at_post_create_script')
     def at_post_create_script(self):
-        """DB initialization
+        """ DB initialization
+        Standard AT hook.
         """
         self.initializeACL()
         index = PlominoIndex(FULLTEXT=self.FulltextIndex)
         self._setObject('plomino_index', index)
         resources = Folder('resources')
-        resources.title='resources'
+        resources.title = 'resources'
         self._setObject('resources', resources)
         scripts = Folder('scripts')
-        scripts.title='scripts'
+        scripts.title = 'scripts'
         self._setObject('scripts', scripts)
 
     def __bobo_traverse__(self, request, name):
@@ -278,35 +288,35 @@ class PlominoDatabase(ATFolder, PlominoAccessControl, PlominoDesignManager, Plom
             if self.documents.has_key(name):
                 return aq_inner(getattr(self.documents, name)).__of__(self)
         return BaseObject.__bobo_traverse__(self, request, name)
-    
+
     def allowedContentTypes(self):
         # Make sure PlominoDocument is hidden in Plone "Add..." menu
         # as getNotAddableTypes is not used anymore in Plone 4
         filterOut = ['PlominoDocument']
         types = PortalFolder.allowedContentTypes(self)
-        return [ ctype for ctype in types if ctype.getId() not in filterOut ]
+        return [ctype for ctype in types if ctype.getId() not in filterOut]
 
     security.declarePublic('getStatus')
     def getStatus(self):
-        """return DB current status
+        """ Return DB current status
         """
         return getattr(self, "plomino_status", "Ready")
 
     security.declarePublic('setStatus')
     def setStatus(self, status):
-        """set DB current status
+        """ Set DB current status
         """
         self.plomino_status = status
 
     security.declarePublic('checkBeforeOpenDatabase')
     def checkBeforeOpenDatabase(self):
-        """check if custom start page
+        """ Check if custom start page
         """
         if self.checkUserPermission(READ_PERMISSION):
 #            if hasattr(self, 'REQUEST') and not self.checkUserPermission(DESIGN_PERMISSION):
 #                self.REQUEST["disable_border"]=True
             try:
-                if self.StartPage:        
+                if self.StartPage:  
                     if hasattr(self, self.getStartPage()):
                         target = getattr(self, self.getStartPage())
                     return getattr(target, target.defaultView())()
@@ -319,7 +329,7 @@ class PlominoDatabase(ATFolder, PlominoAccessControl, PlominoDesignManager, Plom
 
     security.declarePublic('getForm')
     def getForm(self, formname):
-        """return a PlominoForm
+        """ Return a PlominoForm
         """
         obj = getattr(self, formname, None)
         if obj and obj.Type() == 'PlominoForm':
@@ -327,7 +337,7 @@ class PlominoDatabase(ATFolder, PlominoAccessControl, PlominoDesignManager, Plom
 
     security.declarePublic('getForms')
     def getForms(self, sortbyid=True):
-        """return the database forms list
+        """ Return the database forms list
         """
         form_list = self.objectValues(spec='PlominoForm')
         form_obj_list = [a for a in form_list]
@@ -419,9 +429,13 @@ class PlominoDatabase(ATFolder, PlominoAccessControl, PlominoDesignManager, Plom
             if form:
                 message = None
                 try:
-                    message = self.runFormulaScript("form_"+form.id+"_ondelete", doc, form.onDeleteDocument)
+                    message = self.runFormulaScript(
+                            'form_%s_ondelete' % form.id,
+                            doc,
+                            form.onDeleteDocument)
                 except PlominoScriptException, e:
-                    e.reportError('Document has been deleted, but onDelete event failed.')
+                    e.reportError('Document has been deleted, '
+                            'but onDelete event failed.')
                 if message:
                     # Abort deletion
                     doc.writeMessageOnPage(message, REQUEST, False)
@@ -429,7 +443,8 @@ class PlominoDatabase(ATFolder, PlominoAccessControl, PlominoDesignManager, Plom
 
             self.getIndex().unindexDocument(doc)
             if self.getIndexInPortal():
-                self.portal_catalog.uncatalog_object("/".join(self.getPhysicalPath() + (doc.id,)))
+                self.portal_catalog.uncatalog_object(
+                        "/".join(self.getPhysicalPath() + (doc.id,)))
             event.notify(ObjectRemovedEvent(doc, self.documents, doc.id))
             self.documents._delOb(doc.id)
 
@@ -472,7 +487,7 @@ class PlominoDatabase(ATFolder, PlominoAccessControl, PlominoDesignManager, Plom
     def getAllDocuments(self, getObject=True):
         """ Return all the database documents.
         """
-        if getObject == False:
+        if getObject is False:
             # XXX: TODO: Return brains
             pass
         return self.documents.values()
@@ -481,9 +496,9 @@ class PlominoDatabase(ATFolder, PlominoAccessControl, PlominoDesignManager, Plom
     def isDocumentsCountEnabled(self):
         """
         """
-        try :
+        try:
             return self.CountDocuments
-        except Exception :
+        except Exception:
             return False
 
     def getObjectPosition(self, id):
@@ -501,12 +516,12 @@ class PlominoDatabase(ATFolder, PlominoAccessControl, PlominoDesignManager, Plom
         return chooser(self.absolute_url_path())
 
     def getCache(self, key):
-        """ get cached value in the cache provided by plone.memoize 
-        """ 
+        """ Get cached value in the cache provided by plone.memoize
+        """
         return self._cache().get(key)
 
     def setCache(self, key, value):
-        """ set cached value in the cache provided by plone.memoize 
+        """ Set cached value in the cache provided by plone.memoize
         """
         self._cache()[key] = value
 
@@ -524,11 +539,11 @@ class PlominoDatabase(ATFolder, PlominoAccessControl, PlominoDesignManager, Plom
         else:
             # we are probably not using zope.ramcache
             raise PlominoCacheException, 'Cache cleaning not implemented'
-        
+
     def getRequestCache(self, key):
-        """ get cached value in an annotation on the current request
-        Note: it will available within this request only, it will be destroyed
-        once the request is terminated.
+        """ Get cached value in an annotation on the current request.
+        Note: it will available within this request only, 
+        it will be destroyed once the request is terminated.
         """
         if not hasattr(self, 'REQUEST'):
             return None
@@ -538,7 +553,7 @@ class PlominoDatabase(ATFolder, PlominoAccessControl, PlominoDesignManager, Plom
             return cache.get(key)
 
     def setRequestCache(self, key, value):
-        """ set cached value in an annotation on the current request 
+        """ Set cached value in an annotation on the current request
         """
         if not hasattr(self, 'REQUEST'):
             return None
@@ -555,7 +570,7 @@ class PlominoDatabase(ATFolder, PlominoAccessControl, PlominoDesignManager, Plom
         if key:
             cache = annotations.get(PLOMINO_REQUEST_CACHE_KEY)
             del cache[key]
-        else: 
+        else:
             del annotations[PLOMINO_REQUEST_CACHE_KEY]
 
 registerType(PlominoDatabase, PROJECTNAME)
@@ -563,6 +578,3 @@ registerType(PlominoDatabase, PROJECTNAME)
 
 ##code-section module-footer #fill in your manual code here
 ##/code-section module-footer
-
-
-

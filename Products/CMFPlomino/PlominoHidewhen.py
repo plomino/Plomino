@@ -12,20 +12,22 @@
 __author__ = """Eric BREHAULT <eric.brehault@makina-corpus.org>"""
 __docformat__ = 'plaintext'
 
-from AccessControl import ClassSecurityInfo
-from Products.Archetypes.atapi import *
+# Zope
 from zope.interface import implements
-import interfaces
+from AccessControl import ClassSecurityInfo
 
-from Products.CMFDynamicViewFTI.browserdefault import BrowserDefaultMixin
+# CMF / Archetypes / Plone
+from Products.Archetypes.atapi import *
+from Products.CMFDynamicViewFTI.browserdefault import BrowserDefaultMixin 
 
+# Plone
 from Products.CMFPlomino.config import *
+import interfaces 
 
 ##code-section module-header #fill in your manual code here
 ##/code-section module-header
 
 schema = Schema((
-
     StringField(
         name='id',
         widget=StringField._properties['widget'](
@@ -51,7 +53,8 @@ schema = Schema((
         default=False,
         widget=BooleanField._properties['widget'](
             label="Dynamic Hide-when",
-            description="Hide-when are evaluated dynamically when the user enters information",
+            description="Hide-when are evaluated dynamically "
+                "when the user enters information",
             label_msgid='CMFPlomino_label_isDynamicHidewhen',
             description_msgid='CMFPlomino_help_isDynamicHidewhen',
             i18n_domain='CMFPlomino',
@@ -68,6 +71,7 @@ PlominoHidewhen_schema = BaseSchema.copy() + \
 
 ##code-section after-schema #fill in your manual code here
 ##/code-section after-schema
+
 
 class PlominoHidewhen(BaseContent, BrowserDefaultMixin):
     """
@@ -87,9 +91,10 @@ class PlominoHidewhen(BaseContent, BrowserDefaultMixin):
 
     security.declarePublic('at_post_edit_script')
     def at_post_edit_script(self):
+        """ Standard AT post-edit hook.
         """
-        """
-        self.cleanFormulaScripts("hidewhen_"+self.getParentNode().id+"_"+self.id)
+        self.cleanFormulaScripts(
+                'hidewhen_%s_%s' % (self.getParentNode().id, self.id))
 
 
 registerType(PlominoHidewhen, PROJECTNAME)
@@ -97,6 +102,3 @@ registerType(PlominoHidewhen, PROJECTNAME)
 
 ##code-section module-footer #fill in your manual code here
 ##/code-section module-footer
-
-
-

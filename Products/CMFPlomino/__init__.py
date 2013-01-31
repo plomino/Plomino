@@ -33,8 +33,6 @@ import logging
 logger = logging.getLogger('CMFPlomino')
 logger.debug('Installing Product')
 
-import os
-import os.path
 from time import time
 
 # Zope
@@ -47,9 +45,7 @@ from zope.interface import implements
 from Products.PythonScripts.Utility import allow_module
 from Products.Archetypes import listTypes
 from Products.Archetypes.atapi import *
-from Products.Archetypes.utils import capitalize
 from Products.CMFCore import DirectoryView
-from Products.CMFCore import permissions as cmfpermissions
 from Products.CMFCore import utils as cmfutils
 from Products.CMFPlone.utils import ToolInit
 
@@ -59,12 +55,14 @@ import interfaces
 
 DirectoryView.registerDirectory('skins', product_globals)
 
+
 class isPlomino(object):
     """ Return True if called on any Plomino object.
     """
 
     def __call__(self):
         return hasattr(self.context, 'getParentDatabase')
+
 
 class isDesignMode(object):
     """ Return True if called on a Plomino object by a user who has design
@@ -130,6 +128,7 @@ else:
             newf.__doc__ = f.__doc__
             return newf
 
+
 class PlominoCoreUtils:
     implements(interfaces.IPlominoUtils)
 
@@ -163,6 +162,7 @@ class PlominoCoreUtils:
 
 component.provideUtility(PlominoCoreUtils, interfaces.IPlominoUtils)
 
+
 def get_utils():
     utils = {}
     for plugin_utils in component.getUtilitiesFor(interfaces.IPlominoUtils):
@@ -172,8 +172,10 @@ def get_utils():
 
 allow_module("Products.CMFPlomino.PlominoUtils")
 
+
 def initialize(context):
-    """initialize product (called by zope)"""
+    """ Initialize product (standard Zope hook)
+    """
     ##code-section custom-init-top #fill in your manual code here
     registerPermissions([(ADD_DESIGN_PERMISSION, []),
                          (ADD_CONTENT_PERMISSION, []),
@@ -208,29 +210,31 @@ def initialize(context):
     all_constructors += (addPlominoDocument,)
     all_ftis += ({
                 'meta_type': 'PlominoDocument',
-                'allowed_content_types':[],
+                'allowed_content_types': [],
                 'allow_discussion': 0,
-                'immediate_view':'checkBeforeOpenDocument',
-                'global_allow':0,
-                'filter_content_types':1,
+                'immediate_view': 'checkBeforeOpenDocument',
+                'global_allow': 0,
+                'filter_content_types': 1,
                 },)
 #EXAMPLE: {'factory': 'addPlominoAction', 'product': 'CMFPlomino', 'immediate_view': 'base_edit', 'content_icon': 'document_icon.gif', 'global_allow': True, 'filter_content_types': False, 'actions': ({'action': <Products.CMFCore.Expression.Expression object at 0x6bee8c0>, 'title': 'View', 'id': 'view', 'permissions': ('View',)}, {'action': <Products.CMFCore.Expression.Expression object at 0x6bee758>, 'title': 'Edit', 'id': 'edit', 'condition': <Products.CMFCore.Expression.Expression object at 0x6e247d0>, 'permissions': ('Modify portal content',)}, {'action': <Products.CMFCore.Expression.Expression object at 0x6d9dd70>, 'title': 'Properties', 'id': 'metadata', 'permissions': ('Modify portal content',)}), 'fti_meta_type': 'Factory-based Type Information with dynamic views', 'default_view': 'base_view', 'meta_type': 'PlominoAction', 'allow_discussion': False, 'view_methods': ('base_view',), 'aliases': {'sharing': 'folder_localrole_form', 'gethtml': '', '(Default)': '(dynamic view)', 'edit': 'base_edit', 'mkdir': '', 'properties': 'base_metadata', 'view': '(selected layout)'}, 'id': 'PlominoAction', 'description': '\n    '}
 
     cmfutils.ContentInit(
         PROJECTNAME + ' Content',
-        content_types      = all_content_types,
-        permission         = DEFAULT_ADD_CONTENT_PERMISSION,
-        extra_constructors = all_constructors,
-        fti                = all_ftis,
+        content_types=all_content_types,
+        permission=DEFAULT_ADD_CONTENT_PERMISSION,
+        extra_constructors=all_constructors,
+        fti=all_ftis,
         ).initialize(context)
 
     # Give it some extra permissions to control them on a per class limit
-    for i in range(0,len(all_content_types)):
-        klassname=all_content_types[i].__name__
+    for i in range(0, len(all_content_types)):
+        klassname = all_content_types[i].__name__
         if not klassname in ADD_CONTENT_PERMISSIONS:
             continue
 
-        context.registerClass(meta_type   = all_ftis[i]['meta_type'],
-                              constructors= (all_constructors[i],),
-                              permission  = ADD_CONTENT_PERMISSIONS[klassname])
+        context.registerClass(
+                meta_type=all_ftis[i]['meta_type'],
+                constructors=(all_constructors[i],),
+                permission=ADD_CONTENT_PERMISSIONS[klassname]
+                )
 

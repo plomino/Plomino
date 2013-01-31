@@ -19,7 +19,7 @@ import interfaces
 
 from Products.CMFDynamicViewFTI.browserdefault import BrowserDefaultMixin
 
-from Products.CMFPlomino.config import *
+from Products.CMFPlomino.config import PROJECTNAME
 from validator import isValidPlominoId
 
 schema = Schema((
@@ -33,13 +33,14 @@ schema = Schema((
             description_msgid='CMFPlomino_help_column_id',
             i18n_domain='CMFPlomino',
         ),
-        validators = ("isValidId", isValidPlominoId),
+        validators=("isValidId", isValidPlominoId),
     ),
     StringField(
         name='SelectedField',
         widget=SelectionWidget(
             label="Fields list",
-            description="Field value to display in the column. (It does not apply if Formula is provided).",
+            description=("Field value to display in the column. "
+                "(It does not apply if Formula is provided)."),
 #            label_msgid='CMFPlomino_label_FieldType',
 #            description_msgid='CMFPlomino_help_FieldType',
 #            i18n_domain='CMFPlomino',
@@ -90,6 +91,7 @@ schema = Schema((
 PlominoColumn_schema = BaseSchema.copy() + \
     schema.copy()
 
+
 class PlominoColumn(BaseContent, BrowserDefaultMixin):
     """
     """
@@ -109,7 +111,9 @@ class PlominoColumn(BaseContent, BrowserDefaultMixin):
         fields = []
         for form in self.getParentView().getParentDatabase().getForms():
             fields.append([form.id, '=== ' + form.id + ' ==='])
-            fields.extend(([form.id + '/' + field.id, field.id] for field in form.getFormFields()))
+            fields.extend(
+                    [(form.id + '/' + field.id, field.id)
+                        for field in form.getFormFields()])
         return fields
 
     security.declarePublic('getColumnName')
@@ -130,14 +134,14 @@ class PlominoColumn(BaseContent, BrowserDefaultMixin):
         """
         v = self.getParentView()
         v.declareColumn(self.getColumnName(), self)
-        self.cleanFormulaScripts("column_"+v.id+"_"+self.id)
+        self.cleanFormulaScripts('column_%s_%s' % (v.id, self.id))
         db = self.getParentDatabase()
         if not db.DoNotReindex:
             db.getIndex().refresh()
 
     security.declarePublic('at_post_create_script')
     def at_post_create_script(self):
-        """post create
+        """ Standard AT post create hook.
         """
         v = self.getParentView()
         v.declareColumn(self.getColumnName(), self)
@@ -148,6 +152,3 @@ class PlominoColumn(BaseContent, BrowserDefaultMixin):
 
 registerType(PlominoColumn, PROJECTNAME)
 # end of class PlominoColumn
-
-
-

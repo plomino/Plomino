@@ -16,7 +16,7 @@ import interfaces
 
 from Products.CMFDynamicViewFTI.browserdefault import BrowserDefaultMixin
 
-from Products.CMFPlomino.config import *
+from Products.CMFPlomino.config import PROJECTNAME
 
 schema = Schema((
 
@@ -46,6 +46,7 @@ schema = Schema((
 PlominoCache_schema = BaseSchema.copy() + \
     schema.copy()
 
+
 class PlominoCache(BaseContent, BrowserDefaultMixin):
     """
     """
@@ -59,9 +60,10 @@ class PlominoCache(BaseContent, BrowserDefaultMixin):
 
     security.declarePublic('at_post_edit_script')
     def at_post_edit_script(self):
+        """ Standard AT post-edit hook.
         """
-        """
-        self.cleanFormulaScripts("cache_"+self.getParentNode().id+"_"+self.id)
+        self.cleanFormulaScripts(
+                'cache_%s_%s' % (self.getParentNode().id, self.id))
 
 
 registerType(PlominoCache, PROJECTNAME)

@@ -6,6 +6,7 @@ from Products.CMFPlomino.interfaces import IXMLImportExportSubscriber
 
 from archetypes.schemaextender.interfaces import IExtensionField
 
+
 class ExtendedFieldImportExporter(object):
     implements(IXMLImportExportSubscriber)
     def __init__(self, context):
@@ -32,12 +33,11 @@ class ExtendedFieldImportExporter(object):
         schema = self.context.Schema()
         root = doc.childNodes[0]
         for fieldnode in root.childNodes:
-            if fieldnode.nodeName !='field':
+            if fieldnode.nodeName != 'field':
                 continue
             field = schema[fieldnode.getAttribute('name')]
-            if fieldnode.childNodes: # The node might be empty
+            if fieldnode.childNodes:  # The node might be empty
                 value = fieldnode.childNodes[0].wholeText
             else:
                 value = ''
             field.set(self.context, value)
-

@@ -2,13 +2,16 @@ from plone.app.testing import PloneSandboxLayer
 from plone.app.testing import PLONE_FIXTURE
 from plone.app.testing import TEST_USER_ID, TEST_USER_NAME
 from plone.app.testing import login, setRoles
-from plone.app.testing import FunctionalTesting
-from plone.app.testing import selenium_layers
+# from plone.app.testing import FunctionalTesting
+# from plone.app.testing import selenium_layers
 
 from plone.testing import z2
 
+
 class Plomino(PloneSandboxLayer):
+
     defaultBases = (PLONE_FIXTURE, )
+
     def setUpZope(self, app, configurationContext):
         # Load ZCML
         import plomino.tinymce

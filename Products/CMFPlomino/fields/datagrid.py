@@ -9,54 +9,60 @@
 
 __author__ = """Eric BREHAULT <eric.brehault@makina-corpus.com>"""
 __docformat__ = 'plaintext'
+# Standard
+import logging
+logger = logging.getLogger('Plomino')
 
+# Third-party
+from jsonutil import jsonutil as json
+
+# Zope
 from DateTime import DateTime
-
 from zope.formlib import form
 from zope.interface import implements
 from zope import component
 from zope.pagetemplate.pagetemplatefile import PageTemplateFile
-
 from zope.schema import getFields
 from zope.schema.vocabulary import SimpleVocabulary
 from zope.schema import Text, TextLine, Choice
 
-from jsonutil import jsonutil as json
-
-from Products.CMFPlomino.PlominoUtils import csv_to_array, DateToString, PlominoTranslate
-from Products.CMFPlomino.PlominoDocument import TemporaryDocument
-
-from Products.CMFPlomino.interfaces import IPlominoField
-from Products.CMFPlomino.fields.dictionaryproperty import DictionaryProperty
-
+# Plomino
 from Products.CMFPlomino.fields.base import IBaseField, BaseField, BaseForm
+from Products.CMFPlomino.fields.dictionaryproperty import DictionaryProperty
+from Products.CMFPlomino.interfaces import IPlominoField
+from Products.CMFPlomino.PlominoDocument import TemporaryDocument
+from Products.CMFPlomino.PlominoUtils import DateToString, PlominoTranslate
 
-import logging
-logger = logging.getLogger('Plomino')
 
 class IDatagridField(IBaseField):
+    """ Text field schema
     """
-    Text field schema
-    """
-    widget = Choice(vocabulary=SimpleVocabulary.fromItems([("Always dynamic", "REGULAR"),
-                                                           ("Static in read mode", "READ_STATIC"),
-                                                           ]),
-                    title=u'Widget',
-                    description=u'Field rendering',
-                    default="REGULAR",
-                    required=True)
-    associated_form = Choice(vocabulary='Products.CMFPlomino.fields.vocabularies.get_forms',
-                title=u'Associated form',
-                description=u'Form to use to create/edit rows',
-                required=False)
+    widget = Choice(
+            vocabulary=SimpleVocabulary.fromItems(
+                [("Always dynamic", "REGULAR"),
+                    ("Static in read mode", "READ_STATIC"),
+                    ]),
+            title=u'Widget',
+            description=u'Field rendering',
+            default="REGULAR",
+            required=True)
 
-    field_mapping = TextLine(title=u'Columns/fields mapping',
-                description=u'Field ids from the associated form, ordered as the columns, separated by commas',
-                required=False)
+    associated_form = Choice(
+            vocabulary='Products.CMFPlomino.fields.vocabularies.get_forms',
+            title=u'Associated form',
+            description=u'Form to use to create/edit rows',
+            required=False)
 
-    jssettings = Text(title=u'Javascript settings',
-                      description=u'jQuery datatable parameters',
-                      default=u"""
+    field_mapping = TextLine(
+            title=u'Columns/fields mapping',
+            description=u'Field ids from the associated form, '
+                    'ordered as the columns, separated by commas',
+            required=False)
+
+    jssettings = Text(
+            title=u'Javascript settings',
+            description=u'jQuery datatable parameters',
+            default=u"""
 "aoColumns": [
     { "sTitle": "Column 1" },
     { "sTitle": "Column 2", "sClass": "center" }
@@ -72,16 +78,17 @@ class IDatagridField(IBaseField):
         "height": 300
     }
 """,
-                      required=False)
+            required=False)
 
 class DatagridField(BaseField):
     """
     """
     implements(IDatagridField)
 
-    plomino_field_parameters = {'interface': IDatagridField,
-                                'label': "Datagrid",
-                                'index_type': "ZCTextIndex"}
+    plomino_field_parameters = {
+            'interface': IDatagridField,
+            'label': "Datagrid",
+            'index_type': "ZCTextIndex"}
 
     read_template = PageTemplateFile('datagrid_read.pt')
     edit_template = PageTemplateFile('datagrid_edit.pt')
@@ -102,13 +109,13 @@ class DatagridField(BaseField):
     def rows(self, value, rendered=False):
         """
         """
-        if value is None or value == "":
+        if value in [None, '']:
             value = []
         if isinstance(value, basestring):
             return value
-        if isinstance(value, DateTime):
+        elif isinstance(value, DateTime):
             value = DateToString(value)
-        if isinstance(value, dict):
+        elif isinstance(value, dict):
             if rendered:
                 value = value['rendered']
             else:
@@ -135,24 +142,26 @@ class DatagridField(BaseField):
         """
         """
         db = self.context.getParentDatabase()
-        if action_id=="add":
+        if action_id == "add":
             label = PlominoTranslate("datagrid_add_button_label", db)
             child_form_id = self.associated_form
-            if child_form_id is not None:
+            if child_form_id:
                 child_form = db.getForm(child_form_id)
                 if child_form:
                     label += " "+child_form.Title()
             return label
-        if action_id=="delete":
+        elif action_id == "delete":
             return PlominoTranslate("datagrid_delete_button_label", db)
-        if action_id=="edit":
+        elif action_id == "edit":
             return PlominoTranslate("datagrid_edit_button_label", db)
         return ""
 
-    def getFieldValue(self, form, doc=None, editmode_obsolete=False, creation=False, request=None):
+    def getFieldValue(self, form, doc=None, editmode_obsolete=False,
+            creation=False, request=None):
         """
         """
-        fieldValue = BaseField.getFieldValue(self, form, doc, editmode_obsolete, creation, request)
+        fieldValue = BaseField.getFieldValue(
+                self, form, doc, editmode_obsolete, creation, request)
         if not fieldValue:
             return fieldValue
 
@@ -161,7 +170,6 @@ class DatagridField(BaseField):
             return fieldValue
 
         rawValue = fieldValue
-        mode = self.context.getFieldMode()
 
         mapped_fields = []
         if self.field_mapping:
@@ -198,14 +206,17 @@ class DatagridField(BaseField):
                 field_objs = [f for f in field_objs if f is not None]
                 #DBG fields_to_render = [f.id for f in field_objs if f.getFieldType() not in ["DATETIME", "NUMBER", "TEXT", "RICHTEXT"]]
                 #DBG fields_to_render = [f.id for f in field_objs if f.getFieldType() not in ["DOCLINK", ]]
-                fields_to_render = [f.id for f in field_objs if f.getFieldMode() in ["DISPLAY", ] or f.getFieldType() not in ["TEXT", "RICHTEXT"]]
+                fields_to_render = [f.id for f in field_objs 
+                        if f.getFieldMode() in ["DISPLAY", ] or 
+                        f.getFieldType() not in ["TEXT", "RICHTEXT"]]
 
                 if fields_to_render:
                     rendered_values = []
                     for row in fieldValue:
                         row['Form'] = child_form_id
                         row['Plomino_Parent_Document'] = doc.id 
-                        tmp = TemporaryDocument(db, child_form, row, real_doc=doc)
+                        tmp = TemporaryDocument(
+                                db, child_form, row, real_doc=doc)
                         tmp = tmp.__of__(db)
                         for f in fields:
                             if f in fields_to_render:
