@@ -62,8 +62,8 @@ gvisudata_chart.draw(gvisudata, {width: 400, height: 400, is3D: true});
             required=False)
     chartid = TextLine(
             title=u'Chart id',
-            description=u'Used to name the javascript variable/functions "
-                    "and the DIV element',
+            description=u"Used to name the javascript variable/functions "
+                    "and the DIV element",
             required=True,
             default=u'gvisudata')
 

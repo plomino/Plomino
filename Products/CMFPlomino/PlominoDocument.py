@@ -403,7 +403,7 @@ class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
         """refresh values according form, and reindex the document
         """
         # we process computed fields (refresh the value)
-        if form:
+        if not form:
             form = self.getForm()
         else:
             self.setItem('Form', form.getFormName())

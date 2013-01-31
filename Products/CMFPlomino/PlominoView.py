@@ -430,7 +430,7 @@ class PlominoView(ATFolder):
         if column_obj.Formula:
             index.createIndex(
                     'PlominoViewColumn_%s_%s' % (
-                        self.getViewName()
+                        self.getViewName(),
                         column_name),
                     refresh=refresh)
         else:
@@ -658,7 +658,6 @@ class PlominoView(ATFolder):
         search = None
         sort_index = None
         if REQUEST:
-            columns = 
             start = int(REQUEST.get('iDisplayStart', 1))
             iDisplayLength = REQUEST.get('iDisplayLength', None)
             if iDisplayLength:
