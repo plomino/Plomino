@@ -403,7 +403,7 @@ class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
         """refresh values according form, and reindex the document
         """
         # we process computed fields (refresh the value)
-        if form:
+        if not form:
             form = self.getForm()
         else:
             self.setItem('Form', form.getFormName())
@@ -592,9 +592,8 @@ class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
                 raise AttributeError, name
             else:
                 try:
-                    return PortalContent.__getattr__(self, name)
+                    return CMFBTreeFolder.__getattr__(self, name)
                 except Exception, e:
-                    _logger.error('PlominoDocument', exc_info=True)
                     raise AttributeError, name
 
     security.declareProtected(READ_PERMISSION, 'isSelectedInView')
