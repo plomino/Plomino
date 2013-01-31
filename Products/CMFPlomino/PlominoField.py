@@ -12,34 +12,34 @@
 __author__ = """Eric BREHAULT and Caroline ANSALDI <eric.brehault@makina-corpus.org>"""
 __docformat__ = 'plaintext'
 
-# Standard
+from AccessControl import ClassSecurityInfo
+from Products.Archetypes.atapi import *
+from zope.interface import implements
+import interfaces
+
+from Products.CMFPlomino import fields, plomino_profiler
+
+from Products.CMFDynamicViewFTI.browserdefault import BrowserDefaultMixin
+
+from Products.CMFPlomino.config import *
+from PlominoDocument import TemporaryDocument
+
+from Products.CMFPlomino.PlominoUtils import StringToDate
+from fields.selection import ISelectionField
+from fields.text import ITextField
+from fields.datetime import IDatetimeField
+from fields.name import INameField
+from fields.doclink import IDoclinkField
+from ZPublisher.HTTPRequest import FileUpload
+from zope import component
+from zope.annotation.interfaces import IAnnotations
+from persistent.dict import PersistentDict
+
 import logging
 logger = logging.getLogger('Plomino')
 
-# Zope
-from AccessControl import ClassSecurityInfo
-from persistent.dict import PersistentDict
-from zope.annotation.interfaces import IAnnotations
-from zope import component
-from zope.interface import implements
-from ZPublisher.HTTPRequest import FileUpload
-
-# CMF / Archetypes / Plone
-from Products.Archetypes.atapi import *
-from Products.CMFDynamicViewFTI.browserdefault import BrowserDefaultMixin
-
-# Plomino
-from Products.CMFPlomino.config import *
-from Products.CMFPlomino.fields.datetime import IDatetimeField
-from Products.CMFPlomino.fields.doclink import IDoclinkField
-from Products.CMFPlomino.fields.name import INameField
-from Products.CMFPlomino.fields.selection import ISelectionField
-from Products.CMFPlomino.fields.text import ITextField
-from Products.CMFPlomino import fields
-from Products.CMFPlomino import plomino_profiler
-import interfaces
-
 schema = Schema((
+
     StringField(
         name='id',
         widget=StringField._properties['widget'](
@@ -72,7 +72,7 @@ schema = Schema((
             description_msgid='CMFPlomino_help_FieldMode',
             i18n_domain='CMFPlomino',
         ),
-        vocabulary=FIELD_MODES,
+        vocabulary= FIELD_MODES,
     ),
     TextField(
         name='Formula',
@@ -111,8 +111,7 @@ schema = Schema((
         default="0",
         widget=BooleanField._properties['widget'](
             label="Mandatory",
-            description=("Is this field mandatory? "
-                "(empty value will not be allowed)"),
+            description="Is this field mandatory? (empty value will not be allowed)",
             label_msgid='CMFPlomino_label_FieldMandatory',
             description_msgid='CMFPlomino_help_FieldMandatory',
             i18n_domain='CMFPlomino',
@@ -154,18 +153,15 @@ schema = Schema((
 ),
 )
 
-PlominoField_schema = BaseSchema.copy() + schema.copy()
-
+PlominoField_schema = BaseSchema.copy() + \
+    schema.copy()
 
 def get_field_types():
     field_types = FIELD_TYPES
     for plugin_field in component.getUtilitiesFor(interfaces.IPlominoField):
         params = plugin_field[1].plomino_field_parameters
-        field_types[str(plugin_field[0])] = [
-                params['label'],
-                params['index_type']]
+        field_types[str(plugin_field[0])] = [params['label'], params['index_type']]
     return field_types
-
 
 class PlominoField(BaseContent, BrowserDefaultMixin):
     """
@@ -180,21 +176,21 @@ class PlominoField(BaseContent, BrowserDefaultMixin):
 
     security.declarePublic('validateFormat')
     def validateFormat(self, submittedValue):
-        """ Check if submitted value matches the expected field format
+        """check if submitted value match the field expected format
         """
         adapt = self.getSettings()
         return adapt.validate(submittedValue)
 
     security.declarePublic('processInput')
     def processInput(self, submittedValue, doc, process_attachments, validation_mode=False):
-        """ Process submitted value according the field type
+        """process submitted value according the field type
         """
         fieldtype = self.getFieldType()
         fieldname = self.id
         adapt = self.getSettings()
-        if fieldtype == "ATTACHMENT" and process_attachments:
+        if fieldtype=="ATTACHMENT" and process_attachments:
             if isinstance(submittedValue, FileUpload):
-                current_files = doc.getItem(fieldname)
+                current_files=doc.getItem(fieldname)
                 if not current_files:
                     current_files = {}
                 (new_file, contenttype) = doc.setfile(submittedValue)
@@ -203,9 +199,9 @@ class PlominoField(BaseContent, BrowserDefaultMixin):
                         for filename in current_files.keys():
                             if filename != new_file:
                                 doc.deletefile(filename)
-                        current_files = {}
+                        current_files={}
                     current_files[new_file]=contenttype
-                v = current_files
+                v=current_files
             else:
                 v = None
         else:
@@ -227,43 +223,40 @@ class PlominoField(BaseContent, BrowserDefaultMixin):
         """
         mode = self.getFieldMode()
         fieldname = self.id
-        if doc:
-            target = doc
-        else:
+        if doc is None:
             target = form
+        else:
+            target = doc
 
         adapt = self.getSettings()
-        fieldvalue = adapt.getFieldValue(
-                form, doc, editmode, creation, request)
+        fieldvalue = adapt.getFieldValue(form, doc, editmode, creation, request)
 
         # get the rendering template
         pt = None
-        if mode == "EDITABLE" and editmode:
-            field_mode = "Edit"
-            pt_id = self.getFieldEditTemplate()
+        if mode=="EDITABLE" and editmode:
+            templatemode = "Edit"
+            t = self.getFieldEditTemplate()
             # if custom template, use it
-            if pt_id:
-                pt = getattr(self.resources, pt_id).__of__(self)
+            if t:
+                pt = getattr(self.resources, t).__of__(self)
         else:
-            field_mode = "Read"
+            templatemode = "Read"
             # if custom template, use it
-            pt_id = self.getFieldReadTemplate()
-            if pt_id:
-                pt = getattr(self.resources, pt_id).__of__(self)
+            t = self.getFieldReadTemplate()
+            if t:
+                pt = getattr(self.resources, t).__of__(self)
 
         # If no custom template provided, get the template associated with the field type
         if not pt:
-            if field_mode == "Read" and hasattr(adapt, 'read_template'):
+            if templatemode=="Read" and hasattr(adapt, 'read_template'):
                 pt = adapt.read_template
-            elif field_mode == "Edit" and hasattr(adapt, 'edit_template'):
+            elif templatemode=="Edit" and hasattr(adapt, 'edit_template'):
                 pt = adapt.edit_template
             else:
-                field_type = self.FieldType
-                pt = self.getRenderingTemplate(
-                        '%sField%s' % (field_type, field_mode))
+                fieldType = self.FieldType
+                pt = self.getRenderingTemplate(fieldType+"Field"+templatemode)
                 if not pt:
-                    pt = self.getRenderingTemplate(
-                            "DefaultField"+field_mode)
+                    pt = self.getRenderingTemplate("DefaultField"+templatemode)
 
         selection = self.getSettings().getSelectionList(target)
 
@@ -291,84 +284,63 @@ class PlominoField(BaseContent, BrowserDefaultMixin):
         """ post edit
         """
         self._setupConfigAnnotation()
-        self.cleanFormulaScripts(
-                'field_%s_%s' % (
-                    self.getParentNode().id,
-                    self.id))
-        self.cleanFormulaScripts(
-                "field_%s_%s_ValidationFormula" % (
-                    self.getParentNode().id,
-                    self.id))
+        self.cleanFormulaScripts("field_"+self.getParentNode().id+"_"+self.id)
+        self.cleanFormulaScripts("field_"+self.getParentNode().id+"_"+self.id+"_ValidationFormula")
         db = self.getParentDatabase()
         if self.getToBeIndexed() and not db.DoNotReindex:
-            db.getIndex().createFieldIndex(
-                    self.id,
-                    self.getFieldType(),
-                    indextype=self.getIndexType())
+            db.getIndex().createFieldIndex(self.id, self.getFieldType(), indextype=self.getIndexType())
 
     security.declarePublic('at_post_create_script')
     def at_post_create_script(self):
-        """ post create
+        """post create
         """
         self._setupConfigAnnotation()
         db = self.getParentDatabase()
         if self.getToBeIndexed() and not db.DoNotReindex:
-            db.getIndex().createFieldIndex(
-                    self.id,
-                    self.getFieldType(),
-                    indextype=self.getIndexType())
+            db.getIndex().createFieldIndex(self.id, self.getFieldType(), indextype=self.getIndexType())
 
     security.declarePublic('getSettings')
     def getSettings(self, key=None):
         """
         """
-        fieldclass = component.queryUtility(
-                interfaces.IPlominoField,
-                self.FieldType,
-                None)
-        if fieldclass:
-            fieldinterface = fieldclass.plomino_field_parameters['interface']
-        else:
+        fieldclass = component.queryUtility(interfaces.IPlominoField, self.FieldType, None)
+        if fieldclass is None:
             if hasattr(fields, self.FieldType.lower()):
-                # 1. Find the module for FieldType.
-                # 2. Find the corresponding interface in that module.
-                fieldinterface = getattr(
-                        getattr(fields, self.FieldType.lower()),
-                        "I"+self.FieldType.capitalize()+"Field")
+                fieldinterface = getattr(getattr(fields, self.FieldType.lower()), "I"+self.FieldType.capitalize()+"Field")
             else:
-                fieldinterface = getattr(
-                        getattr(fields, "base"),
-                        "IBaseField")
-
-        if key:
-            return getattr(fieldinterface(self), key, None)
+                fieldinterface = getattr(getattr(fields, "base"), "IBaseField")
         else:
+            fieldinterface = fieldclass.plomino_field_parameters['interface']
+
+        if key is None:
             return fieldinterface(self)
+        else:
+            return getattr(fieldinterface(self), key, None)
 
     def type_vocabulary(self):
         ALL_FIELD_TYPES = get_field_types()
         l = [[f, ALL_FIELD_TYPES[f][0]] for f in ALL_FIELD_TYPES.keys()]
-        l.sort(key=lambda f: f[1])
+        l.sort(key=lambda f:f[1])
         return l
     
     def index_vocabulary(self):
         default_index = get_field_types()[self.getFieldType()][1]
-        indexes = [['DEFAULT', 'Default (%s)' % default_index]]
-        db = self.getParentDatabase()
-        idx = db.getIndex()
-        index_ids = [i['name'] for i in idx.Indexes.filtered_meta_types()]
-        for i in index_ids:
-            label = "%s (%s)" % (
-                    i, {"FieldIndex": "match exact value", 
-                        "ZCTextIndex": "match any contained words",
-                        "KeywordIndex": "match list elements"
-                        }.get(i)
-                    )
+        indexes = [['DEFAULT', 'Default ('+default_index+')']]
+        index_ids = [i['name'] for i in
+                        self.getParentDatabase().getIndex().Indexes.filtered_meta_types()]
+        for id in index_ids:
+            label = id
+            if id=="FieldIndex":
+                label += " (match exact value)"
+            if id=="ZCTextIndex":
+                label += " (match any contained words)"
+            if id=="KeywordIndex":
+                label += " (match list elements)"
             indexes.append([id, label])
         return indexes
 
     def getContentType(self, fieldname=None):
-        # Make sure RICHTEXT fields are considered as HTML
+        # Make sure RICHTEXT fields are considered as html
         # (TinyMCE 1.1.8 tests if content is HTML
         # if not, it displays a basic textarea)
         if self.FieldType == "RICHTEXT":
@@ -377,9 +349,6 @@ class PlominoField(BaseContent, BrowserDefaultMixin):
     
     @property
     def formula_ids(self):
-        return {'Formula':  'field_%s_%s' % (
-                    self.getParentNode().id, self.id),
-                'ValidationFormula': 'field_%s_%s_ValidationFormula' % (
-                    self.getParentNode().id, self.id)}
-
+        return {'Formula':  "field_"+self.getParentNode().id+"_"+self.id,
+                'ValidationFormula': "field_"+self.getParentNode().id+"_"+self.id+"_ValidationFormula"}
 registerType(PlominoField, PROJECTNAME)
