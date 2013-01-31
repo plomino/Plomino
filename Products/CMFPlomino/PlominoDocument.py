@@ -592,9 +592,8 @@ class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
                 raise AttributeError, name
             else:
                 try:
-                    return PortalContent.__getattr__(self, name)
+                    return CMFBTreeFolder.__getattr__(self, name)
                 except Exception, e:
-                    _logger.error('PlominoDocument', exc_info=True)
                     raise AttributeError, name
 
     security.declareProtected(READ_PERMISSION, 'isSelectedInView')
