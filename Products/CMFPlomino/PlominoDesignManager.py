@@ -39,6 +39,12 @@ from ZPublisher.HTTPRequest import HTTPRequest
 from ZPublisher.HTTPResponse import HTTPResponse
 import transaction
 
+try:
+    from plone.app.async.interfaces import IAsyncService
+    ASYNC = True
+except:
+    ASYNC = False
+
 # CMF
 from OFS.Image import manage_addImage
 from OFS.ObjectManager import ObjectManager
