@@ -472,7 +472,7 @@ settings::
     False
 
 As ``Plomino_Authors``, ``Plomino_Readers`` can contain users or groups, but
-also Plomino user roles (mentionned within brackets)::
+also Plomino user roles (mentioned within brackets)::
 
     >>> db.UserRoles = {
     ...         '[HR]': {'userAuthor2': 1},
