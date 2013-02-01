@@ -352,19 +352,26 @@ class PlominoField(BaseContent, BrowserDefaultMixin):
         return l
     
     def index_vocabulary(self):
+        """ Vocabulary for the 'Index type' dropdown.
+        """
         default_index = get_field_types()[self.getFieldType()][1]
-        indexes = [['DEFAULT', 'Default (%s)' % default_index]]
+        indexes = {'DEFAULT': 'Default (%s)' % default_index}
         db = self.getParentDatabase()
         idx = db.getIndex()
         index_ids = [i['name'] for i in idx.Indexes.filtered_meta_types()]
         for i in index_ids:
-            label = "%s (%s)" % (
-                    i, {"FieldIndex": "match exact value", 
-                        "ZCTextIndex": "match any contained words",
-                        "KeywordIndex": "match list elements"
-                        }.get(i)
+            if i in ['GopipIndex', 'UUIDIndex']:
+                # Index types internal to Plone
+                continue
+            label = "%s%s" % (
+                    i, {"FieldIndex": " (match exact value)", 
+                        "ZCTextIndex": " (match any contained words)",
+                        "KeywordIndex": " (match list elements)"
+                        }.get(i, '')
                     )
-            indexes.append([id, label])
+            indexes[i] = label
+        indexes = indexes.items()
+        indexes.sort()
         return indexes
 
     def getContentType(self, fieldname=None):
