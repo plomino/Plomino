@@ -189,6 +189,16 @@ schema = Schema((
             i18n_domain='CMFPlomino',
         ),
     ),
+    StringField(
+        name='i18n',
+        widget=StringField._properties['widget'](
+            label='i18n domain',
+            description='i18n domain to use for Plomino internal translation',
+            label_msgid='CMFPlomino_label_i18n',
+            description_msgid='CMFPlomino_help_i18n',
+            i18n_domain='CMFPlomino',
+        ),
+    ),
     BooleanField(
         name='DoNotListUsers',
         default=False,

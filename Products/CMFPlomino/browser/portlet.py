@@ -10,6 +10,7 @@ from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 
 # Plomino
 from Products.CMFPlomino.browser import PloneMessageFactory as _
+from Products.CMFPlomino.PlominoUtils import PlominoTranslate
 
 
 class IPortlet(Interface):
@@ -173,6 +174,20 @@ class ElementPortletRenderer(base.Renderer):
         else:
             return """<p>The database cannot be found or the element cannot be displayed.</p>"""
 
+    @property
+    def header(self):
+        """Get the portlet header
+        (translated if db i18n domain if defined)
+        """
+        header = self.data.header
+
+        db = self.context.restrictedTraverse(
+                self.data.db_path.encode(),
+                None)
+        i18n_domain = db.getI18n()
+        if i18n_domain:
+            header = PlominoTranslate(header, db, domain=i18n_domain)
+        return header
 
 class ElementPortletAddForm(base.AddForm):
     """Creates a portlet used to display a Plomino element everywhere in a Plone site

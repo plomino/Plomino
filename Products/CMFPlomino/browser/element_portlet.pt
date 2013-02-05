@@ -1,4 +1,4 @@
-<dl tal:define="header view/data/header;
+<dl tal:define="header view/header;
 				element_layout view/elementLayout;
 				element_id view/data/element_id;"
 	tal:attributes="class string:portlet portlet-plomino portlet-plomino-$element_id">

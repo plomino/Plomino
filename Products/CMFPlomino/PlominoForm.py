@@ -544,6 +544,19 @@ class PlominoForm(ATFolder):
                     actionName,
                     action_render)
 
+        # translation
+        i18n_domain = self.getParentDatabase().getI18n()
+        if i18n_domain:
+            def translate_token(match):
+                translation = PlominoTranslate(match.group(1), self, domain=i18n_domain)
+                translation = asUnicode(translation)
+                return translation
+            html_content = re.sub(
+                        "__(?P<token>.+?)__",
+                        translate_token,
+                        html_content,
+                        re.MULTILINE + re.DOTALL)
+
         # store fragment to cache
         html_content = self.updateCache(html_content, to_be_cached)
         return html_content
