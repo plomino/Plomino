@@ -27,7 +27,7 @@
                        getKssClasses nocall:kssClassesView/getKssClassesInlineEditable;
                        templateId template/getId;
                        myF python:here.getForm();">
-        <tal:block tal:condition="myF" tal:define="b myF/ActionBarPosition|nothing">
+        <tal:block tal:condition="python:myF" tal:define="b myF/ActionBarPosition|nothing">
 			
 			<div tal:replace="structure provider:plone.abovecontenttitle" />
 				
