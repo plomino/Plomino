@@ -1250,9 +1250,9 @@ class PlominoReplicationManager(Persistent):
                 docids = str_docids.split("@")
 
         if docids:
-            docs = self.getAllDocuments()
-        else:
             docs = [self.getDocument(i) for i in docids]
+        else:
+            docs = self.getAllDocuments()
 
         dom = getDOMImplementation()
         if targettype == 'file':
