@@ -455,18 +455,6 @@ class PlominoForm(ATFolder):
         # remove the hidden content
         html_content = self.applyHideWhen(doc, silent_error=False)
 
-        # insert subforms
-        for subformname in self.getSubforms(doc):
-            subform = self.getParentDatabase().getForm(subformname)
-            if subform:
-                subformrendering = subform.displayDocument(
-                        doc, editmode, creation, parent_form_id=self.id,
-                        request=request)
-                html_content = html_content.replace(
-                        '<span class="plominoSubformClass">%s</span>' % 
-                        subformname,
-                        subformrendering)
-
         # get the field lists
         fields = self.getFormFields(doc=doc, request=request)
         fields_in_layout = []
@@ -515,6 +503,18 @@ class PlominoForm(ATFolder):
                             creation,
                             request=request)
                         )
+
+        # insert subforms
+        for subformname in self.getSubforms(doc):
+            subform = self.getParentDatabase().getForm(subformname)
+            if subform:
+                subformrendering = subform.displayDocument(
+                        doc, editmode, creation, parent_form_id=self.id,
+                        request=request)
+                html_content = html_content.replace(
+                        '<span class="plominoSubformClass">%s</span>' % 
+                        subformname,
+                        subformrendering)
 
         # insert the actions
         if doc is None:
