@@ -299,7 +299,7 @@ class PlominoForm(ATFolder):
 
         # if child form
         if is_childform:
-            tmp = TemporaryDocument(self.getParentDatabase(), self, REQUEST)
+            tmp = TemporaryDocument(db, self, REQUEST).__of__(db)
             tmp.setItem("Plomino_Parent_Field", parent_field)
             tmp.setItem("Plomino_Parent_Form", parent_form)
             tmp.setItem(
@@ -355,7 +355,7 @@ class PlominoForm(ATFolder):
         if applyhidewhen:
             doc = doc or TemporaryDocument(
                     db, self, request,
-                    validation_mode=validation_mode)
+                    validation_mode=validation_mode).__of__(db)
             layout = self.applyHideWhen(doc)
             result = [f for f in result 
                     if """<span class="plominoFieldClass">%s</span>""" % 
@@ -697,12 +697,13 @@ class PlominoForm(ATFolder):
         """ Return a JSON object to dynamically show or hide hidewhens 
         (works only with isDynamicHidewhen)
         """
+        db = self.getParentDatabase()
         result = {}
         target = TemporaryDocument(
-                self.getParentDatabase(),
+                db,
                 parent_form or self,
                 REQUEST,
-                validation_mode=validation_mode)
+                validation_mode=validation_mode).__of__(db)
         for hidewhen in self.getHidewhenFormulas():
             if getattr(hidewhen, 'isDynamicHidewhen', False):
                 try:
@@ -719,7 +720,7 @@ class PlominoForm(ATFolder):
                     isHidden = True
                 result[hidewhen.id] = isHidden
         for subformname in self.getSubforms():
-            form = self.getParentDatabase().getForm(subformname)
+            form = db.getForm(subformname)
             form_hidewhens = json.loads(
                     form.getHidewhenAsJSON(REQUEST,
                         parent_form=parent_form or self,
@@ -813,6 +814,7 @@ class PlominoForm(ATFolder):
     def openBlankForm(self, request=None):
         """ Check beforeCreateDocument, then open the form
         """
+        db = self.getParentDatabase()
         # execute the beforeCreateDocument code of the form
         invalid = False
         if (hasattr(self, 'beforeCreateDocument') and 
@@ -829,9 +831,9 @@ class PlominoForm(ATFolder):
         if not self.isPage and hasattr(self, 'REQUEST'):
             # hideWhens need a TemporaryDocument
             tmp = TemporaryDocument(
-                    self.getParentDatabase(),
+                    db,
                     self,
-                    self.REQUEST)
+                    self.REQUEST).__of__(db)
         if (not invalid) or self.hasDesignPermission(self):
             return self.displayDocument(
                     tmp,
@@ -839,7 +841,6 @@ class PlominoForm(ATFolder):
                     creation=True,
                     request=request)
         else:
-            db = self.getParentDatabase()
             self.REQUEST.RESPONSE.redirect(
                     db.absolute_url() +
                     "/ErrorMessages?disable_border=1&error=" +
@@ -903,12 +904,13 @@ class PlominoForm(ATFolder):
         Check if any of those types are present.
         """
         tmp = None
+        db = self.getParentDatabase()
         if hasattr(self, 'REQUEST'):
             # hideWhens need a TemporaryDocument
             tmp = TemporaryDocument(
-                    self.getParentDatabase(),
+                    db,
                     self,
-                    self.REQUEST)
+                    self.REQUEST).__of__(db)
         fields = self.getFormFields(
                 includesubforms=True,
                 doc=tmp,
@@ -931,11 +933,12 @@ class PlominoForm(ATFolder):
         if applyhidewhen:
             if doc is None and hasattr(self, 'REQUEST'):
                 try:
+                    db = self.getParentDatabase()
                     doc = TemporaryDocument(
-                            self.getParentDatabase(),
+                            db,
                             self,
                             self.REQUEST,
-                            validation_mode=validation_mode)
+                            validation_mode=validation_mode).__of__(db)
                 except:
                     # TemporaryDocument might fail if field validation is
                     # wrong and as we need getFormFields during field
@@ -1144,12 +1147,13 @@ class PlominoForm(ATFolder):
 
         if not errors:
             # STEP 3: check validation formula
+            db = self.getParentDatabase()
             tmp = TemporaryDocument(
-                    self.getParentDatabase(),
+                    db,
                     self,
                     REQUEST,
                     doc,
-                    validation_mode=True)
+                    validation_mode=True).__of__(db)
             for f in fields:
                 formula = f.getValidationFormula()
                 if not formula=='':
