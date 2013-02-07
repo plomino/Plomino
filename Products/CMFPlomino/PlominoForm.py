@@ -330,7 +330,9 @@ class PlominoForm(ATFolder):
             REQUEST.RESPONSE.redirect(db.absolute_url())
 
     security.declarePublic('getFormFields')
-    def getFormFields(self, includesubforms=False, doc=None, applyhidewhen=False, validation_mode=False, request=None, deduplicate=True):
+    def getFormFields(self, includesubforms=False, doc=None,
+            applyhidewhen=False, validation_mode=False, request=None,
+            deduplicate=True):
         """ Get fields
         """
         db = self.getParentDatabase()
@@ -449,7 +451,8 @@ class PlominoForm(ATFolder):
 
     security.declareProtected(READ_PERMISSION, 'displayDocument')
     @plomino_profiler('form')
-    def displayDocument(self, doc, editmode=False, creation=False, parent_form_id=False, request=None):
+    def displayDocument(self, doc, editmode=False, creation=False,
+            parent_form_id=False, request=None):
         """ Display the document using the form's layout
         """ 
         # remove the hidden content

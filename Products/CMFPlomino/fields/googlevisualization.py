@@ -73,7 +73,7 @@ class GooglevisualizationField(BaseField):
     Google Visualization tools.
 
     The field value should be list of lists. Each child list contains the
-    values for the columns declared in the Google Vizualization javascript
+    values for the columns declared in the Google Visualization javascript
     code.
 
     Example:
@@ -84,8 +84,8 @@ class GooglevisualizationField(BaseField):
         gvisudata.addColumn('string', 'Manager');
         gvisudata.addColumn('string', 'ToolTip');
 
-    (typical case when using orgchart package) then the field value should look
-    like:
+    (typical case when using orgchart package) then the field value should
+    look like:
 
     [['\'Mike\',\'Mike<div style="color:red; font-style:italic">President</div>\'', "''", "'The pres'"],
     ["'Tim'", "'Mike'", "'vp'"],
@@ -108,7 +108,7 @@ class GooglevisualizationField(BaseField):
     def validate(self, submittedValue):
         """
         """
-        errors=[]
+        errors = []
         # no validation needed
         return errors
 
@@ -122,7 +122,7 @@ class GooglevisualizationField(BaseField):
         return datatable
 
     def jscode(self, datatable):
-        """ return Google visualization js code
+        """ Return Google visualization JS code
         """
         if type(datatable) is dict:
             # if dict, we convert it to googleviz compliant array
