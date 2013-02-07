@@ -975,3 +975,8 @@ class TemporaryDocument(PlominoDocument):
         """
         return self.real_id
 
+    def getCurrentUser(self):
+        return self._parent.getCurrentUser()
+
+    def getCurrentUserRoles(self):
+        return self._parent.getCurrentUserRoles()
