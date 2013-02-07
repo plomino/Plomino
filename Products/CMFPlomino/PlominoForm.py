@@ -1142,7 +1142,7 @@ class PlominoForm(ATFolder):
                 # STEP 2: check data types
                 errors = errors + f.validateFormat(submittedValue)
 
-        if errors:
+        if not errors:
             # STEP 3: check validation formula
             tmp = TemporaryDocument(
                     self.getParentDatabase(),
