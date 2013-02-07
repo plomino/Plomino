@@ -321,7 +321,7 @@ class PlominoDesignManager(Persistent):
             if counter == 10:
                 self.setStatus(
                         "Re-compute documents (%d%%)" %
-                        int(100 * (total + errors) / total_docs))
+                        (int(100 * (total + errors) / total_docs)))
                 counter = 0
                 logger.info("Re-compute documents: "
                         "%d computed successfully, "

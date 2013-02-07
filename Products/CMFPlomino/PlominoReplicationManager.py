@@ -1409,7 +1409,7 @@ class PlominoReplicationManager(Persistent):
                 docs_counter = docs_counter + 1
                 if docs_counter == 100:
                     self.setStatus("Importing documents (%d%%)" % 
-                            100 * docs_counter / total_docs)
+                            (100 * docs_counter / total_docs))
                     txn.savepoint(optimistic=True)
                     docs_counter = 0
                     logger.info("%d documents imported successfully, "
