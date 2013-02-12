@@ -227,9 +227,7 @@ class PlominoDesignManager(Persistent):
                     idxs = [idx for idx in indexes if idx in items]
                 if views_only:
                     idx = view_indexes
-                txn = transaction.get()
                 plomino_index.indexDocument(d)
-                txn.commit()
                 total = total + 1
             except Exception, e:
                 errors = errors + 1
@@ -258,9 +256,7 @@ class PlominoDesignManager(Persistent):
         self.setStatus("Re-compute documents")
         for d in documents:
             try:
-                txn = transaction.get()
                 d.save(asAuthor=False, onSaveEvent=False)
-                txn.commit()
                 total = total + 1
             except Exception, e:
                 errors = errors + 1

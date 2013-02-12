@@ -448,7 +448,7 @@ class PlominoDocument(Acquisition.Implicit):
             self.setItem('Plomino_Authors', authors)
 
         # execute the onSaveDocument code of the form
-        if form and onSaveEvent:
+        if form and onSaveEvent and form.getOnSaveDocument():
             try:
                 result = self.runFormulaScript("form_"+form.id+"_onsave", self, form.onSaveDocument)
                 if result and hasattr(self, 'REQUEST'):
@@ -874,7 +874,7 @@ class TemporaryDocument(PlominoDocument):
     def __init__(self, parent, form, REQUEST, real_doc=None):
         self._parent=parent
         if real_doc is not None:
-            self.items=deepcopy(real_doc.items)
+            self.items = PersistentDict(real_doc.items)
             self.real_id=real_doc.id
         else:
             self.items={}

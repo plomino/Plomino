@@ -182,7 +182,7 @@ class PlominoField(BaseContent, BrowserDefaultMixin):
         return adapt.validate(submittedValue)
 
     security.declarePublic('processInput')
-    def processInput(self, submittedValue, doc, process_attachments):
+    def processInput(self, submittedValue, doc, process_attachments, validation_mode=False):
         """process submitted value according the field type
         """
         fieldtype = self.getFieldType()
@@ -191,21 +191,29 @@ class PlominoField(BaseContent, BrowserDefaultMixin):
         if fieldtype=="ATTACHMENT" and process_attachments:
             if isinstance(submittedValue, FileUpload):
                 current_files=doc.getItem(fieldname)
-                if current_files=='':
-                    current_files={}
-                else:
-                    if adapt.type == "SINGLE":
-                        for filename in current_files.keys():
-                            doc.deletefile(filename)
-                        current_files={}
+                if not current_files:
+                    current_files = {}
                 (new_file, contenttype) = doc.setfile(submittedValue)
                 if new_file is not None:
+                    if adapt.type == "SINGLE":
+                        for filename in current_files.keys():
+                            if filename != new_file:
+                                doc.deletefile(filename)
+                        current_files={}
                     current_files[new_file]=contenttype
                 v=current_files
             else:
                 v = None
         else:
-            v = adapt.processInput(submittedValue)
+            try:
+                v = adapt.processInput(submittedValue)
+            except Exception, e:
+                if validation_mode:
+                    # when validating, submitted values are potentially bad
+                    # but it must not break getHideWhens, getFormFields, etc.
+                    v = submittedValue
+                else:
+                    raise e
         return v
 
     security.declareProtected(READ_PERMISSION, 'getFieldRender')
