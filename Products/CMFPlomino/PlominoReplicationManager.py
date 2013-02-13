@@ -1031,7 +1031,7 @@ class PlominoReplicationManager(Persistent):
         # separator
         separator = None
         if PLOMINO_IMPORT_SEPARATORS.has_key(separatorName):
-            separator = PLOMINO_IMPORT_SEPARATORS(separatorName, None)
+            separator = PLOMINO_IMPORT_SEPARATORS.get(separatorName, None)
         if not separator:
             raise PlominoReplicationException, 'separator not found'
 
