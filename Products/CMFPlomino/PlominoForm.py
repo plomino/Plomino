@@ -557,8 +557,7 @@ class PlominoForm(ATFolder):
             html_content = re.sub(
                         "__(?P<token>.+?)__",
                         translate_token,
-                        html_content,
-                        re.MULTILINE + re.DOTALL)
+                        html_content)
 
         # store fragment to cache
         html_content = self.updateCache(html_content, to_be_cached)
