@@ -172,9 +172,6 @@ class PlominoDesignManager(Persistent):
             index.createSelectionIndex(v_obj.getViewName())
             for c in v_obj.getColumns():
                 v_obj.declareColumn(c.getColumnName(), c, index=index)
-        # add fulltext if needed
-        if self.FulltextIndex:
-            index.createFieldIndex('SearchableText', 'RICHTEXT')
         logger.info('Views indexing initialized')
 
         # re-index documents

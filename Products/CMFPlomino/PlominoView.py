@@ -286,17 +286,22 @@ class PlominoView(ATFolder):
         query = "PlominoViewFormula_%s == 1" % self.getViewName()
         if fulltext_query:
             query += " and '%s' in SearchableText" % fulltext_query
-        results=index.dbsearch(
+        results = [r for r in index.dbsearch(
             query,
             sortindex=sortindex,
             reverse=reverse,
-            only_allowed=only_allowed)
+            only_allowed=only_allowed,
+            lazy=True)]
+        length = results[0]
         if limit:
-            results = Batch(items=results, pagesize=limit, pagenumber=int(start/limit)+1)
-        if getObject:
-            return [db.getDocument(None, r) for r in results]
+            #results = Batch(items=results, pagesize=limit, pagenumber=int(start/limit)+1)
+            results = results[start+1:start+limit+1]
         else:
-            return results
+            results = results[1:]
+        if getObject:
+            return [db.getDocument(None, r()) for r in results]
+        else:
+            return (length, results)
         # XXX: Fix the generator.
         # for r in results:
         #     if getObject:
@@ -589,6 +594,7 @@ class PlominoView(ATFolder):
     def tojson(self, REQUEST=None):
         """ Returns a JSON representation of view data 
         """
+        dbindex = self.getParentDatabase().getIndex()
         data = []
         categorized = self.getCategorized()
         start = 1
@@ -607,25 +613,29 @@ class PlominoView(ATFolder):
             if sort_column:
                 sort_index = self.getIndexKey(self.getColumns()[int(sort_column)-1].id)
             reverse = REQUEST.get('sSortDir_0', None)
-            if reverse=='desc':
+            if reverse == 'desc':
                 reverse = 0
-            if reverse=='asc':
+            if reverse == 'asc':
                 reverse = 1 
         if limit < 1:
             limit = None
-        results = self.getAllDocuments(start=start,
+        (total, results) = self.getAllDocuments(start=start,
                                        limit=limit,
                                        getObject=False,
                                        fulltext_query=search,
                                        sortindex=sort_index,
-                                       reverse=reverse)
-        total = display_total = len(results)
+                                       reverse=reverse,
+                                       )
+        display_total = total
         columnids = [col.id for col in self.getColumns() if not getattr(col, 'HiddenColumn', False)]
-        for b in results:
-            row = [b.attrs['docid']]
+        for lazy in results:
+            record = lazy()
+            row = [record.attrs['docid']]
             for colid in columnids:
                 index = self.getIndexKey(colid)
-                v = self.getParentDatabase().getIndex().getIndexedValue(index, b.intid) 
+                v = record.attrs.get(index, None)
+                if not v:
+                    v = dbindex.getIndexedValue(index, record.intid) 
                 if isinstance(v, list):
                     v = [asUnicode(e).encode('utf-8').replace('\r', '') for e in v]
                 else:

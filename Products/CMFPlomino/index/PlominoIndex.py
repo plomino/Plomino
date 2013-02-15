@@ -14,13 +14,12 @@ import logging
 logger = logging.getLogger('Plomino')
 
 from Products.CMFPlomino.config import *
-from Products.CMFPlomino.PlominoDocument import PlominoDocument
 from Products.CMFPlomino.PlominoField import get_field_types
 
 from Products.CMFCore.utils import getToolByName
 from Products.PortalTransforms.utils import TransformException
 from Products.PortalTransforms.libtransforms.utils import MissingBinary
-
+from AccessControl import ClassSecurityInfo
 from souper.soup import NodeAttributeIndexer
 from repoze.catalog.indexes.field import CatalogFieldIndex
 from repoze.catalog.indexes.text import CatalogTextIndex
@@ -30,6 +29,8 @@ from repoze.catalog.indexes.keyword import CatalogKeywordIndex
 class PlominoIndex(object):
     """Plomino index
     """
+
+    security = ClassSecurityInfo()
 
     security.declarePublic('__init__')
     def __init__(self, context):
@@ -46,7 +47,7 @@ class PlominoIndex(object):
         catalog[u'Plomino_Readers'] = CatalogKeywordIndex(readers_indexer)
 
         if FULLTEXT:
-            fulltext_indexer = NodeAttributeIndexer('SearchableText')
+            fulltext_indexer = SearchableTextIndexer(self.context)
             catalog[u'SearchableText'] = CatalogTextIndex(fulltext_indexer)
 
         self.context.no_refresh = False
@@ -115,7 +116,7 @@ class PlominoIndex(object):
             self.context.setStatus("Ready")
 
     security.declareProtected(READ_PERMISSION, 'dbsearch')
-    def dbsearch(self, request, sortindex=None, reverse=0, only_allowed=True, limit=None):
+    def dbsearch(self, request, sortindex=None, reverse=0, only_allowed=True, limit=None, lazy=False):
         """
         """
         user_groups_roles = ['Anonymous', '*']
@@ -131,13 +132,17 @@ class PlominoIndex(object):
                 ', '.join(["'%s'" % u for u in user_groups_roles])
                 )
 
-        results = self.context.documents().query(
+        results = self.context.documents().lazy(
                                 request,
                                 sort_index=sortindex,
                                 limit=limit,
                                 sort_type=sortindex,
-                                reverse=reverse)             
-        return list(results)
+                                reverse=reverse,
+                                with_size=True)
+        if lazy:
+            return results
+        else:
+            return [o() for o in list(results)[1:]]
 
     security.declareProtected(READ_PERMISSION, 'getKeyUniqueValues')
     def getIndexedValue(self, index, recordid=None, record=None):
@@ -183,6 +188,7 @@ class PlominoIndex(object):
 
         return result
 
+
 class ViewSelectionIndexer(object):
 
     def __init__(self, viewname, db):
@@ -192,6 +198,7 @@ class ViewSelectionIndexer(object):
     def __call__(self, context, default):
         doc = self.db.getDocument(None, context)
         return doc.isSelectedInView(self.viewname)
+
 
 class ColumnIndexer(object):
 
@@ -203,3 +210,13 @@ class ColumnIndexer(object):
     def __call__(self, context, default):
         doc = self.db.getDocument(None, context)
         return doc.computeColumnValue(self.viewid, self.columnid)
+
+
+class SearchableTextIndexer(object):
+
+    def __init__(self, db):
+        self.db = db
+
+    def __call__(self, context, default):
+        doc = self.db.getDocument(None, context)
+        return doc.SearchableText

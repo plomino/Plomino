@@ -114,7 +114,7 @@ if DevelopmentMode:
             def newf(*args, **kwds):
                 obj = args[0]
                 request = getattr(obj, 'REQUEST', None)
-                if request and self.aspect in request.cookies.get('plomino_profiler', ''):
+                if request and hasattr(request, 'cookies') and self.aspect in request.cookies.get('plomino_profiler', ''):
                     start = time()
                     f_result = f(*args, **kwds)
                     duration = 1000 * (time() - start)

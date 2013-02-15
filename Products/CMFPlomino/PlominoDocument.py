@@ -621,6 +621,7 @@ class PlominoDocument(Acquisition.Implicit):
             REQUEST.RESPONSE.redirect(self.absolute_url()+"/EditDocument")
 
     security.declarePublic('SearchableText')
+    @property
     def SearchableText(self):
         values = []
         index_attachments=self.getParentDatabase().getIndexAttachments()
@@ -871,17 +872,17 @@ class TemporaryDocument(PlominoDocument):
 
     security = ClassSecurityInfo()
 
-    def __init__(self, parent, form, REQUEST, real_doc=None):
-        self._parent=parent
-        if real_doc is not None:
+    def __init__(self, parent, form, REQUEST, real_doc=None, validation_mode=False):
+        self._parent = parent
+        self._REQUEST = REQUEST
+        if real_doc:
             self.items = PersistentDict(real_doc.items)
-            self.real_id=real_doc.id
+            self.real_id = real_doc.id
         else:
-            self.items={}
-            self.real_id="TEMPDOC"
+            self.items = {}
+            self.real_id = "TEMPDOC"
         self.setItem('Form', form.getFormName())
-        form.readInputs(self, REQUEST)
-        self._REQUEST=REQUEST
+        form.readInputs(self, REQUEST, validation_mode=validation_mode)
 
     security.declarePublic('getParentDatabase')
     def getParentDatabase(self):
@@ -899,17 +900,17 @@ class TemporaryDocument(PlominoDocument):
     def isNewDocument(self):
         """
         """
-        if self.real_id=="TEMPDOC":
+        if self.real_id == "TEMPDOC":
             return True
-        else:
-            return False
+        return False
 
-    security.declarePublic('REQUEST')
-    @property
-    def REQUEST(self):
+    security.declarePublic('isDocument')
+    def isDocument(self):
+        """ Return True if we're representing an existing document.
         """
-        """
-        return self._REQUEST
+        if self.id == 'TEMPDOC':
+            return False
+        return True
 
     security.declarePublic('id')
     @property
@@ -918,5 +919,10 @@ class TemporaryDocument(PlominoDocument):
         """
         return self.real_id
 
-
+    security.declarePublic('REQUEST')
+    @property
+    def REQUEST(self):
+        """
+        """
+        return self._REQUEST
 

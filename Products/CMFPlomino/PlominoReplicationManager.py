@@ -999,7 +999,7 @@ class PlominoReplicationManager(Persistent):
 
         i = 2
         logger.info("Documents count: %d" % len(fileContent))
-        # txn = transaction.get()
+        txn = transaction.get()
         for docInfos in fileContent:
             try:
                 #create doc
@@ -1031,7 +1031,7 @@ class PlominoReplicationManager(Persistent):
                 # txn.savepoint(optimistic=True)
                 counter = 0
                 logger.info("%d documents imported successfully, %d errors(s) ...(still running)" % (nbDocDone, nbDocFailed))
-        # txn.commit()
+        txn.commit()
         logger.info("Importation finished: %d documents imported successfully, %d document(s) not imported" % (nbDocDone, nbDocFailed)) 
         
         #result sent
