@@ -116,12 +116,23 @@ schema = Schema((
     ),
     BooleanField(
         name='FulltextIndex',
-        default=True,
+        default=False,
         widget=BooleanField._properties['widget'](
             label="Local full-text index",
             description="If enabled, documents are full-text indexed into the Plomino index.",
             label_msgid='CMFPlomino_label_FulltextIndex',
             description_msgid='CMFPlomino_help_FulltextIndex',
+            i18n_domain='CMFPlomino',
+        ),
+    ),
+    BooleanField(
+        name='ViewsFulltextIndex',
+        default=True,
+        widget=BooleanField._properties['widget'](
+            label="Views full-text index",
+            description="If not enabled, dynamic views cannot be filtered.",
+            label_msgid='CMFPlomino_label_ViewsFulltextIndex',
+            description_msgid='CMFPlomino_help_ViewsFulltextIndex',
             i18n_domain='CMFPlomino',
         ),
     ),

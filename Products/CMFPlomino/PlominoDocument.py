@@ -579,7 +579,7 @@ class PlominoDocument(Acquisition.Implicit):
             except PlominoScriptException, e:
                 e.reportError('%s view selection formula failed' % viewname)
         return result
-
+        
     security.declareProtected(READ_PERMISSION, 'computeColumnValue')
     def computeColumnValue(self, viewname, columnname):
         """

@@ -52,8 +52,17 @@ class PlominoIndex(object):
 
         self.context.no_refresh = False
 
-    def indexDocument(self, doc):
-        self.context.documents().reindex([doc.record])
+    def indexDocument(self, doc, record=None, indexes=None):
+        if doc:
+            record = doc.record
+        catalog = self.context.documents().catalog
+        if not indexes:
+            indexes = catalog.values()
+        else:
+            indexes = [catalog[k] for k in indexes if k in catalog.keys()]
+
+        for index in indexes:
+            index.index_doc(record.intid, record)
 
     def indexes(self):
         return self.context.documents().catalog.keys()
@@ -91,12 +100,21 @@ class PlominoIndex(object):
     def createSelectionIndex(self, id, refresh=True):
         """
         """
-        if not id in self.indexes():
-            view_indexer = ViewSelectionIndexer(id, self.context)
-            self.context.documents().catalog['PlominoViewFormula_' + id] = CatalogFieldIndex(view_indexer)
+        view_indexer = ViewSelectionIndexer(id, self.context)
+        self.context.documents().catalog['PlominoViewFormula_' + id] = CatalogFieldIndex(view_indexer)
 
-            if refresh:
-                self.refresh()
+        if refresh:
+            self.refresh()
+
+    security.declareProtected(DESIGN_PERMISSION, 'createViewFullTextIndex')
+    def createViewFullTextIndex(self, id, refresh=True):
+        """
+        """
+        view_indexer = ViewFullTextIndexer(id, self.context)
+        self.context.documents().catalog['PlominoViewFulltext_' + id] = CatalogTextIndex(view_indexer)
+
+        if refresh:
+            self.refresh()
 
     security.declareProtected(DESIGN_PERMISSION, 'deleteIndex')
     def deleteIndex(self, id, refresh=True):
@@ -198,6 +216,36 @@ class ViewSelectionIndexer(object):
     def __call__(self, context, default):
         doc = self.db.getDocument(None, context)
         return doc.isSelectedInView(self.viewname)
+
+class ViewFullTextIndexer(object):
+
+    def __init__(self, viewname, db):
+        self.viewname = viewname
+        self.db = db
+
+    def __call__(self, context, default):
+        db = self.db
+        try:
+            indexes = db.getRequestCache(self.viewname + "_indexes")
+        except:
+            # no request available (probably a batch processing)
+            # but we cannot afford continuing without cache
+            return ""
+
+        if not indexes:
+            v = db.getView(self.viewname)
+            columns = v.getColumns()
+            indexes = [v.getIndexKey(c.id) for c in columns]
+            db.setRequestCache(self.viewname + "_indexes", indexes)
+
+        text = []
+        index = db.getIndex()
+        for index in indexes:
+            v = context.attrs.get(index, None)
+            if not v:
+                v = index.getIndexedValue(index, context.intid)
+            text.append(v)
+        return " ".join(text)
 
 
 class ColumnIndexer(object):

@@ -173,7 +173,7 @@ schema = Schema((
             i18n_domain='CMFPlomino',
         ),
         default=u"""
-'bPaginate': false,
+'bPaginate': true,
 'bLengthChange': false,
 'bFilter': true,
 'bSort': true,
@@ -285,7 +285,7 @@ class PlominoView(ATFolder):
             reverse = self.getReverseSorting()
         query = "PlominoViewFormula_%s == 1" % self.getViewName()
         if fulltext_query:
-            query += " and '%s' in SearchableText" % fulltext_query
+            query += " and '%s' in PlominoViewFulltext_%s" % (fulltext_query, self.getViewName())
         results = [r for r in index.dbsearch(
             query,
             sortindex=sortindex,
@@ -373,6 +373,8 @@ class PlominoView(ATFolder):
         """
         db = self.getParentDatabase()
         db.getIndex().createSelectionIndex(self.getViewName())
+        if db.getViewsFulltextIndex():
+            db.getIndex().createViewFullTextIndex(self.getViewName())
         if not db.DoNotReindex:
             self.getParentDatabase().getIndex().refresh()
 

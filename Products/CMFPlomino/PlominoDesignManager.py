@@ -170,14 +170,15 @@ class PlominoDesignManager(Persistent):
         #declare all the view formulas and columns index entries
         for v_obj in self.getViews():
             index.createSelectionIndex(v_obj.getViewName())
+            if self.getViewsFulltextIndex():
+                self.getIndex().createViewFullTextIndex(v_obj.getViewName())
             for c in v_obj.getColumns():
                 v_obj.declareColumn(c.getColumnName(), c, index=index)
         logger.info('Views indexing initialized')
 
         # re-index documents
-        start_time = DateTime().toZone('UTC')
-        msg = self.reindexDocuments(index)
-        report.append(msg)
+        self.documents().reindex()
+        report.append("Documents re-indexed")
 
         # as it takes time, re-indexed documents changed since re-indexing started
         #msg = self.reindexDocuments(index, changed_since=start_time)
@@ -214,17 +215,17 @@ class PlominoDesignManager(Persistent):
 
         indexes = plomino_index.indexes()
         view_indexes = [idx for idx in indexes if idx.startswith("PlominoView")]
-        if 'SearchableText' in indexes:
-            view_indexes.append('SearchableText')
+        view_indexes.append("Plomino_Readers")
+
         for d in documents:
             try:
-                idxs = []
+                idxs = None
                 if items_only:
                     items = d.getItems() + ['id']
                     idxs = [idx for idx in indexes if idx in items]
                 if views_only:
-                    idx = view_indexes
-                plomino_index.indexDocument(d)
+                    idxs = view_indexes
+                plomino_index.indexDocument(d, indexes=idxs)
                 total = total + 1
             except Exception, e:
                 errors = errors + 1
@@ -517,11 +518,7 @@ class PlominoDesignManager(Persistent):
 
     security.declarePublic('getFormulaScript')
     def getFormulaScript(self, script_id):
-        if hasattr(self.scripts, script_id):
-            ps=getattr(self.scripts, script_id)
-            return ps
-        else:
-            return None
+        return getattr(self.scripts, script_id, None)
 
     security.declarePublic('cleanFormulaScripts')
     def cleanFormulaScripts(self, script_id_pattern=None):
