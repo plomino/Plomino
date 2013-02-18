@@ -142,22 +142,20 @@ class PlominoDocument(Acquisition.Implicit):
         return self.checkBeforeOpenDocument()
 
     def getPhysicalPath(self):
-        return self.getParentDatabase().getPhysicalPath() + (self.getItem('docid'), )
+        return self.getParentDatabase().getPhysicalPath() + ('document', self.getItem('docid'), )
 
     def doc_path(self):
         return self.getPhysicalPath()
 
     def doc_url(self):
-        """ return valid and nice url:
-        - hide plomino_documents
-        - use physicalPathToURL if REQUEST available
+        """ return valid and nice url
+        use physicalPathToURL if REQUEST available
         """
         path = self.doc_path()
-        short_path = [p for p in path if p!="plomino_documents"]
         if hasattr(self, "REQUEST"):
-            return self.REQUEST.physicalPathToURL(short_path)
+            return self.REQUEST.physicalPathToURL(path)
         else:
-            return "/".join(short_path)
+            return "/".join(path)
 
     security.declarePublic('setItem')
     def setItem(self, name, value):

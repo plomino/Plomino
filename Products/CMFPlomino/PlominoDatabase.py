@@ -279,14 +279,6 @@ class PlominoDatabase(ATFolder, PlominoAccessControl, PlominoDesignManager, Plom
         document_soup = get_soup(self.full_id(), self)
         return document_soup
 
-    def __bobo_traverse__(self, request, name):
-        # TODO: replace with IPublishTraverse or/and ITraverse
-        if self._initialized:
-            doc = self.getDocument(name)
-            if doc:
-                return doc
-        return BaseObject.__bobo_traverse__(self, request, name)
-
     def allowedContentTypes(self):
         # Make sure PlominoDocument is hidden in Plone "Add..." menu
         # as getNotAddableTypes is not used anymore in Plone 4
@@ -498,6 +490,12 @@ class PlominoDatabase(ATFolder, PlominoAccessControl, PlominoDesignManager, Plom
             interfaces.IPlominoIndex(self).initialize()
         return interfaces.IPlominoIndex(self)
 
+    security.declareProtected(READ_PERMISSION, 'dbsearch')
+    def dbsearch(self, request, sortindex=None, reverse=0, only_allowed=True, limit=None, lazy=False):
+        """
+        """
+        return self.getIndex().dbsearch(request, sortindex=sortindex, reverse=reverse, only_allowed=only_allowed, limit=limit, lazy=lazy)
+
     security.declarePublic('getAllDocuments')
     def getAllDocuments(self, getObject=True):
         """ Return all the database documents.
@@ -515,15 +513,6 @@ class PlominoDatabase(ATFolder, PlominoAccessControl, PlominoDesignManager, Plom
             return self.CountDocuments
         except Exception :
             return False
-
-    def getObjectPosition(self, id):
-        """
-        """
-        # TODO: How does Plomino use folder ordering? Ordered soup?
-        if id in self.documents().data:
-            # documents will not be ordered in site map
-            return 0
-        return ATFolder.getObjectPosition(self, id)
 
     def _cache(self):
         chooser = queryUtility(ICacheChooser)
