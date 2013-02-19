@@ -691,7 +691,9 @@ class PlominoForm(ATFolder):
                 if form.hasDynamicHidewhen():
                     return True
             else:
-                logger.info('Missing subform: %s. Referenced on: %s' % (subformname, self.id))
+                msg = 'Missing subform: %s. Referenced on: %s' % (subformname, self.id)
+                self.writeMessageOnPage(msg, self.REQUEST)
+                logger.info(msg)
 
         return False
 
@@ -725,7 +727,9 @@ class PlominoForm(ATFolder):
         for subformname in self.getSubforms():
             form = db.getForm(subformname)
             if not form:
-                logger.info('Missing subform: %s. Referenced on: %s' % (subformname, self.id))
+                msg = 'Missing subform: %s. Referenced on: %s' % (subformname, self.id)
+                self.writeMessageOnPage(msg, self.REQUEST)
+                logger.info(msg)
                 continue
             form_hidewhens = json.loads(
                     form.getHidewhenAsJSON(REQUEST,
@@ -1113,7 +1117,9 @@ class PlominoForm(ATFolder):
         for subformname in self.getSubforms(doc):
             subform = self.getParentDatabase().getForm(subformname)
             if not subform:
-                logger.info('Missing subform: %s. Referenced on: %s' % (subformname, self.id))
+                msg = 'Missing subform: %s. Referenced on: %s' % (subformname, self.id)
+                self.writeMessageOnPage(msg, self.REQUEST)
+                logger.info(msg)
                 continue
             hidden_fields += subform._get_js_hidden_fields(REQUEST, doc)
         return hidden_fields
