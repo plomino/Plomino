@@ -687,7 +687,7 @@ class PlominoForm(ATFolder):
                 return True
         for subformname in self.getSubforms():
             form = self.getParentDatabase().getForm(subformname)
-            if form.hasDynamicHidewhen():
+            if form and form.hasDynamicHidewhen():
                 return True
         return False
 
