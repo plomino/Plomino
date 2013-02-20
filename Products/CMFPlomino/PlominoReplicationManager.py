@@ -36,6 +36,7 @@ import transaction
 
 from ZPublisher.HTTPRequest import FileUpload
 import csv
+csv.field_size_limit(1000000000)
 
 import logging
 logger = logging.getLogger("Replication")

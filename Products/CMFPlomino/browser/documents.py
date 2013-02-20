@@ -18,7 +18,7 @@ class DocumentView(BrowserView):
         if not doc:
             raise NotFound(self, name, request)
         self.doc = doc
-        return self
+        return doc
 
     def __call__(self):
         return self.doc.checkBeforeOpenDocument()

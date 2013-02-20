@@ -38,10 +38,4 @@
     factory=".index.PlominoIndex.PlominoIndex"
     />
 
-  <browser:page
-        for="Products.CMFPlomino.interfaces.IPlominoDatabase"
-        name="document"
-        class=".browser.documents.DocumentView"
-        permission="zope2.View"
-        />
 </configure>

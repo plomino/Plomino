@@ -30,5 +30,12 @@
         name="plomino.javascript"
         directory="javascript"
         />
-        
+
+    <browser:page
+        for="Products.CMFPlomino.interfaces.IPlominoDatabase"
+        name="document"
+        class=".documents.DocumentView"
+        permission="zope2.View"
+        />
+
 </configure>

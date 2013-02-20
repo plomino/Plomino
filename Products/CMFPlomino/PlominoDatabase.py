@@ -491,10 +491,10 @@ class PlominoDatabase(ATFolder, PlominoAccessControl, PlominoDesignManager, Plom
         return interfaces.IPlominoIndex(self)
 
     security.declareProtected(READ_PERMISSION, 'dbsearch')
-    def dbsearch(self, request, sortindex=None, reverse=0, only_allowed=True, limit=None, lazy=False):
+    def dbsearch(self, *args, **kwargs):
         """
         """
-        return self.getIndex().dbsearch(request, sortindex=sortindex, reverse=reverse, only_allowed=only_allowed, limit=limit, lazy=lazy)
+        return self.getIndex().dbsearch(*args, **kwargs)
 
     security.declarePublic('getAllDocuments')
     def getAllDocuments(self, getObject=True):

@@ -133,7 +133,7 @@ class PlominoIndex(object):
             self.context.documents().reindex()
             self.context.setStatus("Ready")
 
-    security.declareProtected(READ_PERMISSION, 'dbsearch')
+    security.declarePublic(READ_PERMISSION, 'dbsearch')
     def dbsearch(self, request, sortindex=None, reverse=0, only_allowed=True, limit=None, lazy=False):
         """
         """
@@ -220,31 +220,21 @@ class ViewSelectionIndexer(object):
 class ViewFullTextIndexer(object):
 
     def __init__(self, viewname, db):
-        self.viewname = viewname
         self.db = db
+        view = db.getView(viewname)
+        columns = view.getColumns()
+        self.indexes = [view.getIndexKey(c.id) for c in columns]
+        logger.info(self.indexes)
 
     def __call__(self, context, default):
         db = self.db
-        try:
-            indexes = db.getRequestCache(self.viewname + "_indexes")
-        except:
-            # no request available (probably a batch processing)
-            # but we cannot afford continuing without cache
-            return ""
-
-        if not indexes:
-            v = db.getView(self.viewname)
-            columns = v.getColumns()
-            indexes = [v.getIndexKey(c.id) for c in columns]
-            db.setRequestCache(self.viewname + "_indexes", indexes)
-
         text = []
-        index = db.getIndex()
-        for index in indexes:
+        for index in self.indexes:
             v = context.attrs.get(index, None)
             if not v:
-                v = index.getIndexedValue(index, context.intid)
-            text.append(v)
+                v = db.getIndex().getIndexedValue(index, context.intid)
+            if v:
+                text.append(v)
         return " ".join(text)
 
 
