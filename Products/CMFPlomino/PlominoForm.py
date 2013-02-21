@@ -687,7 +687,7 @@ class PlominoForm(ATFolder):
                 return True
         for subformname in self.getSubforms():
             form = self.getParentDatabase().getForm(subformname)
-            if form.hasDynamicHidewhen():
+            if form and form.hasDynamicHidewhen():
                 return True
         return False
 
@@ -804,10 +804,13 @@ class PlominoForm(ATFolder):
 
     security.declarePublic('formLayout')
     def formLayout(self, request=None):
-        """return the form layout in edit mode (used to compose a new
-        document)
+        """ Return the form layout in edit mode (used to compose a new
+        document).
         """
-        return self.displayDocument(None, True, True, request=request)
+        return self.displayDocument(None,
+                editmode=True,
+                creation=True,
+                request=request)
 
     security.declarePublic('openBlankForm')
     def openBlankForm(self, request=None):
