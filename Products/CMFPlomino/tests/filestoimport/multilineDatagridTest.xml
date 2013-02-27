@@ -91,6 +91,10 @@
     }
 </string></value>
 </member>
+<member>
+<name>field_mapping</name>
+<value><string>name,a_description</string></value>
+</member>
 </struct></value>
 </param>
 </params>
@@ -105,8 +109,7 @@
       <onDeleteDocument type="Products.Archetypes.Field.TextField"><![CDATA[]]></onDeleteDocument>
       <onSearch type="Products.Archetypes.Field.TextField"><![CDATA[]]></onSearch>
       <beforeCreateDocument type="Products.Archetypes.Field.TextField"><![CDATA[]]></beforeCreateDocument>
-      <FormLayout type="Products.Archetypes.Field.TextField"><![CDATA[<p>Name:<span class="plominoFieldClass">name</span></p>
-<p>Description: <span class="plominoFieldClass">a_description</span></p>]]></FormLayout>
+      <FormLayout type="Products.Archetypes.Field.TextField"><![CDATA[<p>Name:<span class="plominoFieldClass">name</span></p><p>Description: <span class="plominoFieldClass">a_description</span></p>]]></FormLayout>
       <DocumentTitle type="Products.Archetypes.Field.TextField"><![CDATA[]]></DocumentTitle>
       <DocumentId type="Products.Archetypes.Field.TextField"><![CDATA[]]></DocumentId>
       <ActionBarPosition type="Products.Archetypes.Field.StringField">TOP</ActionBarPosition>
