@@ -11,7 +11,7 @@ from plone.app.testing import TEST_USER_NAME, TEST_USER_PASSWORD
 
 from Products.CMFPlomino.testing import PLOMINO_SELENIUM_TESTING
 
-from selenium.common.exceptions import WebDriverException
+from selenium.common.exceptions import WebDriverException, NoSuchFrameException
 
 DIRPATH = join(dirname(__file__), 'filestoimport')
 
@@ -89,6 +89,28 @@ class IntegrationTest(unittest.TestCase):
             "return jQuery(arguments[0]).attr('value')", field_a)
         self.assertEqual(field_value, '123')
 
+    def test_multiline_in_datagrid(self):
+        mydb = self.layer['portal'].mydb
+        sel = self.layer['selenium']
+        import_file('multilineDatagridTest.xml', mydb)
+        selenium_layers.open(sel, self.layer['portal'].absolute_url())
+        self.authenticate(sel)
+        url = mydb.a_form_with_a_datagrid.absolute_url()
+        selenium_layers.open(sel, url)
+        addrow_button = sel.find_element_by_css_selector('#a_datagrid_field_addrow')
+        addrow_button.click()
+        self.wait_for_iframe(0)
+        # Clicking the "close" button doesn't work
+        # But today I must fix another bug, so I'll just pass by
+        # XXX test that the close button works
+        sel.switch_to_frame(0)
+        textarea = sel.find_element_by_css_selector('#plomino_form textarea')
+        textarea.send_keys("Hi!\nI'm a value that includes two newlines.\nNice to meet you.")
+        sel.find_element_by_css_selector('.plominoSave').click()
+        # No validation error should happen; thus no alert shold be there
+        with self.assertRaises(WebDriverException):
+            sel.switch_to_alert().accept()
+
     def do_check_dynamic_hidewhen(self, sel):
         selenium_layers.type(sel, 'a', '123')
         selenium_layers.click(sel, "//option[@value='A']")
@@ -112,6 +134,24 @@ class IntegrationTest(unittest.TestCase):
         sel = self.layer['selenium']
         sel.find_element_by_xpath("//div[@aria-labelledby='ui-dialog-title-plominoValidationPopup']"
                                   "//a[contains(@class, 'ui-dialog-titlebar-close')]").click()
+
+    def wait_for_iframe(self, iframeid, timeout=2000, step=100):
+        "Blocks until an iframe has been loaded"
+        start = datetime.now()
+        elapsed_milliseconds = 0
+        while elapsed_milliseconds < timeout:
+            try:
+                self.layer['selenium'].switch_to_frame(0)
+            except NoSuchFrameException, e:
+                pass
+            else:
+                self.layer['selenium'].switch_to_default_content()
+                return
+            time.sleep(step / 1000.0)
+            now = datetime.now() - start
+            elapsed_milliseconds = now.microseconds / 1000 + now.seconds * 1000
+        self.fail("Timeout %i reached" % timeout)
+
 
     def wait_ajax_calls(self, timeout=5000, step=100):
         "Wait until all jQuery initiated ajax calls return"
