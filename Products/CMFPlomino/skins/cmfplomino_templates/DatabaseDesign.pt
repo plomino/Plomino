@@ -151,11 +151,14 @@
 </dd></dl>
 <hr/><h3 i18n:translate="">Refresh database</h3>
 <ul>
-  <li><a href="./manage_refreshDB" i18n:translate="">Refresh database</a>
+    <li><form name="Refresh" action="manage_refreshDB" method="POST">
+        <input type="submit" name="submit_refresh" class="context" value="Refresh database" i18n:attributes="value"/></form>
   <span i18n:translate="">(clean scripts, re-index documents, and check Plomino version migration)</span></li>     
-  <li><a href="./recomputeAllDocuments" i18n:translate="">Re-compute documents</a>
+  <li><form name="Recompute" action="recomputeAllDocuments" method="POST">
+        <input type="submit" name="submit_recompute" class="context" value="Re-compute documents" i18n:attributes="value"/></form>
   <span i18n:translate="">(save all documents with their current form: computed fields and computed on save fields will be re-computed and stored, and documents are re-indexed)</span></li>
-  <li><a href="./refreshPortalCatalog" i18n:translate="">Re-index documents in portal catalog</a>
+  <li><form name="RefreshCatalog" action="refreshPortalCatalog" method="POST">
+        <input type="submit" name="submit_refreshcatalog" class="context" value="Re-index documents in portal catalog" i18n:attributes="value"/></form>
   <span i18n:translate="">(if the database allows portal catalog indexing, documents are re-indexed, else they are removed from the catalog)</span>
   </li>
 </ul>
