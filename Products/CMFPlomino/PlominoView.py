@@ -300,7 +300,8 @@ class PlominoView(ATFolder):
         return BaseObject.__bobo_traverse__(self, request, name)
 
     security.declarePublic('getAllDocuments')
-    def getAllDocuments(self, start=1, limit=None, only_allowed=True, getObject=True, fulltext_query=None, sortindex=None, reverse=None):
+    def getAllDocuments(self, start=1, limit=None, only_allowed=True,
+            getObject=True, fulltext_query=None, sortindex=None, reverse=None):
         """ Return all the documents matching the view.
         """
         index = self.getParentDatabase().getIndex()
@@ -342,7 +343,7 @@ class PlominoView(ATFolder):
 
     security.declarePublic('getColumns')
     def getColumns(self):
-        """Get colums
+        """ Get columns
         """
         columnslist = self.portal_catalog.search(
                 {'portal_type': ['PlominoColumn'],
