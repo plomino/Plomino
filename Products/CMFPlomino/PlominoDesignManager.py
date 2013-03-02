@@ -44,7 +44,6 @@ try:
     ASYNC = True
 except:
     ASYNC = False
-ASYNC = False
 
 # CMF
 from OFS.Image import manage_addImage
