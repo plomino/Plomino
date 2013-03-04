@@ -107,7 +107,7 @@
     </select>
 
       <a tal:condition="show_jscal"
-         tal:attributes="onclick string:return plone.jscalendar.show('#${input_id}', $yearStart, $yearEnd);"><img alt="" src="" tal:replace="structure here/popup_calendar.gif" /></a>
+         tal:attributes="onclick string:return plone.jscalendar.show('#${input_id}', $yearStart, $yearEnd);"><img alt="" src="" tal:replace="structure here/popup_calendar.png" /></a>
       </tal:ymd>
 
       <span tal:condition="show_hm">
