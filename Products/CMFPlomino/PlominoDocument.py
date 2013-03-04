@@ -343,6 +343,8 @@ class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
         db.deleteDocument(self)
         if REQUEST:
             return_url = REQUEST.get('returnurl')
+            if not return_url:
+                return_url = db.absolute_url()
             REQUEST.RESPONSE.redirect(return_url)
 
     security.declareProtected(EDIT_PERMISSION, 'validation_errors')
