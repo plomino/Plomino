@@ -25,6 +25,7 @@ import xmlrpclib
 
 # Zope
 from Acquisition import *
+from AccessControl.requestmethod import postonly
 from DateTime import DateTime
 from HttpUtils import authenticateAndLoadURL, authenticateAndPostToURL
 from Persistence import Persistent
@@ -102,12 +103,13 @@ def run_refreshdb(context):
 
 
 class PlominoDesignManager(Persistent):
-    """Plomino design import/export features
+    """ Plomino design import/export features
     """
     security = ClassSecurityInfo()
 
     # Methods
     security.declarePublic('manage_refreshDB')
+    @postonly
     def manage_refreshDB(self, REQUEST):
         """ Launch refreshDB
         """
@@ -298,6 +300,7 @@ class PlominoDesignManager(Persistent):
         return msg
 
     security.declareProtected(DESIGN_PERMISSION, 'recomputeAllDocuments')
+    @postonly
     def recomputeAllDocuments(self, REQUEST=None):
         """
         """
@@ -338,6 +341,7 @@ class PlominoDesignManager(Persistent):
             REQUEST.RESPONSE.redirect(self.absolute_url()+"/DatabaseDesign")
 
     security.declareProtected(DESIGN_PERMISSION, 'refreshPortalCatalog')
+    @postonly
     def refreshPortalCatalog(self, REQUEST=None):
         """
         """

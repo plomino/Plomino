@@ -16,8 +16,8 @@
                         request_items python:field.getSettings().request_items_aoData(request);"
             tal:content="structure string:
                 var ${fieldname}_datatable;
-                jq(document).ready(function() {
-                    ${fieldname}_datatable = jq('#${fieldname}_datagrid').dataTable( {
+                $$(document).ready(function() {
+                    ${fieldname}_datatable = $$('#${fieldname}_datagrid').dataTable( {
                         'sAjaxSource': 'tojson?item=${fieldname}&rendered=true&datatables=true',
                         'sServerMethod': 'POST',
                         'fnServerParams': function ( aoData ) {
@@ -26,9 +26,9 @@
                         'bJQueryUI': true,
                         ${param},
                         'fnDrawCallback': function() {
-                            jq('#${fieldname}_datagrid > tbody > tr').click(function() {
+                            $$('#${fieldname}_datagrid > tbody > tr').click(function() {
                                 datagrid_deselect_rows(${fieldname}_datatable);
-                                jq(this).addClass('datagrid_row_selected');
+                                $$(this).addClass('datagrid_row_selected');
                             });
                         },
                         'oLanguage': {
@@ -36,17 +36,17 @@
                         }
                     } );
             
-                    jq('#${fieldname}_addrow').click(function() {
+                    $$('#${fieldname}_addrow').click(function() {
                         datagrid_add_row(${fieldname}_datatable, '${fieldname}', this.href);
                     });
-                    jq('#${fieldname}_editrow').click(function() {
+                    $$('#${fieldname}_editrow').click(function() {
                         datagrid_edit_row(${fieldname}_datatable, '${fieldname}', this.href);
                     });
-                    jq('#${fieldname}_deleterow').click(function() {
+                    $$('#${fieldname}_deleterow').click(function() {
                         datagrid_delete_row(${fieldname}_datatable, '${fieldname}');
                     });
                     
-                    jq('#${fieldname}_editform').dialog({ 'autoOpen': false, 'modal': true });
+                    $$('#${fieldname}_editform').dialog({ 'autoOpen': false, 'modal': true });
                 } );">
     </script>
         

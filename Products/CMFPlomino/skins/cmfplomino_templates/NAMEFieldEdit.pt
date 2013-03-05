@@ -34,23 +34,23 @@
 			tal:define="fieldpath options/field/absolute_url_path">
 			<script type="text/javascript" tal:content="structure string:
 			 	function ${fieldname}_delete_row(elt) {
-					var rows = jq('#${fieldname}_datagrid_result > tbody > tr');
+					var rows = $$('#${fieldname}_datagrid_result > tbody > tr');
 					if (rows.length <= 1)
-						jq('#${fieldname}_datagrid_result > tbody').append('<tr style=\'display: none\'><td><input type=\'hidden\' name=\'${fieldname}\' value=\'\' /></td><td></td></tr>');
-					jq(elt).closest('tr').remove();
+						$$('#${fieldname}_datagrid_result > tbody').append('<tr style=\'display: none\'><td><input type=\'hidden\' name=\'${fieldname}\' value=\'\' /></td><td></td></tr>');
+					$$(elt).closest('tr').remove();
 			 		${fieldname}_set_row_style();
 			 	}
 
 				// Add a row to the results table
 			 	function ${fieldname}_add_row() {
 			 		var selected = o_${fieldname}_datagrid.fnGetData(this)[0];
-			 		var tablebody = jq('#${fieldname}_datagrid_result > tbody');
+			 		var tablebody = $$('#${fieldname}_datagrid_result > tbody');
 			 		// Add the row
 			 		//if (tablebody.has('input[value=' + selected + ']').length == 0) {
-			 		if (jq('#${fieldname}_datagrid_result > tbody:has(input[value=' + selected + '])').length == 0) {
+			 		if ($$('#${fieldname}_datagrid_result > tbody:has(input[value=' + selected + '])').length == 0) {
 			 			//tablebody.children().has('input[value=]').remove()
-			 			jq('#${fieldname}_datagrid_result > tbody > *:has(input[value=])').remove()
-				 		var row = jq('<tr><td><img alt=\'Remove\' src=\'list-remove.png\' style=\'cursor: pointer\' onclick=\'${fieldname}_delete_row(this)\' />' +
+			 			$$('#${fieldname}_datagrid_result > tbody > *:has(input[value=])').remove()
+				 		var row = $$('<tr><td><img alt=\'Remove\' src=\'list-remove.png\' style=\'cursor: pointer\' onclick=\'${fieldname}_delete_row(this)\' />' +
 							 		'<input type=\'hidden\' name=\'${fieldname}\' value=\'' + selected + '\' /></td><td>' + selected + '</td></tr>');
 				 		tablebody.append(row);
 			 		}
@@ -59,16 +59,16 @@
 
 			 	// Update rows classes in the results table
 			 	function ${fieldname}_set_row_style() {
-			 		var tablebody = jq('#${fieldname}_datagrid_result > tbody');
+			 		var tablebody = $$('#${fieldname}_datagrid_result > tbody');
 			 		tablebody.children().removeClass('odd even');
 			 		tablebody.children(':even').addClass('odd');
 			 		tablebody.children(':odd').addClass('even');
 			 	}
 			 	
 				var o_${fieldname}_datagrid;
-				jq(document).ready(function() {
+				$$(document).ready(function() {
 					// Init the datagrid
-					o_${fieldname}_datagrid = jq('#${fieldname}_datagrid').dataTable( {
+					o_${fieldname}_datagrid = $$('#${fieldname}_datagrid').dataTable( {
 						'bProcessing': true,
 						'bPaginate': true,
 						'bJQueryUI': true,
@@ -81,34 +81,34 @@
 	       					'sUrl': '@@collective.js.datatables.translation'
 						},
 				        'fnInitComplete': function(oSettings) {
-					 		jq('#${fieldname}_datagrid').closest('div.wrapper').hide();
+					 		$$('#${fieldname}_datagrid').closest('div.wrapper').hide();
 				        }
 				 	} );
 
 					// Close button
-				 	var close_ctrl = jq('#${fieldname}_datagrid').closest('.picklist').children('img.close_button');
+				 	var close_ctrl = $$('#${fieldname}_datagrid').closest('.picklist').children('img.close_button');
 
 				 	// Search
-				 	jq('#${fieldname}_search').click(function() {
+				 	$$('#${fieldname}_search').click(function() {
 				 		// Do an ajax request, and update the table
-				 		jq.post('${fieldpath}/filterednames',
+				 		$$.post('${fieldpath}/filterednames',
 						 		'filter=' + document.getElementById('${fieldname}_searchfield').value,
 						 		function(data, textStatus, XMLHttpRequest) {
 				 					o_${fieldname}_datagrid.fnClearTable(false);
 				 					o_${fieldname}_datagrid.fnAddData(data, false);
-									jq(o_${fieldname}_datagrid.fnGetNodes()).click(${fieldname}_add_row);
-									jq(o_${fieldname}_datagrid.fnGetNodes()).css('cursor', 'pointer');
+									$$(o_${fieldname}_datagrid.fnGetNodes()).click(${fieldname}_add_row);
+									$$(o_${fieldname}_datagrid.fnGetNodes()).css('cursor', 'pointer');
 				 					o_${fieldname}_datagrid.fnDraw();
 				 				},
 				 				'json');
 	 					
 				 		close_ctrl.show();
-				 		jq('#${fieldname}_datagrid').closest('.wrapper').slideDown();
+				 		$$('#${fieldname}_datagrid').closest('.wrapper').slideDown();
 				 	} );
 
 				 	// Close the panel
 				 	close_ctrl.click( function () {
-				 		jq('#${fieldname}_datagrid').closest('.wrapper').slideUp();
+				 		$$('#${fieldname}_datagrid').closest('.wrapper').slideUp();
 				 		close_ctrl.hide();
 				    } );
 

@@ -190,8 +190,8 @@
                                     fixedcol1size python:iscategorized and '{ \'aTargets\': [1], \'sWidth\': \'0\' },' or '';"
                         tal:content="structure string:
                                      var oDynamicTable;
-                                     jq(document).ready(function() {
-                                            oDynamicTable = jq('#dynamictable').dataTable( {
+                                     $$(document).ready(function() {
+                                            oDynamicTable = $$('#dynamictable').dataTable( {
                                                 'aaSorting': [],
                                                 'bJQueryUI': true,
                                                 'bProcessing': true,
@@ -219,8 +219,8 @@
                                             });
 
                                             var tableNodes = oDynamicTable.fnGetNodes();
-                                            jq('td > input:checkbox', tableNodes).change(function() {
-                                                jq(this).closest('tr').toggleClass('row_selected');
+                                            $$('td > input:checkbox', tableNodes).change(function() {
+                                                $$(this).closest('tr').toggleClass('row_selected');
                                             });
                                         });">
                     </script>
