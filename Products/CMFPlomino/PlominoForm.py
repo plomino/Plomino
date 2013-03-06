@@ -35,7 +35,7 @@ from PlominoDocument import TemporaryDocument
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlomino.config import *
 from Products.CMFPlomino import plomino_profiler
-from Products.CMFPlomino.PlominoUtils import PlominoTranslate
+from Products.CMFPlomino.PlominoUtils import PlominoTranslate, translate
 from Products.CMFPlomino.PlominoUtils import DateToString
 from Products.CMFPlomino.PlominoUtils import asUnicode
 import interfaces
@@ -548,16 +548,12 @@ class PlominoForm(ATFolder):
                     action_render)
 
         # translation
-        i18n_domain = self.getParentDatabase().getI18n()
+        db = self.getParentDatabase()
+        i18n_domain = db.getI18n()
+        if request and request.get("translation")=="off":
+            i18n_domain = None
         if i18n_domain:
-            def translate_token(match):
-                translation = PlominoTranslate(match.group(1), self, domain=i18n_domain)
-                translation = asUnicode(translation)
-                return translation
-            html_content = re.sub(
-                        "__(?P<token>.+?)__",
-                        translate_token,
-                        html_content)
+            html_content = translate(db, html_content, i18n_domain)
 
         # store fragment to cache
         html_content = self.updateCache(html_content, to_be_cached)

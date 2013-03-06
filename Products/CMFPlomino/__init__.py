@@ -158,7 +158,8 @@ class PlominoCoreUtils:
                'actual_path',
                'actual_context',
                'is_email',
-               'urlquote']
+               'urlquote',
+               'translate']
 
 component.provideUtility(PlominoCoreUtils, interfaces.IPlominoUtils)
 
