@@ -15,7 +15,7 @@
       </script>
     </tal:block>
     <tal:block tal:condition="python:here.hasGoogleVisualizationField()">
-        <script type='text/javascript' src='http://www.google.com/jsapi'></script>
+        <tal:script metal:use-macro="here/googlevisualization_macro/macros/js_library">//load google js</tal:script>
     </tal:block>
     <script type="text/javascript" tal:condition="here/hasDynamicHidewhen">
     	function refreshHidewhen() {

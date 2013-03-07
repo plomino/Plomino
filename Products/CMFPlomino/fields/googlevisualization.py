@@ -56,6 +56,7 @@ gvisudata.addColumn('string', 'Category');
 gvisudata.addColumn('number', 'Volume');
 gvisudata_getCells();
 var gvisudata_chart = new google.visualization.PieChart(document.getElementById('gvisudata_div'));
+google.visualization.events.addListener(gvisudata_chart, 'ready', fixGoogleCharts('gvisudata_div'));
 gvisudata_chart.draw(gvisudata, {width: 400, height: 400, is3D: true});
 }
 """,
