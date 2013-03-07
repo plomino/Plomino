@@ -457,6 +457,11 @@ class PlominoForm(ATFolder):
         """ 
         # remove the hidden content
         html_content = self.applyHideWhen(doc, silent_error=False)
+        if request:
+            parent_form_ids = request.get('parent_form_ids', [])
+            if parent_form_id:
+                parent_form_ids.append(parent_form_id)
+                request.set('parent_form_ids', parent_form_ids)
 
         # get the field lists
         fields = self.getFormFields(doc=doc, request=request)
