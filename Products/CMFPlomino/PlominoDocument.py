@@ -488,8 +488,9 @@ class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
             # update portal_catalog
             if db.getIndexInPortal():
                 db.portal_catalog.catalog_object(
-                        self,
-                        "/".join(db.getPhysicalPath() + [self.id]))
+                    self,
+                    "/".join(db.getPhysicalPath() + (self.id,))
+                )
 
     def _onOpenDocument(self, form=None):
         """ Execute the onOpenDocument code of the form.
