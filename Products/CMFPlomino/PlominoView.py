@@ -552,6 +552,12 @@ class PlominoView(ATFolder):
 
         IMPORTANT: brain_docs are supposed to be ZCatalog brains
         """
+        if REQUEST:
+            if REQUEST.get("separator"):
+                separator = REQUEST.get("separator")
+            if REQUEST.get("displayColumnsTitle"):
+                displayColumnsTitle = REQUEST.get("displayColumnsTitle")
+
         if isinstance(quoting, basestring):
             #convert to int when passed via querystring
             try:
