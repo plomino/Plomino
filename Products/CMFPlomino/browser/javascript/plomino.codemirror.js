@@ -1,4 +1,4 @@
-jq(document).ready(function() {
+$(document).ready(function() {
 	plomino_types = ['plominoaction',
 	                 'plominoagent',
 	                 'plominocache',
@@ -6,24 +6,24 @@ jq(document).ready(function() {
 	                 'plominohidewhen',
 	                 'plominofield',
 	                 'plominoview'];
-	jq(plomino_types).each(function(index, type) {
-		jq("#"+type+"-base-edit textarea").each(function() {
+	$(plomino_types).each(function(index, type) {
+		$("#"+type+"-base-edit textarea").each(function() {
 			this.onCodeMirrorSave = function() { 
-				jq("#"+type+"-base-edit").submit();
+				$("#"+type+"-base-edit").submit();
 			};
-			jq(this).addClass('codemirror-python')
-			jq(this).attr('data-codemirror-mode', "python");
+			$(this).addClass('codemirror-python')
+			$(this).attr('data-codemirror-mode', "python");
 		});
 	});
 	
 	// enable on all PlominoField settings page
 	// TODO: SAVE
-	jq(".portaltype-plominofield #content-core textarea").each(function() {
+	$(".portaltype-plominofield #content-core textarea").each(function() {
 		this.onCodeMirrorSave = function() {
-			jq("input[name='form.actions.apply']").click();
+			$("input[name='form.actions.apply']").click();
 		};
-		jq(this).addClass('codemirror-python');
-		jq(this).attr('data-codemirror-mode', "python");
+		$(this).addClass('codemirror-python');
+		$(this).attr('data-codemirror-mode', "python");
 	});
 
 	// plominoform textareas must be processed more precisely
@@ -37,13 +37,13 @@ jq(document).ready(function() {
 	                      'onSearch',
 	                      'beforeCreateDocument'
 	                      ]
-	jq(plomino_form_areas).each(function(index, area) {
-		jq("#plominoform-base-edit #"+area).each(function() {
+	$(plomino_form_areas).each(function(index, area) {
+		$("#plominoform-base-edit #"+area).each(function() {
 			this.onCodeMirrorSave = function() { 
-				jq("#plominoform-base-edit").submit();
+				$("#plominoform-base-edit").submit();
 			};
-			jq(this).addClass('codemirror-python');
-			jq(this).attr('data-codemirror-mode', "python");
+			$(this).addClass('codemirror-python');
+			$(this).attr('data-codemirror-mode', "python");
 		});
 	});
 });

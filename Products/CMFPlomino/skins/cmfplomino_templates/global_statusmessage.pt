@@ -31,22 +31,22 @@
     <script type="text/javascript">
     <!--
         function showTraceback(el, formula_path) {
-            msg = jq(el).children().filter(":first").html();
-            popup = jq("#plominoTracebackPopup").clone();
-            jq(popup).children("strong").html(msg);
-            jq.get(formula_path, function(data) {
+            msg = $(el).children().filter(":first").html();
+            popup = $("#plominoTracebackPopup").clone();
+            $(popup).children("strong").html(msg);
+            $.get(formula_path, function(data) {
                 offset = 4;
                 code = "";
-                jq.each(data.split('\n'), function(index, value) {
+                $.each(data.split('\n'), function(index, value) {
                     line = index + offset
                     code = code + line + ": " + value + '\n';
                 });
-            	jq(popup).children("pre").html(jq("<div/>").text(code).html());
+            	$(popup).children("pre").html($("<div/>").text(code).html());
             });
         	popup.dialog({show: "blind", height: 430, width: 530});
         }
-        jq(document).ready(function () {
-			jq("#plominoMessages").load("./statusmessage_load #plonePortalMessages");
+        $(document).ready(function () {
+			$("#plominoMessages").load("./statusmessage_load #plonePortalMessages");
 		});
 	-->
     </script>

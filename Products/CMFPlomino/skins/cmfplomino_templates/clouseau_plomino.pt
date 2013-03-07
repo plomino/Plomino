@@ -43,8 +43,8 @@
 <script><!--
 var formula_lines = new Array();
 var current_line = 0;
-jq(document).ready(function() {
-	jq.get(formula_path, function(data) {
+$(document).ready(function() {
+	$.get(formula_path, function(data) {
 		formula_lines = data.split('\n');
     });
 	init_debugger();

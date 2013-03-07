@@ -230,12 +230,12 @@
 html="""
 <script>
 function get_results() {
-    criteria = jq('#plomino_form').serialize();
-    jq('#result_list').load("%s"+criteria+" #plomino_form");
+    criteria = $('#plomino_form').serialize();
+    $('#result_list').load("%s"+criteria+" #plomino_form");
 }
-jq(document).ready(function() {
-  jq('#plomino_form input').change(function() {
-  jq('#result_list').html("<img src='spinner.gif' />");
+$(document).ready(function() {
+  $('#plomino_form input').change(function() {
+  $('#result_list').html("<img src='spinner.gif' />");
   get_results();
   });
   get_results();

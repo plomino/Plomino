@@ -35,7 +35,7 @@ from PlominoDocument import TemporaryDocument
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlomino.config import *
 from Products.CMFPlomino import plomino_profiler
-from Products.CMFPlomino.PlominoUtils import PlominoTranslate
+from Products.CMFPlomino.PlominoUtils import PlominoTranslate, translate
 from Products.CMFPlomino.PlominoUtils import DateToString
 from Products.CMFPlomino.PlominoUtils import asUnicode
 import interfaces
@@ -553,16 +553,12 @@ class PlominoForm(ATFolder):
                     action_render)
 
         # translation
-        i18n_domain = self.getParentDatabase().getI18n()
+        db = self.getParentDatabase()
+        i18n_domain = db.getI18n()
+        if request and request.get("translation")=="off":
+            i18n_domain = None
         if i18n_domain:
-            def translate_token(match):
-                translation = PlominoTranslate(match.group(1), self, domain=i18n_domain)
-                translation = asUnicode(translation)
-                return translation
-            html_content = re.sub(
-                        "__(?P<token>.+?)__",
-                        translate_token,
-                        html_content)
+            html_content = translate(db, html_content, i18n_domain)
 
         # store fragment to cache
         html_content = self.updateCache(html_content, to_be_cached)
@@ -692,8 +688,14 @@ class PlominoForm(ATFolder):
                 return True
         for subformname in self.getSubforms():
             form = self.getParentDatabase().getForm(subformname)
-            if form and form.hasDynamicHidewhen():
-                return True
+            if form:
+                if form.hasDynamicHidewhen():
+                    return True
+            else:
+                msg = 'Missing subform: %s. Referenced on: %s' % (subformname, self.id)
+                self.writeMessageOnPage(msg, self.REQUEST)
+                logger.info(msg)
+
         return False
 
     security.declareProtected(READ_PERMISSION, 'getHidewhenAsJSON')
@@ -725,6 +727,11 @@ class PlominoForm(ATFolder):
                 result[hidewhen.id] = isHidden
         for subformname in self.getSubforms():
             form = db.getForm(subformname)
+            if not form:
+                msg = 'Missing subform: %s. Referenced on: %s' % (subformname, self.id)
+                self.writeMessageOnPage(msg, self.REQUEST)
+                logger.info(msg)
+                continue
             form_hidewhens = json.loads(
                     form.getHidewhenAsJSON(REQUEST,
                         parent_form=parent_form or self,
@@ -1110,6 +1117,11 @@ class PlominoForm(ATFolder):
                     hiddensection)
         for subformname in self.getSubforms(doc):
             subform = self.getParentDatabase().getForm(subformname)
+            if not subform:
+                msg = 'Missing subform: %s. Referenced on: %s' % (subformname, self.id)
+                self.writeMessageOnPage(msg, self.REQUEST)
+                logger.info(msg)
+                continue
             hidden_fields += subform._get_js_hidden_fields(REQUEST, doc)
         return hidden_fields
 

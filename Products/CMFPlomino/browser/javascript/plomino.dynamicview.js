@@ -30,25 +30,25 @@ function findInArray(array, value) {
 
 // Expand or collapse a category
 function dynamicview_toggle_category(nRow) {
-	var row = jq(nRow);
+	var row = $(nRow);
 	row.toggleClass("expanded").toggleClass("collapsed");
 	dynamicview_refresh_categories(row.closest("table"));
 }
 
 // Refresh table by collapsing and expanding every category
 function dynamicview_refresh_categories(nTable) {
-	var table = jq(nTable);
+	var table = $(nTable);
 	var collapsed = false;
-	jq("tbody tr", table).each(function() {
-		var row = jq(this);
+	$("tbody tr", table).each(function() {
+		var row = $(this);
 		// it is a header
 		if (row.hasClass("collapsed")) {
 			collapsed = true;
-			jq("td:eq(0)", row).html("<img src='list-add.png' alt='Collapse' />");
+			$("td:eq(0)", row).html("<img src='list-add.png' alt='Collapse' />");
 		}
 		else if(row.hasClass("expanded")) {
 			collapsed = false;
-			jq("td:eq(0)", row).html("<img src='list-remove.png' alt='Extpand' />");
+			$("td:eq(0)", row).html("<img src='list-remove.png' alt='Extpand' />");
 		}
 		// it is a row
 		else {
@@ -61,19 +61,19 @@ function dynamicview_refresh_categories(nTable) {
 
 	// refresh the table asExpanded, stored in the table data
 	var asExpanded = [];
-	jq("tbody tr.expanded", table).each(function() {
-		asExpanded.push(jq(this).text());
+	$("tbody tr.expanded", table).each(function() {
+		asExpanded.push($(this).text());
 	});
 	table.data("asExpanded", asExpanded);
 }
 
 // Generates categories (must be called when the table is re-drawn
 function dynamicview_categorize(sTableId) {
-	var table = jq('#' + sTableId);
+	var table = $('#' + sTableId);
 	// add categories headers
-	jq('tbody tr', table).each(function(index, element) {
-		var row = jq(this);
-		var category = jq('td:eq(1)', this).text();
+	$('tbody tr', table).each(function(index, element) {
+		var row = $(this);
+		var category = $('td:eq(1)', this).text();
 		if (index == 0 || category != row.prev().children("td:eq(1)").text()) {
 			var asExpanded = table.data("asExpanded") || [];
 			var classname = findInArray(asExpanded, category) == -1 ? "collapsed" : "expanded";
@@ -81,8 +81,8 @@ function dynamicview_categorize(sTableId) {
 			row.before('<tr onclick="dynamicview_toggle_category(this);" class="' + classname + '"><td class="group"></td><td class="group" colspan="' + colspan + '">' + category + '</td></tr>');
 		}
 	});
-	jq('tbody tr:not(.collapsed,.expanded)', table).each(function(){
-		jq('td:eq(1) a', this).hide();
+	$('tbody tr:not(.collapsed,.expanded)', table).each(function(){
+		$('td:eq(1) a', this).hide();
 	});
 	// hide collapsed rows
 	dynamicview_refresh_categories(table);
@@ -96,8 +96,8 @@ function generateTableFooter(nFoot, aasData, iStart, iEnd, aiDisplay ) {
 	if (aiDisplay.length > 0) {
 		// Table which stores sums
 		var result = [];
-		jq('#dynamictable > thead > tr:first-child > th:visible').each(function (index, element) {
-			if (jq(element).hasClass('displaysum'))
+		$('#dynamictable > thead > tr:first-child > th:visible').each(function (index, element) {
+			if ($(element).hasClass('displaysum'))
 				result[index] = 0;
 			else
 				result[index] = NaN;
@@ -119,20 +119,20 @@ function generateTableFooter(nFoot, aasData, iStart, iEnd, aiDisplay ) {
 				colResult = "";
 			else
 				hasSums = true;
-			jq('th', nFoot).eq(i).text(colResult);
+			$('th', nFoot).eq(i).text(colResult);
 		}
 	}
 	
 	// Display the footer if there is sums to display
 	if (!hasSums)
-    	jq(nFoot).hide();
+    	$(nFoot).hide();
 	else
-		jq(nFoot).show();
+		$(nFoot).show();
 }
 
 // Returns a string storing every selected documents, separated by '@'
 function dynamicview_selecteddocuments() {
-	var docs = jq('input:checked', oDynamicTable.fnGetNodes()).get();
+	var docs = $('input:checked', oDynamicTable.fnGetNodes()).get();
 	var docids = "";
 	for (var i = 0; i < docs.length; i++)
 		docids += docs[i].value + '@';

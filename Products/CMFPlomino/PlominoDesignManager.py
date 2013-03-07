@@ -25,6 +25,7 @@ import xmlrpclib
 
 # Zope
 from Acquisition import *
+from AccessControl.requestmethod import postonly
 from DateTime import DateTime
 from HttpUtils import authenticateAndLoadURL, authenticateAndPostToURL
 from Persistence import Persistent
@@ -102,14 +103,15 @@ def run_refreshdb(context):
 
 
 class PlominoDesignManager(Persistent):
-    """Plomino design import/export features
+    """ Plomino design import/export features
     """
     security = ClassSecurityInfo()
 
     # Methods
     security.declarePublic('manage_refreshDB')
+    @postonly
     def manage_refreshDB(self, REQUEST):
-        """launch refreshDB
+        """ Launch refreshDB
         """
         if ASYNC:
             self.refreshDB_async()
@@ -131,7 +133,8 @@ class PlominoDesignManager(Persistent):
 
     security.declareProtected(DESIGN_PERMISSION, 'refreshDB')
     def refreshDB(self):
-        """all actions to take when reseting a DB (after import for instance)
+        """ All actions to take when refreshing a DB (after import for
+        instance).
         """
         logger.info('Refreshing database ' + self.id)
         report = []
@@ -229,7 +232,8 @@ class PlominoDesignManager(Persistent):
         return report
 
     security.declareProtected(DESIGN_PERMISSION, 'reindexDocuments')
-    def reindexDocuments(self, plomino_index, items_only=False, views_only=False, update_metadata=1, changed_since=None):
+    def reindexDocuments(self, plomino_index, items_only=False,
+            views_only=False, update_metadata=1, changed_since=None):
         """ Reindex all documents in a given index.
         """
         documents = self.getAllDocuments()
@@ -295,7 +299,8 @@ class PlominoDesignManager(Persistent):
         logger.info(msg)
         return msg
 
-    security.declareProtected(DESIGN_PERMISSION, 'refreshDB')
+    security.declareProtected(DESIGN_PERMISSION, 'recomputeAllDocuments')
+    @postonly
     def recomputeAllDocuments(self, REQUEST=None):
         """
         """
@@ -336,6 +341,7 @@ class PlominoDesignManager(Persistent):
             REQUEST.RESPONSE.redirect(self.absolute_url()+"/DatabaseDesign")
 
     security.declareProtected(DESIGN_PERMISSION, 'refreshPortalCatalog')
+    @postonly
     def refreshPortalCatalog(self, REQUEST=None):
         """
         """
@@ -385,7 +391,8 @@ class PlominoDesignManager(Persistent):
         logger.info('Plone workflow update')
 
     security.declareProtected(DESIGN_PERMISSION, 'exportDesign')
-    def exportDesign(self, targettype='file', targetfolder='', dbsettings=True, designelements=None, REQUEST=None, **kw):
+    def exportDesign(self, targettype='file', targetfolder='', dbsettings=True,
+            designelements=None, REQUEST=None, **kw):
         """ Export design elements to XML.
         The targettype can be file, server, or folder.
         """
@@ -493,7 +500,7 @@ class PlominoDesignManager(Persistent):
 
     security.declareProtected(DESIGN_PERMISSION, 'importDesign')
     def importDesign(self, REQUEST=None):
-        """import design elements in current database
+        """ Import design elements in current database
         """
         submit_import = REQUEST.get('submit_import')
         entire = REQUEST.get('entire')
@@ -1021,7 +1028,8 @@ class PlominoDesignManager(Persistent):
         return node
 
     security.declareProtected(DESIGN_PERMISSION, 'importDesignFromXML')
-    def importDesignFromXML(self, xmlstring=None, REQUEST=None, from_folder=None, replace=False):
+    def importDesignFromXML(self, xmlstring=None, REQUEST=None,
+            from_folder=None, replace=False):
         """
         """
         logger.info("Start design import")

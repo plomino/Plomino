@@ -34,16 +34,16 @@
       </acl>
     </dbsettings>
     <resource id="city_autocomplete" title="" type="Page Template"><![CDATA[<span><script>
-jq(function() {
-    jq( "#city" ).autocomplete({
+$(function() {
+    $( "#city" ).autocomplete({
 	    source: function(req, add){            
-            jq.getJSON("http://ws.geonames.org/searchJSON?maxRows=15&featureCode=P&country=ES&name_startsWith="+jq("#city").val(), req,
+            $.getJSON("http://ws.geonames.org/searchJSON?maxRows=15&featureCode=P&country=ES&name_startsWith="+$("#city").val(), req,
                 function(data) {  
                     var suggestions = [];  
 
                     //read city names in results  
                     data = data.geonames;
-                    jq.each(data, function(i, val){  
+                    $.each(data, function(i, val){  
                         suggestions.push(val.name); 
                     });
 
@@ -57,8 +57,8 @@ jq(function() {
 </script><input id="city" type="text" tal:attributes="name options/fieldname; value options/fieldvalue;" /></span>]]></resource>
     <resource id="department_autocomplete" title="" type="Page Template"><![CDATA[<span>
 <script>
-jq(function() {
-    jq( "#department" ).autocomplete({
+$(function() {
+    $( "#department" ).autocomplete({
         source: ["Development",
                  "Human resources",
                  "Marketing",
@@ -72,9 +72,9 @@ jq(function() {
 </span>]]></resource>
     <resource id="manager_autocomplete" title="" type="Page Template"><![CDATA[<span>
 <script>
-jq(function() {
-    jq.getJSON("tojson?item=employee_list", '', function(data){
-        jq( "#manager" ).autocomplete({
+$(function() {
+    $.getJSON("tojson?item=employee_list", '', function(data){
+        $( "#manager" ).autocomplete({
             source: data
         });
     });
