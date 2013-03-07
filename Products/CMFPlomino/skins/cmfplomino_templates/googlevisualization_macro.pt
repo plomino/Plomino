@@ -1,0 +1,15 @@
+<tal:macro metal:define-macro="js_library">
+    <script type='text/javascript' src='http://www.google.com/jsapi'></script>
+        <script type='text/javascript'>
+/* Fix for Firefox/Google visualization tooltip */
+function fixGoogleCharts(strChartContainer) {
+    return function () {
+        $('#'+strChartContainer+' svg g[clip-path]').each(
+            function() {
+                $(this).attr('clip-path', 'url(' + document.location + $(this).attr('clip-path').substring(4));
+            }
+        );
+    }
+}
+    </script>
+</tal:macro>
