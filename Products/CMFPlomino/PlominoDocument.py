@@ -77,7 +77,7 @@ try:
 except ImportError:
     URL_NORMALIZER = False
 
-from PlominoUtils import sendMail, asUnicode, asList, PlominoTranslate
+from PlominoUtils import sendMail, asUnicode, asList, PlominoTranslate, json_dumps
 
 
 class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
@@ -285,16 +285,16 @@ class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
                     fieldvalue = self.getItem(item)
             else:
                 fieldvalue = self.getItem(item)
+            data = fieldvalue
         else:
-            fieldvalue = self.items.data
+            data = self.items.data
 
         if datatables_format:
-            fieldvalue = {
-                    'iTotalRecords': len(fieldvalue),
-                    'iTotalDisplayRecords': len(fieldvalue),
-                    'aaData': fieldvalue }
-
-        return json.dumps(fieldvalue)
+            data = {
+                    'iTotalRecords': len(data),
+                    'iTotalDisplayRecords': len(data),
+                    'aaData': data }
+        return json_dumps(data)
 
     security.declarePublic('computeItem')
     def computeItem(self, itemname, form=None, formid=None, store=True,

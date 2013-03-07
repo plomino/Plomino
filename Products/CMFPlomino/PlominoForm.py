@@ -37,7 +37,7 @@ from Products.CMFPlomino.config import *
 from Products.CMFPlomino import plomino_profiler
 from Products.CMFPlomino.PlominoUtils import PlominoTranslate, translate
 from Products.CMFPlomino.PlominoUtils import DateToString
-from Products.CMFPlomino.PlominoUtils import asUnicode
+from Products.CMFPlomino.PlominoUtils import asUnicode, json_dumps
 import interfaces
 
 schema = Schema((
@@ -1316,7 +1316,7 @@ class PlominoForm(ATFolder):
                     'iTotalDisplayRecords': len(result),
                     'aaData': result}
 
-        return json.dumps(result)
+        return json_dumps(result)
 
     def _getDatabaseViews(self):
         db = self.getParentDatabase()
