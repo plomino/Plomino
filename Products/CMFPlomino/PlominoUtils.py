@@ -323,8 +323,13 @@ def isDocument(doc):
             return doc.isDocument()
     return False
 
-def json_dumps(obj):
-    return json.dumps(obj)
+
+def json_dumps(data):
+    def json_date_handler(obj):
+        if hasattr(obj, 'ISO'):
+            obj = obj.ISO()
+        return obj
+    return json.dumps(data, default=json_date_handler)
 
 
 def json_loads(json_string):

@@ -242,7 +242,8 @@ PlominoDatabase_schema = getattr(ATFolder, 'schema', Schema(())).copy() + \
 ##/code-section after-schema
 
 
-class PlominoDatabase(ATFolder, PlominoAccessControl, PlominoDesignManager, PlominoReplicationManager, PlominoScheduler):
+class PlominoDatabase(ATFolder, PlominoAccessControl, PlominoDesignManager,
+        PlominoReplicationManager, PlominoScheduler):
     """
     """
     security = ClassSecurityInfo()
@@ -359,7 +360,7 @@ class PlominoDatabase(ATFolder, PlominoAccessControl, PlominoDesignManager, Plom
 
     security.declarePublic('getView')
     def getView(self, viewname):
-        """return a PlominoView
+        """ Return a PlominoView
         """
         obj = getattr(self, viewname, None)
         if obj and obj.Type() == 'PlominoView':
@@ -367,7 +368,7 @@ class PlominoDatabase(ATFolder, PlominoAccessControl, PlominoDesignManager, Plom
 
     security.declarePublic('getViews')
     def getViews(self, sortbyid=True):
-        """return the database views list
+        """ Return the list of PlominoView instances in the database.
         """
         view_list = self.objectValues(spec='PlominoView')
         view_obj_list = [a for a in view_list]
@@ -390,6 +391,7 @@ class PlominoDatabase(ATFolder, PlominoAccessControl, PlominoDesignManager, Plom
         """ Returns all the PlominoAgent objects stored in the database.
         """
         # Convert from LazyList to (sortable) plain list.
+        # We sort because this list is used in UI.
         agent_list = list(self.objectValues(spec='PlominoAgent'))
         agent_list.sort(key=lambda agent: agent.id.lower())
         return agent_list
@@ -479,12 +481,12 @@ class PlominoDatabase(ATFolder, PlominoAccessControl, PlominoDesignManager, Plom
 
     security.declareProtected(REMOVE_PERMISSION, 'manage_deleteDocuments')
     def manage_deleteDocuments(self, REQUEST):
-        """delete documents action
+        """ Delete documents action.
         """
         strids = REQUEST.get('deldocs', None)
         if strids is not None:
             ids = [i for i in strids.split('@') if i is not '']
-            self.deleteDocuments(ids=ids, massive=False)
+            self.deleteDocuments(ids=ids, massive=False)  # Trigger events
         REQUEST.RESPONSE.redirect('.')
 
     security.declarePublic('getIndex')
@@ -536,8 +538,9 @@ class PlominoDatabase(ATFolder, PlominoAccessControl, PlominoDesignManager, Plom
         self._cache()[key] = value
 
     def cleanCache(self, key=None):
-        """ invalidate the cache
-        (if key is None, all cached values are cleaned)
+        """ Invalidate the cache.
+
+        If key is None, all cached values are cleared.
         """
         cache = self._cache()
         if hasattr(cache, 'ramcache'):
@@ -552,6 +555,7 @@ class PlominoDatabase(ATFolder, PlominoAccessControl, PlominoDesignManager, Plom
 
     def getRequestCache(self, key):
         """ Get cached value in an annotation on the current request.
+
         Note: it will available within this request only, 
         it will be destroyed once the request is terminated.
         """

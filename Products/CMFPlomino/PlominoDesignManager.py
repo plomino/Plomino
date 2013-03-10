@@ -645,11 +645,9 @@ class PlominoDesignManager(Persistent):
 
     security.declarePublic('cleanFormulaScripts')
     def cleanFormulaScripts(self, script_id_pattern=None):
-        for s in self.scripts.objectIds():
-            if script_id_pattern is None:
-                self.scripts._delObject(s)
-            elif s.startswith(script_id_pattern):
-                self.scripts._delObject(s)
+        for script_id in self.scripts.objectIds():
+            if not script_id_pattern or script_id_pattern in script_id:
+                self.scripts._delObject(script_id)
 
     security.declarePublic('compileFormulaScript')
     def compileFormulaScript(self, script_id, formula, with_args=False):

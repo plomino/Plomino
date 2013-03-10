@@ -9,7 +9,7 @@
 
 <metal:javascript_head fill-slot="javascript_head_slot">
     <tal:block tal:define="myF python:here.getForm();" tal:condition="python:myF and myF.hasGoogleVisualizationField()">
-        <script type='text/javascript' src='http://www.google.com/jsapi'></script>
+        <tal:script metal:use-macro="here/googlevisualization_macro/macros/js_library">//load google js</tal:script>
     </tal:block>
 </metal:javascript_head>
 

@@ -147,6 +147,7 @@ class PlominoAction(BaseContent, BrowserDefaultMixin):
         elif self.ActionType == "CLOSE":
             return db.absolute_url() + '/checkBeforeOpenDatabase'
         elif self.ActionType == "PYTHON":
+            import pdb; pdb.set_trace()
             if target is None:
                 targetid = "None"
             else:
@@ -167,6 +168,7 @@ class PlominoAction(BaseContent, BrowserDefaultMixin):
                         form_id)
                 return str(redirecturl)
             except PlominoScriptException, e:
+                # TODO: why not use e.reportError here?
                 return ('javascript:alert('
                         '"Error: formula error in redirect action %s")' %
                         self.Title())

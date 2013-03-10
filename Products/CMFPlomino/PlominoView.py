@@ -36,7 +36,7 @@ except:
 
 # Plomino
 from exceptions import PlominoScriptException
-from PlominoUtils import asUnicode, asList
+from PlominoUtils import asUnicode, asList, json_dumps
 from Products.CMFPlomino.config import *
 from validator import isValidPlominoId
 import interfaces
@@ -552,6 +552,12 @@ class PlominoView(ATFolder):
 
         IMPORTANT: brain_docs are supposed to be ZCatalog brains
         """
+        if REQUEST:
+            if REQUEST.get("separator"):
+                separator = REQUEST.get("separator")
+            if REQUEST.get("displayColumnsTitle"):
+                displayColumnsTitle = REQUEST.get("displayColumnsTitle")
+
         if isinstance(quoting, basestring):
             #convert to int when passed via querystring
             try:
@@ -703,7 +709,7 @@ class PlominoView(ATFolder):
                     data.append(entry)
             else:
                 data.append(row)
-        return json.dumps(
+        return json_dumps(
                     {'iTotalRecords': total,
                     'iTotalDisplayRecords': display_total,
                     'aaData': data })

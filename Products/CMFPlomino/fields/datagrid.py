@@ -31,7 +31,7 @@ from Products.CMFPlomino.fields.base import IBaseField, BaseField, BaseForm
 from Products.CMFPlomino.fields.dictionaryproperty import DictionaryProperty
 from Products.CMFPlomino.interfaces import IPlominoField
 from Products.CMFPlomino.PlominoDocument import TemporaryDocument
-from Products.CMFPlomino.PlominoUtils import DateToString, PlominoTranslate
+from Products.CMFPlomino.PlominoUtils import DateToString, PlominoTranslate, json_dumps
 
 
 class IDatagridField(IBaseField):
@@ -126,7 +126,7 @@ class DatagridField(BaseField):
         """
         """
         rows = self.rows(value, rendered)
-        return json.dumps(rows)
+        return json_dumps(rows)
 
     def request_items_aoData(self, request):
         """ Return a string representing REQUEST.items as aoData.push calls.
@@ -134,7 +134,7 @@ class DatagridField(BaseField):
         aoData_templ = "aoData.push(%s); "
         aoDatas = []
         for k,v in request.form.items():
-            j = json.dumps({'name': k, 'value': v})
+            j = json_dumps({'name': k, 'value': v})
             aoDatas.append(aoData_templ % j)
         return '\n'.join(aoDatas)
 
