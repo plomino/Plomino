@@ -29,6 +29,7 @@ __docformat__ = 'plaintext'
 #       use the protected code section at the bottom of initialize().
 
 # From the standard library
+import decimal as std_decimal
 import logging
 logger = logging.getLogger('CMFPlomino')
 logger.debug('Installing Product')
