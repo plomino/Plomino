@@ -29,7 +29,7 @@ __docformat__ = 'plaintext'
 #       use the protected code section at the bottom of initialize().
 
 # From the standard library
-import decimal as std_decimal
+import decimal
 import logging
 logger = logging.getLogger('CMFPlomino')
 logger.debug('Installing Product')
@@ -90,7 +90,7 @@ json._default_decoder = JSONDecoder(
         encoding=None,
         object_hook=_extended_json_decoding,
         object_pairs_hook=None,
-        parse_float=std_decimal.Decimal)
+        parse_float=decimal.Decimal)
 # jsonutil: TO HERE
 
 class isPlomino(object):
