@@ -14,7 +14,7 @@ __docformat__ = 'plaintext'
 from cStringIO import StringIO
 from email.Header import Header
 from email import message_from_string
-from time import strptime
+from dateutil.parser import parse
 from types import StringTypes
 import cgi
 import csv
@@ -26,6 +26,8 @@ import re
 import urllib
 
 # 3rd party Python
+from simplejson.decoder import JSONDecoder, JSONDecodeError
+from simplejson.encoder import JSONEncoder
 from jsonutil import jsonutil as json
 
 # Zope
@@ -80,19 +82,16 @@ def StringToDate(str_d, format='%Y-%m-%d'):
     """
     # XXX: Should use db.getDateTimeFormat
     try:
-        dt = strptime(str_d, format)
+        dt = parse(str_d, format)
     except ValueError, e:
         # XXX: Just let DateTime guess.
-        dt = strptime(DateTime(str_d).ISO(), '%Y-%m-%dT%H:%M:%S')
+        dt = parse(DateTime(str_d).ISO())
         logger.info('StringToDate> %s, %s, %s, guessed: %s' % (
             str(str_d),
             format,
             repr(e),
             repr(dt)))
-    if len(dt) >= 5:
-        return DateTime(dt[0], dt[1], dt[2], dt[3], dt[4])
-    else:
-        return DateTime(dt[0], dt[1], dt[2])
+    return DateTime(dt)
 
 
 def DateRange(d1, d2):
@@ -324,13 +323,42 @@ def isDocument(doc):
             return doc.isDocument()
     return False
 
-
 def json_dumps(obj):
     return json.dumps(obj)
 
 
 def json_loads(json_string):
     return json.loads(json_string)
+
+
+def _extended_json_encoding(obj):
+    if isinstance(obj, DateTime):
+        return {'__datetime__': True,
+                'datetime': obj.ISO()}
+    return json.dumps(obj)
+
+json._default_encoder = JSONEncoder(
+        skipkeys=False,
+        ensure_ascii=True,
+        check_circular=True,
+        allow_nan=True,
+        indent=None,
+        separators=None,
+        encoding='utf-8',
+        default=_extended_json_encoding,
+        use_decimal=True,
+)
+
+def _extended_json_decoding(dct):
+    if '__datetime__' in dct:
+        return StringToDate(dct['datetime'], format=None)
+    return dct
+
+json._default_decoder = JSONDecoder(
+        encoding=None,
+        object_hook=_extended_json_decoding,
+        object_pairs_hook=None,
+        parse_float=std_decimal.Decimal)
 
 # From http://lsimons.wordpress.com/2011/03/17/stripping-illegal-characters-out-of-xml-in-python/
 _illegal_xml_chars_RE = re.compile(
