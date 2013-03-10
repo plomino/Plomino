@@ -32,8 +32,12 @@ __docformat__ = 'plaintext'
 import logging
 logger = logging.getLogger('CMFPlomino')
 logger.debug('Installing Product')
-
 from time import time
+
+# 3rd party
+from jsonutil import jsonutil as json
+from simplejson.decoder import JSONDecoder, JSONDecodeError
+from simplejson.encoder import JSONEncoder
 
 # Zope
 from AccessControl.Permission import registerPermissions
@@ -55,6 +59,38 @@ import interfaces
 
 DirectoryView.registerDirectory('skins', product_globals)
 
+
+# Override default JSONEncoder/JSONDecoder classes in jsonutil to handle
+# dates:
+def _extended_json_encoding(obj):
+    if isinstance(obj, DateTime):
+        return {'__datetime__': True,
+                'datetime': obj.ISO()}
+    return json.dumps(obj)
+
+json._default_encoder = JSONEncoder(
+        skipkeys=False,
+        ensure_ascii=True,
+        check_circular=True,
+        allow_nan=True,
+        indent=None,
+        separators=None,
+        encoding='utf-8',
+        default=_extended_json_encoding,
+        use_decimal=True,
+)
+
+def _extended_json_decoding(dct):
+    if '__datetime__' in dct:
+        return StringToDate(dct['datetime'], format=None)
+    return dct
+
+json._default_decoder = JSONDecoder(
+        encoding=None,
+        object_hook=_extended_json_decoding,
+        object_pairs_hook=None,
+        parse_float=std_decimal.Decimal)
+# jsonutil: TO HERE
 
 class isPlomino(object):
     """ Return True if called on any Plomino object.

@@ -27,8 +27,6 @@ import re
 import urllib
 
 # 3rd party Python
-from simplejson.decoder import JSONDecoder, JSONDecodeError
-from simplejson.encoder import JSONEncoder
 from jsonutil import jsonutil as json
 
 # Zope
@@ -339,35 +337,6 @@ def json_dumps(data):
 def json_loads(json_string):
     return json.loads(json_string)
 
-
-def _extended_json_encoding(obj):
-    if isinstance(obj, DateTime):
-        return {'__datetime__': True,
-                'datetime': obj.ISO()}
-    return json.dumps(obj)
-
-json._default_encoder = JSONEncoder(
-        skipkeys=False,
-        ensure_ascii=True,
-        check_circular=True,
-        allow_nan=True,
-        indent=None,
-        separators=None,
-        encoding='utf-8',
-        default=_extended_json_encoding,
-        use_decimal=True,
-)
-
-def _extended_json_decoding(dct):
-    if '__datetime__' in dct:
-        return StringToDate(dct['datetime'], format=None)
-    return dct
-
-json._default_decoder = JSONDecoder(
-        encoding=None,
-        object_hook=_extended_json_decoding,
-        object_pairs_hook=None,
-        parse_float=std_decimal.Decimal)
 
 # From http://lsimons.wordpress.com/2011/03/17/stripping-illegal-characters-out-of-xml-in-python/
 _illegal_xml_chars_RE = re.compile(
