@@ -27,10 +27,6 @@ from Products.Archetypes.atapi import *
 from Products.ATContentTypes.content.folder import ATFolder
 from zope.interface import implements
 
-# Plone
-from plone.app.content.batching import Batch
-from Products.CMFDynamicViewFTI.browserdefault import BrowserDefaultMixin
-
 # Plomino
 from exceptions import PlominoScriptException
 from PlominoUtils import asUnicode, asList
@@ -294,7 +290,6 @@ class PlominoView(ATFolder):
             lazy=True)]
         length = results[0]
         if limit:
-            #results = Batch(items=results, pagesize=limit, pagenumber=int(start/limit)+1)
             results = results[start+1:start+limit+1]
         else:
             results = results[1:]
