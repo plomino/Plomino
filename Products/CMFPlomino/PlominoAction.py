@@ -167,6 +167,7 @@ class PlominoAction(BaseContent, BrowserDefaultMixin):
                         form_id)
                 return str(redirecturl)
             except PlominoScriptException, e:
+                # TODO: why not use e.reportError here?
                 return ('javascript:alert('
                         '"Error: formula error in redirect action %s")' %
                         self.Title())
