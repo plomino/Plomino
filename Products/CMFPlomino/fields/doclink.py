@@ -24,7 +24,6 @@ from zope.schema.vocabulary import SimpleVocabulary
 from base import IBaseField, BaseField, BaseForm
 from dictionaryproperty import DictionaryProperty
 from Products.CMFPlomino.exceptions import PlominoScriptException
-from Products.CMFPlomino.PlominoUtils import json_dumps
 
 class IDoclinkField(IBaseField):
     """ Selection field schema
@@ -165,7 +164,7 @@ class DoclinkField(BaseField):
         else:
             datatable = [v.split('|')[::-1] for v in selectionlist]
 
-        return json_dumps(datatable)
+        return json.dumps(datatable)
 
     def getJQueryColumns(self):
         """ Returns a JSON representation of columns headers.
@@ -186,7 +185,7 @@ class DoclinkField(BaseField):
                 0,
                 {"bVisible": False, "bSearchable": False})
 
-        return json_dumps(column_dicts)
+        return json.dumps(column_dicts)
 
     def getColumnLabelIndex(self):
         """ Return the column index used to display the document label

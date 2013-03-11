@@ -45,6 +45,7 @@ from AccessControl.Permission import registerPermissions
 from Globals import DevelopmentMode
 from zope import component
 from zope.interface import implements
+from DateTime import DateTime
 
 # CMF/Plone
 from Products.PythonScripts.Utility import allow_module

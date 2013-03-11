@@ -36,7 +36,7 @@ except:
 
 # Plomino
 from exceptions import PlominoScriptException
-from PlominoUtils import asUnicode, asList, json_dumps
+from PlominoUtils import asUnicode, asList
 from Products.CMFPlomino.config import *
 from validator import isValidPlominoId
 import interfaces
@@ -709,7 +709,7 @@ class PlominoView(ATFolder):
                     data.append(entry)
             else:
                 data.append(row)
-        return json_dumps(
+        return json.dumps(
                     {'iTotalRecords': total,
                     'iTotalDisplayRecords': display_total,
                     'aaData': data })

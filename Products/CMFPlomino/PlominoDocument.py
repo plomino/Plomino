@@ -294,7 +294,7 @@ class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
                     'iTotalRecords': len(data),
                     'iTotalDisplayRecords': len(data),
                     'aaData': data }
-        return json_dumps(data)
+        return json.dumps(data)
 
     security.declarePublic('computeItem')
     def computeItem(self, itemname, form=None, formid=None, store=True,
