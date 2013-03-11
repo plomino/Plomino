@@ -14,6 +14,7 @@ __docformat__ = 'plaintext'
 from cStringIO import StringIO
 from email.Header import Header
 from email import message_from_string
+from dateutil.parser import parse
 from time import strptime
 from types import StringTypes
 import cgi
@@ -80,19 +81,19 @@ def StringToDate(str_d, format='%Y-%m-%d'):
     """
     # XXX: Should use db.getDateTimeFormat
     try:
-        dt = strptime(str_d, format)
+        if format:
+            dt = strptime(str_d, format)
+        else:
+            dt = parse(str_d)
     except ValueError, e:
         # XXX: Just let DateTime guess.
-        dt = strptime(DateTime(str_d).ISO(), '%Y-%m-%dT%H:%M:%S')
+        dt = parse(DateTime(str_d).ISO())
         logger.info('StringToDate> %s, %s, %s, guessed: %s' % (
             str(str_d),
             format,
             repr(e),
             repr(dt)))
-    if len(dt) >= 5:
-        return DateTime(dt[0], dt[1], dt[2], dt[3], dt[4])
-    else:
-        return DateTime(dt[0], dt[1], dt[2])
+    return DateTime(*dt[:6])
 
 
 def DateRange(d1, d2):
@@ -335,6 +336,7 @@ def json_dumps(data):
 
 def json_loads(json_string):
     return json.loads(json_string)
+
 
 # From http://lsimons.wordpress.com/2011/03/17/stripping-illegal-characters-out-of-xml-in-python/
 _illegal_xml_chars_RE = re.compile(
