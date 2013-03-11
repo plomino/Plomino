@@ -93,7 +93,7 @@ def StringToDate(str_d, format='%Y-%m-%d'):
             format,
             repr(e),
             repr(dt)))
-    return DateTime(dt)
+    return DateTime(*dt[:6])
 
 
 def DateRange(d1, d2):
