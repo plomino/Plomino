@@ -32,6 +32,7 @@ from zope.interface import implements
 from zope.interface import Interface
 import transaction
 import Acquisition
+from repoze.catalog.query import Eq
 
 try:
     from AccessControl.class_init import InitializeClass
@@ -144,6 +145,22 @@ class PlominoDocument(Acquisition.Implicit):
         """ return the default view
         """
         return self.checkBeforeOpenDocument()
+
+    def Title(self):
+        title = None
+        # compute the document title
+        form = self.getForm()
+        title_formula = form.getDocumentTitle()
+        if title_formula:
+            # Use the formula if we have one
+            try:
+                title = self.runFormulaScript("form_"+form.id+"_title", self, form.DocumentTitle)
+            except PlominoScriptException, e:
+                e.reportError('Title formula failed')
+        if not title:
+            # use Form's title
+            title = form.Title()
+        return title
 
     def getPhysicalPath(self):
         return self.getParentDatabase().getPhysicalPath() + ('document', self.getItem('docid'), )
@@ -410,30 +427,11 @@ class PlominoDocument(Acquisition.Implicit):
                     # computed for display field are not stored
                     pass
 
-            # compute the document title
-            title_formula = form.getDocumentTitle()
-            if title_formula:
-                # Use the formula if we have one
-                try:
-                    title = self.runFormulaScript("form_"+form.id+"_title", self, form.DocumentTitle)
-                    if title != self.Title():
-                        self.setTitle(title)
-                except PlominoScriptException, e:
-                    e.reportError('Title formula failed')
-            elif creation:
-                # If we have no formula and we're creating, use Form's title
-                title = form.Title()
-                if title != self.Title():
-                    # We may be calling save with 'creation=True' on
-                    # existing documents, in which case we may already have
-                    # a title.
-                    self.setTitle(title)
-
             # update the document id
             if creation and form.getDocumentId():
                 new_id = self.generateNewId()
                 if new_id:
-                    transaction.savepoint(optimistic=True)
+                    #transaction.savepoint(optimistic=True)
                     self.setItem('docid', new_id)
 
         # update the Plomino_Authors field with the current user name
@@ -850,13 +848,13 @@ class PlominoDocument(Acquisition.Implicit):
             new_id = queryUtility(IURLNormalizer).normalize(result)
 
         # check if the id already exists
-        count = 0
-        while True:
-            count += 1
-            new_id = "%s-%s" % (new_id, count)
-            results = list(self.documents().query(Eq('docid', new_id)))
-            if not results:
-                break
+        # count = 0
+        # while True:
+        #     count += 1
+        #     new_id = "%s-%s" % (new_id, count)
+        #     results = list(self.documents().query(Eq('docid', new_id)))
+        #     if not results:
+        #         break
 
         return new_id
 

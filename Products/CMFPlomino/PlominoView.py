@@ -605,7 +605,7 @@ class PlominoView(ATFolder):
                 limit = int(iDisplayLength)
             search = REQUEST.get('sSearch', '').lower()
             if search:
-                search = " ".join([term+'*' for term in search.split(' ')])
+                search = " ".join([term+'*' for term in search.split(' ') if len(term)>1])
             sort_column = REQUEST.get('iSortCol_0')
             if sort_column:
                 sort_index = self.getIndexKey(self.getColumns()[int(sort_column)-1].id)

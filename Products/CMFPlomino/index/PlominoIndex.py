@@ -154,7 +154,6 @@ class PlominoIndex(object):
                                 request,
                                 sort_index=sortindex,
                                 limit=limit,
-                                sort_type=sortindex,
                                 reverse=reverse,
                                 with_size=True)
         if lazy:

@@ -205,6 +205,7 @@
                                                 ],
                                                 ${fixedsorting}
                                                 'fnDrawCallback': function() {
+                                                    this.fnSetFilteringLimit(2);
                                                     if (${categorized}) {
                                                         dynamicview_categorize('dynamictable');
                                                     }
@@ -214,7 +215,6 @@
                                                     'sUrl': '@@collective.js.datatables.translation'
                                                 }
                                             });
-
                                             var tableNodes = oDynamicTable.fnGetNodes();
                                             jq('td > input:checkbox', tableNodes).change(function() {
                                                 jq(this).closest('tr').toggleClass('row_selected');

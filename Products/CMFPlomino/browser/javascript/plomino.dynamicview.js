@@ -139,3 +139,39 @@ function dynamicview_selecteddocuments() {
 	
 	return docids;
 }
+
+// trigger filtering only if entered characters reach a given limit
+$(document).ready(function() {
+	jQuery.fn.dataTableExt.oApi.fnSetFilteringLimit = function ( oSettings, limit ) {
+	    var _that = this;
+	    var searchWait = 0;
+		var searchWaitInterval;
+	    this.each( function ( i ) {
+            $.fn.dataTableExt.iApiIndex = i;
+             
+            
+            var anControl = $( 'input', _that.fnSettings().aanFeatures.f );
+             
+            anControl.unbind( 'keyup' ).bind( 'keyup', function(event) {
+            	var $this = this;
+                searchWait = 0;
+                if (event.keyCode != '32' && (anControl.val().length == 0 || anControl.val().length > limit || event.keyCode == '13')) {
+            	    if(!searchWaitInterval) searchWaitInterval = setInterval(
+            	    	function(){
+							if(searchWait>=3){
+    							clearInterval(searchWaitInterval);
+    							searchWaitInterval = '';
+                        		$.fn.dataTableExt.iApiIndex = i;
+                        		_that.fnFilter( $($this).val() );
+                        		searchWait = 0;
+							}
+							searchWait++;
+						}, 200);
+                }
+            });
+             
+            return this;
+	    } );
+	    return this;
+	}	
+});
