@@ -15,7 +15,7 @@ from cStringIO import StringIO
 from email.Header import Header
 from email import message_from_string
 from dateutil.parser import parse
-from time import strptime
+from datetime import datetime
 from types import StringTypes
 import cgi
 import csv
@@ -79,10 +79,9 @@ def DateToString(d, format='%Y-%m-%d'):
 def StringToDate(str_d, format='%Y-%m-%d'):
     """ Parse the string using the given format and return the date
     """
-    # XXX: Should use db.getDateTimeFormat
     try:
         if format:
-            dt = strptime(str_d, format)
+            dt = datetime.strptime(str_d, format)
         else:
             dt = parse(str_d)
     except ValueError, e:
@@ -93,7 +92,7 @@ def StringToDate(str_d, format='%Y-%m-%d'):
             format,
             repr(e),
             repr(dt)))
-    return DateTime(*dt[:6])
+    return DateTime(dt.isoformat())
 
 
 def DateRange(d1, d2):
