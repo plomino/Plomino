@@ -139,3 +139,28 @@ function dynamicview_selecteddocuments() {
 	
 	return docids;
 }
+
+// trigger filtering only if entered characters reach a given limit
+$(document).ready(function() {
+	jQuery.fn.dataTableExt.oApi.fnSetFilteringLimit = function ( oSettings, limit ) {
+	    var _that = this;
+	    this.each( function ( i ) {
+	            $.fn.dataTableExt.iApiIndex = i;
+	             
+	            var $this = this;
+	            var anControl = $( 'input', _that.fnSettings().aanFeatures.f );
+	             
+	            anControl.unbind( 'keyup' ).bind( 'keyup', function(event) {
+	                     
+	                    if (anControl.val().length == 0 || anControl.val().length > limit || event.keyCode == '13') {
+	                            // cr, we filter immedately
+	                            $.fn.dataTableExt.iApiIndex = i;
+	                            _that.fnFilter( $(this).val() );
+	                    }
+	            });
+	             
+	            return this;
+	    } );
+	    return this;
+	}	
+});
