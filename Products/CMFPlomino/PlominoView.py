@@ -30,9 +30,11 @@ from zope.interface import implements
 # Plone
 try:
     from plone.batching.batch import Batch
+    batch = Batch.fromPagenumber
 except:
     # < 4.3 compatibility
     from plone.app.content.batching import Batch
+    batch = Batch
 
 # Plomino
 from exceptions import PlominoScriptException
@@ -322,7 +324,7 @@ class PlominoView(ATFolder):
             reverse=reverse,
             only_allowed=only_allowed)
         if limit:
-            results = Batch(
+            results = batch(
                     items=results,
                     pagesize=limit,
                     pagenumber=int(start/limit)+1)
