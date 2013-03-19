@@ -118,6 +118,18 @@ Add some minimal content to test access (view 1 displays all documents)::
     >>> docid2 = doc2.id
     >>> docUrl2 = doc2.doc_url()
 
+Add an agent which will run as its owner::
+
+    >>> agentid = db.invokeFactory('PlominoAgent',
+    ...         id='ownersagent',
+    ...         RunAs='OWNER',
+    ...         Content='''
+    ... db = plominoContext.getParentDatabase()
+    ... doc = db.getDocument('%s')
+    ... doc.setTitle('Now you have a title')
+    ... doc.save()
+    ... ''' % docid)
+
 Create the browser object we'll be using::
 
     >>> try:
@@ -186,7 +198,14 @@ Reader cannot edit or delete documents::
     >>> browser.open(docUrl+'/delete')
     >>> InsufficientPrivileges in browser.url
     True
-    
+
+Reader can edit a document using an agent which runs with more rights::
+
+    >>> browser.open('%s/%s/runAgent' % (base_url, agentid)) 
+    >>> browser.open(docUrl)
+    >>> "Now you have a title" in browser.contents
+    True
+
 Reader cannot open a form::
 
     >>> browser.open(base_url + '/form1/OpenForm')
