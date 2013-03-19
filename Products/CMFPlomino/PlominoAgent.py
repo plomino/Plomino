@@ -126,7 +126,7 @@ class PlominoAgent(BaseContent, BrowserDefaultMixin):
         return result
 
     security.declarePublic('runAgent')
-    def runAgent(self, redirect=False, *args, **kwargs):
+    def runAgent(self, *args, **kwargs):
         """ Execute the agent formula.
         """
         plominoContext = self
@@ -145,7 +145,7 @@ class PlominoAgent(BaseContent, BrowserDefaultMixin):
                     *args)
             if (request and 
                     plominoReturnURL is not None and
-                    request.get('REDIRECT', redirect)):
+                    request.get('REDIRECT', False)):
                 request.RESPONSE.redirect(plominoReturnURL)
         except PlominoScriptException, e:
             # Exception logged already in runFormulaScript
