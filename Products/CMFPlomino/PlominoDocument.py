@@ -462,7 +462,7 @@ class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
         if asAuthor:
             # getItem('Plomino_Authors', []) might return '' or None
             authors = asList(self.getItem('Plomino_Authors') or [])
-            name = db.getCurrentUser().getUserName()
+            name = db.getCurrentMember().getUserName()
             if not name in authors:
                 authors.append(name)
             self.setItem('Plomino_Authors', authors)

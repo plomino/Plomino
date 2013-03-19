@@ -108,7 +108,8 @@ class PlominoAgent(BaseContent, BrowserDefaultMixin):
         try:
             if self.getRunAs() == "OWNER":
                 owner = self.getOwner()
-                user = self.getCurrentUser()
+                member = self.getCurrentMember()
+                user = member.getUser()
                 newSecurityManager(None, owner)
 
             result = self.runFormulaScript(
