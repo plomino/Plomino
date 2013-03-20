@@ -98,7 +98,7 @@ schema = Schema((
     TextField(
         name='onSearch',
         widget=TextAreaWidget(
-            label="On submssion of search form",
+            label="On submission of search form",
             description="Action to take when submitting a search",
             label_msgid='CMFPlomino_label_onSearch',
             description_msgid='CMFPlomino_help_onSearch',
