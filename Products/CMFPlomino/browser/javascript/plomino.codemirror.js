@@ -35,7 +35,8 @@ $(document).ready(function() {
 	                      'onSaveDocument',
 	                      'onDeleteDocument',
 	                      'onSearch',
-	                      'beforeCreateDocument'
+	                      'beforeCreateDocument',
+	                      'beforeSaveDocument'
 	                      ]
 	$(plomino_form_areas).each(function(index, area) {
 		$("#plominoform-base-edit #"+area).each(function() {

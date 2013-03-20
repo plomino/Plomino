@@ -74,6 +74,17 @@ schema = Schema((
         schemata="Events",
     ),
     TextField(
+        name='beforeSaveDocument',
+        widget=TextAreaWidget(
+            label="Before save document",
+            description="Action to take before submitted values are saved into the document (submitted values are in context.REQUEST)",
+            label_msgid='CMFPlomino_label_beforeSaveDocument',
+            description_msgid='CMFPlomino_help_beforeSaveDocument',
+            i18n_domain='CMFPlomino',
+        ),
+        schemata="Events",
+    ),
+    TextField(
         name='onSaveDocument',
         widget=TextAreaWidget(
             label="On save document",
@@ -98,7 +109,7 @@ schema = Schema((
     TextField(
         name='onSearch',
         widget=TextAreaWidget(
-            label="On submssion of search form",
+            label="On submission of search form",
             description="Action to take when submitting a search",
             label_msgid='CMFPlomino_label_onSearch',
             description_msgid='CMFPlomino_help_onSearch',

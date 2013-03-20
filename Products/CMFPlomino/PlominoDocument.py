@@ -375,6 +375,21 @@ class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
         form = db.getForm(REQUEST.get('Form'))
 
         errors = form.validateInputs(REQUEST, doc=self)
+
+        # execute the beforeSave code of the form
+        error = None
+        try:
+            error = self.runFormulaScript(
+                    'form_%s_beforesave' % form.id,
+                    self,
+                    form.getBeforeSaveDocument)
+        except PlominoScriptException, e:
+            e.reportError('Form submitted, but beforeSave formula failed')
+
+        if error:
+            errors.append(error)
+
+        # if errors, stop here, and notify errors to user
         if errors:
             return form.notifyErrors(errors)
 
