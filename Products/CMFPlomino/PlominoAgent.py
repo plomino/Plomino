@@ -107,6 +107,7 @@ class PlominoAgent(BaseContent, BrowserDefaultMixin):
         plominoContext = self
         try:
             if self.getRunAs() == "OWNER":
+
                 # Remember the current user
                 member = self.getCurrentMember()
                 user = member.getUser()
@@ -121,8 +122,11 @@ class PlominoAgent(BaseContent, BrowserDefaultMixin):
                     self.Content,
                     True,
                     *args)
-            # if self.getRunAs() == "OWNER":
-            #     newSecurityManager(None, user)
+
+            # Switch back to the original user
+            if self.getRunAs() == "OWNER":
+                newSecurityManager(None, user)
+
         except PlominoScriptException, e:
             e.reportError('Agent failed')
             result = None
@@ -161,6 +165,7 @@ class PlominoAgent(BaseContent, BrowserDefaultMixin):
                 if result is not None:
                     plominoReturnURL = result
                 request.RESPONSE.redirect(plominoReturnURL)
+
         except PlominoScriptException, e:
             # Exception logged already in runFormulaScript
             if request and request.get('RESPONSE'):
