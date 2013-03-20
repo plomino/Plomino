@@ -697,7 +697,8 @@ class PlominoDesignManager(Persistent):
 
     security.declarePublic('runFormulaScript')
     @plomino_profiler('formulas')
-    def runFormulaScript(self, script_id, context, formula_getter, with_args=False, *args):
+    def runFormulaScript(self, script_id, context, formula_getter,
+            with_args=False, *args):
         compilation_errors = []
         ps = self.getFormulaScript(script_id)
         if not ps:
