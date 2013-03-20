@@ -137,7 +137,19 @@
         class=".datagrid.SettingForm"
         permission="plomino.DESIGN_PERMISSION"
         />
-        
+
+   <adapter
+        for="Products.CMFPlomino.interfaces.IPlominoField"
+        provides=".boolean.IBooleanField"
+        factory=".boolean.BooleanField"
+        />
+   <browser:page
+        name="booleansettings"
+        for="Products.CMFPlomino.interfaces.IPlominoField"
+        class=".boolean.SettingForm"
+        permission="plomino.DESIGN_PERMISSION"
+        />
+
    <!-- vocabularies -->
    <utility
         name="Products.CMFPlomino.fields.vocabularies.get_forms"

@@ -34,6 +34,7 @@ FIELD_TYPES = {
         "DOCLINK": ["Doclink", "KeywordIndex"],
         "GOOGLECHART": ["Google chart", "FieldIndex"],
         "GOOGLEVISUALIZATION": ["Google visualization", "FieldIndex"],
+        "BOOLEAN": ["Boolean", "FieldIndex"],
         }
 
 FIELD_MODES = [
