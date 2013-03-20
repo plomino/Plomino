@@ -135,8 +135,13 @@ class PlominoAgent(BaseContent, BrowserDefaultMixin):
         request = getattr(self, 'REQUEST', None)
         try:
             if self.getRunAs() == "OWNER":
-                user = self.getOwner()
-                newSecurityManager(None, user)
+                # Remember the current user
+                member = self.getCurrentMember()
+                user = member.getUser()
+
+                # Switch to the agent's owner
+                owner = self.getOwner()
+                newSecurityManager(None, owner)
 
             result = self.runFormulaScript(
                     "agent_"+self.id,
@@ -144,6 +149,11 @@ class PlominoAgent(BaseContent, BrowserDefaultMixin):
                     self.Content,
                     True,
                     *args)
+
+            # Switch back to the original user
+            if self.getRunAs() == "OWNER":
+                newSecurityManager(None, user)
+
             if request and (request.get('REDIRECT', None) == "True"):
                 if result is not None:
                     plominoReturnURL = result
