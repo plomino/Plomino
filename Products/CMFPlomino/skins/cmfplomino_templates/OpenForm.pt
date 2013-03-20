@@ -6,174 +6,222 @@
 <body>
 
 <metal:javascript_head fill-slot="javascript_head_slot">
-    <tal:block tal:condition="python:here.hasDateTimeField()">
-        <script type="text/javascript" charset="iso-8859-1"
+    <tal:block_hasdatetimefield condition="python:here.hasDateTimeField()">
+        <script
+            type="text/javascript"
+            charset="iso-8859-1"
             tal:attributes="src string:$portal_url/jscalendar/calendar_stripped.js">
         </script>
-        <script type="text/javascript" charset="iso-8859-1"
+        <script 
+            type="text/javascript"
+            charset="iso-8859-1"
             tal:attributes="src string:$portal_url/jscalendar/calendar-en.js">
-      </script>
-    </tal:block>
-    <tal:block tal:condition="python:here.hasGoogleVisualizationField()">
+        </script>
+    </tal:block_hasdatetimefield>
+    <tal:block_hasgooglevisualizationfield tal:condition="python:here.hasGoogleVisualizationField()">
         <tal:script metal:use-macro="here/googlevisualization_macro/macros/js_library">//load google js</tal:script>
-    </tal:block>
-    <script type="text/javascript" tal:condition="here/hasDynamicHidewhen">
-    	function refreshHidewhen() {
-        	var onsuccess = function(data, textStatus, xhr) {
-            	for (var hw in data)
-                	$('.hidewhen-' + hw).css('display', data[hw]?'none':'block');
-        	}
-        	$.post('computehidewhens', $('#plomino_form').serialize(), onsuccess, 'json');
-    	}
-    	$(document).ready( function() {
-    		$('#plomino_form :input').change(refreshHidewhen);
-    	});
-	</script>
+    </tal:block_hasgooglevisualizationfield>
+    <script 
+        tal:condition="here/hasDynamicHidewhen"
+        type="text/javascript">
+        function refreshHidewhen() {
+            var onsuccess = function(data, textStatus, xhr) {
+                for (var hw in data)
+                    $('.hidewhen-' + hw).css('display', data[hw]?'none':'block');
+            }
+            $.post('computehidewhens', $('#plomino_form').serialize(), onsuccess, 'json');
+        }
+        $(document).ready( function() {
+            $('#plomino_form :input').change(refreshHidewhen);
+        });
+    </script>
 </metal:javascript_head>
 
 <metal:css fill-slot="style_slot">
-    <tal:block tal:condition="python:here.hasDateTimeField()">
-        <link rel="stylesheet" type="text/css" media="all" tal:attributes="href string:$portal_url/jscalendar/calendar-system.css" />
-    </tal:block>
+    <tal:block_hasdatetimefield condition="python:here.hasDateTimeField()">
+        <link rel="stylesheet"
+            type="text/css"
+            media="all"
+            tal:attributes="href string:$portal_url/jscalendar/calendar-system.css" />
+    </tal:block_hasdatetimefield>
 </metal:css>
 
-<metal:block fill-slot="top_slot"
-             tal:define="is_designer python:here.hasDesignPermission()">
-    <tal:notdesigner tal:condition="not:is_designer">
-        <tal:hide tal:condition="not:is_designer"
-             tal:define="dummy python:request.set('disable_border', 1);" />
+<metal:block_disable_border
+    fill-slot="top_slot"
+    tal:define="is_designer python:here.hasDesignPermission()">
+    <tal:notdesigner condition="not:is_designer">
+        <tal:hide 
+            condition="not:is_designer"
+            define="dummy python:request.set('disable_border', 1);" />
     </tal:notdesigner>
-</metal:block>
+</metal:block_disable_border>
 
 <metal:main fill-slot="main">
-    <tal:main-macro metal:define-macro="main"
-        tal:define="kssClassesView context/@@kss_field_decorator_view;
-                       getKssClasses nocall:kssClassesView/getKssClassesInlineEditable;
-                       templateId template/getId;">
-        <tal:block
-            tal:define="myF python:here;
-                            b myF/ActionBarPosition|nothing;
-                            searchform myF/isSearchForm|nothing;
-                            ispage myF/isPage|nothing;">
+    <tal:main-macro 
+        metal:define-macro="main"
+        define="kssClassesView context/@@kss_field_decorator_view;
+                getKssClasses nocall:kssClassesView/getKssClassesInlineEditable;
+                templateId template/getId;">
+        <tal:block_page
+            define="myF python:here;
+                    b myF/ActionBarPosition|nothing;
+                    searchform myF/isSearchForm|nothing;
+                    ispage myF/isPage|nothing;">
 
-            <tal:block tal:condition="python:not(searchform or ispage)"
-                tal:define="hasCreatePermissionOnDatabase python:test(here.hasCreatePermission(here.getParentDatabase())==True);
-                            hasCreatePermissionOnForm python:test(here.hasCreatePermission(here));">
+            <tal:block_not_searchform_or_ispage 
+                condition="python:not(searchform or ispage)"
+                define="hasCreatePermissionOnDatabase python:test(here.hasCreatePermission(here.getParentDatabase()));
+                        hasCreatePermissionOnForm python:test(here.hasCreatePermission(here));">
 
-                <form id="plomino_form" tal:attributes="name here/id;
-                                     action string:${myF/absolute_url}/createDocument"
-                    method="POST" enctype="multipart/form-data">
-                    <tal:validation metal:use-macro="here/validation_messages/macros/messages">display form actions </tal:validation>
-                    <tal:block tal:condition="python:test(hasCreatePermissionOnDatabase==True and hasCreatePermissionOnForm==True)">
+                <form id="plomino_form"
+                    tal:attributes="
+                            name here/id;
+                            action string:${myF/absolute_url}/createDocument"
+                    method="POST"
+                    enctype="multipart/form-data">
+
+                    <tal:validation metal:use-macro="here/validation_messages/macros/messages">display form actions</tal:validation>
+
+                    <tal:block_no_createpermission
+                        condition="python:not(hasCreatePermissionOnDatabase and hasCreatePermissionOnForm)">
+                        <p i18n:domain="CMFPlomino" i18n:translate="Please log in">Please log in</p>
+                    </tal:block_no_createpermission>
+
+                    <tal:block_has_createpermission
+                        condition="python:test(hasCreatePermissionOnDatabase and hasCreatePermissionOnForm)">
                         <div tal:replace="structure provider:plone.abovecontenttitle" />
-                        <tal:block tal:define="owner python:myF"
-                            tal:condition="python:test((b and  myF.ActionBarPosition=='BOTTOM'),False, True)">
-                            <span metal:use-macro="here/ActionBar/macros/OpenFormActionBar">
-                            display form actions </span><br/>
-                        </tal:block>
+                        <tal:block_actionbar_top tal:define="owner python:myF"
+                            tal:condition="python:test(b and myF.ActionBarPosition=='TOP')">
+                            <span metal:use-macro="here/ActionBar/macros/OpenFormActionBar">display form actions</span><br/>
+                        </tal:block_actionbar_top>
+                    </tal:block_has_createpermission>
 
-                    </tal:block>
                     <h1 class="documentFirstHeading" tal:content="here/Title">Title</h1>
-                <div tal:replace="structure provider:plone.belowcontenttitle" />
+                    <div tal:replace="structure provider:plone.belowcontenttitle" />
 
-                <div tal:replace="structure provider:plone.abovecontentbody" /><tal:block
-                    tal:condition="python:test(hasCreatePermissionOnDatabase==True and hasCreatePermissionOnForm==True)">
-                    <tal:childform tal:define="Plomino_Parent_Field here/REQUEST/Plomino_Parent_Field|nothing;
-                                               Plomino_Parent_Form here/REQUEST/Plomino_Parent_Form|nothing;">
-                        <input tal:condition="Plomino_Parent_Field" type="hidden" name="Plomino_Parent_Field" tal:attributes="value Plomino_Parent_Field" />
-                        <input tal:condition="Plomino_Parent_Form" type="hidden" name="Plomino_Parent_Form" tal:attributes="value Plomino_Parent_Form" />
-                    </tal:childform>
-                    <span tal:content="structure python:here.openBlankForm(request)" /> <tal:block
-                        tal:define="owner python:myF"
-                        tal:condition="python:test((b and myF.ActionBarPosition!='TOP'),True, False)">
-                        <span metal:use-macro="here/ActionBar/macros/OpenFormActionBar">
-                        display form actions </span>
-                    </tal:block>
-                </tal:block> <tal:block
-                    tal:condition="python:not(hasCreatePermissionOnDatabase==True and hasCreatePermissionOnForm==True)">
-                    <p i18n:domain="CMFPlomino" i18n:translate="Please log in">Please log in</p>
-                </tal:block>
+                    <div tal:replace="structure provider:plone.abovecontentbody" />
+                    <tal:block_has_createpermission
+                        condition="python:test(hasCreatePermissionOnDatabase and hasCreatePermissionOnForm)">
+                        <tal:childform 
+                            define="Plomino_Parent_Field here/REQUEST/Plomino_Parent_Field|nothing;
+                                    Plomino_Parent_Form here/REQUEST/Plomino_Parent_Form|nothing;">
+                            <input 
+                                tal:condition="Plomino_Parent_Field"
+                                type="hidden"
+                                name="Plomino_Parent_Field"
+                                tal:attributes="value Plomino_Parent_Field" />
+                            <input
+                                tal:condition="Plomino_Parent_Form"
+                                type="hidden"
+                                name="Plomino_Parent_Form"
+                                tal:attributes="value Plomino_Parent_Form" />
+                        </tal:childform>
+                        <span tal:content="structure python:here.openBlankForm(request)" /> 
+                        <tal:block_actionbar_bottom
+                            define="owner python:myF"
+                            condition="python:test(b and myF.ActionBarPosition=='BOTTOM')">
+                            <span metal:use-macro="here/ActionBar/macros/OpenFormActionBar">display form actions</span>
+                        </tal:block_actionbar_bottom>
+                    </tal:block_has_createpermission>
 
                 <div tal:replace="structure provider:plone.belowcontentbody" />
                 </form>
 
-            </tal:block>
+            </tal:block_not_searchform_or_ispage>
 
-            <tal:block tal:condition="python:searchform"
-                tal:define="hasReadPermissionOnDatabase python:test(here.hasReadPermission(here.getParentDatabase())==True);
-                            hasReadPermissionOnForm python:test(here.hasReadPermission(here)==True);">
+            <tal:block_searchform
+                condition="python:searchform"
+                define="hasReadPermissionOnDatabase python:test(here.hasReadPermission(here.getParentDatabase()));
+                        hasReadPermissionOnForm python:test(here.hasReadPermission(here));">
 
-
-                <form id="plomino_form" tal:attributes="name here/id" action="searchDocuments"
+                <form id="plomino_form"
+                    tal:attributes="name here/id"
+                    action="searchDocuments"
                     method="POST">
-                <div tal:replace="structure provider:plone.abovecontenttitle" /><tal:block
-                    tal:condition="python:test(hasReadPermissionOnDatabase==True and hasReadPermissionOnForm==True)">
+                    <div tal:replace="structure provider:plone.abovecontenttitle" />
+                    <tal:block_has_readpermission
+                        condition="python:test(hasReadPermissionOnDatabase and hasReadPermissionOnForm)">
+                        <tal:block_actionbar_top 
+                            define="owner python:myF"
+                            condition="python:test(b and myF.ActionBarPosition=='TOP')">
+                            <span metal:use-macro="here/ActionBar/macros/SearchFormActionBar">display form actions</span><br/>
+                        </tal:block_actionbar_top>
+                    </tal:block_has_readpermission>
 
-                    <tal:block tal:define="owner python:myF"
-                        tal:condition="python:test((b and  myF.ActionBarPosition=='BOTTOM'),False, True)">
-                        <span metal:use-macro="here/ActionBar/macros/SearchFormActionBar">
-                        display form actions </span><br/>
-                    </tal:block>
+                    <h1 class="documentFirstHeading" tal:content="here/Title">Title</h1>
+                    <div tal:replace="structure provider:plone.belowcontenttitle" />
 
-                </tal:block>
-                <h1 class="documentFirstHeading" tal:content="here/Title">Title</h1>
-                <div tal:replace="structure provider:plone.belowcontenttitle" />
+                    <div tal:replace="structure provider:plone.abovecontentbody" />
 
-                <div tal:replace="structure provider:plone.abovecontentbody" /><tal:block
-                    tal:condition="python:test(hasReadPermissionOnDatabase==True and hasReadPermissionOnForm==True)">
+                    <tal:block_no_readpermission
+                        condition="python:not(hasReadPermissionOnDatabase and hasReadPermissionOnForm)">
+                        <p i18n:domain="CMFPlomino" i18n:translate="Please log in">Please log in</p>
+                    </tal:block_no_readpermission>
 
+                    <tal:block_has_readpermission
+                        condition="python:test(hasReadPermissionOnDatabase and hasReadPermissionOnForm)">
 
-                    <span tal:content="structure python:here.formLayout(request)" /> <tal:results
-                        tal:define="searchviewname python:here.getSearchView();
+                        <span tal:content="structure python:here.formLayout(request)" /> 
+                        <tal:results
+                            define="searchviewname python:here.getSearchView();
                                     searchviewobj python:here.getParentDatabase().getView(searchviewname);
                                     ">
-                        <tal:noview tal:condition="not:searchviewobj" tal:define="error python:here.writeMessageOnPage(searchviewname+' view does not exist.', here.REQUEST, error=True);" />
-                        <tal:viewok tal:condition="searchviewobj">
-                        <table tal:define="results python:options.get('searchresults');
-                                           columns python:searchviewobj.getColumns()"
-                            id="sortable" class="listing" summary="Content listing"
-                            i18n:attributes="summary summary_content_listing;">
-                            <tr>
-                                <th>&nbsp;&nbsp;</th>
-                                <tal:block tal:repeat="c columns">
-                                    <th tal:condition="not: c/HiddenColumn|nothing">&nbsp;<span
-                                        tal:content="c/Title">Title</span>&nbsp;</th>
-                                </tal:block>
-                            </tr>
-                            <tal:block tal:condition="results" tal:repeat="doc results">
+                            <tal:block_no_view_found
+                                condition="not:searchviewobj"
+                                define="error python:here.writeMessageOnPage(searchviewname+' view does not exist.', here.REQUEST, error=True);" />
 
-                                <tr tal:define="oddrow repeat/doc/odd;
-                                docurl python:'../'+searchviewname+'/'+doc.getPath().split('/')[-1]"
-                                    tal:attributes="class python:test(oddrow, 'even', 'odd');">
-                                    <td><input type="checkbox" name="sdoc" tal:attributes="value python:doc.getPath().split('/')[-1]" /></td>
-                                    <tal:block tal:repeat="c columns">
-                                        <td tal:condition="not: c/HiddenColumn|nothing"><a tal:attributes="href string:${docurl}"><span
-                                            tal:define="cname c/id;
-                                                                vname searchviewobj/id;
-                                                                cvalue python:getattr(doc, searchviewobj.getIndexKey(cname), '');
-                                                                "
-                                            tal:content="structure cvalue" ></span></a></td>
-                                    </tal:block>
-                                </tr>
-                            </tal:block>
-                        </table>
-                        </tal:viewok>
-                    </tal:results> <tal:block tal:define="owner python:myF"
-                        tal:condition="python:test((b and myF.ActionBarPosition!='TOP'),True, False)">
-                        <span metal:use-macro="here/ActionBar/macros/SearchFormActionBar">
-                        display form actions </span>
-                    </tal:block>
-                </tal:block> <tal:block
-                    tal:condition="python:not(hasReadPermissionOnDatabase==True and hasReadPermissionOnForm==True)">
-                    <p i18n:domain="CMFPlomino" i18n:translate="Please log in">Please log in</p>
-                </tal:block>
+                            <tal:block_view_found condition="searchviewobj">
+                                <table 
+                                    tal:define="results python:options.get('searchresults');
+                                                columns python:searchviewobj.getColumns()"
+                                    id="sortable"
+                                    class="listing"
+                                    summary="Content listing"
+                                    i18n:attributes="summary summary_content_listing;">
+                                    <tr>
+                                        <th>&nbsp;&nbsp;</th>
+                                        <tal:block_column_titles repeat="c columns">
+                                            <th tal:condition="not: c/HiddenColumn|nothing">&nbsp;<span
+                                                tal:content="c/Title">Title</span>&nbsp;</th>
+                                        </tal:block_column_titles>
+                                    </tr>
+                                    <tal:block_result_rows 
+                                        condition="results"
+                                        repeat="doc results">
 
-                <div tal:replace="structure provider:plone.belowcontentbody" />
+                                        <tr tal:define="
+                                                oddrow repeat/doc/odd;
+                                                docurl python:'../'+searchviewname+'/'+doc.getPath().split('/')[-1]"
+                                            tal:attributes="class python:test(oddrow, 'even', 'odd');">
+                                            <td><input type="checkbox" name="sdoc" tal:attributes="value python:doc.getPath().split('/')[-1]" /></td>
+                                            <tal:block_column_values repeat="c columns">
+                                                <td tal:condition="not: c/HiddenColumn|nothing"><a tal:attributes="href string:${docurl}"><span
+                                                    tal:define="
+                                                            cname c/id;
+                                                            vname searchviewobj/id;
+                                                            cvalue python:getattr(doc, searchviewobj.getIndexKey(cname), '');
+                                                            "
+                                                    tal:content="structure cvalue" ></span></a></td>
+                                            </tal:block_column_values>
+                                        </tr>
+                                    </tal:block_result_rows>
+                                </table>
+                            </tal:block_view_found>
+                        </tal:results>
+
+                        <tal:block_actionbar_bottom 
+                            define="owner python:myF"
+                            condition="python:test(b and myF.ActionBarPosition=='BOTTOM')">
+                            <span metal:use-macro="here/ActionBar/macros/SearchFormActionBar">display form actions</span>
+                        </tal:block_actionbar_bottom>
+                    </tal:block_has_readpermission>
+
+                    <div tal:replace="structure provider:plone.belowcontentbody" />
                 </form>
 
-            </tal:block>
-            
-            <tal:block tal:condition="python:ispage">
+            </tal:block_searchform>
+
+            <tal:block_ispage condition="python:ispage">
                 <h1 class="documentFirstHeading" tal:content="here/Title">Title</h1>
                 <div tal:replace="structure provider:plone.belowcontenttitle" />
                 <div tal:replace="structure provider:plone.abovecontentbody" />
@@ -181,13 +229,15 @@
                     <span tal:content="structure python:here.openBlankForm(request)" />
                 </form>
                 <div tal:replace="structure provider:plone.belowcontentbody" />
-            </tal:block>
+            </tal:block_ispage>
 
-        </tal:block>
-        <tal:profiling tal:define="profiling python:here.is_profiling() and here.REQUEST.cookies.get('plomino_profiler')" tal:condition="profiling">
-			<tal:macro metal:use-macro="here/profiling/macros/durations">display durations</tal:macro>
-		</tal:profiling>
-		
+        </tal:block_page>
+        <tal:profiling 
+            define="profiling python:here.is_profiling() and here.REQUEST.cookies.get('plomino_profiler')"
+            condition="profiling">
+            <tal:macro metal:use-macro="here/profiling/macros/durations">display durations</tal:macro>
+        </tal:profiling>
+        
     </tal:main-macro>
 </metal:main>
 
