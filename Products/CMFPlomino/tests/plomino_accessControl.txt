@@ -156,7 +156,7 @@ Add form with a computed-on-display field that calls an agent::
     ... # This should fail, because we've dropped back to Reader rights.
     ... doc = db.getDocument('%(docid)s')
     ... doc.save()
-    ... return ''
+    ... return 'I made a change in %(docid)s'
     ... """ % {'docid': docid2, 'doctitle': "Set by Agent"})
     >>> db.form2.editingdisplayfield.at_post_create_script()
     >>> from Products.CMFPlomino.fields.text import ITextField
@@ -246,9 +246,8 @@ After using an agent which runs with more rights, Reader is dropped back
 to restricted rights::
 
     >>> browser.open(docUrl2)
-    >>> import pdb; pdb.set_trace()
-    >>> InsufficientPrivileges in browser.contents
-    True
+    >>> "I made a change in doc2" in browser.contents
+    False
 
 Reader cannot open a form::
 
