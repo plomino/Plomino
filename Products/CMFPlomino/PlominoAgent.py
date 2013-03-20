@@ -144,7 +144,10 @@ class PlominoAgent(BaseContent, BrowserDefaultMixin):
             if self.getRunAs() == "OWNER":
                 # Remember the current user
                 member = self.getCurrentMember()
-                user = member.getUser()
+                if member.__class__.__name__ == "SpecialUser":
+                    user = member
+                else:
+                    user = member.getUser()
 
                 # Switch to the agent's owner
                 owner = self.getOwner()
