@@ -274,9 +274,16 @@ class PlominoForm(ATFolder):
             form = obj.aq_parent
         return form
 
-    security.declareProtected(CREATE_PERMISSION, 'createDocument')
+    security.declareProtected(READ_PERMISSION, 'createDocument')
     def createDocument(self, REQUEST):
-        """create a document using the forms submitted content
+        """ Create a document using the form's submitted content.
+
+        The created document may be a TemporaryDocument, in case 
+        this form was rendered as a child form. In this case, we 
+        aren't adding a document to the database yet.
+
+        If we are not a child form, delegate to the database object 
+        to create the new document.
         """
         db = self.getParentDatabase()
 
@@ -297,7 +304,8 @@ class PlominoForm(ATFolder):
                     """%s</span></body></html>""" % " - ".join(errors))
             return self.notifyErrors(errors)
 
-        # if child form
+        ################################################################
+        # If child form, return a TemporaryDocument
         if is_childform:
             tmp = TemporaryDocument(db, self, REQUEST).__of__(db)
             tmp.setItem("Plomino_Parent_Field", parent_field)
@@ -309,6 +317,8 @@ class PlominoForm(ATFolder):
                     )
             return self.ChildForm(temp_doc=tmp)
 
+        ################################################################
+        # Add a document to the database
         doc = db.createDocument()
         doc.setItem('Form', self.getFormName())
 
