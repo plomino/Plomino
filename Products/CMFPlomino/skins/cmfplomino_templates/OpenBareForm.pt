@@ -42,12 +42,13 @@
 
           <tal:block tal:condition="python:not(searchform or ispage)"
               tal:define="hasCreatePermissionOnDatabase python:test(here.hasCreatePermission(here.getParentDatabase())==True);
-                          hasCreatePermissionOnForm python:test(here.hasCreatePermission(here));">
+                          hasCreatePermissionOnForm python:test(here.hasCreatePermission(here));
+                          can_open_form python:(hasCreatePermissionOnDatabase==True and hasCreatePermissionOnForm==True) or here.REQUEST.get('Plomino_Parent_Field', None)">
 
               <form id="plomino_form" tal:attributes="name here/id;
                                    action string:${myF/absolute_url}/createDocument"
                   method="POST" enctype="multipart/form-data">
-                  <tal:block tal:condition="python:test(hasCreatePermissionOnDatabase==True and hasCreatePermissionOnForm==True)">
+                  <tal:block tal:condition="can_open_form">
 
                       <tal:block tal:define="owner python:myF"
                           tal:condition="python:test((b and  myF.ActionBarPosition=='BOTTOM'),False, True)">
@@ -58,7 +59,7 @@
                   </tal:block>
                   <h1 class="documentFirstHeading" tal:content="here/Title">Title</h1>
                     <tal:block
-                  tal:condition="python:test(hasCreatePermissionOnDatabase==True and hasCreatePermissionOnForm==True)">
+                  tal:condition="can_open_form">
                   <tal:childform tal:define="Plomino_Parent_Field here/REQUEST/Plomino_Parent_Field|nothing;
                                              Plomino_Parent_Form here/REQUEST/Plomino_Parent_Form|nothing;">
                       <input tal:condition="Plomino_Parent_Field" type="hidden" name="Plomino_Parent_Field" tal:attributes="value Plomino_Parent_Field" />
@@ -71,7 +72,7 @@
                       display form actions </span>
                   </tal:block>
               </tal:block> <tal:block
-                  tal:condition="python:not(hasCreatePermissionOnDatabase==True and hasCreatePermissionOnForm==True)">
+                  tal:condition="python:not(can_open_form)">
                   <p i18n:domain="CMFPlomino" i18n:translate="Please log in">Please log in</p>
               </tal:block>
 

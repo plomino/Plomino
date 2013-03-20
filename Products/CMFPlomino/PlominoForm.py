@@ -274,7 +274,7 @@ class PlominoForm(ATFolder):
             form = obj.aq_parent
         return form
 
-    security.declareProtected(CREATE_PERMISSION, 'createDocument')
+    security.declareProtected(READ_PERMISSION, 'createDocument')
     def createDocument(self, REQUEST):
         """create a document using the forms submitted content
         """
