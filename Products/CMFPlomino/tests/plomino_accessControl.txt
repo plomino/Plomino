@@ -125,10 +125,45 @@ Add an agent which will run as its owner::
     ...         RunAs='OWNER',
     ...         Content='''
     ... db = plominoContext.getParentDatabase()
-    ... doc = db.getDocument('%s')
-    ... doc.setTitle('Now you have a title')
+    ... req = getattr(plominoContext, 'REQUEST')
+    ... docid = req.get('docid')
+    ... doctitle = req.get('doctitle')
+    ... doc = db.getDocument(docid)
+    ... doc.setTitle(doctitle)
     ... doc.save()
-    ... ''' % docid)
+    ... ''')
+
+Add form with a computed-on-display field that calls an agent::
+
+    >>> doc2 = db.createDocument()
+    >>> doc2.setItem('Form', 'form2')
+    >>> docid2 = doc2.id
+    >>> docUrl2 = doc2.doc_url()
+    >>> id = db.invokeFactory('PlominoForm', id='form2', Title='Form 2')
+    >>> id = db.form2.invokeFactory('PlominoField',
+    ...         id='editingdisplayfield',
+    ...         Title='editingdisplayfield',
+    ...         FieldType="TEXT",
+    ...         FieldMode="DISPLAY",
+    ...         Formula="""
+    ... db = plominoContext.getParentDatabase()
+    ... req = getattr(plominoContext, 'REQUEST')
+    ... req.set('docid', '%(docid)s')
+    ... req.set('doctitle', '%(doctitle)s')
+    ... agent = db.getAgent('ownersagent')
+    ... # This successfully edits doc2, because the agent runs as its owner.
+    ... agent.runAgent()
+    ... # This should fail, because we've dropped back to Reader rights.
+    ... doc = db.getDocument('%(docid)s')
+    ... doc.save()
+    ... return ''
+    ... """ % {'docid': docid2, 'doctitle': "Set by Agent"})
+    >>> db.form2.editingdisplayfield.at_post_create_script()
+    >>> from Products.CMFPlomino.fields.text import ITextField
+    >>> adapted=ITextField(db.form2.editingdisplayfield)
+    >>> adapted.widget="TEXT"
+    >>> db.form2.setFormLayout(
+    ... """<p>editingdisplayfield : <span class="plominoFieldClass">editingdisplayfield</span></p>""")
 
 Create the browser object we'll be using::
 
@@ -201,9 +236,18 @@ Reader cannot edit or delete documents::
 
 Reader can edit a document using an agent which runs with more rights::
 
-    >>> browser.open('%s/%s/runAgent' % (base_url, agentid)) 
+    >>> browser.open('%s/%s/runAgent?docid=%s&doctitle=MyTitle' % (
+    ...         base_url, agentid, docid)) 
     >>> browser.open(docUrl)
-    >>> "Now you have a title" in browser.contents
+    >>> "MyTitle" in browser.contents
+    True
+
+After using an agent which runs with more rights, Reader is dropped back 
+to restricted rights::
+
+    >>> browser.open(docUrl2)
+    >>> import pdb; pdb.set_trace()
+    >>> InsufficientPrivileges in browser.contents
     True
 
 Reader cannot open a form::
