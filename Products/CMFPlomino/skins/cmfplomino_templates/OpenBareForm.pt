@@ -43,7 +43,9 @@
         <tal:block_not_searchform_or_ispage
             condition="python:not(searchform or ispage)"
             define="hasCreatePermissionOnDatabase python:test(here.hasCreatePermission(here.getParentDatabase()));
-                    hasCreatePermissionOnForm python:test(here.hasCreatePermission(here));">
+                    hasCreatePermissionOnForm python:test(here.hasCreatePermission(here));
+                    can_open_form python:(hasCreatePermissionOnDatabase and hasCreatePermissionOnForm) or here.REQUEST.get('Plomino_Parent_Field', None)
+                    "> 
 
             <form id="plomino_form"
                 tal:attributes="
@@ -56,30 +58,30 @@
                 ==================================================
                 NO PERMISSION 
                 ================================================== --> </tal:comment>
-                <tal:block_no_createpermission
-                    condition="python:not(hasCreatePermissionOnDatabase and hasCreatePermissionOnForm)">
+                <tal:block_no_can_open_form
+                    condition="not:can_open_form">
                     <p i18n:domain="CMFPlomino" i18n:translate="Please log in">Please log in</p>
-                </tal:block_no_createpermission>
+                </tal:block_no_can_open_form>
 
                 <tal:comment replace="nothing"> <!-- 
                 ==================================================
                 WE HAVE PERMISSION: ACTION BAR
                 ================================================== --> </tal:comment>
-                <tal:block_has_createpermission condition="python:test(hasCreatePermissionOnDatabase and hasCreatePermissionOnForm)">
+                <tal:block_can_open_form condition="can_open_form">
                     <tal:block_actionbar_top
                         define="owner python:myF"
                         condition="python:test(b and myF.ActionBarPosition=='TOP')">
                         <span metal:use-macro="here/ActionBar/macros/OpenFormActionBar">display form actions</span><br/>
                     </tal:block_actionbar_top>
-                </tal:block_has_createpermission>
+                </tal:block_can_open_form>
 
                 <tal:comment replace="nothing"> <!-- 
                 ==================================================
                 WE HAVE PERMISSION: RENDER FORM
                 ================================================== --> </tal:comment>
                 <h1 class="documentFirstHeading" tal:content="here/Title">Title</h1>
-                <tal:block_has_createpermission
-                    condition="python:test(hasCreatePermissionOnDatabase and hasCreatePermissionOnForm)">
+                <tal:block_can_open_form
+                    condition="can_open_form">
                     <tal:block_childform 
                         define="Plomino_Parent_Field here/REQUEST/Plomino_Parent_Field|nothing;
                                 Plomino_Parent_Form here/REQUEST/Plomino_Parent_Form|nothing;">
@@ -100,7 +102,7 @@
                         condition="python:test(b and myF.ActionBarPosition=='BOTTOM')">
                         <span metal:use-macro="here/ActionBar/macros/OpenFormActionBar">display form actions</span>
                      </tal:block_actionbar_bottom>
-                </tal:block_has_createpermission>
+                </tal:block_can_open_form>
             </form>
 
         </tal:block_not_searchform_or_ispage>
