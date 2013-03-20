@@ -675,7 +675,11 @@ class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
                 self.setItem(fieldname, current_files)
                 self.deletefile(filename)
         if REQUEST:
-            REQUEST.RESPONSE.redirect(self.absolute_url()+"/EditDocument")
+            REQUEST.RESPONSE.redirect(self.absolute_url() + "/EditDocument")
+
+    def UID(self):
+        # needed for portal_catalog indexing
+        return "%s-%s" % (self.getParentDatabase().UID(), self.id)
 
     security.declarePublic('SearchableText')
     def SearchableText(self):
