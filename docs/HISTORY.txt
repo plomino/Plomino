@@ -1,6 +1,15 @@
 Changelog
 =========
 
+1.17 (2013-03-20)
+-----------------
+* Add Boolean field type
+* Add onBeforeSave event
+* Date serialization support in the JSON API
+* Give access to i18n support directly from Plomino forms and fields
+* Pass JQueryUI dialog settings through datagrid field configuration
+* Fix "run as owner" agent behavior
+
 1.16.4 (2013-01-16)
 -------------------
 * Avoid transaction save when viewing a document [silviot]

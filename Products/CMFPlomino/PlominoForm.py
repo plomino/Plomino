@@ -74,6 +74,17 @@ schema = Schema((
         schemata="Events",
     ),
     TextField(
+        name='beforeSaveDocument',
+        widget=TextAreaWidget(
+            label="Before save document",
+            description="Action to take before submitted values are saved into the document (submitted values are in context.REQUEST)",
+            label_msgid='CMFPlomino_label_beforeSaveDocument',
+            description_msgid='CMFPlomino_help_beforeSaveDocument',
+            i18n_domain='CMFPlomino',
+        ),
+        schemata="Events",
+    ),
+    TextField(
         name='onSaveDocument',
         widget=TextAreaWidget(
             label="On save document",
@@ -1010,14 +1021,13 @@ class PlominoForm(ATFolder):
                 else:
                     # The field was not submitted, probably because it is
                     # not part of the form (hide-when, ...) so we just leave
-                    # it unchanged. But with SELECTION or DOCLINK, we need
+                    # it unchanged. But with SELECTION, DOCLINK or BOOLEAN, we need
                     # to presume it was empty (as SELECT/checkbox/radio tags
                     # do not submit an empty value, they are just missing
                     # in the querystring)
                     if applyhidewhen and f in displayed_fields:
                         fieldtype = f.getFieldType()
-                        if (fieldtype == "SELECTION" or 
-                                fieldtype == "DOCLINK"):
+                        if (fieldtype in ("SELECTION", "DOCLINK", "BOOLEAN")):
                             doc.removeItem(fieldName)
 
     security.declareProtected(READ_PERMISSION, 'searchDocuments')

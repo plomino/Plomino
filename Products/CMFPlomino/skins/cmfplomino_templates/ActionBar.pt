@@ -40,7 +40,7 @@
 		<input type="submit" class="context plominoSave" name="plomino_save"
 			value="Save" i18n:domain="CMFPlomino" i18n:attributes="value" />
 		<tal:block
-			tal:condition="python:not(here.getCurrentUser().getUserName()=='Anonymous User')"><tal:block
+			tal:condition="python:not(here.getCurrentMember().getUserName()=='Anonymous User')"><tal:block
 			metal:use-macro="here/ActionBar/macros/DeleteAction">display
 		delete action</tal:block></tal:block>
 	</tal:defaultactions>

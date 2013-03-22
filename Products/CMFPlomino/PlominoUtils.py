@@ -133,7 +133,7 @@ def sendMail(
     message = message + html_message
     message = message + "</html>"
     if not sender:
-        sender = db.getCurrentUser().getProperty("email")
+        sender = db.getCurrentMember().getProperty("email")
 
     mail_message = message_from_string(asUnicode(message).encode('utf-8'))
     mail_message.set_charset('utf-8')
