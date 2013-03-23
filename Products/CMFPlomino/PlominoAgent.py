@@ -167,10 +167,7 @@ class PlominoAgent(BaseContent, BrowserDefaultMixin):
             if self.getRunAs() == "OWNER":
                 newSecurityManager(None, user)
 
-            if request and (request.get('REDIRECT', None) == "True"):
-                if result is not None:
-                    plominoReturnURL = result
-
+            if request and request.get('REDIRECT', False):
                 request.RESPONSE.redirect(plominoReturnURL)
 
         except PlominoScriptException, e:
