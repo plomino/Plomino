@@ -9,9 +9,9 @@
 
         <tal:block tal:define="myF python:here;
                                 doc python:options['temp_doc']">
-			
-			<form tal:attributes="name python:myF.id" >
-			<span style="display: none" id="plomino_parent_field" 
+            
+            <form tal:attributes="name python:myF.id" >
+            <span style="display: none" id="plomino_parent_field" 
                   tal:condition="python:test(doc.hasItem('Plomino_Parent_Field'))"
                   tal:content="python:doc.getItem('Plomino_Parent_Field')">Plomino_Parent_Field</span>
             <span style="display: none" id="plomino_parent_form" 
@@ -19,12 +19,12 @@
                   tal:content="python:doc.getItem('Plomino_Parent_Form')">Plomino_Parent_Form</span>
             <span id="plomino_child_errors"></span>
 
-			    <h1 class="documentFirstHeading" tal:content="here/Title">Title</h1>
-			
-			    <span tal:content="structure python:myF.childDocument(doc)" />
+                <h1 class="documentFirstHeading" tal:content="here/Title">Title</h1>
+            
+                <span tal:content="structure python:myF.childDocument(doc)" />
 
-			</form>
-		</tal:block>
+            </form>
+        </tal:block>
     
 </div>
 </body>
