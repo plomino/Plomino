@@ -25,8 +25,11 @@ class ITextField(IBaseField):
     Text field schema
     """
     widget = Choice(
-            vocabulary=SimpleVocabulary.fromItems(
-                [("Text", "TEXT"), ("Long text", "TEXTAREA")]),
+            vocabulary=SimpleVocabulary.fromItems([
+                    ("Text", "TEXT"),
+                    ("Long text", "TEXTAREA"),
+                    ("Hidden", "HIDDEN")
+                    ]),
             title=u'Widget',
             description=u'Field rendering',
             default="TEXT",
