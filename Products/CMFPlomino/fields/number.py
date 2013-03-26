@@ -10,6 +10,9 @@
 __author__ = """Eric BREHAULT <eric.brehault@makina-corpus.com>"""
 __docformat__ = 'plaintext'
 
+# std
+from decimal import Decimal
+
 # Zope 
 from zope.formlib import form
 from zope.interface import implements
@@ -23,12 +26,19 @@ from dictionaryproperty import DictionaryProperty
 from Products.CMFPlomino.PlominoUtils import PlominoTranslate 
 from base import IBaseField, BaseField, BaseForm
 
+import logging
+logger = logging.getLogger('Plomino')
+
+
 class INumberField(IBaseField):
     """ Number field schema
     """
     type = Choice(
-            vocabulary=SimpleVocabulary.fromItems(
-                [("Integer", "INTEGER"), ("Float", "FLOAT")]),
+            vocabulary=SimpleVocabulary.fromItems([
+                    ("Integer", "INTEGER"),
+                    ("Float", "FLOAT"),
+                    ("Decimal", "DECIMAL"),
+                    ]),
             title=u'Type',
             description=u'Number type',
             default="INTEGER",
@@ -62,7 +72,7 @@ class NumberField(BaseField):
                             " must be an integer (submitted value was: ",
                             self.context) +
                         submittedValue + ")")
-        if self.type == "FLOAT":
+        elif self.type == "FLOAT":
             try:
                 v = float(submittedValue)
             except:
@@ -70,6 +80,16 @@ class NumberField(BaseField):
                         fieldname +
                         PlominoTranslate(
                             " must be a float (submitted value was: ",
+                            self.context) + 
+                        submittedValue + ")")
+        elif self.type == "DECIMAL":
+            try:
+                v = Decimal(str(submittedValue))
+            except:
+                errors.append(
+                        fieldname +
+                        PlominoTranslate(
+                            " must be a decimal (submitted value was: ",
                             self.context) + 
                         submittedValue + ")")
 
@@ -82,7 +102,10 @@ class NumberField(BaseField):
             return long(submittedValue)
         elif self.type == "FLOAT":
             return float(submittedValue)
+        elif self.type == "DECIMAL":
+            return Decimal(str(submittedValue))
         else:
+            logger.info('Number of unknown type: ' + submittedValue)
             return submittedValue
 
     def format_value(self, v):
