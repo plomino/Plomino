@@ -360,6 +360,8 @@ Globals.InitializeClass(plomino_decimal)
 def decimal(v='0'):
     """ Expose the standard library's Decimal class. Useful for finances.
     """
+    if not v:
+        v = '0'
     if type(v) not in StringTypes:
         v = str(v)
     try:
