@@ -103,7 +103,7 @@ class NumberField(BaseField):
         elif self.type == "FLOAT":
             return float(submittedValue)
         elif self.type == "DECIMAL":
-            return Decimal(submittedValue)
+            return Decimal(str(submittedValue))
         else:
             logger.info('Number of unknown type: ' + submittedValue)
             return submittedValue
