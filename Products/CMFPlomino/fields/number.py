@@ -84,7 +84,7 @@ class NumberField(BaseField):
                         submittedValue + ")")
         elif self.type == "DECIMAL":
             try:
-                v = Decimal(submittedValue)
+                v = Decimal(str(submittedValue))
             except:
                 errors.append(
                         fieldname +
