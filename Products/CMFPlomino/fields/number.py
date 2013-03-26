@@ -26,6 +26,10 @@ from dictionaryproperty import DictionaryProperty
 from Products.CMFPlomino.PlominoUtils import PlominoTranslate 
 from base import IBaseField, BaseField, BaseForm
 
+import logging
+logger = logging.getLogger('Plomino')
+
+
 class INumberField(IBaseField):
     """ Number field schema
     """
@@ -101,6 +105,7 @@ class NumberField(BaseField):
         elif self.type == "DECIMAL":
             return Decimal(submittedValue)
         else:
+            logger.info('Number of unknown type: ' + submittedValue)
             return submittedValue
 
     def format_value(self, v):
