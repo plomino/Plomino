@@ -351,7 +351,7 @@ def escape_xml_illegal_chars(val, replacement='?'):
     return _illegal_xml_chars_RE.sub(replacement, val)
 
 
-class plomino_decimal(std_decimal.Decimal, Implicit):
+class plomino_decimal(std_decimal.Decimal):
     security = ClassSecurityInfo()
     security.declareObjectPublic()
     security.declarePublic('as_tuple')
