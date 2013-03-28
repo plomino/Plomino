@@ -31,6 +31,7 @@ from jsonutil import jsonutil as json
 
 # Zope
 from AccessControl import ClassSecurityInfo
+from AccessControl.class_init import InitializeClass
 from Acquisition import Implicit
 from DateTime import DateTime
 
@@ -133,7 +134,7 @@ def sendMail(
     message = message + html_message
     message = message + "</html>"
     if not sender:
-        sender = db.getCurrentUser().getProperty("email")
+        sender = db.getCurrentMember().getProperty("email")
 
     mail_message = message_from_string(asUnicode(message).encode('utf-8'))
     mail_message.set_charset('utf-8')
@@ -190,22 +191,24 @@ def PlominoTranslate(msgid, context, domain='CMFPlomino'):
     translation_service = getToolByName(context, 'translation_service')
     # When will message be an exception?
     if isinstance(msgid, Exception):
+        logging.info("msgid is an Exception: %s" % msgid)
         try:
             msgid = msgid[0]
         except (TypeError, IndexError):
+            logging.exception("Can't translate: %s" % msgid, exc_info=True)
             pass
     if HAS_PLONE40:
         msg = translation_service.utranslate(
-            domain=domain,
-            msgid=msgid,
-            context=context
-        )
+                domain=domain,
+                msgid=msgid,
+                context=context
+                )
     else:
         msg = translation_service.utranslate(
-            msgid=msgid,
-            domain=domain,
-            context=context
-        )
+                msgid=msgid,
+                domain=domain,
+                context=context
+                )
     # this converts unicode to site encoding:
     return translation_service.encode(msg)
 
@@ -354,7 +357,7 @@ class plomino_decimal(std_decimal.Decimal, Implicit):
     security.declarePublic('as_tuple')
     security.declarePublic('quantize')
 
-Globals.InitializeClass(plomino_decimal)
+InitializeClass(plomino_decimal)
 
 
 def decimal(v='0'):
@@ -412,15 +415,15 @@ def translate(context, content, i18n_domain=None):
         i18n_domain = context.getParentDatabase().getI18n()
     def translate_token(match):
         translation = PlominoTranslate(
-            match.group(1),
-            context,
-            domain=i18n_domain
-        )
+                match.group(1),
+                context,
+                domain=i18n_domain
+                )
         translation = asUnicode(translation)
         return translation
     content = re.sub(
-        "__(?P<token>.+?)__",
-        translate_token,
-        content
-    )
+            "__(?P<token>.+?)__",
+            translate_token,
+            content
+            )
     return content

@@ -74,6 +74,17 @@ schema = Schema((
         schemata="Events",
     ),
     TextField(
+        name='beforeSaveDocument',
+        widget=TextAreaWidget(
+            label="Before save document",
+            description="Action to take before submitted values are saved into the document (submitted values are in context.REQUEST)",
+            label_msgid='CMFPlomino_label_beforeSaveDocument',
+            description_msgid='CMFPlomino_help_beforeSaveDocument',
+            i18n_domain='CMFPlomino',
+        ),
+        schemata="Events",
+    ),
+    TextField(
         name='onSaveDocument',
         widget=TextAreaWidget(
             label="On save document",
@@ -98,7 +109,7 @@ schema = Schema((
     TextField(
         name='onSearch',
         widget=TextAreaWidget(
-            label="On submssion of search form",
+            label="On submission of search form",
             description="Action to take when submitting a search",
             label_msgid='CMFPlomino_label_onSearch',
             description_msgid='CMFPlomino_help_onSearch',
@@ -274,9 +285,16 @@ class PlominoForm(ATFolder):
             form = obj.aq_parent
         return form
 
-    security.declareProtected(CREATE_PERMISSION, 'createDocument')
+    security.declareProtected(READ_PERMISSION, 'createDocument')
     def createDocument(self, REQUEST):
-        """create a document using the forms submitted content
+        """ Create a document using the form's submitted content.
+
+        The created document may be a TemporaryDocument, in case 
+        this form was rendered as a child form. In this case, we 
+        aren't adding a document to the database yet.
+
+        If we are not a child form, delegate to the database object 
+        to create the new document.
         """
         db = self.getParentDatabase()
 
@@ -297,7 +315,8 @@ class PlominoForm(ATFolder):
                     """%s</span></body></html>""" % " - ".join(errors))
             return self.notifyErrors(errors)
 
-        # if child form
+        ################################################################
+        # If child form, return a TemporaryDocument
         if is_childform:
             tmp = TemporaryDocument(db, self, REQUEST).__of__(db)
             tmp.setItem("Plomino_Parent_Field", parent_field)
@@ -309,6 +328,8 @@ class PlominoForm(ATFolder):
                     )
             return self.ChildForm(temp_doc=tmp)
 
+        ################################################################
+        # Add a document to the database
         doc = db.createDocument()
         doc.setItem('Form', self.getFormName())
 
@@ -1000,14 +1021,13 @@ class PlominoForm(ATFolder):
                 else:
                     # The field was not submitted, probably because it is
                     # not part of the form (hide-when, ...) so we just leave
-                    # it unchanged. But with SELECTION or DOCLINK, we need
+                    # it unchanged. But with SELECTION, DOCLINK or BOOLEAN, we need
                     # to presume it was empty (as SELECT/checkbox/radio tags
                     # do not submit an empty value, they are just missing
                     # in the querystring)
                     if applyhidewhen and f in displayed_fields:
                         fieldtype = f.getFieldType()
-                        if (fieldtype == "SELECTION" or 
-                                fieldtype == "DOCLINK"):
+                        if (fieldtype in ("SELECTION", "DOCLINK", "BOOLEAN")):
                             doc.removeItem(fieldName)
 
     security.declareProtected(READ_PERMISSION, 'searchDocuments')

@@ -375,6 +375,21 @@ class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
         form = db.getForm(REQUEST.get('Form'))
 
         errors = form.validateInputs(REQUEST, doc=self)
+
+        # execute the beforeSave code of the form
+        error = None
+        try:
+            error = self.runFormulaScript(
+                    'form_%s_beforesave' % form.id,
+                    self,
+                    form.getBeforeSaveDocument)
+        except PlominoScriptException, e:
+            e.reportError('Form submitted, but beforeSave formula failed')
+
+        if error:
+            errors.append(error)
+
+        # if errors, stop here, and notify errors to user
         if errors:
             return form.notifyErrors(errors)
 
@@ -462,7 +477,7 @@ class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
         if asAuthor:
             # getItem('Plomino_Authors', []) might return '' or None
             authors = asList(self.getItem('Plomino_Authors') or [])
-            name = db.getCurrentUser().getUserName()
+            name = db.getCurrentMember().getUserName()
             if not name in authors:
                 authors.append(name)
             self.setItem('Plomino_Authors', authors)
@@ -675,7 +690,11 @@ class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
                 self.setItem(fieldname, current_files)
                 self.deletefile(filename)
         if REQUEST:
-            REQUEST.RESPONSE.redirect(self.absolute_url()+"/EditDocument")
+            REQUEST.RESPONSE.redirect(self.absolute_url() + "/EditDocument")
+
+    def UID(self):
+        # needed for portal_catalog indexing
+        return "%s-%s" % (self.getParentDatabase().UID(), self.id)
 
     security.declarePublic('SearchableText')
     def SearchableText(self):

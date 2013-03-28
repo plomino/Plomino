@@ -118,6 +118,53 @@ Add some minimal content to test access (view 1 displays all documents)::
     >>> docid2 = doc2.id
     >>> docUrl2 = doc2.doc_url()
 
+Add an agent which will run as its owner::
+
+    >>> agentid = db.invokeFactory('PlominoAgent',
+    ...         id='ownersagent',
+    ...         RunAs='OWNER',
+    ...         Content='''
+    ... db = plominoContext.getParentDatabase()
+    ... req = getattr(plominoContext, 'REQUEST')
+    ... docid = req.get('docid')
+    ... doctitle = req.get('doctitle')
+    ... doc = db.getDocument(docid)
+    ... doc.setTitle(doctitle)
+    ... doc.save()
+    ... ''')
+
+Add form with a computed-on-display field that calls an agent::
+
+    >>> doc2 = db.createDocument()
+    >>> doc2.setItem('Form', 'form2')
+    >>> docid2 = doc2.id
+    >>> docUrl2 = doc2.doc_url()
+    >>> id = db.invokeFactory('PlominoForm', id='form2', Title='Form 2')
+    >>> id = db.form2.invokeFactory('PlominoField',
+    ...         id='editingdisplayfield',
+    ...         Title='editingdisplayfield',
+    ...         FieldType="TEXT",
+    ...         FieldMode="DISPLAY",
+    ...         Formula="""
+    ... db = plominoContext.getParentDatabase()
+    ... req = getattr(plominoContext, 'REQUEST')
+    ... req.set('docid', '%(docid)s')
+    ... req.set('doctitle', '%(doctitle)s')
+    ... agent = db.getAgent('ownersagent')
+    ... # This successfully edits doc2, because the agent runs as its owner.
+    ... agent.runAgent()
+    ... # This should fail, because we've dropped back to Reader rights.
+    ... doc = db.getDocument('%(docid)s')
+    ... doc.save()
+    ... return 'I made a change in %(docid)s'
+    ... """ % {'docid': docid2, 'doctitle': "Set by Agent"})
+    >>> db.form2.editingdisplayfield.at_post_create_script()
+    >>> from Products.CMFPlomino.fields.text import ITextField
+    >>> adapted=ITextField(db.form2.editingdisplayfield)
+    >>> adapted.widget="TEXT"
+    >>> db.form2.setFormLayout(
+    ... """<p>editingdisplayfield : <span class="plominoFieldClass">editingdisplayfield</span></p>""")
+
 Create the browser object we'll be using::
 
     >>> try:
@@ -186,7 +233,22 @@ Reader cannot edit or delete documents::
     >>> browser.open(docUrl+'/delete')
     >>> InsufficientPrivileges in browser.url
     True
-    
+
+Reader can edit a document using an agent which runs with more rights::
+
+    >>> browser.open('%s/%s/runAgent?docid=%s&doctitle=MyTitle' % (
+    ...         base_url, agentid, docid)) 
+    >>> browser.open(docUrl)
+    >>> "MyTitle" in browser.contents
+    True
+
+After using an agent which runs with more rights, Reader is dropped back 
+to restricted rights::
+
+    >>> browser.open(docUrl2)
+    >>> "I made a change in doc2" in browser.contents
+    False
+
 Reader cannot open a form::
 
     >>> browser.open(base_url + '/form1/OpenForm')

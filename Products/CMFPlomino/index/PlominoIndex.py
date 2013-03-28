@@ -174,7 +174,7 @@ class PlominoIndex(UniqueObject, CatalogTool):
         """
         """
         user_groups_roles = ['Anonymous', '*']
-        user_id = self.getCurrentUser().getUserName()
+        user_id = self.getCurrentMember().getUserName()
         if user_id != "Anonymous User":
             user_groups_roles += (
                     [user_id] + 

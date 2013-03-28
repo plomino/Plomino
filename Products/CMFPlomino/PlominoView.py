@@ -325,7 +325,7 @@ class PlominoView(ATFolder):
             only_allowed=only_allowed)
         if limit:
             results = batch(
-                    items=results,
+                    results,
                     pagesize=limit,
                     pagenumber=int(start/limit)+1)
         if getObject:

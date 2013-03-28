@@ -107,8 +107,16 @@ class PlominoAgent(BaseContent, BrowserDefaultMixin):
         plominoContext = self
         try:
             if self.getRunAs() == "OWNER":
+
+                # Remember the current user
+                member = self.getCurrentMember()
+                if member.__class__.__name__ == "SpecialUser":
+                    user = member
+                else:
+                    user = member.getUser()
+
+                # Switch to the agent's owner
                 owner = self.getOwner()
-                # user = self.getCurrentUser()
                 newSecurityManager(None, owner)
 
             result = self.runFormulaScript(
@@ -117,8 +125,11 @@ class PlominoAgent(BaseContent, BrowserDefaultMixin):
                     self.Content,
                     True,
                     *args)
-            # if self.getRunAs() == "OWNER":
-            #     newSecurityManager(None, user)
+
+            # Switch back to the original user
+            if self.getRunAs() == "OWNER":
+                newSecurityManager(None, user)
+
         except PlominoScriptException, e:
             e.reportError('Agent failed')
             result = None
@@ -134,19 +145,31 @@ class PlominoAgent(BaseContent, BrowserDefaultMixin):
         request = getattr(self, 'REQUEST', None)
         try:
             if self.getRunAs() == "OWNER":
-                user = self.getOwner()
-                newSecurityManager(None, user)
+                # Remember the current user
+                member = self.getCurrentMember()
+                if member.__class__.__name__ == "SpecialUser":
+                    user = member
+                else:
+                    user = member.getUser()
 
-            result = self.runFormulaScript(
+                # Switch to the agent's owner
+                owner = self.getOwner()
+                newSecurityManager(None, owner)
+
+            plominoReturnURL = self.runFormulaScript(
                     "agent_"+self.id,
                     plominoContext,
                     self.Content,
                     True,
                     *args)
-            if request and (request.get('REDIRECT', None) == "True"):
-                if result is not None:
-                    plominoReturnURL = result
+
+            # Switch back to the original user
+            if self.getRunAs() == "OWNER":
+                newSecurityManager(None, user)
+
+            if request and request.get('REDIRECT', False):
                 request.RESPONSE.redirect(plominoReturnURL)
+
         except PlominoScriptException, e:
             # Exception logged already in runFormulaScript
             if request and request.get('RESPONSE'):
