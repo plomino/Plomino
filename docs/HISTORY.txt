@@ -1,6 +1,10 @@
 Changelog
 =========
 
+1.17.1 (2013-03-28)
+-------------------
+* Fix batching in dynamic view
+
 1.17 (2013-03-20)
 -----------------
 * Add Boolean field type
