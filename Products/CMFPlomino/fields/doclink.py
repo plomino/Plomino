@@ -24,6 +24,7 @@ from zope.schema.vocabulary import SimpleVocabulary
 from base import IBaseField, BaseField, BaseForm
 from dictionaryproperty import DictionaryProperty
 from Products.CMFPlomino.exceptions import PlominoScriptException
+from Products.CMFPlomino.PlominoUtils import asUnicode
 
 class IDoclinkField(IBaseField):
     """ Selection field schema
@@ -98,7 +99,7 @@ class DoclinkField(BaseField):
                     val = getattr(b, v.getIndexKey(self.labelcolumn), '')
                     if not val:
                         val = ''
-                    result.append(val + "|" + b.id)
+                    result.append(asUnicode(val) + "|" + b.id)
                 return result
         else:
             #if no doc provided (if OpenForm action), we use the PlominoForm
