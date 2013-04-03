@@ -14,7 +14,7 @@
 function datagrid_show_form(field_id, formurl, onsubmit) {
 	var field_selector = "#" + field_id + "_editform";
 	$(field_selector).html(
-		'<iframe style="height:100%;width:100%" height="100%" width="100%"></iframe>'
+		'<iframe name="' + field_id + '_iframe" style="height:100%;width:100%" height="100%" width="100%"></iframe>'
 	);
 	var iframe = $("#" + field_id + "_editform iframe");
 	iframe.attr('src', formurl);
