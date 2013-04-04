@@ -1,0 +1,81 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en"
+      xmlns:tal="http://xml.zope.org/namespaces/tal"
+      xmlns:metal="http://xml.zope.org/namespaces/metal"
+      xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+      lang="en"
+      i18n:domain="plone">
+<head tal:define="view context/@@plone;
+                  ajax_load request/ajax_load | nothing;
+                  ajax_include_head request/ajax_include_head | nothing;"
+      tal:condition="python: not ajax_load or ajax_include_head">
+    <div tal:replace="structure provider:plone.resourceregistries.styles" />
+    <div tal:replace="structure provider:plone.resourceregistries.scripts" />
+    <tal:has_date condition="python:here.getForm().hasDateTimeField()">
+        <script type="text/javascript"
+                charset="iso-8859-1"
+                tal:attributes="src string:${here/portal_url}/jscalendar/calendar_stripped.js">
+        </script>
+        <script type="text/javascript"
+                charset="iso-8859-1"
+                tal:attributes="src string:${here/portal_url}/jscalendar/calendar-en.js">
+        </script>
+        <link rel="stylesheet" type="text/css" media="all" tal:attributes="href string:${here/portal_url}/jscalendar/calendar-system.css" />
+    </tal:has_date>
+    
+    <tal:has_googleviz condition="python:here.getForm().hasGoogleVisualizationField()">
+        <script type='text/javascript' src='http://www.google.com/jsapi'></script>
+    </tal:has_googleviz>
+    <script type="text/javascript" tal:condition="python:here.getForm().hasDynamicHidewhen()">
+        function refreshHidewhen() {
+            var onsuccess = function(data, textStatus, xhr) {
+                for (var hw in data)
+                    jq('.hidewhen-' + hw).css('display', data[hw]?'none':'block');
+            }
+            jq.post('computehidewhens', jq('#plomino_form').serialize(), onsuccess, 'json');
+        }
+        jq(document).ready( function() {
+            jq('form :input').change(refreshHidewhen);
+        });
+    </script>
+</head>
+<body>
+<div id="content">
+  <tal:block tal:define="this_form python:here.getForm();
+                         b myF/ActionBarPosition|nothing">
+	
+	<form tal:attributes="name python:this_form.id">
+	<span style="display: none" id="plomino_path" tal:content="python:'/'.join(here.getPhysicalPath())">path</span>
+	<span style="display: none" id="plomino_childof" 
+                tal:condition="python:test(here.hasItem('Plomino_ChildOf'))"
+                tal:content="python:here.getItem('Plomino_ChildOf')">Plomino_ChildOf</span>
+          <span style="display: none" id="plomino_doclink_field" 
+                tal:condition="python:test(here.hasItem('Plomino_Doclink_Field'))"
+                tal:content="python:here.getItem('Plomino_Doclink_Field')">Plomino_Doclink_Field</span>
+          <span style="display: none" id="plomino_parent_field" 
+                tal:condition="python:test(here.hasItem('Plomino_Parent_Field'))"
+                tal:content="python:here.getItem('Plomino_Parent_Field')">Plomino_Parent_Field</span>
+          
+		<tal:form_actions_top
+				define="owner python:this_form"
+				condition= "python:test((b and this_form.ActionBarPosition=='BOTTOM'), False, True)">
+				<span metal:use-macro="here/ActionBar/macros/EditDocumentActionBar" >
+					display form actions above form fields
+				</span><br/>
+		</tal:form_actions_top>
+		
+	    <span tal:content="structure python:here.editWithForm(this_form)" />
+
+		<tal:form_actions_bottom
+			define="owner python:this_form">
+			<span metal:use-macro="here/ActionBar/macros/EditDocumentActionBar" >
+				display form actions below form fields
+			</span>
+		</tal:form_actions_bottom>
+
+	</form>
+  </tal:block>
+</div>
+</body>
+</html>
+
+
