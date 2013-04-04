@@ -2,8 +2,6 @@ from plone.app.testing import PloneSandboxLayer
 from plone.app.testing import PLONE_FIXTURE
 from plone.app.testing import TEST_USER_ID, TEST_USER_NAME
 from plone.app.testing import login, setRoles
-# from plone.app.testing import FunctionalTesting
-# from plone.app.testing import selenium_layers
 
 from plone.testing import z2
 
@@ -48,3 +46,10 @@ PLOMINO_FIXTURE = Plomino()
 
 # PLOMINO_SELENIUM_FIXTURE = PlominoSelenium()
 # PLOMINO_SELENIUM_TESTING = FunctionalTesting(bases=(PLOMINO_SELENIUM_FIXTURE,), name="Plomino:Selenium")
+
+from plone.app.testing import FunctionalTesting
+from plone.app.robotframework.testing import AUTOLOGIN_LIBRARY_FIXTURE
+
+PLOMINO_ROBOT_TESTING = FunctionalTesting(
+    bases=(AUTOLOGIN_LIBRARY_FIXTURE, PLOMINO_FIXTURE, z2.ZSERVER),
+    name="Plomino:Robot")
