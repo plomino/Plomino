@@ -7,7 +7,12 @@ install:
   - python bootstrap.py -c travis.cfg -v 1.7.1
   - bin/buildout -N -t 3 -c travis.cfg install download install
   - bin/buildout -N -t 3 -c travis.cfg
+  - curl -O http://saucelabs.com/downloads/Sauce-Connect-latest.zip
+  - unzip Sauce-Connect-latest.zip
+  - java -jar Sauce-Connect.jar $SAUCE_USERNAME $SAUCE_ACCESS_KEY -i $TRAVIS_JOB_ID -f CONNECTED &
+  - JAVA_PID=$!
 before_script:
+  - bash -c "while [ ! -f CONNECTED ]; do sleep 2; done"
   - "export DISPLAY=:99.0"
   - "sh -e /etc/init.d/xvfb start"
 script:
@@ -15,3 +20,15 @@ script:
 notifications:
   irc:
     - "irc.freenode.org#plomino"
+env: 
+  global: 
+  - secure: |-
+      i7fKKXXH+3F8Fz8O9p9dB3sOA5l5jKX3ebOG9tMwKyR0Cy4X6c/Ncb0pvCYe
+      AX5pyltmcrGfFoZl0q/F/Rr9ir2AW+oMvbjKTBExa5u6kiKvH1wroEfS/g64
+      QpORCTtcCY/PG5PQIWgArZ1sqFCMy8tfCW9iqTqMP5l2lRmH85c=
+  - secure: |-
+      B6qPbd6GhjA9ws1PqaaUdPuu9ao9R6DMQMrF8yrHDRRzXr3/NpzUPZSn0Xl3
+      c9zrkGyUOoB87FBzcpvWU+U+ZDeHSZCr5Sk86JLtBHwTiu6U4dZnAh3shBL5
+      qDAsKTQ+yaHaUFaTD/Zx2sbfsIjvEpxYHV/uHztvHZgK1J28rp4=
+  - ROBOT_BUILD_NUMBER=travis-$TRAVIS_BUILD_NUMBER
+  - ROBOT_REMOTE_URL=http://$SAUCE_USERNAME:$SAUCE_ACCESS_KEY@ondemand.saucelabs.com:80/wd/hub

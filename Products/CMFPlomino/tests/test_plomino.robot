@@ -2,10 +2,11 @@
 *** Settings ***
 
 Resource          plone/app/robotframework/selenium.robot
+Resource          plone/app/robotframework/saucelabs.robot
 Library           Remote    ${PLONE_URL}/RobotRemote
 Library           Dialogs
-Test Setup        Open test browser
-Test Teardown     Close all browsers
+Test Setup        Open SauceLabs test browser
+Test Teardown     Run keywords  Report test status  Close all browsers
 
 *** Test Cases ***
 Plomino is installed
