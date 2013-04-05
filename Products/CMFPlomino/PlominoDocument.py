@@ -830,6 +830,8 @@ class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
                     submittedValue.seek(0)
                     contenttype = guessMimetype(submittedValue, filename)
                     submittedValue = submittedValue.read()
+                elif submittedValue.__class__.__name__ == '_fileobject':
+                    submittedValue = submittedValue.read()
                 try:
                     blob = BlobWrapper(contenttype)
                 except:  # XXX Except what?
