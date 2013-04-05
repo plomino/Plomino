@@ -891,11 +891,13 @@ class PlominoForm(ATFolder):
     def getFormField(self, fieldname, includesubforms=True):
         """ Return the field
         """
+        field = None
         form = self.getForm()
-
-        field = getattr(form, fieldname, None)
-        # if field is not in main form, we search in the subforms
-        if not field:
+        field_ids = form.objectIds(spec='PlominoField')
+        if fieldname in field_ids:
+            field = getattr(form, fieldname)
+        else:
+            # if field is not in main form, we search in the subforms
             all_fields = self.getFormFields(includesubforms=includesubforms)
             matching_fields = [f for f in all_fields if f.id == fieldname]
             if matching_fields:
