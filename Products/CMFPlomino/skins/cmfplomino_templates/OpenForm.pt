@@ -91,7 +91,7 @@
                         condition="python:test(hasCreatePermissionOnDatabase and hasCreatePermissionOnForm)">
                         <div tal:replace="structure provider:plone.abovecontenttitle" />
                         <tal:block_actionbar_top tal:define="owner python:myF"
-                            tal:condition="python:test(b and myF.ActionBarPosition=='TOP')">
+                            tal:condition="python:b and myF.ActionBarPosition in ['TOP', 'BOTH']">
                             <span metal:use-macro="here/ActionBar/macros/OpenFormActionBar">display form actions</span><br/>
                         </tal:block_actionbar_top>
                     </tal:block_has_createpermission>
@@ -119,7 +119,7 @@
                         <span tal:content="structure python:here.openBlankForm(request)" /> 
                         <tal:block_actionbar_bottom
                             define="owner python:myF"
-                            condition="python:test(b and myF.ActionBarPosition=='BOTTOM')">
+                            condition="python:b and myF.ActionBarPosition in ['BOTTOM', 'BOTH']">
                             <span metal:use-macro="here/ActionBar/macros/OpenFormActionBar">display form actions</span>
                         </tal:block_actionbar_bottom>
                     </tal:block_has_createpermission>
@@ -143,7 +143,7 @@
                         condition="python:test(hasReadPermissionOnDatabase and hasReadPermissionOnForm)">
                         <tal:block_actionbar_top 
                             define="owner python:myF"
-                            condition="python:test(b and myF.ActionBarPosition=='TOP')">
+                            condition="python:b and myF.ActionBarPosition in ['TOP', 'BOTH']">
                             <span metal:use-macro="here/ActionBar/macros/SearchFormActionBar">display form actions</span><br/>
                         </tal:block_actionbar_top>
                     </tal:block_has_readpermission>
@@ -211,7 +211,7 @@
 
                         <tal:block_actionbar_bottom 
                             define="owner python:myF"
-                            condition="python:test(b and myF.ActionBarPosition=='BOTTOM')">
+                            condition="python:b and myF.ActionBarPosition in ['BOTTOM', 'BOTH']">
                             <span metal:use-macro="here/ActionBar/macros/SearchFormActionBar">display form actions</span>
                         </tal:block_actionbar_bottom>
                     </tal:block_has_readpermission>

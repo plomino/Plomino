@@ -93,7 +93,7 @@
                 <div tal:replace="structure provider:plone.abovecontenttitle" />
                 <tal:form_actions_top
                     define="owner python:this_form"
-                    condition= "python:test((b and this_form.ActionBarPosition=='BOTTOM'), False, True)">
+                    condition= "python:b and this_form.ActionBarPosition in ['TOP', 'BOTH']">
                     <span metal:use-macro="here/ActionBar/macros/EditDocumentActionBar" >
                         display form actions above form fields
                     </span><br/>
@@ -106,7 +106,7 @@
 
                 <tal:form_actions_bottom
                     define="owner python:this_form"
-                    condition="python:test((b and this_form.ActionBarPosition!='TOP'), True, False)">
+                    condition="python:b and this_form.ActionBarPosition in ['BOTTOM', 'BOTH']">
                     <span metal:use-macro="here/ActionBar/macros/EditDocumentActionBar" >
                         display form actions below form fields
                     </span>

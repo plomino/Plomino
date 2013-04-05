@@ -42,7 +42,7 @@
           
 			<tal:block
 			tal:define="owner python:myF"
-			tal:condition= "python:test((b and  myF.ActionBarPosition=='TOP'), True, False)"
+			tal:condition= "python:b and myF.ActionBarPosition in ['TOP', 'BOTH']"
 			>
     		<span metal:use-macro="here/ActionBar/macros/ReadDocumentActionBar" >
 				display form actions
@@ -52,7 +52,7 @@
 
 		<tal:block
 			tal:define="owner python:myF"
-			tal:condition="python:test((b and  myF.ActionBarPosition=='BOTTOM'),True, False)"
+			tal:condition="python:b and myF.ActionBarPosition in [BOTTOM', 'BOTH']"
 			>
     		<span metal:use-macro="here/ActionBar/macros/ReadDocumentActionBar" >
 				display form actions
