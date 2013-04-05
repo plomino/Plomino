@@ -881,7 +881,12 @@ class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
         # if REQUEST exists, test the current command
         if hasattr(self, 'REQUEST'):
             command = self.REQUEST.URL.split('/')[-1].lower()
-            return command in ['editdocument', 'edit', 'savedocument']
+            return command in [
+                'editdocument',
+                'edit',
+                'savedocument',
+                'editbaredocument'
+            ]
         else:
             return False
 
