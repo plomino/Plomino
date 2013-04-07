@@ -192,7 +192,7 @@
                         </table>
                     </tal:block_results>
                     <tal:block_actionbar_bottom define="owner python:myF"
-                        condition="python:b and myF.ActionBarPosition in ['BOTTOM', 'BOTH'])">
+                        condition="python:b and myF.ActionBarPosition in ['BOTTOM', 'BOTH']">
                         <span metal:use-macro="here/ActionBar/macros/SearchFormActionBar">display form actions</span>
                     </tal:block_actionbar_bottom>
                 </tal:block_has_readpermission>
