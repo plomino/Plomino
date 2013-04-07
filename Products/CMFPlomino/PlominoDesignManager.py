@@ -670,7 +670,7 @@ class PlominoDesignManager(Persistent):
                     )
         import_list = ";".join(import_list)
 
-        r = re.compile('#Plomino import (.+)[\r\n]')
+        r = re.compile('^#Plomino import (.+)[\r\n]', re.MULTILINE)
         for i in r.findall(formula):
             scriptname = i.strip()
             try:
