@@ -1,6 +1,12 @@
 Changelog
 =========
 
+1.17.2 (2013-04-08)
+-------------------
+* EditBareDocument template
+* Add headers (based on fields titles) on datagrid in static mode
+* Fix action bar displaying at both top and bottom
+
 1.17.1 (2013-03-28)
 -------------------
 * Fix batching in dynamic view
