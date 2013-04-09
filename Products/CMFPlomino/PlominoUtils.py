@@ -69,18 +69,29 @@ def Log(message, summary='', severity='info', exc_info=False):
         exc_info=exc_info
     )
 
-
-def DateToString(d, format='%Y-%m-%d'):
-    """ Return the date as string using the given format
+def DateToString(d, format=None, db=None):
+    """ Return the date as string using the given format.
+    
+    Pass in database object to use default format.
     """
-    # XXX: Should use db.getDateTimeFormat
+    if not format:
+        if db:
+            format = db.getDateTimeFormat()
+        if not format:
+            format = '%Y-%m-%d'
     return d.strftime(format)
 
 
-def StringToDate(str_d, format='%Y-%m-%d'):
-    """ Parse the string using the given format and return the date
+def StringToDate(str_d, format='%Y-%m-%d', db=None):
+    """ Parse the string using the given format and return the date.
+
+    With StringToDate, it's best to have a fixed default format, 
+    as it is easier for formulas to control the input date string than the
+    portal date format.
     """
     try:
+        if db:
+            format = db.getDateTimeFormat()
         if format:
             dt = datetime.strptime(str_d, format)
         else:
@@ -195,7 +206,7 @@ def PlominoTranslate(msgid, context, domain='CMFPlomino'):
         try:
             msgid = msgid[0]
         except (TypeError, IndexError):
-            logging.exception("Can't translate: %s" % msgid, exc_info=True)
+            logging.exception("Couldn't subscript msgid: %s" % msgid, exc_info=True)
             pass
     if HAS_PLONE40:
         msg = translation_service.utranslate(
