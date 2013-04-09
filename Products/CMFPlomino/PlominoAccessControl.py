@@ -13,6 +13,9 @@ __docformat__ = 'plaintext'
 # Standard
 import warnings
 
+import logging
+logger = logging.getLogger('Plomino')
+
 # Zope
 from AccessControl import ClassSecurityInfo
 from Persistence import Persistent
@@ -110,6 +113,11 @@ class PlominoAccessControl(Persistent):
         """
         self.ACL_initialized = 0
         self.UserRoles = {}
+
+    def _redirectIfResponse(REQUEST, target):
+        response = getattr(REQUEST, 'RESPONSE', None)
+        if response:
+            response.redirect(target)
 
     security.declarePublic('getUserRoles')
     def getUserRoles(self):
@@ -438,7 +446,7 @@ class PlominoAccessControl(Persistent):
         user = REQUEST.get('newuser')
         accessright = REQUEST.get('accessright')
         self.manage_setLocalRoles(user, [accessright])
-        REQUEST.RESPONSE.redirect('./DatabaseACL')
+        self._redirectIfResponse('./DatabaseACL')
 
     security.declareProtected(ACL_PERMISSION, 'removeACLEntries')
     def removeACLEntries(self, REQUEST):
@@ -450,7 +458,7 @@ class PlominoAccessControl(Persistent):
             users = [users]
 
         self.manage_delLocalRoles(users)
-        REQUEST.RESPONSE.redirect('./DatabaseACL')
+        self._redirectIfResponse('./DatabaseACL')
 
     security.declareProtected(ACL_PERMISSION, 'setGenericAccess')
     def setGenericAccess(self, REQUEST):
@@ -472,7 +480,7 @@ class PlominoAccessControl(Persistent):
                 continue
             wf.updateRoleMappingsFor(self)
 
-        REQUEST.RESPONSE.redirect('./DatabaseACL')
+        self._redirectIfResponse('./DatabaseACL')
 
     security.declareProtected(ACL_PERMISSION, 'addPlominoUserRole')
     def addPlominoUserRole(self, REQUEST):
@@ -487,7 +495,7 @@ class PlominoAccessControl(Persistent):
         if not roles.has_key(newrole):
             roles[newrole] = {}
             self.UserRoles = roles
-        REQUEST.RESPONSE.redirect('./DatabaseACL')
+        self._redirectIfResponse('./DatabaseACL')
 
     security.declareProtected(ACL_PERMISSION, 'removePlominoUserRole')
     def removePlominoUserRole(self, REQUEST):
@@ -499,7 +507,7 @@ class PlominoAccessControl(Persistent):
         if roles.has_key(role):
             del roles[role]
             self.UserRoles = roles
-        REQUEST.RESPONSE.redirect('./DatabaseACL')
+        self._redirectIfResponse('./DatabaseACL')
 
     security.declareProtected(ACL_PERMISSION, 'addPlominoRoleToUser')
     def addPlominoRoleToUser(self, REQUEST):
@@ -514,7 +522,7 @@ class PlominoAccessControl(Persistent):
             userslist[user] = 1
             roles[role] = userslist
             self.UserRoles = roles
-        REQUEST.RESPONSE.redirect('./DatabaseACL')
+        self._redirectIfResponse('./DatabaseACL')
 
     security.declareProtected(ACL_PERMISSION, 'removePlominoRoleFromUser')
     def removePlominoRoleFromUser(self, REQUEST):
@@ -530,7 +538,7 @@ class PlominoAccessControl(Persistent):
                 del userslist[user]
                 roles[role] = userslist
                 self.UserRoles = roles
-        REQUEST.RESPONSE.redirect('./DatabaseACL')
+        self._redirectIfResponse('./DatabaseACL')
 
     security.declarePublic('getPortalMembers')
     def getPortalMembers(self):
@@ -586,7 +594,7 @@ class PlominoAccessControl(Persistent):
         deletedocument = REQUEST.get('specific_deletedocument', None)
         if deletedocument:
             self.setSpecificRights('specific_deletedocument', deletedocument)
-        REQUEST.RESPONSE.redirect('./DatabaseACL')
+        self._redirectIfResponse('./DatabaseACL')
 
     security.declareProtected(ACL_PERMISSION, 'getWorkflowStates')
     def getWorkflowStates(self):
