@@ -326,7 +326,7 @@ Author can open a form and create a document::
     >>> browser.getForm(name='form1').submit(name='plomino_save')
     >>> InsufficientPrivileges in browser.url
     False
-    >>> """<p>field1 : My value 1""" in browser.contents
+    >>> """My value 1""" in browser.contents
     True
 
 Author can edit his own documents::
@@ -338,7 +338,7 @@ Author can edit his own documents::
     >>> browser.getForm(name='form1').submit(name='plomino_save')
     >>> InsufficientPrivileges in browser.url
     False
-    >>> """<p>field1 : My new value 1""" in browser.contents
+    >>> """My new value 1""" in browser.contents
     True
 
 Author can delete his own documents::
@@ -392,7 +392,7 @@ Editor can edit or delete document created by other users::
     >>> browser.getForm(name='form1').submit(name='plomino_save')
     >>> InsufficientPrivileges in browser.url
     False
-    >>> """<p>field1 : The very best value 1""" in browser.contents
+    >>> """The very best value 1""" in browser.contents
     True
     >>> browser.open(docUrl2+'/delete?returnurl='+base_url)
     >>> InsufficientPrivileges in browser.url
