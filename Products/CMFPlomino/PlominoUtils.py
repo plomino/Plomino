@@ -88,6 +88,8 @@ def StringToDate(str_d, format='%Y-%m-%d', db=None):
     With StringToDate, it's best to have a fixed default format, 
     as it is easier for formulas to control the input date string than the
     portal date format.
+
+    Pass `format=None` to allow StringToDate to guess.
     """
     try:
         if db:
