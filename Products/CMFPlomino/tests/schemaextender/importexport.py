@@ -28,8 +28,11 @@ class ExtendedFieldImportExporter(object):
             root.appendChild(fieldnode)
         return root.toxml()
 
-    def import_xml(self, xml_strig):
-        doc = parseString(xml_strig)
+    def import_xml(self, xml_string):
+        nodestring = xml_string
+        if type(xml_string) is unicode:
+            nodestring = xml_string.encode('utf8')
+        doc = parseString(nodestring)
         schema = self.context.Schema()
         root = doc.childNodes[0]
         for fieldnode in root.childNodes:

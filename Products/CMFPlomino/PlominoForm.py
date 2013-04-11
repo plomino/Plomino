@@ -378,8 +378,8 @@ class PlominoForm(ATFolder):
                     db, self, request,
                     validation_mode=validation_mode).__of__(db)
             layout = self.applyHideWhen(doc)
-            result = [f for f in result 
-                    if """<span class="plominoFieldClass">%s</span>""" % 
+            result = [f for f in result
+                    if """<span class="plominoFieldClass">%s</span>""" %
                     f.id in layout]
         result.sort(key=lambda elt: elt.id.lower())
         if includesubforms:
@@ -475,7 +475,7 @@ class PlominoForm(ATFolder):
     def displayDocument(self, doc, editmode=False, creation=False,
             parent_form_id=False, request=None):
         """ Display the document using the form's layout
-        """ 
+        """
         # remove the hidden content
         html_content = self.applyHideWhen(doc, silent_error=False)
         if request:
@@ -489,7 +489,7 @@ class PlominoForm(ATFolder):
         fields_in_layout = []
         fieldids_not_in_layout = []
         for field in fields:
-            fieldblock = '<span class="plominoFieldClass">%s</span>' % field.id 
+            fieldblock = '<span class="plominoFieldClass">%s</span>' % field.id
             if fieldblock in html_content:
                 fields_in_layout.append([field, fieldblock])
             else:
@@ -541,7 +541,7 @@ class PlominoForm(ATFolder):
                         doc, editmode, creation, parent_form_id=self.id,
                         request=request)
                 html_content = html_content.replace(
-                        '<span class="plominoSubformClass">%s</span>' % 
+                        '<span class="plominoSubformClass">%s</span>' %
                         subformname,
                         subformrendering)
 
@@ -569,7 +569,7 @@ class PlominoForm(ATFolder):
             else:
                 action_render = ''
             html_content = html_content.replace(
-                    '<span class="plominoActionClass">%s</span>' % 
+                    '<span class="plominoActionClass">%s</span>' %
                     actionName,
                     action_render)
 
@@ -606,7 +606,7 @@ class PlominoForm(ATFolder):
                 raw_values.append(v)
 
         html = ("<div id='raw_values'>%(raw_values)s</div>"
-                "<div id='parent_field'>%(parent_field)s</div>" 
+                "<div id='parent_field'>%(parent_field)s</div>"
                 "%(fields)s")
         field_html = "<span id='%s' class='plominochildfield'>%s</span>"
 
@@ -652,7 +652,7 @@ class PlominoForm(ATFolder):
                     hidewhen.Formula)
             except PlominoScriptException, e:
                 if not silent_error:
-                    # applyHideWhen is called by getFormFields and 
+                    # applyHideWhen is called by getFormFields and
                     # getSubForms; in those cases, error reporting
                     # is not accurate,
                     # we only need error reporting when actually rendering a
@@ -663,7 +663,7 @@ class PlominoForm(ATFolder):
                 #if error, we hide anyway
                 result = True
 
-            start = ('<span class="plominoHidewhenClass">start:%s</span>' % 
+            start = ('<span class="plominoHidewhenClass">start:%s</span>' %
                     hidewhenName)
             end = ('<span class="plominoHidewhenClass">end:%s</span>' %
                     hidewhenName)
@@ -721,7 +721,7 @@ class PlominoForm(ATFolder):
 
     security.declareProtected(READ_PERMISSION, 'getHidewhenAsJSON')
     def getHidewhenAsJSON(self, REQUEST, parent_form=None, validation_mode=False):
-        """ Return a JSON object to dynamically show or hide hidewhens 
+        """ Return a JSON object to dynamically show or hide hidewhens
         (works only with isDynamicHidewhen)
         """
         db = self.getParentDatabase()
@@ -784,7 +784,7 @@ class PlominoForm(ATFolder):
                         request=getattr(self, 'REQUEST', None))
                 cachekey = None
 
-            start = ('<span class="plominoCacheClass">start:%s</span>' % 
+            start = ('<span class="plominoCacheClass">start:%s</span>' %
                     cacheid)
             end = ('<span class="plominoCacheClass">end:%s</span>' %
                     cacheid)
@@ -852,7 +852,7 @@ class PlominoForm(ATFolder):
         db = self.getParentDatabase()
         # execute the beforeCreateDocument code of the form
         invalid = False
-        if (hasattr(self, 'beforeCreateDocument') and 
+        if (hasattr(self, 'beforeCreateDocument') and
                 self.beforeCreateDocument):
             try:
                 invalid = self.runFormulaScript(
@@ -1127,7 +1127,7 @@ class PlominoForm(ATFolder):
         for hidewhenName, doit in hidewhens.items():
             if not doit:  # Only consider True hidewhens
                 continue
-            start = ('<span class="plominoHidewhenClass">start:%s</span>' % 
+            start = ('<span class="plominoHidewhenClass">start:%s</span>' %
                     hidewhenName)
             end = ('<span class="plominoHidewhenClass">end:%s</span>' %
                     hidewhenName)
@@ -1162,7 +1162,7 @@ class PlominoForm(ATFolder):
                 REQUEST,
                 doc,
                 validation_mode=True)
-        fields = [field for field in fields 
+        fields = [field for field in fields
                 if field.getId() not in hidden_fields]
         for f in fields:
             fieldname = f.id
