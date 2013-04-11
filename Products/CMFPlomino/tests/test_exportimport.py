@@ -6,6 +6,7 @@ from plone.app.testing import PloneSandboxLayer
 from Products.CMFPlomino.tests.schemaextender.importexport import ExtendedFieldImportExporter
 
 class SchemaExtenderLayer(PloneSandboxLayer):
+    defaultBases = (PLOMINO_FIXTURE,)
 
     def setUpZope(self, app, configurationContext):
         super(SchemaExtenderLayer, self).setUpZope(app, configurationContext)
@@ -16,7 +17,7 @@ class SchemaExtenderLayer(PloneSandboxLayer):
         self.loadZCML(package=Products.CMFPlomino.tests.schemaextender)
 
 SCHEMAEXTENDER_FIXTURE = SchemaExtenderLayer()
-PLOMINO_SCHEMAEXTENDER_TESTING = FunctionalTesting(bases=(SCHEMAEXTENDER_FIXTURE,PLOMINO_FIXTURE), name="Plomino:SchemaExtender")
+PLOMINO_SCHEMAEXTENDER_TESTING = FunctionalTesting(bases=(SCHEMAEXTENDER_FIXTURE,), name="Plomino:SchemaExtender")
 
 class ExportImportTest(unittest.TestCase):
 

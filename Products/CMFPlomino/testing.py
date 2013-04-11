@@ -37,6 +37,7 @@ class Plomino(PloneSandboxLayer):
     def tearDownZope(self, app):
         # Uninstall product
         z2.uninstallProduct(app, 'Products.CMFPlomino')
+        z2.uninstallProduct(app, 'plomino.tinymce')
 
 PLOMINO_FIXTURE = Plomino()
 PLOMINO_FUNCTIONAL_TESTING = FunctionalTesting(bases=(PLOMINO_FIXTURE,), name="Plomino:Functional")
