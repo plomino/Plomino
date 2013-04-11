@@ -114,7 +114,7 @@ class DatagridField(BaseField):
         if isinstance(value, basestring):
             return value
         elif isinstance(value, DateTime):
-            value = DateToString(value)
+            value = DateToString(value, '%Y-%m-%d')
         elif isinstance(value, dict):
             if rendered:
                 value = value['rendered']
