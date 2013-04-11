@@ -30,9 +30,11 @@ from zope.interface import implements
 # Plone
 try:
     from plone.batching.batch import Batch
+    batch = Batch.fromPagenumber
 except:
     # < 4.3 compatibility
     from plone.app.content.batching import Batch
+    batch = Batch
 
 # Plomino
 from exceptions import PlominoScriptException
@@ -300,7 +302,8 @@ class PlominoView(ATFolder):
         return BaseObject.__bobo_traverse__(self, request, name)
 
     security.declarePublic('getAllDocuments')
-    def getAllDocuments(self, start=1, limit=None, only_allowed=True, getObject=True, fulltext_query=None, sortindex=None, reverse=None):
+    def getAllDocuments(self, start=1, limit=None, only_allowed=True,
+            getObject=True, fulltext_query=None, sortindex=None, reverse=None):
         """ Return all the documents matching the view.
         """
         index = self.getParentDatabase().getIndex()
@@ -321,8 +324,8 @@ class PlominoView(ATFolder):
             reverse=reverse,
             only_allowed=only_allowed)
         if limit:
-            results = Batch(
-                    items=results,
+            results = batch(
+                    results,
                     pagesize=limit,
                     pagenumber=int(start/limit)+1)
         if getObject:
@@ -342,7 +345,7 @@ class PlominoView(ATFolder):
 
     security.declarePublic('getColumns')
     def getColumns(self):
-        """Get colums
+        """ Get columns
         """
         columnslist = self.portal_catalog.search(
                 {'portal_type': ['PlominoColumn'],
@@ -551,6 +554,12 @@ class PlominoView(ATFolder):
 
         IMPORTANT: brain_docs are supposed to be ZCatalog brains
         """
+        if REQUEST:
+            if REQUEST.get("separator"):
+                separator = REQUEST.get("separator")
+            if REQUEST.get("displayColumnsTitle"):
+                displayColumnsTitle = REQUEST.get("displayColumnsTitle")
+
         if isinstance(quoting, basestring):
             #convert to int when passed via querystring
             try:

@@ -35,7 +35,7 @@
                 tal:condition="python:test(hasReadPermission==True)">
                 <tal:block
                     tal:define="owner python:myF"
-                    tal:condition="python:test((b and myF.ActionBarPosition=='BOTTOM'), False, True)">
+                    tal:condition="python:b and myF.ActionBarPosition in ['TOP', 'BOTH']">
                     <span metal:use-macro="here/ActionBar/macros/ViewActionBar">
                     display view actions </span>
                 </tal:block>
@@ -190,8 +190,8 @@
                                     fixedcol1size python:iscategorized and '{ \'aTargets\': [1], \'sWidth\': \'0\' },' or '';"
                         tal:content="structure string:
                                      var oDynamicTable;
-                                     jq(document).ready(function() {
-                                            oDynamicTable = jq('#dynamictable').dataTable( {
+                                     $$(document).ready(function() {
+                                            oDynamicTable = $$('#dynamictable').dataTable( {
                                                 'aaSorting': [],
                                                 'bJQueryUI': true,
                                                 'bProcessing': true,
@@ -208,6 +208,7 @@
                                                 ],
                                                 ${fixedsorting}
                                                 'fnDrawCallback': function() {
+                                                    this.fnSetFilteringLimit(1);
                                                     if (${categorized}) {
                                                         dynamicview_categorize('dynamictable');
                                                     }
@@ -217,10 +218,9 @@
                                                     'sUrl': '@@collective.js.datatables.translation'
                                                 }
                                             });
-
                                             var tableNodes = oDynamicTable.fnGetNodes();
-                                            jq('td > input:checkbox', tableNodes).change(function() {
-                                                jq(this).closest('tr').toggleClass('row_selected');
+                                            $$('td > input:checkbox', tableNodes).change(function() {
+                                                $$(this).closest('tr').toggleClass('row_selected');
                                             });
                                         });">
                     </script>
@@ -254,7 +254,7 @@
 
                 <tal:block
                     tal:define="owner python:myF"
-                    tal:condition="python:test((b and  myF.ActionBarPosition!='TOP'),True, False)">
+                    tal:condition="python:b and myF.ActionBarPosition in ['BOTTOM', 'BOTH']">
 
                     <span metal:use-macro="here/ActionBar/macros/ViewActionBar">
                     display view actions </span>

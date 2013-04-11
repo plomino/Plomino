@@ -124,7 +124,7 @@ class PlominoAccessControl(Persistent):
         # XXX: method name is plural but takes singular role parameter?
         warnings.warn("getUsersForRoles is deprecated, "
                 "use getUsersForRole (which return a list).",
-                DeprecationWarning, 2)
+                DeprecationWarning, stacklevel=2)
         if self.UserRoles.has_key(role):
             return self.UserRoles[role]
 
@@ -167,6 +167,17 @@ class PlominoAccessControl(Persistent):
     security.declarePublic('getCurrentUser')
     def getCurrentUser(self):
         """ Returns the current user.
+        
+        Haha, no, just joking. Actually returns a Plone member. 
+        """
+        warnings.warn(
+                "getCurrentUser is deprecated, use getCurrentMember.",
+                DeprecationWarning, stacklevel=2)
+        return self.getCurrentMember()
+
+    security.declarePublic('getCurrentMember')
+    def getCurrentMember(self):
+        """ Returns the current member.
         """
         membershiptool = getToolByName(self, 'portal_membership')
         return membershiptool.getAuthenticatedMember()
@@ -175,21 +186,21 @@ class PlominoAccessControl(Persistent):
     def getCurrentUserId(self):
         """ Returns the current user id.
         """
-        return self.getCurrentUser().getMemberId()
+        return self.getCurrentMember().getMemberId()
 
     security.declarePublic('getCurrentUserGroups')
     def getCurrentUserGroups(self):
         """ Get the current user groups
         """
-        user = self.getCurrentUser()
-        return user.getGroups()
+        member = self.getCurrentMember()
+        return member.getGroups()
 
     security.declarePublic('getCurrentUserRights')
     def getCurrentUserRights(self):
         """ Returns the current user Plomino rights.
         """
         try:
-            userid = self.getCurrentUser().getMemberId()
+            userid = self.getCurrentMember().getMemberId()
             rights = self.get_local_roles_for_userid(userid)
 
             # we append group rights
@@ -226,7 +237,7 @@ class PlominoAccessControl(Persistent):
     def getCurrentUserRoles(self):
         """ Get current user roles
         """
-        userid = self.getCurrentUser().getUserName()
+        userid = self.getCurrentMember().getUserName()
         allroles = self.getUserRoles()
         roles = []
         for r in allroles:
@@ -247,7 +258,7 @@ class PlominoAccessControl(Persistent):
                     self.checkUserPermission(ACL_PERMISSION)):
                 isreader = True
             else:
-                username = self.getCurrentUser().getUserName()
+                username = self.getCurrentMember().getUserName()
                 if username == "Anonymous User":
                     user_groups_roles = set(['Anonymous'])
                 else:
@@ -281,7 +292,7 @@ class PlominoAccessControl(Persistent):
             return False
 
         # if the user is Owner or Manager, no problem
-        general_plone_rights = self.getCurrentUser().getRolesInContext(doc)
+        general_plone_rights = self.getCurrentMember().getRolesInContext(doc)
         for r in ['Owner', 'Manager']:
             if r in general_plone_rights:
                 return True
@@ -303,7 +314,7 @@ class PlominoAccessControl(Persistent):
             if '*' in authors:
                 return True
 
-            name = self.getCurrentUser().getUserName()
+            name = self.getCurrentMember().getUserName()
             if name in authors:
                 return True
 

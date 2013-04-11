@@ -2,12 +2,14 @@
 Test samples databases
 ===========================
 
+Setup::
+
     >>> self.setRoles(['Manager'])
     >>> id = self.portal.invokeFactory('Folder', id='samples')
     >>> folder = self.portal.samples
     >>> base_url = folder.absolute_url()
 
-Create some users:
+Create some users::
 
     >>> memberName = 'siteManager'
     >>> self.portal.portal_membership.addMember(memberName, memberName, ('Member, Manager',), '', {'fullname': memberName, 'email': memberName+'@dummy.fr',} )
@@ -27,7 +29,7 @@ Create some users:
     >>> self.portal.portal_membership.addMember(memberName, memberName, ('Member',), '', {'fullname': memberName, 'email': memberName+'@dummy.fr',} )
 
 
-Create the browser object we'll be using and log in as userEditor:
+Create the browser object we'll be using and log in as userEditor::
 
     >>> try:
     ...    from Testing.testbrowser import Browser
@@ -44,7 +46,7 @@ Create the browser object we'll be using and log in as userEditor:
     >>> import os.path
     >>> dir, _f = os.path.split(os.path.abspath(__file__))
 
-Import basic-example db:
+Import basic-example db::
 
     >>> f = open(os.path.join(dir, "samples", "basic-example.xml"))
     >>> id = folder.invokeFactory('PlominoDatabase', id='basic-example')
@@ -58,7 +60,7 @@ Import basic-example db:
     [...]
     >>> f.close()
 
-Set plomino roles and permissions:
+Set plomino roles and permissions::
 
     >>> db.manage_setLocalRoles('userManager', ['PlominoManager'])
     >>> db.manage_setLocalRoles('userDesigner', ['PlominoDesigner'])
@@ -66,7 +68,7 @@ Set plomino roles and permissions:
     >>> db.manage_setLocalRoles('userAuthor', ['PlominoAuthor'])
     >>> db.manage_setLocalRoles('userReader', ['PlominoReader'])
 
-Scenario:
+Scenario::
 
     >>> browser.open(base_url+'/basic-example')
     >>> 'Birthday' in browser.contents
@@ -87,7 +89,7 @@ Scenario:
     True
     >>> browser.open(base_url+'/basic-example/all')
 
-Import example-with-config-doc db:
+Import example-with-config-doc db::
 
     >>> f = open(os.path.join(dir, "samples", "example-with-config-doc.xml"))
     >>> id = folder.invokeFactory('PlominoDatabase', id='example-with-config-doc')
@@ -101,7 +103,7 @@ Import example-with-config-doc db:
     [...]    
     >>> f.close()
 
-Set plomino roles and permissions:
+Set plomino roles and permissions::
 
     >>> db.manage_setLocalRoles('userManager', ['PlominoManager'])
     >>> db.manage_setLocalRoles('userDesigner', ['PlominoDesigner'])
@@ -109,7 +111,7 @@ Set plomino roles and permissions:
     >>> db.manage_setLocalRoles('userAuthor', ['PlominoAuthor'])
     >>> db.manage_setLocalRoles('userReader', ['PlominoReader'])
 
-Scenario:
+Scenario::
 
     >>> browser.open(base_url+'/example-with-config-doc/frmConfig/OpenForm')
     >>> browser.getControl(name='configId').value = 'Departments'
@@ -133,6 +135,8 @@ Scenario:
     >>> browser.getControl('Save').click()
     >>> '11.96' in browser.contents
     True
-    >>> 'Ref. year 2007' in browser.contents
+    >>> 'Ref. year' in browser.contents
+    True
+    >>> '2007' in browser.contents
     True
 

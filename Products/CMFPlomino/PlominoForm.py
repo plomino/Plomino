@@ -35,7 +35,7 @@ from PlominoDocument import TemporaryDocument
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlomino.config import *
 from Products.CMFPlomino import plomino_profiler
-from Products.CMFPlomino.PlominoUtils import PlominoTranslate
+from Products.CMFPlomino.PlominoUtils import PlominoTranslate, translate
 from Products.CMFPlomino.PlominoUtils import DateToString
 from Products.CMFPlomino.PlominoUtils import asUnicode
 import interfaces
@@ -74,6 +74,17 @@ schema = Schema((
         schemata="Events",
     ),
     TextField(
+        name='beforeSaveDocument',
+        widget=TextAreaWidget(
+            label="Before save document",
+            description="Action to take before submitted values are saved into the document (submitted values are in context.REQUEST)",
+            label_msgid='CMFPlomino_label_beforeSaveDocument',
+            description_msgid='CMFPlomino_help_beforeSaveDocument',
+            i18n_domain='CMFPlomino',
+        ),
+        schemata="Events",
+    ),
+    TextField(
         name='onSaveDocument',
         widget=TextAreaWidget(
             label="On save document",
@@ -98,7 +109,7 @@ schema = Schema((
     TextField(
         name='onSearch',
         widget=TextAreaWidget(
-            label="On submssion of search form",
+            label="On submission of search form",
             description="Action to take when submitting a search",
             label_msgid='CMFPlomino_label_onSearch',
             description_msgid='CMFPlomino_help_onSearch',
@@ -274,9 +285,16 @@ class PlominoForm(ATFolder):
             form = obj.aq_parent
         return form
 
-    security.declareProtected(CREATE_PERMISSION, 'createDocument')
+    security.declareProtected(READ_PERMISSION, 'createDocument')
     def createDocument(self, REQUEST):
-        """create a document using the forms submitted content
+        """ Create a document using the form's submitted content.
+
+        The created document may be a TemporaryDocument, in case 
+        this form was rendered as a child form. In this case, we 
+        aren't adding a document to the database yet.
+
+        If we are not a child form, delegate to the database object 
+        to create the new document.
         """
         db = self.getParentDatabase()
 
@@ -297,7 +315,8 @@ class PlominoForm(ATFolder):
                     """%s</span></body></html>""" % " - ".join(errors))
             return self.notifyErrors(errors)
 
-        # if child form
+        ################################################################
+        # If child form, return a TemporaryDocument
         if is_childform:
             tmp = TemporaryDocument(db, self, REQUEST).__of__(db)
             tmp.setItem("Plomino_Parent_Field", parent_field)
@@ -309,6 +328,8 @@ class PlominoForm(ATFolder):
                     )
             return self.ChildForm(temp_doc=tmp)
 
+        ################################################################
+        # Add a document to the database
         doc = db.createDocument()
         doc.setItem('Form', self.getFormName())
 
@@ -457,6 +478,11 @@ class PlominoForm(ATFolder):
         """ 
         # remove the hidden content
         html_content = self.applyHideWhen(doc, silent_error=False)
+        if request:
+            parent_form_ids = request.get('parent_form_ids', [])
+            if parent_form_id:
+                parent_form_ids.append(parent_form_id)
+                request.set('parent_form_ids', parent_form_ids)
 
         # get the field lists
         fields = self.getFormFields(doc=doc, request=request)
@@ -548,16 +574,12 @@ class PlominoForm(ATFolder):
                     action_render)
 
         # translation
-        i18n_domain = self.getParentDatabase().getI18n()
+        db = self.getParentDatabase()
+        i18n_domain = db.getI18n()
+        if request and request.get("translation")=="off":
+            i18n_domain = None
         if i18n_domain:
-            def translate_token(match):
-                translation = PlominoTranslate(match.group(1), self, domain=i18n_domain)
-                translation = asUnicode(translation)
-                return translation
-            html_content = re.sub(
-                        "__(?P<token>.+?)__",
-                        translate_token,
-                        html_content)
+            html_content = translate(db, html_content, i18n_domain)
 
         # store fragment to cache
         html_content = self.updateCache(html_content, to_be_cached)
@@ -687,8 +709,14 @@ class PlominoForm(ATFolder):
                 return True
         for subformname in self.getSubforms():
             form = self.getParentDatabase().getForm(subformname)
-            if form and form.hasDynamicHidewhen():
-                return True
+            if form:
+                if form.hasDynamicHidewhen():
+                    return True
+            else:
+                msg = 'Missing subform: %s. Referenced on: %s' % (subformname, self.id)
+                self.writeMessageOnPage(msg, self.REQUEST)
+                logger.info(msg)
+
         return False
 
     security.declareProtected(READ_PERMISSION, 'getHidewhenAsJSON')
@@ -720,6 +748,11 @@ class PlominoForm(ATFolder):
                 result[hidewhen.id] = isHidden
         for subformname in self.getSubforms():
             form = db.getForm(subformname)
+            if not form:
+                msg = 'Missing subform: %s. Referenced on: %s' % (subformname, self.id)
+                self.writeMessageOnPage(msg, self.REQUEST)
+                logger.info(msg)
+                continue
             form_hidewhens = json.loads(
                     form.getHidewhenAsJSON(REQUEST,
                         parent_form=parent_form or self,
@@ -858,11 +891,13 @@ class PlominoForm(ATFolder):
     def getFormField(self, fieldname, includesubforms=True):
         """ Return the field
         """
+        field = None
         form = self.getForm()
-
-        field = getattr(form, fieldname, None)
-        # if field is not in main form, we search in the subforms
-        if not field:
+        field_ids = form.objectIds(spec='PlominoField')
+        if fieldname in field_ids:
+            field = getattr(form, fieldname)
+        else:
+            # if field is not in main form, we search in the subforms
             all_fields = self.getFormFields(includesubforms=includesubforms)
             matching_fields = [f for f in all_fields if f.id == fieldname]
             if matching_fields:
@@ -988,14 +1023,13 @@ class PlominoForm(ATFolder):
                 else:
                     # The field was not submitted, probably because it is
                     # not part of the form (hide-when, ...) so we just leave
-                    # it unchanged. But with SELECTION or DOCLINK, we need
+                    # it unchanged. But with SELECTION, DOCLINK or BOOLEAN, we need
                     # to presume it was empty (as SELECT/checkbox/radio tags
                     # do not submit an empty value, they are just missing
                     # in the querystring)
                     if applyhidewhen and f in displayed_fields:
                         fieldtype = f.getFieldType()
-                        if (fieldtype == "SELECTION" or 
-                                fieldtype == "DOCLINK"):
+                        if (fieldtype in ("SELECTION", "DOCLINK", "BOOLEAN")):
                             doc.removeItem(fieldName)
 
     security.declareProtected(READ_PERMISSION, 'searchDocuments')
@@ -1105,6 +1139,11 @@ class PlominoForm(ATFolder):
                     hiddensection)
         for subformname in self.getSubforms(doc):
             subform = self.getParentDatabase().getForm(subformname)
+            if not subform:
+                msg = 'Missing subform: %s. Referenced on: %s' % (subformname, self.id)
+                self.writeMessageOnPage(msg, self.REQUEST)
+                logger.info(msg)
+                continue
             hidden_fields += subform._get_js_hidden_fields(REQUEST, doc)
         return hidden_fields
 

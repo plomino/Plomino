@@ -8,7 +8,7 @@
              expression=""
              id="++resource++plomino.javascript/plomino.dynamicview.js"
              inline="False"
-             insert-after="jquery-integration.js"
+             insert-after="++resource++plone.app.jquery.js"
              />
              
  <javascript cacheable="True"
@@ -18,7 +18,7 @@
              expression=""
              id="++resource++plomino.javascript/plomino.accordion.js"
              inline="False"
-             insert-after="jquery-integration.js"
+             insert-after="++resource++plone.app.jquery.js"
              />             
  <javascript cacheable="True"
              compression="safe"
@@ -28,7 +28,6 @@
              id="++resource++plomino.javascript/jquery.urlEncode.js"
              inline="False"
              insert-after="++resource++plone.app.jquery.js"
-             insert-before="jquery-integration.js"
              />
  <javascript cacheable="True"
              compression="safe"
@@ -38,7 +37,6 @@
              id="++resource++plomino.javascript/jquery.json-2.2.min.js"
              inline="False"
              insert-after="++resource++plone.app.jquery.js"
-             insert-before="jquery-integration.js"
              />
  <javascript cacheable="True"
              compression="safe"
@@ -47,7 +45,7 @@
              expression=""
              id="++resource++plomino.javascript/plomino.datagrid.js"
              inline="False"
-             insert-after="jquery-integration.js"
+             insert-after="++resource++plone.app.jquery.js"
              />
  <javascript cacheable="True"
              compression="safe"
@@ -56,7 +54,7 @@
              expression=""
              id="++resource++plomino.javascript/plomino.debug.js"
              inline="False"
-             insert-after="jquery-integration.js"
+             insert-after="++resource++plone.app.jquery.js"
              />
  <javascript cacheable="True"
              compression="safe"
@@ -65,7 +63,7 @@
              expression="context/@@isPlominoDesignContext"
              id="++resource++plomino.javascript/plomino.codemirror.js"
              inline="False"
-             insert-after="jquery-integration.js"
+             insert-after="++resource++plone.app.jquery.js"
              />
  <javascript cacheable="True"
              compression="safe"

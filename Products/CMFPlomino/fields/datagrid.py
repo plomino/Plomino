@@ -156,6 +156,28 @@ class DatagridField(BaseField):
             return PlominoTranslate("datagrid_edit_button_label", db)
         return ""
 
+    def getColumnLabels(self):
+        """
+        """
+        if not self.field_mapping:
+            return []
+        
+        mapped_fields = [ f.strip() for f in self.field_mapping.split(',')]
+        
+        child_form_id = self.associated_form
+        if not child_form_id:
+            return mapped_fields
+
+        db = self.context.getParentDatabase()
+
+        # get child form
+        child_form = db.getForm(child_form_id)
+        if not child_form:
+            return mapped_fields
+
+        # return title for each mapped field if this one exists in the child form
+        return [f.Title() for f in [child_form.getFormField(f) for f in mapped_fields] if f]
+        
     def getFieldValue(self, form, doc=None, editmode_obsolete=False,
             creation=False, request=None):
         """

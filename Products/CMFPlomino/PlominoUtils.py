@@ -14,7 +14,8 @@ __docformat__ = 'plaintext'
 from cStringIO import StringIO
 from email.Header import Header
 from email import message_from_string
-from time import strptime
+from dateutil.parser import parse
+from datetime import datetime
 from types import StringTypes
 import cgi
 import csv
@@ -25,11 +26,12 @@ import Missing
 import re
 import urllib
 
-# 3rd party Python 
+# 3rd party Python
 from jsonutil import jsonutil as json
 
 # Zope
 from AccessControl import ClassSecurityInfo
+from AccessControl.class_init import InitializeClass
 from Acquisition import Implicit
 from DateTime import DateTime
 
@@ -47,10 +49,10 @@ import logging
 logger = logging.getLogger('Plomino')
 
 severity_map = {
-        'info': logging.INFO,
-        'warning': logging.WARNING,
-        'debug': logging.DEBUG
-        }
+    'info': logging.INFO,
+    'warning': logging.WARNING,
+    'debug': logging.DEBUG
+}
 
 
 def Log(message, summary='', severity='info', exc_info=False):
@@ -60,11 +62,13 @@ def Log(message, summary='', severity='info', exc_info=False):
     # Pass in severity as a string, because we don't want to import
     # ``logging`` from scripts.
     logger.log(
-            severity_map.get(severity, 'info'),
-            'App: %s\n%s',
-            summary,
-            message,
-            exc_info=exc_info)
+        severity_map.get(severity, 'info'),
+        'App: %s\n%s',
+        summary,
+        message,
+        exc_info=exc_info
+    )
+
 
 def DateToString(d, format='%Y-%m-%d'):
     """ Return the date as string using the given format
@@ -72,24 +76,25 @@ def DateToString(d, format='%Y-%m-%d'):
     # XXX: Should use db.getDateTimeFormat
     return d.strftime(format)
 
+
 def StringToDate(str_d, format='%Y-%m-%d'):
     """ Parse the string using the given format and return the date
     """
-    # XXX: Should use db.getDateTimeFormat
     try:
-        dt = strptime(str_d, format)
+        if format:
+            dt = datetime.strptime(str_d, format)
+        else:
+            dt = parse(str_d)
     except ValueError, e:
         # XXX: Just let DateTime guess.
-        dt = strptime(DateTime(str_d).ISO(), '%Y-%m-%dT%H:%M:%S')
+        dt = parse(DateTime(str_d).ISO())
         logger.info('StringToDate> %s, %s, %s, guessed: %s' % (
             str(str_d),
             format,
             repr(e),
             repr(dt)))
-    if len(dt) >= 5:
-        return DateTime(dt[0], dt[1], dt[2], dt[3], dt[4])
-    else:
-        return DateTime(dt[0], dt[1], dt[2])
+    return DateTime(dt.isoformat())
+
 
 def DateRange(d1, d2):
     """ Return all the dates from ``d1`` to ``d2`` (inclusive).
@@ -103,12 +108,23 @@ def DateRange(d1, d2):
         current = current + 1
     return result
 
+
 def Now():
     """ current date and tile
     """
     return DateTime()
 
-def sendMail(db, recipients, title, html_message, sender=None, cc=None, bcc=None, immediate=False):
+
+def sendMail(
+    db,
+    recipients,
+    title,
+    html_message,
+    sender=None,
+    cc=None,
+    bcc=None,
+    immediate=False
+):
     """Send an email
     """
     host = getToolByName(db, 'MailHost')
@@ -118,25 +134,33 @@ def sendMail(db, recipients, title, html_message, sender=None, cc=None, bcc=None
     message = message + html_message
     message = message + "</html>"
     if not sender:
-        sender = db.getCurrentUser().getProperty("email")
+        sender = db.getCurrentMember().getProperty("email")
 
     mail_message = message_from_string(asUnicode(message).encode('utf-8'))
     mail_message.set_charset('utf-8')
     mail_message.set_type("text/html")
     if cc:
-        mail_message['CC']= Header(cc)
+        mail_message['CC'] = Header(cc)
     if bcc:
-        mail_message['BCC']= Header(bcc)
+        mail_message['BCC'] = Header(bcc)
     if HAS_PLONE40:
-        host.send(mail_message, recipients, sender,
-                asUnicode(title).encode('utf-8'),
-                msg_type='text/html',
-                immediate=immediate)
+        host.send(
+            mail_message,
+            recipients,
+            sender,
+            asUnicode(title).encode('utf-8'),
+            msg_type='text/html',
+            immediate=immediate
+        )
     else:
-        host.secureSend(message, recipients, sender, 
-                subject=title,
-                subtype='html',
-                charset='utf-8')
+        host.secureSend(
+            message,
+            recipients,
+            sender,
+            subject=title,
+            subtype='html',
+            charset='utf-8'
+        )
 
 
 def userFullname(db, userid):
@@ -164,22 +188,30 @@ def userInfo(db, userid):
 def PlominoTranslate(msgid, context, domain='CMFPlomino'):
     """ Look up the translation for ``msgid`` in the current language.
     """
-    plone_tools = getToolByName(context, 'plone_utils')
     translation_service = getToolByName(context, 'translation_service')
     # When will message be an exception?
     if isinstance(msgid, Exception):
+        logging.info("msgid is an Exception: %s" % msgid)
         try:
             msgid = msgid[0]
         except (TypeError, IndexError):
+            logging.exception("Can't translate: %s" % msgid, exc_info=True)
             pass
     if HAS_PLONE40:
         msg = translation_service.utranslate(
-                domain=domain, msgid=msgid, context=context)
+                domain=domain,
+                msgid=msgid,
+                context=context
+                )
     else:
         msg = translation_service.utranslate(
-                msgid=msgid, domain=domain, context=context)
+                msgid=msgid,
+                domain=domain,
+                context=context
+                )
     # this converts unicode to site encoding:
     return translation_service.encode(msg)
+
 
 def htmlencode(s):
     """ Replace characters with their corresponding HTML entities.
@@ -199,21 +231,26 @@ def htmlencode(s):
             t += c
     return t
 
+
 def urlencode(h):
     """ Call urllib.urlencode
     """
     return urllib.urlencode(h)
+
 
 def urlquote(s):
     """ Call urllib.quote
     """
     return urllib.quote(s)
 
+
 def cgi_escape(s):
     return cgi.escape(s)
 
+
 def normalizeString(text, context=None, encoding=None):
     return utils_normalizeString(text, context, encoding)
+
 
 def asList(x):
     """ If not list, return x in a single-element list.
@@ -222,6 +259,7 @@ def asList(x):
     if isinstance(x, list):
         return x
     return [x]
+
 
 def asUnicode(s):
     """ Make sure ``s`` is unicode; decode according to site encoding if
@@ -256,10 +294,12 @@ def array_to_csv(array, delimiter='\t', quotechar='"'):
     """ Convert ``array`` (a list of lists) to a CSV string.
     """
     s = StringIO()
-    writer = csv.writer(s,
-            delimiter=delimiter,
-            quotechar=quotechar,
-            quoting=csv.QUOTE_NONNUMERIC)
+    writer = csv.writer(
+        s,
+        delimiter=delimiter,
+        quotechar=quotechar,
+        quoting=csv.QUOTE_NONNUMERIC
+    )
     writer.writerows(array)
     return s.getvalue()
 
@@ -273,10 +313,13 @@ def open_url(url, asFile=False):
     else:
         return f.read()
 
+
 def MissingValue():
-    """ Useful to test search results value (as ``Missing.Value`` cannot be imported in scripts).
+    """ Useful to test search results value
+    (as ``Missing.Value`` cannot be imported in scripts).
     """
     return Missing.Value
+
 
 def isDocument(doc):
     if doc:
@@ -284,11 +327,18 @@ def isDocument(doc):
             return doc.isDocument()
     return False
 
-def json_dumps(obj):
-    return json.dumps(obj)
+
+def json_dumps(data):
+    def json_date_handler(obj):
+        if hasattr(obj, 'ISO'):
+            obj = obj.ISO()
+        return obj
+    return json.dumps(data, default=json_date_handler)
+
 
 def json_loads(json_string):
     return json.loads(json_string)
+
 
 # From http://lsimons.wordpress.com/2011/03/17/stripping-illegal-characters-out-of-xml-in-python/
 _illegal_xml_chars_RE = re.compile(
@@ -300,17 +350,21 @@ def escape_xml_illegal_chars(val, replacement='?'):
     """
     return _illegal_xml_chars_RE.sub(replacement, val)
 
-class plomino_decimal(std_decimal.Decimal, Implicit):
+
+class plomino_decimal(std_decimal.Decimal):
     security = ClassSecurityInfo()
     security.declareObjectPublic()
     security.declarePublic('as_tuple')
     security.declarePublic('quantize')
 
-Globals.InitializeClass(plomino_decimal)
+InitializeClass(plomino_decimal)
+
 
 def decimal(v='0'):
     """ Expose the standard library's Decimal class. Useful for finances.
     """
+    if not v:
+        v = '0'
     if type(v) not in StringTypes:
         v = str(v)
     try:
@@ -318,6 +372,7 @@ def decimal(v='0'):
         return v
     except std_decimal.InvalidOperation:
         return 'ERROR'
+
 
 def actual_path(context):
     """ return the actual path from the request
@@ -328,6 +383,7 @@ def actual_path(context):
     url = context.REQUEST.get("ACTUAL_URL")
     return context.REQUEST.physicalPathFromURL(url)
 
+
 def actual_context(context, search="PlominoDocument"):
     """ return the actual context from the request
     Useful in portlet context
@@ -336,13 +392,14 @@ def actual_context(context, search="PlominoDocument"):
     if not path:
         return None
     current_context = context.unrestrictedTraverse(path)
-    while len(path)>0 and current_context.__class__.__name__!=search:
+    while len(path) > 0 and current_context.__class__.__name__ != search:
         path = path[:-1]
         current_context = context.unrestrictedTraverse(path)
     if current_context.__class__.__name__ == search:
         return current_context
     else:
         return None
+
 
 def is_email(email):
     if re.match(
@@ -351,3 +408,22 @@ def is_email(email):
         return True
     else:
         return False
+
+
+def translate(context, content, i18n_domain=None):
+    if not i18n_domain:
+        i18n_domain = context.getParentDatabase().getI18n()
+    def translate_token(match):
+        translation = PlominoTranslate(
+                match.group(1),
+                context,
+                domain=i18n_domain
+                )
+        translation = asUnicode(translation)
+        return translation
+    content = re.sub(
+            "__(?P<token>.+?)__",
+            translate_token,
+            content
+            )
+    return content

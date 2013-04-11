@@ -284,8 +284,7 @@ class PlominoField(BaseContent, BrowserDefaultMixin):
         """ post edit
         """
         self._setupConfigAnnotation()
-        self.cleanFormulaScripts("field_"+self.getParentNode().id+"_"+self.id)
-        self.cleanFormulaScripts("field_"+self.getParentNode().id+"_"+self.id+"_ValidationFormula")
+        self.cleanFormulaScripts(self.id)
         db = self.getParentDatabase()
         if self.getToBeIndexed() and not db.DoNotReindex:
             db.getIndex().createFieldIndex(self.id, self.getFieldType(), indextype=self.getIndexType())

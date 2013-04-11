@@ -1,35 +1,45 @@
-<tal:block tal:define="fieldname python:options['fieldname'];
-                       field python:options['field'];
-                       v options/fieldvalue;
-                       request field/REQUEST;
-                       widget python:field.getSettings('widget');">
+<tal:block 
+    define="fieldname python:options['fieldname'];
+            field python:options['field'];
+            v options/fieldvalue;
+            request field/REQUEST;
+            widget python:field.getSettings('widget');">
 
-    <tal:dynamic tal:condition="python:widget!='READ_STATIC'">
+    <tal:read_dynamic condition="python:widget!='READ_STATIC'">
         <script type="text/javascript" charset="utf-8"
             tal:define="param python:field.getSettings().getParameters();
                         request_items python:field.getSettings().request_items_aoData(request);"
-        tal:content="structure string:
-        				jq(document).ready(function() {
-        					jq('#${fieldname}_datagrid').dataTable( {
+            tal:content="structure string:
+                        $$(document).ready(function() {
+                            $$('#${fieldname}_datagrid').dataTable( {
                                 'sAjaxSource': 'tojson?item=${fieldname}&rendered=true&datatables=true',
                                 'sServerMethod': 'POST',
                                 'fnServerParams': function ( aoData ) {
                                     ${request_items}
                                 },
-        						'bJQueryUI': true,
-        						${param},
-        						'oLanguage': {
-        							'sUrl': '@@collective.js.datatables.translation'
-        						}
-        					} );
-        				} );">
+                                'bJQueryUI': true,
+                                ${param},
+                                'oLanguage': {
+                                    'sUrl': '@@collective.js.datatables.translation'
+                                }
+                            } );
+                        } );">
         </script>
         <table class="display" tal:attributes="id string:${fieldname}_datagrid"></table>
-    </tal:dynamic>
-    <tal:read_static tal:condition="python:widget=='READ_STATIC'">
-        <table class="plain" tal:define="rows python:field.getSettings().rows(v, rendered=True);">
+    </tal:read_dynamic>
+
+    <tal:read_static condition="python:widget=='READ_STATIC'">
+        <table class="plain" 
+            tal:define="rows python:field.getSettings().rows(v, rendered=True);
+                        column_labels python:field.getSettings().getColumnLabels();">
+            <thead>
+                <tr>
+                    <th tal:repeat="label column_labels" tal:content="label">column title</th>
+                </tr>
+            </thead>
             <tr tal:repeat="row rows">
-                <td tal:repeat="cell row" tal:content="structure cell">cell content</td>
+                <td tal:repeat="cell row" 
+                    tal:content="structure cell">cell content</td>
             </tr>
         </table>
     </tal:read_static>

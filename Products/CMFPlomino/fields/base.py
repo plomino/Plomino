@@ -133,7 +133,18 @@ class BaseField(object):
                         else:
                             fieldValue = ""
                     else:
-                        fieldValue = asUnicode(request.get(fieldName, ''))
+                        # if no doc context and no default formula, we accept
+                        # value passed in the REQUEST so we look for 'fieldName'
+                        # but also for 'fieldName_querystring' which allows to
+                        # pass value via the querystring without messing the
+                        # POST content
+                        request_value = request.get(fieldName, '')
+                        if not request_value:
+                            request_value = request.get(
+                                fieldName + '_querystring',
+                                ''
+                            )
+                        fieldValue = asUnicode(request_value)
             else:
                 fieldValue = doc.getItem(fieldName)
 
