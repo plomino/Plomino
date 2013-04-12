@@ -1,4 +1,7 @@
 import unittest
+
+import OFS
+
 from Products.CMFPlomino.testing import PLOMINO_FIXTURE
 from plone.app.testing import FunctionalTesting
 from plone.app.testing import PloneSandboxLayer
@@ -78,6 +81,21 @@ class ExportImportTest(unittest.TestCase):
 
         field = self.layer['portal'].mydb.frm1.another_field
         self.assertEqual(field.Schema()['extension_field'].get(field), "")
+
+    def test_export_folder_in_resources(self):
+        mydb = self.layer['portal'].mydb
+        mydb.resources.manage_addFolder('test_folder')
+        mydb.resources.test_folder.manage_addFolder('test_subfolder')
+        xml = mydb.exportDesignAsXML()
+        # Now delete the fodlers and check they are created back again
+        mydb.resources.manage_delObjects(['test_folder'])
+        mydb.importDesignFromXML(xml, replace=True)
+        self.assertTrue('test_folder' in mydb.resources)
+        folder = mydb.resources.test_folder.aq_base
+        self.assertTrue(isinstance(folder, OFS.Folder.Folder))
+        self.assertTrue('test_subfolder' in mydb.resources.test_folder)
+        subfolder = folder.test_subfolder
+        self.assertTrue(isinstance(subfolder, OFS.Folder.Folder))
 
     def setUp(self):
         self.create_field()
