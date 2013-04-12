@@ -114,8 +114,9 @@ class PlominoAccessControl(Persistent):
         self.ACL_initialized = 0
         self.UserRoles = {}
 
-    def _redirectIfResponse(REQUEST, target):
-        response = getattr(REQUEST, 'RESPONSE', None)
+    def _redirectIfResponse(self, target):
+        request = getattr(self, 'REQUEST', None)
+        response = getattr(request, 'RESPONSE', None)
         if response:
             response.redirect(target)
 
