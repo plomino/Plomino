@@ -39,6 +39,7 @@ from ZPublisher.HTTPRequest import FileUpload
 from ZPublisher.HTTPRequest import HTTPRequest
 from ZPublisher.HTTPResponse import HTTPResponse
 import transaction
+import OFS
 
 try:
     from plone.app.async.interfaces import IAsyncService
@@ -840,7 +841,7 @@ class PlominoDesignManager(Persistent):
             elements = (self.getForms()
                     + self.getViews()
                     + self.getAgents()
-                    + [o for o in self.resources.getChildNodes()] 
+                    + [o for o in self.resources.getChildNodes()]
                     )
         else:
             elements = []
@@ -991,8 +992,8 @@ class PlominoDesignManager(Persistent):
                 IXMLImportExportSubscriber)
 
         for subscriber in subscribers:
-            name = (subscriber.__module__ 
-                    + '.' 
+            name = (subscriber.__module__
+                    + '.'
                     + subscriber.__class__.__name__)
             doc = parseString(subscriber.export_xml())
             customnode = doc.childNodes[0]
@@ -1005,6 +1006,7 @@ class PlominoDesignManager(Persistent):
     security.declareProtected(DESIGN_PERMISSION, 'exportResourceAsXML')
     def exportResourceAsXML(self, xmldoc, obj):
         """
+        xmldoc is a xml.dom.minidom.Document node
         """
         node = xmldoc.createElement('resource')
         id = obj.id
@@ -1017,13 +1019,18 @@ class PlominoDesignManager(Persistent):
         #if resource_type in ["Page Template", "Script (Python)"]:
         if hasattr(obj, 'read'):
             data = xmldoc.createCDATASection(obj.read())
+            node.appendChild(data)
+        elif isinstance(obj, OFS.Folder.Folder):
+            for name, sub_obj in obj.objectItems():
+                sub_node = self.exportResourceAsXML(xmldoc, sub_obj)
+                node.appendChild(sub_node)
         else:
             node.setAttribute('contenttype', obj.getContentType())
             stream = obj.data
             if not hasattr(stream, "encode"):
                 stream = stream.data
             data = xmldoc.createCDATASection(stream.encode('base64'))
-        node.appendChild(data)
+            node.appendChild(data)
         return node
 
     security.declareProtected(DESIGN_PERMISSION, 'importDesignFromXML')
@@ -1243,6 +1250,13 @@ class PlominoDesignManager(Persistent):
             id = manage_addImage(container, id,
                     node.firstChild.data.decode('base64'),
                     content_type=node.getAttribute('contenttype'))
+        elif resource_type == 'Folder':
+            container.manage_addFolder(id)
+            subfolder = container[id]
+            elements = [e for e in node.childNodes
+                            if e.nodeName == 'resource']
+            for subnode in elements:
+                self.importResourceFromXML(subfolder, subnode)
         else:
             container.manage_addFile(id)
             obj = getattr(container, id)
