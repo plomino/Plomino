@@ -260,10 +260,13 @@ class PlominoView(ATFolder):
         return self.id
 
     def __bobo_traverse__(self, request, name):
-        doc = self.getParentDatabase().getDocument(name)
-        if doc:
-            return aq_inner(doc).__of__(self)
-        return BaseObject.__bobo_traverse__(self, request, name)
+        obj = BaseObject.__bobo_traverse__(self, request, name)
+        if obj:
+            return obj
+        else:
+            doc = self.getParentDatabase().getDocument(name)
+            if doc:
+                return aq_inner(doc).__of__(self)
 
     security.declarePublic('getAllDocuments')
     def getAllDocuments(self, start=1, limit=None, only_allowed=True, getObject=True, fulltext_query=None, sortindex=None, reverse=None):
@@ -282,17 +285,26 @@ class PlominoView(ATFolder):
         query = "PlominoViewFormula_%s == 1" % self.getViewName()
         if fulltext_query:
             query += " and '%s' in PlominoViewFulltext_%s" % (fulltext_query, self.getViewName())
-        results = [r for r in index.dbsearch(
+        search = index.dbsearch(
             query,
             sortindex=sortindex,
             reverse=reverse,
             only_allowed=only_allowed,
-            lazy=True)]
-        length = results[0]
+            lazy=True)
+        length = search.next()
         if limit:
-            results = results[start+1:start+limit+1]
+            results = []
+            i = 0
+            if length >= start:
+                while i < start:
+                    search.next()
+                    i += 1
+                end = min(start + limit, length)
+                while i < end:
+                    results.append(search.next())
+                    i += 1
         else:
-            results = results[1:]
+            results = [r for r in search]
         if getObject:
             return [db.getDocument(None, r()) for r in results]
         else:
