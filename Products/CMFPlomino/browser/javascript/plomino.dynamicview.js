@@ -9,7 +9,7 @@ function dynamicview_generate_cells_content(oObj) {
 	var cell = oObj.aData[oObj.iDataColumn];
 	if (oObj.iDataColumn > 0) {
 		if (findInArray(cell, '<a') == -1) {
-			return '<a href="' + oObj.aData[0] + '" class="viewlink">' + cell + '</a>';
+			return '<a href="../document/' + oObj.aData[0] + '" class="viewlink">' + cell + '</a>';
 		}
 		else
 			return cell;
