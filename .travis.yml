@@ -1,5 +1,7 @@
 language: python
 env:
+  - PLONE_VERSION=4.0
+  - PLONE_VERSION=4.1
   - PLONE_VERSION=4.2
   - PLONE_VERSION=4.3
 python:
