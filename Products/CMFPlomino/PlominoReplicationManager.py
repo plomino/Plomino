@@ -802,9 +802,9 @@ class PlominoReplicationManager(Persistent):
                     long_format=True,
                     context=context,
                     domain='plonelocales')
-            result = res + 'last pull : ' + str(datePull)
+            result = result + 'last pull : ' + str(datePull)
         else: 
-            result = res + 'no last pull'    
+            result = result + 'no last pull'    
         return result
 
     security.declarePrivate('setReplicationMode')
