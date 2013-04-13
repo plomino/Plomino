@@ -92,6 +92,7 @@ logger = logging.getLogger('Plomino')
 
 STR_FORMULA = """plominoContext = context
 plominoDocument = context
+script_id = '%(script_id)s'
 %(import_list)s
 
 %(formula)s
@@ -688,6 +689,7 @@ class PlominoDesignManager(Persistent):
                 not formula.startswith('return ')):
             formula = "return " + formula
         str_formula = STR_FORMULA % {
+                'script_id': script_id,
                 'import_list': import_list,
                 'formula': formula
                 }
