@@ -2,15 +2,16 @@
            xmlns:browser="http://namespaces.zope.org/browser"
            xmlns:five="http://namespaces.zope.org/five"
            xmlns:zcml="http://namespaces.zope.org/zcml">
-     
+
   <include file="profiles.zcml" />
   <include file="upgrades.zcml" />
 
   <!-- Dependencies (strictly needed for tests) -->
+  <include package="plone.app.jquery"/>
   <include package="collective.js.jqueryui"/>
   <include package="collective.js.datatables"/>
   <include package="plone.app.registry"/>
-  
+
   <include package=".fields"/>
   <include package=".browser"/>
 
@@ -27,7 +28,7 @@
       permission="zope.Public"
       class=".isDesignMode"
     />
- 
+
   <!-- interfaces moved to zope.container since Plone4.3 /-->
   <subscriber
     zcml:condition="have plone-43"

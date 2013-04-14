@@ -35,6 +35,9 @@ setup(name='Products.CMFPlomino',
           'collective.codemirror',
           'plomino.tinymce',
           'Products.CMFPlone',
+          'python-dateutil>=2.1',
+          'plone.app.registry',
+          'plone.app.jquery',
       ],
       extras_require={
           'test': [
