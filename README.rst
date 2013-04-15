@@ -13,6 +13,26 @@ Features
 * adapt the application behaviour depending on the user access rights and roles
 * import/export your application structure and/or your application data
 
+Installation
+============
+
+To deploy Plomino, you need to edit your ``buildout.cfg`` file
+and add the following in the ``eggs`` section::
+
+    eggs =
+         ...
+         Products.CMFPlomino
+
+Then you have to run ``buildout`` to realize your configuration::
+
+    bin/buildout -N
+
+Support
+=======
+
+You can find support on the freenode IRC channel #plomino or using the `GitHub
+issue tracker <https://github.com/plomino/Plomino/issues>`_
+
 Tests
 =====
 
