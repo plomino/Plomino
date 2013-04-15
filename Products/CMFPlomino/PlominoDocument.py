@@ -8,7 +8,7 @@ __docformat__ = 'plaintext'
 
 # From the standard library
 from copy import deepcopy
-
+from urllib import urlencode
 # 3rd party Python 
 from jsonutil import jsonutil as json
 
@@ -77,7 +77,7 @@ try:
 except ImportError:
     URL_NORMALIZER = False
 
-from PlominoUtils import sendMail, asUnicode, asList, PlominoTranslate, json_dumps
+from PlominoUtils import sendMail, asUnicode, asList, PlominoTranslate
 
 
 class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
@@ -404,6 +404,11 @@ class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
         redirect = REQUEST.get('plominoredirecturl')
         if not redirect:
             redirect = self.getItem("plominoredirecturl")
+        if type(redirect) is dict:
+            # if dict, we assume it contains "callback" as an URL that will be
+            # called asynchronously, "redirect" as the redirect url (optional,
+            # default=doc url), and "method" (optional, default=GET)
+            redirect = "./async_callback?" + urlencode(redirect)
         if not redirect:
             redirect = self.absolute_url()
         REQUEST.RESPONSE.redirect(redirect)
