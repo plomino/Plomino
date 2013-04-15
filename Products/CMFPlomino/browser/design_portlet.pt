@@ -193,6 +193,7 @@ function set_profiling(v) {
 function show_profiling_results() {
     $('#profiling_report').load("./profiling", function() {
         $('#profiling_report').dialog({show: "blind", height: 350, width: 530});
+        $(activateCollapsibles);
     })
 }
         </script>
