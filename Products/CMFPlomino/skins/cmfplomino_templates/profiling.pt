@@ -1,4 +1,3 @@
-<tal:block metal:define-macro="durations">
 <h2>PROFILING</h2>
 <tal:aspects tal:repeat="aspect python:here.profiling_results().items()">
 	<div><dl class="collapsible inline collapsedOnLoad">
@@ -13,4 +12,3 @@
 		</dd>
 	</dl></div>
 </tal:aspects>
-</tal:block>

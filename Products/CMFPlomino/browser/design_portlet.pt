@@ -190,6 +190,11 @@
 function set_profiling(v) {
 	location.href="./set_profiling_level?level="+v;
 }
+function show_profiling_results() {
+    $('#profiling_report').load("./profiling", function() {
+        $('#profiling_report').dialog({show: "blind", height: 350, width: 530});
+    })
+}
         </script>
         <br/><select id="profiling_level" onchange="set_profiling(this.value)"
         	tal:define="profiling_level python:here.REQUEST.cookies.get('plomino_profiler', '')">
@@ -198,5 +203,8 @@ function set_profiling(v) {
         <option tal:attributes="selected python:profiling_level=='form:fields'" value="form:fields">Form and fields</option>
         <option tal:attributes="selected python:profiling_level=='form:fields:formulas'" value="form:fields:formulas">Form, fields, and formulas</option>
         </select>
+        <br/>
+        <button onclick="show_profiling_results()">Show results</button>
+        <div id="profiling_report" style="display: none;"></div>
     </dd>
 </dl>
