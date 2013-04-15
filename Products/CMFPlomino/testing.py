@@ -27,12 +27,12 @@ class Plomino(PloneSandboxLayer):
         # Install into Plone site using portal_setup
         self.applyProfile(portal, 'Products.CMFPlomino:default')
 
-        setRoles(portal, TEST_USER_ID, ['Manager'])
+        setRoles(portal, TEST_USER_ID, ['Manager', 'Member'])
         login(portal, TEST_USER_NAME)
 
         portal.invokeFactory('PlominoDatabase', id='mydb')
         portal.mydb.at_post_create_script()
-        setRoles(portal, TEST_USER_ID, ['Member'])
+        portal.portal_workflow.setDefaultChain("simple_publication_workflow")
 
     def tearDownZope(self, app):
         # Uninstall product

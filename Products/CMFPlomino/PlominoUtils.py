@@ -31,7 +31,11 @@ from jsonutil import jsonutil as json
 
 # Zope
 from AccessControl import ClassSecurityInfo
-from AccessControl.class_init import InitializeClass
+try:
+    from AccessControl.class_init import InitializeClass
+except ImportError:
+    from App.class_init import InitializeClass
+
 from Acquisition import Implicit
 from DateTime import DateTime
 
@@ -71,7 +75,7 @@ def Log(message, summary='', severity='info', exc_info=False):
 
 def DateToString(d, format=None, db=None):
     """ Return the date as string using the given format.
-    
+
     Pass in database object to use default format.
     """
     if not format:
@@ -85,7 +89,7 @@ def DateToString(d, format=None, db=None):
 def StringToDate(str_d, format='%Y-%m-%d', db=None):
     """ Parse the string using the given format and return the date.
 
-    With StringToDate, it's best to have a fixed default format, 
+    With StringToDate, it's best to have a fixed default format,
     as it is easier for formulas to control the input date string than the
     portal date format.
 
