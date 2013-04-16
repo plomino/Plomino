@@ -63,6 +63,7 @@ except ImportError, e:
 
 # Plomino
 from exceptions import PlominoScriptException
+from PlominoUtils import sendMail, asUnicode, asList, PlominoTranslate
 from Products.CMFPlomino.config import *
 import interfaces
 
@@ -76,8 +77,6 @@ try:
     URL_NORMALIZER = True
 except ImportError:
     URL_NORMALIZER = False
-
-from PlominoUtils import sendMail, asUnicode, asList, PlominoTranslate
 
 
 class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):

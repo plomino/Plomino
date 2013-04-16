@@ -176,7 +176,8 @@ class ElementPortletRenderer(base.Renderer):
 
     @property
     def header(self):
-        """Get the portlet header
+        """ Get the portlet header
+
         (translated if db i18n domain if defined)
         """
         header = self.data.header

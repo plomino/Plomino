@@ -425,7 +425,7 @@ class PlominoForm(ATFolder):
 
     security.declarePublic('getHidewhenFormulas')
     def getHidewhenFormulas(self):
-        """Get hidden formulae
+        """Get hide-when formulae
         """
         hidewhens = self.objectValues(spec='PlominoHidewhen')
         return [h for h in hidewhens]
