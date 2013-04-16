@@ -38,6 +38,8 @@ setup(name='Products.CMFPlomino',
           'python-dateutil>=1.5',
           'plone.app.registry',
           'plone.app.jquery',
+          'zope.app.component',  # Helps Plone 4.0, should not hurt elsewhere.
+          'zope.globalrequest',  # This one too.
       ],
       extras_require={
           'test': [
