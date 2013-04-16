@@ -1,6 +1,12 @@
 Changelog
 =========
 
+1.17.3 (unreleased)
+-------------------
+* Depend on zope.app.component and zope.globalrequest
+  so that our users on Plone 4.0 don't have to [silviot]
+* Test Plone 4.0, 4.1, 4.2 and 4.3 on travis [silviot]
+
 1.17.2 (2013-04-08)
 -------------------
 * EditBareDocument template
