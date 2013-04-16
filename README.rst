@@ -34,14 +34,14 @@ If you're using Plone version older than 4.2 you'll need to add some
 more directives to your buildout.cfg.
 Plomino depends on plone.app.registry and plomino.tinymce requires
 Products.TinyMCE>=1.2.13. To make Plomino work on pre-4.2 Plone sites
-you need to pin those versions in your versions.cfg section:
+you need to pin those versions in your versions.cfg section::
 
     Products.TinyMCE=1.2.13
     collective.js.jqueryui=1.8.16.9
 
 and use a known good set for plone.app.registry.
 
-This means extending your buildout from
+This means extending your buildout from::
 
     http://good-py.appspot.com/release/plone.app.registry/1.0b2?plone=4.0.9
 
