@@ -13,8 +13,8 @@ Features
 * adapt the application behaviour depending on the user access rights and roles
 * import/export your application structure and/or your application data
 
-Installation on Plone >= 4.2
-============================
+Installation
+============
 
 To deploy Plomino, you need to edit your ``buildout.cfg`` file
 and add the following in the ``eggs`` section::
@@ -30,6 +30,8 @@ Then you have to run ``buildout`` to realize your configuration::
 Installation on Plone 4.0 and 4.1
 =================================
 
+If you're using Plone version older than 4.2 you'll need to add some
+more directives to your buildout.cfg.
 Plomino depends on plone.app.registry and plomino.tinymce requires
 Products.TinyMCE>=1.2.13. To make Plomino work on pre-4.2 Plone sites
 you need to pin those versions in your versions.cfg section:
