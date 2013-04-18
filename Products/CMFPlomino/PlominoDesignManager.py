@@ -1264,9 +1264,11 @@ class PlominoDesignManager(Persistent):
             obj = getattr(container, id)
             obj.meta_type = resource_type
             obj.title = node.getAttribute('title')
-            obj.update_data(
-                    node.firstChild.data.decode('base64'),
-                    content_type=node.getAttribute('contenttype'))
+            data = ''
+            if node.hasChildNodes():
+                data = node.firstChild.data.decode('base64')
+            obj.update_data(data,
+                            content_type=node.getAttribute('contenttype'))
 
     def is_profiling(self):
         from Products.CMFPlomino import PROFILING

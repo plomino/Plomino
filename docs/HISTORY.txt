@@ -6,6 +6,7 @@ Changelog
 * Depend on zope.app.component and zope.globalrequest
   so that our users on Plone 4.0 don't have to [silviot]
 * Test Plone 4.0, 4.1, 4.2 and 4.3 on travis [silviot]
+* Don't choke on XML import when there is an empty file
 
 1.17.2 (2013-04-08)
 -------------------

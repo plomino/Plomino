@@ -97,5 +97,11 @@ class ExportImportTest(unittest.TestCase):
         subfolder = folder.test_subfolder
         self.assertTrue(isinstance(subfolder, OFS.Folder.Folder))
 
+    def test_empty_file(self):
+        mydb = self.layer['portal'].mydb
+        mydb.resources.manage_addFile('an_empty_file')
+        xml = mydb.exportDesignAsXML()
+        mydb.importDesignFromXML(xml, replace=True)
+
     def setUp(self):
         self.create_field()
