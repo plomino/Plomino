@@ -30,7 +30,7 @@
                             here.hasReadPermission(here)==True and
                             here.hasReadPermission(here.getParentDatabase())==True)">
 
-            <form name="plominoviewform">
+            <form tal:attributes="name python:myF.id" class="plominoviewform">
             <tal:block
                 tal:condition="python:test(hasReadPermission==True)">
                 <tal:block
