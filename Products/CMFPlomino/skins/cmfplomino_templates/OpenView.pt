@@ -26,6 +26,8 @@
             tal:replace="structure provider:plone.abovecontenttitle" /><tal:block
             tal:define="myF python:here;
                         b myF/ActionBarPosition|nothing;
+                        hideCheckboxes myF/HideCheckboxes|nothing;
+                        remove_permission python:here.hasRemovePermission(here)==True;
                         hasReadPermission python:test(
                             here.hasReadPermission(here)==True and
                             here.hasReadPermission(here.getParentDatabase())==True)">
@@ -54,8 +56,7 @@
 
                 <tal:basic tal:condition="python:viewwidget == 'BASIC'">
                     <table
-                        tal:define="columns python:here.getColumns();
-                                    remove_permission python:here.hasRemovePermission(here)==True;"
+                        tal:define="columns python:here.getColumns();"
                         id="sortable"
                         class="plominoview"
                         summary="Content listing"
@@ -100,7 +101,7 @@
                                                                 docurl python:doc.getPath().split('/')[-1]"
                                                     tal:attributes="class python:test(oddrow, 'even', 'odd');">
                                                     <td>
-                                                       <input tal:condition="remove_permission" type="checkbox" name="sdoc" tal:attributes="value python:doc.getPath().split('/')[-1]" /></td>
+                                                       <input tal:condition="python:remove_permission and not(hideCheckboxes)" type="checkbox" name="sdoc" tal:attributes="value python:doc.getPath().split('/')[-1]" /></td>
                                                     <tal:block tal:repeat="c columns">
                                                         <td tal:condition="not: c/HiddenColumn|nothing"><tal:block
                                                             tal:condition="python:test(c!=columns[0])">
@@ -143,7 +144,7 @@
                                         tal:attributes="class python:test(oddrow, 'even', 'odd');">
                                         <td>
                                             <input
-                                                tal:condition="remove_permission"
+                                                tal:condition="python:remove_permission and not(hideCheckboxes)"
                                                 type="checkbox"
                                                 name="sdoc"
                                                 tal:attributes="value python:doc.getPath().split('/')[-1]" /></td>
@@ -187,7 +188,8 @@
                                     iscategorized python:getattr(here, 'Categorized', False);
                                     categorized python:iscategorized and 'true' or 'false';
                                     fixedsorting python:iscategorized and '\'aaSortingFixed\': [[1, \'asc\']],' or '';
-                                    fixedcol1size python:iscategorized and '{ \'aTargets\': [1], \'sWidth\': \'0\' },' or '';"
+                                    fixedcol1size python:iscategorized and '{ \'aTargets\': [1], \'sWidth\': \'0\' },' or '';
+                                    display_checkboxes python:test(remove_permission and not(hideCheckboxes), 'true', 'false')"
                         tal:content="structure string:
                                      var oDynamicTable;
                                      $$(document).ready(function() {
@@ -201,7 +203,7 @@
                                                 'aoColumnDefs': [
                                                     { 'aTargets': ['_all'],
                                                       'bUseRendered': false,
-                                                      'fnRender': dynamicview_generate_cells_content
+                                                      'fnRender': dynamicview_generate_cells_content($display_checkboxes)
                                                     },
                                                     ${fixedcol1size}
                                                     { 'aTargets': [0], 'bSearchable': false, 'bSortable': false, 'sWidth': '0' }
