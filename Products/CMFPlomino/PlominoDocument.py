@@ -100,6 +100,7 @@ class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
         CMFBTreeFolder.__init__(self, id)
         self.id = id
         self.items = PersistentDict()
+        self._v_items = {}
         self.plomino_modification_time = DateTime().toZone('UTC')
 
     security.declarePublic('checkBeforeOpenDocument')
@@ -131,24 +132,28 @@ class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
             return "/".join(short_path)
 
     security.declarePublic('setItem')
-    def setItem(self, name, value):
-        """ Set item on document, converting str to unicode.
+    def setItem(self, name, value, store=True):
+        """ Set item on document.
         """
-        items = self.items
-        if isinstance(value, str):
-            db = self.getParentDatabase()
-            translation_service = getToolByName(db, 'translation_service')
-            value = translation_service.asunicodetype(value)
+        items = self.get_volatile_items()
         items[name] = value
-        self.items = items
+        self.set_volatile_items(items)
+        if store:
+            self.storeItems()
+
+    security.declarePublic('storeItems')
+    def storeItems(self):
+        """ Store current items in PersistentDict.
+        """
+        self.items = self.get_volatile_items()
         self.plomino_modification_time = DateTime().toZone('UTC')
 
     security.declarePublic('getItem')
     def getItem(self,name, default=''):
         """ Get item from document.
         """
-        if self.items.has_key(name):
-            return deepcopy(self.items[name])
+        if self.get_volatile_items().has_key(name):
+            return deepcopy(self.get_volatile_items()[name])
         else:
             return default
 
@@ -156,22 +161,38 @@ class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
     def hasItem(self, name):
         """ Check if doc has item 'name'.
         """
-        return self.items.has_key(name)
+        return self.get_volatile_items().has_key(name)
 
     security.declarePublic('removeItem')
-    def removeItem(self,name):
+    def removeItem(self, name, store=True):
         """ Delete item 'name', if it exists.
         """
-        if self.items.has_key(name):
-            items = self.items
+        items = self.get_volatile_items()
+        if items.has_key(name):
             del items[name]
-            self.items = items
+            self.set_volatile_items(items)
+            if store:
+                self.storeItems()
+
+    def get_volatile_items(self):
+        if not hasattr(self, '_v_items'):
+            self._v_items = deepcopy(self.items)
+        return self._v_items
+    
+    def set_volatile_items(self, items):
+        db = self.getParentDatabase()
+        translation_service = getToolByName(db, 'translation_service')
+        for (name, value) in items.items():
+            if isinstance(value, str):
+                value = translation_service.asunicodetype(value)
+                items[name] = value
+        self._v_items = items
 
     security.declarePublic('getItems')
     def getItems(self):
         """ Return all item names.
         """
-        return self.items.keys()
+        return self.get_volatile_items().keys()
 
     security.declarePublic('getItemClassname')
     def getItemClassname(self, name):
@@ -286,7 +307,7 @@ class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
                 fieldvalue = self.getItem(item)
             data = fieldvalue
         else:
-            data = self.items.data
+            data = self.get_volatile_items()
 
         if datatables_format:
             data = {
@@ -395,7 +416,7 @@ class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
         self.setItem('Form', form.getFormName())
 
         # process editable fields (we read the submitted value in the request)
-        form.readInputs(self, REQUEST, process_attachments=True)
+        form.readInputs(self, REQUEST, process_attachments=True, store=False)
 
         # refresh computed values, run onSave, reindex
         self.save(form, creation)
@@ -435,18 +456,19 @@ class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
         if not form:
             form = self.getForm()
         else:
-            self.setItem('Form', form.getFormName())
+            self.setItem('Form', form.getFormName(), store=False)
 
         db = self.getParentDatabase()
         if form:
+            items = self.get_volatile_items()
             for f in form.getFormFields(includesubforms=True, doc=self):
                 mode = f.getFieldMode()
                 fieldname = f.id
                 # Computed for display fields are not stored
                 if (mode in ["COMPUTED", "COMPUTEDONSAVE"] or 
                         (creation and mode=="CREATION")):
-                    result = form.computeFieldValue(fieldname, self)
-                    self.setItem(fieldname, result)
+                    items[fieldname] = form.computeFieldValue(fieldname, self)
+            self.set_volatile_items(items)
 
             # compute the document title
             title_formula = form.getDocumentTitle()
@@ -484,7 +506,7 @@ class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
             name = db.getCurrentMember().getUserName()
             if not name in authors:
                 authors.append(name)
-            self.setItem('Plomino_Authors', authors)
+            self.setItem('Plomino_Authors', authors, store=False)
 
         # execute the onSaveDocument code of the form
         if form and onSaveEvent:
@@ -500,6 +522,9 @@ class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
                     e.reportError('Document saved, but onSave event failed.')
                     doc_path = self.REQUEST.physicalPathToURL(self.doc_path())
                     self.REQUEST.RESPONSE.redirect(doc_path)
+
+        # store items
+        self.storeItems()
 
         if refresh_index:
             # update index
@@ -615,8 +640,9 @@ class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
     def __getattr__(self, name):
         """ Overloads `getattr` to return item values as attributes.
         """
-        if self.items.has_key(name):
-            return self.items[name]
+        item = self.get_volatile_items().get(name, None)
+        if item:
+            return item
         else:
             if name in ['__parent__', '__conform__', '__annotations__',
                     '_v_at_subobjects', '__getnewargs__', 'aq_inner',
@@ -708,7 +734,7 @@ class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
         index_attachments = self.getParentDatabase().getIndexAttachments()
         form = self.getForm()
 
-        for itemname in self.items.keys():
+        for itemname in self.getItems():
             item_value = self.getItem(itemname)
             if isinstance(item_value, list):
                 for v in item_value:
@@ -988,7 +1014,7 @@ class TemporaryDocument(PlominoDocument):
         self._parent = parent
         self.REQUEST = REQUEST
         if real_doc:
-            self.items = PersistentDict(real_doc.items)
+            self.items = real_doc.get_volatile_items()
             self.real_id = real_doc.id
         else:
             self.items = {}
