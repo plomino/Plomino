@@ -1186,9 +1186,8 @@ class PlominoReplicationManager(Persistent):
                         doc,
                         docInfos,
                         process_attachments=False,
-                        applyhidewhen=False,
-                        store=False)
-                doc.setItem('Form', docInfos['Form'], store=False)
+                        applyhidewhen=False)
+                doc.setItem('Form', docInfos['Form'])
                 # add items that don't correspond to any field 
                 computedItems = doc.getItems()
                 for info in docInfos:
@@ -1196,8 +1195,7 @@ class PlominoReplicationManager(Persistent):
                         v = docInfos[info]
                         if isinstance(v, str):
                             v.decode('utf-8')
-                        doc.setItem(info, v, store=False)
-                
+                        doc.setItem(info, v)
                 doc.save(creation=True, refresh_index=True)
                 # count
                 nbDocDone = nbDocDone + 1
@@ -1347,9 +1345,9 @@ class PlominoReplicationManager(Persistent):
         node.setAttribute('lastmodified', doc.getLastModified(asString=True))
 
         # export items
-        items = doc.get_volatile_items()
+        items = doc.items
         if type(items) is not dict:
-            items = items.data
+            items = doc.items.data
         str_items = xmlrpclib.dumps((items,), allow_none=True)
         try:
             dom_items = parseString(str_items)
@@ -1489,7 +1487,7 @@ class PlominoReplicationManager(Persistent):
                 items[k] = StringToDate(
                         items[k].value[:19],
                         format="%Y-%m-%dT%H:%M:%S")
-        doc.set_volatile_items(items)
+        doc.items = PersistentDict(items)
 
         # restore files
         for fnode in node.getElementsByTagName("attachment"):

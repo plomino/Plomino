@@ -990,14 +990,7 @@ class PlominoForm(ATFolder):
         return [i.strip() for i in r.findall(html_content)]
 
     security.declarePublic('readInputs')
-    def readInputs(
-        self,
-        doc,
-        REQUEST,
-        process_attachments=False,
-        applyhidewhen=True,
-        validation_mode=False,
-        store=True):
+    def readInputs(self, doc, REQUEST, process_attachments=False, applyhidewhen=True, validation_mode=False):
         """ Read submitted values in REQUEST and store them in document
         according to fields definition.
         """
@@ -1012,7 +1005,6 @@ class PlominoForm(ATFolder):
                     applyhidewhen=True,
                     request=REQUEST)
 
-        items = doc.get_volatile_items()
         for f in all_fields:
             mode = f.getFieldMode()
             fieldName = f.id
@@ -1022,11 +1014,12 @@ class PlominoForm(ATFolder):
                     if submittedValue=='':
                         doc.removeItem(fieldName)
                     else:
-                        items[fieldName] = f.processInput(
+                        v = f.processInput(
                                 submittedValue,
                                 doc,
                                 process_attachments,
                                 validation_mode=validation_mode)
+                        doc.setItem(fieldName, v)
                 else:
                     # The field was not submitted, probably because it is
                     # not part of the form (hide-when, ...) so we just leave
@@ -1037,10 +1030,7 @@ class PlominoForm(ATFolder):
                     if applyhidewhen and f in displayed_fields:
                         fieldtype = f.getFieldType()
                         if (fieldtype in ("SELECTION", "DOCLINK", "BOOLEAN")):
-                            doc.removeItem(fieldName, store=store)
-        doc.set_volatile_items(items)
-        if store:
-            doc.storeItems()
+                            doc.removeItem(fieldName)
 
     security.declareProtected(READ_PERMISSION, 'searchDocuments')
     def searchDocuments(self,REQUEST):
