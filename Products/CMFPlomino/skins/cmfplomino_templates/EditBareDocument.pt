@@ -43,7 +43,10 @@
   <tal:block tal:define="this_form python:here.getForm();
                          b myF/ActionBarPosition|nothing">
 	
-	<form tal:attributes="name python:this_form.id">
+	<form tal:attributes="name python:here.getForm().id;
+                          action python:here.doc_url()+'/saveDocument'"
+              id="plomino_form" method="POST" enctype="multipart/form-data">
+              
 	<span style="display: none" id="plomino_path" tal:content="python:'/'.join(here.getPhysicalPath())">path</span>
 	<span style="display: none" id="plomino_childof" 
                 tal:condition="python:test(here.hasItem('Plomino_ChildOf'))"
