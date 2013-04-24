@@ -152,6 +152,17 @@ returns the current Plomino document.""",
 #        schemata="Parameters",
     ),
     BooleanField(
+        name='HideCheckboxes',
+        default="0",
+        widget=BooleanField._properties['widget'](
+            label="Hide checkboxes",
+            description="The first column with checkboxes will not be displayed",
+            label_msgid='CMFPlomino_label_HideCheckboxes',
+            description_msgid='CMFPlomino_help_HideCheckboxes',
+            i18n_domain='CMFPlomino',
+        ),
+    ),
+    BooleanField(
         name='HideInMenu',
         default="0",
         widget=BooleanField._properties['widget'](
