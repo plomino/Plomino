@@ -6,7 +6,8 @@ Plomino provides a set of field types (text, number, richtext, datagrid, etc.).
 But a custom Plomino field type can be declared to Plomino from a custom 
 package in order to extend the Plomino behavior.
 
-Example:
+Example::
+
     >>> from zope.formlib import form
     >>> from zope.interface import implements
     >>> from zope import component
@@ -26,7 +27,7 @@ Example:
     >>> 
     >>> from Products.CMFPlomino.fields.base import IBaseField, BaseField
 
-A Zope schema defines the field setting parameters.
+A Zope schema defines the field setting parameters::
 
     >>> class IRomanNumberField(IBaseField):
     >>>     """
@@ -37,15 +38,22 @@ A Zope schema defines the field setting parameters.
     >>>                 required=False)
     >>>         
 
-A class derivated from BaseField will implement this interface.
-It must mandatorily contain:
-- plomino_field_parameters: it declares the field main parameters
-- read_template: the PageTemplate in charge of rendering the field in read mode
-- edit_template: the PageTemplate in charge of rendering the field in edit mode
+A class derived from BaseField will implement this interface.
+It must contain:
 
-It can also overwrite the different methods of BaseField, like processInput (in
+``plomino_field_parameters``
+   it declares the field main parameters
+
+``read_template``
+    the PageTemplate in charge of rendering the field in read mode
+
+``edit_template``
+    the PageTemplate in charge of rendering the field in edit mode
+
+It can also overwrite the different methods of BaseField,
+like ``processInput`` (in
 charge of converting the submitted value into the actual item value, or 
-validate (in charge of validating the submitted value before saving).
+``validate`` (in charge of validating the submitted value before saving)::
 
     >>> class RomanNumberField(BaseField):
     >>>     """ This field stores integers as roman numerals
@@ -84,10 +92,13 @@ validate (in charge of validating the submitted value before saving).
     >>>         return result
 
 The plugin field must be provided as an utility so Plomino can find it
-(the utility name must be in upper case):
+(the utility name must be in upper case)::
+
     >>> component.provideUtility(RomanNumberField, IPlominoField, 'ROMANNUMBER')
 
-And the SettingForm must built based on the field's schema: (no customization needed here)
+And the ``SettingForm`` must be based on the field's schema
+(no customization needed here)::
+
     >>> for f in getFields(IRomanNumberField).values():
     >>>     setattr(RomanNumberField, f.getName(), DictionaryProperty(f, 'parameters'))
     >>> 
@@ -97,8 +108,9 @@ And the SettingForm must built based on the field's schema: (no customization ne
     >>>     form_fields = form.Fields(IRomanNumberField)
     >>>     
 
-Then in configure.zcml, declare the field as adapter for PlominoField:
-(assuming that previous code is in romannumber.py)
+Then in ``configure.zcml``, declare the field as adapter for
+``PlominoField`` (assuming that previous code is in ``romannumber.py``)::
+
    <include package="Products.CMFPlomino.fields"/>
    <adapter
         for="Products.CMFPlomino.interfaces.IPlominoField"
@@ -106,8 +118,10 @@ Then in configure.zcml, declare the field as adapter for PlominoField:
         factory=".romannumber.RomanNumberField"
         />
 
-and declare the settings form as a browser page (its name must be xxx+'settings'
-where xxx is the utility name in lowercase)
+and declare the settings form as a browser page 
+(its name must be ``xxxsettings``
+where ``xxx`` is the utility name in lowercase)::
+
    <browser:page
         name="romannumbersettings"
         for="Products.CMFPlomino.interfaces.IPlominoField"
@@ -115,11 +129,18 @@ where xxx is the utility name in lowercase)
         permission="plomino.DESIGN_PERMISSION"
         />
 
-The 2 page templates can be based on the following examples:
-roman_read.pt:
-    <tal:block tal:define="v options/fieldvalue" tal:content="python:str(v)">XXII</tal:block>
+The two page templates can be based on the following examples:
 
-roman_edit.pt:
+``roman_read.pt``::
+
+    <tal:romannumber 
+        define="v options/fieldvalue"
+        content="python:str(v)">XXII</tal:romannumber>
+
+``roman_edit.pt``::
+
     <span>
-        <input type="text" tal:attributes="name options/fieldname; value options/fieldvalue" />
+        <input type="text"
+               tal:attributes="name options/fieldname;
+                               value options/fieldvalue" />
     </span>
