@@ -915,9 +915,19 @@ class PlominoDesignManager(Persistent):
             v = f.get(obj)
             if v is not None:
                 if field_type == "Products.Archetypes.Field.TextField":
-                    text = xmldoc.createCDATASection(
-                            f.getRaw(obj).decode('utf-8')
-                            )
+                    s = f.getRaw(obj)
+                    if s and f.__name__ == 'FormLayout':
+                        try:
+                            from lxml import etree
+                            s = etree.tostring(
+                                    etree.HTML(s),
+                                    encoding="utf-8",
+                                    pretty_print=True,
+                                    method='html')
+                        except ImportError:
+                            # XXX: Blunt object replace:
+                            s = s.decode('utf-8').replace("><", ">\n<")
+                    text = xmldoc.createCDATASection(s.decode('utf-8'))
                 else:
                     text = xmldoc.createTextNode(str(f.get(obj)))
                 fieldNode.appendChild(text)
