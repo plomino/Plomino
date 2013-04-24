@@ -924,6 +924,7 @@ class PlominoDesignManager(Persistent):
                                     encoding="utf-8",
                                     pretty_print=True,
                                     method='html')
+                            s = s.split('<html><body>')[1].split('</body></html>')[0]
                         except ImportError:
                             # XXX: Blunt object replace:
                             s = s.decode('utf-8').replace("><", ">\n<")
