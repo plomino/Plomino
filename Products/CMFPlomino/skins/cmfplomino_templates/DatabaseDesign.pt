@@ -42,7 +42,7 @@
 	                        <tal:fieldsforms tal:repeat="field python:form.getFormFields()">
 	                        <ul>
 	                            <li>
-	                            <tal:block tal:content="field/id">Field name</tal:block> (<tal:block tal:content="python:field.getFieldType().title()">Field type</tal:block>)
+	                            <tal:block tal:content="field/id">Field name</tal:block> (<tal:block tal:content="python:field.getFieldType().title()">Field type</tal:block> <span><i><tal:block tal:content="field/FieldMode">Field type</tal:block></i></span>)
 	                            <a href="" tal:attributes="href python:field.absolute_url_path()+'/base_edit'"><img tal:attributes="src string:${here/portal_url}/edit.png" /></a>
 	                            <a href="" tal:attributes="href python:field.absolute_url_path()+'/'+field.getFieldType().lower()+'settings'"><img tal:attributes="src string:${here/portal_url}/document_icon.png" /></a>
 	                            </li>
