@@ -26,6 +26,7 @@ import xmlrpclib
 # Zope
 from Acquisition import *
 from AccessControl.requestmethod import postonly
+from AccessControl.SecurityManagement import newSecurityManager
 from DateTime import DateTime
 from HttpUtils import authenticateAndLoadURL, authenticateAndPostToURL
 from Persistence import Persistent
@@ -653,6 +654,19 @@ class PlominoDesignManager(Persistent):
 
     security.declarePublic('compileFormulaScript')
     def compileFormulaScript(self, script_id, formula, with_args=False):
+        # Remember the current user
+        member = self.getCurrentMember()
+        if member.__class__.__name__ == "SpecialUser":
+            user = member
+        else:
+            user = member.getUser()
+
+        # Switch to the db's owner (formula must be compiled with the higher
+        # access rights, but their execution will always be perform with the
+        # current access rights)
+        owner = self.getOwner()
+        newSecurityManager(None, owner)
+
         ps = self.getFormulaScript(script_id)
         if not ps:
             ps = PythonScript(script_id)
@@ -696,6 +710,10 @@ class PlominoDesignManager(Persistent):
         ps.write(str_formula)
         if self.debugMode:
             logger.info(script_id + " compiled")
+
+        # Switch back to the original user
+        newSecurityManager(None, user)
+
         return ps
 
     security.declarePublic('runFormulaScript')
