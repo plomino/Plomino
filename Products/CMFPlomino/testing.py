@@ -48,3 +48,10 @@ class PlominoSelenium(PloneSandboxLayer):
 
 PLOMINO_SELENIUM_FIXTURE = PlominoSelenium()
 PLOMINO_SELENIUM_TESTING = FunctionalTesting(bases=(PLOMINO_SELENIUM_FIXTURE,), name="Plomino:Selenium")
+
+from plone.app.testing import FunctionalTesting
+from plone.app.robotframework.testing import AUTOLOGIN_LIBRARY_FIXTURE
+
+PLOMINO_ROBOT_TESTING = FunctionalTesting(
+    bases=(AUTOLOGIN_LIBRARY_FIXTURE, PLOMINO_FIXTURE, z2.ZSERVER),
+    name="Plomino:Robot")

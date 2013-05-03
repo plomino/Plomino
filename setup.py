@@ -44,6 +44,8 @@ setup(name='Products.CMFPlomino',
       extras_require={
           'test': [
               'plone.app.testing[robot]>=4.2.2',
+              'python-dateutil',  # (import error without this)
+              'plone.app.robotframework',
               'Products.PloneTestCase',
               'selenium',
               # to test import/export of extended fields:
