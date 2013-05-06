@@ -438,7 +438,7 @@ class PlominoForm(ATFolder):
 
         filtered = []
         for obj_a in all:
-            if hide:
+            if hide and obj_a.Hidewhen:
                 try:
                     result = self.runFormulaScript(
                             'action_%s_%s_hidewhen' % (self.id, obj_a.id),
