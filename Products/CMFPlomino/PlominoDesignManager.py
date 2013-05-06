@@ -749,6 +749,8 @@ class PlominoDesignManager(Persistent):
                     repr(formula_getter),
                     script_id),
                 exc_info=True)
+            if self.getRequestCache("ABORT_ON_ERROR"):
+                transaction.abort()
             raise PlominoScriptException(
                     context,
                     e,
@@ -1328,3 +1330,9 @@ class PlominoDesignManager(Persistent):
         """
         level = REQUEST.get('level', '')
         REQUEST.RESPONSE.setCookie('plomino_profiler', level, path='/')
+
+    security.declarePublic('abortOnError')
+    def abortOnError(self):
+        """
+        """
+        self.setRequestCache("ABORT_ON_ERROR", True)
