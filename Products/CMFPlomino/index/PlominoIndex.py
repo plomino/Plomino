@@ -173,14 +173,15 @@ class PlominoIndex(UniqueObject, CatalogTool):
             only_allowed=True, limit=None):
         """
         """
-        user_groups_roles = ['Anonymous', '*']
-        user_id = self.getCurrentMember().getUserName()
-        if user_id != "Anonymous User":
-            user_groups_roles += (
-                    [user_id] + 
-                    self.getCurrentUserGroups() + 
-                    self.getCurrentUserRoles())
-        request['getPlominoReaders'] = user_groups_roles
+        if only_allowed:
+            user_groups_roles = ['Anonymous', '*']
+            user_id = self.getCurrentMember().getUserName()
+            if user_id != "Anonymous User":
+                user_groups_roles += (
+                        [user_id] + 
+                        self.getCurrentUserGroups() + 
+                        self.getCurrentUserRoles())
+            request['getPlominoReaders'] = user_groups_roles
         try:
             results = self.search(request, sortindex, reverse, limit)
         except AttributeError:
