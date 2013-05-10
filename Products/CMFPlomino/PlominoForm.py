@@ -557,21 +557,20 @@ class PlominoForm(ATFolder):
                 target,
                 False,
                 parent_id=form_id):
-            actionName = action.id
-            if actionName in actionsToDisplay:
-                actionDisplay = action.ActionDisplay
-                pt = self.getRenderingTemplate(actionDisplay + "Action")
-                if pt is None:
-                    pt = self.getRenderingTemplate("LINKAction")
-                action_render = pt(plominoaction=action,
-                                   plominotarget=target,
-                                   plomino_parent_id=form_id)
-            else:
-                action_render = ''
-            html_content = html_content.replace(
-                    '<span class="plominoActionClass">%s</span>' %
-                    actionName,
-                    action_render)
+            action_id = action.id
+            action_span = '<span class="plominoActionClass">%s</span>' % action_id
+            if action_span in html_content:
+                if action_id in actionsToDisplay:
+                    actionDisplay = action.ActionDisplay
+                    pt = self.getRenderingTemplate(actionDisplay + "Action")
+                    if pt is None:
+                        pt = self.getRenderingTemplate("LINKAction")
+                    action_render = pt(plominoaction=action,
+                                       plominotarget=target,
+                                       plomino_parent_id=form_id)
+                else:
+                    action_render = ''
+                html_content = html_content.replace(action_span, action_render)
 
         # translation
         db = self.getParentDatabase()
