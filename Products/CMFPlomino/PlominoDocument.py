@@ -226,7 +226,13 @@ class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
         return result
 
     security.declarePublic('tojson')
-    def tojson(self, REQUEST=None, item=None, formid=None, rendered=False):
+    def tojson(
+        self,
+        REQUEST=None,
+        item=None,
+        formid=None,
+        rendered=False,
+        lastmodified=None):
         """ Return item value as JSON.
 
         Return all items if `item=None`.
@@ -249,6 +255,7 @@ class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
                     'content-type', 'application/json; charset=utf-8')
             item = REQUEST.get('item', item)
             formid = REQUEST.get('formid', formid)
+            lastmodified = REQUEST.get('lastmodified', lastmodified)
             rendered_str = REQUEST.get('rendered', None)
             if rendered_str:
                 rendered = True
@@ -293,6 +300,8 @@ class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
                     'iTotalRecords': len(data),
                     'iTotalDisplayRecords': len(data),
                     'aaData': data }
+        if lastmodified:
+            data = {'lastmodified': self.getLastModified(), 'data': data}
         return json.dumps(data)
 
     security.declarePublic('computeItem')
