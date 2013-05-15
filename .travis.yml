@@ -44,7 +44,7 @@ before_script:
   - "sh -e /etc/init.d/xvfb start"
 script:
   - bin/test --coverage -m Products.CMFPlomino
-  - coverage
+  - bin/coverage
 after_success:
   - pip install coveralls
   - coveralls
