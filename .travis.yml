@@ -43,9 +43,10 @@ before_script:
   - "export DISPLAY=:99.0"
   - "sh -e /etc/init.d/xvfb start"
 script:
-  - bin/test --coverage -m Products.CMFPlomino
+  - bin/test -m Products.CMFPlomino
   - bin/coverage run bin/test
 after_success:
+  - bin/coverage report -m
   - pip install coveralls
   - coveralls
 notifications:
