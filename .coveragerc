@@ -1,0 +1,7 @@
+[report]
+omit =
+	./extra/*
+    ./buildout-cache/eggs/*
+    parts/*
+    eggs/*
+    */test*
