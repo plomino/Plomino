@@ -55,7 +55,6 @@ from PlominoAccessControl import PlominoAccessControl
 from PlominoDesignManager import PlominoDesignManager
 from PlominoDocument import addPlominoDocument
 from PlominoReplicationManager import PlominoReplicationManager
-from PlominoScheduler import PlominoScheduler
 from Products.CMFPlomino.config import *
 from Products.CMFPlomino.PlominoUtils import *
 
@@ -235,7 +234,6 @@ PlominoDatabase_schema = getattr(ATFolder, 'schema', Schema(())).copy() + \
     getattr(PlominoAccessControl, 'schema', Schema(())).copy() + \
     getattr(PlominoDesignManager, 'schema', Schema(())).copy() + \
     getattr(PlominoReplicationManager, 'schema', Schema(())).copy() + \
-    getattr(PlominoScheduler, 'schema', Schema(())).copy() + \
     schema.copy()
 
 ##code-section after-schema #fill in your manual code here
@@ -243,7 +241,7 @@ PlominoDatabase_schema = getattr(ATFolder, 'schema', Schema(())).copy() + \
 
 
 class PlominoDatabase(ATFolder, PlominoAccessControl, PlominoDesignManager,
-        PlominoReplicationManager, PlominoScheduler):
+        PlominoReplicationManager):
     """
     """
     security = ClassSecurityInfo()
