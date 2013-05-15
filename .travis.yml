@@ -46,7 +46,6 @@ script:
   - bin/test -m Products.CMFPlomino
   - bin/coverage run bin/test
 after_success:
-  - bin/coverage report -m
   - pip install coveralls
   - coveralls
 notifications:
