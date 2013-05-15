@@ -44,6 +44,10 @@ before_script:
   - "sh -e /etc/init.d/xvfb start"
 script:
   - bin/test --coverage -m Products.CMFPlomino
+  - coverage
+after_success:
+  - pip install coveralls
+  - coveralls
 notifications:
   irc:
     - "irc.freenode.org#plomino"
