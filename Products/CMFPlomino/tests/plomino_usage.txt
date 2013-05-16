@@ -5,38 +5,40 @@ Plomino usage
 Setup
 -----
 
-Create user::
-
     >>> portal = layer['portal']
+    >>> portal_url = portal.absolute_url()
     >>> memberName = 'siteManager'
     >>> portal.portal_membership.addMember(
     ...         memberName,
     ...         memberName,
-    ...         ('Member, Manager',),
+    ...         ('Member', 'Manager',),
     ...         '',
     ...         {'fullname': memberName, 'email': memberName+'@dummy.fr',}
     ...         )
+    >>> memberName = 'siteMember'
+    >>> portal.portal_membership.addMember(
+    ...         memberName,
+    ...         memberName,
+    ...         ('Member', ),
+    ...         '',
+    ...         {'fullname': memberName, 'email': memberName+'@dummy.fr',}
+    ...         )
+    >>> InsufficientPrivileges = 'credentials_cookie_auth'
 
 Create the browser object we'll be using::
 
     >>> browser = Browser(layer['app'])
     >>> transaction.commit()  # enable the browser to see our changes
 
-Words in content indicating insufficient privileges::
-
-    >>> InsufficientPrivileges = 'credentials_cookie_auth'
-
-Portal url::
-
-    >>> portal_url = portal.absolute_url()
-
-Log in with ``siteManager`` access rights:: 
+Log in with manager access rights:: 
 
     >>> browser.open(portal_url)
-    >>> browser.getLink('Log in').click()
-    >>> browser.getControl('Login Name').value = 'siteManager'
-    >>> browser.getControl('Password').value = 'siteManager'
+    >>> browser.open(portal_url+'/login_form')
+    >>> browser.getControl(name='__ac_name').value = "siteManager"
+    >>> browser.getControl(name='__ac_password').value = "siteManager"
     >>> browser.getControl('Log in').click()
+    >>> "You are now logged in" in browser.contents
+    True
 
 Create a database
 -----------------
@@ -45,4 +47,67 @@ Create a database
     >>> browser.getControl('Title').value = 'testdb'
     >>> browser.getControl('Save').click()
     >>> "No available content" in browser.contents
-    bla
+    True
+    >>> db_url = portal_url + "/testdb"
+
+Create a form
+-------------
+
+    >>> browser.open(db_url + "/createObject?type_name=PlominoForm&tinymce.suppress=FormLayout&")
+    >>> browser.getControl(name='id').value = "frmtest"
+    >>> browser.getControl(name='title').value = "Test form"
+    >>> browser.getControl(name='FormLayout').value = """
+    ... <p>Name: <span class="plominoFieldClass">name</span></p>
+    ... <p>Age: <span class="plominoFieldClass">age</span></p>
+    ... """
+    >>> browser.getControl(name='DocumentTitle').value = """context.getItem('name')"""
+    >>> browser.getControl(name='DocumentId').value = """context.getItem('name')"""
+    >>> browser.getControl(name='form.button.save').click()
+    >>> browser.open(db_url + "/frmtest/createObject?type_name=PlominoField")
+    >>> browser.getControl(name='id').value = "name"
+    >>> browser.getControl(name='title').value = "name"
+    >>> browser.getControl(name='form.button.save').click()
+    >>> browser.open(db_url + "/frmtest/createObject?type_name=PlominoField")
+    >>> browser.getControl(name='id').value = "age"
+    >>> browser.getControl(name='title').value = "age"
+    >>> browser.getControl(name='FieldType').value = ['NUMBER']
+    >>> browser.getControl(name='form.button.save').click()
+    >>> browser.open(db_url + "/frmtest")
+    >>> """<input type="text" name="name" value="" />""" in browser.contents
+    True
+
+Generate a view
+---------------
+
+    >>> browser.open(db_url + "/frmtest/manage_generateView")
+    >>> "Add a new Test form" in browser.contents
+    True
+
+Go to design tab
+----------------
+
+    >>> browser.open(db_url + "/DatabaseDesign")
+
+Change the ACL
+--------------
+
+    >>> browser.open(db_url + "/DatabaseACL")
+    >>> browser.getControl(name='newuser').value = ["siteMember"]
+    >>> browser.getControl(name='accessright').value = ["PlominoReader"]
+    >>> browser.getControl("Add", index=0).click()
+    >>> "reader-siteMember" in browser.contents
+    True
+    >>> browser.getControl(name='users').value = ["siteMember"]
+    >>> browser.getControl("Remove selected users").click()
+    >>> "reader-siteMember" not in browser.contents
+    True
+    >>> browser.getControl(name='authenticatedaccessright').value = ["PlominoReader"]
+    >>> browser.getControl("Change", index=0).click()
+    >>> browser.getControl(name='newrole').value = "in-charge"
+    >>> browser.getControl("Add", index=1).click()
+    >>> browser.getControl(name='role', index=1).value = ["[in-charge]"]
+    >>> browser.getControl(name='user', index=0).value = ["siteMember"]
+    >>> browser.getControl("Add", index=2).click()
+    
+    
+    
