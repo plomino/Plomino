@@ -83,11 +83,6 @@ Generate a view
     >>> "Add a new Test form" in browser.contents
     True
 
-Go to design tab
-----------------
-
-    >>> browser.open(db_url + "/DatabaseDesign")
-
 Change the ACL
 --------------
 
@@ -108,6 +103,36 @@ Change the ACL
     >>> browser.getControl(name='role', index=1).value = ["[in-charge]"]
     >>> browser.getControl(name='user', index=0).value = ["siteMember"]
     >>> browser.getControl("Add", index=2).click()
+
+Create documents
+----------------
+
+    >>> browser.open(db_url + "/frmtest")
+    >>> browser.getControl(name='name').value = "Isaac Newton"
+    >>> browser.getControl(name='age').value = "45"
+    >>> browser.getControl("Save").click()
+    >>> browser.url == db_url + "/plomino_documents/isaac-newton"
+    True
+    >>> browser.open(db_url + "/frmtest")
+    >>> browser.getControl(name='name').value = "Marie Curie"
+    >>> browser.getControl(name='age').value = "46"
+    >>> browser.getControl("Save").click()
+    >>> browser.url == db_url + "/plomino_documents/marie-curie"
+    True
+
+Export design and documents
+---------------------------
+
+    >>> browser.open(db_url + "/DatabaseDesign")
+    >>> browser.getControl(name='targettype').value = ['file']
+    >>> browser.getControl("Export").click()
+    >>> browser.open(db_url + "/DatabaseReplication")
+    >>> browser.getControl(name='targettype').value = ['file']
+    >>> browser.getControl("Export").click()
+
     
+    
+
+
     
     
