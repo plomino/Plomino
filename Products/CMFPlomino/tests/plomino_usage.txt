@@ -50,8 +50,8 @@ Create a database
     True
     >>> db_url = portal_url + "/testdb"
 
-Create a form
--------------
+Create forms
+------------
 
     >>> browser.open(db_url + "/createObject?type_name=PlominoForm&tinymce.suppress=FormLayout&")
     >>> browser.getControl(name='id').value = "frmtest"
@@ -75,12 +75,37 @@ Create a form
     >>> browser.open(db_url + "/frmtest")
     >>> """<input type="text" name="name" value="" />""" in browser.contents
     True
+    >>> browser.open(db_url + "/createObject?type_name=PlominoForm&tinymce.suppress=FormLayout&")
+    >>> browser.getControl(name='id').value = "frmtest2"
+    >>> browser.getControl(name='title').value = "Test form 2"
+    >>> browser.getControl(name='FormLayout').value = """
+    ... <p>Country: <span class="plominoFieldClass">country</span></p>
+    ... <p>Population: <span class="plominoFieldClass">population</span></p>
+    ... """
+    >>> browser.getControl(name='DocumentTitle').value = """context.getItem('country')"""
+    >>> browser.getControl(name='DocumentId').value = """context.getItem('country')"""
+    >>> browser.getControl(name='form.button.save').click()
+    >>> browser.open(db_url + "/frmtest2/createObject?type_name=PlominoField")
+    >>> browser.getControl(name='id').value = "country"
+    >>> browser.getControl(name='title').value = "country"
+    >>> browser.getControl(name='form.button.save').click()
+    >>> browser.open(db_url + "/frmtest2/createObject?type_name=PlominoField")
+    >>> browser.getControl(name='id').value = "population"
+    >>> browser.getControl(name='title').value = "population"
+    >>> browser.getControl(name='FieldType').value = ['NUMBER']
+    >>> browser.getControl(name='form.button.save').click()
+    >>> browser.open(db_url + "/frmtest2")
+    >>> """<input type="text" name="population" value="" />""" in browser.contents
+    True
 
-Generate a view
----------------
+Generate views
+--------------
 
     >>> browser.open(db_url + "/frmtest/manage_generateView")
     >>> "Add a new Test form" in browser.contents
+    True
+    >>> browser.open(db_url + "/frmtest2/manage_generateView")
+    >>> "Add a new Test form 2" in browser.contents
     True
 
 Change the ACL
@@ -120,18 +145,71 @@ Create documents
     >>> browser.url == db_url + "/plomino_documents/marie-curie"
     True
 
-Export design and documents
----------------------------
+Refresh db and recompute doc
+-----------------------------
+
+    >>> browser.open(db_url + "/DatabaseDesign")
+    >>> browser.getControl(name="submit_refresh", index=0).click()
+    >>> "Re-indexing documents: 2 documents indexed successfully, 0 errors(s)" in browser.contents
+    True
+    >>> browser.getControl(name="submit_recompute").click()
+    >>> "Re-compute documents: 2 documents computed successfully, 0 errors(s)" in browser.contents
+    True
+    >>> browser.open(db_url + "/edit")
+    >>> browser.getControl(name='IndexInPortal:boolean').value = ["on"]
+    >>> browser.getControl(name='form.button.save').click()
+    >>> browser.open(db_url + "/DatabaseDesign")
+    >>> browser.getControl(name="submit_refreshcatalog").click()
+    >>> "2 documents re-cataloged" in browser.contents
+    True
+
+
+Export design
+-------------
 
     >>> browser.open(db_url + "/DatabaseDesign")
     >>> browser.getControl(name='targettype').value = ['file']
     >>> browser.getControl("Export").click()
+
+Test internal remote API::
+
+    >>> browser.open(db_url + "/getViewsList")
+    >>> browser.contents
+    'allfrmtest/allfrmtest2'
+    >>> browser.open(db_url + "/getFormsList")
+    >>> browser.contents
+    'frmtest/frmtest2'
+    >>> browser.open(db_url + "/getAgentsList")
+    >>> browser.contents
+    ''
+    >>> browser.open(db_url + "/getResourcesList")
+    >>> browser.contents
+    ''
+
+Profiling
+---------
+
+    >>> browser.open(db_url+"/set_profiling_level?level=form:fields:formulas")
+    >>> browser.open(db_url + "/plomino_documents/marie-curie/EditDocument")
+    >>> browser.getControl(name='age').value = "47"
+    >>> browser.getControl("Save").click()
+    >>> browser.open(db_url + "/profiling")
+    >>> "form_frmtest_title (1 times)" in browser.contents
+    True
+
+Replication
+-----------
+
     >>> browser.open(db_url + "/DatabaseReplication")
     >>> browser.getControl(name='targettype').value = ['file']
     >>> browser.getControl("Export").click()
+    >>> browser.open(db_url + "/manage_replications?actionType=add")
+    >>> #browser.getControl(name='name').value = "test"
+    >>> #browser.getControl(name='remoteUrl').value = "http://somewhere/db"
+    >>> #browser.getControl(name='username').value = "admin"
+    >>> #browser.getControl(name='password').value = "password"
+    >>> #browser.getControl(name="save_replication").click()
 
-    
-    
 
 
     
