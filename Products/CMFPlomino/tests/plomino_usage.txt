@@ -1,0 +1,48 @@
+============================================================
+Plomino usage
+============================================================
+
+Setup
+-----
+
+Create user::
+
+    >>> portal = layer['portal']
+    >>> memberName = 'siteManager'
+    >>> portal.portal_membership.addMember(
+    ...         memberName,
+    ...         memberName,
+    ...         ('Member, Manager',),
+    ...         '',
+    ...         {'fullname': memberName, 'email': memberName+'@dummy.fr',}
+    ...         )
+
+Create the browser object we'll be using::
+
+    >>> browser = Browser(layer['app'])
+    >>> transaction.commit()  # enable the browser to see our changes
+
+Words in content indicating insufficient privileges::
+
+    >>> InsufficientPrivileges = 'credentials_cookie_auth'
+
+Portal url::
+
+    >>> portal_url = portal.absolute_url()
+
+Log in with ``siteManager`` access rights:: 
+
+    >>> browser.open(portal_url)
+    >>> browser.getLink('Log in').click()
+    >>> browser.getControl('Login Name').value = 'siteManager'
+    >>> browser.getControl('Password').value = 'siteManager'
+    >>> browser.getControl('Log in').click()
+
+Create a database
+-----------------
+
+    >>> browser.open(portal_url + "/createObject?type_name=PlominoDatabase")
+    >>> browser.getControl('Title').value = 'testdb'
+    >>> browser.getControl('Save').click()
+    >>> "No available content" in browser.contents
+    bla
