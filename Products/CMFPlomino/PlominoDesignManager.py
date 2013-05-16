@@ -603,7 +603,6 @@ class PlominoDesignManager(Persistent):
                 username,
                 password).read()
         ids = views.split('/')
-        ids.pop()
         return ids
 
     security.declareProtected(DESIGN_PERMISSION, 'getRemoteForms')
@@ -615,7 +614,6 @@ class PlominoDesignManager(Persistent):
                 username,
                 password).read()
         ids = forms.split('/')
-        ids.pop()
         return ids
 
     security.declareProtected(DESIGN_PERMISSION, 'getRemoteAgents')
@@ -627,7 +625,6 @@ class PlominoDesignManager(Persistent):
                 username,
                 password).read()
         ids = agents.split('/')
-        ids.pop()
         return ids
 
     security.declareProtected(DESIGN_PERMISSION, 'getRemoteResources')
@@ -639,7 +636,6 @@ class PlominoDesignManager(Persistent):
                 username,
                 password).read()
         ids = res.split('/')
-        ids.pop()
         return ['resources/'+i for i in ids]
 
     security.declarePublic('getFormulaScript')
