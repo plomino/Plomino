@@ -664,7 +664,6 @@ class PlominoReplicationManager(Persistent):
         """ Sets the replications hashmap.
         """
         self.replicationHistory = replications 
-        self.managePlominoCronTab() 
         return self.replicationHistory
 
     security.declareProtected(EDIT_PERMISSION, 'getReplicationEditingId')
