@@ -5,3 +5,4 @@ omit =
     parts/*
     eggs/*
     */test*
+    Products/CMFPlomino/migration/migration.py
