@@ -1252,9 +1252,13 @@ class PlominoDesignManager(Persistent):
             else:
                 if child.hasChildNodes():
                     field = self.Schema().getField(name)
-                    #field.set(self, child.firstChild.data)
-                    result=field.widget.process_form(self, field, {name : child.firstChild.data})
-                    field.set(self, result[0])
+                    if field:
+                        result=field.widget.process_form(
+                            self,
+                            field,
+                            {name : child.firstChild.data}
+                        )
+                        field.set(self, result[0])
             child = child.nextSibling
 
     security.declareProtected(DESIGN_PERMISSION, 'importResourceFromXML')

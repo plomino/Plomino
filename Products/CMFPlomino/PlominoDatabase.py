@@ -143,19 +143,6 @@ schema = Schema((
         ),
     ),
     BooleanField(
-        name='StorageAttachments',
-        default=False,
-        widget=BooleanField._properties['widget'](
-            label="Use File System Storage for attachments",
-            description="File System Storage must be installed on the portal. "
-                "With current Plone versions (4.x), "
-                "blobstorage will be used by default.",
-            label_msgid='CMFPlomino_label_StorageAttachments',
-            description_msgid='CMFPlomino_help_StorageAttachments',
-            i18n_domain='CMFPlomino',
-        ),
-    ),
-    BooleanField(
         name='CountDocuments',
         default=False,
         widget=BooleanField._properties['widget'](

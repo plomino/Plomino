@@ -50,11 +50,6 @@ except ImportError, e:
     from Products.CMFCore.CMFCatalogAware import CMFCatalogAware as CatalogAware
 
 try:
-    from iw.fss.FileSystemStorage import FileSystemStorage, FSSFileInfo
-except ImportError, e:
-    pass
-
-try:
     from plone.app.blob.field import BlobWrapper
     from plone.app.blob.utils import guessMimetype
     HAS_BLOB = True
@@ -767,13 +762,7 @@ class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
         if not filename:
             return None
 
-        fss = self.getParentDatabase().getStorageAttachments()
-        if fss:
-            storage = FileSystemStorage()
-            file_obj = storage.get(filename, self)
-        else:
-            #file_obj = getattr(self, filename)
-            file_obj = self.get(filename, None)
+        file_obj = self.get(filename, None)
         if not file_obj:
             return None
         if asFile:
@@ -783,27 +772,18 @@ class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
                     'content-type', file_obj.getContentType())
             REQUEST.RESPONSE.setHeader(
                     "Content-Disposition", "inline; filename="+filename)
-        if fss:
-            return file_obj.getData()
-        else:
-            return file_obj.data
+        return file_obj.data
 
     security.declareProtected(READ_PERMISSION, 'getFilenames')
     def getFilenames(self):
-        """ Return names of items that are stored in FSS (legacy) or are blobs.
+        """ Return names of items that are File or Blob.
         """
-        fss = self.getParentDatabase().getStorageAttachments()
-        if fss:
-            return [o.getTitle() for o in self.__dict__.values() 
-                    if isinstance(o, FSSFileInfo)]
+        if HAS_BLOB:
+            return [id for id in self.objectIds()
+                    if isinstance(self[id], BlobWrapper)]
         else:
-            #return [o.getId() for o in self.getChildNodes() if isinstance(o, File)]
-            if HAS_BLOB:
-                return [id for id in self.objectIds()
-                        if isinstance(self[id], BlobWrapper)]
-            else:
-                return [id for id in self.objectIds()
-                        if isinstance(self[id], File)]
+            return [id for id in self.objectIds()
+                    if isinstance(self[id], File)]
 
     security.declareProtected(EDIT_PERMISSION, 'setfile')
     def setfile(self, submittedValue, filename='', overwrite=False, contenttype=''):
@@ -832,12 +812,7 @@ class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
                         DateTime().toZone('UTC').strftime("%Y%m%d%H%M%S"),
                         filename)
             
-            if self.getParentDatabase().getStorageAttachments():
-                tmpfile = File(filename, filename, submittedValue)
-                storage = FileSystemStorage()
-                storage.set(filename, self, tmpfile);
-                contenttype = storage.get(filename,self).getContentType()
-            elif HAS_BLOB:
+            if HAS_BLOB:
                 if (isinstance(submittedValue, FileUpload) or 
                         type(submittedValue) == file):
                     submittedValue.seek(0)
@@ -867,12 +842,8 @@ class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
     def deletefile(self, filename):
         """ Delete blob or FSS obj.
         """
-        if self.getParentDatabase().getStorageAttachments():
-            storage = FileSystemStorage();
-            storage.unset(filename, self);
-        else:
-            if filename in self.objectIds():
-                self.manage_delObjects(filename)
+        if filename in self.objectIds():
+            self.manage_delObjects(filename)
 
     security.declarePublic('isNewDocument')
     def isNewDocument(self):
