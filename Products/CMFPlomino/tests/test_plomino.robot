@@ -22,8 +22,6 @@ Manage a Plomino database
     Plomino is installed
     Log in as the database owner
     Open the database
-    Create form    frm_test    Test form
-    Create field   frm_test    field_1
     Generate view for   frm_test
     Add document    ${PLONE_URL}/mydb/frm_test    field_1     Isaac Newton
     Add document    ${PLONE_URL}/mydb/frm_test    field_1     Marie Curie
