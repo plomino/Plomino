@@ -1076,7 +1076,7 @@ class PlominoDesignManager(Persistent):
         total = 0
         if from_folder:
             if not os.path.isdir(from_folder):
-                raise PlominoDesignException, '%s does not exist' % path
+                raise PlominoDesignException, '%s does not exist' % from_folder
             xml_files = (glob.glob(os.path.join(from_folder, '*.xml')) +
                      glob.glob(os.path.join(from_folder, 'resources/*.xml')))
             total_elements = len(xml_files)
