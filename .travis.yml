@@ -39,6 +39,7 @@ install:
   - java -jar Sauce-Connect.jar $SAUCE_USERNAME $SAUCE_ACCESS_KEY -i $TRAVIS_JOB_ID -f CONNECTED &
   - JAVA_PID=$!
 before_script:
+  - bin/instance start
   - bash -c "while [ ! -f CONNECTED ]; do sleep 2; done"
   - "export DISPLAY=:99.0"
   - "sh -e /etc/init.d/xvfb start"
