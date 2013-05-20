@@ -35,7 +35,6 @@ Manage a Plomino database
     Re-replicate documents
     Go to    ${PLONE_URL}/secondreplicadb/allfrmtest
     Page should contain    Marie Curie
-    Delete replica
 
 *** Keywords ***
 Plomino is installed
