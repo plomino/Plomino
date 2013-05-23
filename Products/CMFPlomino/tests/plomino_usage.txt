@@ -230,15 +230,34 @@ Profiling
 Replication
 -----------
 
-    >>> browser.open(db_url + "/DatabaseReplication")
-    >>> browser.getControl(name='targettype').value = ['file']
-    >>> browser.getControl("Export").click()
-    >>> browser.open(db_url + "/manage_replications?actionType=add")
-    >>> browser.open(db_url + "/manage_replications?actionType=save&name=test&remoteUrl=somewhere&username=admin&password=password")
-    >>> browser.open(db_url + "/manage_replications?selection=1&actionType=edit")
-    >>> browser.open(db_url + "/manage_replications?selection=1&actionType=delete")
-    >>> browser.open(db_url + "/getDocumentsIds")
-    >>> browser.open(db_url + "/getDocumentsIds?restricttoview=allfrmtest")
+
+
+Test with remote server
+    >>> browser.open(portal_url + "/createObject?type_name=PlominoDatabase")
+    >>> browser.getControl('Title').value = 'localdb'
+    >>> browser.getControl('Save').click()
+    >>> "No available content" in browser.contents
+    True
+    >>> localdb_url = portal_url + "/localdb"
+    >>> browser.open(localdb_url + "/DatabaseDesign")
+    >>> browser.getControl(name='sourcetype').value = ['server']
+    >>> browser.getControl(name='sourceURL').value = "http://localhost:8080/Plone/remotedb"
+    >>> browser.getControl(name='username', index=0).value = "admin"
+    >>> browser.getControl(name='password', index=0).value = "admin"
+    >>> browser.getControl(name="submit_refresh_import").click()
+    >>> browser.getControl(name='sourcetype').value = ['server']
+    >>> browser.getControl(name="submit_import").click()
+    >>> "frmMovie" in browser.contents
+    True
+    >>> browser.open(localdb_url + "/manage_replications?actionType=add")
+    >>> browser.open(localdb_url + "/manage_replications?replicationId=1&whoWins=localwins&mode=add&actionType=save&name=my-replication&remoteUrl=http%3A%2F%2Flocalhost%3A8080%2FPlone%2Fremotedb&username=admin&password=admin&repType=pushpull")
+    >>> browser.open(localdb_url + "/manage_replications?actionType=replicate&selection=1")
+    >>> browser.open(localdb_url + "/allMovies")
+    >>> "Apocalypse now" in browser.contents
+    True
+
+
+
 
 
 

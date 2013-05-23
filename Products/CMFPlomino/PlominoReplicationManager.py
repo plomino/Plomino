@@ -46,7 +46,6 @@ from Products.CMFPlomino.PlominoUtils import escape_xml_illegal_chars
 REMOTE_DOC_ID_SEPARATOR = '#'
 REMOTE_DOC_DATE_SEPARATOR = '@'
 REMOTE_DOC_IDS_HEADER = 'REMOTE_DOC_IDS'
-REMOTE_URL_ADDED = 'url to replicate with'
 REPLICATION_TYPES = {
         'push': 'push',
         'pull': 'pull',
@@ -899,7 +898,7 @@ class PlominoReplicationManager(Persistent):
         return self.buildReplication(
                 self.getNewId(),
                 '',  # name
-                REMOTE_URL_ADDED,
+                '',  # url
                 '',  # username
                 '',  # password
                 'pull',
