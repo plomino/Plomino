@@ -29,6 +29,18 @@ Setup
     ...         )
     >>> InsufficientPrivileges = 'credentials_cookie_auth'
 
+Create a sample db we will replicate to a remote portal
+
+    >>> from os.path import dirname, join
+    >>> DIRPATH = join(dirname(__file__), 'filestoimport')
+    >>> id = portal.invokeFactory('PlominoDatabase', id='sampledb')
+    >>> portal.sampledb.at_post_create_script()
+    >>> design_filepath = join(DIRPATH, "replicadb.xml")
+    >>> portal.sampledb.importDesignFromXML(open(design_filepath).read())
+    >>> report = portal.sampledb.refreshDB()
+    >>> data_filepath = join(DIRPATH, "replicadb-all-documents.xml")
+    >>> report = portal.sampledb.importFromXML(open(data_filepath).read())
+
 Create the browser object we'll be using::
 
     >>> browser = Browser(layer['app'])
@@ -229,19 +241,29 @@ Profiling
 
 Replication
 -----------
-
-
-
-Test with remote server
+    >>> creation_url = "http://localhost:8080/Plone/portal_factory/PlominoDatabase/remotereplica/base_edit?title=remotereplica&form.button.save=Save&form.submitted=1"
+    >>> remotereplica_url = "http://localhost:8080/Plone/remotereplica"
+    >>> from Products.CMFPlomino.HttpUtils import authenticateAndLoadURL
+    >>> result = authenticateAndLoadURL(creation_url, 'admin', 'admin')
+    >>> sampledb_url = portal_url + "/sampledb"
+    >>> browser.open(sampledb_url + "/DatabaseDesign")
+    >>> browser.getControl(name='targettype').value = ['server']
+    >>> browser.getControl(name='targetURL').value = remotereplica_url
+    >>> browser.getControl(name='username', index=1).value = "admin"
+    >>> browser.getControl(name='password', index=1).value = "admin"
+    >>> browser.getControl(name="submit_export").click()
+    >>> browser.open(sampledb_url + "/manage_replications?actionType=add")
+    >>> browser.open(sampledb_url + "/manage_replications?replicationId=1&whoWins=localwins&mode=add&actionType=save&name=my-replication&remoteUrl=http%3A%2F%2Flocalhost%3A8080%2FPlone%2Fremotereplica&username=admin&password=admin&repType=pushpull")
+    >>> browser.open(sampledb_url + "/manage_replications?actionType=replicate&selection=1")
     >>> browser.open(portal_url + "/createObject?type_name=PlominoDatabase")
-    >>> browser.getControl('Title').value = 'localdb'
+    >>> browser.getControl('Title').value = 'localreplicadb'
     >>> browser.getControl('Save').click()
     >>> "No available content" in browser.contents
     True
-    >>> localdb_url = portal_url + "/localdb"
+    >>> localdb_url = portal_url + "/localreplicadb"
     >>> browser.open(localdb_url + "/DatabaseDesign")
     >>> browser.getControl(name='sourcetype').value = ['server']
-    >>> browser.getControl(name='sourceURL').value = "http://localhost:8080/Plone/remotedb"
+    >>> browser.getControl(name='sourceURL').value = "http://localhost:8080/Plone/remotereplica"
     >>> browser.getControl(name='username', index=0).value = "admin"
     >>> browser.getControl(name='password', index=0).value = "admin"
     >>> browser.getControl(name="submit_refresh_import").click()
@@ -250,7 +272,7 @@ Test with remote server
     >>> "frmMovie" in browser.contents
     True
     >>> browser.open(localdb_url + "/manage_replications?actionType=add")
-    >>> browser.open(localdb_url + "/manage_replications?replicationId=1&whoWins=localwins&mode=add&actionType=save&name=my-replication&remoteUrl=http%3A%2F%2Flocalhost%3A8080%2FPlone%2Fremotedb&username=admin&password=admin&repType=pushpull")
+    >>> browser.open(localdb_url + "/manage_replications?replicationId=1&whoWins=localwins&mode=add&actionType=save&name=my-replication&remoteUrl=http%3A%2F%2Flocalhost%3A8080%2FPlone%2Fremotereplica&username=admin&password=admin&repType=pushpull")
     >>> browser.open(localdb_url + "/manage_replications?actionType=replicate&selection=1")
     >>> browser.open(localdb_url + "/allMovies")
     >>> "Apocalypse now" in browser.contents
