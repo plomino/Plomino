@@ -10,7 +10,7 @@ Reader, Designer, Author, Editor, Manager::
     >>> portal.portal_membership.addMember(
     ...         memberName,
     ...         memberName,
-    ...         ('Member, Manager',),
+    ...         ('Member', 'Manager',),
     ...         '',
     ...         {'fullname': memberName, 'email': memberName+'@dummy.fr',}
     ...         )

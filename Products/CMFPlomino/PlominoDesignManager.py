@@ -603,7 +603,6 @@ class PlominoDesignManager(Persistent):
                 username,
                 password).read()
         ids = views.split('/')
-        ids.pop()
         return ids
 
     security.declareProtected(DESIGN_PERMISSION, 'getRemoteForms')
@@ -615,7 +614,6 @@ class PlominoDesignManager(Persistent):
                 username,
                 password).read()
         ids = forms.split('/')
-        ids.pop()
         return ids
 
     security.declareProtected(DESIGN_PERMISSION, 'getRemoteAgents')
@@ -627,7 +625,6 @@ class PlominoDesignManager(Persistent):
                 username,
                 password).read()
         ids = agents.split('/')
-        ids.pop()
         return ids
 
     security.declareProtected(DESIGN_PERMISSION, 'getRemoteResources')
@@ -639,7 +636,6 @@ class PlominoDesignManager(Persistent):
                 username,
                 password).read()
         ids = res.split('/')
-        ids.pop()
         return ['resources/'+i for i in ids]
 
     security.declarePublic('getFormulaScript')
@@ -1080,7 +1076,7 @@ class PlominoDesignManager(Persistent):
         total = 0
         if from_folder:
             if not os.path.isdir(from_folder):
-                raise PlominoDesignException, '%s does not exist' % path
+                raise PlominoDesignException, '%s does not exist' % from_folder
             xml_files = (glob.glob(os.path.join(from_folder, '*.xml')) +
                      glob.glob(os.path.join(from_folder, 'resources/*.xml')))
             total_elements = len(xml_files)
@@ -1256,9 +1252,13 @@ class PlominoDesignManager(Persistent):
             else:
                 if child.hasChildNodes():
                     field = self.Schema().getField(name)
-                    #field.set(self, child.firstChild.data)
-                    result=field.widget.process_form(self, field, {name : child.firstChild.data})
-                    field.set(self, result[0])
+                    if field:
+                        result=field.widget.process_form(
+                            self,
+                            field,
+                            {name : child.firstChild.data}
+                        )
+                        field.set(self, result[0])
             child = child.nextSibling
 
     security.declareProtected(DESIGN_PERMISSION, 'importResourceFromXML')

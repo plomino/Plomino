@@ -56,10 +56,14 @@ issue tracker <https://github.com/plomino/Plomino/issues>`_
 Tests
 =====
 
-Plomino is continuously tested on Travis: |travisstatus|_
+Plomino is continuously tested on Travis |travisstatus|_ and the code coverage 
+is tracked on coveralls.io |coveralls|_.
 
 .. |travisstatus| image:: https://secure.travis-ci.org/plomino/Plomino.png?branch=github-main
 .. _travisstatus:  http://travis-ci.org/plomino/Plomino
+
+.. |coveralls| image:: https://coveralls.io/repos/plomino/Plomino/badge.png?branch=github-main
+.. _coveralls: https://coveralls.io/r/plomino/Plomino?branch=github-main
 
 Credits
 =======

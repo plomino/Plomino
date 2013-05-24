@@ -677,6 +677,7 @@ class PlominoView(ATFolder):
         limit = -1
         search = None
         sort_index = None
+        reverse = None
         if REQUEST:
             start = int(REQUEST.get('iDisplayStart', 1))
             iDisplayLength = REQUEST.get('iDisplayLength', None)

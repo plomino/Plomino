@@ -253,17 +253,19 @@
             </tr>
             <tr><td></td>
                 <td i18n:translate="">Source URL</td>
-                <td><input type="text" name="sourceURL" 
+                <td><input type="text" name="sourceURL" id="sourceurl-import"
                     tal:attributes="value sourceURL"
                     /></td>
             </tr>
             <tr><td></td>
                 <td i18n:translate="">Username</td>
-                <td><input type="text" name="username" tal:attributes="value username"/></td>
+                <td><input type="text" name="username" id="username-import"
+                    tal:attributes="value username"/></td>
             </tr>
             <tr><td></td>
                 <td i18n:translate="">Password</td>
-                <td><input type="password" name="password" tal:attributes="value password"/></td>
+                <td><input type="password" name="password" id="password-import"
+                    tal:attributes="value password"/></td>
             </tr>
             <tr><td></td>
                 <td><label for="import-entire" i18n:translate="">Entire design</label></td>
@@ -296,7 +298,7 @@
                         </tal:block>
                     </tal:block>
                 </select>
-                <input type="submit" name="submit_refresh" class="context" value="Refresh" i18n:attributes="value"/>
+                <input type="submit" name="submit_refresh_import" class="context" value="Refresh" i18n:attributes="value"/>
                 </td>
             </tr>
             <tr><td colspan="3">

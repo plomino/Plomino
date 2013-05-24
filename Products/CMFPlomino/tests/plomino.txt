@@ -107,6 +107,12 @@ You can add any type of item in a document::
     >>> doc1.setItem('country', 'Finland')
     >>> doc1.getItem('country')
     u'Finland'
+    >>> doc1.removeItem('country')
+    >>> doc1.getItem('country')
+    ''
+    >>> doc1.setItem('country', 'Finland')
+    >>> doc1.getItem('country')
+    u'Finland'
 
 ``getItem`` returns a copy, not a reference on the item::
 
@@ -209,6 +215,33 @@ designer wants to be display in the view::
     >>> len(db.view1.getDocumentsByKey('hello'))
     1
 
+Views can be exported as CSV:
+
+    >>> db.view1.exportCSV()
+    '"London calling"\r\n"Rhythm is love"\r\n"Rhythm is love"\r\n"bonjour"\r\n"hello"\r\n'
+
+JSON API
+--------
+A document can be exported as JSON:
+
+    >>> doc11.tojson()
+    '{"field2": "My favorite song is Rhythm is love", "field1": "Rhythm is love", "Plomino_Authors": ["test-user"], "Form": "frm1"}'
+
+We can export only one field:
+
+    >>> doc11.tojson(item="field2")
+    '"My favorite song is Rhythm is love"'
+
+We can get the lastmodified value:
+
+    >>> doc11.tojson(item="field2", lastmodified=True)
+    '{"lastmodified": {"datetime": "...", "__datetime__": true}, "data": "My favorite song is Rhythm is love"}'
+
+Views can be exported as JSON:
+
+    >>> db.view1.tojson()
+    '{"aaData": [["...", "London calling"], ["a-document-about-rhythm-is-love", "Rhythm is love"], ["a-document-about-rhythm-is-love-1", "Rhythm is love"], ["...", "bonjour"], ["...", "hello"]], "iTotalRecords": 5, "iTotalDisplayRecords": 5}'
+
 Field types
 ---------------
 
@@ -283,6 +316,8 @@ Date/Time field::
     >>> adapted.format=u'%d/%m/%Y %H:%M'
     >>> db.frm2.displayDocument(doc4)
     u'<p>last album release date:\n17/01/2009 18:49\n\n</p>'
+    >>> doc4.getRenderedItem('lastalbum')
+    u'\n17/01/2009 18:49\n\n'
 
 Number field::
 

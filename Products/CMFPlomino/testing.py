@@ -33,6 +33,12 @@ class Plomino(PloneSandboxLayer):
         portal.invokeFactory('PlominoDatabase', id='mydb')
         portal.mydb.at_post_create_script()
         portal.portal_workflow.setDefaultChain("simple_publication_workflow")
+        db = portal.mydb
+        db.invokeFactory('PlominoForm', id='frm_test', title='Form 1')
+        db.frm_test.invokeFactory('PlominoField', id='field_1',
+            title='field_1', FieldType="TEXT", FieldMode="EDITABLE")
+        db.frm_test.field_1.at_post_create_script()
+        db.frm_test.setFormLayout("""<p>please enter a value for field_1: <span class="plominoFieldClass">field_1</span></p>""")
 
     def tearDownZope(self, app):
         # Uninstall product
