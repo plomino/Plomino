@@ -75,6 +75,12 @@ Create forms
     >>> browser.getControl(name='FormLayout').value = """
     ... <p>Name: <span class="plominoFieldClass">name</span></p>
     ... <p>Age: <span class="plominoFieldClass">age</span></p>
+    ... <span class="plominoHidewhenClass">start:moreThan18</span>
+    ... <p>Parents: <span class="plominoFieldClass">parents</span></p>
+    ... <span class="plominoHidewhenClass">end:moreThan18</span>
+    ... <span class="plominoHidewhenClass">start:notComplete</span>
+    ... <p>Thank you</p>
+    ... <span class="plominoHidewhenClass">end:notComplete</span>
     ... """
     >>> browser.getControl(name='DocumentTitle').value = """context.getItem('name')"""
     >>> browser.getControl(name='DocumentId').value = """context.getItem('name')"""
@@ -87,6 +93,21 @@ Create forms
     >>> browser.getControl(name='id').value = "age"
     >>> browser.getControl(name='title').value = "age"
     >>> browser.getControl(name='FieldType').value = ['NUMBER']
+    >>> browser.getControl(name='form.button.save').click()
+    >>> browser.open(db_url + "/frmtest/createObject?type_name=PlominoHidewhen")
+    >>> browser.getControl(name='id').value = "moreThan18"
+    >>> browser.getControl(name='title').value = "moreThan18"
+    >>> browser.getControl(name='Formula').value = """if not isDocument(context):
+    ...     return True
+    ... return context.getItem('age', 0) >= 18"""
+    >>> browser.getControl(name='isDynamicHidewhen:boolean').value = [True]
+    >>> browser.getControl(name='form.button.save').click()
+    >>> browser.open(db_url + "/frmtest/createObject?type_name=PlominoHidewhen")
+    >>> browser.getControl(name='id').value = "notComplete"
+    >>> browser.getControl(name='title').value = "notComplete"
+    >>> browser.getControl(name='Formula').value = """if not isDocument(context):
+    ...     return True
+    ... return context.getItem('age') and context.getItem('name')"""
     >>> browser.getControl(name='form.button.save').click()
     >>> browser.open(db_url + "/frmtest")
     >>> """<input type="text" name="name" value="" />""" in browser.contents
@@ -108,6 +129,8 @@ Create forms
     >>> browser.getControl(name='FormLayout').value = """
     ... <p>Country: <span class="plominoFieldClass">country</span></p>
     ... <p>Population: <span class="plominoFieldClass">population</span></p>
+    ... <h2>Author</h2>
+    ... <span class="plominoSubformClass">frmtest</span>
     ... """
     >>> browser.getControl(name='DocumentTitle').value = """context.getItem('country')"""
     >>> browser.getControl(name='DocumentId').value = """context.getItem('country')"""
