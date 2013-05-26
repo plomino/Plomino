@@ -42,6 +42,7 @@ install:
   - JAVA_PID=$!
 before_script:
   - bin/instance start
+  - wget http://admin:admin@localhost:8080/@@plone-addsite?site_id=Plone&title=Site&form.submitted:boolean=True&extension_ids:list=plonetheme.classic:default&extension_ids:list=plonetheme.sunburst:default&extension_ids:list=Products.CMFPlomino:default
   - bash -c "while [ ! -f CONNECTED ]; do sleep 2; done"
   - "export DISPLAY=:99.0"
   - "sh -e /etc/init.d/xvfb start"
