@@ -83,4 +83,13 @@
              inline="False"
              insert-after="++resource++plomino.javascript/plomino.codemirror.js"
              />
+ <javascript cacheable="True"
+             compression="safe"
+             cookable="True"
+             enabled="True"
+             expression="object/@@isPlominoDesignContext"
+             id="++resource++plomino.javascript/plomino.design.js"
+             inline="False"
+             insert-after="++resource++codemirror/convertTextAreas.js"
+             />
 </object>

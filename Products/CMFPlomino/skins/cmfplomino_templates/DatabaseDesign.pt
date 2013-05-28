@@ -23,12 +23,20 @@
         
         <tal:permission tal:define="dummy here/checkDesignPermission"/>
         
+        <tal:autocomplete>
+            <input type="text" id="autocomplete_database_design"/>
+            <script>
+            $(document).ready(function() {
+                databaseDesign_filtering();
+            });
+            </script>
+        </tal:autocomplete>
         <div><span i18n:translate="">Plomino database version</span>: <tal:version tal:content="python:getattr(here,'plomino_version', 'before 1.3.0')">version</tal:version></div>
-        <dl class="collapsible inline collapsedOnLoad">
+        <dl class="collapsible inline collapsedOnLoad partTree">
         <dt class="collapsibleHeader" i18n:translate="">Forms</dt>
         <dd class="collapsibleContent">
             <tal:block tal:repeat="form python:here.getForms()">
-            <div>
+            <div class="expandable">
             <dl class="collapsible inline collapsedOnLoad">
                 <dt class="collapsibleHeader">
                     <tal:block tal:content="form/id">form id</tal:block>
@@ -42,7 +50,8 @@
 	                        <tal:fieldsforms tal:repeat="field python:form.getFormFields()">
 	                        <ul>
 	                            <li>
-	                            <tal:block tal:content="field/id">Field name</tal:block> (<tal:block tal:content="python:field.getFieldType().title()">Field type</tal:block> <span><i><tal:block tal:content="field/FieldMode">Field type</tal:block></i></span>)
+	                            <span class="field" tal:content="field/id">Field name</span>
+                                (<tal:block tal:content="python:field.getFieldType().title()">Field type</tal:block> <span><i><tal:block tal:content="field/FieldMode">Field type</tal:block></i></span>)
 	                            <a href="" tal:attributes="href python:field.absolute_url_path()+'/base_edit'"><img tal:attributes="src string:${here/portal_url}/edit.png" /></a>
 	                            <a href="" tal:attributes="href python:field.absolute_url_path()+'/'+field.getFieldType().lower()+'settings'"><img tal:attributes="src string:${here/portal_url}/document_icon.png" /></a>
 	                            </li>
@@ -83,11 +92,11 @@
                 </dd></dl></div>
             </tal:block>
 </dd></dl><br/>
-      <dl class="collapsible inline collapsedOnLoad">
+      <dl class="collapsible inline collapsedOnLoad partTree">
         <dt class="collapsibleHeader" i18n:translate="">Views</dt>
         <dd class="collapsibleContent">
             <tal:blockviews tal:repeat="view python:here.getViews()">
-            <div><dl class="collapsible inline collapsedOnLoad">
+            <div class="expandable"><dl class="collapsible inline collapsedOnLoad">
                 <dt class="collapsibleHeader">
                     <tal:block tal:content="view/id">view name</tal:block>
                     <a tal:attributes="href python:view.absolute_url_path()+'/base_edit'"><img tal:attributes="src string:${here/portal_url}/edit.png" /></a>
@@ -128,10 +137,10 @@
             </dl></div>
             </tal:blockviews>
 </dd></dl><br/>
-<dl class="collapsible inline collapsedOnLoad">
+<dl class="collapsible inline collapsedOnLoad partTree">
         <dt class="collapsibleHeader" i18n:translate="">Agents</dt>
         <dd class="collapsibleContent">
-            <ul>
+            <ul class="agents">
             <tal:blockagents tal:repeat="agent python:here.getAgents()">
             <li>
                 <tal:block tal:content="agent/id">agent name</tal:block>

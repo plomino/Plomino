@@ -57,3 +57,7 @@ def upgrade_to_33(context):
     # refresh js
     context.runImportStepFromProfile(default_profile, 'jsregistry')
 
+
+def upgrade_to_34(context):
+    # refresh js
+    context.runImportStepFromProfile(default_profile, 'jsregistry')
