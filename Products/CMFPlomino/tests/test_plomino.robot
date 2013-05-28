@@ -13,7 +13,8 @@ Test Teardown     Run keywords  Report test status  Close all browsers
 ${OTHER_ZOPE_HOST}  localhost
 ${OTHER_ZOPE_PORT}  8080
 ${OTHER_ZOPE_URL}  http://${OTHER_ZOPE_HOST}:${OTHER_ZOPE_PORT}
-${OTHER_PLONE_SITE_ID}  Plone
+${OTHER_PLONE_SITE_ID}  PloneRobotRemote
+${OTHER_PLONE_INIT_URL}     http://admin:admin@${OTHER_ZOPE_HOST}:${OTHER_ZOPE_PORT}/@@plone-addsite?site_id=${OTHER_PLONE_SITE_ID}&title=Site&form.submitted:boolean=True&extension_ids:list=plonetheme.classic:default&extension_ids:list=plonetheme.sunburst:default&extension_ids:list=Products.CMFPlomino:default
 ${OTHER_PLONE_URL}  ${OTHER_ZOPE_URL}/${OTHER_PLONE_SITE_ID}
 
 *** Test Cases ***
@@ -25,6 +26,7 @@ Manage a Plomino database
     Generate view for   frm_test
     Add document    ${PLONE_URL}/mydb/frm_test    field_1     Isaac Newton
     Add document    ${PLONE_URL}/mydb/frm_test    field_1     Marie Curie
+    Initialize other portal
     Replicate the database design
     Add document    ${OTHER_PLONE_URL}/replicadb/frm_test    field_1     Victor Hugo
     Replicate documents
@@ -167,3 +169,6 @@ Other server log in
     Input text for sure  __ac_name  admin
     Input text for sure  __ac_password  admin
     Click Button  Log in
+
+Initialize other portal
+    Go to  ${OTHER_PLONE_INIT_URL}

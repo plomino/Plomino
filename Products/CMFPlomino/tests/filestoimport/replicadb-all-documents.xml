@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" ?><plominodatabase id="replicadb"><document id="5adda04ed77c42488115fbf8ad6cebc9" lastmodified="2013/05/24 22:00:34.887664 UTC"><params>
+<param>
+<value><struct>
+<member>
+<name>name</name>
+<value><string>Apocalypse now</string></value>
+</member>
+<member>
+<name>Plomino_Authors</name>
+<value><array><data>
+<value><string>admin</string></value>
+</data></array></value>
+</member>
+<member>
+<name>year</name>
+<value><int>1979</int></value>
+</member>
+<member>
+<name>Form</name>
+<value><string>frmMovie</string></value>
+</member>
+</struct></value>
+</param>
+</params></document></plominodatabase>
