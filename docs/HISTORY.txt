@@ -7,6 +7,10 @@ Changelog
   so that our users on Plone 4.0 don't have to [silviot]
 * Test Plone 4.0, 4.1, 4.2 and 4.3 on travis [silviot]
 * Don't choke on XML import when there is an empty file
+* Hide/display checkboxes in views
+* Make sure formulas are compiled with db manager rights
+* context.abortOnError() API
+* use coveralls.io for test coverage reporting
 
 1.17.2 (2013-04-08)
 -------------------
