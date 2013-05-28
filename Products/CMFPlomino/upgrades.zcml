@@ -47,6 +47,7 @@
       profile="Products.CMFPlomino:default"
       handler=".upgrades.upgrade_to_32"
       />
+
   <genericsetup:upgradeStep
       source="*"
       destination="33"
@@ -55,4 +56,14 @@
       profile="Products.CMFPlomino:default"
       handler=".upgrades.upgrade_to_33"
       />
+
+  <genericsetup:upgradeStep
+      source="*"
+      destination="34"
+      title="Add filtering js for databaseDesign page"
+      description=""
+      profile="Products.CMFPlomino:default"
+      handler=".upgrades.upgrade_to_34"
+      />
+
 </configure>
