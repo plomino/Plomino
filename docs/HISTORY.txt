@@ -1,7 +1,11 @@
 Changelog
 =========
 
-1.17.3 (unreleased)
+1.17.3.1 (2013-05-28)
+-------------------
+* filtering feature in datatabse design tab [davisp1]
+
+1.17.3 (2013-05-28)
 -------------------
 * Depend on zope.app.component and zope.globalrequest
   so that our users on Plone 4.0 don't have to [silviot]
