@@ -22,8 +22,8 @@ Plomino database
 
 A Plomino application is supported by a Plomino database.
 The Plomino database is the Plone object which contains the application data
-(i.e. the documents, see below), and its structure (i.e. the design, see
-below).
+(i.e. the documents, see below),
+and its structure (i.e. the design, see below).
 
 Let's start testing::
 
@@ -73,7 +73,8 @@ inserts the fields wherever he wants.
 A form can also contain some action buttons to trigger specific processing::
 
     >>> id = db.frm1.invokeFactory('PlominoField', id='field1',
-    ...         title='field1', FieldType="TEXT", FieldMode="EDITABLE")
+    ...         title='Title of field1', FieldType="TEXT",
+    ...         FieldMode="EDITABLE")
     >>> from Products.CMFPlomino.fields.text import ITextField
     >>> db.frm1.setFormLayout("""<p>please enter a value for field1:
     ... <span class="plominoFieldClass">field1</span></p>""")
@@ -84,12 +85,14 @@ A form can contain editable fields and also computed fields::
 
     >>> id = db.frm1.invokeFactory('PlominoField',
     ...         id='field2',
-    ...         title='field2',
+    ...         title='Title for field2',
     ...         FieldType="TEXT",
     ...         FieldMode="COMPUTED",
     ...         Formula="'My favorite song is '+plominoDocument.field1")
     >>> db.frm1.setFormLayout("""<p>please enter a value for field1:
+    ... <span class="plominoLabelClass">field1</span>
     ... <span class="plominoFieldClass">field1</span></p><p>Comment:
+    ... <span class="plominoLabelClass">field2: Label for field2</span>
     ... <span class="plominoFieldClass">field2</span></p>""")
 
 Documents
@@ -123,7 +126,7 @@ You can add any type of item in a document::
     >>> doc1.getItem('country')
     u'Finland'
 
-To change the value of an item, we use the setItem method::
+To change the value of an item, we use the ``setItem`` method::
 
     >>> doc1.setItem('area', 338145)
     >>> doc1.getItem('area')
@@ -139,7 +142,7 @@ Only items which match a form field will be considered::
 
     >>> doc1.setItem('field1', 'where is my mind?')
     >>> db.frm1.displayDocument(doc1, editmode=False)
-    u'<p>please enter a value for field1:<span>\n    \n    \n        where is my mind?\n    \n</span>\n</p><p>Comment:<span>\n    \n    \n        My favorite song is where is my mind?\n    \n</span>\n</p>'
+    u'<p>please enter a value for field1:\n Title for field1<span>\n    \n    \n        where is my mind?\n    \n</span>\n</p><p>Comment:\nLabel for field2\n<span>\n    \n    \n        My favorite song is where is my mind?\n    \n</span>\n</p>'
     >>> db.frm1.displayDocument(doc1, editmode=True)
     u"<input type='hidden' name='Form' value='frm1' /><p>please enter a value for field1:<span>\n    \n    \n    \n</span>\n</p><p>Comment:<span>\n    \n    \n        My favorite song is where is my mind?\n    \n</span>\n</p>"
 
@@ -254,19 +257,20 @@ The default text widget is a basic HTML text input::
 
     >>> id = db.frm2.invokeFactory('PlominoField',
     ...         id='guitarist',
-    ...         Title='guitarist',
+    ...         Title='Title for guitarist',
     ...         FieldType="TEXT",
     ...         FieldMode="EDITABLE")
     >>> db.frm2.guitarist.at_post_create_script()
     >>> from Products.CMFPlomino.fields.text import ITextField
     >>> db.frm2.setFormLayout("""<p>Who is the guitarist:
+    ... <span class="plominoLabelClass">guitarist</span></p>
     ... <span class="plominoFieldClass">guitarist</span></p>""")
     >>> db.frm2.displayDocument(None, True, True)
-    u'<input type=\'hidden\' name=\'Form\' value=\'frm2\' /><p>Who is the guitarist:<span>\n    \n    \n        <input type="text" name="guitarist" value="" />\n    \n    \n</span>\n</p>'
+    u'<input type=\'hidden\' name=\'Form\' value=\'frm2\' /><p>Who is the guitarist:\n<label for="guitarist">Title for guitarist</label>\n<span>\n    \n    \n        <input type="text" name="guitarist" value="" />\n    \n    \n</span>\n</p>'
     >>> adapted = ITextField(db.frm2.guitarist)
     >>> adapted.widget="TEXTAREA"
     >>> db.frm2.displayDocument(None, True, True)
-    u'<input type=\'hidden\' name=\'Form\' value=\'frm2\' /><p>Who is the guitarist:<span>\n    \n    \n    \n        <textarea name="guitarist"></textarea>\n    \n</span>\n</p>'
+    u'<input type=\'hidden\' name=\'Form\' value=\'frm2\' /><p>Who is the guitarist:\n<label for="guitarist">Title for guitarist</label>\n<span>\n    \n    \n    \n        <textarea name="guitarist"></textarea>\n    \n</span>\n</p>'
 
 Selection field::
 

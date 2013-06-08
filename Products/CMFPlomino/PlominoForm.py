@@ -262,6 +262,8 @@ schema = Schema((
 PlominoForm_schema = getattr(ATFolder, 'schema', Schema(())).copy() + \
     schema.copy()
 
+label_re = re.compile('<span class="plominoLabelClass">((?P<optional_fieldname>[^:]+?)\s*:){0,1}\s*(?P<fieldname_or_label>.+?)</span>')
+legend_re = re.compile('<span class="plominoLegendClass">((?P<optional_fieldname>[^:]+?)\s*:){0,1}\s*(?P<fieldname_or_legend>.+?)</span>')
 
 class PlominoForm(ATFolder):
     """
@@ -470,6 +472,41 @@ class PlominoForm(ATFolder):
         """
         return self.id
 
+    def _handleLabels(self, r, html_content, template):
+        match = r.search(html_content)
+        if not match:
+            return html_content
+        d = match.groupdict()
+        if d['optional_fieldname']:
+            fn = d['optional_fieldname']
+            label = d['fieldname_or_label']
+        else:
+            fn = d['fieldname_or_label']
+            field = self.getFormField(fn)
+            if field:
+                label = field.Title()
+            else:
+                # Skip labels that don't match fields
+                return (html_content[:match.end()] +
+                        self._handleLabels(
+                            r, html_content[match.end():], template)
+                        )
+        name_re = re.compile('name=.%s'%fn)
+        if name_re.search(html_content):
+            # if our input is present, render as label
+            return (html_content[:match.start()] +
+                    template % (fn, label) +
+                    self._handleLabels(
+                        r, html_content[match.end():], template)
+                    )
+        else:
+            # otherwise, render bare
+            return (html_content[:match.start()] +
+                    label +
+                    self._handleLabels(
+                        r, html_content[match.end():], template)
+                    )
+
     security.declareProtected(READ_PERMISSION, 'displayDocument')
     @plomino_profiler('form')
     def displayDocument(self, doc, editmode=False, creation=False,
@@ -571,6 +608,12 @@ class PlominoForm(ATFolder):
                 else:
                     action_render = ''
                 html_content = html_content.replace(action_span, action_render)
+
+        # Handle legends and labels
+        html_content = self._handleLabels(
+                label_re, html_content, "<label for='%s'>%s</label>")
+        html_content = self._handleLabels(
+                legend_re, html_content, "<legend for='%s'>%s</legend>")
 
         # translation
         db = self.getParentDatabase()
