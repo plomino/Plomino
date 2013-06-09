@@ -262,8 +262,9 @@ schema = Schema((
 PlominoForm_schema = getattr(ATFolder, 'schema', Schema(())).copy() + \
     schema.copy()
 
-label_re = re.compile('<span class="plominoLabelClass">((?P<optional_fieldname>[^:]+?)\s*:){0,1}\s*(?P<fieldname_or_label>.+?)</span>')
-legend_re = re.compile('<span class="plominoLegendClass">((?P<optional_fieldname>[^:]+?)\s*:){0,1}\s*(?P<fieldname_or_legend>.+?)</span>')
+# label_re = re.compile('<span class="plominoLabelClass">((?P<optional_fieldname>[^:]+?)\s*:){0,1}\s*(?P<fieldname_or_label>.+?)</span>')
+label_re =   re.compile('<span class="plominoLabelClass">((?P<optional_fieldname>\S+):){0,1}\s*(?P<fieldname_or_label>.+)</span>')
+legend_re = re.compile('<span class="plominoLegendClass">((?P<optional_fieldname>\S+):){0,1}\s*(?P<fieldname_or_label>.+)</span>')
 
 class PlominoForm(ATFolder):
     """
