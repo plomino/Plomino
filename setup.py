@@ -30,6 +30,7 @@ setup(name='Products.CMFPlomino',
           # -*- Extra requirements: -*-
           'simplejson',
           'jsonutil',
+          'pyaml',
           'collective.js.jqueryui',
           'collective.js.datatables',
           'collective.codemirror',
