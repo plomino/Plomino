@@ -22,6 +22,8 @@ import re
 import sys
 import traceback
 import xmlrpclib
+import pyaml
+import yaml
 
 # Zope
 from Acquisition import *
@@ -444,6 +446,16 @@ class PlominoDesignManager(Persistent):
                             "Content-Disposition",
                             "attachment; filename=%s.xml" % self.id)
                 return xmlstring
+        elif targettype == 'yaml-file':
+            yamlstring = self.exportDesignAsYAML(
+                    elementids=designelements,
+                    dbsettings=dbsettings);
+            if REQUEST:   
+                REQUEST.RESPONSE.setHeader('content-type', 'text/yaml')
+                REQUEST.RESPONSE.setHeader(
+                        "Content-Disposition",
+                        "attachment; filename=%s.yaml" % self.id)
+            return yamlstring
         elif targettype == "folder":
             if not designelements:
                 designelements = (
@@ -840,6 +852,172 @@ class PlominoDesignManager(Persistent):
             return pt
         else:
             return None
+
+    def exportDesignAsYAML(self, elementids=None, REQUEST=None, dbsettings=True):
+        """
+        """
+        design = { "plominodatabase" : { "_id" : self.id, "_type" : "plominodatabase" }}
+        if REQUEST:
+            str_elementids = REQUEST.get("elementids")
+            if str_elementids is not None:
+                elementids = str_elementids.split("@")
+
+        if elementids is None:
+            elements = (self.getForms()
+                    + self.getViews()
+                    + self.getAgents()
+                    + [o for o in self.resources.getChildNodes()]
+                    )
+        else:
+            elements = []
+            for id in elementids:
+                if id.startswith('resources/'):
+                    e = getattr(self.resources, id.split('/')[1])
+                else:
+                    e = getattr(self, id)
+                elements.append(e)
+
+        # Sort elements by type (to store forms before views), then by id
+        elements.sort(key=lambda elt: elt.getId())
+        elements.sort(key=lambda elt: elt.Type())
+
+        """
+        # export database settings
+        if dbsettings:
+            node = self.exportElementAsXML(doc, self, isDatabase=True)
+            designNode.appendChild(node)
+        """
+        designSet = []
+        # export database design elements
+        for e in elements:
+            if e.meta_type in plomino_schemas.keys():
+                node = self.exportElementAsYAML(e)
+                designSet.append(node)
+        if REQUEST:
+            REQUEST.RESPONSE.setHeader(
+                    'content-type', "text/yaml;charset=utf-8")
+
+        design["plominodatabase"]["design"]=designSet
+        yaml_string = pyaml.dump(design,vspacing=[2, 2, 1, 1])
+        yaml_string = yaml_string.replace("\r\n\n          \r\n\n","\n\n").replace("\r\n","").replace(">\n\n",">\n")
+        return yaml_string
+
+    def exportElementAsYAML(self, obj, isDatabase=False):
+        """
+        """
+        mynode={}
+        if isDatabase:
+            node = xmldoc.createElement('dbsettings')
+            schema = sys.modules[self.__module__].schema
+        else:
+            mynode['_id'] = obj.id
+            mynode['_type'] = obj.Type()
+            mynode['_title'] = str(obj.title)
+            schema = plomino_schemas[obj.Type()]
+        fields = {}
+        for f in schema.fields():
+            field_type = f.getType()
+            v = f.get(obj)
+            if v is not None:
+                if field_type == "Products.Archetypes.Field.TextField":
+                    s = f.getRaw(obj)
+                    if s and f.__name__ == 'FormLayout':
+                        try:
+                            from lxml import etree
+                            s = etree.tostring(
+                                    etree.HTML(s),
+                                    encoding="utf-8",
+                                    pretty_print=True,
+                                    method='html')
+                            s = s.split('<html><body>')[1].split('</body></html>')[0]
+                        except ImportError:
+                            # XXX: Blunt object replace:
+                            s = s.decode('utf-8').replace("><", ">\n<")
+                    text = s.decode('utf-8')
+                else:
+                    text = str(f.get(obj))
+                logger.info(text)
+                field = { "type" : field_type, "value" : text }
+                fields[f.getName()] = field
+        mynode["fields"] = fields
+        # add AT standard extra attributes
+        extra_sch_attr = {}
+        for extra in extra_schema_attributes:
+            f = obj.Schema().getField(extra)
+            if f is not None:
+                v = f.get(obj)
+                if v is not None:
+                    if field_type == "Products.Archetypes.Field.TextField":
+                        text = f.getRaw(obj).decode('utf-8')
+                    else:
+                        text = str(f.get(obj))
+                    field = { "type" : f.getType(), "value" : text}
+                    extra_sch_attr[extra] = field
+        mynode["extra_schema_attributes"] = extra_sch_attr            
+        """if obj.Type() == "PlominoField":
+            adapt = obj.getSettings()
+            if adapt is not None:
+                items = {}
+                for k in adapt.parameters.keys():
+                    if hasattr(adapt, k):
+                        items[k] = adapt.parameters[k]
+                #items = dict(adapt.parameters)
+                if items:
+                    # export field settings
+                    str_items = xmlrpclib.dumps((items,), allow_none=1)
+                    try:
+                        dom_items = parseString(str_items)
+                    except ExpatError:
+                        dom_items = parseString(
+                                escape_xml_illegal_chars(str_items))
+                    node.appendChild(dom_items.documentElement)"""
+        if not isDatabase:
+            elementslist = obj.objectIds()
+            if elementslist:
+                elements = {}
+                for i in elementslist:
+                    myobj = getattr(obj, i)
+                    element = self.exportElementAsYAML(myobj)
+                    #import pdb; pdb.set_trace()
+                    elements[str(myobj.title)] = element
+                mynode["children"] = elements
+        """
+        if isDatabase:
+            acl = xmldoc.createElement('acl')
+            acl.setAttribute(
+                    'AnomynousAccessRight', obj.AnomynousAccessRight)
+            acl.setAttribute(
+                    'AuthenticatedAccessRight', obj.AuthenticatedAccessRight)
+            str_UserRoles = xmlrpclib.dumps((obj.UserRoles,), allow_none=1)
+            dom_UserRoles = parseString(str_UserRoles)
+            dom_UserRoles.firstChild.setAttribute('id', 'UserRoles')
+            acl.appendChild(dom_UserRoles.documentElement)
+            str_SpecificRights = xmlrpclib.dumps(
+                    (obj.getSpecificRights(),),
+                    allow_none=1)
+            dom_SpecificRights = parseString(str_SpecificRights)
+            dom_SpecificRights.firstChild.setAttribute(
+                    'id', 'SpecificRights')
+            acl.appendChild(dom_SpecificRights.documentElement)
+            node.appendChild(acl)
+            node.setAttribute('version', obj.plomino_version)
+
+        subscribers = component.subscribers(
+                (obj,),
+                IXMLImportExportSubscriber)
+
+        for subscriber in subscribers:
+            name = (subscriber.__module__
+                    + '.'
+                    + subscriber.__class__.__name__)
+            doc = parseString(subscriber.export_xml())
+            customnode = doc.childNodes[0]
+            customnode.setAttribute("ExportImportClass", name)
+            wrapper = doc.createElement("CustomData")
+            wrapper.appendChild(customnode)
+            node.appendChild(wrapper)
+        return node"""
+        return mynode
 
     security.declareProtected(DESIGN_PERMISSION, 'exportDesignAsXML')
     def exportDesignAsXML(self, elementids=None, REQUEST=None, dbsettings=True):
