@@ -1,6 +1,10 @@
 Changelog
 =========
 
+unreleased
+---------------------
+* Add labels in layout [jean]
+
 1.17.3.1 (2013-05-28)
 ---------------------
 * filtering feature in datatabse design tab [davisp1]

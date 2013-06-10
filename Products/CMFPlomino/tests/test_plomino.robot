@@ -10,12 +10,12 @@ Test Teardown     Run keywords  Report test status  Close all browsers
 
 *** Variables ***
 
-${OTHER_ZOPE_HOST}  localhost
-${OTHER_ZOPE_PORT}  8080
-${OTHER_ZOPE_URL}  http://${OTHER_ZOPE_HOST}:${OTHER_ZOPE_PORT}
-${OTHER_PLONE_SITE_ID}  PloneRobotRemote
-${OTHER_PLONE_INIT_URL}     http://admin:admin@${OTHER_ZOPE_HOST}:${OTHER_ZOPE_PORT}/@@plone-addsite?site_id=${OTHER_PLONE_SITE_ID}&title=Site&form.submitted:boolean=True&extension_ids:list=plonetheme.classic:default&extension_ids:list=plonetheme.sunburst:default&extension_ids:list=Products.CMFPlomino:default
-${OTHER_PLONE_URL}  ${OTHER_ZOPE_URL}/${OTHER_PLONE_SITE_ID}
+${OTHER_ZOPE_HOST}       localhost
+${OTHER_ZOPE_PORT}       8080
+${OTHER_ZOPE_URL}        http://${OTHER_ZOPE_HOST}:${OTHER_ZOPE_PORT}
+${OTHER_PLONE_SITE_ID}   PloneRobotRemote
+${OTHER_PLONE_INIT_URL}  http://admin:admin@${OTHER_ZOPE_HOST}:${OTHER_ZOPE_PORT}/@@plone-addsite?site_id=${OTHER_PLONE_SITE_ID}&title=Site&form.submitted:boolean=True&extension_ids:list=plonetheme.classic:default&extension_ids:list=plonetheme.sunburst:default&extension_ids:list=Products.CMFPlomino:default
+${OTHER_PLONE_URL}       ${OTHER_ZOPE_URL}/${OTHER_PLONE_SITE_ID}
 
 *** Test Cases ***
 
@@ -52,43 +52,43 @@ Open the database
     Go to    ${PLONE_URL}/mydb
 
 Create form
-    [Arguments]  ${FORM_ID}     ${FORM_TITLE}
-    Click link    Form
+    [Arguments]          ${FORM_ID}  ${FORM_TITLE}
+    Click link           Form
     Page should contain element    css=input#id
-    Input text    id    ${FORM_ID}
-    Input text    title     ${FORM_TITLE}
-    Click button    Save
-    Page should contain    Changes saved.
+    Input text           id     ${FORM_ID}
+    Input text           title  ${FORM_TITLE}
+    Click button         Save
+    Page should contain  Changes saved.
     
 Create field
-    [Arguments]  ${FORM_ID}     ${FIELD_ID}
-    Click link    Field
-    Page should contain element    css=input#id
-    Input text    id    ${FIELD_ID}
-    Input text    title    ${FIELD_ID}
-    Click button    Save
-    Page should contain    Changes saved.
-    Go to    ${PLONE_URL}/mydb/${FORM_ID}/edit
-    Select frame  FormLayout_ifr 
-    Input text  content  ${FIELD_ID}=
+    [Arguments]          ${FORM_ID}  ${FIELD_ID}
+    Click link           Field
+    Page should contain element      css=input#id
+    Input text           id     ${FIELD_ID}
+    Input text           title  ${FIELD_ID}
+    Click button         Save
+    Page should contain  Changes saved.
+    Go to                ${PLONE_URL}/mydb/${FORM_ID}/edit
+    Select frame         FormLayout_ifr 
+    Input text           content  ${FIELD_ID}=
     Unselect Frame
-    Click link  FormLayout_plominofield
-    Select frame   css=.plonepopup iframe
-    Select From List  plominoFieldId  ${FIELD_ID}
-    Click button    insert
+    Click link           FormLayout_plominofield
+    Select frame         css=.plonepopup iframe
+    Select From List     plominoFieldId  ${FIELD_ID}
+    Click button         insert
     Unselect Frame
-    Click button    Save
+    Click button         Save
 
 Generate view for
     [Arguments]  ${FORM_ID}
-    Go to    ${PLONE_URL}/mydb/${FORM_ID}/manage_generateView
+    Go to        ${PLONE_URL}/mydb/${FORM_ID}/manage_generateView
 
 Add document
-    [Arguments]  ${FORM_PATH}     ${FIELD_ID}     ${VALUE}
-    Go to    ${FORM_PATH}
-    Page should contain element    css=input[name='${FIELD_ID}']
-    Input text    css=input[name='${FIELD_ID}']    ${VALUE}
-    Click button    Save
+    [Arguments]  ${FORM_PATH}  ${FIELD_ID}  ${VALUE}
+    Go to        ${FORM_PATH}
+    Page should contain element  css=input[name='${FIELD_ID}']
+    Input text    css=input[name='${FIELD_ID}']  ${VALUE}
+    Click button  Save
 
 Replicate the database design
     Other server log in
@@ -100,12 +100,12 @@ Replicate the database design
     Click button  name=form.button.save
     Page Should Contain  Changes saved.
     Go to    ${OTHER_PLONE_URL}/replicadb/DatabaseDesign
-    Select Radio Button     sourcetype   server
+    Select Radio Button     sourcetype   sourcetype-server
     Input text     sourceurl-import   ${PLONE_URL}/mydb
     Input text     username-import   ${TEST_USER_ID}
     Input text     password-import   ${TEST_USER_PASSWORD}
     Click button    submit_refresh_import
-    Select Radio Button     sourcetype   server
+    Select Radio Button     sourcetype   sourcetype-server
     Input text     sourceurl-import   ${PLONE_URL}/mydb
     Input text     username-import   ${TEST_USER_ID}
     Input text     password-import   ${TEST_USER_PASSWORD}
@@ -120,12 +120,12 @@ Re-replicate the database design
     Click button  name=form.button.save
     Page Should Contain  Changes saved.
     Go to    ${PLONE_URL}/secondreplicadb/DatabaseDesign
-    Select Radio Button     sourcetype   server
+    Select Radio Button     sourcetype   sourcetype-server
     Input text     sourceurl-import   ${OTHER_PLONE_URL}/replicadb
     Input text     username-import   admin
     Input text     password-import   admin
     Click button    submit_refresh_import
-    Select Radio Button     sourcetype   server
+    Select Radio Button     sourcetype   sourcetype-server
     Input text     sourceurl-import   ${OTHER_PLONE_URL}/replicadb
     Input text     username-import   admin
     Input text     password-import   admin
