@@ -5,30 +5,30 @@
     i18n_domain="CMFPlomino">
 
   <plone:portlet
-      name="plomino.designportlet"
-      interface=".portlet.IPortlet"
-      assignment=".portlet.Assignment"
-      view_permission="zope2.View"
-      edit_permission="plomino.DESIGN_PERMISSION"
-      renderer=".portlet.Renderer"
-      addview=".portlet.AddForm"
-      editview=".portlet.EditForm"
-    />
+    name="plomino.designportlet"
+    interface=".portlet.IPortlet"
+    assignment=".portlet.Assignment"
+    view_permission="zope2.View"
+    edit_permission="plomino.DESIGN_PERMISSION"
+    renderer=".portlet.Renderer"
+    addview=".portlet.AddForm"
+    editview=".portlet.EditForm"
+  />
 
   <plone:portlet
-      name="plomino.elementportlet"
-      interface=".portlet.IElementPortlet"
-      assignment=".portlet.ElementPortletAssignment"
-      view_permission="zope2.View"
-      edit_permission="plomino.DESIGN_PERMISSION"
-      renderer=".portlet.ElementPortletRenderer"
-      addview=".portlet.ElementPortletAddForm"
-      editview=".portlet.ElementPortletEditForm"
-    />
+    name="plomino.elementportlet"
+    interface=".portlet.IElementPortlet"
+    assignment=".portlet.ElementPortletAssignment"
+    view_permission="zope2.View"
+    edit_permission="plomino.DESIGN_PERMISSION"
+    renderer=".portlet.ElementPortletRenderer"
+    addview=".portlet.ElementPortletAddForm"
+    editview=".portlet.ElementPortletEditForm"
+  />
 
-    <browser:resourceDirectory
-        name="plomino.javascript"
-        directory="javascript"
-        />
-        
+  <browser:resourceDirectory
+    name="plomino.javascript"
+    directory="javascript"
+  />
+
 </configure>
