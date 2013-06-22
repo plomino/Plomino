@@ -10,7 +10,7 @@
              inline="False"
              insert-after="++resource++plone.app.jquery.js"
              />
-             
+
  <javascript cacheable="True"
              compression="safe"
              cookable="True"
@@ -19,7 +19,7 @@
              id="++resource++plomino.javascript/plomino.accordion.js"
              inline="False"
              insert-after="++resource++plone.app.jquery.js"
-             />             
+             />
  <javascript cacheable="True"
              compression="safe"
              cookable="True"
@@ -53,6 +53,15 @@
              enabled="True"
              expression=""
              id="++resource++plomino.javascript/plomino.debug.js"
+             inline="False"
+             insert-after="++resource++plone.app.jquery.js"
+             />
+ <javascript cacheable="True"
+             compression="safe"
+             cookable="True"
+             enabled="True"
+             expression=""
+             id="++resource++plomino.javascript/file_upload.js"
              inline="False"
              insert-after="++resource++plone.app.jquery.js"
              />

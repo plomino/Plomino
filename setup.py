@@ -40,6 +40,7 @@ setup(name='Products.CMFPlomino',
           'plone.app.jquery',
           'zope.app.component',  # Helps Plone 4.0, should not hurt elsewhere.
           'zope.globalrequest',  # This one too.
+          'collective.upload',  # we use its static assets to render the upload widget
       ],
       extras_require={
           'test': [

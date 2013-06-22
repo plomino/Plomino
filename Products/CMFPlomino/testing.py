@@ -6,6 +6,7 @@ from plone.app.testing import FunctionalTesting
 from plone.app.testing import selenium_layers
 
 from plone.testing import z2
+from Testing import ZopeTestCase
 
 
 class Plomino(PloneSandboxLayer):
@@ -22,6 +23,10 @@ class Plomino(PloneSandboxLayer):
         # Install product and call its initialize() function
         z2.installProduct(app, 'plomino.tinymce')
         z2.installProduct(app, 'Products.CMFPlomino')
+
+        # Setup session
+        ZopeTestCase.utils.setupCoreSessions(app)
+
 
     def setUpPloneSite(self, portal):
         # Install into Plone site using portal_setup

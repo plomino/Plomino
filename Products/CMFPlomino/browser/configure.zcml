@@ -31,4 +31,18 @@
     directory="javascript"
   />
 
+  <browser:page
+    for="Products.CMFPlomino.interfaces.IPlominoDocument"
+    class=".file_upload.UploadToSession"
+    name="upload_to_session"
+    permission="zope2.Public"
+  />
+
+  <browser:page
+    for="Products.CMFPlomino.interfaces.IPlominoForm"
+    class=".file_upload.UploadToSession"
+    name="upload_to_session"
+    permission="zope2.Public"
+  />
+
 </configure>
