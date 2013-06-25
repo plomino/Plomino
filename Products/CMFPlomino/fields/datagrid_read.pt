@@ -13,7 +13,7 @@
                         $$(document).ready(function() {
                             $$('#${fieldname}_datagrid').dataTable( {
                                 'sAjaxSource': 'tojson?item=${fieldname}&rendered=true&datatables=true',
-                                'sServerMethod': 'POST',
+                                'sServerMethod': 'GET',
                                 'fnServerParams': function ( aoData ) {
                                     ${request_items}
                                 },
