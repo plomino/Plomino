@@ -8,7 +8,7 @@ __docformat__ = 'plaintext'
 # From the standard library
 from copy import deepcopy
 from urllib import urlencode
-# 3rd party Python 
+# 3rd party Python
 from jsonutil import jsonutil as json
 
 # Zope
@@ -233,7 +233,7 @@ class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
         Return all items if `item=None`.
         Values on the REQUEST overrides parameters.
 
-        If the requested item corresponds to a field on the found form, 
+        If the requested item corresponds to a field on the found form,
         the field value is returned. If not, it falls back to a plain item
         lookup on the document.
 
@@ -302,7 +302,7 @@ class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
     security.declarePublic('computeItem')
     def computeItem(self, itemname, form=None, formid=None, store=True,
             report=True):
-        """ Return the value of named item according to the formula 
+        """ Return the value of named item according to the formula
         - of the field defined in the given form (default),
         - or the named `formid`,
         - or use the default doc form if no form found.
@@ -447,7 +447,7 @@ class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
                 mode = f.getFieldMode()
                 fieldname = f.id
                 # Computed for display fields are not stored
-                if (mode in ["COMPUTED", "COMPUTEDONSAVE"] or 
+                if (mode in ["COMPUTED", "COMPUTEDONSAVE"] or
                         (creation and mode=="CREATION")):
                     result = form.computeFieldValue(fieldname, self)
                     self.setItem(fieldname, result)
@@ -612,10 +612,10 @@ class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
 
     security.declarePublic('getForm')
     def getForm(self):
-        """ Look for a form and return it if found. 
-        
+        """ Look for a form and return it if found.
+
         - Look in `REQUEST`,
-        - then try to compute from view, 
+        - then try to compute from view,
         - and finally fall back to document `Form` item.
         """
         formname = None
@@ -765,7 +765,7 @@ class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
 
     security.declareProtected(READ_PERMISSION, 'getfile')
     def getfile(self, filename=None, REQUEST=None, asFile=False):
-        """ Return an attribute named `filename`, assumed to be a file object. 
+        """ Return an attribute named `filename`, assumed to be a file object.
 
         If `filename` is found on request, it overrides the parameter.
         """
@@ -773,7 +773,7 @@ class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
             raise Unauthorized, "You cannot read this content"
 
         # Check access based on doc's current form. Plomino may be busy
-        # rendering a different doc, using some requested form, which 
+        # rendering a different doc, using some requested form, which
         # probably doesn't apply to this document.
         form = self.getParentDatabase().getForm(self.Form)
         onOpenDocument_error = self._onOpenDocument(form=form)
@@ -815,7 +815,7 @@ class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
         The name is normalized before storing. Return the normalized name and
         the guessed content type. (The `contenttype` parameter is ignored.)
         """
-        # TODO: does the `contenttype` parameter exist for BBB? 
+        # TODO: does the `contenttype` parameter exist for BBB?
         # If so, mention it. If not, can it go?
         if filename == '':
             filename = submittedValue.filename
@@ -823,7 +823,7 @@ class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
             if """\\""" in filename:
                 filename = filename.split("\\")[-1]
             filename = '.'.join(
-                    [normalizeString(s, encoding='utf-8') 
+                    [normalizeString(s, encoding='utf-8')
                         for s in filename.split('.')])
             if overwrite and filename in self.objectIds():
                 self.deletefile(filename)
@@ -834,9 +834,9 @@ class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
                 filename = '%s_%s' % (
                         DateTime().toZone('UTC').strftime("%Y%m%d%H%M%S"),
                         filename)
-            
+
             if HAS_BLOB:
-                if (isinstance(submittedValue, FileUpload) or 
+                if (isinstance(submittedValue, FileUpload) or
                         type(submittedValue) == file):
                     submittedValue.seek(0)
                     contenttype = guessMimetype(submittedValue, filename)
