@@ -1,6 +1,7 @@
 """
 Helper view for file upload.
 """
+from Products.CMFCore.utils import getToolByName
 from Products.CMFPlomino.interfaces import IPlominoDocument
 from ZPublisher.HTTPRequest import FileUpload
 from uuid import uuid1
@@ -39,7 +40,9 @@ class UploadToSession(object):
             return json.dumps({'result': 'success'})
 
         file_id = uuid1().get_hex()
-        self.request.SESSION[file_id] = {
+        sdm = getToolByName(self.context, 'session_data_manager')
+        session = sdm.getSessionData(create=True)
+        session[file_id] = {
             'filename': submitted_file.filename,
             'data': submitted_file.read(),
         }

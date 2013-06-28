@@ -10,6 +10,7 @@
 __author__ = """Eric BREHAULT <eric.brehault@makina-corpus.com>"""
 __docformat__ = 'plaintext'
 
+# Stdlib
 from StringIO import StringIO
 
 # Zope
@@ -18,6 +19,9 @@ from zope.formlib import form
 from zope.interface import implements
 from zope.schema import getFields, Choice
 from zope.schema.vocabulary import SimpleVocabulary
+
+# Plone
+from Products.CMFCore.utils import getToolByName
 
 # Plomino
 from base import IBaseField, BaseField, BaseForm
@@ -72,15 +76,17 @@ class AttachmentField(BaseField):
         if isinstance(value, FileUpload) and value.filename:
             current_files = self.store_file(doc, value.read(), value.filename)
         else:
-            # Either no file was passed or we have some stored in SESSION
+            # Either no file was passed or we have some stored in session
             if '_has_session_uploads' in self.context.REQUEST.form:
+                sdm = getToolByName(self.context, 'session_data_manager')
+                session = sdm.getSessionData(create=True)
                 fileid_fieldname = '_uploaded_in_session_' + self.context.id
                 sessionid = self.context.REQUEST.form[fileid_fieldname]
-                filecontents = self.context.REQUEST.SESSION[sessionid]['data']
-                filename = self.context.REQUEST.SESSION[sessionid]['filename']
+                filecontents = session[sessionid]['data']
+                filename = session[sessionid]['filename']
                 current_files = self.store_file(doc, filecontents, filename)
                 # Remove the file from the session
-                del self.context.REQUEST.SESSION[sessionid]
+                del session[sessionid]
         return current_files
 
 
