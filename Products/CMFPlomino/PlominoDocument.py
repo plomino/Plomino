@@ -849,7 +849,9 @@ class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
                     # BEFORE PLONE 4.0.1
                     blob = BlobWrapper()
                 file_obj = blob.getBlob().open('w')
-                file_obj.write(submittedValue)
+                submittedValue.seek(0)
+                file_obj.write(submittedValue.read())
+                submittedValue.seek(0)
                 file_obj.close()
                 blob.setFilename(filename)
                 blob.setContentType(contenttype)

@@ -10,14 +10,14 @@
 __author__ = """Eric BREHAULT <eric.brehault@makina-corpus.com>"""
 __docformat__ = 'plaintext'
 
+from StringIO import StringIO
+
 # Zope
+from ZPublisher.HTTPRequest import FileUpload
 from zope.formlib import form
 from zope.interface import implements
 from zope.schema import getFields, Choice
 from zope.schema.vocabulary import SimpleVocabulary
-
-# CMF / Archetypes / Plone
-from Products.CMFPlone.utils import normalizeString
 
 # Plomino
 from base import IBaseField, BaseField, BaseForm
@@ -50,26 +50,36 @@ class AttachmentField(BaseField):
         strValue = normalizeString(strValue)
         return {strValue: 'application/unknown'}
 
-    def getFieldValue(self, form, doc=None, editmode_obsolete=False,
-            creation=False, request=None):
-        "XXX TODO I expected to be able to return the data here"
-        usable_request = request or self.context.REQUEST
-        if '_has_session_uploads' in usable_request:
-            formfield_name = '_uploaded_in_session_' + self.context.id
-            import pdb; pdb.set_trace()
-            file_ids = usable_request.form[formfield_name]
-            if not isinstance(file_ids, list):
-                file_ids = [file_ids]
-            files_info = []
-            for file_id in file_ids:
-                file_data = usable_request.SESSION[file_id]['data']
-                filename = usable_request.SESSION[file_id]['filename']
-                content_type = 'text/plain' # XXX TODO find file content type
-                doc.setItem(self.context.id, file_data)
-                files_info.append({filename: content_type})
-            return files_info
-        value = super(AttachmentField, self).getFieldValue(form, doc, editmode_obsolete, creation, request)
-        return value
+    def store_file(self, doc, filecontents, filename):
+        current_files = doc.getItem(self.context.id) or {}
+        fileobj = StringIO(filecontents)
+        fileobj.filename = filename
+        new_filename, content_type = doc.setfile(fileobj)
+        if self.type == "SINGLE":
+            for old_filename in doc.getItem(self.context.id):
+                if old_filename != filename:
+                    doc.deletefile(filename)
+        current_files[new_filename] = content_type
+        doc.setItem(self.context.id, current_files)
+        return current_files
+
+    def process_value(self, doc, value):
+        """ Process `value` and calls store_file as appropriate
+        Figures out if `value` is a field or a reference to a file earlier
+        stored in user session.
+        """
+        current_files = doc.getItem(self.context.id) or {}
+        if isinstance(value, FileUpload) and value.filename:
+            current_files = self.store_file(doc, value.read(), value.filename)
+        else:
+            # Either no file was passed or we have some stored in SESSION
+            if '_has_session_uploads' in self.context.REQUEST.form:
+                fileid_fieldname = '_uploaded_in_session_' + self.context.id
+                sessionid = self.context.REQUEST.form[fileid_fieldname]
+                filecontents = self.context.REQUEST.SESSION[sessionid]['data']
+                filename = self.context.REQUEST.SESSION[sessionid]['filename']
+                current_files = self.store_file(doc, filecontents, filename)
+        return current_files
 
 
 for f in getFields(IAttachmentField).values():

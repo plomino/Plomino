@@ -31,7 +31,6 @@ from fields.text import ITextField
 from fields.datetime import IDatetimeField
 from fields.name import INameField
 from fields.doclink import IDoclinkField
-from ZPublisher.HTTPRequest import FileUpload
 from zope import component
 from zope.annotation.interfaces import IAnnotations
 from persistent.dict import PersistentDict
@@ -187,24 +186,9 @@ class PlominoField(BaseContent, BrowserDefaultMixin):
         """process submitted value according the field type
         """
         fieldtype = self.getFieldType()
-        fieldname = self.id
         adapt = self.getSettings()
         if fieldtype=="ATTACHMENT" and process_attachments:
-            if isinstance(submittedValue, FileUpload):
-                current_files=doc.getItem(fieldname)
-                if not current_files:
-                    current_files = {}
-                (new_file, contenttype) = doc.setfile(submittedValue)
-                if new_file is not None:
-                    if adapt.type == "SINGLE":
-                        for filename in current_files.keys():
-                            if filename != new_file:
-                                doc.deletefile(filename)
-                        current_files={}
-                    current_files[new_file]=contenttype
-                v=current_files
-            else:
-                v = None
+            v = adapt.process_value(doc, submittedValue)
         else:
             try:
                 v = adapt.processInput(submittedValue)
@@ -322,7 +306,7 @@ class PlominoField(BaseContent, BrowserDefaultMixin):
         l = [[f, ALL_FIELD_TYPES[f][0]] for f in ALL_FIELD_TYPES.keys()]
         l.sort(key=lambda f:f[1])
         return l
-    
+
     def index_vocabulary(self):
         """ Vocabulary for the 'Index type' dropdown.
         """
@@ -336,7 +320,7 @@ class PlominoField(BaseContent, BrowserDefaultMixin):
                 # Index types internal to Plone
                 continue
             label = "%s%s" % (
-                    i, {"FieldIndex": " (match exact value)", 
+                    i, {"FieldIndex": " (match exact value)",
                         "ZCTextIndex": " (match any contained words)",
                         "KeywordIndex": " (match list elements)"
                         }.get(i, '')
@@ -353,7 +337,7 @@ class PlominoField(BaseContent, BrowserDefaultMixin):
         if self.FieldType == "RICHTEXT":
             return "text/html"
         return "text/plain"
-    
+
     @property
     def formula_ids(self):
         return {'Formula':  "field_"+self.getParentNode().id+"_"+self.id,

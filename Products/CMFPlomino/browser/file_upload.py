@@ -1,10 +1,11 @@
 """
 Helper view for file upload.
 """
+from Products.CMFPlomino.interfaces import IPlominoDocument
+from ZPublisher.HTTPRequest import FileUpload
+from uuid import uuid1
 from zope.browser.interfaces import IBrowserView
 from zope.interface import implements
-from Products.CMFPlomino.interfaces import IPlominoDocument
-from uuid import uuid1
 import json
 
 
@@ -22,13 +23,20 @@ class UploadToSession(object):
         """
         self.request.response.setHeader("Content-type", "application/json")
         for key, val in self.request.form.items():
-            if hasattr(val, 'filename'):
+            if isinstance(val, FileUpload):
                 submitted_file = val
+                fieldname = key
+                break
 
         if IPlominoDocument.providedBy(self.context):
             # Easy peasy! Just store it straight away and go home.
-            import pdb; pdb.set_trace()
-            return "{'result':'success'}"
+            db = self.context.aq_parent.aq_parent
+            form = db[self.request.form['Form']]
+            field = form[fieldname]
+
+            adapt = field.getSettings()
+            adapt.store_file(self.context, submitted_file.read(), submitted_file.filename)
+            return json.dumps({'result': 'success'})
 
         file_id = uuid1().get_hex()
         self.request.SESSION[file_id] = {
