@@ -47,6 +47,13 @@ This means extending your buildout from::
 
 replacing 4.0.9 with the actual version you need.
 
+Installation extras
+===================
+
+Install collective.quickupload for better user experience on file uploads.
+Or make sure `the jquery upload plugin
+<http://blueimp.github.io/jQuery-File-Upload/>` is available on your pages.
+
 Support
 =======
 
@@ -56,7 +63,7 @@ issue tracker <https://github.com/plomino/Plomino/issues>`_
 Tests
 =====
 
-Plomino is continuously tested on Travis |travisstatus|_ and the code coverage 
+Plomino is continuously tested on Travis |travisstatus|_ and the code coverage
 is tracked on coveralls.io |coveralls|_.
 
 .. |travisstatus| image:: https://secure.travis-ci.org/plomino/Plomino.png?branch=github-main

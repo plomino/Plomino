@@ -6,6 +6,7 @@ unreleased
 * Add labels in layout [jean]
 * add import from zip function for database design [davismr]
 * add export as zip function for database design [davismr]
+* HTML5 file upload widget if collective.upload is installed [silviot]
 
 1.17.3.1 (2013-05-28)
 ---------------------
@@ -144,7 +145,7 @@ unreleased
 * fix reader access control on getfile
 * add cgi_escape to utils
 * create plomino_workflow and fix permissions
-* integrate plone.app.async support to enable asynchronous agent execution and asynchronous refreshdb 
+* integrate plone.app.async support to enable asynchronous agent execution and asynchronous refreshdb
 * allow to run agent as current user or as owner
 * don't use File for everything in /resources/; use Script (Python) for script libraries
 
@@ -267,7 +268,7 @@ unreleased
 * Excel export method on views.
 * Categorized views supported with dynamic mode.
 * Fix file attachment bug under Plone 4.
-* 
+*
 
 1.7.4
 -----
