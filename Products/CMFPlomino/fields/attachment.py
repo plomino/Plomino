@@ -79,6 +79,8 @@ class AttachmentField(BaseField):
                 filecontents = self.context.REQUEST.SESSION[sessionid]['data']
                 filename = self.context.REQUEST.SESSION[sessionid]['filename']
                 current_files = self.store_file(doc, filecontents, filename)
+                # Remove the file from the session
+                del self.context.REQUEST.SESSION[sessionid]
         return current_files
 
 
