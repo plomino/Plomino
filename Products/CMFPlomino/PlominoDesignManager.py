@@ -554,8 +554,11 @@ class PlominoDesignManager(Persistent):
                     raise PlominoDesignException, 'file required'
                 if not isinstance(fileToImport, FileUpload):
                     raise PlominoDesignException, 'unrecognized file uploaded'
-                xmlstring = fileToImport.read()
-                self.importDesignFromXML(xmlstring, replace=replace)
+                if fileToImport.headers['content-type'] == 'application/zip':
+                    raise PlominoDesignException, 'not implemented yet'
+                else:
+                    xmlstring = fileToImport.read()
+                    self.importDesignFromXML(xmlstring, replace=replace)
 
             no_refresh_documents = REQUEST.get('no_refresh_documents', 'No')
             if no_refresh_documents == 'No':
