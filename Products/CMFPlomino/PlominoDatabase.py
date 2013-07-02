@@ -462,6 +462,7 @@ class PlominoDatabase(ATFolder, PlominoAccessControl, PlominoDesignManager,
                     self.deleteDocument(self.getDocument(id))
                 except:
                     # if insufficient access rights, we continue
+                    # TODO: if insufficient access rights or absolutely anything else. Fix the bare except.
                     pass
 
     security.declareProtected(REMOVE_PERMISSION, 'manage_deleteDocuments')
