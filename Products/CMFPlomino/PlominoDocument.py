@@ -310,11 +310,11 @@ class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
         (Pass `report` to `PlominoForm.computeFieldValue`.)
         """
         result = None
-        db = self.getParentDatabase()
         if not form:
             if not formid:
                 form = self.getForm()
             else:
+                db = self.getParentDatabase()
                 form = db.getForm(formid)
         if form:
             result = form.computeFieldValue(itemname, self, report=report)

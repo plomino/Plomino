@@ -195,7 +195,7 @@ class PlominoAccessControl(Persistent):
     def getCurrentUserId(self):
         """ Returns the current user id.
         """
-        return self.getCurrentMember().getMemberId()
+        return self.getCurrentMember().getUserName()
 
     security.declarePublic('getCurrentUserGroups')
     def getCurrentUserGroups(self):
@@ -209,7 +209,7 @@ class PlominoAccessControl(Persistent):
         """ Returns the current user Plomino rights.
         """
         try:
-            userid = self.getCurrentMember().getMemberId()
+            userid = self.getCurrentUserId()
             rights = self.get_local_roles_for_userid(userid)
 
             # we append group rights
