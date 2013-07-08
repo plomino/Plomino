@@ -487,6 +487,8 @@ class PlominoForm(ATFolder):
                 field = self.getFormField(fn)
                 if field:
                     label = d['fieldname_or_label']
+                else:
+                    continue
             else:
                 fn = d['fieldname_or_label']
                 field = self.getFormField(fn)
