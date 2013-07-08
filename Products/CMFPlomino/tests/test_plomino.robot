@@ -38,6 +38,9 @@ Manage a Plomino database
     Go to    ${PLONE_URL}/secondreplicadb/allfrmtest
     Page should contain    Marie Curie
 
+Teardown
+    Teardown other portal
+
 *** Keywords ***
 Plomino is installed
     Go to    ${PLONE_URL}
@@ -172,3 +175,8 @@ Other server log in
 
 Initialize other portal
     Go to  ${OTHER_PLONE_INIT_URL}
+
+Teardown other portal
+    Go to            http://admin:admin@${OTHER_ZOPE_HOST}:${OTHER_ZOPE_PORT}/manage_main
+    Select checkbox  PloneRobotRemote
+    Click button     Delete
