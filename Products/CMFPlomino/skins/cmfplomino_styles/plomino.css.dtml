@@ -12,6 +12,12 @@
 /* <dtml-call "REQUEST.set('portal_url', portal_url())"> (not this either :) */
 
 
+.plominoLabelClass {
+	color: #1111FF;
+	border-style:dashed;
+	border-width:thin;
+	}
+
 .plominoFieldClass {
 	color: #0000FF;
 	border-style:dashed;
