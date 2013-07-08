@@ -499,7 +499,6 @@ class PlominoForm(ATFolder):
         if creation and request is not None:
             for field_id in fieldids_not_in_layout:
                 if request.has_key(field_id):
-                    import pdb; pdb.set_trace( )
                     html_content = (
                             "<input type='hidden' "
                             "name='%s' "
