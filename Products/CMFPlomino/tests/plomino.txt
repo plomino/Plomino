@@ -75,11 +75,11 @@ A form can also contain some action buttons to trigger specific processing::
     >>> id = db.frm1.invokeFactory('PlominoField', id='field1',
     ...         title='Title for field1', FieldType="TEXT",
     ...         FieldMode="EDITABLE")
-    >>> from Products.CMFPlomino.fields.text import ITextField
+    >>> db.frm1.field1.at_post_create_script()
     >>> db.frm1.setFormLayout("""1 <p>please enter a value for field1:
     ... <span class="plominoFieldClass">field1</span></p>""")
     >>> db.frm1.displayDocument(None, True, True)
-    u"<input type='hidden' name='Form' value='frm1' />1 <p>please enter a value for field1:<span>\n    \n    \n    \n</span>\n</p>"
+    u'<input type=\'hidden\' name=\'Form\' value=\'frm1\' />1 <p>please enter a value for field1:<span>\n    \n    \n    <input type="text" name="field1" value="" />\n    \n    \n</span>\n</p>'
 
 A form can contain editable fields and also computed fields::
 
@@ -89,6 +89,7 @@ A form can contain editable fields and also computed fields::
     ...         FieldType="TEXT",
     ...         FieldMode="COMPUTED",
     ...         Formula="'My favorite song is '+plominoDocument.field1")
+    >>> db.frm1.field2.at_post_create_script()
     >>> db.frm1.setFormLayout("""2 <p>please enter a value for field1:
     ... <span class="plominoLabelClass">field1</span>
     ... <span class="plominoFieldClass">field1</span></p><p>Comment:
@@ -142,9 +143,9 @@ Only items which match a form field will be considered::
 
     >>> doc1.setItem('field1', 'where is my mind?')
     >>> db.frm1.displayDocument(doc1, editmode=False)
-    u'2 <p>please enter a value for field1:Title for field1<span>\n    \n    \n        where is my mind?\n    \n</span>\n</p><p>Comment:Label for field2<span>\n    \n    \n        My favorite song is where is my mind?\n    \n</span>\n</p>'
+    u"2 <p>please enter a value for field1:<label for='field1'>Title for field1</label><span>\n    \n    \n        where is my mind?\n    \n</span>\n</p><p>Comment:<label for='field2'>Label for field2</label><span>\n    \n    \n        My favorite song is where is my mind?\n    \n</span>\n</p>"
     >>> db.frm1.displayDocument(doc1, editmode=True)
-    u"<input type='hidden' name='Form' value='frm1' />2 <p>please enter a value for field1:Title for field1<span>\n    \n    \n    \n</span>\n</p><p>Comment:Label for field2<span>\n    \n    \n        My favorite song is where is my mind?\n    \n</span>\n</p>"
+    u'<input type=\'hidden\' name=\'Form\' value=\'frm1\' />2 <p>please enter a value for field1:<label for=\'field1\'>Title for field1</label><span>\n    \n    \n        <input type="text" name="field1" value="where is my mind?" />\n    \n    \n</span>\n</p><p>Comment:<label for=\'field2\'>Label for field2</label><span>\n    \n    \n        My favorite song is where is my mind?\n    \n</span>\n</p>'
 
 ``Form`` is a reserved item which allows to indicate the document default
 form::
@@ -250,7 +251,13 @@ Field types
 
 There are several type of fields: text, selection, number, rich text,
 date/time, name (=Plone member id), attachment, document link (=reference).
-Note: A field type may offer several widgets.
+A field type may offer several widgets.
+
+For accessibility purposes, a label may be provided for a field. In the case
+of single inputs, the label is rendered as an HTML 'label' element. In the
+case of grouped inputs such as radio buttons or checkboxes, the group is
+enclosed in an HTML 'fieldset' element, and the label is rendered as an
+HTML 'legend' element.
 
 Text field:
 The default text widget is a basic HTML text input::
@@ -261,16 +268,38 @@ The default text widget is a basic HTML text input::
     ...         FieldType="TEXT",
     ...         FieldMode="EDITABLE")
     >>> db.frm2.guitarist.at_post_create_script()
+    >>> id = db.frm2.invokeFactory('PlominoField',
+    ...         id='bassist',
+    ...         title='Title for bassist',
+    ...         FieldType="SELECTION",
+    ...         FieldMode="EDITABLE")
+    >>> db.frm2.bassist.at_post_create_script()
+    >>> id = db.frm2.invokeFactory('PlominoField',
+    ...         id='drummer',
+    ...         title='Title for drummer',
+    ...         FieldType="SELECTION",
+    ...         FieldMode="EDITABLE")
+    >>> db.frm2.drummer.at_post_create_script()
     >>> from Products.CMFPlomino.fields.text import ITextField
+    >>> from Products.CMFPlomino.fields.selection import ISelectionField
     >>> db.frm2.setFormLayout("""3 <p>Who is the guitarist:
     ... <span class="plominoLabelClass">guitarist</span></p>
-    ... <span class="plominoFieldClass">guitarist</span></p>""")
-    >>> db.frm2.displayDocument(None, True, True)
-    u'<input type=\'hidden\' name=\'Form\' value=\'frm2\' />3 <p>Who is the guitarist:<label for=\'guitarist\'>Title for guitarist</label></p><span>\n    \n    \n        <input type="text" name="guitarist" value="" />\n    \n    \n</span>\n</p>'
+    ... <span class="plominoFieldClass">guitarist</span></p>
+    ... <span class="plominoLabelClass">bassist: Label for bassist</span></p>
+    ... <span class="plominoFieldClass">bassist</span></p>
+    ... <span class="plominoLabelClass">drummer</span></p>
+    ... <span class="plominoFieldClass">drummer</span></p>
+    ... """)
+    >>> adapted = ISelectionField(db.frm2.bassist)
+    >>> adapted.widget = "CHECKBOX"
+    >>> adapted = ISelectionField(db.frm2.drummer)
+    >>> adapted.widget = "RADIO"
+    >>> db.frm2.displayDocument(None, True, True).replace('\n', '').replace('\t', '')
+    u'<input type=\'hidden\' name=\'Form\' value=\'frm2\' />3 <p>Who is the guitarist:<label for=\'guitarist\'>Title for guitarist</label></p><span>                <input type="text" name="guitarist" value="" />        </span></p></p><fieldset><legend>Label for bassist</legend><span></span></fieldset></p></p><fieldset><legend>Title for drummer</legend><span></span></fieldset></p>'
     >>> adapted = ITextField(db.frm2.guitarist)
     >>> adapted.widget="TEXTAREA"
-    >>> db.frm2.displayDocument(None, True, True)
-    u'<input type=\'hidden\' name=\'Form\' value=\'frm2\' />3 <p>Who is the guitarist:<label for=\'guitarist\'>Title for guitarist</label></p><span>\n    \n    \n    \n        <textarea name="guitarist"></textarea>\n    \n</span>\n</p>'
+    >>> db.frm2.displayDocument(None, True, True).replace('\n', '').replace('\t', '')
+    u'<input type=\'hidden\' name=\'Form\' value=\'frm2\' />3 <p>Who is the guitarist:<label for=\'guitarist\'>Title for guitarist</label></p><span>                    <textarea name="guitarist"></textarea>    </span></p></p><fieldset><legend>Label for bassist</legend><span></span></fieldset></p></p><fieldset><legend>Title for drummer</legend><span></span></fieldset></p>'
 
 Selection field::
 
@@ -281,7 +310,7 @@ Selection field::
     ...         FieldMode="EDITABLE")
     >>> db.frm2.artistsfield.at_post_create_script()
     >>> from Products.CMFPlomino.fields.selection import ISelectionField
-    >>> adapted=ISelectionField(db.frm2.artistsfield)
+    >>> adapted = ISelectionField(db.frm2.artistsfield)
     >>> adapted.selectionlist=[u'The Beatles', u'The Doors', u'The Pixies']
     >>> adapted.widget="SELECT"
     >>> db.frm2.setFormLayout(
@@ -387,8 +416,8 @@ A name field allow to select a user in the Plone portal members list::
     >>> db.frm2.setFormLayout(
     ... """9 <p>Who: <span class="plominoFieldClass">buyer</span></p>""")
     >>> db.cleanRequestCache()
-    >>> db.frm2.displayDocument(None, True, True)
-    u'<input type=\'hidden\' name=\'Form\' value=\'frm2\' />9 <p>Who: <span>\n\t\n\t\n\t\t\n\t\t\t\n\t\t\t<select multiple="true" lines="4" name="buyer">\n\t\t\t\t\n\t\t\t\t\t\n\t\t\t\t\t\t<option value=""></option>\n\t\t\t\t\t\n\t\t\t\t\n\t\t\t\t\n\t\t\t\t\t\n\t\t\t\t\t\t<option value="test_user_1_">test_user_1_</option>\n\t\t\t\t\t\n\t\t\t\t\n\t\t\t</select>\n\t\t\n\n\t\t\n\t\t\n\t\t\n\t\n\t\n</span>\n</p>'
+    >>> db.frm2.displayDocument(None, True, True).replace('\n', '').replace('\t', '')
+    u'<input type=\'hidden\' name=\'Form\' value=\'frm2\' />9 <p>Who: <span><select multiple="true" lines="4" name="buyer"><option value=""></option><option value="test_user_1_">test_user_1_</option></select></span></p>'
 
 Doclink field:
 A Doclink field allows to create a reference to another document::
