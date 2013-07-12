@@ -1114,7 +1114,6 @@ class PlominoReplicationManager(Persistent):
             raise PlominoReplicationException, 'file required'
 
         # parse and import
-        import pdb; pdb.set_trace()
         fileContent = self.parseFile(fileToImport, formName, separator,
                 file_encoding)
 
