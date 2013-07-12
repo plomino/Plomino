@@ -107,19 +107,12 @@ function selecteddocuments()
 if (typeof(oDynamicTable)!="undefined") {
 	return dynamicview_selecteddocuments();
 } else {
-	var c_value = "";
-	if(document.plominoviewform.sdoc.length==undefined) {
-		c_value=document.plominoviewform.sdoc.value;
-	} else {
-		for (var i=0; i < document.plominoviewform.sdoc.length; i++)
-		   {
-		   if (document.plominoviewform.sdoc[i].checked)
-		      {
-		      c_value = c_value + document.plominoviewform.sdoc[i].value + "@";
-		      }
-		   }
-	}
-	return c_value;
+	var array_value = [];
+	$(".plominoviewform input[name='sdoc']:checked").each(function() {
+		array_value.push($(this).val());
+	});
+	
+	return array_value.join('@');
 }
 }
 
