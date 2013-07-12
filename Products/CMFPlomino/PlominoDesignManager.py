@@ -457,8 +457,6 @@ class PlominoDesignManager(Persistent):
                         "Content-Disposition",
                         "attachment; filename=%s.zip" % self.id)
                 REQUEST.RESPONSE.setHeader('Content-Length', len(zip_file.getvalue()))
-                #REQUEST.RESPONSE.write(zip_file.getvalue())
-                #return
             return zip_file.getvalue()
         elif targettype == "folder":
             if not designelements:
