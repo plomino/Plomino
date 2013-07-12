@@ -199,6 +199,7 @@ class PlominoDesignManager(Persistent):
 
         #declare all the view formulas and columns index entries
         for v_obj in self.getViews():
+            import pdb;pdb.set_trace()
             index.createSelectionIndex(
                     'PlominoViewFormula_' + v_obj.getViewName())
             for c in v_obj.getColumns():
