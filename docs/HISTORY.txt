@@ -1,6 +1,7 @@
 Changelog
 =========
 
+* add import from zip function for database design [davismr]
 * add export as zip function for database design [davismr]
 
 1.17.3.1 (2013-05-28)
