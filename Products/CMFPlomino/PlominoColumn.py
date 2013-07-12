@@ -149,6 +149,17 @@ class PlominoColumn(BaseContent, BrowserDefaultMixin):
         if not db.DoNotReindex:
             db.getIndex().refresh()
 
+    security.declarePublic('post_validate')
+    def post_validate(self, REQUEST=None, errors=None):
+        """Ensure a field, not a form is selected"""
+        form = REQUEST.form
+        if errors is None:
+            errors = {}
+        SelectedField = form.get('SelectedField', None)
+        fieldpath = SelectedField.split('/')
+        if len(fieldpath) != 2:
+            errors['SelectedField'] = u'You must select a field, and not a form'
+        return errors
 
 registerType(PlominoColumn, PROJECTNAME)
 # end of class PlominoColumn
