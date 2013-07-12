@@ -457,8 +457,6 @@ class PlominoDesignManager(Persistent):
                         "Content-Disposition",
                         "attachment; filename=%s.zip" % self.id)
                 REQUEST.RESPONSE.setHeader('Content-Length', len(zip_file.getvalue()))
-                #REQUEST.RESPONSE.write(zip_file.getvalue())
-                #return
             return zip_file.getvalue()
         elif targettype == "folder":
             if not designelements:
@@ -554,8 +552,9 @@ class PlominoDesignManager(Persistent):
                     raise PlominoDesignException, 'file required'
                 if not isinstance(fileToImport, FileUpload):
                     raise PlominoDesignException, 'unrecognized file uploaded'
-                if fileToImport.headers['content-type'] == 'application/zip':
-                    raise PlominoDesignException, 'not implemented yet'
+                if fileToImport.headers['content-type'] in ['application/zip', 'application/x-zip-compressed']:
+                    zip_file = ZipFile(fileToImport)
+                    self.importDesignFromZip(zip_file, replace=replace)
                 else:
                     xmlstring = fileToImport.read()
                     self.importDesignFromXML(xmlstring, replace=replace)
@@ -1168,6 +1167,61 @@ class PlominoDesignManager(Persistent):
             if not total_elements:
                 total_elements = len(elements)
 
+            e = design.firstChild
+            while e is not None:
+                name = str(e.nodeName)
+                if name in ('resource', 'element', 'dbsettings'):
+                    if name == 'dbsettings':
+                        logger.info("Import db settings")
+                        self.importDbSettingsFromXML(e)
+                    if name == 'element':
+                        logger.info("Import "+e.getAttribute('id'))
+                        self.importElementFromXML(self, e)
+                    if name == 'resource':
+                        logger.info("Import resource "+e.getAttribute('id'))
+                        self.importResourceFromXML(self.resources, e)
+                    count = count + 1
+                    total = total + 1
+                if count == 10:
+                    self.setStatus("Importing design (%d%%)" % int(100*total/total_elements))
+                    logger.info("(%d elements committed, still running...)" % total)
+                    txn.savepoint(optimistic=True)
+                    count = 0
+                e = e.nextSibling
+
+        logger.info("(%d elements imported)" % total)
+        self.setStatus("Ready")
+        txn.commit()
+        self.getIndex().no_refresh = False
+
+    security.declareProtected(DESIGN_PERMISSION, 'importDesignFromZip')
+    def importDesignFromZip(self, zip_file, replace=False):
+        """Import the design from a zip file
+        """
+        logger.info("Start design import")
+        self.setStatus("Importing design")
+        self.getIndex().no_refresh = True
+        txn = transaction.get()
+        count = 0
+        total = 0
+        if replace:
+            logger.info("Replace mode: removing current design")
+            designelements = [o.id for o in self.getForms()] \
+                                 + [o.id for o in self.getViews()] \
+                                 + [o.id for o in self.getAgents()]
+            ObjectManager.manage_delObjects(self, designelements)
+            ObjectManager.manage_delObjects(self.resources, self.resources.objectIds())
+            logger.info("Current design removed")
+        total_elements = None
+        file_names = zip_file.namelist()
+        for file_name in file_names:
+            xml_string = zip_file.open(file_name).read()
+            xml_string = xml_string.replace(">\n<", "><")
+            xmldoc = parseString(xml_string)
+            design = xmldoc.getElementsByTagName("design")[0]
+            elements = [e for e in design.childNodes if e.nodeName in ('resource', 'element', 'dbsettings')]
+            if not total_elements:
+                total_elements = len(elements)
             e = design.firstChild
             while e is not None:
                 name = str(e.nodeName)
