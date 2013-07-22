@@ -945,8 +945,8 @@ msgid "Please log in"
 msgstr "Prosím zadejte své uživatelské jméno a heslo"
 
 #: ../skins/cmfplomino_templates/DatabaseDesign.pt:181
-msgid "Plomino XML file"
-msgstr "soubor Plomino XML"
+msgid "Plomino XML file or in zip file"
+msgstr "soubor Plomino XML nebo v zip souboru"
 
 #: ../skins/cmfplomino_templates/DatabaseDesign.pt:26
 msgid "Plomino database version"
