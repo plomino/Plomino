@@ -185,7 +185,7 @@
                 <td colspan="2"><label for="sourcetype-file" i18n:translate="">From file</label></td>
             </tr>
             <tr><td></td>
-                <td i18n:translate="">Plomino XML file</td>
+                <td i18n:translate="">Plomino XML file or in zip file</td>
                 <td><input type="file" name="sourceFile" /></td>
             </tr>
             <tr>
