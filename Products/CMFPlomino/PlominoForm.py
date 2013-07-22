@@ -262,8 +262,8 @@ schema = Schema((
 PlominoForm_schema = getattr(ATFolder, 'schema', Schema(())).copy() + \
     schema.copy()
 
-# label_re = re.compile('<span class="plominoLabelClass">((?P<optional_fieldname>[^:]+?)\s*:){0,1}\s*(?P<fieldname_or_label>.+?)</span>')
 label_re =  re.compile('<span class="plominoLabelClass">((?P<optional_fieldname>\S+):){0,1}\s*(?P<fieldname_or_label>.+?)</span>')
+# Not bothering with Legend for now. Label will generate a fieldset and legend for CHECKBOX and RADIO widgets.
 # legend_re = re.compile('<span class="plominoLegendClass">((?P<optional_fieldname>\S+):){0,1}\s*(?P<fieldname_or_label>.+)</span>')
 
 class PlominoForm(ATFolder):
@@ -473,12 +473,19 @@ class PlominoForm(ATFolder):
         """
         return self.id
 
-    def _handleLabels(self, html_content_orig):
-        """ Parse the rendered HTML for 
-        - Find the first occurrence of label_re in html_content_orig
-        - 
+    def _handleLabels(self, html_content_orig, editmode):
+        """ Parse the layout for label tags, 
+
+        - add 'label' or 'fieldset/legend' markup to the corresponding fields.
+        - if the referenced field does not exist, leave the layout markup as
+          is (as for missing field markup).
         """
-        html_content_processed = html_content_orig
+        if not editmode:
+            # Strip out labels
+            html_content_orig = label_re.sub('', html_content_orig)
+            return html_content_orig 
+
+        html_content_processed = html_content_orig # We edit the copy
         match_iter = label_re.finditer(html_content_orig)
         for match_label in match_iter:
             d = match_label.groupdict()
@@ -497,9 +504,8 @@ class PlominoForm(ATFolder):
                 else:
                     continue
 
-            field_re = re.compile('<span class="plominoFieldClass">%s</span>'%fn)
+            field_re = re.compile('<span class="plominoFieldClass">%s</span>' % fn)
             match_field = field_re.search(html_content_processed)
-
             field_type = field.getFieldType()
             widget_name = field.getSettings().widget
             if field_type == 'SELECTION' and widget_name in ['CHECKBOX',
@@ -572,7 +578,7 @@ class PlominoForm(ATFolder):
                         html_content))
 
         # Handle legends and labels
-        html_content = self._handleLabels(html_content)
+        html_content = self._handleLabels(html_content, editmode)
         # html_content = self._handleLabels(legend_re, html_content)
 
         # insert the fields with proper value and rendering

@@ -143,7 +143,7 @@ Only items which match a form field will be considered::
 
     >>> doc1.setItem('field1', 'where is my mind?')
     >>> db.frm1.displayDocument(doc1, editmode=False)
-    u"2 <p>please enter a value for field1:<label for='field1'>Title for field1</label><span>\n    \n    \n        where is my mind?\n    \n</span>\n</p><p>Comment:<label for='field2'>Label for field2</label><span>\n    \n    \n        My favorite song is where is my mind?\n    \n</span>\n</p>"
+    u'2 <p>please enter a value for field1:<span>\n    \n    \n        where is my mind?\n    \n</span>\n</p><p>Comment:<span>\n    \n    \n        My favorite song is where is my mind?\n    \n</span>\n</p>'
     >>> db.frm1.displayDocument(doc1, editmode=True)
     u'<input type=\'hidden\' name=\'Form\' value=\'frm1\' />2 <p>please enter a value for field1:<label for=\'field1\'>Title for field1</label><span>\n    \n    \n        <input type="text" name="field1" value="where is my mind?" />\n    \n    \n</span>\n</p><p>Comment:<label for=\'field2\'>Label for field2</label><span>\n    \n    \n        My favorite song is where is my mind?\n    \n</span>\n</p>'
 
