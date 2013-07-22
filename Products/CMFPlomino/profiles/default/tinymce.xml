@@ -2,6 +2,7 @@
 <object>
  <layout>
   <styles purge="False">
+   <element value="Plomino Label|span|plominoLabelClass"/>
    <element value="Plomino Field|span|plominoFieldClass"/>
    <element value="Plomino Action|span|plominoActionClass"/>
    <element value="Plomino Hide-when formula|span|plominoHidewhenClass"/>

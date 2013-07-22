@@ -41,6 +41,7 @@ class Plomino(PloneSandboxLayer):
         db.frm_test.setFormLayout("""<p>please enter a value for field_1: <span class="plominoFieldClass">field_1</span></p>""")
 
     def tearDownZope(self, app):
+        # app.manage_delObjects(ids=['PloneRemote'])
         # Uninstall product
         z2.uninstallProduct(app, 'Products.CMFPlomino')
         z2.uninstallProduct(app, 'plomino.tinymce')

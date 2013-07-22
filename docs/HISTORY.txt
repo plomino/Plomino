@@ -1,6 +1,9 @@
 Changelog
 =========
 
+unreleased
+---------------------
+* Add labels in layout [jean]
 * add import from zip function for database design [davismr]
 * add export as zip function for database design [davismr]
 
