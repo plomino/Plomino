@@ -27,12 +27,14 @@ import xmlrpclib
 from Acquisition import *
 from AccessControl.requestmethod import postonly
 from AccessControl.SecurityManagement import newSecurityManager
+from cStringIO import StringIO
 from DateTime import DateTime
 from HttpUtils import authenticateAndLoadURL, authenticateAndPostToURL
 from Persistence import Persistent
 from Products.PageTemplates.ZopePageTemplate import manage_addPageTemplate
 from Products.PythonScripts.PythonScript import manage_addPythonScript
 from Products.PythonScripts.PythonScript import PythonScript
+from zipfile import ZipFile, ZIP_DEFLATED
 from zope.component import getUtility
 from zope.dottedname.resolve import resolve
 from zope import component
@@ -397,7 +399,7 @@ class PlominoDesignManager(Persistent):
     def exportDesign(self, targettype='file', targetfolder='', dbsettings=True,
             designelements=None, REQUEST=None, **kw):
         """ Export design elements to XML.
-        The targettype can be file, server, or folder.
+        The targettype can be file, zipfile, server, or folder.
         """
         if REQUEST:
             entire = REQUEST.get('entire')
@@ -444,6 +446,18 @@ class PlominoDesignManager(Persistent):
                             "Content-Disposition",
                             "attachment; filename=%s.xml" % self.id)
                 return xmlstring
+        elif targettype == "zipfile":
+            zip_file = self.exportDesignAsZip(
+                    designelements=designelements,
+                    dbsettings=dbsettings)
+
+            if REQUEST:
+                REQUEST.RESPONSE.setHeader('Content-Type', 'application/zip')
+                REQUEST.RESPONSE.setHeader(
+                        "Content-Disposition",
+                        "attachment; filename=%s.zip" % self.id)
+                REQUEST.RESPONSE.setHeader('Content-Length', len(zip_file.getvalue()))
+            return zip_file.getvalue()
         elif targettype == "folder":
             if not designelements:
                 designelements = (
@@ -538,8 +552,12 @@ class PlominoDesignManager(Persistent):
                     raise PlominoDesignException, 'file required'
                 if not isinstance(fileToImport, FileUpload):
                     raise PlominoDesignException, 'unrecognized file uploaded'
-                xmlstring = fileToImport.read()
-                self.importDesignFromXML(xmlstring, replace=replace)
+                if fileToImport.headers['content-type'] in ['application/zip', 'application/x-zip-compressed']:
+                    zip_file = ZipFile(fileToImport)
+                    self.importDesignFromZip(zip_file, replace=replace)
+                else:
+                    xmlstring = fileToImport.read()
+                    self.importDesignFromXML(xmlstring, replace=replace)
 
             no_refresh_documents = REQUEST.get('no_refresh_documents', 'No')
             if no_refresh_documents == 'No':
@@ -841,6 +859,45 @@ class PlominoDesignManager(Persistent):
         else:
             return None
 
+    security.declareProtected(DESIGN_PERMISSION, 'exportDesignAsZip')
+    def exportDesignAsZip(self, designelements=None, dbsettings=True):
+        """
+        """
+        db_id = self.id
+        if not designelements:
+            designelements = (
+                    [o.id for o in self.getForms()] +
+                    [o.id for o in self.getViews()] +
+                    [o.id for o in self.getAgents()] +
+                    ["resources/"+id for id in self.resources.objectIds()]
+                    )
+        file_string = StringIO()
+        zip_file = ZipFile(file_string, 'w', ZIP_DEFLATED)
+        for id in designelements:
+            if id.startswith('resources/'):
+                filename = os.path.join(
+                        db_id,
+                        'resources',
+                        id.split('/')[-1]+'.xml')
+                xmlstring = self.exportDesignAsXML(
+                        elementids=[id],
+                        dbsettings=False)
+                zip_file.writestr(filename, xmlstring)
+            else:
+                filename = os.path.join(db_id, id+'.xml')
+                xmlstring = self.exportDesignAsXML(
+                        elementids=[id],
+                        dbsettings=False)
+                zip_file.writestr(filename, xmlstring)
+        if dbsettings:
+            filename = os.path.join(db_id, 'dbsettings.xml')
+            xmlstring = self.exportDesignAsXML(
+                    elementids=[],
+                    dbsettings=True)
+            zip_file.writestr(filename, xmlstring)
+        zip_file.close()
+        return file_string
+
     security.declareProtected(DESIGN_PERMISSION, 'exportDesignAsXML')
     def exportDesignAsXML(self, elementids=None, REQUEST=None, dbsettings=True):
         """
@@ -1110,6 +1167,61 @@ class PlominoDesignManager(Persistent):
             if not total_elements:
                 total_elements = len(elements)
 
+            e = design.firstChild
+            while e is not None:
+                name = str(e.nodeName)
+                if name in ('resource', 'element', 'dbsettings'):
+                    if name == 'dbsettings':
+                        logger.info("Import db settings")
+                        self.importDbSettingsFromXML(e)
+                    if name == 'element':
+                        logger.info("Import "+e.getAttribute('id'))
+                        self.importElementFromXML(self, e)
+                    if name == 'resource':
+                        logger.info("Import resource "+e.getAttribute('id'))
+                        self.importResourceFromXML(self.resources, e)
+                    count = count + 1
+                    total = total + 1
+                if count == 10:
+                    self.setStatus("Importing design (%d%%)" % int(100*total/total_elements))
+                    logger.info("(%d elements committed, still running...)" % total)
+                    txn.savepoint(optimistic=True)
+                    count = 0
+                e = e.nextSibling
+
+        logger.info("(%d elements imported)" % total)
+        self.setStatus("Ready")
+        txn.commit()
+        self.getIndex().no_refresh = False
+
+    security.declareProtected(DESIGN_PERMISSION, 'importDesignFromZip')
+    def importDesignFromZip(self, zip_file, replace=False):
+        """Import the design from a zip file
+        """
+        logger.info("Start design import")
+        self.setStatus("Importing design")
+        self.getIndex().no_refresh = True
+        txn = transaction.get()
+        count = 0
+        total = 0
+        if replace:
+            logger.info("Replace mode: removing current design")
+            designelements = [o.id for o in self.getForms()] \
+                                 + [o.id for o in self.getViews()] \
+                                 + [o.id for o in self.getAgents()]
+            ObjectManager.manage_delObjects(self, designelements)
+            ObjectManager.manage_delObjects(self.resources, self.resources.objectIds())
+            logger.info("Current design removed")
+        total_elements = None
+        file_names = zip_file.namelist()
+        for file_name in file_names:
+            xml_string = zip_file.open(file_name).read()
+            xml_string = xml_string.replace(">\n<", "><")
+            xmldoc = parseString(xml_string)
+            design = xmldoc.getElementsByTagName("design")[0]
+            elements = [e for e in design.childNodes if e.nodeName in ('resource', 'element', 'dbsettings')]
+            if not total_elements:
+                total_elements = len(elements)
             e = design.firstChild
             while e is not None:
                 name = str(e.nodeName)

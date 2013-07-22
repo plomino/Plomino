@@ -212,6 +212,8 @@ class PlominoIndex(UniqueObject, CatalogTool):
         if hasattr(doc.getItem(field), 'keys'):
             # `files` will always be a dictionary with a single key.
             files = doc.getItem(field)
+            if not files:
+                return ''
             filename = files.keys()[0]
 
             f = doc.getfile(filename=filename)

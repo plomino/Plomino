@@ -1137,8 +1137,10 @@ class PlominoReplicationManager(Persistent):
                 raise PlominoReplicationException, 'separator not set'
 
             # Use the python CSV module
+            if not isinstance(fileToImport, basestring):
+                fileToImport = fileToImport.readlines()
             reader = csv.DictReader(
-                    fileToImport.readlines(),
+                    fileToImport,
                     delimiter=separator)
 
             # Add the form name and copy reader values

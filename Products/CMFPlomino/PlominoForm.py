@@ -562,7 +562,7 @@ class PlominoForm(ATFolder):
                             "name='%s' "
                             "value='%s' />%s" % (
                                 field_id,
-                                str(request.get(field_id, '')),
+                                asUnicode(request.get(field_id, '')),
                                 html_content)
                             )
 

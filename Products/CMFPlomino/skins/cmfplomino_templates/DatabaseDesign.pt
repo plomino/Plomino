@@ -268,11 +268,15 @@
     <form name="ExportDesign" action="exportDesign" method="POST">
         <table>
             <tr>
-            <td><input type="radio" name="targettype" value="file" id="targettype-file" checked="checked"/></td>
+                <td><input type="radio" name="targettype" value="file" id="targettype-file" checked="checked"/></td>
                 <td colspan="2"><label for="targettype-file" i18n:translate="">To XML file</label></td>
             </tr>
             <tr>
-            <td><input type="radio" name="targettype" value="folder" id="targettype-folder"/></td>
+                <td><input type="radio" name="targettype" value="zipfile" id="targettype-zipfile"/></td>
+                <td colspan="2"><label for="targettype-zipfile" i18n:translate="">To ZIP file</label></td>
+            </tr>
+            <tr>
+                <td><input type="radio" name="targettype" value="folder" id="targettype-folder"/></td>
                 <td colspan="2"><label for="targettype-folder" i18n:translate="">To server folder</label></td>
             </tr>
             <tr><td></td>
@@ -280,7 +284,7 @@
                 <td><input type="text" name="targetfolder" value="/tmp"/></td>
             </tr>
             <tr>
-            <td><input type="radio" name="targettype" value="server" id="targettype-server"/></td>
+                <td><input type="radio" name="targettype" value="server" id="targettype-server"/></td>
                 <td colspan="2"><label for="targettype-server" i18n:translate="">To remote server</label></td>
             </tr>
             <tr><td></td>
