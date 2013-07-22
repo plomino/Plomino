@@ -13,7 +13,7 @@
 
 
 .plominoLabelClass {
-	color: #1111FF;
+	color: #aaaaFF;
 	border-style:dashed;
 	border-width:thin;
 	}
