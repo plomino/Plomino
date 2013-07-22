@@ -155,6 +155,9 @@ class PlominoColumn(BaseContent, BrowserDefaultMixin):
         form = REQUEST.form
         if errors is None:
             errors = {}
+        FormulaField = form.get('Formula', None)
+        if FormulaField:
+            return errors
         SelectedField = form.get('SelectedField', None)
         fieldpath = SelectedField.split('/')
         if len(fieldpath) != 2:
