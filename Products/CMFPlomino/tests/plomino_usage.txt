@@ -46,7 +46,8 @@ Create the browser object we'll be using::
     >>> browser = Browser(layer['app'])
     >>> transaction.commit()  # enable the browser to see our changes
 
-Create a Plone site on the remote server
+Create a Plone site on the remote server::
+
     >>> from Products.CMFPlomino.HttpUtils import authenticateAndLoadURL
     >>> result = authenticateAndLoadURL("http://localhost:8080/@@plone-addsite?site_id=PloneRemote&title=Site&form.submitted:boolean=True&extension_ids:list=plonetheme.classic:default&extension_ids:list=plonetheme.sunburst:default&extension_ids:list=Products.CMFPlomino:default", 'admin', 'admin')
 
@@ -336,10 +337,7 @@ Replication
     >>> "Apocalypse now" in browser.contents
     True
 
+Nuke the Plone used for testing::
 
-
-
-
-
-    
-    
+    >>> from Products.CMFPlomino.HttpUtils import authenticateAndPostToURL
+    >>> result = authenticateAndLoadURL("http://localhost:8080?ids:list=PloneRemote&manage_delObjects:method=Delete", 'admin', 'admin')
