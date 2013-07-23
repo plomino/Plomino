@@ -55,6 +55,7 @@ from PlominoAccessControl import PlominoAccessControl
 from PlominoDesignManager import PlominoDesignManager
 from PlominoDocument import addPlominoDocument
 from PlominoReplicationManager import PlominoReplicationManager
+from Products.CMFPlomino.browser import PloneMessageFactory as _
 from Products.CMFPlomino.config import *
 from Products.CMFPlomino.PlominoUtils import *
 
@@ -76,8 +77,8 @@ schema = Schema((
             label="About this database",
             description="Describe the database, its objectives, "
                 "its targeted audience, etc...",
-            label_msgid='CMFPlomino_label_AboutDescription',
-            description_msgid='CMFPlomino_help_AboutDescription',
+            label_msgid=_('CMFPlomino_label_AboutDescription'),
+            description_msgid=_('CMFPlomino_help_AboutDescription'),
             i18n_domain='CMFPlomino',
         ),
         default_output_type="text/html",
@@ -88,8 +89,8 @@ schema = Schema((
         widget=RichWidget(
             label="Using this database",
             description="Describe how to use the database",
-            label_msgid='CMFPlomino_label_UsingDescription',
-            description_msgid='CMFPlomino_help_UsingDescription',
+            label_msgid=_('CMFPlomino_label_UsingDescription'),
+            description_msgid=_('CMFPlomino_help_UsingDescription'),
             i18n_domain='CMFPlomino',
         ),
         default_output_type="text/html",
@@ -102,8 +103,8 @@ schema = Schema((
             description="If enabled, files attached in "
                 "File Attachment fields will be indexed. "
                 "It might increase the index size.",
-            label_msgid='CMFPlomino_label_IndexAttachments',
-            description_msgid='CMFPlomino_help_IndexAttachments',
+            label_msgid=_('CMFPlomino_label_IndexAttachments'),
+            description_msgid=_('CMFPlomino_help_IndexAttachments'),
             i18n_domain='CMFPlomino',
         ),
     ),
@@ -114,8 +115,8 @@ schema = Schema((
             label="Local full-text index",
             description="If enabled, documents are full-text indexed "
                 "in the Plomino index.",
-            label_msgid='CMFPlomino_label_FulltextIndex',
-            description_msgid='CMFPlomino_help_FulltextIndex',
+            label_msgid=_('CMFPlomino_label_FulltextIndex'),
+            description_msgid=_('CMFPlomino_help_FulltextIndex'),
             i18n_domain='CMFPlomino',
         ),
     ),
@@ -126,8 +127,8 @@ schema = Schema((
             label="Index documents in Plone portal",
             description="If enabled, documents are searchable "
             "in Plone search.",
-            label_msgid='CMFPlomino_label_IndexInPortal',
-            description_msgid='CMFPlomino_help_IndexInPortal',
+            label_msgid=_('CMFPlomino_label_IndexInPortal'),
+            description_msgid=_('CMFPlomino_help_IndexInPortal'),
             i18n_domain='CMFPlomino',
         ),
     ),
@@ -137,8 +138,8 @@ schema = Schema((
         widget=BooleanField._properties['widget'](
             label="Debug mode",
             description="If enabled, script and formula errors are logged.",
-            label_msgid='CMFPlomino_label_debugMode',
-            description_msgid='CMFPlomino_help_debugMode',
+            label_msgid=_('CMFPlomino_label_debugMode'),
+            description_msgid=_('CMFPlomino_help_debugMode'),
             i18n_domain='CMFPlomino',
         ),
     ),
@@ -149,8 +150,8 @@ schema = Schema((
             label="Count the number of documents",
             description="If enabled, count the number of documents "
                 "for each view. Display might be slower.",
-            description_msgid="CMFPlomino_help_ShowDocumentsNumbers",
-            label_msgid="CMFPlomino_label_ShowDocumentsNumbers",
+            description_msgid=_("CMFPlomino_help_ShowDocumentsNumbers"),
+            label_msgid=_("CMFPlomino_label_ShowDocumentsNumbers"),
             i18n_domain='CMFPlomino',
         ),
     ),
@@ -160,8 +161,8 @@ schema = Schema((
         widget=StringField._properties['widget'](
             label='Date/time format',
             description='Format example: %Y-%m-%d',
-            label_msgid='CMFPlomino_label_DateTimeFormat',
-            description_msgid="CMFPlomino_help_DateTimeFormat",
+            label_msgid=_('CMFPlomino_label_DateTimeFormat'),
+            description_msgid=_("CMFPlomino_help_DateTimeFormat"),
             i18n_domain='CMFPlomino',
         ),
     ),
@@ -170,8 +171,8 @@ schema = Schema((
         widget=StringField._properties['widget'](
             label='Start page',
             description='Element to display instead of the regular database menu.',
-            label_msgid='CMFPlomino_label_StartPage',
-            description_msgid='CMFPlomino_help_StartPage',
+            label_msgid=_('CMFPlomino_label_StartPage'),
+            description_msgid=_('CMFPlomino_help_StartPage'),
             i18n_domain='CMFPlomino',
         ),
     ),
@@ -180,8 +181,8 @@ schema = Schema((
         widget=StringField._properties['widget'](
             label='i18n domain',
             description='i18n domain to use for Plomino internal translation',
-            label_msgid='CMFPlomino_label_i18n',
-            description_msgid='CMFPlomino_help_i18n',
+            label_msgid=_('CMFPlomino_label_i18n'),
+            description_msgid=_('CMFPlomino_help_i18n'),
             i18n_domain='CMFPlomino',
         ),
     ),
@@ -193,8 +194,8 @@ schema = Schema((
             description="If True, in ACL screen, users are entered using "
                 "a free text field, if False, using a selection list. "
                 "Use True when the amount of users is large.",
-            description_msgid="CMFPlomino_help_DoNotListUsers",
-            label_msgid="CMFPlomino_label_DoNotListUsers",
+            description_msgid=_("CMFPlomino_help_DoNotListUsers"),
+            label_msgid=_("CMFPlomino_label_DoNotListUsers"),
             i18n_domain='CMFPlomino',
         ),
     ),
@@ -206,8 +207,8 @@ schema = Schema((
             description="If True, documents are not re-indexed "
                 "automatically when views, columns or indexed fields "
                 "are changed. Note: manual refresh db is then needed.",
-            description_msgid="CMFPlomino_help_DoNotReindex",
-            label_msgid="CMFPlomino_label_DoNotReindex",
+            description_msgid=_("CMFPlomino_help_DoNotReindex"),
+            label_msgid=_("CMFPlomino_label_DoNotReindex"),
             i18n_domain='CMFPlomino',
         ),
     ),

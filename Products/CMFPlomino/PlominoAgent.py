@@ -34,6 +34,7 @@ from Products.CMFDynamicViewFTI.browserdefault import BrowserDefaultMixin
 # Plomino
 from exceptions import PlominoScriptException
 from Products.CMFPlomino.config import *
+from Products.CMFPlomino.browser import PloneMessageFactory as _
 import interfaces
 
 schema = Schema((
@@ -42,8 +43,8 @@ schema = Schema((
         widget=StringField._properties['widget'](
             label="Id",
             description="The agent id",
-            label_msgid='CMFPlomino_label_agent_id',
-            description_msgid='CMFPlomino_help_agent_id',
+            label_msgid=_('CMFPlomino_label_agent_id'),
+            description_msgid=_('CMFPlomino_help_agent_id'),
             i18n_domain='CMFPlomino',
         ),
     ),
@@ -52,8 +53,8 @@ schema = Schema((
         widget=TextAreaWidget(
             label="Code",
             description="Code to execute",
-            label_msgid="CMFPlomino_label_AgentContent",
-            description_msgid="CMFPlomino_help_AgentContent",
+            label_msgid=_("CMFPlomino_label_AgentContent"),
+            description_msgid=_("CMFPlomino_help_AgentContent"),
             i18n_domain='CMFPlomino',
             rows=25,
         ),
@@ -65,8 +66,8 @@ schema = Schema((
             label="Run as",
             description="Run the agent using current user access rights, "
                 "or using the developer access rights.",
-            label_msgid='CMFPlomino_label_AgentRunAs',
-            description_msgid='CMFPlomino_help_AgentRunAs',
+            label_msgid=_('CMFPlomino_label_AgentRunAs'),
+            description_msgid=_('CMFPlomino_help_AgentRunAs'),
             i18n_domain='CMFPlomino',
         ),
         vocabulary=[
@@ -131,6 +132,7 @@ class PlominoAgent(BaseContent, BrowserDefaultMixin):
                 newSecurityManager(None, user)
 
         except PlominoScriptException, e:
+            import pdb; pdb.set_trace()
             e.reportError('Agent failed')
             result = None
 

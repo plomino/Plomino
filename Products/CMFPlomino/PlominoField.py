@@ -25,6 +25,7 @@ from Products.CMFPlomino.config import *
 from PlominoDocument import TemporaryDocument
 
 from Products.CMFPlomino.PlominoUtils import StringToDate
+from Products.CMFPlomino.browser import PloneMessageFactory as _
 from fields.selection import ISelectionField
 from fields.text import ITextField
 from fields.datetime import IDatetimeField
@@ -45,8 +46,8 @@ schema = Schema((
         widget=StringField._properties['widget'](
             label="Id",
             description="The field id",
-            label_msgid='CMFPlomino_label_field_id',
-            description_msgid='CMFPlomino_help_field_id',
+            label_msgid=_('CMFPlomino_label_field_id'),
+            description_msgid=_('CMFPlomino_help_field_id'),
             i18n_domain='CMFPlomino',
         ),
     ),
@@ -56,8 +57,8 @@ schema = Schema((
         widget=SelectionWidget(
             label="Field type",
             description="The kind of this field",
-            label_msgid='CMFPlomino_label_FieldType',
-            description_msgid='CMFPlomino_help_FieldType',
+            label_msgid=_('CMFPlomino_label_FieldType'),
+            description_msgid=_('CMFPlomino_help_FieldType'),
             i18n_domain='CMFPlomino',
         ),
         vocabulary='type_vocabulary',
@@ -68,8 +69,8 @@ schema = Schema((
         widget=SelectionWidget(
             label="Field mode",
             description="How content will be generated",
-            label_msgid='CMFPlomino_label_FieldMode',
-            description_msgid='CMFPlomino_help_FieldMode',
+            label_msgid=_('CMFPlomino_label_FieldMode'),
+            description_msgid=_('CMFPlomino_help_FieldMode'),
             i18n_domain='CMFPlomino',
         ),
         vocabulary= FIELD_MODES,
@@ -79,8 +80,8 @@ schema = Schema((
         widget=TextAreaWidget(
             label="Formula",
             description="How to calculate field content",
-            label_msgid='CMFPlomino_label_FieldFormula',
-            description_msgid='CMFPlomino_help_FieldFormula',
+            label_msgid=_('CMFPlomino_label_FieldFormula'),
+            description_msgid=_('CMFPlomino_help_FieldFormula'),
             i18n_domain='CMFPlomino',
             rows=10,
         ),
@@ -90,8 +91,8 @@ schema = Schema((
         widget=StringField._properties['widget'](
             label="Field read template",
             description="Custom rendering template in read mode",
-            label_msgid='CMFPlomino_label_FieldReadTemplate',
-            description_msgid='CMFPlomino_help_FieldReadTemplate',
+            label_msgid=_('CMFPlomino_label_FieldReadTemplate'),
+            description_msgid=_('CMFPlomino_help_FieldReadTemplate'),
             i18n_domain='CMFPlomino',
         ),
     ),
@@ -100,8 +101,8 @@ schema = Schema((
         widget=StringField._properties['widget'](
             label="Field edit template",
             description="Custom rendering template in edit mode",
-            label_msgid='CMFPlomino_label_FieldEditTemplate',
-            description_msgid='CMFPlomino_help_FieldEditTemplate',
+            label_msgid=_('CMFPlomino_label_FieldEditTemplate'),
+            description_msgid=_('CMFPlomino_help_FieldEditTemplate'),
             i18n_domain='CMFPlomino',
         ),
     ),
@@ -112,8 +113,8 @@ schema = Schema((
         widget=BooleanField._properties['widget'](
             label="Mandatory",
             description="Is this field mandatory? (empty value will not be allowed)",
-            label_msgid='CMFPlomino_label_FieldMandatory',
-            description_msgid='CMFPlomino_help_FieldMandatory',
+            label_msgid=_('CMFPlomino_label_FieldMandatory'),
+            description_msgid=_('CMFPlomino_help_FieldMandatory'),
             i18n_domain='CMFPlomino',
         ),
     ),
@@ -122,8 +123,8 @@ schema = Schema((
         widget=TextAreaWidget(
             label="Validation formula",
             description="Evaluate the input validation",
-            label_msgid='CMFPlomino_label_FieldValidation',
-            description_msgid='CMFPlomino_help_FieldValidation',
+            label_msgid=_('CMFPlomino_label_FieldValidation'),
+            description_msgid=_('CMFPlomino_help_FieldValidation'),
             i18n_domain='CMFPlomino',
         ),
     ),
@@ -133,8 +134,8 @@ schema = Schema((
         widget=BooleanField._properties['widget'](
             label="Add to index",
             description="The field will be searchable",
-            label_msgid='CMFPlomino_label_FieldIndex',
-            description_msgid='CMFPlomino_help_FieldIndex',
+            label_msgid=_('CMFPlomino_label_FieldIndex'),
+            description_msgid=_('CMFPlomino_help_FieldIndex'),
             i18n_domain='CMFPlomino',
         ),
     ),
@@ -144,8 +145,8 @@ schema = Schema((
         widget=SelectionWidget(
             label="Index type",
             description="The way the field values will be indexed",
-            label_msgid='CMFPlomino_label_FieldIndexType',
-            description_msgid='CMFPlomino_help_FieldIndexType',
+            label_msgid=_('CMFPlomino_label_FieldIndexType'),
+            description_msgid=_('CMFPlomino_help_FieldIndexType'),
             i18n_domain='CMFPlomino',
         ),
         vocabulary='index_vocabulary',

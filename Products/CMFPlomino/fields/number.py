@@ -23,6 +23,7 @@ from zope.schema.vocabulary import SimpleVocabulary
 from dictionaryproperty import DictionaryProperty
 
 # Plomino
+from Products.CMFPlomino.browser import PloneMessageFactory as _
 from Products.CMFPlomino.PlominoUtils import PlominoTranslate 
 from base import IBaseField, BaseField, BaseForm
 
@@ -69,7 +70,7 @@ class NumberField(BaseField):
                 errors.append(
                         fieldname + 
                         PlominoTranslate(
-                            " must be an integer (submitted value was: ",
+                            _(" must be an integer (submitted value was: "),
                             self.context) +
                         submittedValue + ")")
         elif self.type == "FLOAT":
@@ -79,7 +80,7 @@ class NumberField(BaseField):
                 errors.append(
                         fieldname +
                         PlominoTranslate(
-                            " must be a float (submitted value was: ",
+                            _(" must be a float (submitted value was: "),
                             self.context) + 
                         submittedValue + ")")
         elif self.type == "DECIMAL":
@@ -89,7 +90,7 @@ class NumberField(BaseField):
                 errors.append(
                         fieldname +
                         PlominoTranslate(
-                            " must be a decimal (submitted value was: ",
+                            _(" must be a decimal (submitted value was: "),
                             self.context) + 
                         submittedValue + ")")
 
