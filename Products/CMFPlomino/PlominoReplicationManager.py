@@ -985,9 +985,10 @@ class PlominoReplicationManager(Persistent):
                     '(%s expected)' % (
                         replication['whoWins'],
                         ', '.join(CONFLICT_RESOLUTION_TYPE.keys())))
-        if not replication.has_key('scheduled'):
+        scheduled = replication.get('scheduled', None)
+        if scheduled == None:
             errors.append("'scheduled' type not set")
-        elif not replication.get('cron', None):
+        elif scheduled == True and not replication.get('cron', None):
             errors.append('Cron required if scheduled')
         if not replication.has_key('restricttoview'):
             errors.append("'restricttoview' not set")
