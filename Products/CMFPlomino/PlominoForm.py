@@ -168,8 +168,8 @@ schema = Schema((
         widget=SelectionWidget(
             label="Position of the action bar",
             description="Select the position of the action bar",
-            label_msgid=_('CMFPlomino_label_ActionBarPosition'),
-            description_msgid=_('CMFPlomino_help_ActionBarPosition'),
+            label_msgid=_('CMFPlomino_label_ActionBarPosition', default="Position of the action bar"),
+            description_msgid=_('CMFPlomino_help_ActionBarPosition', default="Select the position of the action bar"),
             i18n_domain='CMFPlomino',
         ),
         vocabulary=[

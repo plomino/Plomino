@@ -78,7 +78,8 @@ schema = Schema((
             description="Describe the database, its objectives, "
                 "its targeted audience, etc...",
             label_msgid=_('CMFPlomino_label_AboutDescription'),
-            description_msgid=_('CMFPlomino_help_AboutDescription'),
+            description_msgid=_('CMFPlomino_help_AboutDescription',
+                default='Describe the database, its objectives, its targeted audience, etc...'),
             i18n_domain='CMFPlomino',
         ),
         default_output_type="text/html",

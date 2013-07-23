@@ -67,8 +67,8 @@ schema = Schema((
         widget=SelectionWidget(
             label="Action display",
             description="How the action is shown",
-            label_msgid=_('CMFPlomino_label_ActionDisplay'),
-            description_msgid=_('CMFPlomino_help_ActionDisplay'),
+            label_msgid=_('CMFPlomino_label_ActionDisplay', default="Action display"),
+            description_msgid=_('CMFPlomino_help_ActionDisplay', default="How the action is shown"),
             i18n_domain='CMFPlomino',
         ),
         vocabulary=ACTION_DISPLAY,
@@ -78,8 +78,8 @@ schema = Schema((
         widget=TextAreaWidget(
             label="Parameter or code",
             description="Code or parameter depending on the action type",
-            label_msgid=_('CMFPlomino_label_ActionContent'),
-            description_msgid=_('CMFPlomino_help_ActionContent'),
+            label_msgid=_('CMFPlomino_label_ActionContent', default='Parameter or code'),
+            description_msgid=_('CMFPlomino_help_ActionContent', default='Code or parameter depending on the action type'),
             i18n_domain='CMFPlomino',
         ),
     ),
