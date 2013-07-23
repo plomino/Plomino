@@ -949,8 +949,8 @@ msgid "Please log in"
 msgstr "Veuillez vous identifier."
 
 #: ../skins/cmfplomino_templates/DatabaseDesign.pt:181
-msgid "Plomino XML file"
-msgstr "Fichier XML Plomino"
+msgid "Plomino XML file or in zip file"
+msgstr "Fichier XML Plomino ou dans le fichier zip"
 
 #: ../skins/cmfplomino_templates/DatabaseDesign.pt:26
 msgid "Plomino database version"

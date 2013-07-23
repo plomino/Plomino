@@ -48,7 +48,7 @@ class AttachmentField(BaseField):
         if not strValue:
             return None
         strValue = normalizeString(strValue)
-        return {strValue: 'application/unknow'}
+        return {strValue: 'application/unknown'}
 
 
 for f in getFields(IAttachmentField).values():

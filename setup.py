@@ -1,7 +1,7 @@
 from setuptools import setup, find_packages
 import os
 
-version = '1.17.2'
+version = '1.17.3.1'
 
 setup(name='Products.CMFPlomino',
       version=version,
@@ -44,6 +44,8 @@ setup(name='Products.CMFPlomino',
       extras_require={
           'test': [
               'plone.app.testing[robot]>=4.2.2',
+              'python-dateutil',  # (import error without this)
+              'plone.app.robotframework',
               'Products.PloneTestCase',
               'selenium',
               # to test import/export of extended fields:

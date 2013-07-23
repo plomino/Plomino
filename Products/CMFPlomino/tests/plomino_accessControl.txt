@@ -10,7 +10,7 @@ Reader, Designer, Author, Editor, Manager::
     >>> portal.portal_membership.addMember(
     ...         memberName,
     ...         memberName,
-    ...         ('Member, Manager',),
+    ...         ('Member', 'Manager',),
     ...         '',
     ...         {'fullname': memberName, 'email': memberName+'@dummy.fr',}
     ...         )
@@ -101,7 +101,8 @@ Add some minimal content to test access (view 1 displays all documents)::
     >>> adapted=ITextField(db.form1.field1)
     >>> adapted.widget="TEXT"
     >>> db.form1.setFormLayout(
-    ... """<p>field1 : <span class="plominoFieldClass">field1</span></p>""")
+    ... """<p>field1 : <span class="plominoFieldClass">field1</span></p>
+    ... <p>action : <span class="plominoActionClass">powerful_action</span></p>""")
     >>> id = db.invokeFactory('PlominoView',
     ...         id='view1', Title='View 1', SelectionFormula='True')
     >>> db.view1.at_post_create_script()
@@ -117,6 +118,19 @@ Add some minimal content to test access (view 1 displays all documents)::
     >>> doc2.setItem('field1', 'I prefer this value')
     >>> docid2 = doc2.id
     >>> docUrl2 = doc2.doc_url()
+
+Add an action which performs a task only allowed for a site manager::
+
+    >>> actionid = db.form1.invokeFactory('PlominoAction',
+    ...         id='powerful_action',
+    ...         ActionType='PYTHON',
+    ...         ActionDisplay='LINK',
+    ...         InActionBar=False,
+    ...         Content='''
+    ... portal = plominoContext.getParentDatabase().getParentNode()
+    ... newpage = portal.invokeFactory('Document', id='newpage')
+    ... ''')
+    >>> db.form1.powerful_action.setTitle("powerful_action")
 
 Add an agent which will run as its owner::
 
@@ -259,6 +273,14 @@ A reader cannot edit documents or view properties via URLs::
     True
     >>> browser.open(docUrl + '/DocumentProperties')
     >>> InsufficientPrivileges in browser.url
+    True
+
+A reader can click on an action, but its execution will be restricted to his
+actual rights::
+
+    >>> browser.open(docUrl)
+    >>> browser.getLink('powerful_action').click()
+    >>> "action failed" in browser.contents
     True
 
 Log out::

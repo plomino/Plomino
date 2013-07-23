@@ -55,7 +55,6 @@ from PlominoAccessControl import PlominoAccessControl
 from PlominoDesignManager import PlominoDesignManager
 from PlominoDocument import addPlominoDocument
 from PlominoReplicationManager import PlominoReplicationManager
-from PlominoScheduler import PlominoScheduler
 from Products.CMFPlomino.config import *
 from Products.CMFPlomino.PlominoUtils import *
 
@@ -144,19 +143,6 @@ schema = Schema((
         ),
     ),
     BooleanField(
-        name='StorageAttachments',
-        default=False,
-        widget=BooleanField._properties['widget'](
-            label="Use File System Storage for attachments",
-            description="File System Storage must be installed on the portal. "
-                "With current Plone versions (4.x), "
-                "blobstorage will be used by default.",
-            label_msgid='CMFPlomino_label_StorageAttachments',
-            description_msgid='CMFPlomino_help_StorageAttachments',
-            i18n_domain='CMFPlomino',
-        ),
-    ),
-    BooleanField(
         name='CountDocuments',
         default=False,
         widget=BooleanField._properties['widget'](
@@ -235,7 +221,6 @@ PlominoDatabase_schema = getattr(ATFolder, 'schema', Schema(())).copy() + \
     getattr(PlominoAccessControl, 'schema', Schema(())).copy() + \
     getattr(PlominoDesignManager, 'schema', Schema(())).copy() + \
     getattr(PlominoReplicationManager, 'schema', Schema(())).copy() + \
-    getattr(PlominoScheduler, 'schema', Schema(())).copy() + \
     schema.copy()
 
 ##code-section after-schema #fill in your manual code here
@@ -243,7 +228,7 @@ PlominoDatabase_schema = getattr(ATFolder, 'schema', Schema(())).copy() + \
 
 
 class PlominoDatabase(ATFolder, PlominoAccessControl, PlominoDesignManager,
-        PlominoReplicationManager, PlominoScheduler):
+        PlominoReplicationManager):
     """
     """
     security = ClassSecurityInfo()
@@ -477,6 +462,7 @@ class PlominoDatabase(ATFolder, PlominoAccessControl, PlominoDesignManager,
                     self.deleteDocument(self.getDocument(id))
                 except:
                     # if insufficient access rights, we continue
+                    # TODO: if insufficient access rights or absolutely anything else. Fix the bare except.
                     pass
 
     security.declareProtected(REMOVE_PERMISSION, 'manage_deleteDocuments')

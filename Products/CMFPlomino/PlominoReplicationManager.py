@@ -46,7 +46,6 @@ from Products.CMFPlomino.PlominoUtils import escape_xml_illegal_chars
 REMOTE_DOC_ID_SEPARATOR = '#'
 REMOTE_DOC_DATE_SEPARATOR = '@'
 REMOTE_DOC_IDS_HEADER = 'REMOTE_DOC_IDS'
-REMOTE_URL_ADDED = 'url to replicate with'
 REPLICATION_TYPES = {
         'push': 'push',
         'pull': 'pull',
@@ -664,7 +663,6 @@ class PlominoReplicationManager(Persistent):
         """ Sets the replications hashmap.
         """
         self.replicationHistory = replications 
-        self.managePlominoCronTab() 
         return self.replicationHistory
 
     security.declareProtected(EDIT_PERMISSION, 'getReplicationEditingId')
@@ -900,7 +898,7 @@ class PlominoReplicationManager(Persistent):
         return self.buildReplication(
                 self.getNewId(),
                 '',  # name
-                REMOTE_URL_ADDED,
+                '',  # url
                 '',  # username
                 '',  # password
                 'pull',
@@ -1140,8 +1138,10 @@ class PlominoReplicationManager(Persistent):
                 raise PlominoReplicationException, 'separator not set'
 
             # Use the python CSV module
+            if not isinstance(fileToImport, basestring):
+                fileToImport = fileToImport.readlines()
             reader = csv.DictReader(
-                    fileToImport.readlines(),
+                    fileToImport,
                     delimiter=separator)
 
             # Add the form name and copy reader values

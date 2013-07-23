@@ -68,7 +68,8 @@ EXCLUDED_HTML = [
 ]
 
 STYLE_WHITELIST = ['text-align', 'list-style-type', 'float',
-        'plominoFieldClass', 'plominoActionClass', 'plominoHidewhenClass',
+        'plominoLabelClass', 'plominoLegendClass', 'plominoFieldClass',
+        'plominoActionClass', 'plominoHidewhenClass',
         'plominoSubformClass']
 CLASS_BLACKLIST = ['MsoNormal', 'MsoTitle', 'MsoHeader', 'MsoFootnoteText',
         'Bullet1', 'Bullet2']
@@ -86,6 +87,8 @@ PARAGRAPH_STYLES = (
     "Odd row|tr|odd",
     "Even row|tr|even",
     "Heading cell|th|",
+    "Plomino Label|span|plominoLabelClass",
+    "Plomino Legend|span|plominoLegendClass",
     "Plomino Field|span|plominoFieldClass",
     "Plomino Action|span|plominoActionClass",
     "Plomino Hide-when formula|span|plominoHidewhenClass",

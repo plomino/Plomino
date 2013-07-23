@@ -63,6 +63,12 @@ FCK_STYLES = '''
   <Attribute name="class" value="visualHighlight" />
 </Style>
 <Style name="Heading cell" element="th" />
+<Style name="Plomino Label" element="span">
+  <Attribute name="class" value="plominoLabelClass" />
+</Style>
+<Style name="Plomino Legend" element="span">
+  <Attribute name="class" value="plominoLegendClass" />
+</Style>
 <Style name="Plomino Field" element="span">
   <Attribute name="class" value="plominoFieldClass" />
 </Style>

@@ -1,9 +1,22 @@
 language: python
 env:
-  - PLONE_VERSION=4.0
-  - PLONE_VERSION=4.1
-  - PLONE_VERSION=4.2
-  - PLONE_VERSION=4.3
+  matrix:
+    - PLONE_VERSION=4.0
+    - PLONE_VERSION=4.1
+    - PLONE_VERSION=4.2
+    - PLONE_VERSION=4.3
+  global:
+    - secure: |-
+        HPvtfxZKN4ZWsaKdP+5WdBGte1x96ksR9+Go1z7kpJeYo70XV/LAWYc6ORD8
+        r7lP3tkrTBEoXu1wiX2aUHaYU7EBWkPsMv4+fMwEdy92koH1orw2ldYyTxm+
+        tcOPFAMwPou9tGEJkLG/TOEELpoX+Nr1o/t86ZNkgMkScZhRib4=
+    - secure: |-
+        ORM7W1gV9PWYLRgWvMK8R6sBKNTmQj7VFE7F5kw4bEslztvbIQY1a+SgPB0T
+        tILV9qPumTq16fQhVuv5+5eYdXqqgkyP4P7N7q1X5R8bz8sQu8iMCWf1Yzni
+        rT19wGAVm7B8xJwcuffc8R4XZgIi8EBvcruAzMcBphvh9NUj/pA=
+    - ROBOT_BUILD_NUMBER=travis-$TRAVIS_BUILD_NUMBER
+    - ROBOT_REMOTE_URL=http://$SAUCE_USERNAME:$SAUCE_ACCESS_KEY@ondemand.saucelabs.com:80/wd/hub
+    - ROBOT_DESIRED_CAPABILITIES=tunnel-identifier:$TRAVIS_JOB_ID
 python:
   - 2.7
 install:
@@ -11,20 +24,32 @@ install:
   - echo Add good-py versions for plone.app.registry for Plone 4.0
   - if [ "$PLONE_VERSION" == "4.0" ] ; then sed "4 a\    http://good-py.appspot.com/release/plone.app.registry/1.0b2?plone=4.0.9" travis.cfg > travis.cfg.new && mv travis.cfg{.new,}  ; fi
   - if [ "$PLONE_VERSION" == "4.0" ] ; then cat plone_4.0_4.1_versions.txt >> travis.cfg ; fi
+  - if [ "$PLONE_VERSION" == "4.0" ] ; then rm Products/CMFPlomino/tests/test_robot.py ; fi
   - if [ "$PLONE_VERSION" == "4.1" ] ; then sed "4 a\    http://good-py.appspot.com/release/plone.app.registry/1.0b2?plone=4.1.6" travis.cfg > travis.cfg.new && mv travis.cfg{.new,}  ; fi
   - if [ "$PLONE_VERSION" == "4.1" ] ; then cat plone_4.0_4.1_versions.txt >> travis.cfg ; fi
+  - if [ "$PLONE_VERSION" == "4.1" ] ; then rm Products/CMFPlomino/tests/test_robot.py ; fi
+  - if [ "$PLONE_VERSION" == "4.2" ] ; then cat plone_4.2_versions.txt >> travis.cfg ; fi
   - cat travis.cfg # Debug
   - mkdir -p buildout-cache/eggs
   - mkdir -p buildout-cache/downloads
-  - python bootstrap.py -c travis.cfg
+  - python bootstrap.py -c travis.cfg -v 1.7.1
   - bin/buildout -N -t 3 -c travis.cfg install download install
   - bin/buildout -N -t 3 -c travis.cfg
   - cat bin/test # Debug: trying to shed light on #265 and see the actually installed versions
+  - curl -O http://saucelabs.com/downloads/Sauce-Connect-latest.zip
+  - unzip Sauce-Connect-latest.zip
+  - java -jar Sauce-Connect.jar $SAUCE_USERNAME $SAUCE_ACCESS_KEY -i $TRAVIS_JOB_ID -f CONNECTED &
+  - JAVA_PID=$!
 before_script:
+  - bin/instance start
+  - bash -c "while [ ! -f CONNECTED ]; do sleep 2; done"
   - "export DISPLAY=:99.0"
   - "sh -e /etc/init.d/xvfb start"
 script:
-  - bin/test --coverage -m Products.CMFPlomino
+  - bin/coverage run bin/test
+after_success:
+  - pip install coveralls
+  - coveralls
 notifications:
   irc:
     - "irc.freenode.org#plomino"

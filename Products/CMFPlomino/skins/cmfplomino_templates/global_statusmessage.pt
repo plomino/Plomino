@@ -35,7 +35,7 @@
             popup = $("#plominoTracebackPopup").clone();
             $(popup).children("strong").html(msg);
             $.get(formula_path, function(data) {
-                offset = 4;
+                offset = 6;
                 code = "";
                 $.each(data.split('\n'), function(index, value) {
                     line = index + offset

@@ -45,7 +45,7 @@ class PlominoScriptException(Exception):
             self.context_url))
         if self.context.getParentDatabase().debugMode:
             code = ["Code : "]
-            line_number = 4
+            line_number = 6
             formula = self.formula()
             r = re.compile('#Plomino import (.+)[\r\n]')
             for i in r.findall(formula):

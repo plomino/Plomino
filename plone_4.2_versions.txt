@@ -1,0 +1,3 @@
+
+collective.js.jqueryui=1.9.2.0
+# This file is used by .travis.yml

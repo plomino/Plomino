@@ -121,7 +121,7 @@ class BaseField(object):
                         data = json.loads(
                                 unquote(
                                     row_data_json).decode(
-                                        'unicode_escape'))
+                                        'raw_unicode_escape'))
                         datagrid_fields = (
                                 db.getForm(parent_form)
                                 .getFormField(parent_field)
