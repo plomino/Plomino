@@ -305,7 +305,9 @@ class PlominoField(BaseContent, BrowserDefaultMixin):
         fieldclass = component.queryUtility(interfaces.IPlominoField, self.FieldType, None)
         if fieldclass is None:
             if hasattr(fields, self.FieldType.lower()):
-                fieldinterface = getattr(getattr(fields, self.FieldType.lower()), "I"+self.FieldType.capitalize()+"Field")
+                fieldinterface = getattr(
+                        getattr(fields, self.FieldType.lower()),
+                        "I"+self.FieldType.capitalize()+"Field")
             else:
                 fieldinterface = getattr(getattr(fields, "base"), "IBaseField")
         else:
