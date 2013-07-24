@@ -151,7 +151,7 @@ schema = Schema((
             label="Count the number of documents",
             description="If enabled, count the number of documents "
                 "for each view. Display might be slower.",
-            description_msgid=_("CMFPlomino_help_ShowDocumentsNumbers", default="If enabled, count the number of documents for each view. Display might be slower.""),
+            description_msgid=_("CMFPlomino_help_ShowDocumentsNumbers", default="If enabled, count the number of documents for each view. Display might be slower."),
             label_msgid=_("CMFPlomino_label_ShowDocumentsNumbers", default="Count the number of documents"),
             i18n_domain='CMFPlomino',
         ),
