@@ -34,4 +34,3 @@ msgstr ""
 #. Default: "From"
 msgid "From"
 msgstr ""
-
