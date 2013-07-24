@@ -34,6 +34,7 @@ from exceptions import PlominoScriptException
 from PlominoDocument import TemporaryDocument
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlomino.config import *
+from Products.CMFPlomino.browser import PlominoMessageFactory as _
 from Products.CMFPlomino import plomino_profiler
 from Products.CMFPlomino.PlominoUtils import PlominoTranslate, translate
 from Products.CMFPlomino.PlominoUtils import DateToString
@@ -46,8 +47,8 @@ schema = Schema((
         widget=StringField._properties['widget'](
             label="Id",
             description="The form id",
-            label_msgid='CMFPlomino_label_FormId',
-            description_msgid='CMFPlomino_help_FormId',
+            label_msgid=_('CMFPlomino_label_FormId', default="Id"),
+            description_msgid=_('CMFPlomino_help_FormId', default='The form id'),
             i18n_domain='CMFPlomino',
         ),
     ),
@@ -56,8 +57,8 @@ schema = Schema((
         widget=TextAreaWidget(
             label="On create document",
             description="Action to take when the document is created",
-            label_msgid='CMFPlomino_label_onCreateDocument',
-            description_msgid='CMFPlomino_help_onCreateDocument',
+            label_msgid=_('CMFPlomino_label_onCreateDocument', default="On create document"),
+            description_msgid=_('CMFPlomino_help_onCreateDocument', default="Action to take when the document is created"),
             i18n_domain='CMFPlomino',
         ),
         schemata="Events",
@@ -67,8 +68,8 @@ schema = Schema((
         widget=TextAreaWidget(
             label="On open document",
             description="Action to take when the document is opened",
-            label_msgid='CMFPlomino_label_onOpenDocument',
-            description_msgid='CMFPlomino_help_onOpenDocument',
+            label_msgid=_('CMFPlomino_label_onOpenDocument', default="On open document"),
+            description_msgid=_('CMFPlomino_help_onOpenDocument', default="Action to take when the document is opened"),
             i18n_domain='CMFPlomino',
         ),
         schemata="Events",
@@ -78,8 +79,8 @@ schema = Schema((
         widget=TextAreaWidget(
             label="Before save document",
             description="Action to take before submitted values are saved into the document (submitted values are in context.REQUEST)",
-            label_msgid='CMFPlomino_label_beforeSaveDocument',
-            description_msgid='CMFPlomino_help_beforeSaveDocument',
+            label_msgid=_('CMFPlomino_label_beforeSaveDocument', default="Before save document"),
+            description_msgid=_('CMFPlomino_help_beforeSaveDocument', default="Action to take before submitted values are saved into the document (submitted values are in context.REQUEST)"),
             i18n_domain='CMFPlomino',
         ),
         schemata="Events",
@@ -89,8 +90,8 @@ schema = Schema((
         widget=TextAreaWidget(
             label="On save document",
             description="Action to take when saving the document",
-            label_msgid='CMFPlomino_label_onSaveDocument',
-            description_msgid='CMFPlomino_help_onSaveDocument',
+            label_msgid=_('CMFPlomino_label_onSaveDocument', default="On save document"),
+            description_msgid=_('CMFPlomino_help_onSaveDocument', default="Action to take when saving the document"),
             i18n_domain='CMFPlomino',
         ),
         schemata="Events",
@@ -100,8 +101,8 @@ schema = Schema((
         widget=TextAreaWidget(
             label="On delete document",
             description="Action to take before deleting the document",
-            label_msgid='CMFPlomino_label_onDeleteDocument',
-            description_msgid='CMFPlomino_help_onDeleteDocument',
+            label_msgid=_('CMFPlomino_label_onDeleteDocument', default="On delete document"),
+            description_msgid=_('CMFPlomino_help_onDeleteDocument', default="Action to take before deleting the document"),
             i18n_domain='CMFPlomino',
         ),
         schemata="Events",
@@ -111,8 +112,8 @@ schema = Schema((
         widget=TextAreaWidget(
             label="On submission of search form",
             description="Action to take when submitting a search",
-            label_msgid='CMFPlomino_label_onSearch',
-            description_msgid='CMFPlomino_help_onSearch',
+            label_msgid=_('CMFPlomino_label_onSearch', default="On submission of search form"),
+            description_msgid=_('CMFPlomino_help_onSearch', default="Action to take when submitting a search"),
             i18n_domain='CMFPlomino',
         ),
         schemata="Events",
@@ -122,8 +123,8 @@ schema = Schema((
         widget=TextAreaWidget(
             label="Before document creation",
             description="Action to take when opening a blank form",
-            label_msgid='CMFPlomino_label_beforeCreateDocument',
-            description_msgid='CMFPlomino_help_beforeCreateDocument',
+            label_msgid=_('CMFPlomino_label_beforeCreateDocument', default="Before document creation"),
+            description_msgid=_('CMFPlomino_help_beforeCreateDocument', default="Action to take when opening a blank form"),
             i18n_domain='CMFPlomino',
         ),
         schemata="Events",
@@ -134,8 +135,8 @@ schema = Schema((
             label="Form layout",
             description="The form layout. Text with 'Plominofield' styles "
                 "correspond to the contained field elements.",
-            label_msgid='CMFPlomino_label_FormLayout',
-            description_msgid='CMFPlomino_help_FormLayout',
+            label_msgid=_('CMFPlomino_label_FormLayout', default="Form layout"),
+            description_msgid=_('CMFPlomino_help_FormLayout', default="The form layout. Text with 'Plominofield' styles correspond to the contained field elements."),
             i18n_domain='CMFPlomino',
         ),
         default_output_type="text/html",
@@ -145,8 +146,8 @@ schema = Schema((
         widget=TextAreaWidget(
             label="Document title formula",
             description="Compute the document title",
-            label_msgid='CMFPlomino_label_DocumentTitle',
-            description_msgid='CMFPlomino_help_DocumentTitle',
+            label_msgid=_('CMFPlomino_label_DocumentTitle', default="Document title formula"),
+            description_msgid=_('CMFPlomino_help_DocumentTitle', default='Compute the document title'),
             i18n_domain='CMFPlomino',
         ),
     ),
@@ -156,8 +157,8 @@ schema = Schema((
             label="Document id formula",
             description="Compute the document id at creation. "
                 "(Undergoes normalization.)",
-            label_msgid='CMFPlomino_label_DocumentId',
-            description_msgid='CMFPlomino_help_DocumentId',
+            label_msgid=_('CMFPlomino_label_DocumentId', default="Document id formula"),
+            description_msgid=_('CMFPlomino_help_DocumentId', default='Compute the document id at creation. (Undergoes normalization.)'),
             i18n_domain='CMFPlomino',
         ),
     ),
@@ -167,8 +168,8 @@ schema = Schema((
         widget=SelectionWidget(
             label="Position of the action bar",
             description="Select the position of the action bar",
-            label_msgid='CMFPlomino_label_ActionBarPosition',
-            description_msgid='CMFPlomino_help_ActionBarPosition',
+            label_msgid=_('CMFPlomino_label_ActionBarPosition', default="Position of the action bar"),
+            description_msgid=_('CMFPlomino_help_ActionBarPosition', default="Select the position of the action bar"),
             i18n_domain='CMFPlomino',
         ),
         vocabulary=[
@@ -183,8 +184,8 @@ schema = Schema((
             label="Hide default actions",
             description="Edit, Save, Delete, Close actions "
                 "will not be displayed in the action bar",
-            label_msgid='CMFPlomino_label_HideDefaultActions',
-            description_msgid='CMFPlomino_help_HideDefaultActions',
+            label_msgid=_('CMFPlomino_label_HideDefaultActions', default="Hide default actions"),
+            description_msgid=_('CMFPlomino_help_HideDefaultActions', default='Edit, Save, Delete, Close actions will not be displayed in the action bar'),
             i18n_domain='CMFPlomino',
         ),
     ),
@@ -194,8 +195,8 @@ schema = Schema((
         widget=BooleanField._properties['widget'](
             label="Hide in menu",
             description="It will not appear in the database main menu",
-            label_msgid='CMFPlomino_label_HideInMenu',
-            description_msgid='CMFPlomino_help_HideInMenu',
+            label_msgid=_('CMFPlomino_label_HideInMenu', default="Hide in menu"),
+            description_msgid=_('CMFPlomino_help_HideInMenu', default='It will not appear in the database main menu'),
             i18n_domain='CMFPlomino',
         ),
     ),
@@ -206,8 +207,8 @@ schema = Schema((
             label="Search form",
             description="A search form is only used to search documents, "
                 "it cannot be saved.",
-            label_msgid='CMFPlomino_label_SearchForm',
-            description_msgid='CMFPlomino_help_SearchForm',
+            label_msgid=_('CMFPlomino_label_SearchForm', default="Search form"),
+            description_msgid=_('CMFPlomino_help_SearchForm', default="A search form is only used to search documents, it cannot be saved."),
             i18n_domain='CMFPlomino',
         ),
     ),
@@ -219,8 +220,8 @@ schema = Schema((
             description="A page cannot be saved and does not provide "
                 "any action bar. It can be useful to build a welcome page, "
                 "explanations, reports, navigation, etc.",
-            label_msgid='CMFPlomino_label_isPage',
-            description_msgid='CMFPlomino_help_isPage',
+            label_msgid=_('CMFPlomino_label_isPage', default="Page"),
+            description_msgid=_('CMFPlomino_help_isPage', default="A page cannot be saved and does not provide any action bar. It can be useful to build a welcome page, explanations, reports, navigation, etc."),
             i18n_domain='CMFPlomino',
         ),
     ),
@@ -230,8 +231,8 @@ schema = Schema((
             label="Search view",
             description="View used to display the search results",
             format='select',
-            label_msgid='CMFPlomino_label_SearchView',
-            description_msgid='CMFPlomino_help_SearchView',
+            label_msgid=_('CMFPlomino_label_SearchView', default="Search view"),
+            description_msgid=_('CMFPlomino_help_SearchView', default="View used to display the search results"),
             i18n_domain='CMFPlomino',
         ),
         vocabulary='_getDatabaseViews',
@@ -240,9 +241,9 @@ schema = Schema((
         name='SearchFormula',
         widget=TextAreaWidget(
             label="Search formula",
-            description="Leave blank to use default Zcatalog search",
-            label_msgid='CMFPlomino_label_SearchFormula',
-            description_msgid='CMFPlomino_help_SearchFormula',
+            description="Leave blank to use default ZCatalog search",
+            label_msgid=_('CMFPlomino_label_SearchFormula', default="Search formula"),
+            description_msgid=_('CMFPlomino_help_SearchFormula', default="Leave blank to use default ZCatalog search"),
             i18n_domain='CMFPlomino',
         ),
     ),
@@ -250,9 +251,9 @@ schema = Schema((
         name='Position',
         widget=IntegerField._properties['widget'](
             label="Position",
-            label_msgid="CMFPlomino_label_Position",
+            label_msgid=_("CMFPlomino_label_Position", default="Position"),
             description="Position in menu",
-            description_msgid="CMFPlomino_help_Position",
+            description_msgid=_("CMFPlomino_help_Position", default="Position in menu"),
             i18n_domain='CMFPlomino',
         ),
     ),

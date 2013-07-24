@@ -4,7 +4,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: CMFPlomino\n"
 "POT-Creation-Date: Thu Sep 28 15:52:32 2006\n"
-"PO-Revision-Date: Thu Sep 28 15:52:32 2006\n"
+"PO-Revision-Date: 2013-07-24 13:50+0700\n"
 "Last-Translator: [Eric BREHAULT] <[ebrehault@gmail.com]>\n"
 "Language-Team: [Eric BREHAULT] <[ebrehault@gmail.com]>\n"
 "MIME-Version: 1.0\n"
@@ -20,9 +20,12 @@ msgstr ""
 msgid "PlominoAction"
 msgstr "Plomino: Action"
 
+#. Default: "Plomino: Cache"
+msgid "PlominoCache"
+msgstr ""
+
 msgid "PlominoColumn"
 msgstr "Plomino: Colonne"
-
 
 msgid "PlominoDatabase"
 msgstr "Plomino: Database"

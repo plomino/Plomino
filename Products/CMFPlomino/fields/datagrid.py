@@ -27,6 +27,7 @@ from zope.schema.vocabulary import SimpleVocabulary
 from zope.schema import Text, TextLine, Choice
 
 # Plomino
+from Products.CMFPlomino.browser import PlominoMessageFactory as _
 from Products.CMFPlomino.fields.base import IBaseField, BaseField, BaseForm
 from Products.CMFPlomino.fields.dictionaryproperty import DictionaryProperty
 from Products.CMFPlomino.interfaces import IPlominoField
@@ -143,7 +144,7 @@ class DatagridField(BaseField):
         """
         db = self.context.getParentDatabase()
         if action_id == "add":
-            label = PlominoTranslate("datagrid_add_button_label", db)
+            label = PlominoTranslate(_("datagrid_add_button_label", default="Add"), db)
             child_form_id = self.associated_form
             if child_form_id:
                 child_form = db.getForm(child_form_id)
@@ -151,9 +152,9 @@ class DatagridField(BaseField):
                     label += " "+child_form.Title()
             return label
         elif action_id == "delete":
-            return PlominoTranslate("datagrid_delete_button_label", db)
+            return PlominoTranslate(_("datagrid_delete_button_label", default="Delete"), db)
         elif action_id == "edit":
-            return PlominoTranslate("datagrid_edit_button_label", db)
+            return PlominoTranslate(_("datagrid_edit_button_label", default="Edit"), db)
         return ""
 
     def getColumnLabels(self):

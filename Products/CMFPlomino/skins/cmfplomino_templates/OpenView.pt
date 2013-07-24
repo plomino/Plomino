@@ -87,7 +87,7 @@
                                         </tal:block></td>
                                         <td class="even"
                                             style="text-align: left; text-transform: none"
-                                            tal:attributes="colspan python:len(columns)"><tal:block
+                                            tal:attributes="colspan python:len(columns)"><tal:block i18n:translate=""
                                             tal:condition="python:test(cat[0]=='')">Not categorized</tal:block>
                                         <span tal:content="python:cat[0]+' ('+str(cat[1])+')'" /></td>
                                     </tr>
