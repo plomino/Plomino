@@ -40,7 +40,7 @@ except:
 from exceptions import PlominoScriptException
 from PlominoUtils import asUnicode, asList
 from Products.CMFPlomino.config import *
-from Products.CMFPlomino.browser import PloneMessageFactory as _
+from Products.CMFPlomino.browser import PlominoMessageFactory as _
 from validator import isValidPlominoId
 import interfaces
 
@@ -52,10 +52,9 @@ schema = Schema((
         name='id',
         widget=StringField._properties['widget'](
             label="Id",
-            description="If changed after creation, "
-                "database refresh is needed",
-            label_msgid=_('CMFPlomino_label_view_id'),
-            description_msgid=_('CMFPlomino_help_view_id'),
+            description="If changed after creation, database refresh is needed",
+            label_msgid=_('CMFPlomino_label_view_id', default="Id"),
+            description_msgid=_('CMFPlomino_help_view_id', default="If changed after creation, database refresh is needed"),
             i18n_domain='CMFPlomino',
         ),
         validators = ("isValidId", isValidPlominoId),
@@ -69,8 +68,11 @@ code which should return True or False. The formula will be evaluated for
 each document in the database to decide if the document must be displayed in
 the view or not. 'plominoDocument' is a reserved name in formulae: it
 returns the current Plomino document.""",
-            label_msgid=_('CMFPlomino_label_SelectionFormula'),
-            description_msgid=_('CMFPlomino_help_SelectionFormula'),
+            label_msgid=_('CMFPlomino_label_SelectionFormula', default="Selection formula"),
+            description_msgid=_('CMFPlomino_help_SelectionFormula', default="""The view selection formula is a line of Python code which should return True or False. The formula will be evaluated for
+each document in the database to decide if the document must be displayed in
+the view or not. 'plominoDocument' is a reserved name in formulae: it
+returns the current Plomino document."""),
             i18n_domain='CMFPlomino',
         ),
         default = "True",
@@ -81,8 +83,8 @@ returns the current Plomino document.""",
             label="Sort column",
             description="Column used to sort the view",
             format='select',
-            label_msgid=_('CMFPlomino_label_SortColumn'),
-            description_msgid=_('CMFPlomino_help_SortColumn'),
+            label_msgid=_('CMFPlomino_label_SortColumn', default="Sort column"),
+            description_msgid=_('CMFPlomino_help_SortColumn', default="Column used to sort the view"),
             i18n_domain='CMFPlomino',
         ),
         vocabulary="_getcolumn_ids",
@@ -94,8 +96,8 @@ returns the current Plomino document.""",
         widget=BooleanField._properties['widget'](
             label="Categorized",
             description="Categorised on first column",
-            label_msgid=_('CMFPlomino_label_Categorized'),
-            description_msgid=_('CMFPlomino_help_Categorized'),
+            label_msgid=_('CMFPlomino_label_Categorized', default="Categorized"),
+            description_msgid=_('CMFPlomino_help_Categorized', default='Categorised on first column'),
             i18n_domain='CMFPlomino',
         ),
         schemata="Sorting",
@@ -107,8 +109,8 @@ returns the current Plomino document.""",
             description="Documents open from the view will use the form "
                     "defined by the following formula "
                     "(they use their own form if empty)",
-            label_msgid=_('CMFPlomino_label_FormFormula'),
-            description_msgid=_('CMFPlomino_help_FormFormula'),
+            label_msgid=_('CMFPlomino_label_FormFormula', default="Form formula"),
+            description_msgid=_('CMFPlomino_help_FormFormula', default='Documents open from the view will use the form defined by the following formula(they use their own form if empty)'),
             i18n_domain='CMFPlomino',
         ),
     ),
@@ -118,8 +120,8 @@ returns the current Plomino document.""",
         widget=BooleanField._properties['widget'](
             label="Reverse sorting",
             description="Reverse sorting",
-            label_msgid=_('CMFPlomino_label_ReverseSorting'),
-            description_msgid=_('CMFPlomino_help_ReverseSorting'),
+            label_msgid=_('CMFPlomino_label_ReverseSorting', default="Reverse sorting"),
+            description_msgid=_('CMFPlomino_help_ReverseSorting', default="Reverse the sort ordering"),
             i18n_domain='CMFPlomino',
         ),
         schemata="Sorting",
@@ -146,8 +148,8 @@ returns the current Plomino document.""",
         widget=BooleanField._properties['widget'](
             label="Hide default actions",
             description="Delete, Close actions will not be displayed in the action bar",
-            label_msgid=_('CMFPlomino_label_HideViewDefaultActions'),
-            description_msgid=_('CMFPlomino_help_HideViewDefaultActions'),
+            label_msgid=_('CMFPlomino_label_HideViewDefaultActions', default="Hide default actions"),
+            description_msgid=_('CMFPlomino_help_HideViewDefaultActions', default='Delete, Close actions will not be displayed in the action bar'),
             i18n_domain='CMFPlomino',
         ),
 #        schemata="Parameters",
@@ -158,8 +160,8 @@ returns the current Plomino document.""",
         widget=BooleanField._properties['widget'](
             label="Hide checkboxes",
             description="The first column with checkboxes will not be displayed",
-            label_msgid=_('CMFPlomino_label_HideCheckboxes'),
-            description_msgid=_('CMFPlomino_help_HideCheckboxes'),
+            label_msgid=_('CMFPlomino_label_HideCheckboxes', default="Hide checkboxes"),
+            description_msgid=_('CMFPlomino_help_HideCheckboxes', default='The first column with checkboxes will not be displayed'),
             i18n_domain='CMFPlomino',
         ),
     ),
@@ -169,8 +171,8 @@ returns the current Plomino document.""",
         widget=BooleanField._properties['widget'](
             label="Hide in menu",
             description="It will not appear in the database main menu",
-            label_msgid=_('CMFPlomino_label_HideInMenu'),
-            description_msgid=_('CMFPlomino_help_HideInMenu'),
+            label_msgid=_('CMFPlomino_label_HideInMenu', default="Hide in menu"),
+            description_msgid=_('CMFPlomino_help_HideInMenu', default="It will not appear in the database main menu"),
             i18n_domain='CMFPlomino',
         ),
 #        schemata="Parameters",
@@ -181,8 +183,8 @@ returns the current Plomino document.""",
         widget=SelectionWidget(
             label="Widget",
             description="Rendering mode",
-            label_msgid=_('CMFPlomino_label_ViewWidget'),
-            description_msgid=_('CMFPlomino_help_ViewWidget'),
+            label_msgid=_('CMFPlomino_label_ViewWidget', default="Widget"),
+            description_msgid=_('CMFPlomino_help_ViewWidget', default="Rendering mode"),
             i18n_domain='CMFPlomino',
         ),
         vocabulary= [
@@ -195,8 +197,8 @@ returns the current Plomino document.""",
         widget=TextAreaWidget(
             label="Dynamic Table Parameters",
             description="Change these options to customize the dynamic table.",
-            label_msgid=_('CMFPlomino_label_DynamicTableParameters'),
-            description_msgid=_('CMFPlomino_help_DynamicTableParameters'),
+            label_msgid=_('CMFPlomino_label_DynamicTableParameters', default="Dynamic Table Parameters"),
+            description_msgid=_('CMFPlomino_help_DynamicTableParameters', default='Change these options to customize the dynamic table.'),
             i18n_domain='CMFPlomino',
         ),
         default=u"""
@@ -213,8 +215,8 @@ returns the current Plomino document.""",
         widget=StringField._properties['widget'](
             label="View template",
             description="Leave blank to use default",
-            label_msgid=_('CMFPlomino_label_ViewTemplate'),
-            description_msgid=_('CMFPlomino_help_ViewTemplate'),
+            label_msgid=_('CMFPlomino_label_ViewTemplate', default="View template"),
+            description_msgid=_('CMFPlomino_help_ViewTemplate', default="Leave blank to use default"),
             i18n_domain='CMFPlomino',
         ),
 #        schemata="Parameters",
@@ -226,8 +228,8 @@ returns the current Plomino document.""",
             description="Action to take when the view is opened. "
                 "If a string is returned, it is considered an error "
                 "message, and the opening is not allowed.",
-            label_msgid=_('CMFPlomino_label_onOpenView'),
-            description_msgid=_('CMFPlomino_help_onOpenView'),
+            label_msgid=_('CMFPlomino_label_onOpenView', default="On open view"),
+            description_msgid=_('CMFPlomino_help_onOpenView', default="Action to take when the view is opened. If a string is returned, it is considered an error message, and the opening is not allowed."),
             i18n_domain='CMFPlomino',
         ),
     ),
@@ -235,7 +237,7 @@ returns the current Plomino document.""",
         name='Position',
         widget=IntegerField._properties['widget'](
             label="Position",
-            label_msgid=_("CMFPlomino_label_Position"),
+            label_msgid=_("CMFPlomino_label_Position", default="Position"),
             description="Position in menu",
             description_msgid=_("CMFPlomino_description_Position"),
             i18n_domain='CMFPlomino',

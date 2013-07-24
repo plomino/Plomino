@@ -59,7 +59,7 @@ except ImportError, e:
 # Plomino
 from exceptions import PlominoScriptException
 from PlominoUtils import sendMail, asUnicode, asList, PlominoTranslate
-from Products.CMFPlomino.browser import PloneMessageFactory as _
+from Products.CMFPlomino.browser import PlominoMessageFactory as _
 from Products.CMFPlomino.config import *
 import interfaces
 

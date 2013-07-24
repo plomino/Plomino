@@ -22,7 +22,7 @@ from Products.CMFDynamicViewFTI.browserdefault import BrowserDefaultMixin
 
 # Plone
 from Products.CMFPlomino.config import *
-from Products.CMFPlomino.browser import PloneMessageFactory as _
+from Products.CMFPlomino.browser import PlominoMessageFactory as _
 import interfaces 
 
 ##code-section module-header #fill in your manual code here
@@ -34,8 +34,8 @@ schema = Schema((
         widget=StringField._properties['widget'](
             label="Id",
             description="The hide-when id",
-            label_msgid=_('CMFPlomino_label_hidewhen_id'),
-            description_msgid=_('CMFPlomino_help_hidewhen_id'),
+            label_msgid=_('CMFPlomino_label_hidewhen_id', default="Id"),
+            description_msgid=_('CMFPlomino_help_hidewhen_id', default="The hide-when id"),
             i18n_domain='CMFPlomino',
         ),
     ),
@@ -43,9 +43,9 @@ schema = Schema((
         name='Formula',
         widget=TextAreaWidget(
             label="Formula",
-            description=_("If returning True, the block will be hidden."),
-            label_msgid=_('CMFPlomino_label_HidewhenFormula'),
-            description_msgid=_('CMFPlomino_help_HidewhenFormula'),
+            description="If returning True, the block will be hidden.",
+            label_msgid=_('CMFPlomino_label_HidewhenFormula', default="Formula"),
+            description_msgid=_('CMFPlomino_help_HidewhenFormula', default='If returning True, the block will be hidden.'),
             i18n_domain='CMFPlomino',
         ),
     ),
@@ -56,8 +56,8 @@ schema = Schema((
             label="Dynamic Hide-when",
             description="Hide-when are evaluated dynamically "
                 "when the user enters information",
-            label_msgid=_('CMFPlomino_label_isDynamicHidewhen'),
-            description_msgid=_('CMFPlomino_help_isDynamicHidewhen'),
+            label_msgid=_('CMFPlomino_label_isDynamicHidewhen', default="Dynamic Hide-when"),
+            description_msgid=_('CMFPlomino_help_isDynamicHidewhen', default="Hide-when are evaluated dynamically when the user enters information"),
             i18n_domain='CMFPlomino',
         ),
     ),

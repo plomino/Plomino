@@ -34,7 +34,7 @@ from Products.CMFDynamicViewFTI.browserdefault import BrowserDefaultMixin
 # Plomino
 from exceptions import PlominoScriptException
 from Products.CMFPlomino.config import *
-from Products.CMFPlomino.browser import PloneMessageFactory as _
+from Products.CMFPlomino.browser import PlominoMessageFactory as _
 import interfaces
 
 schema = Schema((
@@ -43,8 +43,8 @@ schema = Schema((
         widget=StringField._properties['widget'](
             label="Id",
             description="The agent id",
-            label_msgid=_('CMFPlomino_label_agent_id'),
-            description_msgid=_('CMFPlomino_help_agent_id'),
+            label_msgid=_('CMFPlomino_label_agent_id', default="Id"),
+            description_msgid=_('CMFPlomino_help_agent_id', default="The agent id"),
             i18n_domain='CMFPlomino',
         ),
     ),
@@ -53,8 +53,8 @@ schema = Schema((
         widget=TextAreaWidget(
             label="Code",
             description="Code to execute",
-            label_msgid=_("CMFPlomino_label_AgentContent"),
-            description_msgid=_("CMFPlomino_help_AgentContent"),
+            label_msgid=_("CMFPlomino_label_AgentContent", default="Code to execute"),
+            description_msgid=_("CMFPlomino_help_AgentContent", default='Code to execute'),
             i18n_domain='CMFPlomino',
             rows=25,
         ),
@@ -64,10 +64,9 @@ schema = Schema((
         default="CURRENT",
         widget=SelectionWidget(
             label="Run as",
-            description="Run the agent using current user access rights, "
-                "or using the developer access rights.",
-            label_msgid=_('CMFPlomino_label_AgentRunAs'),
-            description_msgid=_('CMFPlomino_help_AgentRunAs'),
+            description="Run the agent using current user access rights, or using the developer access rights.",
+            label_msgid=_('CMFPlomino_label_AgentRunAs', default="Run as"),
+            description_msgid=_('CMFPlomino_help_AgentRunAs', default='Run the agent using current user access rights, or using the developer access rights.'),
             i18n_domain='CMFPlomino',
         ),
         vocabulary=[

@@ -23,7 +23,7 @@ from zope.schema.vocabulary import SimpleVocabulary
 from dictionaryproperty import DictionaryProperty
 
 # Plomino
-from Products.CMFPlomino.browser import PloneMessageFactory as _
+from Products.CMFPlomino.browser import PlominoMessageFactory as _
 from Products.CMFPlomino.PlominoUtils import PlominoTranslate 
 from base import IBaseField, BaseField, BaseForm
 
