@@ -59,6 +59,7 @@ except ImportError, e:
 # Plomino
 from exceptions import PlominoScriptException
 from PlominoUtils import sendMail, asUnicode, asList, PlominoTranslate
+from Products.CMFPlomino.browser import PlominoMessageFactory as _
 from Products.CMFPlomino.config import *
 import interfaces
 
@@ -692,7 +693,7 @@ class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
                         if field and field.getMandatory():
                             error = "%s %s" % (
                                     fieldname,
-                                    PlominoTranslate("is mandatory", self))
+                                    PlominoTranslate(_("is mandatory"), self))
                             return form.notifyErrors([error])
                 del current_files[filename]
                 self.setItem(fieldname, current_files)

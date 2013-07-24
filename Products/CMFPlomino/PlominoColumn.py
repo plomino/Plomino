@@ -20,6 +20,7 @@ import interfaces
 from Products.CMFDynamicViewFTI.browserdefault import BrowserDefaultMixin
 
 from Products.CMFPlomino.config import PROJECTNAME
+from Products.CMFPlomino.browser import PlominoMessageFactory as _
 from validator import isValidPlominoId
 
 schema = Schema((
@@ -29,8 +30,8 @@ schema = Schema((
         widget=StringField._properties['widget'](
             label="Id",
             description="Column id",
-            label_msgid='CMFPlomino_label_column_id',
-            description_msgid='CMFPlomino_help_column_id',
+            label_msgid=_('CMFPlomino_label_column_id', default="Id"),
+            description_msgid=_('CMFPlomino_help_column_id', default="Column id"),
             i18n_domain='CMFPlomino',
         ),
         validators=("isValidId", isValidPlominoId),
@@ -41,8 +42,8 @@ schema = Schema((
             label="Fields list",
             description=("Field value to display in the column. "
                 "(It does not apply if Formula is provided)."),
-#            label_msgid='CMFPlomino_label_FieldType',
-#            description_msgid='CMFPlomino_help_FieldType',
+#            label_msgid=_('CMFPlomino_label_FieldType'),
+#            description_msgid=_('CMFPlomino_help_FieldType'),
 #            i18n_domain='CMFPlomino',
         ),
         vocabulary='getFormFields',
@@ -52,8 +53,8 @@ schema = Schema((
         widget=TextAreaWidget(
             label="Formula",
             description="Python code returning the column value.",
-            label_msgid='CMFPlomino_label_ColumnFormula',
-            description_msgid='CMFPlomino_help_ColumnFormula',
+            label_msgid=_('CMFPlomino_label_ColumnFormula', default="Formula"),
+            description_msgid=_('CMFPlomino_help_ColumnFormula', default='Python code returning the column value.'),
             i18n_domain='CMFPlomino',
         ),
     ),
@@ -62,8 +63,8 @@ schema = Schema((
 #        widget=IntegerField._properties['widget'](
 #            label="Position",
 #            description="Position in view",
-#            label_msgid='CMFPlomino_label_ColumnPosition',
-#            description_msgid='CMFPlomino_help_ColumnPosition',
+#            label_msgid=_('CMFPlomino_label_ColumnPosition'),
+#            description_msgid=_('CMFPlomino_help_ColumnPosition'),
 #            i18n_domain='CMFPlomino',
 #        ),
 #    ),
@@ -72,7 +73,7 @@ schema = Schema((
         default="0",
         widget=BooleanField._properties['widget'](
             label="Hidden column",
-            label_msgid='CMFPlomino_label_HiddenColumn',
+            label_msgid=_('CMFPlomino_label_HiddenColumn', default="Hidden column"),
             i18n_domain='CMFPlomino',
         ),
     ),
@@ -81,7 +82,7 @@ schema = Schema((
         default="0",
         widget=BooleanField._properties['widget'](
             label="Display column sum",
-            label_msgid='CMFPlomino_label_DisplaySum',
+            label_msgid=_('CMFPlomino_label_DisplaySum', default="Display column sum"),
             i18n_domain='CMFPlomino',
         ),
     ),
