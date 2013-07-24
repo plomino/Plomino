@@ -31,3 +31,7 @@ msgstr ""
 msgid "Ready"
 msgstr ""
 
+#. Default: "From"
+msgid "From"
+msgstr ""
+
