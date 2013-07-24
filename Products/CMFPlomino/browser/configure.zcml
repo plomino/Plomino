@@ -4,6 +4,23 @@
     xmlns:plone="http://namespaces.plone.org/plone"
     i18n_domain="CMFPlomino">
 
+    <!-- Our custom title viewlet --> 
+  <browser:viewlet
+      name="plone.htmlhead.title"
+      for="Products.CMFPlomino.interfaces.IPlominoDocument"
+      manager="plone.app.layout.viewlets.interfaces.IHtmlHead"
+      class=".viewlets.TitleViewlet" 
+      permission="zope2.View" 
+      />
+
+   <browser:viewlet
+      name="plone.path_bar"
+      for="Products.CMFPlomino.interfaces.IPlominoDocument"
+      manager="plone.app.layout.viewlets.interfaces.IPortalTop"
+      class=".viewlets.PathBarViewlet"
+      permission="zope2.View"
+      />
+
   <plone:portlet
       name="plomino.designportlet"
       interface=".portlet.IPortlet"
