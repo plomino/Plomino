@@ -590,7 +590,8 @@ class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
     def getTitle(self):
         """ Return the stored title or compute the title (if dynamic).
         """
-        if self.getDynamicDocumentTitle():
+        form = self.getForm()
+        if form.getDynamicDocumentTitle():
             # compute the document title
             title_formula = form.getDocumentTitle()
             if title_formula:
@@ -600,7 +601,7 @@ class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
                             'form_%s_title' % form.id,
                             self,
                             form.DocumentTitle)
-                    if (self.getStoreDynamicDocumentTitle() 
+                    if (form.getStoreDynamicDocumentTitle() 
                             and title != self.Title()):
                         self.setTitle(title)
                     return title
