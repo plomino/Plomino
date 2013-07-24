@@ -20,6 +20,7 @@ import interfaces
 from Products.CMFDynamicViewFTI.browserdefault import BrowserDefaultMixin
 
 from Products.CMFPlomino.config import *
+from Products.CMFPlomino.browser import PloneMessageFactory as _
 from exceptions import PlominoScriptException
 
 ##code-section module-header #fill in your manual code here
