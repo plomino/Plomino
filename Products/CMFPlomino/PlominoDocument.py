@@ -2,7 +2,6 @@
 #
 # File: PlominoDocument.py
 
-
 __author__ = """Eric BREHAULT <eric.brehault@makina-corpus.org>"""
 __docformat__ = 'plaintext'
 
@@ -586,6 +585,28 @@ class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
             form = self.getForm()
         message = self.openWithForm(form)
         sendMail(db, recipients, title, message)
+
+    security.declarePublic('getTitle')
+    def getTitle(self):
+        """ Return the stored title or compute the title (if dynamic).
+        """
+        if self.getDynamicDocumentTitle():
+            # compute the document title
+            title_formula = form.getDocumentTitle()
+            if title_formula:
+                # Use the formula if we have one
+                try:
+                    title = self.runFormulaScript(
+                            'form_%s_title' % form.id,
+                            self,
+                            form.DocumentTitle)
+                    if (self.getStoreDynamicDocumentTitle() 
+                            and title != self.Title()):
+                        self.setTitle(title)
+                    return title
+                except PlominoScriptException, e:
+                    e.reportError('Title formula failed')
+        return self.Title()
 
     security.declarePublic('getForm')
     def getForm(self):

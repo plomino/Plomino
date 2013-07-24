@@ -51,7 +51,7 @@
 						display form actions
 					</span><br/>
 				</tal:block>
-			    <h1 class="documentFirstHeading" tal:content="here/Title">Title</h1>
+			    <h1 class="documentFirstHeading" tal:content="here/getTitle">Title</h1>
 			    <div tal:replace="structure provider:plone.belowcontenttitle" />
 
 			    <div tal:replace="structure provider:plone.abovecontentbody" />

@@ -22,7 +22,7 @@
                tal:content="python:doc.getItem('Plomino_Parent_Form')">Plomino_Parent_Form</span>
            <span id="plomino_child_errors"></span>
            <h1 class="documentFirstHeading"
-               tal:content="here/Title">Title</h1>
+               tal:content="here/getTitle">Title</h1>
            <span tal:content="structure python:myF.childDocument(doc)" />
        </form>
     </div>
