@@ -99,7 +99,7 @@
                     </span><br/>
                 </tal:form_actions_top>
 
-                <h1 class="documentFirstHeading" tal:content="here/getTitle">Title</h1>
+                <h1 class="documentFirstHeading" tal:content="here/Title">Title</h1>
                 <div tal:replace="structure provider:plone.belowcontenttitle" />
                 <div tal:replace="structure provider:plone.abovecontentbody" />
                 <span tal:content="structure python:here.editWithForm(this_form)" />

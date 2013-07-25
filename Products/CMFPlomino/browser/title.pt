@@ -1,2 +1,0 @@
-<!-- How do I just use plone/app/layout/viewlets/title.pt ? -->
-<title tal:content="structure view/site_title">Site Title</title>

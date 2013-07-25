@@ -138,7 +138,7 @@ class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
         self.plomino_modification_time = DateTime().toZone('UTC')
 
     security.declarePublic('getItem')
-    def getItem(self,name, default=''):
+    def getItem(self, name, default=''):
         """ Get item from document.
         """
         if self.items.has_key(name):
@@ -587,7 +587,7 @@ class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
         sendMail(db, recipients, title, message)
 
     security.declarePublic('getTitle')
-    def getTitle(self):
+    def Title(self):
         """ Return the stored title or compute the title (if dynamic).
         """
         form = self.getForm()
@@ -601,13 +601,13 @@ class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
                             'form_%s_title' % form.id,
                             self,
                             form.DocumentTitle)
-                    if (form.getStoreDynamicDocumentTitle() 
-                            and title != self.Title()):
+                    if (form.getStoreDynamicDocumentTitle() and
+                            title != super(PlominoDocument, self).Title()):
                         self.setTitle(title)
                     return title
                 except PlominoScriptException, e:
                     e.reportError('Title formula failed')
-        return self.Title()
+        return super(PlominoDocument, self).Title()
 
     security.declarePublic('getForm')
     def getForm(self):
