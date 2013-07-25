@@ -131,7 +131,6 @@ class PlominoAgent(BaseContent, BrowserDefaultMixin):
                 newSecurityManager(None, user)
 
         except PlominoScriptException, e:
-            import pdb; pdb.set_trace()
             e.reportError('Agent failed')
             result = None
 
