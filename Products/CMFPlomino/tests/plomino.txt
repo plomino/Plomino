@@ -173,6 +173,33 @@ By default, during document creation, the title is the form's title::
     >>> doc1.Title()
     u'A document about London calling'
 
+The document title can be computed dynamically, upon every page view::
+
+    >>> db.frm1.setDynamicDocumentTitle(True)
+    >>> doc1.setItem('field1', 'Saigon')
+    >>> doc1.Title()
+    u'A document about Saigon'
+
+By default, the computed title isn't stored,
+so if we stop computing it, it falls back to the last stored value::
+
+    >>> db.frm1.setDynamicDocumentTitle(False)
+    >>> doc1.Title()
+    u'A document about London calling'
+
+It's possible to specify storing the computed value, but note that 
+this introduces complications: write on read, and Author rights::
+
+    >>> db.frm1.setDynamicDocumentTitle(True)
+    >>> db.frm1.setStoreDynamicDocumentTitle(True)
+    >>> doc1.setItem('field1', 'Ho Chi Minh City calling')
+    >>> doc1.Title()
+    u'A document about Ho Chi Minh City calling'
+    >>> db.frm1.setDynamicDocumentTitle(False)
+    >>> db.frm1.setStoreDynamicDocumentTitle(False)
+    >>> doc1.Title()
+    u'A document about Ho Chi Minh City calling'
+
 The document id formula allows to compute the document's id.
 Note: it will be normalized according Plone rules
 (ascii only, lower case, spaces replaced by dash,
@@ -486,10 +513,10 @@ A form can define actions to take when specific events occur on a document.
     ...         plominoDocument.field1+" by The Clash")
     ... plominoDocument.save()""")
     >>> doc1.field1
-    u'London calling'
+    u'Ho Chi Minh City calling'
     >>> content = doc1.openWithForm(db.frm1)
     >>> doc1.field1
-    u'London calling by The Clash'
+    u'Ho Chi Minh City calling by The Clash'
 
 ``onSaveDocument`` is executed each time the document is saved::
 
