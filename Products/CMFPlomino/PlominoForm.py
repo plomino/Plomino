@@ -157,8 +157,8 @@ schema = Schema((
         widget=BooleanField._properties['widget'](
             label="Compute document title on view",
             description="Execute DocumentTitle formula when document is rendered",
-            label_msgid='CMFPlomino_label_DynamicDocumentTitle',
-            description_msgid='CMFPlomino_help_DynamicDocumentTitle',
+            label_msgid=_('CMFPlomino_label_DynamicDocumentTitle', default="Compute document title on view"),
+            description_msgid=_('CMFPlomino_help_DynamicDocumentTitle', default="Execute DocumentTitle formula when document is rendered"),
             i18n_domain='CMFPlomino',
         ),
     ),
@@ -168,8 +168,8 @@ schema = Schema((
         widget=BooleanField._properties['widget'](
             label="Store dynamically computed title",
             description="Store computed title every time document is rendered",
-            label_msgid='CMFPlomino_label_StoreDynamicDocumentTitle',
-            description_msgid='CMFPlomino_help_StoreDynamicDocumentTitle',
+            label_msgid=_('CMFPlomino_label_StoreDynamicDocumentTitle', default="Store dynamically computed title"),
+            description_msgid=_('CMFPlomino_help_StoreDynamicDocumentTitle', default="Store computed title every time document is rendered"),
             i18n_domain='CMFPlomino',
         ),
     ),

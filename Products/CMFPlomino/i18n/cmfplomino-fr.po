@@ -3,7 +3,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: CMFPlomino\n"
-"POT-Creation-Date: 2013-07-24 06:00+0000\n"
+"POT-Creation-Date: 2013-07-25 06:39+0000\n"
 "PO-Revision-Date: Thu Sep 28 15:52:32 2006\n"
 "Last-Translator: [Denis GAY] <[Denis.Gay@materis.fr]>\n"
 "Language-Team: [Eric BREHAULT] <[ebrehault@gmail.com]>\n"
@@ -98,7 +98,7 @@ msgid "CMFPlomino_help_AboutDescription"
 msgstr "Décrire la base, ses objectifs, le public visé, etc..."
 
 #. Default: "Select the position of the action bar"
-#: CMFPlomino/PlominoForm.py:172
+#: CMFPlomino/PlominoForm.py:194
 #: CMFPlomino/PlominoView.py:136
 msgid "CMFPlomino_help_ActionBarPosition"
 msgstr "Indique l'endroit où la barre d'action s'affiche"
@@ -168,7 +168,7 @@ msgid "CMFPlomino_help_DoNotReindex"
 msgstr "Si activé, les documents ne sont réindexés automatiquement lors d'un changement dans le design. La réindexation doit alors être manuelle."
 
 #. Default: "Compute the document id at creation. (Undergoes normalization.)"
-#: CMFPlomino/PlominoForm.py:161
+#: CMFPlomino/PlominoForm.py:183
 msgid "CMFPlomino_help_DocumentId"
 msgstr "Calcule l'ID du document à sa création. Doit être unique globalement s'il doit être synchronisé avec une autre base de données."
 
@@ -176,6 +176,11 @@ msgstr "Calcule l'ID du document à sa création. Doit être unique globalement 
 #: CMFPlomino/PlominoForm.py:150
 msgid "CMFPlomino_help_DocumentTitle"
 msgstr "Calcule le titre du document"
+
+#. Default: "Execute DocumentTitle formula when document is rendered"
+#: CMFPlomino/PlominoForm.py:161
+msgid "CMFPlomino_help_DynamicDocumentTitle"
+msgstr ""
 
 #. Default: "Change these options to customize the dynamic table."
 #: CMFPlomino/PlominoView.py:201
@@ -256,12 +261,12 @@ msgid "CMFPlomino_help_HideCheckboxes"
 msgstr ""
 
 #. Default: "Edit, Save, Delete, Close actions will not be displayed in the action bar"
-#: CMFPlomino/PlominoForm.py:188
+#: CMFPlomino/PlominoForm.py:210
 msgid "CMFPlomino_help_HideDefaultActions"
 msgstr "Les actions par défaut (modifier,sauvegarder,supprimer,fermer) ne seront pas affichées dans la barre d'actions"
 
 #. Default: "It will not appear in the database main menu"
-#: CMFPlomino/PlominoForm.py:199
+#: CMFPlomino/PlominoForm.py:221
 #: CMFPlomino/PlominoView.py:175
 msgid "CMFPlomino_help_HideInMenu"
 msgstr "Ne figurera pas dans le menu principal de la base"
@@ -288,7 +293,7 @@ msgid "CMFPlomino_help_IndexInPortal"
 msgstr "Si activé les documents pourront être recherchés dans Plone"
 
 #. Default: "Position in menu"
-#: CMFPlomino/PlominoForm.py:256
+#: CMFPlomino/PlominoForm.py:278
 msgid "CMFPlomino_help_Position"
 msgstr "Position dans le menu"
 
@@ -298,17 +303,17 @@ msgid "CMFPlomino_help_ReverseSorting"
 msgstr "Inverse l'ordre de tri"
 
 #. Default: "A search form is only used to search documents, it cannot be saved."
-#: CMFPlomino/PlominoForm.py:211
+#: CMFPlomino/PlominoForm.py:233
 msgid "CMFPlomino_help_SearchForm"
 msgstr "Un formulaire de recherche sert uniquement à effectuer des recherches, il ne permet pas de sauvegarder un document."
 
 #. Default: "Leave blank to use default ZCatalog search"
-#: CMFPlomino/PlominoForm.py:246
+#: CMFPlomino/PlominoForm.py:268
 msgid "CMFPlomino_help_SearchFormula"
 msgstr "Laisser vide pour utiliser la recherche ZCatalog par défaut"
 
 #. Default: "View used to display the search results"
-#: CMFPlomino/PlominoForm.py:235
+#: CMFPlomino/PlominoForm.py:257
 msgid "CMFPlomino_help_SearchView"
 msgstr "Vue utilise pour rechercher les documents et afficher les résultats"
 
@@ -332,6 +337,11 @@ msgstr "Colonne utilisée pour trier la vue"
 #: CMFPlomino/PlominoDatabase.py:176
 msgid "CMFPlomino_help_StartPage"
 msgstr "Element à afficher à la place du menu normal."
+
+#. Default: "Store computed title every time document is rendered"
+#: CMFPlomino/PlominoForm.py:172
+msgid "CMFPlomino_help_StoreDynamicDocumentTitle"
+msgstr ""
 
 #. Default: "Describe how to use the database"
 #: CMFPlomino/PlominoDatabase.py:94
@@ -399,7 +409,7 @@ msgid "CMFPlomino_help_isDynamicHidewhen"
 msgstr ""
 
 #. Default: "A page cannot be saved and does not provide any action bar. It can be useful to build a welcome page, explanations, reports, navigation, etc."
-#: CMFPlomino/PlominoForm.py:224
+#: CMFPlomino/PlominoForm.py:246
 msgid "CMFPlomino_help_isPage"
 msgstr "Une page dynamique ne peut pas être sauvée et ne propose pas de barre d'action. Cela peut servir à créer des pages d'accueil, d'explications, de rapports, de navgation, etc."
 
@@ -445,7 +455,7 @@ msgid "CMFPlomino_label_AboutDescription"
 msgstr "A propos de cette base de données"
 
 #. Default: "Position of the action bar"
-#: CMFPlomino/PlominoForm.py:171
+#: CMFPlomino/PlominoForm.py:193
 #: CMFPlomino/PlominoView.py:135
 msgid "CMFPlomino_label_ActionBarPosition"
 msgstr "Position de la barre d'action"
@@ -520,7 +530,7 @@ msgid "CMFPlomino_label_DoNotReindex"
 msgstr "Ne pas réindexer les documents lors des changements de design"
 
 #. Default: "Document id formula"
-#: CMFPlomino/PlominoForm.py:160
+#: CMFPlomino/PlominoForm.py:182
 msgid "CMFPlomino_label_DocumentId"
 msgstr "Formule de calcul de l'ID du document"
 
@@ -528,6 +538,11 @@ msgstr "Formule de calcul de l'ID du document"
 #: CMFPlomino/PlominoForm.py:149
 msgid "CMFPlomino_label_DocumentTitle"
 msgstr "Titre du document"
+
+#. Default: "Compute document title on view"
+#: CMFPlomino/PlominoForm.py:160
+msgid "CMFPlomino_label_DynamicDocumentTitle"
+msgstr ""
 
 #. Default: "Dynamic Table Parameters"
 #: CMFPlomino/PlominoView.py:200
@@ -611,12 +626,12 @@ msgid "CMFPlomino_label_HideCheckboxes"
 msgstr ""
 
 #. Default: "Hide default actions"
-#: CMFPlomino/PlominoForm.py:187
+#: CMFPlomino/PlominoForm.py:209
 msgid "CMFPlomino_label_HideDefaultActions"
 msgstr "Cacher les actions par défaut"
 
 #. Default: "Hide in menu"
-#: CMFPlomino/PlominoForm.py:198
+#: CMFPlomino/PlominoForm.py:220
 #: CMFPlomino/PlominoView.py:174
 msgid "CMFPlomino_label_HideInMenu"
 msgstr "Cacher dans le menu"
@@ -642,7 +657,7 @@ msgid "CMFPlomino_label_IndexInPortal"
 msgstr "Indexer les documents dans le portail Plone"
 
 #. Default: "Position"
-#: CMFPlomino/PlominoForm.py:254
+#: CMFPlomino/PlominoForm.py:276
 #: CMFPlomino/PlominoView.py:240
 msgid "CMFPlomino_label_Position"
 msgstr "Position"
@@ -654,17 +669,17 @@ msgid "CMFPlomino_label_ReverseSorting"
 msgstr "Tri inversé"
 
 #. Default: "Search form"
-#: CMFPlomino/PlominoForm.py:210
+#: CMFPlomino/PlominoForm.py:232
 msgid "CMFPlomino_label_SearchForm"
 msgstr "Formulaire de recherche"
 
 #. Default: "Search formula"
-#: CMFPlomino/PlominoForm.py:245
+#: CMFPlomino/PlominoForm.py:267
 msgid "CMFPlomino_label_SearchFormula"
 msgstr "Formule de recherche"
 
 #. Default: "Search view"
-#: CMFPlomino/PlominoForm.py:234
+#: CMFPlomino/PlominoForm.py:256
 msgid "CMFPlomino_label_SearchView"
 msgstr "Vue de recherche"
 
@@ -687,6 +702,11 @@ msgstr "Colonne à trier"
 #: CMFPlomino/PlominoDatabase.py:175
 msgid "CMFPlomino_label_StartPage"
 msgstr "Page d'accueil"
+
+#. Default: "Store dynamically computed title"
+#: CMFPlomino/PlominoForm.py:171
+msgid "CMFPlomino_label_StoreDynamicDocumentTitle"
+msgstr ""
 
 #. Default: "Using this database"
 #: CMFPlomino/PlominoDatabase.py:93
@@ -754,7 +774,7 @@ msgid "CMFPlomino_label_isDynamicHidewhen"
 msgstr ""
 
 #. Default: "Page"
-#: CMFPlomino/PlominoForm.py:223
+#: CMFPlomino/PlominoForm.py:245
 msgid "CMFPlomino_label_isPage"
 msgstr "Page dynamique"
 
@@ -1182,7 +1202,7 @@ msgstr "Document(s) ${start} à ${end} sur ${total}"
 
 # Error messages
 #. Default: "is mandatory"
-#: CMFPlomino/PlominoDocument.py:696
+#: CMFPlomino/PlominoDocument.py:718
 msgid "is mandatory"
 msgstr "est obligatoire"
 
