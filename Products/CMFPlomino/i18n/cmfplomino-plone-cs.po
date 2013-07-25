@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: CMFPlomino\n"
 "POT-Creation-Date: Thu Sep 28 15:52:32 2006\n"
-"PO-Revision-Date: 2012-04-17 12:00+0300\n"
+"PO-Revision-Date: 2013-07-24 13:49+0700\n"
 "Last-Translator: Šváb Jakub <svab@jtbank.cz>\n"
 "Language-Team: Šváb Jakub <svab@jtbank.cz>\n"
 "MIME-Version: 1.0\n"
@@ -17,9 +17,12 @@ msgstr ""
 msgid "PlominoAction"
 msgstr "Plomino: Akce"
 
+#. Default: "Plomino: Cache"
+msgid "PlominoCache"
+msgstr ""
+
 msgid "PlominoColumn"
 msgstr "Plomino: Sloupec"
-
 
 msgid "PlominoDatabase"
 msgstr "Plomino: Databáze"
