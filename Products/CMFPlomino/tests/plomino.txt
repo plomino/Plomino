@@ -88,13 +88,41 @@ A form can contain editable fields and also computed fields::
     ...         title='Title for field2',
     ...         FieldType="TEXT",
     ...         FieldMode="COMPUTED",
-    ...         Formula="'My favorite song is '+plominoDocument.field1")
+    ...         Formula="plominoDocument.setItem('field4', 'side-effect')\nreturn 'My favorite song is '+plominoDocument.field1")
+
+A form can contain display fields. A display field is computed but the 
+result is not saved on the document::
+
+    >>> id = db.frm1.invokeFactory('PlominoField',
+    ...         id='field3',
+    ...         title='Title for field3',
+    ...         FieldType="TEXT",
+    ...         FieldMode="DISPLAY",
+    ...         Formula="return plominoDocument.field1.upper()")
     >>> db.frm1.field2.at_post_create_script()
+
+If a display field does not specify a formula, it will display the item with
+the id corresponding to the field name (if any). Here's a field without
+formula, the item value was set by the formula for ``field2``::
+
+    >>> id = db.frm1.invokeFactory('PlominoField',
+    ...         id='field4',
+    ...         title='Title for field4',
+    ...         FieldType="TEXT",
+    ...         FieldMode="DISPLAY",
+    ...         Formula="")
+    >>> db.frm1.field2.at_post_create_script()
+
+Let's set a layout which contains our three fields::
+
     >>> db.frm1.setFormLayout("""2 <p>please enter a value for field1:
     ... <span class="plominoLabelClass">field1</span>
     ... <span class="plominoFieldClass">field1</span></p><p>Comment:
     ... <span class="plominoLabelClass">field2: Label for field2</span>
-    ... <span class="plominoFieldClass">field2</span></p>""")
+    ... <span class="plominoFieldClass">field2</span></p><p>
+    ... <span class="plominoFieldClass">field3</span></p><p>
+    ... <span class="plominoFieldClass">field4</span></p>""")
+
 
 Documents
 ---------------
@@ -143,9 +171,9 @@ Only items which match a form field will be considered::
 
     >>> doc1.setItem('field1', 'where is my mind?')
     >>> db.frm1.displayDocument(doc1, editmode=False)
-    u'2 <p>please enter a value for field1:<span>\n    \n    \n        where is my mind?\n    \n</span>\n</p><p>Comment:<span>\n    \n    \n        My favorite song is where is my mind?\n    \n</span>\n</p>'
+    u'2 <p>please enter a value for field1:<span>\n    \n    \n        where is my mind?\n    \n</span>\n</p><p>Comment:<span>\n    \n    \n        My favorite song is where is my mind?\n    \n</span>\n</p><p>\n    \n    \n        My favorite song is WHERE IS MY MIND?\n    \n</span>\n</p><p>\n    \n    \n        side-effect\n    \n</span>\n</p>'
     >>> db.frm1.displayDocument(doc1, editmode=True)
-    u'<input type=\'hidden\' name=\'Form\' value=\'frm1\' />2 <p>please enter a value for field1:<label for=\'field1\'>Title for field1</label><span>\n    \n    \n        <input type="text" name="field1" value="where is my mind?" />\n    \n    \n</span>\n</p><p>Comment:<label for=\'field2\'>Label for field2</label><span>\n    \n    \n        My favorite song is where is my mind?\n    \n</span>\n</p>'
+    u'<input type=\'hidden\' name=\'Form\' value=\'frm1\' />2 <p>please enter a value for field1:<label for=\'field1\'>Title for field1</label><span>\n    \n    \n        <input type="text" name="field1" value="where is my mind?" />\n    \n    \n</span>\n</p><p>Comment:<label for=\'field2\'>Label for field2</label><span>\n    \n    \n        My favorite song is where is my mind?\n    \n</span>\n</p><p>\n    \n    \n        side-effect\n    \n</span>\n</p>'
 
 ``Form`` is a reserved item which allows to indicate the document default
 form::
