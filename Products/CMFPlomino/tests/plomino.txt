@@ -113,7 +113,7 @@ formula, the item value was set by the formula for ``field2``::
     ...         Formula="")
     >>> db.frm1.field2.at_post_create_script()
 
-Let's set a layout which contains our three fields::
+Let's set a layout which contains our fields::
 
     >>> db.frm1.setFormLayout("""2 <p>please enter a value for field1:
     ... <span class="plominoLabelClass">field1</span>
