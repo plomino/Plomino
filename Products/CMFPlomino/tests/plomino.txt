@@ -171,9 +171,9 @@ Only items which match a form field will be considered::
 
     >>> doc1.setItem('field1', 'where is my mind?')
     >>> db.frm1.displayDocument(doc1, editmode=False)
-    u'2 <p>please enter a value for field1:<span>\n    \n    \n        where is my mind?\n    \n</span>\n</p><p>Comment:<span>\n    \n    \n        My favorite song is where is my mind?\n    \n</span>\n</p><p>\n    \n    \n        My favorite song is WHERE IS MY MIND?\n    \n</span>\n</p><p>\n    \n    \n        side-effect\n    \n</span>\n</p>'
+    u'2 <p>please enter a value for field1:<span>\n    \n    \n        where is my mind?\n    \n</span>\n</p><p>Comment:<span>\n    \n    \n        My favorite song is where is my mind?\n    \n</span>\n</p><p><span>\n    \n    \n        WHERE IS MY MIND?\n    \n</span>\n</p><p><span>\n    \n    \n        side-effect\n    \n</span>\n</p>'
     >>> db.frm1.displayDocument(doc1, editmode=True)
-    u'<input type=\'hidden\' name=\'Form\' value=\'frm1\' />2 <p>please enter a value for field1:<label for=\'field1\'>Title for field1</label><span>\n    \n    \n        <input type="text" name="field1" value="where is my mind?" />\n    \n    \n</span>\n</p><p>Comment:<label for=\'field2\'>Label for field2</label><span>\n    \n    \n        My favorite song is where is my mind?\n    \n</span>\n</p><p>\n    \n    \n        side-effect\n    \n</span>\n</p>'
+    u'<input type=\'hidden\' name=\'Form\' value=\'frm1\' />2 <p>please enter a value for field1:<label for=\'field1\'>Title for field1</label><span>\n    \n    \n        <input type="text" name="field1" value="where is my mind?" />\n    \n    \n</span>\n</p><p>Comment:<label for=\'field2\'>Label for field2</label><span>\n    \n    \n        My favorite song is where is my mind?\n    \n</span>\n</p><p><span>\n    \n    \n        WHERE IS MY MIND?\n    \n</span>\n</p><p><span>\n    \n    \n        side-effect\n    \n</span>\n</p>'
 
 ``Form`` is a reserved item which allows to indicate the document default
 form::
@@ -254,22 +254,23 @@ Views can be exported as CSV:
 
 JSON API
 --------
-A document can be exported as JSON:
+
+A document can be exported as JSON::
 
     >>> doc11.tojson()
-    '{"field2": "My favorite song is Rhythm is love", "field1": "Rhythm is love", "Plomino_Authors": ["test-user"], "Form": "frm1"}'
+    '{"field2": "My favorite song is Rhythm is love", "Plomino_Authors": ["test-user"], "field1": "Rhythm is love", "field4": "side-effect", "Form": "frm1"}'
 
-We can export only one field:
+We can export only one field::
 
     >>> doc11.tojson(item="field2")
     '"My favorite song is Rhythm is love"'
 
-We can get the lastmodified value:
+We can get the ``lastmodified`` value::
 
     >>> doc11.tojson(item="field2", lastmodified=True)
     '{"lastmodified": {"datetime": "...", "__datetime__": true}, "data": "My favorite song is Rhythm is love"}'
 
-Views can be exported as JSON:
+Views can be exported as JSON::
 
     >>> db.view1.tojson()
     '{"aaData": [["...", "London calling"], ["a-document-about-rhythm-is-love", "Rhythm is love"], ["a-document-about-rhythm-is-love-1", "Rhythm is love"], ["...", "bonjour"], ["...", "hello"]], "iTotalRecords": 5, "iTotalDisplayRecords": 5}'
