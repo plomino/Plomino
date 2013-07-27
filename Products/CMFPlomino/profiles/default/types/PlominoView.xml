@@ -15,7 +15,6 @@
  <property name="allowed_content_types">
    <element value="PlominoAction"/>
    <element value="PlominoColumn"/>
-   <element value="PlominoCache"/>
  </property>
  <property name="allow_discussion">False</property>
  <property name="default_view">checkBeforeOpenView</property>
