@@ -581,7 +581,7 @@ class PlominoView(ATFolder):
                 logging.exception('Bad quoting: %s'%quoting, exc_info=True)
                 quoting = csv.QUOTE_NONNUMERIC
 
-        if not brain_docs:
+        if brain_docs is None:
             brain_docs = self.getAllDocuments(getObject=False)
 
         columns = [c.id for c in self.getColumns()]
