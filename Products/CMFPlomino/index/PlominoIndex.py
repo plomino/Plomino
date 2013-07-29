@@ -168,7 +168,7 @@ class PlominoIndex(UniqueObject, CatalogTool):
             self.refreshCatalog()
             self.getParentDatabase().setStatus("Ready")
 
-    security.declareProtected(READ_PERMISSION, 'dbsearch')
+    security.declarePublic('dbsearch')
     def dbsearch(self, request, sortindex=None, reverse=0,
             only_allowed=True, limit=None):
         """
