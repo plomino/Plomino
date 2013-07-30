@@ -437,8 +437,10 @@ class PlominoDatabase(ATFolder, PlominoAccessControl, PlominoDesignManager,
                             'but onDelete event failed.')
                 if message:
                     # Abort deletion
-                    doc.writeMessageOnPage(message, REQUEST, False)
-                    REQUEST.RESPONSE.redirect(doc.absolute_url())
+                    if hasattr(self, 'REQUEST'):
+                        doc.writeMessageOnPage(message, self.REQUEST, False)
+                        self.REQUEST.RESPONSE.redirect(doc.absolute_url())
+                    return None
 
             self.getIndex().unindexDocument(doc)
             if self.getIndexInPortal():

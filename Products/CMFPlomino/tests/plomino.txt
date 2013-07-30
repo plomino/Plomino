@@ -560,6 +560,20 @@ A form can define actions to take when specific events occur on a document.
     >>> doc1.country
     u'Chile'
 
+``onDeleteDocument`` is executed each time a document is deleted, if
+it returns a string, it is considered as an error message and the deletion is
+aborted::
+    >>> db.frm1.setOnDeleteDocument("""
+    ... if plominoDocument.getItem('country') == 'Chile':
+    ...     return "Chile cannot be deleted"
+    ... return None
+    ... """)
+    >>> db.cleanFormulaScripts("form_frm1")
+    >>> doc1_id = doc1.id
+    >>> db.deleteDocument(doc1)
+    >>> db.getDocument(doc1_id) is None
+    False
+
 Plomino index
 -------------
 
