@@ -503,11 +503,6 @@ class PlominoForm(ATFolder):
         - if the referenced field does not exist, leave the layout markup as
           is (as for missing field markup).
         """
-        if not editmode:
-            # Strip out labels
-            html_content_orig = label_re.sub('', html_content_orig)
-            return html_content_orig 
-
         html_content_processed = html_content_orig # We edit the copy
         match_iter = label_re.finditer(html_content_orig)
         for match_label in match_iter:
@@ -538,15 +533,26 @@ class PlominoForm(ATFolder):
                 # Is the field in the layout?
                 if match_field:
                     # Markup the field
-                    html_content_processed = field_re.sub(
-                            "<fieldset><legend>%s</legend>%s</fieldset>" % (
-                            label, match_field.group()),
-                            html_content_processed)
+                    if editmode:
+                        html_content_processed = field_re.sub(
+                                "<fieldset><legend>%s</legend>%s</fieldset>" % (
+                                label, match_field.group()),
+                                html_content_processed)
+                    else:
+                        html_content_processed = field_re.sub(
+                                "<div class='fieldset'><span class='legend' title='Legend for %s'>%s</h1>%s</div>" % (
+                                fn, label, match_field.group()),
+                                html_content_processed)
             else:
                 # Replace the processed label with final markup
-                html_content_processed = label_re.sub(
-                        "<label for='%s'>%s</label>" % (fn, label),
-                        html_content_processed, count=1)
+                if editmode:
+                    html_content_processed = label_re.sub(
+                            "<label for='%s'>%s</label>" % (fn, label),
+                            html_content_processed, count=1)
+                else:
+                    html_content_processed = label_re.sub(
+                            "<span class='label' title='Label for %s'>%s</span>" % (fn, label),
+                            html_content_processed, count=1)
 
         return html_content_processed
 
