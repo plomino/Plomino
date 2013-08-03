@@ -540,7 +540,7 @@ class PlominoForm(ATFolder):
                                 html_content_processed)
                     else:
                         html_content_processed = field_re.sub(
-                                "<div class='fieldset'><span class='legend' title='Legend for %s'>%s</h1>%s</div>" % (
+                                "<div class='fieldset'><span class='legend' title='Legend for %s'>%s</span>%s</div>" % (
                                 fn, label, match_field.group()),
                                 html_content_processed)
             else:
