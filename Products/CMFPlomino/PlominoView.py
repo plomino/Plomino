@@ -15,6 +15,7 @@ __docformat__ = 'plaintext'
 # From the standard library
 import cStringIO
 import csv
+from zipfile import ZipFile, ZIP_DEFLATED
 
 # 3rd party Python
 from jsonutil import jsonutil as json
@@ -608,6 +609,37 @@ class PlominoView(ATFolder):
             REQUEST.RESPONSE.setHeader(
                     'Content-Disposition', 'attachment; filename='+self.id+'.csv')
         return stream.getvalue()
+
+    security.declareProtected(READ_PERMISSION, 'exportZIP')
+    def exportZIP(self,
+            REQUEST=None,
+            displayColumnsTitle='False',
+            separator="\t",
+            brain_docs=None,
+            quotechar='"',
+            quoting=csv.QUOTE_NONNUMERIC,
+            filename=''):
+        """ Export CSV as ZIP
+        """
+        if REQUEST:
+            if REQUEST.get("separator"):
+                separator = REQUEST.get("separator")
+            if REQUEST.get("displayColumnsTitle"):
+                displayColumnsTitle = REQUEST.get("displayColumnsTitle")
+        data = self.exportCSV(None, displayColumnsTitle, separator, brain_docs, quotechar, quoting)
+        file_string = cStringIO.StringIO()
+        zip_file = ZipFile(file_string, 'w', ZIP_DEFLATED)
+        if not filename:
+            filename = self.id
+        zip_file.writestr(filename + '.csv', data)
+        zip_file.close()
+
+        if REQUEST:
+            REQUEST.RESPONSE.setHeader(
+                    'content-type', 'application/zip')
+            REQUEST.RESPONSE.setHeader(
+                    'Content-Disposition', 'attachment; filename='+filename+'.zip')
+        return file_string.getvalue()
 
     security.declareProtected(READ_PERMISSION, 'exportXLS')
     def exportXLS(self, REQUEST, displayColumnsTitle='False', 
