@@ -447,7 +447,7 @@ class PlominoDesignManager(Persistent):
                             "attachment; filename=%s.xml" % self.id)
                 return xmlstring
         elif targettype == "zipfile":
-            zip_file = self.exportDesignAsZip(
+            zip_string = self.exportDesignAsZip(
                     designelements=designelements,
                     dbsettings=dbsettings)
 
@@ -456,8 +456,8 @@ class PlominoDesignManager(Persistent):
                 REQUEST.RESPONSE.setHeader(
                         "Content-Disposition",
                         "attachment; filename=%s.zip" % self.id)
-                REQUEST.RESPONSE.setHeader('Content-Length', len(zip_file.getvalue()))
-            return zip_file.getvalue()
+                REQUEST.RESPONSE.setHeader('Content-Length', len(zip_string.getvalue()))
+            return zip_string.getvalue()
         elif targettype == "folder":
             if not designelements:
                 designelements = (
