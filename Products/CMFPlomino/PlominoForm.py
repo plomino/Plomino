@@ -526,8 +526,9 @@ class PlominoForm(ATFolder):
             field_re = re.compile('<span class="plominoFieldClass">%s</span>' % fn)
             match_field = field_re.search(html_content_processed)
             field_type = field.getFieldType()
-            widget_name = field.getSettings().widget
-            if field_type == 'SELECTION' and widget_name in ['CHECKBOX',
+            if field_type != 'DATETIME':
+                widget_name = field.getSettings().widget
+            if field_type == 'DATETIME' or field_type == 'SELECTION' and widget_name in ['CHECKBOX',
                     'RADIO', 'PICKLIST']:
                 # Delete processed label
                 html_content_processed = label_re.sub('', html_content_processed, count=1)
