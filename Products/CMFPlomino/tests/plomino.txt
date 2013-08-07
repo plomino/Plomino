@@ -118,7 +118,7 @@ Let's set a layout which contains our fields::
     >>> db.frm1.setFormLayout("""2 <p>please enter a value for field1:
     ... <span class="plominoLabelClass">field1</span>
     ... <span class="plominoFieldClass">field1</span></p><p>Comment:
-    ... <span class="plominoLabelClass">field2: Label for field2</span>
+    ... <span class="plominoLabelClass">field2</span>
     ... <span class="plominoFieldClass">field2</span></p><p>
     ... <span class="plominoFieldClass">field3</span></p><p>
     ... <span class="plominoFieldClass">field4</span></p>""")
@@ -171,9 +171,9 @@ Only items which match a form field will be considered::
 
     >>> doc1.setItem('field1', 'where is my mind?')
     >>> db.frm1.displayDocument(doc1, editmode=False)
-    u'2 <p>please enter a value for field1:<span>\n    \n    \n        where is my mind?\n    \n</span>\n</p><p>Comment:<span>\n    \n    \n        My favorite song is where is my mind?\n    \n</span>\n</p><p><span>\n    \n    \n        WHERE IS MY MIND?\n    \n</span>\n</p><p><span>\n    \n    \n        side-effect\n    \n</span>\n</p>'
+    u'2 <p>please enter a value for field1:<span>Title for field1</span><span>\n    \n    \n        where is my mind?\n    \n</span>\n</p><p>Comment:<span>Title for field2</span><span>\n    \n    \n        My favorite song is where is my mind?\n    \n</span>\n</p><p><span>\n    \n    \n        WHERE IS MY MIND?\n    \n</span>\n</p><p><span>\n    \n    \n        side-effect\n    \n</span>\n</p>'
     >>> db.frm1.displayDocument(doc1, editmode=True)
-    u'<input type=\'hidden\' name=\'Form\' value=\'frm1\' />2 <p>please enter a value for field1:<label for=\'field1\'>Title for field1</label><span>\n    \n    \n        <input type="text" name="field1" value="where is my mind?" />\n    \n    \n</span>\n</p><p>Comment:<label for=\'field2\'>Label for field2</label><span>\n    \n    \n        My favorite song is where is my mind?\n    \n</span>\n</p><p><span>\n    \n    \n        WHERE IS MY MIND?\n    \n</span>\n</p><p><span>\n    \n    \n        side-effect\n    \n</span>\n</p>'
+    u'<input type=\'hidden\' name=\'Form\' value=\'frm1\' />2 <p>please enter a value for field1:<label for=\'field1\'>Title for field1</label><span>\n    \n    \n        <input type="text" name="field1" value="where is my mind?" />\n    \n    \n</span>\n</p><p>Comment:<label for=\'field2\'>Title for field2</label><span>\n    \n    \n        My favorite song is where is my mind?\n    \n</span>\n</p><p><span>\n    \n    \n        WHERE IS MY MIND?\n    \n</span>\n</p><p><span>\n    \n    \n        side-effect\n    \n</span>\n</p>'
 
 ``Form`` is a reserved item which allows to indicate the document default
 form::
