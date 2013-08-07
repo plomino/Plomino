@@ -508,7 +508,6 @@ class PlominoForm(ATFolder):
         match_iter = label_re.finditer(html_content_orig)
         for match_label in match_iter:
             d = match_label.groupdict()
-            print d
             if d['optional_fieldname']:
                 fn = d['optional_fieldname']
                 field = self.getFormField(fn)
