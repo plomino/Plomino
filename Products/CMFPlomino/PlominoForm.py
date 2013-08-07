@@ -535,14 +535,21 @@ class PlominoForm(ATFolder):
                 # Is the field in the layout?
                 if match_field:
                     # Markup the field
+                    if field.getMandatory():
+                        substitution = "<fieldset><legend class='required'>%s</legend>%s</fieldset>" % (label, match_field.group())
+                    else:
+                        substitution = "<fieldset><legend>%s</legend>%s</fieldset>" % (label, match_field.group())
                     html_content_processed = field_re.sub(
-                            "<fieldset><legend>%s</legend>%s</fieldset>" % (
-                            label, match_field.group()),
+                            substitution,
                             html_content_processed)
             elif editmode:
+                if field.getMandatory():
+                    substitution = "<label for='%s' class='required'>%s</label>" % (fn, label)
+                else:
+                    substitution = "<label for='%s'>%s</label>" % (fn, label)
                 # Replace the processed label with final markup
                 html_content_processed = label_re.sub(
-                        "<label for='%s'>%s</label>" % (fn, label),
+                        substitution,
                         html_content_processed, count=1)
             else:
                 # Just strip out the label classes
