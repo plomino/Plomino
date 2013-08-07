@@ -503,15 +503,12 @@ class PlominoForm(ATFolder):
         - if the referenced field does not exist, leave the layout markup as
           is (as for missing field markup).
         """
-        if not editmode:
-            # Strip out labels
-            html_content_orig = label_re.sub('', html_content_orig)
-            return html_content_orig 
 
         html_content_processed = html_content_orig # We edit the copy
         match_iter = label_re.finditer(html_content_orig)
         for match_label in match_iter:
             d = match_label.groupdict()
+            print d
             if d['optional_fieldname']:
                 fn = d['optional_fieldname']
                 field = self.getFormField(fn)
@@ -542,10 +539,16 @@ class PlominoForm(ATFolder):
                             "<fieldset><legend>%s</legend>%s</fieldset>" % (
                             label, match_field.group()),
                             html_content_processed)
-            else:
+            elif editmode:
                 # Replace the processed label with final markup
                 html_content_processed = label_re.sub(
                         "<label for='%s'>%s</label>" % (fn, label),
+                        html_content_processed, count=1)
+            else:
+                # Just strip out the label classes
+                label_class_re = re.compile('<span class="plominoLabelClass">%s</span>' % fn)
+                html_content_processed = label_class_re.sub(
+                        '<span>%s</span>' % label,
                         html_content_processed, count=1)
 
         return html_content_processed
