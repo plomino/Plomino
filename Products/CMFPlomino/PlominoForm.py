@@ -528,8 +528,8 @@ class PlominoForm(ATFolder):
             field_type = field.getFieldType()
             if field_type != 'DATETIME':
                 widget_name = field.getSettings().widget
-            if field_type == 'DATETIME' or field_type == 'SELECTION' and widget_name in ['CHECKBOX',
-                    'RADIO', 'PICKLIST']:
+            if editmode and (field_type == 'DATETIME' or field_type == 'SELECTION' and widget_name in ['CHECKBOX',
+                    'RADIO', 'PICKLIST']):
                 # Delete processed label
                 html_content_processed = label_re.sub('', html_content_processed, count=1)
                 # Is the field in the layout?
