@@ -158,7 +158,7 @@ Create forms
     >>> browser.getControl(name='FieldMode').value = ['DISPLAY']
     >>> browser.getControl(name='Formula').value = """
     ... # ok no that big processing
-    ... who = context.getCurrentUser().getMemberId()
+    ... who = context.getCurrentUserId()
     ... return 'This is ' + who
     ... """
     >>> browser.getControl(name='form.button.save').click()
@@ -166,7 +166,7 @@ Create forms
     >>> browser.getControl(name='id').value = "cache_for_user"
     >>> browser.getControl(name='title').value = "cache_for_user"
     >>> browser.getControl(name='Formula').value = """
-    ... return context.getCurrentUser().getMemberId()
+    ... return context.getCurrentUserId()
     ... """
     >>> browser.getControl(name='form.button.save').click()
     >>> browser.open(db_url + "/frmtest2")
