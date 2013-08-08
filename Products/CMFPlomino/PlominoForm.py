@@ -527,6 +527,8 @@ class PlominoForm(ATFolder):
             field_type = field.getFieldType()
             if field_type != 'DATETIME':
                 widget_name = field.getSettings().widget
+
+            # Handle input groups:
             if (field_type == 'DATETIME' or
                     field_type == 'SELECTION' and 
                     widget_name in ['CHECKBOX', 'RADIO', 'PICKLIST']):
@@ -549,9 +551,11 @@ class PlominoForm(ATFolder):
                                 "<div class='fieldset'><span class='legend' title='Legend for %s'>%s</span>%s</div>" % (
                                 fn, label, match_field.group()),
                                 html_content_processed)
+
+            # Handle single inputs:
             else:
                 # Replace the processed label with final markup
-                if editmode:
+                if editmode and (field_type not in ['COMPUTED', 'DISPLAY']):
                     mandatory = (
                             field.getMandatory()
                             and " class='required'"
