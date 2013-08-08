@@ -525,18 +525,24 @@ class PlominoForm(ATFolder):
             field_re = re.compile('<span class="plominoFieldClass">%s</span>' % fn)
             match_field = field_re.search(html_content_processed)
             field_type = field.getFieldType()
-            widget_name = field.getSettings().widget
-            if field_type == 'SELECTION' and widget_name in ['CHECKBOX',
-                    'RADIO', 'PICKLIST']:
+            if field_type != 'DATETIME':
+                widget_name = field.getSettings().widget
+            if (field_type == 'DATETIME' or
+                    field_type == 'SELECTION' and 
+                    widget_name in ['CHECKBOX', 'RADIO', 'PICKLIST']):
                 # Delete processed label
                 html_content_processed = label_re.sub('', html_content_processed, count=1)
                 # Is the field in the layout?
                 if match_field:
                     # Markup the field
                     if editmode:
+                        mandatory = (
+                                field.getMandatory()
+                                and " class='required'"
+                                or '')
                         html_content_processed = field_re.sub(
-                                "<fieldset><legend>%s</legend>%s</fieldset>" % (
-                                label, match_field.group()),
+                                "<fieldset><legend%s>%s</legend>%s</fieldset>" % (
+                                mandatory, label, match_field.group()),
                                 html_content_processed)
                     else:
                         html_content_processed = field_re.sub(
@@ -546,8 +552,12 @@ class PlominoForm(ATFolder):
             else:
                 # Replace the processed label with final markup
                 if editmode:
+                    mandatory = (
+                            field.getMandatory()
+                            and " class='required'"
+                            or '')
                     html_content_processed = label_re.sub(
-                            "<label for='%s'>%s</label>" % (fn, label),
+                            "<label for='%s'%s>%s</label>" % (fn, mandatory, label),
                             html_content_processed, count=1)
                 else:
                     html_content_processed = label_re.sub(
