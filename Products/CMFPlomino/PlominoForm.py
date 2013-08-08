@@ -503,7 +503,6 @@ class PlominoForm(ATFolder):
         - if the referenced field does not exist, leave the layout markup as
           is (as for missing field markup).
         """
-
         html_content_processed = html_content_orig # We edit the copy
         match_iter = label_re.finditer(html_content_orig)
         for match_label in match_iter:
@@ -528,35 +527,46 @@ class PlominoForm(ATFolder):
             field_type = field.getFieldType()
             if field_type != 'DATETIME':
                 widget_name = field.getSettings().widget
-            if editmode and (field_type == 'DATETIME' or field_type == 'SELECTION' and widget_name in ['CHECKBOX',
-                    'RADIO', 'PICKLIST']):
+
+            # Handle input groups:
+            if (field_type == 'DATETIME' or
+                    field_type == 'SELECTION' and 
+                    widget_name in ['CHECKBOX', 'RADIO', 'PICKLIST']):
                 # Delete processed label
                 html_content_processed = label_re.sub('', html_content_processed, count=1)
                 # Is the field in the layout?
                 if match_field:
                     # Markup the field
-                    if field.getMandatory():
-                        substitution = "<fieldset><legend class='required'>%s</legend>%s</fieldset>" % (label, match_field.group())
+                    if editmode:
+                        mandatory = (
+                                field.getMandatory()
+                                and " class='required'"
+                                or '')
+                        html_content_processed = field_re.sub(
+                                "<fieldset><legend%s>%s</legend>%s</fieldset>" % (
+                                mandatory, label, match_field.group()),
+                                html_content_processed)
                     else:
-                        substitution = "<fieldset><legend>%s</legend>%s</fieldset>" % (label, match_field.group())
-                    html_content_processed = field_re.sub(
-                            substitution,
-                            html_content_processed)
-            elif editmode:
-                if field.getMandatory():
-                    substitution = "<label for='%s' class='required'>%s</label>" % (fn, label)
-                else:
-                    substitution = "<label for='%s'>%s</label>" % (fn, label)
-                # Replace the processed label with final markup
-                html_content_processed = label_re.sub(
-                        substitution,
-                        html_content_processed, count=1)
+                        html_content_processed = field_re.sub(
+                                "<div class='fieldset'><span class='legend' title='Legend for %s'>%s</span>%s</div>" % (
+                                fn, label, match_field.group()),
+                                html_content_processed)
+
+            # Handle single inputs:
             else:
-                # Just strip out the label classes
-                label_class_re = re.compile('<span class="plominoLabelClass">%s</span>' % fn)
-                html_content_processed = label_class_re.sub(
-                        '<span>%s</span>' % label,
-                        html_content_processed, count=1)
+                # Replace the processed label with final markup
+                if editmode and (field_type not in ['COMPUTED', 'DISPLAY']):
+                    mandatory = (
+                            field.getMandatory()
+                            and " class='required'"
+                            or '')
+                    html_content_processed = label_re.sub(
+                            "<label for='%s'%s>%s</label>" % (fn, mandatory, label),
+                            html_content_processed, count=1)
+                else:
+                    html_content_processed = label_re.sub(
+                            "<span class='label' title='Label for %s'>%s</span>" % (fn, label),
+                            html_content_processed, count=1)
 
         return html_content_processed
 
