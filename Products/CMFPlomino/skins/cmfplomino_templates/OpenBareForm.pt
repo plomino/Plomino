@@ -207,7 +207,9 @@
             <h1 class="documentFirstHeading"
                 tal:content="here/Title">Title</h1>
             <form id="plomino_form"
-                tal:attributes="name here/id">
+                tal:attributes="name here/id"
+                enctype="multipart/form-data"
+                method="POST">
                 <span tal:content="structure python:here.openBlankForm(request)" />
             </form>
         </tal:block_ispage>
