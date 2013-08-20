@@ -1137,7 +1137,7 @@ class PlominoForm(ATFolder):
                             doc.removeItem(fieldName)
 
     security.declareProtected(READ_PERMISSION, 'searchDocuments')
-    def searchDocuments(self,REQUEST):
+    def searchDocuments(self, REQUEST):
         """ Search documents in the view matching the submitted form fields values
         """
         if self.onSearch:
@@ -1165,23 +1165,24 @@ class PlominoForm(ATFolder):
                     request=REQUEST):
                 fieldname = f.id
                 #if fieldname is not an index -> search doesn't matter and returns all
-                submittedValue = asUnicode(REQUEST.get(fieldname))
-                if submittedValue is not None:
-                    if submittedValue != '':
-                        # if non-text field, convert the value
-                        if f.getFieldType() == "NUMBER":
-                            v = long(submittedValue)
-                        elif f.getFieldType() == "FLOAT":
-                            v = float(submittedValue)
-                        elif f.getFieldType() == "DATETIME":
-                            v = submittedValue
-                        else:
-                            v = submittedValue
-                        # rename Plomino_SearchableText to perform full-text
-                        # searches on regular SearchableText index
-                        if fieldname == "Plomino_SearchableText":
-                            fieldname = "SearchableText"
-                        query[fieldname] = v
+                submittedValue = REQUEST.get(fieldname)
+                if submittedValue:
+                    submittedValue = asUnicode(submittedValue)
+                    # if non-text field, convert the value
+                    if f.getFieldType() == "NUMBER":
+                        v = long(submittedValue)
+                    elif f.getFieldType() == "FLOAT":
+                        v = float(submittedValue)
+                    elif f.getFieldType() == "DATETIME":
+                        # XXX: No conversion?
+                        v = submittedValue
+                    else:
+                        v = submittedValue
+                    # rename Plomino_SearchableText to perform full-text
+                    # searches on regular SearchableText index
+                    if fieldname == "Plomino_SearchableText":
+                        fieldname = "SearchableText"
+                    query[fieldname] = v
             sortindex = searchview.getSortColumn()
             if not sortindex:
                 sortindex = None
