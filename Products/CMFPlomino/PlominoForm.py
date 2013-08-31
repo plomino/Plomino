@@ -142,6 +142,18 @@ schema = Schema((
         default_output_type="text/html",
     ),
     TextField(
+        name='FormMethod',
+        default='POST',
+        widget=SelectionWidget(
+            label="Form method",
+            description="The form method: GET or POST (default).",
+            label_msgid=_('CMFPlomino_label_FormMethod', default="Form method"),
+            description_msgid=_('CMFPlomino_help_FormMethod', default="The form method: GET or POST (default)."),
+            i18n_domain='CMFPlomino',
+        ),
+        vocabulary=('GET', 'POST')
+    ),
+    TextField(
         name='DocumentTitle',
         widget=TextAreaWidget(
             label="Document title formula",
