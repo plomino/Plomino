@@ -73,12 +73,18 @@
                 define="hasCreatePermissionOnDatabase python:test(here.hasCreatePermission(here.getParentDatabase()));
                         hasCreatePermissionOnForm python:test(here.hasCreatePermission(here));">
 
-                <form id="plomino_form"
+                <form 
+                    tal:define="
+                            form_method python:myF.getFormMethod();
+                            enctype python:(form_method == 'POST') and 'multipart/form-data'
+                            "
                     tal:attributes="
-                            name here/id;
-                            action string:${myF/absolute_url}/createDocument"
-                    method="POST"
-                    enctype="multipart/form-data">
+                            name myF/id;
+                            action string:${myF/absolute_url}/createDocument;
+                            method form_method;
+                            enctype enctype|nothing
+                            "
+                    id="plomino_form">
 
                     <tal:validation metal:use-macro="here/validation_messages/macros/messages">display form actions</tal:validation>
 
@@ -134,10 +140,18 @@
                 define="hasReadPermissionOnDatabase python:test(here.hasReadPermission(here.getParentDatabase()));
                         hasReadPermissionOnForm python:test(here.hasReadPermission(here));">
 
-                <form id="plomino_form"
-                    tal:attributes="name here/id"
-                    action="searchDocuments"
-                    method="POST">
+                <form 
+                    tal:define="
+                            form_method python:myF.getFormMethod();
+                            enctype python:(form_method == 'POST') and 'multipart/form-data'
+                            "
+                    tal:attributes="
+                            name myF/id;
+                            action string:${myF/absolute_url}/searchDocuments;
+                            method form_method;
+                            enctype enctype|nothing
+                            "
+                    id="plomino_form">
                     <div tal:replace="structure provider:plone.abovecontenttitle" />
                     <tal:block_has_readpermission
                         condition="python:test(hasReadPermissionOnDatabase and hasReadPermissionOnForm)">
@@ -225,10 +239,17 @@
                 <h1 class="documentFirstHeading" tal:content="here/Title">Title</h1>
                 <div tal:replace="structure provider:plone.belowcontenttitle" />
                 <div tal:replace="structure provider:plone.abovecontentbody" />
-                <form id="plomino_form"
-                    tal:attributes="name here/id"
-                    enctype="multipart/form-data"
-                    method="POST">
+                <form 
+                    tal:define="
+                            form_method python:myF.getFormMethod();
+                            enctype python:(form_method == 'POST') and 'multipart/form-data'
+                            "
+                    tal:attributes="
+                            name myF/id;
+                            method form_method;
+                            enctype enctype|nothing
+                            "
+                    id="plomino_form">
                     <span tal:content="structure python:here.openBlankForm(request)" />
                 </form>
                 <div tal:replace="structure provider:plone.belowcontentbody" />

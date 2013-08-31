@@ -85,9 +85,19 @@
                 this_form python:here.getForm()
                 ">
     <tal:has_form condition="has_form">
-        <form tal:attributes="name python:here.getForm().id;
-                              action python:here.doc_url()+'/saveDocument'"
-              id="plomino_form" method="POST" enctype="multipart/form-data">
+        <form 
+            tal:define="
+                    form python:here.getForm();
+                    form_method python:form.getFormMethod();
+                    enctype python:(form_method == 'POST') and 'multipart/form-data'
+                    "
+            tal:attributes="
+                    name form/id;
+                    action python:here.doc_url()+'/saveDocument';
+                    method form_method;
+                    enctype enctype|nothing
+                    "
+            id="plomino_form">
             <tal:validation metal:use-macro="here/validation_messages/macros/messages">display form actions</tal:validation>
             <tal:form define="b this_form/ActionBarPosition|nothing">
                 <div tal:replace="structure provider:plone.abovecontenttitle" />

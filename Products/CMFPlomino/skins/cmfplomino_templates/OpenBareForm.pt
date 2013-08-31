@@ -50,12 +50,18 @@
                     can_open_form python:(hasCreatePermissionOnDatabase and hasCreatePermissionOnForm) or here.REQUEST.get('Plomino_Parent_Field', None)
                     "> 
 
-            <form id="plomino_form"
+            <form 
+                tal:define="
+                        form_method python:myF.getFormMethod();
+                        enctype python:(form_method == 'POST') and 'multipart/form-data'
+                        "
                 tal:attributes="
-                        name here/id;
-                        action string:${myF/absolute_url}/createDocument"
-                method="POST"
-                enctype="multipart/form-data">
+                        name myF/id;
+                        action string:${myF/absolute_url}/createDocument;
+                        method form_method;
+                        enctype enctype|nothing
+                        "
+                id="plomino_form">
 
                 <tal:comment replace="nothing"> <!-- 
                 ==================================================
@@ -115,10 +121,18 @@
             define="hasReadPermissionOnDatabase python:test(here.hasReadPermission(here.getParentDatabase()));
                     hasReadPermissionOnForm python:test(here.hasReadPermission(here));">
 
-            <form id="plomino_form"
-                tal:attributes="name here/id"
-                action="searchDocuments"
-                method="POST">
+            <form 
+                tal:define="
+                        form_method python:myF.getFormMethod();
+                        enctype python:(form_method == 'POST') and 'multipart/form-data'
+                        "
+                tal:attributes="
+                        name myF/id;
+                        action string:${myF/absolute_url}/searchDocuments;
+                        method form_method;
+                        enctype enctype|nothing
+                        "
+                id="plomino_form">
 
                 <tal:comment replace="nothing"> <!-- 
                 ==================================================
@@ -206,10 +220,17 @@
         <tal:block_ispage condition="python:ispage">
             <h1 class="documentFirstHeading"
                 tal:content="here/Title">Title</h1>
-            <form id="plomino_form"
-                tal:attributes="name here/id"
-                enctype="multipart/form-data"
-                method="POST">
+            <form 
+                tal:define="
+                        form_method python:myF.getFormMethod();
+                        enctype python:(form_method == 'POST') and 'multipart/form-data'
+                        "
+                tal:attributes="
+                        name myF/id;
+                        method form_method;
+                        enctype enctype|nothing
+                        "
+                id="plomino_form">
                 <span tal:content="structure python:here.openBlankForm(request)" />
             </form>
         </tal:block_ispage>

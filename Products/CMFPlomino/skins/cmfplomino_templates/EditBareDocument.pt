@@ -40,12 +40,20 @@
 </head>
 <body>
 <div id="content">
-  <tal:block tal:define="this_form python:here.getForm();
-                         b myF/ActionBarPosition|nothing">
+  <tal:block tal:define="b myF/ActionBarPosition|nothing">
 	
-	<form tal:attributes="name python:here.getForm().id;
-                          action python:here.doc_url()+'/saveDocument'"
-              id="plomino_form" method="POST" enctype="multipart/form-data">
+  <form 
+      tal:define="
+            form_method python:myF.getFormMethod();
+            enctype python:(form_method == 'POST') and 'multipart/form-data'
+            "
+      tal:attributes="
+            name myF/id;
+            action python:here.doc_url()+'/saveDocument';
+            method form_method;
+            enctype enctype|nothing
+            "
+      id="plomino_form">
               
 	<span style="display: none" id="plomino_path" tal:content="python:'/'.join(here.getPhysicalPath())">path</span>
 	<span style="display: none" id="plomino_childof" 
@@ -59,17 +67,17 @@
                 tal:content="python:here.getItem('Plomino_Parent_Field')">Plomino_Parent_Field</span>
           
 		<tal:form_actions_top
-				define="owner python:this_form"
-				condition= "python:test((b and this_form.ActionBarPosition=='BOTTOM'), False, True)">
+				define="owner python:myF"
+				condition= "python:test((b and myF.ActionBarPosition=='BOTTOM'), False, True)">
 				<span metal:use-macro="here/ActionBar/macros/EditDocumentActionBar" >
 					display form actions above form fields
 				</span><br/>
 		</tal:form_actions_top>
 		
-	    <span tal:content="structure python:here.editWithForm(this_form)" />
+	    <span tal:content="structure python:here.editWithForm(myF)" />
 
 		<tal:form_actions_bottom
-			define="owner python:this_form">
+			define="owner python:myF">
 			<span metal:use-macro="here/ActionBar/macros/EditDocumentActionBar" >
 				display form actions below form fields
 			</span>
