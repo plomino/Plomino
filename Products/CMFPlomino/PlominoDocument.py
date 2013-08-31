@@ -587,7 +587,7 @@ class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
         message = self.openWithForm(form)
         sendMail(db, recipients, title, message)
 
-    security.declarePublic('getTitle')
+    security.declarePublic('Title')
     def Title(self):
         """ Return the stored title or compute the title (if dynamic).
         """
