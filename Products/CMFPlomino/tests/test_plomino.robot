@@ -100,9 +100,9 @@ Create form with method and type
     Input text           id     ${FORM_ID}
     Input text           title  ${FORM_TITLE}
     Checkbox Should Be Selected  xpath=//input[@name='FormMethod' and @value='Auto']
-    Run keyword if  '${FORM_METHOD}' != 'Auto'  Select Checkbox  xpath=//input[@name='FormMethod' and @value='${FORM_METHOD}']
-    Run keyword if  '${FORM_TYPE}' == 'Page'  Select Checkbox  isPage
-    Run keyword if  '${FORM_TYPE}' == 'SearchForm'  Select Checkbox  isSearchForm
+    Run keyword if  '${FORM_METHOD}' != 'Auto'      Select Checkbox   xpath=//input[@name='FormMethod' and @value='${FORM_METHOD}']
+    Run keyword if  '${FORM_TYPE}' == 'Page'        Select Checkbox   isPage
+    Run keyword if  '${FORM_TYPE}' == 'SearchForm'  Select Checkbox   isSearchForm
     Run keyword if  '${FORM_TYPE}' == 'SearchForm'  Select from list  SearchView  allfrmTest
     Click button         Save
     Page should contain  Changes saved.
@@ -149,9 +149,13 @@ Check datagrid method
     [Arguments]          ${FORM_ID}  ${FORM_METHOD}
     Create field of type  ${FORM_ID}  dgfield  DATAGRID
     Wait Until Page Contains Element  dgfield_gridvalue
-    # Element Should Contain  xpath=//input[@id='dgfield_gridvalue']/following-sibling::script  'sServerMethod': '${FORM_METHOD}'
-    Page should contain  'sServerMethod': '${FORM_METHOD.upper()}'
-    # Page should contain  'sServerMethod': 'POST'
+    # Looks like only visible text is counted
+    # Element Should Contain  xpath=//input[@id='dgfield_gridvalue']/following-sibling::script  'sServerMethod': '${FORM_METHOD.upper()}'
+    # Element Should Contain  dgfield_js  'sServerMethod': 'GET'
+    ${page_source} =  Get source
+    Should match regexp  ${page_source}  dgfield[^>]+'sServerMethod': 'GET'
+    # Page should contain  'sServerMethod': 'GET'
+    # Page should contain  'sServerMethod': '${FORM_METHOD.upper()}'
 
 Select field type
     [Arguments]  ${FIELD_TYPE}
