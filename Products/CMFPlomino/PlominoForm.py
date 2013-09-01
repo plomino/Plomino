@@ -39,7 +39,6 @@ from Products.CMFPlomino import plomino_profiler
 from Products.CMFPlomino.PlominoUtils import PlominoTranslate, translate
 from Products.CMFPlomino.PlominoUtils import DateToString
 from Products.CMFPlomino.PlominoUtils import asUnicode
-from Products.CMFPlomino.PlominoUtils import Log #DBG 
 import interfaces
 
 schema = Schema((
@@ -335,12 +334,9 @@ class PlominoForm(ATFolder):
         value = self.Schema()['FormMethod'].get(self)
         if value == 'Auto':
             if self.isPage or self.isSearchForm:
-                Log('GET because page/search', 'PlominoForm/getFormMethod') #DBG 
                 return 'GET'
             else:
-                Log('POST because Auto', 'PlominoForm/getFormMethod') #DBG 
                 return 'POST'
-        Log('Set to %s' % value, 'PlominoForm/getFormMethod') #DBG 
         return value
 
     security.declareProtected(READ_PERMISSION, 'createDocument')
