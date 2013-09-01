@@ -1,4 +1,3 @@
-
 *** Settings ***
 
 Resource          plone/app/robotframework/selenium.robot
@@ -38,6 +37,25 @@ Manage a Plomino database
     Go to    ${PLONE_URL}/secondreplicadb/allfrmtest
     Page should contain    Marie Curie
 
+Check form methods
+    Log in as the database owner
+    Open the database
+    Create datagrid form
+    Create form                       frmTest           Testing form
+    # Use with the search forms
+    Generate view for                 frmTest
+    Check form method                 frmTest           POST
+    Create form with method           frmGetTest        Testing GET form  GET
+    Check form method                 frmGetTest        GET
+    Create page form                  frmPageTest       Testing page form
+    Check form method                 frmPageTest       GET
+    Create search form                frmSearchTest     Testing search form
+    Check form method                 frmSearchTest     GET
+    Create form with method and type  frmPostingPage    Testing POST page  POST  Page
+    Check form method                 frmPostingPage    POST
+    Create form with method and type  frmPostingSearch  Testing POST search  POST  SearchForm
+    Check form method                 frmPostingSearch  POST
+
 Teardown
     Teardown other portal
 
@@ -54,24 +72,58 @@ Log in as the database owner
 Open the database
     Go to    ${PLONE_URL}/mydb
 
+Open form
+    [Arguments]          ${FORM_ID}  
+    Go to    ${PLONE_URL}/mydb/${FORM_ID}
+
 Create form
     [Arguments]          ${FORM_ID}  ${FORM_TITLE}
+    Create form with method  ${FORM_ID}  ${FORM_TITLE}  Auto
+
+Create form with method
+    [Arguments]          ${FORM_ID}  ${FORM_TITLE}  ${FORM_METHOD}
+    Create form with method and type  ${FORM_ID}  ${FORM_TITLE}  ${FORM_METHOD}  Normal form
+
+Create page form
+    [Arguments]          ${FORM_ID}  ${FORM_TITLE}
+    Create form with method and type  ${FORM_ID}  ${FORM_TITLE}  Auto  Page
+
+Create search form
+    [Arguments]          ${FORM_ID}  ${FORM_TITLE}
+    Create form with method and type  ${FORM_ID}  ${FORM_TITLE}  Auto  SearchForm
+
+Create form with method and type
+    [Arguments]          ${FORM_ID}  ${FORM_TITLE}  ${FORM_METHOD}  ${FORM_TYPE}
+    Open the database
     Click link           Form
-    Page should contain element    css=input#id
+    # Page should contain element    css=input#id
     Input text           id     ${FORM_ID}
     Input text           title  ${FORM_TITLE}
+    Checkbox Should Be Selected  xpath=//input[@name='FormMethod' and @value='Auto']
+    Run keyword if  '${FORM_METHOD}' != 'Auto'  Select Checkbox  xpath=//input[@name='FormMethod' and @value='${FORM_METHOD}']
+    Run keyword if  '${FORM_TYPE}' == 'Page'  Select Checkbox  isPage
+    Run keyword if  '${FORM_TYPE}' == 'SearchForm'  Select Checkbox  isSearchForm
+    Run keyword if  '${FORM_TYPE}' == 'SearchForm'  Select from list  SearchView  allfrmTest
     Click button         Save
     Page should contain  Changes saved.
-    
+
 Create field
-    [Arguments]          ${FORM_ID}  ${FIELD_ID}
+    [Arguments]           ${FORM_ID}  ${FIELD_ID}
+    Create field of type  ${FORM_ID}  ${FIELD_ID}  Default
+
+Create field of type
+    [Arguments]          ${FORM_ID}  ${FIELD_ID}  ${FIELD_TYPE}
+    Open form  ${FORM_ID}
     Click link           Field
     Page should contain element      css=input#id
     Input text           id     ${FIELD_ID}
     Input text           title  ${FIELD_ID}
+    Run keyword if  '${FIELD_TYPE}' != 'Default'  Select field type  ${FIELD_TYPE}
     Click button         Save
     Page should contain  Changes saved.
+    Run keyword if  '${FIELD_TYPE}' == 'DATAGRID'  Configure datagrid field  ${FIELD_ID}
     Go to                ${PLONE_URL}/mydb/${FORM_ID}/edit
+    Wait Until Page Contains Element  FormLayout_ifr
     Select frame         FormLayout_ifr 
     Input text           content  ${FIELD_ID}=
     Unselect Frame
@@ -81,6 +133,36 @@ Create field
     Click button         insert
     Unselect Frame
     Click button         Save
+
+Create datagrid form
+    # [Arguments]          ${FORM_ID}
+    Create form          dgForm  Datagrid form
+
+Check form method
+    [Arguments]          ${FORM_ID}  ${FORM_METHOD}
+    Open form            ${FORM_ID}
+    ${form_method_attr} =  Get element attribute  plomino_form@method
+    Should be equal  ${form_method_attr.upper()}  ${FORM_METHOD}
+    Check datagrid method  ${FORM_ID}  ${FORM_METHOD}
+
+Check datagrid method
+    [Arguments]          ${FORM_ID}  ${FORM_METHOD}
+    Create field of type  ${FORM_ID}  dgfield  DATAGRID
+    Wait Until Page Contains Element  dgfield_gridvalue
+    # Element Should Contain  xpath=//input[@id='dgfield_gridvalue']/following-sibling::script  'sServerMethod': '${FORM_METHOD}'
+    Page should contain  'sServerMethod': '${FORM_METHOD.upper()}'
+    # Page should contain  'sServerMethod': 'POST'
+
+Select field type
+    [Arguments]  ${FIELD_TYPE}
+    Select from list  FieldType  ${FIELD_TYPE}
+
+Configure datagrid field
+    [Arguments]  ${FIELD_ID}
+    Click link  Settings
+    Select from list  form.associated_form  dgForm
+    Input text  form.field_mapping  one,two
+    Click button  form.actions.apply
 
 Generate view for
     [Arguments]  ${FORM_ID}
