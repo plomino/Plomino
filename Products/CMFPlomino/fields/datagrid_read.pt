@@ -7,6 +7,7 @@
             form_method form/getFormMethod;
             widget python:field.getSettings('widget');">
 
+    <tal:comment content="">TODO: Should datagrid_read always use GET method?</tal:comment>
     <tal:read_dynamic condition="python:widget!='READ_STATIC'">
         <script type="text/javascript" charset="utf-8"
             tal:define="param python:field.getSettings().getParameters();
