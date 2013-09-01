@@ -143,7 +143,7 @@ Check form method
     Open form            ${FORM_ID}
     ${form_method_attr} =  Get element attribute  plomino_form@method
     Should be equal  ${form_method_attr.upper()}  ${FORM_METHOD}
-    Check datagrid method  ${FORM_ID}  ${FORM_METHOD}
+    # Check datagrid method  ${FORM_ID}  ${FORM_METHOD}
 
 Check datagrid method
     [Arguments]          ${FORM_ID}  ${FORM_METHOD}
