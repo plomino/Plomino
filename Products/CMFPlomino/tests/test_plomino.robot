@@ -143,7 +143,7 @@ Check form method
     Open form            ${FORM_ID}
     ${form_method_attr} =  Get element attribute  plomino_form@method
     Should be equal  ${form_method_attr.upper()}  ${FORM_METHOD}
-    # Check datagrid method  ${FORM_ID}  ${FORM_METHOD}
+    Check datagrid method  ${FORM_ID}  ${FORM_METHOD}
 
 Check datagrid method
     [Arguments]          ${FORM_ID}  ${FORM_METHOD}
@@ -153,7 +153,7 @@ Check datagrid method
     # Element Should Contain  xpath=//input[@id='dgfield_gridvalue']/following-sibling::script  'sServerMethod': '${FORM_METHOD.upper()}'
     # Element Should Contain  dgfield_js  'sServerMethod': 'GET'
     ${page_source} =  Get source
-    Should match regexp  ${page_source}  dgfield[^>]+'sServerMethod': 'GET'
+    Should match regexp  ${page_source}  dgfield[^>]+'sServerMethod': '${FORM_METHOD.upper()}'
     # Page should contain  'sServerMethod': 'GET'
     # Page should contain  'sServerMethod': '${FORM_METHOD.upper()}'
 
