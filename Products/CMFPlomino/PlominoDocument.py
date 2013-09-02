@@ -291,8 +291,7 @@ class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
             data = self.items.data
 
         if datatables_format:
-            data = {
-                    'iTotalRecords': len(data),
+            data = {'iTotalRecords': len(data),
                     'iTotalDisplayRecords': len(data),
                     'aaData': data }
         if lastmodified:
