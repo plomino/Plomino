@@ -22,22 +22,23 @@ Manage a Plomino database
     Plomino is installed
     Log in as the database owner
     Open the database
-    Generate view for   frm_test
-    Add document    ${PLONE_URL}/mydb/frm_test    field_1     Isaac Newton
-    Add document    ${PLONE_URL}/mydb/frm_test    field_1     Marie Curie
+    Generate view for     frm_test
+    Add document          ${PLONE_URL}/mydb/frm_test    field_1     Isaac Newton
+    Add document          ${PLONE_URL}/mydb/frm_test    field_1     Marie Curie
     Initialize other portal
     Replicate the database design
-    Add document    ${OTHER_PLONE_URL}/replicadb/frm_test    field_1     Victor Hugo
+    Add document          ${OTHER_PLONE_URL}/replicadb/frm_test    field_1     Victor Hugo
     Replicate documents
-    Go to    ${OTHER_PLONE_URL}/replicadb/allfrmtest
-    Page should contain    Marie Curie
+    Go to                 ${OTHER_PLONE_URL}/replicadb/allfrmtest
+    Page should contain   Marie Curie
     Re-replicate the database design
-    Add document    ${PLONE_URL}/secondreplicadb/frm_test    field_1     Louis Pasteur
+    Add document          ${PLONE_URL}/secondreplicadb/frm_test    field_1     Louis Pasteur
     Re-replicate documents
-    Go to    ${PLONE_URL}/secondreplicadb/allfrmtest
-    Page should contain    Marie Curie
+    Go to                 ${PLONE_URL}/secondreplicadb/allfrmtest
+    Page should contain   Marie Curie
 
 Check form methods
+    Set Selenium Implicit Wait        20 seconds
     Log in as the database owner
     Open the database
     Create datagrid form
@@ -61,35 +62,35 @@ Teardown
 
 *** Keywords ***
 Plomino is installed
-    Go to    ${PLONE_URL}
-    Page should contain    mydb
+    Go to                ${PLONE_URL}
+    Page should contain  mydb
 
 Log in as the database owner
-    Enable autologin as    Site Administrator
-    Set autologin username    ${TEST_USER_ID}
+    Enable autologin as     Site Administrator
+    Set autologin username  ${TEST_USER_ID}
     Go to    ${PLONE_URL}
 
 Open the database
-    Go to    ${PLONE_URL}/mydb
+    Go to        ${PLONE_URL}/mydb
 
 Open form
-    [Arguments]          ${FORM_ID}  
-    Go to    ${PLONE_URL}/mydb/${FORM_ID}
+    [Arguments]  ${FORM_ID}  
+    Go to        ${PLONE_URL}/mydb/${FORM_ID}
 
 Create form
-    [Arguments]          ${FORM_ID}  ${FORM_TITLE}
+    [Arguments]              ${FORM_ID}  ${FORM_TITLE}
     Create form with method  ${FORM_ID}  ${FORM_TITLE}  Auto
 
 Create form with method
-    [Arguments]          ${FORM_ID}  ${FORM_TITLE}  ${FORM_METHOD}
+    [Arguments]                       ${FORM_ID}  ${FORM_TITLE}  ${FORM_METHOD}
     Create form with method and type  ${FORM_ID}  ${FORM_TITLE}  ${FORM_METHOD}  Normal form
 
 Create page form
-    [Arguments]          ${FORM_ID}  ${FORM_TITLE}
+    [Arguments]                       ${FORM_ID}  ${FORM_TITLE}
     Create form with method and type  ${FORM_ID}  ${FORM_TITLE}  Auto  Page
 
 Create search form
-    [Arguments]          ${FORM_ID}  ${FORM_TITLE}
+    [Arguments]                       ${FORM_ID}  ${FORM_TITLE}
     Create form with method and type  ${FORM_ID}  ${FORM_TITLE}  Auto  SearchForm
 
 Create form with method and type
@@ -122,6 +123,10 @@ Create field of type
     Click button         Save
     Page should contain  Changes saved.
     Run keyword if  '${FIELD_TYPE}' == 'DATAGRID'  Configure datagrid field  ${FIELD_ID}
+    Add field to layout  ${FORM_ID}  ${FIELD_ID} 
+
+Add field to layout
+    [Arguments]          ${FORM_ID}  ${FIELD_ID} 
     Go to                ${PLONE_URL}/mydb/${FORM_ID}/edit
     Wait Until Page Contains Element  FormLayout_ifr
     Select frame         FormLayout_ifr 
@@ -146,7 +151,7 @@ Check form method
     Check datagrid method  ${FORM_ID}  ${FORM_METHOD}
 
 Check datagrid method
-    [Arguments]          ${FORM_ID}  ${FORM_METHOD}
+    [Arguments]           ${FORM_ID}  ${FORM_METHOD}
     Create field of type  ${FORM_ID}  dgfield  DATAGRID
     Wait Until Page Contains Element  dgfield_gridvalue
     # Looks like only visible text is counted
@@ -162,11 +167,11 @@ Select field type
     Select from list  FieldType  ${FIELD_TYPE}
 
 Configure datagrid field
-    [Arguments]  ${FIELD_ID}
-    Click link  Settings
+    [Arguments]       ${FIELD_ID}
+    Click link        Settings
     Select from list  form.associated_form  dgForm
-    Input text  form.field_mapping  one,two
-    Click button  form.actions.apply
+    Input text        form.field_mapping  one,two
+    Click button      form.actions.apply
 
 Generate view for
     [Arguments]  ${FORM_ID}
@@ -181,24 +186,24 @@ Add document
 
 Replicate the database design
     Other server log in
-    Go to    ${OTHER_PLONE_URL}
+    Go to         ${OTHER_PLONE_URL}
     Open Add New Menu
-    Click Link  plominodatabase
+    Click Link    plominodatabase
     Wait Until Page Contains Element  title
-    Input Text  title  replicadb
+    Input Text    title  replicadb
     Click button  name=form.button.save
     Page Should Contain  Changes saved.
     Go to    ${OTHER_PLONE_URL}/replicadb/DatabaseDesign
     Select Radio Button     sourcetype   sourcetype-server
-    Input text     sourceurl-import   ${PLONE_URL}/mydb
+    Input text     sourceurl-import  ${PLONE_URL}/mydb
     Input text     username-import   ${TEST_USER_ID}
     Input text     password-import   ${TEST_USER_PASSWORD}
-    Click button    submit_refresh_import
+    Click button   submit_refresh_import
     Select Radio Button     sourcetype   sourcetype-server
-    Input text     sourceurl-import   ${PLONE_URL}/mydb
+    Input text     sourceurl-import  ${PLONE_URL}/mydb
     Input text     username-import   ${TEST_USER_ID}
     Input text     password-import   ${TEST_USER_PASSWORD}
-    Click button    submit_import
+    Click button   submit_import
 
 Re-replicate the database design
     Go to    ${PLONE_URL}
