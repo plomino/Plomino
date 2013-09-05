@@ -111,7 +111,7 @@ class PlominoColumn(BaseContent, BrowserDefaultMixin):
         """
         fields = []
         for form in self.getParentView().getParentDatabase().getForms():
-            fields.append([form.id, '=== ' + form.id + ' ==='])
+            fields.append(['', '=== ' + form.id + ' ==='])
             fields.extend(
                     [(form.id + '/' + field.id, field.id)
                         for field in form.getFormFields()])
@@ -151,19 +151,18 @@ class PlominoColumn(BaseContent, BrowserDefaultMixin):
             db.getIndex().refresh()
 
     security.declarePublic('post_validate')
-    def post_validate(self, REQUEST=None, errors=None):
-        """Ensure a field, not a form is selected"""
+    def post_validate(self, REQUEST, errors={}):
+        """ Ensure we have either a field or a formula
+        """
         form = REQUEST.form
-        if errors is None:
-            errors = {}
-        FormulaField = form.get('Formula', None)
-        if FormulaField:
+        formula = form.get('Formula', None)
+        if formula:
             return errors
-        SelectedField = form.get('SelectedField', None)
-        fieldpath = SelectedField.split('/')
-        if len(fieldpath) != 2:
-            errors['SelectedField'] = u'You must select a field, and not a form'
+        selected_field = form.get('SelectedField', None)
+        if not selected_field:
+            errors['SelectedField'] = u"If you don't specify a column formula, you need to select a field."
         return errors
+
 
 registerType(PlominoColumn, PROJECTNAME)
 # end of class PlominoColumn
