@@ -271,9 +271,11 @@ def normalizeString(text, context=None, encoding=None):
 
 def asList(x):
     """ If not list, return x in a single-element list.
-    .. note:: This will wrap falsy values like ``None`` or ``''`` in a list.
+
+    .. note:: This will wrap falsy values like ``None`` or ``''`` in a list,
+              making them truthy.
     """
-    if isinstance(x, list):
+    if isinstance(x, (list, tuple)):
         return x
     return [x]
 
