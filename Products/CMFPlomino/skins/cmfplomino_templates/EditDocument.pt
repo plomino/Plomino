@@ -14,10 +14,11 @@
 <metal:javascript_head_slot fill-slot="javascript_head_slot"
     tal:define="
         has_form python:here.hasItem('Form');
-        this_form python:here.getForm();
-        hasDateTimeField python:this_form.hasDateTimeField();
-        hasDynamicHidewhen python:this_form.hasDynamicHidewhen();
-        hasGoogleVisualizationField python:this_form.hasGoogleVisualizationField()
+        form python:here.getForm();
+        form_method python:form.getFormMethod();
+        hasDateTimeField python:form.hasDateTimeField();
+        hasDynamicHidewhen python:form.hasDynamicHidewhen();
+        hasGoogleVisualizationField python:form.hasGoogleVisualizationField()
         ">
     <tal:has_form condition="has_form">
         <tal:has_date condition="hasDateTimeField">
@@ -33,17 +34,24 @@
         <tal:has_googleviz condition="hasGoogleVisualizationField">
             <tal:script metal:use-macro="here/googlevisualization_macro/macros/js_library">//load google js</tal:script>
         </tal:has_googleviz>
-        <script type="text/javascript" tal:condition="hasDynamicHidewhen">
-            function refreshHidewhen() {
-                var onsuccess = function(data, textStatus, xhr) {
-                    for (var hw in data)
-                        $('.hidewhen-' + hw).css('display', data[hw]?'none':'block');
-                }
-                $.post('computehidewhens', $('#plomino_form').serialize(), onsuccess, 'json');
-            }
-            $(document).ready( function() {
-                $('#plomino_form :input').change(refreshHidewhen);
-            });
+        <script type="text/javascript" tal:condition="hasDynamicHidewhen" tal:content="string:
+function refreshHidewhen() {
+    var onsuccess = function(data, textStatus, xhr) {
+        for (var hw in data)
+            jq('.hidewhen-' + hw).css('display', data[hw]?'none':'block');
+    }
+    jq.ajax({
+        type: '${form_method}',
+        url: 'computehidewhens',
+        data: jq('#plomino_form').serialize(),
+        success: onsuccess,
+        dataType: 'json' 
+    });
+}
+jq(document).ready( function() {
+    jq('#plomino_form :input').change(refreshHidewhen);
+});
+">
         </script>
     </tal:has_form>
 </metal:javascript_head_slot>
@@ -53,10 +61,10 @@
 <metal:css_style_slot fill-slot="style_slot"
     tal:define="
         has_form python:here.hasItem('Form');
-        this_form python:here.getForm();
-        hasDateTimeField python:this_form.hasDateTimeField();
-        hasDynamicHidewhen python:this_form.hasDynamicHidewhen();
-        hasGoogleVisualizationField python:this_form.hasGoogleVisualizationField()
+        form python:here.getForm();
+        hasDateTimeField python:form.hasDateTimeField();
+        hasDynamicHidewhen python:form.hasDynamicHidewhen();
+        hasGoogleVisualizationField python:form.hasGoogleVisualizationField()
         ">
     <tal:has_form condition="has_form">
         <tal:has_date condition="hasDateTimeField">
@@ -75,25 +83,34 @@
 </metal:top_slot>
 
 <metal:main fill-slot="main">
-    <tal:TODO condition="nothing"> Do we need to redefine 'this_form' here? </tal:TODO>
+    <tal:TODO condition="nothing"> Do we need to redefine 'form' here? </tal:TODO>
     <tal:main-macro 
         metal:define-macro="main"
         define="kssClassesView context/@@kss_field_decorator_view;
                 getKssClasses nocall:kssClassesView/getKssClassesInlineEditable;
                 templateId template/getId;
                 has_form python:here.hasItem('Form');
-                this_form python:here.getForm()
+                form python:here.getForm()
                 ">
     <tal:has_form condition="has_form">
-        <form tal:attributes="name python:here.getForm().id;
-                              action python:here.doc_url()+'/saveDocument'"
-              id="plomino_form" method="POST" enctype="multipart/form-data">
+        <form 
+            tal:define="
+                    form_method python:form.getFormMethod();
+                    enctype python:(form_method == 'POST') and 'multipart/form-data'
+                    "
+            tal:attributes="
+                    name form/id;
+                    action python:here.doc_url()+'/saveDocument';
+                    method form_method;
+                    enctype enctype|nothing
+                    "
+            id="plomino_form">
             <tal:validation metal:use-macro="here/validation_messages/macros/messages">display form actions</tal:validation>
-            <tal:form define="b this_form/ActionBarPosition|nothing">
+            <tal:form define="b form/ActionBarPosition|nothing">
                 <div tal:replace="structure provider:plone.abovecontenttitle" />
                 <tal:form_actions_top
-                    define="owner python:this_form"
-                    condition= "python:b and this_form.ActionBarPosition in ['TOP', 'BOTH']">
+                    define="owner python:form"
+                    condition= "python:b and form.ActionBarPosition in ['TOP', 'BOTH']">
                     <span metal:use-macro="here/ActionBar/macros/EditDocumentActionBar" >
                         display form actions above form fields
                     </span><br/>
@@ -102,11 +119,11 @@
                 <h1 class="documentFirstHeading" tal:content="here/Title">Title</h1>
                 <div tal:replace="structure provider:plone.belowcontenttitle" />
                 <div tal:replace="structure provider:plone.abovecontentbody" />
-                <span tal:content="structure python:here.editWithForm(this_form)" />
+                <span tal:content="structure python:here.editWithForm(form)" />
 
                 <tal:form_actions_bottom
-                    define="owner python:this_form"
-                    condition="python:b and this_form.ActionBarPosition in ['BOTTOM', 'BOTH']">
+                    define="owner python:form"
+                    condition="python:b and form.ActionBarPosition in ['BOTTOM', 'BOTH']">
                     <span metal:use-macro="here/ActionBar/macros/EditDocumentActionBar" >
                         display form actions below form fields
                     </span>

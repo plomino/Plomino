@@ -125,9 +125,8 @@ class SelectionField(BaseField):
         return values
 
     def tojson(self, selection):
-        """Return a JSON table storing documents to be displayed
+        """ Return a JSON table storing documents to be displayed
         """
-
         return json.dumps([v.split('|')[::-1] for v in selection])
 
 

@@ -144,6 +144,19 @@ schema = Schema((
         default_output_type="text/html",
     ),
     TextField(
+        name='FormMethod',
+        accessor='getFormMethod',
+        default='Auto',
+        widget=SelectionWidget(
+            label="Form method",
+            description="The form method: GET, POST or Auto (default).",
+            label_msgid=_('CMFPlomino_label_FormMethod', default="Form method"),
+            description_msgid=_('CMFPlomino_help_FormMethod', default="The form method: GET or POST or Auto (default)."),
+            i18n_domain='CMFPlomino',
+        ),
+        vocabulary=('GET', 'POST', 'Auto')
+    ),
+    TextField(
         name='DocumentTitle',
         widget=TextAreaWidget(
             label="Document title formula",
@@ -312,6 +325,21 @@ class PlominoForm(ATFolder):
         while getattr(form, 'meta_type', '') != 'PlominoForm':
             form = obj.aq_parent
         return form
+
+    def getFormMethod(self):
+        """ Return form submit HTTP method
+        """
+        # if self.isEditMode():
+        #     Log('POST because isEditMode', 'PlominoForm/getFormMethod') #DBG 
+        #     return  'POST'
+
+        value = self.Schema()['FormMethod'].get(self)
+        if value == 'Auto':
+            if self.isPage or self.isSearchForm:
+                return 'GET'
+            else:
+                return 'POST'
+        return value
 
     security.declareProtected(READ_PERMISSION, 'createDocument')
     def createDocument(self, REQUEST):

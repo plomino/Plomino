@@ -291,8 +291,7 @@ class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
             data = self.items.data
 
         if datatables_format:
-            data = {
-                    'iTotalRecords': len(data),
+            data = {'iTotalRecords': len(data),
                     'iTotalDisplayRecords': len(data),
                     'aaData': data }
         if lastmodified:
@@ -587,7 +586,7 @@ class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
         message = self.openWithForm(form)
         sendMail(db, recipients, title, message)
 
-    security.declarePublic('getTitle')
+    security.declarePublic('Title')
     def Title(self):
         """ Return the stored title or compute the title (if dynamic).
         """
