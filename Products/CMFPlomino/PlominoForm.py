@@ -36,9 +36,11 @@ from Products.CMFCore.utils import getToolByName
 from Products.CMFPlomino.config import *
 from Products.CMFPlomino.browser import PlominoMessageFactory as _
 from Products.CMFPlomino import plomino_profiler
-from Products.CMFPlomino.PlominoUtils import PlominoTranslate, translate
-from Products.CMFPlomino.PlominoUtils import DateToString
+from Products.CMFPlomino.PlominoUtils import asList
 from Products.CMFPlomino.PlominoUtils import asUnicode
+from Products.CMFPlomino.PlominoUtils import DateToString
+from Products.CMFPlomino.PlominoUtils import PlominoTranslate
+from Products.CMFPlomino.PlominoUtils import translate
 import interfaces
 
 schema = Schema((
@@ -1123,6 +1125,8 @@ class PlominoForm(ATFolder):
                                 doc,
                                 process_attachments,
                                 validation_mode=validation_mode)
+                        if f.getFieldType() == 'SELECTION':
+                            v = asList(v)
                         doc.setItem(fieldName, v)
                 else:
                     # The field was not submitted, probably because it is
