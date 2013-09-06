@@ -38,7 +38,7 @@ from Products.CMFPlomino.browser import PlominoMessageFactory as _
 from Products.CMFPlomino import plomino_profiler
 from Products.CMFPlomino.PlominoUtils import asList
 from Products.CMFPlomino.PlominoUtils import asUnicode
-from Products.CMFPlomino.PlominoUtils import DateToString
+from Products.CMFPlomino.PlominoUtils import DateToString, StringToDate
 from Products.CMFPlomino.PlominoUtils import PlominoTranslate
 from Products.CMFPlomino.PlominoUtils import translate
 import interfaces
@@ -1169,7 +1169,7 @@ class PlominoForm(ATFolder):
                             doc.removeItem(fieldName)
 
     security.declareProtected(READ_PERMISSION, 'searchDocuments')
-    def searchDocuments(self,REQUEST):
+    def searchDocuments(self, REQUEST):
         """ Search documents in the view matching the submitted form fields values
         """
         if self.onSearch:
@@ -1197,23 +1197,28 @@ class PlominoForm(ATFolder):
                     request=REQUEST):
                 fieldname = f.id
                 #if fieldname is not an index -> search doesn't matter and returns all
-                submittedValue = asUnicode(REQUEST.get(fieldname))
-                if submittedValue is not None:
-                    if submittedValue != '':
-                        # if non-text field, convert the value
-                        if f.getFieldType() == "NUMBER":
+                submittedValue = REQUEST.get(fieldname)
+                if submittedValue:
+                    submittedValue = asUnicode(submittedValue)
+                    # if non-text field, convert the value
+                    if f.getFieldType() == "NUMBER":
+                        settings = f.getSettings()
+                        if settings.type == "INTEGER":
                             v = long(submittedValue)
-                        elif f.getFieldType() == "FLOAT":
+                        elif settings.type == "FLOAT":
                             v = float(submittedValue)
-                        elif f.getFieldType() == "DATETIME":
-                            v = submittedValue
-                        else:
-                            v = submittedValue
-                        # rename Plomino_SearchableText to perform full-text
-                        # searches on regular SearchableText index
-                        if fieldname == "Plomino_SearchableText":
-                            fieldname = "SearchableText"
-                        query[fieldname] = v
+                        elif settings.type == "DECIMAL":
+                            v = decimal(submittedValue)
+                    elif f.getFieldType() == "DATETIME":
+                        # The format submitted by the datetime widget:
+                        v = StringToDate(submittedValue, format='%Y-%m-%d %H:%M ')
+                    else:
+                        v = submittedValue
+                    # rename Plomino_SearchableText to perform full-text
+                    # searches on regular SearchableText index
+                    if fieldname == "Plomino_SearchableText":
+                        fieldname = "SearchableText"
+                    query[fieldname] = v
             sortindex = searchview.getSortColumn()
             if not sortindex:
                 sortindex = None
