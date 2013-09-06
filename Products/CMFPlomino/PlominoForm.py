@@ -37,8 +37,9 @@ from Products.CMFPlomino.config import *
 from Products.CMFPlomino.browser import PlominoMessageFactory as _
 from Products.CMFPlomino import plomino_profiler
 from Products.CMFPlomino.PlominoUtils import PlominoTranslate, translate
-from Products.CMFPlomino.PlominoUtils import DateToString
+from Products.CMFPlomino.PlominoUtils import StringToDate, DateToString
 from Products.CMFPlomino.PlominoUtils import asUnicode
+from Products.CMFPlomino.PlominoUtils import decimal
 import interfaces
 
 schema = Schema((
@@ -1170,12 +1171,16 @@ class PlominoForm(ATFolder):
                     submittedValue = asUnicode(submittedValue)
                     # if non-text field, convert the value
                     if f.getFieldType() == "NUMBER":
-                        v = long(submittedValue)
-                    elif f.getFieldType() == "FLOAT":
-                        v = float(submittedValue)
+                        settings = f.getSettings()
+                        if settings.type == "INTEGER":
+                            v = long(submittedValue)
+                        elif settings.type == "FLOAT":
+                            v = float(submittedValue)
+                        elif settings.type == "DECIMAL":
+                            v = decimal(submittedValue)
                     elif f.getFieldType() == "DATETIME":
-                        # XXX: No conversion?
-                        v = submittedValue
+                        # The format submitted by the datetime widget:
+                        v = StringToDate(submittedValue, format='%Y-%m-%d %H:%M ')
                     else:
                         v = submittedValue
                     # rename Plomino_SearchableText to perform full-text
