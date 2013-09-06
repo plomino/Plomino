@@ -2,8 +2,7 @@
 Plomino usage
 ============================================================
 
-Setup
------
+Setup::
 
     >>> from zope import component
     >>> from Products.CMFPlomino.interfaces import IPlominoUtils
@@ -29,7 +28,7 @@ Setup
     ...         )
     >>> InsufficientPrivileges = 'credentials_cookie_auth'
 
-Create a sample db we will replicate to a remote portal
+Create a sample db that we will replicate to a remote portal::
 
     >>> from os.path import dirname, join
     >>> DIRPATH = join(dirname(__file__), 'filestoimport')
@@ -61,8 +60,7 @@ Log in with manager access rights::
     >>> "You are now logged in" in browser.contents
     True
 
-Create a database
------------------
+Create a database::
 
     >>> browser.open(portal_url + "/createObject?type_name=PlominoDatabase")
     >>> browser.getControl('Title').value = 'testdb'
@@ -71,8 +69,7 @@ Create a database
     True
     >>> db_url = portal_url + "/testdb"
 
-Create forms
-------------
+Create forms::
 
     >>> browser.open(db_url + "/createObject?type_name=PlominoForm&tinymce.suppress=FormLayout&")
     >>> browser.getControl(name='id').value = "frmtest"
@@ -133,6 +130,8 @@ Create forms
     >>> browser.getControl(name='title').value = "Test form 2"
     >>> browser.getControl(name='FormLayout').value = """
     ... <p>Country: <span class="plominoFieldClass">country</span></p>
+    ... <p>Area: <span class="plominoFieldClass">area</span></p>
+    ... <p>GDP: <span class="plominoFieldClass">gdp</span></p>
     ... <p>Population: <span class="plominoFieldClass">population</span></p>
     ... <h2>Author</h2>
     ... <span class="plominoSubformClass">frmtest</span>
@@ -147,6 +146,22 @@ Create forms
     >>> browser.getControl(name='id').value = "country"
     >>> browser.getControl(name='title').value = "country"
     >>> browser.getControl(name='form.button.save').click()
+    >>> browser.open(db_url + "/frmtest2/createObject?type_name=PlominoField")
+    >>> browser.getControl(name='id').value = "area"
+    >>> browser.getControl(name='title').value = "area"
+    >>> browser.getControl(name='FieldType').value = ['NUMBER']
+    >>> browser.getControl(name='form.button.save').click()
+    >>> browser.open(db_url + "/frmtest2/area/numbersettings")
+    >>> browser.getControl(name='form.type').value = ['Float']
+    >>> browser.getControl(name='form.actions.apply').click()
+    >>> browser.open(db_url + "/frmtest2/createObject?type_name=PlominoField")
+    >>> browser.getControl(name='id').value = "gdp"
+    >>> browser.getControl(name='title').value = "gdp"
+    >>> browser.getControl(name='FieldType').value = ['NUMBER']
+    >>> browser.getControl(name='form.button.save').click()
+    >>> browser.open(db_url + "/frmtest2/gdp/numbersettings")
+    >>> browser.getControl(name='form.type').value = ['Decimal']
+    >>> browser.getControl(name='form.actions.apply').click()
     >>> browser.open(db_url + "/frmtest2/createObject?type_name=PlominoField")
     >>> browser.getControl(name='id').value = "population"
     >>> browser.getControl(name='title').value = "population"
@@ -173,8 +188,7 @@ Create forms
     >>> """<input type="text" name="population" value="" />""" in browser.contents
     True
 
-Generate views
---------------
+Generate views::
 
     >>> browser.open(db_url + "/frmtest/manage_generateView")
     >>> "Add a new Test form" in browser.contents
@@ -183,8 +197,7 @@ Generate views
     >>> "Add a new Test form 2" in browser.contents
     True
 
-Change the ACL
---------------
+Change the ACL::
 
     >>> browser.open(db_url + "/DatabaseACL")
     >>> browser.getControl(name='newuser').value = ["siteMember"]
@@ -204,8 +217,7 @@ Change the ACL
     >>> browser.getControl(name='user', index=0).value = ["siteMember"]
     >>> browser.getControl("Add", index=2).click()
 
-Create documents
-----------------
+Create documents::
 
     >>> browser.open(db_url + "/frmtest")
     >>> browser.getControl(name='name').value = "Isaac Newton"
@@ -236,19 +248,22 @@ Create documents
     '{"age": "", "display_name": "I have no name", "name": ""}'
     >>> browser.open(db_url + "/frmtest2")
     >>> browser.getControl(name='country').value = "Italy"
+    >>> browser.getControl(name='area').value = "100.323"
+    >>> browser.getControl(name='gdp').value = "35.53"
     >>> browser.getControl(name='population').value = "60"
     >>> browser.getControl(name='name').value = "Giulia"
     >>> browser.getControl(name='age').value = "46"
     >>> browser.getControl("Save").click()
     >>> browser.open(db_url + "/frmtest2")
     >>> browser.getControl(name='country').value = "Spain"
+    >>> browser.getControl(name='area').value = "101.323"
+    >>> browser.getControl(name='gdp').value = "34.53"
     >>> browser.getControl(name='population').value = "47"
     >>> browser.getControl(name='name').value = "Antonio"
     >>> browser.getControl(name='age').value = "21"
     >>> browser.getControl("Save").click()
 
-Refresh db and recompute doc
------------------------------
+Refresh db and recompute doc::
 
     >>> browser.open(db_url + "/DatabaseDesign")
     >>> browser.getControl(name="submit_refresh", index=0).click()
@@ -266,8 +281,7 @@ Refresh db and recompute doc
     True
 
 
-Export design
--------------
+Export design::
 
     >>> browser.open(db_url + "/DatabaseDesign")
     >>> browser.getControl(name='targettype').value = ['file']
@@ -288,8 +302,7 @@ Test internal remote API::
     >>> browser.contents
     ''
 
-Profiling
----------
+Profiling::
 
     >>> browser.open(db_url+"/set_profiling_level?level=form:fields:formulas")
     >>> browser.open(db_url + "/plomino_documents/marie-curie/EditDocument")
@@ -299,8 +312,8 @@ Profiling
     >>> "form_frmtest_title (1 times)" in browser.contents
     True
 
-Replication
------------
+Replication::
+
     >>> creation_url = "http://localhost:8080/PloneRemote/portal_factory/PlominoDatabase/remotereplica/base_edit?title=remotereplica&form.button.save=Save&form.submitted=1"
     >>> remotereplica_url = "http://localhost:8080/PloneRemote/remotereplica"
     >>> result = authenticateAndLoadURL(creation_url, 'admin', 'admin')
