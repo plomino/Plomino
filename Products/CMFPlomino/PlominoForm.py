@@ -36,10 +36,11 @@ from Products.CMFCore.utils import getToolByName
 from Products.CMFPlomino.config import *
 from Products.CMFPlomino.browser import PlominoMessageFactory as _
 from Products.CMFPlomino import plomino_profiler
-from Products.CMFPlomino.PlominoUtils import PlominoTranslate, translate
-from Products.CMFPlomino.PlominoUtils import StringToDate, DateToString
+from Products.CMFPlomino.PlominoUtils import asList
 from Products.CMFPlomino.PlominoUtils import asUnicode
-from Products.CMFPlomino.PlominoUtils import decimal
+from Products.CMFPlomino.PlominoUtils import DateToString, StringToDate
+from Products.CMFPlomino.PlominoUtils import PlominoTranslate
+from Products.CMFPlomino.PlominoUtils import translate
 import interfaces
 
 schema = Schema((
@@ -141,6 +142,19 @@ schema = Schema((
             i18n_domain='CMFPlomino',
         ),
         default_output_type="text/html",
+    ),
+    TextField(
+        name='FormMethod',
+        accessor='getFormMethod',
+        default='Auto',
+        widget=SelectionWidget(
+            label="Form method",
+            description="The form method: GET, POST or Auto (default).",
+            label_msgid=_('CMFPlomino_label_FormMethod', default="Form method"),
+            description_msgid=_('CMFPlomino_help_FormMethod', default="The form method: GET or POST or Auto (default)."),
+            i18n_domain='CMFPlomino',
+        ),
+        vocabulary=('GET', 'POST', 'Auto')
     ),
     TextField(
         name='DocumentTitle',
@@ -311,6 +325,21 @@ class PlominoForm(ATFolder):
         while getattr(form, 'meta_type', '') != 'PlominoForm':
             form = obj.aq_parent
         return form
+
+    def getFormMethod(self):
+        """ Return form submit HTTP method
+        """
+        # if self.isEditMode():
+        #     Log('POST because isEditMode', 'PlominoForm/getFormMethod') #DBG 
+        #     return  'POST'
+
+        value = self.Schema()['FormMethod'].get(self)
+        if value == 'Auto':
+            if self.isPage or self.isSearchForm:
+                return 'GET'
+            else:
+                return 'POST'
+        return value
 
     security.declareProtected(READ_PERMISSION, 'createDocument')
     def createDocument(self, REQUEST):
@@ -1124,6 +1153,8 @@ class PlominoForm(ATFolder):
                                 doc,
                                 process_attachments,
                                 validation_mode=validation_mode)
+                        if f.getFieldType() == 'SELECTION':
+                            v = asList(v)
                         doc.setItem(fieldName, v)
                 else:
                     # The field was not submitted, probably because it is

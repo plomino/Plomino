@@ -1,8 +1,10 @@
 <tal:block 
-    define="fieldname python:options['fieldname'];
-            field python:options['field'];
-            v options/fieldvalue;
+    define="field python:options['field'];
+            fieldname python:options['fieldname'];
             request field/REQUEST;
+            v options/fieldvalue;
+            form field/getParentNode;
+            form_method form/getFormMethod;
             widget python:field.getSettings('widget');">
 
     <tal:read_dynamic condition="python:widget!='READ_STATIC'">
@@ -13,7 +15,7 @@
                         $$(document).ready(function() {
                             $$('#${fieldname}_datagrid').dataTable( {
                                 'sAjaxSource': 'tojson?item=${fieldname}&rendered=true&datatables=true',
-                                'sServerMethod': 'POST',
+                                'sServerMethod': '${form_method}',
                                 'fnServerParams': function ( aoData ) {
                                     ${request_items}
                                 },
