@@ -42,6 +42,7 @@ from HttpUtils import authenticateAndPostToURL
 from Products.CMFPlomino.exceptions import PlominoReplicationException
 from Products.CMFPlomino.PlominoUtils import StringToDate
 from Products.CMFPlomino.PlominoUtils import escape_xml_illegal_chars
+from Products.CMFPlomino.PlominoUtils import plomino_decimal
 
 REMOTE_DOC_ID_SEPARATOR = '#'
 REMOTE_DOC_DATE_SEPARATOR = '@'
@@ -69,8 +70,6 @@ PLOMINO_IMPORT_SEPARATORS = {
 
 # From http://hg.tryton.org/trytond/file/7fefd5066a68/trytond/protocols/xmlrpc.py
 # vvv FROM HERE
-from decimal import Decimal
-
 def dump_struct(self, value, write, escape=xmlrpclib.escape):
     converted_value = {}
     for k, v in value.items():
@@ -90,7 +89,7 @@ def end_struct(self, data):
         dct[xmlrpclib._stringify(items[i])] = items[i + 1]
     if '__class__' in dct:
         if dct['__class__'] == 'Decimal':
-            dct = Decimal(dct['decimal'])
+            dct = plomino_decimal(dct['decimal'])
         # if dct['__class__'] == 'date':
         #     dct = datetime.date(dct['year'], dct['month'], dct['day'])
         # elif dct['__class__'] == 'time':
@@ -133,7 +132,7 @@ def dump_decimal(self, value, write):
 # xmlrpclib.Marshaller.dispatch[datetime.date] = dump_date
 # xmlrpclib.Marshaller.dispatch[datetime.time] = dump_time 
 # xmlrpclib.Marshaller.dispatch[DateTime] = dump_DateTime
-xmlrpclib.Marshaller.dispatch[Decimal] = dump_decimal
+xmlrpclib.Marshaller.dispatch[plomino_decimal] = dump_decimal
 
 xmlrpclib.Unmarshaller.dispatch['struct'] = end_struct
 # ^^^ TO HERE
