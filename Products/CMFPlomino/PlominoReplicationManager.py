@@ -27,6 +27,7 @@ logger = logging.getLogger("Replication")
 
 # Zope
 from Acquisition import *
+from AccessControl.requestmethod import postonly
 from DateTime import DateTime
 from Persistence import Persistent
 from persistent.dict import PersistentDict
@@ -833,6 +834,7 @@ class PlominoReplicationManager(Persistent):
         self.setReplication(replication)
 
     security.declarePublic('startReplicationRemote')
+    @postonly
     def startReplicationRemote(self, REQUEST=None):
         """ Flags the start of the transaction (remote).
         """
@@ -1040,6 +1042,7 @@ class PlominoReplicationManager(Persistent):
         return PLOMINO_IMPORT_SEPARATORS
 
     security.declareProtected(EDIT_PERMISSION, 'processImport')
+    @postonly
     def processImport(self, REQUEST):
         """ Process the importation.
         """
@@ -1372,6 +1375,7 @@ class PlominoReplicationManager(Persistent):
         return node
 
     security.declareProtected(REMOVE_PERMISSION, 'manage_importFromXML')
+    @postonly
     def manage_importFromXML(self, REQUEST):
         """
         """
@@ -1384,6 +1388,7 @@ class PlominoReplicationManager(Persistent):
         REQUEST.RESPONSE.redirect(self.absolute_url()+"/DatabaseReplication")
 
     security.declareProtected(REMOVE_PERMISSION, 'importFromXML')
+    @postonly
     def importFromXML(self, xmlstring=None, sourcetype='sourceFile', from_file=None, from_folder=None, REQUEST=None):
         """ Import documents from XML.
         The sourcetype can be sourceFile or sourceFolder.
