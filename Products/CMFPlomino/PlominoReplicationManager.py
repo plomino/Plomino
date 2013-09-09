@@ -145,6 +145,7 @@ class PlominoReplicationManager(Persistent):
 
     # Methods
     security.declareProtected(EDIT_PERMISSION, 'manage_replications')
+    @postonly
     def manage_replications(self, REQUEST=None):
         """ Replication form manager
         """
@@ -253,6 +254,7 @@ class PlominoReplicationManager(Persistent):
         REQUEST.RESPONSE.redirect(self.absolute_url()+'/DatabaseReplication')
 
     security.declareProtected(EDIT_PERMISSION, 'deleteReplications')
+    @postonly
     def deleteReplications(self, replicationIds):
         """ Delete remoteUrl list
         """
@@ -286,6 +288,7 @@ class PlominoReplicationManager(Persistent):
         return infoMsg
 
     security.declareProtected(EDIT_PERMISSION, 'saveReplication')
+    @postonly
     def saveReplication(self, REQUEST=None):
         """ Save replication        
         """
@@ -302,6 +305,7 @@ class PlominoReplicationManager(Persistent):
         return "replication saved"
 
     security.declareProtected(EDIT_PERMISSION, 'replicate')
+    @postonly
     def replicate(self, replicationId=None):
         """ Launch replication with just remote URL passed
         """
@@ -326,6 +330,7 @@ class PlominoReplicationManager(Persistent):
         return infoMsg        
 
     security.declareProtected(EDIT_PERMISSION, 'launchReplication')
+    @postonly
     def launchReplication(self, replication):
         """ Launch replication with params
         """
@@ -637,6 +642,7 @@ class PlominoReplicationManager(Persistent):
         return result
 
     security.declarePrivate('importDocumentPull')
+    @postonly
     def importDocumentPull(self, i, remoteUrl, username, password):
         """ Imports document from remoteurl.
             Send object as a .zexp stream via HTTP multipart POST
@@ -658,6 +664,7 @@ class PlominoReplicationManager(Persistent):
         return self.replicationHistory
 
     security.declareProtected(EDIT_PERMISSION, 'setReplications')
+    @postonly
     def setReplications(self, replications):
         """ Sets the replications hashmap.
         """
@@ -688,6 +695,7 @@ class PlominoReplicationManager(Persistent):
         return result
 
     security.declarePrivate('setReplication')
+    @postonly
     def setReplication(self, replication):
         """ Add the replication to the replication hashmap.
         """
@@ -708,6 +716,7 @@ class PlominoReplicationManager(Persistent):
         return self.replicationsDates
 
     security.declareProtected(EDIT_PERMISSION, 'setReplicationsDates')
+    @postonly
     def setReplicationsDates(self, replication_dates):
         """ Sets the replications hashmap 
         """
@@ -744,6 +753,7 @@ class PlominoReplicationManager(Persistent):
             return replication_dates[remoteUrl][replicationtype]
 
     security.declarePrivate('setReplicationDate')
+    @postonly
     def setReplicationDate(self, remoteUrl, replicationtype, date):
         """ Sets the replication date for URL and type
         """
@@ -805,6 +815,7 @@ class PlominoReplicationManager(Persistent):
         return result
 
     security.declarePrivate('setReplicationMode')
+    @postonly
     def setReplicationMode(self, remoteId, mode):
         """ Sets the replication mode for URL 
         """
@@ -833,6 +844,7 @@ class PlominoReplicationManager(Persistent):
         self.setReplication(replication)
 
     security.declarePublic('startReplicationRemote')
+    @postonly
     def startReplicationRemote(self, REQUEST=None):
         """ Flags the start of the transaction (remote).
         """
@@ -845,6 +857,7 @@ class PlominoReplicationManager(Persistent):
         self.startReplication(remoteUrl, repType)
 
     security.declarePublic('startReplication')
+    @postonly
     def startReplication(self, remoteUrl, repType):
         """ Flags the start of the transaction (local).
         """
@@ -873,6 +886,7 @@ class PlominoReplicationManager(Persistent):
         return result
 
     security.declarePublic('resetReplications')
+    @postonly
     def resetReplications(self):
         """ Reset the replication hashmap
         """
@@ -1008,6 +1022,7 @@ class PlominoReplicationManager(Persistent):
             return replication
 
     security.declareProtected(EDIT_PERMISSION, 'manage_importation')
+    @postonly
     def manage_importation(self, REQUEST=None):
         """ CSV import form manager.
         """
@@ -1040,6 +1055,7 @@ class PlominoReplicationManager(Persistent):
         return PLOMINO_IMPORT_SEPARATORS
 
     security.declareProtected(EDIT_PERMISSION, 'processImport')
+    @postonly
     def processImport(self, REQUEST):
         """ Process the importation.
         """
@@ -1091,6 +1107,7 @@ class PlominoReplicationManager(Persistent):
         return infoMsg
 
     security.declareProtected(EDIT_PERMISSION, 'processImport')
+    @postonly
     def processImportAPI(self, formName, separator, fileToImport, file_encoding='utf-8'):
         """ Process import API method.
         """
@@ -1165,6 +1182,7 @@ class PlominoReplicationManager(Persistent):
             raise PlominoReplicationException, 'error while parsing file (%s)' % (e)            
 
     security.declareProtected(EDIT_PERMISSION, 'importCsv')
+    @postonly
     def importCsv(self, fileContent):
         """ Import CSV from content parsed.
         """
@@ -1250,6 +1268,7 @@ class PlominoReplicationManager(Persistent):
                     'infoMsg': infoMessage})
 
     security.declareProtected(READ_PERMISSION, 'manage_exportAsXML')
+    @postonly
     def manage_exportAsXML(self, REQUEST):
         """
         """
@@ -1372,6 +1391,7 @@ class PlominoReplicationManager(Persistent):
         return node
 
     security.declareProtected(REMOVE_PERMISSION, 'manage_importFromXML')
+    @postonly
     def manage_importFromXML(self, REQUEST):
         """
         """
@@ -1384,6 +1404,7 @@ class PlominoReplicationManager(Persistent):
         REQUEST.RESPONSE.redirect(self.absolute_url()+"/DatabaseReplication")
 
     security.declareProtected(REMOVE_PERMISSION, 'importFromXML')
+    @postonly
     def importFromXML(self, xmlstring=None, sourcetype='sourceFile', from_file=None, from_folder=None, REQUEST=None):
         """ Import documents from XML.
         The sourcetype can be sourceFile or sourceFolder.
@@ -1470,6 +1491,7 @@ class PlominoReplicationManager(Persistent):
         return (imports, errors)
 
     security.declareProtected(CREATE_PERMISSION, 'importDocumentFromXML')
+    @postonly
     def importDocumentFromXML(self, node):
         docid = node.getAttribute('id').encode('ascii')
         lastmodified = DateTime(node.getAttribute('lastmodified'))
