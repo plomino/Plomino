@@ -352,5 +352,4 @@ Replication::
 
 Nuke the Plone used for testing::
 
-    >>> from Products.CMFPlomino.HttpUtils import authenticateAndPostToURL
     >>> result = authenticateAndLoadURL("http://localhost:8080?ids:list=PloneRemote&manage_delObjects:method=Delete", 'admin', 'admin')
