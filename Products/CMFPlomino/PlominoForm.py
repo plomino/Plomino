@@ -1154,7 +1154,9 @@ class PlominoForm(ATFolder):
                                 process_attachments,
                                 validation_mode=validation_mode)
                         if f.getFieldType() == 'SELECTION':
-                            v = asList(v)
+                            if f.getSettings().widget in [
+                                    'MULTISELECT', 'CHECKBOX', 'PICKLIST']:
+                                v = asList(v)
                         doc.setItem(fieldName, v)
                 else:
                     # The field was not submitted, probably because it is
