@@ -1170,7 +1170,11 @@ class PlominoForm(ATFolder):
 
     security.declareProtected(READ_PERMISSION, 'searchDocuments')
     def searchDocuments(self, REQUEST):
-        """ Search documents in the view matching the submitted form fields values
+        """ Search documents in the view matching the submitted form fields values.
+
+        1. If there is an onSearch event, use the onSearch formula to generate a result set.
+        2. Otherwise, do a dbsearch among the documents of the related view, and
+        2.1. if there is a searchformula, evaluate that for every document in the view.
         """
         if self.onSearch:
             # Manually generate a result set
@@ -1219,6 +1223,7 @@ class PlominoForm(ATFolder):
                     if fieldname == "Plomino_SearchableText":
                         fieldname = "SearchableText"
                     query[fieldname] = v
+
             sortindex = searchview.getSortColumn()
             if not sortindex:
                 sortindex = None
@@ -1244,6 +1249,7 @@ class PlominoForm(ATFolder):
                 results = filteredResults
 
         return self.OpenForm(searchresults=results)
+
 
     security.declarePublic('validation_errors')
     def validation_errors(self, REQUEST):
