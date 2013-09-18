@@ -88,6 +88,7 @@ def authenticateAndPostToURL(targetURL, username, password, filename=None, filec
     return (response.status, response.reason)
 
 
+# Adapted from http://stackoverflow.com/questions/13514713/properly-format-multipart-form-data-body
 class FormData(email.mime.multipart.MIMEMultipart):
 
     def __init__(self):
