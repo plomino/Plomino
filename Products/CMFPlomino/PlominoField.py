@@ -209,6 +209,7 @@ class PlominoField(BaseContent, BrowserDefaultMixin):
             try:
                 v = adapt.processInput(submittedValue)
             except Exception, e:
+                # TODO: Log exception
                 if validation_mode:
                     # when validating, submitted values are potentially bad
                     # but it must not break getHideWhens, getFormFields, etc.
