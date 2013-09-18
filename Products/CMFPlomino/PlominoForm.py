@@ -1123,6 +1123,7 @@ class PlominoForm(ATFolder):
         r = re.compile('<span class="plominoSubformClass">([^<]+)</span>')
         return [i.strip() for i in r.findall(html_content)]
 
+
     security.declarePublic('readInputs')
     def readInputs(self, doc, REQUEST, process_attachments=False, applyhidewhen=True, validation_mode=False):
         """ Read submitted values in REQUEST and store them in document
@@ -1169,6 +1170,7 @@ class PlominoForm(ATFolder):
                         fieldtype = f.getFieldType()
                         if (fieldtype in ("SELECTION", "DOCLINK", "BOOLEAN")):
                             doc.removeItem(fieldName)
+
 
     security.declareProtected(READ_PERMISSION, 'searchDocuments')
     def searchDocuments(self, REQUEST):
@@ -1296,6 +1298,7 @@ class PlominoForm(ATFolder):
             hidden_fields += subform._get_js_hidden_fields(REQUEST, doc)
         return hidden_fields
 
+
     security.declarePublic('validateInputs')
     def validateInputs(self, REQUEST, doc=None):
         """
@@ -1313,6 +1316,16 @@ class PlominoForm(ATFolder):
                 validation_mode=True)
         fields = [field for field in fields
                 if field.getId() not in hidden_fields]
+
+        # Temp doc for validation
+        db = self.getParentDatabase()
+        tmp = TemporaryDocument(
+                db,
+                self,
+                REQUEST,
+                doc,
+                validation_mode=True).__of__(db)
+
         for f in fields:
             fieldname = f.id
             fieldtype = f.getFieldType()
@@ -1332,24 +1345,16 @@ class PlominoForm(ATFolder):
                             f.Title(),
                             PlominoTranslate("is mandatory", self)))
             else:
-                # STEP 2: check data types
-                errors = errors + f.validateFormat(submittedValue)
-
-        if not errors:
-            # STEP 3: check validation formula
-            db = self.getParentDatabase()
-            tmp = TemporaryDocument(
-                    db,
-                    self,
-                    REQUEST,
-                    doc,
-                    validation_mode=True).__of__(db)
-            for f in fields:
+                #
+                # STEP 2: check validation formula
+                #
+                # This may massage the submitted value e.g. to make it pass STEP 3
+                #
                 formula = f.getValidationFormula()
-                if not formula=='':
-                    s = ''
+                if formula:
+                    error_msg = ''
                     try:
-                        s = self.runFormulaScript(
+                        error_msg = self.runFormulaScript(
                                 'field_%s_%s_ValidationFormula' % (
                                     self.id,
                                     f.id),
@@ -1357,8 +1362,12 @@ class PlominoForm(ATFolder):
                                 f.ValidationFormula)
                     except PlominoScriptException, e:
                         e.reportError('%s validation formula failed' % f.id)
-                    if s:
-                        errors.append(s)
+                    if error_msg:
+                        errors.append(error_msg)
+                #
+                # STEP 3: check data types
+                #
+                errors = errors + f.validateFormat(submittedValue)
 
         return errors
 
