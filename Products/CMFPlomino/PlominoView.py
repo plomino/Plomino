@@ -88,7 +88,7 @@ returns the current Plomino document."""),
             description_msgid=_('CMFPlomino_help_SortColumn', default="Column used to sort the view"),
             i18n_domain='CMFPlomino',
         ),
-        vocabulary="_getcolumn_ids",
+        vocabulary="SortColumn_vocabulary",
         schemata="Sorting",
     ),
     BooleanField(
@@ -362,6 +362,7 @@ class PlominoView(ATFolder):
     def getColumns(self):
         """ Get columns
         """
+        # TODO: why not just `return self.contentValues(filter='PlominoColumn')`?
         columnslist = self.portal_catalog.search(
                 {'portal_type': ['PlominoColumn'],
                     'path': '/'.join(self.getPhysicalPath())},
@@ -398,7 +399,7 @@ class PlominoView(ATFolder):
         return filtered
 
     security.declarePublic('getColumn')
-    def getColumn(self,column_name):
+    def getColumn(self, column_name):
         """ Get a single column
         """
         return getattr(self, column_name)
@@ -530,7 +531,7 @@ class PlominoView(ATFolder):
                 indexkey = self.getIndexKey(col.getColumnName())
                 values = [getattr(b, indexkey) for b in brains]
                 try:
-                    s = sum([v for v in values if v is not None])
+                    s = sum([v for v in values if v])
                 except:
                     logger.error('PlominoView', exc_info=True)
                     s = 0
@@ -782,8 +783,8 @@ class PlominoView(ATFolder):
                 key = ''
         return key
 
-    def _getcolumn_ids(self):
-        return [''] +  [c.id for c in self.getColumns()]
+    def SortColumn_vocabulary(self):
+        return [''] + [c.id for c in self.getColumns()]
 
 registerType(PlominoView, PROJECTNAME)
 # end of class PlominoView

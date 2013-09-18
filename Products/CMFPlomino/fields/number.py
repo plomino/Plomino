@@ -122,6 +122,7 @@ class NumberField(BaseField):
             str_v = str(v)
         return str_v
 
+
 for f in getFields(INumberField).values():
     setattr(NumberField, f.getName(), DictionaryProperty(f, 'parameters'))
 
