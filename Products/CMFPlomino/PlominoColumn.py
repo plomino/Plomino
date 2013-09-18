@@ -105,6 +105,7 @@ class PlominoColumn(BaseContent, BrowserDefaultMixin):
     schema = PlominoColumn_schema
 
     # Methods
+    # TODO: No reason to copy method name, we don't do the same thing
     security.declarePublic('getFormFields')
     def getFormFields(self):
         """ Get a list of all the fields in the database
@@ -123,11 +124,61 @@ class PlominoColumn(BaseContent, BrowserDefaultMixin):
         """
         return self.id
 
+
+    # TODO: OK for this to be public?
+    security.declarePublic('getColumnName')
+    def getColumnRender(self, fieldvalue):
+        """ If associated with a field, let the field do the rendering.
+        """
+        if self.getFormula():
+            return fieldvalue
+
+        associated_field = self.getSelectedField()
+        form_id, fieldname = associated_field.split('/')
+        db = self.getParentDatabase()
+        form = db.getForm(form_id)
+        field = form.getFormField(fieldname)
+        field_settings = field.getSettings()
+
+        # TODO: delegate to PlominoField?
+        # get the rendering template
+        pt = None
+        templatemode = "Read"
+        # if custom template, use it
+        t = field.getFieldReadTemplate()
+        if t:
+            pt = getattr(db.resources, t).__of__(field)
+
+        # If no custom template provided, get the template associated with the field type
+        if not pt:
+            if hasattr(field_settings, 'read_template'):
+                pt = field_settings.read_template
+            else:
+                fieldType = field.FieldType
+                pt = field.getRenderingTemplate(fieldType+"FieldRead")
+                if not pt:
+                    pt = field.getRenderingTemplate("DefaultFieldRead")
+
+        selection = field_settings.getSelectionList(form)
+
+        try:
+            return pt(fieldname=fieldname,
+                    fieldvalue=fieldvalue,
+                    selection=selection,
+                    field=field,
+                    doc=form
+                    )
+        except Exception, e:
+            self.traceRenderingErr(e, self)
+            return ""
+
+
     security.declarePublic('getParentView')
     def getParentView(self):
         """ Get parent view
         """
         return self.getParentNode()
+
 
     security.declarePublic('at_post_edit_script')
     def at_post_edit_script(self):
