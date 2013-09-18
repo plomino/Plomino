@@ -344,7 +344,7 @@ Replication::
     >>> "frmMovie" in browser.contents
     True
     >>> browser.open(localdb_url + "/manage_replications?actionType=add")
-    >>> browser.open(localdb_url + "/manage_replications?replicationId=1&whoWins=localwins&mode=add&actionType=save&name=my-replication&remoteUrl=http%3A%2F%2Flocalhost%3A8080%2FPloneRemote%2Fremotereplica&username=admin&password=admin&repType=pushpull")
+    >>> browser.open(localdb_url + "/manage_replications?actionType=save&replicationId=1&whoWins=localwins&mode=add&name=my-replication&remoteUrl=http%3A%2F%2Flocalhost%3A8080%2FPloneRemote%2Fremotereplica&username=admin&password=admin&repType=pushpull")
     >>> browser.open(localdb_url + "/manage_replications?actionType=replicate&selection=1")
     >>> browser.open(localdb_url + "/allMovies")
     >>> "Apocalypse now" in browser.contents
