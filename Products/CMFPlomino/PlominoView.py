@@ -526,16 +526,16 @@ class PlominoView(ATFolder):
         """
         sums = {}
         brains = self.getAllDocuments(getObject=False)
-        for col in self.getColumns():
-            if col.DisplaySum:
-                indexkey = self.getIndexKey(col.getColumnName())
+        for column in self.getColumns():
+            if column.DisplaySum:
+                indexkey = self.getIndexKey(column.getColumnName())
                 values = [getattr(b, indexkey) for b in brains]
                 try:
                     s = sum([v for v in values if v])
                 except:
                     logger.error('PlominoView', exc_info=True)
                     s = 0
-                sums[col.id] = s
+                sums[column.id] = column.getColumnRender(s)
         return sums
 
     def makeArray(self, brains, columns):
