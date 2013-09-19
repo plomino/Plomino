@@ -111,8 +111,10 @@ class PlominoColumn(BaseContent, BrowserDefaultMixin):
         """ Get a list of all the fields in the database
         """
         fields = []
+        counter = 1
         for form in self.getParentView().getParentDatabase().getForms():
-            fields.append(['', '=== ' + form.id + ' ==='])
+            fields.append(['PlominoPlaceholder%s' % counter, '=== ' + form.id + ' ==='])
+            counter += 1
             fields.extend(
                     [(form.id + '/' + field.id, field.id)
                         for field in form.getFormFields()])
@@ -210,7 +212,7 @@ class PlominoColumn(BaseContent, BrowserDefaultMixin):
         if formula:
             return errors
         selected_field = form.get('SelectedField', None)
-        if not selected_field:
+        if selected_field.startswith('PlominoPlaceholder'):
             errors['SelectedField'] = u"If you don't specify a column formula, you need to select a field."
         return errors
 
