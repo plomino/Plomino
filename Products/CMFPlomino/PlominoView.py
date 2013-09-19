@@ -743,17 +743,18 @@ class PlominoView(ATFolder):
                 sortindex=sort_index,
                 reverse=reverse)
         total = display_total = len(results)
-        columnids = [col.id for col in self.getColumns()
-                if not getattr(col, 'HiddenColumn', False)]
-        for b in results:
-            row = [b.getPath().split('/')[-1]]
-            for colid in columnids:
-                v = getattr(b, self.getIndexKey(colid), '')
-                if isinstance(v, list):
-                    v = [asUnicode(e).encode('utf-8').replace('\r', '') for e in v]
+        columns = [column for column in self.getColumns()
+                if not getattr(column, 'HiddenColumn', False)]
+        for brain in results:
+            row = [brain.getPath().split('/')[-1]]
+            for column in columns:
+                column_value = getattr(brain, self.getIndexKey(column.id), '')
+                rendered = column.getColumnRender(column_value)
+                if isinstance(rendered, list):
+                    rendered = [asUnicode(e).encode('utf-8').replace('\r', '') for e in rendered]
                 else:
-                    v = asUnicode(v).encode('utf-8').replace('\r', '')
-                row.append(v or '&nbsp;')
+                    rendered = asUnicode(rendered).encode('utf-8').replace('\r', '')
+                row.append(rendered or '&nbsp;')
             if categorized:
                 for cat in asList(row[1]):
                     entry = [c for c in row]
