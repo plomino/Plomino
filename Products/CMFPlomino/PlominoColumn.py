@@ -16,6 +16,7 @@ from AccessControl import ClassSecurityInfo
 from Products.Archetypes.atapi import *
 from zope.interface import implements
 import interfaces
+import Missing
 
 from Products.CMFDynamicViewFTI.browserdefault import BrowserDefaultMixin
 
@@ -132,6 +133,9 @@ class PlominoColumn(BaseContent, BrowserDefaultMixin):
     def getColumnRender(self, fieldvalue):
         """ If associated with a field, let the field do the rendering.
         """
+        if fieldvalue is Missing.Value:
+            return 'Missing'
+
         if self.getFormula():
             return fieldvalue
 
