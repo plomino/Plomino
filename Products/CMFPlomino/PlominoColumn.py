@@ -16,6 +16,7 @@ from AccessControl import ClassSecurityInfo
 from Products.Archetypes.atapi import *
 from zope.interface import implements
 import interfaces
+import Missing
 
 from Products.CMFDynamicViewFTI.browserdefault import BrowserDefaultMixin
 
