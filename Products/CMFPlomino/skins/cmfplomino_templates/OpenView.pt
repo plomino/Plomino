@@ -226,9 +226,9 @@
                                                 },
                                                 // Move to field settings?
                                                 // 'fnFooterCallback': generateTableFooter,
-                                                // 'oLanguage': {
-                                                //     'sUrl': '@@collective.js.datatables.translation'
-                                                // }
+                                                'oLanguage': {
+                                                    'sUrl': '@@collective.js.datatables.translation'
+                                                }
                                             });
                                             var tableNodes = oDynamicTable.fnGetNodes();
                                             $$('td > input:checkbox', tableNodes).change(function() {
