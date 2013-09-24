@@ -1,6 +1,13 @@
 Changelog
 =========
 
+unreleased
+----------
+* Reorder validation, so that submitted values can be 
+  massaged [jean]
+* Enable Views to use field rendering [jean]
+* Allow forms to specify their HTTP submit method [jean]
+
 1.17.4 (2013-09-11)
 -------------------
 * Dynamic titles [jean]
@@ -61,7 +68,7 @@ Changelog
 
 1.16.1 (2012-10-16)
 -------------------
-* integrate jsonutils to manage decimal [neaj]
+* integrate jsonutils to manage decimal [jean]
 * use iframe in overlay for datagrid popup [silviot]
 * working on Plone4.3 support [alert]
 * hide-when fixes [manuelep]

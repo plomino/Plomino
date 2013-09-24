@@ -24,6 +24,9 @@ from Products.CMFPlomino.config import PROJECTNAME
 from Products.CMFPlomino.browser import PlominoMessageFactory as _
 from validator import isValidPlominoId
 
+import logging
+logger = logging.getLogger('Plomino')
+
 schema = Schema((
 
     StringField(
@@ -134,7 +137,8 @@ class PlominoColumn(BaseContent, BrowserDefaultMixin):
         """ If associated with a field, let the field do the rendering.
         """
         if fieldvalue is Missing.Value:
-            return 'Missing'
+            logger.warn('PlominoColumn.getColumnRender> fieldvalue is Missing.Value')
+            return ''
 
         if self.getFormula():
             return fieldvalue

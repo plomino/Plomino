@@ -224,7 +224,8 @@
                                                         dynamicview_categorize('dynamictable');
                                                     }
                                                 },
-                                                'fnFooterCallback': generateTableFooter,
+                                                // Move to field settings?
+                                                // 'fnFooterCallback': generateTableFooter,
                                                 'oLanguage': {
                                                     'sUrl': '@@collective.js.datatables.translation'
                                                 }
@@ -248,12 +249,7 @@
                             </tr>
                         </thead>
                         <tfoot>
-                            <tr>
-                                <th></th>
-                                <tal:column_footer repeat="column columns">
-                                    <th tal:condition="not: column/HiddenColumn|nothing"></th>
-                                </tal:column_footer>
-                            </tr>
+                            <tal:sums metal:use-macro="here/view_macros/macros/SumsMacro">sums</tal:sums>
                         </tfoot>
                         <tbody></tbody>
                     </table>
