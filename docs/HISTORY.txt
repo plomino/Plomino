@@ -1,8 +1,8 @@
 Changelog
 =========
 
-unreleased
-----------
+1.17.5 (2013-09-24)
+-------------------
 * Reorder validation, so that submitted values can be 
   massaged [jean]
 * Enable Views to use field rendering [jean]
