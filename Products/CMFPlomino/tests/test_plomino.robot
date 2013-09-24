@@ -257,7 +257,8 @@ Delete replica
 
 Other server log in
     Go to  ${OTHER_PLONE_URL}/login_form
-    Page should contain element  __ac_name
+    Wait Until Page Contains Element  __ac_name
+    # Page should contain element  __ac_name
     Page should contain element  __ac_password
     Page should contain button  Log in
     Input text for sure  __ac_name  admin
