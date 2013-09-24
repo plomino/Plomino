@@ -14,6 +14,7 @@ __docformat__ = 'plaintext'
 from xml.dom.minidom import getDOMImplementation
 from xml.dom.minidom import parseString
 from xml.parsers.expat import ExpatError
+import base64
 import codecs
 import csv
 import datetime
@@ -381,15 +382,16 @@ class PlominoReplicationManager(Persistent):
         # flag replication begin on remote
         if not error:
             try:
-                authenticateAndLoadURL(
-                        '%s/startReplicationRemote'
-                        '?RemoteUrl=%s'
-                        '&repType=%s' % (
-                            replication['remoteUrl'],
-                            self.absolute_url(),
-                            replication['repType']),
+                authenticateAndPostToURL(
+                        '%s/startReplicationRemote' % (
+                            replication['remoteUrl']),
                         replication['username'],
-                        replication['password'])
+                        replication['password'], 
+                        parameters={
+                            'RemoteUrl': self.absolute_url(),
+                            'repType': replication['repType']
+                            }
+                        )
             except Exception, e:
                 infoMsg = '%serror while flagging replication on remote: %s%s' % (
                         infoMsg,
@@ -1406,7 +1408,9 @@ class PlominoReplicationManager(Persistent):
                 sourcetype = REQUEST.get('sourcetype', sourcetype)
             if sourcetype == 'sourceFile':
                 if REQUEST:
-                    xml_sources = [REQUEST.get("file")]
+                    filename = REQUEST.get('filename')
+                    f = REQUEST.get(filename)
+                    xml_sources = [f]
                 elif from_file:
                     xml_sources = [from_file]
             elif sourcetype == 'folder':
@@ -1420,13 +1424,17 @@ class PlominoReplicationManager(Persistent):
 
         # xml_sources contains either:
         # - a string, or
-        # - file objects and/or filenames.
+        # - FileUpload objects and/or filenames.
         for source in xml_sources:
             if xmlstring_arg:
                 xmlstring = source
             else:
                 if hasattr(source, 'read'):
-                    xmlstring = source.read()
+                    cte = source.headers.get('content-transfer-encoding')
+                    if cte == 'base64':
+                        xmlstring = base64.decodestring(source.read())
+                    else:
+                        xmlstring = source.read()
                 else:
                     fileobj = codecs.open(source, 'r', 'utf-8')
                     xmlstring = fileobj.read().encode('utf-8')
