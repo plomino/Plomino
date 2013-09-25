@@ -3,7 +3,10 @@
     <tal:widget condition="python:test(widget=='HIDDEN')">
         <input type="hidden" tal:attributes="name options/fieldname; value options/fieldvalue" />
     </tal:widget>
-    <tal:widget condition="python:test(widget!='HIDDEN')">
+    <tal:widget condition="python:test(widget=='TEXT')">
+        <tal:block tal:define="v options/fieldvalue" tal:content="structure v">text</tal:block>
+    </tal:widget>
+    <tal:widget condition="python:test(widget=='TEXTAREA')">
         <tal:block tal:define="v options/fieldvalue" tal:content="structure python:v.replace('\n','<br/>')">text</tal:block>
     </tal:widget>
 </span>
