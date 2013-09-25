@@ -16,12 +16,16 @@ from AccessControl import ClassSecurityInfo
 from Products.Archetypes.atapi import *
 from zope.interface import implements
 import interfaces
+import Missing
 
 from Products.CMFDynamicViewFTI.browserdefault import BrowserDefaultMixin
 
 from Products.CMFPlomino.config import PROJECTNAME
 from Products.CMFPlomino.browser import PlominoMessageFactory as _
 from validator import isValidPlominoId
+
+import logging
+logger = logging.getLogger('Plomino')
 
 schema = Schema((
 
@@ -105,13 +109,16 @@ class PlominoColumn(BaseContent, BrowserDefaultMixin):
     schema = PlominoColumn_schema
 
     # Methods
+    # TODO: No reason to copy method name, we don't do the same thing
     security.declarePublic('getFormFields')
     def getFormFields(self):
         """ Get a list of all the fields in the database
         """
         fields = []
+        counter = 1
         for form in self.getParentView().getParentDatabase().getForms():
-            fields.append([form.id, '=== ' + form.id + ' ==='])
+            fields.append(['PlominoPlaceholder%s' % counter, '=== ' + form.id + ' ==='])
+            counter += 1
             fields.extend(
                     [(form.id + '/' + field.id, field.id)
                         for field in form.getFormFields()])
@@ -123,11 +130,65 @@ class PlominoColumn(BaseContent, BrowserDefaultMixin):
         """
         return self.id
 
+
+    # TODO: OK for this to be public?
+    security.declarePublic('getColumnName')
+    def getColumnRender(self, fieldvalue):
+        """ If associated with a field, let the field do the rendering.
+        """
+        if fieldvalue is Missing.Value:
+            logger.warn('PlominoColumn.getColumnRender> fieldvalue is Missing.Value')
+            return ''
+
+        if self.getFormula():
+            return fieldvalue
+
+        associated_field = self.getSelectedField()
+        form_id, fieldname = associated_field.split('/')
+        db = self.getParentDatabase()
+        form = db.getForm(form_id)
+        field = form.getFormField(fieldname)
+        field_settings = field.getSettings()
+
+        # TODO: delegate to PlominoField?
+        # get the rendering template
+        pt = None
+        templatemode = "Read"
+        # if custom template, use it
+        t = field.getFieldReadTemplate()
+        if t:
+            pt = getattr(db.resources, t).__of__(field)
+
+        # If no custom template provided, get the template associated with the field type
+        if not pt:
+            if hasattr(field_settings, 'read_template'):
+                pt = field_settings.read_template
+            else:
+                fieldType = field.FieldType
+                pt = field.getRenderingTemplate(fieldType+"FieldRead")
+                if not pt:
+                    pt = field.getRenderingTemplate("DefaultFieldRead")
+
+        selection = field_settings.getSelectionList(form)
+
+        try:
+            return pt(fieldname=fieldname,
+                    fieldvalue=fieldvalue,
+                    selection=selection,
+                    field=field,
+                    doc=form
+                    )
+        except Exception, e:
+            self.traceRenderingErr(e, self)
+            return ""
+
+
     security.declarePublic('getParentView')
     def getParentView(self):
         """ Get parent view
         """
         return self.getParentNode()
+
 
     security.declarePublic('at_post_edit_script')
     def at_post_edit_script(self):
@@ -151,19 +212,18 @@ class PlominoColumn(BaseContent, BrowserDefaultMixin):
             db.getIndex().refresh()
 
     security.declarePublic('post_validate')
-    def post_validate(self, REQUEST=None, errors=None):
-        """Ensure a field, not a form is selected"""
+    def post_validate(self, REQUEST, errors={}):
+        """ Ensure we have either a field or a formula
+        """
         form = REQUEST.form
-        if errors is None:
-            errors = {}
-        FormulaField = form.get('Formula', None)
-        if FormulaField:
+        formula = form.get('Formula', None)
+        if formula:
             return errors
-        SelectedField = form.get('SelectedField', None)
-        fieldpath = SelectedField.split('/')
-        if len(fieldpath) != 2:
-            errors['SelectedField'] = u'You must select a field, and not a form'
+        selected_field = form.get('SelectedField', None)
+        if selected_field.startswith('PlominoPlaceholder'):
+            errors['SelectedField'] = u"If you don't specify a column formula, you need to select a field."
         return errors
+
 
 registerType(PlominoColumn, PROJECTNAME)
 # end of class PlominoColumn

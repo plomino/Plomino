@@ -88,7 +88,7 @@ returns the current Plomino document."""),
             description_msgid=_('CMFPlomino_help_SortColumn', default="Column used to sort the view"),
             i18n_domain='CMFPlomino',
         ),
-        vocabulary="_getcolumn_ids",
+        vocabulary="SortColumn_vocabulary",
         schemata="Sorting",
     ),
     BooleanField(
@@ -362,6 +362,7 @@ class PlominoView(ATFolder):
     def getColumns(self):
         """ Get columns
         """
+        # TODO: why not just `return self.contentValues(filter='PlominoColumn')`?
         columnslist = self.portal_catalog.search(
                 {'portal_type': ['PlominoColumn'],
                     'path': '/'.join(self.getPhysicalPath())},
@@ -373,7 +374,7 @@ class PlominoView(ATFolder):
         """Get actions
         """
         actions = self.objectValues(spec='PlominoAction')
-        
+
         filtered = []
         for action in actions:
             if hide:
@@ -398,7 +399,7 @@ class PlominoView(ATFolder):
         return filtered
 
     security.declarePublic('getColumn')
-    def getColumn(self,column_name):
+    def getColumn(self, column_name):
         """ Get a single column
         """
         return getattr(self, column_name)
@@ -441,10 +442,10 @@ class PlominoView(ATFolder):
         """
         db = self.getParentDatabase()
         refresh = not(db.DoNotReindex)
-        
+
         if index is None:
             index = db.getIndex()
-            
+
         if column_obj.Formula:
             index.createIndex(
                     'PlominoViewColumn_%s_%s' % (
@@ -525,16 +526,16 @@ class PlominoView(ATFolder):
         """
         sums = {}
         brains = self.getAllDocuments(getObject=False)
-        for col in self.getColumns():
-            if col.DisplaySum:
-                indexkey = self.getIndexKey(col.getColumnName())
+        for column in self.getColumns():
+            if column.DisplaySum:
+                indexkey = self.getIndexKey(column.getColumnName())
                 values = [getattr(b, indexkey) for b in brains]
                 try:
-                    s = sum([v for v in values if v is not None])
+                    s = sum([v for v in values if v])
                 except:
                     logger.error('PlominoView', exc_info=True)
                     s = 0
-                sums[col.id] = s
+                sums[column.id] = column.getColumnRender(s)
         return sums
 
     def makeArray(self, brains, columns):
@@ -596,8 +597,8 @@ class PlominoView(ATFolder):
 
         # add column titles
         if displayColumnsTitle=='True' :
-            titles = [c.title for c in self.getColumns()
-                if not getattr(c, 'HiddenColumn', False)]
+            titles = [c.title.encode('utf-8') for c in self.getColumns()
+                      if not getattr(c, 'HiddenColumn', False)]
             writer.writerow(titles)
 
         rows = self.makeArray(brain_docs, columns)
@@ -642,7 +643,7 @@ class PlominoView(ATFolder):
         return file_string.getvalue()
 
     security.declareProtected(READ_PERMISSION, 'exportXLS')
-    def exportXLS(self, REQUEST, displayColumnsTitle='False', 
+    def exportXLS(self, REQUEST, displayColumnsTitle='False',
             brain_docs=None):
         """ Export column values to an HTML table, and set content-type to
         launch Excel.
@@ -664,7 +665,7 @@ class PlominoView(ATFolder):
             rows[0:0] = titles
 
         html = XLS_TABLE % (
-                ''.join([TR % 
+                ''.join([TR %
                     ''.join([TD % v for v in row]) for row in rows]))
 
         REQUEST.RESPONSE.setHeader(
@@ -695,7 +696,7 @@ class PlominoView(ATFolder):
 
         sortindex = self.getIndexKey(sortindex)
         results = index.dbsearch(
-                    {'PlominoViewFormula_%s' % self.getViewName(): True, 
+                    {'PlominoViewFormula_%s' % self.getViewName(): True,
                     sortindex: key},
                 sortindex,
                 self.getReverseSorting())
@@ -707,7 +708,7 @@ class PlominoView(ATFolder):
 
     security.declarePublic('tojson')
     def tojson(self, REQUEST=None):
-        """ Returns a JSON representation of view data 
+        """ Returns a JSON representation of view data
         """
         data = []
         categorized = self.getCategorized()
@@ -732,7 +733,7 @@ class PlominoView(ATFolder):
             if reverse == 'desc':
                 reverse = 0
             if reverse == 'asc':
-                reverse = 1 
+                reverse = 1
         if limit < 1:
             limit = None
         results = self.getAllDocuments(
@@ -743,17 +744,18 @@ class PlominoView(ATFolder):
                 sortindex=sort_index,
                 reverse=reverse)
         total = display_total = len(results)
-        columnids = [col.id for col in self.getColumns() 
-                if not getattr(col, 'HiddenColumn', False)]
-        for b in results:
-            row = [b.getPath().split('/')[-1]]
-            for colid in columnids:
-                v = getattr(b, self.getIndexKey(colid), '')
-                if isinstance(v, list):
-                    v = [asUnicode(e).encode('utf-8').replace('\r', '') for e in v]
+        columns = [column for column in self.getColumns()
+                if not getattr(column, 'HiddenColumn', False)]
+        for brain in results:
+            row = [brain.getPath().split('/')[-1]]
+            for column in columns:
+                column_value = getattr(brain, self.getIndexKey(column.id), '')
+                rendered = column.getColumnRender(column_value)
+                if isinstance(rendered, list):
+                    rendered = [asUnicode(e).encode('utf-8').replace('\r', '') for e in rendered]
                 else:
-                    v = asUnicode(v).encode('utf-8').replace('\r', '')
-                row.append(v or '&nbsp;')
+                    rendered = asUnicode(rendered).encode('utf-8').replace('\r', '')
+                row.append(rendered or '&nbsp;')
             if categorized:
                 for cat in asList(row[1]):
                     entry = [c for c in row]
@@ -770,7 +772,7 @@ class PlominoView(ATFolder):
     def getIndexKey(self, columnName):
         """ Returns an index key if one exists.
 
-        We try to find a computed index ('PlominoViewColumn_*'); 
+        We try to find a computed index ('PlominoViewColumn_*');
         if not found, we look for a field.
         """
         key = 'PlominoViewColumn_%s_%s' % (self.getViewName(), columnName)
@@ -782,8 +784,8 @@ class PlominoView(ATFolder):
                 key = ''
         return key
 
-    def _getcolumn_ids(self):
-        return [''] +  [c.id for c in self.getColumns()]
-        
+    def SortColumn_vocabulary(self):
+        return [''] + [c.id for c in self.getColumns()]
+
 registerType(PlominoView, PROJECTNAME)
 # end of class PlominoView

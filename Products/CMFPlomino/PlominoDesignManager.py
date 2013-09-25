@@ -15,6 +15,7 @@ from webdav.Lockable import wl_isLocked
 from xml.dom.minidom import getDOMImplementation
 from xml.dom.minidom import parseString
 from xml.parsers.expat import ExpatError
+import base64
 import codecs
 import glob
 import os
@@ -700,7 +701,7 @@ class PlominoDesignManager(Persistent):
                     )
         import_list = ";".join(import_list)
 
-        r = re.compile('^#Plomino import (.+)[\r\n]', re.MULTILINE)
+        r = re.compile('^#Plomino import (.+)$', re.MULTILINE)
         for i in r.findall(formula):
             scriptname = i.strip()
             try:
@@ -1142,8 +1143,14 @@ class PlominoDesignManager(Persistent):
                 xml_strings.append(fileobj.read())
         else:
             if REQUEST:
-                f=REQUEST.get("file")
-                xml_strings.append(asUnicode(f.read()))
+                filename = REQUEST.get('filename')
+                f = REQUEST.get(filename)
+                cte = f.headers.get('content-transfer-encoding')
+                if cte == 'base64':
+                    filecontent = base64.decodestring(f.read())
+                else:
+                    filecontent = f.read()
+                xml_strings.append(asUnicode(filecontent))
             else:
                 xml_strings.append(asUnicode(xmlstring))
             total_elements = None

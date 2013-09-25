@@ -36,9 +36,11 @@ from Products.CMFCore.utils import getToolByName
 from Products.CMFPlomino.config import *
 from Products.CMFPlomino.browser import PlominoMessageFactory as _
 from Products.CMFPlomino import plomino_profiler
-from Products.CMFPlomino.PlominoUtils import PlominoTranslate, translate
-from Products.CMFPlomino.PlominoUtils import DateToString
+from Products.CMFPlomino.PlominoUtils import asList
 from Products.CMFPlomino.PlominoUtils import asUnicode
+from Products.CMFPlomino.PlominoUtils import DateToString, StringToDate
+from Products.CMFPlomino.PlominoUtils import PlominoTranslate
+from Products.CMFPlomino.PlominoUtils import translate
 import interfaces
 
 schema = Schema((
@@ -140,6 +142,19 @@ schema = Schema((
             i18n_domain='CMFPlomino',
         ),
         default_output_type="text/html",
+    ),
+    TextField(
+        name='FormMethod',
+        accessor='getFormMethod',
+        default='Auto',
+        widget=SelectionWidget(
+            label="Form method",
+            description="The form method: GET, POST or Auto (default).",
+            label_msgid=_('CMFPlomino_label_FormMethod', default="Form method"),
+            description_msgid=_('CMFPlomino_help_FormMethod', default="The form method: GET or POST or Auto (default)."),
+            i18n_domain='CMFPlomino',
+        ),
+        vocabulary=('GET', 'POST', 'Auto')
     ),
     TextField(
         name='DocumentTitle',
@@ -310,6 +325,21 @@ class PlominoForm(ATFolder):
         while getattr(form, 'meta_type', '') != 'PlominoForm':
             form = obj.aq_parent
         return form
+
+    def getFormMethod(self):
+        """ Return form submit HTTP method
+        """
+        # if self.isEditMode():
+        #     Log('POST because isEditMode', 'PlominoForm/getFormMethod') #DBG 
+        #     return  'POST'
+
+        value = self.Schema()['FormMethod'].get(self)
+        if value == 'Auto':
+            if self.isPage or self.isSearchForm:
+                return 'GET'
+            else:
+                return 'POST'
+        return value
 
     security.declareProtected(READ_PERMISSION, 'createDocument')
     def createDocument(self, REQUEST):
@@ -1093,6 +1123,7 @@ class PlominoForm(ATFolder):
         r = re.compile('<span class="plominoSubformClass">([^<]+)</span>')
         return [i.strip() for i in r.findall(html_content)]
 
+
     security.declarePublic('readInputs')
     def readInputs(self, doc, REQUEST, process_attachments=False, applyhidewhen=True, validation_mode=False):
         """ Read submitted values in REQUEST and store them in document
@@ -1123,6 +1154,10 @@ class PlominoForm(ATFolder):
                                 doc,
                                 process_attachments,
                                 validation_mode=validation_mode)
+                        if f.getFieldType() == 'SELECTION':
+                            if f.getSettings().widget in [
+                                    'MULTISELECT', 'CHECKBOX', 'PICKLIST']:
+                                v = asList(v)
                         doc.setItem(fieldName, v)
                 else:
                     # The field was not submitted, probably because it is
@@ -1136,9 +1171,14 @@ class PlominoForm(ATFolder):
                         if (fieldtype in ("SELECTION", "DOCLINK", "BOOLEAN")):
                             doc.removeItem(fieldName)
 
+
     security.declareProtected(READ_PERMISSION, 'searchDocuments')
-    def searchDocuments(self,REQUEST):
-        """ Search documents in the view matching the submitted form fields values
+    def searchDocuments(self, REQUEST):
+        """ Search documents in the view matching the submitted form fields values.
+
+        1. If there is an onSearch event, use the onSearch formula to generate a result set.
+        2. Otherwise, do a dbsearch among the documents of the related view, and
+        2.1. if there is a searchformula, evaluate that for every document in the view.
         """
         if self.onSearch:
             # Manually generate a result set
@@ -1165,23 +1205,29 @@ class PlominoForm(ATFolder):
                     request=REQUEST):
                 fieldname = f.id
                 #if fieldname is not an index -> search doesn't matter and returns all
-                submittedValue = asUnicode(REQUEST.get(fieldname))
-                if submittedValue is not None:
-                    if submittedValue != '':
-                        # if non-text field, convert the value
-                        if f.getFieldType() == "NUMBER":
+                submittedValue = REQUEST.get(fieldname)
+                if submittedValue:
+                    submittedValue = asUnicode(submittedValue)
+                    # if non-text field, convert the value
+                    if f.getFieldType() == "NUMBER":
+                        settings = f.getSettings()
+                        if settings.type == "INTEGER":
                             v = long(submittedValue)
-                        elif f.getFieldType() == "FLOAT":
+                        elif settings.type == "FLOAT":
                             v = float(submittedValue)
-                        elif f.getFieldType() == "DATETIME":
-                            v = submittedValue
-                        else:
-                            v = submittedValue
-                        # rename Plomino_SearchableText to perform full-text
-                        # searches on regular SearchableText index
-                        if fieldname == "Plomino_SearchableText":
-                            fieldname = "SearchableText"
-                        query[fieldname] = v
+                        elif settings.type == "DECIMAL":
+                            v = decimal(submittedValue)
+                    elif f.getFieldType() == "DATETIME":
+                        # The format submitted by the datetime widget:
+                        v = StringToDate(submittedValue, format='%Y-%m-%d %H:%M ')
+                    else:
+                        v = submittedValue
+                    # rename Plomino_SearchableText to perform full-text
+                    # searches on regular SearchableText index
+                    if fieldname == "Plomino_SearchableText":
+                        fieldname = "SearchableText"
+                    query[fieldname] = v
+
             sortindex = searchview.getSortColumn()
             if not sortindex:
                 sortindex = None
@@ -1207,6 +1253,7 @@ class PlominoForm(ATFolder):
                 results = filteredResults
 
         return self.OpenForm(searchresults=results)
+
 
     security.declarePublic('validation_errors')
     def validation_errors(self, REQUEST):
@@ -1251,6 +1298,7 @@ class PlominoForm(ATFolder):
             hidden_fields += subform._get_js_hidden_fields(REQUEST, doc)
         return hidden_fields
 
+
     security.declarePublic('validateInputs')
     def validateInputs(self, REQUEST, doc=None):
         """
@@ -1268,6 +1316,16 @@ class PlominoForm(ATFolder):
                 validation_mode=True)
         fields = [field for field in fields
                 if field.getId() not in hidden_fields]
+
+        # Temp doc for validation
+        db = self.getParentDatabase()
+        tmp = TemporaryDocument(
+                db,
+                self,
+                REQUEST,
+                doc,
+                validation_mode=True).__of__(db)
+
         for f in fields:
             fieldname = f.id
             fieldtype = f.getFieldType()
@@ -1287,24 +1345,16 @@ class PlominoForm(ATFolder):
                             f.Title(),
                             PlominoTranslate("is mandatory", self)))
             else:
-                # STEP 2: check data types
-                errors = errors + f.validateFormat(submittedValue)
-
-        if not errors:
-            # STEP 3: check validation formula
-            db = self.getParentDatabase()
-            tmp = TemporaryDocument(
-                    db,
-                    self,
-                    REQUEST,
-                    doc,
-                    validation_mode=True).__of__(db)
-            for f in fields:
+                #
+                # STEP 2: check validation formula
+                #
+                # This may massage the submitted value e.g. to make it pass STEP 3
+                #
                 formula = f.getValidationFormula()
-                if not formula=='':
-                    s = ''
+                if formula:
+                    error_msg = ''
                     try:
-                        s = self.runFormulaScript(
+                        error_msg = self.runFormulaScript(
                                 'field_%s_%s_ValidationFormula' % (
                                     self.id,
                                     f.id),
@@ -1312,8 +1362,12 @@ class PlominoForm(ATFolder):
                                 f.ValidationFormula)
                     except PlominoScriptException, e:
                         e.reportError('%s validation formula failed' % f.id)
-                    if s:
-                        errors.append(s)
+                    if error_msg:
+                        errors.append(error_msg)
+                #
+                # STEP 3: check data types
+                #
+                errors = errors + f.validateFormat(submittedValue)
 
         return errors
 
