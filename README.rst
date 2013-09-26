@@ -89,3 +89,7 @@ Companies
 
 .. |makinacom| image:: http://depot.makina-corpus.org/public/logo.gif
 .. _makinacom:  http://www.makina-corpus.com
+
+.. |Bitdeli| image:: https://d2weczhvl823v0.cloudfront.net/plomino/plomino/trend.png
+.. _Bitdeli: https://bitdeli.com/free
+
