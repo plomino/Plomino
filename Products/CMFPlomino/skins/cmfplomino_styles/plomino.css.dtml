@@ -52,6 +52,10 @@
 	white-space: nowrap;	
 }
 
+span.TEXTFieldRead-TEXTAREA {
+    white-space: pre-line;
+}
+
 /* The table used for plomino views */
 table.plominoview {
 /* The default table for plominoviews*/
