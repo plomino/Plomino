@@ -91,6 +91,7 @@ A form can contain editable fields and also computed fields::
     ...         FieldType="TEXT",
     ...         FieldMode="COMPUTED",
     ...         Formula="plominoDocument.setItem('field4', 'side-effect')\nreturn 'My favorite song is '+plominoDocument.field1")
+    >>> db.frm1.field2.at_post_create_script()
 
 A form can contain display fields. A display field is computed but the 
 result is not saved on the document::
@@ -101,7 +102,7 @@ result is not saved on the document::
     ...         FieldType="TEXT",
     ...         FieldMode="DISPLAY",
     ...         Formula="return plominoDocument.field1.upper()")
-    >>> db.frm1.field2.at_post_create_script()
+    >>> db.frm1.field3.at_post_create_script()
 
 If a display field does not specify a formula, it will display the item with
 the id corresponding to the field name (if any). Here's a field without
@@ -113,7 +114,7 @@ formula, the item value was set by the formula for ``field2``::
     ...         FieldType="TEXT",
     ...         FieldMode="DISPLAY",
     ...         Formula="")
-    >>> db.frm1.field2.at_post_create_script()
+    >>> db.frm1.field4.at_post_create_script()
 
 Let's set a layout which contains our fields::
 
@@ -173,9 +174,9 @@ Only items which match a form field will be considered::
 
     >>> doc1.setItem('field1', 'where is my mind?')
     >>> db.frm1.displayDocument(doc1, editmode=False)
-    u'2 <p>please enter a value for field1:<span class=\'label\' title=\'Label for field1\'>Title for field1</span><span class="TEXTFieldRead-TEXT">\n    \n    \n        where is my mind?\n    \n</span>\n</p><p>Comment:<span class=\'label\' title=\'Label for field2\'>Title for field2</span><span class="TEXTFieldRead-TEXT">\n    \n    \n        My favorite song is where is my mind?\n    \n</span>\n</p><p><span class="TEXTFieldRead-None">\n    \n    \n        WHERE IS MY MIND?\n    \n</span>\n</p><p><span class="TEXTFieldRead-None">\n    \n    \n        side-effect\n    \n</span>\n</p>'
+    u'2 <p>please enter a value for field1:<span class=\'label\' title=\'Label for field1\'>Title for field1</span><span class="TEXTFieldRead-TEXT">\n    \n    \n        where is my mind?\n    \n</span>\n</p><p>Comment:<span class=\'label\' title=\'Label for field2\'>Title for field2</span><span class="TEXTFieldRead-TEXT">\n    \n    \n        My favorite song is where is my mind?\n    \n</span>\n</p><p><span class="TEXTFieldRead-TEXT">\n    \n    \n        WHERE IS MY MIND?\n    \n</span>\n</p><p><span class="TEXTFieldRead-TEXT">\n    \n    \n        side-effect\n    \n</span>\n</p>'
     >>> db.frm1.displayDocument(doc1, editmode=True)
-    u'<input type=\'hidden\' name=\'Form\' value=\'frm1\' />2 <p>please enter a value for field1:<label for=\'field1\' class=\'required\'>Title for field1</label><span>\n    \n    \n        <input type="text" id="field1" value="where is my mind?" name="field1" />\n    \n    \n</span>\n</p><p>Comment:<label for=\'field2\'>Title for field2</label><span class="TEXTFieldRead-TEXT">\n    \n    \n        My favorite song is where is my mind?\n    \n</span>\n</p><p><span class="TEXTFieldRead-None">\n    \n    \n        WHERE IS MY MIND?\n    \n</span>\n</p><p><span class="TEXTFieldRead-None">\n    \n    \n        side-effect\n    \n</span>\n</p>'
+    u'<input type=\'hidden\' name=\'Form\' value=\'frm1\' />2 <p>please enter a value for field1:<label for=\'field1\' class=\'required\'>Title for field1</label><span>\n    \n    \n        <input type="text" id="field1" value="where is my mind?" name="field1" />\n    \n    \n</span>\n</p><p>Comment:<label for=\'field2\'>Title for field2</label><span class="TEXTFieldRead-TEXT">\n    \n    \n        My favorite song is where is my mind?\n    \n</span>\n</p><p><span class="TEXTFieldRead-TEXT">\n    \n    \n        WHERE IS MY MIND?\n    \n</span>\n</p><p><span class="TEXTFieldRead-TEXT">\n    \n    \n        side-effect\n    \n</span>\n</p>'
 
 ``Form`` is a reserved item which allows to indicate the document default
 form::
@@ -517,6 +518,7 @@ A field can be computed::
     ...         Title='Welcome message',
     ...         FieldType="TEXT",
     ...         FieldMode="COMPUTED")
+    >>> db.frm2.welcome.at_post_create_script()
     >>> db.frm2.welcome.setFormula(
     ... """message="Welcome "+plominoDocument.buyer\nreturn message""")
     >>> db.frm2.setFormLayout(
@@ -525,7 +527,7 @@ A field can be computed::
     >>> doc4.save()
     >>> db.cleanRequestCache()
     >>> db.frm2.displayDocument(doc4)
-    u'11 <p><span class="TEXTFieldRead-None">\n    \n    \n        Welcome test_user_1_\n    \n</span>\n</p>'
+    u'11 <p><span class="TEXTFieldRead-TEXT">\n    \n    \n        Welcome test_user_1_\n    \n</span>\n</p>'
 
 Events
 -------
