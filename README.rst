@@ -13,6 +13,23 @@ Features
 * adapt the application behaviour depending on the user access rights and roles
 * import/export your application structure and/or your application data
 
+Resources and documentation
+===========================
+
+Screencasts and how-tos are available on http://www.plomino.net/ .
+
+Plomino documentation is available on ReadTheDocs
+http://readthedocs.org/docs/plomino/ .
+
+Note: if you think something is missing in the documentation, please send your
+pull request at https://github.com/plomino/PlominoDoc .
+
+Internationalization
+====================
+
+Plomino itself is internationalized and translated in seven languages. Applications
+built with Plomino can be internationalized (see https://plomino.readthedocs.org/en/latest/features/#i18n-support ).
+
 Installation
 ============
 
@@ -68,16 +85,17 @@ is tracked on coveralls.io |coveralls|_.
 Credits
 =======
 
-Authors
--------
+Maintainers
+-----------
 
 * Eric BREHAULT <eric.brehault@makina-corpus.org>
+* Jean Jordaan <jean.jordaan@gmail.com>
+* Silvio Tomatis <silviot@gmail.com>
 
 Contributors
 ------------
 
-* Jean Jordaan <jean.jordaan@gmail.com>
-* Silvio Tomatis <silviot@gmail.com>
+The complete list is available here http://www.plomino.net/credits
 
 Companies
 ---------
@@ -86,6 +104,11 @@ Companies
 * `Planet Makina Corpus <http://www.makina-corpus.org>`_
 * `Contact us <mailto:python@makina-corpus.org>`_
 
+|Bitdeli|_
 
 .. |makinacom| image:: http://depot.makina-corpus.org/public/logo.gif
 .. _makinacom:  http://www.makina-corpus.com
+
+.. |Bitdeli| image:: https://d2weczhvl823v0.cloudfront.net/plomino/plomino/trend.png
+.. _Bitdeli: https://bitdeli.com/free
+

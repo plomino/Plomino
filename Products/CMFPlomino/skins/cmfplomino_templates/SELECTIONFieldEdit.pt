@@ -2,14 +2,14 @@
 				selection options/selection
 				">
 	<tal:widget tal:condition="python:test(widget=='SELECT')">
-		<select tal:attributes="name options/fieldname"><tal:loop tal:repeat="v selection">
+		<select tal:attributes="id options/fieldname; name options/fieldname"><tal:loop tal:repeat="v selection">
 			<option tal:define="current options/fieldvalue;l python:v.split('|')"
 				tal:attributes="value python:l[1]; selected python:test(current==l[1],1,0)"
 				tal:content="python:l[0]">value</option>
 		</tal:loop></select>
 	</tal:widget>
 	<tal:widget tal:condition="python:test(widget=='MULTISELECT')">
-		<select tal:attributes="name options/fieldname" multiple="true" lines="4"><tal:loop tal:repeat="v selection">
+		<select tal:attributes="id options/fieldname; name options/fieldname" multiple="true" lines="4"><tal:loop tal:repeat="v selection">
 				<tal:block tal:define="current options/fieldvalue;
 									currentaslist python:test(hasattr(current, 'append'), current, [current]);
 									l python:v.split('|')">

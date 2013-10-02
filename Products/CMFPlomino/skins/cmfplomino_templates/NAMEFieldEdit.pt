@@ -6,7 +6,7 @@
 	
 	<tal:listusers tal:condition="python:test(selection)">
 		<tal:block tal:condition="python:test(selector=='LIST')">
-			<select tal:condition="python:test(not(type=='MULTI'))" tal:attributes="name fieldname">
+			<select tal:condition="python:test(not(type=='MULTI'))" tal:attributes="id options/fieldname; name fieldname">
 				<tal:block tal:repeat="v selection">
 					<tal:block tal:define="current fieldvalue;l python:v.split('|')">
 						<option 
@@ -15,7 +15,7 @@
 					</tal:block>
 				</tal:block>
 			</select>
-			<select tal:condition="python:test(type=='MULTI')" tal:attributes="name fieldname" multiple="true" lines="4">
+			<select tal:condition="python:test(type=='MULTI')" tal:attributes="id options/fieldname; name fieldname" multiple="true" lines="4">
 				<tal:block tal:repeat="v selection">
 					<tal:block tal:define="current fieldvalue;l python:v.split('|')">
 						<option 
@@ -27,7 +27,7 @@
 		</tal:block>
 
 		<tal:block tal:condition="python:test(selector=='FIELD')">
-			<input type="text" tal:attributes="name fieldname; value fieldvalue" />
+			<input type="text" tal:attributes="id options/fieldname; name fieldname; value fieldvalue" />
 		</tal:block>
 		
 		<tal:block tal:condition="python:test(selector=='SEARCH')"
@@ -151,6 +151,6 @@
 		</tal:block>
 	</tal:listusers>
 	<tal:nolistusers tal:condition="python:test(not(selection))">
-		<input type="text" tal:attributes="name fieldname; value fieldvalue" />
+		<input type="text" tal:attributes="id options/fieldname; name fieldname; value fieldvalue" />
 	</tal:nolistusers>
 </span>

@@ -6,14 +6,14 @@
 				lcurrent_ids python:[p.split('/')[-1] for p in lcurrent];
 				">
 	<tal:widget tal:condition="python:test(widget=='SELECT')">
-		<select tal:attributes="name name"><tal:loop tal:repeat="v selection">
+		<select tal:attributes="id options/fieldname; name name"><tal:loop tal:repeat="v selection">
 			<option tal:define="l python:v.split('|')"
 				tal:attributes="value python:l[1]; selected python:test(lcurrent and (lcurrent[0]==l[1] or lcurrent_ids[0]==l[1]),1,0)"
 				tal:content="python:l[0]">value</option>
 		</tal:loop></select>
 	</tal:widget>
 	<tal:widget tal:condition="python:test(widget=='MULTISELECT')">
-		<select tal:attributes="name name" multiple="true" lines="4"><tal:loop tal:repeat="v selection">
+		<select tal:attributes="id options/fieldname; name name" multiple="true" lines="4"><tal:loop tal:repeat="v selection">
 				<tal:block tal:define="l python:v.split('|')">
 					<option 
 						tal:attributes="value python:l[1]; selected python:test(lcurrent and (l[1] in lcurrent or l[1] in lcurrent_ids),1,0)"
