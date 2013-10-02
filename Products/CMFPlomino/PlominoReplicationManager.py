@@ -1408,7 +1408,7 @@ class PlominoReplicationManager(Persistent):
                 sourcetype = REQUEST.get('sourcetype', sourcetype)
             if sourcetype == 'sourceFile':
                 if REQUEST:
-                    filename = REQUEST.get('filename')
+                    filename = REQUEST.get('file')
                     f = REQUEST.get(filename)
                     xml_sources = [f]
                 elif from_file:
