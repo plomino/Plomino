@@ -13,13 +13,20 @@ Features
 * adapt the application behaviour depending on the user access rights and roles
 * import/export your application structure and/or your application data
 
+Positioning
+===========
+
+Plomino is a **throught-the-web application builder**, hence:
+
+* it is **not a throught-the-web content-type builder** like `Dexterity <http://plone.org/products/dexterity>`_, which is perfect to create a custom content type but that will always stick to the standard content management scenario, while Plomino allows to implement any custom scenarios,
+* it is **not just a form generator** like `PloneFormGen <http://plone.org/products/ploneformgen>`_, as Plomino provides all the services (data storage, search, automation, import/export, etc.) to build an entire application. And regarding form generation itself, a major difference with PloneFormGen is that Plomino allows to edit the form layout entirely, while PloneFormGen use a fixed pre-defined form layout.
+
 Resources and documentation
 ===========================
 
 Screencasts and how-tos are available on http://www.plomino.net/ .
 
-Plomino documentation is available on ReadTheDocs
-http://readthedocs.org/docs/plomino/ .
+Plomino documentation is available on `ReadTheDocs <http://readthedocs.org/docs/plomino/>`_.
 
 Note: if you think something is missing in the documentation, please send your
 pull request at https://github.com/plomino/PlominoDoc .
@@ -28,7 +35,7 @@ Internationalization
 ====================
 
 Plomino itself is internationalized and translated in seven languages. Applications
-built with Plomino can be internationalized (see https://plomino.readthedocs.org/en/latest/features/#i18n-support ).
+built with Plomino can be internationalized (see the `related documentation <https://plomino.readthedocs.org/en/latest/features/#i18n-support>`_).
 
 Installation
 ============
@@ -95,7 +102,7 @@ Maintainers
 Contributors
 ------------
 
-The complete list is available here http://www.plomino.net/credits
+The complete list is available `here <http://www.plomino.net/credits>`.
 
 Companies
 ---------
