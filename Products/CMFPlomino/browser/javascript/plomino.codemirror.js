@@ -8,16 +8,11 @@ $(document).ready(function() {
 	                 'plominoview'];
 	$(plomino_types).each(function(index, type) {
 		$("#"+type+"-base-edit textarea").each(function() {
-			// disable textarea #Formula for user role designer
-			if($('.userrole-plominodesigner').length > 0){
-				$(this).prop('disabled', true);
-			} else {
-				this.onCodeMirrorSave = function() {
-					$("#"+type+"-base-edit").submit();
-				};
-				$(this).addClass('codemirror-python');
-				$(this).attr('data-codemirror-mode', "python");
-			}
+			this.onCodeMirrorSave = function() {
+				$("#"+type+"-base-edit").submit();
+			};
+			$(this).addClass('codemirror-python');
+			$(this).attr('data-codemirror-mode', "python");
 		});
 	});
 
