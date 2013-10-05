@@ -18,9 +18,8 @@ logger = logging.getLogger('CMFPlomino: setuphandlers')
 from Products.CMFPlomino.config import PROJECTNAME
 from Products.CMFPlomino.config import DEPENDENCIES
 import os
-##code-section HEAD
+
 from Products.CMFPlomino.config import FCK_STYLES
-##/code-section HEAD
 
 
 def isNotCMFPlominoProfile(context):
@@ -53,5 +52,18 @@ def postInstall(context):
     # THIS STEP MUST BE REMOVED
     # (but as it is permanent we need to unregister it properly)
 
-##code-section FOOT
-##/code-section FOOT
+def export_databases(context):
+    """
+    """
+    portal = context.getSite()
+    dbs = portal.portal_catalog.searchResults({'Type': 'PlominoDatabase'})
+    for brain in dbs:
+        db = brain.getObject()
+        if db.getIsDatabaseTemplate()==True:
+            context.writeDataFile(db.id + '.xml',
+                text=db.exportDesign(),
+                content_type='text/xml',
+                subdir="plomino",
+            )
+    logger.info('Plomino databases exported')
+    
