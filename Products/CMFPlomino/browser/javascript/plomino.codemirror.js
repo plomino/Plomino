@@ -10,7 +10,6 @@ $(document).ready(function() {
 		$("#"+type+"-base-edit textarea").each(function() {
 			// disable textarea #Formula for user role designer
 			if($('.userrole-plominodesigner').length > 0){
-				console.log('teste');
 				$(this).prop('disabled', true);
 			} else {
 				this.onCodeMirrorSave = function() {
