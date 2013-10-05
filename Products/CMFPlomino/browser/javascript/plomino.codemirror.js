@@ -45,11 +45,16 @@ $(document).ready(function() {
 	                      ]
 	$(plomino_form_areas).each(function(index, area) {
 		$("#plominoform-base-edit #"+area).each(function() {
-			this.onCodeMirrorSave = function() {
-				$("#plominoform-base-edit").submit();
-			};
-			$(this).addClass('codemirror-python');
-			$(this).attr('data-codemirror-mode', "python");
+			// disable textarea #Formula for user role designer
+			if($('.userrole-plominodesigner').length > 0){
+				$(this).prop('disabled', true);
+			} else {
+				this.onCodeMirrorSave = function() {
+					$("#plominoform-base-edit").submit();
+				};
+				$(this).addClass('codemirror-python');
+				$(this).attr('data-codemirror-mode', "python");
+			}
 		});
 	});
 });
