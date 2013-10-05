@@ -60,10 +60,35 @@ def export_databases(context):
     for brain in dbs:
         db = brain.getObject()
         if db.getIsDatabaseTemplate()==True:
-            context.writeDataFile(db.id + '.xml',
-                text=db.exportDesign(),
-                content_type='text/xml',
-                subdir="plomino",
+            designelements = (
+                [o.id for o in db.getForms()] +
+                [o.id for o in db.getViews()] +
+                [o.id for o in db.getAgents()] +
+                ["resources/"+id for id in db.resources.objectIds()]
             )
+            for id in designelements:
+                xmlstring = db.exportDesignAsXML(
+                        elementids=[id],
+                        dbsettings=False)
+                subdir = "plomino/"+db.id
+                filename = id + '.xml'
+                if id.startswith('resources/'):
+                    subdir += "/resources"
+                    filename = filename.split('/')[1]
+                context.writeDataFile(filename,
+                    text=xmlstring,
+                    content_type='text/xml',
+                    subdir=subdir,
+                )
+
+            xmlstring = db.exportDesignAsXML(
+                    elementids=[],
+                    dbsettings=True)
+            context.writeDataFile("dbsettings.xml",
+                text=xmlstring,
+                content_type='text/xml',
+                subdir="plomino/"+db.id,
+            )
+            
     logger.info('Plomino databases exported')
     
