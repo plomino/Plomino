@@ -8,14 +8,20 @@ $(document).ready(function() {
 	                 'plominoview'];
 	$(plomino_types).each(function(index, type) {
 		$("#"+type+"-base-edit textarea").each(function() {
-			this.onCodeMirrorSave = function() { 
-				$("#"+type+"-base-edit").submit();
-			};
-			$(this).addClass('codemirror-python')
-			$(this).attr('data-codemirror-mode', "python");
+			// disable textarea #Formula for user role designer
+			if($('.userrole-plominodesigner').length > 0){
+				console.log('teste');
+				$(this).prop('disabled', true);
+			} else {
+				this.onCodeMirrorSave = function() {
+					$("#"+type+"-base-edit").submit();
+				};
+				$(this).addClass('codemirror-python');
+				$(this).attr('data-codemirror-mode', "python");
+			}
 		});
 	});
-	
+
 	// enable on all PlominoField settings page
 	// TODO: SAVE
 	$(".portaltype-plominofield #content-core textarea").each(function() {
@@ -40,7 +46,7 @@ $(document).ready(function() {
 	                      ]
 	$(plomino_form_areas).each(function(index, area) {
 		$("#plominoform-base-edit #"+area).each(function() {
-			this.onCodeMirrorSave = function() { 
+			this.onCodeMirrorSave = function() {
 				$("#plominoform-base-edit").submit();
 			};
 			$(this).addClass('codemirror-python');
