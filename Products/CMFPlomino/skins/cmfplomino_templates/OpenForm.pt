@@ -35,6 +35,16 @@
             $('#plomino_form :input').change(refreshHidewhen);
         });
     </script>
+    <tal:block_hasjsresources 
+        tal:define="jsresources python:here.getResourcesJS().splitlines()"
+        tal:condition="jsresources"
+        tal:repeat="js jsresources">
+        <script
+            type="text/javascript"
+            charset="iso-8859-1"
+            tal:attributes="src js">
+        </script>
+    </tal:block_hasjsresources>
 </metal:javascript_head>
 
 <metal:css fill-slot="style_slot">
@@ -44,6 +54,16 @@
             media="all"
             tal:attributes="href string:$portal_url/jscalendar/calendar-system.css" />
     </tal:block_hasdatetimefield>
+    <tal:block_hascssresources
+        tal:define="cssresources python:here.getResourcesCSS().splitlines()"
+        tal:condition="cssresources"
+        tal:repeat="css cssresources">
+        <script rel="stylesheet"
+            type="text/css"
+            media="all"
+            tal:attributes="href css">
+        </script>
+    </tal:block_hascssresources>
 </metal:css>
 
 <metal:block_disable_border
@@ -66,7 +86,8 @@
             define="myF python:here;
                     b myF/ActionBarPosition|nothing;
                     searchform myF/isSearchForm|nothing;
-                    ispage myF/isPage|nothing;">
+                    ispage myF/isPage|nothing;
+                    jsresources python:myF.getResourcesJS().splitlines()">
 
             <tal:block_not_searchform_or_ispage 
                 condition="python:not(searchform or ispage)"

@@ -11,7 +11,32 @@
     <tal:block tal:define="myF python:here.getForm();" tal:condition="python:myF and myF.hasGoogleVisualizationField()">
         <tal:script metal:use-macro="here/googlevisualization_macro/macros/js_library">//load google js</tal:script>
     </tal:block>
+    <tal:block_hasjsresources 
+        tal:define="myF python:here.getForm();
+                    jsresources python:myF.getResourcesJS().splitlines();"
+        tal:condition="jsresources"
+        tal:repeat="js jsresources">
+        <script
+            type="text/javascript"
+            charset="iso-8859-1"
+            tal:attributes="src js">
+        </script>
+    </tal:block_hasjsresources>
 </metal:javascript_head>
+
+<metal:css fill-slot="style_slot">
+    <tal:block_hascssresources
+        tal:define="myF python:here.getForm();
+                    cssresources python:myF.getResourcesCSS().splitlines();"
+        tal:condition="cssresources"
+        tal:repeat="css cssresources">
+        <script rel="stylesheet"
+            type="text/css"
+            media="all"
+            tal:attributes="href css">
+        </script>
+    </tal:block_hascssresources>
+</metal:css>
 
 <metal:block fill-slot="top_slot"
              tal:define="is_designer python:here.hasDesignPermission()">
