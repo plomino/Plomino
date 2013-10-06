@@ -15,12 +15,16 @@ __docformat__ = 'plaintext'
 
 import logging
 logger = logging.getLogger('CMFPlomino: setuphandlers')
+import os
+from StringIO import StringIO
+from zope.component import queryUtility
+from plone.resource.interfaces import IResourceDirectory
+
 from Products.CMFPlomino.config import PROJECTNAME
 from Products.CMFPlomino.config import DEPENDENCIES
-import os
-
 from Products.CMFPlomino.config import FCK_STYLES
 
+PLOMINO_RESOURCE_NAME = "plomino"
 
 def isNotCMFPlominoProfile(context):
     return context.readDataFile("CMFPlomino_marker.txt") is None
@@ -52,7 +56,7 @@ def postInstall(context):
     # THIS STEP MUST BE REMOVED
     # (but as it is permanent we need to unregister it properly)
 
-def export_databases(context):
+def export_database_templates(context):
     """
     """
     portal = context.getSite()
@@ -90,5 +94,38 @@ def export_databases(context):
                 subdir="plomino/"+db.id,
             )
             
-    logger.info('Plomino databases exported')
-    
+    logger.info('Plomino database templates exported')
+
+def import_database_templates(context):
+    """
+    """
+    portal = context.getSite()
+    resource = get_resource_directory()
+    if not resource:
+        logger.warning('Plomino database templates cannot be imported without plone.resource.')
+    copy_db_folder(context, 'plomino', resource)
+    logger.info('Plomino database templates imported')
+
+def get_resource_directory():
+    """Obtain the 'plomino' persistent resource directory, creating it if
+    necessary.
+    """
+    persistentDirectory = queryUtility(IResourceDirectory, name="persistent")
+    if not persistentDirectory:
+        return None
+    if PLOMINO_RESOURCE_NAME not in persistentDirectory:
+        persistentDirectory.makeDirectory(PLOMINO_RESOURCE_NAME)
+
+    return persistentDirectory[PLOMINO_RESOURCE_NAME]
+
+def copy_db_folder(context, source_path, target):
+    items = context.listDirectory(source_path)
+    if not items:
+        return
+    for name in items:
+        if context.isDirectory(source_path + '/' + name):
+            target.makeDirectory(name)
+            copy_db_folder(context, source_path + '/' + name, target[name])
+        else:
+            f = context.readDataFile(name, subdir=source_path)
+            target.writeFile(name, StringIO(f))
