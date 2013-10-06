@@ -46,6 +46,7 @@ from Globals import DevelopmentMode
 from zope import component
 from zope.interface import implements
 from DateTime import DateTime
+from zope.component import queryUtility
 
 # CMF/Plone
 from Products.PythonScripts.Utility import allow_module
@@ -54,6 +55,7 @@ from Products.Archetypes.atapi import *
 from Products.CMFCore import DirectoryView
 from Products.CMFCore import utils as cmfutils
 from Products.CMFPlone.utils import ToolInit
+from plone.resource.interfaces import IResourceDirectory
 
 # Plomino
 from config import *
@@ -220,6 +222,20 @@ class PlominoSafeDomains:
     ]
 
 component.provideUtility(PlominoSafeDomains, interfaces.IPlominoSafeDomains)
+
+PLOMINO_RESOURCE_NAME = "plomino"
+
+def get_resource_directory():
+    """Obtain the 'plomino' persistent resource directory, creating it if
+    necessary.
+    """
+    persistentDirectory = queryUtility(IResourceDirectory, name="persistent")
+    if not persistentDirectory:
+        return None
+    if PLOMINO_RESOURCE_NAME not in persistentDirectory:
+        persistentDirectory.makeDirectory(PLOMINO_RESOURCE_NAME)
+
+    return persistentDirectory[PLOMINO_RESOURCE_NAME]
 
 def initialize(context):
     """ Initialize product (standard Zope hook)

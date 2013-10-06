@@ -17,14 +17,11 @@ import logging
 logger = logging.getLogger('CMFPlomino: setuphandlers')
 import os
 from StringIO import StringIO
-from zope.component import queryUtility
-from plone.resource.interfaces import IResourceDirectory
 
 from Products.CMFPlomino.config import PROJECTNAME
 from Products.CMFPlomino.config import DEPENDENCIES
 from Products.CMFPlomino.config import FCK_STYLES
-
-PLOMINO_RESOURCE_NAME = "plomino"
+from Products.CMFPlomino import get_resource_directory
 
 def isNotCMFPlominoProfile(context):
     return context.readDataFile("CMFPlomino_marker.txt") is None
@@ -105,18 +102,6 @@ def import_database_templates(context):
         logger.warning('Plomino database templates cannot be imported without plone.resource.')
     copy_db_folder(context, 'plomino', resource)
     logger.info('Plomino database templates imported')
-
-def get_resource_directory():
-    """Obtain the 'plomino' persistent resource directory, creating it if
-    necessary.
-    """
-    persistentDirectory = queryUtility(IResourceDirectory, name="persistent")
-    if not persistentDirectory:
-        return None
-    if PLOMINO_RESOURCE_NAME not in persistentDirectory:
-        persistentDirectory.makeDirectory(PLOMINO_RESOURCE_NAME)
-
-    return persistentDirectory[PLOMINO_RESOURCE_NAME]
 
 def copy_db_folder(context, source_path, target):
     items = context.listDirectory(source_path)
