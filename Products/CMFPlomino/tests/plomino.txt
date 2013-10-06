@@ -696,3 +696,14 @@ Check the documents imported::
     >>> test
     [u'test1', u'test2']
 
+Databases marked as template can also be exported to a GenericSetup profile::
+
+    >>> db.setIsDatabaseTemplate(True)
+    >>> from Products.GenericSetup.tests.common import DummyExportContext
+    >>> from Products.CMFPlomino.setuphandlers import export_database_templates
+    >>> context = DummyExportContext(portal)
+    >>> export_database_templates(context)
+    >>> context._wrote[0][0]
+    'plomino/test/frmBillet.xml'
+
+TODO: TEST ALSO IMPORT
