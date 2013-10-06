@@ -18,10 +18,17 @@
 
   <genericsetup:exportStep
       name="plomino_database"
-      title="Export Plomino"
-      description="Export Plomino databases"
-      handler=".setuphandlers.export_databases">
+      title="Export Plomino templates"
+      description="Export Plomino database templates"
+      handler=".setuphandlers.export_database_templates">
   </genericsetup:exportStep>
+
+  <genericsetup:importStep
+      name="plomino_database"
+      title="Import Plomino templates"
+      description="Import Plomino database templates"
+      handler=".setuphandlers.import_database_templates">
+  </genericsetup:importStep>
 
   <browser:view
       for="*"
