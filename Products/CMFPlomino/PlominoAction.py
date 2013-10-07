@@ -132,7 +132,28 @@ class PlominoAction(BaseContent, BrowserDefaultMixin):
     ##code-section class-header #fill in your manual code here
     ##/code-section class-header
 
-    # Methods
+    security.declareProtected(READ_PERMISSION, 'isHidden')
+    def isHidden(self, target, context):
+        """ Return True if an action is hidden for a target and context.
+
+        Target may be view/page/document.
+        """
+        if self.Hidewhen:
+            try:
+                result = self.runFormulaScript(
+                        'action_%s_%s_hidewhen' % (context.id, self.id),
+                        target,
+                        self.Hidewhen,
+                        True,
+                        context.id)
+            except PlominoScriptException, e:
+                e.reportError(
+                        '"%s" self hide-when failed' % self.Title())
+                # if error, we hide anyway
+                result = True
+            return result
+        else:
+            return False
 
     security.declareProtected(READ_PERMISSION, 'executeAction')
     def executeAction(self, target, form_id):

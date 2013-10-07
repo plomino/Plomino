@@ -487,30 +487,18 @@ class PlominoForm(ATFolder):
         return [h for h in hidewhens]
 
     security.declarePublic('getActions')
-    def getActions(self, target, hide=True, parent_id=None):
-        """Get actions
+    def getActions(self, target, hide=True):
+        """ Get filtered form actions for the target (page or document).
         """
-        all = self.objectValues(spec='PlominoAction')
+        actions = self.objectValues(spec='PlominoAction')
 
         filtered = []
-        for obj_a in all:
-            if hide and obj_a.Hidewhen:
-                try:
-                    result = self.runFormulaScript(
-                            'action_%s_%s_hidewhen' % (self.id, obj_a.id),
-                            target,
-                            obj_a.Hidewhen,
-                            True,
-                            parent_id)
-                except PlominoScriptException, e:
-                    e.reportError(
-                            '"%s" hide-when formula failed' % obj_a.Title())
-                    #if error, we hide anyway
-                    result = True
-                if not result:
-                    filtered.append((obj_a, parent_id))
+        for action in actions:
+            if hide:
+                if not action.isHidden(target, self):
+                    filtered.append((action, self.id))
             else:
-                filtered.append((obj_a, parent_id))
+                filtered.append((action, self.id))
         return filtered
 
     security.declarePublic('getCacheFormulas')
@@ -680,29 +668,32 @@ class PlominoForm(ATFolder):
                         subformname,
                         subformrendering)
 
+        #
         # insert the actions
+        #
         if doc is None:
             target = self
         else:
             target = doc
-        form_id = parent_form_id and parent_form_id or self.id
-        actionsToDisplay = [a.id for a, f_id in self.getActions(
-            target, hide=True, parent_id=form_id)]
-        for action, form_id in self.getActions(
-                target,
-                False,
-                parent_id=form_id):
+
+        if parent_form_id:
+            form = self.getForm(parent_form_id)
+        else:
+            form = self
+
+        for action, form_id in self.getActions(target, hide=False):
+
             action_id = action.id
             action_span = '<span class="plominoActionClass">%s</span>' % action_id
             if action_span in html_content:
-                if action_id in actionsToDisplay:
-                    actionDisplay = action.ActionDisplay
-                    pt = self.getRenderingTemplate(actionDisplay + "Action")
+                if not action.isHidden(target, form):
+                    template = action.ActionDisplay
+                    pt = self.getRenderingTemplate(template + "Action")
                     if pt is None:
                         pt = self.getRenderingTemplate("LINKAction")
                     action_render = pt(plominoaction=action,
                                        plominotarget=target,
-                                       plomino_parent_id=form_id)
+                                       plomino_parent_id=form.id)
                 else:
                     action_render = ''
                 html_content = html_content.replace(action_span, action_render)
