@@ -132,7 +132,7 @@ class PlominoAction(BaseContent, BrowserDefaultMixin):
     ##code-section class-header #fill in your manual code here
     ##/code-section class-header
 
-    security.declareProtected(READ_PERMISSION, 'isHidden')
+    security.declarePublic('isHidden')
     def isHidden(self, target, context):
         """ Return True if an action is hidden for a target and context.
 
