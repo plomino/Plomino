@@ -1,7 +1,8 @@
 import unittest
-
+from AccessControl.unauthorized import Unauthorized
 from DateTime import DateTime
-
+import Missing
+from decimal import Decimal
 from Products.CMFPlomino.testing import PLOMINO_FUNCTIONAL_TESTING
 import Products.CMFPlomino.PlominoUtils as utils
 
@@ -46,7 +47,7 @@ class PlominoUtilsTest(unittest.TestCase):
 
     def test_Now(self):
         now = DateTime()
-        self.assertTrue(utils.Now() - now < 1.0e-6)
+        self.assertAlmostEqual(utils.Now() - now , 0)
 
     def test_userFullname(self):
         self.assertEqual(utils.userFullname(self.db, "user1"), "User 1")
@@ -100,8 +101,8 @@ class PlominoUtilsTest(unittest.TestCase):
             ["cheese"]
         )
         self.assertEqual(
-            utils.asList(["cheese", "bacon"]),
-            ["cheese", "bacon"]
+            utils.asList(["cheese", "bacon", 10]),
+            ["cheese", "bacon", 10]
         )
         self.assertEqual(
             utils.asList([]),
@@ -114,4 +115,105 @@ class PlominoUtilsTest(unittest.TestCase):
         self.assertEqual(
             utils.asList(None),
             [None]
+        )
+
+    def test_asUnicode(self):
+        self.assertEqual(
+            utils.asUnicode(u"C'est \xe9vident"),
+            u"C'est \xe9vident"
+        )
+        self.assertEqual(
+            utils.asUnicode("C'est \xc3\xa9vident"),
+            u"C'est \xe9vident"
+        )
+        self.assertEqual(
+            utils.asUnicode(10),
+            u"10"
+        )
+
+    def test_csv_to_array(self):
+        # important: only strings in the result
+        self.assertEqual(
+            utils.csv_to_array('"abc"\t12\r\n"def"\t23\r\n'),
+            [['abc', '12'], ['def', '23']]
+        )
+        self.assertEqual(
+            utils.csv_to_array('"abc";12\r\n"def";23\r\n', delimiter=';'),
+            [['abc', '12'], ['def', '23']]
+        )
+
+    def test_array_to_csv(self):
+        self.assertEqual(
+            utils.array_to_csv([['abc', 12], ['def', 23]]),
+            '"abc"\t12\r\n"def"\t23\r\n'
+        )
+        self.assertEqual(
+            utils.array_to_csv([['abc', 12], ['def', 23]], delimiter=';'),
+            '"abc";12\r\n"def";23\r\n'
+        )
+
+    def test_open_url(self):
+        self.assertRaises(
+            Unauthorized,
+            utils.open_url,
+            "http://www.google.com",   
+        )
+
+    def test_MissingValue(self):
+        self.assertEqual(
+            utils.MissingValue(),
+            Missing.Value
+        )
+
+    def test_isDocument(self):
+        self.assertEqual(
+            utils.isDocument(self.db.getForm('frm_test')),
+            False
+        )
+        self.assertEqual(
+            utils.isDocument(self.db.getDocument('doc1')),
+            True
+        )
+
+    def test_json_dumps(self):
+        self.assertEqual(
+            utils.json_dumps({"a": [20, 3]}),
+            '{"a": [20, 3]}'
+        )
+
+    def test_json_loads(self):
+        self.assertEqual(
+            utils.json_loads('{"a": [20, 3]}'),
+            {"a": [20, 3]}
+        )
+
+    def test_escape_xml_illegal_chars(self):
+        self.assertEqual(
+            utils.escape_xml_illegal_chars(u'this is \x00'),
+            u'this is ?'
+        )
+
+    def test_decimal(self):
+        self.assertEqual(
+            utils.decimal(100.0),
+            Decimal('100.0')
+        )
+
+    def test_is_email(self):
+        self.assertEqual(
+            utils.is_email("ebrehault@gmail.com"),
+            True
+        )
+        self.assertEqual(
+            utils.is_email("one@two"),
+            False
+        )
+
+    def test_translate(self):
+        self.assertEqual(
+            utils.translate(
+                self.db,
+                "__my name__ will be translated"
+            ),
+            "my name will be translated"
         )
