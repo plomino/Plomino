@@ -319,7 +319,7 @@ class PlominoForm(ATFolder):
         """ In case we're being called via acquisition.
         """
         if formname:
-            return self.getParentDatabase().getForm(self, formname)
+            return self.getParentDatabase().getForm(formname)
 
         form = self
         while getattr(form, 'meta_type', '') != 'PlominoForm':
