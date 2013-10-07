@@ -27,7 +27,7 @@ install:
   - if [ "$PLONE_VERSION" == "4.1" ] ; then sed "4 a\    http://good-py.appspot.com/release/plone.app.registry/1.0b2?plone=4.1.6" travis.cfg > travis.cfg.new && mv travis.cfg{.new,}  ; fi
   - if [ "$PLONE_VERSION" == "4.1" ] ; then cat plone_4.0_4.1_versions.txt >> travis.cfg ; fi
   - if [ "$PLONE_VERSION" == "4.2" ] ; then cat plone_4.2_versions.txt >> travis.cfg ; fi
-  - rm Products/CMFPlomino/tests/test_robot.py ; fi
+  - rm Products/CMFPlomino/tests/test_robot.py
   - cat travis.cfg # Debug
   - mkdir -p buildout-cache/eggs
   - mkdir -p buildout-cache/downloads
