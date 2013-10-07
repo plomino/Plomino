@@ -568,3 +568,13 @@ also Plomino user roles (mentioned within brackets)::
     >>> browser.open(currentDocUrl)
     >>> InsufficientPrivileges in browser.url
     False
+
+.. Note: debugging server errors (from
+    https://plone.org/documentation/kb/testing/functional-tests):
+
+    ### try:
+    ###     browser.getControl('Save').click()
+    ### except:
+    ###     print db.error_log.getLogEntries()[0]['tb_text']
+    ###     import pdb; pdb.set_trace()
+
