@@ -373,7 +373,7 @@ class PlominoView(ATFolder):
     def getActions(self, view, hide=True):
         """ Get filtered actions for the view.
         """
-        # Note: We take 'view' as parameter (even thought `self` and `view`
+        # Note: We take 'view' as parameter (even though `self` and `view`
         # will always be the same) because `getActions` is called from
         # `ActionBar` template without knowing whether it's used for
         # view/document/page.
