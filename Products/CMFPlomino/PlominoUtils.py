@@ -445,8 +445,20 @@ def is_email(email):
 
 
 def translate(context, content, i18n_domain=None):
+    """ Translate content, if possible. 
+    """
+    # TODO: translate non-string content? Like dates?
+    if not isinstance(content, basestring):
+        return content
+
+    request = getattr(context, 'REQUEST', None)
+    if request and request.get("translation")=="off":
+        return content
+
     if not i18n_domain:
-        i18n_domain = context.getParentDatabase().getI18n()
+        db = context.getParentDatabase()
+        i18n_domain = db.getI18n()
+
     def translate_token(match):
         translation = PlominoTranslate(
                 match.group(1),
@@ -455,6 +467,7 @@ def translate(context, content, i18n_domain=None):
                 )
         translation = asUnicode(translation)
         return translation
+
     content = re.sub(
             "__(?P<token>.+?)__",
             translate_token,
