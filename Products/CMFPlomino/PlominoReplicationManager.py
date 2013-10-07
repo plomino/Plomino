@@ -598,8 +598,8 @@ class PlominoReplicationManager(Persistent):
                 remoteUrl+"/importFromXML",
                 username,
                 password,
-                '%s.xml' % i,  # filename
-                xmlstring.encode('utf-8')  # content
+                filename='%s.xml' % i,
+                filecontent=xmlstring.encode('utf-8'),
                 )
 
     security.declarePrivate('importableDoc')
@@ -1408,8 +1408,9 @@ class PlominoReplicationManager(Persistent):
                 sourcetype = REQUEST.get('sourcetype', sourcetype)
             if sourcetype == 'sourceFile':
                 if REQUEST:
-                    filename = REQUEST.get('file')
-                    xml_sources = [filename]
+                    filename = REQUEST.get('filename')
+                    filecontent = REQUEST.get(filename)
+                    xml_sources = [filecontent]
                 elif from_file:
                     xml_sources = [from_file]
             elif sourcetype == 'folder':
