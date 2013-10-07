@@ -20,18 +20,18 @@
 function refreshHidewhen() {
     var onsuccess = function(data, textStatus, xhr) {
         for (var hw in data)
-            jq('.hidewhen-' + hw).css('display', data[hw]?'none':'block');
+            $$('.hidewhen-' + hw).css('display', data[hw]?'none':'block');
     }
-    jq.ajax({
+    $$.ajax({
         type: '${form_method}',
         url: 'computehidewhens',
-        data: jq('#plomino_form').serialize(),
+        data: $$('#plomino_form').serialize(),
         success: onsuccess,
         dataType: 'json' 
     });
 }
-jq(document).ready( function() {
-    jq('#plomino_form :input').change(refreshHidewhen);
+$$(document).ready( function() {
+    $$('#plomino_form :input').change(refreshHidewhen);
 });
     ">
     </script>

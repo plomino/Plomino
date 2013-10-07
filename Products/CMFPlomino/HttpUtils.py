@@ -23,10 +23,12 @@ from zope.contenttype import guess_content_type
 import email.mime.application
 import email.mime.multipart
 import email.mime.text
+import email.generator
 import httplib
 import io
 import urllib
 import urlparse
+
 
 def authenticateAndLoadURL(targetURL, username, password):
     """ Authenticate and return URL page content

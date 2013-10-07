@@ -81,7 +81,7 @@ A form can also contain some action buttons to trigger specific processing::
     >>> db.frm1.setFormLayout("""1 <p>please enter a value for field1:
     ... <span class="plominoFieldClass">field1</span></p>""")
     >>> db.frm1.displayDocument(None, True, True)
-    u'<input type=\'hidden\' name=\'Form\' value=\'frm1\' />1 <p>please enter a value for field1:<span>\n    \n    \n    <input type="text" name="field1" value="" />\n    \n    \n</span>\n</p>'
+    u'<input type=\'hidden\' name=\'Form\' value=\'frm1\' />1 <p>please enter a value for field1:<span>\n    \n    \n        <input type="text" id="field1" value="" name="field1" />\n    \n    \n</span>\n</p>'
 
 A form can contain editable fields and also computed fields::
 
@@ -91,6 +91,7 @@ A form can contain editable fields and also computed fields::
     ...         FieldType="TEXT",
     ...         FieldMode="COMPUTED",
     ...         Formula="plominoDocument.setItem('field4', 'side-effect')\nreturn 'My favorite song is '+plominoDocument.field1")
+    >>> db.frm1.field2.at_post_create_script()
 
 A form can contain display fields. A display field is computed but the 
 result is not saved on the document::
@@ -101,7 +102,7 @@ result is not saved on the document::
     ...         FieldType="TEXT",
     ...         FieldMode="DISPLAY",
     ...         Formula="return plominoDocument.field1.upper()")
-    >>> db.frm1.field2.at_post_create_script()
+    >>> db.frm1.field3.at_post_create_script()
 
 If a display field does not specify a formula, it will display the item with
 the id corresponding to the field name (if any). Here's a field without
@@ -113,7 +114,7 @@ formula, the item value was set by the formula for ``field2``::
     ...         FieldType="TEXT",
     ...         FieldMode="DISPLAY",
     ...         Formula="")
-    >>> db.frm1.field2.at_post_create_script()
+    >>> db.frm1.field4.at_post_create_script()
 
 Let's set a layout which contains our fields::
 
@@ -173,9 +174,9 @@ Only items which match a form field will be considered::
 
     >>> doc1.setItem('field1', 'where is my mind?')
     >>> db.frm1.displayDocument(doc1, editmode=False)
-    u"2 <p>please enter a value for field1:<span class='label' title='Label for field1'>Title for field1</span><span>\n    \n    \n        where is my mind?\n    \n</span>\n</p><p>Comment:<span class='label' title='Label for field2'>Title for field2</span><span>\n    \n    \n        My favorite song is where is my mind?\n    \n</span>\n</p><p><span>\n    \n    \n        WHERE IS MY MIND?\n    \n</span>\n</p><p><span>\n    \n    \n        side-effect\n    \n</span>\n</p>"
+    u'2 <p>please enter a value for field1:<span class=\'label\' title=\'Label for field1\'>Title for field1</span><span class="TEXTFieldRead-TEXT">\n    \n    \n        where is my mind?\n    \n</span>\n</p><p>Comment:<span class=\'label\' title=\'Label for field2\'>Title for field2</span><span class="TEXTFieldRead-TEXT">\n    \n    \n        My favorite song is where is my mind?\n    \n</span>\n</p><p><span class="TEXTFieldRead-TEXT">\n    \n    \n        WHERE IS MY MIND?\n    \n</span>\n</p><p><span class="TEXTFieldRead-TEXT">\n    \n    \n        side-effect\n    \n</span>\n</p>'
     >>> db.frm1.displayDocument(doc1, editmode=True)
-    u'<input type=\'hidden\' name=\'Form\' value=\'frm1\' />2 <p>please enter a value for field1:<label for=\'field1\' class=\'required\'>Title for field1</label><span>\n    \n    \n        <input type="text" name="field1" value="where is my mind?" />\n    \n    \n</span>\n</p><p>Comment:<label for=\'field2\'>Title for field2</label><span>\n    \n    \n        My favorite song is where is my mind?\n    \n</span>\n</p><p><span>\n    \n    \n        WHERE IS MY MIND?\n    \n</span>\n</p><p><span>\n    \n    \n        side-effect\n    \n</span>\n</p>'
+    u'<input type=\'hidden\' name=\'Form\' value=\'frm1\' />2 <p>please enter a value for field1:<label for=\'field1\' class=\'required\'>Title for field1</label><span>\n    \n    \n        <input type="text" id="field1" value="where is my mind?" name="field1" />\n    \n    \n</span>\n</p><p>Comment:<label for=\'field2\'>Title for field2</label><span class="TEXTFieldRead-TEXT">\n    \n    \n        My favorite song is where is my mind?\n    \n</span>\n</p><p><span class="TEXTFieldRead-TEXT">\n    \n    \n        WHERE IS MY MIND?\n    \n</span>\n</p><p><span class="TEXTFieldRead-TEXT">\n    \n    \n        side-effect\n    \n</span>\n</p>'
 
 ``Form`` is a reserved item which allows to indicate the document default
 form::
@@ -356,11 +357,11 @@ The default text widget is a basic HTML text input::
     >>> adapted.widget = "RADIO"
     >>> adapted.selectionlist = [u"John Bonham", u"Princess Leonie"]
     >>> db.frm2.displayDocument(None, True, True).replace('\n', '').replace('\t', '')
-    u'<input type=\'hidden\' name=\'Form\' value=\'frm2\' />3 <p>Who is the guitarist:<label for=\'guitarist\'>Title for guitarist</label></p><span>                <input type="text" name="guitarist" value="" />        </span></p></p><fieldset><legend class=\'required\'>Label for bassist</legend><span><input type="checkbox" name="bassist" value="John Paul Jones" id="bassist-John Paul Jones"><label for="bassist-John Paul Jones">John Paul Jones</label><input type="checkbox" name="bassist" value="Chris Chameleon" id="bassist-Chris Chameleon"><label for="bassist-Chris Chameleon">Chris Chameleon</label></span></fieldset></p></p><fieldset><legend>Title for drummer</legend><span><input type="radio" name="drummer" value="John Bonham" id="drummer-John Bonham"><label for="drummer-John Bonham">John Bonham</label><input type="radio" name="drummer" value="Princess Leonie" id="drummer-Princess Leonie"><label for="drummer-Princess Leonie">Princess Leonie</label></span></fieldset></p>'
+    u'<input type=\'hidden\' name=\'Form\' value=\'frm2\' />3 <p>Who is the guitarist:<label for=\'guitarist\'>Title for guitarist</label></p><span>                <input type="text" id="guitarist" value="" name="guitarist" />        </span></p></p><fieldset><legend class=\'required\'>Label for bassist</legend><span><input type="checkbox" name="bassist" value="John Paul Jones" id="bassist-John Paul Jones"><label for="bassist-John Paul Jones">John Paul Jones</label><input type="checkbox" name="bassist" value="Chris Chameleon" id="bassist-Chris Chameleon"><label for="bassist-Chris Chameleon">Chris Chameleon</label></span></fieldset></p></p><fieldset><legend>Title for drummer</legend><span><input type="radio" name="drummer" value="John Bonham" id="drummer-John Bonham"><label for="drummer-John Bonham">John Bonham</label><input type="radio" name="drummer" value="Princess Leonie" id="drummer-Princess Leonie"><label for="drummer-Princess Leonie">Princess Leonie</label></span></fieldset></p>'
     >>> adapted = ITextField(db.frm2.guitarist)
     >>> adapted.widget="TEXTAREA"
     >>> db.frm2.displayDocument(None, True, True).replace('\n', '').replace('\t', '')
-    u'<input type=\'hidden\' name=\'Form\' value=\'frm2\' />3 <p>Who is the guitarist:<label for=\'guitarist\'>Title for guitarist</label></p><span>                    <textarea name="guitarist"></textarea>    </span></p></p><fieldset><legend class=\'required\'>Label for bassist</legend><span><input type="checkbox" name="bassist" value="John Paul Jones" id="bassist-John Paul Jones"><label for="bassist-John Paul Jones">John Paul Jones</label><input type="checkbox" name="bassist" value="Chris Chameleon" id="bassist-Chris Chameleon"><label for="bassist-Chris Chameleon">Chris Chameleon</label></span></fieldset></p></p><fieldset><legend>Title for drummer</legend><span><input type="radio" name="drummer" value="John Bonham" id="drummer-John Bonham"><label for="drummer-John Bonham">John Bonham</label><input type="radio" name="drummer" value="Princess Leonie" id="drummer-Princess Leonie"><label for="drummer-Princess Leonie">Princess Leonie</label></span></fieldset></p>'
+    u'<input type=\'hidden\' name=\'Form\' value=\'frm2\' />3 <p>Who is the guitarist:<label for=\'guitarist\'>Title for guitarist</label></p><span>                    <textarea id="guitarist" name="guitarist"></textarea>    </span></p></p><fieldset><legend class=\'required\'>Label for bassist</legend><span><input type="checkbox" name="bassist" value="John Paul Jones" id="bassist-John Paul Jones"><label for="bassist-John Paul Jones">John Paul Jones</label><input type="checkbox" name="bassist" value="Chris Chameleon" id="bassist-Chris Chameleon"><label for="bassist-Chris Chameleon">Chris Chameleon</label></span></fieldset></p></p><fieldset><legend>Title for drummer</legend><span><input type="radio" name="drummer" value="John Bonham" id="drummer-John Bonham"><label for="drummer-John Bonham">John Bonham</label><input type="radio" name="drummer" value="Princess Leonie" id="drummer-Princess Leonie"><label for="drummer-Princess Leonie">Princess Leonie</label></span></fieldset></p>'
 
 .. todo:: We need a test for a selection list with no value in edit mode. It should not render a label.
 
@@ -382,7 +383,7 @@ Selection field::
     >>> db.cleanRequestCache()
     >>> db.frm2.displayDocument(None, True, True
     ...         ).replace('\n', '').replace('\t', '')
-    u'<input type=\'hidden\' name=\'Form\' value=\'frm2\' />4 <p>choose:<span><select name="artistsfield"><option value="The Beatles">The Beatles</option><option value="The Doors">The Doors</option><option value="The Pixies">The Pixies</option></select></span></p>'
+    u'<input type=\'hidden\' name=\'Form\' value=\'frm2\' />4 <p>choose:<span><select id="artistsfield" name="artistsfield"><option value="The Beatles">The Beatles</option><option value="The Doors">The Doors</option><option value="The Pixies">The Pixies</option></select></span></p>'
     >>> adapted.widget = "CHECKBOX"
     >>> db.frm2.displayDocument(None, True, True
     ...         ).replace('\n', '').replace('\t', '')
@@ -480,7 +481,7 @@ A name field allow to select a user in the Plone portal members list::
     ... """9 <p>Who: <span class="plominoFieldClass">buyer</span></p>""")
     >>> db.cleanRequestCache()
     >>> db.frm2.displayDocument(None, True, True).replace('\n', '').replace('\t', '')
-    u'<input type=\'hidden\' name=\'Form\' value=\'frm2\' />9 <p>Who: <span><select multiple="true" lines="4" name="buyer"><option value=""></option><option value="test_user_1_">test_user_1_</option></select></span></p>'
+    u'<input type=\'hidden\' name=\'Form\' value=\'frm2\' />9 <p>Who: <span><select multiple="true" lines="4" id="buyer" name="buyer"><option value=""></option><option value="test_user_1_">test_user_1_</option></select></span></p>'
 
 Doclink field:
 A Doclink field allows to create a reference to another document::
@@ -517,6 +518,7 @@ A field can be computed::
     ...         Title='Welcome message',
     ...         FieldType="TEXT",
     ...         FieldMode="COMPUTED")
+    >>> db.frm2.welcome.at_post_create_script()
     >>> db.frm2.welcome.setFormula(
     ... """message="Welcome "+plominoDocument.buyer\nreturn message""")
     >>> db.frm2.setFormLayout(
@@ -525,7 +527,7 @@ A field can be computed::
     >>> doc4.save()
     >>> db.cleanRequestCache()
     >>> db.frm2.displayDocument(doc4)
-    u'11 <p><span>\n    \n    \n        Welcome test_user_1_\n    \n</span>\n</p>'
+    u'11 <p><span class="TEXTFieldRead-TEXT">\n    \n    \n        Welcome test_user_1_\n    \n</span>\n</p>'
 
 Events
 -------
@@ -694,3 +696,14 @@ Check the documents imported::
     >>> test
     [u'test1', u'test2']
 
+Databases marked as template can also be exported to a GenericSetup profile::
+
+    >>> db.setIsDatabaseTemplate(True)
+    >>> from Products.GenericSetup.tests.common import DummyExportContext
+    >>> from Products.CMFPlomino.setuphandlers import export_database_templates
+    >>> context = DummyExportContext(portal)
+    >>> export_database_templates(context)
+    >>> context._wrote[0][0]
+    'plomino/test/frmBillet.xml'
+
+TODO: TEST ALSO IMPORT

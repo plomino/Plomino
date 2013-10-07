@@ -76,6 +76,7 @@ from Products.CMFPlomino.PlominoField import schema as field_schema
 from Products.CMFPlomino.PlominoForm import schema as form_schema
 from Products.CMFPlomino.PlominoHidewhen import schema as hidewhen_schema
 from Products.CMFPlomino.PlominoView import schema as view_schema
+from Products.CMFPlomino import get_resource_directory
 
 plomino_schemas = {
         'PlominoAction': action_schema,
@@ -1455,3 +1456,38 @@ class PlominoDesignManager(Persistent):
         """
         """
         self.setRequestCache("ABORT_ON_ERROR", True)
+
+    security.declarePublic('getTemplateList')
+    def getTemplateList(self):
+        """
+        """
+        resource = get_resource_directory()
+        if not resource:
+            return []
+        return resource.listDirectory()
+
+    security.declareProtected(DESIGN_PERMISSION, 'importTemplate')
+    def importTemplate(self, REQUEST=None, template_id=None):
+        """
+        """
+        if REQUEST:
+            template_id = REQUEST.get("template_id")
+        resource = get_resource_directory()
+        if template_id in resource:
+            self.importTemplateElement(resource[template_id])
+        if REQUEST:
+            REQUEST.RESPONSE.redirect(
+                "%s/DatabaseDesign" % (self.absolute_url())
+            )
+
+
+    security.declareProtected(DESIGN_PERMISSION, 'importTemplate')
+    def importTemplateElement(self, source):
+        for name in source.listDirectory():
+            if source.isDirectory(name):
+                self.importTemplateElement(source[name])
+            else:
+                xml = source.readFile(name)
+                self.importDesignFromXML(xmlstring=xml)
+
+

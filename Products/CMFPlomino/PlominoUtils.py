@@ -32,6 +32,7 @@ from jsonutil import jsonutil as json
 
 # Zope
 from AccessControl import ClassSecurityInfo
+from AccessControl.unauthorized import Unauthorized
 try:
     from AccessControl.class_init import InitializeClass
 except ImportError:
@@ -39,10 +40,12 @@ except ImportError:
 
 from Acquisition import Implicit
 from DateTime import DateTime
+from zope import component
 
 # Plone
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import normalizeString as utils_normalizeString
+from .interfaces import IPlominoSafeDomains
 
 try:
     from plone.app.upgrade import v40
@@ -325,13 +328,24 @@ def array_to_csv(array, delimiter='\t', quotechar='"'):
 
 
 def open_url(url, asFile=False):
-    """ Retrieve content from ``url``.
+    """ retrieve content from url
     """
-    f = urllib.urlopen(url)
-    if asFile:
-        return f.fp
+    safe_domains = []
+    for safedomains_utils in component.getUtilitiesFor(IPlominoSafeDomains):
+        safe_domains += safedomains_utils[1].domains
+    is_safe = False
+    for domain in safe_domains:
+        if url.startswith(domain):
+            is_safe = True
+            break
+    if is_safe:
+        f=urllib.urlopen(url)
+        if asFile:
+            return f.fp
+        else:
+            return f.read()
     else:
-        return f.read()
+        raise Unauthorized(url)
 
 
 def MissingValue():

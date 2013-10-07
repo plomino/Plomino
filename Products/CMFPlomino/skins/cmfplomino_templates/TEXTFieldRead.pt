@@ -2,7 +2,7 @@
                   size python:options['field'].getSettings('size')"
     tal:attributes="class string:TEXTFieldRead-${widget}">
     <tal:widget condition="python:test(widget=='HIDDEN')">
-        <input type="hidden" tal:attributes="name options/fieldname; value options/fieldvalue" />
+        <input type="hidden" tal:attributes="id options/fieldname; name options/fieldname; value options/fieldvalue" />
     </tal:widget>
     <tal:widget condition="python:test(widget!='HIDDEN')">
         <tal:block tal:define="v options/fieldvalue" tal:content="structure v">text</tal:block>

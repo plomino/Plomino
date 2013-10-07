@@ -213,6 +213,19 @@ schema = Schema((
             i18n_domain='CMFPlomino',
         ),
     ),
+    BooleanField(
+        name='IsDatabaseTemplate',
+        default=False,
+        widget=BooleanField._properties['widget'](
+            label="Use as a template",
+            description="If True, the database design can be exported in a "
+                "GenericSetup profile and can then be used as a template"
+                "in any Plomino database.",
+            description_msgid=_("CMFPlomino_help_IsDatabaseTemplate", default='If True, the database design can be exported in a GenericSetup profile and can then be used as a template in any Plomino database.'),
+            label_msgid=_("CMFPlomino_label_IsDatabaseTemplate", default="Use it as a template"),
+            i18n_domain='CMFPlomino',
+        ),
+    ),
 ),
 )
 
