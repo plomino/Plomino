@@ -20,7 +20,7 @@
 	</tal:defaultactions>
 	
 	<tal:block
-		tal:repeat="action_tuple python:[(a, parent_id) for a, parent_id in owner.getActions(here, True, owner.id) if a.getInActionBar()==True]">
+		tal:repeat="action_tuple python:[(a, parent_id) for a, parent_id in owner.getActions(here, True) if a.getInActionBar()==True]">
 		<tal:block
 			tal:define="plominoaction python:action_tuple[0];
                         plominotarget python:here;
@@ -45,7 +45,7 @@
 		delete action</tal:block></tal:block>
 	</tal:defaultactions>
 		<tal:block
-			tal:repeat="action_tuple python:[(a, parent_id) for a, parent_id in owner.getActions(here, True, owner.id) if a.getInActionBar()==True]">
+			tal:repeat="action_tuple python:[(a, parent_id) for a, parent_id in owner.getActions(here, True) if a.getInActionBar()==True]">
 			<tal:block
 				tal:define="plominoaction python:action_tuple[0];
                             plominotarget python:here;
@@ -66,7 +66,7 @@
 			value="Save" i18n:domain="CMFPlomino" i18n:attributes="value" />
 	</tal:defaultactions>
 		<tal:block
-			tal:repeat="action_tuple python:[(a, parent_id) for a, parent_id in owner.getActions(here, True, owner.id) if a.getInActionBar()==True]">
+			tal:repeat="action_tuple python:[(a, parent_id) for a, parent_id in owner.getActions(here, True) if a.getInActionBar()==True]">
 			<tal:block
 				tal:define="plominoaction python:action_tuple[0];
                             plominotarget python:here;
@@ -87,7 +87,7 @@
 			i18n:domain="CMFPlomino" i18n:attributes="value" />
 	</tal:defaultactions>
 		<tal:block
-			tal:repeat="action_tuple python:[(a, parent_id) for a, parent_id in owner.getActions(here, True, owner.id) if a.getInActionBar()==True]">
+			tal:repeat="action_tuple python:[(a, parent_id) for a, parent_id in owner.getActions(here, True) if a.getInActionBar()==True]">
 			<tal:block
 				tal:define="plominoaction python:action_tuple[0];
                             plominotarget python:here;
@@ -129,7 +129,7 @@ if (typeof(oDynamicTable)!="undefined") {
 			tal:attributes="onclick string:if(confirm('${msg} ?')){location.href='./manage_deleteDocuments?deldocs='+selecteddocuments()}" />
 	</tal:defaultactions>
 		<tal:block
-			tal:repeat="action_tuple python:[(a, parent_id) for a, parent_id in owner.getActions(here, True, owner.id) if a.getInActionBar()==True]">
+			tal:repeat="action_tuple python:[(a, parent_id) for a, parent_id in owner.getActions(here, True) if a.getInActionBar()==True]">
 			<tal:block
 				tal:define="plominoaction python:action_tuple[0];
                             plominotarget python:here;
