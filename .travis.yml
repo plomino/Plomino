@@ -1,10 +1,10 @@
 language: python
 env:
   matrix:
-    - PLONE_VERSION=4.0
-    - PLONE_VERSION=4.1
-    - PLONE_VERSION=4.2
     - PLONE_VERSION=4.3
+    - PLONE_VERSION=4.2
+    - PLONE_VERSION=4.1
+    - PLONE_VERSION=4.0
   global:
     - secure: |-
         HPvtfxZKN4ZWsaKdP+5WdBGte1x96ksR9+Go1z7kpJeYo70XV/LAWYc6ORD8
