@@ -11,15 +11,32 @@ Features
 * easily embed charts or maps
 * create specific actions with formula (compute fields, send emails, ...)
 * adapt the application behaviour depending on the user access rights and roles
-* import/export your application structure and/or your application data
+* import/export your application structure and/or your application data,
+  including replication between Plomino instances
+
+Positioning
+===========
+
+Plomino is a **through-the-web application builder**, hence:
+
+* it is not a **through-the-web content-type builder** like 
+  `Dexterity <http://plone.org/products/dexterity>`_, which is perfect to
+  create a custom content type but that will always stick to the standard
+  content management scenario, while Plomino allows to implement any custom
+  scenarios,
+* it is not just a **form generator** like 
+  `PloneFormGen <http://plone.org/products/ploneformgen>`_, as Plomino provides
+  all the services (data storage, search, automation, import/export, etc.) to
+  build an entire application. Regarding form generation itself, a major
+  difference with PloneFormGen is that Plomino allows to edit the form layout
+  entirely, while PloneFormGen use a fixed pre-defined form layout.
 
 Resources and documentation
 ===========================
 
 Screencasts and how-tos are available on http://www.plomino.net/ .
 
-Plomino documentation is available on ReadTheDocs
-http://readthedocs.org/docs/plomino/ .
+Plomino documentation is available on `ReadTheDocs <http://readthedocs.org/docs/plomino/>`_.
 
 Note: if you think something is missing in the documentation, please send your
 pull request at https://github.com/plomino/PlominoDoc .
@@ -28,7 +45,8 @@ Internationalization
 ====================
 
 Plomino itself is internationalized and translated in seven languages. Applications
-built with Plomino can be internationalized (see https://plomino.readthedocs.org/en/latest/features/#i18n-support ).
+built with Plomino can be internationalized (see the `related documentation
+<https://plomino.readthedocs.org/en/latest/features/#i18n-support>`_).
 
 Installation
 ============
@@ -48,15 +66,15 @@ Installation on Plone 4.0 and 4.1
 =================================
 
 If you're using Plone version older than 4.2 you'll need to add some
-more directives to your buildout.cfg.
-Plomino depends on plone.app.registry and plomino.tinymce requires
-Products.TinyMCE>=1.2.13. To make Plomino work on pre-4.2 Plone sites
-you need to pin those versions in your versions.cfg section::
+more directives to your ``buildout.cfg``.
+Plomino depends on ``plone.app.registry`` and ``plomino.tinymce`` requires
+``Products.TinyMCE>=1.2.13``. To make Plomino work on pre-4.2 Plone sites
+you need to pin those versions in your ``versions.cfg`` section::
 
     Products.TinyMCE=1.2.13
     collective.js.jqueryui=1.8.16.9
 
-and use a known good set for plone.app.registry.
+and use a known good set for ``plone.app.registry``.
 
 This means extending your buildout from::
 
@@ -74,7 +92,7 @@ Tests
 =====
 
 Plomino is continuously tested on Travis |travisstatus|_ and the code coverage 
-is tracked on coveralls.io |coveralls|_.
+is tracked on ``coveralls.io`` |coveralls|_.
 
 .. |travisstatus| image:: https://secure.travis-ci.org/plomino/Plomino.png?branch=github-main
 .. _travisstatus:  http://travis-ci.org/plomino/Plomino
@@ -95,7 +113,7 @@ Maintainers
 Contributors
 ------------
 
-The complete list is available here http://www.plomino.net/credits
+The complete list is available `here <http://www.plomino.net/credits>`.
 
 Companies
 ---------

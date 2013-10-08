@@ -172,6 +172,17 @@
   </li>
 </ul>
 <hr/><h3 i18n:translate="">Import/Export design</h3>
+<form name="ImportTemplate" action="importTemplate" method="POST">
+    <label for="template">Import a template</label>
+    <select name="template_id">
+        <option value="">== Templates ==</option>
+        <tal:block tal:repeat="f python:here.getTemplateList()">
+            <option tal:attributes="value f;"
+                tal:content="python:f">value</option>
+        </tal:block>
+    </select>
+    <input type="submit" value="Import template"/>
+</form><br/>
 <table>
 <tr><th i18n:translate="">Import</th><th i18n:translate="">Export</th></tr>
 <tr><td valign="top">

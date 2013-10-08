@@ -65,7 +65,7 @@ Create a database::
     >>> browser.open(portal_url + "/createObject?type_name=PlominoDatabase")
     >>> browser.getControl('Title').value = 'testdb'
     >>> browser.getControl('Save').click()
-    >>> "No available content" in browser.contents
+    >>> "The database is empty" in browser.contents
     True
     >>> db_url = portal_url + "/testdb"
 
@@ -330,7 +330,7 @@ Replication::
     >>> browser.open(portal_url + "/createObject?type_name=PlominoDatabase")
     >>> browser.getControl('Title').value = 'localreplicadb'
     >>> browser.getControl('Save').click()
-    >>> "No available content" in browser.contents
+    >>> "The database is empty" in browser.contents
     True
     >>> localdb_url = portal_url + "/localreplicadb"
     >>> browser.open(localdb_url + "/DatabaseDesign")

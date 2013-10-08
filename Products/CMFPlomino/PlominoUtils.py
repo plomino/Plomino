@@ -32,6 +32,7 @@ from jsonutil import jsonutil as json
 
 # Zope
 from AccessControl import ClassSecurityInfo
+from AccessControl.unauthorized import Unauthorized
 try:
     from AccessControl.class_init import InitializeClass
 except ImportError:
@@ -39,10 +40,12 @@ except ImportError:
 
 from Acquisition import Implicit
 from DateTime import DateTime
+from zope import component
 
 # Plone
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import normalizeString as utils_normalizeString
+from .interfaces import IPlominoSafeDomains
 
 try:
     from plone.app.upgrade import v40
@@ -325,13 +328,24 @@ def array_to_csv(array, delimiter='\t', quotechar='"'):
 
 
 def open_url(url, asFile=False):
-    """ Retrieve content from ``url``.
+    """ retrieve content from url
     """
-    f = urllib.urlopen(url)
-    if asFile:
-        return f.fp
+    safe_domains = []
+    for safedomains_utils in component.getUtilitiesFor(IPlominoSafeDomains):
+        safe_domains += safedomains_utils[1].domains
+    is_safe = False
+    for domain in safe_domains:
+        if url.startswith(domain):
+            is_safe = True
+            break
+    if is_safe:
+        f=urllib.urlopen(url)
+        if asFile:
+            return f.fp
+        else:
+            return f.read()
     else:
-        return f.read()
+        raise Unauthorized(url)
 
 
 def MissingValue():
@@ -431,8 +445,20 @@ def is_email(email):
 
 
 def translate(context, content, i18n_domain=None):
+    """ Translate content, if possible. 
+    """
+    # TODO: translate non-string content? Like dates?
+    if not isinstance(content, basestring):
+        return content
+
+    request = getattr(context, 'REQUEST', None)
+    if request and request.get("translation")=="off":
+        return content
+
     if not i18n_domain:
-        i18n_domain = context.getParentDatabase().getI18n()
+        db = context.getParentDatabase()
+        i18n_domain = db.getI18n()
+
     def translate_token(match):
         translation = PlominoTranslate(
                 match.group(1),
@@ -441,6 +467,7 @@ def translate(context, content, i18n_domain=None):
                 )
         translation = asUnicode(translation)
         return translation
+
     content = re.sub(
             "__(?P<token>.+?)__",
             translate_token,
