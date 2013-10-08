@@ -373,32 +373,22 @@ class PlominoView(ATFolder):
         return [c.getObject() for c in columnslist]
 
     security.declarePublic('getActions')
-    def getActions(self, target, hide=True, parent_id=None):
-        """Get actions
+    def getActions(self, view, hide=True):
+        """ Get filtered actions for the view.
         """
+        # Note: We take 'view' as parameter (even though `self` and `view`
+        # will always be the same) because `getActions` is called from
+        # `ActionBar` template without knowing whether it's used for
+        # view/document/page.
         actions = self.objectValues(spec='PlominoAction')
 
         filtered = []
         for action in actions:
             if hide:
-                try:
-                    #result = RunFormula(target, action.getHidewhen())
-                    result = self.runFormulaScript(
-                            'action_%s_%s_hidewhen' % (
-                                action.getParentNode().id,
-                                action.id),
-                            target,
-                            action.Hidewhen,
-                            True)
-                except PlominoScriptException, e:
-                    e.reportError(
-                            '"%s" action hide-when failed' % action.Title())
-                    # if error, we hide anyway
-                    result = True
-                if not result:
-                    filtered.append((action, parent_id))
+                if not action.isHidden(view, self):
+                    filtered.append((action, self.id))
             else:
-                filtered.append((action, parent_id))
+                filtered.append((action, self.id))
         return filtered
 
     security.declarePublic('getColumn')
