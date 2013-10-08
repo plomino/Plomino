@@ -474,7 +474,7 @@ class PlominoForm(ATFolder):
                 report = ', '.join(
                         ['%s (occurs %s times)' % (f, c)
                             for f,c in seen.items() if c > 1])
-                logger.debug('Ambiguous fieldnames: %s' % report)
+                logger.debug('Overridden fields: %s' % report)
 
         db.setRequestCache(cache_key, result)
         return result
@@ -708,12 +708,7 @@ class PlominoForm(ATFolder):
                 html_content = html_content.replace(action_span, action_render)
 
         # translation
-        db = self.getParentDatabase()
-        i18n_domain = db.getI18n()
-        if request and request.get("translation")=="off":
-            i18n_domain = None
-        if i18n_domain:
-            html_content = translate(db, html_content, i18n_domain)
+        html_content = translate(self, html_content)
 
         # store fragment to cache
         html_content = self.updateCache(html_content, to_be_cached)
