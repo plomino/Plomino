@@ -178,7 +178,7 @@ class ElementPortletRenderer(base.Renderer):
     def header(self):
         """ Get the portlet header
 
-        (translated if db i18n domain if defined)
+        (translated if db i18n domain is defined)
         """
         header = self.data.header
 
@@ -188,6 +188,8 @@ class ElementPortletRenderer(base.Renderer):
         i18n_domain = db.getI18n()
         if i18n_domain:
             header = PlominoTranslate(header, db, domain=i18n_domain)
+        # TODO: why not the following?
+        # header = translate(db, header)
         return header
 
 class ElementPortletAddForm(base.AddForm):
