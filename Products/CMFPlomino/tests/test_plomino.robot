@@ -28,34 +28,34 @@ Manage a Plomino database
     Initialize other portal
     Replicate the database design
     Add document          ${OTHER_PLONE_URL}/replicadb/frm_test    field_1     Victor Hugo
-#    Replicate documents
-#    Go to                 ${OTHER_PLONE_URL}/replicadb/allfrmtest
-#    Page should contain   Marie Curie
-#    Re-replicate the database design
-#    Add document          ${PLONE_URL}/secondreplicadb/frm_test    field_1     Louis Pasteur
-#    Re-replicate documents
-#    Go to                 ${PLONE_URL}/secondreplicadb/allfrmtest
-#    Page should contain   Marie Curie
-#
-#Check form methods
-#    Set Selenium Implicit Wait        20 seconds
-#    Log in as the database owner
-#    Open the database
-#    Create datagrid form
-#    Create form                       frmTest           Testing form
-#    # Use with the search forms
-#    Generate view for                 frmTest
-#    Check form method                 frmTest           POST
-#    Create form with method           frmGetTest        Testing GET form  GET
-#    Check form method                 frmGetTest        GET
-#    Create page form                  frmPageTest       Testing page form
-#    Check form method                 frmPageTest       GET
-#    Create search form                frmSearchTest     Testing search form
-#    Check form method                 frmSearchTest     GET
-#    Create form with method and type  frmPostingPage    Testing POST page  POST  Page
-#    Check form method                 frmPostingPage    POST
-#    Create form with method and type  frmPostingSearch  Testing POST search  POST  SearchForm
-#    Check form method                 frmPostingSearch  POST
+    Replicate documents
+    Go to                 ${OTHER_PLONE_URL}/replicadb/allfrmtest
+    Page should contain   Marie Curie
+    Re-replicate the database design
+    Add document          ${PLONE_URL}/secondreplicadb/frm_test    field_1     Louis Pasteur
+    Re-replicate documents
+    Go to                 ${PLONE_URL}/secondreplicadb/allfrmtest
+    Page should contain   Marie Curie
+
+Check form methods
+    Set Selenium Implicit Wait        20 seconds
+    Log in as the database owner
+    Open the database
+    Create datagrid form
+    Create form                       frmTest           Testing form
+    # Use with the search forms
+    Generate view for                 frmTest
+    Check form method                 frmTest           POST
+    Create form with method           frmGetTest        Testing GET form  GET
+    Check form method                 frmGetTest        GET
+    Create page form                  frmPageTest       Testing page form
+    Check form method                 frmPageTest       GET
+    Create search form                frmSearchTest     Testing search form
+    Check form method                 frmSearchTest     GET
+    Create form with method and type  frmPostingPage    Testing POST page  POST  Page
+    Check form method                 frmPostingPage    POST
+    Create form with method and type  frmPostingSearch  Testing POST search  POST  SearchForm
+    Check form method                 frmPostingSearch  POST
 
 Teardown
     Teardown other portal
