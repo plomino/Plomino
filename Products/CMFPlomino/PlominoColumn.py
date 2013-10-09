@@ -23,6 +23,7 @@ from Products.CMFDynamicViewFTI.browserdefault import BrowserDefaultMixin
 from Products.CMFPlomino.config import PROJECTNAME
 from Products.CMFPlomino.browser import PlominoMessageFactory as _
 from validator import isValidPlominoId
+from Products.CMFPlomino.PlominoUtils import translate
 
 import logging
 logger = logging.getLogger('Plomino')
@@ -135,14 +136,17 @@ class PlominoColumn(BaseContent, BrowserDefaultMixin):
     security.declarePublic('getColumnName')
     def getColumnRender(self, fieldvalue):
         """ If associated with a field, let the field do the rendering.
+
+        Do translation of the rendered field.
         """
         if fieldvalue is Missing.Value:
             logger.warn('PlominoColumn.getColumnRender> fieldvalue is Missing.Value')
             return ''
 
         if self.getFormula():
-            return fieldvalue
+            return translate(self, fieldvalue)
 
+        # If there is no formula, there has to be a field
         associated_field = self.getSelectedField()
         form_id, fieldname = associated_field.split('/')
         db = self.getParentDatabase()
@@ -172,12 +176,15 @@ class PlominoColumn(BaseContent, BrowserDefaultMixin):
         selection = field_settings.getSelectionList(form)
 
         try:
-            return pt(fieldname=fieldname,
+            html_content = pt(
+                    fieldname=fieldname,
                     fieldvalue=fieldvalue,
                     selection=selection,
                     field=field,
-                    doc=form
-                    )
+                    doc=form)
+            html_content = translate(self, html_content)
+            return html_content
+
         except Exception, e:
             self.traceRenderingErr(e, self)
             return ""

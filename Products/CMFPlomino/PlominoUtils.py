@@ -102,10 +102,7 @@ def StringToDate(str_d, format='%Y-%m-%d', db=None):
     try:
         if db:
             format = db.getDateTimeFormat()
-        if format:
-            dt = datetime.strptime(str_d, format)
-        else:
-            dt = parse(str_d)
+        dt = datetime.strptime(str_d, format)
     except ValueError, e:
         # XXX: Just let DateTime guess.
         dt = parse(DateTime(str_d).ISO())
@@ -114,7 +111,8 @@ def StringToDate(str_d, format='%Y-%m-%d', db=None):
             format,
             repr(e),
             repr(dt)))
-    return DateTime(dt.isoformat())
+    as_tuple = dt.timetuple()
+    return DateTime(*as_tuple[:6])
 
 
 def DateRange(d1, d2):
