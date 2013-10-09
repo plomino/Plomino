@@ -92,7 +92,7 @@ Tests
 =====
 
 Plomino is continuously tested on Travis |travisstatus|_ and the code coverage 
-is tracked on ``coveralls.io`` |coveralls|_.
+is tracked on coveralls.io |coveralls|_.
 
 .. |travisstatus| image:: https://secure.travis-ci.org/plomino/Plomino.png?branch=github-main
 .. _travisstatus:  http://travis-ci.org/plomino/Plomino
@@ -128,5 +128,5 @@ Companies
 .. _makinacom:  http://www.makina-corpus.com
 
 .. |Bitdeli| image:: https://d2weczhvl823v0.cloudfront.net/plomino/plomino/trend.png
-.. _Bitdeli: https://bitdeli.com/free
+.. _Bitdeli: https://bitdeli.com/plomino
 
