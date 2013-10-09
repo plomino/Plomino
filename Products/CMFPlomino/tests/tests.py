@@ -45,6 +45,12 @@ def test_suite():
             optionflags=doctest.NORMALIZE_WHITESPACE | doctest.ELLIPSIS),
             #optionflags=doctest.REPORT_ONLY_FIRST_FAILURE | doctest.NORMALIZE_WHITESPACE | doctest.ELLIPSIS),
 
+        ztc.ZopeDocFileSuite(
+            'tests/form-resources.txt', package='Products.CMFPlomino',
+            test_class=ExampleFunctionalTestCase,
+            optionflags=doctest.NORMALIZE_WHITESPACE | doctest.ELLIPSIS),
+            #optionflags=doctest.REPORT_ONLY_FIRST_FAILURE | doctest.NORMALIZE_WHITESPACE | doctest.ELLIPSIS),
+
         # We could add more doctest files here as well, by copying the file
         # block above.
 

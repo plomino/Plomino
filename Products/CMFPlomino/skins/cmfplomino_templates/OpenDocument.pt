@@ -30,11 +30,10 @@
                     cssresources python:myF.getResourcesCSS().splitlines();"
         tal:condition="cssresources"
         tal:repeat="css cssresources">
-        <script rel="stylesheet"
+        <link rel="stylesheet"
             type="text/css"
             media="all"
-            tal:attributes="href css">
-        </script>
+            tal:attributes="href css" />
     </tal:block_hascssresources>
 </metal:css>
 
