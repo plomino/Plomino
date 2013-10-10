@@ -55,7 +55,7 @@ from PlominoAccessControl import PlominoAccessControl
 from PlominoDesignManager import PlominoDesignManager
 from PlominoDocument import addPlominoDocument
 from PlominoReplicationManager import PlominoReplicationManager
-from PlominoScheduler import PlominoScheduler
+from Products.CMFPlomino.browser import PlominoMessageFactory as _
 from Products.CMFPlomino.config import *
 from Products.CMFPlomino.PlominoUtils import *
 
@@ -77,8 +77,9 @@ schema = Schema((
             label="About this database",
             description="Describe the database, its objectives, "
                 "its targeted audience, etc...",
-            label_msgid='CMFPlomino_label_AboutDescription',
-            description_msgid='CMFPlomino_help_AboutDescription',
+            label_msgid=_('CMFPlomino_label_AboutDescription'),
+            description_msgid=_('CMFPlomino_help_AboutDescription',
+                default='Describe the database, its objectives, its targeted audience, etc...'),
             i18n_domain='CMFPlomino',
         ),
         default_output_type="text/html",
@@ -89,8 +90,8 @@ schema = Schema((
         widget=RichWidget(
             label="Using this database",
             description="Describe how to use the database",
-            label_msgid='CMFPlomino_label_UsingDescription',
-            description_msgid='CMFPlomino_help_UsingDescription',
+            label_msgid=_('CMFPlomino_label_UsingDescription', default="Using this database"),
+            description_msgid=_('CMFPlomino_help_UsingDescription', default="Describe how to use the database"),
             i18n_domain='CMFPlomino',
         ),
         default_output_type="text/html",
@@ -103,8 +104,8 @@ schema = Schema((
             description="If enabled, files attached in "
                 "File Attachment fields will be indexed. "
                 "It might increase the index size.",
-            label_msgid='CMFPlomino_label_IndexAttachments',
-            description_msgid='CMFPlomino_help_IndexAttachments',
+            label_msgid=_('CMFPlomino_label_IndexAttachments', default="Index file attachments"),
+            description_msgid=_('CMFPlomino_help_IndexAttachments', default="If enabled, files attached in File Attachment fields will be indexed. It might increase the index size."),
             i18n_domain='CMFPlomino',
         ),
     ),
@@ -115,8 +116,8 @@ schema = Schema((
             label="Local full-text index",
             description="If enabled, documents are full-text indexed "
                 "in the Plomino index.",
-            label_msgid='CMFPlomino_label_FulltextIndex',
-            description_msgid='CMFPlomino_help_FulltextIndex',
+            label_msgid=_('CMFPlomino_label_FulltextIndex', default="Local full-text index"),
+            description_msgid=_('CMFPlomino_help_FulltextIndex', default='If enabled, documents are full-text indexed in the Plomino index.'),
             i18n_domain='CMFPlomino',
         ),
     ),
@@ -127,8 +128,8 @@ schema = Schema((
             label="Index documents in Plone portal",
             description="If enabled, documents are searchable "
             "in Plone search.",
-            label_msgid='CMFPlomino_label_IndexInPortal',
-            description_msgid='CMFPlomino_help_IndexInPortal',
+            label_msgid=_('CMFPlomino_label_IndexInPortal', default="Index documents in Plone portal"),
+            description_msgid=_('CMFPlomino_help_IndexInPortal', default="If enabled, documents are searchable in Plone search."),
             i18n_domain='CMFPlomino',
         ),
     ),
@@ -138,21 +139,8 @@ schema = Schema((
         widget=BooleanField._properties['widget'](
             label="Debug mode",
             description="If enabled, script and formula errors are logged.",
-            label_msgid='CMFPlomino_label_debugMode',
-            description_msgid='CMFPlomino_help_debugMode',
-            i18n_domain='CMFPlomino',
-        ),
-    ),
-    BooleanField(
-        name='StorageAttachments',
-        default=False,
-        widget=BooleanField._properties['widget'](
-            label="Use File System Storage for attachments",
-            description="File System Storage must be installed on the portal. "
-                "With current Plone versions (4.x), "
-                "blobstorage will be used by default.",
-            label_msgid='CMFPlomino_label_StorageAttachments',
-            description_msgid='CMFPlomino_help_StorageAttachments',
+            label_msgid=_('CMFPlomino_label_debugMode', default="Debug mode"),
+            description_msgid=_('CMFPlomino_help_debugMode', default="If enabled, script and formula errors are logged."),
             i18n_domain='CMFPlomino',
         ),
     ),
@@ -163,8 +151,8 @@ schema = Schema((
             label="Count the number of documents",
             description="If enabled, count the number of documents "
                 "for each view. Display might be slower.",
-            description_msgid="CMFPlomino_help_ShowDocumentsNumbers",
-            label_msgid="CMFPlomino_label_ShowDocumentsNumbers",
+            description_msgid=_("CMFPlomino_help_ShowDocumentsNumbers", default="If enabled, count the number of documents for each view. Display might be slower."),
+            label_msgid=_("CMFPlomino_label_ShowDocumentsNumbers", default="Count the number of documents"),
             i18n_domain='CMFPlomino',
         ),
     ),
@@ -172,30 +160,30 @@ schema = Schema((
         name='DateTimeFormat',
         default="%Y-%m-%d",
         widget=StringField._properties['widget'](
-            label='Date/time format',
-            description='Format example: %Y-%m-%d',
-            label_msgid='CMFPlomino_label_DateTimeFormat',
-            description_msgid="CMFPlomino_help_DateTimeFormat",
+            label="Date/time format",
+            description="Format example: %Y-%m-%d",
+            label_msgid=_('CMFPlomino_label_DateTimeFormat', default="Date/time format"),
+            description_msgid=_("CMFPlomino_help_DateTimeFormat", default='Format example: %Y-%m-%d'),
             i18n_domain='CMFPlomino',
         ),
     ),
     StringField(
         name='StartPage',
         widget=StringField._properties['widget'](
-            label='Start page',
-            description='Element to display instead of the regular database menu.',
-            label_msgid='CMFPlomino_label_StartPage',
-            description_msgid='CMFPlomino_help_StartPage',
+            label="Start page",
+            description="Element to display instead of the regular database menu.",
+            label_msgid=_('CMFPlomino_label_StartPage', default="Start page"),
+            description_msgid=_('CMFPlomino_help_StartPage', default="Element to display instead of the regular database menu."),
             i18n_domain='CMFPlomino',
         ),
     ),
     StringField(
         name='i18n',
         widget=StringField._properties['widget'](
-            label='i18n domain',
-            description='i18n domain to use for Plomino internal translation',
-            label_msgid='CMFPlomino_label_i18n',
-            description_msgid='CMFPlomino_help_i18n',
+            label="i18n domain",
+            description="i18n domain to use for Plomino internal translation",
+            label_msgid=_('CMFPlomino_label_i18n', default="i18n domain"),
+            description_msgid=_('CMFPlomino_help_i18n', default="i18n domain to use for Plomino internal translation"),
             i18n_domain='CMFPlomino',
         ),
     ),
@@ -207,8 +195,8 @@ schema = Schema((
             description="If True, in ACL screen, users are entered using "
                 "a free text field, if False, using a selection list. "
                 "Use True when the amount of users is large.",
-            description_msgid="CMFPlomino_help_DoNotListUsers",
-            label_msgid="CMFPlomino_label_DoNotListUsers",
+            description_msgid=_("CMFPlomino_help_DoNotListUsers", default='If True, in ACL screen, users are entered using a free text field, if False, using a selection list. Use True when the amount of users is large.'),
+            label_msgid=_("CMFPlomino_label_DoNotListUsers", default="Do not list portal users"),
             i18n_domain='CMFPlomino',
         ),
     ),
@@ -220,8 +208,21 @@ schema = Schema((
             description="If True, documents are not re-indexed "
                 "automatically when views, columns or indexed fields "
                 "are changed. Note: manual refresh db is then needed.",
-            description_msgid="CMFPlomino_help_DoNotReindex",
-            label_msgid="CMFPlomino_label_DoNotReindex",
+            description_msgid=_("CMFPlomino_help_DoNotReindex", default='If True, documents are not re-indexed automatically when views, columns or indexed fields are changed. Note: manual refresh db is then needed.'),
+            label_msgid=_("CMFPlomino_label_DoNotReindex", default="Do not re-index documents on design changes"),
+            i18n_domain='CMFPlomino',
+        ),
+    ),
+    BooleanField(
+        name='IsDatabaseTemplate',
+        default=False,
+        widget=BooleanField._properties['widget'](
+            label="Use as a template",
+            description="If True, the database design can be exported in a "
+                "GenericSetup profile and can then be used as a template"
+                "in any Plomino database.",
+            description_msgid=_("CMFPlomino_help_IsDatabaseTemplate", default='If True, the database design can be exported in a GenericSetup profile and can then be used as a template in any Plomino database.'),
+            label_msgid=_("CMFPlomino_label_IsDatabaseTemplate", default="Use it as a template"),
             i18n_domain='CMFPlomino',
         ),
     ),
@@ -235,7 +236,6 @@ PlominoDatabase_schema = getattr(ATFolder, 'schema', Schema(())).copy() + \
     getattr(PlominoAccessControl, 'schema', Schema(())).copy() + \
     getattr(PlominoDesignManager, 'schema', Schema(())).copy() + \
     getattr(PlominoReplicationManager, 'schema', Schema(())).copy() + \
-    getattr(PlominoScheduler, 'schema', Schema(())).copy() + \
     schema.copy()
 
 ##code-section after-schema #fill in your manual code here
@@ -243,7 +243,7 @@ PlominoDatabase_schema = getattr(ATFolder, 'schema', Schema(())).copy() + \
 
 
 class PlominoDatabase(ATFolder, PlominoAccessControl, PlominoDesignManager,
-        PlominoReplicationManager, PlominoScheduler):
+        PlominoReplicationManager):
     """
     """
     security = ClassSecurityInfo()
@@ -450,8 +450,10 @@ class PlominoDatabase(ATFolder, PlominoAccessControl, PlominoDesignManager,
                             'but onDelete event failed.')
                 if message:
                     # Abort deletion
-                    doc.writeMessageOnPage(message, REQUEST, False)
-                    REQUEST.RESPONSE.redirect(doc.absolute_url())
+                    if hasattr(self, 'REQUEST'):
+                        doc.writeMessageOnPage(message, self.REQUEST, False)
+                        self.REQUEST.RESPONSE.redirect(doc.absolute_url())
+                    return None
 
             self.getIndex().unindexDocument(doc)
             if self.getIndexInPortal():
@@ -477,6 +479,7 @@ class PlominoDatabase(ATFolder, PlominoAccessControl, PlominoDesignManager,
                     self.deleteDocument(self.getDocument(id))
                 except:
                     # if insufficient access rights, we continue
+                    # TODO: if insufficient access rights or absolutely anything else. Fix the bare except.
                     pass
 
     security.declareProtected(REMOVE_PERMISSION, 'manage_deleteDocuments')

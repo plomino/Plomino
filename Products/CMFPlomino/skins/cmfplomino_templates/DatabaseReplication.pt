@@ -160,9 +160,9 @@
 														<td>
 															<input class="textType"
 																type="checkbox"
-																id="selection" 
 																name="selection"
 																tal:attributes="value replicationId;
+																				id string:selection-${replicationId};
 																				checked python:test(selection,'checked','')"/>
 														</td>
 														<td><span tal:content="name">name</span></td>
@@ -198,9 +198,9 @@
 																tal:attributes="value mode"/>
 															<input class="textType"
 																type="checkbox"
-																id="selection" 
 																name="selection"
 																tal:attributes="value replicationId;
+																				id string:selection-${replicationId};
 																				checked python:test(selection,'checked','')"/>
 														</td>
 														<td>

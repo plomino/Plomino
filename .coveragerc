@@ -1,0 +1,10 @@
+[report]
+omit =
+    extras/*
+    buildout-cache/eggs/*
+    parts/*
+    eggs/*
+    */test*
+    Products/CMFPlomino/migration/migration.py
+    Products/CMFPlomino/upgrades.py
+    /home/travis/virtualenv/python2.7/lib/python2.7/distutils/__init__.py

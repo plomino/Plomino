@@ -121,7 +121,7 @@ class BaseField(object):
                         data = json.loads(
                                 unquote(
                                     row_data_json).decode(
-                                        'unicode_escape'))
+                                        'raw_unicode_escape'))
                         datagrid_fields = (
                                 db.getForm(parent_form)
                                 .getFormField(parent_field)
@@ -133,12 +133,26 @@ class BaseField(object):
                         else:
                             fieldValue = ""
                     else:
-                        fieldValue = asUnicode(request.get(fieldName, ''))
+                        # if no doc context and no default formula, we accept
+                        # value passed in the REQUEST so we look for 'fieldName'
+                        # but also for 'fieldName_querystring' which allows to
+                        # pass value via the querystring without messing the
+                        # POST content
+                        request_value = request.get(fieldName, '')
+                        if not request_value:
+                            request_value = request.get(
+                                fieldName + '_querystring',
+                                ''
+                            )
+                        fieldValue = asUnicode(request_value)
             else:
                 fieldValue = doc.getItem(fieldName)
 
         elif mode in ["DISPLAY", "COMPUTED"]:
-            fieldValue = form.computeFieldValue(fieldName, target)
+            if mode == "DISPLAY" and not self.context.Formula() and doc:
+                fieldValue = doc.getItem(fieldName)
+            else:
+                fieldValue = form.computeFieldValue(fieldName, target)
 
         elif mode == "CREATION":
             if creation:

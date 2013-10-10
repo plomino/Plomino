@@ -1,0 +1,355 @@
+============================================================
+Plomino usage
+============================================================
+
+Setup::
+
+    >>> from zope import component
+    >>> from Products.CMFPlomino.interfaces import IPlominoUtils
+    >>> from Products.CMFPlomino import PlominoCoreUtils
+    >>> component.provideUtility(PlominoCoreUtils, IPlominoUtils)
+    >>> portal = layer['portal']
+    >>> portal_url = portal.absolute_url()
+    >>> memberName = 'siteManager'
+    >>> portal.portal_membership.addMember(
+    ...         memberName,
+    ...         memberName,
+    ...         ('Member', 'Manager',),
+    ...         '',
+    ...         {'fullname': memberName, 'email': memberName+'@dummy.fr',}
+    ...         )
+    >>> memberName = 'siteMember'
+    >>> portal.portal_membership.addMember(
+    ...         memberName,
+    ...         memberName,
+    ...         ('Member', ),
+    ...         '',
+    ...         {'fullname': memberName, 'email': memberName+'@dummy.fr',}
+    ...         )
+    >>> InsufficientPrivileges = 'credentials_cookie_auth'
+
+Create a sample db that we will replicate to a remote portal::
+
+    >>> from os.path import dirname, join
+    >>> DIRPATH = join(dirname(__file__), 'filestoimport')
+    >>> id = portal.invokeFactory('PlominoDatabase', id='sampledb')
+    >>> portal.sampledb.at_post_create_script()
+    >>> design_filepath = join(DIRPATH, "replicadb.xml")
+    >>> portal.sampledb.importDesignFromXML(open(design_filepath).read())
+    >>> report = portal.sampledb.refreshDB()
+    >>> data_filepath = join(DIRPATH, "replicadb-all-documents.xml")
+    >>> report = portal.sampledb.importFromXML(open(data_filepath).read())
+
+Create the browser object we'll be using::
+
+    >>> browser = Browser(layer['app'])
+    >>> transaction.commit()  # enable the browser to see our changes
+
+Create a Plone site on the remote server::
+
+    >>> from Products.CMFPlomino.HttpUtils import authenticateAndLoadURL
+    >>> result = authenticateAndLoadURL("http://localhost:8080/@@plone-addsite?site_id=PloneRemote&title=Site&form.submitted:boolean=True&extension_ids:list=plonetheme.classic:default&extension_ids:list=plonetheme.sunburst:default&extension_ids:list=Products.CMFPlomino:default", 'admin', 'admin')
+
+Log in with manager access rights:: 
+
+    >>> browser.open(portal_url)
+    >>> browser.open(portal_url+'/login_form')
+    >>> browser.getControl(name='__ac_name').value = "siteManager"
+    >>> browser.getControl(name='__ac_password').value = "siteManager"
+    >>> browser.getControl('Log in').click()
+    >>> "You are now logged in" in browser.contents
+    True
+
+Create a database::
+
+    >>> browser.open(portal_url + "/createObject?type_name=PlominoDatabase")
+    >>> browser.getControl('Title').value = 'testdb'
+    >>> browser.getControl('Save').click()
+    >>> "The database is empty" in browser.contents
+    True
+    >>> db_url = portal_url + "/testdb"
+
+Create forms::
+
+    >>> browser.open(db_url + "/createObject?type_name=PlominoForm&tinymce.suppress=FormLayout&")
+    >>> browser.getControl(name='id').value = "frmtest"
+    >>> browser.getControl(name='title').value = "Test form"
+    >>> browser.getControl(name='FormLayout').value = """
+    ... <p>Name: <span class="plominoFieldClass">name</span></p>
+    ... <p>Age: <span class="plominoFieldClass">age</span></p>
+    ... <span class="plominoHidewhenClass">start:moreThan18</span>
+    ... <p>Parents: <span class="plominoFieldClass">parents</span></p>
+    ... <span class="plominoHidewhenClass">end:moreThan18</span>
+    ... <span class="plominoHidewhenClass">start:notComplete</span>
+    ... <p>Thank you</p>
+    ... <span class="plominoHidewhenClass">end:notComplete</span>
+    ... """
+    >>> browser.getControl(name='DocumentTitle').value = """context.getItem('name')"""
+    >>> browser.getControl(name='DocumentId').value = """context.getItem('name')"""
+    >>> browser.getControl(name='form.button.save').click()
+    >>> browser.open(db_url + "/frmtest/createObject?type_name=PlominoField")
+    >>> browser.getControl(name='id').value = "name"
+    >>> browser.getControl(name='title').value = "name"
+    >>> browser.getControl(name='form.button.save').click()
+    >>> browser.open(db_url + "/frmtest/createObject?type_name=PlominoField")
+    >>> browser.getControl(name='id').value = "age"
+    >>> browser.getControl(name='title').value = "age"
+    >>> browser.getControl(name='FieldType').value = ['NUMBER']
+    >>> browser.getControl(name='form.button.save').click()
+    >>> browser.open(db_url + "/frmtest/createObject?type_name=PlominoHidewhen")
+    >>> browser.getControl(name='id').value = "moreThan18"
+    >>> browser.getControl(name='title').value = "moreThan18"
+    >>> browser.getControl(name='Formula').value = """if not isDocument(context):
+    ...     return True
+    ... return context.getItem('age', 0) >= 18"""
+    >>> browser.getControl(name='isDynamicHidewhen:boolean').value = [True]
+    >>> browser.getControl(name='form.button.save').click()
+    >>> browser.open(db_url + "/frmtest/createObject?type_name=PlominoHidewhen")
+    >>> browser.getControl(name='id').value = "notComplete"
+    >>> browser.getControl(name='title').value = "notComplete"
+    >>> browser.getControl(name='Formula').value = """if not isDocument(context):
+    ...     return True
+    ... return context.getItem('age') and context.getItem('name')"""
+    >>> browser.getControl(name='form.button.save').click()
+    >>> browser.open(db_url + "/frmtest")
+    >>> """<input type="text" id="name" value="" name="name" />""" in browser.contents
+    True
+    >>> browser.open(db_url + "/frmtest/createObject?type_name=PlominoField")
+    >>> browser.getControl(name='id').value = "display_name"
+    >>> browser.getControl(name='title').value = "display_name"
+    >>> browser.getControl(name='FieldMode').value = ['DISPLAY']
+    >>> browser.getControl(name='Formula').value = """
+    ... if not isDocument(context):
+    ...     return "I have no name"
+    ... return 'This is ' + context.getItem('name')
+    ... """
+    >>> browser.getControl(name='form.button.save').click()
+
+    >>> browser.open(db_url + "/createObject?type_name=PlominoForm&tinymce.suppress=FormLayout&")
+    >>> browser.getControl(name='id').value = "frmtest2"
+    >>> browser.getControl(name='title').value = "Test form 2"
+    >>> browser.getControl(name='FormLayout').value = """
+    ... <p>Country: <span class="plominoFieldClass">country</span></p>
+    ... <p>Area: <span class="plominoFieldClass">area</span></p>
+    ... <p>GDP: <span class="plominoFieldClass">gdp</span></p>
+    ... <p>Population: <span class="plominoFieldClass">population</span></p>
+    ... <h2>Author</h2>
+    ... <span class="plominoSubformClass">frmtest</span>
+    ... <span class="plominoCacheClass">start:cache_for_user</span>
+    ... <p>This will be computed only once: <span class="plominoFieldClass">big_processing</span></p>
+    ... <span class="plominoCacheClass">end:cache_for_user</span>
+    ... """
+    >>> browser.getControl(name='DocumentTitle').value = """context.getItem('country')"""
+    >>> browser.getControl(name='DocumentId').value = """context.getItem('country')"""
+    >>> browser.getControl(name='form.button.save').click()
+    >>> browser.open(db_url + "/frmtest2/createObject?type_name=PlominoField")
+    >>> browser.getControl(name='id').value = "country"
+    >>> browser.getControl(name='title').value = "country"
+    >>> browser.getControl(name='form.button.save').click()
+    >>> browser.open(db_url + "/frmtest2/createObject?type_name=PlominoField")
+    >>> browser.getControl(name='id').value = "area"
+    >>> browser.getControl(name='title').value = "area"
+    >>> browser.getControl(name='FieldType').value = ['NUMBER']
+    >>> browser.getControl(name='form.button.save').click()
+    >>> browser.open(db_url + "/frmtest2/area/numbersettings")
+    >>> browser.getControl(name='form.type').value = ['Float']
+    >>> browser.getControl(name='form.actions.apply').click()
+    >>> browser.open(db_url + "/frmtest2/createObject?type_name=PlominoField")
+    >>> browser.getControl(name='id').value = "gdp"
+    >>> browser.getControl(name='title').value = "gdp"
+    >>> browser.getControl(name='FieldType').value = ['NUMBER']
+    >>> browser.getControl(name='form.button.save').click()
+    >>> browser.open(db_url + "/frmtest2/gdp/numbersettings")
+    >>> browser.getControl(name='form.type').value = ['Decimal']
+    >>> browser.getControl(name='form.actions.apply').click()
+    >>> browser.open(db_url + "/frmtest2/createObject?type_name=PlominoField")
+    >>> browser.getControl(name='id').value = "population"
+    >>> browser.getControl(name='title').value = "population"
+    >>> browser.getControl(name='FieldType').value = ['NUMBER']
+    >>> browser.getControl(name='form.button.save').click()
+    >>> browser.open(db_url + "/frmtest2/createObject?type_name=PlominoField")
+    >>> browser.getControl(name='id').value = "big_processing"
+    >>> browser.getControl(name='title').value = "big_processing"
+    >>> browser.getControl(name='FieldMode').value = ['DISPLAY']
+    >>> browser.getControl(name='Formula').value = """
+    ... # ok no that big processing
+    ... who = context.getCurrentUserId()
+    ... return 'This is ' + who
+    ... """
+    >>> browser.getControl(name='form.button.save').click()
+    >>> browser.open(db_url + "/frmtest2/createObject?type_name=PlominoCache")
+    >>> browser.getControl(name='id').value = "cache_for_user"
+    >>> browser.getControl(name='title').value = "cache_for_user"
+    >>> browser.getControl(name='Formula').value = """
+    ... return context.getCurrentUserId()
+    ... """
+    >>> browser.getControl(name='form.button.save').click()
+    >>> browser.open(db_url + "/frmtest2")
+    >>> """<input type="text" id="population" value="" name="population" />""" in browser.contents
+    True
+
+Generate views::
+
+    >>> browser.open(db_url + "/frmtest/manage_generateView")
+    >>> "Add a new Test form" in browser.contents
+    True
+    >>> browser.open(db_url + "/frmtest2/manage_generateView")
+    >>> "Add a new Test form 2" in browser.contents
+    True
+
+Change the ACL::
+
+    >>> browser.open(db_url + "/DatabaseACL")
+    >>> browser.getControl(name='newuser').value = ["siteMember"]
+    >>> browser.getControl(name='accessright').value = ["PlominoReader"]
+    >>> browser.getControl("Add", index=0).click()
+    >>> "reader-siteMember" in browser.contents
+    True
+    >>> browser.getControl(name='users').value = ["siteMember"]
+    >>> browser.getControl("Remove selected users").click()
+    >>> "reader-siteMember" not in browser.contents
+    True
+    >>> browser.getControl(name='authenticatedaccessright').value = ["PlominoReader"]
+    >>> browser.getControl("Change", index=0).click()
+    >>> browser.getControl(name='newrole').value = "in-charge"
+    >>> browser.getControl("Add", index=1).click()
+    >>> browser.getControl(name='role', index=1).value = ["[in-charge]"]
+    >>> browser.getControl(name='user', index=0).value = ["siteMember"]
+    >>> browser.getControl("Add", index=2).click()
+
+Create documents::
+
+    >>> browser.open(db_url + "/frmtest")
+    >>> browser.getControl(name='name').value = "Isaac Newton"
+    >>> browser.getControl(name='age').value = "45"
+    >>> browser.getControl("Save").click()
+    >>> browser.url == db_url + "/plomino_documents/isaac-newton"
+    True
+    >>> browser.open(db_url + "/frmtest")
+    >>> browser.getControl(name='name').value = "Marie Curie"
+    >>> browser.getControl(name='age').value = "46"
+    >>> browser.getControl("Save").click()
+    >>> browser.url == db_url + "/plomino_documents/marie-curie"
+    True
+    >>> browser.open(db_url + "/plomino_documents/marie-curie/tojson")
+    >>> browser.contents
+    '{"Plomino_Authors": ["siteManager"], "age": 46, "name": "Marie Curie", "Form": "frmtest"}'
+    >>> browser.open(db_url + "/plomino_documents/marie-curie/tojson?item=age")
+    >>> browser.contents
+    '46'
+    >>> browser.open(db_url + "/plomino_documents/marie-curie/tojson?item=display_name")
+    >>> browser.contents
+    '"This is Marie Curie"'
+    >>> browser.open(db_url + "/frmtest/tojson?item=display_name")
+    >>> browser.contents
+    '"I have no name"'
+    >>> browser.open(db_url + "/frmtest/tojson")
+    >>> browser.contents
+    '{"age": "", "display_name": "I have no name", "name": ""}'
+    >>> browser.open(db_url + "/frmtest2")
+    >>> browser.getControl(name='country').value = "Italy"
+    >>> browser.getControl(name='area').value = "100.323"
+    >>> browser.getControl(name='gdp').value = "35.53"
+    >>> browser.getControl(name='population').value = "60"
+    >>> browser.getControl(name='name').value = "Giulia"
+    >>> browser.getControl(name='age').value = "46"
+    >>> browser.getControl("Save").click()
+    >>> browser.open(db_url + "/frmtest2")
+    >>> browser.getControl(name='country').value = "Spain"
+    >>> browser.getControl(name='area').value = "101.323"
+    >>> browser.getControl(name='gdp').value = "34.53"
+    >>> browser.getControl(name='population').value = "47"
+    >>> browser.getControl(name='name').value = "Antonio"
+    >>> browser.getControl(name='age').value = "21"
+    >>> browser.getControl("Save").click()
+
+Refresh db and recompute doc::
+
+    >>> browser.open(db_url + "/DatabaseDesign")
+    >>> browser.getControl(name="submit_refresh", index=0).click()
+    >>> "Re-indexing documents: 4 documents indexed successfully, 0 errors(s)" in browser.contents
+    True
+    >>> browser.getControl(name="submit_recompute").click()
+    >>> "Re-compute documents: 4 documents computed successfully, 0 errors(s)" in browser.contents
+    True
+    >>> browser.open(db_url + "/edit")
+    >>> browser.getControl(name='IndexInPortal:boolean').value = ["on"]
+    >>> browser.getControl(name='form.button.save').click()
+    >>> browser.open(db_url + "/DatabaseDesign")
+    >>> browser.getControl(name="submit_refreshcatalog").click()
+    >>> "4 documents re-cataloged" in browser.contents
+    True
+
+
+Export design::
+
+    >>> browser.open(db_url + "/DatabaseDesign")
+    >>> browser.getControl(name='targettype').value = ['file']
+    >>> browser.getControl("Export").click()
+
+Test internal remote API::
+
+    >>> browser.open(db_url + "/getViewsList")
+    >>> browser.contents
+    'allfrmtest/allfrmtest2'
+    >>> browser.open(db_url + "/getFormsList")
+    >>> browser.contents
+    'frmtest/frmtest2'
+    >>> browser.open(db_url + "/getAgentsList")
+    >>> browser.contents
+    ''
+    >>> browser.open(db_url + "/getResourcesList")
+    >>> browser.contents
+    ''
+
+Profiling::
+
+    >>> browser.open(db_url+"/set_profiling_level?level=form:fields:formulas")
+    >>> browser.open(db_url + "/plomino_documents/marie-curie/EditDocument")
+    >>> browser.getControl(name='age').value = "47"
+    >>> browser.getControl("Save").click()
+    >>> browser.open(db_url + "/profiling")
+    >>> "form_frmtest_title (1 times)" in browser.contents
+    True
+
+Replication::
+
+    >>> creation_url = "http://localhost:8080/PloneRemote/portal_factory/PlominoDatabase/remotereplica/base_edit?title=remotereplica&form.button.save=Save&form.submitted=1"
+    >>> remotereplica_url = "http://localhost:8080/PloneRemote/remotereplica"
+    >>> result = authenticateAndLoadURL(creation_url, 'admin', 'admin')
+    >>> sampledb_url = portal_url + "/sampledb"
+    >>> browser.open(sampledb_url + "/DatabaseDesign")
+    >>> browser.getControl(name='targettype').value = ['server']
+    >>> browser.getControl(name='targetURL').value = remotereplica_url
+    >>> browser.getControl(name='username', index=1).value = "admin"
+    >>> browser.getControl(name='password', index=1).value = "admin"
+    >>> browser.getControl(name="submit_export").click()
+    >>> browser.open(sampledb_url + "/manage_replications?actionType=add")
+    >>> browser.open(sampledb_url + "/manage_replications?replicationId=1&whoWins=localwins&mode=add&actionType=save&name=my-replication&remoteUrl=http%3A%2F%2Flocalhost%3A8080%2FPloneRemote%2Fremotereplica&username=admin&password=admin&repType=pushpull")
+    >>> browser.open(sampledb_url + "/manage_replications?actionType=replicate&selection=1")
+    >>> browser.open(portal_url + "/createObject?type_name=PlominoDatabase")
+    >>> browser.getControl('Title').value = 'localreplicadb'
+    >>> browser.getControl('Save').click()
+    >>> "The database is empty" in browser.contents
+    True
+    >>> localdb_url = portal_url + "/localreplicadb"
+    >>> browser.open(localdb_url + "/DatabaseDesign")
+    >>> browser.getControl(name='sourcetype').value = ['server']
+    >>> browser.getControl(name='sourceURL').value = "http://localhost:8080/PloneRemote/remotereplica"
+    >>> browser.getControl(name='username', index=0).value = "admin"
+    >>> browser.getControl(name='password', index=0).value = "admin"
+    >>> browser.getControl(name="submit_refresh_import").click()
+    >>> browser.getControl(name='sourcetype').value = ['server']
+    >>> browser.getControl(name="submit_import").click()
+    >>> "frmMovie" in browser.contents
+    True
+    >>> browser.open(localdb_url + "/manage_replications?actionType=add")
+    >>> browser.open(localdb_url + "/manage_replications?actionType=save&replicationId=1&whoWins=localwins&mode=add&name=my-replication&remoteUrl=http%3A%2F%2Flocalhost%3A8080%2FPloneRemote%2Fremotereplica&username=admin&password=admin&repType=pushpull")
+    >>> browser.open(localdb_url + "/manage_replications?actionType=replicate&selection=1")
+    >>> browser.open(localdb_url + "/allMovies")
+    >>> "Apocalypse now" in browser.contents
+    True
+
+Nuke the Plone used for testing::
+
+    >>> result = authenticateAndLoadURL("http://localhost:8080?ids:list=PloneRemote&manage_delObjects:method=Delete", 'admin', 'admin')

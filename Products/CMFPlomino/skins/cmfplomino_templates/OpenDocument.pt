@@ -69,7 +69,7 @@
             
 	 			<tal:block
 					tal:define="owner python:myF"
-					tal:condition= "python:test((b and  myF.ActionBarPosition=='BOTTOM'),False, True)"
+					tal:condition="python:b and myF.ActionBarPosition in ['TOP', 'BOTH']"
 					>
 		    		<span metal:use-macro="here/ActionBar/macros/ReadDocumentActionBar" >
 						display form actions
@@ -84,7 +84,7 @@
 
 				<tal:block
 					tal:define="owner python:myF"
-					tal:condition="python:test((b and  myF.ActionBarPosition!='TOP'),True, False)"
+					tal:condition="python:b and myF.ActionBarPosition in ['BOTTOM', 'BOTH']"
 					>
 		    		<span metal:use-macro="here/ActionBar/macros/ReadDocumentActionBar" >
 						display form actions
@@ -95,9 +95,6 @@
 		
         <div tal:replace="structure provider:plone.belowcontentbody" />
 
-		<tal:profiling tal:define="profiling python:here.is_profiling() and here.REQUEST.cookies.get('plomino_profiler')" tal:condition="profiling">
-			<tal:macro metal:use-macro="here/profiling/macros/durations">display durations</tal:macro>
-		</tal:profiling>
     </tal:main-macro>
 </metal:main>
 

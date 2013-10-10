@@ -1,8 +1,9 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en"
-    xmlns:tal="http://xml.zope.org/namespaces/tal"
-    xmlns:metal="http://xml.zope.org/namespaces/metal"
-    xmlns:i18n="http://xml.zope.org/namespaces/i18n" lang="en"
-    metal:use-macro="here/main_template/macros/master" i18n:domain="plone">
+      xmlns:tal="http://xml.zope.org/namespaces/tal"
+      xmlns:metal="http://xml.zope.org/namespaces/metal"
+      xmlns:i18n="http://xml.zope.org/namespaces/i18n" lang="en"
+      metal:use-macro="here/main_template/macros/master" i18n:domain="plone"
+    >
 <body>
 
 <metal:javascript_head fill-slot="javascript_head_slot">
@@ -23,17 +24,28 @@
     </tal:block_hasgooglevisualizationfield>
     <script 
         tal:condition="here/hasDynamicHidewhen"
-        type="text/javascript">
-        function refreshHidewhen() {
-            var onsuccess = function(data, textStatus, xhr) {
-                for (var hw in data)
-                    $('.hidewhen-' + hw).css('display', data[hw]?'none':'block');
-            }
-            $.post('computehidewhens', $('#plomino_form').serialize(), onsuccess, 'json');
-        }
-        $(document).ready( function() {
-            $('#plomino_form :input').change(refreshHidewhen);
-        });
+        tal:define="form python:here;
+                    form_method python:form.getFormMethod();
+                    "
+        type="text/javascript"
+        tal:content="string:
+function refreshHidewhen() {
+    var onsuccess = function(data, textStatus, xhr) {
+        for (var hw in data)
+            $$('.hidewhen-' + hw).css('display', data[hw]?'none':'block');
+    }
+    $$.ajax({
+        type: '${form_method}',
+        url: 'computehidewhens',
+        data: $$('#plomino_form').serialize(),
+        success: onsuccess,
+        dataType: 'json' 
+    });
+}
+$$(document).ready( function() {
+    $$('#plomino_form :input').change(refreshHidewhen);
+});
+">
     </script>
     <tal:block_hasjsresources 
         tal:define="jsresources python:here.getResourcesJS().splitlines()"
@@ -80,25 +92,30 @@
         metal:define-macro="main"
         define="kssClassesView context/@@kss_field_decorator_view;
                 getKssClasses nocall:kssClassesView/getKssClassesInlineEditable;
-                templateId template/getId;">
+                templateId template/getId;
+                form python:here;
+                form_method python:form.getFormMethod();
+                ">
         <tal:block_page
-            define="myF python:here;
-                    b myF/ActionBarPosition|nothing;
-                    searchform myF/isSearchForm|nothing;
-                    ispage myF/isPage|nothing;
-                    jsresources python:myF.getResourcesJS().splitlines()">
+        define="b form/ActionBarPosition|nothing;
+                searchform form/isSearchForm|nothing;
+                ispage form/isPage|nothing;">
 
             <tal:block_not_searchform_or_ispage 
                 condition="python:not(searchform or ispage)"
                 define="hasCreatePermissionOnDatabase python:test(here.hasCreatePermission(here.getParentDatabase()));
                         hasCreatePermissionOnForm python:test(here.hasCreatePermission(here));">
 
-                <form id="plomino_form"
+                <form tal:define="
+                            enctype python:(form_method == 'POST') and 'multipart/form-data'
+                            "
                     tal:attributes="
-                            name here/id;
-                            action string:${myF/absolute_url}/createDocument"
-                    method="POST"
-                    enctype="multipart/form-data">
+                            name form/id;
+                            action string:${form/absolute_url}/createDocument;
+                            method form_method;
+                            enctype enctype|nothing
+                            "
+                    id="plomino_form">
 
                     <tal:validation metal:use-macro="here/validation_messages/macros/messages">display form actions</tal:validation>
 
@@ -110,8 +127,8 @@
                     <tal:block_has_createpermission
                         condition="python:test(hasCreatePermissionOnDatabase and hasCreatePermissionOnForm)">
                         <div tal:replace="structure provider:plone.abovecontenttitle" />
-                        <tal:block_actionbar_top tal:define="owner python:myF"
-                            tal:condition="python:test(b and myF.ActionBarPosition=='TOP')">
+                        <tal:block_actionbar_top tal:define="owner python:form"
+                            tal:condition="python:b and form.ActionBarPosition in ['TOP', 'BOTH']">
                             <span metal:use-macro="here/ActionBar/macros/OpenFormActionBar">display form actions</span><br/>
                         </tal:block_actionbar_top>
                     </tal:block_has_createpermission>
@@ -138,8 +155,8 @@
                         </tal:childform>
                         <span tal:content="structure python:here.openBlankForm(request)" /> 
                         <tal:block_actionbar_bottom
-                            define="owner python:myF"
-                            condition="python:test(b and myF.ActionBarPosition=='BOTTOM')">
+                            define="owner python:form"
+                            condition="python:b and form.ActionBarPosition in ['BOTTOM', 'BOTH']">
                             <span metal:use-macro="here/ActionBar/macros/OpenFormActionBar">display form actions</span>
                         </tal:block_actionbar_bottom>
                     </tal:block_has_createpermission>
@@ -154,16 +171,23 @@
                 define="hasReadPermissionOnDatabase python:test(here.hasReadPermission(here.getParentDatabase()));
                         hasReadPermissionOnForm python:test(here.hasReadPermission(here));">
 
-                <form id="plomino_form"
-                    tal:attributes="name here/id"
-                    action="searchDocuments"
-                    method="POST">
+                <form 
+                    tal:define="
+                            enctype python:(form_method == 'POST') and 'multipart/form-data'
+                            "
+                    tal:attributes="
+                            name form/id;
+                            action string:${form/absolute_url}/searchDocuments;
+                            method form_method;
+                            enctype enctype|nothing
+                            "
+                    id="plomino_form">
                     <div tal:replace="structure provider:plone.abovecontenttitle" />
                     <tal:block_has_readpermission
                         condition="python:test(hasReadPermissionOnDatabase and hasReadPermissionOnForm)">
                         <tal:block_actionbar_top 
-                            define="owner python:myF"
-                            condition="python:test(b and myF.ActionBarPosition=='TOP')">
+                            define="owner python:form"
+                            condition="python:b and form.ActionBarPosition in ['TOP', 'BOTH']">
                             <span metal:use-macro="here/ActionBar/macros/SearchFormActionBar">display form actions</span><br/>
                         </tal:block_actionbar_top>
                     </tal:block_has_readpermission>
@@ -230,8 +254,8 @@
                         </tal:results>
 
                         <tal:block_actionbar_bottom 
-                            define="owner python:myF"
-                            condition="python:test(b and myF.ActionBarPosition=='BOTTOM')">
+                            define="owner python:form"
+                            condition="python:b and form.ActionBarPosition in ['BOTTOM', 'BOTH']">
                             <span metal:use-macro="here/ActionBar/macros/SearchFormActionBar">display form actions</span>
                         </tal:block_actionbar_bottom>
                     </tal:block_has_readpermission>
@@ -245,18 +269,21 @@
                 <h1 class="documentFirstHeading" tal:content="here/Title">Title</h1>
                 <div tal:replace="structure provider:plone.belowcontenttitle" />
                 <div tal:replace="structure provider:plone.abovecontentbody" />
-                <form id="plomino_form" tal:attributes="name here/id" method="POST">
+                <form tal:define="
+                            enctype python:(form_method == 'POST') and 'multipart/form-data'
+                            "
+                    tal:attributes="
+                            name form/id;
+                            method form_method;
+                            enctype enctype|nothing
+                            "
+                    id="plomino_form">
                     <span tal:content="structure python:here.openBlankForm(request)" />
                 </form>
                 <div tal:replace="structure provider:plone.belowcontentbody" />
             </tal:block_ispage>
 
         </tal:block_page>
-        <tal:profiling 
-            define="profiling python:here.is_profiling() and here.REQUEST.cookies.get('plomino_profiler')"
-            condition="profiling">
-            <tal:macro metal:use-macro="here/profiling/macros/durations">display durations</tal:macro>
-        </tal:profiling>
         
     </tal:main-macro>
 </metal:main>

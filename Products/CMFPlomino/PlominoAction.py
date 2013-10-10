@@ -20,6 +20,7 @@ import interfaces
 from Products.CMFDynamicViewFTI.browserdefault import BrowserDefaultMixin
 
 from Products.CMFPlomino.config import *
+from Products.CMFPlomino.browser import PlominoMessageFactory as _
 from exceptions import PlominoScriptException
 
 ##code-section module-header #fill in your manual code here
@@ -46,8 +47,8 @@ schema = Schema((
         widget=StringField._properties['widget'](
             label="Id",
             description="The action id",
-            label_msgid='CMFPlomino_label_action_id',
-            description_msgid='CMFPlomino_help_action_id',
+            label_msgid=_('CMFPlomino_label_action_id', default="Id"),
+            description_msgid=_('CMFPlomino_help_action_id', default="The action id"),
             i18n_domain='CMFPlomino',
         ),
     ),
@@ -56,8 +57,8 @@ schema = Schema((
         widget=SelectionWidget(
             label="Action type",
             description="Select the type for this action",
-            label_msgid='CMFPlomino_label_ActionType',
-            description_msgid='CMFPlomino_help_ActionType',
+            label_msgid=_('CMFPlomino_label_ActionType', default="Select the type for this action"),
+            description_msgid=_('CMFPlomino_help_ActionType', default='Select the type for this action'),
             i18n_domain='CMFPlomino',
         ),
         vocabulary=ACTION_TYPES,
@@ -67,8 +68,8 @@ schema = Schema((
         widget=SelectionWidget(
             label="Action display",
             description="How the action is shown",
-            label_msgid='CMFPlomino_label_ActionDisplay',
-            description_msgid='CMFPlomino_help_ActionDisplay',
+            label_msgid=_('CMFPlomino_label_ActionDisplay', default="Action display"),
+            description_msgid=_('CMFPlomino_help_ActionDisplay', default="How the action is shown"),
             i18n_domain='CMFPlomino',
         ),
         vocabulary=ACTION_DISPLAY,
@@ -78,8 +79,8 @@ schema = Schema((
         widget=TextAreaWidget(
             label="Parameter or code",
             description="Code or parameter depending on the action type",
-            label_msgid='CMFPlomino_label_ActionContent',
-            description_msgid='CMFPlomino_help_ActionContent',
+            label_msgid=_('CMFPlomino_label_ActionContent', default='Parameter or code'),
+            description_msgid=_('CMFPlomino_help_ActionContent', default='Code or parameter depending on the action type'),
             i18n_domain='CMFPlomino',
         ),
     ),
@@ -87,9 +88,9 @@ schema = Schema((
         name='Hidewhen',
         widget=TextAreaWidget(
             label="Hide-when formula",
-            description="Action is hidden if formula return True",
-            label_msgid='CMFPlomino_label_ActionHidewhen',
-            description_msgid='CMFPlomino_help_ActionHidewhen',
+            description="Action is hidden if formula returns True",
+            label_msgid=_('CMFPlomino_label_ActionHidewhen', default="Action is hidden if formula returns True"),
+            description_msgid=_('CMFPlomino_help_ActionHidewhen', default='Action is hidden if formula returns True'),
             i18n_domain='CMFPlomino',
         ),
     ),
@@ -99,8 +100,8 @@ schema = Schema((
         widget=BooleanField._properties['widget'](
             label="Display action in action bar",
             description="Display action in action bar (yes/no)",
-            label_msgid='CMFPlomino_label_ActionInActionBar',
-            description_msgid='CMFPlomino_help_ActionInActionBar',
+            label_msgid=_('CMFPlomino_label_ActionInActionBar', default='Display action in action bar (yes/no)'),
+            description_msgid=_('CMFPlomino_help_ActionInActionBar', default='Display action in action bar (yes/no)'),
             i18n_domain='CMFPlomino',
         ),
     ),
@@ -131,7 +132,28 @@ class PlominoAction(BaseContent, BrowserDefaultMixin):
     ##code-section class-header #fill in your manual code here
     ##/code-section class-header
 
-    # Methods
+    security.declarePublic('isHidden')
+    def isHidden(self, target, context):
+        """ Return True if an action is hidden for a target and context.
+
+        Target may be view/page/document.
+        """
+        if self.Hidewhen:
+            try:
+                result = self.runFormulaScript(
+                        'action_%s_%s_hidewhen' % (context.id, self.id),
+                        target,
+                        self.Hidewhen,
+                        True,
+                        context.id)
+            except PlominoScriptException, e:
+                e.reportError(
+                        '"%s" self hide-when failed' % self.Title())
+                # if error, we hide anyway
+                result = True
+            return result
+        else:
+            return False
 
     security.declareProtected(READ_PERMISSION, 'executeAction')
     def executeAction(self, target, form_id):

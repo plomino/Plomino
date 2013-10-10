@@ -9,13 +9,13 @@ from plone.app.portlets.portlets import base
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 
 # Plomino
-from Products.CMFPlomino.browser import PloneMessageFactory as _
+from Products.CMFPlomino.browser import PlominoMessageFactory as _
 from Products.CMFPlomino.PlominoUtils import PlominoTranslate
 
 
 class IPortlet(Interface):
     display_tree = schema.Choice(
-            title=_(u"Display design tree"),
+            title=_("Display design tree"),
             description=_(u"Embed the full design tree in the portlet."),
             vocabulary=schema.vocabulary.SimpleVocabulary.fromItems(
                 [('Yes', True), ('No', False)]),
@@ -25,7 +25,7 @@ class IPortlet(Interface):
 class Assignment(base.Assignment):
     implements(IPortlet)
 
-    title = u'Plomino design portlet'
+    title = _('Plomino design portlet')
     display_tree = True
 
     def __init__(self, display_tree=True):
@@ -107,7 +107,7 @@ class ElementPortletAssignment(base.Assignment):
     """
     implements(IElementPortlet)
 
-    title = u'Plomino Element Display'
+    title = _(u'Plomino Element Display')
     header = u""
     db_path = ""
     element_id = ""
@@ -176,8 +176,9 @@ class ElementPortletRenderer(base.Renderer):
 
     @property
     def header(self):
-        """Get the portlet header
-        (translated if db i18n domain if defined)
+        """ Get the portlet header
+
+        (translated if db i18n domain is defined)
         """
         header = self.data.header
 
@@ -187,6 +188,8 @@ class ElementPortletRenderer(base.Renderer):
         i18n_domain = db.getI18n()
         if i18n_domain:
             header = PlominoTranslate(header, db, domain=i18n_domain)
+        # TODO: why not the following?
+        # header = translate(db, header)
         return header
 
 class ElementPortletAddForm(base.AddForm):

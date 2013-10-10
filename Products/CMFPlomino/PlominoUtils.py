@@ -20,6 +20,7 @@ from types import StringTypes
 import cgi
 import csv
 import decimal as std_decimal
+
 import Globals
 import htmlentitydefs
 import Missing
@@ -31,13 +32,20 @@ from jsonutil import jsonutil as json
 
 # Zope
 from AccessControl import ClassSecurityInfo
-from AccessControl.class_init import InitializeClass
+from AccessControl.unauthorized import Unauthorized
+try:
+    from AccessControl.class_init import InitializeClass
+except ImportError:
+    from App.class_init import InitializeClass
+
 from Acquisition import Implicit
 from DateTime import DateTime
+from zope import component
 
 # Plone
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import normalizeString as utils_normalizeString
+from .interfaces import IPlominoSafeDomains
 
 try:
     from plone.app.upgrade import v40
@@ -69,22 +77,32 @@ def Log(message, summary='', severity='info', exc_info=False):
         exc_info=exc_info
     )
 
+def DateToString(d, format=None, db=None):
+    """ Return the date as string using the given format.
 
-def DateToString(d, format='%Y-%m-%d'):
-    """ Return the date as string using the given format
+    Pass in database object to use default format.
     """
-    # XXX: Should use db.getDateTimeFormat
+    if not format:
+        if db:
+            format = db.getDateTimeFormat()
+        if not format:
+            format = '%Y-%m-%d'
     return d.strftime(format)
 
 
-def StringToDate(str_d, format='%Y-%m-%d'):
-    """ Parse the string using the given format and return the date
+def StringToDate(str_d, format='%Y-%m-%d', db=None):
+    """ Parse the string using the given format and return the date.
+
+    With StringToDate, it's best to have a fixed default format,
+    as it is easier for formulas to control the input date string than the
+    portal date format.
+
+    Pass `format=None` to allow StringToDate to guess.
     """
     try:
-        if format:
-            dt = datetime.strptime(str_d, format)
-        else:
-            dt = parse(str_d)
+        if db:
+            format = db.getDateTimeFormat()
+        dt = datetime.strptime(str_d, format)
     except ValueError, e:
         # XXX: Just let DateTime guess.
         dt = parse(DateTime(str_d).ISO())
@@ -93,7 +111,8 @@ def StringToDate(str_d, format='%Y-%m-%d'):
             format,
             repr(e),
             repr(dt)))
-    return DateTime(dt.isoformat())
+    as_tuple = dt.timetuple()
+    return DateTime(*as_tuple[:6])
 
 
 def DateRange(d1, d2):
@@ -195,7 +214,7 @@ def PlominoTranslate(msgid, context, domain='CMFPlomino'):
         try:
             msgid = msgid[0]
         except (TypeError, IndexError):
-            logging.exception("Can't translate: %s" % msgid, exc_info=True)
+            logging.exception("Couldn't subscript msgid: %s" % msgid, exc_info=True)
             pass
     if HAS_PLONE40:
         msg = translation_service.utranslate(
@@ -254,9 +273,11 @@ def normalizeString(text, context=None, encoding=None):
 
 def asList(x):
     """ If not list, return x in a single-element list.
-    .. note:: This will wrap falsy values like ``None`` or ``''`` in a list.
+
+    .. note:: This will wrap falsy values like ``None`` or ``''`` in a list,
+              making them truthy.
     """
-    if isinstance(x, list):
+    if isinstance(x, (list, tuple)):
         return x
     return [x]
 
@@ -305,13 +326,24 @@ def array_to_csv(array, delimiter='\t', quotechar='"'):
 
 
 def open_url(url, asFile=False):
-    """ Retrieve content from ``url``.
+    """ retrieve content from url
     """
-    f = urllib.urlopen(url)
-    if asFile:
-        return f.fp
+    safe_domains = []
+    for safedomains_utils in component.getUtilitiesFor(IPlominoSafeDomains):
+        safe_domains += safedomains_utils[1].domains
+    is_safe = False
+    for domain in safe_domains:
+        if url.startswith(domain):
+            is_safe = True
+            break
+    if is_safe:
+        f=urllib.urlopen(url)
+        if asFile:
+            return f.fp
+        else:
+            return f.read()
     else:
-        return f.read()
+        raise Unauthorized(url)
 
 
 def MissingValue():
@@ -411,8 +443,20 @@ def is_email(email):
 
 
 def translate(context, content, i18n_domain=None):
+    """ Translate content, if possible. 
+    """
+    # TODO: translate non-string content? Like dates?
+    if not isinstance(content, basestring):
+        return content
+
+    request = getattr(context, 'REQUEST', None)
+    if request and request.get("translation")=="off":
+        return content
+
     if not i18n_domain:
-        i18n_domain = context.getParentDatabase().getI18n()
+        db = context.getParentDatabase()
+        i18n_domain = db.getI18n()
+
     def translate_token(match):
         translation = PlominoTranslate(
                 match.group(1),
@@ -421,6 +465,7 @@ def translate(context, content, i18n_domain=None):
                 )
         translation = asUnicode(translation)
         return translation
+
     content = re.sub(
             "__(?P<token>.+?)__",
             translate_token,

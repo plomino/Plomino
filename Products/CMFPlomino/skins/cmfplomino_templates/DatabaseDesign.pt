@@ -23,12 +23,20 @@
         
         <tal:permission tal:define="dummy here/checkDesignPermission"/>
         
+        <tal:autocomplete>
+            <input type="text" id="autocomplete_database_design"/>
+            <script>
+            $(document).ready(function() {
+                databaseDesign_filtering();
+            });
+            </script>
+        </tal:autocomplete>
         <div><span i18n:translate="">Plomino database version</span>: <tal:version tal:content="python:getattr(here,'plomino_version', 'before 1.3.0')">version</tal:version></div>
-        <dl class="collapsible inline collapsedOnLoad">
+        <dl class="collapsible inline collapsedOnLoad partTree">
         <dt class="collapsibleHeader" i18n:translate="">Forms</dt>
         <dd class="collapsibleContent">
             <tal:block tal:repeat="form python:here.getForms()">
-            <div>
+            <div class="expandable">
             <dl class="collapsible inline collapsedOnLoad">
                 <dt class="collapsibleHeader">
                     <tal:block tal:content="form/id">form id</tal:block>
@@ -42,7 +50,8 @@
 	                        <tal:fieldsforms tal:repeat="field python:form.getFormFields()">
 	                        <ul>
 	                            <li>
-	                            <tal:block tal:content="field/id">Field name</tal:block> (<tal:block tal:content="python:field.getFieldType().title()">Field type</tal:block>)
+	                            <span class="field" tal:content="field/id">Field name</span>
+                                (<tal:block tal:content="python:field.getFieldType().title()">Field type</tal:block> <span><i><tal:block tal:content="field/FieldMode">Field type</tal:block></i></span>)
 	                            <a href="" tal:attributes="href python:field.absolute_url_path()+'/base_edit'"><img tal:attributes="src string:${here/portal_url}/edit.png" /></a>
 	                            <a href="" tal:attributes="href python:field.absolute_url_path()+'/'+field.getFieldType().lower()+'settings'"><img tal:attributes="src string:${here/portal_url}/document_icon.png" /></a>
 	                            </li>
@@ -62,7 +71,7 @@
 	                    <li>
                             <span i18n:translate="">Actions</span> : 
 	                        <ul>
-	                            <tal:actionsforms tal:repeat="action_tuple python:form.getActions(None, False, form.id)">
+	                            <tal:actionsforms tal:repeat="action_tuple python:form.getActions(None, False)">
 	                                <li tal:define="action python:action_tuple[0]">
 	                                <tal:block tal:content="action/id">action name</tal:block>
 	                                <a href="" tal:attributes="href python:action.absolute_url()+'/base_edit'"><img tal:attributes="src string:${here/portal_url}/edit.png" /></a>
@@ -83,11 +92,11 @@
                 </dd></dl></div>
             </tal:block>
 </dd></dl><br/>
-      <dl class="collapsible inline collapsedOnLoad">
+      <dl class="collapsible inline collapsedOnLoad partTree">
         <dt class="collapsibleHeader" i18n:translate="">Views</dt>
         <dd class="collapsibleContent">
             <tal:blockviews tal:repeat="view python:here.getViews()">
-            <div><dl class="collapsible inline collapsedOnLoad">
+            <div class="expandable"><dl class="collapsible inline collapsedOnLoad">
                 <dt class="collapsibleHeader">
                     <tal:block tal:content="view/id">view name</tal:block>
                     <a tal:attributes="href python:view.absolute_url_path()+'/base_edit'"><img tal:attributes="src string:${here/portal_url}/edit.png" /></a>
@@ -114,7 +123,7 @@
                                     <span i18n:translate="">Actions</span> : 
                                 </li>
                                 <ul>
-                                    <tal:actionsviews tal:repeat="action_tuple python:view.getActions(None, False, view.id)">
+                                    <tal:actionsviews tal:repeat="action_tuple python:view.getActions(None, False)">
                                         <li tal:define="action python:action_tuple[0]">
                                         <tal:block tal:content="action/id">action name</tal:block>
                                         <a href="" tal:attributes="href python:action.absolute_url()+'/base_edit'"><img tal:attributes="src string:${here/portal_url}/edit.png" /></a>
@@ -128,10 +137,10 @@
             </dl></div>
             </tal:blockviews>
 </dd></dl><br/>
-<dl class="collapsible inline collapsedOnLoad">
+<dl class="collapsible inline collapsedOnLoad partTree">
         <dt class="collapsibleHeader" i18n:translate="">Agents</dt>
         <dd class="collapsibleContent">
-            <ul>
+            <ul class="agents">
             <tal:blockagents tal:repeat="agent python:here.getAgents()">
             <li>
                 <tal:block tal:content="agent/id">agent name</tal:block>
@@ -163,6 +172,17 @@
   </li>
 </ul>
 <hr/><h3 i18n:translate="">Import/Export design</h3>
+<form name="ImportTemplate" action="importTemplate" method="POST">
+    <label for="template">Import a template</label>
+    <select name="template_id">
+        <option value="">== Templates ==</option>
+        <tal:block tal:repeat="f python:here.getTemplateList()">
+            <option tal:attributes="value f;"
+                tal:content="python:f">value</option>
+        </tal:block>
+    </select>
+    <input type="submit" value="Import template"/>
+</form><br/>
 <table>
 <tr><th i18n:translate="">Import</th><th i18n:translate="">Export</th></tr>
 <tr><td valign="top">
@@ -176,7 +196,7 @@
                 <td colspan="2"><label for="sourcetype-file" i18n:translate="">From file</label></td>
             </tr>
             <tr><td></td>
-                <td i18n:translate="">Plomino XML file</td>
+                <td i18n:translate="">Plomino XML file or in zip file</td>
                 <td><input type="file" name="sourceFile" /></td>
             </tr>
             <tr>
@@ -193,17 +213,19 @@
             </tr>
             <tr><td></td>
                 <td i18n:translate="">Source URL</td>
-                <td><input type="text" name="sourceURL" 
+                <td><input type="text" name="sourceURL" id="sourceurl-import"
                     tal:attributes="value sourceURL"
                     /></td>
             </tr>
             <tr><td></td>
                 <td i18n:translate="">Username</td>
-                <td><input type="text" name="username" tal:attributes="value username"/></td>
+                <td><input type="text" name="username" id="username-import"
+                    tal:attributes="value username"/></td>
             </tr>
             <tr><td></td>
                 <td i18n:translate="">Password</td>
-                <td><input type="password" name="password" tal:attributes="value password"/></td>
+                <td><input type="password" name="password" id="password-import"
+                    tal:attributes="value password"/></td>
             </tr>
             <tr><td></td>
                 <td><label for="import-entire" i18n:translate="">Entire design</label></td>
@@ -236,7 +258,7 @@
                         </tal:block>
                     </tal:block>
                 </select>
-                <input type="submit" name="submit_refresh" class="context" value="Refresh" i18n:attributes="value"/>
+                <input type="submit" name="submit_refresh_import" class="context" value="Refresh" i18n:attributes="value"/>
                 </td>
             </tr>
             <tr><td colspan="3">
@@ -257,11 +279,15 @@
     <form name="ExportDesign" action="exportDesign" method="POST">
         <table>
             <tr>
-            <td><input type="radio" name="targettype" value="file" id="targettype-file" checked="checked"/></td>
+                <td><input type="radio" name="targettype" value="file" id="targettype-file" checked="checked"/></td>
                 <td colspan="2"><label for="targettype-file" i18n:translate="">To XML file</label></td>
             </tr>
             <tr>
-            <td><input type="radio" name="targettype" value="folder" id="targettype-folder"/></td>
+                <td><input type="radio" name="targettype" value="zipfile" id="targettype-zipfile"/></td>
+                <td colspan="2"><label for="targettype-zipfile" i18n:translate="">To ZIP file</label></td>
+            </tr>
+            <tr>
+                <td><input type="radio" name="targettype" value="folder" id="targettype-folder"/></td>
                 <td colspan="2"><label for="targettype-folder" i18n:translate="">To server folder</label></td>
             </tr>
             <tr><td></td>
@@ -269,7 +295,7 @@
                 <td><input type="text" name="targetfolder" value="/tmp"/></td>
             </tr>
             <tr>
-            <td><input type="radio" name="targettype" value="server" id="targettype-server"/></td>
+                <td><input type="radio" name="targettype" value="server" id="targettype-server"/></td>
                 <td colspan="2"><label for="targettype-server" i18n:translate="">To remote server</label></td>
             </tr>
             <tr><td></td>

@@ -1,0 +1,33 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en"
+      xmlns:tal="http://xml.zope.org/namespaces/tal"
+      xmlns:metal="http://xml.zope.org/namespaces/metal"
+      xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+      i18n:domain="plone">
+<script tal:define="callback python:here.REQUEST.get('callback', '');
+                    redirect python:here.REQUEST.get('redirect', here.doc_url());
+                    method python:here.REQUEST.get('method', 'GET');"
+tal:content='string:var callback="$callback"; var redirect="$redirect"; var method="$method"; '/>
+<script>
+// the following is from JavaScript: The Definitive Guide
+if (window.XMLHttpRequest === undefined) {
+  window.XMLHttpRequest = function() {
+    try {
+      return new ActiveXObject("Microsoft.XMLHTTP.6.0");
+    }
+    catch  (e1) {
+      try {
+        return new ActiveXObject("Microsoft.XMLHTTP.3.0");
+      }
+      catch (e2) {
+        throw new Error("XMLHttpRequest is not supported");
+      }
+    }
+  };
+}
+var xhr = new XMLHttpRequest();
+xhr.open(method, callback, true);
+xhr.send();
+
+location.href=redirect;
+</script>
+</html>

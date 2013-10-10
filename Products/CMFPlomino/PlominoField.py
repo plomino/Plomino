@@ -25,6 +25,7 @@ from Products.CMFPlomino.config import *
 from PlominoDocument import TemporaryDocument
 
 from Products.CMFPlomino.PlominoUtils import StringToDate
+from Products.CMFPlomino.browser import PlominoMessageFactory as _
 from fields.selection import ISelectionField
 from fields.text import ITextField
 from fields.datetime import IDatetimeField
@@ -45,8 +46,8 @@ schema = Schema((
         widget=StringField._properties['widget'](
             label="Id",
             description="The field id",
-            label_msgid='CMFPlomino_label_field_id',
-            description_msgid='CMFPlomino_help_field_id',
+            label_msgid=_('CMFPlomino_label_field_id', default="Id"),
+            description_msgid=_('CMFPlomino_help_field_id', default="The field id"),
             i18n_domain='CMFPlomino',
         ),
     ),
@@ -56,8 +57,8 @@ schema = Schema((
         widget=SelectionWidget(
             label="Field type",
             description="The kind of this field",
-            label_msgid='CMFPlomino_label_FieldType',
-            description_msgid='CMFPlomino_help_FieldType',
+            label_msgid=_('CMFPlomino_label_FieldType', default="Field type"),
+            description_msgid=_('CMFPlomino_help_FieldType', default='The kind of this field'),
             i18n_domain='CMFPlomino',
         ),
         vocabulary='type_vocabulary',
@@ -68,8 +69,8 @@ schema = Schema((
         widget=SelectionWidget(
             label="Field mode",
             description="How content will be generated",
-            label_msgid='CMFPlomino_label_FieldMode',
-            description_msgid='CMFPlomino_help_FieldMode',
+            label_msgid=_('CMFPlomino_label_FieldMode', default="Field mode"),
+            description_msgid=_('CMFPlomino_help_FieldMode', default='How content will be generated'),
             i18n_domain='CMFPlomino',
         ),
         vocabulary= FIELD_MODES,
@@ -79,8 +80,8 @@ schema = Schema((
         widget=TextAreaWidget(
             label="Formula",
             description="How to calculate field content",
-            label_msgid='CMFPlomino_label_FieldFormula',
-            description_msgid='CMFPlomino_help_FieldFormula',
+            label_msgid=_('CMFPlomino_label_FieldFormula', default="Formula"),
+            description_msgid=_('CMFPlomino_help_FieldFormula', default='How to calculate field content'),
             i18n_domain='CMFPlomino',
             rows=10,
         ),
@@ -90,8 +91,8 @@ schema = Schema((
         widget=StringField._properties['widget'](
             label="Field read template",
             description="Custom rendering template in read mode",
-            label_msgid='CMFPlomino_label_FieldReadTemplate',
-            description_msgid='CMFPlomino_help_FieldReadTemplate',
+            label_msgid=_('CMFPlomino_label_FieldReadTemplate', default="Field read template"),
+            description_msgid=_('CMFPlomino_help_FieldReadTemplate', default='Custom rendering template in read mode'),
             i18n_domain='CMFPlomino',
         ),
     ),
@@ -100,8 +101,8 @@ schema = Schema((
         widget=StringField._properties['widget'](
             label="Field edit template",
             description="Custom rendering template in edit mode",
-            label_msgid='CMFPlomino_label_FieldEditTemplate',
-            description_msgid='CMFPlomino_help_FieldEditTemplate',
+            label_msgid=_('CMFPlomino_label_FieldEditTemplate', default="Field edit template"),
+            description_msgid=_('CMFPlomino_help_FieldEditTemplate', default='Custom rendering template in edit mode'),
             i18n_domain='CMFPlomino',
         ),
     ),
@@ -112,8 +113,8 @@ schema = Schema((
         widget=BooleanField._properties['widget'](
             label="Mandatory",
             description="Is this field mandatory? (empty value will not be allowed)",
-            label_msgid='CMFPlomino_label_FieldMandatory',
-            description_msgid='CMFPlomino_help_FieldMandatory',
+            label_msgid=_('CMFPlomino_label_FieldMandatory', default="Mandatory"),
+            description_msgid=_('CMFPlomino_help_FieldMandatory', default='Is this field mandatory? (empty value will not be allowed)'),
             i18n_domain='CMFPlomino',
         ),
     ),
@@ -122,8 +123,8 @@ schema = Schema((
         widget=TextAreaWidget(
             label="Validation formula",
             description="Evaluate the input validation",
-            label_msgid='CMFPlomino_label_FieldValidation',
-            description_msgid='CMFPlomino_help_FieldValidation',
+            label_msgid=_('CMFPlomino_label_FieldValidation', default="Validation formula"),
+            description_msgid=_('CMFPlomino_help_FieldValidation', default='Evaluate the input validation'),
             i18n_domain='CMFPlomino',
         ),
     ),
@@ -133,8 +134,8 @@ schema = Schema((
         widget=BooleanField._properties['widget'](
             label="Add to index",
             description="The field will be searchable",
-            label_msgid='CMFPlomino_label_FieldIndex',
-            description_msgid='CMFPlomino_help_FieldIndex',
+            label_msgid=_('CMFPlomino_label_FieldIndex', default="Add to index"),
+            description_msgid=_('CMFPlomino_help_FieldIndex', default='The field will be searchable'),
             i18n_domain='CMFPlomino',
         ),
     ),
@@ -144,11 +145,21 @@ schema = Schema((
         widget=SelectionWidget(
             label="Index type",
             description="The way the field values will be indexed",
-            label_msgid='CMFPlomino_label_FieldIndexType',
-            description_msgid='CMFPlomino_help_FieldIndexType',
+            label_msgid=_('CMFPlomino_label_FieldIndexType'),
+            description_msgid=_('CMFPlomino_help_FieldIndexType', default='The way the field values will be indexed'),
             i18n_domain='CMFPlomino',
         ),
         vocabulary='index_vocabulary',
+    ),
+    TextField(
+        name='HTMLAttributesFormula',
+        widget=TextAreaWidget(
+            label="HTML attributes formula",
+            description="Inject DOM attributes in the field tag",
+            label_msgid=_('CMFPlomino_label_HTMLAttributesFormula', default="HTML attributes formula"),
+            description_msgid=_('CMFPlomino_help_HTMLAttributesFormula', default='Inject DOM attributes in the field tag'),
+            i18n_domain='CMFPlomino',
+        ),
     ),
 ),
 )
@@ -208,6 +219,7 @@ class PlominoField(BaseContent, BrowserDefaultMixin):
             try:
                 v = adapt.processInput(submittedValue)
             except Exception, e:
+                # TODO: Log exception
                 if validation_mode:
                     # when validating, submitted values are potentially bad
                     # but it must not break getHideWhens, getFormFields, etc.
@@ -261,12 +273,34 @@ class PlominoField(BaseContent, BrowserDefaultMixin):
         selection = self.getSettings().getSelectionList(target)
 
         try:
-            return pt(fieldname=fieldname,
-                    fieldvalue=fieldvalue,
-                    selection=selection,
-                    field=self,
-                    doc=target
-                    )
+            html = pt(fieldname=fieldname,
+                fieldvalue=fieldvalue,
+                selection=selection,
+                field=self,
+                doc=target
+            )
+
+            injection_zone = 'id="%s"' % self.id
+            if (injection_zone in html
+                and hasattr(self, 'HTMLAttributesFormula')
+                and self.HTMLAttributesFormula
+            ):
+                injection_position = html.index(injection_zone)
+                html_attributes = self.runFormulaScript(
+                    'field_%s_%s_attributes' % (
+                        self.getParentNode().id,
+                        self.id,
+                    ),
+                    target,
+                    self.HTMLAttributesFormula
+                )
+                html = ' '.join([
+                    html[:injection_position],
+                    html_attributes,
+                    html[injection_position:],
+                ])
+            return html
+
         except Exception, e:
             self.traceRenderingErr(e, self)
             return ""

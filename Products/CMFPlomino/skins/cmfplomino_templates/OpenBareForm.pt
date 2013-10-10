@@ -3,26 +3,41 @@
       xmlns:metal="http://xml.zope.org/namespaces/metal"
       xmlns:i18n="http://xml.zope.org/namespaces/i18n"
       lang="en"
-      i18n:domain="plone">
+      i18n:domain="plone"
+      tal:define="form python:here;
+                  form_method python:form.getFormMethod();
+                  "
+      >
 <head tal:define="view context/@@plone;
                   ajax_load request/ajax_load | nothing;
                   ajax_include_head request/ajax_include_head | nothing;
-                  myF python:here.getForm();"
+                  "
       tal:condition="python: not ajax_load or ajax_include_head">
     <div tal:replace="structure provider:plone.resourceregistries.styles" />
     <div tal:replace="structure provider:plone.resourceregistries.scripts" />
-    <script type="text/javascript" tal:condition="here/hasDynamicHidewhen">
-        function refreshHidewhen() {
-            var onsuccess = function(data, textStatus, xhr) {
-                for (var hw in data)
-                    $('.hidewhen-' + hw).css('display', data[hw]?'none':'block');
-            }
-            $.post('computehidewhens', $('#plomino_form').serialize(), onsuccess, 'json');
-        }
-        $(document).ready( function() {
-            $('#plomino_form :input').change(refreshHidewhen);
-        });
+    <script type="text/javascript" tal:condition="here/hasDynamicHidewhen" 
+        tal:content="string:
+function refreshHidewhen() {
+    var onsuccess = function(data, textStatus, xhr) {
+        for (var hw in data)
+            $$('.hidewhen-' + hw).css('display', data[hw]?'none':'block');
+    }
+    $$.ajax({
+        type: '${form_method}',
+        url: 'computehidewhens',
+        data: $$('#plomino_form').serialize(),
+        success: onsuccess,
+        dataType: 'json' 
+    });
+}
+$$(document).ready( function() {
+    $$('#plomino_form :input').change(refreshHidewhen);
+});
+    ">
     </script>
+    <tal:has_googleviz condition="python:here.getForm().hasGoogleVisualizationField()">
+        <script type='text/javascript' src='http://www.google.com/jsapi'></script>
+    </tal:has_googleviz>
     <tal:block tal:condition="python:here.hasDateTimeField()">
         <script type="text/javascript" charset="iso-8859-1"
             tal:attributes="src string:${here/portal_url}/jscalendar/calendar_stripped.js">
@@ -33,7 +48,7 @@
       <link rel="stylesheet" type="text/css" media="all" tal:attributes="href string:${here/portal_url}/jscalendar/calendar-system.css" />
     </tal:block>
     <tal:block_hasjsresources 
-        tal:define="jsresources python:myF.getResourcesJS().splitlines();"
+        tal:define="jsresources python:form.getResourcesJS().splitlines();"
         tal:condition="jsresources"
         tal:repeat="js jsresources">
         <script
@@ -43,7 +58,7 @@
         </script>
     </tal:block_hasjsresources>
     <tal:block_hascssresources
-            tal:define="cssresources python:myF.getResourcesCSS().splitlines()"
+            tal:define="cssresources python:form.getResourcesCSS().splitlines()"
             tal:condition="cssresources"
             tal:repeat="css cssresources">
             <link rel="stylesheet"
@@ -56,10 +71,9 @@
 <body class="OpenBareForm">
     <div id="content"
         tal:define="
-                myF python:here;
-                b myF/ActionBarPosition|nothing;
-                searchform myF/isSearchForm|nothing;
-                ispage myF/isPage|nothing;">
+                b form/ActionBarPosition|nothing;
+                searchform form/isSearchForm|nothing;
+                ispage form/isPage|nothing;">
 
         <tal:block_not_searchform_or_ispage
             condition="python:not(searchform or ispage)"
@@ -68,12 +82,17 @@
                     can_open_form python:(hasCreatePermissionOnDatabase and hasCreatePermissionOnForm) or here.REQUEST.get('Plomino_Parent_Field', None)
                     "> 
 
-            <form id="plomino_form"
+            <form 
+                tal:define="
+                        enctype python:(form_method == 'POST') and 'multipart/form-data'
+                        "
                 tal:attributes="
-                        name here/id;
-                        action string:${myF/absolute_url}/createDocument"
-                method="POST"
-                enctype="multipart/form-data">
+                        name form/id;
+                        action string:${form/absolute_url}/createDocument;
+                        method form_method;
+                        enctype enctype|nothing
+                        "
+                id="plomino_form">
 
                 <tal:comment replace="nothing"> <!-- 
                 ==================================================
@@ -90,8 +109,8 @@
                 ================================================== --> </tal:comment>
                 <tal:block_can_open_form condition="can_open_form">
                     <tal:block_actionbar_top
-                        define="owner python:myF"
-                        condition="python:test(b and myF.ActionBarPosition=='TOP')">
+                        define="owner python:form"
+                        condition="python:b and form.ActionBarPosition in ['TOP', 'BOTH']">
                         <span metal:use-macro="here/ActionBar/macros/OpenFormActionBar">display form actions</span><br/>
                     </tal:block_actionbar_top>
                 </tal:block_can_open_form>
@@ -119,8 +138,8 @@
                     </tal:block_childform>
                     <span tal:content="structure python:here.openBlankForm(request)" />
                     <tal:block_actionbar_bottom
-                        define="owner python:myF"
-                        condition="python:test(b and myF.ActionBarPosition=='BOTTOM')">
+                        define="owner python:form"
+                        condition="python:b and form.ActionBarPosition in ['BOTTOM', 'BOTH']">
                         <span metal:use-macro="here/ActionBar/macros/OpenFormActionBar">display form actions</span>
                      </tal:block_actionbar_bottom>
                 </tal:block_can_open_form>
@@ -133,10 +152,17 @@
             define="hasReadPermissionOnDatabase python:test(here.hasReadPermission(here.getParentDatabase()));
                     hasReadPermissionOnForm python:test(here.hasReadPermission(here));">
 
-            <form id="plomino_form"
-                tal:attributes="name here/id"
-                action="searchDocuments"
-                method="POST">
+            <form 
+                tal:define="
+                        enctype python:(form_method == 'POST') and 'multipart/form-data'
+                        "
+                tal:attributes="
+                        name form/id;
+                        action string:${form/absolute_url}/searchDocuments;
+                        method form_method;
+                        enctype enctype|nothing
+                        "
+                id="plomino_form">
 
                 <tal:comment replace="nothing"> <!-- 
                 ==================================================
@@ -155,8 +181,8 @@
                     condition="python:test(hasReadPermissionOnDatabase and hasReadPermissionOnForm)">
 
                     <tal:block_actionbar_top
-                        define="owner python:myF"
-                        condition="python:test(b and myF.ActionBarPosition=='TOP')">
+                        define="owner python:form"
+                        condition="python:b and form.ActionBarPosition in ['TOP', 'BOTH']">
                         <span metal:use-macro="here/ActionBar/macros/SearchFormActionBar">display form actions</span><br/>
                     </tal:block_actionbar_top>
 
@@ -212,8 +238,8 @@
                             </tal:block_result_rows>
                         </table>
                     </tal:block_results>
-                    <tal:block_actionbar_bottom define="owner python:myF"
-                        condition="python:test(b and myF.ActionBarPosition=='BOTTOM')">
+                    <tal:block_actionbar_bottom define="owner python:form"
+                        condition="python:b and form.ActionBarPosition in ['BOTTOM', 'BOTH']">
                         <span metal:use-macro="here/ActionBar/macros/SearchFormActionBar">display form actions</span>
                     </tal:block_actionbar_bottom>
                 </tal:block_has_readpermission>
@@ -224,8 +250,16 @@
         <tal:block_ispage condition="python:ispage">
             <h1 class="documentFirstHeading"
                 tal:content="here/Title">Title</h1>
-            <form id="plomino_form"
-                tal:attributes="name here/id">
+            <form 
+                tal:define="
+                        enctype python:(form_method == 'POST') and 'multipart/form-data'
+                        "
+                tal:attributes="
+                        name form/id;
+                        method form_method;
+                        enctype enctype|nothing
+                        "
+                id="plomino_form">
                 <span tal:content="structure python:here.openBlankForm(request)" />
             </form>
         </tal:block_ispage>

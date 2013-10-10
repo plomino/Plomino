@@ -1,0 +1,5 @@
+
+Products.TinyMCE = 1.2.13
+plone.app.testing=4.2.2
+collective.js.jqueryui=1.8.16.9
+# This file is used by .travis.yml

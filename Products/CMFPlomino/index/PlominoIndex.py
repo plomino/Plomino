@@ -168,19 +168,20 @@ class PlominoIndex(UniqueObject, CatalogTool):
             self.refreshCatalog()
             self.getParentDatabase().setStatus("Ready")
 
-    security.declareProtected(READ_PERMISSION, 'dbsearch')
+    security.declarePublic('dbsearch')
     def dbsearch(self, request, sortindex=None, reverse=0,
             only_allowed=True, limit=None):
         """
         """
-        user_groups_roles = ['Anonymous', '*']
-        user_id = self.getCurrentMember().getUserName()
-        if user_id != "Anonymous User":
-            user_groups_roles += (
-                    [user_id] + 
-                    self.getCurrentUserGroups() + 
-                    self.getCurrentUserRoles())
-        request['getPlominoReaders'] = user_groups_roles
+        if only_allowed:
+            user_groups_roles = ['Anonymous', '*']
+            user_id = self.getCurrentMember().getUserName()
+            if user_id != "Anonymous User":
+                user_groups_roles += (
+                        [user_id] + 
+                        self.getCurrentUserGroups() + 
+                        self.getCurrentUserRoles())
+            request['getPlominoReaders'] = user_groups_roles
         try:
             results = self.search(request, sortindex, reverse, limit)
         except AttributeError:
@@ -211,6 +212,8 @@ class PlominoIndex(UniqueObject, CatalogTool):
         if hasattr(doc.getItem(field), 'keys'):
             # `files` will always be a dictionary with a single key.
             files = doc.getItem(field)
+            if not files:
+                return ''
             filename = files.keys()[0]
 
             f = doc.getfile(filename=filename)

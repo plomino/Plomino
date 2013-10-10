@@ -34,10 +34,13 @@ from exceptions import PlominoScriptException
 from PlominoDocument import TemporaryDocument
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlomino.config import *
+from Products.CMFPlomino.browser import PlominoMessageFactory as _
 from Products.CMFPlomino import plomino_profiler
-from Products.CMFPlomino.PlominoUtils import PlominoTranslate, translate
-from Products.CMFPlomino.PlominoUtils import DateToString
+from Products.CMFPlomino.PlominoUtils import asList
 from Products.CMFPlomino.PlominoUtils import asUnicode
+from Products.CMFPlomino.PlominoUtils import DateToString, StringToDate
+from Products.CMFPlomino.PlominoUtils import PlominoTranslate
+from Products.CMFPlomino.PlominoUtils import translate
 import interfaces
 
 schema = Schema((
@@ -46,8 +49,8 @@ schema = Schema((
         widget=StringField._properties['widget'](
             label="Id",
             description="The form id",
-            label_msgid='CMFPlomino_label_FormId',
-            description_msgid='CMFPlomino_help_FormId',
+            label_msgid=_('CMFPlomino_label_FormId', default="Id"),
+            description_msgid=_('CMFPlomino_help_FormId', default='The form id'),
             i18n_domain='CMFPlomino',
         ),
     ),
@@ -56,8 +59,8 @@ schema = Schema((
         widget=TextAreaWidget(
             label="On create document",
             description="Action to take when the document is created",
-            label_msgid='CMFPlomino_label_onCreateDocument',
-            description_msgid='CMFPlomino_help_onCreateDocument',
+            label_msgid=_('CMFPlomino_label_onCreateDocument', default="On create document"),
+            description_msgid=_('CMFPlomino_help_onCreateDocument', default="Action to take when the document is created"),
             i18n_domain='CMFPlomino',
         ),
         schemata="Events",
@@ -67,8 +70,8 @@ schema = Schema((
         widget=TextAreaWidget(
             label="On open document",
             description="Action to take when the document is opened",
-            label_msgid='CMFPlomino_label_onOpenDocument',
-            description_msgid='CMFPlomino_help_onOpenDocument',
+            label_msgid=_('CMFPlomino_label_onOpenDocument', default="On open document"),
+            description_msgid=_('CMFPlomino_help_onOpenDocument', default="Action to take when the document is opened"),
             i18n_domain='CMFPlomino',
         ),
         schemata="Events",
@@ -78,8 +81,8 @@ schema = Schema((
         widget=TextAreaWidget(
             label="Before save document",
             description="Action to take before submitted values are saved into the document (submitted values are in context.REQUEST)",
-            label_msgid='CMFPlomino_label_beforeSaveDocument',
-            description_msgid='CMFPlomino_help_beforeSaveDocument',
+            label_msgid=_('CMFPlomino_label_beforeSaveDocument', default="Before save document"),
+            description_msgid=_('CMFPlomino_help_beforeSaveDocument', default="Action to take before submitted values are saved into the document (submitted values are in context.REQUEST)"),
             i18n_domain='CMFPlomino',
         ),
         schemata="Events",
@@ -89,8 +92,8 @@ schema = Schema((
         widget=TextAreaWidget(
             label="On save document",
             description="Action to take when saving the document",
-            label_msgid='CMFPlomino_label_onSaveDocument',
-            description_msgid='CMFPlomino_help_onSaveDocument',
+            label_msgid=_('CMFPlomino_label_onSaveDocument', default="On save document"),
+            description_msgid=_('CMFPlomino_help_onSaveDocument', default="Action to take when saving the document"),
             i18n_domain='CMFPlomino',
         ),
         schemata="Events",
@@ -100,8 +103,8 @@ schema = Schema((
         widget=TextAreaWidget(
             label="On delete document",
             description="Action to take before deleting the document",
-            label_msgid='CMFPlomino_label_onDeleteDocument',
-            description_msgid='CMFPlomino_help_onDeleteDocument',
+            label_msgid=_('CMFPlomino_label_onDeleteDocument', default="On delete document"),
+            description_msgid=_('CMFPlomino_help_onDeleteDocument', default="Action to take before deleting the document"),
             i18n_domain='CMFPlomino',
         ),
         schemata="Events",
@@ -111,8 +114,8 @@ schema = Schema((
         widget=TextAreaWidget(
             label="On submission of search form",
             description="Action to take when submitting a search",
-            label_msgid='CMFPlomino_label_onSearch',
-            description_msgid='CMFPlomino_help_onSearch',
+            label_msgid=_('CMFPlomino_label_onSearch', default="On submission of search form"),
+            description_msgid=_('CMFPlomino_help_onSearch', default="Action to take when submitting a search"),
             i18n_domain='CMFPlomino',
         ),
         schemata="Events",
@@ -122,8 +125,8 @@ schema = Schema((
         widget=TextAreaWidget(
             label="Before document creation",
             description="Action to take when opening a blank form",
-            label_msgid='CMFPlomino_label_beforeCreateDocument',
-            description_msgid='CMFPlomino_help_beforeCreateDocument',
+            label_msgid=_('CMFPlomino_label_beforeCreateDocument', default="Before document creation"),
+            description_msgid=_('CMFPlomino_help_beforeCreateDocument', default="Action to take when opening a blank form"),
             i18n_domain='CMFPlomino',
         ),
         schemata="Events",
@@ -134,19 +137,54 @@ schema = Schema((
             label="Form layout",
             description="The form layout. Text with 'Plominofield' styles "
                 "correspond to the contained field elements.",
-            label_msgid='CMFPlomino_label_FormLayout',
-            description_msgid='CMFPlomino_help_FormLayout',
+            label_msgid=_('CMFPlomino_label_FormLayout', default="Form layout"),
+            description_msgid=_('CMFPlomino_help_FormLayout', default="The form layout. Text with 'Plominofield' styles correspond to the contained field elements."),
             i18n_domain='CMFPlomino',
         ),
         default_output_type="text/html",
+    ),
+    TextField(
+        name='FormMethod',
+        accessor='getFormMethod',
+        default='Auto',
+        widget=SelectionWidget(
+            label="Form method",
+            description="The form method: GET, POST or Auto (default).",
+            label_msgid=_('CMFPlomino_label_FormMethod', default="Form method"),
+            description_msgid=_('CMFPlomino_help_FormMethod', default="The form method: GET or POST or Auto (default)."),
+            i18n_domain='CMFPlomino',
+        ),
+        vocabulary=('GET', 'POST', 'Auto')
     ),
     TextField(
         name='DocumentTitle',
         widget=TextAreaWidget(
             label="Document title formula",
             description="Compute the document title",
-            label_msgid='CMFPlomino_label_DocumentTitle',
-            description_msgid='CMFPlomino_help_DocumentTitle',
+            label_msgid=_('CMFPlomino_label_DocumentTitle', default="Document title formula"),
+            description_msgid=_('CMFPlomino_help_DocumentTitle', default='Compute the document title'),
+            i18n_domain='CMFPlomino',
+        ),
+    ),
+    BooleanField(
+        name='DynamicDocumentTitle',
+        default="0",
+        widget=BooleanField._properties['widget'](
+            label="Compute document title on view",
+            description="Execute DocumentTitle formula when document is rendered",
+            label_msgid=_('CMFPlomino_label_DynamicDocumentTitle', default="Compute document title on view"),
+            description_msgid=_('CMFPlomino_help_DynamicDocumentTitle', default="Execute DocumentTitle formula when document is rendered"),
+            i18n_domain='CMFPlomino',
+        ),
+    ),
+    BooleanField(
+        name='StoreDynamicDocumentTitle',
+        default="0",
+        widget=BooleanField._properties['widget'](
+            label="Store dynamically computed title",
+            description="Store computed title every time document is rendered",
+            label_msgid=_('CMFPlomino_label_StoreDynamicDocumentTitle', default="Store dynamically computed title"),
+            description_msgid=_('CMFPlomino_help_StoreDynamicDocumentTitle', default="Store computed title every time document is rendered"),
             i18n_domain='CMFPlomino',
         ),
     ),
@@ -156,8 +194,8 @@ schema = Schema((
             label="Document id formula",
             description="Compute the document id at creation. "
                 "(Undergoes normalization.)",
-            label_msgid='CMFPlomino_label_DocumentId',
-            description_msgid='CMFPlomino_help_DocumentId',
+            label_msgid=_('CMFPlomino_label_DocumentId', default="Document id formula"),
+            description_msgid=_('CMFPlomino_help_DocumentId', default='Compute the document id at creation. (Undergoes normalization.)'),
             i18n_domain='CMFPlomino',
         ),
     ),
@@ -167,8 +205,8 @@ schema = Schema((
         widget=SelectionWidget(
             label="Position of the action bar",
             description="Select the position of the action bar",
-            label_msgid='CMFPlomino_label_ActionBarPosition',
-            description_msgid='CMFPlomino_help_ActionBarPosition',
+            label_msgid=_('CMFPlomino_label_ActionBarPosition', default="Position of the action bar"),
+            description_msgid=_('CMFPlomino_help_ActionBarPosition', default="Select the position of the action bar"),
             i18n_domain='CMFPlomino',
         ),
         vocabulary=[
@@ -183,8 +221,8 @@ schema = Schema((
             label="Hide default actions",
             description="Edit, Save, Delete, Close actions "
                 "will not be displayed in the action bar",
-            label_msgid='CMFPlomino_label_HideDefaultActions',
-            description_msgid='CMFPlomino_help_HideDefaultActions',
+            label_msgid=_('CMFPlomino_label_HideDefaultActions', default="Hide default actions"),
+            description_msgid=_('CMFPlomino_help_HideDefaultActions', default='Edit, Save, Delete, Close actions will not be displayed in the action bar'),
             i18n_domain='CMFPlomino',
         ),
     ),
@@ -194,8 +232,8 @@ schema = Schema((
         widget=BooleanField._properties['widget'](
             label="Hide in menu",
             description="It will not appear in the database main menu",
-            label_msgid='CMFPlomino_label_HideInMenu',
-            description_msgid='CMFPlomino_help_HideInMenu',
+            label_msgid=_('CMFPlomino_label_HideInMenu', default="Hide in menu"),
+            description_msgid=_('CMFPlomino_help_HideInMenu', default='It will not appear in the database main menu'),
             i18n_domain='CMFPlomino',
         ),
     ),
@@ -206,8 +244,8 @@ schema = Schema((
             label="Search form",
             description="A search form is only used to search documents, "
                 "it cannot be saved.",
-            label_msgid='CMFPlomino_label_SearchForm',
-            description_msgid='CMFPlomino_help_SearchForm',
+            label_msgid=_('CMFPlomino_label_SearchForm', default="Search form"),
+            description_msgid=_('CMFPlomino_help_SearchForm', default="A search form is only used to search documents, it cannot be saved."),
             i18n_domain='CMFPlomino',
         ),
     ),
@@ -219,8 +257,8 @@ schema = Schema((
             description="A page cannot be saved and does not provide "
                 "any action bar. It can be useful to build a welcome page, "
                 "explanations, reports, navigation, etc.",
-            label_msgid='CMFPlomino_label_isPage',
-            description_msgid='CMFPlomino_help_isPage',
+            label_msgid=_('CMFPlomino_label_isPage', default="Page"),
+            description_msgid=_('CMFPlomino_help_isPage', default="A page cannot be saved and does not provide any action bar. It can be useful to build a welcome page, explanations, reports, navigation, etc."),
             i18n_domain='CMFPlomino',
         ),
     ),
@@ -230,8 +268,8 @@ schema = Schema((
             label="Search view",
             description="View used to display the search results",
             format='select',
-            label_msgid='CMFPlomino_label_SearchView',
-            description_msgid='CMFPlomino_help_SearchView',
+            label_msgid=_('CMFPlomino_label_SearchView', default="Search view"),
+            description_msgid=_('CMFPlomino_help_SearchView', default="View used to display the search results"),
             i18n_domain='CMFPlomino',
         ),
         vocabulary='_getDatabaseViews',
@@ -240,9 +278,9 @@ schema = Schema((
         name='SearchFormula',
         widget=TextAreaWidget(
             label="Search formula",
-            description="Leave blank to use default Zcatalog search",
-            label_msgid='CMFPlomino_label_SearchFormula',
-            description_msgid='CMFPlomino_help_SearchFormula',
+            description="Leave blank to use default ZCatalog search",
+            label_msgid=_('CMFPlomino_label_SearchFormula', default="Search formula"),
+            description_msgid=_('CMFPlomino_help_SearchFormula', default="Leave blank to use default ZCatalog search"),
             i18n_domain='CMFPlomino',
         ),
     ),
@@ -250,9 +288,9 @@ schema = Schema((
         name='Position',
         widget=IntegerField._properties['widget'](
             label="Position",
-            label_msgid="CMFPlomino_label_Position",
+            label_msgid=_("CMFPlomino_label_Position", default="Position"),
             description="Position in menu",
-            description_msgid="CMFPlomino_help_Position",
+            description_msgid=_("CMFPlomino_help_Position", default="Position in menu"),
             i18n_domain='CMFPlomino',
         ),
     ),
@@ -284,6 +322,9 @@ schema = Schema((
 PlominoForm_schema = getattr(ATFolder, 'schema', Schema(())).copy() + \
     schema.copy()
 
+label_re =  re.compile('<span class="plominoLabelClass">((?P<optional_fieldname>\S+):){0,1}\s*(?P<fieldname_or_label>.+?)</span>')
+# Not bothering with Legend for now. Label will generate a fieldset and legend for CHECKBOX and RADIO widgets.
+# legend_re = re.compile('<span class="plominoLegendClass">((?P<optional_fieldname>\S+):){0,1}\s*(?P<fieldname_or_label>.+)</span>')
 
 class PlominoForm(ATFolder):
     """
@@ -300,12 +341,27 @@ class PlominoForm(ATFolder):
         """ In case we're being called via acquisition.
         """
         if formname:
-            return self.getParentDatabase().getForm(self, formname)
+            return self.getParentDatabase().getForm(formname)
 
         form = self
         while getattr(form, 'meta_type', '') != 'PlominoForm':
             form = obj.aq_parent
         return form
+
+    def getFormMethod(self):
+        """ Return form submit HTTP method
+        """
+        # if self.isEditMode():
+        #     Log('POST because isEditMode', 'PlominoForm/getFormMethod') #DBG 
+        #     return  'POST'
+
+        value = self.Schema()['FormMethod'].get(self)
+        if value == 'Auto':
+            if self.isPage or self.isSearchForm:
+                return 'GET'
+            else:
+                return 'POST'
+        return value
 
     security.declareProtected(READ_PERMISSION, 'createDocument')
     def createDocument(self, REQUEST):
@@ -400,8 +456,8 @@ class PlominoForm(ATFolder):
                     db, self, request,
                     validation_mode=validation_mode).__of__(db)
             layout = self.applyHideWhen(doc)
-            result = [f for f in result 
-                    if """<span class="plominoFieldClass">%s</span>""" % 
+            result = [f for f in result
+                    if """<span class="plominoFieldClass">%s</span>""" %
                     f.id in layout]
         result.sort(key=lambda elt: elt.id.lower())
         if includesubforms:
@@ -440,43 +496,31 @@ class PlominoForm(ATFolder):
                 report = ', '.join(
                         ['%s (occurs %s times)' % (f, c)
                             for f,c in seen.items() if c > 1])
-                logger.debug('Ambiguous fieldnames: %s' % report)
+                logger.debug('Overridden fields: %s' % report)
 
         db.setRequestCache(cache_key, result)
         return result
 
     security.declarePublic('getHidewhenFormulas')
     def getHidewhenFormulas(self):
-        """Get hidden formulae
+        """Get hide-when formulae
         """
         hidewhens = self.objectValues(spec='PlominoHidewhen')
         return [h for h in hidewhens]
 
     security.declarePublic('getActions')
-    def getActions(self, target, hide=True, parent_id=None):
-        """Get actions
+    def getActions(self, target, hide=True):
+        """ Get filtered form actions for the target (page or document).
         """
-        all = self.objectValues(spec='PlominoAction')
+        actions = self.objectValues(spec='PlominoAction')
 
         filtered = []
-        for obj_a in all:
+        for action in actions:
             if hide:
-                try:
-                    result = self.runFormulaScript(
-                            'action_%s_%s_hidewhen' % (self.id, obj_a.id),
-                            target,
-                            obj_a.Hidewhen,
-                            True,
-                            parent_id)
-                except PlominoScriptException, e:
-                    e.reportError(
-                            '"%s" hide-when formula failed' % obj_a.Title())
-                    #if error, we hide anyway
-                    result = True
-                if not result:
-                    filtered.append((obj_a, parent_id))
+                if not action.isHidden(target, self):
+                    filtered.append((action, self.id))
             else:
-                filtered.append((obj_a, parent_id))
+                filtered.append((action, self.id))
         return filtered
 
     security.declarePublic('getCacheFormulas')
@@ -492,12 +536,87 @@ class PlominoForm(ATFolder):
         """
         return self.id
 
+    def _handleLabels(self, html_content_orig, editmode):
+        """ Parse the layout for label tags, 
+
+        - add 'label' or 'fieldset/legend' markup to the corresponding fields.
+        - if the referenced field does not exist, leave the layout markup as
+          is (as for missing field markup).
+        """
+        html_content_processed = html_content_orig # We edit the copy
+        match_iter = label_re.finditer(html_content_orig)
+        for match_label in match_iter:
+            d = match_label.groupdict()
+            if d['optional_fieldname']:
+                fn = d['optional_fieldname']
+                field = self.getFormField(fn)
+                if field:
+                    label = d['fieldname_or_label']
+                else:
+                    continue
+            else:
+                fn = d['fieldname_or_label']
+                field = self.getFormField(fn)
+                if field:
+                    label = field.Title()
+                else:
+                    continue
+
+            field_re = re.compile('<span class="plominoFieldClass">%s</span>' % fn)
+            match_field = field_re.search(html_content_processed)
+            field_type = field.getFieldType()
+            if field_type != 'DATETIME':
+                widget_name = field.getSettings().widget
+
+            # Handle input groups:
+            if (field_type == 'DATETIME' or
+                    field_type == 'SELECTION' and 
+                    widget_name in ['CHECKBOX', 'RADIO', 'PICKLIST']):
+                # Delete processed label
+                html_content_processed = label_re.sub('', html_content_processed, count=1)
+                # Is the field in the layout?
+                if match_field:
+                    # Markup the field
+                    if editmode:
+                        mandatory = (
+                                field.getMandatory()
+                                and " class='required'"
+                                or '')
+                        html_content_processed = field_re.sub(
+                                "<fieldset><legend%s>%s</legend>%s</fieldset>" % (
+                                mandatory, label, match_field.group()),
+                                html_content_processed)
+                    else:
+                        html_content_processed = field_re.sub(
+                                "<div class='fieldset'><span class='legend' title='Legend for %s'>%s</span>%s</div>" % (
+                                fn, label, match_field.group()),
+                                html_content_processed)
+
+            # Handle single inputs:
+            else:
+                # Replace the processed label with final markup
+                if editmode and (field_type not in ['COMPUTED', 'DISPLAY']):
+                    mandatory = (
+                            field.getMandatory()
+                            and " class='required'"
+                            or '')
+                    html_content_processed = label_re.sub(
+                            "<label for='%s'%s>%s</label>" % (fn, mandatory, label),
+                            html_content_processed, count=1)
+                else:
+                    html_content_processed = label_re.sub(
+                            "<span class='label' title='Label for %s'>%s</span>" % (fn, label),
+                            html_content_processed, count=1)
+
+        return html_content_processed
+
+
     security.declareProtected(READ_PERMISSION, 'displayDocument')
     @plomino_profiler('form')
     def displayDocument(self, doc, editmode=False, creation=False,
             parent_form_id=False, request=None):
         """ Display the document using the form's layout
-        """ 
+        """
         # remove the hidden content
         html_content = self.applyHideWhen(doc, silent_error=False)
         if request:
@@ -511,7 +630,7 @@ class PlominoForm(ATFolder):
         fields_in_layout = []
         fieldids_not_in_layout = []
         for field in fields:
-            fieldblock = '<span class="plominoFieldClass">%s</span>' % field.id 
+            fieldblock = '<span class="plominoFieldClass">%s</span>' % field.id
             if fieldblock in html_content:
                 fields_in_layout.append([field, fieldblock])
             else:
@@ -526,7 +645,7 @@ class PlominoForm(ATFolder):
                             "name='%s' "
                             "value='%s' />%s" % (
                                 field_id,
-                                str(request.get(field_id, '')),
+                                asUnicode(request.get(field_id, '')),
                                 html_content)
                             )
 
@@ -540,6 +659,10 @@ class PlominoForm(ATFolder):
                     "value='%s' />%s"% (
                         self.getFormName(),
                         html_content))
+
+        # Handle legends and labels
+        html_content = self._handleLabels(html_content, editmode)
+        # html_content = self._handleLabels(legend_re, html_content)
 
         # insert the fields with proper value and rendering
         for (field, fieldblock) in fields_in_layout:
@@ -563,45 +686,42 @@ class PlominoForm(ATFolder):
                         doc, editmode, creation, parent_form_id=self.id,
                         request=request)
                 html_content = html_content.replace(
-                        '<span class="plominoSubformClass">%s</span>' % 
+                        '<span class="plominoSubformClass">%s</span>' %
                         subformname,
                         subformrendering)
 
+        #
         # insert the actions
+        #
         if doc is None:
             target = self
         else:
             target = doc
-        form_id = parent_form_id and parent_form_id or self.id
-        actionsToDisplay = [a.id for a, f_id in self.getActions(
-            target, hide=True, parent_id=form_id)]
-        for action, form_id in self.getActions(
-                target,
-                False,
-                parent_id=form_id):
-            actionName = action.id
-            if actionName in actionsToDisplay:
-                actionDisplay = action.ActionDisplay
-                pt = self.getRenderingTemplate(actionDisplay + "Action")
-                if pt is None:
-                    pt = self.getRenderingTemplate("LINKAction")
-                action_render = pt(plominoaction=action,
-                                   plominotarget=target,
-                                   plomino_parent_id=form_id)
-            else:
-                action_render = ''
-            html_content = html_content.replace(
-                    '<span class="plominoActionClass">%s</span>' % 
-                    actionName,
-                    action_render)
+
+        if parent_form_id:
+            form = self.getForm(parent_form_id)
+        else:
+            form = self
+
+        for action, form_id in self.getActions(target, hide=False):
+
+            action_id = action.id
+            action_span = '<span class="plominoActionClass">%s</span>' % action_id
+            if action_span in html_content:
+                if not action.isHidden(target, form):
+                    template = action.ActionDisplay
+                    pt = self.getRenderingTemplate(template + "Action")
+                    if pt is None:
+                        pt = self.getRenderingTemplate("LINKAction")
+                    action_render = pt(plominoaction=action,
+                                       plominotarget=target,
+                                       plomino_parent_id=form.id)
+                else:
+                    action_render = ''
+                html_content = html_content.replace(action_span, action_render)
 
         # translation
-        db = self.getParentDatabase()
-        i18n_domain = db.getI18n()
-        if request and request.get("translation")=="off":
-            i18n_domain = None
-        if i18n_domain:
-            html_content = translate(db, html_content, i18n_domain)
+        html_content = translate(self, html_content)
 
         # store fragment to cache
         html_content = self.updateCache(html_content, to_be_cached)
@@ -628,7 +748,7 @@ class PlominoForm(ATFolder):
                 raw_values.append(v)
 
         html = ("<div id='raw_values'>%(raw_values)s</div>"
-                "<div id='parent_field'>%(parent_field)s</div>" 
+                "<div id='parent_field'>%(parent_field)s</div>"
                 "%(fields)s")
         field_html = "<span id='%s' class='plominochildfield'>%s</span>"
 
@@ -674,7 +794,7 @@ class PlominoForm(ATFolder):
                     hidewhen.Formula)
             except PlominoScriptException, e:
                 if not silent_error:
-                    # applyHideWhen is called by getFormFields and 
+                    # applyHideWhen is called by getFormFields and
                     # getSubForms; in those cases, error reporting
                     # is not accurate,
                     # we only need error reporting when actually rendering a
@@ -685,7 +805,7 @@ class PlominoForm(ATFolder):
                 #if error, we hide anyway
                 result = True
 
-            start = ('<span class="plominoHidewhenClass">start:%s</span>' % 
+            start = ('<span class="plominoHidewhenClass">start:%s</span>' %
                     hidewhenName)
             end = ('<span class="plominoHidewhenClass">end:%s</span>' %
                     hidewhenName)
@@ -743,7 +863,7 @@ class PlominoForm(ATFolder):
 
     security.declareProtected(READ_PERMISSION, 'getHidewhenAsJSON')
     def getHidewhenAsJSON(self, REQUEST, parent_form=None, validation_mode=False):
-        """ Return a JSON object to dynamically show or hide hidewhens 
+        """ Return a JSON object to dynamically show or hide hidewhens
         (works only with isDynamicHidewhen)
         """
         db = self.getParentDatabase()
@@ -806,7 +926,7 @@ class PlominoForm(ATFolder):
                         request=getattr(self, 'REQUEST', None))
                 cachekey = None
 
-            start = ('<span class="plominoCacheClass">start:%s</span>' % 
+            start = ('<span class="plominoCacheClass">start:%s</span>' %
                     cacheid)
             end = ('<span class="plominoCacheClass">end:%s</span>' %
                     cacheid)
@@ -874,7 +994,7 @@ class PlominoForm(ATFolder):
         db = self.getParentDatabase()
         # execute the beforeCreateDocument code of the form
         invalid = False
-        if (hasattr(self, 'beforeCreateDocument') and 
+        if (hasattr(self, 'beforeCreateDocument') and
                 self.beforeCreateDocument):
             try:
                 invalid = self.runFormulaScript(
@@ -913,11 +1033,13 @@ class PlominoForm(ATFolder):
     def getFormField(self, fieldname, includesubforms=True):
         """ Return the field
         """
+        field = None
         form = self.getForm()
-
-        field = getattr(form, fieldname, None)
-        # if field is not in main form, we search in the subforms
-        if not field:
+        field_ids = form.objectIds(spec='PlominoField')
+        if fieldname in field_ids:
+            field = getattr(form, fieldname)
+        else:
+            # if field is not in main form, we search in the subforms
             all_fields = self.getFormFields(includesubforms=includesubforms)
             matching_fields = [f for f in all_fields if f.id == fieldname]
             if matching_fields:
@@ -1009,6 +1131,7 @@ class PlominoForm(ATFolder):
         r = re.compile('<span class="plominoSubformClass">([^<]+)</span>')
         return [i.strip() for i in r.findall(html_content)]
 
+
     security.declarePublic('readInputs')
     def readInputs(self, doc, REQUEST, process_attachments=False, applyhidewhen=True, validation_mode=False):
         """ Read submitted values in REQUEST and store them in document
@@ -1039,6 +1162,10 @@ class PlominoForm(ATFolder):
                                 doc,
                                 process_attachments,
                                 validation_mode=validation_mode)
+                        if f.getFieldType() == 'SELECTION':
+                            if f.getSettings().widget in [
+                                    'MULTISELECT', 'CHECKBOX', 'PICKLIST']:
+                                v = asList(v)
                         doc.setItem(fieldName, v)
                 else:
                     # The field was not submitted, probably because it is
@@ -1052,9 +1179,14 @@ class PlominoForm(ATFolder):
                         if (fieldtype in ("SELECTION", "DOCLINK", "BOOLEAN")):
                             doc.removeItem(fieldName)
 
+
     security.declareProtected(READ_PERMISSION, 'searchDocuments')
-    def searchDocuments(self,REQUEST):
-        """ Search documents in the view matching the submitted form fields values
+    def searchDocuments(self, REQUEST):
+        """ Search documents in the view matching the submitted form fields values.
+
+        1. If there is an onSearch event, use the onSearch formula to generate a result set.
+        2. Otherwise, do a dbsearch among the documents of the related view, and
+        2.1. if there is a searchformula, evaluate that for every document in the view.
         """
         if self.onSearch:
             # Manually generate a result set
@@ -1081,23 +1213,29 @@ class PlominoForm(ATFolder):
                     request=REQUEST):
                 fieldname = f.id
                 #if fieldname is not an index -> search doesn't matter and returns all
-                submittedValue = asUnicode(REQUEST.get(fieldname))
-                if submittedValue is not None:
-                    if submittedValue != '':
-                        # if non-text field, convert the value
-                        if f.getFieldType() == "NUMBER":
+                submittedValue = REQUEST.get(fieldname)
+                if submittedValue:
+                    submittedValue = asUnicode(submittedValue)
+                    # if non-text field, convert the value
+                    if f.getFieldType() == "NUMBER":
+                        settings = f.getSettings()
+                        if settings.type == "INTEGER":
                             v = long(submittedValue)
-                        elif f.getFieldType() == "FLOAT":
+                        elif settings.type == "FLOAT":
                             v = float(submittedValue)
-                        elif f.getFieldType() == "DATETIME":
-                            v = submittedValue
-                        else:
-                            v = submittedValue
-                        # rename Plomino_SearchableText to perform full-text
-                        # searches on regular SearchableText index
-                        if fieldname == "Plomino_SearchableText":
-                            fieldname = "SearchableText"
-                        query[fieldname] = v
+                        elif settings.type == "DECIMAL":
+                            v = decimal(submittedValue)
+                    elif f.getFieldType() == "DATETIME":
+                        # The format submitted by the datetime widget:
+                        v = StringToDate(submittedValue, format='%Y-%m-%d %H:%M ')
+                    else:
+                        v = submittedValue
+                    # rename Plomino_SearchableText to perform full-text
+                    # searches on regular SearchableText index
+                    if fieldname == "Plomino_SearchableText":
+                        fieldname = "SearchableText"
+                    query[fieldname] = v
+
             sortindex = searchview.getSortColumn()
             if not sortindex:
                 sortindex = None
@@ -1124,6 +1262,7 @@ class PlominoForm(ATFolder):
 
         return self.OpenForm(searchresults=results)
 
+
     security.declarePublic('validation_errors')
     def validation_errors(self, REQUEST):
         """ Check submitted values
@@ -1147,7 +1286,7 @@ class PlominoForm(ATFolder):
         for hidewhenName, doit in hidewhens.items():
             if not doit:  # Only consider True hidewhens
                 continue
-            start = ('<span class="plominoHidewhenClass">start:%s</span>' % 
+            start = ('<span class="plominoHidewhenClass">start:%s</span>' %
                     hidewhenName)
             end = ('<span class="plominoHidewhenClass">end:%s</span>' %
                     hidewhenName)
@@ -1167,6 +1306,7 @@ class PlominoForm(ATFolder):
             hidden_fields += subform._get_js_hidden_fields(REQUEST, doc)
         return hidden_fields
 
+
     security.declarePublic('validateInputs')
     def validateInputs(self, REQUEST, doc=None):
         """
@@ -1182,8 +1322,18 @@ class PlominoForm(ATFolder):
                 REQUEST,
                 doc,
                 validation_mode=True)
-        fields = [field for field in fields 
+        fields = [field for field in fields
                 if field.getId() not in hidden_fields]
+
+        # Temp doc for validation
+        db = self.getParentDatabase()
+        tmp = TemporaryDocument(
+                db,
+                self,
+                REQUEST,
+                doc,
+                validation_mode=True).__of__(db)
+
         for f in fields:
             fieldname = f.id
             fieldtype = f.getFieldType()
@@ -1203,24 +1353,16 @@ class PlominoForm(ATFolder):
                             f.Title(),
                             PlominoTranslate("is mandatory", self)))
             else:
-                # STEP 2: check data types
-                errors = errors + f.validateFormat(submittedValue)
-
-        if not errors:
-            # STEP 3: check validation formula
-            db = self.getParentDatabase()
-            tmp = TemporaryDocument(
-                    db,
-                    self,
-                    REQUEST,
-                    doc,
-                    validation_mode=True).__of__(db)
-            for f in fields:
+                #
+                # STEP 2: check validation formula
+                #
+                # This may massage the submitted value e.g. to make it pass STEP 3
+                #
                 formula = f.getValidationFormula()
-                if not formula=='':
-                    s = ''
+                if formula:
+                    error_msg = ''
                     try:
-                        s = self.runFormulaScript(
+                        error_msg = self.runFormulaScript(
                                 'field_%s_%s_ValidationFormula' % (
                                     self.id,
                                     f.id),
@@ -1228,8 +1370,12 @@ class PlominoForm(ATFolder):
                                 f.ValidationFormula)
                     except PlominoScriptException, e:
                         e.reportError('%s validation formula failed' % f.id)
-                    if s:
-                        errors.append(s)
+                    if error_msg:
+                        errors.append(error_msg)
+                #
+                # STEP 3: check data types
+                #
+                errors = errors + f.validateFormat(submittedValue)
 
         return errors
 

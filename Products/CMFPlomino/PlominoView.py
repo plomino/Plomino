@@ -15,6 +15,7 @@ __docformat__ = 'plaintext'
 # From the standard library
 import cStringIO
 import csv
+from zipfile import ZipFile, ZIP_DEFLATED
 
 # 3rd party Python
 from jsonutil import jsonutil as json
@@ -26,6 +27,7 @@ from Acquisition import aq_inner
 from Products.Archetypes.atapi import *
 from Products.ATContentTypes.content.folder import ATFolder
 from zope.interface import implements
+from Products.CMFPlomino.PlominoUtils import translate
 
 # Plone
 try:
@@ -40,6 +42,7 @@ except:
 from exceptions import PlominoScriptException
 from PlominoUtils import asUnicode, asList
 from Products.CMFPlomino.config import *
+from Products.CMFPlomino.browser import PlominoMessageFactory as _
 from validator import isValidPlominoId
 import interfaces
 
@@ -51,10 +54,9 @@ schema = Schema((
         name='id',
         widget=StringField._properties['widget'](
             label="Id",
-            description="If changed after creation, "
-                "database refresh is needed",
-            label_msgid='CMFPlomino_label_view_id',
-            description_msgid='CMFPlomino_help_view_id',
+            description="If changed after creation, database refresh is needed",
+            label_msgid=_('CMFPlomino_label_view_id', default="Id"),
+            description_msgid=_('CMFPlomino_help_view_id', default="If changed after creation, database refresh is needed"),
             i18n_domain='CMFPlomino',
         ),
         validators = ("isValidId", isValidPlominoId),
@@ -68,8 +70,11 @@ code which should return True or False. The formula will be evaluated for
 each document in the database to decide if the document must be displayed in
 the view or not. 'plominoDocument' is a reserved name in formulae: it
 returns the current Plomino document.""",
-            label_msgid='CMFPlomino_label_SelectionFormula',
-            description_msgid='CMFPlomino_help_SelectionFormula',
+            label_msgid=_('CMFPlomino_label_SelectionFormula', default="Selection formula"),
+            description_msgid=_('CMFPlomino_help_SelectionFormula', default="""The view selection formula is a line of Python code which should return True or False. The formula will be evaluated for
+each document in the database to decide if the document must be displayed in
+the view or not. 'plominoDocument' is a reserved name in formulae: it
+returns the current Plomino document."""),
             i18n_domain='CMFPlomino',
         ),
         default = "True",
@@ -80,11 +85,11 @@ returns the current Plomino document.""",
             label="Sort column",
             description="Column used to sort the view",
             format='select',
-            label_msgid='CMFPlomino_label_SortColumn',
-            description_msgid='CMFPlomino_help_SortColumn',
+            label_msgid=_('CMFPlomino_label_SortColumn', default="Sort column"),
+            description_msgid=_('CMFPlomino_help_SortColumn', default="Column used to sort the view"),
             i18n_domain='CMFPlomino',
         ),
-        vocabulary="_getcolumn_ids",
+        vocabulary="SortColumn_vocabulary",
         schemata="Sorting",
     ),
     BooleanField(
@@ -93,8 +98,8 @@ returns the current Plomino document.""",
         widget=BooleanField._properties['widget'](
             label="Categorized",
             description="Categorised on first column",
-            label_msgid='CMFPlomino_label_Categorized',
-            description_msgid='CMFPlomino_help_Categorized',
+            label_msgid=_('CMFPlomino_label_Categorized', default="Categorized"),
+            description_msgid=_('CMFPlomino_help_Categorized', default='Categorised on first column'),
             i18n_domain='CMFPlomino',
         ),
         schemata="Sorting",
@@ -106,8 +111,8 @@ returns the current Plomino document.""",
             description="Documents open from the view will use the form "
                     "defined by the following formula "
                     "(they use their own form if empty)",
-            label_msgid='CMFPlomino_label_FormFormula',
-            description_msgid='CMFPlomino_help_FormFormula',
+            label_msgid=_('CMFPlomino_label_FormFormula', default="Form formula"),
+            description_msgid=_('CMFPlomino_help_FormFormula', default='Documents open from the view will use the form defined by the following formula(they use their own form if empty)'),
             i18n_domain='CMFPlomino',
         ),
     ),
@@ -117,8 +122,8 @@ returns the current Plomino document.""",
         widget=BooleanField._properties['widget'](
             label="Reverse sorting",
             description="Reverse sorting",
-            label_msgid='CMFPlomino_label_ReverseSorting',
-            description_msgid='CMFPlomino_help_ReverseSorting',
+            label_msgid=_('CMFPlomino_label_ReverseSorting', default="Reverse sorting"),
+            description_msgid=_('CMFPlomino_help_ReverseSorting', default="Reverse the sort ordering"),
             i18n_domain='CMFPlomino',
         ),
         schemata="Sorting",
@@ -129,8 +134,8 @@ returns the current Plomino document.""",
         widget=SelectionWidget(
             label="Position of the action bar",
             description="Select the position of the action bar",
-            label_msgid='CMFPlomino_label_ActionBarPosition',
-            description_msgid='CMFPlomino_help_ActionBarPosition',
+            label_msgid=_('CMFPlomino_label_ActionBarPosition', default="Position of the action bar"),
+            description_msgid=_('CMFPlomino_help_ActionBarPosition', default="Select the position of the action bar"),
             i18n_domain='CMFPlomino',
         ),
 #        schemata="Parameters",
@@ -145,11 +150,22 @@ returns the current Plomino document.""",
         widget=BooleanField._properties['widget'](
             label="Hide default actions",
             description="Delete, Close actions will not be displayed in the action bar",
-            label_msgid='CMFPlomino_label_HideViewDefaultActions',
-            description_msgid='CMFPlomino_help_HideViewDefaultActions',
+            label_msgid=_('CMFPlomino_label_HideViewDefaultActions', default="Hide default actions"),
+            description_msgid=_('CMFPlomino_help_HideViewDefaultActions', default='Delete, Close actions will not be displayed in the action bar'),
             i18n_domain='CMFPlomino',
         ),
 #        schemata="Parameters",
+    ),
+    BooleanField(
+        name='HideCheckboxes',
+        default="0",
+        widget=BooleanField._properties['widget'](
+            label="Hide checkboxes",
+            description="The first column with checkboxes will not be displayed",
+            label_msgid=_('CMFPlomino_label_HideCheckboxes', default="Hide checkboxes"),
+            description_msgid=_('CMFPlomino_help_HideCheckboxes', default='The first column with checkboxes will not be displayed'),
+            i18n_domain='CMFPlomino',
+        ),
     ),
     BooleanField(
         name='HideInMenu',
@@ -157,8 +173,8 @@ returns the current Plomino document.""",
         widget=BooleanField._properties['widget'](
             label="Hide in menu",
             description="It will not appear in the database main menu",
-            label_msgid='CMFPlomino_label_HideInMenu',
-            description_msgid='CMFPlomino_help_HideInMenu',
+            label_msgid=_('CMFPlomino_label_HideInMenu', default="Hide in menu"),
+            description_msgid=_('CMFPlomino_help_HideInMenu', default="It will not appear in the database main menu"),
             i18n_domain='CMFPlomino',
         ),
 #        schemata="Parameters",
@@ -169,8 +185,8 @@ returns the current Plomino document.""",
         widget=SelectionWidget(
             label="Widget",
             description="Rendering mode",
-            label_msgid='CMFPlomino_label_ViewWidget',
-            description_msgid='CMFPlomino_help_ViewWidget',
+            label_msgid=_('CMFPlomino_label_ViewWidget', default="Widget"),
+            description_msgid=_('CMFPlomino_help_ViewWidget', default="Rendering mode"),
             i18n_domain='CMFPlomino',
         ),
         vocabulary= [
@@ -183,8 +199,8 @@ returns the current Plomino document.""",
         widget=TextAreaWidget(
             label="Dynamic Table Parameters",
             description="Change these options to customize the dynamic table.",
-            label_msgid='CMFPlomino_label_DynamicTableParameters',
-            description_msgid='CMFPlomino_help_DynamicTableParameters',
+            label_msgid=_('CMFPlomino_label_DynamicTableParameters', default="Dynamic Table Parameters"),
+            description_msgid=_('CMFPlomino_help_DynamicTableParameters', default='Change these options to customize the dynamic table.'),
             i18n_domain='CMFPlomino',
         ),
         default=u"""
@@ -201,8 +217,8 @@ returns the current Plomino document.""",
         widget=StringField._properties['widget'](
             label="View template",
             description="Leave blank to use default",
-            label_msgid='CMFPlomino_label_ViewTemplate',
-            description_msgid='CMFPlomino_help_ViewTemplate',
+            label_msgid=_('CMFPlomino_label_ViewTemplate', default="View template"),
+            description_msgid=_('CMFPlomino_help_ViewTemplate', default="Leave blank to use default"),
             i18n_domain='CMFPlomino',
         ),
 #        schemata="Parameters",
@@ -214,8 +230,8 @@ returns the current Plomino document.""",
             description="Action to take when the view is opened. "
                 "If a string is returned, it is considered an error "
                 "message, and the opening is not allowed.",
-            label_msgid='CMFPlomino_label_onOpenView',
-            description_msgid='CMFPlomino_help_onOpenView',
+            label_msgid=_('CMFPlomino_label_onOpenView', default="On open view"),
+            description_msgid=_('CMFPlomino_help_onOpenView', default="Action to take when the view is opened. If a string is returned, it is considered an error message, and the opening is not allowed."),
             i18n_domain='CMFPlomino',
         ),
     ),
@@ -223,9 +239,9 @@ returns the current Plomino document.""",
         name='Position',
         widget=IntegerField._properties['widget'](
             label="Position",
-            label_msgid="CMFPlomino_label_Position",
+            label_msgid=_("CMFPlomino_label_Position", default="Position"),
             description="Position in menu",
-            description_msgid="CMFPlomino_description_Position",
+            description_msgid=_("CMFPlomino_description_Position"),
             i18n_domain='CMFPlomino',
         ),
 #        schemata="Parameters",
@@ -297,6 +313,8 @@ class PlominoView(ATFolder):
         return self.id
 
     def __bobo_traverse__(self, request, name):
+        """ Allow traversing to .../<view>/<docid> 
+        """
         if self.documents.has_key(name):
             return aq_inner(getattr(self.documents, name)).__of__(self)
         return BaseObject.__bobo_traverse__(self, request, name)
@@ -319,10 +337,10 @@ class PlominoView(ATFolder):
         if fulltext_query:
             query['SearchableText'] = fulltext_query
         results=index.dbsearch(
-            query,
-            sortindex=sortindex,
-            reverse=reverse,
-            only_allowed=only_allowed)
+                query,
+                sortindex=sortindex,
+                reverse=reverse,
+                only_allowed=only_allowed)
         if limit:
             results = batch(
                     results,
@@ -347,6 +365,7 @@ class PlominoView(ATFolder):
     def getColumns(self):
         """ Get columns
         """
+        # TODO: why not just `return self.contentValues(filter='PlominoColumn')`?
         columnslist = self.portal_catalog.search(
                 {'portal_type': ['PlominoColumn'],
                     'path': '/'.join(self.getPhysicalPath())},
@@ -354,36 +373,26 @@ class PlominoView(ATFolder):
         return [c.getObject() for c in columnslist]
 
     security.declarePublic('getActions')
-    def getActions(self, target, hide=True, parent_id=None):
-        """Get actions
+    def getActions(self, view, hide=True):
+        """ Get filtered actions for the view.
         """
+        # Note: We take 'view' as parameter (even though `self` and `view`
+        # will always be the same) because `getActions` is called from
+        # `ActionBar` template without knowing whether it's used for
+        # view/document/page.
         actions = self.objectValues(spec='PlominoAction')
-        
+
         filtered = []
         for action in actions:
             if hide:
-                try:
-                    #result = RunFormula(target, action.getHidewhen())
-                    result = self.runFormulaScript(
-                            'action_%s_%s_hidewhen' % (
-                                action.getParentNode().id,
-                                action.id),
-                            target,
-                            action.Hidewhen,
-                            True)
-                except PlominoScriptException, e:
-                    e.reportError(
-                            '"%s" action hide-when failed' % action.Title())
-                    # if error, we hide anyway
-                    result = True
-                if not result:
-                    filtered.append((action, parent_id))
+                if not action.isHidden(view, self):
+                    filtered.append((action, self.id))
             else:
-                filtered.append((action, parent_id))
+                filtered.append((action, self.id))
         return filtered
 
     security.declarePublic('getColumn')
-    def getColumn(self,column_name):
+    def getColumn(self, column_name):
         """ Get a single column
         """
         return getattr(self, column_name)
@@ -426,10 +435,10 @@ class PlominoView(ATFolder):
         """
         db = self.getParentDatabase()
         refresh = not(db.DoNotReindex)
-        
+
         if index is None:
             index = db.getIndex()
-            
+
         if column_obj.Formula:
             index.createIndex(
                     'PlominoViewColumn_%s_%s' % (
@@ -456,7 +465,6 @@ class PlominoView(ATFolder):
                                 self.getViewName(), column_name),
                             refresh=refresh)
             else:
-                column_obj.setFormula("'Non-existing form'")
                 index.createIndex(
                         'PlominoViewColumn_%s_%s' % (
                             self.getViewName(), column_name),
@@ -511,16 +519,16 @@ class PlominoView(ATFolder):
         """
         sums = {}
         brains = self.getAllDocuments(getObject=False)
-        for col in self.getColumns():
-            if col.DisplaySum:
-                indexkey = self.getIndexKey(col.getColumnName())
+        for column in self.getColumns():
+            if column.DisplaySum:
+                indexkey = self.getIndexKey(column.getColumnName())
                 values = [getattr(b, indexkey) for b in brains]
                 try:
-                    s = sum([v for v in values if v is not None])
+                    s = sum([v for v in values if v])
                 except:
                     logger.error('PlominoView', exc_info=True)
                     s = 0
-                sums[col.id] = s
+                sums[column.id] = column.getColumnRender(s)
         return sums
 
     def makeArray(self, brains, columns):
@@ -530,15 +538,16 @@ class PlominoView(ATFolder):
         rows = []
         for b in brains:
             row = []
-            for cname in columns:
-                v = getattr(b, self.getIndexKey(cname))
-                if v is None:
-                    v = ''
-                elif isinstance(v, basestring):
-                    v = v.encode('utf-8')
+            for column in columns:
+                column_value = getattr(b, self.getIndexKey(column.id))
+                rendered = column.getColumnRender(column_value)
+                if column_value is None:
+                    column_value = ''
+                elif isinstance(column_value, basestring):
+                    column_value = column_value.encode('utf-8')
                 else:
-                    v = unicode(v).encode('utf-8')
-                row.append(v)
+                    column_value = unicode(column_value).encode('utf-8')
+                row.append(column_value)
             rows.append(row)
         return rows
 
@@ -568,10 +577,11 @@ class PlominoView(ATFolder):
                 logging.exception('Bad quoting: %s'%quoting, exc_info=True)
                 quoting = csv.QUOTE_NONNUMERIC
 
-        if not brain_docs:
+        if brain_docs is None:
             brain_docs = self.getAllDocuments(getObject=False)
 
-        columns = [c.id for c in self.getColumns()]
+        columns = [c for c in self.getColumns()
+            if not getattr(c, 'HiddenColumn', False)]
 
         stream = cStringIO.StringIO()
         writer = csv.writer(stream,
@@ -581,7 +591,7 @@ class PlominoView(ATFolder):
 
         # add column titles
         if displayColumnsTitle=='True' :
-            titles = [c.title for c in self.getColumns()]
+            titles = [c.title.encode('utf-8') for c in columns]
             writer.writerow(titles)
 
         rows = self.makeArray(brain_docs, columns)
@@ -594,8 +604,39 @@ class PlominoView(ATFolder):
                     'Content-Disposition', 'attachment; filename='+self.id+'.csv')
         return stream.getvalue()
 
+    security.declareProtected(READ_PERMISSION, 'exportZIP')
+    def exportZIP(self,
+            REQUEST=None,
+            displayColumnsTitle='False',
+            separator="\t",
+            brain_docs=None,
+            quotechar='"',
+            quoting=csv.QUOTE_NONNUMERIC,
+            filename=''):
+        """ Export CSV as ZIP
+        """
+        if REQUEST:
+            if REQUEST.get("separator"):
+                separator = REQUEST.get("separator")
+            if REQUEST.get("displayColumnsTitle"):
+                displayColumnsTitle = REQUEST.get("displayColumnsTitle")
+        data = self.exportCSV(None, displayColumnsTitle, separator, brain_docs, quotechar, quoting)
+        file_string = cStringIO.StringIO()
+        zip_file = ZipFile(file_string, 'w', ZIP_DEFLATED)
+        if not filename:
+            filename = self.id
+        zip_file.writestr(filename + '.csv', data)
+        zip_file.close()
+
+        if REQUEST:
+            REQUEST.RESPONSE.setHeader(
+                    'content-type', 'application/zip')
+            REQUEST.RESPONSE.setHeader(
+                    'Content-Disposition', 'attachment; filename='+filename+'.zip')
+        return file_string.getvalue()
+
     security.declareProtected(READ_PERMISSION, 'exportXLS')
-    def exportXLS(self, REQUEST, displayColumnsTitle='False', 
+    def exportXLS(self, REQUEST, displayColumnsTitle='False',
             brain_docs=None):
         """ Export column values to an HTML table, and set content-type to
         launch Excel.
@@ -605,17 +646,19 @@ class PlominoView(ATFolder):
         if brain_docs is None:
             brain_docs = self.getAllDocuments(getObject=False)
 
-        columns = [c.id for c in self.getColumns()]
+        columns = [c for c in self.getColumns()
+            if not getattr(c, 'HiddenColumn', False)]
 
         rows = self.makeArray(brain_docs, columns)
 
         # add column titles
         if displayColumnsTitle == 'True':
-            titles = [c.title.encode('utf-8') for c in self.getColumns()]
+            titles = [c.title.encode('utf-8') for c in self.getColumns()
+                if not getattr(c, 'HiddenColumn', False)]
             rows[0:0] = titles
 
         html = XLS_TABLE % (
-                ''.join([TR % 
+                ''.join([TR %
                     ''.join([TD % v for v in row]) for row in rows]))
 
         REQUEST.RESPONSE.setHeader(
@@ -646,7 +689,7 @@ class PlominoView(ATFolder):
 
         sortindex = self.getIndexKey(sortindex)
         results = index.dbsearch(
-                    {'PlominoViewFormula_%s' % self.getViewName(): True, 
+                    {'PlominoViewFormula_%s' % self.getViewName(): True,
                     sortindex: key},
                 sortindex,
                 self.getReverseSorting())
@@ -658,7 +701,7 @@ class PlominoView(ATFolder):
 
     security.declarePublic('tojson')
     def tojson(self, REQUEST=None):
-        """ Returns a JSON representation of view data 
+        """ Returns a JSON representation of view data
         """
         data = []
         categorized = self.getCategorized()
@@ -666,6 +709,7 @@ class PlominoView(ATFolder):
         limit = -1
         search = None
         sort_index = None
+        reverse = None
         if REQUEST:
             start = int(REQUEST.get('iDisplayStart', 1))
             iDisplayLength = REQUEST.get('iDisplayLength', None)
@@ -682,7 +726,7 @@ class PlominoView(ATFolder):
             if reverse == 'desc':
                 reverse = 0
             if reverse == 'asc':
-                reverse = 1 
+                reverse = 1
         if limit < 1:
             limit = None
         results = self.getAllDocuments(
@@ -693,17 +737,18 @@ class PlominoView(ATFolder):
                 sortindex=sort_index,
                 reverse=reverse)
         total = display_total = len(results)
-        columnids = [col.id for col in self.getColumns() 
-                if not getattr(col, 'HiddenColumn', False)]
-        for b in results:
-            row = [b.getPath().split('/')[-1]]
-            for colid in columnids:
-                v = getattr(b, self.getIndexKey(colid), '')
-                if isinstance(v, list):
-                    v = [asUnicode(e).encode('utf-8').replace('\r', '') for e in v]
+        columns = [column for column in self.getColumns()
+                if not getattr(column, 'HiddenColumn', False)]
+        for brain in results:
+            row = [brain.getPath().split('/')[-1]]
+            for column in columns:
+                column_value = getattr(brain, self.getIndexKey(column.id), '')
+                rendered = column.getColumnRender(column_value)
+                if isinstance(rendered, list):
+                    rendered = [asUnicode(e).encode('utf-8').replace('\r', '') for e in rendered]
                 else:
-                    v = asUnicode(v).encode('utf-8').replace('\r', '')
-                row.append(v or '&nbsp;')
+                    rendered = asUnicode(rendered).encode('utf-8').replace('\r', '')
+                row.append(rendered or '&nbsp;')
             if categorized:
                 for cat in asList(row[1]):
                     entry = [c for c in row]
@@ -720,7 +765,7 @@ class PlominoView(ATFolder):
     def getIndexKey(self, columnName):
         """ Returns an index key if one exists.
 
-        We try to find a computed index ('PlominoViewColumn_*'); 
+        We try to find a computed index ('PlominoViewColumn_*');
         if not found, we look for a field.
         """
         key = 'PlominoViewColumn_%s_%s' % (self.getViewName(), columnName)
@@ -732,8 +777,8 @@ class PlominoView(ATFolder):
                 key = ''
         return key
 
-    def _getcolumn_ids(self):
-        return [''] +  [c.id for c in self.getColumns()]
-        
+    def SortColumn_vocabulary(self):
+        return [''] + [c.id for c in self.getColumns()]
+
 registerType(PlominoView, PROJECTNAME)
 # end of class PlominoView

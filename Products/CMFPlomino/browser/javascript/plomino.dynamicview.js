@@ -5,17 +5,23 @@
  */
 
 // Add checkboxes in the first column and links to documents in the others (see DataTables documentation)
-function dynamicview_generate_cells_content(oObj) {
-	var cell = oObj.aData[oObj.iDataColumn];
-	if (oObj.iDataColumn > 0) {
-		if (findInArray(cell, '<a') == -1) {
-			return '<a href="' + oObj.aData[0] + '" class="viewlink">' + cell + '</a>';
+function dynamicview_generate_cells_content(display_checkboxes) {
+	return function(oObj) {
+		var cell = oObj.aData[oObj.iDataColumn];
+		if (oObj.iDataColumn > 0) {
+			if (findInArray(cell, '<a') == -1) {
+				return '<a href="' + oObj.aData[0] + '" class="viewlink">' + cell + '</a>';
+			}
+			else
+				return cell;
 		}
-		else
-			return cell;
-	}
-	else {
-		return '<input type="checkbox" value="' + oObj.aData[0] + '" />';
+		else {
+			if(display_checkboxes) {
+				return '<input type="checkbox" value="' + oObj.aData[0] + '" />';
+			} else {
+				return '';
+			}
+		}
 	}
 }
 

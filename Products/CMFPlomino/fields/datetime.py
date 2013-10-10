@@ -103,7 +103,7 @@ class DatetimeField(BaseField):
 
         mode = self.context.getFieldMode()
         if mode == "EDITABLE" and request:
-            if (doc is None or creation or 
+            if ((doc is None and not(creation)) or 
                     request.has_key('Plomino_datagrid_rowdata')):
                 fieldname = self.context.id
                 fieldValue = request.get(fieldname, fieldValue)

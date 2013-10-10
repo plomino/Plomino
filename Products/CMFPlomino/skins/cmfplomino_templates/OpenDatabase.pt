@@ -68,7 +68,22 @@
 
 		<tal:block
 			tal:condition="python:not(len(composeforms)>0 or len(searchforms)>0 or len(views)>0)">
-			<p>No available content</p>
+			<p>The database is empty</p>
+			<tal:template-picker tal:condition="python:here.hasDesignPermission()">
+				<form tal:define="template_list python:here.getTemplateList()"
+					tal:condition="template_list"
+					name="ImportTemplate" action="importTemplate" method="POST">
+				    <label for="template">Import a template</label>
+				    <select name="template_id">
+				        <option value="">== Templates ==</option>
+				        <tal:block tal:repeat="f template_list">
+				            <option tal:attributes="value f;"
+				                tal:content="python:f">value</option>
+				        </tal:block>
+				    </select>
+				    <input type="submit" value="Import template"/>
+				</form>
+			</tal:template-picker>
 		</tal:block>
 
 	</tal:block> <tal:block

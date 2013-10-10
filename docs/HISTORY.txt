@@ -1,6 +1,42 @@
 Changelog
 =========
 
+1.17.5 (2013-09-24)
+-------------------
+* Reorder validation, so that submitted values can be 
+  massaged [jean]
+* Enable Views to use field rendering [jean]
+* Allow forms to specify their HTTP submit method [jean]
+
+1.17.4 (2013-09-11)
+-------------------
+* Dynamic titles [jean]
+* Add labels in layout [jean]
+* add import from zip function for database design [davismr]
+* add export as zip function for database design [davismr]
+* fix missing encoding on exportCSV view [jpcw]
+
+1.17.3.1 (2013-05-28)
+---------------------
+* filtering feature in datatabse design tab [davisp1]
+
+1.17.3 (2013-05-28)
+-------------------
+* Depend on zope.app.component and zope.globalrequest
+  so that our users on Plone 4.0 don't have to [silviot]
+* Test Plone 4.0, 4.1, 4.2 and 4.3 on travis [silviot]
+* Don't choke on XML import when there is an empty file
+* Hide/display checkboxes in views
+* Make sure formulas are compiled with db manager rights
+* context.abortOnError() API
+* use coveralls.io for test coverage reporting
+
+1.17.2 (2013-04-08)
+-------------------
+* EditBareDocument template
+* Add headers (based on fields titles) on datagrid in static mode
+* Fix action bar displaying at both top and bottom
+
 1.17.1 (2013-03-28)
 -------------------
 * Fix batching in dynamic view
@@ -32,7 +68,7 @@ Changelog
 
 1.16.1 (2012-10-16)
 -------------------
-* integrate jsonutils to manage decimal [neaj]
+* integrate jsonutils to manage decimal [jean]
 * use iframe in overlay for datagrid popup [silviot]
 * working on Plone4.3 support [alert]
 * hide-when fixes [manuelep]

@@ -15,6 +15,7 @@ from webdav.Lockable import wl_isLocked
 from xml.dom.minidom import getDOMImplementation
 from xml.dom.minidom import parseString
 from xml.parsers.expat import ExpatError
+import base64
 import codecs
 import glob
 import os
@@ -26,12 +27,15 @@ import xmlrpclib
 # Zope
 from Acquisition import *
 from AccessControl.requestmethod import postonly
+from AccessControl.SecurityManagement import newSecurityManager
+from cStringIO import StringIO
 from DateTime import DateTime
 from HttpUtils import authenticateAndLoadURL, authenticateAndPostToURL
 from Persistence import Persistent
 from Products.PageTemplates.ZopePageTemplate import manage_addPageTemplate
 from Products.PythonScripts.PythonScript import manage_addPythonScript
 from Products.PythonScripts.PythonScript import PythonScript
+from zipfile import ZipFile, ZIP_DEFLATED
 from zope.component import getUtility
 from zope.dottedname.resolve import resolve
 from zope import component
@@ -39,6 +43,7 @@ from ZPublisher.HTTPRequest import FileUpload
 from ZPublisher.HTTPRequest import HTTPRequest
 from ZPublisher.HTTPResponse import HTTPResponse
 import transaction
+import OFS
 
 try:
     from plone.app.async.interfaces import IAsyncService
@@ -71,6 +76,7 @@ from Products.CMFPlomino.PlominoField import schema as field_schema
 from Products.CMFPlomino.PlominoForm import schema as form_schema
 from Products.CMFPlomino.PlominoHidewhen import schema as hidewhen_schema
 from Products.CMFPlomino.PlominoView import schema as view_schema
+from Products.CMFPlomino import get_resource_directory
 
 plomino_schemas = {
         'PlominoAction': action_schema,
@@ -91,6 +97,7 @@ logger = logging.getLogger('Plomino')
 
 STR_FORMULA = """plominoContext = context
 plominoDocument = context
+script_id = '%(script_id)s'
 %(import_list)s
 
 %(formula)s
@@ -394,7 +401,7 @@ class PlominoDesignManager(Persistent):
     def exportDesign(self, targettype='file', targetfolder='', dbsettings=True,
             designelements=None, REQUEST=None, **kw):
         """ Export design elements to XML.
-        The targettype can be file, server, or folder.
+        The targettype can be file, zipfile, server, or folder.
         """
         if REQUEST:
             entire = REQUEST.get('entire')
@@ -441,6 +448,18 @@ class PlominoDesignManager(Persistent):
                             "Content-Disposition",
                             "attachment; filename=%s.xml" % self.id)
                 return xmlstring
+        elif targettype == "zipfile":
+            zip_string = self.exportDesignAsZip(
+                    designelements=designelements,
+                    dbsettings=dbsettings)
+
+            if REQUEST:
+                REQUEST.RESPONSE.setHeader('Content-Type', 'application/zip')
+                REQUEST.RESPONSE.setHeader(
+                        "Content-Disposition",
+                        "attachment; filename=%s.zip" % self.id)
+                REQUEST.RESPONSE.setHeader('Content-Length', len(zip_string.getvalue()))
+            return zip_string.getvalue()
         elif targettype == "folder":
             if not designelements:
                 designelements = (
@@ -535,8 +554,12 @@ class PlominoDesignManager(Persistent):
                     raise PlominoDesignException, 'file required'
                 if not isinstance(fileToImport, FileUpload):
                     raise PlominoDesignException, 'unrecognized file uploaded'
-                xmlstring = fileToImport.read()
-                self.importDesignFromXML(xmlstring, replace=replace)
+                if fileToImport.headers['content-type'] in ['application/zip', 'application/x-zip-compressed']:
+                    zip_file = ZipFile(fileToImport)
+                    self.importDesignFromZip(zip_file, replace=replace)
+                else:
+                    xmlstring = fileToImport.read()
+                    self.importDesignFromXML(xmlstring, replace=replace)
 
             no_refresh_documents = REQUEST.get('no_refresh_documents', 'No')
             if no_refresh_documents == 'No':
@@ -600,7 +623,6 @@ class PlominoDesignManager(Persistent):
                 username,
                 password).read()
         ids = views.split('/')
-        ids.pop()
         return ids
 
     security.declareProtected(DESIGN_PERMISSION, 'getRemoteForms')
@@ -612,7 +634,6 @@ class PlominoDesignManager(Persistent):
                 username,
                 password).read()
         ids = forms.split('/')
-        ids.pop()
         return ids
 
     security.declareProtected(DESIGN_PERMISSION, 'getRemoteAgents')
@@ -624,7 +645,6 @@ class PlominoDesignManager(Persistent):
                 username,
                 password).read()
         ids = agents.split('/')
-        ids.pop()
         return ids
 
     security.declareProtected(DESIGN_PERMISSION, 'getRemoteResources')
@@ -636,7 +656,6 @@ class PlominoDesignManager(Persistent):
                 username,
                 password).read()
         ids = res.split('/')
-        ids.pop()
         return ['resources/'+i for i in ids]
 
     security.declarePublic('getFormulaScript')
@@ -651,6 +670,19 @@ class PlominoDesignManager(Persistent):
 
     security.declarePublic('compileFormulaScript')
     def compileFormulaScript(self, script_id, formula, with_args=False):
+        # Remember the current user
+        member = self.getCurrentMember()
+        if member.__class__.__name__ == "SpecialUser":
+            user = member
+        else:
+            user = member.getUser()
+
+        # Switch to the db's owner (formula must be compiled with the higher
+        # access rights, but their execution will always be perform with the
+        # current access rights)
+        owner = self.getOwner()
+        newSecurityManager(None, owner)
+
         ps = self.getFormulaScript(script_id)
         if not ps:
             ps = PythonScript(script_id)
@@ -670,7 +702,7 @@ class PlominoDesignManager(Persistent):
                     )
         import_list = ";".join(import_list)
 
-        r = re.compile('#Plomino import (.+)[\r\n]')
+        r = re.compile('^#Plomino import (.+)$', re.MULTILINE)
         for i in r.findall(formula):
             scriptname = i.strip()
             try:
@@ -687,12 +719,17 @@ class PlominoDesignManager(Persistent):
                 not formula.startswith('return ')):
             formula = "return " + formula
         str_formula = STR_FORMULA % {
+                'script_id': script_id,
                 'import_list': import_list,
                 'formula': formula
                 }
         ps.write(str_formula)
         if self.debugMode:
             logger.info(script_id + " compiled")
+
+        # Switch back to the original user
+        newSecurityManager(None, user)
+
         return ps
 
     security.declarePublic('runFormulaScript')
@@ -728,6 +765,8 @@ class PlominoDesignManager(Persistent):
                     repr(formula_getter),
                     script_id),
                 exc_info=True)
+            if self.getRequestCache("ABORT_ON_ERROR"):
+                transaction.abort()
             raise PlominoScriptException(
                     context,
                     e,
@@ -822,6 +861,45 @@ class PlominoDesignManager(Persistent):
         else:
             return None
 
+    security.declareProtected(DESIGN_PERMISSION, 'exportDesignAsZip')
+    def exportDesignAsZip(self, designelements=None, dbsettings=True):
+        """
+        """
+        db_id = self.id
+        if not designelements:
+            designelements = (
+                    [o.id for o in self.getForms()] +
+                    [o.id for o in self.getViews()] +
+                    [o.id for o in self.getAgents()] +
+                    ["resources/"+id for id in self.resources.objectIds()]
+                    )
+        file_string = StringIO()
+        zip_file = ZipFile(file_string, 'w', ZIP_DEFLATED)
+        for id in designelements:
+            if id.startswith('resources/'):
+                filename = os.path.join(
+                        db_id,
+                        'resources',
+                        id.split('/')[-1]+'.xml')
+                xmlstring = self.exportDesignAsXML(
+                        elementids=[id],
+                        dbsettings=False)
+                zip_file.writestr(filename, xmlstring)
+            else:
+                filename = os.path.join(db_id, id+'.xml')
+                xmlstring = self.exportDesignAsXML(
+                        elementids=[id],
+                        dbsettings=False)
+                zip_file.writestr(filename, xmlstring)
+        if dbsettings:
+            filename = os.path.join(db_id, 'dbsettings.xml')
+            xmlstring = self.exportDesignAsXML(
+                    elementids=[],
+                    dbsettings=True)
+            zip_file.writestr(filename, xmlstring)
+        zip_file.close()
+        return file_string
+
     security.declareProtected(DESIGN_PERMISSION, 'exportDesignAsXML')
     def exportDesignAsXML(self, elementids=None, REQUEST=None, dbsettings=True):
         """
@@ -840,7 +918,7 @@ class PlominoDesignManager(Persistent):
             elements = (self.getForms()
                     + self.getViews()
                     + self.getAgents()
-                    + [o for o in self.resources.getChildNodes()] 
+                    + [o for o in self.resources.getChildNodes()]
                     )
         else:
             elements = []
@@ -912,12 +990,23 @@ class PlominoDesignManager(Persistent):
             v = f.get(obj)
             if v is not None:
                 if field_type == "Products.Archetypes.Field.TextField":
-                    text = xmldoc.createCDATASection(
-                            f.getRaw(obj).decode('utf-8')
-                            )
+                    text_value = f.getRaw(obj)
+                    if text_value and f.__name__ == 'FormLayout':
+                        try:
+                            from lxml import etree
+                            text_value = etree.tostring(
+                                    etree.HTML(text_value.decode('utf-8')),
+                                    encoding="utf-8",
+                                    pretty_print=True,
+                                    method='html')
+                            text_value = text_value.split('<html><body>')[1].split('</body></html>')[0]
+                        except ImportError:
+                            # XXX: Blunt object replace:
+                            text_value = text_value.replace("><", ">\n<")
+                    text_node = xmldoc.createCDATASection(text_value.decode('utf-8'))
                 else:
-                    text = xmldoc.createTextNode(str(f.get(obj)))
-                fieldNode.appendChild(text)
+                    text_node = xmldoc.createTextNode(str(f.get(obj)))
+                fieldNode.appendChild(text_node)
             node.appendChild(fieldNode)
 
         # add AT standard extra attributes
@@ -991,8 +1080,8 @@ class PlominoDesignManager(Persistent):
                 IXMLImportExportSubscriber)
 
         for subscriber in subscribers:
-            name = (subscriber.__module__ 
-                    + '.' 
+            name = (subscriber.__module__
+                    + '.'
                     + subscriber.__class__.__name__)
             doc = parseString(subscriber.export_xml())
             customnode = doc.childNodes[0]
@@ -1005,6 +1094,7 @@ class PlominoDesignManager(Persistent):
     security.declareProtected(DESIGN_PERMISSION, 'exportResourceAsXML')
     def exportResourceAsXML(self, xmldoc, obj):
         """
+        xmldoc is a xml.dom.minidom.Document node
         """
         node = xmldoc.createElement('resource')
         id = obj.id
@@ -1017,13 +1107,18 @@ class PlominoDesignManager(Persistent):
         #if resource_type in ["Page Template", "Script (Python)"]:
         if hasattr(obj, 'read'):
             data = xmldoc.createCDATASection(obj.read())
+            node.appendChild(data)
+        elif isinstance(obj, OFS.Folder.Folder):
+            for name, sub_obj in obj.objectItems():
+                sub_node = self.exportResourceAsXML(xmldoc, sub_obj)
+                node.appendChild(sub_node)
         else:
             node.setAttribute('contenttype', obj.getContentType())
             stream = obj.data
             if not hasattr(stream, "encode"):
                 stream = stream.data
             data = xmldoc.createCDATASection(stream.encode('base64'))
-        node.appendChild(data)
+            node.appendChild(data)
         return node
 
     security.declareProtected(DESIGN_PERMISSION, 'importDesignFromXML')
@@ -1040,7 +1135,7 @@ class PlominoDesignManager(Persistent):
         total = 0
         if from_folder:
             if not os.path.isdir(from_folder):
-                raise PlominoDesignException, '%s does not exist' % path
+                raise PlominoDesignException, '%s does not exist' % from_folder
             xml_files = (glob.glob(os.path.join(from_folder, '*.xml')) +
                      glob.glob(os.path.join(from_folder, 'resources/*.xml')))
             total_elements = len(xml_files)
@@ -1049,8 +1144,14 @@ class PlominoDesignManager(Persistent):
                 xml_strings.append(fileobj.read())
         else:
             if REQUEST:
-                f=REQUEST.get("file")
-                xml_strings.append(asUnicode(f.read()))
+                filename = REQUEST.get('filename')
+                f = REQUEST.get(filename)
+                cte = f.headers.get('content-transfer-encoding')
+                if cte == 'base64':
+                    filecontent = base64.decodestring(f.read())
+                else:
+                    filecontent = f.read()
+                xml_strings.append(asUnicode(filecontent))
             else:
                 xml_strings.append(asUnicode(xmlstring))
             total_elements = None
@@ -1074,6 +1175,61 @@ class PlominoDesignManager(Persistent):
             if not total_elements:
                 total_elements = len(elements)
 
+            e = design.firstChild
+            while e is not None:
+                name = str(e.nodeName)
+                if name in ('resource', 'element', 'dbsettings'):
+                    if name == 'dbsettings':
+                        logger.info("Import db settings")
+                        self.importDbSettingsFromXML(e)
+                    if name == 'element':
+                        logger.info("Import "+e.getAttribute('id'))
+                        self.importElementFromXML(self, e)
+                    if name == 'resource':
+                        logger.info("Import resource "+e.getAttribute('id'))
+                        self.importResourceFromXML(self.resources, e)
+                    count = count + 1
+                    total = total + 1
+                if count == 10:
+                    self.setStatus("Importing design (%d%%)" % int(100*total/total_elements))
+                    logger.info("(%d elements committed, still running...)" % total)
+                    txn.savepoint(optimistic=True)
+                    count = 0
+                e = e.nextSibling
+
+        logger.info("(%d elements imported)" % total)
+        self.setStatus("Ready")
+        txn.commit()
+        self.getIndex().no_refresh = False
+
+    security.declareProtected(DESIGN_PERMISSION, 'importDesignFromZip')
+    def importDesignFromZip(self, zip_file, replace=False):
+        """Import the design from a zip file
+        """
+        logger.info("Start design import")
+        self.setStatus("Importing design")
+        self.getIndex().no_refresh = True
+        txn = transaction.get()
+        count = 0
+        total = 0
+        if replace:
+            logger.info("Replace mode: removing current design")
+            designelements = [o.id for o in self.getForms()] \
+                                 + [o.id for o in self.getViews()] \
+                                 + [o.id for o in self.getAgents()]
+            ObjectManager.manage_delObjects(self, designelements)
+            ObjectManager.manage_delObjects(self.resources, self.resources.objectIds())
+            logger.info("Current design removed")
+        total_elements = None
+        file_names = zip_file.namelist()
+        for file_name in file_names:
+            xml_string = zip_file.open(file_name).read()
+            xml_string = xml_string.replace(">\n<", "><")
+            xmldoc = parseString(xml_string)
+            design = xmldoc.getElementsByTagName("design")[0]
+            elements = [e for e in design.childNodes if e.nodeName in ('resource', 'element', 'dbsettings')]
+            if not total_elements:
+                total_elements = len(elements)
             e = design.firstChild
             while e is not None:
                 name = str(e.nodeName)
@@ -1216,9 +1372,13 @@ class PlominoDesignManager(Persistent):
             else:
                 if child.hasChildNodes():
                     field = self.Schema().getField(name)
-                    #field.set(self, child.firstChild.data)
-                    result=field.widget.process_form(self, field, {name : child.firstChild.data})
-                    field.set(self, result[0])
+                    if field:
+                        result=field.widget.process_form(
+                            self,
+                            field,
+                            {name : child.firstChild.data}
+                        )
+                        field.set(self, result[0])
             child = child.nextSibling
 
     security.declareProtected(DESIGN_PERMISSION, 'importResourceFromXML')
@@ -1243,14 +1403,23 @@ class PlominoDesignManager(Persistent):
             id = manage_addImage(container, id,
                     node.firstChild.data.decode('base64'),
                     content_type=node.getAttribute('contenttype'))
+        elif resource_type == 'Folder':
+            container.manage_addFolder(id)
+            subfolder = container[id]
+            elements = [e for e in node.childNodes
+                            if e.nodeName == 'resource']
+            for subnode in elements:
+                self.importResourceFromXML(subfolder, subnode)
         else:
             container.manage_addFile(id)
             obj = getattr(container, id)
             obj.meta_type = resource_type
             obj.title = node.getAttribute('title')
-            obj.update_data(
-                    node.firstChild.data.decode('base64'),
-                    content_type=node.getAttribute('contenttype'))
+            data = ''
+            if node.hasChildNodes():
+                data = node.firstChild.data.decode('base64')
+            obj.update_data(data,
+                            content_type=node.getAttribute('contenttype'))
 
     def is_profiling(self):
         from Products.CMFPlomino import PROFILING
@@ -1281,3 +1450,44 @@ class PlominoDesignManager(Persistent):
         """
         level = REQUEST.get('level', '')
         REQUEST.RESPONSE.setCookie('plomino_profiler', level, path='/')
+
+    security.declarePublic('abortOnError')
+    def abortOnError(self):
+        """
+        """
+        self.setRequestCache("ABORT_ON_ERROR", True)
+
+    security.declarePublic('getTemplateList')
+    def getTemplateList(self):
+        """
+        """
+        resource = get_resource_directory()
+        if not resource:
+            return []
+        return resource.listDirectory()
+
+    security.declareProtected(DESIGN_PERMISSION, 'importTemplate')
+    def importTemplate(self, REQUEST=None, template_id=None):
+        """
+        """
+        if REQUEST:
+            template_id = REQUEST.get("template_id")
+        resource = get_resource_directory()
+        if template_id in resource:
+            self.importTemplateElement(resource[template_id])
+        if REQUEST:
+            REQUEST.RESPONSE.redirect(
+                "%s/DatabaseDesign" % (self.absolute_url())
+            )
+
+
+    security.declareProtected(DESIGN_PERMISSION, 'importTemplate')
+    def importTemplateElement(self, source):
+        for name in source.listDirectory():
+            if source.isDirectory(name):
+                self.importTemplateElement(source[name])
+            else:
+                xml = source.readFile(name)
+                self.importDesignFromXML(xmlstring=xml)
+
+

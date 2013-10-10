@@ -2,13 +2,12 @@
 #
 # File: PlominoDocument.py
 
-
 __author__ = """Eric BREHAULT <eric.brehault@makina-corpus.org>"""
 __docformat__ = 'plaintext'
 
 # From the standard library
 from copy import deepcopy
-
+from urllib import urlencode
 # 3rd party Python 
 from jsonutil import jsonutil as json
 
@@ -50,11 +49,6 @@ except ImportError, e:
     from Products.CMFCore.CMFCatalogAware import CMFCatalogAware as CatalogAware
 
 try:
-    from iw.fss.FileSystemStorage import FileSystemStorage, FSSFileInfo
-except ImportError, e:
-    pass
-
-try:
     from plone.app.blob.field import BlobWrapper
     from plone.app.blob.utils import guessMimetype
     HAS_BLOB = True
@@ -63,6 +57,8 @@ except ImportError, e:
 
 # Plomino
 from exceptions import PlominoScriptException
+from PlominoUtils import sendMail, asUnicode, asList, PlominoTranslate
+from Products.CMFPlomino.browser import PlominoMessageFactory as _
 from Products.CMFPlomino.config import *
 import interfaces
 
@@ -76,8 +72,6 @@ try:
     URL_NORMALIZER = True
 except ImportError:
     URL_NORMALIZER = False
-
-from PlominoUtils import sendMail, asUnicode, asList, PlominoTranslate, json_dumps
 
 
 class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
@@ -145,7 +139,7 @@ class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
         self.plomino_modification_time = DateTime().toZone('UTC')
 
     security.declarePublic('getItem')
-    def getItem(self,name, default=''):
+    def getItem(self, name, default=''):
         """ Get item from document.
         """
         if self.items.has_key(name):
@@ -227,7 +221,13 @@ class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
         return result
 
     security.declarePublic('tojson')
-    def tojson(self, REQUEST=None, item=None, formid=None, rendered=False):
+    def tojson(
+        self,
+        REQUEST=None,
+        item=None,
+        formid=None,
+        rendered=False,
+        lastmodified=None):
         """ Return item value as JSON.
 
         Return all items if `item=None`.
@@ -250,6 +250,7 @@ class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
                     'content-type', 'application/json; charset=utf-8')
             item = REQUEST.get('item', item)
             formid = REQUEST.get('formid', formid)
+            lastmodified = REQUEST.get('lastmodified', lastmodified)
             rendered_str = REQUEST.get('rendered', None)
             if rendered_str:
                 rendered = True
@@ -290,10 +291,11 @@ class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
             data = self.items.data
 
         if datatables_format:
-            data = {
-                    'iTotalRecords': len(data),
+            data = {'iTotalRecords': len(data),
                     'iTotalDisplayRecords': len(data),
                     'aaData': data }
+        if lastmodified:
+            data = {'lastmodified': self.getLastModified(), 'data': data}
         return json.dumps(data)
 
     security.declarePublic('computeItem')
@@ -307,11 +309,11 @@ class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
         (Pass `report` to `PlominoForm.computeFieldValue`.)
         """
         result = None
-        db = self.getParentDatabase()
         if not form:
             if not formid:
                 form = self.getForm()
             else:
+                db = self.getParentDatabase()
                 form = db.getForm(formid)
         if form:
             result = form.computeFieldValue(itemname, self, report=report)
@@ -404,6 +406,11 @@ class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
         redirect = REQUEST.get('plominoredirecturl')
         if not redirect:
             redirect = self.getItem("plominoredirecturl")
+        if type(redirect) is dict:
+            # if dict, we assume it contains "callback" as an URL that will be
+            # called asynchronously, "redirect" as the redirect url (optional,
+            # default=doc url), and "method" (optional, default=GET)
+            redirect = "./async_callback?" + urlencode(redirect)
         if not redirect:
             redirect = self.absolute_url()
         REQUEST.RESPONSE.redirect(redirect)
@@ -579,6 +586,29 @@ class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
         message = self.openWithForm(form)
         sendMail(db, recipients, title, message)
 
+    security.declarePublic('Title')
+    def Title(self):
+        """ Return the stored title or compute the title (if dynamic).
+        """
+        form = self.getForm()
+        if form.getDynamicDocumentTitle():
+            # compute the document title
+            title_formula = form.getDocumentTitle()
+            if title_formula:
+                # Use the formula if we have one
+                try:
+                    title = self.runFormulaScript(
+                            'form_%s_title' % form.id,
+                            self,
+                            form.DocumentTitle)
+                    if (form.getStoreDynamicDocumentTitle() and
+                            title != super(PlominoDocument, self).Title()):
+                        self.setTitle(title)
+                    return title
+                except PlominoScriptException, e:
+                    e.reportError('Title formula failed')
+        return super(PlominoDocument, self).Title()
+
     security.declarePublic('getForm')
     def getForm(self):
         """ Look for a form and return it if found. 
@@ -684,7 +714,7 @@ class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
                         if field and field.getMandatory():
                             error = "%s %s" % (
                                     fieldname,
-                                    PlominoTranslate("is mandatory", self))
+                                    PlominoTranslate(_("is mandatory"), self))
                             return form.notifyErrors([error])
                 del current_files[filename]
                 self.setItem(fieldname, current_files)
@@ -754,13 +784,7 @@ class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
         if not filename:
             return None
 
-        fss = self.getParentDatabase().getStorageAttachments()
-        if fss:
-            storage = FileSystemStorage()
-            file_obj = storage.get(filename, self)
-        else:
-            #file_obj = getattr(self, filename)
-            file_obj = self.get(filename, None)
+        file_obj = self.get(filename, None)
         if not file_obj:
             return None
         if asFile:
@@ -770,27 +794,18 @@ class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
                     'content-type', file_obj.getContentType())
             REQUEST.RESPONSE.setHeader(
                     "Content-Disposition", "inline; filename="+filename)
-        if fss:
-            return file_obj.getData()
-        else:
-            return file_obj.data
+        return file_obj.data
 
     security.declareProtected(READ_PERMISSION, 'getFilenames')
     def getFilenames(self):
-        """ Return names of items that are stored in FSS (legacy) or are blobs.
+        """ Return names of items that are File or Blob.
         """
-        fss = self.getParentDatabase().getStorageAttachments()
-        if fss:
-            return [o.getTitle() for o in self.__dict__.values() 
-                    if isinstance(o, FSSFileInfo)]
+        if HAS_BLOB:
+            return [id for id in self.objectIds()
+                    if isinstance(self[id], BlobWrapper)]
         else:
-            #return [o.getId() for o in self.getChildNodes() if isinstance(o, File)]
-            if HAS_BLOB:
-                return [id for id in self.objectIds()
-                        if isinstance(self[id], BlobWrapper)]
-            else:
-                return [id for id in self.objectIds()
-                        if isinstance(self[id], File)]
+            return [id for id in self.objectIds()
+                    if isinstance(self[id], File)]
 
     security.declareProtected(EDIT_PERMISSION, 'setfile')
     def setfile(self, submittedValue, filename='', overwrite=False, contenttype=''):
@@ -819,16 +834,13 @@ class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
                         DateTime().toZone('UTC').strftime("%Y%m%d%H%M%S"),
                         filename)
             
-            if self.getParentDatabase().getStorageAttachments():
-                tmpfile = File(filename, filename, submittedValue)
-                storage = FileSystemStorage()
-                storage.set(filename, self, tmpfile);
-                contenttype = storage.get(filename,self).getContentType()
-            elif HAS_BLOB:
+            if HAS_BLOB:
                 if (isinstance(submittedValue, FileUpload) or 
                         type(submittedValue) == file):
                     submittedValue.seek(0)
                     contenttype = guessMimetype(submittedValue, filename)
+                    submittedValue = submittedValue.read()
+                elif submittedValue.__class__.__name__ == '_fileobject':
                     submittedValue = submittedValue.read()
                 try:
                     blob = BlobWrapper(contenttype)
@@ -852,12 +864,8 @@ class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
     def deletefile(self, filename):
         """ Delete blob or FSS obj.
         """
-        if self.getParentDatabase().getStorageAttachments():
-            storage = FileSystemStorage();
-            storage.unset(filename, self);
-        else:
-            if filename in self.objectIds():
-                self.manage_delObjects(filename)
+        if filename in self.objectIds():
+            self.manage_delObjects(filename)
 
     security.declarePublic('isNewDocument')
     def isNewDocument(self):
@@ -881,7 +889,12 @@ class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
         # if REQUEST exists, test the current command
         if hasattr(self, 'REQUEST'):
             command = self.REQUEST.URL.split('/')[-1].lower()
-            return command in ['editdocument', 'edit', 'savedocument']
+            return command in [
+                'editdocument',
+                'edit',
+                'savedocument',
+                'editbaredocument'
+            ]
         else:
             return False
 

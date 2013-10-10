@@ -1,12 +1,12 @@
 <span tal:define="widget python:options['field'].getSettings('widget');
-				size python:options['field'].getSettings('size')">
-	<tal:widget tal:condition="python:test(widget=='HIDDEN')">
-		<input type="hidden" tal:attributes="name options/fieldname; value options/fieldvalue" />
-	</tal:widget>
-	<tal:widget tal:condition="python:test(widget=='TEXT')">
-		<input type="text" tal:attributes="name options/fieldname; value options/fieldvalue; size size" />
-	</tal:widget>
-	<tal:widget tal:condition="python:test(widget=='TEXTAREA')">
-		<textarea tal:attributes="name options/fieldname; rows size" tal:content="options/fieldvalue">text</textarea>
-	</tal:widget>
+                size python:options['field'].getSettings('size')">
+    <tal:widget tal:condition="python:test(widget=='HIDDEN')">
+        <input type="hidden" tal:attributes="id options/fieldname; name options/fieldname; value options/fieldvalue" />
+    </tal:widget>
+    <tal:widget tal:condition="python:test(widget=='TEXT')">
+        <input type="text" tal:attributes="id options/fieldname; name options/fieldname; value options/fieldvalue; size size" />
+    </tal:widget>
+    <tal:widget tal:condition="python:test(widget=='TEXTAREA')">
+        <textarea tal:attributes="id options/fieldname; name options/fieldname; rows size" tal:content="options/fieldvalue">text</textarea>
+    </tal:widget>
 </span>

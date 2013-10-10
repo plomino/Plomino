@@ -6,4 +6,4 @@
 	 </a>
 	<br/>
 </tal:block>
-<input type="file" tal:attributes="name options/fieldname" />
+<input type="file" tal:attributes="id options/fieldname; name options/fieldname" />

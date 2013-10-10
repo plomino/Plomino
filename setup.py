@@ -1,7 +1,7 @@
 from setuptools import setup, find_packages
 import os
 
-version = '1.17.1'
+version = '1.17.5'
 
 setup(name='Products.CMFPlomino',
       version=version,
@@ -35,11 +35,16 @@ setup(name='Products.CMFPlomino',
           'collective.codemirror',
           'plomino.tinymce',
           'Products.CMFPlone',
+          'python-dateutil>=1.5',
+          'plone.app.registry',
+          'plone.app.jquery',
+          'zope.app.component',  # Helps Plone 4.0, should not hurt elsewhere.
+          'zope.globalrequest',  # This one too.
       ],
       extras_require={
           'test': [
+              'plone.app.testing[robot]>=4.2.2',
               'python-dateutil',  # (import error without this)
-              'plone.app.testing',
               'plone.app.robotframework',
               'Products.PloneTestCase',
               'selenium',

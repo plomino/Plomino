@@ -1,0 +1,36 @@
+# --- PLEASE EDIT THE LINES BELOW CORRECTLY ---
+# Manual msgids for Plomino
+# Jean Jordaan <jean.jordaan@gmail.com>, 2013.
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"POT-Creation-Date: 2013-07-23 10:17+0000\n"
+"PO-Revision-Date: 2013-07-23 18:00+0700\n"
+"Last-Translator: Jean Jordaan <jean.jordaan@gmail.com>\n"
+"Language-Team: Eric BREHAULT <ebrehault@gmail.com>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0\n"
+"Language-Code: en\n"
+"Language-Name: English\n"
+"Preferred-Encodings: utf-8 latin1\n"
+"Domain: CMFPlomino\n"
+
+# Do you really want to delete this document
+#. Default: "Do you really want to delete this document"
+msgid "Do you really want to delete this document"
+msgstr ""
+
+# Do you really want to delete those documents
+#. Default: "Do you really want to delete those documents"
+msgid "Do you really want to delete those documents"
+msgstr ""
+
+#. Default: "Ready"
+msgid "Ready"
+msgstr ""
+
+#. Default: "From"
+msgid "From"
+msgstr ""
