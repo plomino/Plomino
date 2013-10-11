@@ -47,6 +47,16 @@ $$(document).ready( function() {
 });
 ">
     </script>
+    <tal:block_hasjsresources 
+        tal:define="jsresources python:here.getResourcesJS().splitlines()"
+        tal:condition="jsresources"
+        tal:repeat="js jsresources">
+        <script
+            type="text/javascript"
+            charset="iso-8859-1"
+            tal:attributes="src js">
+        </script>
+    </tal:block_hasjsresources>
 </metal:javascript_head>
 
 <metal:css fill-slot="style_slot">
@@ -56,6 +66,15 @@ $$(document).ready( function() {
             media="all"
             tal:attributes="href string:$portal_url/jscalendar/calendar-system.css" />
     </tal:block_hasdatetimefield>
+    <tal:block_hascssresources
+        tal:define="cssresources python:here.getResourcesCSS().splitlines()"
+        tal:condition="cssresources"
+        tal:repeat="css cssresources">
+        <link rel="stylesheet"
+            type="text/css"
+            media="all"
+            tal:attributes="href css" />
+    </tal:block_hascssresources>
 </metal:css>
 
 <metal:block_disable_border
