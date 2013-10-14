@@ -180,6 +180,7 @@ class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
         """
         if not hasattr(self, 'plomino_modification_time'):
             self.plomino_modification_time = self.bobobase_modification_time().toZone('UTC')
+        # TODO: We'll get the time in UTC, convert to local timezone?
         if asString:
             return str(self.plomino_modification_time)
         else:
