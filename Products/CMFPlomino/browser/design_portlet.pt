@@ -106,7 +106,7 @@
                                 </li>
                                 <li><span i18n:translate="">Actions</span> : 
                                 <ul>
-                                    <tal:actionsforms tal:repeat="action_tuple python:form.getActions(None, False, form.id)">
+                                    <tal:actionsforms tal:repeat="action_tuple python:form.getActions(None, False)">
                                         <li tal:define="action python:action_tuple[0]">
                                         <tal:block tal:replace="action/id">action name</tal:block>
                                         <a href="" tal:attributes="href python:action.absolute_url()+'/base_edit'"><img tal:attributes="src string:${here/portal_url}/edit.png" /></a>
@@ -156,7 +156,7 @@
                                 <!--View actions-->
                                 <li><span i18n:translate="">Actions</span> :
                                 <ul>
-                                    <tal:actionsviews tal:repeat="action_tuple python:plominoview.getActions(None, False, plominoview.id)">
+                                    <tal:actionsviews tal:repeat="action_tuple python:plominoview.getActions(None, False)">
                                         <li tal:define="action python:action_tuple[0]">
                                         <tal:block tal:content="action/id">action name</tal:block>
                                         <a href="" tal:attributes="href python:action.absolute_url()+'/base_edit'"><img tal:attributes="src string:${here/portal_url}/edit.png" /></a>

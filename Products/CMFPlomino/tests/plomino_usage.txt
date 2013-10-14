@@ -65,7 +65,7 @@ Create a database::
     >>> browser.open(portal_url + "/createObject?type_name=PlominoDatabase")
     >>> browser.getControl('Title').value = 'testdb'
     >>> browser.getControl('Save').click()
-    >>> "No available content" in browser.contents
+    >>> "The database is empty" in browser.contents
     True
     >>> db_url = portal_url + "/testdb"
 
@@ -112,7 +112,7 @@ Create forms::
     ... return context.getItem('age') and context.getItem('name')"""
     >>> browser.getControl(name='form.button.save').click()
     >>> browser.open(db_url + "/frmtest")
-    >>> """<input type="text" name="name" value="" />""" in browser.contents
+    >>> """<input type="text" id="name" value="" name="name" />""" in browser.contents
     True
     >>> browser.open(db_url + "/frmtest/createObject?type_name=PlominoField")
     >>> browser.getControl(name='id').value = "display_name"
@@ -185,7 +185,7 @@ Create forms::
     ... """
     >>> browser.getControl(name='form.button.save').click()
     >>> browser.open(db_url + "/frmtest2")
-    >>> """<input type="text" name="population" value="" />""" in browser.contents
+    >>> """<input type="text" id="population" value="" name="population" />""" in browser.contents
     True
 
 Generate views::
@@ -330,7 +330,7 @@ Replication::
     >>> browser.open(portal_url + "/createObject?type_name=PlominoDatabase")
     >>> browser.getControl('Title').value = 'localreplicadb'
     >>> browser.getControl('Save').click()
-    >>> "No available content" in browser.contents
+    >>> "The database is empty" in browser.contents
     True
     >>> localdb_url = portal_url + "/localreplicadb"
     >>> browser.open(localdb_url + "/DatabaseDesign")

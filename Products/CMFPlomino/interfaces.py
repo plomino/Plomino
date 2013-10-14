@@ -59,3 +59,8 @@ class IXMLImportExportSubscriber(Interface):
         (as returned by __call__).
         """
 
+        
+class IPlominoSafeDomains(Interface):
+    """Marker interface for PlominoSafeDomains
+    """
+

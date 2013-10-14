@@ -185,7 +185,6 @@ Add document
     Click button  Save
 
 Replicate the database design
-    Other server log in
     Go to         ${OTHER_PLONE_URL}
     Open Add New Menu
     Click Link    plominodatabase
@@ -257,8 +256,7 @@ Delete replica
 
 Other server log in
     Go to  ${OTHER_PLONE_URL}/login_form
-    Wait Until Page Contains Element  __ac_name
-    # Page should contain element  __ac_name
+    Page should contain element  __ac_name
     Page should contain element  __ac_password
     Page should contain button  Log in
     Input text for sure  __ac_name  admin

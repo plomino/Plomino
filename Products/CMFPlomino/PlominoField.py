@@ -151,6 +151,16 @@ schema = Schema((
         ),
         vocabulary='index_vocabulary',
     ),
+    TextField(
+        name='HTMLAttributesFormula',
+        widget=TextAreaWidget(
+            label="HTML attributes formula",
+            description="Inject DOM attributes in the field tag",
+            label_msgid=_('CMFPlomino_label_HTMLAttributesFormula', default="HTML attributes formula"),
+            description_msgid=_('CMFPlomino_help_HTMLAttributesFormula', default='Inject DOM attributes in the field tag'),
+            i18n_domain='CMFPlomino',
+        ),
+    ),
 ),
 )
 
@@ -263,12 +273,34 @@ class PlominoField(BaseContent, BrowserDefaultMixin):
         selection = self.getSettings().getSelectionList(target)
 
         try:
-            return pt(fieldname=fieldname,
-                    fieldvalue=fieldvalue,
-                    selection=selection,
-                    field=self,
-                    doc=target
-                    )
+            html = pt(fieldname=fieldname,
+                fieldvalue=fieldvalue,
+                selection=selection,
+                field=self,
+                doc=target
+            )
+
+            injection_zone = 'id="%s"' % self.id
+            if (injection_zone in html
+                and hasattr(self, 'HTMLAttributesFormula')
+                and self.HTMLAttributesFormula
+            ):
+                injection_position = html.index(injection_zone)
+                html_attributes = self.runFormulaScript(
+                    'field_%s_%s_attributes' % (
+                        self.getParentNode().id,
+                        self.id,
+                    ),
+                    target,
+                    self.HTMLAttributesFormula
+                )
+                html = ' '.join([
+                    html[:injection_position],
+                    html_attributes,
+                    html[injection_position:],
+                ])
+            return html
+
         except Exception, e:
             self.traceRenderingErr(e, self)
             return ""

@@ -27,6 +27,7 @@ from Acquisition import aq_inner
 from Products.Archetypes.atapi import *
 from Products.ATContentTypes.content.folder import ATFolder
 from zope.interface import implements
+from Products.CMFPlomino.PlominoUtils import translate
 
 # Plone
 try:
@@ -312,6 +313,8 @@ class PlominoView(ATFolder):
         return self.id
 
     def __bobo_traverse__(self, request, name):
+        """ Allow traversing to .../<view>/<docid> 
+        """
         if self.documents.has_key(name):
             return aq_inner(getattr(self.documents, name)).__of__(self)
         return BaseObject.__bobo_traverse__(self, request, name)
@@ -334,10 +337,10 @@ class PlominoView(ATFolder):
         if fulltext_query:
             query['SearchableText'] = fulltext_query
         results=index.dbsearch(
-            query,
-            sortindex=sortindex,
-            reverse=reverse,
-            only_allowed=only_allowed)
+                query,
+                sortindex=sortindex,
+                reverse=reverse,
+                only_allowed=only_allowed)
         if limit:
             results = batch(
                     results,
@@ -370,32 +373,22 @@ class PlominoView(ATFolder):
         return [c.getObject() for c in columnslist]
 
     security.declarePublic('getActions')
-    def getActions(self, target, hide=True, parent_id=None):
-        """Get actions
+    def getActions(self, view, hide=True):
+        """ Get filtered actions for the view.
         """
+        # Note: We take 'view' as parameter (even though `self` and `view`
+        # will always be the same) because `getActions` is called from
+        # `ActionBar` template without knowing whether it's used for
+        # view/document/page.
         actions = self.objectValues(spec='PlominoAction')
 
         filtered = []
         for action in actions:
             if hide:
-                try:
-                    #result = RunFormula(target, action.getHidewhen())
-                    result = self.runFormulaScript(
-                            'action_%s_%s_hidewhen' % (
-                                action.getParentNode().id,
-                                action.id),
-                            target,
-                            action.Hidewhen,
-                            True)
-                except PlominoScriptException, e:
-                    e.reportError(
-                            '"%s" action hide-when failed' % action.Title())
-                    # if error, we hide anyway
-                    result = True
-                if not result:
-                    filtered.append((action, parent_id))
+                if not action.isHidden(view, self):
+                    filtered.append((action, self.id))
             else:
-                filtered.append((action, parent_id))
+                filtered.append((action, self.id))
         return filtered
 
     security.declarePublic('getColumn')
@@ -545,15 +538,16 @@ class PlominoView(ATFolder):
         rows = []
         for b in brains:
             row = []
-            for cname in columns:
-                v = getattr(b, self.getIndexKey(cname))
-                if v is None:
-                    v = ''
-                elif isinstance(v, basestring):
-                    v = v.encode('utf-8')
+            for column in columns:
+                column_value = getattr(b, self.getIndexKey(column.id))
+                rendered = column.getColumnRender(column_value)
+                if column_value is None:
+                    column_value = ''
+                elif isinstance(column_value, basestring):
+                    column_value = column_value.encode('utf-8')
                 else:
-                    v = unicode(v).encode('utf-8')
-                row.append(v)
+                    column_value = unicode(column_value).encode('utf-8')
+                row.append(column_value)
             rows.append(row)
         return rows
 
@@ -586,7 +580,7 @@ class PlominoView(ATFolder):
         if brain_docs is None:
             brain_docs = self.getAllDocuments(getObject=False)
 
-        columns = [c.id for c in self.getColumns()
+        columns = [c for c in self.getColumns()
             if not getattr(c, 'HiddenColumn', False)]
 
         stream = cStringIO.StringIO()
@@ -597,8 +591,7 @@ class PlominoView(ATFolder):
 
         # add column titles
         if displayColumnsTitle=='True' :
-            titles = [c.title.encode('utf-8') for c in self.getColumns()
-                      if not getattr(c, 'HiddenColumn', False)]
+            titles = [c.title.encode('utf-8') for c in columns]
             writer.writerow(titles)
 
         rows = self.makeArray(brain_docs, columns)
@@ -653,7 +646,7 @@ class PlominoView(ATFolder):
         if brain_docs is None:
             brain_docs = self.getAllDocuments(getObject=False)
 
-        columns = [c.id for c in self.getColumns()
+        columns = [c for c in self.getColumns()
             if not getattr(c, 'HiddenColumn', False)]
 
         rows = self.makeArray(brain_docs, columns)

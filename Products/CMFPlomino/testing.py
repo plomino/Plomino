@@ -39,6 +39,7 @@ class Plomino(PloneSandboxLayer):
             title='field_1', FieldType="TEXT", FieldMode="EDITABLE")
         db.frm_test.field_1.at_post_create_script()
         db.frm_test.setFormLayout("""<p>please enter a value for field_1: <span class="plominoFieldClass">field_1</span></p>""")
+        db.createDocument("doc1")
 
     def tearDownZope(self, app):
         # app.manage_delObjects(ids=['PloneRemote'])

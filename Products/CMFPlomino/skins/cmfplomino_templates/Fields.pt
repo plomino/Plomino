@@ -34,13 +34,13 @@
 </span>
 
 <span metal:define-macro="DefaultFieldEdit">
-	<input type="text" tal:attributes="name fieldname; value fieldvalue" /> (type <span tal:content="fieldtype">my type</span>)
+	<input type="text" tal:attributes="id options/fieldname; name fieldname; value fieldvalue" /> (type <span tal:content="fieldtype">my type</span>)
 </span>
 
 <span metal:define-macro="TEXTFieldEdit">
-	<input type="text" tal:attributes="name fieldname; value fieldvalue" />
+	<input type="text" tal:attributes="id options/fieldname; name fieldname; value fieldvalue" />
 </span>
 
 <span metal:define-macro="RICHTEXTFieldEdit">
-	<textarea tal:attributes="name fieldname"><tal:block tal:content="fieldvalue">my value</tal:block></textarea>
+	<textarea tal:attributes="id options/fieldname; name fieldname"><tal:block tal:content="fieldvalue">my value</tal:block></textarea>
 </span>
