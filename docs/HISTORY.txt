@@ -1,6 +1,18 @@
 Changelog
 =========
 
+1.18 (2013-10-15)
+-----------------
+* support for labels associated to fields
+* disabled formula editing for PlominoDesigner (so we can allow a user to change
+  form layouts without breaking the formulas)
+* fix a major vulnerability in open_url (now, targeted sources must be declared
+  safe from an local package)
+* allow to load specific CSS and JS in a PlominoForm
+* GenericSetup import/export for Plomino db marked as templates
+* allow to inject HTML attributes on fields
+* extended translation support for views
+
 1.17.5 (2013-09-24)
 -------------------
 * Reorder validation, so that submitted values can be 
