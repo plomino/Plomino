@@ -24,19 +24,19 @@
 
         <div tal:replace="structure provider:plone.abovecontenttitle" 
         /><tal:view_parameters
-            define="myF python:here;
-                    b myF/ActionBarPosition|nothing;
-                    hideCheckboxes myF/HideCheckboxes|nothing;
+            define="plomino_view python:here;
+                    b plomino_view/ActionBarPosition|nothing;
+                    hideCheckboxes plomino_view/HideCheckboxes|nothing;
                     hasRemovePermission python:here.hasRemovePermission(here)==True;
                     hasReadPermission python:test(
                         here.hasReadPermission(here)==True and
                         here.hasReadPermission(here.getParentDatabase())==True)">
 
-            <form tal:attributes="name python:myF.id" class="plominoviewform">
+            <form tal:attributes="name python:plomino_view.id" class="plominoviewform">
             <tal:hasReadPermission condition="python:test(hasReadPermission==True)">
                 <tal:view_actions
-                    define="owner python:myF"
-                    condition="python:b and myF.ActionBarPosition in ['TOP', 'BOTH']">
+                    define="owner python:plomino_view"
+                    condition="python:b and plomino_view.ActionBarPosition in ['TOP', 'BOTH']">
                     <span metal:use-macro="here/ActionBar/macros/ViewActionBar">
                     display view actions </span>
                 </tal:view_actions>
@@ -98,16 +98,12 @@
                                         <tal:categoryrows
                                             repeat="brain python:here.getCategoryViewEntries(columns[0].getColumnName(), cat[0])">
 
-                                            <!-- TODO: why lookup doc here? it isn't referenced.
-                                                       also: why not just 'brain.getObject()'?
-                                            -->
-                                            <tal:block
-                                                tal:define="doc python:here.getDocument(brain.getPath().split('/')[-1])">
+                                            <tal:row>
                                                 <tr tal:define="oddrow repeat/brain/odd;
                                                                 docurl python:brain.getPath().split('/')[-1]"
                                                     tal:attributes="class python:test(oddrow, 'even', 'odd');">
                                                     <td>
-                                                       <input tal:condition="python:hasRemovePermission and not(hideCheckboxes)" type="checkbox" name="sdoc" tal:attributes="value python:brain.getPath().split('/')[-1]" /></td>
+                                                       <input tal:condition="python:hasRemovePermission and not(hideCheckboxes)" type="checkbox" name="sdoc" tal:attributes="value python:(brain.getPath().split('/')[-1])" /></td>
                                                     <tal:columns repeat="column columns">
                                                         <td tal:condition="not: column/HiddenColumn|nothing"><tal:skipfirstcolumn
                                                             condition="python:test(column!=columns[0])">
@@ -120,7 +116,7 @@
                                                         </tal:skipfirstcolumn></td>
                                                     </tal:columns>
                                                 </tr>
-                                            </tal:block>
+                                            </tal:row>
                                         </tal:categoryrows>
                                     </tal:expanded_category>
                                 </tal:category>
@@ -260,8 +256,8 @@
                 </tal:dynamic_widget>
 
                 <tal:view_actions
-                    define="owner python:myF"
-                    condition="python:b and myF.ActionBarPosition in ['BOTTOM', 'BOTH']">
+                    define="owner python:plomino_view"
+                    condition="python:b and plomino_view.ActionBarPosition in ['BOTTOM', 'BOTH']">
 
                     <span metal:use-macro="here/ActionBar/macros/ViewActionBar">
                     display view actions </span>

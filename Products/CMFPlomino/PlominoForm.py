@@ -294,6 +294,28 @@ schema = Schema((
             i18n_domain='CMFPlomino',
         ),
     ),
+    TextField(
+        name='ResourcesJS',
+        widget=TextAreaWidget(
+            label="JavaScripts",
+            description="JavaScript resources loaded by this form. " \
+                "Enter one path per line.",
+            label_msgid='CMFPlomino_label_FormResourcesJS',
+            description_msgid='CMFPlomino_help_FormResourcesJS',
+            i18n_domain='CMFPlomino',
+        ),
+    ),
+    TextField(
+        name='ResourcesCSS',
+        widget=TextAreaWidget(
+            label="CSS",
+            description="CSS resources loaded by this form. " \
+                "Enter one path per line.",
+            label_msgid='CMFPlomino_label_FormResourcesCSS',
+            description_msgid='CMFPlomino_help_FormResourcesCSS',
+            i18n_domain='CMFPlomino',
+        ),
+    ),
 ),
 )
 

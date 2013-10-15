@@ -1393,8 +1393,21 @@ class PlominoReplicationManager(Persistent):
     @postonly
     def importFromXML(self, xmlstring=None, sourcetype='sourceFile', from_file=None, from_folder=None, REQUEST=None):
         """ Import documents from XML.
-        The sourcetype can be sourceFile or sourceFolder.
+
+        The documents can be provided in a number of ways:
+        - As a single XML string ('xmlstring' parameter). If supplied, 
+          this governs.
+        - As a source file (default).
+          - If 'REQUEST=None', the file should be supplied via the
+            'from_file' parameter.
+          - Otherwise, REQUEST is checked for a 'filename' key, and the file
+            is looked for under this key.
+          - If there is no 'filename' key, we look for the file under the
+            'file' key.
+        - As a directory on the server ('source_type=folder'). In this case,
+          the 'from_folder' parameter needs to be specified.
         """
+        # TODO: This calling protocol is too complicated.
         logger.info("Start documents import")
         self.setStatus("Importing documents (0%)")
         txn = transaction.get()
@@ -1409,7 +1422,12 @@ class PlominoReplicationManager(Persistent):
             if sourcetype == 'sourceFile':
                 if REQUEST:
                     filename = REQUEST.get('filename')
-                    filecontent = REQUEST.get(filename)
+                    if filename:
+                        # exportDocumentPush
+                        filecontent = REQUEST.get(filename)
+                    else:
+                        # DatabaseReplication.pt input:
+                        filecontent = REQUEST.get('file')
                     xml_sources = [filecontent]
                 elif from_file:
                     xml_sources = [from_file]

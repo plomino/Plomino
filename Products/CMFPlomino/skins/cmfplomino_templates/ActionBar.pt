@@ -102,7 +102,7 @@
 <div class="formControls" metal:define-macro="ViewActionBar">
 <span class="actionButtons">
 <script>
-function selecteddocuments()
+function selected_documents()
 {
 if (typeof(oDynamicTable)!="undefined") {
 	return dynamicview_selecteddocuments();
@@ -126,7 +126,7 @@ if (typeof(oDynamicTable)!="undefined") {
 			tal:define="
 				translate nocall:modules/Products/CMFPlomino/PlominoUtils/PlominoTranslate;
 				msg python:translate('Do you really want to delete those documents', here, domain='CMFPlomino');"
-			tal:attributes="onclick string:if(confirm('${msg} ?')){location.href='./manage_deleteDocuments?deldocs='+selecteddocuments()}" />
+			tal:attributes="onclick string:if (confirm('${msg} ?')) {location.href='./manage_deleteDocuments?deldocs='+selected_documents()}" />
 	</tal:defaultactions>
 		<tal:block
 			tal:repeat="action_tuple python:[(a, parent_id) for a, parent_id in owner.getActions(here, True) if a.getInActionBar()==True]">
