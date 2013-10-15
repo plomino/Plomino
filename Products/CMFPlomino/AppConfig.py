@@ -4,7 +4,9 @@ security = ClassSecurityInfo()
 
 PROJECTNAME = 'CMFPlomino'
 
-VERSION = '1.16'
+import os
+versionfile = os.path.join(os.path.dirname(__file__), 'version.txt')
+VERSION = open(versionfile).read().strip()
 
 security.declarePublic('ADD_DESIGN_PERMISSION')
 ADD_DESIGN_PERMISSION = 'CMFPlomino: Add Plomino design elements'
