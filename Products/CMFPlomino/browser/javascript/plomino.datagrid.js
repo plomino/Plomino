@@ -214,7 +214,7 @@ function datagrid_edit_inline_row( oTable, nRow, fields )
 			);
 		cell.find("textarea").text(aData[i]);
     } 
-    jqTds[fields.length-1].innerHTML = jqTds[fields.length-1].innerHTML+"<a class='save' href='' >Save</a>   <a class='cancel' href=''>Cancel</a>";
+    jqTds[fields.length-1].innerHTML = jqTds[fields.length-1].innerHTML+"<a class='save' href='#' >Save</a>   <a class='cancel' href='#'>Cancel</a>";
 }	
 
 function datagrid_save_inline_row ( oTable, nRow, field_id, form_url )
@@ -225,31 +225,42 @@ function datagrid_save_inline_row ( oTable, nRow, field_id, form_url )
 
     $.get(url,function(data)
     {
-		var row_index = oTable.fnGetPosition(nRow)
-		// from response
-		var row_data = $('span.plominochildfield', data).map(function(d,el){ return el.innerHTML });
-    	var raw_values = $.evalJSON($('#raw_values', data).html().trim());
-    	//update field_data
-    	var field = $('#' + field_id + '_gridvalue');
-    	var field_data= $.evalJSON(field.val());
-    	field_data[row_index] = $.evalJSON($('#raw_values', data).html().trim());
-		field.val($.toJSON(field_data));
-	    //update datatable
-	    for (var i=0;i<row_data.length;i++) {
-	      oTable.fnUpdate( row_data[i], nRow, i, false );
-	    } 
+
+		message = $(data).filter('#plomino_child_errors').html();
+		if(message===null || message==='')
+		{
+			var row_index = oTable.fnGetPosition(nRow)
+			// from response
+			var row_data = $('span.plominochildfield', data).map(function(d,el){ return el.innerHTML });
+	    	var raw_values = $.evalJSON($('#raw_values', data).html().trim());
+	    	//update field_data
+	    	var field = $('#' + field_id + '_gridvalue');
+	    	var field_data= $.evalJSON(field.val());
+	    	field_data[row_index] = $.evalJSON($('#raw_values', data).html().trim());
+			field.val($.toJSON(field_data));
+		    //update datatable
+		    for (var i=0;i<row_data.length;i++) {
+		      oTable.fnUpdate( row_data[i], nRow, i, false );
+		    } 
+	    	oTable.fnDraw();
+	    	return true;
+    	}
+    	else
+    	{
+    		alert(message);
+    		return false;
+    	}
     });
 
-    oTable.fnDraw();
+
 }
 
-function datagrid_add_inline_row ( oTable, row_nEditing, fields){
-    e.preventDefault();
-     
+function datagrid_add_inline_row( oTable, row_nEditing, fields){
     var aiNew = oTable.fnAddData( [ '', '', '', '', '',
         '<a class=&quot;edit&quot; href=&quot;&quot;>Edit</a>', '<a class=&quot;delete&quot; href=&quot;&quot;>Delete</a>' ] );
-    var nRow = oTable_datatable.fnGetNodes( aiNew[0] );
+    var nRow = oTable.fnGetNodes( aiNew[0] );
     datagrid_edit_inline_row( oTable, nRow, fields );
     row_nEditing = nRow;
+    return nRow;
 }
 
