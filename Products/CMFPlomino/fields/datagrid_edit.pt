@@ -7,8 +7,10 @@
             form field/getParentNode;
             form_name form/id;
             form_method form/getFormMethod;
-            datagrid_associated_form python:field.getSettings().associated_form;
-            datagrid_associated_form_url python:field.getSettings().getAssociateForm().absolute_url();
+            datagrid_associated_form_object python:field.getSettings().getAssociateForm();
+            datagrid_associated_form python:datagrid_associated_form_object.id;
+            datagrid_associated_form_url python:datagrid_associated_form_object.absolute_url();
+            datagrid_associated_form_rendering python:field.getSettings().associated_form_rendering;
             new_fields python:field.getSettings().getFieldsRender();
             ">
 <input type='hidden'
@@ -23,8 +25,7 @@
                     request_items python:field.getSettings().request_items_aoData(request);
                     "
             tal:content="structure string:
-
-                ${fieldname}_datatable='';
+                var ${fieldname}_datatable;
                 $$(document).ready(function() {
                     ${fieldname}_datatable = $$('#${fieldname}_datagrid').dataTable( {
                         'sAjaxSource': 'tojson?item=${fieldname}&rendered=true&datatables=true',
@@ -44,57 +45,48 @@
                             'sUrl': '@@collective.js.datatables.translation'
                         }
                     } );
-                    var ${fieldname}_fields = ${new_fields};
-                    var ${fieldname}_nEditing = null;                   
                     
-                    $$('#${fieldname}_addrow').click( function (e) {
-                        datagrid_add_inline_row( ${fieldname}_datatable, ${fieldname}_nEditing, ${fieldname}_fields )
-                    } );
+                    if('${datagrid_associated_form_rendering}'==='INLINE') {
+                        var ${fieldname}_fields = ${new_fields};
+                        var ${fieldname}_nEditing = null;                   
+                        
+                        $$('#${fieldname}_addrow').click( function (e) {
+                            datagrid_add_inline_row( ${fieldname}_datatable, ${fieldname}_nEditing, ${fieldname}_fields )
+                        } );
 
-                    $$('#${fieldname}_datagrid a.save').live('click', function (e) {
-                        e.preventDefault();
-                         
-                        /* Get the row as a parent of the link that was clicked on */
-                        var nRow = $(this).parents('tr')[0];
-                        var url = '${datagrid_associated_form_url}/createDocument?Plomino_Parent_Field=${fieldname}&Plomino_Parent_Form=${form_name}&Form=${datagrid_associated_form}';
+                        $$('#${fieldname}_datagrid a.save').live('click', function (e) {
+                            e.preventDefault();
+                             
+                            /* Get the row as a parent of the link that was clicked on */
+                            var nRow = $(this).parents('tr')[0];
+                            var url = '${datagrid_associated_form_url}/createDocument?Plomino_Parent_Field=${fieldname}&Plomino_Parent_Form=${form_name}&Form=${datagrid_associated_form}';
 
-                        if ( ${fieldname}_nEditing !== null && ${fieldname}_nEditing != nRow ) {
-                            /* A different row is being edited - the edit should be cancelled and this row edited */
-                            //restoreRow( oTable, nEditing );
-                            datagrid_edit_inline_row( ${fieldname}_datatable, nRow, ${fieldname}_fields  );
-                            ${fieldname}_nEditing = nRow;
-                        }
-                        else if ( ${fieldname}_nEditing == nRow && this.innerHTML == 'Save' ) {
-                            /* This row is being edited and should be saved */
+                            if ( ${fieldname}_nEditing == nRow && this.innerHTML == 'Save' ) {
+                                /* This row is being edited and should be saved */
 
-                            datagrid_save_inline_row( ${fieldname}_datatable, ${fieldname}_nEditing,'${fieldname}',url);
-                            ${fieldname}_nEditing = null;
-                        }
-                        else {
-                            /* No row currently being edited */
-                            datagrid_edit_inline_row( ${fieldname}_datatable, nRow, ${fieldname}_fields  );
-                            ${fieldname}_nEditing = nRow;
-                        }
-                    } );
+                                datagrid_save_inline_row( ${fieldname}_datatable, ${fieldname}_nEditing,'${fieldname}',url);
+                                ${fieldname}_nEditing = null;
+                            }
+                        } );
 
-                    $$('#${fieldname}_editrow').click(function() {
-                        var row = datagrid_get_selected_row(${fieldname}_datatable);
-                        datagrid_edit_inline_row(${fieldname}_datatable, row, ${fieldname}_fields);
-                        ${fieldname}_nEditing = row;
-                    });
-
-                    /**
-                    $$('#${fieldname}_addrow').click(function() {${fieldname}_fields
-                        datagrid_add_row(${fieldname}_datatable, '${fieldname}', this.href);
-                    });
-                    $$('#${fieldname}_editrow').click(function() {
-                        datagrid_edit_row(${fieldname}_datatable, '${fieldname}', this.href);
-                    });
-                    $$('#${fieldname}_deleterow').click(function() {
-                        datagrid_delete_row(${fieldname}_datatable, '${fieldname}');
-                    });
-                    **/
-                    $$('#${fieldname}_editform').dialog({ 'autoOpen': false, 'modal': true });
+                        $$('#${fieldname}_editrow').click(function() {
+                            var row = datagrid_get_selected_row(${fieldname}_datatable);
+                            datagrid_edit_inline_row(${fieldname}_datatable, row, ${fieldname}_fields);
+                            ${fieldname}_nEditing = row;
+                        });
+                    }
+                    else{
+                        $$('#${fieldname}_addrow').click(function() {${fieldname}_fields
+                            datagrid_add_row(${fieldname}_datatable, '${fieldname}', this.href);
+                        });
+                        $$('#${fieldname}_editrow').click(function() {
+                            datagrid_edit_row(${fieldname}_datatable, '${fieldname}', this.href);
+                        });
+                        $$('#${fieldname}_deleterow').click(function() {
+                            datagrid_delete_row(${fieldname}_datatable, '${fieldname}');
+                        });
+                        $$('#${fieldname}_editform').dialog({ 'autoOpen': false, 'modal': true });
+                    }
                 } );">
     </script>
         

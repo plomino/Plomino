@@ -54,6 +54,16 @@ class IDatagridField(IBaseField):
             description=u'Form to use to create/edit rows',
             required=False)
 
+    associated_form_rendering = Choice(
+            vocabulary=SimpleVocabulary.fromItems(
+                [("Modal", "MODAL"),
+                    ("Inline editing", "INLINE"),
+                    ]),
+            title=u'Associate form rendering',
+            description=u'Associate form rendering',
+            default="MODAL",
+            required=True)
+
     field_mapping = TextLine(
             title=u'Columns/fields mapping',
             description=u'Field ids from the associated form, '
