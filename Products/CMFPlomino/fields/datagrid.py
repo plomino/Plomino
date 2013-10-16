@@ -178,7 +178,36 @@ class DatagridField(BaseField):
 
         # return title for each mapped field if this one exists in the child form
         return [f.Title() for f in [child_form.getFormField(f) for f in mapped_fields] if f]
+
+
+    def getFieldsRender(self):
+        """
+        """
+        if not self.field_mapping:
+            return []
         
+        mapped_fields = [ f.strip() for f in self.field_mapping.split(',')]
+        
+        child_form_id = self.associated_form
+        if not child_form_id:
+            return mapped_fields
+
+        db = self.context.getParentDatabase()
+
+        # get child form
+        child_form = db.getForm(child_form_id)
+        if not child_form:
+            return mapped_fields
+
+        # return title for each mapped field if this one exists in the child form
+        return [str(f.getFieldRender(child_form, None, editmode=True, creation=False, request=None)) for f in [child_form.getFormField(f) for f in mapped_fields] if f]
+
+    def getAssociateForm(self):
+        child_form_id = self.associated_form;
+        if child_form_id:
+            db = self.context.getParentDatabase()
+            return db.getForm(child_form_id)   
+
     def getFieldValue(self, form, doc=None, editmode_obsolete=False,
             creation=False, request=None):
         """
