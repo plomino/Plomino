@@ -197,3 +197,59 @@ function datagrid_delete_row(table, field_id) {
 		alert('You must select a row to delete.');
 	}
 }
+
+
+function datagrid_edit_inline_row( oTable, nRow, fields )
+{
+    var aData = oTable.fnGetData(nRow);
+    var jqTds = $('>td', nRow);
+    for (var i=0;i<fields.length;i++) {
+    	var field = $(fields[i]);
+    	var cell = $(jqTds[i]).html(field);
+    	if (cell.find("input").length>0) {
+    		cell.get(0).innerHTML = cell.html().replace('value=""','value="'+ aData[i]+'"');
+    	}
+		cell.find("select").val(
+			cell.find("select>option").filter(function(e,el){ return $(el).text()===aData[i].replace("\n","").trim() }).val()
+			);
+		cell.find("textarea").text(aData[i]);
+    } 
+    jqTds[fields.length-1].innerHTML = jqTds[fields.length-1].innerHTML+"<a class='save' href='' >Save</a>   <a class='cancel' href=''>Cancel</a>";
+}	
+
+function datagrid_save_inline_row ( oTable, nRow, field_id, form_url )
+{
+    var jqFields = $('input,textarea,select',nRow);
+    var jqTds = $('>td', nRow);
+    url = form_url+"&"+jqFields.serialize();
+
+    $.get(url,function(data)
+    {
+		var row_index = oTable.fnGetPosition(nRow)
+		// from response
+		var row_data = $('span.plominochildfield', data).map(function(d,el){ return el.innerHTML });
+    	var raw_values = $.evalJSON($('#raw_values', data).html().trim());
+    	//update field_data
+    	var field = $('#' + field_id + '_gridvalue');
+    	var field_data= $.evalJSON(field.val());
+    	field_data[row_index] = $.evalJSON($('#raw_values', data).html().trim());
+		field.val($.toJSON(field_data));
+	    //update datatable
+	    for (var i=0;i<row_data.length;i++) {
+	      oTable.fnUpdate( row_data[i], nRow, i, false );
+	    } 
+    });
+
+    oTable.fnDraw();
+}
+
+function datagrid_add_inline_row ( oTable, row_nEditing, fields){
+    e.preventDefault();
+     
+    var aiNew = oTable.fnAddData( [ '', '', '', '', '',
+        '<a class=&quot;edit&quot; href=&quot;&quot;>Edit</a>', '<a class=&quot;delete&quot; href=&quot;&quot;>Delete</a>' ] );
+    var nRow = oTable_datatable.fnGetNodes( aiNew[0] );
+    datagrid_edit_inline_row( oTable, nRow, fields );
+    row_nEditing = nRow;
+}
+
