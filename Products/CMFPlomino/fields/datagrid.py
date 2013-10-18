@@ -231,6 +231,14 @@ class DatagridField(BaseField):
         # We have already warned about missing fields in getColumnLabels
         fields = [f for f in fields if f]
 
+        if not data:
+            # If we have no data, we're probably rendering fields in creation mode
+            rendered_fields = []
+            for f in fields:
+                rendered_field = field.getFieldRender(associated_form, target, editmode, creation=creation, request=request)
+                rendered_fields.append(rendered_field)
+            return rendered_fields
+
         rows = []
         # We may have data for one row, or the whole array.
         # TODO: is data being passed in as a param or on the request?
