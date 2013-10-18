@@ -202,26 +202,29 @@ function datagrid_delete_row(table, field_id) {
  * Inline Editing: compute row as inline Form.
  * - oTable: JQuery DataTables object (returned by the initialisation method)
  * - row_nr: row number
- * - fields: needed fields to render the form 
+ * - fields: rendered fields 
  */
-function datagrid_compute_inline_form( oTable, row_nr, fields )
+function datagrid_compute_inline_edit_form( oTable, row_nr, fields )
 {
     var aData = oTable.fnGetData(row_nr);
     var jqTds = $('>td', row_nr);
-    for (var i=0;i<fields.length;i++) {
+    for (var i=0; i<fields.length; i++) {
         var field = $(fields[i]);
         var cell = $(jqTds[i]).html(field);
-        if (cell.find("input").length>0) {
-            // TODO: this isn't enough: we need to get the rendered edit widget for the current values. 
-            // i.e. if we have an array called edit_widgets defined like
-            // edit_widgets python:field.getSettings().getFieldsRendered(doc, editmode=True, creation=False, request);
-            // then the whole cell needs to be replaced with the corresponding rendered widget, not only the value attribute
-            cell.get(0).innerHTML = cell.html().replace('value=""','value="'+ aData[i]+'"');
-        }
-        cell.find("select").val(
-            cell.find("select>option").filter(function(e,el){ return $(el).text()===aData[i].replace("\n","").trim() }).val()
-            );
-        cell.find("textarea").text(aData[i]);
+        //
+        // We have the rendered widget, so no need to mutate the HTML
+        //
+        // if (cell.find("input").length>0) {
+        //     // TODO: this isn't enough: we need to get the rendered edit widget for the current values. 
+        //     // i.e. if we have an array called edit_widgets defined like
+        //     // edit_widgets python:field.getSettings().getFieldsRendered(doc, editmode=True, creation=False, request);
+        //     // then the whole cell needs to be replaced with the corresponding rendered widget, not only the value attribute
+        //     cell.get(0).innerHTML = cell.html().replace('value=""','value="'+ aData[i]+'"');
+        // }
+        // cell.find("select").val(
+        //     cell.find("select>option").filter(function(e,el){ return $(el).text()===aData[i].replace("\n","").trim() }).val()
+        //     );
+        // cell.find("textarea").text(aData[i]);
     } 
     jqTds[fields.length-1].innerHTML = jqTds[fields.length-1].innerHTML+"<a class='save' href='#' >Save</a>   <a class='cancel' href='#'>Cancel</a>";
 }   
@@ -233,13 +236,17 @@ function datagrid_compute_inline_form( oTable, row_nr, fields )
  * - field_id: field id of the datagrid Field
  * - form_url: url to use for Ajax
  */
-function datagrid_save_inline_row ( oTable, row_nr, field_id, form_url ) {
+function datagrid_save_inline_row( oTable, row_nr, field_id, form_url ) {
+    // TODO: this function should update 
+    // ${fieldname}_edit_widgets[row_nr] and 
+    // ${fieldname}_read_wigdets[row_nr]
+    // using getFieldsRendered()
 
     var jqFields = $('input,textarea,select',row_nr);
     var jqTds = $('>td', row_nr);
     url = form_url+"&"+jqFields.serialize();
 
-    $.get(url,function(data)
+    $.get(url, function(data)
     {
         message = $(data).filter('#plomino_child_errors').html();
         if(message===null || message==='')
@@ -248,7 +255,7 @@ function datagrid_save_inline_row ( oTable, row_nr, field_id, form_url ) {
             // from response
             var row_data = $('span.plominochildfield', data).map(function(d,el){ return el.innerHTML });
             var raw_values = $.evalJSON($('#raw_values', data).html().trim());
-            //update field_data
+            // update field_data
             var field = $('#' + field_id + '_gridvalue');
             var field_data= $.evalJSON(field.val());
             field_data[row_index] = $.evalJSON($('#raw_values', data).html().trim());
@@ -269,25 +276,26 @@ function datagrid_save_inline_row ( oTable, row_nr, field_id, form_url ) {
 }
 
 /*
- * Inline Editing : add form with empty values to the datagrid.
+ * Inline Editing: add form with empty values to the datagrid.
  * - oTable: JQuery DataTables object (returned by the initialisation method)
- * - fields : needed fields to render the form 
+ * - fields: needed fields to render the form 
  */
 function datagrid_add_inline_row( oTable, fields) {
 
     var aiNew = oTable.fnAddData( [ '', '', '', '', '', '' ] );
     var row_nr = oTable.fnGetNodes( aiNew[0] );
-    datagrid_compute_inline_form( oTable, row_nr, fields );
+    datagrid_compute_inline_edit_form( oTable, row_nr, fields );
     return row_nr;
 
 }
 
 /*
- * Inline Editing : restore row as a normal datatable row.
+ * Inline Editing: restore row as a normal datatable row.
  * - oTable: JQuery DataTables object (returned by the initialisation method)
- * - row_nr : row
+ * - row_nr: row
+ * - fields: rendered fields
  */
-function datagrid_restore_row( oTable, row_nr ) {
+function datagrid_compute_inline_read_form( oTable, row_nr, fields ) {
 
     function isEmpty(data){
         for (var i = 0; i < data.length; i++) {
@@ -297,14 +305,17 @@ function datagrid_restore_row( oTable, row_nr ) {
         return true;
     }
 
-    var aData = oTable.fnGetData(row_nr);
+    // Don't use the raw values, they may be different from the rendered 
+    // var aData = oTable.fnGetData(row_nr);
     if ( isEmpty(aData) ) {
         oTable.fnDeleteRow(row_nr)
     }
     else {
         var jqTds = $('>td', row_nr);
         for ( var i=0, iLen=jqTds.length ; i<iLen ; i++ ) {
-            oTable.fnUpdate( aData[i], row_nr, i, false );
+            // Use the rendered field
+            oTable.fnUpdate( fields[i], row_nr, i, false );
+            // oTable.fnUpdate( aData[i], row_nr, i, false );
         }
     }
     oTable.fnDraw();
