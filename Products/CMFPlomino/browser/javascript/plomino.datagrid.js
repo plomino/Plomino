@@ -199,15 +199,15 @@ function datagrid_delete_row(table, field_id) {
 }
 
 /*
- * Inline Editing : compute row as inline Form.
+ * Inline Editing: compute row as inline Form.
  * - oTable: JQuery DataTables object (returned by the initialisation method)
- * - nRow : row
- * - fields : needed fields to render the form 
+ * - row_nr: row number
+ * - fields: needed fields to render the form 
  */
-function datagrid_compute_inline_form( oTable, nRow, fields )
+function datagrid_compute_inline_form( oTable, row_nr, fields )
 {
-    var aData = oTable.fnGetData(nRow);
-    var jqTds = $('>td', nRow);
+    var aData = oTable.fnGetData(row_nr);
+    var jqTds = $('>td', row_nr);
     for (var i=0;i<fields.length;i++) {
         var field = $(fields[i]);
         var cell = $(jqTds[i]).html(field);
@@ -227,16 +227,16 @@ function datagrid_compute_inline_form( oTable, nRow, fields )
 }   
 
 /*
- * Inline Editing  : save the row.
+ * Inline Editing: save the row.
  * - oTable: JQuery DataTables object (returned by the initialisation method)
- * - nRow : row
- * - field_id : field id of the datagrid Field
- * - form_url : url to use for Ajax
+ * - row_nr: row
+ * - field_id: field id of the datagrid Field
+ * - form_url: url to use for Ajax
  */
-function datagrid_save_inline_row ( oTable, nRow, field_id, form_url ) {
+function datagrid_save_inline_row ( oTable, row_nr, field_id, form_url ) {
 
-    var jqFields = $('input,textarea,select',nRow);
-    var jqTds = $('>td', nRow);
+    var jqFields = $('input,textarea,select',row_nr);
+    var jqTds = $('>td', row_nr);
     url = form_url+"&"+jqFields.serialize();
 
     $.get(url,function(data)
@@ -244,7 +244,7 @@ function datagrid_save_inline_row ( oTable, nRow, field_id, form_url ) {
         message = $(data).filter('#plomino_child_errors').html();
         if(message===null || message==='')
         {
-            var row_index = oTable.fnGetPosition(nRow)
+            var row_index = oTable.fnGetPosition(row_nr)
             // from response
             var row_data = $('span.plominochildfield', data).map(function(d,el){ return el.innerHTML });
             var raw_values = $.evalJSON($('#raw_values', data).html().trim());
@@ -255,7 +255,7 @@ function datagrid_save_inline_row ( oTable, nRow, field_id, form_url ) {
             field.val($.toJSON(field_data));
             //update datatable
             for (var i=0;i<row_data.length;i++) {
-              oTable.fnUpdate( row_data[i], nRow, i, false );
+              oTable.fnUpdate( row_data[i], row_nr, i, false );
             } 
             oTable.fnDraw();
             return true;
@@ -276,18 +276,18 @@ function datagrid_save_inline_row ( oTable, nRow, field_id, form_url ) {
 function datagrid_add_inline_row( oTable, fields) {
 
     var aiNew = oTable.fnAddData( [ '', '', '', '', '', '' ] );
-    var nRow = oTable.fnGetNodes( aiNew[0] );
-    datagrid_compute_inline_form( oTable, nRow, fields );
-    return nRow;
+    var row_nr = oTable.fnGetNodes( aiNew[0] );
+    datagrid_compute_inline_form( oTable, row_nr, fields );
+    return row_nr;
 
 }
 
 /*
  * Inline Editing : restore row as a normal datatable row.
  * - oTable: JQuery DataTables object (returned by the initialisation method)
- * - nRow : row
+ * - row_nr : row
  */
-function datagrid_restore_row( oTable, nRow ) {
+function datagrid_restore_row( oTable, row_nr ) {
 
     function isEmpty(data){
         for (var i = 0; i < data.length; i++) {
@@ -297,14 +297,14 @@ function datagrid_restore_row( oTable, nRow ) {
         return true;
     }
 
-    var aData = oTable.fnGetData(nRow);
+    var aData = oTable.fnGetData(row_nr);
     if ( isEmpty(aData) ) {
-        oTable.fnDeleteRow(nRow)
+        oTable.fnDeleteRow(row_nr)
     }
     else {
-        var jqTds = $('>td', nRow);
+        var jqTds = $('>td', row_nr);
         for ( var i=0, iLen=jqTds.length ; i<iLen ; i++ ) {
-            oTable.fnUpdate( aData[i], nRow, i, false );
+            oTable.fnUpdate( aData[i], row_nr, i, false );
         }
     }
     oTable.fnDraw();
