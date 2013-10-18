@@ -7,23 +7,23 @@
             form field/getParentNode;
             form_name form/id;
             form_method form/getFormMethod;
-            datagrid_associated_form_object python:field.getSettings().getAssociateForm();
-            datagrid_associated_form python:datagrid_associated_form_object.id;
-            datagrid_associated_form_url python:datagrid_associated_form_object.absolute_url();
+            datagrid_associated_form python:field.getSettings().getAssociatedForm();
+            datagrid_associated_form_id python:datagrid_associated_form.id;
+            datagrid_associated_form_url python:datagrid_associated_form.absolute_url();
             datagrid_associated_form_rendering python:field.getSettings().associated_form_rendering;
-            new_fields python:field.getSettings().getFieldsRender();
+            blank_edit_widgets python:field.getSettings().getFieldsRendered();
             ">
 <input type='hidden'
     tal:attributes="
             id string:${fieldname}_gridvalue;
             name fieldname;
             value data"/>
+
     <script 
         type="text/javascript"
         charset="utf-8"
         tal:define="param python:field.getSettings().getParameters();
-                    request_items python:field.getSettings().request_items_aoData(request);
-                    "
+                    request_items python:field.getSettings().request_items_aoData(request);"
             tal:content="structure string:
                 var ${fieldname}_datatable;
                 $$(document).ready(function() {
@@ -45,9 +45,19 @@
                             'sUrl': '@@collective.js.datatables.translation'
                         }
                     } );
+            
+                    $$('#${fieldname}_addrow').click(function() {
+                        datagrid_add_row(${fieldname}_datatable, '${fieldname}', this.href);
+                    });
+                    $$('#${fieldname}_editrow').click(function() {
+                        datagrid_edit_row(${fieldname}_datatable, '${fieldname}', this.href);
+                    });
+                    $$('#${fieldname}_deleterow').click(function() {
+                        datagrid_delete_row(${fieldname}_datatable, '${fieldname}');
+                    });
                     
                     if('${datagrid_associated_form_rendering}'==='INLINE') {
-                        var ${fieldname}_fields = ${new_fields};
+                        var ${fieldname}_fields = ${blank_edit_widgets};
                         var ${fieldname}_nEditing = null;                   
                         
                         $$('#${fieldname}_addrow').click( function (e) {
@@ -58,13 +68,13 @@
                         $$('#${fieldname}_datagrid a.save').live('click', function (e) {
                             e.preventDefault();
                             var nRow = $(this).parents('tr')[0];
-                            var url = '${datagrid_associated_form_url}/createDocument?Plomino_Parent_Field=${fieldname}&Plomino_Parent_Form=${form_name}&Form=${datagrid_associated_form}';
+                            var url = '${datagrid_associated_form_url}/createDocument?Plomino_Parent_Field=${fieldname}&Plomino_Parent_Form=${form_name}&Form=${datagrid_associated_form_id}';
                             console.log(${fieldname}_nEditing);
                             if ( ${fieldname}_nEditing == nRow && this.innerHTML == 'Save' ) {
                                 /* This row is being edited and should be saved */
 
-                                var succeded = datagrid_save_inline_row( ${fieldname}_datatable, ${fieldname}_nEditing,'${fieldname}',url);
-                                if(succeded===true)
+                                var succeeded = datagrid_save_inline_row( ${fieldname}_datatable, ${fieldname}_nEditing,'${fieldname}',url);
+                                if (succeeded===true)
                                     ${fieldname}_nEditing = null;
                             }
                         } );
@@ -107,13 +117,13 @@
     <div tal:attributes="id string:${fieldname}_editform"></div>
     <p><a class="context add-row"
           tal:attributes="id string:${fieldname}_addrow;
-                          href string:../${datagrid_associated_form}/OpenBareForm?Plomino_Parent_Field=${fieldname}&Plomino_Parent_Form=${form_name};
+                          href string:../${datagrid_associated_form_id}/OpenBareForm?Plomino_Parent_Field=${fieldname}&Plomino_Parent_Form=${form_name};
                           onclick string:event.preventDefault ? event.preventDefault() : event.returnValue = false;; return false"
           tal:content="python:options['field'].getSettings().getActionLabel('add')"
           >Add row</a>
        <a class="context edit-row"
           tal:attributes="id string:${fieldname}_editrow;
-                          href string:../${datagrid_associated_form}/OpenBareForm?Plomino_Parent_Field=${fieldname}&Plomino_Parent_Form=${form_name};
+                          href string:../${datagrid_associated_form_id}/OpenBareForm?Plomino_Parent_Field=${fieldname}&Plomino_Parent_Form=${form_name};
                           onclick string:event.preventDefault ? event.preventDefault() : event.returnValue = false;; return false;
                           style python:{0: 'display:none'}.get(len(v), '')"
           tal:content="python:options['field'].getSettings().getActionLabel('edit')"
