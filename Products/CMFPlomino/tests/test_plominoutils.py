@@ -47,7 +47,7 @@ class PlominoUtilsTest(unittest.TestCase):
 
     def test_Now(self):
         now = DateTime()
-        self.assertAlmostEqual(utils.Now() - now , 0)
+        self.assertAlmostEqual(utils.Now() - now, 0)
 
     def test_userFullname(self):
         self.assertEqual(utils.userFullname(self.db, "user1"), "User 1")
@@ -97,25 +97,20 @@ class PlominoUtilsTest(unittest.TestCase):
 
     def test_asList(self):
         self.assertEqual(
-            utils.asList("cheese"),
-            ["cheese"]
-        )
+                utils.asList("cheese"),
+                ["cheese"])
         self.assertEqual(
-            utils.asList(["cheese", "bacon", 10]),
-            ["cheese", "bacon", 10]
-        )
+                utils.asList(["cheese", "bacon", 10]),
+                ["cheese", "bacon", 10])
         self.assertEqual(
-            utils.asList([]),
-            []
-        )
+                utils.asList([]),
+                [])
         self.assertEqual(
-            utils.asList(""),
-            [""]
-        )
+                utils.asList(""),
+                [""])
         self.assertEqual(
-            utils.asList(None),
-            [None]
-        )
+                utils.asList(None),
+                [None])
 
     def test_asUnicode(self):
         self.assertEqual(
