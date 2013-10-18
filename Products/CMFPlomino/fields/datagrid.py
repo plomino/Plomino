@@ -250,7 +250,6 @@ class DatagridField(BaseField):
             return db.getForm(associated_form_id)   
 
 
->>>>>>> Stashed changes
     def getFieldValue(self, form, doc=None, editmode_obsolete=False,
             creation=False, request=None):
         """
