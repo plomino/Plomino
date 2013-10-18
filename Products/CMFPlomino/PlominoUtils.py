@@ -104,7 +104,10 @@ def StringToDate(str_d, format='%Y-%m-%d', db=None):
     try:
         if db:
             format = db.getDateTimeFormat()
-        dt = datetime.strptime(str_d, format)
+        if format:
+            dt = datetime.strptime(str_d, format)
+        else:
+            dt = parse(str_d)
     except ValueError, e:
         # XXX: Just let DateTime guess.
         dt = parse(DateTime(str_d).ISO())
