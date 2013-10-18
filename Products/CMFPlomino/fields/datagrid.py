@@ -205,9 +205,10 @@ class DatagridField(BaseField):
         return titles
 
 
-    def getFieldsRendered(self, editmode=False, creation=False, request=None):
-        """ Return an array of rows rendered using the associated form fields
+    def getFieldsRendered(self, editmode=False, creation=False, request=None, data=None):
+        """ Return a list (or array) of row(s) rendered using the associated form fields
         """
+        # I'm not sure if we need 'data', or if the row data is on 'request'
         if not self.field_mapping:
             return []
 
@@ -225,22 +226,28 @@ class DatagridField(BaseField):
         if not associated_form:
             return mapped_fields
 
-        target = TemporaryDocument(
-                db,
-                associated_form,
-                request,
-                validation_mode=validation_mode).__of__(db)
+        fields = [associated_form.getFormField(f) for f in mapped_fields]
 
-        rendered_fields = []
-        for f in mapped_fields:
-            field = associated_form.getFormField(f) 
-            if not field:
-                # We have already warned about missing fields in getColumnLabels
-                continue
-            rendered_field = field.getFieldRender(associated_form, target, editmode, creation=creation, request=request)
-            rendered_fields.append(rendered_field)
+        # We have already warned about missing fields in getColumnLabels
+        fields = [f for f in fields if f]
 
-        return rendered_fields
+        rows = []
+        # We may have data for one row, or the whole array.
+        # TODO: is data being passed in as a param or on the request?
+        for row in data:
+            target = TemporaryDocument(
+                    db,
+                    associated_form,
+                    request, # well, the row data that we wish to render
+                    validation_mode=validation_mode).__of__(db)
+
+            rendered_fields = []
+            for f in fields:
+                rendered_field = field.getFieldRender(associated_form, target, editmode, creation=creation, request=request)
+                rendered_fields.append(rendered_field)
+            rows.append(rendered_fields)
+
+        return rows
 
 
     def getAssociatedForm(self):
