@@ -2,13 +2,13 @@
                        db python:options['field'].getParentDatabase();
                        defaultformat python:db.getDateTimeFormat();
                        fieldformat python:options['field'].getSettings('format');
-                       format python:test(not(fieldformat),defaultformat,fieldformat);
+                       format python:test(not(fieldformat), defaultformat, fieldformat);
                        hm python:('%H' in format or '%I' in format);
                        ymd python:('%Y' in format or '%y' in format)">
 
-	<tal:block tal:condition="python:test(v)">
-		<span>
-			<tal:define tal:define="id options/fieldname;
+    <tal:block tal:condition="python:test(v)">
+        <span>
+            <tal:define tal:define="id options/fieldname;
                               show_hm hm|nothing;
                               show_ymd ymd|nothing;
                               starting_year python:options['field'].getSettings('startingyear');
@@ -19,15 +19,15 @@
                               ymd_fmt python:test(show_ymd, '%Y-%m-%d', '');
                               hm_fmt python:test(show_hm, '%I:%M %p', '');
                               inputvalue python:same_type(v, '') and v or v.strftime(' '.join([ymd_fmt, hm_fmt]).strip());">
-	            <metal:box use-macro="here/DATETIMETool/macros/calendarDatePickerBox">
-	              a calendar, hopefully
-	            </metal:box>
+                <metal:box use-macro="here/DATETIMETool/macros/calendarDatePickerBox">
+                  a calendar, hopefully
+                </metal:box>
           </tal:define>
-		</span>
-	</tal:block>
-	<tal:block tal:condition="python:test(not(v))">
-		<span>
-			<tal:define tal:define="id options/fieldname;
+        </span>
+    </tal:block>
+    <tal:block tal:condition="python:test(not(v))">
+        <span>
+            <tal:define tal:define="id options/fieldname;
                               show_hm hm|nothing;
                               show_ymd ymd|nothing;
                               starting_year python:options['field'].getSettings('startingyear');
@@ -36,10 +36,10 @@
                               inputname options/fieldname;
                               formname string:edit_form;
                               inputvalue python:'';">
-	            <metal:box use-macro="here/DATETIMETool/macros/calendarDatePickerBox">
-	              a calendar, hopefully
-	            </metal:box>
+                <metal:box use-macro="here/DATETIMETool/macros/calendarDatePickerBox">
+                  a calendar, hopefully
+                </metal:box>
           </tal:define>
-		</span>
-	</tal:block>
+        </span>
+    </tal:block>
 </tal:block>
