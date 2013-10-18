@@ -11,7 +11,9 @@
             datagrid_associated_form_id python:datagrid_associated_form.id;
             datagrid_associated_form_url python:datagrid_associated_form.absolute_url();
             datagrid_associated_form_rendering python:field.getSettings().associated_form_rendering;
-            blank_edit_widgets python:field.getSettings().getFieldsRendered();
+            blank_edit_widgets python:field.getSettings().getFieldsRendered(editmode=True, creation=True);
+            edit_widgets python:field.getSettings().getFieldsRendered(editmode=True, data=data);
+            read_widgets python:field.getSettings().getFieldsRendered(data=data);
             ">
 <input type='hidden'
     tal:attributes="
@@ -57,25 +59,28 @@
                     });
                     
                     if('${datagrid_associated_form_rendering}'==='INLINE') {
-                        var ${fieldname}_fields = ${blank_edit_widgets};
-                        var ${fieldname}_nEditing = null;                   
+                        var ${fieldname}_add_widgets = ${blank_edit_widgets};
+                        var ${fieldname}_edit_widgets = ${edit_widgets};
+                        var ${fieldname}_read_wigdets = ${edit_widgets};
+
+                        var ${fieldname}_editing_row_nr = null;                   
                         
                         $$('#${fieldname}_addrow').click( function (e) {
                             e.preventDefault();
-                            ${fieldname}_nEditing = datagrid_add_inline_row( ${fieldname}_datatable, ${fieldname}_fields )
+                            ${fieldname}_editing_row_nr = datagrid_add_inline_row( ${fieldname}_datatable, ${fieldname}_add_widgets )
                         } );
 
                         $$('#${fieldname}_datagrid a.save').live('click', function (e) {
                             e.preventDefault();
                             var nRow = $(this).parents('tr')[0];
                             var url = '${datagrid_associated_form_url}/createDocument?Plomino_Parent_Field=${fieldname}&Plomino_Parent_Form=${form_name}&Form=${datagrid_associated_form_id}';
-                            console.log(${fieldname}_nEditing);
-                            if ( ${fieldname}_nEditing == nRow && this.innerHTML == 'Save' ) {
+                            console.log(${fieldname}_editing_row_nr);
+                            if ( ${fieldname}_editing_row_nr == nRow && this.innerHTML == 'Save' ) {
                                 /* This row is being edited and should be saved */
 
-                                var succeeded = datagrid_save_inline_row( ${fieldname}_datatable, ${fieldname}_nEditing,'${fieldname}',url);
+                                var succeeded = datagrid_save_inline_row(${fieldname}_datatable, ${fieldname}_editing_row_nr, '${fieldname}', url);
                                 if (succeeded===true)
-                                    ${fieldname}_nEditing = null;
+                                    ${fieldname}_editing_row_nr = null;
                             }
                         } );
 
@@ -83,22 +88,22 @@
                             e.preventDefault();
                             var nRow = $(this).parents('tr')[0];
                             datagrid_restore_row(${fieldname}_datatable, nRow);
-                            ${fieldname}_nEditing = null;
+                            ${fieldname}_editing_row_nr = null;
                         });
 
                         $$('#${fieldname}_editrow').click(function(e) {
                             e.preventDefault();
                             var row = datagrid_get_selected_row(${fieldname}_datatable);
-                            datagrid_compute_inline_form(${fieldname}_datatable, row, ${fieldname}_fields);
-                            if(${fieldname}_nEditing!=null){
-                                datagrid_restore_row(${fieldname}_datatable, ${fieldname}_nEditing);
+                            datagrid_compute_inline_form(${fieldname}_datatable, row, ${fieldname}_add_widgets);
+                            if(${fieldname}_editing_row_nr!=null){
+                                datagrid_restore_row(${fieldname}_datatable, ${fieldname}_editing_row_nr);
                             } 
-                            ${fieldname}_nEditing = row;
+                            ${fieldname}_editing_row_nr = row;
                         });
 
                     }
                     else{
-                        $$('#${fieldname}_addrow').click(function() {${fieldname}_fields
+                        $$('#${fieldname}_addrow').click(function() {${fieldname}_add_widgets
                             datagrid_add_row(${fieldname}_datatable, '${fieldname}', this.href);
                         });
                         $$('#${fieldname}_editrow').click(function() {
