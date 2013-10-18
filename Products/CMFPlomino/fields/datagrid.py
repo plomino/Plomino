@@ -59,8 +59,8 @@ class IDatagridField(IBaseField):
                 [("Modal", "MODAL"),
                     ("Inline editing", "INLINE"),
                     ]),
-            title=u'Associate form rendering',
-            description=u'Associate form rendering',
+            title=u'Associated form rendering',
+            description=u'How the associated form will be used',
             default="MODAL",
             required=True)
 
@@ -155,11 +155,12 @@ class DatagridField(BaseField):
         db = self.context.getParentDatabase()
         if action_id == "add":
             label = PlominoTranslate(_("datagrid_add_button_label", default="Add"), db)
-            child_form_id = self.associated_form
-            if child_form_id:
-                child_form = db.getForm(child_form_id)
-                if child_form:
-                    label += " "+child_form.Title()
+            associated_form_id = self.associated_form
+            if associated_form_id:
+                associated_form = db.getForm(associated_form_id)
+                if associated_form:
+                    # TODO: will this get translated if __marked up__?
+                    label += " " + associated_form.Title()
             return label
         elif action_id == "delete":
             return PlominoTranslate(_("datagrid_delete_button_label", default="Delete"), db)
@@ -168,56 +169,88 @@ class DatagridField(BaseField):
         return ""
 
     def getColumnLabels(self):
-        """
+        """ If we have an associated form, return field titles from the form.
+
+        Otherwise, return the mapping names as column titles.
         """
         if not self.field_mapping:
             return []
-        
-        mapped_fields = [ f.strip() for f in self.field_mapping.split(',')]
-        
-        child_form_id = self.associated_form
-        if not child_form_id:
+
+        mapped_fields = [f.strip() for f in self.field_mapping.split(',')]
+
+        associated_form_id = self.associated_form
+        if not associated_form_id:
             return mapped_fields
 
         db = self.context.getParentDatabase()
 
-        # get child form
-        child_form = db.getForm(child_form_id)
-        if not child_form:
+        associated_form = db.getForm(associated_form_id)
+        if not associated_form:
+            msg = 'Missing associated form: %s. Referenced on: %s' % (associated_form_id, self.id)
+            self.writeMessageOnPage(msg, self.REQUEST)
+            logger.info(msg)
             return mapped_fields
 
-        # return title for each mapped field if this one exists in the child form
-        return [f.Title() for f in [child_form.getFormField(f) for f in mapped_fields] if f]
+        # TODO: if the field does not exist in the child form, then the
+        # relation between fields and datagrid columns is broken .. so we
+        # should complain.
+        titles = []
+        for f in mapped_fields:
+            field = associated_form.getFormField(f)
+            if not field:
+                msg = 'Missing field: %s. Sought on: %s by: %s' % (f,  associated_form_id, self.id)
+                self.writeMessageOnPage(msg, self.REQUEST)
+                logger.info(msg)
+            titles.append(field.Title())
+        return titles
 
 
-    def getFieldsRender(self):
-        """
+    def getFieldsRendered(self, editmode=False, creation=False, request=None):
+        """ Return an array of rows rendered using the associated form fields
         """
         if not self.field_mapping:
             return []
-        
-        mapped_fields = [ f.strip() for f in self.field_mapping.split(',')]
-        
-        child_form_id = self.associated_form
-        if not child_form_id:
+
+        mapped_fields = [f.strip() for f in self.field_mapping.split(',')]
+
+        associated_form_id = self.associated_form
+        if not associated_form_id:
+            # TODO: Shouldn't this just return the row value?
             return mapped_fields
 
         db = self.context.getParentDatabase()
 
-        # get child form
-        child_form = db.getForm(child_form_id)
-        if not child_form:
+        # get associated form
+        associated_form = db.getForm(associated_form_id)
+        if not associated_form:
             return mapped_fields
 
-        # return title for each mapped field if this one exists in the child form
-        return [str(f.getFieldRender(child_form, None, editmode=True, creation=False, request=None)) for f in [child_form.getFormField(f) for f in mapped_fields] if f]
+        target = TemporaryDocument(
+                db,
+                associated_form,
+                request,
+                validation_mode=validation_mode).__of__(db)
 
-    def getAssociateForm(self):
-        child_form_id = self.associated_form;
-        if child_form_id:
+        rendered_fields = []
+        for f in mapped_fields:
+            field = associated_form.getFormField(f) 
+            if not field:
+                # We have already warned about missing fields in getColumnLabels
+                continue
+            rendered_field = field.getFieldRender(associated_form, target, editmode, creation=creation, request=request)
+            rendered_fields.append(rendered_field)
+
+        return rendered_fields
+
+
+    def getAssociatedForm(self):
+        associated_form_id = self.associated_form;
+        if associated_form_id:
             db = self.context.getParentDatabase()
-            return db.getForm(child_form_id)   
+            return db.getForm(associated_form_id)   
 
+
+>>>>>>> Stashed changes
     def getFieldValue(self, form, doc=None, editmode_obsolete=False,
             creation=False, request=None):
         """
@@ -246,10 +279,10 @@ class DatagridField(BaseField):
 
             # fieldValue is a array, where we must replace raw values with
             # rendered values
-            child_form_id = self.associated_form
-            if child_form_id:
+            associated_form_id = self.associated_form
+            if associated_form_id:
                 db = self.context.getParentDatabase()
-                child_form = db.getForm(child_form_id)
+                associated_form = db.getForm(associated_form_id)
                 # zip is procrustean: we get the longest of mapped_fields or
                 # fieldValue
                 mapped = []
@@ -263,7 +296,7 @@ class DatagridField(BaseField):
                 for f in mapped_fields + item_names:
                     fields[f] = None
                 fields = fields.keys()
-                field_objs = [child_form.getFormField(f) for f in fields]
+                field_objs = [associated_form.getFormField(f) for f in fields]
                 # avoid bad field ids
                 field_objs = [f for f in field_objs if f is not None]
                 #DBG fields_to_render = [f.id for f in field_objs if f.getFieldType() not in ["DATETIME", "NUMBER", "TEXT", "RICHTEXT"]]
@@ -275,10 +308,10 @@ class DatagridField(BaseField):
                 if fields_to_render:
                     rendered_values = []
                     for row in fieldValue:
-                        row['Form'] = child_form_id
+                        row['Form'] = associated_form_id
                         row['Plomino_Parent_Document'] = doc.id 
                         tmp = TemporaryDocument(
-                                db, child_form, row, real_doc=doc)
+                                db, associated_form, row, real_doc=doc)
                         tmp = tmp.__of__(db)
                         for f in fields:
                             if f in fields_to_render:
@@ -286,13 +319,14 @@ class DatagridField(BaseField):
                         rendered_values.append(row)
                     fieldValue = rendered_values
 
-            if mapped_fields and child_form_id:
+            if mapped_fields and associated_form_id:
                 mapped = []
                 for row in fieldValue:
                     mapped.append([row[c] for c in mapped_fields])
                 fieldValue = mapped
 
         return {'rawdata': rawValue, 'rendered': fieldValue}
+
 
 component.provideUtility(DatagridField, IPlominoField, 'DATAGRID')
 
