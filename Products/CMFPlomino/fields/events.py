@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-# File: datetime.py
+# File: events.py
 #
 # Copyright (c) 2009 by ['Eric BREHAULT']
 #

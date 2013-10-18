@@ -17,7 +17,6 @@ from xml.parsers.expat import ExpatError
 import base64
 import codecs
 import csv
-import datetime
 import glob
 import os
 import transaction
@@ -566,7 +565,6 @@ class PlominoReplicationManager(Persistent):
         else:
             # Zope modification time (Plone modification time is not 
             # set while document modified via script)
-            # TODO: UTC
             lastEditDocumentDate = doc.getLastModified()
             # check dates
             if not lastReplicationDate:
@@ -617,7 +615,6 @@ class PlominoReplicationManager(Persistent):
         else:
             # Zope modification time (Plone modification time is not 
             # set while document modified via script)
-            # TODO: UTC
             lastEditDocumentDate = localDoc.getLastModified()
 
             #check dates
@@ -852,7 +849,7 @@ class PlominoReplicationManager(Persistent):
     def startReplication(self, remoteUrl, repType):
         """ Flags the start of the transaction (local).
         """
-        now = DateTime().toZone('UTC')
+        now = DateTime().toZone(TIMEZONE)
         self.setReplicationDate(remoteUrl, repType, now)
 
     security.declarePublic('hideIt')

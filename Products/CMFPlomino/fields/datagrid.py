@@ -115,7 +115,10 @@ class DatagridField(BaseField):
         if isinstance(value, basestring):
             return value
         elif isinstance(value, DateTime):
-            value = DateToString(value, '%Y-%m-%d')
+            db = self.context.getParentDatabase()
+            value = DateToString(value, db=db)
+            # TODO does anything require that format here?
+            # value = DateToString(value, '%Y-%m-%d')
         elif isinstance(value, dict):
             if rendered:
                 value = value['rendered']

@@ -38,7 +38,8 @@ from Products.CMFPlomino.browser import PlominoMessageFactory as _
 from Products.CMFPlomino import plomino_profiler
 from Products.CMFPlomino.PlominoUtils import asList
 from Products.CMFPlomino.PlominoUtils import asUnicode
-from Products.CMFPlomino.PlominoUtils import DateToString, StringToDate
+from Products.CMFPlomino.PlominoUtils import DateToString
+from Products.CMFPlomino.PlominoUtils import StringToDate
 from Products.CMFPlomino.PlominoUtils import PlominoTranslate
 from Products.CMFPlomino.PlominoUtils import translate
 import interfaces
