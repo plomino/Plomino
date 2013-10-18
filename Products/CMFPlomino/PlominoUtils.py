@@ -38,7 +38,6 @@ try:
 except ImportError:
     from App.class_init import InitializeClass
 
-from Acquisition import Implicit
 from DateTime import DateTime
 from zope import component
 

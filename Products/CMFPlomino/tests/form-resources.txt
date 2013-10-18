@@ -1,0 +1,345 @@
+===========================
+Test samples databases
+===========================
+
+    >>> portal = layer['portal']
+    >>> id = portal.invokeFactory('Folder', id='samples')
+    >>> folder = portal.samples
+    >>> base_url = folder.absolute_url()
+
+Create some users:
+
+    >>> memberName = 'siteManager'
+    >>> portal.portal_membership.addMember(memberName, memberName, ('Member, Manager',), '', {'fullname': memberName, 'email': memberName+'@dummy.fr',} )
+    >>> memberName = 'userReader'
+    >>> portal.portal_membership.addMember(memberName, memberName, ('Member',), '', {'fullname': memberName, 'email': memberName+'@dummy.fr',} )
+    >>> memberName = 'userDesigner'
+    >>> portal.portal_membership.addMember(memberName, memberName, ('Member',), '', {'fullname': memberName, 'email': memberName+'@dummy.fr',} )
+    >>> memberName = 'userAuthor'
+    >>> portal.portal_membership.addMember(memberName, memberName, ('Member',), '', {'fullname': memberName, 'email': memberName+'@dummy.fr',} )
+    >>> memberName = 'userAuthor2'
+    >>> portal.portal_membership.addMember(memberName, memberName, ('Member',), '', {'fullname': memberName, 'email': memberName+'@dummy.fr',} )
+    >>> memberName = 'userEditor'
+    >>> portal.portal_membership.addMember(memberName, memberName, ('Member',), '', {'fullname': memberName, 'email': memberName+'@dummy.fr',} )
+    >>> memberName = 'userManager'
+    >>> portal.portal_membership.addMember(memberName, memberName, ('Member',), '', {'fullname': memberName, 'email': memberName+'@dummy.fr',} )
+    >>> memberName = 'demouser'
+    >>> portal.portal_membership.addMember(memberName, memberName, ('Member',), '', {'fullname': memberName, 'email': memberName+'@dummy.fr',} )
+
+Create the database:
+
+    >>> import os.path
+    >>> dir, _f = os.path.split(os.path.abspath(__file__))
+    >>> f = open(os.path.join(dir, "samples", "form-resources-example.xml"))
+    >>> db_id = 'example-with-form-resources'
+    >>> id = folder.invokeFactory('PlominoDatabase', id=db_id)
+    >>> db = getattr(folder, 'example-with-form-resources')
+    >>> db.at_post_create_script()
+    >>> wf_tool = portal.portal_workflow
+    >>> wf_tool.doActionFor(db, 'publish')
+    >>> xmlstring=f.read()
+    >>> db.importDesignFromXML(xmlstring)
+    >>> db.refreshDB()
+    [...]    
+    >>> f.close()
+
+Set plomino roles and permissions:
+
+    >>> db.manage_setLocalRoles('userManager', ['PlominoManager'])
+    >>> db.manage_setLocalRoles('userDesigner', ['PlominoDesigner'])
+    >>> db.manage_setLocalRoles('userEditor', ['PlominoEditor'])
+    >>> db.manage_setLocalRoles('userAuthor', ['PlominoAuthor'])
+    >>> db.manage_setLocalRoles('userReader', ['PlominoReader'])
+
+Create the browser object we'll be using and log in as userEditor:
+
+    >>> browser = Browser(layer['app'])
+    >>> transaction.commit()  # enable the browser to see our changes
+    >>> portal_url = portal.absolute_url()
+    >>> browser.open(portal_url)
+    >>> browser.getLink('Log in').click()
+    >>> browser.getControl('Login Name').value = 'userManager'
+    >>> browser.getControl('Password').value = 'userManager'
+    >>> browser.getControl('Log in').click()
+
+Import form-resources-example db:
+
+    >>> browser.open(portal_url)
+    >>> browser.getLink('Log out').click()
+    >>> browser.getLink('Log in').click()
+    >>> browser.getControl('Login Name').value = 'userManager'
+    >>> browser.getControl('Password').value = 'userManager'
+    >>> browser.getControl('Log in').click()
+
+Scenario: frmBirthday has one JS resource and one CSS resource
+- both are loaded with the form and with a document
+
+    >>> from re import compile
+    >>> js_pattern1 = r'<script[^<]*src="./resources/test.js"[^<]*</script>'
+    >>> css_pattern1 = r'<link[^>]*href="./resources/test.css"[^>]*/>'
+    >>> js_re1=compile(js_pattern1)
+    >>> css_re1=compile(css_pattern1)
+    >>> browser.open(base_url+'/example-with-form-resources')
+    >>> 'Birthday' in browser.contents
+    True
+    >>> browser.open(browser.url+"/frmBirthday/edit")
+    >>> browser.getControl(name='ResourcesJS').value
+    './resources/test.js'
+    >>> browser.getControl(name='ResourcesCSS').value
+    './resources/test.css'
+
+    >>> example_url = base_url+'/'+db_id
+    >>> browser.open(example_url+'/frmBirthday/OpenForm')
+    >>> bool(js_re1.search(browser.contents))
+    True
+    >>> bool(css_re1.search(browser.contents))
+    True
+
+    >>> browser.open(example_url+'/frmBirthday/OpenBareForm')
+    >>> bool(js_re1.search(browser.contents))
+    True
+    >>> bool(css_re1.search(browser.contents))
+    True
+
+    >>> browser.getControl(name='personName').value = 'Eric'
+    >>> browser.getControl(name='birthDate').value = '1974-10-20 00:00'
+    >>> browser.getControl(name='personCategory').value = ['Friend']
+    >>> browser.getControl(name='plomino_save').click()
+    >>> document_url = browser.url
+    >>> bool(js_re1.search(browser.contents))
+    True
+    >>> bool(css_re1.search(browser.contents))
+    True
+
+    >>> browser.open(document_url + '/OpenDocument')
+    >>> bool(js_re1.search(browser.contents))
+    True
+    >>> bool(css_re1.search(browser.contents))
+    True
+
+    >>> browser.open(document_url + '/OpenBareDocument')
+    >>> bool(js_re1.search(browser.contents))
+    True
+    >>> bool(css_re1.search(browser.contents))
+    True
+
+    >>> browser.open(document_url + '/EditDocument')
+    >>> bool(js_re1.search(browser.contents))
+    True
+    >>> bool(css_re1.search(browser.contents))
+    True
+
+    >>> browser.open(document_url + '/EditBareDocument')
+    >>> bool(js_re1.search(browser.contents))
+    True
+    >>> bool(css_re1.search(browser.contents))
+    True
+    
+Scenario: add two more resources, both to JS and to CSS, as multi-line strings
+- all six resources are loaded as separate <script> and <link> elements
+    
+  >>> browser.open(example_url+'/frmBirthday/edit')
+  >>> longjs = "./resources/test.js\n/testroot.js\nhttp://google.com"
+  >>> longcss = "./resources/test.css\n/testroot.css\nhttp://google.com"
+  >>> browser.getControl(name='ResourcesJS').value = longjs
+  >>> browser.getControl(name='ResourcesCSS').value = longcss
+  >>> browser.getControl(name='form.button.save').click()
+
+  >>> browser.open(example_url+'/frmBirthday/edit')
+  >>> browser.getControl(name='ResourcesJS').value
+  './resources/test.js\r\n/testroot.js\r\nhttp://google.com'
+  >>> browser.getControl(name='ResourcesCSS').value
+  './resources/test.css\r\n/testroot.css\r\nhttp://google.com'
+  
+
+  >>> js_pattern2 = r'<script[^<]*src="/testroot.js"[^<]*</script>'
+  >>> css_pattern2 = r'<link[^>]*href="/testroot.css"[^>]*/>'
+  >>> js_pattern3 = r'<script[^<]*src="http://google.com"[^<]*</script>'
+  >>> css_pattern3 = r'<link[^>]*href="http://google.com"[^>]*/>'
+  >>> js_re2=compile(js_pattern2)
+  >>> css_re2=compile(css_pattern2)
+  >>> js_re3=compile(js_pattern3)
+  >>> css_re3=compile(css_pattern3)
+
+  >>> browser.open(example_url+'/frmBirthday/OpenForm')
+  >>> bool(js_re1.search(browser.contents))
+  True
+  >>> bool(css_re1.search(browser.contents))
+  True
+  >>> bool(js_re2.search(browser.contents))
+  True
+  >>> bool(css_re2.search(browser.contents))
+  True
+  >>> bool(js_re3.search(browser.contents))
+  True
+  >>> bool(css_re3.search(browser.contents))
+  True
+
+  >>> browser.open(example_url+'/frmBirthday/OpenBareForm')
+  >>> bool(js_re1.search(browser.contents))
+  True
+  >>> bool(css_re1.search(browser.contents))
+  True
+  >>> bool(js_re2.search(browser.contents))
+  True
+  >>> bool(css_re2.search(browser.contents))
+  True
+  >>> bool(js_re3.search(browser.contents))
+  True
+  >>> bool(css_re3.search(browser.contents))
+  True
+
+  >>> browser.open(document_url + '/OpenDocument')
+  >>> bool(js_re1.search(browser.contents))
+  True
+  >>> bool(css_re1.search(browser.contents))
+  True
+  >>> bool(js_re2.search(browser.contents))
+  True
+  >>> bool(css_re2.search(browser.contents))
+  True
+  >>> bool(js_re3.search(browser.contents))
+  True
+  >>> bool(css_re3.search(browser.contents))
+  True
+
+  >>> browser.open(document_url + '/OpenBareDocument')
+  >>> bool(js_re1.search(browser.contents))
+  True
+  >>> bool(css_re1.search(browser.contents))
+  True
+  >>> bool(js_re2.search(browser.contents))
+  True
+  >>> bool(css_re2.search(browser.contents))
+  True
+  >>> bool(js_re3.search(browser.contents))
+  True
+  >>> bool(css_re3.search(browser.contents))
+  True
+
+  >>> browser.open(document_url + '/EditDocument')
+  >>> bool(js_re1.search(browser.contents))
+  True
+  >>> bool(css_re1.search(browser.contents))
+  True
+  >>> bool(js_re2.search(browser.contents))
+  True
+  >>> bool(css_re2.search(browser.contents))
+  True
+  >>> bool(js_re3.search(browser.contents))
+  True
+  >>> bool(css_re3.search(browser.contents))
+  True
+
+  >>> browser.open(document_url + '/EditBareDocument')
+  >>> bool(js_re1.search(browser.contents))
+  True
+  >>> bool(css_re1.search(browser.contents))
+  True
+  >>> bool(js_re2.search(browser.contents))
+  True
+  >>> bool(css_re2.search(browser.contents))
+  True
+  >>> bool(js_re3.search(browser.contents))
+  True
+  >>> bool(css_re3.search(browser.contents))
+  True
+  
+Scenario: no JS or CSS resources
+- none of the previous <script> and <link> elements are found
+
+  >>> browser.open(example_url+'/frmBirthday/edit')
+  >>> browser.getControl(name='ResourcesJS').value = ''
+  >>> browser.getControl(name='ResourcesCSS').value = ''
+  >>> browser.getControl(name='form.button.save').click()
+
+  >>> browser.open(example_url+'/frmBirthday/edit')
+  >>> browser.getControl(name='ResourcesJS').value
+  ''
+  >>> browser.getControl(name='ResourcesCSS').value
+  ''
+
+  >>> browser.open(example_url+'/frmBirthday/OpenForm')
+  >>> bool(js_re1.search(browser.contents))
+  False
+  >>> bool(css_re1.search(browser.contents))
+  False
+  >>> bool(js_re2.search(browser.contents))
+  False
+  >>> bool(css_re2.search(browser.contents))
+  False
+  >>> bool(js_re3.search(browser.contents))
+  False
+  >>> bool(css_re3.search(browser.contents))
+  False
+
+  >>> browser.open(example_url+'/frmBirthday/OpenBareForm')
+  >>> bool(js_re1.search(browser.contents))
+  False
+  >>> bool(css_re1.search(browser.contents))
+  False
+  >>> bool(js_re2.search(browser.contents))
+  False
+  >>> bool(css_re2.search(browser.contents))
+  False
+  >>> bool(js_re3.search(browser.contents))
+  False
+  >>> bool(css_re3.search(browser.contents))
+  False
+
+  >>> browser.open(document_url + '/OpenDocument')
+  >>> bool(js_re1.search(browser.contents))
+  False
+  >>> bool(css_re1.search(browser.contents))
+  False
+  >>> bool(js_re2.search(browser.contents))
+  False
+  >>> bool(css_re2.search(browser.contents))
+  False
+  >>> bool(js_re3.search(browser.contents))
+  False
+  >>> bool(css_re3.search(browser.contents))
+  False
+
+  >>> browser.open(document_url + '/OpenBareDocument')
+  >>> bool(js_re1.search(browser.contents))
+  False
+  >>> bool(css_re1.search(browser.contents))
+  False
+  >>> bool(js_re2.search(browser.contents))
+  False
+  >>> bool(css_re2.search(browser.contents))
+  False
+  >>> bool(js_re3.search(browser.contents))
+  False
+  >>> bool(css_re3.search(browser.contents))
+  False
+
+  >>> browser.open(document_url + '/EditDocument')
+  >>> bool(js_re1.search(browser.contents))
+  False
+  >>> bool(css_re1.search(browser.contents))
+  False
+  >>> bool(js_re2.search(browser.contents))
+  False
+  >>> bool(css_re2.search(browser.contents))
+  False
+  >>> bool(js_re3.search(browser.contents))
+  False
+  >>> bool(css_re3.search(browser.contents))
+  False
+
+  >>> browser.open(document_url + '/EditBareDocument')
+  >>> bool(js_re1.search(browser.contents))
+  False
+  >>> bool(css_re1.search(browser.contents))
+  False
+  >>> bool(js_re2.search(browser.contents))
+  False
+  >>> bool(css_re2.search(browser.contents))
+  False
+  >>> bool(js_re3.search(browser.contents))
+  False
+  >>> bool(css_re3.search(browser.contents))
+  False
+   

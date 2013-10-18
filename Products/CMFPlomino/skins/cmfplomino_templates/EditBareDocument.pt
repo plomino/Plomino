@@ -4,7 +4,7 @@
       xmlns:i18n="http://xml.zope.org/namespaces/i18n"
       lang="en"
       i18n:domain="plone"
-      tal:define="form python:here;
+      tal:define="form python:here.getForm();
                   form_method python:form.getFormMethod();
                   "
       >
@@ -51,17 +51,36 @@ $$(document).ready( function() {
     $$('form :input').change(refreshHidewhen);
 });">
     </script>
+    <tal:block_hasjsresources 
+        tal:define="jsresources python:form.getResourcesJS().splitlines();"
+        tal:condition="jsresources"
+        tal:repeat="js jsresources">
+        <script
+            type="text/javascript"
+            charset="iso-8859-1"
+            tal:attributes="src js">
+        </script>
+    </tal:block_hasjsresources>
+    <tal:block_hascssresources
+            tal:define="cssresources python:form.getResourcesCSS().splitlines()"
+            tal:condition="cssresources"
+            tal:repeat="css cssresources">
+            <link rel="stylesheet"
+                type="text/css"
+                media="all"
+                tal:attributes="href css" />
+        </tal:block_hascssresources>
 </head>
 <body>
 <div id="content">
-  <tal:block tal:define="b myF/ActionBarPosition|nothing">
+  <tal:block tal:define="b form/ActionBarPosition|nothing">
 	
   <form 
       tal:define="
             enctype python:(form_method == 'POST') and 'multipart/form-data'
             "
       tal:attributes="
-            name myF/id;
+            name form/id;
             action python:here.doc_url()+'/saveDocument';
             method form_method;
             enctype enctype|nothing
@@ -80,17 +99,17 @@ $$(document).ready( function() {
                 tal:content="python:here.getItem('Plomino_Parent_Field')">Plomino_Parent_Field</span>
           
 		<tal:form_actions_top
-				define="owner python:myF"
-				condition= "python:test((b and myF.ActionBarPosition=='BOTTOM'), False, True)">
+				define="owner python:form"
+				condition= "python:test((b and form.ActionBarPosition=='BOTTOM'), False, True)">
 				<span metal:use-macro="here/ActionBar/macros/EditDocumentActionBar" >
 					display form actions above form fields
 				</span><br/>
 		</tal:form_actions_top>
 		
-	    <span tal:content="structure python:here.editWithForm(myF)" />
+	    <span tal:content="structure python:here.editWithForm(form)" />
 
 		<tal:form_actions_bottom
-			define="owner python:myF">
+			define="owner python:form">
 			<span metal:use-macro="here/ActionBar/macros/EditDocumentActionBar" >
 				display form actions below form fields
 			</span>

@@ -1,0 +1,193 @@
+<plominodatabase id="test2">
+  <design>
+    <dbsettings version="1.17">
+      <AboutDescription type="Products.Archetypes.Field.TextField"><![CDATA[
+
+]]></AboutDescription>
+      <UsingDescription type="Products.Archetypes.Field.TextField"><![CDATA[
+
+]]></UsingDescription>
+      <IndexAttachments type="Products.Archetypes.Field.BooleanField">False</IndexAttachments>
+      <FulltextIndex type="Products.Archetypes.Field.BooleanField">False</FulltextIndex>
+      <IndexInPortal type="Products.Archetypes.Field.BooleanField">False</IndexInPortal>
+      <debugMode type="Products.Archetypes.Field.BooleanField">False</debugMode>
+      <StorageAttachments type="Products.Archetypes.Field.BooleanField">False</StorageAttachments>
+      <CountDocuments type="Products.Archetypes.Field.BooleanField">False</CountDocuments>
+      <DateTimeFormat type="Products.Archetypes.Field.StringField">%Y/%m/%d</DateTimeFormat>
+      <StartPage type="Products.Archetypes.Field.StringField"/>
+      <i18n type="Products.Archetypes.Field.StringField"/>
+      <DoNotListUsers type="Products.Archetypes.Field.BooleanField">False</DoNotListUsers>
+      <DoNotReindex type="Products.Archetypes.Field.BooleanField">False</DoNotReindex>
+      <excludeFromNav type="Products.Archetypes.Field.BooleanField">False</excludeFromNav>
+      <acl AnomynousAccessRight="NoAccess" AuthenticatedAccessRight="NoAccess">
+        <params id="UserRoles">
+<param>
+<value><struct>
+</struct></value>
+</param>
+</params>
+        <params id="SpecificRights">
+<param>
+<value><struct>
+<member>
+<name>specific_deletedocument</name>
+<value><string>PlominoAuthor</string></value>
+</member>
+</struct></value>
+</param>
+</params>
+      </acl>
+    </dbsettings>
+    <resource contenttype="text/css" id="test.css" title="test.css" type="File"><![CDATA[I2NvbnRlbnQgaDEuZG9jdW1lbnRGaXJzdEhlYWRpbmcgewogICAgY29sb3I6cmVkOwp9
+]]></resource>
+    <resource contenttype="application/x-javascript" id="test.js" title="test.js" type="File"><![CDATA[dmFyIHRlc3RpbmcgPSB0cnVlOw==
+]]></resource>
+    <element id="frmBirthday" title="Birthday" type="PlominoForm">
+      <id type="Products.Archetypes.Field.StringField">frmBirthday</id>
+      <onCreateDocument type="Products.Archetypes.Field.TextField"><![CDATA[]]></onCreateDocument>
+      <onOpenDocument type="Products.Archetypes.Field.TextField"><![CDATA[]]></onOpenDocument>
+      <beforeSaveDocument type="Products.Archetypes.Field.TextField"><![CDATA[]]></beforeSaveDocument>
+      <onSaveDocument type="Products.Archetypes.Field.TextField"><![CDATA[]]></onSaveDocument>
+      <onDeleteDocument type="Products.Archetypes.Field.TextField"><![CDATA[]]></onDeleteDocument>
+      <onSearch type="Products.Archetypes.Field.TextField"><![CDATA[]]></onSearch>
+      <beforeCreateDocument type="Products.Archetypes.Field.TextField"><![CDATA[]]></beforeCreateDocument>
+      <FormLayout type="Products.Archetypes.Field.TextField"><![CDATA[<p>Name: <span class="plominoFieldClass">personName</span></p>
+<p>Date of birth: <span class="plominoFieldClass">birthDate</span></p>
+<p>Category: <span class="plominoFieldClass">personCategory</span></p>
+<p> </p>
+<p><span class="discreet">Today : <span class="plominoFieldClass">todayDate</span></span></p>]]></FormLayout>
+      <DocumentTitle type="Products.Archetypes.Field.TextField"><![CDATA[plominoDocument.personName]]></DocumentTitle>
+      <DocumentId type="Products.Archetypes.Field.TextField"><![CDATA[]]></DocumentId>
+      <ActionBarPosition type="Products.Archetypes.Field.StringField">TOP</ActionBarPosition>
+      <HideDefaultActions type="Products.Archetypes.Field.BooleanField">False</HideDefaultActions>
+      <HideInMenu type="Products.Archetypes.Field.BooleanField">False</HideInMenu>
+      <isSearchForm type="Products.Archetypes.Field.BooleanField">False</isSearchForm>
+      <isPage type="Products.Archetypes.Field.BooleanField">False</isPage>
+      <SearchView type="Products.Archetypes.Field.StringField"/>
+      <SearchFormula type="Products.Archetypes.Field.TextField"><![CDATA[]]></SearchFormula>
+      <Position type="Products.Archetypes.Field.IntegerField"/>
+      <ResourcesJS type="Products.Archetypes.Field.TextField"><![CDATA[./resources/test.js]]></ResourcesJS>
+      <ResourcesCSS type="Products.Archetypes.Field.TextField"><![CDATA[./resources/test.css]]></ResourcesCSS>
+      <excludeFromNav type="Products.Archetypes.Field.BooleanField">False</excludeFromNav>
+      <elements>
+        <element id="personName" title="personName" type="PlominoField">
+          <id type="Products.Archetypes.Field.StringField">personName</id>
+          <FieldType type="Products.Archetypes.Field.StringField">TEXT</FieldType>
+          <FieldMode type="Products.Archetypes.Field.StringField">EDITABLE</FieldMode>
+          <Formula type="Products.Archetypes.Field.TextField"><![CDATA[]]></Formula>
+          <FieldReadTemplate type="Products.Archetypes.Field.StringField"/>
+          <FieldEditTemplate type="Products.Archetypes.Field.StringField"/>
+          <Mandatory type="Products.Archetypes.Field.BooleanField">False</Mandatory>
+          <ValidationFormula type="Products.Archetypes.Field.TextField"><![CDATA[]]></ValidationFormula>
+          <ToBeIndexed type="Products.Archetypes.Field.BooleanField">False</ToBeIndexed>
+          <IndexType type="Products.Archetypes.Field.StringField">DEFAULT</IndexType>
+        </element>
+        <element id="birthDate" title="birthDate" type="PlominoField">
+          <id type="Products.Archetypes.Field.StringField">birthDate</id>
+          <FieldType type="Products.Archetypes.Field.StringField">DATETIME</FieldType>
+          <FieldMode type="Products.Archetypes.Field.StringField">EDITABLE</FieldMode>
+          <Formula type="Products.Archetypes.Field.TextField"><![CDATA[]]></Formula>
+          <FieldReadTemplate type="Products.Archetypes.Field.StringField"/>
+          <FieldEditTemplate type="Products.Archetypes.Field.StringField"/>
+          <Mandatory type="Products.Archetypes.Field.BooleanField">False</Mandatory>
+          <ValidationFormula type="Products.Archetypes.Field.TextField"><![CDATA[]]></ValidationFormula>
+          <ToBeIndexed type="Products.Archetypes.Field.BooleanField">False</ToBeIndexed>
+          <IndexType type="Products.Archetypes.Field.StringField">DEFAULT</IndexType>
+          <params>
+<param>
+<value><struct>
+<member>
+<name>startingyear</name>
+<value><string>1940</string></value>
+</member>
+<member>
+<name>format</name>
+<value><string>%d-%m-%Y</string></value>
+</member>
+</struct></value>
+</param>
+</params>
+        </element>
+        <element id="todayDate" title="todayDate" type="PlominoField">
+          <id type="Products.Archetypes.Field.StringField">todayDate</id>
+          <FieldType type="Products.Archetypes.Field.StringField">DATETIME</FieldType>
+          <FieldMode type="Products.Archetypes.Field.StringField">DISPLAY</FieldMode>
+          <Formula type="Products.Archetypes.Field.TextField"><![CDATA[Now()]]></Formula>
+          <FieldReadTemplate type="Products.Archetypes.Field.StringField"/>
+          <FieldEditTemplate type="Products.Archetypes.Field.StringField"/>
+          <Mandatory type="Products.Archetypes.Field.BooleanField">False</Mandatory>
+          <ValidationFormula type="Products.Archetypes.Field.TextField"><![CDATA[]]></ValidationFormula>
+          <ToBeIndexed type="Products.Archetypes.Field.BooleanField">False</ToBeIndexed>
+          <IndexType type="Products.Archetypes.Field.StringField">DEFAULT</IndexType>
+        </element>
+        <element id="personCategory" title="personCategory" type="PlominoField">
+          <id type="Products.Archetypes.Field.StringField">personCategory</id>
+          <FieldType type="Products.Archetypes.Field.StringField">SELECTION</FieldType>
+          <FieldMode type="Products.Archetypes.Field.StringField">EDITABLE</FieldMode>
+          <Formula type="Products.Archetypes.Field.TextField"><![CDATA[]]></Formula>
+          <FieldReadTemplate type="Products.Archetypes.Field.StringField"/>
+          <FieldEditTemplate type="Products.Archetypes.Field.StringField"/>
+          <Mandatory type="Products.Archetypes.Field.BooleanField">False</Mandatory>
+          <ValidationFormula type="Products.Archetypes.Field.TextField"><![CDATA[]]></ValidationFormula>
+          <ToBeIndexed type="Products.Archetypes.Field.BooleanField">False</ToBeIndexed>
+          <IndexType type="Products.Archetypes.Field.StringField">DEFAULT</IndexType>
+          <params>
+<param>
+<value><struct>
+<member>
+<name>selectionlist</name>
+<value><array><data>
+<value><string>Relative</string></value>
+<value><string>Friend</string></value>
+<value><string>Colleague</string></value>
+</data></array></value>
+</member>
+</struct></value>
+</param>
+</params>
+        </element>
+      </elements>
+    </element>
+    <element id="all" title="All birthdays" type="PlominoView">
+      <id type="Products.Archetypes.Field.StringField">all</id>
+      <SelectionFormula type="Products.Archetypes.Field.TextField"><![CDATA[True]]></SelectionFormula>
+      <SortColumn type="Products.Archetypes.Field.StringField"/>
+      <Categorized type="Products.Archetypes.Field.BooleanField">False</Categorized>
+      <FormFormula type="Products.Archetypes.Field.TextField"><![CDATA[]]></FormFormula>
+      <ReverseSorting type="Products.Archetypes.Field.BooleanField">False</ReverseSorting>
+      <ActionBarPosition type="Products.Archetypes.Field.StringField">TOP</ActionBarPosition>
+      <HideDefaultActions type="Products.Archetypes.Field.BooleanField">False</HideDefaultActions>
+      <HideInMenu type="Products.Archetypes.Field.BooleanField">False</HideInMenu>
+      <Widget type="Products.Archetypes.Field.StringField">BASIC</Widget>
+      <DynamicTableParameters type="Products.Archetypes.Field.TextField"><![CDATA['bPaginate': false,
+'bLengthChange': false,
+'bFilter': true,
+'bSort': true,
+'bInfo': false,
+'bAutoWidth': false]]></DynamicTableParameters>
+      <ViewTemplate type="Products.Archetypes.Field.StringField"/>
+      <onOpenView type="Products.Archetypes.Field.TextField"><![CDATA[]]></onOpenView>
+      <Position type="Products.Archetypes.Field.IntegerField"/>
+      <excludeFromNav type="Products.Archetypes.Field.BooleanField">False</excludeFromNav>
+      <elements>
+        <element id="person" title="Name" type="PlominoColumn">
+          <id type="Products.Archetypes.Field.StringField">person</id>
+          <SelectedField type="Products.Archetypes.Field.StringField"/>
+          <Formula type="Products.Archetypes.Field.TextField"><![CDATA[plominoDocument.personName]]></Formula>
+          <HiddenColumn type="Products.Archetypes.Field.BooleanField">False</HiddenColumn>
+          <DisplaySum type="Products.Archetypes.Field.BooleanField">False</DisplaySum>
+        </element>
+        <element id="birthDate" title="Birthday" type="PlominoColumn">
+          <id type="Products.Archetypes.Field.StringField">birthDate</id>
+          <SelectedField type="Products.Archetypes.Field.StringField">frmBirthday</SelectedField>
+          <Formula type="Products.Archetypes.Field.TextField"><![CDATA[birthDate = plominoDocument.getItem("birthDate")
+if not birthDate:
+    return ""
+return DateToString(birthDate, "%Y/%m/%d")]]></Formula>
+          <HiddenColumn type="Products.Archetypes.Field.BooleanField">False</HiddenColumn>
+          <DisplaySum type="Products.Archetypes.Field.BooleanField">False</DisplaySum>
+        </element>
+      </elements>
+    </element>
+  </design>
+</plominodatabase>

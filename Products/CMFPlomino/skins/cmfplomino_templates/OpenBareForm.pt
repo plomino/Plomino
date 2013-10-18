@@ -47,6 +47,26 @@ $$(document).ready( function() {
       </script>
       <link rel="stylesheet" type="text/css" media="all" tal:attributes="href string:${here/portal_url}/jscalendar/calendar-system.css" />
     </tal:block>
+    <tal:block_hasjsresources 
+        tal:define="jsresources python:form.getResourcesJS().splitlines();"
+        tal:condition="jsresources"
+        tal:repeat="js jsresources">
+        <script
+            type="text/javascript"
+            charset="iso-8859-1"
+            tal:attributes="src js">
+        </script>
+    </tal:block_hasjsresources>
+    <tal:block_hascssresources
+            tal:define="cssresources python:form.getResourcesCSS().splitlines()"
+            tal:condition="cssresources"
+            tal:repeat="css cssresources">
+            <link rel="stylesheet"
+                type="text/css"
+                media="all"
+                tal:attributes="href css" />
+        </tal:block_hascssresources>
+
 </head>
 <body class="OpenBareForm">
     <div id="content"
