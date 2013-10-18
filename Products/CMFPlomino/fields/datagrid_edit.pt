@@ -63,42 +63,43 @@
                         var ${fieldname}_edit_widgets = ${edit_widgets};
                         var ${fieldname}_read_wigdets = ${edit_widgets};
 
-                        var ${fieldname}_editing_row_nr = null;                   
+                        var ${fieldname}_edited_row_nr = null;                   
                         
                         $$('#${fieldname}_addrow').click( function (e) {
                             e.preventDefault();
-                            ${fieldname}_editing_row_nr = datagrid_add_inline_row( ${fieldname}_datatable, ${fieldname}_add_widgets )
+                            ${fieldname}_edited_row_nr = datagrid_add_inline_row( ${fieldname}_datatable, ${fieldname}_add_widgets )
                         } );
 
+                        // TODO This should be called when moving between rows
                         $$('#${fieldname}_datagrid a.save').live('click', function (e) {
                             e.preventDefault();
                             var nRow = $(this).parents('tr')[0];
                             var url = '${datagrid_associated_form_url}/createDocument?Plomino_Parent_Field=${fieldname}&Plomino_Parent_Form=${form_name}&Form=${datagrid_associated_form_id}';
-                            console.log(${fieldname}_editing_row_nr);
-                            if ( ${fieldname}_editing_row_nr == nRow && this.innerHTML == 'Save' ) {
+                            console.log(${fieldname}_edited_row_nr);
+                            if ( ${fieldname}_edited_row_nr == nRow && this.innerHTML == 'Save' ) {
                                 /* This row is being edited and should be saved */
 
-                                var succeeded = datagrid_save_inline_row(${fieldname}_datatable, ${fieldname}_editing_row_nr, '${fieldname}', url);
+                                var succeeded = datagrid_save_inline_row(${fieldname}_datatable, ${fieldname}_edited_row_nr, '${fieldname}', url);
                                 if (succeeded===true)
-                                    ${fieldname}_editing_row_nr = null;
+                                    ${fieldname}_edited_row_nr = null;
                             }
                         } );
 
                         $$('#${fieldname}_datagrid a.cancel').live('click', function (e) {
                             e.preventDefault();
                             var nRow = $(this).parents('tr')[0];
-                            datagrid_restore_row(${fieldname}_datatable, nRow);
-                            ${fieldname}_editing_row_nr = null;
+                            datagrid_compute_inline_read_form(${fieldname}_datatable, nRow);
+                            ${fieldname}_edited_row_nr = null;
                         });
 
                         $$('#${fieldname}_editrow').click(function(e) {
                             e.preventDefault();
-                            var row = datagrid_get_selected_row(${fieldname}_datatable);
-                            datagrid_compute_inline_form(${fieldname}_datatable, row, ${fieldname}_add_widgets);
-                            if(${fieldname}_editing_row_nr!=null){
-                                datagrid_restore_row(${fieldname}_datatable, ${fieldname}_editing_row_nr);
+                            var row_nr = datagrid_get_selected_row(${fieldname}_datatable);
+                            datagrid_compute_inline_edit_form(${fieldname}_datatable, row_nr, ${fieldname}_edit_widgets[row_nr]);
+                            if (${fieldname}_edited_row_nr != null) {
+                                datagrid_compute_inline_read_form(${fieldname}_datatable, ${fieldname}_edited_row_nr, ${fieldname}_read_widgets[${fieldname}_edited_row_nr]);
                             } 
-                            ${fieldname}_editing_row_nr = row;
+                            ${fieldname}_edited_row_nr = row_nr;
                         });
 
                     }
