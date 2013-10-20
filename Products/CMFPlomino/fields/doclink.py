@@ -25,6 +25,7 @@ from base import IBaseField, BaseField, BaseForm
 from dictionaryproperty import DictionaryProperty
 from Products.CMFPlomino.exceptions import PlominoScriptException
 from Products.CMFPlomino.PlominoUtils import asUnicode
+from AppConfig import SCRIPTID_DELIMITER
 
 class IDoclinkField(IBaseField):
     """ Selection field schema
