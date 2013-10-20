@@ -493,7 +493,7 @@ class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
         if form and onSaveEvent:
             try:
                 result = self.runFormulaScript(
-                        SCRIPTID_DELIMITER.join(['form', form.id, 'onsave'),
+                        SCRIPTID_DELIMITER.join(['form', form.id, 'onsave']),
                         self,
                         form.onSaveDocument)
                 if result and hasattr(self, 'REQUEST'):
@@ -947,7 +947,7 @@ class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
         result = None
         try:
             result = self.runFormulaScript(
-                    SCRIPTID_DELIMITER.join('form', form.id, 'docid']), self, form.DocumentId)
+                    SCRIPTID_DELIMITER.join(['form', form.id, 'docid']), self, form.DocumentId)
         except PlominoScriptException, e:
             e.reportError('Document id formula failed')
 
