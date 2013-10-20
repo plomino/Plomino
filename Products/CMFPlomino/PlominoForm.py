@@ -789,7 +789,7 @@ class PlominoForm(ATFolder):
                 else:
                     target = doc
                 result = self.runFormulaScript(
-                    'hidewhen_%s_%s_formula' % (self.id, hidewhen.id),
+                    SCRIPTID_DELIMITER.join(['hidewhen', self.id, hidewhen.id, 'formula']),
                     target,
                     hidewhen.Formula)
             except PlominoScriptException, e:
@@ -877,9 +877,7 @@ class PlominoForm(ATFolder):
             if getattr(hidewhen, 'isDynamicHidewhen', False):
                 try:
                     isHidden = self.runFormulaScript(
-                            'hidewhen_%s_%s_formula' % (
-                                self.id,
-                                hidewhen.id),
+                            SCRIPTID_DELIMITER.join(['hidewhen', self.id, hidewhen.id, 'formula']),
                             target,
                             hidewhen.Formula)
                 except PlominoScriptException, e:

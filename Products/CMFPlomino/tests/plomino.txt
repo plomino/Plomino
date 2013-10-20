@@ -568,7 +568,8 @@ A form can define actions to take when specific events occur on a document.
     ... newcountry='Chile'
     ... plominoDocument.setItem('country', newcountry)
     ... """)
-    >>> db.cleanFormulaScripts("form_frm1")
+    >>> from Products.CMFPlomino.AppConfig import SCRIPTID_DELIMITER
+    >>> db.cleanFormulaScripts("form"+SCRIPTID_DELIMITER+"frm1")
     >>> doc1.country
     u'Finland'
     >>> doc1.save(db.frm1)
@@ -583,7 +584,8 @@ aborted::
     ...     return "Chile cannot be deleted"
     ... return None
     ... """)
-    >>> db.cleanFormulaScripts("form_frm1")
+    >>> from Products.CMFPlomino.AppConfig import SCRIPTID_DELIMITER
+    >>> db.cleanFormulaScripts("form"+SCRIPTID_DELIMITER+"frm1")
     >>> doc1_id = doc1.id
     >>> db.deleteDocument(doc1)
     >>> db.getDocument(doc1_id) is None
