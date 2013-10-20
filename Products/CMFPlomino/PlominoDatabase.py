@@ -442,7 +442,7 @@ class PlominoDatabase(ATFolder, PlominoAccessControl, PlominoDesignManager,
                 message = None
                 try:
                     message = self.runFormulaScript(
-                            'form_%s_ondelete' % form.id,
+                            SCRIPTID_DELIMITER.join(['form', form.id, 'ondelete']),
                             doc,
                             form.onDeleteDocument)
                 except PlominoScriptException, e:
