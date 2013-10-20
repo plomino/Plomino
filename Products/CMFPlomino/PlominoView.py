@@ -289,7 +289,7 @@ class PlominoView(ATFolder):
             try:
                 if self.getOnOpenView():
                     valid = self.runFormulaScript(
-                            SCRIPTID_DELIMITER.join('view', self.id, 'onopen'),
+                            SCRIPTID_DELIMITER.join(['view', self.id, 'onopen']),
                             self,
                             self.getOnOpenView)
             except PlominoScriptException, e:
@@ -404,7 +404,7 @@ class PlominoView(ATFolder):
         try:
             #result = RunFormula(doc, self.getFormFormula())
             result = self.runFormulaScript(
-                    SCRIPTID_DELIMITER.join('view', self.id, 'formformula'),
+                    SCRIPTID_DELIMITER.join(['view', self.id, 'formformula']),
                     doc,
                     self.FormFormula)
         except PlominoScriptException, e:
@@ -415,7 +415,7 @@ class PlominoView(ATFolder):
     security.declarePublic('at_post_edit_script')
     def at_post_edit_script(self):
         db = self.getParentDatabase()
-        self.cleanFormulaScripts(SCRIPTID_DELIMITER.join("view", self.id))
+        self.cleanFormulaScripts(SCRIPTID_DELIMITER.join(["view", self.id]))
         if not db.DoNotReindex:
             self.getParentDatabase().getIndex().refresh()
 

@@ -14,4 +14,4 @@ __docformat__ = 'plaintext'
 def afterFieldModified(obj, event):
     """
     """
-    obj.cleanFormulaScripts(SCRIPTID_DELIMITER.join("field", obj.getPhysicalPath()[-2], obj.id))
+    obj.cleanFormulaScripts(SCRIPTID_DELIMITER.join(["field", obj.getPhysicalPath()[-2], obj.id]))
