@@ -45,8 +45,11 @@
                             'sUrl': '@@collective.js.datatables.translation'
                         }
                     } );
-                    
+                    /** 
+                        INLINE EDITING MODE 
+                    **/
                     if('${datagrid_associated_form_rendering}'==='INLINE') {
+
                         var ${fieldname}_fields = ${new_fields};
                         var ${fieldname}_nEditing = null;                   
                         
@@ -55,12 +58,22 @@
                             ${fieldname}_nEditing = datagrid_add_inline_row( ${fieldname}_datatable, ${fieldname}_fields )
                         } );
 
-                        $$('#${fieldname}_datagrid a.save').live('click', function (e) {
+                        $$('#${fieldname}_editrow').click(function(e) {
+                            e.preventDefault();
+                            var row = datagrid_get_selected_row(${fieldname}_datatable);
+
+                            if ( ${fieldname}_nEditing!=null ) { datagrid_restore_row(${fieldname}_datatable, ${fieldname}_nEditing); } 
+                            datagrid_compute_inline_form(${fieldname}_datatable, row, ${fieldname}_fields,'${fieldname}');
+                            
+                            ${fieldname}_nEditing = row;
+                        });
+                        
+                        $$('#${fieldname}_datagrid button.save').live('click', function (e) {
                             e.preventDefault();
                             var nRow = $(this).parents('tr')[0];
                             var url = '${datagrid_associated_form_url}/createDocument?Plomino_Parent_Field=${fieldname}&Plomino_Parent_Form=${form_name}&Form=${datagrid_associated_form}';
-                            console.log(${fieldname}_nEditing);
-                            if ( ${fieldname}_nEditing == nRow && this.innerHTML == 'Save' ) {
+
+                            if ( ${fieldname}_nEditing == nRow ) {
                                 /* This row is being edited and should be saved */
 
                                 var succeded = datagrid_save_inline_row( ${fieldname}_datatable, ${fieldname}_nEditing,'${fieldname}',url);
@@ -69,25 +82,19 @@
                             }
                         } );
 
-                        $$('#${fieldname}_datagrid a.cancel').live('click', function (e) {
+                        $$('#${fieldname}_datagrid button.cancel').live('click', function (e) {
                             e.preventDefault();
                             var nRow = $(this).parents('tr')[0];
                             datagrid_restore_row(${fieldname}_datatable, nRow);
                             ${fieldname}_nEditing = null;
                         });
 
-                        $$('#${fieldname}_editrow').click(function(e) {
-                            e.preventDefault();
-                            var row = datagrid_get_selected_row(${fieldname}_datatable);
-                            datagrid_compute_inline_form(${fieldname}_datatable, row, ${fieldname}_fields);
-                            if(${fieldname}_nEditing!=null){
-                                datagrid_restore_row(${fieldname}_datatable, ${fieldname}_nEditing);
-                            } 
-                            ${fieldname}_nEditing = row;
-                        });
-
                     }
+                    /** 
+                        MODAL MODE
+                    **/
                     else{
+
                         $$('#${fieldname}_addrow').click(function() {${fieldname}_fields
                             datagrid_add_row(${fieldname}_datatable, '${fieldname}', this.href);
                         });
@@ -98,6 +105,7 @@
                             datagrid_delete_row(${fieldname}_datatable, '${fieldname}');
                         });
                         $$('#${fieldname}_editform').dialog({ 'autoOpen': false, 'modal': true });
+
                     }
                 } );">
     </script>

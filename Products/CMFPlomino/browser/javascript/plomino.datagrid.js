@@ -204,23 +204,27 @@ function datagrid_delete_row(table, field_id) {
  * - nRow : row
  * - fields : needed fields to render the form 
  */
-function datagrid_compute_inline_form( oTable, nRow, fields )
+function datagrid_compute_inline_form( oTable, nRow, fields, field_id )
 {
-    var aData = oTable.fnGetData(nRow);
-    var jqTds = $('>td', nRow);
-    for (var i=0;i<fields.length;i++) {
-    	var field = $(fields[i]);
-    	var cell = $(jqTds[i]).html(field);
-    	if (cell.find("input").length>0) {
-    		cell.get(0).innerHTML = cell.html().replace('value=""','value="'+ aData[i]+'"');
-    	}
-		cell.find("select").val(
-			cell.find("select>option").filter(function(e,el){ return $(el).text()===aData[i].replace("\n","").trim() }).val()
-			);
-		cell.find("textarea").text(aData[i]);
-    } 
-    jqTds[fields.length-1].innerHTML = jqTds[fields.length-1].innerHTML+"<a class='save' href='#' >Save</a>   <a class='cancel' href='#'>Cancel</a>";
-}	
+	var jqTds = $('>td', nRow);
+	var row_index = oTable.fnGetPosition(nRow)
+	if (field_id) {
+		var field_data= $.evalJSON( $('#' + field_id + '_gridvalue').val());
+		var row_data=field_data[row_index];
+	}
+	else
+		row_data=fields.map(function(d,el){ return ''});
+	for (var i=0;i<fields.length;i++) {
+		var field = $(fields[i]);
+		var cell = $(jqTds[i]).html(field);
+		if (cell.find("input").length>0) {
+			cell.get(0).innerHTML = cell.html().replace('value=""','value="'+ row_data[i]+'"');
+		}
+		cell.find("select").val(row_data[i]);
+		cell.find("textarea").text(row_data[i]);
+	} 
+	jqTds[fields.length-1].innerHTML = jqTds[fields.length-1].innerHTML+"<button class='save' href='#' >Save</button>   <button class='cancel' href='#'>Cancel</button>";
+}   
 
 /*
  * Inline Editing  : save the row.
@@ -231,37 +235,44 @@ function datagrid_compute_inline_form( oTable, nRow, fields )
  */
 function datagrid_save_inline_row ( oTable, nRow, field_id, form_url ) {
 
-    var jqFields = $('input,textarea,select',nRow);
-    var jqTds = $('>td', nRow);
-    url = form_url+"&"+jqFields.serialize();
+	var jqFields = $('input,textarea,select',nRow);
+	var jqTds = $('>td', nRow);
+	url = form_url+"&"+jqFields.serialize();
 
-    $.get(url,function(data)
-    {
+	$.get(url,function(data)
+	{
 		message = $(data).filter('#plomino_child_errors').html();
 		if(message===null || message==='')
 		{
 			var row_index = oTable.fnGetPosition(nRow)
+			
 			// from response
 			var row_data = $('span.plominochildfield', data).map(function(d,el){ return el.innerHTML });
-	    	var raw_values = $.evalJSON($('#raw_values', data).html().trim());
-	    	//update field_data
-	    	var field = $('#' + field_id + '_gridvalue');
-	    	var field_data= $.evalJSON(field.val());
-	    	field_data[row_index] = $.evalJSON($('#raw_values', data).html().trim());
+			var raw_values = $.evalJSON($('#raw_values', data).html().trim());
+			
+			//update field_data
+			var field = $('#' + field_id + '_gridvalue');
+			var field_data= $.evalJSON(field.val());
+			field_data[row_index] = $.evalJSON($('#raw_values', data).html().trim());
 			field.val($.toJSON(field_data));
-		    //update datatable
-		    for (var i=0;i<row_data.length;i++) {
-		      oTable.fnUpdate( row_data[i], nRow, i, false );
-		    } 
-	    	oTable.fnDraw();
-	    	return true;
-    	}
-    	else
-    	{
-    		alert(message);
-    		return false;
-    	}
-    });
+
+			//update datatable
+			for (var i=0;i<row_data.length;i++) {
+			  var cell_data =  row_data[i];
+			  if(cell_data.replace("\n","").trim()!="" && $(cell_data)!=null && $(cell_data).hasClass('TEXTFieldRead-TEXTAREA'))
+				cell_data = $(cell_data).html();
+			  oTable.fnUpdate( cell_data, nRow, i, false );
+			} 
+			
+			oTable.fnDraw();
+			return true;
+		}
+		else
+		{
+			alert(message);
+			return false;
+		}
+	});
 }
 
 /*
@@ -271,10 +282,10 @@ function datagrid_save_inline_row ( oTable, nRow, field_id, form_url ) {
  */
 function datagrid_add_inline_row( oTable, fields) {
 
-    var aiNew = oTable.fnAddData( [ '', '', '', '', '', '' ] );
-    var nRow = oTable.fnGetNodes( aiNew[0] );
-    datagrid_compute_inline_form( oTable, nRow, fields );
-    return nRow;
+	var aiNew = oTable.fnAddData( [ fields.map(function(){ return '' }) ] );
+	var nRow = oTable.fnGetNodes( aiNew[0] );
+	datagrid_compute_inline_form( oTable, nRow, fields );
+	return nRow;
 
 }
 
@@ -287,16 +298,13 @@ function datagrid_restore_row( oTable, nRow ) {
 
 	function isEmpty(data){
 		for (var i = 0; i < data.length; i++) {
-			if(data[i]!="")
-				return false;
+			if(data[i]!="") return false;
 		}
 		return true;
 	}
 
 	var aData = oTable.fnGetData(nRow);
-	if ( isEmpty(aData) ) {
-		oTable.fnDeleteRow(nRow)
-	}
+	if ( isEmpty(aData) ) { oTable.fnDeleteRow(nRow) }
 	else {
 		var jqTds = $('>td', nRow);
 		for ( var i=0, iLen=jqTds.length ; i<iLen ; i++ ) {
