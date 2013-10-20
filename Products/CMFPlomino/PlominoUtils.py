@@ -52,7 +52,7 @@ try:
 except ImportError:
     HAS_PLONE40 = False
 
-from AppConfig import SCRIPTID_DELIMITER
+from Products.CMFPlomino.AppConfig import SCRIPTID_DELIMITER
 
 import logging
 logger = logging.getLogger('Plomino')
