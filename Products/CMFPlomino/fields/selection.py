@@ -87,9 +87,9 @@ class SelectionField(BaseField):
                 obj = self.context
             try:
                 s = self.context.runFormulaScript(
-                        'field_%s_%s_SelectionListFormula' % (
+                        SCRIPTID_DELIMITER.join('field',
                             self.context.getParentNode().id,
-                            self.context.id),
+                            self.context.id, 'SelectionListFormula'),
                         obj,
                         lambda: f)
             except PlominoScriptException, e:

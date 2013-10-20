@@ -287,10 +287,9 @@ class PlominoField(BaseContent, BrowserDefaultMixin):
             ):
                 injection_position = html.index(injection_zone)
                 html_attributes = self.runFormulaScript(
-                    'field_%s_%s_attributes' % (
-                        self.getParentNode().id,
-                        self.id,
-                    ),
+                    SCRIPTID_DELIMITER.join(
+                        'field', self.getParentNode().id, self.id,
+                        'attributes'),
                     target,
                     self.HTMLAttributesFormula
                 )
@@ -389,6 +388,6 @@ class PlominoField(BaseContent, BrowserDefaultMixin):
     
     @property
     def formula_ids(self):
-        return {'Formula':  "field_"+self.getParentNode().id+"_"+self.id,
-                'ValidationFormula': "field_"+self.getParentNode().id+"_"+self.id+"_ValidationFormula"}
+        return {'Formula':  SCRIPTID_DELIMITER.join("field", self.getParentNode().id, self.id),
+                'ValidationFormula': SCRIPTID_DELIMITER.join("field", self.getParentNode().id, self.id, "ValidationFormula")}
 registerType(PlominoField, PROJECTNAME)

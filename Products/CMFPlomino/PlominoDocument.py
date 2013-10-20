@@ -666,7 +666,7 @@ class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
         try:
             #result = RunFormula(self, v.SelectionFormula())
             result = self.runFormulaScript(
-                    'view_%s_selection' % v.id,
+                    SCRIPTID_DELIMITER.join('view', v.id, 'selection'),
                     self,
                     v.SelectionFormula)
             return result

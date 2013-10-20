@@ -109,9 +109,10 @@ class DoclinkField(BaseField):
                 obj = doc
             try:
                 s = self.context.runFormulaScript(
-                        'field_%s_%s_DocumentListFormula' % (
+                        SCRIPTID_DELIMITER.join('field',
                             self.context.getParentNode().id,
-                            self.context.id),
+                            self.context.id,
+                            'DocumentListFormula'),
                         obj,
                         lambda: f)
             except PlominoScriptException, e:

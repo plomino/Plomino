@@ -1056,7 +1056,7 @@ class PlominoForm(ATFolder):
             db = self.getParentDatabase()
             try:
                 fieldvalue = db.runFormulaScript(
-                        'field_%s_%s_formula' % (self.id, fieldname),
+                        SCRIPTID_DELIMITER.join('field', self.id, fieldname, 'formula'),
                         target,
                         field.Formula,
                         True,
@@ -1363,9 +1363,9 @@ class PlominoForm(ATFolder):
                     error_msg = ''
                     try:
                         error_msg = self.runFormulaScript(
-                                'field_%s_%s_ValidationFormula' % (
-                                    self.id,
-                                    f.id),
+                                SCRIPTID_DELIMITER.join(
+                                    'field', self.id, f.id,
+                                    'ValidationFormula'),
                                 tmp,
                                 f.ValidationFormula)
                     except PlominoScriptException, e:
