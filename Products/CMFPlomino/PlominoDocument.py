@@ -493,7 +493,7 @@ class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
         if form and onSaveEvent:
             try:
                 result = self.runFormulaScript(
-                        SCRIPTID_DELIMITER.join(['form', form.id, 'onsave'),
+                        SCRIPTID_DELIMITER.join(['form', form.id, 'onsave']),
                         self,
                         form.onSaveDocument)
                 if result and hasattr(self, 'REQUEST'):
