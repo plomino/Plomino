@@ -60,6 +60,7 @@ from plone.resource.interfaces import IResourceDirectory
 # Plomino
 from config import *
 import interfaces
+from Products.CMFPlomino.PlominoUtils import StringToDate
 
 DirectoryView.registerDirectory('skins', product_globals)
 
