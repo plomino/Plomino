@@ -88,7 +88,7 @@ json._default_encoder = JSONEncoder(
 def _extended_json_decoding(dct):
     if '__datetime__' in dct:
         # 2013-10-18T20:35:18+07:00
-        return StringToDate(dct['datetime'], format='%Y-%m-%dT%H:%M:%S+%z')
+        return StringToDate(dct['datetime'], format=None)
     return dct
 
 json._default_decoder = JSONDecoder(
