@@ -175,11 +175,20 @@ class PlominoUtilsTest(unittest.TestCase):
             utils.json_dumps({"a": [20, 3]}),
             '{"a": [20, 3]}'
         )
+        dt = DateTime('2013/10/21 19:26:48 GMT+7')
+        self.assertEqual(
+            utils.json_dumps(dt),
+            '{"datetime": "2013-10-21T19:26:48+07:00", "__datetime__": true}'
+        )
 
     def test_json_loads(self):
         self.assertEqual(
             utils.json_loads('{"a": [20, 3]}'),
             {"a": [20, 3]}
+        )
+        self.assertEqual(
+            utils.json_loads('{"datetime": "2013-10-21T19:26:48+07:00", "__datetime__": true}'),
+            DateTime('2013/10/21 19:26:48 GMT+7')
         )
 
     def test_escape_xml_illegal_chars(self):
