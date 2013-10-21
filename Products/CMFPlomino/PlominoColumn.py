@@ -140,7 +140,8 @@ class PlominoColumn(BaseContent, BrowserDefaultMixin):
         Do translation of the rendered field.
         """
         if fieldvalue is Missing.Value:
-            logger.warn('PlominoColumn.getColumnRender> fieldvalue is Missing.Value')
+            view = self.getParentView()
+            logger.warn('PlominoColumn.getColumnRender> %s/%s is Missing.Value' % (view.id, self.id))
             return ''
 
         if self.getFormula():
