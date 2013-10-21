@@ -104,7 +104,6 @@ script_id = '%(script_id)s'
 %(formula)s
 """
 
-
 def run_refreshdb(context):
     # for async call
     context.refreshDB()
@@ -799,7 +798,7 @@ class PlominoDesignManager(Persistent):
         ``scriptname``, stored in the ``resources`` folder.
         If the called function allows it, you may pass some arguments.
         """
-        script_id = 'script_%s_%s' % (scriptname, funcname)
+        script_id = SCRIPTID_DELIMITER.join(['script', scriptname, funcname])
         try:
             script_code = self.resources._getOb(scriptname).read()
         except:

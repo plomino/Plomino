@@ -98,3 +98,5 @@ FCK_STYLES = '''
 </Style>'''
 
 MSG_SEPARATOR = '\n'
+
+SCRIPTID_DELIMITER = '-_-'
