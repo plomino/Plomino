@@ -4,6 +4,7 @@ from DateTime import DateTime
 import Missing
 from decimal import Decimal
 from Products.CMFPlomino.testing import PLOMINO_FUNCTIONAL_TESTING
+from  Products.CMFPlomino.config import TIMEZONE
 import Products.CMFPlomino.PlominoUtils as utils
 
 
@@ -188,7 +189,7 @@ class PlominoUtilsTest(unittest.TestCase):
         )
         self.assertEqual(
             utils.json_loads('{"datetime": "2013-10-21T19:26:48+07:00", "__datetime__": true}'),
-            DateTime('2013/10/21 19:26:48 GMT+7')
+            DateTime('2013-10-21T19:26:48+07:00').toZone(TIMEZONE)
         )
 
     def test_escape_xml_illegal_chars(self):
