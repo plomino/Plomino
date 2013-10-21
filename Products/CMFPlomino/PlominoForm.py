@@ -38,7 +38,8 @@ from Products.CMFPlomino.browser import PlominoMessageFactory as _
 from Products.CMFPlomino import plomino_profiler
 from Products.CMFPlomino.PlominoUtils import asList
 from Products.CMFPlomino.PlominoUtils import asUnicode
-from Products.CMFPlomino.PlominoUtils import DateToString, StringToDate
+from Products.CMFPlomino.PlominoUtils import DateToString
+from Products.CMFPlomino.PlominoUtils import StringToDate
 from Products.CMFPlomino.PlominoUtils import PlominoTranslate
 from Products.CMFPlomino.PlominoUtils import translate
 import interfaces
@@ -415,7 +416,7 @@ class PlominoForm(ATFolder):
         valid = ''
         try:
             valid = self.runFormulaScript(
-                    'form_%s_oncreate' % self.id,
+                    SCRIPTID_DELIMITER.join(['form', self.id, 'oncreate']),
                     doc,
                     self.onCreateDocument)
         except PlominoScriptException, e:
@@ -789,7 +790,7 @@ class PlominoForm(ATFolder):
                 else:
                     target = doc
                 result = self.runFormulaScript(
-                    'hidewhen_%s_%s_formula' % (self.id, hidewhen.id),
+                    SCRIPTID_DELIMITER.join(['hidewhen', self.id, hidewhen.id, 'formula']),
                     target,
                     hidewhen.Formula)
             except PlominoScriptException, e:
@@ -877,9 +878,7 @@ class PlominoForm(ATFolder):
             if getattr(hidewhen, 'isDynamicHidewhen', False):
                 try:
                     isHidden = self.runFormulaScript(
-                            'hidewhen_%s_%s_formula' % (
-                                self.id,
-                                hidewhen.id),
+                            SCRIPTID_DELIMITER.join(['hidewhen', self.id, hidewhen.id, 'formula']),
                             target,
                             hidewhen.Formula)
                 except PlominoScriptException, e:
@@ -998,7 +997,7 @@ class PlominoForm(ATFolder):
                 self.beforeCreateDocument):
             try:
                 invalid = self.runFormulaScript(
-                        'form_%s_beforecreate' % self.id,
+                        SCRIPTID_DELIMITER.join(['form', self.id, 'beforecreate']),
                         self,
                         self.beforeCreateDocument)
             except PlominoScriptException, e:
@@ -1027,7 +1026,7 @@ class PlominoForm(ATFolder):
     def at_post_edit_script(self):
         """ Clean up the layout before saving
         """
-        self.cleanFormulaScripts("form_" + self.id)
+        self.cleanFormulaScripts(SCRIPTID_DELIMITER.join(["form", self.id]))
 
     security.declarePublic('getFormField')
     def getFormField(self, fieldname, includesubforms=True):
@@ -1056,7 +1055,7 @@ class PlominoForm(ATFolder):
             db = self.getParentDatabase()
             try:
                 fieldvalue = db.runFormulaScript(
-                        'field_%s_%s_formula' % (self.id, fieldname),
+                        SCRIPTID_DELIMITER.join(['field', self.id, fieldname, 'formula']),
                         target,
                         field.Formula,
                         True,
@@ -1251,7 +1250,7 @@ class PlominoForm(ATFolder):
                 try:
                     for doc in results:
                         valid = self.runFormulaScript(
-                                'form_%s_searchformula' % self.id,
+                                SCRIPTID_DELIMITER.join(['form', self.id, 'searchformula']),
                                 doc.getObject(),
                                 self.SearchFormula)
                         if valid:
@@ -1363,9 +1362,9 @@ class PlominoForm(ATFolder):
                     error_msg = ''
                     try:
                         error_msg = self.runFormulaScript(
-                                'field_%s_%s_ValidationFormula' % (
-                                    self.id,
-                                    f.id),
+                                SCRIPTID_DELIMITER.join([
+                                    'field', self.id, f.id,
+                                    'ValidationFormula']),
                                 tmp,
                                 f.ValidationFormula)
                     except PlominoScriptException, e:

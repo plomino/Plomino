@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-# File: datetime.py
+# File: events.py
 #
 # Copyright (c) 2009 by ['Eric BREHAULT']
 #
@@ -10,8 +10,9 @@
 __author__ = """Eric BREHAULT <eric.brehault@makina-corpus.com>"""
 __docformat__ = 'plaintext'
 
+from Products.CMFPlomino.AppConfig import SCRIPTID_DELIMITER
 
 def afterFieldModified(obj, event):
     """
     """
-    obj.cleanFormulaScripts("field_"+obj.getPhysicalPath()[-2]+"_"+obj.id)
+    obj.cleanFormulaScripts(SCRIPTID_DELIMITER.join(["field", obj.getPhysicalPath()[-2], obj.id]))
