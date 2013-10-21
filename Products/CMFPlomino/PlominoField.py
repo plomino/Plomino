@@ -23,7 +23,6 @@ from Products.CMFDynamicViewFTI.browserdefault import BrowserDefaultMixin
 
 from Products.CMFPlomino.config import *
 
-from Products.CMFPlomino.PlominoUtils import StringToDate
 from Products.CMFPlomino.browser import PlominoMessageFactory as _
 from fields.selection import ISelectionField
 from fields.text import ITextField

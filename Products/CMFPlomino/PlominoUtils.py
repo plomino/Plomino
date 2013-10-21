@@ -46,6 +46,9 @@ from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import normalizeString as utils_normalizeString
 from .interfaces import IPlominoSafeDomains
 
+# Plomino
+from Products.CMFPlomino.config import *
+
 try:
     from plone.app.upgrade import v40
     HAS_PLONE40 = True
@@ -86,7 +89,7 @@ def DateToString(d, format=None, db=None):
             format = db.getDateTimeFormat()
         if not format:
             format = '%Y-%m-%d'
-    return d.strftime(format)
+    return d.toZone(TIMEZONE).strftime(format)
 
 
 def StringToDate(str_d, format='%Y-%m-%d', db=None):
@@ -101,7 +104,10 @@ def StringToDate(str_d, format='%Y-%m-%d', db=None):
     try:
         if db:
             format = db.getDateTimeFormat()
-        dt = datetime.strptime(str_d, format)
+        if format:
+            dt = datetime.strptime(str_d, format)
+        else:
+            dt = parse(str_d)
     except ValueError, e:
         # XXX: Just let DateTime guess.
         dt = parse(DateTime(str_d).ISO())
@@ -110,8 +116,7 @@ def StringToDate(str_d, format='%Y-%m-%d', db=None):
             format,
             repr(e),
             repr(dt)))
-    as_tuple = dt.timetuple()
-    return DateTime(*as_tuple[:6])
+    return DateTime(*dt.timetuple()[:6]).toZone(TIMEZONE)
 
 
 def DateRange(d1, d2):
