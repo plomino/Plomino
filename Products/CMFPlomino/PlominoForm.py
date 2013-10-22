@@ -789,6 +789,21 @@ class PlominoForm(ATFolder):
                     target = self
                 else:
                     target = doc
+
+                req = getattr(self, 'REQUEST', None)
+                if req:
+                    form_id = getattr(req, 'Plomino_Parent_Form', None)
+                    field_id = getattr(req, 'Plomino_Parent_Field', None)
+                    rowdata_json = getattr(req, 'Plomino_datagrid_rowdata', None)
+                    if form_id and field_id and rowdata_json:
+                        form = self.getForm(form_id)
+                        field = form.getFormField(field_id)
+                        settings = field.getSettings()
+                        rowdata = json.loads(rowdata_json)
+                        mapped_field_ids = [f.strip() for f in settings.field_mapping.split(',')]
+                        for f in mapped_field_ids:
+                            target.setItem(f.strip(), rowdata[mapped_field_ids.index(f)])
+
                 result = self.runFormulaScript(
                     SCRIPTID_DELIMITER.join(['hidewhen', self.id, hidewhen.id, 'formula']),
                     target,
