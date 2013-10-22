@@ -73,6 +73,28 @@ class BaseField(object):
             creation=False, request=None):
         """ Return the field as rendered by ``form`` on ``doc``.
 
+        We may be called on:
+        - a blank form, e.g. while creating a document;
+        - an existing document;
+        - a TemporaryDocument used during datagrid editing.
+
+        - If EDITABLE, look for the field value:
+          - are we creating a doc or editing a datagrid row?
+            - do we have a request?
+              - if we're being used for a datagrid,
+                - look in `request['Plomino_datagrid_rowdata']`,
+                - or compute a default value;
+              - otherwise look for `request[fieldName]`;
+              - otherwise look for `request[fieldName+'_querystring']`;
+            - otherwise compute a default value.
+          - otherwise just `getItem`
+        - if DISPLAY/COMPUTED:
+          - if DISPLAY and doc and no formula: `getItem`.
+          - else compute
+        - if CREATION
+          - compute or `getItem`
+        - if COMPUTEDONSAVE and doc: `getItem`
+        - otherwise, give up.
         """
         # XXX: The editmode_obsolete parameter is unused.
         fieldName = self.context.id
@@ -97,54 +119,53 @@ class BaseField(object):
         # works without breaking any test.
         temporary_doc_in_overlay = (
             isinstance(aq_base(doc), TemporaryDocument) and
-            hasattr(self.context, 'REQUEST') and
-            'Plomino_Parent_Form' in self.context.REQUEST.form and not
-            self.context.REQUEST.get('ACTUAL_URL').endswith('/createDocument')
+            request and
+            'Plomino_Parent_Form' in request.form and not
+            request.get('ACTUAL_URL').endswith('/createDocument')
             )
-        if temporary_doc_in_overlay:
-            request = self.context.REQUEST
+        # if temporary_doc_in_overlay:
+        #     request = self.context.REQUEST
         if mode == "EDITABLE":
+            # XXX: What is the difference between `mode == "CREATION"` and `creation == True`?
             if doc is None or creation or temporary_doc_in_overlay:
                 # The aforementioned ugliness ends here
-                if self.context.Formula():
-                    fieldValue = form.computeFieldValue(fieldName, target)
-                elif request is None:
-                    fieldValue = ""
-                else:
-                    row_data_json = request.get("Plomino_datagrid_rowdata", None)
-                    if row_data_json is not None:
-                        # datagrid form case
-                        parent_form = request.get(
-                                "Plomino_Parent_Form", None)
-                        parent_field = request.get(
-                                "Plomino_Parent_Field", None)
-                        data = json.loads(
-                                unquote(
-                                    row_data_json).decode(
-                                        'raw_unicode_escape'))
-                        datagrid_fields = (
-                                db.getForm(parent_form)
-                                .getFormField(parent_field)
-                                .getSettings()
-                                .field_mapping.split(','))
-                        if fieldName in datagrid_fields:
-                            fieldValue = data[
-                                    datagrid_fields.index(fieldName)]
-                        else:
-                            fieldValue = ""
+
+                if request and request.get("Plomino_datagrid_rowdata", None):
+                    row_data_json = request.get("Plomino_datagrid_rowdata")
+                    parent_form = request.get("Plomino_Parent_Form", None)
+                    parent_field = request.get("Plomino_Parent_Field", None)
+                    data = json.loads(
+                            unquote(row_data_json).decode('raw_unicode_escape'))
+                    datagrid_fields = (
+                            db.getForm(parent_form)
+                            .getFormField(parent_field)
+                            .getSettings()
+                            .field_mapping.split(','))
+                    if fieldName in datagrid_fields:
+                        fieldValue = data[
+                                datagrid_fields.index(fieldName)]
                     else:
-                        # if no doc context and no default formula, we accept
-                        # value passed in the REQUEST so we look for 'fieldName'
-                        # but also for 'fieldName_querystring' which allows to
-                        # pass value via the querystring without messing the
-                        # POST content
-                        request_value = request.get(fieldName, '')
-                        if not request_value:
-                            request_value = request.get(
-                                fieldName + '_querystring',
-                                ''
-                            )
-                        fieldValue = asUnicode(request_value)
+                        fieldValue = ""
+
+                elif self.context.Formula():
+                    fieldValue = form.computeFieldValue(fieldName, target)
+
+                elif request:
+                    # if no doc context and no default formula, we accept
+                    # value passed in the REQUEST so we look for 'fieldName'
+                    # but also for 'fieldName_querystring' which allows to
+                    # pass value via the querystring without messing the
+                    # POST content
+                    request_value = request.get(fieldName, '')
+                    if not request_value:
+                        request_value = request.get(
+                            fieldName + '_querystring',
+                            ''
+                        )
+                    fieldValue = asUnicode(request_value)
+
+                else:
+                    fieldValue = ""
             else:
                 fieldValue = doc.getItem(fieldName)
 
@@ -160,6 +181,7 @@ class BaseField(object):
                 # in formula
                 fieldValue = form.computeFieldValue(fieldName, form)
             else:
+                # XXX: CREATION but `creation=False`? /me confused
                 fieldValue = doc.getItem(fieldName)
 
         elif mode == "COMPUTEDONSAVE" and doc:

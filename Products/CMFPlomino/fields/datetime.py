@@ -107,11 +107,11 @@ class DatetimeField(BaseField):
                     request.has_key('Plomino_datagrid_rowdata')):
                 fieldname = self.context.id
                 fieldValue = request.get(fieldname, fieldValue)
-                if fieldValue:
-                    fmt = self.format
-                    if not fmt:
-                        fmt = form.getParentDatabase().getDateTimeFormat()
-                    fieldValue = StringToDate(fieldValue, fmt)
+                # if fieldValue:
+                #     fmt = self.format
+                #     if not fmt:
+                #         fmt = form.getParentDatabase().getDateTimeFormat()
+                #     fieldValue = StringToDate(fieldValue, fmt)
         return fieldValue
 
 for f in getFields(IDatetimeField).values():
