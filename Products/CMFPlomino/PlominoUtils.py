@@ -118,7 +118,7 @@ def StringToDate(str_d, format='%Y-%m-%d', db=None):
             format,
             repr(e),
             repr(dt)))
-    return DateTime(*dt.timetuple()[:6]).toZone(TIMEZONE)
+    return DateTime(dt).toZone(TIMEZONE)
 
 
 def DateRange(d1, d2):
