@@ -1011,24 +1011,20 @@ class TemporaryDocument(PlominoDocument):
             self.items = {}
             self.setItem('Form', form.getFormName())
             self.real_id = "TEMPDOC"
-            self._populateFromDatagrid()
-
-
-    security.declarePrivate('_populateFromDatagrid')
-    def _populateFromDatagrid(self):
-        """ If we're being used in datagrid context, setup items based on the current row
-        """
-        form_id = getattr(self.REQUEST, 'Plomino_Parent_Form', None)
-        field_id = getattr(self.REQUEST, 'Plomino_Parent_Field', None)
-        rowdata_json = getattr(self.REQUEST, 'Plomino_datagrid_rowdata', None)
-        if form_id and field_id and rowdata_json:
-            form = self.getParentDatabase().getForm(form_id)
-            field = form.getFormField(field_id)
-            settings = field.getSettings()
-            rowdata = json.loads(rowdata_json)
-            mapped_field_ids = [f.strip() for f in settings.field_mapping.split(',')]
-            for f in mapped_field_ids:
-                self.setItem(f.strip(), rowdata[mapped_field_ids.index(f)])
+            # Initialise datagrid form, or populate current datagrid form
+            form_id = getattr(self.REQUEST, 'Plomino_Parent_Form', None)
+            field_id = getattr(self.REQUEST, 'Plomino_Parent_Field', None)
+            rowdata_json = getattr(self.REQUEST, 'Plomino_datagrid_rowdata', None)
+            if form_id and field_id and rowdata_json:
+                form = self.getParentDatabase().getForm(form_id)
+                field = form.getFormField(field_id)
+                settings = field.getSettings()
+                rowdata = json.loads(rowdata_json)
+                mapped_field_ids = [f.strip() for f in settings.field_mapping.split(',')]
+                for f in mapped_field_ids:
+                    self.setItem(f.strip(), rowdata[mapped_field_ids.index(f)])
+            else:
+                form.readInputs(self, REQUEST, validation_mode=validation_mode)
 
 
     security.declarePublic('getParentDatabase')
