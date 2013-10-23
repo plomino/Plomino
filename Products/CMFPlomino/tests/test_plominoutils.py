@@ -179,7 +179,7 @@ class PlominoUtilsTest(unittest.TestCase):
         dt = DateTime('2013/10/21 19:26:48 GMT+7')
         self.assertEqual(
             utils.json_dumps(dt),
-            '{"datetime": "2013-10-21T19:26:48+07:00", "__datetime__": true}'
+            '{"<datetime>": true, "datetime": "2013-10-21T19:26:48+07:00"}'
         )
 
     def test_json_loads(self):
@@ -188,7 +188,7 @@ class PlominoUtilsTest(unittest.TestCase):
             {"a": [20, 3]}
         )
         self.assertEqual(
-            utils.json_loads('{"datetime": "2013-10-21T19:26:48+07:00", "__datetime__": true}'),
+            utils.json_loads('{"<datetime>": true, "datetime": "2013-10-21T19:26:48+07:00"}'),
             DateTime('2013-10-21T19:26:48+07:00').toZone(TIMEZONE)
         )
 
