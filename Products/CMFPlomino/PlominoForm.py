@@ -31,7 +31,7 @@ from Products.ATContentTypes.content.folder import ATFolder
 
 # Plomino
 from exceptions import PlominoScriptException
-from PlominoDocument import TemporaryDocument
+from PlominoDocument import getTemporaryDocument, TemporaryDocument
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlomino.config import *
 from Products.CMFPlomino.browser import PlominoMessageFactory as _
@@ -864,16 +864,17 @@ class PlominoForm(ATFolder):
         return False
 
     security.declareProtected(READ_PERMISSION, 'getHidewhenAsJSON')
-    def getHidewhenAsJSON(self, REQUEST, parent_form=None, validation_mode=False):
+    def getHidewhenAsJSON(self, REQUEST, parent_form=None, doc=None, validation_mode=False):
         """ Return a JSON object to dynamically show or hide hidewhens
         (works only with isDynamicHidewhen)
         """
         db = self.getParentDatabase()
         result = {}
-        target = TemporaryDocument(
+        target = getTemporaryDocument(
                 db,
                 parent_form or self,
                 REQUEST,
+                doc,
                 validation_mode=validation_mode).__of__(db)
         for hidewhen in self.getHidewhenFormulas():
             if getattr(hidewhen, 'isDynamicHidewhen', False):
@@ -888,7 +889,7 @@ class PlominoForm(ATFolder):
                     #if error, we hide anyway
                     isHidden = True
                 result[hidewhen.id] = isHidden
-        for subformname in self.getSubforms():
+        for subformname in self.getSubforms(doc=target):
             form = db.getForm(subformname)
             if not form:
                 msg = 'Missing subform: %s. Referenced on: %s' % (subformname, self.id)
@@ -897,7 +898,7 @@ class PlominoForm(ATFolder):
                 continue
             form_hidewhens = json.loads(
                     form.getHidewhenAsJSON(REQUEST,
-                        parent_form=parent_form or self,
+                        parent_form=parent_form or self, doc=target,
                         validation_mode=validation_mode))
             result.update(form_hidewhens)
 
@@ -1280,7 +1281,7 @@ class PlominoForm(ATFolder):
     def _get_js_hidden_fields(self, REQUEST, doc, validation_mode=False):
         hidden_fields = []
         hidewhens = json.loads(
-                self.getHidewhenAsJSON(REQUEST,
+                self.getHidewhenAsJSON(REQUEST, doc=doc,
                     validation_mode=validation_mode))
         html_content = self._get_html_content()
         for hidewhenName, doit in hidewhens.items():
@@ -1310,30 +1311,31 @@ class PlominoForm(ATFolder):
     security.declarePublic('validateInputs')
     def validateInputs(self, REQUEST, doc=None):
         """
-        """
-        errors=[]
-        fields = self.getFormFields(
-                includesubforms=True,
-                doc=doc,
-                applyhidewhen=True,
-                validation_mode=True,
-                request=REQUEST)
-        hidden_fields = self._get_js_hidden_fields(
-                REQUEST,
-                doc,
-                validation_mode=True)
-        fields = [field for field in fields
-                if field.getId() not in hidden_fields]
-
-        # Temp doc for validation
+        """ 
         db = self.getParentDatabase()
-        tmp = TemporaryDocument(
+        tmp = getTemporaryDocument(
                 db,
                 self,
                 REQUEST,
                 doc,
                 validation_mode=True).__of__(db)
 
+        fields = self.getFormFields(
+                includesubforms=True,
+                # doc=doc,
+                doc=tmp,
+                applyhidewhen=True,
+                validation_mode=True,
+                request=REQUEST)
+        hidden_fields = self._get_js_hidden_fields(
+                REQUEST,
+                # doc,
+                tmp,
+                validation_mode=True)
+        fields = [field for field in fields
+                if field.getId() not in hidden_fields]
+
+        errors=[]
         for f in fields:
             fieldname = f.id
             fieldtype = f.getFieldType()
@@ -1367,6 +1369,7 @@ class PlominoForm(ATFolder):
                                     'field', self.id, f.id,
                                     'ValidationFormula']),
                                 tmp,
+                                # doc,
                                 f.ValidationFormula)
                     except PlominoScriptException, e:
                         e.reportError('%s validation formula failed' % f.id)

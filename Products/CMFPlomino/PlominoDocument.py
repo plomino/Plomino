@@ -995,6 +995,17 @@ InitializeClass(PlominoDocument)
 addPlominoDocument = Factory(PlominoDocument)
 addPlominoDocument.__name__ = "addPlominoDocument"
 
+def getTemporaryDocument(db, form, REQUEST, doc=None, validation_mode=False):
+    if hasattr(doc, 'real_id'):
+        return doc
+    else:
+        target = TemporaryDocument(
+                db,
+                form,
+                REQUEST,
+                validation_mode=validation_mode).__of__(db)
+        return target
+
 class TemporaryDocument(PlominoDocument):
 
     security = ClassSecurityInfo()
@@ -1006,6 +1017,7 @@ class TemporaryDocument(PlominoDocument):
             self.items = PersistentDict(real_doc.items)
             self.setItem('Form', form.getFormName())
             self.real_id = real_doc.id
+            form.validateInputs(REQUEST, self)
             form.readInputs(self, REQUEST, validation_mode=validation_mode)
         else:
             self.items = {}
@@ -1024,6 +1036,7 @@ class TemporaryDocument(PlominoDocument):
                 for f in mapped_field_ids:
                     self.setItem(f.strip(), rowdata[mapped_field_ids.index(f)])
             else:
+                form.validateInputs(REQUEST, self)
                 form.readInputs(self, REQUEST, validation_mode=validation_mode)
 
 
