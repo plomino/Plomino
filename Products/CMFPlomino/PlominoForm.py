@@ -1372,6 +1372,8 @@ class PlominoForm(ATFolder):
                         e.reportError('%s validation formula failed' % f.id)
                     if error_msg:
                         errors.append(error_msg)
+                    # May have been changed by formula
+                    submittedValue = REQUEST.get(fieldname)
                 #
                 # STEP 3: check data types
                 #
