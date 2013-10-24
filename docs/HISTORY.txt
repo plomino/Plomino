@@ -1,6 +1,11 @@
 Changelog
 =========
 
+1.18.1 (2013-10-24)
+-------------------
+* Fix timezone support in date conversion
+* Fix temporary doc behaviour when evaluation hide-when
+
 1.18 (2013-10-15)
 -----------------
 * support for labels associated to fields
