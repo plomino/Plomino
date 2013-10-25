@@ -82,7 +82,7 @@ class BaseField(object):
           - are we creating a doc or editing a datagrid row?
             - do we have a request?
               - if we're being used for a datagrid,
-                - look in `request['Plomino_datagrid_rowdata']`,
+                - get field value from `getDatagridRowdata`,
                 - or compute a default value;
               - otherwise look for `request[fieldName]`;
               - otherwise look for `request[fieldName+'_querystring']`;
@@ -101,53 +101,15 @@ class BaseField(object):
         mode = self.context.getFieldMode()
 
         db = self.context.getParentDatabase()
-        if doc is None:
-            target = form
-        else:
+        if doc:
             target = doc
+        else:
+            target = form
 
         fieldValue = None
-        # XXX This is super-ugly, sorry. The reason I do this is that
-        # I changed some logic upper in the call chain to give a
-        # properly populated TemporaryDocument to hideWhens
-        # to avoid users coding defensively with unneeded
-        # try: catch blocks.
-        # A proper solution would probably be to factor out the logic
-        # that finds a field value and use that logic to populate
-        # the TemporaryDocument.
-        # But *right now* (that is better than never) I see this solution
-        # works without breaking any test.
-        temporary_doc_in_overlay = (
-            isinstance(aq_base(doc), TemporaryDocument) and
-            request and
-            'Plomino_Parent_Form' in request.form and not
-            request.get('ACTUAL_URL').endswith('/createDocument')
-            )
-        # if temporary_doc_in_overlay:
-        #     request = self.context.REQUEST
         if mode == "EDITABLE":
-            # XXX: What is the difference between `mode == "CREATION"` and `creation == True`?
-            if doc is None or creation or temporary_doc_in_overlay:
-                # The aforementioned ugliness ends here
-
-                if request and request.get("Plomino_datagrid_rowdata", None):
-                    row_data_json = request.get("Plomino_datagrid_rowdata")
-                    parent_form = request.get("Plomino_Parent_Form", None)
-                    parent_field = request.get("Plomino_Parent_Field", None)
-                    data = json.loads(
-                            unquote(row_data_json).decode('raw_unicode_escape'))
-                    datagrid_fields = (
-                            db.getForm(parent_form)
-                            .getFormField(parent_field)
-                            .getSettings()
-                            .field_mapping.split(','))
-                    if fieldName in datagrid_fields:
-                        fieldValue = data[
-                                datagrid_fields.index(fieldName)]
-                    else:
-                        fieldValue = ""
-
-                elif self.context.Formula():
+            if not doc or creation:
+                if self.context.Formula():
                     fieldValue = form.computeFieldValue(fieldName, target)
 
                 elif request:

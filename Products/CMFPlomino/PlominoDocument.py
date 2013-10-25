@@ -60,6 +60,7 @@ from exceptions import PlominoScriptException
 from PlominoUtils import asList
 from PlominoUtils import asUnicode
 from PlominoUtils import DateToString
+from PlominoUtils import getDatagridRowdata
 from PlominoUtils import PlominoTranslate
 from PlominoUtils import sendMail
 from Products.CMFPlomino.browser import PlominoMessageFactory as _
@@ -995,6 +996,18 @@ InitializeClass(PlominoDocument)
 addPlominoDocument = Factory(PlominoDocument)
 addPlominoDocument.__name__ = "addPlominoDocument"
 
+def getTemporaryDocument(db, form, REQUEST, doc=None, validation_mode=False):
+    if hasattr(doc, 'real_id'):
+        return doc
+    else:
+        target = TemporaryDocument(
+                db,
+                form,
+                REQUEST,
+                real_doc=doc,
+                validation_mode=validation_mode).__of__(db)
+        return target
+
 class TemporaryDocument(PlominoDocument):
 
     security = ClassSecurityInfo()
@@ -1006,24 +1019,17 @@ class TemporaryDocument(PlominoDocument):
             self.items = PersistentDict(real_doc.items)
             self.setItem('Form', form.getFormName())
             self.real_id = real_doc.id
+            form.validateInputs(REQUEST, self)
             form.readInputs(self, REQUEST, validation_mode=validation_mode)
         else:
             self.items = {}
             self.setItem('Form', form.getFormName())
             self.real_id = "TEMPDOC"
-            # Initialise datagrid form, or populate current datagrid form
-            form_id = getattr(self.REQUEST, 'Plomino_Parent_Form', None)
-            field_id = getattr(self.REQUEST, 'Plomino_Parent_Field', None)
-            rowdata_json = getattr(self.REQUEST, 'Plomino_datagrid_rowdata', None)
-            if form_id and field_id and rowdata_json:
-                form = self.getParentDatabase().getForm(form_id)
-                field = form.getFormField(field_id)
-                settings = field.getSettings()
-                rowdata = json.loads(rowdata_json)
-                mapped_field_ids = [f.strip() for f in settings.field_mapping.split(',')]
-                for f in mapped_field_ids:
-                    self.setItem(f.strip(), rowdata[mapped_field_ids.index(f)])
+            mapped_field_ids, rowdata = getDatagridRowdata(self, REQUEST)
+            for f in mapped_field_ids:
+                self.setItem(f.strip(), rowdata[mapped_field_ids.index(f)])
             else:
+                form.validateInputs(REQUEST, self)
                 form.readInputs(self, REQUEST, validation_mode=validation_mode)
 
 

@@ -474,3 +474,30 @@ def translate(context, content, i18n_domain=None):
             content
             )
     return content
+
+
+def getDatagridRowdata(context, REQUEST):
+    """ Return rowdata for a datagrid on a modal popup
+
+    In the context of a modal datagrid popup, return the rowdata 
+    on the REQUEST.
+    """
+    # This is currently just used during creation of TemporaryDocument,
+    # but may possibly be useful in formulas. I won't publish it yet though.
+    if not REQUEST:
+        return [], []
+
+    mapped_field_ids = []
+    rowdata = []
+    form_id = getattr(REQUEST, 'Plomino_Parent_Form', None)
+    field_id = getattr(REQUEST, 'Plomino_Parent_Field', None)
+    rowdata_json = getattr(REQUEST, 'Plomino_datagrid_rowdata', None)
+    if form_id and field_id and rowdata_json:
+        form = context.getParentDatabase().getForm(form_id)
+        field = form.getFormField(field_id)
+        settings = field.getSettings()
+        rowdata = json.loads(
+                unquote(row_data_json).decode('raw_unicode_escape'))
+        mapped_field_ids = [f.strip() for f in settings.field_mapping.split(',')]
+    return mapped_field_ids, rowdata
+
