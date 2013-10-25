@@ -389,7 +389,7 @@ class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
         error = None
         try:
             error = self.runFormulaScript(
-                    SCRIPTID_DELIMITER.join(['form', form.id, 'beforesave']),
+                    SCRIPT_ID_DELIMITER.join(['form', form.id, 'beforesave']),
                     self,
                     form.getBeforeSaveDocument)
         except PlominoScriptException, e:
@@ -464,7 +464,7 @@ class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
                 # Use the formula if we have one
                 try:
                     title = self.runFormulaScript(
-                            SCRIPTID_DELIMITER.join(['form', form.id, 'title']),
+                            SCRIPT_ID_DELIMITER.join(['form', form.id, 'title']),
                             self,
                             form.DocumentTitle)
                     if title != self.Title():
@@ -500,7 +500,7 @@ class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
         if form and onSaveEvent:
             try:
                 result = self.runFormulaScript(
-                        SCRIPTID_DELIMITER.join(['form', form.id, 'onsave']),
+                        SCRIPT_ID_DELIMITER.join(['form', form.id, 'onsave']),
                         self,
                         form.onSaveDocument)
                 if result and hasattr(self, 'REQUEST'):
@@ -531,7 +531,7 @@ class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
         try:
             if form.getOnOpenDocument():
                 onOpenDocument_error = self.runFormulaScript(
-                        SCRIPTID_DELIMITER.join(['form', form.id, 'onopen']),
+                        SCRIPT_ID_DELIMITER.join(['form', form.id, 'onopen']),
                         self,
                         form.onOpenDocument)
                 return onOpenDocument_error
@@ -605,7 +605,7 @@ class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
                 # Use the formula if we have one
                 try:
                     title = self.runFormulaScript(
-                            SCRIPTID_DELIMITER.join(['form', form.id, 'title']),
+                            SCRIPT_ID_DELIMITER.join(['form', form.id, 'title']),
                             self,
                             form.DocumentTitle)
                     if (form.getStoreDynamicDocumentTitle() and
@@ -673,7 +673,7 @@ class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
         try:
             #result = RunFormula(self, v.SelectionFormula())
             result = self.runFormulaScript(
-                    SCRIPTID_DELIMITER.join(['view', v.id, 'selection']),
+                    SCRIPT_ID_DELIMITER.join(['view', v.id, 'selection']),
                     self,
                     v.SelectionFormula)
             return result
@@ -961,7 +961,7 @@ class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
         result = None
         try:
             result = self.runFormulaScript(
-                    SCRIPTID_DELIMITER.join(['form', form.id, 'docid']), self, form.DocumentId)
+                    SCRIPT_ID_DELIMITER.join(['form', form.id, 'docid']), self, form.DocumentId)
         except PlominoScriptException, e:
             e.reportError('Document id formula failed')
 

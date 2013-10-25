@@ -798,7 +798,7 @@ class PlominoDesignManager(Persistent):
         ``scriptname``, stored in the ``resources`` folder.
         If the called function allows it, you may pass some arguments.
         """
-        script_id = SCRIPTID_DELIMITER.join(['script', scriptname, funcname])
+        script_id = SCRIPT_ID_DELIMITER.join(['script', scriptname, funcname])
         try:
             script_code = self.resources._getOb(scriptname).read()
         except:

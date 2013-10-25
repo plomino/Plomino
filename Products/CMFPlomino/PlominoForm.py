@@ -416,7 +416,7 @@ class PlominoForm(ATFolder):
         valid = ''
         try:
             valid = self.runFormulaScript(
-                    SCRIPTID_DELIMITER.join(['form', self.id, 'oncreate']),
+                    SCRIPT_ID_DELIMITER.join(['form', self.id, 'oncreate']),
                     doc,
                     self.onCreateDocument)
         except PlominoScriptException, e:
@@ -446,6 +446,7 @@ class PlominoForm(ATFolder):
                 )
         cache = db.getRequestCache(cache_key)
         if cache:
+            #DBG logger.info('Cache hit: %s' % `cache`) 
             return cache
         if not request and hasattr(self, 'REQUEST'):
             request = self.REQUEST
@@ -791,7 +792,7 @@ class PlominoForm(ATFolder):
                     target = doc
 
                 result = self.runFormulaScript(
-                    SCRIPTID_DELIMITER.join(['hidewhen', self.id, hidewhen.id, 'formula']),
+                    SCRIPT_ID_DELIMITER.join(['hidewhen', self.id, hidewhen.id, 'formula']),
                     target,
                     hidewhen.Formula)
             except PlominoScriptException, e:
@@ -880,7 +881,7 @@ class PlominoForm(ATFolder):
             if getattr(hidewhen, 'isDynamicHidewhen', False):
                 try:
                     isHidden = self.runFormulaScript(
-                            SCRIPTID_DELIMITER.join(['hidewhen', self.id, hidewhen.id, 'formula']),
+                            SCRIPT_ID_DELIMITER.join(['hidewhen', self.id, hidewhen.id, 'formula']),
                             target,
                             hidewhen.Formula)
                 except PlominoScriptException, e:
@@ -999,7 +1000,7 @@ class PlominoForm(ATFolder):
                 self.beforeCreateDocument):
             try:
                 invalid = self.runFormulaScript(
-                        SCRIPTID_DELIMITER.join(['form', self.id, 'beforecreate']),
+                        SCRIPT_ID_DELIMITER.join(['form', self.id, 'beforecreate']),
                         self,
                         self.beforeCreateDocument)
             except PlominoScriptException, e:
@@ -1028,7 +1029,7 @@ class PlominoForm(ATFolder):
     def at_post_edit_script(self):
         """ Clean up the layout before saving
         """
-        self.cleanFormulaScripts(SCRIPTID_DELIMITER.join(["form", self.id]))
+        self.cleanFormulaScripts(SCRIPT_ID_DELIMITER.join(["form", self.id]))
 
     security.declarePublic('getFormField')
     def getFormField(self, fieldname, includesubforms=True):
@@ -1057,7 +1058,7 @@ class PlominoForm(ATFolder):
             db = self.getParentDatabase()
             try:
                 fieldvalue = db.runFormulaScript(
-                        SCRIPTID_DELIMITER.join(['field', self.id, fieldname, 'formula']),
+                        SCRIPT_ID_DELIMITER.join(['field', self.id, fieldname, 'formula']),
                         target,
                         field.Formula,
                         True,
@@ -1252,7 +1253,7 @@ class PlominoForm(ATFolder):
                 try:
                     for doc in results:
                         valid = self.runFormulaScript(
-                                SCRIPTID_DELIMITER.join(['form', self.id, 'searchformula']),
+                                SCRIPT_ID_DELIMITER.join(['form', self.id, 'searchformula']),
                                 doc.getObject(),
                                 self.SearchFormula)
                         if valid:
@@ -1365,7 +1366,7 @@ class PlominoForm(ATFolder):
                     error_msg = ''
                     try:
                         error_msg = self.runFormulaScript(
-                                SCRIPTID_DELIMITER.join([
+                                SCRIPT_ID_DELIMITER.join([
                                     'field', self.id, f.id,
                                     'ValidationFormula']),
                                 tmp,
