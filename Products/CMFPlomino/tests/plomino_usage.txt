@@ -309,8 +309,8 @@ Profiling::
     >>> browser.getControl(name='age').value = "47"
     >>> browser.getControl("Save").click()
     >>> browser.open(db_url + "/profiling")
-    >>> from Products.CMFPlomino.AppConfig import SCRIPTID_DELIMITER
-    >>> "form"+SCRIPTID_DELIMITER+"frmtest"+SCRIPTID_DELIMITER+"title (1 times)" in browser.contents
+    >>> from Products.CMFPlomino.AppConfig import SCRIPT_ID_DELIMITER
+    >>> "form"+SCRIPT_ID_DELIMITER+"frmtest"+SCRIPTID_DELIMITER+"title (1 times)" in browser.contents
     True
 
 Replication::
