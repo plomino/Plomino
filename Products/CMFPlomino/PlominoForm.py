@@ -31,7 +31,7 @@ from Products.ATContentTypes.content.folder import ATFolder
 
 # Plomino
 from exceptions import PlominoScriptException
-from PlominoDocument import getTemporaryDocument, TemporaryDocument
+from PlominoDocument import getTemporaryDocument
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlomino.config import *
 from Products.CMFPlomino.browser import PlominoMessageFactory as _
@@ -397,7 +397,7 @@ class PlominoForm(ATFolder):
         ################################################################
         # If child form, return a TemporaryDocument
         if is_childform:
-            tmp = TemporaryDocument(db, self, REQUEST).__of__(db)
+            tmp = getTemporaryDocument(db, self, REQUEST).__of__(db)
             tmp.setItem("Plomino_Parent_Field", parent_field)
             tmp.setItem("Plomino_Parent_Form", parent_form)
             tmp.setItem(
@@ -453,7 +453,7 @@ class PlominoForm(ATFolder):
         fieldlist = form.objectValues(spec='PlominoField')
         result = [f for f in fieldlist]  # Convert from LazyMap to list
         if applyhidewhen:
-            doc = doc or TemporaryDocument(
+            doc = doc or getTemporaryDocument(
                     db, self, request,
                     validation_mode=validation_mode).__of__(db)
             layout = self.applyHideWhen(doc)
@@ -1008,7 +1008,7 @@ class PlominoForm(ATFolder):
         tmp = None
         if not self.isPage and hasattr(self, 'REQUEST'):
             # hideWhens need a TemporaryDocument
-            tmp = TemporaryDocument(
+            tmp = getTemporaryDocument(
                     db,
                     self,
                     self.REQUEST).__of__(db)
@@ -1087,7 +1087,7 @@ class PlominoForm(ATFolder):
         db = self.getParentDatabase()
         if hasattr(self, 'REQUEST'):
             # hideWhens need a TemporaryDocument
-            tmp = TemporaryDocument(
+            tmp = getTemporaryDocument(
                     db,
                     self,
                     self.REQUEST).__of__(db)
@@ -1114,7 +1114,7 @@ class PlominoForm(ATFolder):
             if doc is None and hasattr(self, 'REQUEST'):
                 try:
                     db = self.getParentDatabase()
-                    doc = TemporaryDocument(
+                    doc = getTemporaryDocument(
                             db,
                             self,
                             self.REQUEST,
