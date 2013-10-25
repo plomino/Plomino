@@ -310,7 +310,7 @@ Profiling::
     >>> browser.getControl("Save").click()
     >>> browser.open(db_url + "/profiling")
     >>> from Products.CMFPlomino.AppConfig import SCRIPT_ID_DELIMITER
-    >>> "form"+SCRIPT_ID_DELIMITER+"frmtest"+SCRIPTID_DELIMITER+"title (1 times)" in browser.contents
+    >>> "form"+SCRIPT_ID_DELIMITER+"frmtest"+SCRIPT_ID_DELIMITER+"title (1 times)" in browser.contents
     True
 
 Replication::
