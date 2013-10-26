@@ -1511,6 +1511,7 @@ class PlominoReplicationManager(Persistent):
         for k in items.keys():
             # convert xmlrpclib.DateTime into DateTime
             if items[k].__class__.__name__ == 'DateTime':
+                # XXX: import loses timezone data
                 items[k] = StringToDate(
                         items[k].value[:19],
                         format="%Y-%m-%dT%H:%M:%S")
