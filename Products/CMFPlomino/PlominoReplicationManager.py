@@ -1346,10 +1346,9 @@ class PlominoReplicationManager(Persistent):
         node.setAttribute('lastmodified', doc.getLastModified(asString=True))
 
         # export items
-        items = doc.items
-        if type(items) is not dict:
-            items = doc.items.data
-        str_items = xmlrpclib.dumps((items,), allow_none=True)
+        # Preserve order in exports for stable diffs
+        items = tuple(sorted(doc.items.items()))
+        str_items = xmlrpclib.dumps(items, allow_none=True)
         try:
             dom_items = parseString(str_items)
         except ExpatError:
@@ -1507,7 +1506,7 @@ class PlominoReplicationManager(Persistent):
         itemnode = node.getElementsByTagName("params")[0]
         #result, method = xmlrpclib.loads(node.firstChild.toxml())
         result, method = xmlrpclib.loads(itemnode.toxml().encode('utf-8'))
-        items = result[0]
+        items = dict(result[0])
         for k in items.keys():
             # convert xmlrpclib.DateTime into DateTime
             if items[k].__class__.__name__ == 'DateTime':

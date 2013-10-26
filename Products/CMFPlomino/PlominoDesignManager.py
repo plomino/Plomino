@@ -51,7 +51,7 @@ try:
 except:
     ASYNC = False
 
-# CMF
+# CMF / Archetypes / Plone
 from OFS.Image import manage_addImage
 from OFS.ObjectManager import ObjectManager
 from Products.CMFCore.utils import getToolByName
@@ -1028,16 +1028,16 @@ class PlominoDesignManager(Persistent):
                 node.appendChild(fieldNode)
 
         if obj.Type() == "PlominoField":
-            adapt = obj.getSettings()
-            if adapt is not None:
-                items = {}
-                for k in adapt.parameters.keys():
-                    if hasattr(adapt, k):
-                        items[k] = adapt.parameters[k]
-                #items = dict(adapt.parameters)
-                if items:
-                    # export field settings
-                    str_items = xmlrpclib.dumps((items,), allow_none=1)
+            field_settings = obj.getSettings()
+            if field_settings:
+                field_parameters = {}
+                for k in field_settings.parameters.keys():
+                    if hasattr(field_settings, k):
+                        field_parameters[k] = field_settings.parameters[k]
+                if field_parameters:
+                    # Preserve order in exports for stable diffs
+                    field_parameters = tuple(sorted(field_parameters.items()))
+                    str_items = xmlrpclib.dumps(field_parameters, allow_none=1)
                     try:
                         dom_items = parseString(str_items)
                     except ExpatError:
@@ -1296,7 +1296,7 @@ class PlominoDesignManager(Persistent):
                     # current object is a field, the params tag contains the
                     # specific settings
                     result, method = xmlrpclib.loads(node.toxml().encode('utf-8'))
-                    parameters = result[0]
+                    parameters = dict(result[0])
                     for key in parameters.keys():
                         v = parameters[key]
                         if v is not None:
