@@ -298,7 +298,7 @@ We can export only one field::
 We can get the ``lastmodified`` value::
 
     >>> doc11.tojson(item="field2", lastmodified=True)
-    '{"lastmodified": {"datetime": "...", "__datetime__": true}, "data": "My favorite song is Rhythm is love"}'
+    '{"lastmodified": {"<datetime>": true, "datetime": "..."}, "data": "My favorite song is Rhythm is love"}'
 
 Views can be exported as JSON::
 
@@ -568,7 +568,8 @@ A form can define actions to take when specific events occur on a document.
     ... newcountry='Chile'
     ... plominoDocument.setItem('country', newcountry)
     ... """)
-    >>> db.cleanFormulaScripts("form_frm1")
+    >>> from Products.CMFPlomino.AppConfig import SCRIPT_ID_DELIMITER
+    >>> db.cleanFormulaScripts("form"+SCRIPT_ID_DELIMITER+"frm1")
     >>> doc1.country
     u'Finland'
     >>> doc1.save(db.frm1)
@@ -583,7 +584,8 @@ aborted::
     ...     return "Chile cannot be deleted"
     ... return None
     ... """)
-    >>> db.cleanFormulaScripts("form_frm1")
+    >>> from Products.CMFPlomino.AppConfig import SCRIPT_ID_DELIMITER
+    >>> db.cleanFormulaScripts("form"+SCRIPT_ID_DELIMITER+"frm1")
     >>> doc1_id = doc1.id
     >>> db.deleteDocument(doc1)
     >>> db.getDocument(doc1_id) is None

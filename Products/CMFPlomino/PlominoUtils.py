@@ -46,11 +46,16 @@ from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import normalizeString as utils_normalizeString
 from .interfaces import IPlominoSafeDomains
 
+# Plomino
+from Products.CMFPlomino.config import *
+
 try:
     from plone.app.upgrade import v40
     HAS_PLONE40 = True
 except ImportError:
     HAS_PLONE40 = False
+
+from Products.CMFPlomino.AppConfig import SCRIPT_ID_DELIMITER
 
 import logging
 logger = logging.getLogger('Plomino')
@@ -86,7 +91,7 @@ def DateToString(d, format=None, db=None):
             format = db.getDateTimeFormat()
         if not format:
             format = '%Y-%m-%d'
-    return d.strftime(format)
+    return d.toZone(TIMEZONE).strftime(format)
 
 
 def StringToDate(str_d, format='%Y-%m-%d', db=None):
@@ -101,7 +106,10 @@ def StringToDate(str_d, format='%Y-%m-%d', db=None):
     try:
         if db:
             format = db.getDateTimeFormat()
-        dt = datetime.strptime(str_d, format)
+        if format:
+            dt = datetime.strptime(str_d, format)
+        else:
+            dt = parse(str_d)
     except ValueError, e:
         # XXX: Just let DateTime guess.
         dt = parse(DateTime(str_d).ISO())
@@ -110,8 +118,7 @@ def StringToDate(str_d, format='%Y-%m-%d', db=None):
             format,
             repr(e),
             repr(dt)))
-    as_tuple = dt.timetuple()
-    return DateTime(*as_tuple[:6])
+    return DateTime(dt).toZone(TIMEZONE)
 
 
 def DateRange(d1, d2):
@@ -360,11 +367,7 @@ def isDocument(doc):
 
 
 def json_dumps(data):
-    def json_date_handler(obj):
-        if hasattr(obj, 'ISO'):
-            obj = obj.ISO()
-        return obj
-    return json.dumps(data, default=json_date_handler)
+    return json.dumps(data)
 
 
 def json_loads(json_string):
@@ -471,3 +474,30 @@ def translate(context, content, i18n_domain=None):
             content
             )
     return content
+
+
+def getDatagridRowdata(context, REQUEST):
+    """ Return rowdata for a datagrid on a modal popup
+
+    In the context of a modal datagrid popup, return the rowdata 
+    on the REQUEST.
+    """
+    # This is currently just used during creation of TemporaryDocument,
+    # but may possibly be useful in formulas. I won't publish it yet though.
+    if not REQUEST:
+        return [], []
+
+    mapped_field_ids = []
+    rowdata = []
+    form_id = getattr(REQUEST, 'Plomino_Parent_Form', None)
+    field_id = getattr(REQUEST, 'Plomino_Parent_Field', None)
+    rowdata_json = getattr(REQUEST, 'Plomino_datagrid_rowdata', None)
+    if form_id and field_id and rowdata_json:
+        form = context.getParentDatabase().getForm(form_id)
+        field = form.getFormField(field_id)
+        settings = field.getSettings()
+        rowdata = json.loads(
+                unquote(row_data_json).decode('raw_unicode_escape'))
+        mapped_field_ids = [f.strip() for f in settings.field_mapping.split(',')]
+    return mapped_field_ids, rowdata
+

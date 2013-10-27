@@ -103,7 +103,10 @@
                                                                 docurl python:brain.getPath().split('/')[-1]"
                                                     tal:attributes="class python:test(oddrow, 'even', 'odd');">
                                                     <td>
-                                                       <input tal:condition="python:hasRemovePermission and not(hideCheckboxes)" type="checkbox" name="sdoc" tal:attributes="value python:(brain.getPath().split('/')[-1])" /></td>
+                                                      <input tal:condition="python:hasRemovePermission and not hideCheckboxes"
+                                                             type="checkbox"
+                                                             name="sdoc"
+                                                             tal:attributes="value python:brain.getPath().split('/')[-1]" /></td>
                                                     <tal:columns repeat="column columns">
                                                         <td tal:condition="not: column/HiddenColumn|nothing"><tal:skipfirstcolumn
                                                             condition="python:test(column!=columns[0])">

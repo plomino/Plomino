@@ -63,6 +63,7 @@ from index.PlominoIndex import PlominoIndex
 from migration.migration import migrate
 from PlominoUtils import asUnicode
 from PlominoUtils import escape_xml_illegal_chars
+from PlominoUtils import DateToString
 from Products.CMFPlomino.config import *
 from Products.CMFPlomino import get_utils
 from Products.CMFPlomino import plomino_profiler
@@ -102,7 +103,6 @@ script_id = '%(script_id)s'
 
 %(formula)s
 """
-
 
 def run_refreshdb(context):
     # for async call
@@ -211,7 +211,7 @@ class PlominoDesignManager(Persistent):
         logger.info('Views indexing initialized')
 
         # re-index documents
-        start_time = DateTime().toZone('UTC')
+        start_time = DateTime().toZone(TIMEZONE)
         msg = self.reindexDocuments(index)
         report.append(msg)
 
@@ -249,7 +249,7 @@ class PlominoDesignManager(Persistent):
                     if doc.plomino_modification_time > changed_since]
             total_docs = len(documents)
             logger.info('Re-indexing %d changed document(s) since %s' % (
-                total_docs, str(changed_since)))
+                total_docs, DateToString(changed_since, db=self)))
         else:
             total_docs = len(self.plomino_documents)
             logger.info('Existing documents: ' + str(total_docs))
@@ -798,7 +798,7 @@ class PlominoDesignManager(Persistent):
         ``scriptname``, stored in the ``resources`` folder.
         If the called function allows it, you may pass some arguments.
         """
-        script_id = 'script_%s_%s' % (scriptname, funcname)
+        script_id = SCRIPT_ID_DELIMITER.join(['script', scriptname, funcname])
         try:
             script_code = self.resources._getOb(scriptname).read()
         except:
