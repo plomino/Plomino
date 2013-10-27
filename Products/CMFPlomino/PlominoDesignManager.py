@@ -1037,12 +1037,12 @@ class PlominoDesignManager(Persistent):
                 if field_parameters:
                     # Preserve order in exports for stable diffs
                     field_parameters = tuple(sorted(field_parameters.items()))
-                    str_items = xmlrpclib.dumps(field_parameters, allow_none=1)
+                    field_parameters = xmlrpclib.dumps(field_parameters, allow_none=1)
                     try:
-                        dom_items = parseString(str_items)
+                        dom_items = parseString(field_parameters)
                     except ExpatError:
                         dom_items = parseString(
-                                escape_xml_illegal_chars(str_items))
+                                escape_xml_illegal_chars(field_parameters))
                     node.appendChild(dom_items.documentElement)
         if not isDatabase:
             elementslist = obj.objectIds()
@@ -1296,10 +1296,7 @@ class PlominoDesignManager(Persistent):
                     # current object is a field, the params tag contains the
                     # specific settings
                     result, method = xmlrpclib.loads(node.toxml().encode('utf-8'))
-                    try:
-                        parameters = dict(result)
-                    except:
-                        import pdb; pdb.set_trace()
+                    parameters = dict(result)
                     for key in parameters.keys():
                         v = parameters[key]
                         if v is not None:
