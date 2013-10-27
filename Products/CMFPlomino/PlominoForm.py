@@ -789,6 +789,7 @@ class PlominoForm(ATFolder):
                     target = self
                 else:
                     target = doc
+
                 result = self.runFormulaScript(
                     SCRIPTID_DELIMITER.join(['hidewhen', self.id, hidewhen.id, 'formula']),
                     target,

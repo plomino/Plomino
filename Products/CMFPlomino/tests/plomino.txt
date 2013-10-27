@@ -298,7 +298,7 @@ We can export only one field::
 We can get the ``lastmodified`` value::
 
     >>> doc11.tojson(item="field2", lastmodified=True)
-    '{"lastmodified": {"datetime": "...", "__datetime__": true}, "data": "My favorite song is Rhythm is love"}'
+    '{"lastmodified": {"<datetime>": true, "datetime": "..."}, "data": "My favorite song is Rhythm is love"}'
 
 Views can be exported as JSON::
 
