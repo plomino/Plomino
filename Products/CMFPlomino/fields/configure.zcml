@@ -125,7 +125,7 @@
         class=".googlevisualization.SettingForm"
         permission="plomino.DESIGN_PERMISSION"
         />
-                
+
    <adapter
         for="Products.CMFPlomino.interfaces.IPlominoField"
         provides=".datagrid.IDatagridField"
@@ -137,6 +137,12 @@
         class=".datagrid.SettingForm"
         permission="plomino.DESIGN_PERMISSION"
         />
+   <browser:view
+      for="Products.CMFPlomino.interfaces.IPlominoField"
+      name="editFields"
+      permission="plomino.DESIGN_PERMISSION"
+      class=".datagrid.EditFieldsAsJson"
+    />
 
    <adapter
         for="Products.CMFPlomino.interfaces.IPlominoField"
