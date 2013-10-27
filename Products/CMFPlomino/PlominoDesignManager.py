@@ -79,6 +79,9 @@ from Products.CMFPlomino.PlominoHidewhen import schema as hidewhen_schema
 from Products.CMFPlomino.PlominoView import schema as view_schema
 from Products.CMFPlomino import get_resource_directory
 
+# 3rd-party
+from jsonutil import jsonutil as json
+
 plomino_schemas = {
         'PlominoAction': action_schema,
         'PlominoAgent': agent_schema,
@@ -1037,7 +1040,7 @@ class PlominoDesignManager(Persistent):
                 if field_parameters:
                     # Preserve order in exports for stable diffs
                     field_parameters = tuple(sorted(field_parameters.items()))
-                    str_items = xmlrpclib.dumps(field_parameters, allow_none=1)
+                    str_items = json.dumps(field_parameters)
                     try:
                         dom_items = parseString(str_items)
                     except ExpatError:
@@ -1295,8 +1298,7 @@ class PlominoDesignManager(Persistent):
                 elif name == 'params':
                     # current object is a field, the params tag contains the
                     # specific settings
-                    result, method = xmlrpclib.loads(node.toxml().encode('utf-8'))
-                    parameters = dict(result[0])
+                    parameters = json.loads(node.toxml().encode('utf-8'))
                     for key in parameters.keys():
                         v = parameters[key]
                         if v is not None:

@@ -1,6 +1,20 @@
 Changelog
 =========
 
+1.18.2 (unreleased)
+-------------------
+* Preserve element order during XML export, for stable diffs
+  (note this requires replication target Plomino instances 
+  to be updated also)
+* Switch from xmlrpclib to jsonutil (can handle DateTime properly, and
+  Decimal)
+
+1.18.1 (2013-10-23)
+-------------------
+* Change SCRIPTID_DELIMITER from '_'
+* Improve date handling when dealing with timezones
+* Let Plomino use the Zope instance timezone
+
 1.18 (2013-10-15)
 -----------------
 * support for labels associated to fields
