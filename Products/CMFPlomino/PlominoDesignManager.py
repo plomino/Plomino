@@ -1040,13 +1040,19 @@ class PlominoDesignManager(Persistent):
                 if field_parameters:
                     # Preserve order in exports for stable diffs
                     field_parameters = tuple(sorted(field_parameters.items()))
-                    str_items = json.dumps(field_parameters)
+                    parameters_json = json.dumps(field_parameters)
+                    parameters = xmldoc.createElement('parameters')
                     try:
-                        dom_items = parseString(str_items)
+                        parameters.appendChild(xmldoc.createCDATASection(parameters_json))
                     except ExpatError:
-                        dom_items = parseString(
-                                escape_xml_illegal_chars(str_items))
-                    node.appendChild(dom_items.documentElement)
+                        parameters.appendChild(xmldoc.createCDATASection(escape_xml_illegal_chars(parameters_json)))
+                    node.appendChild(parameters)
+                    # try:
+                    #     dom_items = parseString(str_items)
+                    # except ExpatError:
+                    #     dom_items = parseString(
+                    #             escape_xml_illegal_chars(str_items))
+                    # node.appendChild(dom_items.documentElement)
         if not isDatabase:
             elementslist = obj.objectIds()
             if elementslist:
@@ -1295,24 +1301,24 @@ class PlominoDesignManager(Persistent):
                         if subchild.nodeType == subchild.ELEMENT_NODE:
                             self.importElementFromXML(obj, subchild)
                         subchild = subchild.nextSibling
-                elif name == 'params':
+                elif name == 'parameters':
                     # current object is a field, the params tag contains the
                     # specific settings
-                    parameters = json.loads(node.toxml().encode('utf-8'))
-                    for key in parameters.keys():
-                        v = parameters[key]
+                    # parameters = json.loads(node.toxml().encode('utf-8'))
+                    parameters = json.loads(child.firstChild.data.encode('utf-8'))
+                    for key, v in parameters:
                         if v is not None:
-                            if hasattr(v, 'encode'):
-                                v = unicode(v)
-                            else:
-                                if hasattr(v, 'append'):
-                                    uv = []
-                                    for e in v:
-                                        if hasattr(e, 'encode'):
-                                            uv.append(unicode(e))
-                                        else:
-                                            uv.append(e)
-                                    v = uv
+                            # if hasattr(v, 'encode'):
+                            #     v = unicode(v)
+                            # else:
+                            #     if hasattr(v, 'append'):
+                            #         uv = []
+                            #         for e in v:
+                            #             if hasattr(e, 'encode'):
+                            #                 uv.append(unicode(e))
+                            #             else:
+                            #                 uv.append(e)
+                            #         v = uv
                             settings_values[key] = v
                 elif name == "CustomData":
                     # Only one non.text child is expected
