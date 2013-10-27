@@ -60,6 +60,7 @@ from exceptions import PlominoScriptException
 from PlominoUtils import asList
 from PlominoUtils import asUnicode
 from PlominoUtils import DateToString
+from PlominoUtils import getDatagridRowdata
 from PlominoUtils import PlominoTranslate
 from PlominoUtils import sendMail
 from Products.CMFPlomino.browser import PlominoMessageFactory as _
@@ -388,7 +389,7 @@ class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
         error = None
         try:
             error = self.runFormulaScript(
-                    SCRIPTID_DELIMITER.join(['form', form.id, 'beforesave']),
+                    SCRIPT_ID_DELIMITER.join(['form', form.id, 'beforesave']),
                     self,
                     form.getBeforeSaveDocument)
         except PlominoScriptException, e:
@@ -463,7 +464,7 @@ class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
                 # Use the formula if we have one
                 try:
                     title = self.runFormulaScript(
-                            SCRIPTID_DELIMITER.join(['form', form.id, 'title']),
+                            SCRIPT_ID_DELIMITER.join(['form', form.id, 'title']),
                             self,
                             form.DocumentTitle)
                     if title != self.Title():
@@ -499,7 +500,7 @@ class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
         if form and onSaveEvent:
             try:
                 result = self.runFormulaScript(
-                        SCRIPTID_DELIMITER.join(['form', form.id, 'onsave']),
+                        SCRIPT_ID_DELIMITER.join(['form', form.id, 'onsave']),
                         self,
                         form.onSaveDocument)
                 if result and hasattr(self, 'REQUEST'):
@@ -530,7 +531,7 @@ class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
         try:
             if form.getOnOpenDocument():
                 onOpenDocument_error = self.runFormulaScript(
-                        SCRIPTID_DELIMITER.join(['form', form.id, 'onopen']),
+                        SCRIPT_ID_DELIMITER.join(['form', form.id, 'onopen']),
                         self,
                         form.onOpenDocument)
                 return onOpenDocument_error
@@ -604,7 +605,7 @@ class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
                 # Use the formula if we have one
                 try:
                     title = self.runFormulaScript(
-                            SCRIPTID_DELIMITER.join(['form', form.id, 'title']),
+                            SCRIPT_ID_DELIMITER.join(['form', form.id, 'title']),
                             self,
                             form.DocumentTitle)
                     if (form.getStoreDynamicDocumentTitle() and
@@ -672,7 +673,7 @@ class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
         try:
             #result = RunFormula(self, v.SelectionFormula())
             result = self.runFormulaScript(
-                    SCRIPTID_DELIMITER.join(['view', v.id, 'selection']),
+                    SCRIPT_ID_DELIMITER.join(['view', v.id, 'selection']),
                     self,
                     v.SelectionFormula)
             return result
@@ -960,7 +961,7 @@ class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
         result = None
         try:
             result = self.runFormulaScript(
-                    SCRIPTID_DELIMITER.join(['form', form.id, 'docid']), self, form.DocumentId)
+                    SCRIPT_ID_DELIMITER.join(['form', form.id, 'docid']), self, form.DocumentId)
         except PlominoScriptException, e:
             e.reportError('Document id formula failed')
 
@@ -995,6 +996,18 @@ InitializeClass(PlominoDocument)
 addPlominoDocument = Factory(PlominoDocument)
 addPlominoDocument.__name__ = "addPlominoDocument"
 
+def getTemporaryDocument(db, form, REQUEST, doc=None, validation_mode=False):
+    if hasattr(doc, 'real_id'):
+        return doc
+    else:
+        target = TemporaryDocument(
+                db,
+                form,
+                REQUEST,
+                real_doc=doc,
+                validation_mode=validation_mode).__of__(db)
+        return target
+
 class TemporaryDocument(PlominoDocument):
 
     security = ClassSecurityInfo()
@@ -1006,24 +1019,17 @@ class TemporaryDocument(PlominoDocument):
             self.items = PersistentDict(real_doc.items)
             self.setItem('Form', form.getFormName())
             self.real_id = real_doc.id
+            form.validateInputs(REQUEST, self)
             form.readInputs(self, REQUEST, validation_mode=validation_mode)
         else:
             self.items = {}
             self.setItem('Form', form.getFormName())
             self.real_id = "TEMPDOC"
-            # Initialise datagrid form, or populate current datagrid form
-            form_id = getattr(self.REQUEST, 'Plomino_Parent_Form', None)
-            field_id = getattr(self.REQUEST, 'Plomino_Parent_Field', None)
-            rowdata_json = getattr(self.REQUEST, 'Plomino_datagrid_rowdata', None)
-            if form_id and field_id and rowdata_json:
-                form = self.getParentDatabase().getForm(form_id)
-                field = form.getFormField(field_id)
-                settings = field.getSettings()
-                rowdata = json.loads(rowdata_json)
-                mapped_field_ids = [f.strip() for f in settings.field_mapping.split(',')]
-                for f in mapped_field_ids:
-                    self.setItem(f.strip(), rowdata[mapped_field_ids.index(f)])
+            mapped_field_ids, rowdata = getDatagridRowdata(self, REQUEST)
+            for f in mapped_field_ids:
+                self.setItem(f.strip(), rowdata[mapped_field_ids.index(f)])
             else:
+                form.validateInputs(REQUEST, self)
                 form.readInputs(self, REQUEST, validation_mode=validation_mode)
 
 

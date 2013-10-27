@@ -22,7 +22,7 @@ from Products.CMFPlomino.exceptions import PlominoScriptException
 from Products.CMFPlomino.PlominoUtils import asUnicode
 
 from jsonutil import jsonutil as json
-from Products.CMFPlomino.AppConfig import SCRIPTID_DELIMITER
+from Products.CMFPlomino.AppConfig import SCRIPT_ID_DELIMITER
 
 
 class ISelectionField(IBaseField):
@@ -88,7 +88,7 @@ class SelectionField(BaseField):
                 obj = self.context
             try:
                 s = self.context.runFormulaScript(
-                        SCRIPTID_DELIMITER.join(['field',
+                        SCRIPT_ID_DELIMITER.join(['field',
                             self.context.getParentNode().id,
                             self.context.id, 'SelectionListFormula']),
                         obj,

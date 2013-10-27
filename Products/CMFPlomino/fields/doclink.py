@@ -25,7 +25,7 @@ from base import IBaseField, BaseField, BaseForm
 from dictionaryproperty import DictionaryProperty
 from Products.CMFPlomino.exceptions import PlominoScriptException
 from Products.CMFPlomino.PlominoUtils import asUnicode
-from Products.CMFPlomino.AppConfig import SCRIPTID_DELIMITER
+from Products.CMFPlomino.AppConfig import SCRIPT_ID_DELIMITER
 
 class IDoclinkField(IBaseField):
     """ Selection field schema
@@ -110,7 +110,7 @@ class DoclinkField(BaseField):
                 obj = doc
             try:
                 s = self.context.runFormulaScript(
-                        SCRIPTID_DELIMITER.join(['field',
+                        SCRIPT_ID_DELIMITER.join(['field',
                             self.context.getParentNode().id,
                             self.context.id,
                             'DocumentListFormula']),

@@ -141,7 +141,7 @@ class PlominoAction(BaseContent, BrowserDefaultMixin):
         if self.Hidewhen:
             try:
                 result = self.runFormulaScript(
-                        SCRIPTID_DELIMITER.join(['action', context.id, self.id, 'hidewhen']),
+                        SCRIPT_ID_DELIMITER.join(['action', context.id, self.id, 'hidewhen']),
                         target,
                         self.Hidewhen,
                         True,
@@ -180,7 +180,7 @@ class PlominoAction(BaseContent, BrowserDefaultMixin):
         elif self.ActionType == "REDIRECT":
             try:
                 redirecturl = self.runFormulaScript(
-                        SCRIPTID_DELIMITER.join([
+                        SCRIPT_ID_DELIMITER.join([
                             'action', self.getParentNode().id, self.id,
                             'script']),
                         target,
@@ -213,7 +213,7 @@ class PlominoAction(BaseContent, BrowserDefaultMixin):
         plominoReturnURL = plominoContext.absolute_url()
         try:
             returnurl = self.runFormulaScript(
-                        SCRIPTID_DELIMITER.join([
+                        SCRIPT_ID_DELIMITER.join([
                             'action', self.getParentNode().id, self.id,
                             'script']),
                         plominoContext,
@@ -232,7 +232,7 @@ class PlominoAction(BaseContent, BrowserDefaultMixin):
         """ Standard AT post edit hook.
         """
         self.cleanFormulaScripts(
-                SCRIPTID_DELIMITER.join(['action', self.getParentNode().id, self.id]))
+                SCRIPT_ID_DELIMITER.join(['action', self.getParentNode().id, self.id]))
 
 
 registerType(PlominoAction, PROJECTNAME)

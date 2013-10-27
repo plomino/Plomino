@@ -10,9 +10,9 @@
 __author__ = """Eric BREHAULT <eric.brehault@makina-corpus.com>"""
 __docformat__ = 'plaintext'
 
-from Products.CMFPlomino.AppConfig import SCRIPTID_DELIMITER
+from Products.CMFPlomino.AppConfig import SCRIPT_ID_DELIMITER
 
 def afterFieldModified(obj, event):
     """
     """
-    obj.cleanFormulaScripts(SCRIPTID_DELIMITER.join(["field", obj.getPhysicalPath()[-2], obj.id]))
+    obj.cleanFormulaScripts(SCRIPT_ID_DELIMITER.join(["field", obj.getPhysicalPath()[-2], obj.id]))
