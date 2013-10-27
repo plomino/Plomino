@@ -1,49 +1,19 @@
-<plominodatabase id="mydb">
+<plominodatabase id="multilineDatagridTest">
   <design>
-    <dbsettings version="1.16">
-      <AboutDescription type="Products.Archetypes.Field.TextField"><![CDATA[]]></AboutDescription>
-      <UsingDescription type="Products.Archetypes.Field.TextField"><![CDATA[]]></UsingDescription>
-      <IndexAttachments type="Products.Archetypes.Field.BooleanField">False</IndexAttachments>
-      <FulltextIndex type="Products.Archetypes.Field.BooleanField">True</FulltextIndex>
-      <IndexInPortal type="Products.Archetypes.Field.BooleanField">False</IndexInPortal>
-      <debugMode type="Products.Archetypes.Field.BooleanField">False</debugMode>
-      <StorageAttachments type="Products.Archetypes.Field.BooleanField">False</StorageAttachments>
-      <CountDocuments type="Products.Archetypes.Field.BooleanField">False</CountDocuments>
-      <DateTimeFormat type="Products.Archetypes.Field.StringField">%Y-%m-%d</DateTimeFormat>
-      <StartPage type="Products.Archetypes.Field.StringField"/>
-      <i18n type="Products.Archetypes.Field.StringField"/>
-      <DoNotListUsers type="Products.Archetypes.Field.BooleanField">False</DoNotListUsers>
-      <DoNotReindex type="Products.Archetypes.Field.BooleanField">False</DoNotReindex>
-      <excludeFromNav type="Products.Archetypes.Field.BooleanField">False</excludeFromNav>
-      <acl AnomynousAccessRight="NoAccess" AuthenticatedAccessRight="NoAccess">
-        <params id="UserRoles">
-<param>
-<value><struct>
-</struct></value>
-</param>
-</params>
-        <params id="SpecificRights">
-<param>
-<value><struct>
-<member>
-<name>specific_deletedocument</name>
-<value><string>PlominoAuthor</string></value>
-</member>
-</struct></value>
-</param>
-</params>
-      </acl>
-    </dbsettings>
     <element id="a_form_with_a_datagrid" title="A form that includes a datagrid" type="PlominoForm">
       <id type="Products.Archetypes.Field.StringField">a_form_with_a_datagrid</id>
       <onCreateDocument type="Products.Archetypes.Field.TextField"><![CDATA[]]></onCreateDocument>
       <onOpenDocument type="Products.Archetypes.Field.TextField"><![CDATA[]]></onOpenDocument>
+      <beforeSaveDocument type="Products.Archetypes.Field.TextField"><![CDATA[]]></beforeSaveDocument>
       <onSaveDocument type="Products.Archetypes.Field.TextField"><![CDATA[]]></onSaveDocument>
       <onDeleteDocument type="Products.Archetypes.Field.TextField"><![CDATA[]]></onDeleteDocument>
       <onSearch type="Products.Archetypes.Field.TextField"><![CDATA[]]></onSearch>
       <beforeCreateDocument type="Products.Archetypes.Field.TextField"><![CDATA[]]></beforeCreateDocument>
       <FormLayout type="Products.Archetypes.Field.TextField"><![CDATA[<p><span class="plominoFieldClass">a_datagrid_field</span></p>]]></FormLayout>
+      <FormMethod type="Products.Archetypes.Field.TextField"><![CDATA[Auto]]></FormMethod>
       <DocumentTitle type="Products.Archetypes.Field.TextField"><![CDATA[]]></DocumentTitle>
+      <DynamicDocumentTitle type="Products.Archetypes.Field.BooleanField">False</DynamicDocumentTitle>
+      <StoreDynamicDocumentTitle type="Products.Archetypes.Field.BooleanField">False</StoreDynamicDocumentTitle>
       <DocumentId type="Products.Archetypes.Field.TextField"><![CDATA[]]></DocumentId>
       <ActionBarPosition type="Products.Archetypes.Field.StringField">TOP</ActionBarPosition>
       <HideDefaultActions type="Products.Archetypes.Field.BooleanField">False</HideDefaultActions>
@@ -53,6 +23,8 @@
       <SearchView type="Products.Archetypes.Field.StringField"/>
       <SearchFormula type="Products.Archetypes.Field.TextField"><![CDATA[]]></SearchFormula>
       <Position type="Products.Archetypes.Field.IntegerField"/>
+      <ResourcesJS type="Products.Archetypes.Field.TextField"><![CDATA[]]></ResourcesJS>
+      <ResourcesCSS type="Products.Archetypes.Field.TextField"><![CDATA[]]></ResourcesCSS>
       <excludeFromNav type="Products.Archetypes.Field.BooleanField">False</excludeFromNav>
       <elements>
         <element id="a_datagrid_field" title="A datagrid field" type="PlominoField">
@@ -66,15 +38,23 @@
           <ValidationFormula type="Products.Archetypes.Field.TextField"><![CDATA[]]></ValidationFormula>
           <ToBeIndexed type="Products.Archetypes.Field.BooleanField">False</ToBeIndexed>
           <IndexType type="Products.Archetypes.Field.StringField">DEFAULT</IndexType>
+          <HTMLAttributesFormula type="Products.Archetypes.Field.TextField"><![CDATA[]]></HTMLAttributesFormula>
           <params>
 <param>
-<value><struct>
-<member>
-<name>associated_form</name>
+<value><array><data>
+<value><string>associated_form</string></value>
 <value><string>a_form_with_a_textarea</string></value>
-</member>
-<member>
-<name>jssettings</name>
+</data></array></value>
+</param>
+<param>
+<value><array><data>
+<value><string>field_mapping</string></value>
+<value><string>name,a_description</string></value>
+</data></array></value>
+</param>
+<param>
+<value><array><data>
+<value><string>jssettings</string></value>
 <value><string>"aoColumns": [
     { "sTitle": "Column 1" },
     { "sTitle": "Column 2", "sClass": "center" }
@@ -90,12 +70,7 @@
         "height": 300
     }
 </string></value>
-</member>
-<member>
-<name>field_mapping</name>
-<value><string>name,a_description</string></value>
-</member>
-</struct></value>
+</data></array></value>
 </param>
 </params>
         </element>
@@ -105,12 +80,19 @@
       <id type="Products.Archetypes.Field.StringField">a_form_with_a_textarea</id>
       <onCreateDocument type="Products.Archetypes.Field.TextField"><![CDATA[]]></onCreateDocument>
       <onOpenDocument type="Products.Archetypes.Field.TextField"><![CDATA[]]></onOpenDocument>
+      <beforeSaveDocument type="Products.Archetypes.Field.TextField"><![CDATA[]]></beforeSaveDocument>
       <onSaveDocument type="Products.Archetypes.Field.TextField"><![CDATA[]]></onSaveDocument>
       <onDeleteDocument type="Products.Archetypes.Field.TextField"><![CDATA[]]></onDeleteDocument>
       <onSearch type="Products.Archetypes.Field.TextField"><![CDATA[]]></onSearch>
       <beforeCreateDocument type="Products.Archetypes.Field.TextField"><![CDATA[]]></beforeCreateDocument>
-      <FormLayout type="Products.Archetypes.Field.TextField"><![CDATA[<p>Name:<span class="plominoFieldClass">name</span></p><p>Description: <span class="plominoFieldClass">a_description</span></p>]]></FormLayout>
+      <FormLayout type="Products.Archetypes.Field.TextField"><![CDATA[
+<p>Name:<span class="plominoFieldClass">name</span></p>
+<p>Description: <span class="plominoFieldClass">a_description</span></p>
+]]></FormLayout>
+      <FormMethod type="Products.Archetypes.Field.TextField"><![CDATA[Auto]]></FormMethod>
       <DocumentTitle type="Products.Archetypes.Field.TextField"><![CDATA[]]></DocumentTitle>
+      <DynamicDocumentTitle type="Products.Archetypes.Field.BooleanField">False</DynamicDocumentTitle>
+      <StoreDynamicDocumentTitle type="Products.Archetypes.Field.BooleanField">False</StoreDynamicDocumentTitle>
       <DocumentId type="Products.Archetypes.Field.TextField"><![CDATA[]]></DocumentId>
       <ActionBarPosition type="Products.Archetypes.Field.StringField">TOP</ActionBarPosition>
       <HideDefaultActions type="Products.Archetypes.Field.BooleanField">False</HideDefaultActions>
@@ -120,6 +102,8 @@
       <SearchView type="Products.Archetypes.Field.StringField"/>
       <SearchFormula type="Products.Archetypes.Field.TextField"><![CDATA[]]></SearchFormula>
       <Position type="Products.Archetypes.Field.IntegerField"/>
+      <ResourcesJS type="Products.Archetypes.Field.TextField"><![CDATA[]]></ResourcesJS>
+      <ResourcesCSS type="Products.Archetypes.Field.TextField"><![CDATA[]]></ResourcesCSS>
       <excludeFromNav type="Products.Archetypes.Field.BooleanField">False</excludeFromNav>
       <elements>
         <element id="name" title="Name" type="PlominoField">
@@ -133,6 +117,7 @@
           <ValidationFormula type="Products.Archetypes.Field.TextField"><![CDATA[]]></ValidationFormula>
           <ToBeIndexed type="Products.Archetypes.Field.BooleanField">False</ToBeIndexed>
           <IndexType type="Products.Archetypes.Field.StringField">DEFAULT</IndexType>
+          <HTMLAttributesFormula type="Products.Archetypes.Field.TextField"><![CDATA[]]></HTMLAttributesFormula>
         </element>
         <element id="a_description" title="Description" type="PlominoField">
           <id type="Products.Archetypes.Field.StringField">a_description</id>
@@ -145,18 +130,19 @@
           <ValidationFormula type="Products.Archetypes.Field.TextField"><![CDATA[]]></ValidationFormula>
           <ToBeIndexed type="Products.Archetypes.Field.BooleanField">False</ToBeIndexed>
           <IndexType type="Products.Archetypes.Field.StringField">DEFAULT</IndexType>
+          <HTMLAttributesFormula type="Products.Archetypes.Field.TextField"><![CDATA[]]></HTMLAttributesFormula>
           <params>
 <param>
-<value><struct>
-<member>
-<name>widget</name>
-<value><string>TEXTAREA</string></value>
-</member>
-<member>
-<name>size</name>
+<value><array><data>
+<value><string>size</string></value>
 <value><string>10</string></value>
-</member>
-</struct></value>
+</data></array></value>
+</param>
+<param>
+<value><array><data>
+<value><string>widget</string></value>
+<value><string>TEXTAREA</string></value>
+</data></array></value>
 </param>
 </params>
         </element>

@@ -1,19 +1,19 @@
 <plominodatabase id="charts-example">
   <design>
-    <dbsettings version="1.16">
+    <dbsettings version="1.18">
       <AboutDescription type="Products.Archetypes.Field.TextField"><![CDATA[]]></AboutDescription>
       <UsingDescription type="Products.Archetypes.Field.TextField"><![CDATA[]]></UsingDescription>
       <IndexAttachments type="Products.Archetypes.Field.BooleanField">False</IndexAttachments>
       <FulltextIndex type="Products.Archetypes.Field.BooleanField">False</FulltextIndex>
       <IndexInPortal type="Products.Archetypes.Field.BooleanField">False</IndexInPortal>
       <debugMode type="Products.Archetypes.Field.BooleanField">False</debugMode>
-      <StorageAttachments type="Products.Archetypes.Field.BooleanField">False</StorageAttachments>
       <CountDocuments type="Products.Archetypes.Field.BooleanField">False</CountDocuments>
       <DateTimeFormat type="Products.Archetypes.Field.StringField">%Y/%m/%d</DateTimeFormat>
       <StartPage type="Products.Archetypes.Field.StringField"/>
       <i18n type="Products.Archetypes.Field.StringField"/>
       <DoNotListUsers type="Products.Archetypes.Field.BooleanField">False</DoNotListUsers>
       <DoNotReindex type="Products.Archetypes.Field.BooleanField">False</DoNotReindex>
+      <IsDatabaseTemplate type="Products.Archetypes.Field.BooleanField">False</IsDatabaseTemplate>
       <excludeFromNav type="Products.Archetypes.Field.BooleanField">False</excludeFromNav>
       <acl AnomynousAccessRight="NoAccess" AuthenticatedAccessRight="NoAccess">
         <params id="UserRoles">
@@ -38,14 +38,20 @@
       <id type="Products.Archetypes.Field.StringField">frmSale</id>
       <onCreateDocument type="Products.Archetypes.Field.TextField"><![CDATA[]]></onCreateDocument>
       <onOpenDocument type="Products.Archetypes.Field.TextField"><![CDATA[]]></onOpenDocument>
+      <beforeSaveDocument type="Products.Archetypes.Field.TextField"><![CDATA[]]></beforeSaveDocument>
       <onSaveDocument type="Products.Archetypes.Field.TextField"><![CDATA[]]></onSaveDocument>
       <onDeleteDocument type="Products.Archetypes.Field.TextField"><![CDATA[]]></onDeleteDocument>
       <onSearch type="Products.Archetypes.Field.TextField"><![CDATA[]]></onSearch>
       <beforeCreateDocument type="Products.Archetypes.Field.TextField"><![CDATA[]]></beforeCreateDocument>
-      <FormLayout type="Products.Archetypes.Field.TextField"><![CDATA[<p>Product: <span class="plominoFieldClass">product_name</span></p>
+      <FormLayout type="Products.Archetypes.Field.TextField"><![CDATA[
+<p>Product: <span class="plominoFieldClass">product_name</span></p>
 <p>Country: <span class="plominoFieldClass">country</span></p>
-<p>Total sales: <span class="plominoFieldClass">total_sales</span></p>]]></FormLayout>
+<p>Total sales: <span class="plominoFieldClass">total_sales</span></p>
+]]></FormLayout>
+      <FormMethod type="Products.Archetypes.Field.TextField"><![CDATA[Auto]]></FormMethod>
       <DocumentTitle type="Products.Archetypes.Field.TextField"><![CDATA[]]></DocumentTitle>
+      <DynamicDocumentTitle type="Products.Archetypes.Field.BooleanField">False</DynamicDocumentTitle>
+      <StoreDynamicDocumentTitle type="Products.Archetypes.Field.BooleanField">False</StoreDynamicDocumentTitle>
       <DocumentId type="Products.Archetypes.Field.TextField"><![CDATA[]]></DocumentId>
       <ActionBarPosition type="Products.Archetypes.Field.StringField">TOP</ActionBarPosition>
       <HideDefaultActions type="Products.Archetypes.Field.BooleanField">False</HideDefaultActions>
@@ -55,6 +61,8 @@
       <SearchView type="Products.Archetypes.Field.StringField"/>
       <SearchFormula type="Products.Archetypes.Field.TextField"><![CDATA[]]></SearchFormula>
       <Position type="Products.Archetypes.Field.IntegerField"/>
+      <ResourcesJS type="Products.Archetypes.Field.TextField"><![CDATA[]]></ResourcesJS>
+      <ResourcesCSS type="Products.Archetypes.Field.TextField"><![CDATA[]]></ResourcesCSS>
       <excludeFromNav type="Products.Archetypes.Field.BooleanField">False</excludeFromNav>
       <elements>
         <element id="product_name" title="product_name" type="PlominoField">
@@ -68,19 +76,18 @@
           <ValidationFormula type="Products.Archetypes.Field.TextField"><![CDATA[]]></ValidationFormula>
           <ToBeIndexed type="Products.Archetypes.Field.BooleanField">False</ToBeIndexed>
           <IndexType type="Products.Archetypes.Field.StringField">DEFAULT</IndexType>
+          <HTMLAttributesFormula type="Products.Archetypes.Field.TextField"><![CDATA[]]></HTMLAttributesFormula>
           <params>
 <param>
-<value><struct>
-<member>
-<name>selectionlist</name>
+<value><array><data>
+<value><string>selectionlist</string></value>
 <value><array><data>
 <value><string>SR-100</string></value>
 <value><string>SR-110</string></value>
 <value><string>TW-12A</string></value>
 <value><string>HY-1000</string></value>
 </data></array></value>
-</member>
-</struct></value>
+</data></array></value>
 </param>
 </params>
         </element>
@@ -95,19 +102,18 @@
           <ValidationFormula type="Products.Archetypes.Field.TextField"><![CDATA[]]></ValidationFormula>
           <ToBeIndexed type="Products.Archetypes.Field.BooleanField">True</ToBeIndexed>
           <IndexType type="Products.Archetypes.Field.StringField">DEFAULT</IndexType>
+          <HTMLAttributesFormula type="Products.Archetypes.Field.TextField"><![CDATA[]]></HTMLAttributesFormula>
           <params>
 <param>
-<value><struct>
-<member>
-<name>selectionlist</name>
+<value><array><data>
+<value><string>selectionlist</string></value>
 <value><array><data>
 <value><string>France|FR</string></value>
 <value><string>Germany|DE</string></value>
 <value><string>Italy|IT</string></value>
 <value><string>Spain|ES</string></value>
 </data></array></value>
-</member>
-</struct></value>
+</data></array></value>
 </param>
 </params>
         </element>
@@ -122,6 +128,7 @@
           <ValidationFormula type="Products.Archetypes.Field.TextField"><![CDATA[]]></ValidationFormula>
           <ToBeIndexed type="Products.Archetypes.Field.BooleanField">False</ToBeIndexed>
           <IndexType type="Products.Archetypes.Field.StringField">DEFAULT</IndexType>
+          <HTMLAttributesFormula type="Products.Archetypes.Field.TextField"><![CDATA[]]></HTMLAttributesFormula>
         </element>
       </elements>
     </element>
@@ -129,28 +136,29 @@
       <id type="Products.Archetypes.Field.StringField">frmSaleAnalysis</id>
       <onCreateDocument type="Products.Archetypes.Field.TextField"><![CDATA[]]></onCreateDocument>
       <onOpenDocument type="Products.Archetypes.Field.TextField"><![CDATA[]]></onOpenDocument>
+      <beforeSaveDocument type="Products.Archetypes.Field.TextField"><![CDATA[]]></beforeSaveDocument>
       <onSaveDocument type="Products.Archetypes.Field.TextField"><![CDATA[]]></onSaveDocument>
       <onDeleteDocument type="Products.Archetypes.Field.TextField"><![CDATA[]]></onDeleteDocument>
       <onSearch type="Products.Archetypes.Field.TextField"><![CDATA[]]></onSearch>
       <beforeCreateDocument type="Products.Archetypes.Field.TextField"><![CDATA[]]></beforeCreateDocument>
-      <FormLayout type="Products.Archetypes.Field.TextField"><![CDATA[<h3>Brand: <span class="plominoFieldClass">brand_name</span></h3>
+      <FormLayout type="Products.Archetypes.Field.TextField"><![CDATA[
+<h3>Brand: <span class="plominoFieldClass">brand_name</span>
+</h3>
 <h3>Analysis</h3>
-<ul>
-<li>Total by product</li>
-</ul>
+<ul><li>Total by product</li></ul>
 <p><span class="plominoFieldClass">sales_barchart</span></p>
-<ul>
-<li>Total by country</li>
-</ul>
+<ul><li>Total by country</li></ul>
 <p><span class="plominoFieldClass">sales_map</span></p>
 <h3></h3>
 <div>
 <h3 class="plomino-accordion-header"><a href="#">Sales details</a></h3>
-<div class="plomino-accordion-content">
-<p><span class="plominoFieldClass">brand_sales</span></p>
+<div class="plomino-accordion-content"><p><span class="plominoFieldClass">brand_sales</span></p></div>
 </div>
-</div>]]></FormLayout>
+]]></FormLayout>
+      <FormMethod type="Products.Archetypes.Field.TextField"><![CDATA[Auto]]></FormMethod>
       <DocumentTitle type="Products.Archetypes.Field.TextField"><![CDATA[plominoDocument.brand_name]]></DocumentTitle>
+      <DynamicDocumentTitle type="Products.Archetypes.Field.BooleanField">False</DynamicDocumentTitle>
+      <StoreDynamicDocumentTitle type="Products.Archetypes.Field.BooleanField">False</StoreDynamicDocumentTitle>
       <DocumentId type="Products.Archetypes.Field.TextField"><![CDATA[]]></DocumentId>
       <ActionBarPosition type="Products.Archetypes.Field.StringField">TOP</ActionBarPosition>
       <HideDefaultActions type="Products.Archetypes.Field.BooleanField">False</HideDefaultActions>
@@ -160,6 +168,8 @@
       <SearchView type="Products.Archetypes.Field.StringField"/>
       <SearchFormula type="Products.Archetypes.Field.TextField"><![CDATA[]]></SearchFormula>
       <Position type="Products.Archetypes.Field.IntegerField"/>
+      <ResourcesJS type="Products.Archetypes.Field.TextField"><![CDATA[]]></ResourcesJS>
+      <ResourcesCSS type="Products.Archetypes.Field.TextField"><![CDATA[]]></ResourcesCSS>
       <excludeFromNav type="Products.Archetypes.Field.BooleanField">False</excludeFromNav>
       <elements>
         <element id="brand_name" title="brand_name" type="PlominoField">
@@ -173,6 +183,7 @@
           <ValidationFormula type="Products.Archetypes.Field.TextField"><![CDATA[]]></ValidationFormula>
           <ToBeIndexed type="Products.Archetypes.Field.BooleanField">True</ToBeIndexed>
           <IndexType type="Products.Archetypes.Field.StringField">DEFAULT</IndexType>
+          <HTMLAttributesFormula type="Products.Archetypes.Field.TextField"><![CDATA[]]></HTMLAttributesFormula>
         </element>
         <element id="brand_sales" title="brand_sales" type="PlominoField">
           <id type="Products.Archetypes.Field.StringField">brand_sales</id>
@@ -185,15 +196,23 @@
           <ValidationFormula type="Products.Archetypes.Field.TextField"><![CDATA[]]></ValidationFormula>
           <ToBeIndexed type="Products.Archetypes.Field.BooleanField">True</ToBeIndexed>
           <IndexType type="Products.Archetypes.Field.StringField">DEFAULT</IndexType>
+          <HTMLAttributesFormula type="Products.Archetypes.Field.TextField"><![CDATA[]]></HTMLAttributesFormula>
           <params>
 <param>
-<value><struct>
-<member>
-<name>associated_form</name>
+<value><array><data>
+<value><string>associated_form</string></value>
 <value><string>frmSale</string></value>
-</member>
-<member>
-<name>jssettings</name>
+</data></array></value>
+</param>
+<param>
+<value><array><data>
+<value><string>field_mapping</string></value>
+<value><string>product_name,country,total_sales</string></value>
+</data></array></value>
+</param>
+<param>
+<value><array><data>
+<value><string>jssettings</string></value>
 <value><string>"aoColumns": [
     { "sTitle": "Product" },
     { "sTitle": "Country" },
@@ -210,12 +229,7 @@
     "height": 400
 }
 </string></value>
-</member>
-<member>
-<name>field_mapping</name>
-<value><string>product_name,country,total_sales</string></value>
-</member>
-</struct></value>
+</data></array></value>
 </param>
 </params>
         </element>
@@ -240,15 +254,17 @@ return [['"%s"' % p, "%d" % by_product[p]] for p in by_product]]]></Formula>
           <ValidationFormula type="Products.Archetypes.Field.TextField"><![CDATA[]]></ValidationFormula>
           <ToBeIndexed type="Products.Archetypes.Field.BooleanField">True</ToBeIndexed>
           <IndexType type="Products.Archetypes.Field.StringField">DEFAULT</IndexType>
+          <HTMLAttributesFormula type="Products.Archetypes.Field.TextField"><![CDATA[]]></HTMLAttributesFormula>
           <params>
 <param>
-<value><struct>
-<member>
-<name>chartid</name>
+<value><array><data>
+<value><string>chartid</string></value>
 <value><string>barchart</string></value>
-</member>
-<member>
-<name>jssettings</name>
+</data></array></value>
+</param>
+<param>
+<value><array><data>
+<value><string>jssettings</string></value>
 <value><string>google.load('visualization', '1', {packages:['barchart']});
 google.setOnLoadCallback(barchart_drawChart);
 var barchart;
@@ -262,8 +278,7 @@ var barchart_chart = new google.visualization.BarChart(document.getElementById('
 barchart_chart.draw(barchart, {width: 400, height: 220, is3D: true, backgroundColor: '#EEEEEE', legend: 'label',tooltipFontSize:'10'});
 }
 </string></value>
-</member>
-</struct></value>
+</data></array></value>
 </param>
 </params>
         </element>
@@ -288,15 +303,17 @@ return [['"%s"' % c, "%d" % by_country[c]] for c in by_country]]]></Formula>
           <ValidationFormula type="Products.Archetypes.Field.TextField"><![CDATA[]]></ValidationFormula>
           <ToBeIndexed type="Products.Archetypes.Field.BooleanField">False</ToBeIndexed>
           <IndexType type="Products.Archetypes.Field.StringField">DEFAULT</IndexType>
+          <HTMLAttributesFormula type="Products.Archetypes.Field.TextField"><![CDATA[]]></HTMLAttributesFormula>
           <params>
 <param>
-<value><struct>
-<member>
-<name>chartid</name>
+<value><array><data>
+<value><string>chartid</string></value>
 <value><string>geomap</string></value>
-</member>
-<member>
-<name>jssettings</name>
+</data></array></value>
+</param>
+<param>
+<value><array><data>
+<value><string>jssettings</string></value>
 <value><string>google.load('visualization', '1', {packages:['geomap']});
 google.setOnLoadCallback(geomap_drawChart);
 var geomap;
@@ -309,8 +326,7 @@ geomap_getCells();
 var geomap_chart = new google.visualization.GeoMap(document.getElementById('geomap_div'));
 geomap_chart.draw(geomap, {allowHtml:true, dataMode: "regions", region: "155"});
 }</string></value>
-</member>
-</struct></value>
+</data></array></value>
 </param>
 </params>
         </element>
@@ -325,6 +341,7 @@ geomap_chart.draw(geomap, {allowHtml:true, dataMode: "regions", region: "155"});
       <ReverseSorting type="Products.Archetypes.Field.BooleanField">False</ReverseSorting>
       <ActionBarPosition type="Products.Archetypes.Field.StringField">TOP</ActionBarPosition>
       <HideDefaultActions type="Products.Archetypes.Field.BooleanField">False</HideDefaultActions>
+      <HideCheckboxes type="Products.Archetypes.Field.BooleanField">False</HideCheckboxes>
       <HideInMenu type="Products.Archetypes.Field.BooleanField">False</HideInMenu>
       <Widget type="Products.Archetypes.Field.StringField">BASIC</Widget>
       <DynamicTableParameters type="Products.Archetypes.Field.TextField"><![CDATA['bPaginate': false,

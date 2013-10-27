@@ -1,38 +1,5 @@
 <plominodatabase id="replicadb">
   <design>
-    <dbsettings version="1.16">
-      <AboutDescription type="Products.Archetypes.Field.TextField"><![CDATA[]]></AboutDescription>
-      <UsingDescription type="Products.Archetypes.Field.TextField"><![CDATA[]]></UsingDescription>
-      <IndexAttachments type="Products.Archetypes.Field.BooleanField">False</IndexAttachments>
-      <FulltextIndex type="Products.Archetypes.Field.BooleanField">True</FulltextIndex>
-      <IndexInPortal type="Products.Archetypes.Field.BooleanField">False</IndexInPortal>
-      <debugMode type="Products.Archetypes.Field.BooleanField">False</debugMode>
-      <CountDocuments type="Products.Archetypes.Field.BooleanField">False</CountDocuments>
-      <DateTimeFormat type="Products.Archetypes.Field.StringField">%Y-%m-%d</DateTimeFormat>
-      <StartPage type="Products.Archetypes.Field.StringField"/>
-      <i18n type="Products.Archetypes.Field.StringField"/>
-      <DoNotListUsers type="Products.Archetypes.Field.BooleanField">False</DoNotListUsers>
-      <DoNotReindex type="Products.Archetypes.Field.BooleanField">False</DoNotReindex>
-      <excludeFromNav type="Products.Archetypes.Field.BooleanField">False</excludeFromNav>
-      <acl AnomynousAccessRight="NoAccess" AuthenticatedAccessRight="NoAccess">
-        <params id="UserRoles">
-<param>
-<value><struct>
-</struct></value>
-</param>
-</params>
-        <params id="SpecificRights">
-<param>
-<value><struct>
-<member>
-<name>specific_deletedocument</name>
-<value><string>PlominoAuthor</string></value>
-</member>
-</struct></value>
-</param>
-</params>
-      </acl>
-    </dbsettings>
     <element id="frmMovie" title="Movie" type="PlominoForm">
       <id type="Products.Archetypes.Field.StringField">frmMovie</id>
       <onCreateDocument type="Products.Archetypes.Field.TextField"><![CDATA[]]></onCreateDocument>
@@ -48,7 +15,10 @@
 <p><strong>Year</strong></p>
 <p><span class="plominoFieldClass">year</span></p>
 ]]></FormLayout>
+      <FormMethod type="Products.Archetypes.Field.TextField"><![CDATA[Auto]]></FormMethod>
       <DocumentTitle type="Products.Archetypes.Field.TextField"><![CDATA[]]></DocumentTitle>
+      <DynamicDocumentTitle type="Products.Archetypes.Field.BooleanField">False</DynamicDocumentTitle>
+      <StoreDynamicDocumentTitle type="Products.Archetypes.Field.BooleanField">False</StoreDynamicDocumentTitle>
       <DocumentId type="Products.Archetypes.Field.TextField"><![CDATA[]]></DocumentId>
       <ActionBarPosition type="Products.Archetypes.Field.StringField">TOP</ActionBarPosition>
       <HideDefaultActions type="Products.Archetypes.Field.BooleanField">False</HideDefaultActions>
@@ -58,6 +28,8 @@
       <SearchView type="Products.Archetypes.Field.StringField"/>
       <SearchFormula type="Products.Archetypes.Field.TextField"><![CDATA[]]></SearchFormula>
       <Position type="Products.Archetypes.Field.IntegerField"/>
+      <ResourcesJS type="Products.Archetypes.Field.TextField"><![CDATA[]]></ResourcesJS>
+      <ResourcesCSS type="Products.Archetypes.Field.TextField"><![CDATA[]]></ResourcesCSS>
       <excludeFromNav type="Products.Archetypes.Field.BooleanField">False</excludeFromNav>
       <elements>
         <element id="name" title="name" type="PlominoField">
@@ -71,6 +43,7 @@
           <ValidationFormula type="Products.Archetypes.Field.TextField"><![CDATA[]]></ValidationFormula>
           <ToBeIndexed type="Products.Archetypes.Field.BooleanField">True</ToBeIndexed>
           <IndexType type="Products.Archetypes.Field.StringField">DEFAULT</IndexType>
+          <HTMLAttributesFormula type="Products.Archetypes.Field.TextField"><![CDATA[]]></HTMLAttributesFormula>
         </element>
         <element id="year" title="year" type="PlominoField">
           <id type="Products.Archetypes.Field.StringField">year</id>
@@ -83,6 +56,7 @@
           <ValidationFormula type="Products.Archetypes.Field.TextField"><![CDATA[]]></ValidationFormula>
           <ToBeIndexed type="Products.Archetypes.Field.BooleanField">True</ToBeIndexed>
           <IndexType type="Products.Archetypes.Field.StringField">DEFAULT</IndexType>
+          <HTMLAttributesFormula type="Products.Archetypes.Field.TextField"><![CDATA[]]></HTMLAttributesFormula>
         </element>
       </elements>
     </element>

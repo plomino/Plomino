@@ -1,5 +1,39 @@
 <plominodatabase id="configdb">
   <design>
+    <dbsettings version="1.18">
+      <AboutDescription type="Products.Archetypes.Field.TextField"><![CDATA[]]></AboutDescription>
+      <UsingDescription type="Products.Archetypes.Field.TextField"><![CDATA[]]></UsingDescription>
+      <IndexAttachments type="Products.Archetypes.Field.BooleanField">False</IndexAttachments>
+      <FulltextIndex type="Products.Archetypes.Field.BooleanField">True</FulltextIndex>
+      <IndexInPortal type="Products.Archetypes.Field.BooleanField">False</IndexInPortal>
+      <debugMode type="Products.Archetypes.Field.BooleanField">False</debugMode>
+      <CountDocuments type="Products.Archetypes.Field.BooleanField">False</CountDocuments>
+      <DateTimeFormat type="Products.Archetypes.Field.StringField">%Y-%m-%d</DateTimeFormat>
+      <StartPage type="Products.Archetypes.Field.StringField"/>
+      <i18n type="Products.Archetypes.Field.StringField"/>
+      <DoNotListUsers type="Products.Archetypes.Field.BooleanField">False</DoNotListUsers>
+      <DoNotReindex type="Products.Archetypes.Field.BooleanField">False</DoNotReindex>
+      <IsDatabaseTemplate type="Products.Archetypes.Field.BooleanField">False</IsDatabaseTemplate>
+      <excludeFromNav type="Products.Archetypes.Field.BooleanField">False</excludeFromNav>
+      <acl AnomynousAccessRight="NoAccess" AuthenticatedAccessRight="NoAccess">
+        <params id="UserRoles">
+<param>
+<value><struct>
+</struct></value>
+</param>
+</params>
+        <params id="SpecificRights">
+<param>
+<value><struct>
+<member>
+<name>specific_deletedocument</name>
+<value><string>PlominoAuthor</string></value>
+</member>
+</struct></value>
+</param>
+</params>
+      </acl>
+    </dbsettings>
     <element id="migrate_configdocs" title="migrate_configdocs" type="PlominoAgent">
       <id type="Products.Archetypes.Field.StringField">migrate_configdocs</id>
       <Content type="Products.Archetypes.Field.TextField"><![CDATA[db = context.getParentDatabase()
@@ -76,7 +110,10 @@ def getConfigValuesAsDict(db, key, separator='|'):
 <p><span class="plominoFieldClass">frmConfig_config_value</span></p>
 <p><span class="plominoActionClass">frmConfig_save_button</span> <span class="plominoFieldClass">frmConfig_delete_button</span></p>
 ]]></FormLayout>
+      <FormMethod type="Products.Archetypes.Field.TextField"><![CDATA[Auto]]></FormMethod>
       <DocumentTitle type="Products.Archetypes.Field.TextField"><![CDATA[]]></DocumentTitle>
+      <DynamicDocumentTitle type="Products.Archetypes.Field.BooleanField">False</DynamicDocumentTitle>
+      <StoreDynamicDocumentTitle type="Products.Archetypes.Field.BooleanField">False</StoreDynamicDocumentTitle>
       <DocumentId type="Products.Archetypes.Field.TextField"><![CDATA[]]></DocumentId>
       <ActionBarPosition type="Products.Archetypes.Field.StringField">BOTTOM</ActionBarPosition>
       <HideDefaultActions type="Products.Archetypes.Field.BooleanField">False</HideDefaultActions>
@@ -86,6 +123,8 @@ def getConfigValuesAsDict(db, key, separator='|'):
       <SearchView type="Products.Archetypes.Field.StringField"/>
       <SearchFormula type="Products.Archetypes.Field.TextField"><![CDATA[]]></SearchFormula>
       <Position type="Products.Archetypes.Field.IntegerField"/>
+      <ResourcesJS type="Products.Archetypes.Field.TextField"><![CDATA[]]></ResourcesJS>
+      <ResourcesCSS type="Products.Archetypes.Field.TextField"><![CDATA[]]></ResourcesCSS>
       <excludeFromNav type="Products.Archetypes.Field.BooleanField">False</excludeFromNav>
       <elements>
         <element id="frmConfig_config_id" title="frmConfig_config_id" type="PlominoField">
@@ -99,6 +138,7 @@ def getConfigValuesAsDict(db, key, separator='|'):
           <ValidationFormula type="Products.Archetypes.Field.TextField"><![CDATA[]]></ValidationFormula>
           <ToBeIndexed type="Products.Archetypes.Field.BooleanField">False</ToBeIndexed>
           <IndexType type="Products.Archetypes.Field.StringField">DEFAULT</IndexType>
+          <HTMLAttributesFormula type="Products.Archetypes.Field.TextField"><![CDATA[]]></HTMLAttributesFormula>
         </element>
         <element id="frmConfig_config_value" title="frmConfig_config_value" type="PlominoField">
           <id type="Products.Archetypes.Field.StringField">frmConfig_config_value</id>
@@ -120,18 +160,19 @@ if config_id:
           <ValidationFormula type="Products.Archetypes.Field.TextField"><![CDATA[]]></ValidationFormula>
           <ToBeIndexed type="Products.Archetypes.Field.BooleanField">False</ToBeIndexed>
           <IndexType type="Products.Archetypes.Field.StringField">DEFAULT</IndexType>
+          <HTMLAttributesFormula type="Products.Archetypes.Field.TextField"><![CDATA[]]></HTMLAttributesFormula>
           <params>
 <param>
-<value><struct>
-<member>
-<name>widget</name>
-<value><string>TEXTAREA</string></value>
-</member>
-<member>
-<name>size</name>
+<value><array><data>
+<value><string>size</string></value>
 <value><string>10</string></value>
-</member>
-</struct></value>
+</data></array></value>
+</param>
+<param>
+<value><array><data>
+<value><string>widget</string></value>
+<value><string>TEXTAREA</string></value>
+</data></array></value>
 </param>
 </params>
         </element>
@@ -177,6 +218,7 @@ db.writeMessageOnPage(message, context.REQUEST)]]></Formula>
           <ValidationFormula type="Products.Archetypes.Field.TextField"><![CDATA[]]></ValidationFormula>
           <ToBeIndexed type="Products.Archetypes.Field.BooleanField">False</ToBeIndexed>
           <IndexType type="Products.Archetypes.Field.StringField">DEFAULT</IndexType>
+          <HTMLAttributesFormula type="Products.Archetypes.Field.TextField"><![CDATA[]]></HTMLAttributesFormula>
         </element>
         <element id="frmConfig_go_to_field" title="frmConfig_go_to_field" type="PlominoField">
           <id type="Products.Archetypes.Field.StringField">frmConfig_go_to_field</id>
@@ -187,9 +229,7 @@ db.writeMessageOnPage(message, context.REQUEST)]]></Formula>
 $(document).ready(function(){
     $('#plomino_form').attr('method', "GET");
 });
-</script>
-<select onchange="location.href='%s?frmConfig_config_id='+this.value">
-<option value="">Go to...</option>""" % context.absolute_url()
+</script><select onchange="location.href='%s?frmConfig_config_id='+this.value"><option value="">Go to...</option>""" % context.absolute_url()
 for field in context.getFormFields():
     if field.id.startswith('frmConfig_'):
         continue
@@ -202,6 +242,7 @@ return html]]></Formula>
           <ValidationFormula type="Products.Archetypes.Field.TextField"><![CDATA[]]></ValidationFormula>
           <ToBeIndexed type="Products.Archetypes.Field.BooleanField">False</ToBeIndexed>
           <IndexType type="Products.Archetypes.Field.StringField">DEFAULT</IndexType>
+          <HTMLAttributesFormula type="Products.Archetypes.Field.TextField"><![CDATA[]]></HTMLAttributesFormula>
         </element>
         <element id="frmConfig_delete_button" title="frmConfig_delete_button" type="PlominoField">
           <id type="Products.Archetypes.Field.StringField">frmConfig_delete_button</id>
@@ -223,6 +264,7 @@ return html]]></Formula>
           <ValidationFormula type="Products.Archetypes.Field.TextField"><![CDATA[]]></ValidationFormula>
           <ToBeIndexed type="Products.Archetypes.Field.BooleanField">False</ToBeIndexed>
           <IndexType type="Products.Archetypes.Field.StringField">DEFAULT</IndexType>
+          <HTMLAttributesFormula type="Products.Archetypes.Field.TextField"><![CDATA[]]></HTMLAttributesFormula>
         </element>
       </elements>
     </element>

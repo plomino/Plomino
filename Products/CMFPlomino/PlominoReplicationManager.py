@@ -45,9 +45,6 @@ from Products.CMFPlomino.PlominoUtils import StringToDate
 from Products.CMFPlomino.PlominoUtils import escape_xml_illegal_chars
 from Products.CMFPlomino.PlominoUtils import plomino_decimal
 
-# 3rd-party
-from jsonutil import jsonutil as json
-
 REMOTE_DOC_ID_SEPARATOR = '#'
 REMOTE_DOC_DATE_SEPARATOR = '@'
 REMOTE_DOC_IDS_HEADER = 'REMOTE_DOC_IDS'
@@ -1351,18 +1348,12 @@ class PlominoReplicationManager(Persistent):
         # export items
         # Preserve order in exports for stable diffs
         items = tuple(sorted(doc.items.items()))
-        str_items = json.dumps(items)
-        items = xmldoc.createElement('items')
+        str_items = xmlrpclib.dumps(items, allow_none=True)
         try:
-            items.appendChild(xmldoc.createCDATASection(str_items))
+            dom_items = parseString(str_items)
         except ExpatError:
-            items.appendChild(xmldoc.createCDATASection(escape_xml_illegal_chars(str_items)))
-        node.appendChild(items)
-        # try:
-        #     dom_items = parseString(str_items)
-        # except ExpatError:
-        #     dom_items = parseString(escape_xml_illegal_chars(str_items))
-        # node.appendChild(dom_items.documentElement)
+            dom_items = parseString(escape_xml_illegal_chars(str_items))
+        node.appendChild(dom_items.documentElement)
 
         # export attached files
         for f in doc.getFilenames():
@@ -1512,16 +1503,17 @@ class PlominoReplicationManager(Persistent):
         doc = self.createDocument(docid)
 
         # restore items
-        itemnode = node.getElementsByTagName("items")[0]
+        itemnode = node.getElementsByTagName("params")[0]
         #result, method = xmlrpclib.loads(node.firstChild.toxml())
-        items = json.loads(itemnode.firstChild.data.encode('utf-8'))
-        # for k in items.keys():
-        #     # convert xmlrpclib.DateTime into DateTime
-        #     if items[k].__class__.__name__ == 'DateTime':
-        #         # XXX: import loses timezone data
-        #         items[k] = StringToDate(
-        #                 items[k].value[:19],
-        #                 format="%Y-%m-%dT%H:%M:%S")
+        result, method = xmlrpclib.loads(itemnode.toxml().encode('utf-8'))
+        items = dict(result)
+        for k in items.keys():
+            # convert xmlrpclib.DateTime into DateTime
+            if items[k].__class__.__name__ == 'DateTime':
+                # XXX: import loses timezone data
+                items[k] = StringToDate(
+                        items[k].value[:19],
+                        format="%Y-%m-%dT%H:%M:%S")
         doc.items = PersistentDict(items)
 
         # restore files

@@ -1,18 +1,19 @@
 <plominodatabase id="printable">
   <design>
-    <dbsettings version="1.13">
+    <dbsettings version="1.18">
       <AboutDescription type="Products.Archetypes.Field.TextField"><![CDATA[]]></AboutDescription>
       <UsingDescription type="Products.Archetypes.Field.TextField"><![CDATA[]]></UsingDescription>
       <IndexAttachments type="Products.Archetypes.Field.BooleanField">False</IndexAttachments>
       <FulltextIndex type="Products.Archetypes.Field.BooleanField">False</FulltextIndex>
       <IndexInPortal type="Products.Archetypes.Field.BooleanField">False</IndexInPortal>
       <debugMode type="Products.Archetypes.Field.BooleanField">False</debugMode>
-      <StorageAttachments type="Products.Archetypes.Field.BooleanField">False</StorageAttachments>
       <CountDocuments type="Products.Archetypes.Field.BooleanField">False</CountDocuments>
       <DateTimeFormat type="Products.Archetypes.Field.StringField">%Y-%m-%d</DateTimeFormat>
       <StartPage type="Products.Archetypes.Field.StringField"/>
+      <i18n type="Products.Archetypes.Field.StringField"/>
       <DoNotListUsers type="Products.Archetypes.Field.BooleanField">False</DoNotListUsers>
       <DoNotReindex type="Products.Archetypes.Field.BooleanField">False</DoNotReindex>
+      <IsDatabaseTemplate type="Products.Archetypes.Field.BooleanField">False</IsDatabaseTemplate>
       <excludeFromNav type="Products.Archetypes.Field.BooleanField">False</excludeFromNav>
       <acl AnomynousAccessRight="NoAccess" AuthenticatedAccessRight="NoAccess">
         <params id="UserRoles">
@@ -37,11 +38,13 @@
       <id type="Products.Archetypes.Field.StringField">frmEmployee</id>
       <onCreateDocument type="Products.Archetypes.Field.TextField"><![CDATA[]]></onCreateDocument>
       <onOpenDocument type="Products.Archetypes.Field.TextField"><![CDATA[]]></onOpenDocument>
+      <beforeSaveDocument type="Products.Archetypes.Field.TextField"><![CDATA[]]></beforeSaveDocument>
       <onSaveDocument type="Products.Archetypes.Field.TextField"><![CDATA[]]></onSaveDocument>
       <onDeleteDocument type="Products.Archetypes.Field.TextField"><![CDATA[]]></onDeleteDocument>
       <onSearch type="Products.Archetypes.Field.TextField"><![CDATA[]]></onSearch>
       <beforeCreateDocument type="Products.Archetypes.Field.TextField"><![CDATA[]]></beforeCreateDocument>
-      <FormLayout type="Products.Archetypes.Field.TextField"><![CDATA[<p><b>Name:</b></p>
+      <FormLayout type="Products.Archetypes.Field.TextField"><![CDATA[
+<p><b>Name:</b></p>
 <p><span class="plominoFieldClass">employee_name</span></p>
 <p><b>Working hours:</b></p>
 <p>from <span class="plominoFieldClass">hour_from</span> to <span class="plominoFieldClass">hour_to</span></p>
@@ -51,8 +54,12 @@
 <p><span class="plominoFieldClass">mission</span></p>
 <p><b>Photo:</b></p>
 <p><span class="plominoFieldClass">photo</span></p>
-<p><span class="plominoFieldClass">print_button</span> <span class="plominoFieldClass">print_form_only_button</span></p>]]></FormLayout>
+<p><span class="plominoFieldClass">print_button</span> <span class="plominoFieldClass">print_form_only_button</span></p>
+]]></FormLayout>
+      <FormMethod type="Products.Archetypes.Field.TextField"><![CDATA[Auto]]></FormMethod>
       <DocumentTitle type="Products.Archetypes.Field.TextField"><![CDATA[context.getItem('employee_name')]]></DocumentTitle>
+      <DynamicDocumentTitle type="Products.Archetypes.Field.BooleanField">False</DynamicDocumentTitle>
+      <StoreDynamicDocumentTitle type="Products.Archetypes.Field.BooleanField">False</StoreDynamicDocumentTitle>
       <DocumentId type="Products.Archetypes.Field.TextField"><![CDATA[context.getItem('employee_name')]]></DocumentId>
       <ActionBarPosition type="Products.Archetypes.Field.StringField">TOP</ActionBarPosition>
       <HideDefaultActions type="Products.Archetypes.Field.BooleanField">False</HideDefaultActions>
@@ -62,6 +69,8 @@
       <SearchView type="Products.Archetypes.Field.StringField"/>
       <SearchFormula type="Products.Archetypes.Field.TextField"><![CDATA[]]></SearchFormula>
       <Position type="Products.Archetypes.Field.IntegerField"/>
+      <ResourcesJS type="Products.Archetypes.Field.TextField"><![CDATA[]]></ResourcesJS>
+      <ResourcesCSS type="Products.Archetypes.Field.TextField"><![CDATA[]]></ResourcesCSS>
       <excludeFromNav type="Products.Archetypes.Field.BooleanField">False</excludeFromNav>
       <elements>
         <element id="employee_name" title="employee_name" type="PlominoField">
@@ -74,6 +83,8 @@
           <Mandatory type="Products.Archetypes.Field.BooleanField">False</Mandatory>
           <ValidationFormula type="Products.Archetypes.Field.TextField"><![CDATA[]]></ValidationFormula>
           <ToBeIndexed type="Products.Archetypes.Field.BooleanField">True</ToBeIndexed>
+          <IndexType type="Products.Archetypes.Field.StringField">DEFAULT</IndexType>
+          <HTMLAttributesFormula type="Products.Archetypes.Field.TextField"><![CDATA[]]></HTMLAttributesFormula>
         </element>
         <element id="hour_from" title="hour_from" type="PlominoField">
           <id type="Products.Archetypes.Field.StringField">hour_from</id>
@@ -85,14 +96,14 @@
           <Mandatory type="Products.Archetypes.Field.BooleanField">False</Mandatory>
           <ValidationFormula type="Products.Archetypes.Field.TextField"><![CDATA[]]></ValidationFormula>
           <ToBeIndexed type="Products.Archetypes.Field.BooleanField">True</ToBeIndexed>
+          <IndexType type="Products.Archetypes.Field.StringField">DEFAULT</IndexType>
+          <HTMLAttributesFormula type="Products.Archetypes.Field.TextField"><![CDATA[]]></HTMLAttributesFormula>
           <params>
 <param>
-<value><struct>
-<member>
-<name>size</name>
+<value><array><data>
+<value><string>size</string></value>
 <value><string>4</string></value>
-</member>
-</struct></value>
+</data></array></value>
 </param>
 </params>
         </element>
@@ -106,14 +117,14 @@
           <Mandatory type="Products.Archetypes.Field.BooleanField">False</Mandatory>
           <ValidationFormula type="Products.Archetypes.Field.TextField"><![CDATA[]]></ValidationFormula>
           <ToBeIndexed type="Products.Archetypes.Field.BooleanField">True</ToBeIndexed>
+          <IndexType type="Products.Archetypes.Field.StringField">DEFAULT</IndexType>
+          <HTMLAttributesFormula type="Products.Archetypes.Field.TextField"><![CDATA[]]></HTMLAttributesFormula>
           <params>
 <param>
-<value><struct>
-<member>
-<name>size</name>
+<value><array><data>
+<value><string>size</string></value>
 <value><string>4</string></value>
-</member>
-</struct></value>
+</data></array></value>
 </param>
 </params>
         </element>
@@ -127,30 +138,34 @@
           <Mandatory type="Products.Archetypes.Field.BooleanField">False</Mandatory>
           <ValidationFormula type="Products.Archetypes.Field.TextField"><![CDATA[]]></ValidationFormula>
           <ToBeIndexed type="Products.Archetypes.Field.BooleanField">True</ToBeIndexed>
+          <IndexType type="Products.Archetypes.Field.StringField">DEFAULT</IndexType>
+          <HTMLAttributesFormula type="Products.Archetypes.Field.TextField"><![CDATA[]]></HTMLAttributesFormula>
           <params>
 <param>
-<value><struct>
-<member>
-<name>dynamictableparam</name>
+<value><array><data>
+<value><string>dynamictableparam</string></value>
 <value><string>'bPaginate': true,
 'bLengthChange': true,
 'bFilter': true,
 'bSort': true,
 'bInfo': true,
 'bAutoWidth': false</string></value>
-</member>
-<member>
-<name>widget</name>
-<value><string>RADIO</string></value>
-</member>
-<member>
-<name>selectionlist</name>
+</data></array></value>
+</param>
+<param>
+<value><array><data>
+<value><string>selectionlist</string></value>
 <value><array><data>
 <value><string>Yes</string></value>
 <value><string>No</string></value>
 </data></array></value>
-</member>
-</struct></value>
+</data></array></value>
+</param>
+<param>
+<value><array><data>
+<value><string>widget</string></value>
+<value><string>RADIO</string></value>
+</data></array></value>
 </param>
 </params>
         </element>
@@ -164,6 +179,8 @@
           <Mandatory type="Products.Archetypes.Field.BooleanField">False</Mandatory>
           <ValidationFormula type="Products.Archetypes.Field.TextField"><![CDATA[]]></ValidationFormula>
           <ToBeIndexed type="Products.Archetypes.Field.BooleanField">False</ToBeIndexed>
+          <IndexType type="Products.Archetypes.Field.StringField">DEFAULT</IndexType>
+          <HTMLAttributesFormula type="Products.Archetypes.Field.TextField"><![CDATA[]]></HTMLAttributesFormula>
         </element>
         <element id="photo" title="photo" type="PlominoField">
           <id type="Products.Archetypes.Field.StringField">photo</id>
@@ -175,6 +192,8 @@
           <Mandatory type="Products.Archetypes.Field.BooleanField">False</Mandatory>
           <ValidationFormula type="Products.Archetypes.Field.TextField"><![CDATA[]]></ValidationFormula>
           <ToBeIndexed type="Products.Archetypes.Field.BooleanField">False</ToBeIndexed>
+          <IndexType type="Products.Archetypes.Field.StringField">DEFAULT</IndexType>
+          <HTMLAttributesFormula type="Products.Archetypes.Field.TextField"><![CDATA[]]></HTMLAttributesFormula>
         </element>
         <element id="print_button" title="print_button" type="PlominoField">
           <id type="Products.Archetypes.Field.StringField">print_button</id>
@@ -187,6 +206,8 @@ return html]]></Formula>
           <Mandatory type="Products.Archetypes.Field.BooleanField">False</Mandatory>
           <ValidationFormula type="Products.Archetypes.Field.TextField"><![CDATA[]]></ValidationFormula>
           <ToBeIndexed type="Products.Archetypes.Field.BooleanField">False</ToBeIndexed>
+          <IndexType type="Products.Archetypes.Field.StringField">DEFAULT</IndexType>
+          <HTMLAttributesFormula type="Products.Archetypes.Field.TextField"><![CDATA[]]></HTMLAttributesFormula>
         </element>
         <element id="print_form_only_button" title="print_form_only_button" type="PlominoField">
           <id type="Products.Archetypes.Field.StringField">print_form_only_button</id>
@@ -199,6 +220,8 @@ return html]]></Formula>
           <Mandatory type="Products.Archetypes.Field.BooleanField">False</Mandatory>
           <ValidationFormula type="Products.Archetypes.Field.TextField"><![CDATA[]]></ValidationFormula>
           <ToBeIndexed type="Products.Archetypes.Field.BooleanField">False</ToBeIndexed>
+          <IndexType type="Products.Archetypes.Field.StringField">DEFAULT</IndexType>
+          <HTMLAttributesFormula type="Products.Archetypes.Field.TextField"><![CDATA[]]></HTMLAttributesFormula>
         </element>
       </elements>
     </element>
@@ -206,41 +229,38 @@ return html]]></Formula>
       <id type="Products.Archetypes.Field.StringField">frmEmployeePrint</id>
       <onCreateDocument type="Products.Archetypes.Field.TextField"><![CDATA[]]></onCreateDocument>
       <onOpenDocument type="Products.Archetypes.Field.TextField"><![CDATA[]]></onOpenDocument>
+      <beforeSaveDocument type="Products.Archetypes.Field.TextField"><![CDATA[]]></beforeSaveDocument>
       <onSaveDocument type="Products.Archetypes.Field.TextField"><![CDATA[]]></onSaveDocument>
       <onDeleteDocument type="Products.Archetypes.Field.TextField"><![CDATA[]]></onDeleteDocument>
       <onSearch type="Products.Archetypes.Field.TextField"><![CDATA[]]></onSearch>
       <beforeCreateDocument type="Products.Archetypes.Field.TextField"><![CDATA[]]></beforeCreateDocument>
-      <FormLayout type="Products.Archetypes.Field.TextField"><![CDATA[<table class="vertical listing">
-<tbody>
+      <FormLayout type="Products.Archetypes.Field.TextField"><![CDATA[
+<table class="vertical listing"><tbody>
 <tr>
 <th>Name</th>
-<td>
-<p><span class="plominoFieldClass">employee_name</span></p>
-</td>
-<td>
-<p><span class="plominoFieldClass">photo</span></p>
-</td>
+<td><p><span class="plominoFieldClass">employee_name</span></p></td>
+<td><p><span class="plominoFieldClass">photo</span></p></td>
 </tr>
 <tr>
 <th>Working hours</th>
-<td colspan="2">from <span class="plominoFieldClass">hour_from</span> to <span class="plominoFieldClass">hour_to</span></td>
+<td colspan="2">from <span class="plominoFieldClass">hour_from</span> to <span class="plominoFieldClass">hour_to</span>
+</td>
 </tr>
 <tr>
 <th>Driving license</th>
-<td colspan="2">
-<p><span class="plominoFieldClass">driving_license</span></p>
-</td>
+<td colspan="2"><p><span class="plominoFieldClass">driving_license</span></p></td>
 </tr>
 <tr>
 <th>Mission</th>
-<td colspan="2">
-<p><span class="plominoFieldClass">mission</span></p>
-</td>
+<td colspan="2"><p><span class="plominoFieldClass">mission</span></p></td>
 </tr>
-</tbody>
-</table>
-<p><span class="plominoFieldClass">print_js</span></p>]]></FormLayout>
+</tbody></table>
+<p><span class="plominoFieldClass">print_js</span></p>
+]]></FormLayout>
+      <FormMethod type="Products.Archetypes.Field.TextField"><![CDATA[Auto]]></FormMethod>
       <DocumentTitle type="Products.Archetypes.Field.TextField"><![CDATA[context.getItem('employee_name')]]></DocumentTitle>
+      <DynamicDocumentTitle type="Products.Archetypes.Field.BooleanField">False</DynamicDocumentTitle>
+      <StoreDynamicDocumentTitle type="Products.Archetypes.Field.BooleanField">False</StoreDynamicDocumentTitle>
       <DocumentId type="Products.Archetypes.Field.TextField"><![CDATA[context.getItem('employee_name')]]></DocumentId>
       <ActionBarPosition type="Products.Archetypes.Field.StringField">TOP</ActionBarPosition>
       <HideDefaultActions type="Products.Archetypes.Field.BooleanField">True</HideDefaultActions>
@@ -250,6 +270,8 @@ return html]]></Formula>
       <SearchView type="Products.Archetypes.Field.StringField"/>
       <SearchFormula type="Products.Archetypes.Field.TextField"><![CDATA[]]></SearchFormula>
       <Position type="Products.Archetypes.Field.IntegerField"/>
+      <ResourcesJS type="Products.Archetypes.Field.TextField"><![CDATA[]]></ResourcesJS>
+      <ResourcesCSS type="Products.Archetypes.Field.TextField"><![CDATA[]]></ResourcesCSS>
       <excludeFromNav type="Products.Archetypes.Field.BooleanField">False</excludeFromNav>
       <elements>
         <element id="employee_name" title="employee_name" type="PlominoField">
@@ -262,6 +284,8 @@ return html]]></Formula>
           <Mandatory type="Products.Archetypes.Field.BooleanField">False</Mandatory>
           <ValidationFormula type="Products.Archetypes.Field.TextField"><![CDATA[]]></ValidationFormula>
           <ToBeIndexed type="Products.Archetypes.Field.BooleanField">True</ToBeIndexed>
+          <IndexType type="Products.Archetypes.Field.StringField">DEFAULT</IndexType>
+          <HTMLAttributesFormula type="Products.Archetypes.Field.TextField"><![CDATA[]]></HTMLAttributesFormula>
         </element>
         <element id="hour_from" title="hour_from" type="PlominoField">
           <id type="Products.Archetypes.Field.StringField">hour_from</id>
@@ -273,14 +297,14 @@ return html]]></Formula>
           <Mandatory type="Products.Archetypes.Field.BooleanField">False</Mandatory>
           <ValidationFormula type="Products.Archetypes.Field.TextField"><![CDATA[]]></ValidationFormula>
           <ToBeIndexed type="Products.Archetypes.Field.BooleanField">True</ToBeIndexed>
+          <IndexType type="Products.Archetypes.Field.StringField">DEFAULT</IndexType>
+          <HTMLAttributesFormula type="Products.Archetypes.Field.TextField"><![CDATA[]]></HTMLAttributesFormula>
           <params>
 <param>
-<value><struct>
-<member>
-<name>size</name>
+<value><array><data>
+<value><string>size</string></value>
 <value><string>4</string></value>
-</member>
-</struct></value>
+</data></array></value>
 </param>
 </params>
         </element>
@@ -294,14 +318,14 @@ return html]]></Formula>
           <Mandatory type="Products.Archetypes.Field.BooleanField">False</Mandatory>
           <ValidationFormula type="Products.Archetypes.Field.TextField"><![CDATA[]]></ValidationFormula>
           <ToBeIndexed type="Products.Archetypes.Field.BooleanField">True</ToBeIndexed>
+          <IndexType type="Products.Archetypes.Field.StringField">DEFAULT</IndexType>
+          <HTMLAttributesFormula type="Products.Archetypes.Field.TextField"><![CDATA[]]></HTMLAttributesFormula>
           <params>
 <param>
-<value><struct>
-<member>
-<name>size</name>
+<value><array><data>
+<value><string>size</string></value>
 <value><string>4</string></value>
-</member>
-</struct></value>
+</data></array></value>
 </param>
 </params>
         </element>
@@ -315,30 +339,34 @@ return html]]></Formula>
           <Mandatory type="Products.Archetypes.Field.BooleanField">False</Mandatory>
           <ValidationFormula type="Products.Archetypes.Field.TextField"><![CDATA[]]></ValidationFormula>
           <ToBeIndexed type="Products.Archetypes.Field.BooleanField">True</ToBeIndexed>
+          <IndexType type="Products.Archetypes.Field.StringField">DEFAULT</IndexType>
+          <HTMLAttributesFormula type="Products.Archetypes.Field.TextField"><![CDATA[]]></HTMLAttributesFormula>
           <params>
 <param>
-<value><struct>
-<member>
-<name>dynamictableparam</name>
+<value><array><data>
+<value><string>dynamictableparam</string></value>
 <value><string>'bPaginate': true,
 'bLengthChange': true,
 'bFilter': true,
 'bSort': true,
 'bInfo': true,
 'bAutoWidth': false</string></value>
-</member>
-<member>
-<name>widget</name>
-<value><string>RADIO</string></value>
-</member>
-<member>
-<name>selectionlist</name>
+</data></array></value>
+</param>
+<param>
+<value><array><data>
+<value><string>selectionlist</string></value>
 <value><array><data>
 <value><string>Yes</string></value>
 <value><string>No</string></value>
 </data></array></value>
-</member>
-</struct></value>
+</data></array></value>
+</param>
+<param>
+<value><array><data>
+<value><string>widget</string></value>
+<value><string>RADIO</string></value>
+</data></array></value>
 </param>
 </params>
         </element>
@@ -352,6 +380,8 @@ return html]]></Formula>
           <Mandatory type="Products.Archetypes.Field.BooleanField">False</Mandatory>
           <ValidationFormula type="Products.Archetypes.Field.TextField"><![CDATA[]]></ValidationFormula>
           <ToBeIndexed type="Products.Archetypes.Field.BooleanField">False</ToBeIndexed>
+          <IndexType type="Products.Archetypes.Field.StringField">DEFAULT</IndexType>
+          <HTMLAttributesFormula type="Products.Archetypes.Field.TextField"><![CDATA[]]></HTMLAttributesFormula>
         </element>
         <element id="photo" title="photo" type="PlominoField">
           <id type="Products.Archetypes.Field.StringField">photo</id>
@@ -363,6 +393,8 @@ return html]]></Formula>
           <Mandatory type="Products.Archetypes.Field.BooleanField">False</Mandatory>
           <ValidationFormula type="Products.Archetypes.Field.TextField"><![CDATA[]]></ValidationFormula>
           <ToBeIndexed type="Products.Archetypes.Field.BooleanField">False</ToBeIndexed>
+          <IndexType type="Products.Archetypes.Field.StringField">DEFAULT</IndexType>
+          <HTMLAttributesFormula type="Products.Archetypes.Field.TextField"><![CDATA[]]></HTMLAttributesFormula>
         </element>
         <element id="print_js" title="print_js" type="PlominoField">
           <id type="Products.Archetypes.Field.StringField">print_js</id>
@@ -377,6 +409,8 @@ return html]]></Formula>
           <Mandatory type="Products.Archetypes.Field.BooleanField">False</Mandatory>
           <ValidationFormula type="Products.Archetypes.Field.TextField"><![CDATA[]]></ValidationFormula>
           <ToBeIndexed type="Products.Archetypes.Field.BooleanField">False</ToBeIndexed>
+          <IndexType type="Products.Archetypes.Field.StringField">DEFAULT</IndexType>
+          <HTMLAttributesFormula type="Products.Archetypes.Field.TextField"><![CDATA[]]></HTMLAttributesFormula>
         </element>
       </elements>
     </element>
@@ -389,6 +423,7 @@ return html]]></Formula>
       <ReverseSorting type="Products.Archetypes.Field.BooleanField">False</ReverseSorting>
       <ActionBarPosition type="Products.Archetypes.Field.StringField">TOP</ActionBarPosition>
       <HideDefaultActions type="Products.Archetypes.Field.BooleanField">False</HideDefaultActions>
+      <HideCheckboxes type="Products.Archetypes.Field.BooleanField">False</HideCheckboxes>
       <HideInMenu type="Products.Archetypes.Field.BooleanField">False</HideInMenu>
       <Widget type="Products.Archetypes.Field.StringField">BASIC</Widget>
       <DynamicTableParameters type="Products.Archetypes.Field.TextField"><![CDATA['bPaginate': false,
