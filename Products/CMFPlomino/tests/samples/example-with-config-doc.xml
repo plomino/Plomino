@@ -1,18 +1,19 @@
-<plominodatabase id="configdocs">
+<plominodatabase id="example-with-config-doc">
   <design>
-    <dbsettings version="1.11">
+    <dbsettings version="1.18">
       <AboutDescription type="Products.Archetypes.Field.TextField"><![CDATA[]]></AboutDescription>
       <UsingDescription type="Products.Archetypes.Field.TextField"><![CDATA[]]></UsingDescription>
       <IndexAttachments type="Products.Archetypes.Field.BooleanField">False</IndexAttachments>
       <FulltextIndex type="Products.Archetypes.Field.BooleanField">False</FulltextIndex>
       <IndexInPortal type="Products.Archetypes.Field.BooleanField">False</IndexInPortal>
       <debugMode type="Products.Archetypes.Field.BooleanField">False</debugMode>
-      <StorageAttachments type="Products.Archetypes.Field.BooleanField">False</StorageAttachments>
       <CountDocuments type="Products.Archetypes.Field.BooleanField">False</CountDocuments>
       <DateTimeFormat type="Products.Archetypes.Field.StringField">%Y/%m/%d</DateTimeFormat>
       <StartPage type="Products.Archetypes.Field.StringField"/>
+      <i18n type="Products.Archetypes.Field.StringField"/>
       <DoNotListUsers type="Products.Archetypes.Field.BooleanField">False</DoNotListUsers>
       <DoNotReindex type="Products.Archetypes.Field.BooleanField">False</DoNotReindex>
+      <IsDatabaseTemplate type="Products.Archetypes.Field.BooleanField">False</IsDatabaseTemplate>
       <excludeFromNav type="Products.Archetypes.Field.BooleanField">False</excludeFromNav>
       <acl AnomynousAccessRight="NoAccess" AuthenticatedAccessRight="NoAccess">
         <params id="UserRoles">
@@ -33,37 +34,62 @@
 </params>
       </acl>
     </dbsettings>
-    <resource contenttype="text/x-unknown-content-type" id="scriptConfig" title="" type="File"><![CDATA[ZGVmIGdldENvbmZpZ1ZhbHVlKGRiLCBrZXksIGRlZmF1bHQ9IiIpOgogIGNvbmZpZ2RvYyA9IGRi
-LmdldERvY3VtZW50KGtleSkKICBpZiBjb25maWdkb2M6CiAgICByZXR1cm4gY29uZmlnZG9jLmdl
-dEl0ZW0oJ2NvbmZpZ1ZhbHVlcycpCiAgZWxzZToKICAgIHJldHVybiBkZWZhdWx0CgpkZWYgZ2V0
-Q29uZmlnVmFsdWVzQXNMaXN0KGRiLCBrZXksIGRlZmF1bHQ9W10pOgogIHZhbHVlcyA9IGdldENv
-bmZpZ1ZhbHVlKGRiLCBrZXksIGRlZmF1bHQ9Tm9uZSkKICBpZiB2YWx1ZXMgaXMgTm9uZToKICAg
-IHJldHVybiBkZWZhdWx0CiAgZWxzZToKICAgIHJldHVybiB2YWx1ZXMucmVwbGFjZSgnXHInLCAn
-Jykuc3BsaXQoJ1xuJykKCmRlZiBnZXRDb25maWdWYWx1ZXNBc0RpY3QoZGIsIGtleSwgc2VwYXJh
-dG9yPSd8Jyk6CiAgYWxsID0gZ2V0Q29uZmlnVmFsdWVzQXNMaXN0KGRiLCBrZXkpCiAgZCA9IHt9
-CiAgZm9yIHJvdyBpbiBhbGw6CiAgICAobGFiZWwsIGtleSkgPSByb3cuc3BsaXQoc2VwYXJhdG9y
-KQogICAgZFtrZXldID0gbGFiZWwKICByZXR1cm4gZA==
-]]></resource>
     <resource id="TEXTFieldEdit" title="Customized TEXTFieldEdit" type="Page Template"><![CDATA[<span tal:define="widget python:options['field'].getSettings('widget');
         size python:options['field'].getSettings('size')">
   <tal:widget tal:condition="python:test(widget=='TEXT')">I'm customized!<input type="text" tal:attributes="name options/fieldname; value options/fieldvalue; class string:span${size}" /></tal:widget>
   <tal:widget tal:condition="python:test(widget=='TEXTAREA')">
     <textarea tal:attributes="name options/fieldname; rows size" tal:content="options/fieldvalue">text</textarea>
-  </tal:widget>
-</span>]]></resource>
+  </tal:widget></span>]]></resource>
+    <resource id="scriptConfig" title="" type="Script (Python)"><![CDATA[## Script (Python) "scriptConfig"
+##bind container=container
+##bind context=context
+##bind namespace=
+##bind script=script
+##bind subpath=traverse_subpath
+##parameters=
+##title=
+##
+def getConfigValue(db, key, default=""):
+  configdoc = db.getDocument(key)
+  if configdoc:
+    return configdoc.getItem('configValues')
+  else:
+    return default
+
+def getConfigValuesAsList(db, key, default=[]):
+  values = getConfigValue(db, key, default=None)
+  if values is None:
+    return default
+  else:
+    return values.replace('\r', '').split('\n')
+
+def getConfigValuesAsDict(db, key, separator='|'):
+  all = getConfigValuesAsList(db, key)
+  d = {}
+  for row in all:
+    (label, key) = row.split(separator)
+    d[key] = label
+  return d
+]]></resource>
     <element id="frmConfig" title="Parameters" type="PlominoForm">
       <id type="Products.Archetypes.Field.StringField">frmConfig</id>
       <onCreateDocument type="Products.Archetypes.Field.TextField"><![CDATA[]]></onCreateDocument>
       <onOpenDocument type="Products.Archetypes.Field.TextField"><![CDATA[]]></onOpenDocument>
+      <beforeSaveDocument type="Products.Archetypes.Field.TextField"><![CDATA[]]></beforeSaveDocument>
       <onSaveDocument type="Products.Archetypes.Field.TextField"><![CDATA[if context.isNewDocument():
   context.setItem('configId', context.id)]]></onSaveDocument>
       <onDeleteDocument type="Products.Archetypes.Field.TextField"><![CDATA[]]></onDeleteDocument>
       <onSearch type="Products.Archetypes.Field.TextField"><![CDATA[]]></onSearch>
       <beforeCreateDocument type="Products.Archetypes.Field.TextField"><![CDATA[]]></beforeCreateDocument>
-      <FormLayout type="Products.Archetypes.Field.TextField"><![CDATA[<p>Id: <span class="plominoFieldClass">configId</span></p>
+      <FormLayout type="Products.Archetypes.Field.TextField"><![CDATA[
+<p>Id: <span class="plominoFieldClass">configId</span></p>
 <p>Value(s):</p>
-<p><span class="plominoFieldClass">configValues</span></p>]]></FormLayout>
+<p><span class="plominoFieldClass">configValues</span></p>
+]]></FormLayout>
+      <FormMethod type="Products.Archetypes.Field.TextField"><![CDATA[Auto]]></FormMethod>
       <DocumentTitle type="Products.Archetypes.Field.TextField"><![CDATA[plominoDocument.configId]]></DocumentTitle>
+      <DynamicDocumentTitle type="Products.Archetypes.Field.BooleanField">False</DynamicDocumentTitle>
+      <StoreDynamicDocumentTitle type="Products.Archetypes.Field.BooleanField">False</StoreDynamicDocumentTitle>
       <DocumentId type="Products.Archetypes.Field.TextField"><![CDATA[plominoDocument.configId]]></DocumentId>
       <ActionBarPosition type="Products.Archetypes.Field.StringField">TOP</ActionBarPosition>
       <HideDefaultActions type="Products.Archetypes.Field.BooleanField">False</HideDefaultActions>
@@ -73,6 +99,8 @@ KQogICAgZFtrZXldID0gbGFiZWwKICByZXR1cm4gZA==
       <SearchView type="Products.Archetypes.Field.StringField"/>
       <SearchFormula type="Products.Archetypes.Field.TextField"><![CDATA[]]></SearchFormula>
       <Position type="Products.Archetypes.Field.IntegerField"/>
+      <ResourcesJS type="Products.Archetypes.Field.TextField"><![CDATA[]]></ResourcesJS>
+      <ResourcesCSS type="Products.Archetypes.Field.TextField"><![CDATA[]]></ResourcesCSS>
       <excludeFromNav type="Products.Archetypes.Field.BooleanField">False</excludeFromNav>
       <elements>
         <element id="configId" title="configId" type="PlominoField">
@@ -85,6 +113,8 @@ KQogICAgZFtrZXldID0gbGFiZWwKICByZXR1cm4gZA==
           <Mandatory type="Products.Archetypes.Field.BooleanField">False</Mandatory>
           <ValidationFormula type="Products.Archetypes.Field.TextField"><![CDATA[]]></ValidationFormula>
           <ToBeIndexed type="Products.Archetypes.Field.BooleanField">True</ToBeIndexed>
+          <IndexType type="Products.Archetypes.Field.StringField">DEFAULT</IndexType>
+          <HTMLAttributesFormula type="Products.Archetypes.Field.TextField"><![CDATA[]]></HTMLAttributesFormula>
         </element>
         <element id="configValues" title="configValues" type="PlominoField">
           <id type="Products.Archetypes.Field.StringField">configValues</id>
@@ -96,18 +126,20 @@ KQogICAgZFtrZXldID0gbGFiZWwKICByZXR1cm4gZA==
           <Mandatory type="Products.Archetypes.Field.BooleanField">False</Mandatory>
           <ValidationFormula type="Products.Archetypes.Field.TextField"><![CDATA[]]></ValidationFormula>
           <ToBeIndexed type="Products.Archetypes.Field.BooleanField">False</ToBeIndexed>
+          <IndexType type="Products.Archetypes.Field.StringField">DEFAULT</IndexType>
+          <HTMLAttributesFormula type="Products.Archetypes.Field.TextField"><![CDATA[]]></HTMLAttributesFormula>
           <params>
 <param>
-<value><struct>
-<member>
-<name>widget</name>
-<value><string>TEXTAREA</string></value>
-</member>
-<member>
-<name>size</name>
+<value><array><data>
+<value><string>size</string></value>
 <value><string>10</string></value>
-</member>
-</struct></value>
+</data></array></value>
+</param>
+<param>
+<value><array><data>
+<value><string>widget</string></value>
+<value><string>TEXTAREA</string></value>
+</data></array></value>
 </param>
 </params>
         </element>
@@ -125,17 +157,29 @@ KQogICAgZFtrZXldID0gbGFiZWwKICByZXR1cm4gZA==
       <id type="Products.Archetypes.Field.StringField">frmExample</id>
       <onCreateDocument type="Products.Archetypes.Field.TextField"><![CDATA[]]></onCreateDocument>
       <onOpenDocument type="Products.Archetypes.Field.TextField"><![CDATA[]]></onOpenDocument>
+      <beforeSaveDocument type="Products.Archetypes.Field.TextField"><![CDATA[]]></beforeSaveDocument>
       <onSaveDocument type="Products.Archetypes.Field.TextField"><![CDATA[]]></onSaveDocument>
       <onDeleteDocument type="Products.Archetypes.Field.TextField"><![CDATA[]]></onDeleteDocument>
       <onSearch type="Products.Archetypes.Field.TextField"><![CDATA[]]></onSearch>
       <beforeCreateDocument type="Products.Archetypes.Field.TextField"><![CDATA[]]></beforeCreateDocument>
-      <FormLayout type="Products.Archetypes.Field.TextField"><![CDATA[<p style="text-align: right; "><span class="discreet">Ref. year <span class="plominoFieldClass">refyear</span></span></p>
+      <FormLayout type="Products.Archetypes.Field.TextField"><![CDATA[
+<p style="text-align: right; "><span class="discreet">Ref. year <span class="plominoFieldClass">refyear</span></span></p>
 <ul>
-<li><b>Department:</b> <span class="plominoFieldClass">department</span></li>
-<li><b>Price:</b> <span class="plominoFieldClass">price</span></li>
-<li><b>Total price (VAT included):</b> <span class="plominoFieldClass">pricewithVAT</span></li>
-</ul>]]></FormLayout>
+<li>
+<b>Department:</b> <span class="plominoFieldClass">department</span>
+</li>
+<li>
+<b>Price:</b> <span class="plominoFieldClass">price</span>
+</li>
+<li>
+<b>Total price (VAT included):</b> <span class="plominoFieldClass">pricewithVAT</span>
+</li>
+</ul>
+]]></FormLayout>
+      <FormMethod type="Products.Archetypes.Field.TextField"><![CDATA[Auto]]></FormMethod>
       <DocumentTitle type="Products.Archetypes.Field.TextField"><![CDATA["Example"]]></DocumentTitle>
+      <DynamicDocumentTitle type="Products.Archetypes.Field.BooleanField">False</DynamicDocumentTitle>
+      <StoreDynamicDocumentTitle type="Products.Archetypes.Field.BooleanField">False</StoreDynamicDocumentTitle>
       <DocumentId type="Products.Archetypes.Field.TextField"><![CDATA[]]></DocumentId>
       <ActionBarPosition type="Products.Archetypes.Field.StringField">TOP</ActionBarPosition>
       <HideDefaultActions type="Products.Archetypes.Field.BooleanField">False</HideDefaultActions>
@@ -145,6 +189,8 @@ KQogICAgZFtrZXldID0gbGFiZWwKICByZXR1cm4gZA==
       <SearchView type="Products.Archetypes.Field.StringField"/>
       <SearchFormula type="Products.Archetypes.Field.TextField"><![CDATA[]]></SearchFormula>
       <Position type="Products.Archetypes.Field.IntegerField"/>
+      <ResourcesJS type="Products.Archetypes.Field.TextField"><![CDATA[]]></ResourcesJS>
+      <ResourcesCSS type="Products.Archetypes.Field.TextField"><![CDATA[]]></ResourcesCSS>
       <excludeFromNav type="Products.Archetypes.Field.BooleanField">False</excludeFromNav>
       <elements>
         <element id="refyear" title="refyear" type="PlominoField">
@@ -158,6 +204,8 @@ return db.callScriptMethod("scriptConfig", "getConfigValue", db, "reference-year
           <Mandatory type="Products.Archetypes.Field.BooleanField">False</Mandatory>
           <ValidationFormula type="Products.Archetypes.Field.TextField"><![CDATA[]]></ValidationFormula>
           <ToBeIndexed type="Products.Archetypes.Field.BooleanField">False</ToBeIndexed>
+          <IndexType type="Products.Archetypes.Field.StringField">DEFAULT</IndexType>
+          <HTMLAttributesFormula type="Products.Archetypes.Field.TextField"><![CDATA[]]></HTMLAttributesFormula>
         </element>
         <element id="department" title="department" type="PlominoField">
           <id type="Products.Archetypes.Field.StringField">department</id>
@@ -169,24 +217,26 @@ return db.callScriptMethod("scriptConfig", "getConfigValue", db, "reference-year
           <Mandatory type="Products.Archetypes.Field.BooleanField">False</Mandatory>
           <ValidationFormula type="Products.Archetypes.Field.TextField"><![CDATA[]]></ValidationFormula>
           <ToBeIndexed type="Products.Archetypes.Field.BooleanField">False</ToBeIndexed>
+          <IndexType type="Products.Archetypes.Field.StringField">DEFAULT</IndexType>
+          <HTMLAttributesFormula type="Products.Archetypes.Field.TextField"><![CDATA[]]></HTMLAttributesFormula>
           <params>
 <param>
-<value><struct>
-<member>
-<name>selectionlistformula</name>
-<value><string>db=plominoDocument.getParentDatabase()
-return db.callScriptMethod("scriptConfig", "getConfigValuesAsList", db, "departments")</string></value>
-</member>
-<member>
-<name>dynamictableparam</name>
+<value><array><data>
+<value><string>dynamictableparam</string></value>
 <value><string>'bPaginate': true,
 'bLengthChange': true,
 'bFilter': true,
 'bSort': true,
 'bInfo': true,
 'bAutoWidth': false</string></value>
-</member>
-</struct></value>
+</data></array></value>
+</param>
+<param>
+<value><array><data>
+<value><string>selectionlistformula</string></value>
+<value><string>db=plominoDocument.getParentDatabase()
+return db.callScriptMethod("scriptConfig", "getConfigValuesAsList", db, "departments")</string></value>
+</data></array></value>
 </param>
 </params>
         </element>
@@ -200,6 +250,8 @@ return db.callScriptMethod("scriptConfig", "getConfigValuesAsList", db, "departm
           <Mandatory type="Products.Archetypes.Field.BooleanField">False</Mandatory>
           <ValidationFormula type="Products.Archetypes.Field.TextField"><![CDATA[]]></ValidationFormula>
           <ToBeIndexed type="Products.Archetypes.Field.BooleanField">False</ToBeIndexed>
+          <IndexType type="Products.Archetypes.Field.StringField">DEFAULT</IndexType>
+          <HTMLAttributesFormula type="Products.Archetypes.Field.TextField"><![CDATA[]]></HTMLAttributesFormula>
         </element>
         <element id="pricewithVAT" title="pricewithVAT" type="PlominoField">
           <id type="Products.Archetypes.Field.StringField">pricewithVAT</id>
@@ -217,6 +269,8 @@ except:
           <Mandatory type="Products.Archetypes.Field.BooleanField">False</Mandatory>
           <ValidationFormula type="Products.Archetypes.Field.TextField"><![CDATA[]]></ValidationFormula>
           <ToBeIndexed type="Products.Archetypes.Field.BooleanField">False</ToBeIndexed>
+          <IndexType type="Products.Archetypes.Field.StringField">DEFAULT</IndexType>
+          <HTMLAttributesFormula type="Products.Archetypes.Field.TextField"><![CDATA[]]></HTMLAttributesFormula>
         </element>
       </elements>
     </element>
@@ -229,6 +283,7 @@ except:
       <ReverseSorting type="Products.Archetypes.Field.BooleanField">False</ReverseSorting>
       <ActionBarPosition type="Products.Archetypes.Field.StringField">TOP</ActionBarPosition>
       <HideDefaultActions type="Products.Archetypes.Field.BooleanField">False</HideDefaultActions>
+      <HideCheckboxes type="Products.Archetypes.Field.BooleanField">False</HideCheckboxes>
       <HideInMenu type="Products.Archetypes.Field.BooleanField">False</HideInMenu>
       <Widget type="Products.Archetypes.Field.StringField">DYNAMICTABLE</Widget>
       <DynamicTableParameters type="Products.Archetypes.Field.TextField"><![CDATA['bPaginate': false,
@@ -238,6 +293,7 @@ except:
 'bInfo': false,
 'bAutoWidth': false]]></DynamicTableParameters>
       <ViewTemplate type="Products.Archetypes.Field.StringField"/>
+      <onOpenView type="Products.Archetypes.Field.TextField"><![CDATA[]]></onOpenView>
       <Position type="Products.Archetypes.Field.IntegerField"/>
       <excludeFromNav type="Products.Archetypes.Field.BooleanField">False</excludeFromNav>
       <elements>
@@ -258,56 +314,44 @@ except:
       </elements>
     </element>
     <element id="bydepartment" title="by department" type="PlominoView">
-<id type="Products.Archetypes.Field.StringField">bydepartment</id>
-<SelectionFormula type="Products.Archetypes.Field.TextField">
-<![CDATA[plominoDocument.Form=="frmExample"]]>
-</SelectionFormula>
-<SortColumn type="Products.Archetypes.Field.StringField">
-</SortColumn>
-<Categorized type="Products.Archetypes.Field.BooleanField">True</Categorized>
-<FormFormula type="Products.Archetypes.Field.TextField">
-<![CDATA[]]>
-</FormFormula>
-<ReverseSorting type="Products.Archetypes.Field.BooleanField">False</ReverseSorting>
-<ActionBarPosition type="Products.Archetypes.Field.StringField">TOP</ActionBarPosition>
-<HideDefaultActions type="Products.Archetypes.Field.BooleanField">False</HideDefaultActions>
-<HideInMenu type="Products.Archetypes.Field.BooleanField">False</HideInMenu>
-<Widget type="Products.Archetypes.Field.StringField">DYNAMICTABLE</Widget>
-<DynamicTableParameters type="Products.Archetypes.Field.TextField">
-<![CDATA['bPaginate': false,
+      <id type="Products.Archetypes.Field.StringField">bydepartment</id>
+      <SelectionFormula type="Products.Archetypes.Field.TextField"><![CDATA[plominoDocument.Form=="frmExample"]]></SelectionFormula>
+      <SortColumn type="Products.Archetypes.Field.StringField"/>
+      <Categorized type="Products.Archetypes.Field.BooleanField">True</Categorized>
+      <FormFormula type="Products.Archetypes.Field.TextField"><![CDATA[]]></FormFormula>
+      <ReverseSorting type="Products.Archetypes.Field.BooleanField">False</ReverseSorting>
+      <ActionBarPosition type="Products.Archetypes.Field.StringField">TOP</ActionBarPosition>
+      <HideDefaultActions type="Products.Archetypes.Field.BooleanField">False</HideDefaultActions>
+      <HideCheckboxes type="Products.Archetypes.Field.BooleanField">False</HideCheckboxes>
+      <HideInMenu type="Products.Archetypes.Field.BooleanField">False</HideInMenu>
+      <Widget type="Products.Archetypes.Field.StringField">DYNAMICTABLE</Widget>
+      <DynamicTableParameters type="Products.Archetypes.Field.TextField"><![CDATA['bPaginate': false,
 'bLengthChange': false,
 'bFilter': true,
 'bSort': true,
 'bInfo': false,
-'bAutoWidth': false]]>
-</DynamicTableParameters>
-<ViewTemplate type="Products.Archetypes.Field.StringField">
-</ViewTemplate>
-<Position type="Products.Archetypes.Field.IntegerField"/>
-<excludeFromNav type="Products.Archetypes.Field.BooleanField">False</excludeFromNav>
-<elements>
-<element id="department" title="Department" type="PlominoColumn">
-<id type="Products.Archetypes.Field.StringField">department</id>
-<SelectedField type="Products.Archetypes.Field.StringField">
-</SelectedField>
-<Formula type="Products.Archetypes.Field.TextField">
-<![CDATA[plominoDocument.department]]>
-</Formula>
-<HiddenColumn type="Products.Archetypes.Field.BooleanField">False</HiddenColumn>
-<DisplaySum type="Products.Archetypes.Field.BooleanField">False</DisplaySum>
-</element>
-<element id="price" title="Total price" type="PlominoColumn">
-<id type="Products.Archetypes.Field.StringField">price</id>
-<SelectedField type="Products.Archetypes.Field.StringField">
-</SelectedField>
-<Formula type="Products.Archetypes.Field.TextField">
-<![CDATA[plominoDocument.pricewithVAT]]>
-</Formula>
-<HiddenColumn type="Products.Archetypes.Field.BooleanField">False</HiddenColumn>
-<DisplaySum type="Products.Archetypes.Field.BooleanField">False</DisplaySum>
-</element>
-</elements>
-</element>
+'bAutoWidth': false]]></DynamicTableParameters>
+      <ViewTemplate type="Products.Archetypes.Field.StringField"/>
+      <onOpenView type="Products.Archetypes.Field.TextField"><![CDATA[]]></onOpenView>
+      <Position type="Products.Archetypes.Field.IntegerField"/>
+      <excludeFromNav type="Products.Archetypes.Field.BooleanField">False</excludeFromNav>
+      <elements>
+        <element id="department" title="Department" type="PlominoColumn">
+          <id type="Products.Archetypes.Field.StringField">department</id>
+          <SelectedField type="Products.Archetypes.Field.StringField"/>
+          <Formula type="Products.Archetypes.Field.TextField"><![CDATA[plominoDocument.department]]></Formula>
+          <HiddenColumn type="Products.Archetypes.Field.BooleanField">False</HiddenColumn>
+          <DisplaySum type="Products.Archetypes.Field.BooleanField">False</DisplaySum>
+        </element>
+        <element id="price" title="Total price" type="PlominoColumn">
+          <id type="Products.Archetypes.Field.StringField">price</id>
+          <SelectedField type="Products.Archetypes.Field.StringField"/>
+          <Formula type="Products.Archetypes.Field.TextField"><![CDATA[plominoDocument.pricewithVAT]]></Formula>
+          <HiddenColumn type="Products.Archetypes.Field.BooleanField">False</HiddenColumn>
+          <DisplaySum type="Products.Archetypes.Field.BooleanField">False</DisplaySum>
+        </element>
+      </elements>
+    </element>
     <element id="configview" title="Parameters list" type="PlominoView">
       <id type="Products.Archetypes.Field.StringField">configview</id>
       <SelectionFormula type="Products.Archetypes.Field.TextField"><![CDATA[plominoDocument.Form=="frmConfig"]]></SelectionFormula>
@@ -317,6 +361,7 @@ except:
       <ReverseSorting type="Products.Archetypes.Field.BooleanField">False</ReverseSorting>
       <ActionBarPosition type="Products.Archetypes.Field.StringField">BOTH</ActionBarPosition>
       <HideDefaultActions type="Products.Archetypes.Field.BooleanField">False</HideDefaultActions>
+      <HideCheckboxes type="Products.Archetypes.Field.BooleanField">False</HideCheckboxes>
       <HideInMenu type="Products.Archetypes.Field.BooleanField">False</HideInMenu>
       <Widget type="Products.Archetypes.Field.StringField">BASIC</Widget>
       <DynamicTableParameters type="Products.Archetypes.Field.TextField"><![CDATA['bPaginate': false,
@@ -326,6 +371,7 @@ except:
 'bInfo': false,
 'bAutoWidth': false]]></DynamicTableParameters>
       <ViewTemplate type="Products.Archetypes.Field.StringField"/>
+      <onOpenView type="Products.Archetypes.Field.TextField"><![CDATA[]]></onOpenView>
       <Position type="Products.Archetypes.Field.IntegerField"/>
       <excludeFromNav type="Products.Archetypes.Field.BooleanField">True</excludeFromNav>
       <elements>

@@ -79,9 +79,6 @@ from Products.CMFPlomino.PlominoHidewhen import schema as hidewhen_schema
 from Products.CMFPlomino.PlominoView import schema as view_schema
 from Products.CMFPlomino import get_resource_directory
 
-# 3rd-party
-from jsonutil import jsonutil as json
-
 plomino_schemas = {
         'PlominoAction': action_schema,
         'PlominoAgent': agent_schema,
@@ -1040,19 +1037,13 @@ class PlominoDesignManager(Persistent):
                 if field_parameters:
                     # Preserve order in exports for stable diffs
                     field_parameters = tuple(sorted(field_parameters.items()))
-                    parameters_json = json.dumps(field_parameters)
-                    parameters = xmldoc.createElement('parameters')
+                    str_items = xmlrpclib.dumps(field_parameters, allow_none=1)
                     try:
-                        parameters.appendChild(xmldoc.createCDATASection(parameters_json))
+                        dom_items = parseString(str_items)
                     except ExpatError:
-                        parameters.appendChild(xmldoc.createCDATASection(escape_xml_illegal_chars(parameters_json)))
-                    node.appendChild(parameters)
-                    # try:
-                    #     dom_items = parseString(str_items)
-                    # except ExpatError:
-                    #     dom_items = parseString(
-                    #             escape_xml_illegal_chars(str_items))
-                    # node.appendChild(dom_items.documentElement)
+                        dom_items = parseString(
+                                escape_xml_illegal_chars(str_items))
+                    node.appendChild(dom_items.documentElement)
         if not isDatabase:
             elementslist = obj.objectIds()
             if elementslist:
@@ -1301,24 +1292,28 @@ class PlominoDesignManager(Persistent):
                         if subchild.nodeType == subchild.ELEMENT_NODE:
                             self.importElementFromXML(obj, subchild)
                         subchild = subchild.nextSibling
-                elif name == 'parameters':
+                elif name == 'params':
                     # current object is a field, the params tag contains the
                     # specific settings
-                    # parameters = json.loads(node.toxml().encode('utf-8'))
-                    parameters = json.loads(child.firstChild.data.encode('utf-8'))
-                    for key, v in parameters:
+                    result, method = xmlrpclib.loads(node.toxml().encode('utf-8'))
+                    try:
+                        parameters = dict(result)
+                    except:
+                        import pdb; pdb.set_trace()
+                    for key in parameters.keys():
+                        v = parameters[key]
                         if v is not None:
-                            # if hasattr(v, 'encode'):
-                            #     v = unicode(v)
-                            # else:
-                            #     if hasattr(v, 'append'):
-                            #         uv = []
-                            #         for e in v:
-                            #             if hasattr(e, 'encode'):
-                            #                 uv.append(unicode(e))
-                            #             else:
-                            #                 uv.append(e)
-                            #         v = uv
+                            if hasattr(v, 'encode'):
+                                v = unicode(v)
+                            else:
+                                if hasattr(v, 'append'):
+                                    uv = []
+                                    for e in v:
+                                        if hasattr(e, 'encode'):
+                                            uv.append(unicode(e))
+                                        else:
+                                            uv.append(e)
+                                    v = uv
                             settings_values[key] = v
                 elif name == "CustomData":
                     # Only one non.text child is expected
@@ -1497,5 +1492,4 @@ class PlominoDesignManager(Persistent):
             else:
                 xml = source.readFile(name)
                 self.importDesignFromXML(xmlstring=xml)
-
 
