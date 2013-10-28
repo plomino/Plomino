@@ -12,15 +12,14 @@ __docformat__ = 'plaintext'
 
 # From the standard library
 from cStringIO import StringIO
+from datetime import datetime
+from dateutil.parser import parse
 from email.Header import Header
 from email import message_from_string
-from dateutil.parser import parse
-from datetime import datetime
 from types import StringTypes
 import cgi
 import csv
 import decimal as std_decimal
-
 import Globals
 import htmlentitydefs
 import Missing
@@ -497,7 +496,7 @@ def getDatagridRowdata(context, REQUEST):
         field = form.getFormField(field_id)
         settings = field.getSettings()
         rowdata = json.loads(
-                unquote(row_data_json).decode('raw_unicode_escape'))
+                urllib.unquote(rowdata_json).decode('raw_unicode_escape'))
         mapped_field_ids = [f.strip() for f in settings.field_mapping.split(',')]
     return mapped_field_ids, rowdata
 
