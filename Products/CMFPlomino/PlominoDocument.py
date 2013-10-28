@@ -694,7 +694,7 @@ class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
             c = v.getColumn(columnname)
             #result = RunFormula(self, c.Formula())
             return self.runFormulaScript(
-                    'column_%s_%s_formula' % (v.id, c.id),
+                    SCRIPT_ID_DELIMITER.join(['column', v.id, c.id, 'formula']),
                     self,
                     c.Formula)
         except PlominoScriptException, e:
