@@ -28,6 +28,9 @@ from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from Products.CMFPlomino.PlominoUtils import asUnicode
 from Products.CMFPlomino.PlominoDocument import TemporaryDocument
 
+import logging
+_logger = logging.getLogger('Plomino')
+
 
 class IBaseField(Interface):
     """
@@ -105,10 +108,10 @@ class BaseField(object):
 
         fieldValue = None
         if mode == "EDITABLE":
-            if not doc or creation:
+
+            if not doc and creation:
                 if self.context.Formula():
                     fieldValue = form.computeFieldValue(fieldName, target)
-
                 elif request:
                     # if no doc context and no default formula, we accept
                     # value passed in the REQUEST so we look for 'fieldName'
@@ -117,12 +120,8 @@ class BaseField(object):
                     # POST content
                     request_value = request.get(fieldName, '')
                     if not request_value:
-                        request_value = request.get(
-                            fieldName + '_querystring',
-                            ''
-                        )
+                        request_value = request.get(fieldName + '_querystring', '')
                     fieldValue = asUnicode(request_value)
-
                 else:
                     fieldValue = ""
             else:
@@ -140,7 +139,6 @@ class BaseField(object):
                 # in formula
                 fieldValue = form.computeFieldValue(fieldName, form)
             else:
-                # XXX: CREATION but `creation=False`? /me confused
                 fieldValue = doc.getItem(fieldName)
 
         elif mode == "COMPUTEDONSAVE" and doc:
