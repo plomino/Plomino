@@ -497,7 +497,7 @@ def getDatagridRowdata(context, REQUEST):
         field = form.getFormField(field_id)
         settings = field.getSettings()
         rowdata = json.loads(
-                unquote(row_data_json).decode('raw_unicode_escape'))
+                urllib.unquote(rowdata_json).decode('raw_unicode_escape'))
         mapped_field_ids = [f.strip() for f in settings.field_mapping.split(',')]
     return mapped_field_ids, rowdata
 
