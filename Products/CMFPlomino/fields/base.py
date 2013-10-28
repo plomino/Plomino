@@ -10,9 +10,6 @@
 __author__ = """Eric BREHAULT <eric.brehault@makina-corpus.org>"""
 __docformat__ = 'plaintext'
 
-# stdlib
-from urllib import unquote
-
 # 3rd party
 from jsonutil import jsonutil as json
 

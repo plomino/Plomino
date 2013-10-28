@@ -12,15 +12,14 @@ __docformat__ = 'plaintext'
 
 # From the standard library
 from cStringIO import StringIO
+from datetime import datetime
+from dateutil.parser import parse
 from email.Header import Header
 from email import message_from_string
-from dateutil.parser import parse
-from datetime import datetime
 from types import StringTypes
 import cgi
 import csv
 import decimal as std_decimal
-
 import Globals
 import htmlentitydefs
 import Missing

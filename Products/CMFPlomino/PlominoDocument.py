@@ -1026,8 +1026,9 @@ class TemporaryDocument(PlominoDocument):
             self.setItem('Form', form.getFormName())
             self.real_id = "TEMPDOC"
             mapped_field_ids, rowdata = getDatagridRowdata(self, REQUEST)
-            for f in mapped_field_ids:
-                self.setItem(f.strip(), rowdata[mapped_field_ids.index(f)])
+            if mapped_field_ids and rowdata:
+                for f in mapped_field_ids:
+                    self.setItem(f.strip(), rowdata[mapped_field_ids.index(f)])
             else:
                 form.validateInputs(REQUEST, self)
                 form.readInputs(self, REQUEST, validation_mode=validation_mode)
