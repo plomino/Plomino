@@ -109,8 +109,12 @@ class BaseField(object):
         fieldValue = None
         if mode == "EDITABLE":
 
-            if not doc and creation:
-                if self.context.Formula():
+            if (not doc) or creation:
+                if doc:
+                    if request and request.get('Plomino_datagrid_rowdata', None):
+                        # Populated from datagrid row
+                        fieldValue = doc.getItem(fieldName)
+                elif self.context.Formula():
                     fieldValue = form.computeFieldValue(fieldName, target)
                 elif request:
                     # if no doc context and no default formula, we accept
