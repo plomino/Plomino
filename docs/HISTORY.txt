@@ -1,6 +1,11 @@
 Changelog
 =========
 
+1.18.2 (2013-10-29)
+-------------------
+* Optimize TemporaryDocument
+* Fixes for dates and decimal
+
 1.18.1 (2013-10-24)
 -------------------
 * Fix timezone support in date conversion
