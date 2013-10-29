@@ -225,10 +225,9 @@ class PlominoSafeDomains:
 
 component.provideUtility(PlominoSafeDomains, interfaces.IPlominoSafeDomains)
 
-PLOMINO_RESOURCE_NAME = "plomino"
 
 def get_resource_directory():
-    """Obtain the 'plomino' persistent resource directory, creating it if
+    """Obtain the Plomino persistent resource directory, creating it if
     necessary.
     """
     persistentDirectory = queryUtility(IResourceDirectory, name="persistent")
