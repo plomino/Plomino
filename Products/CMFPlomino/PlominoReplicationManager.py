@@ -17,6 +17,7 @@ from xml.parsers.expat import ExpatError
 import base64
 import codecs
 import csv
+import decimal
 import glob
 import os
 import transaction
@@ -101,6 +102,7 @@ def dump_decimal(self, value, write):
     self.dump_struct(value, write)
 
 xmlrpclib.Marshaller.dispatch[plomino_decimal] = dump_decimal
+xmlrpclib.Marshaller.dispatch[decimal.Decimal] = dump_decimal
 
 xmlrpclib.Unmarshaller.dispatch['struct'] = end_struct
 # ^^^ TO HERE
