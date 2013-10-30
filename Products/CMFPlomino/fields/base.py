@@ -109,27 +109,28 @@ class BaseField(object):
         fieldValue = None
         if mode == "EDITABLE":
 
-            if (not doc) or creation:
-                if doc:
-                    if request and request.get('Plomino_datagrid_rowdata', None):
-                        # Populated from datagrid row
-                        fieldValue = doc.getItem(fieldName)
-                elif self.context.Formula():
-                    fieldValue = form.computeFieldValue(fieldName, target)
-                elif request:
-                    # if no doc context and no default formula, we accept
-                    # value passed in the REQUEST so we look for 'fieldName'
-                    # but also for 'fieldName_querystring' which allows to
-                    # pass value via the querystring without messing the
-                    # POST content
-                    request_value = request.get(fieldName, '')
-                    if not request_value:
-                        request_value = request.get(fieldName + '_querystring', '')
-                    fieldValue = asUnicode(request_value)
-                else:
-                    fieldValue = ""
-            else:
+            # if (not doc) or creation:
+            if doc:
                 fieldValue = doc.getItem(fieldName)
+                _logger.info('BaseField.getFieldValue> 1 got doc') #DBG 
+            elif self.context.Formula():
+                fieldValue = form.computeFieldValue(fieldName, target)
+                _logger.info('BaseField.getFieldValue> 2 default formula') #DBG 
+            elif request:
+                # if no doc context and no default formula, we accept
+                # value passed in the REQUEST so we look for 'fieldName'
+                # but also for 'fieldName_querystring' which allows to
+                # pass value via the querystring without messing the
+                # POST content
+                request_value = request.get(fieldName, '')
+                _logger.info('BaseField.getFieldValue> 3 request') #DBG 
+                if not request_value:
+                    request_value = request.get(fieldName + '_querystring', '')
+                    _logger.info('BaseField.getFieldValue> 3 request _querystring') #DBG 
+                fieldValue = asUnicode(request_value)
+            else:
+                _logger.info('BaseField.getFieldValue> 4 blank') #DBG 
+                fieldValue = ""
 
         elif mode in ["DISPLAY", "COMPUTED"]:
             if mode == "DISPLAY" and not self.context.Formula() and doc:
@@ -151,6 +152,7 @@ class BaseField(object):
         if fieldValue is None:
             fieldValue = ""
 
+        _logger.info('BaseField.getFieldValue> doc: %s, fieldName: %s, fieldValue: %s, creation: %s' % (`doc`, `fieldName`, `fieldValue`[:20], creation)) #DBG 
         return fieldValue
 
 
