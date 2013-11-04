@@ -213,12 +213,14 @@ class DatagridField(BaseField):
         child_form = db.getForm(child_form_id)
         if not child_form:
             return mapped_fields
-            
-        target = TemporaryDocument(
-                db,
-                child_form,
-                request, 
-                validation_mode=False).__of__(db)  
+        if not creation: 
+            target = TemporaryDocument(
+                    db,
+                    child_form,
+                    request, 
+                    validation_mode=False).__of__(db) 
+        else:
+            target = None
 
         # return rendered field for each mapped field if this one exists in the child form
         return [str(f.getFieldRender(child_form, target, editmode=editmode, creation=creation, request=request)) for f in [child_form.getFormField(f) for f in mapped_fields] if f]
@@ -331,6 +333,6 @@ class EditFieldsAsJson(object):
             #DBG logger.info("%s --- %s --- %s"%(self.request["Plomino_Parent_Form"],self.request["Plomino_Parent_Field"],self.request["Plomino_datagrid_rowdata"]))
 
             associatedFormFields = self.field.getRenderedFields(request=self.request)
-            
+
             return json.dumps(associatedFormFields)
         return ""

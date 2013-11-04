@@ -112,10 +112,10 @@ class BaseField(object):
             # if (not doc) or creation:
             if doc:
                 fieldValue = doc.getItem(fieldName)
-                #DBG _logger.info('BaseField.getFieldValue> 1 got doc') 
+                _logger.info('BaseField.getFieldValue> 1 got doc') 
             elif self.context.Formula():
                 fieldValue = form.computeFieldValue(fieldName, target)
-                #DBG _logger.info('BaseField.getFieldValue> 2 default formula') 
+                _logger.info('BaseField.getFieldValue> 2 default formula') 
             elif request:
                 # if no doc context and no default formula, we accept
                 # value passed in the REQUEST so we look for 'fieldName'
@@ -123,7 +123,7 @@ class BaseField(object):
                 # pass value via the querystring without messing the
                 # POST content
                 request_value = request.get(fieldName, '')
-                #DBG _logger.info('BaseField.getFieldValue> 3 request') 
+                _logger.info('BaseField.getFieldValue> 3 request') 
                 if not request_value:
                     request_value = request.get(fieldName + '_querystring', '')
                     #DBG _logger.info('BaseField.getFieldValue> 3 request _querystring') 
