@@ -112,10 +112,10 @@ class BaseField(object):
             # if (not doc) or creation:
             if doc:
                 fieldValue = doc.getItem(fieldName)
-                _logger.info('BaseField.getFieldValue> 1 got doc') #DBG 
+                #DBG _logger.info('BaseField.getFieldValue> 1 got doc') 
             elif self.context.Formula():
                 fieldValue = form.computeFieldValue(fieldName, target)
-                _logger.info('BaseField.getFieldValue> 2 default formula') #DBG 
+                #DBG _logger.info('BaseField.getFieldValue> 2 default formula') 
             elif request:
                 # if no doc context and no default formula, we accept
                 # value passed in the REQUEST so we look for 'fieldName'
@@ -123,13 +123,13 @@ class BaseField(object):
                 # pass value via the querystring without messing the
                 # POST content
                 request_value = request.get(fieldName, '')
-                _logger.info('BaseField.getFieldValue> 3 request') #DBG 
+                #DBG _logger.info('BaseField.getFieldValue> 3 request') 
                 if not request_value:
                     request_value = request.get(fieldName + '_querystring', '')
-                    _logger.info('BaseField.getFieldValue> 3 request _querystring') #DBG 
+                    #DBG _logger.info('BaseField.getFieldValue> 3 request _querystring') 
                 fieldValue = asUnicode(request_value)
             else:
-                _logger.info('BaseField.getFieldValue> 4 blank') #DBG 
+                #DBG _logger.info('BaseField.getFieldValue> 4 blank') 
                 fieldValue = ""
 
         elif mode in ["DISPLAY", "COMPUTED"]:
@@ -152,7 +152,7 @@ class BaseField(object):
         if fieldValue is None:
             fieldValue = ""
 
-        _logger.info('BaseField.getFieldValue> doc: %s, fieldName: %s, fieldValue: %s, creation: %s' % (`doc`, `fieldName`, `fieldValue`[:20], creation)) #DBG 
+        #DBG _logger.info('BaseField.getFieldValue> doc: %s, fieldName: %s, fieldValue: %s, creation: %s' % (`doc`, `fieldName`, `fieldValue`[:20], creation)) 
         return fieldValue
 
 
