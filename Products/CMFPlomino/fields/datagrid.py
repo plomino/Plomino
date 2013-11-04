@@ -194,20 +194,22 @@ class DatagridField(BaseField):
         # return title for each mapped field if this one exists in the child form
         return [f.Title() for f in [child_form.getFormField(f) for f in mapped_fields] if f]
 
-    def getRenderedFields(self, editmode=False, creation=False, request={}, data={}):
+    def getRenderedFields(self, editmode=True, creation=False, request={}):
         """ Return an array of rows rendered using the associated form fields
         """
         if not self.field_mapping:
             return []
-        
+
+        db = self.context.getParentDatabase()
+
         mapped_fields = [ f.strip() for f in self.field_mapping.split(',')]
-        
+
+        #get associated form id
         child_form_id = self.associated_form
         if not child_form_id:
             return mapped_fields
-
-        db = self.context.getParentDatabase()
-        # get child form
+ 
+        # get associated form object
         child_form = db.getForm(child_form_id)
         if not child_form:
             return mapped_fields
@@ -215,10 +217,11 @@ class DatagridField(BaseField):
         target = TemporaryDocument(
                 db,
                 child_form,
-                data, # well, the row data that we wish to render
+                request, 
                 validation_mode=False).__of__(db)  
-        # return title for each mapped field if this one exists in the child form
-        return [str(f.getFieldRender(child_form, target, editmode=True, creation=False, request=None)) for f in [child_form.getFormField(f) for f in mapped_fields] if f]
+
+        # return rendered field for each mapped field if this one exists in the child form
+        return [str(f.getFieldRender(child_form, target, editmode=editmode, creation=creation, request=request)) for f in [child_form.getFormField(f) for f in mapped_fields] if f]
 
     def getAssociateForm(self):
         child_form_id = self.associated_form;
@@ -321,24 +324,13 @@ class EditFieldsAsJson(object):
             self.request.RESPONSE.setHeader(
                         'content-type',
                         'application/json; charset=utf-8')
-            self.field = self.context.getSettings()
-            data = self._getParams()
-            associatedFormFields = self.field.getRenderedFields(data=data)
-            return json.dumps(associatedFormFields)
-        return " "
 
-    def _getParams(self):
-        """
-        """
-        params = {}
-        if self.request and self.field:
-            datagrid_fields = [ f.strip() for f in self.field.field_mapping.split(',')]
-            rowdata_json = self.request.get("row_values",None)
-            if rowdata_json:
-                rowdata = json.loads(rowdata_json)
-                for fieldName in datagrid_fields:
-                    params[fieldName] = rowdata[datagrid_fields.index(fieldName)]
-            else:
-                for fieldName in datagrid_fields:
-                    params[fieldName] = self.request.get(fieldName,None)            
-        return params
+            self.field = self.context.getSettings()
+            self.request.set("Plomino_Parent_Form",self.context.getForm().id)
+            self.request.set("Plomino_Parent_Field",self.context.id)
+            #DBG logger.info("%s --- %s --- %s"%(self.request["Plomino_Parent_Form"],self.request["Plomino_Parent_Field"],self.request["Plomino_datagrid_rowdata"]))
+
+            associatedFormFields = self.field.getRenderedFields(request=self.request)
+            
+            return json.dumps(associatedFormFields)
+        return ""

@@ -12,7 +12,7 @@
             associated_form python:associated_form_object.id;
             associated_form_url python:associated_form_object.absolute_url();
             associated_form_rendering python:field.getSettings().associated_form_rendering;
-            new_fields python:field.getSettings().getRenderedFields();
+            new_fields python:field.getSettings().getRenderedFields(creation=True,request=request);
             ">
 <input type='hidden'
     tal:attributes="
@@ -92,7 +92,7 @@
                     **/
                     else{
 
-                        $$('#${fieldname}_addrow').click(function() {${fieldname}_fields
+                        $$('#${fieldname}_addrow').click(function() {
                             datagrid_add_row(${fieldname}_datatable, '${fieldname}', this.href);
                         });
                         $$('#${fieldname}_editrow').click(function() {
@@ -102,7 +102,6 @@
                             datagrid_delete_row(${fieldname}_datatable, '${fieldname}');
                         });
                         $$('#${fieldname}_editform').dialog({ 'autoOpen': false, 'modal': true });
-
                     }
                 } );">
     </script>

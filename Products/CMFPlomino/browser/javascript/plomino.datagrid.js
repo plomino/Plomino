@@ -214,7 +214,7 @@ function datagrid_edit_inline_form( oTable, field_id, formurl )
 		var field_data = $.evalJSON( $('#' + field_id + '_gridvalue').val() );
 		var row_data = field_data[row_index];
 		
-		formurl += '&row_values=' + $.URLEncode($.toJSON(row_data));
+		formurl += '&Plomino_datagrid_rowdata=' + $.URLEncode($.toJSON(row_data));
 
 		$.getJSON( formurl, function( data ) 
 		{
@@ -225,7 +225,7 @@ function datagrid_edit_inline_form( oTable, field_id, formurl )
 		});
 	}
 	else {
-		alert('You must select a row to delete.');
+		alert('You must select a row to edit.');
 	}
 	return nRow;
 }
@@ -313,7 +313,7 @@ function datagrid_restore_row( oTable, nRow ) {
 	}
 
 	var aData = oTable.fnGetData(nRow);
-	if ( isEmpty(aData) ) { oTable.fnDeleteRow(nRow) }
+	if ( aData && isEmpty(aData) ) { oTable.fnDeleteRow(nRow) }
 	else {
 		var jqTds = $('>td', nRow);
 		for ( var i=0, iLen=jqTds.length ; i<iLen ; i++ ) {
