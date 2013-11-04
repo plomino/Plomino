@@ -18,10 +18,12 @@ logger = logging.getLogger('CMFPlomino: setuphandlers')
 import os
 from StringIO import StringIO
 
-from Products.CMFPlomino.config import PROJECTNAME
 from Products.CMFPlomino.config import DEPENDENCIES
 from Products.CMFPlomino.config import FCK_STYLES
+from Products.CMFPlomino.config import PLOMINO_RESOURCE_NAME
+from Products.CMFPlomino.config import PROJECTNAME
 from Products.CMFPlomino import get_resource_directory
+
 
 def isNotCMFPlominoProfile(context):
     return context.readDataFile("CMFPlomino_marker.txt") is None
@@ -53,8 +55,11 @@ def postInstall(context):
     # THIS STEP MUST BE REMOVED
     # (but as it is permanent we need to unregister it properly)
 
+
 def export_database_templates(context):
-    """
+    """ Handler for 'Export Plomino templates' exportStep
+
+    Write databases marked as templates to folders in a resource directory.
     """
     portal = context.getSite()
     dbs = portal.portal_catalog.searchResults({'Type': 'PlominoDatabase'})
@@ -71,7 +76,7 @@ def export_database_templates(context):
                 xmlstring = db.exportDesignAsXML(
                         elementids=[id],
                         dbsettings=False)
-                subdir = "plomino/"+db.id
+                subdir = os.path.join(PLOMINO_RESOURCE_NAME, db.id)
                 filename = id + '.xml'
                 if id.startswith('resources/'):
                     subdir += "/resources"
@@ -88,29 +93,33 @@ def export_database_templates(context):
             context.writeDataFile("dbsettings.xml",
                 text=xmlstring,
                 content_type='text/xml',
-                subdir="plomino/"+db.id,
+                subdir= os.path.join(PLOMINO_RESOURCE_NAME, db.id),
             )
             
     logger.info('Plomino database templates exported')
 
+
 def import_database_templates(context):
-    """
+    """ Handler for 'Import Plomino templates' importStep
     """
     portal = context.getSite()
     resource = get_resource_directory()
     if not resource:
         logger.warning('Plomino database templates cannot be imported without plone.resource.')
-    copy_db_folder(context, 'plomino', resource)
+    _copy_db_folder(context, PLOMINO_RESOURCE_NAME, resource)
     logger.info('Plomino database templates imported')
 
-def copy_db_folder(context, source_path, target):
-    items = context.listDirectory(source_path)
-    if not items:
+
+def _copy_db_folder(context, source_path, target):
+    """ Utility: recursively copy export from source to target
+    """
+    filenames = context.listDirectory(source_path)
+    if not filenames:
         return
-    for name in items:
-        if context.isDirectory(source_path + '/' + name):
-            target.makeDirectory(name)
-            copy_db_folder(context, source_path + '/' + name, target[name])
+    for fn in filenames:
+        if context.isDirectory(source_path + '/' + fn):
+            target.makeDirectory(fn)
+            copy_db_folder(context, source_path + '/' + fn, target[fn])
         else:
-            f = context.readDataFile(name, subdir=source_path)
-            target.writeFile(name, StringIO(f))
+            f = context.readDataFile(fn, subdir=source_path)
+            target.writeFile(fn, StringIO(f))

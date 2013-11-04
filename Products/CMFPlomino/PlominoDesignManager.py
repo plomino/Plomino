@@ -1459,7 +1459,7 @@ class PlominoDesignManager(Persistent):
 
     security.declarePublic('getTemplateList')
     def getTemplateList(self):
-        """
+        """ Get a list of available template databases
         """
         resource = get_resource_directory()
         if not resource:
@@ -1468,7 +1468,7 @@ class PlominoDesignManager(Persistent):
 
     security.declareProtected(DESIGN_PERMISSION, 'importTemplate')
     def importTemplate(self, REQUEST=None, template_id=None):
-        """
+        """ Import a template database design
         """
         if REQUEST:
             template_id = REQUEST.get("template_id")
