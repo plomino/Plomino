@@ -37,6 +37,12 @@ Manage a Plomino database
     Go to                 ${PLONE_URL}/secondreplicadb/allfrmtest
     Page should contain   Marie Curie
 
+## TODO
+# Check datagrid editing
+    # test datagrid with some rows invisible
+    # test datagrid with some rows computed fields
+    # test datagrid with some rows display fields
+
 Check form methods
     Set Selenium Implicit Wait        20 seconds
     Log in as the database owner
