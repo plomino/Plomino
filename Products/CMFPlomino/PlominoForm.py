@@ -1510,6 +1510,7 @@ class PlominoForm(ATFolder):
                     'iTotalDisplayRecords': len(result),
                     'aaData': result}
 
+        #DBG logger.info('PlominoForm.tojson> item: %s, result: %s' % (`item`, `result`[:20])) 
         return json.dumps(result)
 
     def _getDatabaseViews(self):
