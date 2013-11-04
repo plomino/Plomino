@@ -52,21 +52,27 @@
                     if('${associated_form_rendering}'==='INLINE') {
 
                         var ${fieldname}_nEditing = null;                   
-
+                        
+                        /** Add inline creation form **/
                         $$('#${fieldname}_addrow').click( function (e) {
                             e.preventDefault();
                             ${fieldname}_nEditing = datagrid_add_inline_row( ${fieldname}_datatable,  ${new_fields} )
                         } );
 
-                        $$('#${fieldname}_editrow').click(function(e) {
-                            e.preventDefault();
+                        /** Compute inline form **/
+                        function ${fieldname}_computeEdit(event){
+                            event.preventDefault();
                             if ( ${fieldname}_nEditing!=null ) { 
                                 datagrid_restore_row(${fieldname}_datatable, ${fieldname}_nEditing); 
                             } 
                             var url = '${form_url}/${fieldname}/editFields?';
-                            ${fieldname}_nEditing = datagrid_edit_inline_form(${fieldname}_datatable,'${fieldname}',url);
-                        });
-                        
+                            ${fieldname}_nEditing = datagrid_edit_inline_form(${fieldname}_datatable,'${fieldname}',url);                     
+                        }
+
+                        $$('#${fieldname}_editrow').click(${fieldname}_computeEdit);
+                        $$('#${fieldname}_datagrid tbody>tr').live('dblclick', ${fieldname}_computeEdit);
+
+                        /** Save changes **/
                         $$('#${fieldname}_datagrid button.save').live('click', function (e) {
                             e.preventDefault();
                             var nRow = $(this).parents('tr')[0];
@@ -79,13 +85,13 @@
                             }
                         } );
 
+                        /** Cancel edition **/
                         $$('#${fieldname}_datagrid button.cancel').live('click', function (e) {
                             e.preventDefault();
                             var nRow = $(this).parents('tr')[0];
                             datagrid_restore_row(${fieldname}_datatable, nRow);
                             ${fieldname}_nEditing = null;
                         });
-
                     }
                     /** 
                         MODAL MODE

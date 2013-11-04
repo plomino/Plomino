@@ -313,12 +313,14 @@ function datagrid_restore_row( oTable, nRow ) {
 	}
 
 	var aData = oTable.fnGetData(nRow);
-	if ( aData && isEmpty(aData) ) { oTable.fnDeleteRow(nRow) }
+	if (aData) {
+	if ( isEmpty(aData) ) { oTable.fnDeleteRow(nRow) }
 	else {
 		var jqTds = $('>td', nRow);
 		for ( var i=0, iLen=jqTds.length ; i<iLen ; i++ ) {
 			oTable.fnUpdate( aData[i], nRow, i, false );
 		}
+	}
 	}
 	oTable.fnDraw();
 } 
