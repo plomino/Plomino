@@ -1,6 +1,10 @@
 Changelog
 =========
 
+1.18.3 (2013-11-04)
+-------------------
+* Fix getFieldValue
+
 1.18.2 (2013-10-29)
 -------------------
 * Optimize TemporaryDocument
