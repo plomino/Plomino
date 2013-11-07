@@ -31,7 +31,7 @@ from Products.CMFPlomino.browser import PlominoMessageFactory as _
 from Products.CMFPlomino.fields.base import IBaseField, BaseField, BaseForm
 from Products.CMFPlomino.fields.dictionaryproperty import DictionaryProperty
 from Products.CMFPlomino.interfaces import IPlominoField
-from Products.CMFPlomino.PlominoDocument import TemporaryDocument
+from Products.CMFPlomino.PlominoDocument import getTemporaryDocument
 from Products.CMFPlomino.PlominoUtils import DateToString, PlominoTranslate
 
 
@@ -54,7 +54,7 @@ class IDatagridField(IBaseField):
             description=u'Form to use to create/edit rows',
             required=False)
 
-    associated_form_rendering = Choice(
+    edit_mode = Choice(
             vocabulary=SimpleVocabulary.fromItems(
                 [("Modal", "MODAL"),
                     ("Inline editing", "INLINE"),
@@ -144,7 +144,7 @@ class DatagridField(BaseField):
         return json.dumps(rows)
 
     def request_items_aoData(self, request):
-        
+
         """ Return a string representing REQUEST.items as aoData.push calls.
         """
         aoData_templ = "aoData.push(%s); "
@@ -160,9 +160,9 @@ class DatagridField(BaseField):
         db = self.context.getParentDatabase()
         if action_id == "add":
             label = PlominoTranslate(_("datagrid_add_button_label", default="Add"), db)
-            child_form_id = self.associated_form
-            if child_form_id:
-                child_form = db.getForm(child_form_id)
+            associated_form_id = self.associated_form
+            if associated_form_id:
+                child_form = db.getForm(associated_form_id)
                 if child_form:
                     label += " "+child_form.Title()
             return label
@@ -177,17 +177,17 @@ class DatagridField(BaseField):
         """
         if not self.field_mapping:
             return []
-        
+
         mapped_fields = [ f.strip() for f in self.field_mapping.split(',')]
-        
-        child_form_id = self.associated_form
-        if not child_form_id:
+
+        associated_form_id = self.associated_form
+        if not associated_form_id:
             return mapped_fields
 
         db = self.context.getParentDatabase()
 
         # get child form
-        child_form = db.getForm(child_form_id)
+        child_form = db.getForm(associated_form_id)
         if not child_form:
             return mapped_fields
 
@@ -199,32 +199,34 @@ class DatagridField(BaseField):
         """
         if not self.field_mapping:
             return []
-        
-        mapped_fields = [ f.strip() for f in self.field_mapping.split(',')]
-        
-        child_form_id = self.associated_form
-        if not child_form_id:
+
+        mapped_fields = [f.strip() for f in self.field_mapping.split(',')]
+
+        associated_form_id = self.associated_form
+        if not associated_form_id:
             return mapped_fields
 
         db = self.context.getParentDatabase()
         # get child form
-        child_form = db.getForm(child_form_id)
+        child_form = db.getForm(associated_form_id)
         if not child_form:
             return mapped_fields
-            
-        target = TemporaryDocument(
+
+        target = getTemporaryDocument(
                 db,
                 child_form,
                 data, # well, the row data that we wish to render
-                validation_mode=False).__of__(db)  
+                validation_mode=False).__of__(db)
         # return title for each mapped field if this one exists in the child form
-        return [str(f.getFieldRender(child_form, target, editmode=True, creation=False, request=None)) for f in [child_form.getFormField(f) for f in mapped_fields] if f]
+        # TODO: str won't work if the rendering isn't ASCII
+        return [str(f.getFieldRender(child_form, target, editmode=True, creation=False, request=None))
+                for f in [child_form.getFormField(f) for f in mapped_fields] if f]
 
-    def getAssociateForm(self):
-        child_form_id = self.associated_form;
-        if child_form_id:
+    def getAssociatedForm(self):
+        associated_form_id = self.associated_form;
+        if associated_form_id:
             db = self.context.getParentDatabase()
-            return db.getForm(child_form_id)   
+            return db.getForm(associated_form_id)
 
     def getFieldValue(self, form, doc=None, editmode_obsolete=False,
             creation=False, request=None):
@@ -254,10 +256,10 @@ class DatagridField(BaseField):
 
             # fieldValue is a array, where we must replace raw values with
             # rendered values
-            child_form_id = self.associated_form
-            if child_form_id:
+            associated_form_id = self.associated_form
+            if associated_form_id:
                 db = self.context.getParentDatabase()
-                child_form = db.getForm(child_form_id)
+                child_form = db.getForm(associated_form_id)
                 # zip is procrustean: we get the longest of mapped_fields or
                 # fieldValue
                 mapped = []
@@ -276,16 +278,16 @@ class DatagridField(BaseField):
                 field_objs = [f for f in field_objs if f is not None]
                 #DBG fields_to_render = [f.id for f in field_objs if f.getFieldType() not in ["DATETIME", "NUMBER", "TEXT", "RICHTEXT"]]
                 #DBG fields_to_render = [f.id for f in field_objs if f.getFieldType() not in ["DOCLINK", ]]
-                fields_to_render = [f.id for f in field_objs 
-                        if f.getFieldMode() in ["DISPLAY", ] or 
+                fields_to_render = [f.id for f in field_objs
+                        if f.getFieldMode() in ["DISPLAY", ] or
                         f.getFieldType() not in ["TEXT", "RICHTEXT"]]
 
                 if fields_to_render:
                     rendered_values = []
                     for row in fieldValue:
-                        row['Form'] = child_form_id
-                        row['Plomino_Parent_Document'] = doc.id 
-                        tmp = TemporaryDocument(
+                        row['Form'] = associated_form_id
+                        row['Plomino_Parent_Document'] = doc.id
+                        tmp = getTemporaryDocument(
                                 db, child_form, row, real_doc=doc)
                         tmp = tmp.__of__(db)
                         for f in fields:
@@ -294,7 +296,7 @@ class DatagridField(BaseField):
                         rendered_values.append(row)
                     fieldValue = rendered_values
 
-            if mapped_fields and child_form_id:
+            if mapped_fields and associated_form_id:
                 mapped = []
                 for row in fieldValue:
                     mapped.append([row[c] for c in mapped_fields])
@@ -313,7 +315,7 @@ class SettingForm(BaseForm):
     form_fields = form.Fields(IDatagridField)
 
 class EditFieldsAsJson(object):
-    """
+    """ Return an array of rendered fields
     """
     def __call__(self):
 
@@ -323,8 +325,8 @@ class EditFieldsAsJson(object):
                         'application/json; charset=utf-8')
             self.field = self.context.getSettings()
             data = self._getParams()
-            associatedFormFields = self.field.getRenderedFields(data=data)
-            return json.dumps(associatedFormFields)
+            rendered_datagrid_fields = self.field.getRenderedFields(data=data)
+            return json.dumps(rendered_datagrid_fields)
         return " "
 
     def _getParams(self):
@@ -332,13 +334,13 @@ class EditFieldsAsJson(object):
         """
         params = {}
         if self.request and self.field:
-            datagrid_fields = [ f.strip() for f in self.field.field_mapping.split(',')]
-            rowdata_json = self.request.get("row_values",None)
+            datagrid_fields = [f.strip() for f in self.field.field_mapping.split(',')]
+            rowdata_json = self.request.get("row_values", None)
             if rowdata_json:
                 rowdata = json.loads(rowdata_json)
-                for fieldName in datagrid_fields:
-                    params[fieldName] = rowdata[datagrid_fields.index(fieldName)]
+                for field_name in datagrid_fields:
+                    params[field_name] = rowdata[datagrid_fields.index(field_name)]
             else:
-                for fieldName in datagrid_fields:
-                    params[fieldName] = self.request.get(fieldName,None)            
+                for field_name in datagrid_fields:
+                    params[field_name] = self.request.get(field_name, None)
         return params
