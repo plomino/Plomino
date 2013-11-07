@@ -4,6 +4,10 @@
            i18n_domain="CMFPlomino">
 
   <permission
+     id="plomino.EDIT_PERMISSION"
+     title="CMFPlomino: Edit documents"
+     />
+  <permission
      id="plomino.DESIGN_PERMISSION"
      title="CMFPlomino: Modify Database design"
      />
