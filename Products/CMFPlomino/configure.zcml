@@ -12,6 +12,7 @@
   <include package="collective.js.jqueryui"/>
   <include package="collective.js.datatables"/>
   <include package="plone.app.registry"/>
+  <include package="plone.resourceeditor"/>
 
   <include package=".fields"/>
   <include package=".browser"/>

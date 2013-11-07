@@ -108,7 +108,6 @@ class BaseField(object):
 
         fieldValue = None
         if mode == "EDITABLE":
-
             # if (not doc) or creation:
             if doc:
                 fieldValue = doc.getItem(fieldName)

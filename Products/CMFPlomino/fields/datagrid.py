@@ -144,7 +144,6 @@ class DatagridField(BaseField):
         return json.dumps(rows)
 
     def request_items_aoData(self, request):
-
         """ Return a string representing REQUEST.items as aoData.push calls.
         """
         aoData_templ = "aoData.push(%s); "
@@ -194,7 +193,7 @@ class DatagridField(BaseField):
         # return title for each mapped field if this one exists in the child form
         return [f.Title() for f in [child_form.getFormField(f) for f in mapped_fields] if f]
 
-    def getRenderedFields(self, editmode=False, creation=False, request={}, data={}):
+    def getRenderedFields(self, editmode=True, creation=False, request={}):
         """ Return an array of rows rendered using the associated form fields
         """
         if not self.field_mapping:
@@ -212,11 +211,16 @@ class DatagridField(BaseField):
         if not child_form:
             return mapped_fields
 
-        target = getTemporaryDocument(
-                db,
-                child_form,
-                data, # well, the row data that we wish to render
-                validation_mode=False).__of__(db)
+        if creation: 
+            target = None
+        else:
+            target = getTemporaryDocument(
+                    db,
+                    child_form,
+                    # Hm, where does the field get its value?
+                    # data, # well, the row data that we wish to render
+                    validation_mode=False).__of__(db)
+
         # return title for each mapped field if this one exists in the child form
         # TODO: str won't work if the rendering isn't ASCII
         return [str(f.getFieldRender(child_form, target, editmode=True, creation=False, request=None))
@@ -324,23 +328,42 @@ class EditFieldsAsJson(object):
                         'content-type',
                         'application/json; charset=utf-8')
             self.field = self.context.getSettings()
-            data = self._getParams()
-            rendered_datagrid_fields = self.field.getRenderedFields(data=data)
-            return json.dumps(rendered_datagrid_fields)
-        return " "
+            self.request.set("Plomino_Parent_Form", self.context.getForm().id)
+            self.request.set("Plomino_Parent_Field", self.context.id)
+            #DBG logger.info("%s --- %s --- %s"%(self.request["Plomino_Parent_Form"],self.request["Plomino_Parent_Field"],self.request["Plomino_datagrid_rowdata"]))
 
-    def _getParams(self):
-        """
-        """
-        params = {}
-        if self.request and self.field:
-            datagrid_fields = [f.strip() for f in self.field.field_mapping.split(',')]
-            rowdata_json = self.request.get("row_values", None)
-            if rowdata_json:
-                rowdata = json.loads(rowdata_json)
-                for field_name in datagrid_fields:
-                    params[field_name] = rowdata[datagrid_fields.index(field_name)]
-            else:
-                for field_name in datagrid_fields:
-                    params[field_name] = self.request.get(field_name, None)
-        return params
+            associatedFormFields = self.field.getRenderedFields(request=self.request)
+
+            return json.dumps(associatedFormFields)
+        return ""
+
+#class EditFieldsAsJson(object):
+#    """ Return an array of rendered fields
+#    """
+#    def __call__(self):
+#
+#        if hasattr(self.context, 'getParentDatabase') and self.context.FieldType == u'DATAGRID':
+#            self.request.RESPONSE.setHeader(
+#                        'content-type',
+#                        'application/json; charset=utf-8')
+#             self.field = self.context.getSettings()
+#             data = self._getParams()
+#             rendered_datagrid_fields = self.field.getRenderedFields(data=data)
+#             return json.dumps(rendered_datagrid_fields)
+#         return " "
+# 
+#     def _getParams(self):
+#         """
+#         """
+#         params = {}
+#         if self.request and self.field:
+#             datagrid_fields = [f.strip() for f in self.field.field_mapping.split(',')]
+#             rowdata_json = self.request.get("row_values", None)
+#             if rowdata_json:
+#                 rowdata = json.loads(rowdata_json)
+#                 for field_name in datagrid_fields:
+#                     params[field_name] = rowdata[datagrid_fields.index(field_name)]
+#             else:
+#                 for field_name in datagrid_fields:
+#                     params[field_name] = self.request.get(field_name, None)
+#         return params
