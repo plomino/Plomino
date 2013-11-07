@@ -216,7 +216,7 @@ function datagrid_edit_inline_form(oTable, field_id, form_url) {
         var field_data = $.evalJSON( $('#' + field_id + '_gridvalue').val() );
         var row_data = field_data[row_index];
 
-        form_url += '&row_values=' + $.URLEncode($.toJSON(row_data));
+        form_url += '?row_values=' + $.URLEncode($.toJSON(row_data));
 
         $.getJSON(form_url, function(data) {
             for (var i = 0; i < data.length; i++) {
