@@ -7,12 +7,12 @@
      id="plomino.DESIGN_PERMISSION"
      title="CMFPlomino: Modify Database design"
      />
-     
+
 	<subscriber
        for="Products.CMFPlomino.interfaces.IPlominoField zope.lifecycleevent.interfaces.IObjectModifiedEvent"
        handler=".events.afterFieldModified"
        />
-       
+
    <adapter
 		for="Products.CMFPlomino.interfaces.IPlominoField"
 		provides=".selection.ISelectionField"
@@ -90,7 +90,7 @@
         class=".richtext.SettingForm"
         permission="plomino.DESIGN_PERMISSION"
         />
-        
+
    <adapter
         for="Products.CMFPlomino.interfaces.IPlominoField"
         provides=".attachment.IAttachmentField"
@@ -113,7 +113,7 @@
         class=".googlechart.SettingForm"
         permission="plomino.DESIGN_PERMISSION"
         />
-        
+
    <adapter
         for="Products.CMFPlomino.interfaces.IPlominoField"
         provides=".googlevisualization.IGooglevisualizationField"
@@ -140,7 +140,7 @@
    <browser:view
       for="Products.CMFPlomino.interfaces.IPlominoField"
       name="editFields"
-      permission="plomino.DESIGN_PERMISSION"
+      permission="plomino.EDIT_PERMISSION"
       class=".datagrid.EditFieldsAsJson"
     />
 
