@@ -32,7 +32,7 @@
           </table>
 
           <br/><br/>
-          
+          <input type="checkbox" class="expand_all"/> Expand All
           <table class="listing"
                 tal:define="listItems python:here.getItems();
                             sort python:listItems.sort()">
@@ -69,6 +69,10 @@
                       event.preventDefault();
                       $(this).siblings().toggle();
                       $(this).text(function(i,d){ return (d==="...") ? "." : "..."});
+                  });
+                  $(".expand_all").live("click",function(event){
+                  alert("toto");
+                      $(".toggleText").click();
                   });
               });
           </script>
