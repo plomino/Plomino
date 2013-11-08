@@ -71,7 +71,6 @@
                       $(this).text(function(i,d){ return (d==="...") ? "." : "..."});
                   });
                   $(".expand_all").live("click",function(event){
-                  alert("toto");
                       $(".toggleText").click();
                   });
               });
