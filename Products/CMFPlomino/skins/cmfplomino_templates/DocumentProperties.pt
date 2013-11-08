@@ -13,45 +13,45 @@
                            getKssClasses nocall:kssClassesView/getKssClassesInlineEditable;
                            templateId template/getId;">
 
-      		<div tal:replace="structure provider:plone.abovecontenttitle" />
+          <div tal:replace="structure provider:plone.abovecontenttitle" />
 
-      		<h1 class="documentFirstHeading">Document properties</h1>
-      		
-      		<div tal:replace="structure provider:plone.belowcontenttitle" />
+          <h1 class="documentFirstHeading">Document properties</h1>
+          
+          <div tal:replace="structure provider:plone.belowcontenttitle" />
 
-      		<div tal:replace="structure provider:plone.abovecontentbody" />
-      		
-      		<tal:permission tal:define="dummy here/checkDesignPermission"/>
-      			
-      		<table tal:define="form python:here.getItem('Form')" class="listing">
-      	    		<tr><th>Property</th><th>Value</th></tr>
-          			<tr><td>Id</td><td tal:content="here/id">id</td></tr>
-          			<tr><td>Last modified</td><td tal:content="python:here.getLastModified(asString=True)">id</td></tr>
+          <div tal:replace="structure provider:plone.abovecontentbody" />
+          
+          <tal:permission tal:define="dummy here/checkDesignPermission"/>
+            
+          <table tal:define="form python:here.getItem('Form')" class="listing">
+                <tr><th>Property</th><th>Value</th></tr>
+                <tr><td>Id</td><td tal:content="here/id">id</td></tr>
+                <tr><td>Last modified</td><td tal:content="python:here.getLastModified(asString=True)">id</td></tr>
                 <tr tal:condition="form"><td>Form id</td><td tal:content="form">formname</td></tr>
-          			<tr tal:condition="not:form"><td>Form</td><td>FORM NOT AVAILABLE</td></tr>
-      		</table>
+                <tr tal:condition="not:form"><td>Form</td><td>FORM NOT AVAILABLE</td></tr>
+          </table>
 
-      		<br/><br/>
-      		
+          <br/><br/>
+          
           <table class="listing"
                 tal:define="listItems python:here.getItems();
                             sort python:listItems.sort()">
 
-      			<tr><th>Item</th><th>Classname</th><th>Value</th></tr>
-      			
+            <tr><th>Item</th><th>Classname</th><th>Value</th></tr>
+            
             <tal:block tal:repeat="i python:listItems">
-      				<tr
+              <tr
                   tal:define="fullText python:unicode(here.getItem(i));
                               shortText python:fullText[:90];
                               needExpand python:len(fullText)>90;"
                 >
-      					<td tal:content="i">Item</td>
-      					<td tal:content="python:here.getItemClassname(i)">Classname</td>
-      					<td>
+                <td tal:content="i">Item</td>
+                <td tal:content="python:here.getItemClassname(i)">Classname</td>
+                <td>
                     <span class="reduced_text"
                           tal:content="shortText">ShortValue</span>
 
-                    <tal:text tal:condition="needExpand">                        
+                    <tal:text tal:condition="needExpand">
                         <span class="full_text"
                               style="display:none"
                               tal:content="fullText">FullValue</span>
@@ -59,17 +59,17 @@
                     </tal:text>
                     
                 </td>
-      				</tr>
-      			</tal:block>
-      		
-          </table>      
+              </tr>
+            </tal:block>
+          
+          </table>
           <script>
               $( document ).ready(function() {
                   $(".toggleText").live("click",function(event){
                       event.preventDefault();
                       $(this).siblings().toggle();
                       $(this).text(function(i,d){ return (d==="...") ? "." : "..."});
-                  });       
+                  });
               });
           </script>
           <div tal:replace="structure provider:plone.belowcontentbody" />
@@ -79,6 +79,3 @@
 
   </body>
 </html>
-
-
-
