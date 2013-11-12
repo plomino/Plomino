@@ -5,50 +5,80 @@
       lang="en"
       metal:use-macro="here/main_template/macros/master"
       i18n:domain="plone">
-<body>
+  <body>
 
-<metal:main fill-slot="main">
-    <tal:main-macro metal:define-macro="main"
-           tal:define="kssClassesView context/@@kss_field_decorator_view;
-                       getKssClasses nocall:kssClassesView/getKssClassesInlineEditable;
-                       templateId template/getId;">
+    <metal:main fill-slot="main">
+        <tal:main-macro metal:define-macro="main"
+               tal:define="kssClassesView context/@@kss_field_decorator_view;
+                           getKssClasses nocall:kssClassesView/getKssClassesInlineEditable;
+                           templateId template/getId;">
 
-		<div tal:replace="structure provider:plone.abovecontenttitle" />
+          <div tal:replace="structure provider:plone.abovecontenttitle" />
 
-		<h1 class="documentFirstHeading">Document properties</h1>
-		
-		<div tal:replace="structure provider:plone.belowcontenttitle" />
+          <h1 class="documentFirstHeading">Document properties</h1>
+          
+          <div tal:replace="structure provider:plone.belowcontenttitle" />
 
-		<div tal:replace="structure provider:plone.abovecontentbody" />
-		
-		<tal:permission tal:define="dummy here/checkDesignPermission"/>
-			
-		<table tal:define="form python:here.getItem('Form')" class="listing">
-	    		<tr><th>Property</th><th>Value</th></tr>
-    			<tr><td>Id</td><td tal:content="here/id">id</td></tr>
-    			<tr><td>Last modified</td><td tal:content="python:here.getLastModified(asString=True)">id</td></tr>
-			<tr tal:condition="form"><td>Form id</td><td tal:content="form">formname</td></tr>
-			<tr tal:condition="not:form"><td>Form</td><td>FORM NOT AVAILABLE</td></tr>
-		</table>
-    		<br/><br/>
-    		<table class="listing">
-    			<tr><th>Item</th><th>Classname</th><th>Value</th></tr>
-    			<tal:block tal:repeat="i python:here.getItems()">
-    				<tr>
-    					<td tal:content="i">Item</td>
-    					<td tal:content="python:here.getItemClassname(i)">Classname</td>
-    					<td tal:content="python:here.getItem(i)">Value</td>
-    				</tr>
-    			</tal:block>
-    		</table>
-    
-        <div tal:replace="structure provider:plone.belowcontentbody" />
+          <div tal:replace="structure provider:plone.abovecontentbody" />
+          
+          <tal:permission tal:define="dummy here/checkDesignPermission"/>
+            
+          <table tal:define="form python:here.getItem('Form')" class="listing">
+                <tr><th>Property</th><th>Value</th></tr>
+                <tr><td>Id</td><td tal:content="here/id">id</td></tr>
+                <tr><td>Last modified</td><td tal:content="python:here.getLastModified(asString=True)">id</td></tr>
+                <tr tal:condition="form"><td>Form id</td><td tal:content="form">formname</td></tr>
+                <tr tal:condition="not:form"><td>Form</td><td>FORM NOT AVAILABLE</td></tr>
+          </table>
 
-    </tal:main-macro>
-</metal:main>
+          <br/><br/>
+          <input type="checkbox" class="expand_all"/> Expand All
+          <table class="listing"
+                tal:define="listItems python:here.getItems();
+                            sort python:listItems.sort()">
 
-</body>
+            <tr><th>Item</th><th>Classname</th><th>Value</th></tr>
+            
+            <tal:block tal:repeat="i python:listItems">
+              <tr
+                  tal:define="fullText python:unicode(here.getItem(i));
+                              shortText python:fullText[:90];
+                              needExpand python:len(fullText)>90;"
+                >
+                <td tal:content="i">Item</td>
+                <td tal:content="python:here.getItemClassname(i)">Classname</td>
+                <td>
+                    <span class="reduced_text"
+                          tal:content="shortText">ShortValue</span>
+
+                    <tal:text tal:condition="needExpand">
+                        <span class="full_text"
+                              style="display:none"
+                              tal:content="fullText">FullValue</span>
+                        <a title="view more" class="toggleText" href="#">...</a>
+                    </tal:text>
+                    
+                </td>
+              </tr>
+            </tal:block>
+          
+          </table>
+          <script>
+              $( document ).ready(function() {
+                  $(".toggleText").live("click",function(event){
+                      event.preventDefault();
+                      $(this).siblings().toggle();
+                      $(this).text(function(i,d){ return (d==="...") ? "." : "..."});
+                  });
+                  $(".expand_all").live("click",function(event){
+                      $(".toggleText").click();
+                  });
+              });
+          </script>
+          <div tal:replace="structure provider:plone.belowcontentbody" />
+        </tal:main-macro>
+    </metal:main>
+
+
+  </body>
 </html>
-
-
-
