@@ -1224,6 +1224,9 @@ class PlominoDesignManager(Persistent):
         file_names = zip_file.namelist()
         for file_name in file_names:
             xml_string = zip_file.open(file_name).read()
+            if not xml_string:
+                # E.g. if the zipfile contains entries for directories
+                continue
             xml_string = xml_string.replace(">\n<", "><")
             xmldoc = parseString(xml_string)
             design = xmldoc.getElementsByTagName("design")[0]
