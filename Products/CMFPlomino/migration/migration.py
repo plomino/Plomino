@@ -104,6 +104,9 @@ def migrate(db):
     if db.plomino_version == "1.17":
         # no migration needed here
         db.plomino_version = "1.18"
+    if db.plomino_version == "1.18":
+        msg = migrate_to_1_18_4(db)
+        messages.append(msg)
     return messages
 
 def migrate_to_130(db):
@@ -464,4 +467,19 @@ def migrate_to_1_17(db):
             doc.items = PersistentDict(items)
     msg = "Migration to 1.17: items stored in PersistentDict"
     db.plomino_version = "1.17"
+    return msg
+
+def migrate_to_1_18_4(db):
+    """ Rename beforeDocumentCreate to onOpenForm
+    """
+    # Following Products.contentmigration
+    from Products.Archetypes.Storage import AttributeStorage
+    storage = AttributeStorage()
+    forms = db.getForms()
+    for form in forms:
+        value = storage.get('beforeDocumentCreate', form)
+        storage.unset('beforeDocumentCreate', form)
+        storage.set('onOpenForm', form, value)
+    msg = "Migration to 1.18.4: beforeDocumentCreate event renamed to onOpenForm"
+    db.plomino_version = "1.18.4"
     return msg
