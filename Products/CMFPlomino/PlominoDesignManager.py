@@ -1337,6 +1337,10 @@ class PlominoDesignManager(Persistent):
                 at_values['FormLayout_text_format'] = "text/html"
 
             if len(at_values) > 0:
+                # BBB: s/beforeDocumentCreate/onOpenForm/
+                v = at_values.get('beforeDocumentCreate')
+                if v:
+                    at_values['onOpenForm'] = v
                 obj.processForm(REQUEST=None, values=at_values)
 
             if len(settings_values) > 0:
