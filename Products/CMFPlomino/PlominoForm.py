@@ -122,12 +122,12 @@ schema = Schema((
         schemata="Events",
     ),
     TextField(
-        name='beforeCreateDocument',
+        name='onOpenForm',
         widget=TextAreaWidget(
-            label="Before document creation",
+            label="On open form",
             description="Action to take when opening a blank form",
-            label_msgid=_('CMFPlomino_label_beforeCreateDocument', default="Before document creation"),
-            description_msgid=_('CMFPlomino_help_beforeCreateDocument', default="Action to take when opening a blank form"),
+            label_msgid=_('CMFPlomino_label_onOpenForm', default="On open form"),
+            description_msgid=_('CMFPlomino_help_onOpenForm', default="Action to take when opening a blank form"),
             i18n_domain='CMFPlomino',
         ),
         schemata="Events",
@@ -991,18 +991,18 @@ class PlominoForm(ATFolder):
 
     security.declarePublic('openBlankForm')
     def openBlankForm(self, request=None):
-        """ Check beforeCreateDocument, then open the form
+        """ Check onOpenForm, then open the form
         """
         db = self.getParentDatabase()
-        # execute the beforeCreateDocument code of the form
+        # execute the onOpenForm code of the form
         invalid = False
-        if (hasattr(self, 'beforeCreateDocument') and
-                self.beforeCreateDocument):
+        if (hasattr(self, 'onOpenForm') and
+                self.onOpenForm):
             try:
                 invalid = self.runFormulaScript(
                         SCRIPT_ID_DELIMITER.join(['form', self.id, 'beforecreate']),
                         self,
-                        self.beforeCreateDocument)
+                        self.onOpenForm)
             except PlominoScriptException, e:
                 e.reportError('beforeCreate formula failed')
 

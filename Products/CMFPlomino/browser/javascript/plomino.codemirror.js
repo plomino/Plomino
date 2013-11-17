@@ -40,7 +40,7 @@ $(document).ready(function() {
 	                      'onSaveDocument',
 	                      'onDeleteDocument',
 	                      'onSearch',
-	                      'beforeCreateDocument',
+	                      'onOpenForm',
 	                      'beforeSaveDocument'
 	                      ]
 	$(plomino_form_areas).each(function(index, area) {

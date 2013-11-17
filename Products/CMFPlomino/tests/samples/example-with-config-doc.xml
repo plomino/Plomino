@@ -59,7 +59,7 @@ KQogICAgZFtrZXldID0gbGFiZWwKICByZXR1cm4gZA==
   context.setItem('configId', context.id)]]></onSaveDocument>
       <onDeleteDocument type="Products.Archetypes.Field.TextField"><![CDATA[]]></onDeleteDocument>
       <onSearch type="Products.Archetypes.Field.TextField"><![CDATA[]]></onSearch>
-      <beforeCreateDocument type="Products.Archetypes.Field.TextField"><![CDATA[]]></beforeCreateDocument>
+      <onOpenForm type="Products.Archetypes.Field.TextField"><![CDATA[]]></onOpenForm>
       <FormLayout type="Products.Archetypes.Field.TextField"><![CDATA[<p>Id: <span class="plominoFieldClass">configId</span></p>
 <p>Value(s):</p>
 <p><span class="plominoFieldClass">configValues</span></p>]]></FormLayout>
@@ -128,7 +128,7 @@ KQogICAgZFtrZXldID0gbGFiZWwKICByZXR1cm4gZA==
       <onSaveDocument type="Products.Archetypes.Field.TextField"><![CDATA[]]></onSaveDocument>
       <onDeleteDocument type="Products.Archetypes.Field.TextField"><![CDATA[]]></onDeleteDocument>
       <onSearch type="Products.Archetypes.Field.TextField"><![CDATA[]]></onSearch>
-      <beforeCreateDocument type="Products.Archetypes.Field.TextField"><![CDATA[]]></beforeCreateDocument>
+      <onOpenForm type="Products.Archetypes.Field.TextField"><![CDATA[]]></onOpenForm>
       <FormLayout type="Products.Archetypes.Field.TextField"><![CDATA[<p style="text-align: right; "><span class="discreet">Ref. year <span class="plominoFieldClass">refyear</span></span></p>
 <ul>
 <li><b>Department:</b> <span class="plominoFieldClass">department</span></li>

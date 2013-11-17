@@ -58,9 +58,9 @@
 <onDeleteDocument type="Products.Archetypes.Field.TextField">
 <![CDATA[]]>
 </onDeleteDocument>
-<beforeCreateDocument type="Products.Archetypes.Field.TextField">
+<onOpenForm type="Products.Archetypes.Field.TextField">
 <![CDATA[]]>
-</beforeCreateDocument>
+</onOpenForm>
 <FormLayout type="Products.Archetypes.Field.TextField">
 <![CDATA[<h3>What is this animal</h3>
 <p>How many legs ? <span class="plominoFieldClass">legs</span>

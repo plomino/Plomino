@@ -50,7 +50,7 @@
       <onSaveDocument type="Products.Archetypes.Field.TextField"><![CDATA[]]></onSaveDocument>
       <onDeleteDocument type="Products.Archetypes.Field.TextField"><![CDATA[]]></onDeleteDocument>
       <onSearch type="Products.Archetypes.Field.TextField"><![CDATA[]]></onSearch>
-      <beforeCreateDocument type="Products.Archetypes.Field.TextField"><![CDATA[]]></beforeCreateDocument>
+      <onOpenForm type="Products.Archetypes.Field.TextField"><![CDATA[]]></onOpenForm>
       <FormLayout type="Products.Archetypes.Field.TextField"><![CDATA[<p>Name: <span class="plominoFieldClass">personName</span></p>
 <p>Date of birth: <span class="plominoFieldClass">birthDate</span></p>
 <p>Category: <span class="plominoFieldClass">personCategory</span></p>

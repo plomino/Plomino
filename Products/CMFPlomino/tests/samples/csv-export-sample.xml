@@ -80,9 +80,9 @@ context.REQUEST.RESPONSE.setBody(array_to_csv(results))]]>
 <onSearch type="Products.Archetypes.Field.TextField">
 <![CDATA[]]>
 </onSearch>
-<beforeCreateDocument type="Products.Archetypes.Field.TextField">
+<onOpenForm type="Products.Archetypes.Field.TextField">
 <![CDATA[]]>
-</beforeCreateDocument>
+</onOpenForm>
 <FormLayout type="Products.Archetypes.Field.TextField">
 <![CDATA[<p>Name</p>
 <p>

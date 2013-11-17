@@ -62,9 +62,9 @@
 <onSearch type="Products.Archetypes.Field.TextField">
 <![CDATA[]]>
 </onSearch>
-<beforeCreateDocument type="Products.Archetypes.Field.TextField">
+<onOpenForm type="Products.Archetypes.Field.TextField">
 <![CDATA[]]>
-</beforeCreateDocument>
+</onOpenForm>
 <FormLayout type="Products.Archetypes.Field.TextField">
 <![CDATA[<p>Name: <span class="plominoFieldClass">item_name</span>
 </p>
@@ -143,9 +143,9 @@
 <onSearch type="Products.Archetypes.Field.TextField">
 <![CDATA[]]>
 </onSearch>
-<beforeCreateDocument type="Products.Archetypes.Field.TextField">
+<onOpenForm type="Products.Archetypes.Field.TextField">
 <![CDATA[]]>
-</beforeCreateDocument>
+</onOpenForm>
 <FormLayout type="Products.Archetypes.Field.TextField">
 <![CDATA[<p>Order reference: <span class="plominoFieldClass">order_reference</span>
 </p>

@@ -61,9 +61,9 @@
 <onSearch type="Products.Archetypes.Field.TextField">
 <![CDATA[]]>
 </onSearch>
-<beforeCreateDocument type="Products.Archetypes.Field.TextField">
+<onOpenForm type="Products.Archetypes.Field.TextField">
 <![CDATA[]]>
-</beforeCreateDocument>
+</onOpenForm>
 <FormLayout type="Products.Archetypes.Field.TextField">
 <![CDATA[<p>Location: <span class="plominoFieldClass">job_location</span>
 </p>
@@ -276,9 +276,9 @@ return html]]>
 <onSearch type="Products.Archetypes.Field.TextField">
 <![CDATA[]]>
 </onSearch>
-<beforeCreateDocument type="Products.Archetypes.Field.TextField">
+<onOpenForm type="Products.Archetypes.Field.TextField">
 <![CDATA[]]>
-</beforeCreateDocument>
+</onOpenForm>
 <FormLayout type="Products.Archetypes.Field.TextField">
 <![CDATA[<p>
 <span class="plominoFieldClass">results</span>
@@ -382,9 +382,9 @@ return html]]>
 <onSearch type="Products.Archetypes.Field.TextField">
 <![CDATA[]]>
 </onSearch>
-<beforeCreateDocument type="Products.Archetypes.Field.TextField">
+<onOpenForm type="Products.Archetypes.Field.TextField">
 <![CDATA[]]>
-</beforeCreateDocument>
+</onOpenForm>
 <FormLayout type="Products.Archetypes.Field.TextField">
 <![CDATA[<p>Job title: <span class="plominoFieldClass">job_title</span>
 </p>

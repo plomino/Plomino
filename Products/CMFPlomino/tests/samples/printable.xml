@@ -40,7 +40,7 @@
       <onSaveDocument type="Products.Archetypes.Field.TextField"><![CDATA[]]></onSaveDocument>
       <onDeleteDocument type="Products.Archetypes.Field.TextField"><![CDATA[]]></onDeleteDocument>
       <onSearch type="Products.Archetypes.Field.TextField"><![CDATA[]]></onSearch>
-      <beforeCreateDocument type="Products.Archetypes.Field.TextField"><![CDATA[]]></beforeCreateDocument>
+      <onOpenForm type="Products.Archetypes.Field.TextField"><![CDATA[]]></onOpenForm>
       <FormLayout type="Products.Archetypes.Field.TextField"><![CDATA[<p><b>Name:</b></p>
 <p><span class="plominoFieldClass">employee_name</span></p>
 <p><b>Working hours:</b></p>
@@ -209,7 +209,7 @@ return html]]></Formula>
       <onSaveDocument type="Products.Archetypes.Field.TextField"><![CDATA[]]></onSaveDocument>
       <onDeleteDocument type="Products.Archetypes.Field.TextField"><![CDATA[]]></onDeleteDocument>
       <onSearch type="Products.Archetypes.Field.TextField"><![CDATA[]]></onSearch>
-      <beforeCreateDocument type="Products.Archetypes.Field.TextField"><![CDATA[]]></beforeCreateDocument>
+      <onOpenForm type="Products.Archetypes.Field.TextField"><![CDATA[]]></onOpenForm>
       <FormLayout type="Products.Archetypes.Field.TextField"><![CDATA[<table class="vertical listing">
 <tbody>
 <tr>

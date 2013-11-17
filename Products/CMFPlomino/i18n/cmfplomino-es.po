@@ -366,7 +366,7 @@ msgstr "The agent id"
 
 #. Default: "Action to take when opening a blank form"
 #: CMFPlomino/PlominoForm.py:127
-msgid "CMFPlomino_help_beforeCreateDocument"
+msgid "CMFPlomino_help_onOpenForm"
 msgstr ""
 
 #. Default: "Action to take before submitted values are saved into the document (submitted values are in context.REQUEST)"
@@ -728,9 +728,9 @@ msgstr "Id"
 msgid "CMFPlomino_label_agent_id"
 msgstr "Id"
 
-#. Default: "Before document creation"
+#. Default: "On open form"
 #: CMFPlomino/PlominoForm.py:126
-msgid "CMFPlomino_label_beforeCreateDocument"
+msgid "CMFPlomino_label_onOpenForm"
 msgstr ""
 
 #. Default: "Before save document"
