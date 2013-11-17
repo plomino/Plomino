@@ -41,7 +41,7 @@
       <onSaveDocument type="Products.Archetypes.Field.TextField"><![CDATA[]]></onSaveDocument>
       <onDeleteDocument type="Products.Archetypes.Field.TextField"><![CDATA[]]></onDeleteDocument>
       <onSearch type="Products.Archetypes.Field.TextField"><![CDATA[]]></onSearch>
-      <onOpenForm type="Products.Archetypes.Field.TextField"><![CDATA[]]></onOpenForm>
+      <beforeCreateDocument type="Products.Archetypes.Field.TextField"><![CDATA[]]></beforeCreateDocument>
       <FormLayout type="Products.Archetypes.Field.TextField"><![CDATA[<p>Product: <span class="plominoFieldClass">product_name</span></p>
 <p>Country: <span class="plominoFieldClass">country</span></p>
 <p>Total sales: <span class="plominoFieldClass">total_sales</span></p>]]></FormLayout>
@@ -132,7 +132,7 @@
       <onSaveDocument type="Products.Archetypes.Field.TextField"><![CDATA[]]></onSaveDocument>
       <onDeleteDocument type="Products.Archetypes.Field.TextField"><![CDATA[]]></onDeleteDocument>
       <onSearch type="Products.Archetypes.Field.TextField"><![CDATA[]]></onSearch>
-      <onOpenForm type="Products.Archetypes.Field.TextField"><![CDATA[]]></onOpenForm>
+      <beforeCreateDocument type="Products.Archetypes.Field.TextField"><![CDATA[]]></beforeCreateDocument>
       <FormLayout type="Products.Archetypes.Field.TextField"><![CDATA[<h3>Brand: <span class="plominoFieldClass">brand_name</span></h3>
 <h3>Analysis</h3>
 <ul>

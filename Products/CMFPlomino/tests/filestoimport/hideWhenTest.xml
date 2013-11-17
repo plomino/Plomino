@@ -40,7 +40,7 @@
       <onSaveDocument type="Products.Archetypes.Field.TextField"><![CDATA[]]></onSaveDocument>
       <onDeleteDocument type="Products.Archetypes.Field.TextField"><![CDATA[]]></onDeleteDocument>
       <onSearch type="Products.Archetypes.Field.TextField"><![CDATA[]]></onSearch>
-      <onOpenForm type="Products.Archetypes.Field.TextField"><![CDATA[]]></onOpenForm>
+      <beforeCreateDocument type="Products.Archetypes.Field.TextField"><![CDATA[]]></beforeCreateDocument>
       <FormLayout type="Products.Archetypes.Field.TextField"><![CDATA[<p> </p><fieldset><legend>Numero Pratica</legend> <span class="plominoFieldClass">a</span></fieldset><p> </p><p> </p><fieldset><legend>Tipo Pratica</legend><span class="plominoFieldClass">b</span></fieldset><p> </p><p><span class="plominoHidewhenClass">start:hideWhenNotA</span></p><fieldset><legend>Campo A</legend><span class="plominoFieldClass">c</span> </fieldset><p><span class="plominoHidewhenClass">end:hideWhenNotA</span></p><p> </p><p><span class="plominoHidewhenClass">start:hideWhenNotB</span></p><fieldset><legend>Campo b</legend><span class="plominoFieldClass">d</span> </fieldset><p><span class="plominoHidewhenClass">end:hideWhenNotB</span></p>]]></FormLayout>
       <DocumentTitle type="Products.Archetypes.Field.TextField"><![CDATA[]]></DocumentTitle>
       <DocumentId type="Products.Archetypes.Field.TextField"><![CDATA[]]></DocumentId>
@@ -148,7 +148,7 @@ return v!='B']]></Formula>
       <onSaveDocument type="Products.Archetypes.Field.TextField"><![CDATA[]]></onSaveDocument>
       <onDeleteDocument type="Products.Archetypes.Field.TextField"><![CDATA[]]></onDeleteDocument>
       <onSearch type="Products.Archetypes.Field.TextField"><![CDATA[]]></onSearch>
-      <onOpenForm type="Products.Archetypes.Field.TextField"><![CDATA[]]></onOpenForm>
+      <beforeCreateDocument type="Products.Archetypes.Field.TextField"><![CDATA[]]></beforeCreateDocument>
       <FormLayout type="Products.Archetypes.Field.TextField"><![CDATA[<p><span class="plominoFieldClass">a_datagrid</span></p>]]></FormLayout>
       <DocumentTitle type="Products.Archetypes.Field.TextField"><![CDATA[]]></DocumentTitle>
       <DocumentId type="Products.Archetypes.Field.TextField"><![CDATA[]]></DocumentId>
@@ -211,7 +211,7 @@ return v!='B']]></Formula>
       <onSaveDocument type="Products.Archetypes.Field.TextField"><![CDATA[]]></onSaveDocument>
       <onDeleteDocument type="Products.Archetypes.Field.TextField"><![CDATA[]]></onDeleteDocument>
       <onSearch type="Products.Archetypes.Field.TextField"><![CDATA[]]></onSearch>
-      <onOpenForm type="Products.Archetypes.Field.TextField"><![CDATA[]]></onOpenForm>
+      <beforeCreateDocument type="Products.Archetypes.Field.TextField"><![CDATA[]]></beforeCreateDocument>
       <FormLayout type="Products.Archetypes.Field.TextField"><![CDATA[<p><span class="plominoSubformClass">form1</span></p>]]></FormLayout>
       <DocumentTitle type="Products.Archetypes.Field.TextField"><![CDATA[]]></DocumentTitle>
       <DocumentId type="Products.Archetypes.Field.TextField"><![CDATA[]]></DocumentId>
