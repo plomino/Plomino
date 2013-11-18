@@ -331,7 +331,9 @@ class PlominoView(ATFolder):
                 sortindex=self.getIndexKey(sortindex)
         if not reverse:
             reverse = self.getReverseSorting()
-        query = {'PlominoViewFormula_'+self.getViewName(): True}
+        view_formula_key = SCRIPT_ID_DELIMITER.join(
+                ['PlominoViewFormula', self.getViewName()])
+        query = {view_formula_key: True}
         if fulltext_query:
             query['SearchableText'] = fulltext_query
         results=index.dbsearch(
@@ -423,7 +425,9 @@ class PlominoView(ATFolder):
         """
         db = self.getParentDatabase()
         db.getIndex().createSelectionIndex(
-                'PlominoViewFormula_'+self.getViewName())
+                SCRIPT_ID_DELIMITER.join(
+                    ['PlominoViewFormula', self.getViewName()])
+                )
         if not db.DoNotReindex:
             self.getParentDatabase().getIndex().refresh()
 
@@ -439,9 +443,10 @@ class PlominoView(ATFolder):
 
         if column_obj.Formula:
             index.createIndex(
-                    'PlominoViewColumn_%s_%s' % (
+                    SCRIPT_ID_DELIMITER.join(
+                        ['PlominoViewColumn' 
                         self.getViewName(),
-                        column_name),
+                        column_name]),
                     refresh=refresh)
         else:
             fieldpath = column_obj.SelectedField.split('/')
@@ -459,13 +464,15 @@ class PlominoView(ATFolder):
                 else:
                     column_obj.setFormula("'Non-existing field'")
                     index.createIndex(
-                            'PlominoViewColumn_%s_%s' % (
-                                self.getViewName(), column_name),
+                            SCRIPT_ID_DELIMITER.join(
+                                ['PlominoViewColumn',
+                                self.getViewName(), column_name]),
                             refresh=refresh)
             else:
                 index.createIndex(
-                        'PlominoViewColumn_%s_%s' % (
-                            self.getViewName(), column_name),
+                        SCRIPT_ID_DELIMITER.join([
+                            'PlominoViewColumn',
+                            self.getViewName(), column_name]),
                         refresh=refresh)
 
     security.declarePublic('getCategorizedColumnValues')
@@ -504,8 +511,10 @@ class PlominoView(ATFolder):
         else:
             sortindex = self.getIndexKey(sortindex)
 
+        view_formula_key = SCRIPT_ID_DELIMITER.join(
+                ['PlominoViewFormula', self.getViewName()])
         return index.dbsearch(
-                {'PlominoViewFormula_'+self.getViewName(): True,
+                {view_formula_key: True,
                     self.getIndexKey(category_column_name): category_value},
                 sortindex,
                 self.getReverseSorting())
@@ -686,8 +695,10 @@ class PlominoView(ATFolder):
             return []
 
         sortindex = self.getIndexKey(sortindex)
+        view_formula_key = SCRIPT_ID_DELIMITER.join(
+                    ['PlominoViewFormula', self.getViewName()])
         results = index.dbsearch(
-                    {'PlominoViewFormula_%s' % self.getViewName(): True,
+                    {view_formula_key: True,
                     sortindex: key},
                 sortindex,
                 self.getReverseSorting())
@@ -763,10 +774,11 @@ class PlominoView(ATFolder):
     def getIndexKey(self, columnName):
         """ Returns an index key if one exists.
 
-        We try to find a computed index ('PlominoViewColumn_*');
+        We try to find a computed index ('PlominoViewColumn*');
         if not found, we look for a field.
         """
-        key = 'PlominoViewColumn_%s_%s' % (self.getViewName(), columnName)
+        key = SCRIPT_ID_DELIMITER.join(
+                ['PlominoViewColumn', self.getViewName(), columnName])
         if not key in self.getParentDatabase().plomino_index.Indexes:
             fieldPath = self.getColumn(columnName).SelectedField.split('/')
             if len(fieldPath) > 1:

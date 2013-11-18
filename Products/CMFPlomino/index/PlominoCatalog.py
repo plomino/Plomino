@@ -16,6 +16,7 @@ from Missing import MV
 
 # Plomino
 from Products.CMFPlomino.PlominoUtils import asUnicode
+from Products.CMFPlomino.config import *
 
 try:
     from DocumentTemplate.cDocumentTemplate import safe_callable
@@ -39,8 +40,8 @@ class PlominoCatalog(Catalog):
         record = []
         # the unique id is always the first element
         for name in self.names:
-            if name.startswith("PlominoViewColumn_"):
-                marker, viewname, columnname = name.split('_')
+            if name.startswith("PlominoViewColumn"+SCRIPT_ID_DELIMITER):
+                marker, viewname, columnname = name.split(SCRIPT_ID_DELIMITER)
                 if not obj.isSelectedInView(viewname):
                     v = None
                 else:

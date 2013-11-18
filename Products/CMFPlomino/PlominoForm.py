@@ -1208,7 +1208,9 @@ class PlominoForm(ATFolder):
 
             #index search
             index = db.getIndex()
-            query = {'PlominoViewFormula_'+searchview.getViewName(): True}
+            view_formula_key = SCRIPT_ID_DELIMITER.join(
+                    ['PlominoViewFormula', searchview.getViewName()])
+            query = {view_formula_key: True}
 
             for f in self.getFormFields(
                     includesubforms=True,

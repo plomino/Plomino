@@ -10,7 +10,7 @@
 __author__ = """Eric BREHAULT <eric.brehault@makina-corpus.com>"""
 __docformat__ = 'plaintext'
 
-from Products.CMFPlomino.AppConfig import SCRIPT_ID_DELIMITER
+from Products.CMFPlomino.config import *
 
 def afterFieldModified(obj, event):
     """

@@ -22,7 +22,7 @@ from Products.CMFPlomino.exceptions import PlominoScriptException
 from Products.CMFPlomino.PlominoUtils import asUnicode
 
 from jsonutil import jsonutil as json
-from Products.CMFPlomino.AppConfig import SCRIPT_ID_DELIMITER
+from Products.CMFPlomino.config import *
 
 
 class ISelectionField(IBaseField):

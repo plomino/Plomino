@@ -14,6 +14,7 @@ __docformat__ = 'plaintext'
 from ZODB.POSException import ConflictError
 from Products.PluginIndexes.common.UnIndex import UnIndex
 
+from Products.CMFPlomino.config import *
 
 class PlominoViewIndex(UnIndex): 
     """ Index for Plomino view selection formula.
@@ -35,8 +36,8 @@ class PlominoViewIndex(UnIndex):
         returnStatus = 0
         parentdb = self.getParentDatabase()
         doc = obj.__of__(parentdb)
-        if self.id.startswith("PlominoViewFormula_"):
-            param = self.id.split('_')
+        if self.id.startswith("PlominoViewFormula"+SCRIPT_ID_DELIMITER):
+            param = self.id.split(SCRIPT_ID_DELIMITER)
             viewname = param[1]
             newSelection = doc.isSelectedInView(viewname)
         else:
