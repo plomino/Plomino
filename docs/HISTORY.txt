@@ -1,6 +1,11 @@
 Changelog
 =========
 
+1.18.4-dev (unreleased)
+-----------------------
+* Change format of view indexes.
+  This requires database refresh, which may be EXPENSIVE.
+
 1.18.3 (2013-11-04)
 -------------------
 * Fix getFieldValue

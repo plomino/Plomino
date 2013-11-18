@@ -465,3 +465,10 @@ def migrate_to_1_17(db):
     msg = "Migration to 1.17: items stored in PersistentDict"
     db.plomino_version = "1.17"
     return msg
+
+def migrate_to_1_18_4(db):
+    """ Refresh database to rebuild indexes using new-style ids
+    """
+    db.refreshDB()
+    db.plomino_version = "1.18.4"
+    return msg
