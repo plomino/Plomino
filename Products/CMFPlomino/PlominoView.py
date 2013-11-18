@@ -444,7 +444,7 @@ class PlominoView(ATFolder):
         if column_obj.Formula:
             index.createIndex(
                     SCRIPT_ID_DELIMITER.join(
-                        ['PlominoViewColumn' 
+                        ['PlominoViewColumn',
                         self.getViewName(),
                         column_name]),
                     refresh=refresh)
