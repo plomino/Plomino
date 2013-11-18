@@ -22,7 +22,6 @@ from Products.CMFDynamicViewFTI.browserdefault import BrowserDefaultMixin
 
 from Products.CMFPlomino.config import PROJECTNAME
 from Products.CMFPlomino.browser import PlominoMessageFactory as _
-from validator import isValidPlominoId
 from Products.CMFPlomino.PlominoUtils import translate
 
 import logging
@@ -39,7 +38,6 @@ schema = Schema((
             description_msgid=_('CMFPlomino_help_column_id', default="Column id"),
             i18n_domain='CMFPlomino',
         ),
-        validators=("isValidId", isValidPlominoId),
     ),
     StringField(
         name='SelectedField',

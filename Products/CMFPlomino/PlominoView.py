@@ -43,7 +43,6 @@ from exceptions import PlominoScriptException
 from PlominoUtils import asUnicode, asList
 from Products.CMFPlomino.config import *
 from Products.CMFPlomino.browser import PlominoMessageFactory as _
-from validator import isValidPlominoId
 import interfaces
 
 import logging
@@ -59,7 +58,6 @@ schema = Schema((
             description_msgid=_('CMFPlomino_help_view_id', default="If changed after creation, database refresh is needed"),
             i18n_domain='CMFPlomino',
         ),
-        validators = ("isValidId", isValidPlominoId),
     ),
     TextField(
         name='SelectionFormula',
@@ -86,23 +84,10 @@ returns the current Plomino document."""),
             description="Column used to sort the view",
             format='select',
             label_msgid=_('CMFPlomino_label_SortColumn', default="Sort column"),
-            description_msgid=_('CMFPlomino_help_SortColumn', default="Column used to sort the view, and by default for key lookup"),
+            description_msgid=_('CMFPlomino_help_SortColumn', default="Column used to sort the view"),
             i18n_domain='CMFPlomino',
         ),
-        vocabulary="Column_vocabulary",
-        schemata="Sorting",
-    ),
-    StringField(
-        name='KeyColumn',
-        widget=SelectionWidget(
-            label="Key column",
-            description="Column used for key lookup",
-            format='select',
-            label_msgid=_('CMFPlomino_label_KeyColumn', default="Key column"),
-            description_msgid=_('CMFPlomino_help_KeyColumn', default="Column used for key lookup, if different from sort column"),
-            i18n_domain='CMFPlomino',
-        ),
-        vocabulary="Column_vocabulary",
+        vocabulary="SortColumn_vocabulary",
         schemata="Sorting",
     ),
     BooleanField(
@@ -437,11 +422,9 @@ class PlominoView(ATFolder):
         """ Post create
         """
         db = self.getParentDatabase()
-        refresh = not db.DoNotReindex
         db.getIndex().createSelectionIndex(
-                'PlominoViewFormula_'+self.getViewName(),
-                refresh=refresh)
-        if refresh:
+                'PlominoViewFormula_'+self.getViewName())
+        if not db.DoNotReindex:
             self.getParentDatabase().getIndex().refresh()
 
     security.declarePublic('declareColumn')
@@ -695,30 +678,21 @@ class PlominoView(ATFolder):
 
     security.declarePublic('getDocumentsByKey')
     def getDocumentsByKey(self, key, getObject=True):
-        """ Get documents where key or sorted column matches the given key
+        """ Get documents where the sorted column value matches the given key.
         """
         index = self.getParentDatabase().getIndex()
-        keycolumn = self.getKeyColumn()
-        sortcolumn = self.getSortColumn()
-
-        if not (keycolumn or sortcolumn):
+        sortindex = self.getSortColumn()
+        if not sortindex:
             return []
 
-        query = {'PlominoViewFormula_%s' % self.getViewName(): True}
-        sortkey = None
-        if keycolumn:
-            query[self.getIndexKey(keycolumn)] = key
-        elif sortcolumn:
-            sortkey = self.getIndexKey(sortcolumn)
-            query[sortkey] = key
-
+        sortindex = self.getIndexKey(sortindex)
         results = index.dbsearch(
-                query,
-                sortkey,
+                    {'PlominoViewFormula_%s' % self.getViewName(): True,
+                    sortindex: key},
+                sortindex,
                 self.getReverseSorting())
 
         if getObject:
-            # TODO: keep lazy
             return [d.getObject() for d in results]
         else:
             return results
@@ -801,7 +775,7 @@ class PlominoView(ATFolder):
                 key = ''
         return key
 
-    def Column_vocabulary(self):
+    def SortColumn_vocabulary(self):
         return [''] + [c.id for c in self.getColumns()]
 
 registerType(PlominoView, PROJECTNAME)
