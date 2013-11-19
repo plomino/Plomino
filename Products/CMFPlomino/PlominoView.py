@@ -84,10 +84,23 @@ returns the current Plomino document."""),
             description="Column used to sort the view",
             format='select',
             label_msgid=_('CMFPlomino_label_SortColumn', default="Sort column"),
-            description_msgid=_('CMFPlomino_help_SortColumn', default="Column used to sort the view"),
+            description_msgid=_('CMFPlomino_help_SortColumn', default="Column used to sort the view, and by default for key lookup"),
             i18n_domain='CMFPlomino',
         ),
-        vocabulary="SortColumn_vocabulary",
+        vocabulary="Column_vocabulary",
+        schemata="Sorting",
+    ),
+    StringField(
+        name='KeyColumn',
+        widget=SelectionWidget(
+            label="Key column",
+            description="Column used for key lookup",
+            format='select',
+            label_msgid=_('CMFPlomino_label_KeyColumn', default="Key column"),
+            description_msgid=_('CMFPlomino_help_KeyColumn', default="Column used for key lookup, if different from sort column"),
+            i18n_domain='CMFPlomino',
+        ),
+        vocabulary="Column_vocabulary",
         schemata="Sorting",
     ),
     BooleanField(
@@ -424,11 +437,12 @@ class PlominoView(ATFolder):
         """ Post create
         """
         db = self.getParentDatabase()
+        refresh = not db.DoNotReindex
         db.getIndex().createSelectionIndex(
                 SCRIPT_ID_DELIMITER.join(
                     ['PlominoViewFormula', self.getViewName()])
                 )
-        if not db.DoNotReindex:
+        if refresh:
             self.getParentDatabase().getIndex().refresh()
 
     security.declarePublic('declareColumn')
@@ -436,7 +450,7 @@ class PlominoView(ATFolder):
         """ Declare column
         """
         db = self.getParentDatabase()
-        refresh = not(db.DoNotReindex)
+        refresh = not db.DoNotReindex
 
         if index is None:
             index = db.getIndex()
@@ -687,20 +701,28 @@ class PlominoView(ATFolder):
 
     security.declarePublic('getDocumentsByKey')
     def getDocumentsByKey(self, key, getObject=True):
-        """ Get documents where the sorted column value matches the given key.
+        """ Get documents where key or sorted column matches the given key
         """
         index = self.getParentDatabase().getIndex()
-        sortindex = self.getSortColumn()
-        if not sortindex:
+        keycolumn = self.getKeyColumn()
+        sortcolumn = self.getSortColumn()
+
+        if not (keycolumn or sortcolumn):
             return []
 
-        sortindex = self.getIndexKey(sortindex)
         view_formula_key = SCRIPT_ID_DELIMITER.join(
                     ['PlominoViewFormula', self.getViewName()])
+        query = {view_formula_key: True}
+        sortkey = None
+        if keycolumn:
+            query[self.getIndexKey(keycolumn)] = key
+        elif sortcolumn:
+            sortkey = self.getIndexKey(sortcolumn)
+            query[sortkey] = key
+
         results = index.dbsearch(
-                    {view_formula_key: True,
-                    sortindex: key},
-                sortindex,
+                query,
+                sortkey,
                 self.getReverseSorting())
 
         if getObject:
