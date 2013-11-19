@@ -121,7 +121,7 @@ class PlominoIndex(UniqueObject, CatalogTool):
             self.refresh()
 
     security.declareProtected(DESIGN_PERMISSION, 'createSelectionIndex')
-    def createSelectionIndex(self,fieldname, refresh=True):
+    def createSelectionIndex(self, fieldname, refresh=True):
         """
         """
         if not fieldname in self.indexes():

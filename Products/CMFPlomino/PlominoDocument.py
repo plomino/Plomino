@@ -426,6 +426,7 @@ class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
     security.declareProtected(EDIT_PERMISSION, 'refresh')
     def refresh(self, form=None):
         """ Re-compute fields and re-index document.
+
         (`onSaveEvent` is not called, and authors are not updated)
         """
         self.save(

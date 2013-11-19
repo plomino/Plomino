@@ -258,12 +258,18 @@ def htmlencode(s):
 
 def urlencode(h):
     """ Call urllib.urlencode
+
+    (Encode a sequence of two-element tuples or dictionary into a URL query
+    string, does quoting.)
     """
+    # TODO: consider doseq parameter
     return urllib.urlencode(h)
 
 
 def urlquote(s):
     """ Call urllib.quote
+
+    (quote('abc def') -> 'abc%20def')
     """
     return urllib.quote(s)
 

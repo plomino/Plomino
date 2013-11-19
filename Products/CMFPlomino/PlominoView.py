@@ -325,22 +325,28 @@ class PlominoView(ATFolder):
         """ Return all the documents matching the view.
         """
         index = self.getParentDatabase().getIndex()
+
         if not sortindex:
             sortindex = self.getSortColumn()
-            if sortindex=='':
-                sortindex=None
+            if sortindex == '':
+                sortindex = None
             else:
-                sortindex=self.getIndexKey(sortindex)
+                sortindex = self.getIndexKey(sortindex)
+
         if not reverse:
             reverse = self.getReverseSorting()
+
         query = {'PlominoViewFormula_'+self.getViewName(): True}
+
         if fulltext_query:
             query['SearchableText'] = fulltext_query
-        results=index.dbsearch(
+
+        results = index.dbsearch(
                 query,
                 sortindex=sortindex,
                 reverse=reverse,
                 only_allowed=only_allowed)
+
         if limit:
             results = batch(
                     results,
