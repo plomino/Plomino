@@ -704,6 +704,7 @@ class PlominoView(ATFolder):
                 self.getReverseSorting())
 
         if getObject:
+            # TODO: keep lazy
             return [d.getObject() for d in results]
         else:
             return results
