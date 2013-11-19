@@ -702,18 +702,37 @@ class PlominoDesignManager(Persistent):
                     )
         import_list = ";".join(import_list)
 
-        r = re.compile('^#Plomino import (.+)$', re.MULTILINE)
-        for i in r.findall(formula):
-            scriptname = i.strip()
-            try:
-                script_code = self.resources._getOb(scriptname).read()
-            except:
-                logger.warning("compileFormulaScript> %s not found in resources" % scriptname)
-                script_code = (
-                        "#ALERT: %s not found in resources" % scriptname)
-            formula = formula.replace(
-                    '#Plomino import '+scriptname,
-                    script_code)
+        # Match any include
+        r = re.compile('^#Plomino (import|include) (.+)$', re.MULTILINE)
+
+        matches = r.findall(formula)
+        seen = []
+        while matches:
+            for include, scriptname in matches:
+
+                scriptname = scriptname.strip()
+                # Match only this include; don't match script names that are
+                # prefixes of other script names
+                exact_r = re.compile(
+                        '^#Plomino %s %s\\b' % (include, scriptname),
+                        re.MULTILINE)
+
+                if scriptname in seen:
+                    # Included already, blank the include statement
+                    formula = exact_r.sub('', formula)
+                    continue
+
+                seen.append(scriptname)
+                try:
+                    script_code = self.resources._getOb(scriptname).read()
+                except:
+                    logger.warning("compileFormulaScript> %s not found in resources" % scriptname)
+                    script_code = (
+                            "#ALERT: %s not found in resources" % scriptname)
+
+                formula = exact_r.sub(script_code, formula)
+
+            matches = r.findall(formula)
 
         if (formula.strip().count('\n') == 0 and
                 not formula.startswith('return ')):

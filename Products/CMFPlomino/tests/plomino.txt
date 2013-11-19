@@ -127,6 +127,59 @@ Let's set a layout which contains our fields::
     ... <span class="plominoFieldClass">field4</span></p>""")
 
 
+Formulas can include scripts from resources
+--------------------------------------------
+
+A formula can include scripts from ``resources``::
+
+    >>> from Products.PythonScripts.PythonScript import PythonScript
+    >>> ps = PythonScript('script')
+    >>> script_id = db.resources._setObject('script', ps)
+    >>> ps.write('return "hello"')
+    >>> id = db.frm1.invokeFactory('PlominoField',
+    ...         id='field5',
+    ...         title='Field with import',
+    ...         FieldType="TEXT",
+    ...         FieldMode="DISPLAY",
+    ...         Formula="#Plomino import script")
+    >>> db.frm1.field5.at_post_create_script()
+    >>> db.frm1.computeFieldValue('field5', db.frm1)
+    'hello'
+
+Scripts can also include other scripts (including themselves; i.e. 
+recursive includes), and script names can be prefixes of other scripts::
+
+    >>> ps = PythonScript('script_too')
+    >>> script_id = db.resources._setObject('script_too', ps)
+    >>> ps.write('#Plomino import script\n#Plomino import script_too')
+    >>> id = db.frm1.invokeFactory('PlominoField',
+    ...         id='field6',
+    ...         title='Field with import',
+    ...         FieldType="TEXT",
+    ...         FieldMode="DISPLAY",
+    ...         Formula="#Plomino import script_too")
+    >>> db.frm1.field6.at_post_create_script()
+    >>> db.frm1.computeFieldValue('field6', db.frm1)
+    'hello'
+
+You can also spell it ``include`` (because what we're doing is really 
+not much like Python's ``import``, it's straight string interpolation).
+And scripts can include scripts that include scripts ...::
+
+    >>> ps = PythonScript('script_three')
+    >>> script_id = db.resources._setObject('script_three', ps)
+    >>> ps.write('#Plomino include script_too')
+    >>> id = db.frm1.invokeFactory('PlominoField',
+    ...         id='field7',
+    ...         title='Field with import',
+    ...         FieldType="TEXT",
+    ...         FieldMode="DISPLAY",
+    ...         Formula="#Plomino include script_three")
+    >>> db.frm1.field7.at_post_create_script()
+    >>> db.frm1.computeFieldValue('field7', db.frm1)
+    'hello'
+
+
 Documents
 ---------------
 
