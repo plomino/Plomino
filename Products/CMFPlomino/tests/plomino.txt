@@ -637,6 +637,15 @@ field::
     >>> 'field2' in db.getIndex().indexes()
     True
 
+If we don't want the sort column to double as the key column, we can set
+another column as key column::
+
+    >>> db.view1.setKeyColumn('col2')
+    >>> len(db.view1.getDocumentsByKey('hello'))
+    0
+    >>> len(db.view1.getDocumentsByKey('My favorite song is Ho Chi Minh City calling by The Clash'))
+    1
+
 Import/export design
 ---------------------
 
