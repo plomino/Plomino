@@ -146,8 +146,9 @@ A formula can include scripts from ``resources``::
     >>> db.frm1.computeFieldValue('field5', db.frm1)
     'hello'
 
-Scripts can also include other scripts (including themselves; i.e. 
-recursive includes), and script names can be prefixes of other scripts::
+Scripts can also include other scripts, and script names can be prefixes of
+other scripts. A script is only included the first time it's seen; subsequent
+mentions are blanked::
 
     >>> ps = PythonScript('script_too')
     >>> script_id = db.resources._setObject('script_too', ps)
