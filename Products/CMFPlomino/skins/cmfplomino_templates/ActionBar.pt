@@ -124,8 +124,8 @@ if (typeof(oDynamicTable)!="undefined") {
 			i18n:domain="CMFPlomino" i18n:attributes="value"
 			tal:condition="python:here.hasRemovePermission(here)==True"
 			tal:define="
-				translate nocall:modules/Products/CMFPlomino/PlominoUtils/PlominoTranslate;
-				msg python:translate('Do you really want to delete those documents', here, domain='CMFPlomino');"
+				plominotranslate nocall:modules/Products/CMFPlomino/PlominoUtils/PlominoTranslate;
+				msg python:plominotranslate('Do you really want to delete those documents', here, domain='CMFPlomino');"
 			tal:attributes="onclick string:if (confirm('${msg} ?')) {location.href='./manage_deleteDocuments?deldocs='+selected_documents()}" />
 	</tal:defaultactions>
 		<tal:block
@@ -184,8 +184,8 @@ if (typeof(oDynamicTable)!="undefined") {
 	class="context plominoDelete" value="Delete" i18n:domain="CMFPlomino" name="plomino_delete"
 	i18n:attributes="value"
 	tal:define="
-		translate nocall:modules/Products/CMFPlomino/PlominoUtils/PlominoTranslate;
-		msg python:translate('Do you really want to delete this document', here, domain='CMFPlomino');"
+		plominotranslate nocall:modules/Products/CMFPlomino/PlominoUtils/PlominoTranslate;
+		msg python:plominotranslate('Do you really want to delete this document', here, domain='CMFPlomino');"
 	tal:attributes="onclick python:'if(confirm(\''+msg+' ?\')){location.href=\''+here.absolute_url()+'/delete?returnurl='+here.getParentDatabase().absolute_url()+'\'}'" />
 	</tal:block>
 </tal:block>
