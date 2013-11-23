@@ -423,8 +423,9 @@ class PlominoForm(ATFolder):
             e.reportError('Document is created, but onCreate formula failed')
 
         if valid is None or valid == '':
-            doc.saveDocument(REQUEST, creation=True)
-        else:
+            valid = doc.saveDocument(REQUEST, creation=True)
+        
+        if valid and valid != '':
             db.documents._delOb(doc.id)
             db.writeMessageOnPage(valid, REQUEST, False)
             REQUEST.RESPONSE.redirect(db.absolute_url())
