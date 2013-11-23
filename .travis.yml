@@ -31,7 +31,7 @@ install:
   - cat travis.cfg # Debug
   - mkdir -p buildout-cache/eggs
   - mkdir -p buildout-cache/downloads
-  - python bootstrap.py -c travis.cfg -v 1.7.1
+  - python bootstrap.py -c travis.cfg -d
   - bin/buildout -N -t 3 -c travis.cfg install download install
   - bin/buildout -N -t 3 -c travis.cfg
   - cat bin/test # Debug: trying to shed light on #265 and see the actually installed versions
