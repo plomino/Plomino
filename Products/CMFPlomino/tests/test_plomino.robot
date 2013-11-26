@@ -18,7 +18,7 @@ ${OTHER_PLONE_URL}       ${OTHER_ZOPE_URL}/${OTHER_PLONE_SITE_ID}
 
 *** Test Cases ***
 
-Manage a Plomino database
+Replicate a Plomino database
     Plomino is installed
     Log in as the database owner
     Open the database
@@ -37,11 +37,34 @@ Manage a Plomino database
     Go to                 ${PLONE_URL}/secondreplicadb/allfrmtest
     Page should contain   Marie Curie
 
-## TODO
-# Check datagrid editing
-    # test datagrid with some rows invisible
-    # test datagrid with some rows computed fields
-    # test datagrid with some rows display fields
+Teardown
+    Teardown other portal
+
+Check datagrid editing
+    Log in as the database owner
+    Open the database
+    Open form  frm_test
+    Create datagrid form
+    Create field of type in layout  frm_test  dgfield  DATAGRID
+    Add datagrid row modal
+    Select window 
+    Element should contain  css=span.TEXTFieldRead-TEXT  This one
+    Element should contain  css=td.center  22
+    Set datagrid field inline
+    Open form  frm_test
+    Add datagrid row inline
+    Element should contain  css=span.TEXTFieldRead-TEXT  That one
+    Element should contain  css=td.center  44
+
+# columns invisible
+# columns computed fields
+# columns display fields
+# columns editable fields with default values
+# columns editable fields failing format validation
+# columns editable fields failing formula validation
+# columns editable fields mutate value during formula validation
+# columns with editable fields custom read template
+# columns with editable fields custom edit template
 
 Check form methods
     Set Selenium Implicit Wait        20 seconds
@@ -49,7 +72,7 @@ Check form methods
     Open the database
     Create datagrid form
     Create form                       frmTest           Testing form
-    # Use with the search forms
+# Use with the search forms
     Generate view for                 frmTest
     Check form method                 frmTest           POST
     Create form with method           frmGetTest        Testing GET form  GET
@@ -62,9 +85,6 @@ Check form methods
     Check form method                 frmPostingPage    POST
     Create form with method and type  frmPostingSearch  Testing POST search  POST  SearchForm
     Check form method                 frmPostingSearch  POST
-
-Teardown
-    Teardown other portal
 
 *** Keywords ***
 Plomino is installed
@@ -82,6 +102,10 @@ Open the database
 Open form
     [Arguments]  ${FORM_ID}  
     Go to        ${PLONE_URL}/mydb/${FORM_ID}
+
+Open field
+    [Arguments]  ${FORM_ID}  ${FIELD_ID}
+    Go to        ${PLONE_URL}/mydb/${FORM_ID}/${FIELD_ID}
 
 Create form
     [Arguments]              ${FORM_ID}  ${FORM_TITLE}
@@ -103,7 +127,7 @@ Create form with method and type
     [Arguments]          ${FORM_ID}  ${FORM_TITLE}  ${FORM_METHOD}  ${FORM_TYPE}
     Open the database
     Click link           Form
-    # Page should contain element    css=input#id
+#   Page should contain element    css=input#id
     Input text           id     ${FORM_ID}
     Input text           title  ${FORM_TITLE}
     Checkbox Should Be Selected  xpath=//input[@name='FormMethod' and @value='Auto']
@@ -111,12 +135,18 @@ Create form with method and type
     Run keyword if  '${FORM_TYPE}' == 'Page'        Select Checkbox   isPage
     Run keyword if  '${FORM_TYPE}' == 'SearchForm'  Select Checkbox   isSearchForm
     Run keyword if  '${FORM_TYPE}' == 'SearchForm'  Select from list  SearchView  allfrmTest
+# Add a list to the page so that we have something to hold on to when editing
     Click button         Save
     Page should contain  Changes saved.
 
 Create field
-    [Arguments]           ${FORM_ID}  ${FIELD_ID}
-    Create field of type  ${FORM_ID}  ${FIELD_ID}  Default
+    [Arguments]                     ${FORM_ID}  ${FIELD_ID}
+    Create field of type in layout  ${FORM_ID}  ${FIELD_ID}  Default
+
+Create field of type in layout
+    [Arguments]           ${FORM_ID}  ${FIELD_ID}  ${FIELD_TYPE}
+    Create field of type  ${FORM_ID}  ${FIELD_ID}  ${FIELD_TYPE}
+    Add field to layout   ${FORM_ID}  ${FIELD_ID} 
 
 Create field of type
     [Arguments]          ${FORM_ID}  ${FIELD_ID}  ${FIELD_TYPE}
@@ -128,28 +158,37 @@ Create field of type
     Run keyword if  '${FIELD_TYPE}' != 'Default'  Select field type  ${FIELD_TYPE}
     Click button         Save
     Page should contain  Changes saved.
-    Run keyword if  '${FIELD_TYPE}' == 'DATAGRID'  Configure datagrid field  ${FIELD_ID}
-    Add field to layout  ${FORM_ID}  ${FIELD_ID} 
+#   Run keyword if  '${FIELD_TYPE}' == 'DATAGRID'  Configure datagrid field  ${FIELD_ID}
+    Run keyword if  '${FIELD_TYPE}' == 'DATAGRID'  Configure datagrid field
 
 Add field to layout
     [Arguments]          ${FORM_ID}  ${FIELD_ID} 
     Go to                ${PLONE_URL}/mydb/${FORM_ID}/edit
-    Wait Until Page Contains Element  FormLayout_ifr
-    Select frame         FormLayout_ifr 
-    Input text           content  ${FIELD_ID}=
-    Unselect Frame
-    Click link           FormLayout_plominofield
-    Select frame         css=.plonepopup iframe
-    Select From List     plominoFieldId  ${FIELD_ID}
-    Click button         insert
-    Unselect Frame
+#   Wait Until Page Contains Element  FormLayout_ifr
+    Select from list     FormLayout_text_format    text/x-web-textile
+    Sleep  2s
+#   Select frame         FormLayout_ifr 
+# Add to existing layout
+    ${layout} =          Get text  FormLayout
+    Input text           FormLayout  ${layout} ${FIELD_ID}= <span class="plominoFieldClass">${FIELD_ID}</span>
+#   Unselect Frame
+#   Click link           FormLayout_plominofield
+#   Select frame         css=.plonepopup iframe
+#   Select From List     plominoFieldId  ${FIELD_ID}
+#   Click button         insert
+#   Unselect Frame
     Click button         Save
 
 Create datagrid form
-    # [Arguments]          ${FORM_ID}
-    Create form          dgForm  Datagrid form
+#   [Arguments]          ${FORM_ID}
+    Create form           dgForm  Datagrid form
+    Create field of type in layout  dgForm  one  TEXT
+    Create field of type in layout  dgForm  two  NUMBER
+#   Add field to layout   dgForm  one
+#   Add field to layout   dgForm  two
 
 Check form method
+# Make sure the form method is what it should be
     [Arguments]          ${FORM_ID}  ${FORM_METHOD}
     Open form            ${FORM_ID}
     ${form_method_attr} =  Get element attribute  plomino_form@method
@@ -157,26 +196,50 @@ Check form method
     Check datagrid method  ${FORM_ID}  ${FORM_METHOD}
 
 Check datagrid method
+# The datagrid form method should match that of the parent form
     [Arguments]           ${FORM_ID}  ${FORM_METHOD}
-    Create field of type  ${FORM_ID}  dgfield  DATAGRID
+    Create field of type in layout  ${FORM_ID}  dgfield  DATAGRID
     Wait Until Page Contains Element  dgfield_gridvalue
-    # Looks like only visible text is counted
-    # Element Should Contain  xpath=//input[@id='dgfield_gridvalue']/following-sibling::script  'sServerMethod': '${FORM_METHOD.upper()}'
-    # Element Should Contain  dgfield_js  'sServerMethod': 'GET'
+# Looks like only visible text is counted
+#   Element Should Contain  xpath=//input[@id='dgfield_gridvalue']/following-sibling::script  'sServerMethod': '${FORM_METHOD.upper()}'
+#   Element Should Contain  dgfield_js  'sServerMethod': 'GET'
     ${page_source} =  Get source
     Should match regexp  ${page_source}  dgfield[^>]+'sServerMethod': '${FORM_METHOD.upper()}'
-    # Page should contain  'sServerMethod': 'GET'
-    # Page should contain  'sServerMethod': '${FORM_METHOD.upper()}'
+#   Page should contain  'sServerMethod': 'GET'
+#   Page should contain  'sServerMethod': '${FORM_METHOD.upper()}'
 
 Select field type
     [Arguments]  ${FIELD_TYPE}
     Select from list  FieldType  ${FIELD_TYPE}
 
 Configure datagrid field
-    [Arguments]       ${FIELD_ID}
+#   [Arguments]       ${FIELD_ID}
     Click link        Settings
     Select from list  form.associated_form  dgForm
     Input text        form.field_mapping  one,two
+    Click button      form.actions.apply
+
+Add datagrid row modal
+# To use, should be viewing form with dgfield
+    Click link    dgfield_addrow
+    Select frame  dgfield_iframe
+    Input text    one  This one
+    Input text    two  22
+    Click button  Save
+
+Add datagrid row inline
+# To use, should be viewing form with dgfield
+    Click link    dgfield_addrow
+    Page Should Contain Textfield  input#one
+    Element should contain  input#two  22
+    Input text    one  That one
+    Input text    two  44
+    Click button  button.save
+
+Set datagrid field inline
+    Open field        frm_test  dgfield
+    Click link        Settings
+    Select from list  form.associated_form_rendering  Inline editing
     Click button      form.actions.apply
 
 Generate view for
