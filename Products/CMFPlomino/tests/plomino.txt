@@ -277,7 +277,7 @@ designer wants to be display in the view::
     >>> len(db.view1.getDocumentsByKey('hello'))
     1
 
-Views can be exported as CSV:
+Views can be exported as CSV::
 
     >>> db.view1.exportCSV()
     '"London calling"\r\n"Rhythm is love"\r\n"Rhythm is love"\r\n"bonjour"\r\n"hello"\r\n'

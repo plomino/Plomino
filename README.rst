@@ -9,7 +9,7 @@ Features
 * create your own custom applications from a web interface without programming
 * create and design forms in WYSIWYG mode
 * easily embed charts or maps
-* create specific actions with formula (compute fields, send emails, ...)
+* create specific actions with formulas (compute fields, send emails, ...)
 * adapt the application behaviour depending on the user access rights and roles
 * import/export your application structure and/or your application data,
   including replication between Plomino instances
@@ -22,21 +22,21 @@ Plomino is a **through-the-web application builder**, hence:
 * it is not a **through-the-web content-type builder** like 
   `Dexterity <http://plone.org/products/dexterity>`_, which is perfect to
   create a custom content type but that will always stick to the standard
-  content management scenario, while Plomino allows to implement any custom
-  scenarios,
+  content management scenario, while Plomino allows any custom scenario,
 * it is not just a **form generator** like 
   `PloneFormGen <http://plone.org/products/ploneformgen>`_, as Plomino provides
   all the services (data storage, search, automation, import/export, etc.) to
   build an entire application. Regarding form generation itself, a major
-  difference with PloneFormGen is that Plomino allows to edit the form layout
-  entirely, while PloneFormGen use a fixed pre-defined form layout.
+  difference with PloneFormGen is that Plomino allows editing the form layout
+  in its entirety, while PloneFormGen uses a fixed pre-defined form layout.
 
 Resources and documentation
 ===========================
 
 Screencasts and how-tos are available on http://www.plomino.net/ .
 
-Plomino documentation is available on `ReadTheDocs <http://readthedocs.org/docs/plomino/>`_.
+Plomino documentation is available on 
+`ReadTheDocs <http://readthedocs.org/docs/plomino/>`_.
 
 Note: if you think something is missing in the documentation, please send your
 pull request at https://github.com/plomino/PlominoDoc .
@@ -44,8 +44,9 @@ pull request at https://github.com/plomino/PlominoDoc .
 Internationalization
 ====================
 
-Plomino itself is internationalized and translated in seven languages. Applications
-built with Plomino can be internationalized (see the `related documentation
+Plomino itself is internationalized and translated in seven languages.
+Applications built with Plomino can be internationalized (see the 
+`related documentation
 <https://plomino.readthedocs.org/en/latest/features/#i18n-support>`_).
 
 Installation
@@ -67,7 +68,8 @@ Installation on Plone 4.0 and 4.1
 
 If you're using Plone version older than 4.2 you'll need to add some
 more directives to your ``buildout.cfg``.
-Plomino depends on ``plone.app.registry`` and ``plomino.tinymce`` requires
+
+Plomino depends on ``plone.app.registry``, and ``plomino.tinymce`` requires
 ``Products.TinyMCE>=1.2.13``. To make Plomino work on pre-4.2 Plone sites
 you need to pin those versions in your ``versions.cfg`` section::
 
@@ -85,8 +87,8 @@ replacing 4.0.9 with the actual version you need.
 Support
 =======
 
-You can find support on the freenode IRC channel #plomino or using the `GitHub
-issue tracker <https://github.com/plomino/Plomino/issues>`_
+You can find support on the freenode IRC channel #plomino or using the 
+`GitHub issue tracker <https://github.com/plomino/Plomino/issues>`_
 
 Tests
 =====
