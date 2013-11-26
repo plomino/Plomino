@@ -51,7 +51,7 @@
                     if('${associated_form_rendering}'==='INLINE') {
 
                         var ${fieldname}_nEditing = null;                   
-                        
+
                         /** Add inline creation form **/
                         $$('#${fieldname}_addrow').click( function (e) {
                             e.preventDefault();
@@ -76,7 +76,7 @@
                             e.preventDefault();
                             var nRow = $(this).parents('tr')[0];
                             var url = '${associated_form_url}/createDocument?Plomino_Parent_Field=${fieldname}&Plomino_Parent_Form=${form_name}';
-                            
+
                             if ( ${fieldname}_nEditing == nRow ) {
                                 var succeeded = datagrid_save_inline_row( ${fieldname}_datatable, ${fieldname}_nEditing,'${fieldname}',url);
                                 if(succeeded===true)
@@ -110,7 +110,7 @@
                     }
                 } );">
     </script>
-        
+
     <table class="display" tal:attributes="id string:${fieldname}_datagrid">
     </table>
     <div tal:attributes="id string:${fieldname}_editform"></div>
