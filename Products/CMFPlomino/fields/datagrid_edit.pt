@@ -8,9 +8,9 @@
             form_name form/id;
             form_url python:form.absolute_url();
             form_method form/getFormMethod;
-            associated_form_object python:field.getSettings().getAssociateForm();
-            associated_form python:associated_form_object.id;
-            associated_form_url python:associated_form_object.absolute_url();
+            associated_form python:field.getSettings().getAssociateForm();
+            associated_form_id python:associated_form.id;
+            associated_form_url python:associated_form.absolute_url();
             associated_form_rendering python:field.getSettings().associated_form_rendering;
             new_fields python:field.getSettings().getRenderedFields(creation=True,request=request);
             ">
@@ -76,11 +76,11 @@
                         $$('#${fieldname}_datagrid button.save').live('click', function (e) {
                             e.preventDefault();
                             var nRow = $(this).parents('tr')[0];
-                            var url = '${associated_form_url}/createDocument?Plomino_Parent_Field=${fieldname}&Plomino_Parent_Form=${form_name}&Form=${associated_form}';
+                            var url = '${associated_form_url}/createDocument?Plomino_Parent_Field=${fieldname}&Plomino_Parent_Form=${form_name}&Form=${associated_form_id}';
                             
                             if ( ${fieldname}_nEditing == nRow ) {
-                                var succeded = datagrid_save_inline_row( ${fieldname}_datatable, ${fieldname}_nEditing,'${fieldname}',url);
-                                if(succeded===true)
+                                var succeeded = datagrid_save_inline_row( ${fieldname}_datatable, ${fieldname}_nEditing,'${fieldname}',url);
+                                if(succeeded===true)
                                     ${fieldname}_nEditing = null;
                             }
                         } );
@@ -117,13 +117,13 @@
     <div tal:attributes="id string:${fieldname}_editform"></div>
     <p><a class="context add-row"
           tal:attributes="id string:${fieldname}_addrow;
-                          href string:../${associated_form}/OpenBareForm?Plomino_Parent_Field=${fieldname}&Plomino_Parent_Form=${form_name};
+                          href string:../${associated_form_id}/OpenBareForm?Plomino_Parent_Field=${fieldname}&Plomino_Parent_Form=${form_name};
                           onclick string:event.preventDefault ? event.preventDefault() : event.returnValue = false;; return false"
           tal:content="python:options['field'].getSettings().getActionLabel('add')"
           >Add row</a>
        <a class="context edit-row"
           tal:attributes="id string:${fieldname}_editrow;
-                          href string:../${associated_form}/OpenBareForm?Plomino_Parent_Field=${fieldname}&Plomino_Parent_Form=${form_name};
+                          href string:../${associated_form_id}/OpenBareForm?Plomino_Parent_Field=${fieldname}&Plomino_Parent_Form=${form_name};
                           onclick string:event.preventDefault ? event.preventDefault() : event.returnValue = false;; return false;
                           style python:{0: 'display:none'}.get(len(v), '')"
           tal:content="python:options['field'].getSettings().getActionLabel('edit')"
