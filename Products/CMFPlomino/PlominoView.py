@@ -86,10 +86,23 @@ returns the current Plomino document."""),
             description="Column used to sort the view",
             format='select',
             label_msgid=_('CMFPlomino_label_SortColumn', default="Sort column"),
-            description_msgid=_('CMFPlomino_help_SortColumn', default="Column used to sort the view"),
+            description_msgid=_('CMFPlomino_help_SortColumn', default="Column used to sort the view, and by default for key lookup"),
             i18n_domain='CMFPlomino',
         ),
-        vocabulary="SortColumn_vocabulary",
+        vocabulary="Column_vocabulary",
+        schemata="Sorting",
+    ),
+    StringField(
+        name='KeyColumn',
+        widget=SelectionWidget(
+            label="Key column",
+            description="Column used for key lookup",
+            format='select',
+            label_msgid=_('CMFPlomino_label_KeyColumn', default="Key column"),
+            description_msgid=_('CMFPlomino_help_KeyColumn', default="Column used for key lookup, if different from sort column"),
+            i18n_domain='CMFPlomino',
+        ),
+        vocabulary="Column_vocabulary",
         schemata="Sorting",
     ),
     BooleanField(
@@ -325,22 +338,28 @@ class PlominoView(ATFolder):
         """ Return all the documents matching the view.
         """
         index = self.getParentDatabase().getIndex()
+
         if not sortindex:
             sortindex = self.getSortColumn()
-            if sortindex=='':
-                sortindex=None
+            if sortindex == '':
+                sortindex = None
             else:
-                sortindex=self.getIndexKey(sortindex)
+                sortindex = self.getIndexKey(sortindex)
+
         if not reverse:
             reverse = self.getReverseSorting()
+
         query = {'PlominoViewFormula_'+self.getViewName(): True}
+
         if fulltext_query:
             query['SearchableText'] = fulltext_query
-        results=index.dbsearch(
+
+        results = index.dbsearch(
                 query,
                 sortindex=sortindex,
                 reverse=reverse,
                 only_allowed=only_allowed)
+
         if limit:
             results = batch(
                     results,
@@ -424,9 +443,11 @@ class PlominoView(ATFolder):
         """ Post create
         """
         db = self.getParentDatabase()
+        refresh = not db.DoNotReindex
         db.getIndex().createSelectionIndex(
-                'PlominoViewFormula_'+self.getViewName())
-        if not db.DoNotReindex:
+                'PlominoViewFormula_'+self.getViewName(),
+                refresh=refresh)
+        if refresh:
             self.getParentDatabase().getIndex().refresh()
 
     security.declarePublic('declareColumn')
@@ -680,21 +701,30 @@ class PlominoView(ATFolder):
 
     security.declarePublic('getDocumentsByKey')
     def getDocumentsByKey(self, key, getObject=True):
-        """ Get documents where the sorted column value matches the given key.
+        """ Get documents where key or sorted column matches the given key
         """
         index = self.getParentDatabase().getIndex()
-        sortindex = self.getSortColumn()
-        if not sortindex:
+        keycolumn = self.getKeyColumn()
+        sortcolumn = self.getSortColumn()
+
+        if not (keycolumn or sortcolumn):
             return []
 
-        sortindex = self.getIndexKey(sortindex)
+        query = {'PlominoViewFormula_%s' % self.getViewName(): True}
+        sortkey = None
+        if keycolumn:
+            query[self.getIndexKey(keycolumn)] = key
+        elif sortcolumn:
+            sortkey = self.getIndexKey(sortcolumn)
+            query[sortkey] = key
+
         results = index.dbsearch(
-                    {'PlominoViewFormula_%s' % self.getViewName(): True,
-                    sortindex: key},
-                sortindex,
+                query,
+                sortkey,
                 self.getReverseSorting())
 
         if getObject:
+            # TODO: keep lazy
             return [d.getObject() for d in results]
         else:
             return results
@@ -777,7 +807,7 @@ class PlominoView(ATFolder):
                 key = ''
         return key
 
-    def SortColumn_vocabulary(self):
+    def Column_vocabulary(self):
         return [''] + [c.id for c in self.getColumns()]
 
 registerType(PlominoView, PROJECTNAME)

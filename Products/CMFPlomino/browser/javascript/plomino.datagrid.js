@@ -12,66 +12,67 @@
  *   form (second request, when the user clicks on the submit button of the sub-form)
  */
 function datagrid_show_form(field_id, formurl, onsubmit) {
-	var field_selector = "#" + field_id + "_editform";
-	$(field_selector).html(
-		'<iframe name="' + field_id + '_iframe" style="height:100%;width:100%" height="100%" width="100%"></iframe>'
-	);
-	var iframe = $("#" + field_id + "_editform iframe");
-	iframe.attr('src', formurl);
-	iframe.load(function() {
-		var popup = $(field_selector);
-		var body = iframe[0].contentDocument.body;
-		// Edit-form close button
-		$("input[name=plomino_close]", body).removeAttr('onclick').click(function() {
-			popup.dialog('close');
-		});
-		// Edit form submission
-		$('form', body).submit(function(){
-			var message = "";
+    var field_selector = "#" + field_id + "_editform";
+    $(field_selector).html(
+        '<iframe name="' + field_id + '_iframe" style="height:100%;width:100%" height="100%" width="100%"></iframe>'
+    );
+    var iframe = $("#" + field_id + "_editform iframe");
+    iframe.attr('src', formurl);
+    iframe.load(function() {
+        var popup = $(field_selector);
+        var body = iframe[0].contentDocument.body;
+        // Edit-form close button
+        $("input[name=plomino_close]", body).removeAttr('onclick').click(function() {
+            popup.dialog('close');
+        });
+        // Edit form submission
+        $('form', body).submit(function(){
+            var message = "";
 
-			$.ajax({url: this.action+"?"+$(this).serialize(),
-				async: false,
-				//context: $('#plomino_form'),
-				error: function() {
-					alert("Error while validating.");
-				},
-				success: function(data) {
-					message = $(data).filter('#plomino_child_errors').html();
-					return false;
-				}
-			});
+            $.ajax({url: this.action+"?"+$(this).serialize(),
+                async: false,
+                //context: $('#plomino_form'),
+                error: function() {
+                    alert("Error while validating.");
+                },
+                success: function(data) {
+                    message = $(data).filter('#plomino_child_errors').html();
+                    return false;
+                }
+            });
 
-			if(!(message === null || message === '')) {
-				alert(message);
-				// Avoid Plone message "You already submitted this form", since we didn't
-				jQuery(this).find('input[type="submit"].submitting').removeClass('submitting');
-				return false;
-			}
-			$.get(this.action, $(this).serialize(), function(data, textStatus, XMLHttpRequest){
-				// Call back function with new row
-				var rowdata = [];
-				$('span.plominochildfield', data).each(function(){
-					rowdata.push(this.innerHTML);
-				});
-				var raw = $.evalJSON($('#raw_values', data).text());
-				onsubmit(rowdata, raw);
-			});
-			popup.dialog('close');
-			return false;
-		});
-		// Prepare and display the dialog
-		$('.documentActions', body).remove();
-		popup.dialog("option", "title", $('.documentFirstHeading', body).remove().text());
-		var table = $("#" + field_id + "_datagrid");
-		var options = table.dataTable().fnSettings().oInit;
-		if(options.plominoDialogOptions) {
-			keys = Object.keys(options.plominoDialogOptions);
-			for(var k in keys) {
-				popup.dialog("option", keys[k], options.plominoDialogOptions[keys[k]]);
-			}
-		}
-		popup.dialog('open');
-	});
+            if(!(message === null || message === '')) {
+                alert(message);
+                // Avoid Plone message "You already submitted this form", since we didn't
+                jQuery(this).find('input[type="submit"].submitting').removeClass('submitting');
+                return false;
+            }
+            $.get(this.action, $(this).serialize(), function(data, textStatus, XMLHttpRequest){
+                // Call back function with new row
+                var rowdata = [];
+                $('span.plominochildfield', data).each(function(){
+                    rowdata.push(this.innerHTML);
+                });
+                var raw = $.evalJSON($('#raw_values', data).text());
+                onsubmit(rowdata, raw);
+            });
+            popup.dialog('close');
+            return false;
+        });
+        // Prepare and display the dialog
+        $('.documentActions', body).remove();
+        popup.dialog("option", "title", $('.documentFirstHeading', body).remove().text());
+        var table = $("#" + field_id + "_datagrid");
+        var options = table.dataTable().fnSettings().oInit;
+        if(options.plominoDialogOptions) {
+            Object.keys = Object.keys || ie8_object_keys();
+            keys = Object.keys(options.plominoDialogOptions);
+            for(var k in keys) {
+                popup.dialog("option", keys[k], options.plominoDialogOptions[keys[k]]);
+            }
+        }
+        popup.dialog('open');
+    });
 }
 
 /*
@@ -79,12 +80,12 @@ function datagrid_show_form(field_id, formurl, onsubmit) {
  * - table: JQuery DataTables object (returned by the initialisation method)
  */
 function datagrid_deselect_rows(table) {
-	var rows = table.fnGetNodes();
-	for (var i = 0; i < rows.length; i++) {
-		var row = rows[i];
-		if (row)
-			$(row).removeClass('datagrid_row_selected');
-	}
+    var rows = table.fnGetNodes();
+    for (var i = 0; i < rows.length; i++) {
+        var row = rows[i];
+        if (row)
+            $(row).removeClass('datagrid_row_selected');
+    }
 }
 
 /*
@@ -92,13 +93,13 @@ function datagrid_deselect_rows(table) {
  * - table: JQuery DataTables object (returned by the initialisation method)
  */
 function datagrid_get_selected_row(table) {
-	var rows = table.fnGetNodes();
-	for (var i = 0; i < rows.length; i++) {
-		var row = rows[i];
-		if (row && $(row).hasClass('datagrid_row_selected'))
-			return row;
-	}
-	return null;
+    var rows = table.fnGetNodes();
+    for (var i = 0; i < rows.length; i++) {
+        var row = rows[i];
+        if (row && $(row).hasClass('datagrid_row_selected'))
+            return row;
+    }
+    return null;
 }
 
 /*
@@ -111,15 +112,15 @@ function datagrid_get_selected_row(table) {
  * - row: row we are searching for the index
  */
 function datagrid_get_field_index(table, row) {
-	// find the correct index of the row in the field
-	var table_data = table.fnGetData();
-	var row_index = table.fnGetPosition(row);
-	var empty_rows = 0;
-	for (var i = 0; i < row_index; i++)
-		if (!table_data[i])
-			empty_rows++;
+    // find the correct index of the row in the field
+    var table_data = table.fnGetData();
+    var row_index = table.fnGetPosition(row);
+    var empty_rows = 0;
+    for (var i = 0; i < row_index; i++)
+        if (!table_data[i])
+            empty_rows++;
 
-	return row_index - empty_rows;
+    return row_index - empty_rows;
 }
 
 /*
@@ -129,20 +130,20 @@ function datagrid_get_field_index(table, row) {
  * - formurl: url of the form used to insert data
  */
 function datagrid_add_row(table, field_id, formurl) {
-	datagrid_show_form(field_id, formurl, function(rowdata, raw) {
-		// update the field
-		var field = $('#' + field_id + '_gridvalue');
-		var field_data = $.evalJSON(field.val());
-		field_data.push(raw);
-		field.val($.toJSON(field_data));
+    datagrid_show_form(field_id, formurl, function(rowdata, raw) {
+        // update the field
+        var field = $('#' + field_id + '_gridvalue');
+        var field_data = $.evalJSON(field.val());
+        field_data.push(raw);
+        field.val($.toJSON(field_data));
 
-		// show buttons
-		$('#' + field_id + '_editrow').show();
-		$('#' + field_id + '_deleterow').show();
+        // show buttons
+        $('#' + field_id + '_editrow').show();
+        $('#' + field_id + '_deleterow').show();
 
-		// update the datagrid
-		table.fnAddData(rowdata);
-	});
+        // update the datagrid
+        table.fnAddData(rowdata);
+    });
 }
 
 /*
@@ -152,25 +153,25 @@ function datagrid_add_row(table, field_id, formurl) {
  * - formurl: url of the form used to update data
  */
 function datagrid_edit_row(table, field_id, formurl) {
-	var row = datagrid_get_selected_row(table);
-	if (row) {
-		// get data to send
-		var field = $('#' + field_id + '_gridvalue');
-		var field_data = $.evalJSON(field.val());
-		var row_index = datagrid_get_field_index(table, row);
-		formurl += '&Plomino_datagrid_rowdata=' + $.URLEncode($.toJSON(field_data[row_index]));
-		datagrid_show_form(field_id, formurl, function(rowdata, raw) {
-			// update the field
-			field_data[row_index] = raw;
-			field.val($.toJSON(field_data));
+    var row = datagrid_get_selected_row(table);
+    if (row) {
+        // get data to send
+        var field = $('#' + field_id + '_gridvalue');
+        var field_data = $.evalJSON(field.val());
+        var row_index = datagrid_get_field_index(table, row);
+        formurl += '&Plomino_datagrid_rowdata=' + $.URLEncode($.toJSON(field_data[row_index]));
+        datagrid_show_form(field_id, formurl, function(rowdata, raw) {
+            // update the field
+            field_data[row_index] = raw;
+            field.val($.toJSON(field_data));
 
-			// update the datagrid
-			table.fnUpdate(rowdata, row);
-		});
-	}
-	else {
-		alert('You must select a row to edit.');
-	}
+            // update the datagrid
+            table.fnUpdate(rowdata, row);
+        });
+    }
+    else {
+        alert('You must select a row to edit.');
+    }
 }
 
 /*
@@ -179,23 +180,63 @@ function datagrid_edit_row(table, field_id, formurl) {
  * - field_id: id of the datagrid field
  */
 function datagrid_delete_row(table, field_id) {
-	var row = datagrid_get_selected_row(table);
-	if (row) {
-		// find the correct index of the row in the field
-		var row_index = datagrid_get_field_index(table, row);
+    var row = datagrid_get_selected_row(table);
+    if (row) {
+        // find the correct index of the row in the field
+        var row_index = datagrid_get_field_index(table, row);
 
-		// update the field
-		var field = $('#' + field_id + '_gridvalue');
-		var field_data = $.evalJSON(field.val());
-		field_data.splice(row_index, 1);
-		field.val($.toJSON(field_data));
+        // update the field
+        var field = $('#' + field_id + '_gridvalue');
+        var field_data = $.evalJSON(field.val());
+        field_data.splice(row_index, 1);
+        field.val($.toJSON(field_data));
 
-		// delete the row in the datagrid
-		table.fnDeleteRow(row, undefined, true);
-	}
-	else {
-		alert('You must select a row to delete.');
-	}
+        // delete the row in the datagrid
+        table.fnDeleteRow(row, undefined, true);
+    }
+    else {
+        alert('You must select a row to delete.');
+    }
+}
+
+/*
+ * IE8 does not support Object.keys.
+ * Function from here:
+ * http://whattheheadsaid.com/2010/10/a-safer-object-keys-compatibility-implementation
+ */
+function ie8_object_keys () {
+    var hasOwnProperty = Object.prototype.hasOwnProperty,
+        hasDontEnumBug = !{toString:null}.propertyIsEnumerable("toString"),
+        DontEnums = [
+            'toString',
+            'toLocaleString',
+            'valueOf',
+            'hasOwnProperty',
+            'isPrototypeOf',
+            'propertyIsEnumerable',
+            'constructor'
+        ],
+        DontEnumsLength = DontEnums.length;
+
+    return function (o) {
+        if (typeof o != "object" && typeof o != "function" || o === null)
+            throw new TypeError("Object.keys called on a non-object");
+
+        var result = [];
+        for (var name in o) {
+            if (hasOwnProperty.call(o, name))
+                result.push(name);
+        }
+
+        if (hasDontEnumBug) {
+            for (var i = 0; i < DontEnumsLength; i++) {
+                if (hasOwnProperty.call(o, DontEnums[i]))
+                    result.push(DontEnums[i]);
+            }
+        }
+
+        return result;
+    };
 }
 
 /*
