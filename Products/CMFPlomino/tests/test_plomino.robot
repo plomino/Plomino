@@ -46,18 +46,34 @@ Check datagrid editing
     Open form  frm_test
     Create datagrid form
     Create field of type in layout  frm_test  dgfield  DATAGRID
+# test simple modal adding
     Add datagrid row modal
     Select window 
     Element should contain  css=span.TEXTFieldRead-TEXT  This one
     Element should contain  css=td.center  22
+# test simple inline adding
     Set datagrid field inline
     Open form  frm_test
     Add datagrid row inline
     Element should contain  dgcolumnone  That one
     Element should contain  dgcolumntwo  33
-
-# columns invisible
+# test with invisible column
+# TODO: check presence of column's value
+    Create field of type in layout  dgForm   dgcolumnthree       TEXT
+    Set field settings  frm_test    dgfield  form.field_mapping  dgcolumnone,dgcolumntwo,dgcolumnthree  
+    Set field settings  frm_test    dgfield  form.jssettings  "aoColumns": [ { "sTitle": "Column 1" }, { "sTitle": "Column 2", "sClass": "center" },  { "sTitle": "Column 3", 'bVisible': false }], "bPaginate": false, "bLengthChange": false, "bFilter": false, "bSort": false, "bInfo": false, "bAutoWidth": false, "plominoDialogOptions": { "width": 400, "height": 300 } 
+    Open form  frm_test
+    Page should not contain  dgcolumnthree
 # columns computed fields
+# TODO: OK to set field list property like this?
+    Create field of type in layout  dgForm   dgcolumncomputed    TEXT
+    Set field property  dgForm      dgcolumncomputed  FieldMode  COMPUTED
+    Set field property  dgForm      dgcolumncomputed  Formula    return 'hello'
+    Set field settings  frm_test    dgfield  form.field_mapping  dgcolumnone,dgcolumntwo,dgcolumnthree,dgcolumncomputed
+    Open form  frm_test
+    Page should not contain  css=input#dgcolumncomputed
+    Element should contain   dgcolumncomputed  hello
+
 # columns display fields
 # columns editable fields with default values
 # columns editable fields failing format validation
@@ -65,6 +81,7 @@ Check datagrid editing
 # columns editable fields mutate value during formula validation
 # columns with editable fields custom read template
 # columns with editable fields custom edit template
+# static widget rendering selected
 
 Check form methods
     Set Selenium Implicit Wait        20 seconds
@@ -169,7 +186,7 @@ Add field to layout
     Go to                ${PLONE_URL}/mydb/${FORM_ID}/edit
 # Switch to textile to get a textarea/ see 'contenteditable' below
     Select from list     FormLayout_text_format    text/x-web-textile
-    Wait Until Page Contains Element   FormLayout
+    Wait until element is visible   FormLayout
 # Add to existing layout
     ${layout} =          Get text  FormLayout
     Input text           FormLayout  ${layout} ${FIELD_ID}= <span class="plominoFieldClass">${FIELD_ID}</span>
@@ -197,6 +214,15 @@ Set field property
     Go to        ${PLONE_URL}/mydb/${FORM_ID}/${FIELD_ID}
     Input text   ${PROPERTY}  ${VALUE}
     Click button  form.button.save
+
+
+Set field settings
+    [Arguments]   ${FORM_ID}  ${FIELD_ID}  ${PROPERTY}  ${VALUE}
+    Go to         ${PLONE_URL}/mydb/${FORM_ID}/${FIELD_ID}
+    Click link    Settings
+    Input text    ${PROPERTY}  ${VALUE}
+    Click button  form.actions.apply
+
 
 # This keyword creates 'dgForm' with two fields
 Create datagrid form
@@ -361,3 +387,9 @@ Teardown other portal
     Go to            http://admin:admin@${OTHER_ZOPE_HOST}:${OTHER_ZOPE_PORT}/manage_main
     Select checkbox  PloneRobotRemote
     Click button     Delete
+
+# TODO: munged from example in plone/app/robotframework/keywords.robot
+# upgrade selenium2library?
+Wait until element is visible
+    [Arguments]  ${LOCATOR}
+    Wait until keyword succeeds  2  5  Element Should Be Visible  ${LOCATOR}
