@@ -138,9 +138,9 @@ class BaseField(object):
                 fieldValue = form.computeFieldValue(fieldName, target)
 
         elif mode == "CREATION":
-            if creation:
+            if creation or not doc:
                 # Note: on creation, there is no doc, we use form as target
-                # in formula
+                # in formula, and we do the same when no doc (e.g. with tojson)
                 fieldValue = form.computeFieldValue(fieldName, form)
             else:
                 fieldValue = doc.getItem(fieldName)
