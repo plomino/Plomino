@@ -76,9 +76,11 @@ $$(document).ready( function() {
                 ispage form/isPage|nothing;">
 
         <tal:block_not_searchform_or_ispage
-            condition="python:not(searchform or ispage)"
-            define="hasCreatePermissionOnDatabase python:test(here.hasCreatePermission(here.getParentDatabase()));
-                    hasCreatePermissionOnForm python:test(here.hasCreatePermission(here));
+            condition="python:not (searchform or ispage)"
+            define="
+                    db python:here.getParentDatabase();
+                    hasCreatePermissionOnDatabase python:here.hasCreatePermission(db);
+                    hasCreatePermissionOnForm python:here.hasCreatePermission(here);
                     can_open_form python:(hasCreatePermissionOnDatabase and hasCreatePermissionOnForm) or here.REQUEST.get('Plomino_Parent_Field', None)
                     "> 
 
@@ -98,10 +100,10 @@ $$(document).ready( function() {
                 ==================================================
                 NO PERMISSION 
                 ================================================== --> </tal:comment>
-                <tal:block_no_can_open_form
+                <tal:block_not_can_open_form
                     condition="not:can_open_form">
                     <p i18n:domain="CMFPlomino" i18n:translate="Please log in">Please log in</p>
-                </tal:block_no_can_open_form>
+                </tal:block_not_can_open_form>
 
                 <tal:comment replace="nothing"> <!-- 
                 ==================================================
