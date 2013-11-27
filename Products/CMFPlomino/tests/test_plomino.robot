@@ -53,8 +53,8 @@ Check datagrid editing
     Set datagrid field inline
     Open form  frm_test
     Add datagrid row inline
-    Element should contain  css=span.TEXTFieldRead-TEXT  That one
-    Element should contain  css=td.center  44
+    Element should contain  dgcolumnone  That one
+    Element should contain  dgcolumntwo  33
 
 # columns invisible
 # columns computed fields
@@ -143,6 +143,7 @@ Create field
     [Arguments]                     ${FORM_ID}  ${FIELD_ID}
     Create field of type in layout  ${FORM_ID}  ${FIELD_ID}  Default
 
+# Add field to specified form and add it to the layout
 Create field of type in layout
     [Arguments]           ${FORM_ID}  ${FIELD_ID}  ${FIELD_TYPE}
     Create field of type  ${FORM_ID}  ${FIELD_ID}  ${FIELD_TYPE}
@@ -152,7 +153,9 @@ Create field of type
     [Arguments]          ${FORM_ID}  ${FIELD_ID}  ${FIELD_TYPE}
     Open form  ${FORM_ID}
     Click link           Field
-    Page should contain element      css=input#id
+# too slow locally :(
+#   Page should contain element      css=input#id
+    Wait until page contains element  css=input#id
     Input text           id     ${FIELD_ID}
     Input text           title  ${FIELD_ID}
     Run keyword if  '${FIELD_TYPE}' != 'Default'  Select field type  ${FIELD_TYPE}
@@ -164,28 +167,44 @@ Create field of type
 Add field to layout
     [Arguments]          ${FORM_ID}  ${FIELD_ID} 
     Go to                ${PLONE_URL}/mydb/${FORM_ID}/edit
-#   Wait Until Page Contains Element  FormLayout_ifr
+# Switch to textile to get a textarea/ see 'contenteditable' below
     Select from list     FormLayout_text_format    text/x-web-textile
-    Sleep  2s
-#   Select frame         FormLayout_ifr 
+    Wait Until Page Contains Element   FormLayout
 # Add to existing layout
     ${layout} =          Get text  FormLayout
     Input text           FormLayout  ${layout} ${FIELD_ID}= <span class="plominoFieldClass">${FIELD_ID}</span>
+    Click button         Save
+
+##
+## Editing TinyMCE contenteditable ##
+##
+# This is problematic, because it's a pain navigating the DOM to edit.
+# See http://stackoverflow.com/questions/17306305/how-to-select-the-text-of-a-tinymce-field-with-robot-framework-and-selenium2libr
+# http://stackoverflow.com/questions/6139107/programatically-select-text-in-a-contenteditable-html-element
+#   Wait Until Page Contains Element  FormLayout_ifr
+#   Select frame         FormLayout_ifr 
+#   Input text           content  ${FIELD_ID}=
 #   Unselect Frame
 #   Click link           FormLayout_plominofield
 #   Select frame         css=.plonepopup iframe
 #   Select From List     plominoFieldId  ${FIELD_ID}
 #   Click button         insert
 #   Unselect Frame
-    Click button         Save
 
+Set field property
+# See PlominoField.schema for properties
+    [Arguments]  ${FORM_ID}  ${FIELD_ID}  ${PROPERTY}  ${VALUE}
+    Go to        ${PLONE_URL}/mydb/${FORM_ID}/${FIELD_ID}
+    Input text   ${PROPERTY}  ${VALUE}
+    Click button  form.button.save
+
+# This keyword creates 'dgForm' with two fields
 Create datagrid form
-#   [Arguments]          ${FORM_ID}
-    Create form           dgForm  Datagrid form
-    Create field of type in layout  dgForm  one  TEXT
-    Create field of type in layout  dgForm  two  NUMBER
-#   Add field to layout   dgForm  one
-#   Add field to layout   dgForm  two
+    Create form                     dgForm  Datagrid form
+    Create field of type in layout  dgForm  dgcolumnone  TEXT
+    Create field of type in layout  dgForm  dgcolumntwo  NUMBER
+# Set a default formula for 'dgcolumntwo':
+    Set field property  dgForm  dgcolumntwo  Formula  return 11
 
 Check form method
 # Make sure the form method is what it should be
@@ -216,24 +235,27 @@ Configure datagrid field
 #   [Arguments]       ${FIELD_ID}
     Click link        Settings
     Select from list  form.associated_form  dgForm
-    Input text        form.field_mapping  one,two
+    Input text        form.field_mapping  dgcolumnone,dgcolumntwo
     Click button      form.actions.apply
 
 Add datagrid row modal
 # To use, should be viewing form with dgfield
     Click link    dgfield_addrow
     Select frame  dgfield_iframe
-    Input text    one  This one
-    Input text    two  22
+# Default value
+    Element should contain  dgcolumntwo  11
+    Input text    dgcolumnone  This one
+    Input text    dgcolumntwo  22
     Click button  Save
 
 Add datagrid row inline
-# To use, should be viewing form with dgfield
+# Context: viewing form containing dgfield
     Click link    dgfield_addrow
-    Page Should Contain Textfield  input#one
-    Element should contain  input#two  22
-    Input text    one  That one
-    Input text    two  44
+    Page Should Contain Textfield  dgcolumnone
+# Default value
+    Element should contain  dgcolumntwo  11
+    Input text    dgcolumnone  That one
+    Input text    dgcolumntwo  33
     Click button  button.save
 
 Set datagrid field inline
@@ -257,17 +279,17 @@ Replicate the database design
     Go to         ${OTHER_PLONE_URL}
     Open Add New Menu
     Click Link    plominodatabase
-    Wait Until Page Contains Element  title
-    Input Text    title  replicadb
+    Wait until page contains element  title
+    Input text    title  replicadb
     Click button  name=form.button.save
-    Page Should Contain  Changes saved.
+    Page should contain  Changes saved.
     Go to    ${OTHER_PLONE_URL}/replicadb/DatabaseDesign
-    Select Radio Button     sourcetype   sourcetype-server
+    Select radio button     sourcetype   sourcetype-server
     Input text     sourceurl-import  ${PLONE_URL}/mydb
     Input text     username-import   ${TEST_USER_ID}
     Input text     password-import   ${TEST_USER_PASSWORD}
     Click button   submit_refresh_import
-    Select Radio Button     sourcetype   sourcetype-server
+    Select radio button     sourcetype   sourcetype-server
     Input text     sourceurl-import  ${PLONE_URL}/mydb
     Input text     username-import   ${TEST_USER_ID}
     Input text     password-import   ${TEST_USER_PASSWORD}
