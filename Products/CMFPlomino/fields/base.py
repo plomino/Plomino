@@ -109,7 +109,7 @@ class BaseField(object):
         fieldValue = None
         if mode == "EDITABLE":
             # if (not doc) or creation:
-            if doc:
+            if doc and not creation:
                 fieldValue = doc.getItem(fieldName)
                 #DBG _logger.info('BaseField.getFieldValue> 1 got doc') 
             elif self.context.Formula():
