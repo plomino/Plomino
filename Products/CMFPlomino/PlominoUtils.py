@@ -25,6 +25,7 @@ import htmlentitydefs
 import Missing
 import re
 import urllib
+import transaction
 
 # 3rd party Python
 from jsonutil import jsonutil as json
@@ -506,3 +507,6 @@ def getDatagridRowdata(context, REQUEST):
         mapped_field_ids = [f.strip() for f in settings.field_mapping.split(',')]
     return mapped_field_ids, rowdata
 
+def save_point():
+    txn = transaction.get()
+    txn.savepoint(optimistic=True)
