@@ -32,18 +32,18 @@
 function refreshHidewhen() {
     var onsuccess = function(data, textStatus, xhr) {
         for (var hw in data)
-            $$('.hidewhen-' + hw).css('display', data[hw]?'none':'block');
+            jQuery('.hidewhen-' + hw).css('display', data[hw]?'none':'block');
     }
-    $$.ajax({
+    jQuery.ajax({
         type: '${form_method}',
         url: 'computehidewhens',
-        data: $$('#plomino_form').serialize(),
+        data: jQuery('#plomino_form').serialize(),
         success: onsuccess,
         dataType: 'json' 
     });
 }
-$$(document).ready( function() {
-    $$('#plomino_form :input').change(refreshHidewhen);
+jQuery(document).ready( function() {
+    jQuery('#plomino_form :input').change(refreshHidewhen);
 });
 ">
     </script>

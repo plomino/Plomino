@@ -60,21 +60,21 @@
 	    			">
         <script type='text/javascript' tal:content="structure string:
 		 	function ${fieldid}_delete_row(elt) {
-				var rows = $$('#${fieldid}_table_result > tbody > tr');
+				var rows = jQuery('#${fieldid}_table_result > tbody > tr');
 				if (rows.length <= 1) {
-					$$('#${fieldid}_table_result > tbody').append('<tr style=\'display: none\'><td><input type=\'hidden\' name=\'${fieldid}\' value=\'\' /></td><td></td></tr>');
+					jQuery('#${fieldid}_table_result > tbody').append('<tr style=\'display: none\'><td><input type=\'hidden\' name=\'${fieldid}\' value=\'\' /></td><td></td></tr>');
 				}
-				$$(elt).closest('tr').remove();
+				jQuery(elt).closest('tr').remove();
 		 		${fieldid}_set_row_style();
 		 	}
 
 		 	function ${fieldid}_add_row(data) {
-		 		var tablebody = $$('#${fieldid}_table_result > tbody');
+		 		var tablebody = jQuery('#${fieldid}_table_result > tbody');
 		 		//if (tablebody.has('input[value=' + data[0] + ']').length == 0) {
-		 		if ($$('#${fieldid}_table_result > tbody:has(input[value=' + data[0] + '])').length == 0) {
+		 		if (jQuery('#${fieldid}_table_result > tbody:has(input[value=' + data[0] + '])').length == 0) {
 		 			//tablebody.children().has('input[value=]').remove()
-		 			$$('#${fieldid}_table_result > tbody > *:has(input[value=])').remove()
-			 		var row = $$('<tr><td><img alt=\'Remove\' src=\'list-remove.png\' style=\'cursor: pointer\' onclick=\'${fieldid}_delete_row(this)\' />' +
+		 			jQuery('#${fieldid}_table_result > tbody > *:has(input[value=])').remove()
+			 		var row = jQuery('<tr><td><img alt=\'Remove\' src=\'list-remove.png\' style=\'cursor: pointer\' onclick=\'${fieldid}_delete_row(this)\' />' +
 						 		'<input type=\'hidden\' name=\'${fieldid}\' value=\'' + data[0] + '\' /></td>' +
 						 		'<td>' + data[1] + '</td></tr>');
 			 		tablebody.append(row);
@@ -83,21 +83,21 @@
 		 	}
 
 		 	function ${fieldid}_set_row_style() {
-		 		var tablebody = $$('#${fieldid}_table_result > tbody');
+		 		var tablebody = jQuery('#${fieldid}_table_result > tbody');
 		 		tablebody.children().removeClass('odd even');
 		 		tablebody.children(':even').addClass('odd');
 		 		tablebody.children(':odd').addClass('even');
 		 	}
 			
 			var o_${fieldid}_table;
-			$$(document).ready(function() {
-				o_${fieldid}_table = $$('#${fieldid}_table').dataTable( {
+			jQuery(document).ready(function() {
+				o_${fieldid}_table = jQuery('#${fieldid}_table').dataTable( {
 			        'aaData': ${data},
 			        'bJQueryUI': true,
 			        'aoColumns': [{'bVisible': false, 'bSearchable': false}, {'sTitle':'Value'}],
 			        'aaSorting': [],
 			        'fnInitComplete': function(oSettings) {
-			        	$$('#${fieldid}_table').closest('.wrapper').hide();
+			        	jQuery('#${fieldid}_table').closest('.wrapper').hide();
 				        for (var i = 0; i < oSettings.aoData.length; i++) {
 				            if ('${selected}'.indexOf('|'+oSettings.aoData[i]._aData[0]+'|') != -1) {
 					        	${fieldid}_add_row(oSettings.aoData[i]._aData);
@@ -111,14 +111,14 @@
 			        ${params}
 			    });
 				 
-			    $$('#${fieldid}_table tbody tr').live('click', function () {
+			    jQuery('#${fieldid}_table tbody tr').live('click', function () {
 			    	${fieldid}_add_row(o_${fieldid}_table.fnGetData(this));
 			    } );
 
-			 	var close_ctrl = $$('#${fieldid}_table').closest('.picklist').children('img.close_button');
+			 	var close_ctrl = jQuery('#${fieldid}_table').closest('.picklist').children('img.close_button');
 
 			    var onTextChanged = function(value) {
-				    var table = $$('#${fieldid}_table');
+				    var table = jQuery('#${fieldid}_table');
 				    if (value) {
 			        	close_ctrl.show();
 			        	table.closest('.wrapper').slideDown();
@@ -134,7 +134,7 @@
 			    	onTextChanged('');
 			    } );
 
-			    $$('#${fieldid}_search').keyup( function() {
+			    jQuery('#${fieldid}_search').keyup( function() {
 			    	onTextChanged(this.value);
 			    } );
 			});

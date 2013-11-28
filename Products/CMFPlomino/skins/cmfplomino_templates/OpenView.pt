@@ -200,8 +200,8 @@
                                     display_checkboxes python:test(hasRemovePermission and not(hideCheckboxes), 'true', 'false')"
                         tal:content="structure string:
                                      var oDynamicTable;
-                                     $$(document).ready(function() {
-                                            oDynamicTable = $$('#dynamictable').dataTable( {
+                                     jQuery(document).ready(function() {
+                                            oDynamicTable = jQuery('#dynamictable').dataTable( {
                                                 'aaSorting': [],
                                                 'bJQueryUI': true,
                                                 'bProcessing': true,
@@ -230,8 +230,8 @@
                                                 }
                                             });
                                             var tableNodes = oDynamicTable.fnGetNodes();
-                                            $$('td > input:checkbox', tableNodes).change(function() {
-                                                $$(this).closest('tr').toggleClass('row_selected');
+                                            jQuery('td > input:checkbox', tableNodes).change(function() {
+                                                jQuery(this).closest('tr').toggleClass('row_selected');
                                             });
                                         });">
                     </script>
