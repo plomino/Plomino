@@ -1430,7 +1430,7 @@ class PlominoDesignManager(Persistent):
             id = manage_addImage(container, id,
                     node.firstChild.data.decode('base64'),
                     content_type=node.getAttribute('contenttype'))
-        elif resource_type == 'Folder':
+        elif resource_type in ('Folder', 'ATFolder'):
             container.manage_addFolder(id)
             subfolder = container[id]
             elements = [e for e in node.childNodes
