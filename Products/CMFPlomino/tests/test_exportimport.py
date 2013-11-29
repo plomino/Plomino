@@ -3,7 +3,6 @@ import os
 from zipfile import ZipFile, ZIP_DEFLATED
 
 import OFS
-from Products.CMFCore import CMFBTreeFolder
 
 from Products.CMFPlomino.testing import PLOMINO_FIXTURE
 from plone.app.testing import FunctionalTesting
