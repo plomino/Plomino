@@ -763,7 +763,7 @@ class PlominoForm(ATFolder):
             field_items.append(
                     field_html % {
                         'field_id': i,
-                        'renameItem': doc.getRenderedItem(i, form=self)
+                        'rendered_item': doc.getRenderedItem(i, form=self)
                         })
 
         return html % {
