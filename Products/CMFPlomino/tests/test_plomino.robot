@@ -37,12 +37,12 @@ Check datagrid editing
     Element should contain  css=#dgfield_datagrid tbody>tr>td:nth-child(2)  33
 # test with invisible column
 # TODO: check presence of column's value
-##    Create field of type in layout  dgForm   dgcolumnthree       TEXT
-##    Set field settings  frm_test    dgfield  form.field_mapping  dgcolumnone,dgcolumntwo,dgcolumnthree  
-##    Set field settings  frm_test    dgfield  form.jssettings  "aoColumns": [ { "sTitle": "Column 1" }, { "sTitle": "Column 2", "sClass": "center" }, { "sTitle": "Column 3", 'bVisible': false }], "bPaginate": false, "bLengthChange": false, "bFilter": false, "bSort": false, "bInfo": false, "bAutoWidth": false, "plominoDialogOptions": { "width": 400, "height": 300 } 
-##    Open form  frm_test
-##    Inspect Page
-##    Page should not contain  css=#dgfield_datagrid tbody>th>td:nth-child(3)
+    Create field of type in layout  dgForm   dgcolumnthree       TEXT
+    Set field settings  frm_test    dgfield  form.field_mapping  dgcolumnone,dgcolumntwo,dgcolumnthree  
+    Set field settings  frm_test    dgfield  form.jssettings  "aoColumns": [ { "sTitle": "Column 1" }, { "sTitle": "Column 2", "sClass": "center" }, { "sTitle": "Column 3", 'bVisible': false }], "bPaginate": false, "bLengthChange": false, "bFilter": false, "bSort": false, "bInfo": false, "bAutoWidth": false, "plominoDialogOptions": { "width": 400, "height": 300 } 
+    Open form  frm_test
+    Page should contain element  css=#dgfield_datagrid thead>tr>th:nth-child(2)
+    Page should not contain element  css=#dgfield_datagrid thead>tr>th:nth-child(3)
 # columns computed fields
 # TODO: OK to set field list property like this?
 ##    Create field of type in layout  dgForm   dgcolumncomputed    TEXT
@@ -50,6 +50,7 @@ Check datagrid editing
 ##    Set field property  dgForm      dgcolumncomputed  Formula    return 'hello'
 ##    Set field settings  frm_test    dgfield  form.field_mapping  dgcolumnone,dgcolumntwo,dgcolumnthree,dgcolumncomputed
 ##    Open form  frm_test
+##    Inspect Page
 ##    Page should not contain  css=input#dgcolumncomputed
 ##    Element should contain   dgcolumncomputed  hello
 
