@@ -29,20 +29,30 @@ Check datagrid editing
     Select window 
     Element should contain  css=span.TEXTFieldRead-TEXT  This one
     Element should contain  css=td.center  22
+
 # test simple inline adding
     Set datagrid field inline
     Open form  frm_test
     Add datagrid row inline
+    Select window
     Element should contain  css=#dgfield_datagrid tbody>tr>td:nth-child(1)  That one
     Element should contain  css=#dgfield_datagrid tbody>tr>td:nth-child(2)  33
+# test simple inline editing
+    Edit datagrid row inline
+    Select window
+    Element should contain  css=#dgfield_datagrid tbody>tr>td:nth-child(1)  That two
+    Element should contain  css=#dgfield_datagrid tbody>tr>td:nth-child(2)  33
+# test simple deleting
+    Delete datagrid row inline
+
 # test with invisible column
 # TODO: check presence of column's value
-    Create field of type in layout  dgForm   dgcolumnthree       TEXT
-    Set field settings  frm_test    dgfield  form.field_mapping  dgcolumnone,dgcolumntwo,dgcolumnthree  
-    Set field settings  frm_test    dgfield  form.jssettings  "aoColumns": [ { "sTitle": "Column 1" }, { "sTitle": "Column 2", "sClass": "center" }, { "sTitle": "Column 3", 'bVisible': false }], "bPaginate": false, "bLengthChange": false, "bFilter": false, "bSort": false, "bInfo": false, "bAutoWidth": false, "plominoDialogOptions": { "width": 400, "height": 300 } 
-    Open form  frm_test
-    Page should contain element  css=#dgfield_datagrid thead>tr>th:nth-child(2)
-    Page should not contain element  css=#dgfield_datagrid thead>tr>th:nth-child(3)
+#    Create field of type in layout  dgForm   dgcolumnthree       TEXT
+#    Set field settings  frm_test    dgfield  form.field_mapping  dgcolumnone,dgcolumntwo,dgcolumnthree  
+#    Set field settings  frm_test    dgfield  form.jssettings  "aoColumns": [ { "sTitle": "Column 1" }, { "sTitle": "Column 2", "sClass": "center" }, { "sTitle": "Column 3", 'bVisible': false }], "bPaginate": false, "bLengthChange": false, "bFilter": false, "bSort": false, "bInfo": false, "bAutoWidth": false, "plominoDialogOptions": { "width": 400, "height": 300 } 
+#    Open form  frm_test
+#    Page should contain element  css=#dgfield_datagrid thead>tr>th:nth-child(2)
+#    Page should not contain element  css=#dgfield_datagrid thead>tr>th:nth-child(3)
 # columns computed fields
 # TODO: OK to set field list property like this?
 ##    Create field of type in layout  dgForm   dgcolumncomputed    TEXT
@@ -291,7 +301,27 @@ Add datagrid row inline
     Input text    dgcolumnone  That one
     Input text    dgcolumntwo  33
     Click button  css=button.save
+    Wait until page contains element  css=#dgfield_datagrid tbody>tr
+    Click button  css=input.plominoSave
+    Wait until page contains element  css=.plominoEdit
 
+Edit datagrid row inline
+    Click button  css=.plominoEdit
+    Page should contain element  css=#dgfield_datagrid tbody>tr
+    Double click element  css=#dgfield_datagrid tbody>tr
+    Wait until page contains element  css=#dgfield_datagrid tbody>tr button.save
+    Input text    dgcolumnone  That two
+    Click button  css=button.save
+    Wait until page contains element  css=#dgfield_datagrid tbody>tr
+    Click button  css=input.plominoSave
+    Wait until page contains element  css=.plominoEdit
+
+Delete datagrid row inline
+    Click button  css=.plominoEdit
+    Page should contain element  css=#dgfield_datagrid tbody>tr
+    Click element  css=#dgfield_datagrid tbody>tr
+    Click link    dgfield_deleterow
+    Wait until page contains element  css=.dataTables_empty
 
 Set datagrid field inline
     Open field        frm_test  dgfield
