@@ -103,11 +103,13 @@
                         $$('#${fieldname}_editrow').click(function() {
                             datagrid_edit_row(${fieldname}_datatable, '${fieldname}', this.href);
                         });
-                        $$('#${fieldname}_deleterow').click(function() {
-                            datagrid_delete_row(${fieldname}_datatable, '${fieldname}');
-                        });
                         $$('#${fieldname}_editform').dialog({ 'autoOpen': false, 'modal': true });
                     }
+
+                    $$('#${fieldname}_deleterow').click(function() {
+                        datagrid_delete_row(${fieldname}_datatable, '${fieldname}');
+                    });
+                    
                 } );">
     </script>
 
