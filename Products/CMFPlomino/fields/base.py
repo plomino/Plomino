@@ -113,10 +113,12 @@ class BaseField(object):
             if doc:
                 fieldValue = doc.getItem(fieldName)
                 #DBG _logger.info('BaseField.getFieldValue> 1 got doc') 
-            elif self.context.Formula():
+            if (not fieldValue) and self.context.Formula():
+                # This implies that if a falsy fieldValue is possible, 
+                # Formula needs to take it into account, e.g. using hasItem
                 fieldValue = form.computeFieldValue(fieldName, target)
                 #DBG _logger.info('BaseField.getFieldValue> 2 default formula') 
-            elif request:
+            elif (not fieldValue) and request:
                 # if no doc context and no default formula, we accept
                 # value passed in the REQUEST so we look for 'fieldName'
                 # but also for 'fieldName_querystring' which allows to
@@ -128,7 +130,7 @@ class BaseField(object):
                     request_value = request.get(fieldName + '_querystring', '')
                     #DBG _logger.info('BaseField.getFieldValue> 3 request _querystring') 
                 fieldValue = asUnicode(request_value)
-            else:
+            if not fieldValue:
                 #DBG _logger.info('BaseField.getFieldValue> 4 blank') 
                 fieldValue = ""
 
