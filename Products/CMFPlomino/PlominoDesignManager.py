@@ -610,7 +610,8 @@ class PlominoDesignManager(Persistent):
     def getResourcesList(self):
         """ Return the database resources objects ids in a string
         """
-        ids = self.resources.objectIds()
+        # Un-lazify, resources is a BTree
+        ids = [i for i in self.resources.objectIds()]
         ids.sort()
         return '/'.join(ids)
 
@@ -1177,11 +1178,15 @@ class PlominoDesignManager(Persistent):
 
         if replace:
             logger.info("Replace mode: removing current design")
-            designelements = [o.id for o in self.getForms()] \
-                                 + [o.id for o in self.getViews()] \
-                                 + [o.id for o in self.getAgents()]
+            designelements = [o.id for o in 
+                    self.getForms() +
+                    self.getViews() +
+                    self.getAgents()]
             ObjectManager.manage_delObjects(self, designelements)
-            ObjectManager.manage_delObjects(self.resources, self.resources.objectIds())
+            ObjectManager.manage_delObjects(
+                    self.resources,
+                    # Un-lazify BTree 
+                    [i for i in self.resources.objectIds()])
             logger.info("Current design removed")
 
         for xmlstring in xml_strings:
@@ -1425,7 +1430,7 @@ class PlominoDesignManager(Persistent):
             id = manage_addImage(container, id,
                     node.firstChild.data.decode('base64'),
                     content_type=node.getAttribute('contenttype'))
-        elif resource_type == 'Folder':
+        elif resource_type in ('Folder', 'ATFolder'):
             container.manage_addFolder(id)
             subfolder = container[id]
             elements = [e for e in node.childNodes

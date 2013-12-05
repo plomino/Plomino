@@ -118,8 +118,6 @@ if (typeof(oDynamicTable)!="undefined") {
 
 </script>
 	<tal:defaultactions tal:define="hidedefault owner/HideDefaultActions|nothing" tal:condition="python:not(hidedefault)">
-		<tal:block metal:use-macro="here/ActionBar/macros/CloseAction">display
-		close action</tal:block>
 		<input type="button" class="context plominoDelete" value="Delete" name="plomino_deletedocuments"
 			i18n:domain="CMFPlomino" i18n:attributes="value"
 			tal:condition="python:here.hasRemovePermission(here)==True"

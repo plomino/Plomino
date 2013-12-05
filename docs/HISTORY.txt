@@ -1,6 +1,17 @@
 Changelog
 =========
 
+1.18.5 (2013-12-04)
+-------------------
+* Working on BaseField.getFieldValue, handling of field defaults
+
+1.18.4 (2013-11-29)
+-------------------
+* Fix few Chameleon compatibility issues
+* Improve document properties page
+* Split key column from sort column
+* Remove Close action from views
+
 1.18.3 (2013-11-04)
 -------------------
 * Fix getFieldValue

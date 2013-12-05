@@ -26,8 +26,8 @@
                     "
             tal:content="structure string:
                 var ${fieldname}_datatable;
-                $$(document).ready(function() {
-                    ${fieldname}_datatable = $$('#${fieldname}_datagrid').dataTable( {
+                jQuery(document).ready(function() {
+                    ${fieldname}_datatable = jQuery('#${fieldname}_datagrid').dataTable( {
                         'sAjaxSource': 'tojson?item=${fieldname}&rendered=true&datatables=true',
                         'sServerMethod': '${form_method}',
                         'fnServerParams': function ( aoData ) {
@@ -36,9 +36,9 @@
                         'bJQueryUI': true,
                         ${param},
                         'fnDrawCallback': function() {
-                            $$('#${fieldname}_datagrid > tbody > tr').click(function() {
+                            jQuery('#${fieldname}_datagrid > tbody > tr').click(function() {
                                 datagrid_deselect_rows(${fieldname}_datatable);
-                                $$(this).addClass('datagrid_row_selected');
+                                jQuery(this).addClass('datagrid_row_selected');
                             });
                         },
                         'oLanguage': {

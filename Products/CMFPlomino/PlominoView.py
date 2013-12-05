@@ -664,6 +664,10 @@ class PlominoView(ATFolder):
 
         IMPORTANT: brain_docs are supposed to be ZCatalog brains
         """
+        if REQUEST:
+            if REQUEST.get("displayColumnsTitle"):
+                displayColumnsTitle = REQUEST.get("displayColumnsTitle")
+
         if brain_docs is None:
             brain_docs = self.getAllDocuments(getObject=False)
 
@@ -676,7 +680,7 @@ class PlominoView(ATFolder):
         if displayColumnsTitle == 'True':
             titles = [c.title.encode('utf-8') for c in self.getColumns()
                 if not getattr(c, 'HiddenColumn', False)]
-            rows[0:0] = titles
+            rows = [titles] + rows
 
         html = XLS_TABLE % (
                 ''.join([TR %

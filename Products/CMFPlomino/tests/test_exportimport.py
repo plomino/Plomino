@@ -89,7 +89,7 @@ class ExportImportTest(unittest.TestCase):
         mydb.resources.manage_addFolder('test_folder')
         mydb.resources.test_folder.manage_addFolder('test_subfolder')
         xml = mydb.exportDesignAsXML()
-        # Now delete the fodlers and check they are created back again
+        # Now delete the folders and check they are created back again
         mydb.resources.manage_delObjects(['test_folder'])
         mydb.importDesignFromXML(xml, replace=True)
         self.assertTrue('test_folder' in mydb.resources)
