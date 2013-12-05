@@ -12,13 +12,33 @@ Test Teardown     Run keywords  Report test status  Close all browsers
 ${OTHER_ZOPE_HOST}       localhost
 ${OTHER_ZOPE_PORT}       8080
 ${OTHER_ZOPE_URL}        http://${OTHER_ZOPE_HOST}:${OTHER_ZOPE_PORT}
-# ${OTHER_PLONE_SITE_ID}   PloneRobotRemote
-# ${OTHER_PLONE_INIT_URL}  http://admin:admin@${OTHER_ZOPE_HOST}:${OTHER_ZOPE_PORT}/@@plone-addsite?site_id=${OTHER_PLONE_SITE_ID}&title=Site&form.submitted:boolean=True&extension_ids:list=plonetheme.classic:default&extension_ids:list=plonetheme.sunburst:default&extension_ids:list=Products.CMFPlomino:default
-# ${OTHER_PLONE_URL}       ${OTHER_ZOPE_URL}/${OTHER_PLONE_SITE_ID} 
+${OTHER_PLONE_SITE_ID}   PloneRobotRemote
+${OTHER_PLONE_INIT_URL}  http://admin:admin@${OTHER_ZOPE_HOST}:${OTHER_ZOPE_PORT}/@@plone-addsite?site_id=${OTHER_PLONE_SITE_ID}&title=Site&form.submitted:boolean=True&extension_ids:list=plonetheme.classic:default&extension_ids:list=plonetheme.sunburst:default&extension_ids:list=Products.CMFPlomino:default
+${OTHER_PLONE_URL}       ${OTHER_ZOPE_URL}/${OTHER_PLONE_SITE_ID} 
 
 *** Test Cases ***
 
+Manage a Plomino database
+    Plomino is installed
+    Log in as the database owner
+    Open the database
+    Generate view for     frm_test
+    Add document          ${PLONE_URL}/mydb/frm_test    field_1     Isaac Newton
+    Add document          ${PLONE_URL}/mydb/frm_test    field_1     Marie Curie
+    Initialize other portal
+    Replicate the database design
+    Add document          ${OTHER_PLONE_URL}/replicadb/frm_test    field_1     Victor Hugo
+    Replicate documents
+    Go to                 ${OTHER_PLONE_URL}/replicadb/allfrmtest
+    Page should contain   Marie Curie
+    Re-replicate the database design
+    Add document          ${PLONE_URL}/secondreplicadb/frm_test    field_1     Louis Pasteur
+    Re-replicate documents
+    Go to                 ${PLONE_URL}/secondreplicadb/allfrmtest
+    Page should contain   Marie Curie
+
 Check datagrid editing
+    Plomino is installed
     Log in as the database owner
     Open the database
     Open form  frm_test
@@ -80,31 +100,6 @@ Check datagrid editing
 # columns with editable fields custom read template
 # columns with editable fields custom edit template
 # static widget rendering selected
-
-*** Keywords ***
-
-Replicate a Plomino database
-    Plomino is installed
-    Log in as the database owner
-    Open the database
-    Generate view for     frm_test
-    Add document          ${PLONE_URL}/mydb/frm_test    field_1     Isaac Newton
-    Add document          ${PLONE_URL}/mydb/frm_test    field_1     Marie Curie
-    Initialize other portal
-    #Replicate the database design
-    Add document          ${OTHER_PLONE_URL}/replicadb/frm_test    field_1     Victor Hugo
-    #Replicate documents
-    Go to                 ${OTHER_PLONE_URL}/replicadb/allfrmtest
-    Page should contain   Marie Curie
-    #Re-replicate the database design
-    Add document          ${PLONE_URL}/secondreplicadb/frm_test    field_1     Louis Pasteur
-    #Re-replicate documents
-    Go to                 ${PLONE_URL}/secondreplicadb/allfrmtest
-    Page should contain   Marie Curie
-
-#Teardown
-#    Teardown other portal
-
 Check form methods
     Set Selenium Implicit Wait        20 seconds
     Log in as the database owner
@@ -124,6 +119,11 @@ Check form methods
     Check form method                 frmPostingPage    POST
     Create form with method and type  frmPostingSearch  Testing POST search  POST  SearchForm
     Check form method                 frmPostingSearch  POST
+
+Teardown
+    Teardown other portal
+
+*** Keywords ***
 
 Plomino is installed
     Go to                ${PLONE_URL}
