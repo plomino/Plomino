@@ -114,6 +114,8 @@ class BaseField(object):
                 #DBG _logger.info('BaseField.getFieldValue> 1 got doc') 
     
             if (not fieldValue) and self.context.Formula():
+                # This implies that if a falsy fieldValue is possible, 
+                # Formula needs to take it into account, e.g. using hasItem
                 fieldValue = form.computeFieldValue(fieldName, target)
                 #DBG _logger.info('BaseField.getFieldValue> 2 default formula') 
             elif (not fieldValue) and request:
