@@ -741,6 +741,8 @@ class PlominoForm(ATFolder):
         raw_values = []
         for f in field_ids:
             v = doc.getItem(f)
+            # Watch out, this is lossy. Don't use DB date format here, 
+            # use a non-lossy representation.
             if hasattr(v, 'strftime'):
                 raw_values.append(
                         DateToString(
@@ -752,15 +754,17 @@ class PlominoForm(ATFolder):
         html = ("<div id='raw_values'>%(raw_values)s</div>"
                 "<div id='parent_field'>%(parent_field)s</div>"
                 "%(fields)s")
-        field_html = "<span id='%s' class='plominochildfield'>%s</span>"
+        field_html = (
+                "<span id='%(field_id)s' "
+                "class='plominochildfield'>%(rendered_item)s</span>")
 
         field_items = []
         for i in field_ids:
             field_items.append(
-                    field_html % (
-                        i,
-                        doc.getRenderedItem(i, form=self)
-                        ))
+                    field_html % {
+                        'field_id': i,
+                        'rendered_item': doc.getRenderedItem(i, form=self)
+                        })
 
         return html % {
                 'raw_values': json.dumps(raw_values),

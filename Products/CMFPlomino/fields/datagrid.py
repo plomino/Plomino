@@ -54,6 +54,16 @@ class IDatagridField(IBaseField):
             description=u'Form to use to create/edit rows',
             required=False)
 
+    associated_form_rendering = Choice(
+            vocabulary=SimpleVocabulary.fromItems(
+                [("Modal", "MODAL"),
+                    ("Inline editing", "INLINE"),
+                    ]),
+            title=u'Associate form rendering',
+            description=u'Associate form rendering',
+            default="MODAL",
+            required=True)
+
     field_mapping = TextLine(
             title=u'Columns/fields mapping',
             description=u'Field ids from the associated form, '
@@ -130,9 +140,11 @@ class DatagridField(BaseField):
         """
         """
         rows = self.rows(value, rendered)
+
         return json.dumps(rows)
 
     def request_items_aoData(self, request):
+        
         """ Return a string representing REQUEST.items as aoData.push calls.
         """
         aoData_templ = "aoData.push(%s); "
@@ -181,7 +193,44 @@ class DatagridField(BaseField):
 
         # return title for each mapped field if this one exists in the child form
         return [f.Title() for f in [child_form.getFormField(f) for f in mapped_fields] if f]
-        
+
+    def getRenderedFields(self, editmode=True, creation=False, request={}):
+        """ Return an array of rows rendered using the associated form fields
+        """
+        if not self.field_mapping:
+            return []
+
+        db = self.context.getParentDatabase()
+
+        mapped_fields = [ f.strip() for f in self.field_mapping.split(',')]
+
+        #get associated form id
+        child_form_id = self.associated_form
+        if not child_form_id:
+            return mapped_fields
+ 
+        # get associated form object
+        child_form = db.getForm(child_form_id)
+        if not child_form:
+            return mapped_fields
+        if not creation: 
+            target = TemporaryDocument(
+                    db,
+                    child_form,
+                    request, 
+                    validation_mode=False).__of__(db) 
+        else:
+            target = None
+
+        # return rendered field for each mapped field if this one exists in the child form
+        return [str(f.getFieldRender(child_form, target, editmode=editmode, creation=creation, request=request)) for f in [child_form.getFormField(f) for f in mapped_fields] if f]
+
+    def getAssociateForm(self):
+        child_form_id = self.associated_form;
+        if child_form_id:
+            db = self.context.getParentDatabase()
+            return db.getForm(child_form_id)   
+
     def getFieldValue(self, form, doc=None, editmode_obsolete=False,
             creation=False, request=None):
         """
@@ -268,3 +317,22 @@ class SettingForm(BaseForm):
     """
     form_fields = form.Fields(IDatagridField)
 
+class EditFieldsAsJson(object):
+    """
+    """
+    def __call__(self):
+
+        if hasattr(self.context, 'getParentDatabase') and self.context.FieldType == u'DATAGRID':
+            self.request.RESPONSE.setHeader(
+                        'content-type',
+                        'application/json; charset=utf-8')
+
+            self.field = self.context.getSettings()
+            self.request.set("Plomino_Parent_Form",self.context.getForm().id)
+            self.request.set("Plomino_Parent_Field",self.context.id)
+            #DBG logger.info("%s --- %s --- %s"%(self.request["Plomino_Parent_Form"],self.request["Plomino_Parent_Field"],self.request["Plomino_datagrid_rowdata"]))
+
+            associatedFormFields = self.field.getRenderedFields(request=self.request)
+
+            return json.dumps(associatedFormFields)
+        return ""

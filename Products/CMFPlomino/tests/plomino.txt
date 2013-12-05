@@ -18,7 +18,7 @@ and it uses its terminology
 (which sometimes overlaps with the Plone terminology).
 
 Plomino database
----------------
+----------------
 
 A Plomino application is supported by a Plomino database.
 The Plomino database is the Plone object which contains the application data
@@ -331,7 +331,7 @@ designer wants to be display in the view::
     >>> len(db.view1.getDocumentsByKey('hello'))
     1
 
-Views can be exported as CSV:
+Views can be exported as CSV::
 
     >>> db.view1.exportCSV()
     '"London calling"\r\n"Rhythm is love"\r\n"Rhythm is love"\r\n"bonjour"\r\n"hello"\r\n'

@@ -497,14 +497,15 @@ def getDatagridRowdata(context, REQUEST):
     rowdata = []
     form_id = getattr(REQUEST, 'Plomino_Parent_Form', None)
     field_id = getattr(REQUEST, 'Plomino_Parent_Field', None)
-    rowdata_json = getattr(REQUEST, 'Plomino_datagrid_rowdata', None)
-    if form_id and field_id and rowdata_json:
+    if form_id and field_id:
         form = context.getParentDatabase().getForm(form_id)
         field = form.getFormField(field_id)
         settings = field.getSettings()
+        mapped_field_ids = [f.strip() for f in settings.field_mapping.split(',')]
+    rowdata_json = getattr(REQUEST, 'Plomino_datagrid_rowdata', None)
+    if rowdata_json:
         rowdata = json.loads(
                 urllib.unquote(rowdata_json).decode('raw_unicode_escape'))
-        mapped_field_ids = [f.strip() for f in settings.field_mapping.split(',')]
     return mapped_field_ids, rowdata
 
 def save_point():

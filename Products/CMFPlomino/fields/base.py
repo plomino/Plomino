@@ -108,11 +108,11 @@ class BaseField(object):
 
         fieldValue = None
         if mode == "EDITABLE":
-
             # if (not doc) or creation:
             if doc:
                 fieldValue = doc.getItem(fieldName)
                 #DBG _logger.info('BaseField.getFieldValue> 1 got doc') 
+    
             if (not fieldValue) and self.context.Formula():
                 # This implies that if a falsy fieldValue is possible, 
                 # Formula needs to take it into account, e.g. using hasItem
