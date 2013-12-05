@@ -24,15 +24,22 @@ Check datagrid editing
     Open form  frm_test
     Create datagrid form
     Create field of type in layout  frm_test  dgfield  DATAGRID
+
 # test simple modal adding
     Add datagrid row modal
     Select window 
     Element should contain  css=span.TEXTFieldRead-TEXT  This one
     Element should contain  css=td.center  22
+#test simple modal editing
+    Edit datagrid row modal
+    Element should contain  css=span.TEXTFieldRead-TEXT  That two
+    Element should contain  css=td.center  33
 
-# test simple inline adding
+# set datagrid as inline mode
     Set datagrid field inline
     Open form  frm_test
+
+# test simple inline adding
     Add datagrid row inline
     Select window
     Element should contain  css=#dgfield_datagrid tbody>tr>td:nth-child(1)  That one
@@ -42,17 +49,18 @@ Check datagrid editing
     Select window
     Element should contain  css=#dgfield_datagrid tbody>tr>td:nth-child(1)  That two
     Element should contain  css=#dgfield_datagrid tbody>tr>td:nth-child(2)  33
+
 # test simple deleting
-    Delete datagrid row inline
+    Delete datagrid row
 
 # test with invisible column
 # TODO: check presence of column's value
-#    Create field of type in layout  dgForm   dgcolumnthree       TEXT
-#    Set field settings  frm_test    dgfield  form.field_mapping  dgcolumnone,dgcolumntwo,dgcolumnthree  
-#    Set field settings  frm_test    dgfield  form.jssettings  "aoColumns": [ { "sTitle": "Column 1" }, { "sTitle": "Column 2", "sClass": "center" }, { "sTitle": "Column 3", 'bVisible': false }], "bPaginate": false, "bLengthChange": false, "bFilter": false, "bSort": false, "bInfo": false, "bAutoWidth": false, "plominoDialogOptions": { "width": 400, "height": 300 } 
-#    Open form  frm_test
-#    Page should contain element  css=#dgfield_datagrid thead>tr>th:nth-child(2)
-#    Page should not contain element  css=#dgfield_datagrid thead>tr>th:nth-child(3)
+    Create field of type in layout  dgForm   dgcolumnthree       TEXT
+    Set field settings  frm_test    dgfield  form.field_mapping  dgcolumnone,dgcolumntwo,dgcolumnthree  
+    Set field settings  frm_test    dgfield  form.jssettings  "aoColumns": [ { "sTitle": "Column 1" }, { "sTitle": "Column 2", "sClass": "center" }, { "sTitle": "Column 3", 'bVisible': false }], "bPaginate": false, "bLengthChange": false, "bFilter": false, "bSort": false, "bInfo": false, "bAutoWidth": false, "plominoDialogOptions": { "width": 400, "height": 300 } 
+    Open form  frm_test
+    Page should contain element  css=#dgfield_datagrid thead>tr>th:nth-child(2)
+    Page should not contain element  css=#dgfield_datagrid thead>tr>th:nth-child(3)
 # columns computed fields
 # TODO: OK to set field list property like this?
 ##    Create field of type in layout  dgForm   dgcolumncomputed    TEXT
@@ -264,7 +272,7 @@ Check datagrid method
     ${page_source} =  Get source
     Should match regexp  ${page_source}  dgfield[^>]+'sServerMethod': '${FORM_METHOD.upper()}'
 #   Page should contain  'sServerMethod': 'GET'
-#   Page should contain  'sServerMethod': '${FORM_METHOD.upper()}'
+#   Page should contain  'sServerMethod': '${FORM_METHOD.upper()}'e
 
 Select field type
     [Arguments]  ${FIELD_TYPE}
@@ -290,6 +298,15 @@ Add datagrid row modal
     Select Window
     Page should contain element  css=#dgfield_datagrid tbody>tr
 
+Edit datagrid row modal
+    Click element  css=#dgfield_datagrid tbody>tr
+    Click link    dgfield_editrow
+    Select frame  dgfield_iframe
+    Input text    dgcolumnone  That two
+    Click button  Save
+    Select Window
+    Inspect Page
+    Page should contain element  css=#dgfield_datagrid tbody>tr
 
 Add datagrid row inline
 # Context: viewing form containing dgfield
@@ -316,7 +333,7 @@ Edit datagrid row inline
     Click button  css=input.plominoSave
     Wait until page contains element  css=.plominoEdit
 
-Delete datagrid row inline
+Delete datagrid row
     Click button  css=.plominoEdit
     Page should contain element  css=#dgfield_datagrid tbody>tr
     Click element  css=#dgfield_datagrid tbody>tr
