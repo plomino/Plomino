@@ -33,7 +33,7 @@ Check datagrid editing
 #test simple modal editing
     Edit datagrid row modal
     Element should contain  css=span.TEXTFieldRead-TEXT  That two
-    Element should contain  css=td.center  33
+    Element should contain  css=td.center  22
 
 # set datagrid as inline mode
     Set datagrid field inline
@@ -305,7 +305,6 @@ Edit datagrid row modal
     Input text    dgcolumnone  That two
     Click button  Save
     Select Window
-    Inspect Page
     Page should contain element  css=#dgfield_datagrid tbody>tr
 
 Add datagrid row inline
