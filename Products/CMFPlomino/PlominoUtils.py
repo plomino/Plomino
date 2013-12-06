@@ -516,8 +516,6 @@ def save_point():
 def _expandIncludes(context, formula):
     """ Recursively expand include statements
     """
-    import pdb; pdb.set_trace()
-
     # First, we match any includes
     r = re.compile('^#Plomino (import|include) (.+)$', re.MULTILINE)
 
