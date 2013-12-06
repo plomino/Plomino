@@ -9,8 +9,7 @@ logger = logging.getLogger('Plomino')
 from Products.CMFCore.utils import getToolByName
 
 # Plomino
-from PlominoUtils import asUnicode
-
+from PlominoUtils import asUnicode, _expandIncludes
 
 class PlominoScriptException(Exception):
     def __init__(self, context, exception_obj, formula, script_id, compilation_errors):
@@ -47,22 +46,24 @@ class PlominoScriptException(Exception):
             code = ["Code : "]
             line_number = 6
             formula = self.formula()
-            r = re.compile('#Plomino import (.+)[\r\n]')
-            for i in r.findall(formula):
-                scriptname = i.strip()
-                db = self.context.getParentDatabase()
-                script_code = db.resources._getOb(scriptname, None)
-                if script_code:
-                    try:
-                        script_code = script_code.read()
-                    except:
-                        msg = "#ALERT: " + scriptname + " invalid"
-                        logger.error(msg, exc_info=True)
-                        script_code = msg
-                else:
-                    script_code = "#ALERT: %s not found in resources" % scriptname
-                formula = formula.replace(
-                        '#Plomino import ' + scriptname, script_code)
+            formula = _expandIncludes(self.context, formula)
+            # r = re.compile('#Plomino import (.+)[\r\n]')
+            # for i in r.findall(formula):
+            #     scriptname = i.strip()
+            #     db = self.context.getParentDatabase()
+            #     script_code = db.resources._getOb(scriptname, None)
+            #     if script_code:
+            #         try:
+            #             script_code = script_code.read()
+            #         except:
+            #             msg = "#ALERT: " + scriptname + " invalid"
+            #             logger.error(msg, exc_info=True)
+            #             script_code = msg
+            #     else:
+            #         script_code = "#ALERT: %s not found in resources" % scriptname
+            #     formula = formula.replace(
+            #             '#Plomino import ' + scriptname, script_code)
+
             for l in formula.replace('\r', '').split('\n'):
                 code.append("%d: %s" % (line_number, l))
                 line_number += 1

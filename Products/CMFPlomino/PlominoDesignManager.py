@@ -67,6 +67,7 @@ from PlominoUtils import DateToString
 from Products.CMFPlomino.config import *
 from Products.CMFPlomino import get_utils
 from Products.CMFPlomino import plomino_profiler
+from Products.CMFPlomino.PlominoUtils import _expandIncludes
 # get AT specific schemas for each Plomino class
 from Products.CMFPlomino.interfaces import IXMLImportExportSubscriber
 from Products.CMFPlomino.PlominoAction import schema as action_schema
@@ -669,6 +670,7 @@ class PlominoDesignManager(Persistent):
             if not script_id_pattern or script_id_pattern in script_id:
                 self.scripts._delObject(script_id)
 
+
     security.declarePublic('compileFormulaScript')
     def compileFormulaScript(self, script_id, formula, with_args=False):
         # Remember the current user
@@ -703,41 +705,12 @@ class PlominoDesignManager(Persistent):
                     )
         import_list = ";".join(import_list)
 
-        # Match any include
-        r = re.compile('^#Plomino (import|include) (.+)$', re.MULTILINE)
-
-        matches = r.findall(formula)
-        seen = []
-        while matches:
-            for include, scriptname in matches:
-
-                scriptname = scriptname.strip()
-                # Match only this include; don't match script names that are
-                # prefixes of other script names
-                exact_r = re.compile(
-                        '^#Plomino %s %s\\b' % (include, scriptname),
-                        re.MULTILINE)
-
-                if scriptname in seen:
-                    # Included already, blank the include statement
-                    formula = exact_r.sub('', formula)
-                    continue
-
-                seen.append(scriptname)
-                try:
-                    script_code = self.resources._getOb(scriptname).read()
-                except:
-                    logger.warning("compileFormulaScript> %s not found in resources" % scriptname)
-                    script_code = (
-                            "#ALERT: %s not found in resources" % scriptname)
-
-                formula = exact_r.sub(script_code, formula)
-
-            matches = r.findall(formula)
+        formula = _expandIncludes(self, formula)
 
         if (formula.strip().count('\n') == 0 and
                 not formula.startswith('return ')):
             formula = "return " + formula
+
         str_formula = STR_FORMULA % {
                 'script_id': script_id,
                 'import_list': import_list,

@@ -511,3 +511,43 @@ def getDatagridRowdata(context, REQUEST):
 def save_point():
     txn = transaction.get()
     txn.savepoint(optimistic=True)
+
+
+def _expandIncludes(context, formula):
+    """ Recursively expand include statements
+    """
+    # First, we match any includes
+    r = re.compile('^#Plomino (import|include) (.+)$', re.MULTILINE)
+
+    matches = r.findall(formula)
+    seen = []
+    while matches:
+        for include, scriptname in matches:
+
+            scriptname = scriptname.strip()
+            # Now, we match only *this* include; don't match script names
+            # that are prefixes of other script names
+            exact_r = re.compile(
+                    '^#Plomino %s %s\\b' % (include, scriptname),
+                    re.MULTILINE)
+
+            if scriptname in seen:
+                # Included already, blank the include statement
+                formula = exact_r.sub('', formula)
+                continue
+
+            seen.append(scriptname)
+            try:
+                db = context.getParentDatabase()
+                script_code = db.resources._getOb(scriptname).read()
+            except:
+                logger.warning("expandIncludes> %s not found in resources" % scriptname)
+                script_code = (
+                        "#ALERT: %s not found in resources" % scriptname)
+
+            formula = exact_r.sub(script_code, formula)
+
+        matches = r.findall(formula)
+
+    return formula
+
