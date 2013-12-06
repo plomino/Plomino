@@ -180,6 +180,28 @@ And scripts can include scripts that include scripts ...::
     >>> db.frm1.computeFieldValue('field7', db.frm1)
     'hello'
 
+When formulas fail, and the database is in debug mode, the error is logged
+--------------------------------------------------------------------------
+
+First we mess up one of our scripts. We choose a script in 
+``resources`` which is indirectly included by a field formula, 
+so that we are testing that *include* functionality works at the same time::
+
+    >>> ps = db.resources._getOb('script_too')
+    >>> ps.write('burp')
+
+Delete compiled scripts; next access will trigger recompilation::
+
+    >>> db.scripts.manage_delObjects(list(db.scripts.objectIds()))
+
+Now cause the formula to be executed, the error will be reported 
+to the user as a portal message::
+
+    >>> db.frm1.computeFieldValue('field7', db.frm1)
+    >>> msg = db.plone_utils.showPortalMessages()[0]
+    >>> msg.message
+    u"field7 field formula failed - Plomino formula /plone/mydb/frm1/field7/Formula - Plomino traceback  line 24, in field_-_frm1_-_field7_-_formula\r\n<br/>NameError: global name 'burp' is not defined\r\n<br/>Context is &lt;PlominoForm&gt; /plone/mydb/frm1"
+
 
 Documents
 ---------------
