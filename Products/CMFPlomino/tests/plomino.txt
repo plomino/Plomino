@@ -180,6 +180,10 @@ And scripts can include scripts that include scripts ...::
     >>> db.frm1.computeFieldValue('field7', db.frm1)
     'hello'
 
+When formulas fail, and the database is in debug mode, the error is logged
+--------------------------------------------------------------------------
+
+TODO
 
 Documents
 ---------------
