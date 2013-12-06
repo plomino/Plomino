@@ -516,6 +516,7 @@ def save_point():
 def _expandIncludes(context, formula):
     """ Recursively expand include statements
     """
+    import pdb; pdb.set_trace()
 
     # First, we match any includes
     r = re.compile('^#Plomino (import|include) (.+)$', re.MULTILINE)
@@ -539,7 +540,7 @@ def _expandIncludes(context, formula):
 
             seen.append(scriptname)
             try:
-                db = self.context.getParentDatabase()
+                db = context.getParentDatabase()
                 script_code = db.resources._getOb(scriptname).read()
             except:
                 logger.warning("expandIncludes> %s not found in resources" % scriptname)
