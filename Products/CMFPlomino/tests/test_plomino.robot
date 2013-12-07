@@ -18,7 +18,7 @@ ${OTHER_PLONE_URL}       ${OTHER_ZOPE_URL}/${OTHER_PLONE_SITE_ID}
 
 *** Test Cases ***
 
-Manage a Plomino database
+Replicate a Plomino database
     Plomino is installed
     Log in as the database owner
     Open the database
