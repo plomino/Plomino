@@ -288,6 +288,7 @@ class DatagridField(BaseField):
                     for row in fieldValue:
                         row['Form'] = child_form_id
                         row['Plomino_Parent_Document'] = doc.id 
+                        # We want a new TemporaryDocument for every row
                         tmp = TemporaryDocument(
                                 db, child_form, row, real_doc=doc)
                         tmp = tmp.__of__(db)
