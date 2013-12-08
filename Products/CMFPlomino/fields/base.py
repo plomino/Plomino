@@ -26,7 +26,6 @@ from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 
 # Plomino
 from Products.CMFPlomino.PlominoUtils import asUnicode
-from Products.CMFPlomino.PlominoDocument import TemporaryDocument
 
 import logging
 _logger = logging.getLogger('Plomino')
