@@ -213,14 +213,12 @@ class DatagridField(BaseField):
         child_form = db.getForm(child_form_id)
         if not child_form:
             return mapped_fields
-        if not creation: 
-            target = TemporaryDocument(
-                    db,
-                    child_form,
-                    request, 
-                    validation_mode=False).__of__(db) 
-        else:
-            target = None
+
+        target = TemporaryDocument(
+                db,
+                child_form,
+                request, 
+                validation_mode=False).__of__(db) 
 
         # return rendered field for each mapped field if this one exists in the child form
         return [str(f.getFieldRender(child_form, target, editmode=editmode, creation=creation, request=request)) for f in [child_form.getFormField(f) for f in mapped_fields] if f]
@@ -290,6 +288,7 @@ class DatagridField(BaseField):
                     for row in fieldValue:
                         row['Form'] = child_form_id
                         row['Plomino_Parent_Document'] = doc.id 
+                        # We want a new TemporaryDocument for every row
                         tmp = TemporaryDocument(
                                 db, child_form, row, real_doc=doc)
                         tmp = tmp.__of__(db)

@@ -1051,6 +1051,8 @@ class TemporaryDocument(PlominoDocument):
     def isNewDocument(self):
         """
         """
+        # XXX: this is confusing in the context of a datagrid, where
+        # the output is rows, not documents, and that always look new.
         if self.real_id == "TEMPDOC":
             return True
         return False
