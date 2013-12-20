@@ -745,6 +745,8 @@ class PlominoView(ATFolder):
         sort_index = None
         reverse = None
         if REQUEST:
+            REQUEST.RESPONSE.setHeader(
+                    'content-type', 'application/json; charset=utf-8')
             start = int(REQUEST.get('iDisplayStart', 1))
             iDisplayLength = REQUEST.get('iDisplayLength', None)
             if iDisplayLength:
