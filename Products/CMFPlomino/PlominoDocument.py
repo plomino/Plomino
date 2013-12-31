@@ -334,7 +334,7 @@ class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
         """ Return list of readers; if none set, everyone can read.
         """
         if self.hasItem('Plomino_Readers'):
-            return asList(self.Plomino_Readers)
+            return asList(self.getItem('Plomino_Readers'))
         else:
             return ['*']
 
