@@ -18,7 +18,8 @@ logger = logging.getLogger('Plomino')
 from zope.formlib import form
 from zope.interface import implements
 from zope.schema import getFields
-from zope.schema import TextLine
+from zope.schema import TextLine, Choice
+from zope.schema.vocabulary import SimpleVocabulary
 
 # Plomino
 from base import IBaseField, BaseField, BaseForm
@@ -30,6 +31,15 @@ class IDatetimeField(IBaseField):
     """
     DateTime field schema
     """
+    widget = Choice(
+        vocabulary=SimpleVocabulary.fromItems([
+            ("Default", "SERVER"),
+            ("JQuery datetime widget", "JQUERY"),
+        ]),
+        title=u'Widget',
+        description=u'Field rendering',
+        default="SERVER",
+        required=True)
     format = TextLine(
             title=u'Format',
             description=u"Date/time format (if different than "
