@@ -478,7 +478,8 @@ class PlominoView(ATFolder):
                             field.id,
                             field.getFieldType(),
                             refresh=refresh,
-                            indextype=field.getIndexType())
+                            indextype=field.getIndexType(),
+                            fieldmode=field.getFieldMode())
                 else:
                     column_obj.setFormula("'Non-existing field'")
                     index.createIndex(

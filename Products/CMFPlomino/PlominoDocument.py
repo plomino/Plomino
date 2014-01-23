@@ -65,6 +65,7 @@ from PlominoUtils import PlominoTranslate
 from PlominoUtils import sendMail
 from Products.CMFPlomino.browser import PlominoMessageFactory as _
 from Products.CMFPlomino.config import *
+from index.PlominoIndex import DISPLAY_INDEXED_ATTR_PREFIX
 import interfaces
 
 import logging
@@ -656,6 +657,12 @@ class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
                     '_v_at_subobjects', '__getnewargs__', 'aq_inner',
                     'im_self']:
                 raise AttributeError, name
+            elif name.startswith(DISPLAY_INDEXED_ATTR_PREFIX):
+                import pdb; pdb.set_trace()
+                field_name = name.lstrip(DISPLAY_INDEXED_ATTR_PREFIX)
+                form_name = self.Form
+                value = self.computeItem(field_name)
+                return value
             else:
                 try:
                     return CMFBTreeFolder.__getattr__(self, name)
