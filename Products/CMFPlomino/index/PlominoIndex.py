@@ -115,7 +115,7 @@ class PlominoIndex(UniqueObject, CatalogTool):
             if not fieldname in self.indexes():
                 if fieldmode == 'DISPLAY':
                     display_extra = SimpleRecord(
-                        indexed_attrs='%s_%s' % (DISPLAY_INDEXED_ATTR_PREFIX, fieldname))
+                        indexed_attrs='%s%s' % (DISPLAY_INDEXED_ATTR_PREFIX, fieldname))
                     self.addIndex(fieldname, indextype, extra=display_extra)
                 else:
                     self.addIndex(fieldname, indextype)

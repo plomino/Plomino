@@ -31,7 +31,8 @@ class DisplayFieldIndexTest(unittest.TestCase):
         doc1.setItem('Form', 'frm1')
         doc1.save()
         doc_id = doc1.id
-        #len(self.db.getIndex().dbsearch({'question': 'where'}))
-        import pdb; pdb.set_trace()
-        date = DateTime(2013, 10, 7)
-        self.assertEqual(utils.DateToString(date), '2013-10-07')
+        res = self.db.getIndex().dbsearch({'a_field': 'notspam'})
+        self.assertEquals(len(res), 0)
+        res = self.db.getIndex().dbsearch({'a_field': 'spam'})
+        self.assertEquals(len(res), 1)
+        #import pdb; pdb.set_trace()

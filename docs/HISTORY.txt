@@ -1,6 +1,11 @@
 Changelog
 =========
 
+1.18.6 (unreleased)
+-------------------
+* Allow indexing of computed display fields
+ [djay, ivant]
+
 1.18.5 (2013-12-04)
 -------------------
 * Working on BaseField.getFieldValue, handling of field defaults
