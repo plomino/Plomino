@@ -24,7 +24,7 @@ try:
 except ImportError:
     from zope.app.container.contained import Contained
 from zope.component.factory import Factory
-from zope.component import queryUtility
+from zope.component import queryUtility, adapts
 from zope.interface import implements
 from ZPublisher.HTTPRequest import FileUpload
 import transaction
@@ -65,7 +65,12 @@ from PlominoUtils import PlominoTranslate
 from PlominoUtils import sendMail
 from Products.CMFPlomino.browser import PlominoMessageFactory as _
 from Products.CMFPlomino.config import *
+from index.PlominoIndex import DISPLAY_INDEXED_ATTR_PREFIX
+from Products.ZCatalog.interfaces import IZCatalog
+from plone.indexer.wrapper import IndexableObjectWrapper
+from plone.indexer.interfaces import IIndexer
 import interfaces
+from zope.component import adapts, queryMultiAdapter
 
 import logging
 _logger = logging.getLogger('Plomino')
@@ -77,6 +82,7 @@ try:
     URL_NORMALIZER = True
 except ImportError:
     URL_NORMALIZER = False
+from plone.indexer.interfaces import IIndexableObjectWrapper, IIndexableObject
 
 
 class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
@@ -626,8 +632,16 @@ class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
         - and finally fall back to document `Form` item.
         """
         formname = None
+        # if called from __getattr__ we're not wrapped and we have don't have real
+        # request
         if hasattr(self, 'REQUEST'):
-            formname = self.REQUEST.get("openwithform", None)
+            request = self.REQUEST
+            if type(request == type("")):
+                request = None
+        else:
+            request = None
+        if request is not None:
+            formname = request.get("openwithform", None)
         if not formname:
             if hasattr(self, 'evaluateViewForm'):
                 formname = self.evaluateViewForm(self)
@@ -635,10 +649,10 @@ class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
             formname = self.getItem('Form')
         form = self.getParentDatabase().getForm(formname)
         if not form:
-            if hasattr(self, "REQUEST") and formname:
+            if request is not None and formname:
                 self.writeMessageOnPage(
                         "Form %s does not exist." % formname,
-                        self.REQUEST,
+                        request,
                         True)
         return form
 
@@ -1071,3 +1085,37 @@ class TemporaryDocument(PlominoDocument):
         """
         """
         return self.real_id
+
+
+class PlominoIndexableObjectWrapper(IndexableObjectWrapper):
+    """Our special adapter so we can index displayfields specially
+
+    """
+
+    implements(IIndexableObject, IIndexableObjectWrapper)
+    adapts(interfaces.IPlominoDocument, IZCatalog)
+
+    def __init__(self, object, catalog):
+        self.__object = object
+        self.__catalog = catalog
+        self.__vars = {}
+
+    def __getattr__(self, name):
+        # First, try to look up an indexer adapter
+        indexer = queryMultiAdapter((self.__object, self.__catalog,), IIndexer, name=name)
+        if indexer is not None:
+            return indexer()
+
+        # Then, try displayfields
+        # we can't calc a displayfield in a ZODB __getattr__ since self is not
+        # aquisition wrapped in __getattr__.
+        if name.startswith(DISPLAY_INDEXED_ATTR_PREFIX):
+            field_name = name[len(DISPLAY_INDEXED_ATTR_PREFIX):]
+            value = self.__object.computeItem(field_name, store=False)
+            return value
+
+        # Finally see if the object provides the attribute directly. This
+        # is allowed to raise AttributeError.
+        return getattr(self.__object, name)
+
+

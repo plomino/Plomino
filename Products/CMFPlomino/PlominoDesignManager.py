@@ -197,7 +197,8 @@ class PlominoDesignManager(Persistent):
                     index.createFieldIndex(
                             f.id,
                             f.getFieldType(),
-                            indextype=f.getIndexType())
+                            indextype=f.getIndexType(),
+                            fieldmode=f.getFieldMode())
         logger.info('Field indexing initialized')
 
         #declare all the view formulas and columns index entries

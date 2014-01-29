@@ -57,5 +57,10 @@
     handler="Products.CMFPlomino.events.PlominoDocumentRemoveEventHandler"
   />
 
+    <adapter
+            factory=".PlominoDocument.PlominoIndexableObjectWrapper"
+            provides="plone.indexer.interfaces.IIndexableObject"
+            />
+
 
 </configure>
