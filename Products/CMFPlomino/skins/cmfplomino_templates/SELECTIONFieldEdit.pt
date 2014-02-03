@@ -70,8 +70,8 @@
 
 		 	function ${fieldid}_add_row(data) {
 		 		var tablebody = jQuery('#${fieldid}_table_result > tbody');
-		 		//if (tablebody.has('input[value=' + data[0] + ']').length == 0) {
-		 		if (jQuery('#${fieldid}_table_result > tbody:has(input[value=' + data[0] + '])').length == 0) {
+		 		//if (tablebody.has('input[value=\'' + data[0] + '\']').length == 0) {
+		 		if (jQuery('#${fieldid}_table_result > tbody:has(input[value=\'' + data[0] + '\'])').length == 0) {
 		 			//tablebody.children().has('input[value=]').remove()
 		 			jQuery('#${fieldid}_table_result > tbody > *:has(input[value=])').remove()
 			 		var row = jQuery('<tr><td><img alt=\'Remove\' src=\'list-remove.png\' style=\'cursor: pointer\' onclick=\'${fieldid}_delete_row(this)\' />' +
