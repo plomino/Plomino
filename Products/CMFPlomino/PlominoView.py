@@ -742,9 +742,9 @@ class PlominoView(ATFolder):
         """ """
         # Some fields might express a date
         # We try to convert those strings to datetime
-        #indexes = self.aq_parent.aq_base.plomino_index.Indexes
         indexes = self.getParentDatabase().getIndex().Indexes
-        for key, value in json.loads(request_query).iteritems():
+        request_query = json.loads(request_query)
+        for key, value in request_query.iteritems():
             if key in indexes:
                 index = indexes[key]
                 # This is lame: we should check if it quacks, not
@@ -757,11 +757,11 @@ class PlominoView(ATFolder):
                     if isinstance(value, basestring):
                         request_query[key] = parse_date(value)
                     elif not 'query' in value:
-                        # it means value is a list of date values
-                        # to be used with the default operator query OR
+                        # it means value is a list of date values to be used
+                        # with the implicit default operator query OR
                         request_query[key] = map(parse_date, value)
                     else:
-                        # it means value is a dictionary and I got a generic query 
+                        # it means value is a dictionary
                         if isinstance(value['query'], basestring):
                             # query got a single comparison value
                             request_query[key]['query'] = parse_date(value['query'])
@@ -806,7 +806,7 @@ class PlominoView(ATFolder):
 
         if not REQUEST is None and 'request_query' in REQUEST:
             # query parameter in REQUEST is supposed to be a json object
-            request_query = __query_loads__(self, REQUEST['request_query'])
+            request_query = self.__query_loads__(REQUEST['request_query'])
         else:
             request_query = None
 
