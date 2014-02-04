@@ -19,6 +19,7 @@ from zipfile import ZipFile, ZIP_DEFLATED
 
 # 3rd party Python
 from jsonutil import jsonutil as json
+from dateutil.parser import parse as parse_date
 
 # Zope
 from AccessControl import ClassSecurityInfo
@@ -37,6 +38,8 @@ except:
     # < 4.3 compatibility
     from plone.app.content.batching import Batch
     batch = Batch
+
+from Products.PluginIndexes.DateIndex.DateIndex import DateIndex
 
 # Plomino
 from exceptions import PlominoScriptException
@@ -275,7 +278,6 @@ XLS_TABLE = """<html><head>
 TR = """<tr>%s</tr>"""
 TD = """<td>%s</td>"""
 
-
 class PlominoView(ATFolder):
     """
     """
@@ -333,10 +335,9 @@ class PlominoView(ATFolder):
         return BaseObject.__bobo_traverse__(self, request, name)
 
     security.declarePublic('getAllDocuments')
-    def getAllDocuments(self, start=1, limit=None, only_allowed=True,
-            getObject=True, fulltext_query=None, sortindex=None, reverse=None):
-        """ Return all the documents matching the view.
-        """
+    def getAllDocuments(self, start=1, limit=None, only_allowed=True, getObject=True,
+            fulltext_query=None, sortindex=None, reverse=None, request_query=None):
+        """ Return a subset of documents that matches the view. """
         index = self.getParentDatabase().getIndex()
 
         if not sortindex:
@@ -349,7 +350,11 @@ class PlominoView(ATFolder):
         if not reverse:
             reverse = self.getReverseSorting()
 
-        query = {'PlominoViewFormula_'+self.getViewName(): True}
+        query = dict()
+        if not request_query is None:
+            query.update(request_query)
+        # in this way you can search only inside view results
+        query.update({'PlominoViewFormula_'+self.getViewName(): True})
 
         if fulltext_query:
             query['SearchableText'] = fulltext_query
@@ -733,6 +738,39 @@ class PlominoView(ATFolder):
         else:
             return results
 
+    def __query_loads__(self, request_query):
+        """ """
+        # Some fields might express a date
+        # We try to convert those strings to datetime
+        #indexes = self.aq_parent.aq_base.plomino_index.Indexes
+        indexes = self.getParentDatabase().getIndex().Indexes
+        for key, value in json.loads(request_query).iteritems():
+            if key in indexes:
+                index = indexes[key]
+                # This is lame: we should check if it quacks, not
+                # if it's a duck!
+                # XXX Use a more robust method to tell apart
+                # date indexes from non-dates
+
+                if isinstance(index, DateIndex):
+                    # convert value(s) to date(s)
+                    if isinstance(value, basestring):
+                        request_query[key] = parse_date(value)
+                    elif not 'query' in value:
+                        # it means value is a list of date values
+                        # to be used with the default operator query OR
+                        request_query[key] = map(parse_date, value)
+                    else:
+                        # it means value is a dictionary and I got a generic query 
+                        if isinstance(value['query'], basestring):
+                            # query got a single comparison value
+                            request_query[key]['query'] = parse_date(value['query'])
+                        else:
+                            # query got multiple comparison values
+                            request_query[key]['query'] = map(parse_date, value['query'])
+
+        return request_query
+
     security.declarePublic('tojson')
     def tojson(self, REQUEST=None):
         """ Returns a JSON representation of view data
@@ -765,13 +803,21 @@ class PlominoView(ATFolder):
                 reverse = 1
         if limit < 1:
             limit = None
+
+        if 'request_query' in REQUEST:
+            # query parameter in REQUEST is supposed to be a json object
+            request_query = __query_loads__(self, REQUEST['request_query'])
+        else:
+            request_query = None
+
         results = self.getAllDocuments(
                 start=start,
                 limit=limit,
                 getObject=False,
                 fulltext_query=search,
                 sortindex=sort_index,
-                reverse=reverse)
+                reverse=reverse,
+                request_query=request_query)
         total = display_total = len(results)
         columns = [column for column in self.getColumns()
                 if not getattr(column, 'HiddenColumn', False)]
