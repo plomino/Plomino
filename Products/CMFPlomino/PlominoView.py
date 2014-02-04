@@ -804,7 +804,7 @@ class PlominoView(ATFolder):
         if limit < 1:
             limit = None
 
-        if 'request_query' in REQUEST:
+        if not REQUEST is None and 'request_query' in REQUEST:
             # query parameter in REQUEST is supposed to be a json object
             request_query = __query_loads__(self, REQUEST['request_query'])
         else:
