@@ -22,16 +22,26 @@
     >>> len(db.view.getAllDocuments(request_query=dict(field1='foo')))
     3
 
+    >>> from DateTime import DateTime
     >>> id = db.invokeFactory('PlominoForm', id='frm1', title='Form 2')
     >>> id = db.frm1.invokeFactory('PlominoField',
     ...         id='field1',
     ...         Title='Test field',
     ...         FieldType="TEXT",
     ...         ToBeIndexed=True)
+    >>> id = db.frm1.invokeFactory('PlominoField',
+    ...         id='field2',
+    ...         Title='Test DATETIME field',
+    ...         FieldType="DATETIME",
+    ...         ToBeIndexed=True)
     >>> db.frm1.field1.at_post_create_script()
+    >>> db.frm1.field2.at_post_create_script()
     >>> doc1.setItem('Form', 'frm1')
     >>> doc2.setItem('Form', 'frm1')
     >>> doc3.setItem('Form', 'frm1')
+    >>> doc1.setItem('field2', DateTime(2000, 3, 1))
+    >>> doc2.setItem('field2', DateTime(2000, 2, 1))
+    >>> doc3.setItem('field2', DateTime(2000, 1, 1))
     >>> doc1.save()
     >>> doc2.save()
     >>> doc3.save()
@@ -51,4 +61,9 @@
     >>> jres = db.view.tojson(db.view.REQUEST)
     >>> len(json.loads(jres)['aaData'])
     1
-    
+
+    >>> request_query = json.dumps(dict(field2=dict(query=[DateTime(2000, 2, 1).strftime('%d/%m/%Y')], range='min')))
+    >>> db.view.REQUEST.set('request_query', request_query)
+    >>> jres = db.view.tojson(db.view.REQUEST)
+    >>> len(json.loads(jres)['aaData'])
+    2

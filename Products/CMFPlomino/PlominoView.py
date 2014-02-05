@@ -766,7 +766,7 @@ class PlominoView(ATFolder):
                             # query got a single comparison value
                             request_query[key]['query'] = parse_date(value['query'])
                         else:
-                            # query got multiple comparison values
+                            # query got a list of comparison values
                             request_query[key]['query'] = map(parse_date, value['query'])
 
         return request_query
