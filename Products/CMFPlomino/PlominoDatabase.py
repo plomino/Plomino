@@ -15,6 +15,7 @@ __docformat__ = 'plaintext'
 # Standard
 import Globals
 import string
+import warnings
 
 # Zope
 from AccessControl import ClassSecurityInfo
@@ -428,6 +429,9 @@ class PlominoDatabase(ATFolder, PlominoAccessControl, PlominoDesignManager,
         """ Delete the document from database.
         """
         if not self.isCurrentUserAuthor(doc):
+            if hasattr(self, 'REQUEST'):
+                self.writeMessageOnPage("You cannot delete this document.",
+                        self.REQUEST, error=False)
             raise Unauthorized, "You cannot delete this document."
         else:
             # execute the onDeleteDocument code of the form
@@ -471,10 +475,9 @@ class PlominoDatabase(ATFolder, PlominoAccessControl, PlominoDesignManager,
             for id in ids:
                 try:
                     self.deleteDocument(self.getDocument(id))
-                except:
-                    # if insufficient access rights, we continue
+                except Exception, e:
                     # TODO: if insufficient access rights or absolutely anything else. Fix the bare except.
-                    pass
+                    warnings.warn("Error during deletion: %s" % e)
 
     security.declareProtected(REMOVE_PERMISSION, 'manage_deleteDocuments')
     def manage_deleteDocuments(self, REQUEST):
