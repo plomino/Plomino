@@ -5,14 +5,18 @@
                        format python:test(not(fieldformat), defaultformat, fieldformat);
                        hm python:('%H' in format or '%I' in format);
                        ymd python:('%Y' in format or '%y' in format);
+                       mandatory python: 'mandatory' if options['field'].getMandatory() else '';
                        widget python:options['field'].getSettings('widget');">
 
     <tal:widget tal:condition="python:test(widget=='JQUERY')">
         <input type="date"
             tal:define="inputvalue python: '' if not options['fieldvalue'] else options['fieldvalue'].strftime('%Y-%m-%d')"
-            tal:attributes="name options/fieldname; id options/fieldname; value inputvalue">
+            tal:attributes="name options/fieldname;
+                id options/fieldname;
+                class mandatory;
+                value inputvalue">
     </tal:widget>
-    <tal:widget tal:condition="python:test(widget=='DEFAULT')">
+    <tal:widget tal:condition="python:test(widget=='SERVER')">
         <tal:block tal:condition="python:test(v)">
             <span>
                 <tal:define tal:define="id options/fieldname;
