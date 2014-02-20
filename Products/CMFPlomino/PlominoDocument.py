@@ -632,14 +632,11 @@ class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
         - and finally fall back to document `Form` item.
         """
         formname = None
-        # if called from __getattr__ we're not wrapped and we have don't have real
-        # request
-        if hasattr(self, 'REQUEST'):
+        # if called from __getattr__ we're not wrapped and we don't have a real
+        # request but a weird str
+        request = None
+        if hasattr(self, 'REQUEST') and getattr(self.REQUEST, 'get'):
             request = self.REQUEST
-            if type(request == type("")):
-                request = None
-        else:
-            request = None
         if request is not None:
             formname = request.get("openwithform", None)
         if not formname:
