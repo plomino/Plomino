@@ -19,7 +19,6 @@ import string
 # Zope
 from AccessControl import ClassSecurityInfo
 from Acquisition import aq_inner
-from OFS.Folder import *
 from OFS.ObjectManager import ObjectManager
 from zope.annotation.interfaces import IAnnotations
 # 4.3 compatibility
@@ -44,7 +43,6 @@ from Products.Archetypes.BaseObject import BaseObject
 from Products.Archetypes.debug import deprecated
 from Products.Archetypes.utils import make_uuid
 from Products.ATContentTypes.content.folder import ATFolder
-#from Products.BTreeFolder2.BTreeFolder2 import manage_addBTreeFolder
 from Products.CMFPlone.interfaces import IHideFromBreadcrumbs
 
 # Plomino
@@ -267,7 +265,6 @@ class PlominoDatabase(ATFolder, PlominoAccessControl, PlominoDesignManager,
         self.plomino_version = VERSION
         self.setStatus("Ready")
         PlominoAccessControl.__init__(self)
-        #manage_addBTreeFolder(self, id='plomino_documents')
         manage_addCMFBTreeFolder(self, id='plomino_documents')
         directlyProvides(self.documents, IHideFromBreadcrumbs)
 
@@ -281,17 +278,14 @@ class PlominoDatabase(ATFolder, PlominoAccessControl, PlominoDesignManager,
     security.declarePublic('at_post_create_script')
     def at_post_create_script(self):
         """ DB initialization
+
         Standard AT hook.
         """
         self.initializeACL()
         index = PlominoIndex(FULLTEXT=self.FulltextIndex)
         self._setObject('plomino_index', index)
-        resources = Folder('resources')
-        resources.title = 'resources'
-        self._setObject('resources', resources)
-        scripts = Folder('scripts')
-        scripts.title = 'scripts'
-        self._setObject('scripts', scripts)
+        for i in ['resources', 'scripts']:
+            manage_addCMFBTreeFolder(self, id=i)
 
     def __bobo_traverse__(self, request, name):
         # TODO: replace with IPublishTraverse or/and ITraverse
@@ -442,7 +436,7 @@ class PlominoDatabase(ATFolder, PlominoAccessControl, PlominoDesignManager,
                 message = None
                 try:
                     message = self.runFormulaScript(
-                            'form_%s_ondelete' % form.id,
+                            SCRIPT_ID_DELIMITER.join(['form', form.id, 'ondelete']),
                             doc,
                             form.onDeleteDocument)
                 except PlominoScriptException, e:

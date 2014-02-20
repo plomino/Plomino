@@ -4,6 +4,7 @@ from DateTime import DateTime
 import Missing
 from decimal import Decimal
 from Products.CMFPlomino.testing import PLOMINO_FUNCTIONAL_TESTING
+from  Products.CMFPlomino.config import TIMEZONE
 import Products.CMFPlomino.PlominoUtils as utils
 
 
@@ -47,7 +48,7 @@ class PlominoUtilsTest(unittest.TestCase):
 
     def test_Now(self):
         now = DateTime()
-        self.assertAlmostEqual(utils.Now() - now , 0)
+        self.assertAlmostEqual(utils.Now() - now, 0)
 
     def test_userFullname(self):
         self.assertEqual(utils.userFullname(self.db, "user1"), "User 1")
@@ -97,25 +98,20 @@ class PlominoUtilsTest(unittest.TestCase):
 
     def test_asList(self):
         self.assertEqual(
-            utils.asList("cheese"),
-            ["cheese"]
-        )
+                utils.asList("cheese"),
+                ["cheese"])
         self.assertEqual(
-            utils.asList(["cheese", "bacon", 10]),
-            ["cheese", "bacon", 10]
-        )
+                utils.asList(["cheese", "bacon", 10]),
+                ["cheese", "bacon", 10])
         self.assertEqual(
-            utils.asList([]),
-            []
-        )
+                utils.asList([]),
+                [])
         self.assertEqual(
-            utils.asList(""),
-            [""]
-        )
+                utils.asList(""),
+                [""])
         self.assertEqual(
-            utils.asList(None),
-            [None]
-        )
+                utils.asList(None),
+                [None])
 
     def test_asUnicode(self):
         self.assertEqual(
@@ -180,11 +176,20 @@ class PlominoUtilsTest(unittest.TestCase):
             utils.json_dumps({"a": [20, 3]}),
             '{"a": [20, 3]}'
         )
+        dt = DateTime('2013/10/21 19:26:48 GMT+7')
+        self.assertEqual(
+            utils.json_dumps(dt),
+            '{"<datetime>": true, "datetime": "2013-10-21T19:26:48+07:00"}'
+        )
 
     def test_json_loads(self):
         self.assertEqual(
             utils.json_loads('{"a": [20, 3]}'),
             {"a": [20, 3]}
+        )
+        self.assertEqual(
+            utils.json_loads('{"<datetime>": true, "datetime": "2013-10-21T19:26:48+07:00"}'),
+            DateTime('2013-10-21T19:26:48+07:00').toZone(TIMEZONE)
         )
 
     def test_escape_xml_illegal_chars(self):

@@ -17,7 +17,7 @@ from xml.parsers.expat import ExpatError
 import base64
 import codecs
 import csv
-import datetime
+import decimal
 import glob
 import os
 import transaction
@@ -92,12 +92,6 @@ def end_struct(self, data):
     if '__class__' in dct:
         if dct['__class__'] == 'Decimal':
             dct = plomino_decimal(dct['decimal'])
-        # if dct['__class__'] == 'date':
-        #     dct = datetime.date(dct['year'], dct['month'], dct['day'])
-        # elif dct['__class__'] == 'time':
-        #     dct = datetime.time(dct['hour'], dct['minute'], dct['second'])
-        # elif dct['__class__'] == 'DateTime':
-        #     dct = DateTime([dct[i] for i in ('year', 'month', 'day')])
     self._stack[mark:] = [dct]
     self._value = 0
 
@@ -107,34 +101,8 @@ def dump_decimal(self, value, write):
         }
     self.dump_struct(value, write)
 
-# def dump_time(self, value, write):
-#     value = {'__class__': 'time',
-#         'hour': value.hour,
-#         'minute': value.minute,
-#         'second': value.second,
-#         }
-#     self.dump_struct(value, write)
-# 
-# def dump_date(self, value, write):
-#     value = {'__class__': 'date',
-#             'year': value.year,
-#             'month': value.month,
-#             'day': value.day,
-#             }
-#     self.dump_struct(value, write)
-# 
-# def dump_DateTime(self, value, write):
-#     value = {'__class__': 'DateTime',
-#             'year': value.year,
-#             'month': value.month,
-#             'day': value.day,
-#             }
-#     self.dump_struct(value, write)
-
-# xmlrpclib.Marshaller.dispatch[datetime.date] = dump_date
-# xmlrpclib.Marshaller.dispatch[datetime.time] = dump_time 
-# xmlrpclib.Marshaller.dispatch[DateTime] = dump_DateTime
 xmlrpclib.Marshaller.dispatch[plomino_decimal] = dump_decimal
+xmlrpclib.Marshaller.dispatch[decimal.Decimal] = dump_decimal
 
 xmlrpclib.Unmarshaller.dispatch['struct'] = end_struct
 # ^^^ TO HERE
@@ -566,7 +534,6 @@ class PlominoReplicationManager(Persistent):
         else:
             # Zope modification time (Plone modification time is not 
             # set while document modified via script)
-            # TODO: UTC
             lastEditDocumentDate = doc.getLastModified()
             # check dates
             if not lastReplicationDate:
@@ -617,7 +584,6 @@ class PlominoReplicationManager(Persistent):
         else:
             # Zope modification time (Plone modification time is not 
             # set while document modified via script)
-            # TODO: UTC
             lastEditDocumentDate = localDoc.getLastModified()
 
             #check dates
@@ -852,7 +818,7 @@ class PlominoReplicationManager(Persistent):
     def startReplication(self, remoteUrl, repType):
         """ Flags the start of the transaction (local).
         """
-        now = DateTime().toZone('UTC')
+        now = DateTime().toZone(TIMEZONE)
         self.setReplicationDate(remoteUrl, repType, now)
 
     security.declarePublic('hideIt')

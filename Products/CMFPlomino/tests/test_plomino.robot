@@ -14,11 +14,11 @@ ${OTHER_ZOPE_PORT}       8080
 ${OTHER_ZOPE_URL}        http://${OTHER_ZOPE_HOST}:${OTHER_ZOPE_PORT}
 ${OTHER_PLONE_SITE_ID}   PloneRobotRemote
 ${OTHER_PLONE_INIT_URL}  http://admin:admin@${OTHER_ZOPE_HOST}:${OTHER_ZOPE_PORT}/@@plone-addsite?site_id=${OTHER_PLONE_SITE_ID}&title=Site&form.submitted:boolean=True&extension_ids:list=plonetheme.classic:default&extension_ids:list=plonetheme.sunburst:default&extension_ids:list=Products.CMFPlomino:default
-${OTHER_PLONE_URL}       ${OTHER_ZOPE_URL}/${OTHER_PLONE_SITE_ID}
+${OTHER_PLONE_URL}       ${OTHER_ZOPE_URL}/${OTHER_PLONE_SITE_ID} 
 
 *** Test Cases ***
 
-Manage a Plomino database
+Replicate a Plomino database
     Plomino is installed
     Log in as the database owner
     Open the database
@@ -37,13 +37,76 @@ Manage a Plomino database
     Go to                 ${PLONE_URL}/secondreplicadb/allfrmtest
     Page should contain   Marie Curie
 
+Check datagrid editing
+    Plomino is installed
+    Log in as the database owner
+    Open the database
+    Open form  frm_test
+    Create datagrid form
+    Create field of type in layout  frm_test  dgfield  DATAGRID
+
+# test simple modal adding
+    Add datagrid row modal
+    Select window 
+    Element should contain  css=span.TEXTFieldRead-TEXT  This one
+    Element should contain  css=td.center  22
+#test simple modal editing
+    Edit datagrid row modal
+    Element should contain  css=span.TEXTFieldRead-TEXT  That two
+    Element should contain  css=td.center  22
+
+# set datagrid as inline mode
+    Set datagrid field inline
+    Open form  frm_test
+
+# test simple inline adding
+    Add datagrid row inline
+    Select window
+    Element should contain  css=#dgfield_datagrid tbody>tr>td:nth-child(1)  That one
+    Element should contain  css=#dgfield_datagrid tbody>tr>td:nth-child(2)  33
+# test simple inline editing
+    Edit datagrid row inline
+    Select window
+    Element should contain  css=#dgfield_datagrid tbody>tr>td:nth-child(1)  That two
+    Element should contain  css=#dgfield_datagrid tbody>tr>td:nth-child(2)  33
+
+# test simple deleting
+    Delete datagrid row
+
+# test with invisible column
+# TODO: check presence of column's value
+    Create field of type in layout  dgForm   dgcolumnthree       TEXT
+    Set field settings  frm_test    dgfield  form.field_mapping  dgcolumnone,dgcolumntwo,dgcolumnthree  
+    Set field settings  frm_test    dgfield  form.jssettings  "aoColumns": [ { "sTitle": "Column 1" }, { "sTitle": "Column 2", "sClass": "center" }, { "sTitle": "Column 3", 'bVisible': false }], "bPaginate": false, "bLengthChange": false, "bFilter": false, "bSort": false, "bInfo": false, "bAutoWidth": false, "plominoDialogOptions": { "width": 400, "height": 300 } 
+    Open form  frm_test
+    Page should contain element  css=#dgfield_datagrid thead>tr>th:nth-child(2)
+    Page should not contain element  css=#dgfield_datagrid thead>tr>th:nth-child(3)
+# columns computed fields
+# TODO: OK to set field list property like this?
+##    Create field of type in layout  dgForm   dgcolumncomputed    TEXT
+##    Set field property  dgForm      dgcolumncomputed  FieldMode  COMPUTED
+##    Set field property  dgForm      dgcolumncomputed  Formula    return 'hello'
+##    Set field settings  frm_test    dgfield  form.field_mapping  dgcolumnone,dgcolumntwo,dgcolumnthree,dgcolumncomputed
+##    Open form  frm_test
+##    Inspect Page
+##    Page should not contain  css=input#dgcolumncomputed
+##    Element should contain   dgcolumncomputed  hello
+
+# columns display fields
+# columns editable fields with default values
+# columns editable fields failing format validation
+# columns editable fields failing formula validation
+# columns editable fields mutate value during formula validation
+# columns with editable fields custom read template
+# columns with editable fields custom edit template
+# static widget rendering selected
 Check form methods
     Set Selenium Implicit Wait        20 seconds
     Log in as the database owner
     Open the database
     Create datagrid form
     Create form                       frmTest           Testing form
-    # Use with the search forms
+# Use with the search forms
     Generate view for                 frmTest
     Check form method                 frmTest           POST
     Create form with method           frmGetTest        Testing GET form  GET
@@ -61,6 +124,7 @@ Teardown
     Teardown other portal
 
 *** Keywords ***
+
 Plomino is installed
     Go to                ${PLONE_URL}
     Page should contain  mydb
@@ -76,6 +140,10 @@ Open the database
 Open form
     [Arguments]  ${FORM_ID}  
     Go to        ${PLONE_URL}/mydb/${FORM_ID}
+
+Open field
+    [Arguments]  ${FORM_ID}  ${FIELD_ID}
+    Go to        ${PLONE_URL}/mydb/${FORM_ID}/${FIELD_ID}
 
 Create form
     [Arguments]              ${FORM_ID}  ${FORM_TITLE}
@@ -97,7 +165,7 @@ Create form with method and type
     [Arguments]          ${FORM_ID}  ${FORM_TITLE}  ${FORM_METHOD}  ${FORM_TYPE}
     Open the database
     Click link           Form
-    # Page should contain element    css=input#id
+#   Page should contain element    css=input#id
     Input text           id     ${FORM_ID}
     Input text           title  ${FORM_TITLE}
     Checkbox Should Be Selected  xpath=//input[@name='FormMethod' and @value='Auto']
@@ -105,45 +173,88 @@ Create form with method and type
     Run keyword if  '${FORM_TYPE}' == 'Page'        Select Checkbox   isPage
     Run keyword if  '${FORM_TYPE}' == 'SearchForm'  Select Checkbox   isSearchForm
     Run keyword if  '${FORM_TYPE}' == 'SearchForm'  Select from list  SearchView  allfrmTest
+# Add a list to the page so that we have something to hold on to when editing
     Click button         Save
     Page should contain  Changes saved.
 
 Create field
-    [Arguments]           ${FORM_ID}  ${FIELD_ID}
-    Create field of type  ${FORM_ID}  ${FIELD_ID}  Default
+    [Arguments]                     ${FORM_ID}  ${FIELD_ID}
+    Create field of type in layout  ${FORM_ID}  ${FIELD_ID}  Default
+
+# Add field to specified form and add it to the layout
+Create field of type in layout
+    [Arguments]           ${FORM_ID}  ${FIELD_ID}  ${FIELD_TYPE}
+    Create field of type  ${FORM_ID}  ${FIELD_ID}  ${FIELD_TYPE}
+    Add field to layout   ${FORM_ID}  ${FIELD_ID} 
 
 Create field of type
     [Arguments]          ${FORM_ID}  ${FIELD_ID}  ${FIELD_TYPE}
     Open form  ${FORM_ID}
     Click link           Field
-    Page should contain element      css=input#id
+# too slow locally :(
+#   Page should contain element      css=input#id
+    Wait until page contains element  css=input#id
     Input text           id     ${FIELD_ID}
     Input text           title  ${FIELD_ID}
     Run keyword if  '${FIELD_TYPE}' != 'Default'  Select field type  ${FIELD_TYPE}
     Click button         Save
     Page should contain  Changes saved.
-    Run keyword if  '${FIELD_TYPE}' == 'DATAGRID'  Configure datagrid field  ${FIELD_ID}
-    Add field to layout  ${FORM_ID}  ${FIELD_ID} 
+#   Run keyword if  '${FIELD_TYPE}' == 'DATAGRID'  Configure datagrid field  ${FIELD_ID}
+    Run keyword if  '${FIELD_TYPE}' == 'DATAGRID'  Configure datagrid field
 
 Add field to layout
     [Arguments]          ${FORM_ID}  ${FIELD_ID} 
     Go to                ${PLONE_URL}/mydb/${FORM_ID}/edit
-    Wait Until Page Contains Element  FormLayout_ifr
-    Select frame         FormLayout_ifr 
-    Input text           content  ${FIELD_ID}=
-    Unselect Frame
-    Click link           FormLayout_plominofield
-    Select frame         css=.plonepopup iframe
-    Select From List     plominoFieldId  ${FIELD_ID}
-    Click button         insert
-    Unselect Frame
+# Switch to textile to get a textarea/ see 'contenteditable' below
+    Select from list     FormLayout_text_format    text/x-web-textile
+    Wait until element is visible   FormLayout
+# Add to existing layout
+    ${layout} =          Get text  FormLayout
+    Input text           FormLayout  ${layout} ${FIELD_ID}= <span class="plominoFieldClass">${FIELD_ID}</span>
     Click button         Save
 
+##
+## Editing TinyMCE contenteditable ##
+##
+# This is problematic, because it's a pain navigating the DOM to edit.
+# See http://stackoverflow.com/questions/17306305/how-to-select-the-text-of-a-tinymce-field-with-robot-framework-and-selenium2libr
+# http://stackoverflow.com/questions/6139107/programatically-select-text-in-a-contenteditable-html-element
+#   Wait Until Page Contains Element  FormLayout_ifr
+#   Select frame         FormLayout_ifr 
+#   Input text           content  ${FIELD_ID}=
+#   Unselect Frame
+#   Click link           FormLayout_plominofield
+#   Select frame         css=.plonepopup iframe
+#   Select From List     plominoFieldId  ${FIELD_ID}
+#   Click button         insert
+#   Unselect Frame
+
+Set field property
+# See PlominoField.schema for properties
+    [Arguments]  ${FORM_ID}  ${FIELD_ID}  ${PROPERTY}  ${VALUE}
+    Go to        ${PLONE_URL}/mydb/${FORM_ID}/${FIELD_ID}
+    Input text   ${PROPERTY}  ${VALUE}
+    Click button  form.button.save
+
+
+Set field settings
+    [Arguments]   ${FORM_ID}  ${FIELD_ID}  ${PROPERTY}  ${VALUE}
+    Go to         ${PLONE_URL}/mydb/${FORM_ID}/${FIELD_ID}
+    Click link    Settings
+    Input text    ${PROPERTY}  ${VALUE}
+    Click button  form.actions.apply
+
+
+# This keyword creates 'dgForm' with two fields
 Create datagrid form
-    # [Arguments]          ${FORM_ID}
-    Create form          dgForm  Datagrid form
+    Create form                     dgForm  Datagrid form
+    Create field of type in layout  dgForm  dgcolumnone  TEXT
+    Create field of type in layout  dgForm  dgcolumntwo  NUMBER
+# Set a default formula for 'dgcolumntwo':
+    Set field property  dgForm  dgcolumntwo  Formula  return 11
 
 Check form method
+# Make sure the form method is what it should be
     [Arguments]          ${FORM_ID}  ${FORM_METHOD}
     Open form            ${FORM_ID}
     ${form_method_attr} =  Get element attribute  plomino_form@method
@@ -151,26 +262,87 @@ Check form method
     Check datagrid method  ${FORM_ID}  ${FORM_METHOD}
 
 Check datagrid method
+# The datagrid form method should match that of the parent form
     [Arguments]           ${FORM_ID}  ${FORM_METHOD}
-    Create field of type  ${FORM_ID}  dgfield  DATAGRID
+    Create field of type in layout  ${FORM_ID}  dgfield  DATAGRID
     Wait Until Page Contains Element  dgfield_gridvalue
-    # Looks like only visible text is counted
-    # Element Should Contain  xpath=//input[@id='dgfield_gridvalue']/following-sibling::script  'sServerMethod': '${FORM_METHOD.upper()}'
-    # Element Should Contain  dgfield_js  'sServerMethod': 'GET'
+# Looks like only visible text is counted
+#   Element Should Contain  xpath=//input[@id='dgfield_gridvalue']/following-sibling::script  'sServerMethod': '${FORM_METHOD.upper()}'
+#   Element Should Contain  dgfield_js  'sServerMethod': 'GET'
     ${page_source} =  Get source
     Should match regexp  ${page_source}  dgfield[^>]+'sServerMethod': '${FORM_METHOD.upper()}'
-    # Page should contain  'sServerMethod': 'GET'
-    # Page should contain  'sServerMethod': '${FORM_METHOD.upper()}'
+#   Page should contain  'sServerMethod': 'GET'
+#   Page should contain  'sServerMethod': '${FORM_METHOD.upper()}'e
 
 Select field type
     [Arguments]  ${FIELD_TYPE}
     Select from list  FieldType  ${FIELD_TYPE}
 
 Configure datagrid field
-    [Arguments]       ${FIELD_ID}
+#   [Arguments]       ${FIELD_ID}
     Click link        Settings
     Select from list  form.associated_form  dgForm
-    Input text        form.field_mapping  one,two
+    Input text        form.field_mapping  dgcolumnone,dgcolumntwo
+    Click button      form.actions.apply
+
+Add datagrid row modal
+# To use, should be viewing form with dgfield
+    Click link    dgfield_addrow
+    Select frame  dgfield_iframe
+# Default value
+    ${value} =  Get value  css=#dgcolumntwo
+    Should be equal  ${value}  11
+    Input text    dgcolumnone  This one
+    Input text    dgcolumntwo  22
+    Click button  Save
+    Select Window
+    Page should contain element  css=#dgfield_datagrid tbody>tr
+
+Edit datagrid row modal
+    Click element  css=#dgfield_datagrid tbody>tr
+    Click link    dgfield_editrow
+    Select frame  dgfield_iframe
+    Input text    dgcolumnone  That two
+    Click button  Save
+    Select Window
+    Page should contain element  css=#dgfield_datagrid tbody>tr
+
+Add datagrid row inline
+# Context: viewing form containing dgfield
+    Click link    dgfield_addrow
+    Page Should Contain Textfield  dgcolumnone
+# Default value
+    ${value} =  Get value  css=#dgcolumntwo
+    Should be equal  ${value}  11
+    Input text    dgcolumnone  That one
+    Input text    dgcolumntwo  33
+    Click button  css=button.save
+    Wait until page contains element  css=#dgfield_datagrid tbody>tr
+    Click button  css=input.plominoSave
+    Wait until page contains element  css=.plominoEdit
+
+Edit datagrid row inline
+    Click button  css=.plominoEdit
+    Page should contain element  css=#dgfield_datagrid tbody>tr
+    Double click element  css=#dgfield_datagrid tbody>tr
+    Wait until page contains element  css=#dgfield_datagrid tbody>tr button.save
+    Input text    dgcolumnone  That two
+    Click button  css=button.save
+    Wait until page contains element  css=#dgfield_datagrid tbody>tr
+    Click button  css=input.plominoSave
+    Wait until page contains element  css=.plominoEdit
+
+Delete datagrid row
+    Click button  css=.plominoEdit
+    Page should contain element  css=#dgfield_datagrid tbody>tr
+    Click element  css=#dgfield_datagrid tbody>tr
+    Click link    dgfield_deleterow
+    Wait until page contains element  css=.dataTables_empty
+
+Set datagrid field inline
+    Open field        frm_test  dgfield
+    Click link        Settings
+    Select from list  form.associated_form_rendering  Inline editing
     Click button      form.actions.apply
 
 Generate view for
@@ -188,17 +360,17 @@ Replicate the database design
     Go to         ${OTHER_PLONE_URL}
     Open Add New Menu
     Click Link    plominodatabase
-    Wait Until Page Contains Element  title
-    Input Text    title  replicadb
+    Wait until page contains element  title
+    Input text    title  replicadb
     Click button  name=form.button.save
-    Page Should Contain  Changes saved.
+    Page should contain  Changes saved.
     Go to    ${OTHER_PLONE_URL}/replicadb/DatabaseDesign
-    Select Radio Button     sourcetype   sourcetype-server
+    Select radio button     sourcetype   sourcetype-server
     Input text     sourceurl-import  ${PLONE_URL}/mydb
     Input text     username-import   ${TEST_USER_ID}
     Input text     password-import   ${TEST_USER_PASSWORD}
     Click button   submit_refresh_import
-    Select Radio Button     sourcetype   sourcetype-server
+    Select radio button     sourcetype   sourcetype-server
     Input text     sourceurl-import  ${PLONE_URL}/mydb
     Input text     username-import   ${TEST_USER_ID}
     Input text     password-import   ${TEST_USER_PASSWORD}
@@ -236,6 +408,10 @@ Replicate documents
     Select Checkbox     selection-1
     Click Button    submit_replication
 
+Inspect page
+    Import library  Dialogs
+    Pause Execution
+
 Re-replicate documents
     Go to    ${PLONE_URL}/secondreplicadb/DatabaseReplication
     Click Button    add_replication
@@ -270,3 +446,9 @@ Teardown other portal
     Go to            http://admin:admin@${OTHER_ZOPE_HOST}:${OTHER_ZOPE_PORT}/manage_main
     Select checkbox  PloneRobotRemote
     Click button     Delete
+
+# TODO: munged from example in plone/app/robotframework/keywords.robot
+# upgrade selenium2library?
+Wait until element is visible
+    [Arguments]  ${LOCATOR}
+    Wait until keyword succeeds  2  5  Element Should Be Visible  ${LOCATOR}

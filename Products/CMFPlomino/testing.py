@@ -1,3 +1,4 @@
+import os
 from plone.app.testing import PloneSandboxLayer
 from plone.app.testing import PLONE_FIXTURE
 from plone.app.testing import TEST_USER_ID, TEST_USER_NAME
@@ -11,6 +12,11 @@ from plone.testing import z2
 class Plomino(PloneSandboxLayer):
 
     defaultBases = (PLONE_FIXTURE, )
+
+    def setUp(self):
+        # Make sure we're testing in a predictable timezone
+        os.environ['TZ'] = 'UTC'
+        PloneSandboxLayer.setUp(self)
 
     def setUpZope(self, app, configurationContext):
         # Load ZCML

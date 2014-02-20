@@ -95,7 +95,7 @@ class PlominoHidewhen(BaseContent, BrowserDefaultMixin):
         """ Standard AT post-edit hook.
         """
         self.cleanFormulaScripts(
-                'hidewhen_%s_%s' % (self.getParentNode().id, self.id))
+                SCRIPT_ID_DELIMITER.join(['hidewhen', self.getParentNode().id, self.id]))
 
 
 registerType(PlominoHidewhen, PROJECTNAME)

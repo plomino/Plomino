@@ -103,7 +103,10 @@
                                                                 docurl python:brain.getPath().split('/')[-1]"
                                                     tal:attributes="class python:test(oddrow, 'even', 'odd');">
                                                     <td>
-                                                       <input tal:condition="python:hasRemovePermission and not(hideCheckboxes)" type="checkbox" name="sdoc" tal:attributes="value python:(brain.getPath().split('/')[-1])" /></td>
+                                                      <input tal:condition="python:hasRemovePermission and not hideCheckboxes"
+                                                             type="checkbox"
+                                                             name="sdoc"
+                                                             tal:attributes="value python:brain.getPath().split('/')[-1]" /></td>
                                                     <tal:columns repeat="column columns">
                                                         <td tal:condition="not: column/HiddenColumn|nothing"><tal:skipfirstcolumn
                                                             condition="python:test(column!=columns[0])">
@@ -197,8 +200,8 @@
                                     display_checkboxes python:test(hasRemovePermission and not(hideCheckboxes), 'true', 'false')"
                         tal:content="structure string:
                                      var oDynamicTable;
-                                     $$(document).ready(function() {
-                                            oDynamicTable = $$('#dynamictable').dataTable( {
+                                     jQuery(document).ready(function() {
+                                            oDynamicTable = jQuery('#dynamictable').dataTable( {
                                                 'aaSorting': [],
                                                 'bJQueryUI': true,
                                                 'bProcessing': true,
@@ -227,8 +230,8 @@
                                                 }
                                             });
                                             var tableNodes = oDynamicTable.fnGetNodes();
-                                            $$('td > input:checkbox', tableNodes).change(function() {
-                                                $$(this).closest('tr').toggleClass('row_selected');
+                                            jQuery('td > input:checkbox', tableNodes).change(function() {
+                                                jQuery(this).closest('tr').toggleClass('row_selected');
                                             });
                                         });">
                     </script>

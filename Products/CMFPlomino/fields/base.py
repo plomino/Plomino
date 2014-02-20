@@ -10,9 +10,6 @@
 __author__ = """Eric BREHAULT <eric.brehault@makina-corpus.org>"""
 __docformat__ = 'plaintext'
 
-# stdlib
-from urllib import unquote
-
 # 3rd party
 from jsonutil import jsonutil as json
 
@@ -29,7 +26,9 @@ from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 
 # Plomino
 from Products.CMFPlomino.PlominoUtils import asUnicode
-from Products.CMFPlomino.PlominoDocument import TemporaryDocument
+
+import logging
+_logger = logging.getLogger('Plomino')
 
 
 class IBaseField(Interface):
@@ -73,80 +72,66 @@ class BaseField(object):
             creation=False, request=None):
         """ Return the field as rendered by ``form`` on ``doc``.
 
+        We may be called on:
+        - a blank form, e.g. while creating a document;
+        - an existing document;
+        - a TemporaryDocument used during datagrid editing.
+
+        - If EDITABLE, look for the field value:
+          - are we creating a doc or editing a datagrid row?
+            - do we have a request?
+              - if we're being used for a datagrid,
+                - get field value from `getDatagridRowdata`,
+                - or compute a default value;
+              - otherwise look for `request[fieldName]`;
+              - otherwise look for `request[fieldName+'_querystring']`;
+            - otherwise compute a default value.
+          - otherwise just `getItem`
+        - if DISPLAY/COMPUTED:
+          - if DISPLAY and doc and no formula: `getItem`.
+          - else compute
+        - if CREATION
+          - compute or `getItem`
+        - if COMPUTEDONSAVE and doc: `getItem`
+        - otherwise, give up.
         """
         # XXX: The editmode_obsolete parameter is unused.
         fieldName = self.context.id
         mode = self.context.getFieldMode()
 
         db = self.context.getParentDatabase()
-        if doc is None:
-            target = form
-        else:
+        if doc:
             target = doc
+        else:
+            target = form
 
         fieldValue = None
-        # XXX This is super-ugly, sorry. The reason I do this is that
-        # I changed some logic upper in the call chain to give a
-        # properly populated TemporaryDocument to hideWhens
-        # to avoid users coding defensively with unneeded
-        # try: catch blocks.
-        # A proper solution would probably be to factor out the logic
-        # that finds a field value and use that logic to populate
-        # the TemporaryDocument.
-        # But *right now* (that is better than never) I see this solution
-        # works without breaking any test.
-        temporary_doc_in_overlay = (
-            isinstance(aq_base(doc), TemporaryDocument) and
-            hasattr(self.context, 'REQUEST') and
-            'Plomino_Parent_Form' in self.context.REQUEST.form and not
-            self.context.REQUEST.get('ACTUAL_URL').endswith('/createDocument')
-            )
-        if temporary_doc_in_overlay:
-            request = self.context.REQUEST
         if mode == "EDITABLE":
-            if doc is None or creation or temporary_doc_in_overlay:
-                # The aforementioned ugliness ends here
-                if self.context.Formula():
-                    fieldValue = form.computeFieldValue(fieldName, target)
-                elif request is None:
-                    fieldValue = ""
-                else:
-                    row_data_json = request.get("Plomino_datagrid_rowdata", None)
-                    if row_data_json is not None:
-                        # datagrid form case
-                        parent_form = request.get(
-                                "Plomino_Parent_Form", None)
-                        parent_field = request.get(
-                                "Plomino_Parent_Field", None)
-                        data = json.loads(
-                                unquote(
-                                    row_data_json).decode(
-                                        'raw_unicode_escape'))
-                        datagrid_fields = (
-                                db.getForm(parent_form)
-                                .getFormField(parent_field)
-                                .getSettings()
-                                .field_mapping.split(','))
-                        if fieldName in datagrid_fields:
-                            fieldValue = data[
-                                    datagrid_fields.index(fieldName)]
-                        else:
-                            fieldValue = ""
-                    else:
-                        # if no doc context and no default formula, we accept
-                        # value passed in the REQUEST so we look for 'fieldName'
-                        # but also for 'fieldName_querystring' which allows to
-                        # pass value via the querystring without messing the
-                        # POST content
-                        request_value = request.get(fieldName, '')
-                        if not request_value:
-                            request_value = request.get(
-                                fieldName + '_querystring',
-                                ''
-                            )
-                        fieldValue = asUnicode(request_value)
-            else:
+            # if (not doc) or creation:
+            if doc:
                 fieldValue = doc.getItem(fieldName)
+                #DBG _logger.info('BaseField.getFieldValue> 1 got doc') 
+    
+            if (not fieldValue) and self.context.Formula():
+                # This implies that if a falsy fieldValue is possible, 
+                # Formula needs to take it into account, e.g. using hasItem
+                fieldValue = form.computeFieldValue(fieldName, target)
+                #DBG _logger.info('BaseField.getFieldValue> 2 default formula') 
+            elif (not fieldValue) and request:
+                # if no doc context and no default formula, we accept
+                # value passed in the REQUEST so we look for 'fieldName'
+                # but also for 'fieldName_querystring' which allows to
+                # pass value via the querystring without messing the
+                # POST content
+                request_value = request.get(fieldName, '')
+                #DBG _logger.info('BaseField.getFieldValue> 3 request') 
+                if not request_value:
+                    request_value = request.get(fieldName + '_querystring', '')
+                    #DBG _logger.info('BaseField.getFieldValue> 3 request _querystring') 
+                fieldValue = asUnicode(request_value)
+            if not fieldValue:
+                #DBG _logger.info('BaseField.getFieldValue> 4 blank') 
+                fieldValue = ""
 
         elif mode in ["DISPLAY", "COMPUTED"]:
             if mode == "DISPLAY" and not self.context.Formula() and doc:
@@ -155,9 +140,9 @@ class BaseField(object):
                 fieldValue = form.computeFieldValue(fieldName, target)
 
         elif mode == "CREATION":
-            if creation:
+            if creation or not doc:
                 # Note: on creation, there is no doc, we use form as target
-                # in formula
+                # in formula, and we do the same when no doc (e.g. with tojson)
                 fieldValue = form.computeFieldValue(fieldName, form)
             else:
                 fieldValue = doc.getItem(fieldName)
@@ -168,6 +153,7 @@ class BaseField(object):
         if fieldValue is None:
             fieldValue = ""
 
+        #DBG _logger.info('BaseField.getFieldValue> doc: %s, fieldName: %s, fieldValue: %s, creation: %s' % (`doc`, `fieldName`, `fieldValue`[:20], creation)) 
         return fieldValue
 
 

@@ -60,6 +60,7 @@ from plone.resource.interfaces import IResourceDirectory
 # Plomino
 from config import *
 import interfaces
+from Products.CMFPlomino.PlominoUtils import StringToDate
 
 DirectoryView.registerDirectory('skins', product_globals)
 
@@ -68,8 +69,7 @@ DirectoryView.registerDirectory('skins', product_globals)
 # dates:
 def _extended_json_encoding(obj):
     if isinstance(obj, DateTime):
-        return {'__datetime__': True,
-                'datetime': obj.ISO()}
+        return {'<datetime>': True, 'datetime': obj.ISO()}
     return json.dumps(obj)
 
 json._default_encoder = JSONEncoder(
@@ -85,7 +85,8 @@ json._default_encoder = JSONEncoder(
 )
 
 def _extended_json_decoding(dct):
-    if '__datetime__' in dct:
+    if '<datetime>' in dct:
+        # 2013-10-18T20:35:18+07:00
         return StringToDate(dct['datetime'], format=None)
     return dct
 
@@ -199,7 +200,9 @@ class PlominoCoreUtils:
                'actual_context',
                'is_email',
                'urlquote',
-               'translate']
+               'translate',
+               'SCRIPT_ID_DELIMITER',
+               'save_point',]
 
 component.provideUtility(PlominoCoreUtils, interfaces.IPlominoUtils)
 
@@ -223,10 +226,9 @@ class PlominoSafeDomains:
 
 component.provideUtility(PlominoSafeDomains, interfaces.IPlominoSafeDomains)
 
-PLOMINO_RESOURCE_NAME = "plomino"
 
 def get_resource_directory():
-    """Obtain the 'plomino' persistent resource directory, creating it if
+    """Obtain the Plomino persistent resource directory, creating it if
     necessary.
     """
     persistentDirectory = queryUtility(IResourceDirectory, name="persistent")

@@ -18,7 +18,7 @@ and it uses its terminology
 (which sometimes overlaps with the Plone terminology).
 
 Plomino database
----------------
+----------------
 
 A Plomino application is supported by a Plomino database.
 The Plomino database is the Plone object which contains the application data
@@ -126,6 +126,64 @@ Let's set a layout which contains our fields::
     ... <span class="plominoFieldClass">field3</span></p><p>
     ... <span class="plominoFieldClass">field4</span></p>""")
 
+
+Formulas can include scripts from resources
+--------------------------------------------
+
+A formula can include scripts from ``resources``::
+
+    >>> from Products.PythonScripts.PythonScript import PythonScript
+    >>> ps = PythonScript('script')
+    >>> script_id = db.resources._setObject('script', ps)
+    >>> ps.write('return "hello"')
+    >>> id = db.frm1.invokeFactory('PlominoField',
+    ...         id='field5',
+    ...         title='Field with import',
+    ...         FieldType="TEXT",
+    ...         FieldMode="DISPLAY",
+    ...         Formula="#Plomino import script")
+    >>> db.frm1.field5.at_post_create_script()
+    >>> db.frm1.computeFieldValue('field5', db.frm1)
+    'hello'
+
+Scripts can also include other scripts, and script names can be prefixes of
+other scripts. A script is only included the first time it's seen; subsequent
+mentions are blanked::
+
+    >>> ps = PythonScript('script_too')
+    >>> script_id = db.resources._setObject('script_too', ps)
+    >>> ps.write('#Plomino import script\n#Plomino import script_too')
+    >>> id = db.frm1.invokeFactory('PlominoField',
+    ...         id='field6',
+    ...         title='Field with import',
+    ...         FieldType="TEXT",
+    ...         FieldMode="DISPLAY",
+    ...         Formula="#Plomino import script_too")
+    >>> db.frm1.field6.at_post_create_script()
+    >>> db.frm1.computeFieldValue('field6', db.frm1)
+    'hello'
+
+You can also spell it ``include`` (because what we're doing is really 
+not much like Python's ``import``, it's straight string interpolation).
+And scripts can include scripts that include scripts ...::
+
+    >>> ps = PythonScript('script_three')
+    >>> script_id = db.resources._setObject('script_three', ps)
+    >>> ps.write('#Plomino include script_too')
+    >>> id = db.frm1.invokeFactory('PlominoField',
+    ...         id='field7',
+    ...         title='Field with import',
+    ...         FieldType="TEXT",
+    ...         FieldMode="DISPLAY",
+    ...         Formula="#Plomino include script_three")
+    >>> db.frm1.field7.at_post_create_script()
+    >>> db.frm1.computeFieldValue('field7', db.frm1)
+    'hello'
+
+When formulas fail, and the database is in debug mode, the error is logged
+--------------------------------------------------------------------------
+
+TODO
 
 Documents
 ---------------
@@ -277,7 +335,7 @@ designer wants to be display in the view::
     >>> len(db.view1.getDocumentsByKey('hello'))
     1
 
-Views can be exported as CSV:
+Views can be exported as CSV::
 
     >>> db.view1.exportCSV()
     '"London calling"\r\n"Rhythm is love"\r\n"Rhythm is love"\r\n"bonjour"\r\n"hello"\r\n'
@@ -298,7 +356,7 @@ We can export only one field::
 We can get the ``lastmodified`` value::
 
     >>> doc11.tojson(item="field2", lastmodified=True)
-    '{"lastmodified": {"datetime": "...", "__datetime__": true}, "data": "My favorite song is Rhythm is love"}'
+    '{"lastmodified": {"<datetime>": true, "datetime": "..."}, "data": "My favorite song is Rhythm is love"}'
 
 Views can be exported as JSON::
 
@@ -568,7 +626,8 @@ A form can define actions to take when specific events occur on a document.
     ... newcountry='Chile'
     ... plominoDocument.setItem('country', newcountry)
     ... """)
-    >>> db.cleanFormulaScripts("form_frm1")
+    >>> from Products.CMFPlomino.AppConfig import SCRIPT_ID_DELIMITER
+    >>> db.cleanFormulaScripts("form"+SCRIPT_ID_DELIMITER+"frm1")
     >>> doc1.country
     u'Finland'
     >>> doc1.save(db.frm1)
@@ -583,7 +642,8 @@ aborted::
     ...     return "Chile cannot be deleted"
     ... return None
     ... """)
-    >>> db.cleanFormulaScripts("form_frm1")
+    >>> from Products.CMFPlomino.AppConfig import SCRIPT_ID_DELIMITER
+    >>> db.cleanFormulaScripts("form"+SCRIPT_ID_DELIMITER+"frm1")
     >>> doc1_id = doc1.id
     >>> db.deleteDocument(doc1)
     >>> db.getDocument(doc1_id) is None
@@ -634,6 +694,15 @@ field::
     False
     >>> 'field2' in db.getIndex().indexes()
     True
+
+If we don't want the sort column to double as the key column, we can set
+another column as key column::
+
+    >>> db.view1.setKeyColumn('col2')
+    >>> len(db.view1.getDocumentsByKey('hello'))
+    0
+    >>> len(db.view1.getDocumentsByKey('My favorite song is Ho Chi Minh City calling by The Clash'))
+    1
 
 Import/export design
 ---------------------

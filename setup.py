@@ -1,7 +1,7 @@
 from setuptools import setup, find_packages
 import os
 
-version = '1.17.5'
+version = '1.18.5'
 
 setup(name='Products.CMFPlomino',
       version=version,
@@ -40,6 +40,7 @@ setup(name='Products.CMFPlomino',
           'plone.app.jquery',
           'zope.app.component',  # Helps Plone 4.0, should not hurt elsewhere.
           'zope.globalrequest',  # This one too.
+          'plone.resource',
       ],
       extras_require={
           'test': [

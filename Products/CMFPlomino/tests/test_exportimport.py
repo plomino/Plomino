@@ -1,4 +1,6 @@
 import unittest
+import os
+from zipfile import ZipFile, ZIP_DEFLATED
 
 import OFS
 
@@ -87,7 +89,7 @@ class ExportImportTest(unittest.TestCase):
         mydb.resources.manage_addFolder('test_folder')
         mydb.resources.test_folder.manage_addFolder('test_subfolder')
         xml = mydb.exportDesignAsXML()
-        # Now delete the fodlers and check they are created back again
+        # Now delete the folders and check they are created back again
         mydb.resources.manage_delObjects(['test_folder'])
         mydb.importDesignFromXML(xml, replace=True)
         self.assertTrue('test_folder' in mydb.resources)
@@ -102,6 +104,13 @@ class ExportImportTest(unittest.TestCase):
         mydb.resources.manage_addFile('an_empty_file')
         xml = mydb.exportDesignAsXML()
         mydb.importDesignFromXML(xml, replace=True)
+
+    def test_import_zipfile_with_directory_entry(self):
+        mydb = self.layer['portal'].mydb
+        dir, _f = os.path.split(os.path.abspath(__file__))
+        zip_file = ZipFile(os.path.join(dir, 'samples', 'testdirentry.zip'))
+        mydb.importDesignFromZip(zip_file, replace=True)
+        self.assertTrue('libConfig' in mydb.resources)
 
     def setUp(self):
         self.create_field()

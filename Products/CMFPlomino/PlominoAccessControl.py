@@ -258,6 +258,7 @@ class PlominoAccessControl(Persistent):
     def isCurrentUserReader(self, doc):
         """ Does the current user have read permission on the db
         (so Plone security is preserved)?
+
         If Plomino_Readers is defined on the doc, is he part of it?
         """
         isreader = False

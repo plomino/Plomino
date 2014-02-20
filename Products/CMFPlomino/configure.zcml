@@ -12,6 +12,7 @@
   <include package="collective.js.jqueryui"/>
   <include package="collective.js.datatables"/>
   <include package="plone.app.registry"/>
+  <!--<include package="plone.resourceeditor"/>-->
 
   <include package=".fields"/>
   <include package=".browser"/>
@@ -55,6 +56,11 @@
     for="Products.CMFPlomino.interfaces.IPlominoDocument zope.app.container.interfaces.IObjectRemovedEvent"
     handler="Products.CMFPlomino.events.PlominoDocumentRemoveEventHandler"
   />
+
+    <adapter
+            factory=".PlominoDocument.PlominoIndexableObjectWrapper"
+            provides="plone.indexer.interfaces.IIndexableObject"
+            />
 
 
 </configure>

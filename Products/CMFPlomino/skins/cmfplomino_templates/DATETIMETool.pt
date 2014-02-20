@@ -245,7 +245,7 @@
         &nbsp;
           </td>
           <td class="noevent" tal:condition="python: day"
-          tal:define="datestring python:'%d/%0.2d/%0.2d'%(year,month,day)"
+          tal:define="datestring python:'%d/%0.2d/%0.2d'%(year, month, day)"
           tal:attributes="class python:test(current.year()==year and current.month()==month and current.day()==int(day), 'todaynoevent', 'noevent')">
         <a href="" tal:attributes="onclick string:returndate('${datestring}');; return false" tal:content="day">
           day number

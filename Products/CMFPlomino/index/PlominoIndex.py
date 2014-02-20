@@ -38,6 +38,7 @@ from Products.CMFPlomino.index.PlominoFileIndex import PlominoFileIndex
 from Products.CMFPlomino.index.PlominoViewIndex import PlominoViewIndex
 from Products.CMFPlomino.PlominoField import get_field_types
 
+DISPLAY_INDEXED_ATTR_PREFIX = 'PlominoDisplay_'
 
 class PlominoIndex(UniqueObject, CatalogTool):
     """ Plomino index
@@ -89,7 +90,7 @@ class PlominoIndex(UniqueObject, CatalogTool):
 
     security.declareProtected(DESIGN_PERMISSION, 'createFieldIndex')
     def createFieldIndex(self, fieldname, fieldtype, refresh=True,
-            indextype='DEFAULT'):
+            indextype='DEFAULT', fieldmode=None):
         """
         """
         if indextype == 'DEFAULT':
@@ -112,7 +113,12 @@ class PlominoIndex(UniqueObject, CatalogTool):
                             )
         else:
             if not fieldname in self.indexes():
-                self.addIndex(fieldname, indextype)
+                if fieldmode == 'DISPLAY':
+                    display_extra = SimpleRecord(
+                        indexed_attrs='%s%s' % (DISPLAY_INDEXED_ATTR_PREFIX, fieldname))
+                    self.addIndex(fieldname, indextype, extra=display_extra)
+                else:
+                    self.addIndex(fieldname, indextype)
 
         if not self._catalog.schema.has_key(fieldname):
             self.addColumn(fieldname)
@@ -121,7 +127,7 @@ class PlominoIndex(UniqueObject, CatalogTool):
             self.refresh()
 
     security.declareProtected(DESIGN_PERMISSION, 'createSelectionIndex')
-    def createSelectionIndex(self,fieldname, refresh=True):
+    def createSelectionIndex(self, fieldname, refresh=True):
         """
         """
         if not fieldname in self.indexes():

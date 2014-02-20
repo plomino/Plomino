@@ -12,20 +12,20 @@ __docformat__ = 'plaintext'
 
 # From the standard library
 from cStringIO import StringIO
+from datetime import datetime
+from dateutil.parser import parse
 from email.Header import Header
 from email import message_from_string
-from dateutil.parser import parse
-from datetime import datetime
 from types import StringTypes
 import cgi
 import csv
 import decimal as std_decimal
-
 import Globals
 import htmlentitydefs
 import Missing
 import re
 import urllib
+import transaction
 
 # 3rd party Python
 from jsonutil import jsonutil as json
@@ -46,11 +46,16 @@ from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import normalizeString as utils_normalizeString
 from .interfaces import IPlominoSafeDomains
 
+# Plomino
+from Products.CMFPlomino.config import *
+
 try:
     from plone.app.upgrade import v40
     HAS_PLONE40 = True
 except ImportError:
     HAS_PLONE40 = False
+
+from Products.CMFPlomino.AppConfig import SCRIPT_ID_DELIMITER
 
 import logging
 logger = logging.getLogger('Plomino')
@@ -86,7 +91,7 @@ def DateToString(d, format=None, db=None):
             format = db.getDateTimeFormat()
         if not format:
             format = '%Y-%m-%d'
-    return d.strftime(format)
+    return d.toZone(TIMEZONE).strftime(format)
 
 
 def StringToDate(str_d, format='%Y-%m-%d', db=None):
@@ -101,7 +106,10 @@ def StringToDate(str_d, format='%Y-%m-%d', db=None):
     try:
         if db:
             format = db.getDateTimeFormat()
-        dt = datetime.strptime(str_d, format)
+        if format:
+            dt = datetime.strptime(str_d, format)
+        else:
+            dt = parse(str_d)
     except ValueError, e:
         # XXX: Just let DateTime guess.
         dt = parse(DateTime(str_d).ISO())
@@ -110,8 +118,7 @@ def StringToDate(str_d, format='%Y-%m-%d', db=None):
             format,
             repr(e),
             repr(dt)))
-    as_tuple = dt.timetuple()
-    return DateTime(*as_tuple[:6])
+    return DateTime(dt).toZone(TIMEZONE)
 
 
 def DateRange(d1, d2):
@@ -252,12 +259,18 @@ def htmlencode(s):
 
 def urlencode(h):
     """ Call urllib.urlencode
+
+    (Encode a sequence of two-element tuples or dictionary into a URL query
+    string, does quoting.)
     """
+    # TODO: consider doseq parameter
     return urllib.urlencode(h)
 
 
 def urlquote(s):
     """ Call urllib.quote
+
+    (quote('abc def') -> 'abc%20def')
     """
     return urllib.quote(s)
 
@@ -360,11 +373,7 @@ def isDocument(doc):
 
 
 def json_dumps(data):
-    def json_date_handler(obj):
-        if hasattr(obj, 'ISO'):
-            obj = obj.ISO()
-        return obj
-    return json.dumps(data, default=json_date_handler)
+    return json.dumps(data)
 
 
 def json_loads(json_string):
@@ -471,3 +480,74 @@ def translate(context, content, i18n_domain=None):
             content
             )
     return content
+
+
+def getDatagridRowdata(context, REQUEST):
+    """ Return rowdata for a datagrid on a modal popup
+
+    In the context of a modal datagrid popup, return the rowdata 
+    on the REQUEST.
+    """
+    # This is currently just used during creation of TemporaryDocument,
+    # but may possibly be useful in formulas. I won't publish it yet though.
+    if not REQUEST:
+        return [], []
+
+    mapped_field_ids = []
+    rowdata = []
+    form_id = getattr(REQUEST, 'Plomino_Parent_Form', None)
+    field_id = getattr(REQUEST, 'Plomino_Parent_Field', None)
+    if form_id and field_id:
+        form = context.getParentDatabase().getForm(form_id)
+        field = form.getFormField(field_id)
+        settings = field.getSettings()
+        mapped_field_ids = [f.strip() for f in settings.field_mapping.split(',')]
+    rowdata_json = getattr(REQUEST, 'Plomino_datagrid_rowdata', None)
+    if rowdata_json:
+        rowdata = json.loads(
+                urllib.unquote(rowdata_json).decode('raw_unicode_escape'))
+    return mapped_field_ids, rowdata
+
+def save_point():
+    txn = transaction.get()
+    txn.savepoint(optimistic=True)
+
+
+def _expandIncludes(context, formula):
+    """ Recursively expand include statements
+    """
+    # First, we match any includes
+    r = re.compile('^#Plomino (import|include) (.+)$', re.MULTILINE)
+
+    matches = r.findall(formula)
+    seen = []
+    while matches:
+        for include, scriptname in matches:
+
+            scriptname = scriptname.strip()
+            # Now, we match only *this* include; don't match script names
+            # that are prefixes of other script names
+            exact_r = re.compile(
+                    '^#Plomino %s %s\\b' % (include, scriptname),
+                    re.MULTILINE)
+
+            if scriptname in seen:
+                # Included already, blank the include statement
+                formula = exact_r.sub('', formula)
+                continue
+
+            seen.append(scriptname)
+            try:
+                db = context.getParentDatabase()
+                script_code = db.resources._getOb(scriptname).read()
+            except:
+                logger.warning("expandIncludes> %s not found in resources" % scriptname)
+                script_code = (
+                        "#ALERT: %s not found in resources" % scriptname)
+
+            formula = exact_r.sub(script_code, formula)
+
+        matches = r.findall(formula)
+
+    return formula
+

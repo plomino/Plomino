@@ -178,6 +178,38 @@ dl.portlet-design-plomino dt a:hover {
 .CodeMirror {
     font-size: 12px;
 }
+
+.ace_editor {
+        border: 1px solid lightgray;
+        margin: auto;
+        height: 200px;
+        width: 80%;
+        position: relative !important
+}
+        
+.ace-fullscreen .ace-fullscreen-editor{
+        height: auto!important;
+        width: auto!important;
+        border: 0;
+        margin: 0;
+        position: fixed !important;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        z-index: 10000
+}
+        
+.ace-fullscreen {
+    overflow: hidden
+}
+
+.ace_marker-layer .ace_start{
+    background: none;
+    border-color:black !important;
+    border-width:1px !important;
+}
+
 /* </dtml-with> */
 
 

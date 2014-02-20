@@ -63,9 +63,11 @@ from index.PlominoIndex import PlominoIndex
 from migration.migration import migrate
 from PlominoUtils import asUnicode
 from PlominoUtils import escape_xml_illegal_chars
+from PlominoUtils import DateToString
 from Products.CMFPlomino.config import *
 from Products.CMFPlomino import get_utils
 from Products.CMFPlomino import plomino_profiler
+from Products.CMFPlomino.PlominoUtils import _expandIncludes
 # get AT specific schemas for each Plomino class
 from Products.CMFPlomino.interfaces import IXMLImportExportSubscriber
 from Products.CMFPlomino.PlominoAction import schema as action_schema
@@ -102,7 +104,6 @@ script_id = '%(script_id)s'
 
 %(formula)s
 """
-
 
 def run_refreshdb(context):
     # for async call
@@ -196,7 +197,8 @@ class PlominoDesignManager(Persistent):
                     index.createFieldIndex(
                             f.id,
                             f.getFieldType(),
-                            indextype=f.getIndexType())
+                            indextype=f.getIndexType(),
+                            fieldmode=f.getFieldMode())
         logger.info('Field indexing initialized')
 
         #declare all the view formulas and columns index entries
@@ -211,7 +213,7 @@ class PlominoDesignManager(Persistent):
         logger.info('Views indexing initialized')
 
         # re-index documents
-        start_time = DateTime().toZone('UTC')
+        start_time = DateTime().toZone(TIMEZONE)
         msg = self.reindexDocuments(index)
         report.append(msg)
 
@@ -249,7 +251,7 @@ class PlominoDesignManager(Persistent):
                     if doc.plomino_modification_time > changed_since]
             total_docs = len(documents)
             logger.info('Re-indexing %d changed document(s) since %s' % (
-                total_docs, str(changed_since)))
+                total_docs, DateToString(changed_since, db=self)))
         else:
             total_docs = len(self.plomino_documents)
             logger.info('Existing documents: ' + str(total_docs))
@@ -610,7 +612,8 @@ class PlominoDesignManager(Persistent):
     def getResourcesList(self):
         """ Return the database resources objects ids in a string
         """
-        ids = self.resources.objectIds()
+        # Un-lazify, resources is a BTree
+        ids = [i for i in self.resources.objectIds()]
         ids.sort()
         return '/'.join(ids)
 
@@ -668,6 +671,7 @@ class PlominoDesignManager(Persistent):
             if not script_id_pattern or script_id_pattern in script_id:
                 self.scripts._delObject(script_id)
 
+
     security.declarePublic('compileFormulaScript')
     def compileFormulaScript(self, script_id, formula, with_args=False):
         # Remember the current user
@@ -702,22 +706,12 @@ class PlominoDesignManager(Persistent):
                     )
         import_list = ";".join(import_list)
 
-        r = re.compile('^#Plomino import (.+)$', re.MULTILINE)
-        for i in r.findall(formula):
-            scriptname = i.strip()
-            try:
-                script_code = self.resources._getOb(scriptname).read()
-            except:
-                logger.warning("compileFormulaScript> %s not found in resources" % scriptname)
-                script_code = (
-                        "#ALERT: %s not found in resources" % scriptname)
-            formula = formula.replace(
-                    '#Plomino import '+scriptname,
-                    script_code)
+        formula = _expandIncludes(self, formula)
 
         if (formula.strip().count('\n') == 0 and
                 not formula.startswith('return ')):
             formula = "return " + formula
+
         str_formula = STR_FORMULA % {
                 'script_id': script_id,
                 'import_list': import_list,
@@ -798,7 +792,7 @@ class PlominoDesignManager(Persistent):
         ``scriptname``, stored in the ``resources`` folder.
         If the called function allows it, you may pass some arguments.
         """
-        script_id = 'script_%s_%s' % (scriptname, funcname)
+        script_id = SCRIPT_ID_DELIMITER.join(['script', scriptname, funcname])
         try:
             script_code = self.resources._getOb(scriptname).read()
         except:
@@ -1158,11 +1152,15 @@ class PlominoDesignManager(Persistent):
 
         if replace:
             logger.info("Replace mode: removing current design")
-            designelements = [o.id for o in self.getForms()] \
-                                 + [o.id for o in self.getViews()] \
-                                 + [o.id for o in self.getAgents()]
+            designelements = [o.id for o in 
+                    self.getForms() +
+                    self.getViews() +
+                    self.getAgents()]
             ObjectManager.manage_delObjects(self, designelements)
-            ObjectManager.manage_delObjects(self.resources, self.resources.objectIds())
+            ObjectManager.manage_delObjects(
+                    self.resources,
+                    # Un-lazify BTree 
+                    [i for i in self.resources.objectIds()])
             logger.info("Current design removed")
 
         for xmlstring in xml_strings:
@@ -1224,6 +1222,9 @@ class PlominoDesignManager(Persistent):
         file_names = zip_file.namelist()
         for file_name in file_names:
             xml_string = zip_file.open(file_name).read()
+            if not xml_string:
+                # E.g. if the zipfile contains entries for directories
+                continue
             xml_string = xml_string.replace(">\n<", "><")
             xmldoc = parseString(xml_string)
             design = xmldoc.getElementsByTagName("design")[0]
@@ -1403,7 +1404,7 @@ class PlominoDesignManager(Persistent):
             id = manage_addImage(container, id,
                     node.firstChild.data.decode('base64'),
                     content_type=node.getAttribute('contenttype'))
-        elif resource_type == 'Folder':
+        elif resource_type in ('Folder', 'ATFolder'):
             container.manage_addFolder(id)
             subfolder = container[id]
             elements = [e for e in node.childNodes
@@ -1459,7 +1460,7 @@ class PlominoDesignManager(Persistent):
 
     security.declarePublic('getTemplateList')
     def getTemplateList(self):
-        """
+        """ Get a list of available template databases
         """
         resource = get_resource_directory()
         if not resource:
@@ -1468,7 +1469,7 @@ class PlominoDesignManager(Persistent):
 
     security.declareProtected(DESIGN_PERMISSION, 'importTemplate')
     def importTemplate(self, REQUEST=None, template_id=None):
-        """
+        """ Import a template database design
         """
         if REQUEST:
             template_id = REQUEST.get("template_id")

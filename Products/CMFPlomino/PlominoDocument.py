@@ -24,7 +24,7 @@ try:
 except ImportError:
     from zope.app.container.contained import Contained
 from zope.component.factory import Factory
-from zope.component import queryUtility
+from zope.component import queryUtility, adapts
 from zope.interface import implements
 from ZPublisher.HTTPRequest import FileUpload
 import transaction
@@ -57,10 +57,20 @@ except ImportError, e:
 
 # Plomino
 from exceptions import PlominoScriptException
-from PlominoUtils import sendMail, asUnicode, asList, PlominoTranslate
+from PlominoUtils import asList
+from PlominoUtils import asUnicode
+from PlominoUtils import DateToString
+from PlominoUtils import getDatagridRowdata
+from PlominoUtils import PlominoTranslate
+from PlominoUtils import sendMail
 from Products.CMFPlomino.browser import PlominoMessageFactory as _
 from Products.CMFPlomino.config import *
+from index.PlominoIndex import DISPLAY_INDEXED_ATTR_PREFIX
+from Products.ZCatalog.interfaces import IZCatalog
+from plone.indexer.wrapper import IndexableObjectWrapper
+from plone.indexer.interfaces import IIndexer
 import interfaces
+from zope.component import adapts, queryMultiAdapter
 
 import logging
 _logger = logging.getLogger('Plomino')
@@ -72,6 +82,7 @@ try:
     URL_NORMALIZER = True
 except ImportError:
     URL_NORMALIZER = False
+from plone.indexer.interfaces import IIndexableObjectWrapper, IIndexableObject
 
 
 class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
@@ -95,7 +106,8 @@ class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
         CMFBTreeFolder.__init__(self, id)
         self.id = id
         self.items = PersistentDict()
-        self.plomino_modification_time = DateTime().toZone('UTC')
+        self.plomino_modification_time = DateTime().toZone(TIMEZONE)
+
 
     security.declarePublic('checkBeforeOpenDocument')
     def checkBeforeOpenDocument(self):
@@ -136,7 +148,7 @@ class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
             value = translation_service.asunicodetype(value)
         items[name] = value
         self.items = items
-        self.plomino_modification_time = DateTime().toZone('UTC')
+        self.plomino_modification_time = DateTime().toZone(TIMEZONE)
 
     security.declarePublic('getItem')
     def getItem(self, name, default=''):
@@ -179,11 +191,12 @@ class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
         """ Return last modified date, setting it if absent.
         """
         if not hasattr(self, 'plomino_modification_time'):
-            self.plomino_modification_time = self.bobobase_modification_time().toZone('UTC')
+            self.plomino_modification_time = self.bobobase_modification_time().toZone(TIMEZONE)
         if asString:
-            return str(self.plomino_modification_time)
+            return DateToString(self.plomino_modification_time, db=self.getParentDatabase())
         else:
             return self.plomino_modification_time
+
 
     security.declarePublic('getRenderedItem')
     def getRenderedItem(self, itemname, form=None, formid=None,
@@ -327,7 +340,7 @@ class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
         """ Return list of readers; if none set, everyone can read.
         """
         if self.hasItem('Plomino_Readers'):
-            return asList(self.Plomino_Readers)
+            return asList(self.getItem('Plomino_Readers'))
         else:
             return ['*']
 
@@ -382,7 +395,7 @@ class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
         error = None
         try:
             error = self.runFormulaScript(
-                    'form_%s_beforesave' % form.id,
+                    SCRIPT_ID_DELIMITER.join(['form', form.id, 'beforesave']),
                     self,
                     form.getBeforeSaveDocument)
         except PlominoScriptException, e:
@@ -419,6 +432,7 @@ class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
     security.declareProtected(EDIT_PERMISSION, 'refresh')
     def refresh(self, form=None):
         """ Re-compute fields and re-index document.
+
         (`onSaveEvent` is not called, and authors are not updated)
         """
         self.save(
@@ -457,7 +471,7 @@ class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
                 # Use the formula if we have one
                 try:
                     title = self.runFormulaScript(
-                            'form_%s_title' % form.id,
+                            SCRIPT_ID_DELIMITER.join(['form', form.id, 'title']),
                             self,
                             form.DocumentTitle)
                     if title != self.Title():
@@ -493,7 +507,7 @@ class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
         if form and onSaveEvent:
             try:
                 result = self.runFormulaScript(
-                        'form_%s_onsave' % form.id,
+                        SCRIPT_ID_DELIMITER.join(['form', form.id, 'onsave']),
                         self,
                         form.onSaveDocument)
                 if result and hasattr(self, 'REQUEST'):
@@ -524,7 +538,7 @@ class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
         try:
             if form.getOnOpenDocument():
                 onOpenDocument_error = self.runFormulaScript(
-                        'form_%s_onopen' % form.id,
+                        SCRIPT_ID_DELIMITER.join(['form', form.id, 'onopen']),
                         self,
                         form.onOpenDocument)
                 return onOpenDocument_error
@@ -598,7 +612,7 @@ class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
                 # Use the formula if we have one
                 try:
                     title = self.runFormulaScript(
-                            'form_%s_title' % form.id,
+                            SCRIPT_ID_DELIMITER.join(['form', form.id, 'title']),
                             self,
                             form.DocumentTitle)
                     if (form.getStoreDynamicDocumentTitle() and
@@ -618,8 +632,16 @@ class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
         - and finally fall back to document `Form` item.
         """
         formname = None
+        # if called from __getattr__ we're not wrapped and we have don't have real
+        # request
         if hasattr(self, 'REQUEST'):
-            formname = self.REQUEST.get("openwithform", None)
+            request = self.REQUEST
+            if type(request == type("")):
+                request = None
+        else:
+            request = None
+        if request is not None:
+            formname = request.get("openwithform", None)
         if not formname:
             if hasattr(self, 'evaluateViewForm'):
                 formname = self.evaluateViewForm(self)
@@ -627,10 +649,10 @@ class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
             formname = self.getItem('Form')
         form = self.getParentDatabase().getForm(formname)
         if not form:
-            if hasattr(self, "REQUEST") and formname:
+            if request is not None and formname:
                 self.writeMessageOnPage(
                         "Form %s does not exist." % formname,
-                        self.REQUEST,
+                        request,
                         True)
         return form
 
@@ -666,7 +688,7 @@ class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
         try:
             #result = RunFormula(self, v.SelectionFormula())
             result = self.runFormulaScript(
-                    'view_%s_selection' % v.id,
+                    SCRIPT_ID_DELIMITER.join(['view', v.id, 'selection']),
                     self,
                     v.SelectionFormula)
             return result
@@ -687,7 +709,7 @@ class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
             c = v.getColumn(columnname)
             #result = RunFormula(self, c.Formula())
             return self.runFormulaScript(
-                    'column_%s_%s_formula' % (v.id, c.id),
+                    SCRIPT_ID_DELIMITER.join(['column', v.id, c.id, 'formula']),
                     self,
                     c.Formula)
         except PlominoScriptException, e:
@@ -829,7 +851,14 @@ class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
             try:
                 self._checkId(filename)
             except BadRequest:
-                # if filename is a reserved id, we rename it
+                #
+                # If filename is a reserved id, we rename it
+                #
+                # Rather than risk dates going back in time when timezone is
+                # changed, always use UTC. I.e. here we care more about 
+                # ordering and uniqueness than about the time (which can be
+                # found elsewhere on the object).
+                #
                 filename = '%s_%s' % (
                         DateTime().toZone('UTC').strftime("%Y%m%d%H%M%S"),
                         filename)
@@ -947,7 +976,7 @@ class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
         result = None
         try:
             result = self.runFormulaScript(
-                    'form_%s_docid' % form.id, self, form.DocumentId)
+                    SCRIPT_ID_DELIMITER.join(['form', form.id, 'docid']), self, form.DocumentId)
         except PlominoScriptException, e:
             e.reportError('Document id formula failed')
 
@@ -982,6 +1011,18 @@ InitializeClass(PlominoDocument)
 addPlominoDocument = Factory(PlominoDocument)
 addPlominoDocument.__name__ = "addPlominoDocument"
 
+def getTemporaryDocument(db, form, REQUEST, doc=None, validation_mode=False):
+    if hasattr(doc, 'real_id'):
+        return doc
+    else:
+        target = TemporaryDocument(
+                db,
+                form,
+                REQUEST,
+                real_doc=doc,
+                validation_mode=validation_mode).__of__(db)
+        return target
+
 class TemporaryDocument(PlominoDocument):
 
     security = ClassSecurityInfo()
@@ -991,12 +1032,22 @@ class TemporaryDocument(PlominoDocument):
         self.REQUEST = REQUEST
         if real_doc:
             self.items = PersistentDict(real_doc.items)
+            self.setItem('Form', form.getFormName())
             self.real_id = real_doc.id
+            form.validateInputs(REQUEST, self)
+            form.readInputs(self, REQUEST, validation_mode=validation_mode)
         else:
             self.items = {}
+            self.setItem('Form', form.getFormName())
             self.real_id = "TEMPDOC"
-        self.setItem('Form', form.getFormName())
-        form.readInputs(self, REQUEST, validation_mode=validation_mode)
+            mapped_field_ids, rowdata = getDatagridRowdata(self, REQUEST)
+            if mapped_field_ids and rowdata:
+                for f in mapped_field_ids:
+                    self.setItem(f.strip(), rowdata[mapped_field_ids.index(f)])
+            else:
+                form.validateInputs(REQUEST, self)
+                form.readInputs(self, REQUEST, validation_mode=validation_mode)
+
 
     security.declarePublic('getParentDatabase')
     def getParentDatabase(self):
@@ -1014,6 +1065,8 @@ class TemporaryDocument(PlominoDocument):
     def isNewDocument(self):
         """
         """
+        # XXX: this is confusing in the context of a datagrid, where
+        # the output is rows, not documents, and that always look new.
         if self.real_id == "TEMPDOC":
             return True
         return False
@@ -1032,3 +1085,37 @@ class TemporaryDocument(PlominoDocument):
         """
         """
         return self.real_id
+
+
+class PlominoIndexableObjectWrapper(IndexableObjectWrapper):
+    """Our special adapter so we can index displayfields specially
+
+    """
+
+    implements(IIndexableObject, IIndexableObjectWrapper)
+    adapts(interfaces.IPlominoDocument, IZCatalog)
+
+    def __init__(self, object, catalog):
+        self.__object = object
+        self.__catalog = catalog
+        self.__vars = {}
+
+    def __getattr__(self, name):
+        # First, try to look up an indexer adapter
+        indexer = queryMultiAdapter((self.__object, self.__catalog,), IIndexer, name=name)
+        if indexer is not None:
+            return indexer()
+
+        # Then, try displayfields
+        # we can't calc a displayfield in a ZODB __getattr__ since self is not
+        # aquisition wrapped in __getattr__.
+        if name.startswith(DISPLAY_INDEXED_ATTR_PREFIX):
+            field_name = name[len(DISPLAY_INDEXED_ATTR_PREFIX):]
+            value = self.__object.computeItem(field_name, store=False)
+            return value
+
+        # Finally see if the object provides the attribute directly. This
+        # is allowed to raise AttributeError.
+        return getattr(self.__object, name)
+
+

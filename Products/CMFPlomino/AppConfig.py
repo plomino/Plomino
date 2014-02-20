@@ -4,7 +4,22 @@ security = ClassSecurityInfo()
 
 PROJECTNAME = 'CMFPlomino'
 
-VERSION = '1.16'
+VERSION = "1.18"
+
+import logging
+logger = logging.getLogger('Plomino')
+
+import os
+TIMEZONE = os.environ.get('TZ', None)
+if TIMEZONE:
+    from DateTime import Timezones
+    if TIMEZONE not in Timezones():
+        logger.info('Specified timezone not recognized: %s, '
+                'defaulting to local timezone.' % TIMEZONE)
+        TIMEZONE = None
+if not TIMEZONE:
+    from DateTime import DateTime
+    TIMEZONE = DateTime().timezone()
 
 security.declarePublic('ADD_DESIGN_PERMISSION')
 ADD_DESIGN_PERMISSION = 'CMFPlomino: Add Plomino design elements'
@@ -83,3 +98,5 @@ FCK_STYLES = '''
 </Style>'''
 
 MSG_SEPARATOR = '\n'
+
+SCRIPT_ID_DELIMITER = '_-_'

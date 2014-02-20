@@ -2,7 +2,7 @@
                        db python:options['field'].getParentDatabase();
                        defaultformat python:db.getDateTimeFormat();
                        fieldformat python:options['field'].getSettings('format');
-                       format python:test(not(fieldformat),defaultformat,fieldformat);"
+                       format python:test(not(fieldformat), defaultformat, fieldformat);"
            tal:condition="python:test(v)">
 <tal:block tal:content="python:v.strftime(format)">Datetime read template</tal:block>
 </tal:block>
