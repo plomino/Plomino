@@ -210,6 +210,11 @@ dl.portlet-design-plomino dt a:hover {
     border-width:1px !important;
 }
 
+@media print {
+    .ui-accordion .ui-accordion-content {
+        display:block !important;
+    }
+}
 /* </dtml-with> */
 
 
