@@ -20,10 +20,10 @@
   
    <!-- SelectionField -->
    <adapter
-    for="Products.CMFPlomino.interfaces.IPlominoField"
-    provides=".selection.ISelectionField"
-    factory=".selection.SelectionField"
-    />
+        for="Products.CMFPlomino.interfaces.IPlominoField"
+        provides=".selection.ISelectionField"
+        factory=".selection.SelectionField"
+        />
    <browser:page
         name="selectionsettings"
         for="Products.CMFPlomino.interfaces.IPlominoField"
@@ -33,10 +33,10 @@
 
    <!-- TextField -->
    <adapter
-    for="Products.CMFPlomino.interfaces.IPlominoField"
-    provides=".text.ITextField"
-    factory=".text.TextField"
-    />
+        for="Products.CMFPlomino.interfaces.IPlominoField"
+        provides=".text.ITextField"
+        factory=".text.TextField"
+        />
    <browser:page
         name="textsettings"
         for="Products.CMFPlomino.interfaces.IPlominoField"
@@ -46,10 +46,10 @@
 
    <!-- NumberField -->
    <adapter
-    for="Products.CMFPlomino.interfaces.IPlominoField"
-    provides=".number.INumberField"
-    factory=".number.NumberField"
-    />
+        for="Products.CMFPlomino.interfaces.IPlominoField"
+        provides=".number.INumberField"
+        factory=".number.NumberField"
+        />
    <browser:page
         name="numbersettings"
         for="Products.CMFPlomino.interfaces.IPlominoField"
@@ -59,10 +59,10 @@
 
    <!-- DatetimeField -->
    <adapter
-    for="Products.CMFPlomino.interfaces.IPlominoField"
-    provides=".datetime.IDatetimeField"
-    factory=".datetime.DatetimeField"
-    />
+        for="Products.CMFPlomino.interfaces.IPlominoField"
+        provides=".datetime.IDatetimeField"
+        factory=".datetime.DatetimeField"
+        />
    <browser:page
         name="datetimesettings"
         for="Products.CMFPlomino.interfaces.IPlominoField"
@@ -72,10 +72,10 @@
 
    <!-- NameField -->
    <adapter
-    for="Products.CMFPlomino.interfaces.IPlominoField"
-    provides=".name.INameField"
-    factory=".name.NameField"
-    />
+        for="Products.CMFPlomino.interfaces.IPlominoField"
+        provides=".name.INameField"
+        factory=".name.NameField"
+        />
    <browser:page
         name="namesettings"
         for="Products.CMFPlomino.interfaces.IPlominoField"
@@ -85,10 +85,10 @@
 
    <!-- DoclinkField -->
    <adapter
-    for="Products.CMFPlomino.interfaces.IPlominoField"
-    provides=".doclink.IDoclinkField"
-    factory=".doclink.DoclinkField"
-    />
+        for="Products.CMFPlomino.interfaces.IPlominoField"
+        provides=".doclink.IDoclinkField"
+        factory=".doclink.DoclinkField"
+        />
    <browser:page
         name="doclinksettings"
         for="Products.CMFPlomino.interfaces.IPlominoField"
@@ -98,10 +98,10 @@
 
    <!-- RichtextField -->
    <adapter
-    for="Products.CMFPlomino.interfaces.IPlominoField"
-    provides=".richtext.IRichtextField"
-    factory=".richtext.RichtextField"
-    />
+        for="Products.CMFPlomino.interfaces.IPlominoField"
+        provides=".richtext.IRichtextField"
+        factory=".richtext.RichtextField"
+        />
    <browser:page
         name="richtextsettings"
         for="Products.CMFPlomino.interfaces.IPlominoField"
@@ -164,7 +164,7 @@
         for="Products.CMFPlomino.interfaces.IPlominoField"
         name="editFields"
         class=".datagrid.EditFieldsAsJson"
-        permission="plomino.DESIGN_PERMISSION"
+        permission="plomino.EDIT_PERMISSION"
         />
 
    <!-- BooleanField -->
@@ -177,7 +177,7 @@
         name="booleansettings"
         for="Products.CMFPlomino.interfaces.IPlominoField"
         class=".boolean.SettingForm"
-        permission="plomino.EDIT_PERMISSION"
+        permission="plomino.DESIGN_PERMISSION"
         />
 
    <!-- vocabularies -->
