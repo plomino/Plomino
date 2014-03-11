@@ -113,7 +113,7 @@ class NumberField(BaseField):
         """
         """
         str_v = ""
-        if self.format and v is not None and v != "":
+        if v not in (None, "") and self.format:
             try:
                 str_v = self.format % v
             except:
