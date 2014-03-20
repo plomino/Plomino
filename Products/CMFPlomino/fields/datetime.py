@@ -34,7 +34,7 @@ class IDatetimeField(IBaseField):
     widget = Choice(
         vocabulary=SimpleVocabulary.fromItems([
             ("Default", "SERVER"),
-            ("JQuery datetime widget", "JQUERY"),
+            ("JQuery datetime widget", "JQUERY")
         ]),
         title=u'Widget',
         description=u'Field rendering',
