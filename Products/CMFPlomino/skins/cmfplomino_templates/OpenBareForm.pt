@@ -36,7 +36,7 @@ jQuery(document).ready( function() {
     ">
     </script>
     <tal:has_googleviz condition="python:here.getForm().hasGoogleVisualizationField()">
-        <script type='text/javascript' src='http://www.google.com/jsapi'></script>
+        <script type='text/javascript' src='//www.google.com/jsapi'></script>
     </tal:has_googleviz>
     <tal:block tal:condition="python:here.hasDateTimeField()">
         <script type="text/javascript" charset="iso-8859-1"
