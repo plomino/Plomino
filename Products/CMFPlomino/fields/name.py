@@ -98,9 +98,9 @@ class NameField(BaseField):
         s=['|']
         for username, userid in names_ids:
             if not username:
-                s.append(userid+'|'+userid)
+                s.append("%s | %s" % (userid, userid))
             else:
-                s.append(username+'|'+userid)
+                s.append("%s | %s" % (username, userid))
         return s
 
     def getFullname(self, userid):
