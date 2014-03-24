@@ -23,13 +23,13 @@ $(document).ready(function() {
     });
 });
 
-$(document).ready(function() {
-    //datepicker widget
-    $(".date").datepicker().each(function(){
-        var options = $.parseJSON($(this).data('datepickerOptions')) || { };
-        $(this).datepicker( "option", options );
-        $('#btn_' + this.id).click(function() {
-            $(this).datepicker('show');
-        });
-    });
-});
+// $(document).ready(function() {
+//     //datepicker widget
+//     $(".date").datepicker().each(function(){
+//         var options = $.parseJSON($(this).data('datepickerOptions')) || { };
+//         $(this).datepicker( "option", options );
+//         $('#btn_' + this.id).click(function() {
+//             $(this).datepicker('show');
+//         });
+//     });
+// });
