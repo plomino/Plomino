@@ -278,7 +278,7 @@ class PlominoField(BaseContent, BrowserDefaultMixin):
                 doc=target
             )
 
-            injection_zone = 'id="%s"' % self.id
+            injection_zone = 'name="%s"' % self.id
             if (injection_zone in html
                 and hasattr(self, 'HTMLAttributesFormula')
                 and self.HTMLAttributesFormula
