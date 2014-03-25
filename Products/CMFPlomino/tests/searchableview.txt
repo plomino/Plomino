@@ -1,0 +1,69 @@
+    >>> portal = layer['portal']
+    >>> db = portal.mydb
+    >>> id = db.invokeFactory('PlominoView', id='view',
+    ...         title='View 1', SelectionFormula='True')
+    >>> db.view.at_post_create_script()
+    >>> id = db.view.invokeFactory('PlominoColumn', id='col1',
+    ...         title='Col 1', Formula='plominoDocument.field1')
+    >>> db.view.col1.at_post_create_script()
+    >>> db.view.setSortColumn('col1')
+    >>> doc1 = db.createDocument()
+    >>> doc2 = db.createDocument()
+    >>> doc3 = db.createDocument()
+    >>> doc1.setItem('field1', 'foo')
+    >>> doc2.setItem('field1', 'bar')
+    >>> doc3.setItem('field1', 'buz')
+    >>> doc1.save()
+    >>> doc2.save()
+    >>> doc3.save()
+    >>> len(db.view.getAllDocuments())
+    3
+
+    >>> len(db.view.getAllDocuments(request_query=dict(field1='foo')))
+    3
+
+    >>> from DateTime import DateTime
+    >>> id = db.invokeFactory('PlominoForm', id='frm1', title='Form 2')
+    >>> id = db.frm1.invokeFactory('PlominoField',
+    ...         id='field1',
+    ...         Title='Test field',
+    ...         FieldType="TEXT",
+    ...         ToBeIndexed=True)
+    >>> id = db.frm1.invokeFactory('PlominoField',
+    ...         id='field2',
+    ...         Title='Test DATETIME field',
+    ...         FieldType="DATETIME",
+    ...         ToBeIndexed=True)
+    >>> db.frm1.field1.at_post_create_script()
+    >>> db.frm1.field2.at_post_create_script()
+    >>> doc1.setItem('Form', 'frm1')
+    >>> doc2.setItem('Form', 'frm1')
+    >>> doc3.setItem('Form', 'frm1')
+    >>> doc1.setItem('field2', DateTime(2000, 3, 1))
+    >>> doc2.setItem('field2', DateTime(2000, 2, 1))
+    >>> doc3.setItem('field2', DateTime(2000, 1, 1))
+    >>> doc1.save()
+    >>> doc2.save()
+    >>> doc3.save()
+    >>> len(db.view.getAllDocuments(request_query=dict(field1='foo')))
+    1
+
+    >>> len(db.view.getAllDocuments(request_query=dict(field1=['foo', 'bar'])))
+    2
+
+    >>> import json
+    >>> jres = db.view.tojson()
+    >>> len(json.loads(jres)['aaData'])
+    3
+
+    >>> request_query = json.dumps(dict(field1=dict(query='foo')))
+    >>> db.view.REQUEST.set('request_query', request_query)
+    >>> jres = db.view.tojson(db.view.REQUEST)
+    >>> len(json.loads(jres)['aaData'])
+    1
+
+    >>> request_query = json.dumps(dict(field2=dict(query=[DateTime(2000, 2, 1).strftime('%d/%m/%Y')], range='min')))
+    >>> db.view.REQUEST.set('request_query', request_query)
+    >>> jres = db.view.tojson(db.view.REQUEST)
+    >>> len(json.loads(jres)['aaData'])
+    2
