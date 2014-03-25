@@ -12,5 +12,5 @@
       description="Extension profile for CMFPlomino."
       provides="Products.GenericSetup.interfaces.EXTENSION"
       />
-  
+
 </configure>
