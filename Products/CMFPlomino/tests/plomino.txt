@@ -426,7 +426,7 @@ The default text widget is a basic HTML text input::
 Note: a field can have extra html attributes produced by a formula::
 
     >>> db.frm2.guitarist.setHTMLAttributesFormula("""'placeholder="Enter the name here"'""")
-    >>> 'placeholder="Enter the name here" id="guitarist"' in db.frm2.displayDocument(None, True, True)
+    >>> 'placeholder="Enter the name here" name="guitarist"' in db.frm2.displayDocument(None, True, True)
     True
 
 Selection field::
