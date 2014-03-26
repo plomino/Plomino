@@ -153,6 +153,11 @@ jQuery(document).ready( function() {
                                 name="Plomino_Parent_Form"
                                 tal:attributes="value Plomino_Parent_Form" />
                         </tal:childform>
+                        <tal:redirecturl tal:condition="python: 'plominoredirecturl' in context.REQUEST.keys()">
+                            <input type="hidden"
+                                name="plominoredirecturl"
+                                tal:attributes="value here/REQUEST/plominoredirecturl|nothing" />
+                        </tal:redirecturl>
                         <span tal:content="structure python:here.openBlankForm(request)" /> 
                         <tal:block_actionbar_bottom
                             define="owner python:form"
