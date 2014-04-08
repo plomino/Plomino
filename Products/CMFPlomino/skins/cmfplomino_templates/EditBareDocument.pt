@@ -28,7 +28,7 @@
     </tal:has_date>
     
     <tal:has_googleviz condition="python:here.getForm().hasGoogleVisualizationField()">
-        <script type='text/javascript' src='http://www.google.com/jsapi'></script>
+        <script type='text/javascript' src='//www.google.com/jsapi'></script>
     </tal:has_googleviz>
     <script
         type="text/javascript"

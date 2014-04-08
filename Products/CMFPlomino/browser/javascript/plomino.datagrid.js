@@ -159,7 +159,13 @@ function datagrid_edit_row(table, field_id, formurl) {
         var field = $('#' + field_id + '_gridvalue');
         var field_data = $.evalJSON(field.val());
         var row_index = datagrid_get_field_index(table, row);
-        formurl += '&Plomino_datagrid_rowdata=' + $.URLEncode($.toJSON(field_data[row_index]));
+        var json = $.toJSON(field_data[row_index]);
+        json = json.replace(/[\u007f-\uffff]/g,
+            function(c) { 
+                return '\\u'+('0000'+c.charCodeAt(0).toString(16)).slice(-4);
+            }
+        );
+        formurl += '&Plomino_datagrid_rowdata=' + $.URLEncode(json);
         datagrid_show_form(field_id, formurl, function(rowdata, raw) {
             // update the field
             field_data[row_index] = raw;

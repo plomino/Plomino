@@ -567,13 +567,11 @@ class PlominoForm(ATFolder):
             field_re = re.compile('<span class="plominoFieldClass">%s</span>' % fn)
             match_field = field_re.search(html_content_processed)
             field_type = field.getFieldType()
-            if field_type != 'DATETIME':
-                widget_name = field.getSettings().widget
+            widget_name = field.getSettings().widget
 
             # Handle input groups:
-            if (field_type == 'DATETIME' or
-                    field_type == 'SELECTION' and 
-                    widget_name in ['CHECKBOX', 'RADIO', 'PICKLIST']):
+            if (field_type in ['DATETIME', 'SELECTION'] and 
+                    widget_name in ['CHECKBOX', 'RADIO', 'PICKLIST', 'SERVER']):
                 # Delete processed label
                 html_content_processed = label_re.sub('', html_content_processed, count=1)
                 # Is the field in the layout?

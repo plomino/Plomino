@@ -58,7 +58,7 @@
 
       <span tal:condition="python:len(years)==1">
         <input name="ic_year"
-               type="hidden"
+                type="hidden"
                 id="ic_year"
                 size="1"
                 value="00"
@@ -66,7 +66,7 @@
                                 id string:${input_id}_year;
                                 value python:years[0]['value']"/>
         <span tal:content="python:years[0]['value']"
-              tal:condition="show_single_year"></span>
+            tal:condition="show_single_year"></span>
       </span>
 
       <span i18n:translate="date_separator"

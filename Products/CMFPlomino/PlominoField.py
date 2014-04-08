@@ -278,7 +278,7 @@ class PlominoField(BaseContent, BrowserDefaultMixin):
                 doc=target
             )
 
-            injection_zone = 'id="%s"' % self.id
+            injection_zone = 'name="%s"' % self.id
             if (injection_zone in html
                 and hasattr(self, 'HTMLAttributesFormula')
                 and self.HTMLAttributesFormula
@@ -318,7 +318,7 @@ class PlominoField(BaseContent, BrowserDefaultMixin):
         self.cleanFormulaScripts(self.id)
         db = self.getParentDatabase()
         if self.getToBeIndexed() and not db.DoNotReindex:
-            db.getIndex().createFieldIndex(self.id, self.getFieldType(), indextype=self.getIndexType())
+            db.getIndex().createFieldIndex(self.id, self.getFieldType(), indextype=self.getIndexType(), fieldmode=self.getFieldMode())
 
     security.declarePublic('at_post_create_script')
     def at_post_create_script(self):
@@ -327,7 +327,7 @@ class PlominoField(BaseContent, BrowserDefaultMixin):
         self._setupConfigAnnotation()
         db = self.getParentDatabase()
         if self.getToBeIndexed() and not db.DoNotReindex:
-            db.getIndex().createFieldIndex(self.id, self.getFieldType(), indextype=self.getIndexType())
+            db.getIndex().createFieldIndex(self.id, self.getFieldType(), indextype=self.getIndexType(), fieldmode=self.getFieldMode())
 
     security.declarePublic('getSettings')
     def getSettings(self, key=None):

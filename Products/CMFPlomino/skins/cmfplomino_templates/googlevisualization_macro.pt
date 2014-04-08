@@ -1,5 +1,5 @@
 <tal:macro metal:define-macro="js_library">
-    <script type='text/javascript' src='http://www.google.com/jsapi'></script>
+    <script type='text/javascript' src='//www.google.com/jsapi'></script>
         <script type='text/javascript'>
 /* Fix for Firefox/Google visualization tooltip, see
  * http://code.google.com/p/google-visualization-api-issues/issues/detail?id=598#c7
