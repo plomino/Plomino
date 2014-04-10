@@ -340,7 +340,7 @@ function datagrid_add_inline_row( oTable, fields) {
 	for ( var i=0, iLen=jqTds.length ; i<iLen ; i++ ) {
 		$(jqTds[i]).html(fields[i]);
 	}
-	jqTds[jqTds.length-1].innerHTML += "<button class='save' href='#' >Save</button>   <button class='cancel' href='#'>Cancel</button>";
+	jqTds[jqTds.length-1].innerHTML += "<button class='save' href='#' >Enter</button>   <button class='cancel' href='#'>Cancel</button>";
 	return nRow;
 
 }
