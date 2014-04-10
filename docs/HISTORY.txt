@@ -1,10 +1,15 @@
 Changelog
 =========
 
-1.18.6 (unreleased)
+1.18.6 (2014-04-10)
 -------------------
-* Allow indexing of computed display fields
- [djay, ivant]
+* Datagrid inline editing [davisp1]
+* jQuery-ui datepicker widget for DATETIME fields [manuelep]
+* Redirect on save document if a value for plominoredirecturl is specified in
+  request [manuelep]
+* Make views searchable: accept a query as URL parameter [manuelep]
+* Inject computed HTML attributes based on name, and not id [manuelep]
+* Allow indexing of computed display fields [djay, ivant]
 
 1.18.5 (2013-12-04)
 -------------------
