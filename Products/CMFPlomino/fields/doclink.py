@@ -88,20 +88,21 @@ class DoclinkField(BaseField):
         #if formula available, use formula, else use view entries
         f = self.documentslistformula
         if not f:
-            if self.sourceview:
-                v = self.context.getParentDatabase().getView(self.sourceview)
-            else:
-                v = None
-            if v is None:
+            if not(self.sourceview and self.labelcolumn):
                 return []
-            else:
-                result = []
-                for b in v.getAllDocuments(getObject=False):
-                    val = getattr(b, v.getIndexKey(self.labelcolumn), '')
-                    if not val:
-                        val = ''
-                    result.append(asUnicode(val) + "|" + b.id)
-                return result
+            v = self.context.getParentDatabase().getView(self.sourceview)
+            if not v:
+                return []
+            label_key = v.getIndexKey(self.labelcolumn)
+            if not label_key:
+                return []
+            result = []
+            for b in v.getAllDocuments(getObject=False):
+                val = getattr(b, label_key, '')
+                if not val:
+                    val = ''
+                result.append(asUnicode(val) + "|" + b.id)
+            return result
         else:
             #if no doc provided (if OpenForm action), we use the PlominoForm
             if doc is None:
