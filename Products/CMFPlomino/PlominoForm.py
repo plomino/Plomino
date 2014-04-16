@@ -567,30 +567,31 @@ class PlominoForm(ATFolder):
             field_re = re.compile('<span class="plominoFieldClass">%s</span>' % fn)
             match_field = field_re.search(html_content_processed)
             field_type = field.getFieldType()
+            if hasattr(field.getSettings(), 'widget'):
+                widget_name = field.getSettings().widget
 
             # Handle input groups:
-            if field_type in ['DATETIME', 'SELECTION']:
-                widget_name = field.getSettings().widget
-                if widget_name in ['CHECKBOX', 'RADIO', 'PICKLIST', 'SERVER']:
-                    # Delete processed label
-                    html_content_processed = label_re.sub('', html_content_processed, count=1)
-                    # Is the field in the layout?
-                    if match_field:
-                        # Markup the field
-                        if editmode:
-                            mandatory = (
-                                    field.getMandatory()
-                                    and " class='required'"
-                                    or '')
-                            html_content_processed = field_re.sub(
-                                    "<fieldset><legend%s>%s</legend>%s</fieldset>" % (
-                                    mandatory, label, match_field.group()),
-                                    html_content_processed)
-                        else:
-                            html_content_processed = field_re.sub(
-                                    "<div class='fieldset'><span class='legend' title='Legend for %s'>%s</span>%s</div>" % (
-                                    fn, label, match_field.group()),
-                                    html_content_processed)
+            if field_type in ('DATETIME', 'SELECTION', ) and \
+                widget_name in ('CHECKBOX', 'RADIO', 'PICKLIST', 'SERVER', ):
+                # Delete processed label
+                html_content_processed = label_re.sub('', html_content_processed, count=1)
+                # Is the field in the layout?
+                if match_field:
+                    # Markup the field
+                    if editmode:
+                        mandatory = (
+                                field.getMandatory()
+                                and " class='required'"
+                                or '')
+                        html_content_processed = field_re.sub(
+                                "<fieldset><legend%s>%s</legend>%s</fieldset>" % (
+                                mandatory, label, match_field.group()),
+                                html_content_processed)
+                    else:
+                        html_content_processed = field_re.sub(
+                                "<div class='fieldset'><span class='legend' title='Legend for %s'>%s</span>%s</div>" % (
+                                fn, label, match_field.group()),
+                                html_content_processed)
 
             # Handle single inputs:
             else:
