@@ -13,7 +13,9 @@ __author__ = """Eric BREHAULT <eric.brehault@makina-corpus.org>"""
 __docformat__ = 'plaintext'
 
 # Standard
-import re
+import re, sys
+
+sys_enc = sys.getfilesystemencoding()
 
 import logging
 logger = logging.getLogger('Plomino')
@@ -560,7 +562,7 @@ class PlominoForm(ATFolder):
                 fn = d['fieldname_or_label']
                 field = self.getFormField(fn)
                 if field:
-                    label = field.Title()
+                    label = field.Title().decode(sys_enc)
                 else:
                     continue
 
