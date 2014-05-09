@@ -993,8 +993,6 @@ class PlominoReplicationManager(Persistent):
                 infoMsg = 'error while importing: %s%s' % (
                         e, MSG_SEPARATOR)
                 error = True
-        elif actionType == 'reset_report':
-            self.resetReport()
         else:
             infoMsg = '%s: unmanaged action%s' % (
                     actionType, MSG_SEPARATOR)

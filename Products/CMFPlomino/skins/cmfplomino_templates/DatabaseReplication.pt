@@ -488,13 +488,6 @@
 		                        	class="context"
 		                        	type="button"
 		                        	onClick="document.forms['importCSV'].actionType.value='import';document.forms['importCSV'].submit();;"/>
-		                    <input tal:condition="python:True" 
-		                        	value="Reset report"
-		                        	name="reset_report"
-		                        	id="reset_report"
-		                        	class="context"
-		                        	type="button"
-		                        	onClick="document.forms['importCSV'].actionType.value='reset_report';document.forms['importCSV'].submit();;"/>
 		            	</span>
 		            </div>
 					<input type="hidden" name="actionType" id ="actionType" value=""/>
