@@ -36,8 +36,8 @@ Create the browser object we'll be using and log in as userEditor::
     >>> portal_url = portal.absolute_url()
     >>> browser.open(portal_url)
     >>> browser.getLink('Log in').click()
-    >>> browser.getControl('Login Name').value = 'userEditor'
-    >>> browser.getControl('Password').value = 'userEditor'
+    >>> browser.getControl('Login Name').value = 'userManager'
+    >>> browser.getControl('Password').value = 'userManager'
     >>> browser.getControl('Log in').click()
 
     >>> import os.path
@@ -81,6 +81,8 @@ Scenario::
     >>> browser.open(browser.url+"/EditDocument")
     >>> browser.getControl(name='personCategory').value = ['Relative']
     >>> browser.getControl(name='plomino_save').click()
+    >>> browser.open(base_url+'/basic-example/all/person/edit')
+    >>> browser.getControl(name='form.button.save').click()
     >>> browser.open(base_url+'/basic-example')
     >>> browser.getLink('All birthdays').click()
     >>> 'Eric' in browser.contents
