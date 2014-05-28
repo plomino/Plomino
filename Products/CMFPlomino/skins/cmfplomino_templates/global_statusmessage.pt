@@ -45,7 +45,7 @@
         	popup.dialog({show: "blind", height: 430, width: 530});
         }
         $(document).ready(function () {
-			$("#plominoMessages").load("./statusmessage_load #plonePortalMessages");
+			$("#plominoMessages").load("./statusmessage_load?" + new Date().getTime() + " #plonePortalMessages");
 		});
     </script>
 
