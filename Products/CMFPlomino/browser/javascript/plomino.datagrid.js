@@ -41,7 +41,7 @@ function datagrid_show_form(field_id, formurl, onsubmit) {
                 }
             });
 
-            if(!(message === null || message === '')) {
+            if(!(typeof message === "undefined" || message === null || message === '')) {
                 alert(message);
                 // Avoid Plone message "You already submitted this form", since we didn't
                 jQuery(this).find('input[type="submit"].submitting').removeClass('submitting');
