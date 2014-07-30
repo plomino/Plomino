@@ -42,6 +42,7 @@ from Products.CMFPlomino.PlominoUtils import DateToString
 from Products.CMFPlomino.PlominoUtils import StringToDate
 from Products.CMFPlomino.PlominoUtils import PlominoTranslate
 from Products.CMFPlomino.PlominoUtils import translate
+
 import interfaces
 
 schema = Schema((
@@ -560,7 +561,7 @@ class PlominoForm(ATFolder):
                 fn = d['fieldname_or_label']
                 field = self.getFormField(fn)
                 if field:
-                    label = field.Title()
+                    label = asUnicode(field.Title())
                 else:
                     continue
 
