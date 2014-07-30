@@ -1,6 +1,7 @@
-$(document).ready(function() {
-    // datepicker widget
-    $(".date").datepicker().each(function(){
+
+(function ($) {
+
+    function initDatePicker() {
         var value = $(this).val();
         var options = $(this).data('datepickerOptions');
         if(typeof(options)!='object') options = {};
@@ -14,6 +15,10 @@ $(document).ready(function() {
         };
         $(this).datepicker( "option", options );
         $(this).datepicker( "setDate", value );
+    }
 
+    $(document).on('ready',function(){
+        $(".date").datepicker().each(initDatePicker);
     });
-});
+
+})(jQuery);
