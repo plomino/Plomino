@@ -17,6 +17,8 @@ from Products.Archetypes.atapi import *
 from zope.interface import implements
 import interfaces
 
+from Products.CMFPlomino.PlominoUtils import asUnicode
+
 from Products.CMFPlomino import fields, plomino_profiler
 
 from Products.CMFDynamicViewFTI.browserdefault import BrowserDefaultMixin
@@ -293,7 +295,7 @@ class PlominoField(BaseContent, BrowserDefaultMixin):
                 )
                 html = ' '.join([
                     html[:injection_position],
-                    html_attributes,
+                    asUnicode(html_attributes),
                     html[injection_position:],
                 ])
             return html
