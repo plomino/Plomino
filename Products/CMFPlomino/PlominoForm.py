@@ -560,7 +560,7 @@ class PlominoForm(ATFolder):
                 fn = d['fieldname_or_label']
                 field = self.getFormField(fn)
                 if field:
-                    label = field.Title()
+                    label = asUnicode(field.Title())
                 else:
                     continue
 
