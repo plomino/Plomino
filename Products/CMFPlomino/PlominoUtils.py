@@ -337,7 +337,7 @@ def array_to_csv(array, delimiter='\t', quotechar='"'):
     return s.getvalue()
 
 
-def open_url(url, asFile=False):
+def open_url(url, asFile=False, data=None):
     """ retrieve content from url
     """
     safe_domains = []
@@ -345,11 +345,14 @@ def open_url(url, asFile=False):
         safe_domains += safedomains_utils[1].domains
     is_safe = False
     for domain in safe_domains:
-        if url.startswith(domain):
+        if (url.startswith(domain)
+            or url.split("//")[1].split("/")[0].split('@')[-1] == domain):
             is_safe = True
             break
     if is_safe:
-        f=urllib.urlopen(url)
+        if data and not isinstance(data, basestring):
+            data = urllib.urlencode(data)
+        f=urllib.urlopen(url, data)
         if asFile:
             return f.fp
         else:
