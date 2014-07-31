@@ -109,5 +109,5 @@
              id="++resource++plomino.javascript/plomino.dynamichidewhen.js"
              inline="False"
              insert-after="++resource++plone.app.jquery.js"
-             /
+             />
 </object>
