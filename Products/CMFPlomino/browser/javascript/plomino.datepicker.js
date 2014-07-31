@@ -21,4 +21,8 @@
         $(".date").datepicker().each(initDatePicker);
     });
 
+    $(document).on('opendialog',function(e, container){
+        $(container).find('.date').datepicker().each(initDatePicker)
+    });
+
 })(jQuery);

@@ -22,31 +22,13 @@
     <tal:block_hasgooglevisualizationfield tal:condition="python:here.hasGoogleVisualizationField()">
         <tal:script metal:use-macro="here/googlevisualization_macro/macros/js_library">//load google js</tal:script>
     </tal:block_hasgooglevisualizationfield>
-    <script 
-        tal:condition="here/hasDynamicHidewhen"
-        tal:define="form python:here;
-                    form_method python:form.getFormMethod();
-                    "
+    <tal:block_hasDynamicHidewhen condition="python:here.hasDynamicHidewhen()">
+    <script
         type="text/javascript"
-        tal:content="string:
-function refreshHidewhen() {
-    var onsuccess = function(data, textStatus, xhr) {
-        for (var hw in data)
-            jQuery('.hidewhen-' + hw).css('display', data[hw]?'none':'block');
-    }
-    jQuery.ajax({
-        type: '${form_method}',
-        url: 'computehidewhens',
-        data: jQuery('#plomino_form').serialize(),
-        success: onsuccess,
-        dataType: 'json' 
-    });
-}
-jQuery(document).ready( function() {
-    jQuery('#plomino_form :input').change(refreshHidewhen);
-});
-">
+        charset="iso-8859-1"
+        tal:attributes="src string:$portal_url/plomino.dynamichidewhen.js">
     </script>
+    </tal:block_hasDynamicHidewhen>
     <tal:block_hasjsresources 
         tal:define="jsresources python:here.getResourcesJS().splitlines()"
         tal:condition="jsresources"
