@@ -34,12 +34,7 @@
         <tal:has_googleviz condition="hasGoogleVisualizationField">
             <tal:script metal:use-macro="here/googlevisualization_macro/macros/js_library">//load google js</tal:script>
         </tal:has_googleviz>
-        <tal:block_hasDynamicHidewhen condition="python:here.hasDynamicHidewhen()">
-        <script
-            type="text/javascript"
-            charset="iso-8859-1"
-            tal:attributes="src string:$portal_url/plomino.dynamichidewhen.js">
-        </script>
+
         </tal:block_hasDynamicHidewhen>
         <tal:block_hasjsresources 
             tal:define="jsresources python:form.getResourcesJS().splitlines();"
@@ -107,6 +102,7 @@
                     "
             tal:attributes="
                     name form/id;
+                    class string:plomino_form;
                     action python:here.doc_url()+'/saveDocument';
                     method form_method;
                     enctype enctype|nothing
