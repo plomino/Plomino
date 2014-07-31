@@ -101,4 +101,13 @@
              inline="False"
              insert-after="++resource++codemirror/convertTextAreas.js"
              />
+ <javascript cacheable="True"
+             compression="safe"
+             cookable="True"
+             enabled="True"
+             expression=""
+             id="++resource++plomino.javascript/plomino.dynamichidewhen.js"
+             inline="False"
+             insert-after="++resource++plone.app.jquery.js"
+             /
 </object>
