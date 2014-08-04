@@ -1180,17 +1180,17 @@ msgstr ""
 #. Default: "Add"
 #: CMFPlomino/fields/datagrid.py:147
 msgid "datagrid_add_button_label"
-msgstr ""
+msgstr "Aggiungi"
 
 #. Default: "Delete"
 #: CMFPlomino/fields/datagrid.py:155
 msgid "datagrid_delete_button_label"
-msgstr ""
+msgstr "Elimina"
 
 #. Default: "Edit"
 #: CMFPlomino/fields/datagrid.py:157
 msgid "datagrid_edit_button_label"
-msgstr ""
+msgstr "Modifica"
 
 # Documents x to y of z
 #. Default: "Document(s) ${start} to ${end} of ${total}"
