@@ -35,7 +35,6 @@
             <tal:script metal:use-macro="here/googlevisualization_macro/macros/js_library">//load google js</tal:script>
         </tal:has_googleviz>
 
-        </tal:block_hasDynamicHidewhen>
         <tal:block_hasjsresources 
             tal:define="jsresources python:form.getResourcesJS().splitlines();"
             tal:condition="jsresources"
