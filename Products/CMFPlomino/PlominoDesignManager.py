@@ -1106,7 +1106,7 @@ class PlominoDesignManager(Persistent):
             for name, sub_obj in obj.objectItems():
                 sub_node = self.exportResourceAsXML(xmldoc, sub_obj)
                 node.appendChild(sub_node)
-        else:
+        elif hasattr(obj, "data"):
             node.setAttribute('contenttype', obj.getContentType())
             stream = obj.data
             if not hasattr(stream, "encode"):
