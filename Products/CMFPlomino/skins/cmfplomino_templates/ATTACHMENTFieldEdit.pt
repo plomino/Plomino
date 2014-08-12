@@ -5,5 +5,15 @@
 	 	<img alt="Delete file" src="delete_icon.gif" />
 	 </a>
 	<br/>
+
 </tal:block>
-<input type="file" tal:attributes="id options/fieldname; name options/fieldname" />
+
+<tal:widget tal:condition="python:options['field'].getSettings('parameters')" >
+	<input type="file" tal:attributes="id options/fieldname; name options/fieldname;" />
+</tal:widget>
+<tal:widget tal:condition="python:not options['field'].getSettings('parameters')" >
+	<input type="file" multiple tal:attributes="id options/fieldname; name options/fieldname;" />
+</tal:widget>
+
+
+
