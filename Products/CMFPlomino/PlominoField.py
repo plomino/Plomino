@@ -193,7 +193,7 @@ class PlominoField(BaseContent, BrowserDefaultMixin):
         return adapt.validate(submittedValue)
 
     security.declarePublic('processInput')
-    def processInput(self, submittedValue , doc, process_attachments, validation_mode=False):
+    def processInput(self, submittedValue, doc, process_attachments, validation_mode=False):
         """process submitted value according the field type
         """
 
