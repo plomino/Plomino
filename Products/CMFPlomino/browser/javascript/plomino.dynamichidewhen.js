@@ -1,5 +1,5 @@
 (function ($) {
-
+    "use strict";
     function refreshHidewhen() {
         var onsuccess = function(data, textStatus, xhr) {
             for (var hw in data)

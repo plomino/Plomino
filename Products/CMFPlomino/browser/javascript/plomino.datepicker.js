@@ -1,6 +1,6 @@
 
 (function ($) {
-
+    "use strict";
     function initDatePicker() {
         var value = $(this).val();
         var options = $(this).data('datepickerOptions');
