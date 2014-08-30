@@ -17,7 +17,7 @@ from Products.Archetypes.atapi import *
 from zope.interface import implements
 import interfaces
 
-from Products.CMFPlomino.PlominoUtils import asUnicode
+from Products.CMFPlomino.PlominoUtils import asUnicode,asList
 
 from Products.CMFPlomino import fields, plomino_profiler
 
@@ -196,25 +196,33 @@ class PlominoField(BaseContent, BrowserDefaultMixin):
     def processInput(self, submittedValue, doc, process_attachments, validation_mode=False):
         """process submitted value according the field type
         """
+
         fieldtype = self.getFieldType()
         fieldname = self.id
         adapt = self.getSettings()
+
         if fieldtype=="ATTACHMENT" and process_attachments:
+            
             if isinstance(submittedValue, FileUpload):
-                current_files=doc.getItem(fieldname)
-                if not current_files:
-                    current_files = {}
-                (new_file, contenttype) = doc.setfile(submittedValue)
-                if new_file is not None:
-                    if adapt.type == "SINGLE":
-                        for filename in current_files.keys():
-                            if filename != new_file:
-                                doc.deletefile(filename)
-                        current_files={}
-                    current_files[new_file]=contenttype
-                v=current_files
-            else:
-                v = None
+                submittedValue = asList(submittedValue)
+                
+            current_files=doc.getItem(fieldname)
+            if not current_files:
+                current_files = {}
+
+            if submittedValue is not None: 
+                for fl in submittedValue:
+                    (new_file, contenttype) = doc.setfile(fl)
+                    if new_file is not None:
+                        if adapt.type == "SINGLE":
+                            for filename in current_files.keys():
+                                if filename != new_file:
+                                    doc.deletefile(filename)
+                            current_files={}
+                        current_files[new_file]=contenttype
+
+            v = current_files
+
         else:
             try:
                 v = adapt.processInput(submittedValue)
@@ -226,6 +234,7 @@ class PlominoField(BaseContent, BrowserDefaultMixin):
                     v = submittedValue
                 else:
                     raise e
+
         return v
 
     security.declareProtected(READ_PERMISSION, 'getFieldRender')
