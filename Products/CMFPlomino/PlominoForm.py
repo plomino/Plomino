@@ -43,6 +43,9 @@ from Products.CMFPlomino.PlominoUtils import DateToString
 from Products.CMFPlomino.PlominoUtils import StringToDate
 from Products.CMFPlomino.PlominoUtils import PlominoTranslate
 from Products.CMFPlomino.PlominoUtils import translate
+
+
+
 import interfaces
 
 schema = Schema((
@@ -1516,7 +1519,9 @@ class PlominoForm(ATFolder):
 
         #DBG logger.info('PlominoForm.tojson> item: %s, result: %s' % (`item`, `result`[:20])) 
         return json.dumps(result)
-
+    
+    
+            
     def _getDatabaseViews(self):
         db = self.getParentDatabase()
         views = db.getViews()
