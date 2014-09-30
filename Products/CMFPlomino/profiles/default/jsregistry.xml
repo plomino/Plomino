@@ -110,4 +110,22 @@
              inline="False"
              insert-after="++resource++plone.app.jquery.js"
              />
+ <javascript cacheable="True"
+             compression="safe"
+             cookable="True"
+             enabled="True"
+             expression=""
+             id="++resource++plomino.javascript/plomino.serializeZopeQuery.js"
+             inline="False"
+             insert-after="++resource++plone.app.jquery.js"
+             />    
+ <javascript cacheable="True"
+             compression="safe"
+             cookable="True"
+             enabled="True"
+             expression=""
+             id="++resource++plomino.javascript/plomino.search.dataTables.js "
+             inline="False"
+             insert-after="++resource++plone.app.jquery.js"
+             />    
 </object>
