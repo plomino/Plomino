@@ -34,25 +34,7 @@
         <tal:has_googleviz condition="hasGoogleVisualizationField">
             <tal:script metal:use-macro="here/googlevisualization_macro/macros/js_library">//load google js</tal:script>
         </tal:has_googleviz>
-        <script type="text/javascript" tal:condition="hasDynamicHidewhen" tal:content="string:
-function refreshHidewhen() {
-    var onsuccess = function(data, textStatus, xhr) {
-        for (var hw in data)
-            jQuery('.hidewhen-' + hw).css('display', data[hw]?'none':'block');
-    }
-    jQuery.ajax({
-        type: '${form_method}',
-        url: 'computehidewhens',
-        data: jQuery('#plomino_form').serialize(),
-        success: onsuccess,
-        dataType: 'json' 
-    });
-}
-jQuery(document).ready( function() {
-    jQuery('#plomino_form :input').change(refreshHidewhen);
-});
-">
-        </script>
+
         <tal:block_hasjsresources 
             tal:define="jsresources python:form.getResourcesJS().splitlines();"
             tal:condition="jsresources"
@@ -119,6 +101,7 @@ jQuery(document).ready( function() {
                     "
             tal:attributes="
                     name form/id;
+                    class string:plomino_form;
                     action python:here.doc_url()+'/saveDocument';
                     method form_method;
                     enctype enctype|nothing

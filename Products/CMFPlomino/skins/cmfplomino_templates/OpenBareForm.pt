@@ -8,66 +8,6 @@
                   form_method python:form.getFormMethod();
                   "
       >
-<head tal:define="view context/@@plone;
-                  ajax_load request/ajax_load | nothing;
-                  ajax_include_head request/ajax_include_head | nothing;
-                  "
-      tal:condition="python: not ajax_load or ajax_include_head">
-    <div tal:replace="structure provider:plone.resourceregistries.styles" />
-    <div tal:replace="structure provider:plone.resourceregistries.scripts" />
-    <script type="text/javascript" tal:condition="here/hasDynamicHidewhen" 
-        tal:content="string:
-function refreshHidewhen() {
-    var onsuccess = function(data, textStatus, xhr) {
-        for (var hw in data)
-            jQuery('.hidewhen-' + hw).css('display', data[hw]?'none':'block');
-    }
-    jQuery.ajax({
-        type: '${form_method}',
-        url: 'computehidewhens',
-        data: jQuery('#plomino_form').serialize(),
-        success: onsuccess,
-        dataType: 'json' 
-    });
-}
-jQuery(document).ready( function() {
-    jQuery('#plomino_form :input').change(refreshHidewhen);
-});
-    ">
-    </script>
-    <tal:has_googleviz condition="python:here.getForm().hasGoogleVisualizationField()">
-        <script type='text/javascript' src='//www.google.com/jsapi'></script>
-    </tal:has_googleviz>
-    <tal:block tal:condition="python:here.hasDateTimeField()">
-        <script type="text/javascript" charset="iso-8859-1"
-            tal:attributes="src string:${here/portal_url}/jscalendar/calendar_stripped.js">
-        </script>
-        <script type="text/javascript" charset="iso-8859-1"
-            tal:attributes="src string:${here/portal_url}/jscalendar/calendar-en.js">
-      </script>
-      <link rel="stylesheet" type="text/css" media="all" tal:attributes="href string:${here/portal_url}/jscalendar/calendar-system.css" />
-    </tal:block>
-    <tal:block_hasjsresources 
-        tal:define="jsresources python:form.getResourcesJS().splitlines();"
-        tal:condition="jsresources"
-        tal:repeat="js jsresources">
-        <script
-            type="text/javascript"
-            charset="iso-8859-1"
-            tal:attributes="src js">
-        </script>
-    </tal:block_hasjsresources>
-    <tal:block_hascssresources
-            tal:define="cssresources python:form.getResourcesCSS().splitlines()"
-            tal:condition="cssresources"
-            tal:repeat="css cssresources">
-            <link rel="stylesheet"
-                type="text/css"
-                media="all"
-                tal:attributes="href css" />
-        </tal:block_hascssresources>
-
-</head>
 <body class="OpenBareForm">
     <div id="content"
         tal:define="

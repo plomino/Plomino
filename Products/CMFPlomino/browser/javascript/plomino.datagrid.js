@@ -12,21 +12,20 @@
  *   form (second request, when the user clicks on the submit button of the sub-form)
  */
 function datagrid_show_form(field_id, formurl, onsubmit) {
-    var field_selector = "#" + field_id + "_editform";
-    $(field_selector).html(
-        '<iframe name="' + field_id + '_iframe" style="height:100%;width:100%" height="100%" width="100%"></iframe>'
-    );
-    var iframe = $("#" + field_id + "_editform iframe");
-    iframe.attr('src', formurl);
-    iframe.load(function() {
-        var popup = $(field_selector);
-        var body = iframe[0].contentDocument.body;
+    $("#" + field_id + "_editform").load(formurl + ' form', function() {
+
+        var editform = $(this);
+        var popup = $(this);
         // Edit-form close button
-        $("input[name=plomino_close]", body).removeAttr('onclick').click(function() {
+        $("input[name=plomino_close]", this).removeAttr('onclick').click(function() {
             popup.dialog('close');
         });
+
+        // Add event
+        $(document).trigger('opendialog', this);
+
         // Edit form submission
-        $('form', body).submit(function(){
+        $('form', editform).submit(function(){
             var message = "";
 
             $.ajax({url: this.action+"?"+$(this).serialize(),
@@ -41,18 +40,16 @@ function datagrid_show_form(field_id, formurl, onsubmit) {
                 }
             });
 
-            if(!(typeof message === "undefined" || message === null || message === '')) {
+            if(!(message == null || message=='')) {
                 alert(message);
-                // Avoid Plone message "You already submitted this form", since we didn't
-                jQuery(this).find('input[type="submit"].submitting').removeClass('submitting');
                 return false;
             }
             $.get(this.action, $(this).serialize(), function(data, textStatus, XMLHttpRequest){
                 // Call back function with new row
-                var rowdata = [];
+                var rowdata = new Array();
                 $('span.plominochildfield', data).each(function(){
                     rowdata.push(this.innerHTML);
-                });
+                })
                 var raw = $.evalJSON($('#raw_values', data).text());
                 onsubmit(rowdata, raw);
             });
@@ -60,8 +57,6 @@ function datagrid_show_form(field_id, formurl, onsubmit) {
             return false;
         });
         // Prepare and display the dialog
-        $('.documentActions', body).remove();
-        popup.dialog("option", "title", $('.documentFirstHeading', body).remove().text());
         var table = $("#" + field_id + "_datagrid");
         var options = table.dataTable().fnSettings().oInit;
         if(options.plominoDialogOptions) {

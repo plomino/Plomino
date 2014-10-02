@@ -13,7 +13,8 @@ __author__ = """Eric BREHAULT <eric.brehault@makina-corpus.org>"""
 __docformat__ = 'plaintext'
 
 # Standard
-import re
+import re, sys
+sys_enc = sys.getfilesystemencoding()
 
 import logging
 logger = logging.getLogger('Plomino')
