@@ -1,6 +1,12 @@
 Changelog
 =========
 
+1.19 (2014-10-15)
+-----------------
+* Allow to post data with open_url util [manuelep]
+* Enable multiple file upload [robystar]
+* Fixes [ebrehault, ivant, fulv, gaudenz]
+
 1.18.6 (2014-04-10)
 -------------------
 * Datagrid inline editing [davisp1]
