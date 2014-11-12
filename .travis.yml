@@ -3,8 +3,6 @@ env:
   matrix:
     - PLONE_VERSION=4.3
     - PLONE_VERSION=4.2
-    - PLONE_VERSION=4.1
-    - PLONE_VERSION=4.0
   global:
     - secure: |-
         HPvtfxZKN4ZWsaKdP+5WdBGte1x96ksR9+Go1z7kpJeYo70XV/LAWYc6ORD8
@@ -21,12 +19,6 @@ python:
   - 2.7
 install:
   - sed -ie "s#travis-4.x.cfg#travis-$PLONE_VERSION.x.cfg#" travis.cfg
-  - echo Add good-py versions for plone.app.registry for Plone 4.0
-  - if [ "$PLONE_VERSION" == "4.0" ] ; then sed "4 a\    http://good-py.appspot.com/release/plone.app.registry/1.0b2?plone=4.0.9" travis.cfg > travis.cfg.new && mv travis.cfg{.new,}  ; fi
-  - if [ "$PLONE_VERSION" == "4.0" ] ; then cat plone_4.0_4.1_versions.txt >> travis.cfg ; fi
-  - if [ "$PLONE_VERSION" == "4.1" ] ; then sed "4 a\    http://good-py.appspot.com/release/plone.app.registry/1.0b2?plone=4.1.6" travis.cfg > travis.cfg.new && mv travis.cfg{.new,}  ; fi
-  - if [ "$PLONE_VERSION" == "4.1" ] ; then cat plone_4.0_4.1_versions.txt >> travis.cfg ; fi
-  - if [ "$PLONE_VERSION" == "4.2" ] ; then cat plone_4.2_versions.txt >> travis.cfg ; fi
   - rm Products/CMFPlomino/tests/test_robot.py
   - cat travis.cfg # Debug
   - mkdir -p buildout-cache/eggs
