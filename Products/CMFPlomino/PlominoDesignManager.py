@@ -828,30 +828,32 @@ class PlominoDesignManager(Persistent):
     def getRenderingTemplate(self, templatename, request=None):
         """
         """
-        skin = self.portal_skins.cmfplomino_templates
-        if hasattr(skin, templatename):
-            pt = getattr(skin, templatename)
-            if request:
-                pt.REQUEST = request
-            else:
-                request = getattr(pt, 'REQUEST', None)
-                proper_request = (request and
-                        pt.REQUEST.__class__.__name__=='HTTPRequest')
-                if not proper_request:
-                    # XXX What *else* could REQUEST be here?
-                    # we are not in an actual web context, but we a need a
-                    # request object to have the template working
-                    response = HTTPResponse(stdout=sys.stdout)
-                    env = {'SERVER_NAME': 'fake_server',
-                           'SERVER_PORT': '80',
-                           'REQUEST_METHOD': 'GET'}
-                    pt.REQUEST = HTTPRequest(sys.stdin, env, response)
+        skins = (self.portal_skins.custom,
+                 self.portal_skins.cmfplomino_templates)
+        for skin in skins:
+            if hasattr(skin, templatename):
+                pt = getattr(skin, templatename)
+                if request:
+                    pt.REQUEST = request
+                else:
+                    request = getattr(pt, 'REQUEST', None)
+                    proper_request = (request and
+                            pt.REQUEST.__class__.__name__=='HTTPRequest')
+                    if not proper_request:
+                        # XXX What *else* could REQUEST be here?
+                        # we are not in an actual web context, but we a need a
+                        # request object to have the template working
+                        response = HTTPResponse(stdout=sys.stdout)
+                        env = {'SERVER_NAME': 'fake_server',
+                            'SERVER_PORT': '80',
+                            'REQUEST_METHOD': 'GET'}
+                        pt.REQUEST = HTTPRequest(sys.stdin, env, response)
 
-            # we also need a RESPONSE
-            if not pt.REQUEST.has_key('RESPONSE'):
-                pt.REQUEST['RESPONSE'] = HTTPResponse()
+                # we also need a RESPONSE
+                if not pt.REQUEST.has_key('RESPONSE'):
+                    pt.REQUEST['RESPONSE'] = HTTPResponse()
 
-            return pt
+                return pt
         else:
             return None
 
@@ -1152,14 +1154,14 @@ class PlominoDesignManager(Persistent):
 
         if replace:
             logger.info("Replace mode: removing current design")
-            designelements = [o.id for o in 
+            designelements = [o.id for o in
                     self.getForms() +
                     self.getViews() +
                     self.getAgents()]
             ObjectManager.manage_delObjects(self, designelements)
             ObjectManager.manage_delObjects(
                     self.resources,
-                    # Un-lazify BTree 
+                    # Un-lazify BTree
                     [i for i in self.resources.objectIds()])
             logger.info("Current design removed")
 
