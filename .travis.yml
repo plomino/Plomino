@@ -19,6 +19,7 @@ python:
   - 2.7
 install:
   - sed -ie "s#travis-4.x.cfg#travis-$PLONE_VERSION.x.cfg#" travis.cfg
+  - if [ "$PLONE_VERSION" == "4.2" ] ; then cat plone_4.2_versions.txt >> travis.cfg ; fi
   - rm Products/CMFPlomino/tests/test_robot.py
   - cat travis.cfg # Debug
   - mkdir -p buildout-cache/eggs
