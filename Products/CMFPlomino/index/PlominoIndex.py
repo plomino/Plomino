@@ -156,7 +156,7 @@ class PlominoIndex(UniqueObject, CatalogTool):
         except Exception, e:
             _logger.info(
                     'indexDocument> %s\non %s' % (repr(e), doc.id),
-                    exc_info=True) 
+                    exc_info=True)
             raise
 
     security.declareProtected(READ_PERMISSION, 'unindexDocument')
@@ -184,8 +184,8 @@ class PlominoIndex(UniqueObject, CatalogTool):
             user_id = self.getCurrentMember().getUserName()
             if user_id != "Anonymous User":
                 user_groups_roles += (
-                        [user_id] + 
-                        self.getCurrentUserGroups() + 
+                        [user_id] +
+                        self.getCurrentUserGroups() +
                         self.getCurrentUserRoles())
             request['getPlominoReaders'] = user_groups_roles
         try:
@@ -198,7 +198,7 @@ class PlominoIndex(UniqueObject, CatalogTool):
                         "The %s index does not allow sorting" % sortindex,
                         self.REQUEST,
                         error=True)
-            results = self.search(request, None, reverse, limit)                
+            results = self.search(request, None, reverse, limit)
         return results
 
     security.declareProtected(READ_PERMISSION, 'getKeyUniqueValues')
@@ -233,13 +233,12 @@ class PlominoIndex(UniqueObject, CatalogTool):
                 except TransformException:
                     _logger.info(
                             'convertFileToText> Transform failed',
-                            exc_info=True) 
+                            exc_info=True)
                 except MissingBinary:
                     _logger.info(
                             'convertFileToText> Transform failed',
-                            exc_info=True) 
+                            exc_info=True)
                 if textstream:
                     result = textstream.getData()
 
         return result
-
