@@ -826,36 +826,30 @@ class PlominoDesignManager(Persistent):
 
     security.declarePublic('getRenderingTemplate')
     def getRenderingTemplate(self, templatename, request=None):
+        """ Look up a Plomino form or field template from portal skin layers.
         """
-        """
-        skins = (self.portal_skins.custom,
-                 self.portal_skins.cmfplomino_templates)
-        for skin in skins:
-            if hasattr(skin, templatename):
-                pt = getattr(skin, templatename)
-                if request:
-                    pt.REQUEST = request
-                else:
-                    request = getattr(pt, 'REQUEST', None)
-                    proper_request = (request and
-                            pt.REQUEST.__class__.__name__=='HTTPRequest')
-                    if not proper_request:
-                        # XXX What *else* could REQUEST be here?
-                        # we are not in an actual web context, but we a need a
-                        # request object to have the template working
-                        response = HTTPResponse(stdout=sys.stdout)
-                        env = {'SERVER_NAME': 'fake_server',
-                            'SERVER_PORT': '80',
-                            'REQUEST_METHOD': 'GET'}
-                        pt.REQUEST = HTTPRequest(sys.stdin, env, response)
-
-                # we also need a RESPONSE
-                if not pt.REQUEST.has_key('RESPONSE'):
-                    pt.REQUEST['RESPONSE'] = HTTPResponse()
-
-                return pt
-        else:
-            return None
+        # The portal_skins machinery will look through layers in order
+        if hasattr(self.portal_skins, templatename):
+            pt = getattr(self.portal_skins, templatename)
+            if request:
+                pt.REQUEST = request
+            else:
+                request = getattr(pt, 'REQUEST', None)
+                proper_request = (request and
+                        pt.REQUEST.__class__.__name__=='HTTPRequest')
+                if not proper_request:
+                    # XXX What *else* could REQUEST be here?
+                    # we are not in an actual web context, but we a need a
+                    # request object to have the template working
+                    response = HTTPResponse(stdout=sys.stdout)
+                    env = {'SERVER_NAME': 'fake_server',
+                        'SERVER_PORT': '80',
+                        'REQUEST_METHOD': 'GET'}
+                    pt.REQUEST = HTTPRequest(sys.stdin, env, response)
+            # we also need a RESPONSE
+            if not pt.REQUEST.has_key('RESPONSE'):
+                pt.REQUEST['RESPONSE'] = HTTPResponse()
+            return pt
 
     security.declareProtected(DESIGN_PERMISSION, 'exportDesignAsZip')
     def exportDesignAsZip(self, designelements=None, dbsettings=True):
