@@ -1,6 +1,6 @@
 <span tal:define="widget python:options['field'].getSettings('widget');
-				selection options/selection
-				">
+				selection options/selection" 
+				tal:attributes="class python:options['fieldname'] + '-' + 'selectionfield'">
 	<tal:widget tal:condition="python:test(widget=='SELECT')">
 		<select tal:attributes="id options/fieldname; name options/fieldname"><tal:loop tal:repeat="v selection">
 			<option tal:define="current options/fieldvalue;l python:v.split('|')"
