@@ -1,6 +1,12 @@
 Changelog
 =========
 
+1.19.2 (unreleased)
+-------------------
+
+- Nothing changed yet.
+
+
 1.19.1 (2015-01-06)
 -------------------
 * Enable standard behaviour when looking up portal_skins resources [jean]
