@@ -1,6 +1,10 @@
 Changelog
 =========
 
+1.19.1 (2015-01-06)
+-------------------
+* Enable standard behaviour when looking up portal_skins resources [jean]
+
 1.19 (2014-10-15)
 -----------------
 * Allow to post data with open_url util [manuelep]
