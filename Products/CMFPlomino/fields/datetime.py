@@ -60,7 +60,6 @@ class DatetimeField(BaseField):
         """
         """
         errors = []
-        fieldname = self.context.id
         submittedValue = submittedValue.strip()
         try:
             # check if date only:
@@ -74,6 +73,7 @@ class DatetimeField(BaseField):
                 else:
                     v = StringToDate(submittedValue, '%Y-%m-%d %H:%M')
         except:
+            fieldname = self.context.id
             errors.append(
                     "%s must be a date/time (submitted value was: %s)" % (
                         fieldname,
@@ -112,13 +112,12 @@ class DatetimeField(BaseField):
                 self, form, doc, editmode_obsolete, creation, request)
 
         mode = self.context.getFieldMode()
-        if (mode == "EDITABLE"
-            and request
-            and ((doc is None and not(creation))
-                or request.has_key('Plomino_datagrid_rowdata'))
-            ):
-                fieldname = self.context.id
-                fieldValue = request.get(fieldname, fieldValue)
+        if (mode == "EDITABLE" and
+            request and
+            ((doc is None and not(creation)) or
+             request.has_key('Plomino_datagrid_rowdata'))):
+            fieldname = self.context.id
+            fieldValue = request.get(fieldname, fieldValue)
 
         if fieldValue and isinstance(fieldValue, basestring):
             fmt = self.format
@@ -130,8 +129,8 @@ class DatetimeField(BaseField):
 for f in getFields(IDatetimeField).values():
     setattr(DatetimeField, f.getName(), DictionaryProperty(f, 'parameters'))
 
+
 class SettingForm(BaseForm):
     """
     """
     form_fields = form.Fields(IDatetimeField)
-
