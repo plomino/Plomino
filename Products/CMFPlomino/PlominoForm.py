@@ -299,7 +299,7 @@ schema = Schema((
         name='ResourcesJS',
         widget=TextAreaWidget(
             label="JavaScripts",
-            description="JavaScript resources loaded by this form. " \
+            description="JavaScript resources loaded by this form. "
                 "Enter one path per line.",
             label_msgid='CMFPlomino_label_FormResourcesJS',
             description_msgid='CMFPlomino_help_FormResourcesJS',
@@ -310,7 +310,7 @@ schema = Schema((
         name='ResourcesCSS',
         widget=TextAreaWidget(
             label="CSS",
-            description="CSS resources loaded by this form. " \
+            description="CSS resources loaded by this form. "
                 "Enter one path per line.",
             label_msgid='CMFPlomino_label_FormResourcesCSS',
             description_msgid='CMFPlomino_help_FormResourcesCSS',
@@ -353,7 +353,7 @@ class PlominoForm(ATFolder):
         """ Return form submit HTTP method
         """
         # if self.isEditMode():
-        #     Log('POST because isEditMode', 'PlominoForm/getFormMethod') #DBG 
+        #     Log('POST because isEditMode', 'PlominoForm/getFormMethod') #DBG
         #     return  'POST'
 
         value = self.Schema()['FormMethod'].get(self)
@@ -368,11 +368,11 @@ class PlominoForm(ATFolder):
     def createDocument(self, REQUEST):
         """ Create a document using the form's submitted content.
 
-        The created document may be a TemporaryDocument, in case 
-        this form was rendered as a child form. In this case, we 
+        The created document may be a TemporaryDocument, in case
+        this form was rendered as a child form. In this case, we
         aren't adding a document to the database yet.
 
-        If we are not a child form, delegate to the database object 
+        If we are not a child form, delegate to the database object
         to create the new document.
         """
         db = self.getParentDatabase()
@@ -446,7 +446,7 @@ class PlominoForm(ATFolder):
                 )
         cache = db.getRequestCache(cache_key)
         if cache:
-            #DBG logger.info('Cache hit: %s' % `cache`) 
+            #DBG logger.info('Cache hit: %s' % `cache`)
             return cache
         if not request and hasattr(self, 'REQUEST'):
             request = self.REQUEST
@@ -497,7 +497,7 @@ class PlominoForm(ATFolder):
             if report:
                 report = ', '.join(
                         ['%s (occurs %s times)' % (f, c)
-                            for f,c in seen.items() if c > 1])
+                            for f, c in seen.items() if c > 1])
                 logger.debug('Overridden fields: %s' % report)
 
         db.setRequestCache(cache_key, result)
@@ -539,7 +539,7 @@ class PlominoForm(ATFolder):
         return self.id
 
     def _handleLabels(self, html_content_orig, editmode):
-        """ Parse the layout for label tags, 
+        """ Parse the layout for label tags,
 
         - add 'label' or 'fieldset/legend' markup to the corresponding fields.
         - if the referenced field does not exist, leave the layout markup as
@@ -740,7 +740,7 @@ class PlominoForm(ATFolder):
         raw_values = []
         for f in field_ids:
             v = doc.getItem(f)
-            # Watch out, this is lossy. Don't use DB date format here, 
+            # Watch out, this is lossy. Don't use DB date format here,
             # use a non-lossy representation.
             if hasattr(v, 'strftime'):
                 raw_values.append(
@@ -1315,7 +1315,7 @@ class PlominoForm(ATFolder):
     security.declarePublic('validateInputs')
     def validateInputs(self, REQUEST, doc=None):
         """
-        """ 
+        """
         db = self.getParentDatabase()
         tmp = getTemporaryDocument(
                 db,
@@ -1513,7 +1513,7 @@ class PlominoForm(ATFolder):
                     'iTotalDisplayRecords': len(result),
                     'aaData': result}
 
-        #DBG logger.info('PlominoForm.tojson> item: %s, result: %s' % (`item`, `result`[:20])) 
+        logger.info('PlominoForm.tojson> item: %s, result: %s' % (`item`, `result`[:20])) #DBG
         return json.dumps(result)
 
     def _getDatabaseViews(self):

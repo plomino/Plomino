@@ -21,10 +21,11 @@
     <script 
         type="text/javascript"
         charset="utf-8"
-        tal:define="param python:field.getSettings().getParameters();
-                    request_items python:field.getSettings().request_items_aoData(request);
-                    "
-            tal:content="structure string:
+        tal:define="
+                param python:field.getSettings().getParameters();
+                request_items python:field.getSettings().request_items_aoData(request);
+                "
+        tal:content="structure string:
                 var ${fieldname}_datatable;
                 jQuery(document).ready(function() {
                     ${fieldname}_datatable = jQuery('#${fieldname}_datagrid').dataTable( {

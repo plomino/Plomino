@@ -322,7 +322,7 @@ class PlominoDatabase(ATFolder, PlominoAccessControl, PlominoDesignManager,
 #            if hasattr(self, 'REQUEST') and not self.checkUserPermission(DESIGN_PERMISSION):
 #                self.REQUEST["disable_border"]=True
             try:
-                if self.StartPage:  
+                if self.StartPage:
                     if hasattr(self, self.getStartPage()):
                         target = getattr(self, self.getStartPage())
                     return getattr(target, target.defaultView())()
@@ -404,7 +404,7 @@ class PlominoDatabase(ATFolder, PlominoAccessControl, PlominoDesignManager,
 
     security.declarePublic('getDocument')
     def getDocument(self, docid):
-        """ Return a PlominoDocument, or None. 
+        """ Return a PlominoDocument, or None.
         If ``docid`` contains a "/", assume it's a path not a docid.
         """
         if not docid:
@@ -556,7 +556,7 @@ class PlominoDatabase(ATFolder, PlominoAccessControl, PlominoDesignManager,
     def getRequestCache(self, key):
         """ Get cached value in an annotation on the current request.
 
-        Note: it will available within this request only, 
+        Note: it will available within this request only,
         it will be destroyed once the request is terminated.
         """
         if not hasattr(self, 'REQUEST'):

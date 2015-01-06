@@ -218,7 +218,7 @@ allow_module("Products.CMFPlomino.PlominoUtils")
 
 class PlominoSafeDomains:
     implements(interfaces.IPlominoSafeDomains)
-    
+
     domains = [
       # by default, there is no domains allowed
       # but we can provide a IPlominoSafeDomains utility to declare some

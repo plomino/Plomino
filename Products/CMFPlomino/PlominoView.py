@@ -328,7 +328,7 @@ class PlominoView(ATFolder):
         return self.id
 
     def __bobo_traverse__(self, request, name):
-        """ Allow traversing to .../<view>/<docid> 
+        """ Allow traversing to .../<view>/<docid>
         """
         if self.documents.has_key(name):
             return aq_inner(getattr(self.documents, name)).__of__(self)
@@ -364,6 +364,7 @@ class PlominoView(ATFolder):
                 sortindex=sortindex,
                 reverse=reverse,
                 only_allowed=only_allowed)
+        logger.info('PlominoView.getAllDocuments> %s %s' % (len(results), query)) #DBG
 
         if limit:
             results = batch(
@@ -381,7 +382,7 @@ class PlominoView(ATFolder):
         #             obj = r.getObject()
         #             yield obj
         #         except:
-        #             logging.exception('Corrupt view: %s'%self.id, exc_info=True)
+        #             logger.exception('Corrupt view: %s'%self.id, exc_info=True)
         #     else:
         #         yield r
 
@@ -601,7 +602,7 @@ class PlominoView(ATFolder):
             try:
                 quoting = int(quoting)
             except:
-                logging.exception('Bad quoting: %s'%quoting, exc_info=True)
+                logger.exception('Bad quoting: %s'%quoting, exc_info=True)
                 quoting = csv.QUOTE_NONNUMERIC
 
         if brain_docs is None:
