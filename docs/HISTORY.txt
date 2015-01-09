@@ -1,11 +1,9 @@
 Changelog
 =========
 
-1.19.2 (unreleased)
+1.19.2 (2015-01-09)
 -------------------
-
-- Nothing changed yet.
-
+* Forgot to bump the version string [jean]
 
 1.19.1 (2015-01-06)
 -------------------
