@@ -4,7 +4,7 @@ security = ClassSecurityInfo()
 
 PROJECTNAME = 'CMFPlomino'
 
-VERSION = "1.19"
+VERSION = "1.19.2"
 
 import logging
 logger = logging.getLogger('Plomino')

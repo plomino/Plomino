@@ -107,6 +107,12 @@ def migrate(db):
     if db.plomino_version == "1.18":
         # no migration needed here
         db.plomino_version = "1.19"
+    if db.plomino_version == "1.19":
+        # no migration needed here
+        db.plomino_version = "1.19.1"
+    if db.plomino_version == "1.19.1":
+        # no migration needed here
+        db.plomino_version = "1.19.2"
     return messages
 
 def migrate_to_130(db):
@@ -160,7 +166,7 @@ def migrate_to_130(db):
                 v = getattr(field, "SelectionListFormula", None)
                 if v is not None:
                     adapt.documentslistformula = v.raw
-    msg = msg + ", FieldType remapped" 
+    msg = msg + ", FieldType remapped"
     db.plomino_version = "1.3.0"
     return msg
 
@@ -236,7 +242,7 @@ def migrate_to_175(db):
     if 'plomino_documents' not in db.objectIds():
         manage_addBTreeFolder(db, id='plomino_documents')
     directlyProvides(db.plomino_documents, IHideFromBreadcrumbs)
-    docids = [id for id in db.objectIds() 
+    docids = [id for id in db.objectIds()
             if getattr(db, id).portal_type == "PlominoDocument"]
     cookie = db.manage_cutObjects(ids=docids)
     db.plomino_documents.manage_pasteObjects(cookie)
@@ -273,7 +279,7 @@ def migrate_to_1_11(db):
     # Page Template: read() and write()
     from zope.interface import providedBy
     from Products.CMFPlomino.fields.selection import ISelectionField
-    
+
     forms = db.getForms()
     for form in forms:
         fields = form.getFormFields()
@@ -300,7 +306,7 @@ def migrate_to_1_11(db):
                 f = settings.selectionlistformula
                 if f:
                     settings.selectionlistformula = f.replace(
-                        'getAllDocuments()', 
+                        'getAllDocuments()',
                         'getAllDocuments(getObject=False)')
         hidewhens = form.getHidewhenFormulas()
         for hidewhen in hidewhens:
@@ -399,7 +405,7 @@ def migrate_to_1_12(db):
     for lib in libs:
         lib_id = lib.id()
         lib_data = lib.data
-        content_type = lib.getContentType() 
+        content_type = lib.getContentType()
         if 'image' in content_type:
             db.resources.manage_delObjects(lib_id)
             lib_id = manage_addImage(db.resources, lib_id, lib_data)
@@ -411,7 +417,7 @@ def migrate_to_1_12(db):
             except UnicodeDecodeError, e:
                 logger.info("Unknown encoding, skipping: %s" % lib_id)
                 continue
-            
+
             ps.write(lib_data)
             if not error_re.search(ps.read()):
                 db.resources.manage_delObjects(lib_id)
@@ -420,7 +426,7 @@ def migrate_to_1_12(db):
                 sc.write(lib_data)
                 logger.info("Converted to Script: %s" % lib_id)
                 continue
-    
+
     msg = "Migration to 1.12: Convert resources script lib File into PythonScripts."
     db.plomino_version = "1.12"
     return msg
