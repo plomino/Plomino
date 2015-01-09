@@ -1,6 +1,12 @@
 Changelog
 =========
 
+1.19.3 (unreleased)
+-------------------
+
+- Nothing changed yet.
+
+
 1.19.2 (2015-01-09)
 -------------------
 * Forgot to bump the version string [jean]
