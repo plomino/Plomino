@@ -75,10 +75,6 @@ Scenario: frmBirthday has one JS resource and one CSS resource
 - both are loaded with the form and with a document
 
     >>> from re import compile
-    >>> js_pattern1 = r'<script[^<]*src="./resources/test.js"[^<]*</script>'
-    >>> css_pattern1 = r'<link[^>]*href="./resources/test.css"[^>]*/>'
-    >>> js_re1=compile(js_pattern1)
-    >>> css_re1=compile(css_pattern1)
     >>> browser.open(base_url+'/example-with-form-resources')
     >>> 'Birthday' in browser.contents
     True
@@ -90,6 +86,10 @@ Scenario: frmBirthday has one JS resource and one CSS resource
 
     >>> example_url = base_url+'/'+db_id
     >>> browser.open(example_url+'/frmBirthday/OpenForm')
+    >>> js_pattern1 = r'<script[^<]*src="%s/resources/test.js"[^<]*</script>' % example_url
+    >>> css_pattern1 = r'<link[^>]*href="%s/resources/test.css"[^>]*/>' % example_url
+    >>> js_re1=compile(js_pattern1)
+    >>> css_re1=compile(css_pattern1)
     >>> bool(js_re1.search(browser.contents))
     True
     >>> bool(css_re1.search(browser.contents))

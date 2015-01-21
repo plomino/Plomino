@@ -13,7 +13,7 @@
     </tal:block>
     <tal:block_hasjsresources 
         tal:define="myF python:here.getForm();
-                    jsresources python:myF.getResourcesJS().splitlines();"
+                    jsresources python:myF.getResourcesJS()"
         tal:condition="jsresources"
         tal:repeat="js jsresources">
         <script
@@ -27,7 +27,7 @@
 <metal:css fill-slot="style_slot">
     <tal:block_hascssresources
         tal:define="myF python:here.getForm();
-                    cssresources python:myF.getResourcesCSS().splitlines();"
+                    cssresources python:myF.getResourcesCSS()"
         tal:condition="cssresources"
         tal:repeat="css cssresources">
         <link rel="stylesheet"

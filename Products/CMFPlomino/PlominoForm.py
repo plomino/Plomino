@@ -364,6 +364,30 @@ class PlominoForm(ATFolder):
                 return 'POST'
         return value
 
+    def _get_resource_urls(self, field_name):
+        """ Return canonicalized URLs if local.
+
+        Pass through fully specified URLs and un-found URLs (they may be
+        statically served outside of Zope).
+        """
+        value = self.Schema()[field_name].get(self).splitlines()
+        for url in value:
+            url = url.strip()
+            if url:
+                if not url.lower().startswith(('http', '//')):
+                    if url.startswith('./'):
+                        url = url[2:]
+                    resource = self.unrestrictedTraverse(url, None)
+                    if resource:
+                        url = resource.absolute_url()
+                yield url
+
+    def getResourcesCSS(self):
+        return self._get_resource_urls('ResourcesCSS')
+
+    def getResourcesJS(self):
+        return self._get_resource_urls('ResourcesJS')
+
     security.declareProtected(READ_PERMISSION, 'createDocument')
     def createDocument(self, REQUEST):
         """ Create a document using the form's submitted content.
