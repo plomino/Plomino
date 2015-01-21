@@ -1,4 +1,8 @@
 language: python
+sudo: false
+cache:
+  directories:
+    - buildout-cache
 env:
   matrix:
     - PLONE_VERSION=4.3
@@ -12,31 +16,19 @@ env:
         ORM7W1gV9PWYLRgWvMK8R6sBKNTmQj7VFE7F5kw4bEslztvbIQY1a+SgPB0T
         tILV9qPumTq16fQhVuv5+5eYdXqqgkyP4P7N7q1X5R8bz8sQu8iMCWf1Yzni
         rT19wGAVm7B8xJwcuffc8R4XZgIi8EBvcruAzMcBphvh9NUj/pA=
-    - ROBOT_BUILD_NUMBER=travis-$TRAVIS_BUILD_NUMBER
-    - ROBOT_REMOTE_URL=http://$SAUCE_USERNAME:$SAUCE_ACCESS_KEY@ondemand.saucelabs.com:80/wd/hub
-    - ROBOT_DESIRED_CAPABILITIES=tunnel-identifier:$TRAVIS_JOB_ID
 python:
   - 2.7
 install:
   - sed -ie "s#travis-4.x.cfg#travis-$PLONE_VERSION.x.cfg#" travis.cfg
   - if [ "$PLONE_VERSION" == "4.2" ] ; then cat plone_4.2_versions.txt >> travis.cfg ; fi
   - rm Products/CMFPlomino/tests/test_robot.py
-  - cat travis.cfg # Debug
   - mkdir -p buildout-cache/eggs
   - mkdir -p buildout-cache/downloads
   - python bootstrap.py -c travis.cfg
   - bin/buildout -N -t 3 -c travis.cfg install download install
   - bin/buildout -N -t 3 -c travis.cfg
-  - cat bin/test # Debug: trying to shed light on #265 and see the actually installed versions
-  - curl -O http://saucelabs.com/downloads/Sauce-Connect-latest.zip
-  - unzip Sauce-Connect-latest.zip
-  - java -jar Sauce-Connect.jar $SAUCE_USERNAME $SAUCE_ACCESS_KEY -i $TRAVIS_JOB_ID -f CONNECTED &
-  - JAVA_PID=$!
 before_script:
   - bin/instance start
-  - bash -c "while [ ! -f CONNECTED ]; do sleep 2; done"
-  - "export DISPLAY=:99.0"
-  - "sh -e /etc/init.d/xvfb start"
 script:
   - bin/coverage run bin/test
 after_success:
