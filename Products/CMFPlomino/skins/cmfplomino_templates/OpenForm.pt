@@ -48,7 +48,7 @@ jQuery(document).ready( function() {
 ">
     </script>
     <tal:block_hasjsresources 
-        tal:define="jsresources python:here.getResourcesJS().splitlines()"
+        tal:define="jsresources python:here.getResourcesJS()"
         tal:condition="jsresources"
         tal:repeat="js jsresources">
         <script
@@ -67,7 +67,7 @@ jQuery(document).ready( function() {
             tal:attributes="href string:$portal_url/jscalendar/calendar-system.css" />
     </tal:block_hasdatetimefield>
     <tal:block_hascssresources
-        tal:define="cssresources python:here.getResourcesCSS().splitlines()"
+        tal:define="cssresources python:here.getResourcesCSS()"
         tal:condition="cssresources"
         tal:repeat="css cssresources">
         <link rel="stylesheet"
