@@ -376,8 +376,10 @@ class PlominoForm(ATFolder):
             if url:
                 if not url.lower().startswith(('http', '//')):
                     if url.startswith('./'):
-                        url = url[2:]
-                    resource = self.unrestrictedTraverse(url, None)
+                        # unrestrictedTraverse knows '../' but not './'
+                        resource = self.unrestrictedTraverse(url[2:], None)
+                    else:
+                        resource = self.unrestrictedTraverse(url, None)
                     if resource:
                         url = resource.absolute_url()
                 yield url
