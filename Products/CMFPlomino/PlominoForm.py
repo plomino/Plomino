@@ -382,6 +382,9 @@ class PlominoForm(ATFolder):
                         resource = self.unrestrictedTraverse(url, None)
                     if resource:
                         url = resource.absolute_url()
+                    else:
+                        logger.info('Missing resource: %s' % url)
+                        continue
                 yield url
 
     def getResourcesCSS(self):

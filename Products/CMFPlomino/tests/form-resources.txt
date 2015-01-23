@@ -135,7 +135,56 @@ Scenario: frmBirthday has one JS resource and one CSS resource
     >>> bool(css_re1.search(browser.contents))
     True
     
-Scenario: add two more resources, both to JS and to CSS, as multi-line strings
+Scenario: add two resources at relative paths that don't exist in Plone
+- they are dropped on the floor (not passed to browser)
+
+  >>> browser.open(example_url+'/frmBirthday/edit')
+  >>> browser.getControl(name='ResourcesJS').value = './resources/missing.js'
+  >>> browser.getControl(name='ResourcesCSS').value = './random/missing.css'
+  >>> browser.getControl(name='form.button.save').click()
+
+  >>> js_pattern2 = r'<script[^<]*src=".*resources/missing.js"[^<]*</script>'
+  >>> css_pattern2 = r'<link[^>]*href=".*random/missing.css"[^>]*/>'
+  >>> js_re2=compile(js_pattern2)
+  >>> css_re2=compile(css_pattern2)
+
+  >>> browser.open(example_url+'/frmBirthday/OpenForm')
+  >>> bool(js_re2.search(browser.contents))
+  False
+  >>> bool(css_re2.search(browser.contents))
+  False
+
+  >>> browser.open(example_url+'/frmBirthday/OpenBareForm')
+  >>> bool(js_re2.search(browser.contents))
+  False
+  >>> bool(css_re2.search(browser.contents))
+  False
+
+  >>> browser.open(document_url + '/OpenDocument')
+  >>> bool(js_re2.search(browser.contents))
+  False
+  >>> bool(css_re2.search(browser.contents))
+  False
+
+  >>> browser.open(document_url + '/OpenBareDocument')
+  >>> bool(js_re2.search(browser.contents))
+  False
+  >>> bool(css_re2.search(browser.contents))
+  False
+
+  >>> browser.open(document_url + '/EditDocument')
+  >>> bool(js_re2.search(browser.contents))
+  False
+  >>> bool(css_re2.search(browser.contents))
+  False
+
+  >>> browser.open(document_url + '/EditBareDocument')
+  >>> bool(js_re2.search(browser.contents))
+  False
+  >>> bool(css_re2.search(browser.contents))
+  False
+
+Scenario: add three resources, both to JS and to CSS, as multi-line strings
 - all six resources are loaded as separate <script> and <link> elements
     
   >>> browser.open(example_url+'/frmBirthday/edit')
@@ -150,7 +199,6 @@ Scenario: add two more resources, both to JS and to CSS, as multi-line strings
   './resources/test.js\r\n/testroot.js\r\nhttp://google.com'
   >>> browser.getControl(name='ResourcesCSS').value
   './resources/test.css\r\n/testroot.css\r\nhttp://google.com'
-  
 
   >>> js_pattern2 = r'<script[^<]*src="/testroot.js"[^<]*</script>'
   >>> css_pattern2 = r'<link[^>]*href="/testroot.css"[^>]*/>'
@@ -244,7 +292,7 @@ Scenario: add two more resources, both to JS and to CSS, as multi-line strings
   True
   >>> bool(css_re3.search(browser.contents))
   True
-  
+
 Scenario: no JS or CSS resources
 - none of the previous <script> and <link> elements are found
 
