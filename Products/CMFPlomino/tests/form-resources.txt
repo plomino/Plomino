@@ -2,12 +2,14 @@
 Test samples databases
 ===========================
 
+::
+
     >>> portal = layer['portal']
     >>> id = portal.invokeFactory('Folder', id='samples')
     >>> folder = portal.samples
     >>> base_url = folder.absolute_url()
 
-Create some users:
+Create some users::
 
     >>> memberName = 'siteManager'
     >>> portal.portal_membership.addMember(memberName, memberName, ('Member, Manager',), '', {'fullname': memberName, 'email': memberName+'@dummy.fr',} )
@@ -26,7 +28,7 @@ Create some users:
     >>> memberName = 'demouser'
     >>> portal.portal_membership.addMember(memberName, memberName, ('Member',), '', {'fullname': memberName, 'email': memberName+'@dummy.fr',} )
 
-Create the database:
+Create the database::
 
     >>> import os.path
     >>> dir, _f = os.path.split(os.path.abspath(__file__))
@@ -40,10 +42,10 @@ Create the database:
     >>> xmlstring=f.read()
     >>> db.importDesignFromXML(xmlstring)
     >>> db.refreshDB()
-    [...]    
+    [...]
     >>> f.close()
 
-Set plomino roles and permissions:
+Set plomino roles and permissions::
 
     >>> db.manage_setLocalRoles('userManager', ['PlominoManager'])
     >>> db.manage_setLocalRoles('userDesigner', ['PlominoDesigner'])
@@ -51,7 +53,7 @@ Set plomino roles and permissions:
     >>> db.manage_setLocalRoles('userAuthor', ['PlominoAuthor'])
     >>> db.manage_setLocalRoles('userReader', ['PlominoReader'])
 
-Create the browser object we'll be using and log in as userEditor:
+Create the browser object we'll be using and log in as userEditor::
 
     >>> browser = Browser(layer['app'])
     >>> transaction.commit()  # enable the browser to see our changes
@@ -62,7 +64,7 @@ Create the browser object we'll be using and log in as userEditor:
     >>> browser.getControl('Password').value = 'userManager'
     >>> browser.getControl('Log in').click()
 
-Import form-resources-example db:
+Import form-resources-example db::
 
     >>> browser.open(portal_url)
     >>> browser.getLink('Log out').click()
@@ -72,7 +74,7 @@ Import form-resources-example db:
     >>> browser.getControl('Log in').click()
 
 Scenario: frmBirthday has one JS resource and one CSS resource
-- both are loaded with the form and with a document
+- both are loaded with the form and with a document::
 
     >>> from re import compile
     >>> browser.open(base_url+'/example-with-form-resources')
@@ -134,9 +136,9 @@ Scenario: frmBirthday has one JS resource and one CSS resource
     True
     >>> bool(css_re1.search(browser.contents))
     True
-    
+
 Scenario: add two resources at relative paths that don't exist in Plone
-- they are dropped on the floor (not passed to browser)
+- they are dropped on the floor (not passed to browser)::
 
   >>> browser.open(example_url+'/frmBirthday/edit')
   >>> browser.getControl(name='ResourcesJS').value = './resources/missing.js'
@@ -185,8 +187,8 @@ Scenario: add two resources at relative paths that don't exist in Plone
   False
 
 Scenario: add three resources, both to JS and to CSS, as multi-line strings
-- all six resources are loaded as separate <script> and <link> elements
-    
+- all six resources are loaded as separate <script> and <link> elements::
+
   >>> browser.open(example_url+'/frmBirthday/edit')
   >>> longjs = "./resources/test.js\n/testroot.js\nhttp://google.com"
   >>> longcss = "./resources/test.css\n/testroot.css\nhttp://google.com"
@@ -294,7 +296,7 @@ Scenario: add three resources, both to JS and to CSS, as multi-line strings
   True
 
 Scenario: no JS or CSS resources
-- none of the previous <script> and <link> elements are found
+- none of the previous <script> and <link> elements are found::
 
   >>> browser.open(example_url+'/frmBirthday/edit')
   >>> browser.getControl(name='ResourcesJS').value = ''
@@ -390,4 +392,4 @@ Scenario: no JS or CSS resources
   False
   >>> bool(css_re3.search(browser.contents))
   False
-   
+
