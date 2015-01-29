@@ -721,12 +721,15 @@ class PlominoView(ATFolder):
         if not (keycolumn or sortcolumn):
             return []
 
+        if sortcolumn:
+            sortkey = self.getIndexKey(sortcolumn)
+        else:
+            sortkey = None
+
         query = {'PlominoViewFormula_%s' % self.getViewName(): True}
-        sortkey = None
         if keycolumn:
             query[self.getIndexKey(keycolumn)] = key
         elif sortcolumn:
-            sortkey = self.getIndexKey(sortcolumn)
             query[sortkey] = key
 
         results = index.dbsearch(
