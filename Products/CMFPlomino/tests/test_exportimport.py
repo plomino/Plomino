@@ -4,6 +4,7 @@ from zipfile import ZipFile, ZIP_DEFLATED
 
 import OFS
 
+from Products.PythonScripts.PythonScript import PythonScript
 from Products.CMFPlomino.testing import PLOMINO_FIXTURE
 from plone.app.testing import FunctionalTesting
 from plone.app.testing import PloneSandboxLayer
@@ -107,6 +108,12 @@ class ExportImportTest(unittest.TestCase):
 
     def test_import_zipfile_with_directory_entry(self):
         mydb = self.layer['portal'].mydb
+
+        # Create resource script, to test 'importDesignFromZip' replace
+        ps = PythonScript('script')
+        script_id = mydb.resources._setObject('script', ps)
+        ps.write('return "hello"')
+
         dir, _f = os.path.split(os.path.abspath(__file__))
         zip_file = ZipFile(os.path.join(dir, 'samples', 'testdirentry.zip'))
         mydb.importDesignFromZip(zip_file, replace=True)
