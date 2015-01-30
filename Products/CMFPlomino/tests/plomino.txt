@@ -93,7 +93,7 @@ A form can contain editable fields and also computed fields::
     ...         Formula="plominoDocument.setItem('field4', 'side-effect')\nreturn 'My favorite song is '+plominoDocument.field1")
     >>> db.frm1.field2.at_post_create_script()
 
-A form can contain display fields. A display field is computed but the 
+A form can contain *display* fields. A display field is computed but the 
 result is not saved on the document::
 
     >>> id = db.frm1.invokeFactory('PlominoField',
@@ -112,7 +112,7 @@ formula, the item value was set by the formula for ``field2``::
     ...         id='field4',
     ...         title='Title for field4',
     ...         FieldType="TEXT",
-    ...         FieldMode="DISPLAY",
+    ...         FieldMode="EDITABLE",
     ...         Formula="")
     >>> db.frm1.field4.at_post_create_script()
 
@@ -234,7 +234,7 @@ Only items which match a form field will be considered::
     >>> db.frm1.displayDocument(doc1, editmode=False)
     u'2 <p>please enter a value for field1:<span class=\'label\' title=\'Label for field1\'>Title for field1</span><span class="TEXTFieldRead-TEXT">\n    \n    \n        where is my mind?\n    \n</span>\n</p><p>Comment:<span class=\'label\' title=\'Label for field2\'>Title for field2</span><span class="TEXTFieldRead-TEXT">\n    \n    \n        My favorite song is where is my mind?\n    \n</span>\n</p><p><span class="TEXTFieldRead-TEXT">\n    \n    \n        WHERE IS MY MIND?\n    \n</span>\n</p><p><span class="TEXTFieldRead-TEXT">\n    \n    \n        side-effect\n    \n</span>\n</p>'
     >>> db.frm1.displayDocument(doc1, editmode=True)
-    u'<input type=\'hidden\' name=\'Form\' value=\'frm1\' />2 <p>please enter a value for field1:<label for=\'field1\' class=\'required\'>Title for field1</label><span>\n    \n    \n        <input type="text" id="field1" value="where is my mind?" name="field1" />\n    \n    \n</span>\n</p><p>Comment:<label for=\'field2\'>Title for field2</label><span class="TEXTFieldRead-TEXT">\n    \n    \n        My favorite song is where is my mind?\n    \n</span>\n</p><p><span class="TEXTFieldRead-TEXT">\n    \n    \n        WHERE IS MY MIND?\n    \n</span>\n</p><p><span class="TEXTFieldRead-TEXT">\n    \n    \n        side-effect\n    \n</span>\n</p>'
+    u'<input type=\'hidden\' name=\'Form\' value=\'frm1\' />2 <p>please enter a value for field1:<label for=\'field1\' class=\'required\'>Title for field1</label><span>\n    \n    \n        <input type="text" id="field1" value="where is my mind?" name="field1" />\n    \n    \n</span>\n</p><p>Comment:<label for=\'field2\'>Title for field2</label><span class="TEXTFieldRead-TEXT">\n    \n    \n        My favorite song is where is my mind?\n    \n</span>\n</p><p><span class="TEXTFieldRead-TEXT">\n    \n    \n        WHERE IS MY MIND?\n    \n</span>\n</p><p><span>\n    \n    \n        <input type="text" id="field4" value="side-effect" name="field4" />\n    \n    \n</span>\n</p>'
 
 ``Form`` is a reserved item which allows to indicate the document default
 form::
@@ -312,6 +312,8 @@ so it only applies to new documents::
     >>> doc12.save(creation=True)
     >>> doc12.id
     'a-document-about-rhythm-is-love-1'
+    >>> doc12.setItem('field1', 'A rhythm is love')
+    >>> doc12.save()
 
 Views
 ------
@@ -338,7 +340,7 @@ designer wants to be display in the view::
 Views can be exported as CSV::
 
     >>> db.view1.exportCSV()
-    '"London calling"\r\n"Rhythm is love"\r\n"Rhythm is love"\r\n"bonjour"\r\n"hello"\r\n'
+    '"A rhythm is love"\r\n"London calling"\r\n"Rhythm is love"\r\n"bonjour"\r\n"hello"\r\n'
 
 JSON API
 --------
@@ -361,7 +363,7 @@ We can get the ``lastmodified`` value::
 Views can be exported as JSON::
 
     >>> db.view1.tojson()
-    '{"aaData": [["...", "London calling"], ["a-document-about-rhythm-is-love", "Rhythm is love"], ["a-document-about-rhythm-is-love-1", "Rhythm is love"], ["...", "bonjour"], ["...", "hello"]], "iTotalRecords": 5, "iTotalDisplayRecords": 5}'
+    '{"aaData": [["a-document-about-rhythm-is-love-1", "A rhythm is love"], ["...", "London calling"], ["a-document-about-rhythm-is-love", "Rhythm is love"], ["...", "bonjour"], ["...", "hello"]], "iTotalRecords": 5, "iTotalDisplayRecords": 5}'
 
 Field types
 ---------------
@@ -703,6 +705,23 @@ another column as key column::
     0
     >>> len(db.view1.getDocumentsByKey('My favorite song is Ho Chi Minh City calling by The Clash'))
     1
+
+Let's create a key column that returns multiple documents::
+
+    >>> id = db.view1.invokeFactory('PlominoColumn',
+    ...         id='col3',
+    ...         Title='Col 3',
+    ...         SelectedField='frm1/field4')
+    >>> db.view1.col3.at_post_create_script()
+    >>> db.view1.setKeyColumn('col3')
+
+Results from views are sorted on the sort column::
+
+    >>> [o.getItem('field1') for o in db.view1.getAllDocuments()]
+    [u'A rhythm is love', u'Ho Chi Minh City calling by The Clash', u'Rhythm is love', u'bonjour', u'hello', u'ola']
+    >>> [o.getItem('field1') for o in db.view1.getDocumentsByKey('side-effect')]
+    [u'A rhythm is love', u'Ho Chi Minh City calling by The Clash', u'Rhythm is love', u'bonjour', u'hello']
+
 
 Import/export design
 ---------------------

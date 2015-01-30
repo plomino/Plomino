@@ -3,9 +3,9 @@ Changelog
 
 1.19.3 (unreleased)
 -------------------
-
-- Nothing changed yet.
-
+- Fix sorting of view docs [jean]
+- Fix importDesignFromZip for when there are script resources [jean]
+- Generate canonical URLs for local resources [jean]
 
 1.19.2 (2015-01-09)
 -------------------
