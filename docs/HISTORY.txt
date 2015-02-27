@@ -1,7 +1,7 @@
 Changelog
 =========
 
-1.19.3 (unreleased)
+1.19.3 (2015-02-27)
 -------------------
 - Fix sorting of view docs [jean]
 - Fix importDesignFromZip for when there are script resources [jean]
