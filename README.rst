@@ -59,6 +59,12 @@ and add the following in the ``eggs`` section::
          ...
          Products.CMFPlomino
 
+and also add the following in the ``versions`` block::
+
+    [versions]
+    ...
+    collective.js.datatables = 2.0.1
+
 Then you have to run ``buildout`` to realize your configuration::
 
     bin/buildout -N
