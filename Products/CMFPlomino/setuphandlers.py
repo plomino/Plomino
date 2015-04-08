@@ -119,7 +119,7 @@ def _copy_db_folder(context, source_path, target):
     for fn in filenames:
         if context.isDirectory(source_path + '/' + fn):
             target.makeDirectory(fn)
-            copy_db_folder(context, source_path + '/' + fn, target[fn])
+            _copy_db_folder(context, source_path + '/' + fn, target[fn])
         else:
             f = context.readDataFile(fn, subdir=source_path)
             target.writeFile(fn, StringIO(f))
