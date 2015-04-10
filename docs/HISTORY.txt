@@ -1,10 +1,11 @@
 Changelog
 =========
 
-1.19.4 (unreleased)
+1.19.4 (2015-04-10)
 -------------------
 
-- Nothing changed yet.
+- Fix isCurrentUserAuthor (the doc creator is always Onwer, so we should test Plone rights
+  in the db context, not the doc) [ebrehault]
 
 
 1.19.3 (2015-02-27)
