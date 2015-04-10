@@ -301,8 +301,8 @@ class PlominoAccessControl(Persistent):
         if not self.isCurrentUserReader(doc):
             return False
 
-        # if the user is Owner or Manager, no problem
-        general_plone_rights = self.getCurrentMember().getRolesInContext(doc)
+        # if the user is Owner of the db or Manager, no problem
+        general_plone_rights = self.getCurrentMember().getRolesInContext(doc.getParentDatabase())
         for r in ['Owner', 'Manager']:
             if r in general_plone_rights:
                 return True
