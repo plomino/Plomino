@@ -95,6 +95,8 @@ class NameField(BaseField):
         """ Fullname/ID list in selectionlist format: fullname|userid
         """
         names_ids = self._getNamesIds()
+        if not names_ids:
+            return None
         s=['|']
         for username, userid in names_ids:
             if not username:
