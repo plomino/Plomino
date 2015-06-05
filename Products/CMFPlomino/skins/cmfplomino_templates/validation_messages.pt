@@ -18,7 +18,7 @@ function rememberClickedInputName(event) {
 
 $("#plomino_form").submit(function(){
     var form = this;
-    var validation_callback = function(data) {
+    var validation_callback = window.plomino_custom_validation_callback ? window.plomino_custom_validation_callback : function(data) {
         // Avoid Plone message "You already submitted this form", since we didn't
         $(form).find('input[type="submit"]').removeClass('submitting');
         if(data['success']) {
