@@ -3,7 +3,9 @@ Changelog
 
 1.19.5 (unreleased)
 -------------------
-- (nothing)
+
+- Enable fields validation in Page forms [ebrehault]
+- Allow to define a custom JS validation callback (window.plomino_custom_validation_callback) [ebrehault]
 
 1.19.4 (2015-04-10)
 -------------------
@@ -81,7 +83,7 @@ Changelog
 
 1.17.5 (2013-09-24)
 -------------------
-* Reorder validation, so that submitted values can be 
+* Reorder validation, so that submitted values can be
   massaged [jean]
 * Enable Views to use field rendering [jean]
 * Allow forms to specify their HTTP submit method [jean]
@@ -231,7 +233,7 @@ Changelog
 * fix reader access control on getfile
 * add cgi_escape to utils
 * create plomino_workflow and fix permissions
-* integrate plone.app.async support to enable asynchronous agent execution and asynchronous refreshdb 
+* integrate plone.app.async support to enable asynchronous agent execution and asynchronous refreshdb
 * allow to run agent as current user or as owner
 * don't use File for everything in /resources/; use Script (Python) for script libraries
 
@@ -354,7 +356,7 @@ Changelog
 * Excel export method on views.
 * Categorized views supported with dynamic mode.
 * Fix file attachment bug under Plone 4.
-* 
+*
 
 1.7.4
 -----
