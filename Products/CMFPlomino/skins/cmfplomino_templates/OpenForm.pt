@@ -283,6 +283,7 @@ jQuery(document).ready( function() {
                             enctype enctype|nothing
                             "
                     id="plomino_form">
+                    <tal:validation metal:use-macro="here/validation_messages/macros/messages">display form actions</tal:validation>
                     <span tal:content="structure python:here.openBlankForm(request)" />
                 </form>
                 <div tal:replace="structure provider:plone.belowcontentbody" />

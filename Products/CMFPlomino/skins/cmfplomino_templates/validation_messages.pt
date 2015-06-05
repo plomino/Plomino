@@ -47,7 +47,7 @@ $("#plomino_form").submit(function(){
             form_values = form_values + "&" + object.name +"="+ $.URLEncode($(object).val());
         });
         $.post(
-            this.action+"/../validation_errors",
+            this.action ? this.action+"/../validation_errors" : "validation_errors",
             form_values,
             validation_callback.bind(this),
             "json");
