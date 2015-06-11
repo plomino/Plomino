@@ -24,7 +24,7 @@
         });
     </script>
     <tal:block_hasjsresources 
-        tal:define="jsresources python:myF.getResourcesJS()"
+        tal:define="jsresources python:myF.get_resources_js()"
         tal:condition="jsresources"
         tal:repeat="js jsresources">
         <script
@@ -34,7 +34,7 @@
         </script>
     </tal:block_hasjsresources>
     <tal:block_hascssresources
-            tal:define="cssresources python:myF.getResourcesCSS()"
+            tal:define="cssresources python:myF.get_resources_css()"
             tal:condition="cssresources"
             tal:repeat="css cssresources">
             <link rel="stylesheet"

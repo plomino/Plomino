@@ -387,10 +387,10 @@ class PlominoForm(ATFolder):
                         continue
                 yield url
 
-    def getResourcesCSS(self):
+    def get_resources_css(self):
         return self._get_resource_urls('ResourcesCSS')
 
-    def getResourcesJS(self):
+    def get_resources_js(self):
         return self._get_resource_urls('ResourcesJS')
 
     security.declareProtected(READ_PERMISSION, 'createDocument')
