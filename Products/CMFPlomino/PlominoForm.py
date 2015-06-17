@@ -819,7 +819,12 @@ class PlominoForm(ATFolder):
             hidewhenName = hidewhen.id
             try:
                 if doc is None:
-                    target = self
+                    db = self.getParentDatabase()
+                    target = getTemporaryDocument(
+                        db,
+                        self,
+                        self.REQUEST
+                    ).__of__(db)
                 else:
                     target = doc
 
