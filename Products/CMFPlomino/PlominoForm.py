@@ -815,7 +815,6 @@ class PlominoForm(ATFolder):
         html_content = self._get_html_content()
 
         # remove the hidden content
-
         if doc is None:
             db = self.getParentDatabase()
             target = getTemporaryDocument(
