@@ -815,14 +815,18 @@ class PlominoForm(ATFolder):
         html_content = self._get_html_content()
 
         # remove the hidden content
+        if doc is None:
+            db = self.getParentDatabase()
+            target = getTemporaryDocument(
+                db,
+                self,
+                self.REQUEST
+            )
+        else:
+            target = doc
         for hidewhen in self.getHidewhenFormulas():
             hidewhenName = hidewhen.id
             try:
-                if doc is None:
-                    target = self
-                else:
-                    target = doc
-
                 result = self.runFormulaScript(
                     SCRIPT_ID_DELIMITER.join(['hidewhen', self.id, hidewhen.id, 'formula']),
                     target,
