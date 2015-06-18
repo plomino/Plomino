@@ -648,6 +648,13 @@ class PlominoForm(ATFolder):
         """ Display the document using the form's layout
         """
         # remove the hidden content
+        if doc is None:
+            db = self.getParentDatabase()
+            doc = getTemporaryDocument(
+                db,
+                self,
+                self.REQUEST
+            )
         html_content = self.applyHideWhen(doc, silent_error=False)
         if request:
             parent_form_ids = request.get('parent_form_ids', [])
@@ -815,21 +822,12 @@ class PlominoForm(ATFolder):
         html_content = self._get_html_content()
 
         # remove the hidden content
-        if doc is None:
-            db = self.getParentDatabase()
-            target = getTemporaryDocument(
-                db,
-                self,
-                self.REQUEST
-            )
-        else:
-            target = doc
         for hidewhen in self.getHidewhenFormulas():
             hidewhenName = hidewhen.id
             try:
                 result = self.runFormulaScript(
                     SCRIPT_ID_DELIMITER.join(['hidewhen', self.id, hidewhen.id, 'formula']),
-                    target,
+                    doc,
                     hidewhen.Formula)
             except PlominoScriptException, e:
                 if not silent_error:
