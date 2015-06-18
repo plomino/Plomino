@@ -825,9 +825,14 @@ class PlominoForm(ATFolder):
         for hidewhen in self.getHidewhenFormulas():
             hidewhenName = hidewhen.id
             try:
+                if doc is None:
+                    target = self
+                else:
+                    target = doc
+
                 result = self.runFormulaScript(
                     SCRIPT_ID_DELIMITER.join(['hidewhen', self.id, hidewhen.id, 'formula']),
-                    doc,
+                    target,
                     hidewhen.Formula)
             except PlominoScriptException, e:
                 if not silent_error:
