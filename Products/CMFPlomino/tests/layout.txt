@@ -53,7 +53,7 @@ If labels are inline then no fieldset is used. A span is used instead.
      >>> print pphtml(db.frm1.displayDocument(None, True, True))
      <input type="hidden" name="Form" value="frm1" />
      <p>
-      <span class="plominoFieldGroup">
+      <span class="plominoFieldGroup required">
        <label for="field1">
         my label
        </label>
@@ -72,7 +72,7 @@ a grouping div. This can be useful to highlight an error message affecting the f
      ... """)
      >>> print pphtml(db.frm1.displayDocument(None, True, True))
      <input type="hidden" name="Form" value="frm1" />
-     <div class="plominoFieldGroup">
+     <div class="plominoFieldGroup required">
       <p>
        <label for="field1">
         my label
@@ -94,7 +94,7 @@ if we have some text inbetween just as help text this will be preserved
      ... """)
      >>> print pphtml(db.frm1.displayDocument(None, True, True))
      <input type="hidden" name="Form" value="frm1" />
-     <div class="plominoFieldGroup">
+     <div class="plominoFieldGroup required">
       <p>
        <label for="field1">
         my label
@@ -159,8 +159,6 @@ case of grouped inputs such as radio buttons or checkboxes, the group is
 enclosed in an HTML 'fieldset' element, and the label is rendered as an
 HTML 'legend' element.
 
-Text field:
-The default text widget is a basic HTML text input::
 
     >>> id = db.frm2.invokeFactory('PlominoField',
     ...         id='guitarist',
@@ -185,11 +183,11 @@ The default text widget is a basic HTML text input::
     >>> from Products.CMFPlomino.fields.selection import ISelectionField
     >>> db.frm2.setFormLayout("""3 <p>Who is the guitarist:
     ... <span class="plominoLabelClass">guitarist</span></p>
-    ... <span class="plominoFieldClass">guitarist</span></p>
-    ... <span class="plominoLabelClass">bassist: Label for bassist</span></p>
-    ... <span class="plominoFieldClass">bassist</span></p>
-    ... <span class="plominoLabelClass">drummer</span></p>
-    ... <span class="plominoFieldClass">drummer</span></p>
+    ... <p><span class="plominoFieldClass">guitarist</span></p>
+    ... <p><span class="plominoLabelClass">bassist: Label for bassist</span></p>
+    ... <p><span class="plominoFieldClass">bassist</span></p>
+    ... <p><span class="plominoLabelClass">drummer</span></p>
+    ... <p><span class="plominoFieldClass">drummer</span></p>
     ... """)
     >>> adapted = ISelectionField(db.frm2.bassist)
     >>> adapted.widget = "CHECKBOX"
@@ -207,84 +205,64 @@ The default text widget is a basic HTML text input::
        Title for guitarist
       </label>
      </p>
-     <span>
-      <input type="text" id="guitarist" value="" name="guitarist" />
-     </span>
-     <fieldset>
-      <legend class="required">
+     <p>
+      <span>
+       <input type="text" id="guitarist" value="" name="guitarist" />
+      </span>
+     </p>
+    </div>
+    <fieldset class="required">
+     <p>
+      <legend>
        Label for bassist
       </legend>
-      <span>
-       <input type="checkbox" name="bassist" value="John Paul Jones" id="bassist-John Paul Jones" />
-       <label for="bassist-John Paul Jones">
-        John Paul Jones
-       </label>
-       <input type="checkbox" name="bassist" value="Chris Chameleon" id="bassist-Chris Chameleon" />
-       <label for="bassist-Chris Chameleon">
-        Chris Chameleon
-       </label>
+     </p>
+     <p>
+      <span class="bassist-selectionfield">
+       <span>
+        <input type="checkbox" name="bassist" value="John Paul Jones" id="bassist-John Paul Jones" />
+        <label for="bassist-John Paul Jones">
+         John Paul Jones
+        </label>
+       </span>
+       <span>
+        <input type="checkbox" name="bassist" value="Chris Chameleon" id="bassist-Chris Chameleon" />
+        <label for="bassist-Chris Chameleon">
+         Chris Chameleon
+        </label>
+       </span>
       </span>
-     </fieldset>
-     <fieldset>
+     </p>
+    </fieldset>
+    <fieldset>
+     <p>
       <legend>
        Title for drummer
       </legend>
-      <span>
-      <input type="radio" name="drummer" value="John Bonham" id="drummer-John Bonham" />
-      <label for="drummer-John Bonham">
-       John Bonham
-      </label>
-      <input type="radio" name="drummer" value="Princess Leonie" id="drummer-Princess Leonie" />
-      <label for="drummer-Princess Leonie">
-       Princess Leonie
-      </label>
-     </span>
+     </p>
+     <p>
+      <span class="drummer-selectionfield">
+       <span>
+        <input type="radio" name="drummer" value="John Bonham" id="drummer-John Bonham" />
+        <label for="drummer-John Bonham">
+         John Bonham
+        </label>
+       </span>
+       <span>
+        <input type="radio" name="drummer" value="Princess Leonie" id="drummer-Princess Leonie" />
+        <label for="drummer-Princess Leonie">
+         Princess Leonie
+        </label>
+       </span>
+      </span>
+     </p>
     </fieldset>
 
-   >>> adapted = ITextField(db.frm2.guitarist)
-    >>> adapted.widget="TEXTAREA"
-    >>> print pphtml(db.frm2.displayDocument(None, True, True))
-    <input type="hidden" name="Form" value="frm2" />
-    3
-    <p>
-     Who is the guitarist:
-     <label for="guitarist">
-      Title for guitarist
-     </label>
-    </p>
-    <span>
-     <textarea id="guitarist" name="guitarist">
-     </textarea>
-    </span>
-    <fieldset>
-     <legend class="required">
-      Label for bassist
-     </legend>
-     <span>
-      <input type="checkbox" name="bassist" value="John Paul Jones" id="bassist-John Paul Jones" />
-      <label for="bassist-John Paul Jones">
-       John Paul Jones
-      </label>
-      <input type="checkbox" name="bassist" value="Chris Chameleon" id="bassist-Chris Chameleon" />
-      <label for="bassist-Chris Chameleon">
-       Chris Chameleon
-      </label>
-     </span>
-    </fieldset>
-    <fieldset>
-     <legend>
-      Title for drummer
-     </legend>
-     <span>
-      <input type="radio" name="drummer" value="John Bonham" id="drummer-John Bonham" />
-      <label for="drummer-John Bonham">
-       John Bonham
-      </label>
-      <input type="radio" name="drummer" value="Princess Leonie" id="drummer-Princess Leonie" />
-      <label for="drummer-Princess Leonie">
-       Princess Leonie
-      </label>
-     </span>
-    </fieldset>
+.. todo:: test text area
 
 .. todo:: We need a test for a selection list with no value in edit mode. It should not render a label.
+
+.. todo:: test labels below fields
+
+.. todo:: test labels without fieldid
+
