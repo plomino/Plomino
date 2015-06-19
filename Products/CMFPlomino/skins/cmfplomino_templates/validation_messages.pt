@@ -32,7 +32,7 @@ $("#plomino_form").submit(function(){
             popup = $("#plominoValidationPopup").clone();
             message = "";
             $.each(data['errors'], function(index, value) {
-                message = message + value + "<br/>";
+                message = message + value['error'] + "<br/>";
             });
             $(popup).children("strong").html(message);
             popup.dialog({show: "blind", height: 350, width: 530});
