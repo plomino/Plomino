@@ -623,7 +623,7 @@ class PlominoForm(ATFolder):
                         break
 
             field_type = field.getFieldType()
-            if field_type != 'DATETIME':
+            if hasattr(field.getSettings(), 'widget'):
                 widget_name = field.getSettings().widget
 
             compound_widget = (field_type == 'DATETIME' or
