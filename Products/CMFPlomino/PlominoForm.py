@@ -419,8 +419,9 @@ class PlominoForm(ATFolder):
         errors = self.validateInputs(REQUEST)
         if errors:
             if is_childform:
+                msgs = [x['error'] for x in errors]
                 return ("""<html><body><span id="plomino_child_errors">"""
-                    """%s</span></body></html>""" % " - ".join(errors))
+                        """%s</span></body></html>""" % " - ".join(msgs))
             return self.notifyErrors(errors)
 
         ################################################################
@@ -1383,17 +1384,19 @@ class PlominoForm(ATFolder):
             fieldtype = f.getFieldType()
             submittedValue = REQUEST.get(fieldname)
 
+            field_errors = []
+
             # STEP 1: check mandatory fields
             if not submittedValue:
                 if f.getMandatory() is True:
                     if fieldtype == "ATTACHMENT" and doc:
                         existing_files = doc.getItem(fieldname)
                         if not existing_files:
-                            errors.append("%s %s" % (
+                            field_errors.append("%s %s" % (
                                 f.Title(),
                                 PlominoTranslate("is mandatory", self)))
                     else:
-                        errors.append("%s %s" % (
+                        field_errors.append("%s %s" % (
                             f.Title(),
                             PlominoTranslate("is mandatory", self)))
             else:
@@ -1416,13 +1419,16 @@ class PlominoForm(ATFolder):
                     except PlominoScriptException, e:
                         e.reportError('%s validation formula failed' % f.id)
                     if error_msg:
-                        errors.append(error_msg)
+                        field_errors.append(error_msg)
                     # May have been changed by formula
                     submittedValue = REQUEST.get(fieldname)
                 #
                 # STEP 3: check data types
                 #
-                errors = errors + f.validateFormat(submittedValue)
+                field_errors = field_errors + f.validateFormat(submittedValue)
+
+            for field_error in field_errors:
+                errors.append({'field': fieldname, 'error': field_error})
 
         return errors
 
