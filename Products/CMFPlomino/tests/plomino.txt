@@ -507,7 +507,7 @@ Number field::
     >>> REQUEST = {'price': "zero"}
     >>> db.cleanRequestCache()
     >>> db.frm2.validateInputs(REQUEST)
-    ['price must be a float (submitted value was: zero)']
+    [{'field': 'price', 'error': 'price must be a float (submitted value was: zero)'}]
 
 Rich-text field::
 
