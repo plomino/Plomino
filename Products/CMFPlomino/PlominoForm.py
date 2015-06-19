@@ -638,15 +638,13 @@ class PlominoForm(ATFolder):
             else:
                 legend = "<span class='legend'></span>"
             grouping = ""
-            if togroup and pq(togroup).is_("span"):
+            #TODO: is testing the first element enough?
+            if togroup and pq(togroup).eq(0).is_("span"):
                 # we want to wrap in a div
                 grouping = '<span class="plominoFieldGroup"></span>'
-            elif togroup and (pq(togroup).is_("div") or pq(togroup).is_("p")):
+            elif togroup and pq(togroup).eq(0).is_("div,p"):
                 if compound_widget and editmode:
-                    if field.getMandatory():
-                        grouping = "<fieldset class='required'></fieldset>"
-                    else:
-                        grouping = "<fieldset></fieldset>"
+                    grouping = "<fieldset></fieldset>"
                     legend = "<legend></legend>"
                 else:
                     grouping = '<div class="plominoFieldGroup"></div>'
@@ -664,6 +662,8 @@ class PlominoForm(ATFolder):
                 except:
                     import pdb; pdb.set_trace()
                     raise
+                if field.getMandatory():
+                    pq(ng).add_class("required")
 
             #switch the label last so insert_before works properly
             legend = pq(legend).append(label_text)
