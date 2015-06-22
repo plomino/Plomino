@@ -586,6 +586,9 @@ class PlominoForm(ATFolder):
         # interate over all the labels
         # if there is stuff inbetween its field then grab it too
         # create fieldset around teh field and put in the label and inbetween stuff
+        # we will build up a map of field_id -> (field, nodes_to_group)
+        # so we can check we group all labels for a given field
+        field2group = {}
 
         for label_node in d("span.plominoLabelClass"):
 
@@ -598,29 +601,61 @@ class PlominoForm(ATFolder):
                 field_id = pq(label_node).text()
             field_id = field_id.strip()
             field = self.getFormField(field_id)
-            if label_text is None:
-                label_text = field.Title()
+            if field is None:
+                #TODO? should we produce a label anyway?
+                # We could also look and see if the next field doesn't have a label and use that.
+                continue
+
+            if field_id in field2group:
+                # we have more than one label. We will try to form a group around both the other labels
+                # and the field.
+                (field, togroup, labels, label_texts) = field2group[field_id]
+                labels = labels + [label_node]
+                label_texts = label_texts + [label_text]
+            else:
+                labels = [label_node]
+                label_texts = [label_text]
+
 
             #field_node.first(":parent")
             # do a breadth first search but starting at the label and going up
             togroup = []
-            field_node = None
-            for parent in  [label_node] + [n for n in reversed(pq(label_node).parents())]:
+            for parent in [label_node] + [n for n in reversed(pq(label_node).parents())]:
                 #parent.next("span.plominoFieldClass")
-                if field_node:
-                    break
-                togroup = [parent]
-                for sibling in pq(parent).next_all():
-                    togroup.append(sibling)
+                togroup = []
+                to_find = set(labels+[field])
+                # go through siblings until to find first and last target
+                for sibling in pq(parent).parent().children():
+                    found_in_sibling = False
                     field_node = pq(sibling)("span.plominoFieldClass").eq(0)
-                    if not field_node:
-                        continue
-                    elif field_node.text().strip() == field_id:
+                    if field_node and field_node.text().strip() == field_id:
+                        # found our field
+                        found_in_sibling = True
+                        to_find.remove(field)
+                    elif field_node:
+                        # disolve grouping
+                        togroup = found = []
                         break
-                    else:
-                        field_node = None
-                        togroup = []
+
+                    for label in set(to_find):
+                        if sibling in pq(label).parents() or label == sibling:
+                            to_find.remove(label)
+                            found_in_sibling = True
+                    if found_in_sibling or togroup:
+                        togroup.append(sibling)
+                    if not to_find:
+                        # we found everything already
                         break
+
+                if not to_find:
+                    # we found everything already
+                    break
+
+            if togroup:
+                field2group[field_id] = (field, togroup, labels, label_texts)
+
+        for field_id, (field, togroup, labels, label_texts) in field2group.items():
+
 
             field_type = field.getFieldType()
             if hasattr(field.getSettings(), 'widget'):
@@ -651,6 +686,7 @@ class PlominoForm(ATFolder):
             else:
                 # we don't want to group a table row or list elements
                 togroup = []
+                import pdb; pdb.set_trace()
             #wrapped = pq(togroup).wrap_all(grouping)
 
             # my own wrap method
@@ -665,9 +701,13 @@ class PlominoForm(ATFolder):
                 if field.getMandatory():
                     pq(ng).add_class("required")
 
-            #switch the label last so insert_before works properly
-            legend = pq(legend).append(label_text)
-            legend = pq(label_node).replace_with(legend)
+            for label_node, label_text in zip(labels, label_texts):
+                if label_text is None:
+                    label_text = field.Title()
+
+                #switch the label last so insert_before works properly
+                legend_node = pq(legend).append(label_text)
+                pq(label_node).replace_with(legend_node)
 
 
         #return "".join([pq(n).html(method="html") for n in d.next_all()])
