@@ -110,6 +110,112 @@ if we have some text inbetween just as help text this will be preserved
       </p>
      </div>
 
+It's legal to have two labels for the same field
+
+
+    >>> db.frm1.setFormLayout("""
+    ... <p><span class="plominoLabelClass">field1:my label 1</span></p>
+    ... <p><span class="plominoLabelClass">field1:my label 2</span></p>
+    ... <p><span class="plominoFieldClass">field1</span></p>
+    ... """)
+    >>> print pphtml(db.frm1.displayDocument(None, True, True))
+    <input type="hidden" name="Form" value="frm1" />
+    <div class="plominoFieldGroup required">
+     <p>
+      <label for="field1">
+       my label 1
+      </label>
+     </p>
+     <p>
+      <label for="field1">
+       my label 2
+      </label>
+     </p>
+     <p>
+      <span>
+       <input type="text" id="field1" value="" name="field1" />
+      </span>
+     </p>
+    </div>
+
+#TODO: can you have multiple legends?
+
+The label can be below the field
+
+    >>> db.frm1.setFormLayout("""
+    ... <p><span class="plominoFieldClass">field1</span></p>
+    ... <p><span class="plominoLabelClass">field1:my label 2</span></p>
+    ... """)
+    >>> print pphtml(db.frm1.displayDocument(None, True, True))
+    <input type="hidden" name="Form" value="frm1" />
+    <div class="plominoFieldGroup required">
+     <p>
+      <span>
+       <input type="text" id="field1" value="" name="field1" />
+      </span>
+     </p>
+     <p>
+      <label for="field1">
+       my label 2
+      </label>
+     </p>
+    </div>
+
+
+It will still group with a label on either side
+    >>> db.frm1.setFormLayout("""
+    ... <p><span class="plominoLabelClass">field1:my label 1</span></p>
+    ... <p><span class="plominoFieldClass">field1</span></p>
+    ... <p><span class="plominoLabelClass">field1:my label 2</span></p>
+    ... """)
+    >>> print pphtml(db.frm1.displayDocument(None, True, True))
+    <input type="hidden" name="Form" value="frm1" />
+    <div class="plominoFieldGroup required">
+     <p>
+      <label for="field1">
+       my label 1
+      </label>
+     </p>
+     <p>
+      <span>
+       <input type="text" id="field1" value="" name="field1" />
+      </span>
+     </p>
+     <p>
+      <label for="field1">
+       my label 2
+      </label>
+     </p>
+    </div>
+
+
+We could have two alternative labels using hidewhens.
+
+    >>> id = db.frm1.invokeFactory('PlominoHidewhen', id='is_true',
+    ...         title='is true', formula="True", isDynamicHidewhen=False)
+    >>> db.frm1.field1.at_post_create_script()
+    >>> db.frm1.setFormLayout("""
+    ... <p><span class="plominoLabelClass"><span class="plominoHidewhenClass">start:is_true</span> field1:my label <span class="plominoHidewhenClass">end:is_true</span></span></p>
+    ... <p><span class="plominoLabelClass"><span class="plominoHidewhenClass">start:is_false</span> field1:my label <span class="plominoHidewhenClass">end:is_false</span></span></p>
+    ... <p><span class="plominoFieldClass">field1</span></p>
+    ... """)
+    >>> print pphtml(db.frm1.displayDocument(None, True, True))
+    <input type="hidden" name="Form" value="frm1" />
+    <div class="plominoFieldGroup required">
+     <p>
+      <label for="field1">
+       my label
+      </label>
+     </p>
+     <p>
+       Some help text
+     </p>
+     <p>
+      <span>
+       <input type="text" id="field1" value="" name="field1" />
+      </span>
+     </p>
+    </div>
 
 
 <div>
@@ -120,6 +226,52 @@ if we have some text inbetween just as help text this will be preserved
 </div>
 <p><span><br /></span></p>
 <p>Ê</p>
+
+
+#TODO: test a label for a computed field
+#TODO: test a computed field in the help text
+
+#TODO: test a computed field inside a label
+
+
+If we have a label without a field
+
+     >>> db.frm1.setFormLayout("""
+     ... <p><span class="plominoLabelClass">fieldX:my label</span></p>
+     ... <p>Some help text</p>
+     ... """)
+     >>> print pphtml(db.frm1.displayDocument(None, True, True))
+     <input type="hidden" name="Form" value="frm1" />
+     <p>
+      <span class="plominoLabelClass">
+        fieldX:my label
+      </span>
+     </p>
+     <p>
+      Some help text
+     </p>
+
+and without a field or label text
+
+     >>> db.frm1.setFormLayout("""
+     ... <p><span class="plominoLabelClass">fieldX</span></p>
+     ... <p>Some help text</p>
+     ... """)
+     >>> print pphtml(db.frm1.displayDocument(None, True, True))
+     <input type="hidden" name="Form" value="frm1" />
+     <p>
+      <span class="plominoLabelClass">
+       fieldX
+      </span>
+     </p>
+     <p>
+      Some help text
+     </p>
+
+#TODO: a field without a label and its a checkbox should still be wrapped in a fieldset
+
+#TODO: what if the field exists but isn't in the layout? Should warn the user on save?
+
 
 
 <h2>About what you need</h2>
@@ -265,4 +417,17 @@ HTML 'legend' element.
 .. todo:: test labels below fields
 
 .. todo:: test labels without fieldid
+
+.. todo:: test hidewhens inside a label
+
+.. todo:: fix other tests
+
+.. todo:: test span for label and p for field
+
+.. todo:: test fields in tables and lists
+
+.. todo:: test inline compound field like simple yes no
+
+.. todo:: test boolean field
+
 
