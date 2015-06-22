@@ -63,6 +63,26 @@ If labels are inline then no fieldset is used. A span is used instead.
       </span>
      </p>
 
+If no label text is specified then the field Title is used
+
+     >>> db.frm1.setFormLayout("""
+     ... <p><span class="plominoLabelClass">field1</span>
+     ... <span class="plominoFieldClass">field1</span></p>
+     ... """)
+     >>> print pphtml(db.frm1.displayDocument(None, True, True))
+     <input type="hidden" name="Form" value="frm1" />
+     <p>
+      <span class="plominoFieldGroup required">
+       <label for="field1">
+        Title for field1
+       </label>
+       <span>
+        <input type="text" id="field1" value="" name="field1" />
+       </span>
+      </span>
+     </p>
+
+
 If labels are different paragraphs then a fieldset won't be used but it will be grouped in a
 a grouping div. This can be useful to highlight an error message affecting the field as a whole.
 
@@ -109,6 +129,29 @@ if we have some text inbetween just as help text this will be preserved
        </span>
       </p>
      </div>
+
+It won't group when label and field are in a table
+     >>> db.frm1.setFormLayout("""
+     ... <table><tr><td><span class="plominoLabelClass">field1:my label</span></td>
+     ... <td><span class="plominoFieldClass">field1</span></td></tr></table>
+     ... """)
+     >>> print pphtml(db.frm1.displayDocument(None, True, True))
+     <input type="hidden" name="Form" value="frm1" />
+     <table>
+      <tr>
+       <td>
+        <label for="field1">
+         my label
+        </label>
+       </td>
+       <td>
+        <span>
+         <input type="text" id="field1" value="" name="field1" />
+        </span>
+       </td>
+      </tr>
+     </table>
+
 
 It's legal to have two labels for the same field
 
@@ -187,6 +230,110 @@ It will still group with a label on either side
       </label>
      </p>
     </div>
+
+ In the
+case of grouped inputs such as radio buttons or checkboxes, the group is
+enclosed in an HTML 'fieldset' element, and the label is rendered as an
+HTML 'legend' element.
+
+
+    >>> id = db.frm2.invokeFactory('PlominoField',
+    ...         id='guitarist',
+    ...         title='Title for guitarist',
+    ...         FieldType="TEXT",
+    ...         FieldMode="EDITABLE")
+    >>> db.frm2.guitarist.at_post_create_script()
+    >>> id = db.frm2.invokeFactory('PlominoField',
+    ...         id='bassist',
+    ...         title='Title for bassist',
+    ...         Mandatory='1',
+    ...         FieldType="SELECTION",
+    ...         FieldMode="EDITABLE")
+    >>> db.frm2.bassist.at_post_create_script()
+    >>> id = db.frm2.invokeFactory('PlominoField',
+    ...         id='drummer',
+    ...         title='Title for drummer',
+    ...         FieldType="SELECTION",
+    ...         FieldMode="EDITABLE")
+    >>> db.frm2.drummer.at_post_create_script()
+    >>> from Products.CMFPlomino.fields.text import ITextField
+    >>> from Products.CMFPlomino.fields.selection import ISelectionField
+    >>> db.frm2.setFormLayout("""3 <p>Who is the guitarist:
+    ... <span class="plominoLabelClass">guitarist</span></p>
+    ... <p><span class="plominoFieldClass">guitarist</span></p>
+    ... <p><span class="plominoLabelClass">bassist: Label for bassist</span></p>
+    ... <p><span class="plominoFieldClass">bassist</span></p>
+    ... <p><span class="plominoLabelClass">drummer</span></p>
+    ... <p><span class="plominoFieldClass">drummer</span></p>
+    ... """)
+    >>> adapted = ISelectionField(db.frm2.bassist)
+    >>> adapted.widget = "CHECKBOX"
+    >>> adapted.selectionlist = [u"John Paul Jones", u"Chris Chameleon"]
+    >>> adapted = ISelectionField(db.frm2.drummer)
+    >>> adapted.widget = "RADIO"
+    >>> adapted.selectionlist = [u"John Bonham", u"Princess Leonie"]
+    >>> print pphtml(db.frm2.displayDocument(None, True, True))
+    <input type="hidden" name="Form" value="frm2" />
+    3
+    <div class="plominoFieldGroup">
+     <p>
+      Who is the guitarist:
+      <label for="guitarist">
+       Title for guitarist
+      </label>
+     </p>
+     <p>
+      <span>
+       <input type="text" id="guitarist" value="" name="guitarist" />
+      </span>
+     </p>
+    </div>
+    <fieldset class="required">
+     <p>
+      <legend>
+       Label for bassist
+      </legend>
+     </p>
+     <p>
+      <span class="bassist-selectionfield">
+       <span>
+        <input type="checkbox" name="bassist" value="John Paul Jones" id="bassist-John Paul Jones" />
+        <label for="bassist-John Paul Jones">
+         John Paul Jones
+        </label>
+       </span>
+       <span>
+        <input type="checkbox" name="bassist" value="Chris Chameleon" id="bassist-Chris Chameleon" />
+        <label for="bassist-Chris Chameleon">
+         Chris Chameleon
+        </label>
+       </span>
+      </span>
+     </p>
+    </fieldset>
+    <fieldset>
+     <p>
+      <legend>
+       Title for drummer
+      </legend>
+     </p>
+     <p>
+      <span class="drummer-selectionfield">
+       <span>
+        <input type="radio" name="drummer" value="John Bonham" id="drummer-John Bonham" />
+        <label for="drummer-John Bonham">
+         John Bonham
+        </label>
+       </span>
+       <span>
+        <input type="radio" name="drummer" value="Princess Leonie" id="drummer-Princess Leonie" />
+        <label for="drummer-Princess Leonie">
+         Princess Leonie
+        </label>
+       </span>
+      </span>
+     </p>
+    </fieldset>
 
 
 We could have two alternative labels using hidewhens.
@@ -306,109 +453,6 @@ https://admin.pretagov.co.uk/05/mnt/www/DWP%20eforms/hardship-payment-1/About_yo
 <p><span class="plominoFieldClass"><span class="plominoHidewhenClass">end:serious_illness_affect</span></span></p>
 
 
- In the
-case of grouped inputs such as radio buttons or checkboxes, the group is
-enclosed in an HTML 'fieldset' element, and the label is rendered as an
-HTML 'legend' element.
-
-
-    >>> id = db.frm2.invokeFactory('PlominoField',
-    ...         id='guitarist',
-    ...         title='Title for guitarist',
-    ...         FieldType="TEXT",
-    ...         FieldMode="EDITABLE")
-    >>> db.frm2.guitarist.at_post_create_script()
-    >>> id = db.frm2.invokeFactory('PlominoField',
-    ...         id='bassist',
-    ...         title='Title for bassist',
-    ...         Mandatory='1',
-    ...         FieldType="SELECTION",
-    ...         FieldMode="EDITABLE")
-    >>> db.frm2.bassist.at_post_create_script()
-    >>> id = db.frm2.invokeFactory('PlominoField',
-    ...         id='drummer',
-    ...         title='Title for drummer',
-    ...         FieldType="SELECTION",
-    ...         FieldMode="EDITABLE")
-    >>> db.frm2.drummer.at_post_create_script()
-    >>> from Products.CMFPlomino.fields.text import ITextField
-    >>> from Products.CMFPlomino.fields.selection import ISelectionField
-    >>> db.frm2.setFormLayout("""3 <p>Who is the guitarist:
-    ... <span class="plominoLabelClass">guitarist</span></p>
-    ... <p><span class="plominoFieldClass">guitarist</span></p>
-    ... <p><span class="plominoLabelClass">bassist: Label for bassist</span></p>
-    ... <p><span class="plominoFieldClass">bassist</span></p>
-    ... <p><span class="plominoLabelClass">drummer</span></p>
-    ... <p><span class="plominoFieldClass">drummer</span></p>
-    ... """)
-    >>> adapted = ISelectionField(db.frm2.bassist)
-    >>> adapted.widget = "CHECKBOX"
-    >>> adapted.selectionlist = [u"John Paul Jones", u"Chris Chameleon"]
-    >>> adapted = ISelectionField(db.frm2.drummer)
-    >>> adapted.widget = "RADIO"
-    >>> adapted.selectionlist = [u"John Bonham", u"Princess Leonie"]
-    >>> print pphtml(db.frm2.displayDocument(None, True, True))
-    <input type="hidden" name="Form" value="frm2" />
-    3
-    <div class="plominoFieldGroup">
-     <p>
-      Who is the guitarist:
-      <label for="guitarist">
-       Title for guitarist
-      </label>
-     </p>
-     <p>
-      <span>
-       <input type="text" id="guitarist" value="" name="guitarist" />
-      </span>
-     </p>
-    </div>
-    <fieldset class="required">
-     <p>
-      <legend>
-       Label for bassist
-      </legend>
-     </p>
-     <p>
-      <span class="bassist-selectionfield">
-       <span>
-        <input type="checkbox" name="bassist" value="John Paul Jones" id="bassist-John Paul Jones" />
-        <label for="bassist-John Paul Jones">
-         John Paul Jones
-        </label>
-       </span>
-       <span>
-        <input type="checkbox" name="bassist" value="Chris Chameleon" id="bassist-Chris Chameleon" />
-        <label for="bassist-Chris Chameleon">
-         Chris Chameleon
-        </label>
-       </span>
-      </span>
-     </p>
-    </fieldset>
-    <fieldset>
-     <p>
-      <legend>
-       Title for drummer
-      </legend>
-     </p>
-     <p>
-      <span class="drummer-selectionfield">
-       <span>
-        <input type="radio" name="drummer" value="John Bonham" id="drummer-John Bonham" />
-        <label for="drummer-John Bonham">
-         John Bonham
-        </label>
-       </span>
-       <span>
-        <input type="radio" name="drummer" value="Princess Leonie" id="drummer-Princess Leonie" />
-        <label for="drummer-Princess Leonie">
-         Princess Leonie
-        </label>
-       </span>
-      </span>
-     </p>
-    </fieldset>
 
 .. todo:: test text area
 

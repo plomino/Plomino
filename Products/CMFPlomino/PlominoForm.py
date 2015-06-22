@@ -632,7 +632,8 @@ class PlominoForm(ATFolder):
                         # found our field
                         found_in_sibling = True
                         to_find.remove(field)
-                    elif field_node:
+                    elif field_node and togroup:
+                        # found a field in our group thats not ours
                         # disolve grouping
                         togroup = found = []
                         break
@@ -686,7 +687,6 @@ class PlominoForm(ATFolder):
             else:
                 # we don't want to group a table row or list elements
                 togroup = []
-                import pdb; pdb.set_trace()
             #wrapped = pq(togroup).wrap_all(grouping)
 
             # my own wrap method
@@ -696,7 +696,6 @@ class PlominoForm(ATFolder):
                     ng = pq(grouping).insert_before(pq(togroup).eq(0))
                     pq(ng).append(pq(togroup))
                 except:
-                    import pdb; pdb.set_trace()
                     raise
                 if field.getMandatory():
                     pq(ng).add_class("required")
