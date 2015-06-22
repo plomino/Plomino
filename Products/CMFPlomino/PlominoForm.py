@@ -593,12 +593,14 @@ class PlominoForm(ATFolder):
         for label_node in d("span.plominoLabelClass"):
 
             # work out the fieldid the label is for, and its text
-            label_text = None
+            # we could have hide whens or other nodes in our label. filter them out
+            label_text = pq(label_node).clone().children().remove().end().text()
             try:
-                field_id, label_text = pq(label_node).text().split(':',1)
+                field_id, label_text = label_text.split(':',1)
                 label_text = label_text.strip()
             except:
-                field_id = pq(label_node).text()
+                field_id = label_text
+                label_text = None
             field_id = field_id.strip()
             field = self.getFormField(field_id)
             if field is None:

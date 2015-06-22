@@ -342,8 +342,8 @@ We could have two alternative labels using hidewhens.
     ...         title='is true', formula="True", isDynamicHidewhen=False)
     >>> db.frm1.field1.at_post_create_script()
     >>> db.frm1.setFormLayout("""
-    ... <p><span class="plominoLabelClass"><span class="plominoHidewhenClass">start:is_true</span> field1:my label <span class="plominoHidewhenClass">end:is_true</span></span></p>
-    ... <p><span class="plominoLabelClass"><span class="plominoHidewhenClass">start:is_false</span> field1:my label <span class="plominoHidewhenClass">end:is_false</span></span></p>
+    ... <p><span class="plominoLabelClass"><span class="plominoHidewhenClass">start:is_true</span> field1:true <span class="plominoHidewhenClass">end:is_true</span></span></p>
+    ... <p><span class="plominoLabelClass"><span class="plominoHidewhenClass">start:is_false</span> field1:false <span class="plominoHidewhenClass">end:is_false</span></span></p>
     ... <p><span class="plominoFieldClass">field1</span></p>
     ... """)
     >>> print pphtml(db.frm1.displayDocument(None, True, True))
@@ -351,11 +351,17 @@ We could have two alternative labels using hidewhens.
     <div class="plominoFieldGroup required">
      <p>
       <label for="field1">
-       my label
+       <span class="plominoHidewhenClass">start:is_true</span>
+        true
+       <span class="plominoHidewhenClass">end:is_true</span>
       </label>
      </p>
      <p>
-       Some help text
+      <label for="field1">
+       <span class="plominoHidewhenClass">start:is_false</span>
+        false
+       <span class="plominoHidewhenClass">end:is_false</span>
+      </label>
      </p>
      <p>
       <span>
