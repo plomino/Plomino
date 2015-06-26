@@ -222,6 +222,14 @@ jQuery(document).ready( function() {
                             <tal:block_view_found condition="searchviewobj">
                                 <table 
                                     tal:define="results python:options.get('searchresults');
+                                                count python:len(results) if results else 0;
+                                                paramstart request/start|python:'1';
+                                                paramlimit request/limit|python:'3';
+                                                start python:int(paramstart);
+                                                limit python:int(paramlimit);
+                                                overlimit python:count>limit;
+                                                nextstart python:start+limit;
+                                                previousstart python:max(0,start-100);
                                                 columns python:searchviewobj.getColumns()"
                                     id="sortable"
                                     class="listing"
@@ -236,7 +244,7 @@ jQuery(document).ready( function() {
                                     </tr>
                                     <tal:block_result_rows 
                                         condition="results"
-                                        repeat="doc results">
+                                        repeat="doc python:results[start-1:start-1+limit]">
 
                                         <tr tal:define="
                                                 oddrow repeat/doc/odd;
@@ -254,6 +262,27 @@ jQuery(document).ready( function() {
                                             </tal:block_column_values>
                                         </tr>
                                     </tal:block_result_rows>
+
+                                    <!-- DOC COUNTING -->
+                                    <tal:block_result_pagination condition="results">
+                                        <tr>
+                                            <th tal:attributes="colspan python:len(columns)+1"><tal:previous
+                                                condition="python:start>1">
+                                                <a i18n:translate=""
+                                                    tal:attributes="href python:'/'.join(context.getPhysicalPath())+'?start='+str(previousstart)+'&limit='+str(limit)">&lt;&lt; Previous</a>
+                                            </tal:previous>
+                                            <tal:count i18n:translate="documents_count">
+                                                 Document(s) <span i18n:name="start" tal:content="python:str(start)">start</span> to
+                                                 <span i18n:name="end" tal:content="python:str(min(start+limit-1,count))">end</span>
+                                                 of <span i18n:name="total" tal:content="count">count</span>
+                                            </tal:count>
+                                            <tal:next condition="python:count>start+limit">
+                                                <a i18n:translate=""
+                                                    tal:attributes="href python:request.physicalPathToURL(context.getPhysicalPath())+'?start='+str(nextstart)+'&limit='+str(limit)">Next &gt;&gt;</a>
+                                            </tal:next></th>
+                                        </tr>
+                                    </tal:block_result_pagination>
+
                                 </table>
                             </tal:block_view_found>
                         </tal:results>
