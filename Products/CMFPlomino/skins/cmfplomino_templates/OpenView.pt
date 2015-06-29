@@ -140,7 +140,7 @@
                                             limit python:int(paramlimit);
                                             overlimit python:count>limit;
                                             nextstart python:start+limit;
-                                            previousstart python:max(0,start-100);
+                                            previousstart python:max(0,start-limit);
                                             ">
 
                                 <tal:rows
