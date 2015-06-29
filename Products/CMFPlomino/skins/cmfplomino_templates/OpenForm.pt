@@ -224,13 +224,14 @@ jQuery(document).ready( function() {
                                     tal:define="results python:options.get('searchresults');
                                                 count python:len(results) if results else 0;
                                                 paramstart request/start|python:'1';
-                                                paramlimit request/limit|python:'3';
+                                                paramlimit request/limit|python:'100';
                                                 start python:int(paramstart);
                                                 limit python:int(paramlimit);
                                                 overlimit python:count>limit;
                                                 nextstart python:start+limit;
-                                                previousstart python:max(0,start-100);
-                                                columns python:searchviewobj.getColumns()"
+                                                previousstart python:max(1,start-limit);
+                                                columns python:searchviewobj.getColumns();
+                                                query_string python:'&'.join(['='.join([x,y]) for (x,y) in request.form.items() if x != 'limit' and x != 'start'])"
                                     id="sortable"
                                     class="listing"
                                     summary="Content listing"
@@ -269,7 +270,7 @@ jQuery(document).ready( function() {
                                             <th tal:attributes="colspan python:len(columns)+1"><tal:previous
                                                 condition="python:start>1">
                                                 <a i18n:translate=""
-                                                    tal:attributes="href python:'/'.join(context.getPhysicalPath())+'?start='+str(previousstart)+'&limit='+str(limit)">&lt;&lt; Previous</a>
+                                                    tal:attributes="href python:'/'.join(context.getPhysicalPath())+'/searchDocuments?'+query_string+'&start='+str(previousstart)+'&limit='+str(limit)">&lt;&lt; Previous</a>
                                             </tal:previous>
                                             <tal:count i18n:translate="documents_count">
                                                  Document(s) <span i18n:name="start" tal:content="python:str(start)">start</span> to
@@ -278,7 +279,7 @@ jQuery(document).ready( function() {
                                             </tal:count>
                                             <tal:next condition="python:count>start+limit">
                                                 <a i18n:translate=""
-                                                    tal:attributes="href python:request.physicalPathToURL(context.getPhysicalPath())+'?start='+str(nextstart)+'&limit='+str(limit)">Next &gt;&gt;</a>
+                                                    tal:attributes="href python:request.physicalPathToURL(context.getPhysicalPath())+'/searchDocuments?'+query_string+'&start='+str(nextstart)+'&limit='+str(limit)">Next &gt;&gt;</a>
                                             </tal:next></th>
                                         </tr>
                                     </tal:block_result_pagination>
