@@ -230,8 +230,8 @@ jQuery(document).ready( function() {
                                                 overlimit python:count>limit;
                                                 nextstart python:start+limit;
                                                 previousstart python:max(1,start-limit);
-                                                columns python:searchviewobj.getColumns();
-                                                query_string python:'&'.join(['='.join([x,y]) for (x,y) in request.form.items() if x != 'limit' and x != 'start'])"
+                                                query_string python:'&'.join(['='.join([x,y]) for (x,y) in request.form.items() if x != 'limit' and x != 'start']);
+                                                columns python:searchviewobj.getColumns()"
                                     id="sortable"
                                     class="listing"
                                     summary="Content listing"
