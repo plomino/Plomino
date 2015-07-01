@@ -339,7 +339,9 @@ HTML 'legend' element.
 We could have two alternative labels using hidewhens.
 
     >>> id = db.frm1.invokeFactory('PlominoHidewhen', id='is_true',
-    ...         title='is true', formula="True", isDynamicHidewhen=False)
+    ...         title='is true', formula="True", isDynamicHidewhen=True)
+    >>> id = db.frm1.invokeFactory('PlominoHidewhen', id='is_false',
+    ...         title='is false', formula="False", isDynamicHidewhen=True)
     >>> db.frm1.field1.at_post_create_script()
     >>> db.frm1.setFormLayout("""
     ... <p><span class="plominoLabelClass"><span class="plominoHidewhenClass">start:is_true</span> field1:true <span class="plominoHidewhenClass">end:is_true</span></span></p>
@@ -351,16 +353,16 @@ We could have two alternative labels using hidewhens.
     <div class="plominoFieldGroup required">
      <p>
       <label for="field1">
-       <span class="plominoHidewhenClass">start:is_true</span>
+       <div class="hidewhen-is_true">
         true
-       <span class="plominoHidewhenClass">end:is_true</span>
+       </div>
       </label>
      </p>
      <p>
       <label for="field1">
-       <span class="plominoHidewhenClass">start:is_false</span>
+       <div class="hidewhen-is_false">
         false
-       <span class="plominoHidewhenClass">end:is_false</span>
+       </div>
       </label>
      </p>
      <p>
@@ -370,15 +372,6 @@ We could have two alternative labels using hidewhens.
      </p>
     </div>
 
-
-<div>
-<h3><span>About Universal Credit</span></h3>
-<p><span class="plominoLabelClass"><span class="plominoHidewhenClass">start:Not_Single</span> UniversalCreditQuestion: Are you getting Universal Credit or have you applied for it?<span class="plominoHidewhenClass">end:Not_Single</span></span></p>
-<p><span class="plominoLabelClass"><span class="plominoHidewhenClass">start:Not_Partnered</span>UniversalCreditQuestion: Are you or your partner getting Univeral Credit or have either of you applied for it?<span class="plominoHidewhenClass">end:Not_Partnered</span><br /></span></p>
-<p class=" "><span><span class="plominoFieldClass">UniversalCreditQuestion</span></span></p>
-</div>
-<p><span><br /></span></p>
-<p>Ê</p>
 
 
 #TODO: test a label for a computed field

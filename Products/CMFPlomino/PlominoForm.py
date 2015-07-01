@@ -594,29 +594,48 @@ class PlominoForm(ATFolder):
 
             # work out the fieldid the label is for, and its text
             # we could have hide whens or other nodes in our label. filter them out
-            label_text = pq(label_node).clone().children().remove().end().text()
-            try:
-                field_id, label_text = label_text.split(':',1)
-                label_text = label_text.strip()
-            except:
-                field_id = label_text
-                label_text = None
-            field_id = field_id.strip()
-            field = self.getFormField(field_id)
+            #TODO: we really want to remove "fieldid:" and leave rest unchanged
+            #label_text = pq(label_node).clone().children().remove().end().text()
+            #label_text = pq(label_node).children().html()
+            #label_re =  re.compile('<span class="plominoLabelClass">((?P<optional_fieldname>\S+):){0,1}\s*(?P<fieldname_or_label>.+?)</span>')
+            # see if we have a label with fieldid buried in it somewhere.
+            # we want to keep any html inside it intact.
+            field = None
+            for child in [label_node] + pq(label_node).find("*"):
+                for text_attribute in ['text', 'tail']:
+                    label_text = getattr(child, text_attribute)
+                    if label_text and ':' in label_text:
+                        field_id, label_text = label_text.split(':',1)
+                        field_id = field_id.strip()
+                        field = self.getFormField(field_id)
+                        if field is not None:
+                            # do we replace if we don't know if the field exists in teh layout? yes for ow
+                            setattr(child, text_attribute, label_text)
+                            break
+                if field is not None:
+                    break
             if field is None:
-                #TODO? should we produce a label anyway?
-                # We could also look and see if the next field doesn't have a label and use that.
-                continue
+                # we aren't using custom label text. In that case we can blow any internal html away
+                field_id = pq(label_node).clone().children().remove().end().text()
+                field_id = field_id.strip()
+                if not field_id:
+                    # label is empty? #TODO: get rid of label?
+                    continue
+                field = self.getFormField(field_id)
+                if field is not None:
+                    pq(label_node).text(field.Title())
+                else:
+                    #TODO? should we produce a label anyway?
+                    # We could also look and see if the next field doesn't have a label and use that.
+                    continue
 
             if field_id in field2group:
                 # we have more than one label. We will try to form a group around both the other labels
                 # and the field.
-                (field, togroup, labels, label_texts) = field2group[field_id]
+                (field, togroup, labels) = field2group[field_id]
                 labels = labels + [label_node]
-                label_texts = label_texts + [label_text]
             else:
                 labels = [label_node]
-                label_texts = [label_text]
 
 
             #field_node.first(":parent")
@@ -655,9 +674,9 @@ class PlominoForm(ATFolder):
                     break
 
             if togroup:
-                field2group[field_id] = (field, togroup, labels, label_texts)
+                field2group[field_id] = (field, togroup, labels)
 
-        for field_id, (field, togroup, labels, label_texts) in field2group.items():
+        for field_id, (field, togroup, labels) in field2group.items():
 
 
             field_type = field.getFieldType()
@@ -702,16 +721,14 @@ class PlominoForm(ATFolder):
                 if field.getMandatory():
                     pq(ng).add_class("required")
 
-            for label_node, label_text in zip(labels, label_texts):
-                if label_text is None:
-                    label_text = field.Title()
+            for label_node in labels:
 
                 #switch the label last so insert_before works properly
-                legend_node = pq(legend).append(label_text)
-                pq(label_node).replace_with(legend_node)
+                #legend_node = pq(legend).append(pq(label_node).children())
+                #pq(label_node).replace_with(pq(legend))
+                pq(legend).html(pq(label_node).html()).insert_before(pq(label_node))
+                pq(label_node).remove()
 
-
-        #return "".join([pq(n).html(method="html") for n in d.next_all()])
         return d.html()
 
 
