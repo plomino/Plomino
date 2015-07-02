@@ -8,9 +8,11 @@ We need to test code for
  - doing clean up of various non-useful plomino style combinations
 
 
->>> from lxml import etree, html
->>> #pphtml = lambda myhtml: etree.tostring(html.fromstring(myhtml.replace('\t','').replace('\n','')), encoding='unicode', pretty_print=True)
+>>> from lxml import etree, html; from StringIO import StringIO
+>>> parser = etree.HTMLParser(remove_blank_text=True)
+>>> pphtml = lambda myhtml: etree.tostring(html.fromstring(myhtml.replace('\n','')), pretty_print=True)
 >>> from BeautifulSoup import BeautifulSoup; pphtml = lambda myhtml: BeautifulSoup(myhtml).prettify()
+
 
 Let's start testing::
 
@@ -441,7 +443,6 @@ and without a field or label text
 <p><span class="plominoFieldClass">disabilitypaymentpartner</span></p>
 <p><span class="plominoFieldClass"><span class="plominoHidewhenClass"><span class="plominoHidewhenClass">start:disability_payment_partner</span></span></span></p>
 
-https://admin.pretagov.co.uk/05/mnt/www/DWP%20eforms/hardship-payment-1/About_your_health_serious_illness/view
 
 <h2>ÊSerious illness</h2>
 <p><span class="plominoLabelClass">seriousillness:AreÊyou suffering from a serious illness?</span></p>
