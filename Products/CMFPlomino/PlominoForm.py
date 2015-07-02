@@ -1055,6 +1055,15 @@ class PlominoForm(ATFolder):
                     self,
                     self.REQUEST).__of__(db)
         if (not invalid) or self.hasDesignPermission(self):
+            display_form = request.get('display_form')
+            if display_form:
+                form = db.getForm('%s' % display_form)
+                return form.displayDocument(
+                    tmp,
+                    editmode=False,
+                    creation=False,
+                    request=request
+                )
             return self.displayDocument(
                     tmp,
                     editmode=True,
