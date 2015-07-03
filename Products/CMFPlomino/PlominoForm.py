@@ -1055,9 +1055,25 @@ class PlominoForm(ATFolder):
                     self,
                     self.REQUEST).__of__(db)
         if (not invalid) or self.hasDesignPermission(self):
+            editmode=True
+            form_mode = request.get('plomino_form_mode')
+            if form_mode and form_mode == 'READ':
+                editmode=False
+            if form_mode and form_mode == 'EDIT':
+                editmode=True
+
+            alternate_form = request.get('plomino_alternate_form')
+            if alternate_form:
+                form = db.getForm('%s' % alternate_form)
+                return form.displayDocument(
+                    tmp,
+                    editmode=editmode,
+                    creation=False,
+                    request=request
+                )
             return self.displayDocument(
                     tmp,
-                    editmode=True,
+                    editmode=editmode,
                     creation=True,
                     request=request)
         else:

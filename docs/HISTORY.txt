@@ -7,6 +7,7 @@ Changelog
 - Enable fields validation in Page forms [ebrehault]
 - Allow to define a custom JS validation callback (window.plomino_custom_validation_callback) [ebrehault]
 - Pass a TemporaryDocument context to hidewhen evaluation [instification]
+- Allow to display request data with alternate forms and read/edit mode [instification]
 
 1.19.4 (2015-04-10)
 -------------------
