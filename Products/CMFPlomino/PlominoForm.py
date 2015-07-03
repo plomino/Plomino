@@ -1059,7 +1059,7 @@ class PlominoForm(ATFolder):
             form_mode = request.get('plomino_form_mode')
             if form_mode and form_mode == 'READ':
                 editmode=False
-            if form_mode and form_mode == 'WRITE':
+            if form_mode and form_mode == 'EDIT':
                 editmode=True
 
             alternate_form = request.get('plomino_alternate_form')
