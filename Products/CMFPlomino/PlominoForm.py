@@ -905,9 +905,9 @@ class PlominoForm(ATFolder):
 
         return False
 
-    security.declareProtected(READ_PERMISSION, 'getHidewhenAsJSON')
-    def getHidewhenAsJSON(self, REQUEST, parent_form=None, doc=None, validation_mode=False):
-        """ Return a JSON object to dynamically show or hide hidewhens
+    security.declareProtected(READ_PERMISSION,'getHidewhen')
+    def getHidewhen(self,REQUEST,parent_form=None,doc=None,validation_mode=False):
+        """ Return a python object to dynamically show or hide hidewhens
         (works only with isDynamicHidewhen)
         """
         db = self.getParentDatabase()
@@ -943,7 +943,18 @@ class PlominoForm(ATFolder):
                         parent_form=parent_form or self, doc=target,
                         validation_mode=validation_mode))
             result.update(form_hidewhens)
+        return result
 
+    security.declareProtected(READ_PERMISSION, 'getHidewhenAsJSON')
+    def getHidewhenAsJSON(self, REQUEST, parent_form=None, doc=None, validation_mode=False):
+        """ Return a JSON object to dynamically show or hide hidewhens
+        (works only with isDynamicHidewhen)
+        """
+        result = self.getHidewhen(
+            REQUEST,
+            parent_form=parent_form,
+            doc=doc,
+            validation_mode=validation_mode)
         return json.dumps(result)
 
     security.declareProtected(READ_PERMISSION, 'applyCache')
@@ -1338,10 +1349,8 @@ class PlominoForm(ATFolder):
     security.declarePrivate('_get_js_hidden_subforms')
     def _get_js_hidden_subforms(self, REQUEST, doc, validation_mode=False):
         hidden_forms = []
-        hidewhens = json.loads(
-            self.getHidewhenAsJSON(REQUEST, doc=doc,
-            validation_mode=validation_mode)
-        )
+        hidewhens = self.getHidewhen(REQUEST, doc=doc,
+                    validation_mode=validation_mode)
         html_content = self._get_html_content()
         for hidewhenName, doit in hidewhens.items():
             if not doit: # Only consider True hidewhens
@@ -1369,9 +1378,8 @@ class PlominoForm(ATFolder):
     security.declarePrivate('_get_js_hidden_fields')
     def _get_js_hidden_fields(self, REQUEST, doc, validation_mode=False):
         hidden_fields = []
-        hidewhens = json.loads(
-                self.getHidewhenAsJSON(REQUEST, doc=doc,
-                    validation_mode=validation_mode))
+        hidewhens = self.getHidewhen(REQUEST, doc=doc,
+                    validation_mode=validation_mode)
         html_content = self._get_html_content()
         for hidewhenName, doit in hidewhens.items():
             if not doit:  # Only consider True hidewhens
