@@ -872,19 +872,35 @@ class PlominoForm(ATFolder):
         """ Return a JSON object to dynamically show or hide hidewhens
         (works only with isDynamicHidewhen)
         """
-        db = self.getParentDatabase()
+        if parent_form is None:
+            parent_form = self
+        db = parent_form.getParentDatabase()
         result = {}
         target = getTemporaryDocument(
                 db,
                 parent_form or self,
                 REQUEST,
                 doc,
-                validation_mode=validation_mode).__of__(db)
-        for hidewhen in self.getHidewhenFormulas():
+                validation_mode=validation_mode)
+
+        hidewhens =  parent_form.getHidewhenFormulas()
+        for subformname in self.getSubforms(doc=target):
+            form = db.getForm(subformname)
+            if not form:
+                msg = 'Missing subform: %s. Referenced on: %s' % (subformname, parent_form.id)
+                parent_form.writeMessageOnPage(msg, REQUEST)
+                logger.info(msg)
+                continue
+            hidewhens += form.getHidewhenFormulas()
+
+
+        for hidewhen in hidewhens:
+            if hidewhen.id in result:
+                continue
             if getattr(hidewhen, 'isDynamicHidewhen', False):
                 try:
-                    isHidden = self.runFormulaScript(
-                            SCRIPT_ID_DELIMITER.join(['hidewhen', self.id, hidewhen.id, 'formula']),
+                    isHidden = parent_form.runFormulaScript(
+                            SCRIPT_ID_DELIMITER.join(['hidewhen', parent_form.id, hidewhen.id, 'formula']),
                             target,
                             hidewhen.Formula)
                 except PlominoScriptException, e:
@@ -893,18 +909,6 @@ class PlominoForm(ATFolder):
                     #if error, we hide anyway
                     isHidden = True
                 result[hidewhen.id] = isHidden
-        for subformname in self.getSubforms(doc=target):
-            form = db.getForm(subformname)
-            if not form:
-                msg = 'Missing subform: %s. Referenced on: %s' % (subformname, self.id)
-                self.writeMessageOnPage(msg, self.REQUEST)
-                logger.info(msg)
-                continue
-            form_hidewhens = json.loads(
-                    form.getHidewhenAsJSON(REQUEST,
-                        parent_form=parent_form or self, doc=target,
-                        validation_mode=validation_mode))
-            result.update(form_hidewhens)
 
         return json.dumps(result)
 
