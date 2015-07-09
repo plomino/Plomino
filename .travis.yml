@@ -1,9 +1,13 @@
 language: python
+sudo: false
+cache:
+  directories:
+    - buildout-cache
 python:
   - 2.7
 install:
   - mkdir -p buildout-cache/{eggs,downloads}
-  - python bootstrap-buildout.py -c travis.cfg
+  - python bootstrap-buildout.py --setuptools-version=8.3 -c travis.cfg
   - bin/buildout -Nc travis.cfg
 script:
   - bin/test
@@ -13,5 +17,5 @@ after_success:
   - coveralls
 
 notifications:
-  email:
-    - ebrehault@gmail.com
+  irc:
+    - "irc.freenode.org#plomino"
