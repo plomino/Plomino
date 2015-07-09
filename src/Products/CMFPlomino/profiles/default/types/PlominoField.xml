@@ -1,18 +1,17 @@
 <?xml version="1.0"?>
-<object name="PlominoDatabase" meta_type="Dexterity FTI" i18n:domain="Products.CMFPlomino"
+<object name="PlominoField" meta_type="Dexterity FTI" i18n:domain="Products.CMFPlomino"
    xmlns:i18n="http://xml.zope.org/namespaces/i18n">
-  <property name="title" i18n:translate="">PlominoDatabase</property>
+  <property name="title" i18n:translate="">PlominoField</property>
   <property name="description"
     i18n:translate=""></property>
   <property name="icon_expr"></property>
-  <property name="factory">PlominoDatabase</property>
-  <property name="add_view_expr">string:${folder_url}/++add++PlominoDatabase</property>
+  <property name="factory">PlominoField</property>
+  <property name="add_view_expr">string:${folder_url}/++add++PlominoField</property>
   <property name="link_target"></property>
   <property name="immediate_view">view</property>
-  <property name="global_allow">True</property>
+  <property name="global_allow">False</property>
   <property name="filter_content_types">True</property>
   <property name="allowed_content_types">
-    <element value="PlominoForm"/>
   </property>
   <property name="allow_discussion">False</property>
   <property name="default_view">view</property>
@@ -24,8 +23,8 @@
   <property name="behaviors">
     <element value="plone.app.content.interfaces.INameFromTitle"/>
   </property>
-  <property name="schema">Products.CMFPlomino.contents.database.IPlominoDatabase</property>
-  <property name="klass">Products.CMFPlomino.contents.database.PlominoDatabase</property>
+  <property name="schema">Products.CMFPlomino.contents.field.IPlominoField</property>
+  <property name="klass">Products.CMFPlomino.contents.field.PlominoField</property>
   <property name="model_source"></property>
   <property name="model_file"></property>
   <alias from="(Default)" to="(dynamic view)"/>
