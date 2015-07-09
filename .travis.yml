@@ -11,10 +11,6 @@ install:
   - bin/buildout -Nc travis.cfg
 script:
   - bin/test
-  - bin/createcoverage
-after_success:
-  - pip install coveralls
-  - coveralls
 
 notifications:
   irc:
