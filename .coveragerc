@@ -1,0 +1,6 @@
+[report]
+include =
+    src/Products/*
+omit =
+    */test*
+    */upgrades/*

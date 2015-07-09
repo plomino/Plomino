@@ -1,0 +1,5 @@
+====================
+Products.CMFPlomino
+====================
+
+User documentation

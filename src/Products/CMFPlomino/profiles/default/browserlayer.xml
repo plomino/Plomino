@@ -1,0 +1,7 @@
+<?xml version="1.0"?>
+<layers>
+  <layer
+    name="Products.CMFPlomino"
+    interface="Products.CMFPlomino.interfaces.IProductsCmfplominoLayer"
+  />
+</layers>
