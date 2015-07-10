@@ -346,7 +346,7 @@ class PlominoForm(ATFolder):
 
         form = self
         while getattr(form, 'meta_type', '') != 'PlominoForm':
-            form = obj.aq_parent
+            form = form.aq_parent
         return form
 
     def getFormMethod(self):
