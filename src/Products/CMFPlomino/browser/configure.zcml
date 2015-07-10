@@ -4,17 +4,17 @@
     xmlns:plone="http://namespaces.plone.org/plone"
     i18n_domain="Products.CMFPlomino">
 
-    <!-- Set overrides folder for Just-a-Bunch-Of-Templates product -->
-    <include package="z3c.jbot" file="meta.zcml" />
-    <browser:jbot
-        directory="overrides"
-        layer="Products.CMFPlomino.interfaces.IProductsCmfplominoLayer"
-        />
-
-    <!-- Publish static files -->
     <browser:resourceDirectory
         name="Products.CMFPlomino"
         directory="static"
+        />
+
+    <browser:page
+        for="Products.CMFPlomino.contents.form.IPlominoForm"
+        name="OpenForm"
+        class=".form.FormView"
+        attribute="openform"
+        permission="zope.Public"
         />
 
 </configure>

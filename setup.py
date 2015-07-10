@@ -43,8 +43,8 @@ setup(
     install_requires=[
         'plone.api',
         'setuptools',
-        'z3c.jbot',
         'plone.app.dexterity',
+        'jsonutil',
     ],
     extras_require={
         'test': [

@@ -1,0 +1,3 @@
+
+class PlominoScriptException(Exception):
+    pass
