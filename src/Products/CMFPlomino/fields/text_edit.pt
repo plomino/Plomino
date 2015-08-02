@@ -1,0 +1,14 @@
+<span tal:define="field python:options['field'];
+        fieldvalue python:options['fieldvalue'];
+        widget python:field.widget;
+        size python:field.size">
+    <tal:widget tal:condition="python:widget=='HIDDEN'">
+        <input type="hidden" tal:attributes="id field/id; name field/id; value fieldvalue" />
+    </tal:widget>
+    <tal:widget tal:condition="python:widget=='TEXT'">
+        <input type="text" tal:attributes="id field/id; name field/id; value fieldvalue; size size" />
+    </tal:widget>
+    <tal:widget tal:condition="python:widget=='TEXTAREA'">
+        <textarea tal:attributes="id field/id; name field/id; rows size" tal:content="fieldvalue">text</textarea>
+    </tal:widget>
+</span>

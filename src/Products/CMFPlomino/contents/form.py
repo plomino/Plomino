@@ -1,6 +1,5 @@
 from AccessControl import ClassSecurityInfo
 import logging
-from plone import api
 from plone.app.z3cform.wysiwyg import WysiwygFieldWidget
 from plone.autoform import directives as form
 from plone.dexterity.content import Container
@@ -87,7 +86,8 @@ class PlominoForm(Container):
         if not request and hasattr(self, 'REQUEST'):
             request = self.REQUEST
         form = self.getForm()
-        fieldlist = form.objectValues(spec='PlominoField')
+        fieldlist = [obj for obj in form.objectValues()
+            if obj.__class__.__name__ == 'PlominoField']
         result = [f for f in fieldlist]  # Convert from LazyMap to list
         if applyhidewhen:
             doc = doc or getTemporaryDocument(
@@ -139,12 +139,30 @@ class PlominoForm(Container):
         # db.setRequestCache(cache_key, result)
         return result
 
+    security.declarePublic('getActions')
+
+    def getActions(self, target, hide=True):
+        """ Get filtered form actions for the target (page or document).
+        """
+        actions = [obj for obj in self.objectValues()
+            if obj.__class__.__name__ == 'PlominoAction']
+
+        filtered = []
+        for action in actions:
+            if hide:
+                if not action.isHidden(target, self):
+                    filtered.append((action, self.id))
+            else:
+                filtered.append((action, self.id))
+        return filtered
+
     security.declarePublic('getHidewhenFormulas')
 
     def getHidewhenFormulas(self):
         """Get hide-when formulae
         """
-        hidewhens = self.objectValues(spec='PlominoHidewhen')
+        hidewhens = [obj for obj in self.objectValues()
+            if obj.__class__.__name__ == 'PlominoHidewhen']
         return [h for h in hidewhens]
 
     security.declareProtected(READ_PERMISSION, 'displayDocument')
@@ -188,18 +206,18 @@ class PlominoForm(Container):
                     )
 
         # evaluate cache formulae and insert already cached fragment
-        (html_content, to_be_cached) = self.applyCache(html_content, doc)
+        #(html_content, to_be_cached) = self.applyCache(html_content, doc)
 
         # if editmode, we add a hidden field to handle the Form item value
         if editmode and not parent_form_id:
             html_content = ("<input type='hidden' "
                     "name='Form' "
                     "value='%s' />%s" % (
-                        self.getFormName(),
+                        self.id,
                         html_content))
 
         # Handle legends and labels
-        html_content = self._handleLabels(html_content, editmode)
+        #html_content = self._handleLabels(html_content, editmode)
         # html_content = self._handleLabels(legend_re, html_content)
 
         # insert the fields with proper value and rendering
@@ -263,7 +281,7 @@ class PlominoForm(Container):
         html_content = translate(self, html_content)
 
         # store fragment to cache
-        html_content = self.updateCache(html_content, to_be_cached)
+        #html_content = self.updateCache(html_content, to_be_cached)
         return html_content
 
     security.declarePrivate('_get_html_content')
@@ -389,7 +407,8 @@ class PlominoForm(Container):
         """
         field = None
         form = self.getForm()
-        field_ids = form.objectIds(spec='PlominoField')
+        field_ids = [obj.id for obj in form.objectValues()
+            if obj.__class__.__name__ == 'PlominoField']
         if fieldname in field_ids:
             field = getattr(form, fieldname)
         else:
@@ -399,3 +418,30 @@ class PlominoForm(Container):
             if matching_fields:
                 field = matching_fields[0]
         return field
+
+    security.declarePublic('getSubforms')
+
+    def getSubforms(self, doc=None, applyhidewhen=True, validation_mode=False):
+        """ Return the names of the subforms embedded in the form.
+        """
+        if applyhidewhen:
+            if doc is None and hasattr(self, 'REQUEST'):
+                try:
+                    db = self.getParentDatabase()
+                    doc = getTemporaryDocument(
+                        db,
+                        self,
+                        self.REQUEST,
+                        validation_mode=validation_mode).__of__(db)
+                except:
+                    # TemporaryDocument might fail if field validation is
+                    # wrong and as we need getFormFields during field
+                    # validation, we need to continue so the error is nicely
+                    # returned to the user
+                    doc = None
+            html_content = self.applyHideWhen(doc)
+        else:
+            html_content = self._get_html_content()
+
+        r = re.compile('<span class="plominoSubformClass">([^<]+)</span>')
+        return [i.strip() for i in r.findall(html_content)]

@@ -1,0 +1,12 @@
+<span tal:define="field python:options['field'];
+        fieldvalue python:options['fieldvalue'];
+        widget python:field.widget;
+        size python:field.size"
+    tal:attributes="class string:TEXTFieldRead-${widget}">
+    <tal:widget condition="python:widget=='HIDDEN'">
+        <input type="hidden" tal:attributes="id field/id; name field/id; value fieldvalue" />
+    </tal:widget>
+    <tal:widget condition="python:test(widget!='HIDDEN')">
+        <tal:block tal:define="v fieldvalue" tal:content="structure v">text</tal:block>
+    </tal:widget>
+</span>

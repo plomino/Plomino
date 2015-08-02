@@ -1,0 +1,142 @@
+<tal:block 
+    define="field python:options['field'];
+            fieldname python:options['fieldname'];
+            request field/REQUEST;
+            v options/fieldvalue;
+            data python:field.getSettings().tojson(v);
+            form field/getParentNode;
+            form_name form/id;
+            form_url python:form.absolute_url();
+            form_method form/getFormMethod;
+            associated_form python:field.getSettings().getAssociateForm();
+            associated_form_url python:associated_form and associated_form.absolute_url();
+            associated_form_rendering python:field.getSettings().associated_form_rendering;
+            new_fields python:field.getSettings().getRenderedFields(creation=True,request=request);
+            ">
+<input type='hidden'
+    tal:attributes="
+            id string:${fieldname}_gridvalue;
+            name fieldname;
+            value data"/>
+    <script 
+        type="text/javascript"
+        charset="utf-8"
+        tal:define="
+                param python:field.getSettings().getParameters();
+                request_items python:field.getSettings().request_items_aoData(request);
+                "
+        tal:content="structure string:
+                var ${fieldname}_datatable;
+                jQuery(document).ready(function() {
+                    ${fieldname}_datatable = jQuery('#${fieldname}_datagrid').dataTable( {
+                        'sAjaxSource': 'tojson?item=${fieldname}&rendered=true&datatables=true',
+                        'sServerMethod': '${form_method}',
+                        'fnServerParams': function ( aoData ) {
+                            ${request_items}
+                        },
+                        'bJQueryUI': true,
+                        ${param},
+                        'fnDrawCallback': function() {
+                            jQuery('#${fieldname}_datagrid > tbody > tr').click(function() {
+                                datagrid_deselect_rows(${fieldname}_datatable);
+                                jQuery(this).addClass('datagrid_row_selected');
+                            });
+                        },
+                        'oLanguage': {
+                            'sUrl': '@@collective.js.datatables.translation'
+                        }
+                    } );
+                    /** 
+                        INLINE EDITING MODE 
+                    **/
+                    if('${associated_form_rendering}'==='INLINE') {
+
+                        var ${fieldname}_nEditing = null;                   
+
+                        /** Add inline creation form **/
+                        jQuery('#${fieldname}_addrow').click( function (e) {
+                            e.preventDefault();
+                            ${fieldname}_nEditing = datagrid_add_inline_row( ${fieldname}_datatable,  ${new_fields} )
+                        } );
+
+                        /** Compute inline form **/
+                        function ${fieldname}_computeEdit(event){
+                            event.preventDefault();
+                            if ( ${fieldname}_nEditing!=null ) { 
+                                datagrid_restore_row(${fieldname}_datatable, ${fieldname}_nEditing); 
+                            } 
+                            var url = '${form_url}/${fieldname}/editFields?';
+                            ${fieldname}_nEditing = datagrid_edit_inline_form(${fieldname}_datatable,'${fieldname}',url);                     
+                        }
+
+                        jQuery('#${fieldname}_editrow').click(${fieldname}_computeEdit);
+                        jQuery('#${fieldname}_datagrid tbody>tr').live('dblclick', ${fieldname}_computeEdit);
+
+                        /** Save changes **/
+                        jQuery('#${fieldname}_datagrid button.save').live('click', function (e) {
+                            e.preventDefault();
+                            var nRow = $(this).parents('tr')[0];
+                            var url = '${associated_form_url}/createDocument?Plomino_Parent_Field=${fieldname}&Plomino_Parent_Form=${form_name}';
+
+                            if ( ${fieldname}_nEditing == nRow ) {
+                                var succeeded = datagrid_save_inline_row( ${fieldname}_datatable, ${fieldname}_nEditing,'${fieldname}',url);
+                                if(succeeded===true)
+                                    ${fieldname}_nEditing = null;
+                            }
+                        } );
+
+                        /** Cancel edition **/
+                        jQuery('#${fieldname}_datagrid button.cancel').live('click', function (e) {
+                            e.preventDefault();
+                            var nRow = $(this).parents('tr')[0];
+                            datagrid_restore_row(${fieldname}_datatable, nRow);
+                            ${fieldname}_nEditing = null;
+                        });
+                    }
+                    /** 
+                        MODAL MODE
+                    **/
+                    else{
+
+                        jQuery('#${fieldname}_addrow').click(function() {
+                            datagrid_add_row(${fieldname}_datatable, '${fieldname}', this.href);
+                        });
+                        jQuery('#${fieldname}_editrow').click(function() {
+                            datagrid_edit_row(${fieldname}_datatable, '${fieldname}', this.href);
+                        });
+                        jQuery('#${fieldname}_editform').dialog({ 'autoOpen': false, 'modal': true });
+                    }
+
+                    jQuery('#${fieldname}_deleterow').click(function() {
+                        datagrid_delete_row(${fieldname}_datatable, '${fieldname}');
+                    });
+                    
+                } );">
+    </script>
+
+    <table class="display" tal:attributes="id string:${fieldname}_datagrid">
+    </table>
+    <div tal:attributes="id string:${fieldname}_editform"></div>
+    <p><a class="context add-row"
+          tal:condition="associated_form"
+          tal:attributes="id string:${fieldname}_addrow;
+                          href string:${associated_form_url}/OpenBareForm?Plomino_Parent_Field=${fieldname}&Plomino_Parent_Form=${form_name};
+                          onclick string:event.preventDefault ? event.preventDefault() : event.returnValue = false;; return false"
+          tal:content="python:options['field'].getSettings().getActionLabel('add')"
+          >Add row</a>
+       <a class="context edit-row"
+          tal:condition="associated_form"
+          tal:attributes="id string:${fieldname}_editrow;
+                          href string:${associated_form_url}/OpenBareForm?Plomino_Parent_Field=${fieldname}&Plomino_Parent_Form=${form_name};
+                          onclick string:event.preventDefault ? event.preventDefault() : event.returnValue = false;; return false;
+                          style python:{0: 'display:none'}.get(len(v), '')"
+          tal:content="python:options['field'].getSettings().getActionLabel('edit')"
+          >Edit row</a>
+       <a href="javascript:void(0)" class="context delete-row"
+          tal:attributes="id string:${fieldname}_deleterow;
+                          onclick string:event.preventDefault ? event.preventDefault() : event.returnValue = false;; return false;
+                          style python:{0: 'display:none'}.get(len(v), '')" 
+          tal:content="python:options['field'].getSettings().getActionLabel('delete')"
+          >Delete row</a>
+    </p>
+</tal:block>

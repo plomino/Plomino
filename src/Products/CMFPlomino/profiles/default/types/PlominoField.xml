@@ -14,7 +14,7 @@
   <property name="allowed_content_types">
   </property>
   <property name="allow_discussion">False</property>
-  <property name="default_view">view</property>
+  <property name="default_view">edit</property>
   <property name="view_methods">
     <element value="view"/>
   </property>

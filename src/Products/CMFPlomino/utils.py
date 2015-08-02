@@ -452,10 +452,6 @@ def translate(context, content, i18n_domain=None):
     if request and request.get("translation")=="off":
         return content
 
-    if not i18n_domain:
-        db = context.getParentDatabase()
-        i18n_domain = db.getI18n()
-
     def translate_token(match):
         translation = PlominoTranslate(
                 match.group(1),

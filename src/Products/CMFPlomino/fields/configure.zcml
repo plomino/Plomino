@@ -1,0 +1,34 @@
+<configure xmlns="http://namespaces.zope.org/zope"
+           xmlns:browser="http://namespaces.zope.org/browser"
+           xmlns:five="http://namespaces.zope.org/five"
+           xmlns:plone="http://namespaces.plone.org/plone"
+           i18n_domain="CMFPlomino">
+
+  <!-- permissions -->
+  <permission
+    id="plomino.DESIGN_PERMISSION"
+    title="CMFPlomino: Modify Database design"
+    />
+  <permission
+    id="plomino.EDIT_PERMISSION"
+    title="CMFPlomino: Edit documents"
+    />
+
+  <include package="plone.behavior" file="meta.zcml" />
+
+  <!-- behaviors -->
+  <plone:behavior
+    title="Text field"
+    provides=".text.ITextField"
+    />
+
+  <!-- vocabularies -->
+  <utility
+    name="Products.CMFPlomino.fields.vocabularies.get_forms"
+    component=".vocabularies.get_forms"
+    />
+  <utility
+    name="Products.CMFPlomino.fields.vocabularies.get_views"
+    component=".vocabularies.get_views"
+    />
+</configure>

@@ -45,6 +45,7 @@ setup(
         'setuptools',
         'plone.app.dexterity',
         'jsonutil',
+        'collective.instancebehavior',
     ],
     extras_require={
         'test': [

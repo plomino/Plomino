@@ -1,0 +1,146 @@
+How to provide a custom Plomino field type as a plugin
+======================================================
+
+Plomino provides a set of field types (text, number, richtext, datagrid, etc.).
+
+But a custom Plomino field type can be declared to Plomino from a custom 
+package in order to extend the Plomino behavior.
+
+Example::
+
+    >>> from zope.formlib import form
+    >>> from zope.interface import implements
+    >>> from zope import component
+    >>> from zope.pagetemplate.pagetemplatefile import PageTemplateFile
+    >>> 
+    >>> from zope.schema import getFields
+    >>> from zope.schema import Text, TextLine
+    >>> 
+    >>> try:
+    >>>     from five.formlib.formbase import EditForm
+    >>> except:
+    >>>     #PLONE 3
+    >>>     from Products.Five.formlib.formbase import EditForm
+    >>> 
+    >>> from Products.CMFPlomino.interfaces import IPlominoField
+    >>> from Products.CMFPlomino.fields.dictionaryproperty import DictionaryProperty
+    >>> 
+    >>> from Products.CMFPlomino.fields.base import IBaseField, BaseField
+
+A Zope schema defines the field setting parameters::
+
+    >>> class IRomanNumberField(IBaseField):
+    >>>     """
+    >>>     Roman number field schema
+    >>>     """
+    >>>     color = TextLine(title=u'Color',
+    >>>                 description=u'Font color to apply to roman number display.',
+    >>>                 required=False)
+    >>>         
+
+A class derived from BaseField will implement this interface.
+It must contain:
+
+``plomino_field_parameters``
+   it declares the field main parameters
+
+``read_template``
+    the PageTemplate in charge of rendering the field in read mode
+
+``edit_template``
+    the PageTemplate in charge of rendering the field in edit mode
+
+It can also overwrite the different methods of BaseField,
+like ``processInput`` (in
+charge of converting the submitted value into the actual item value, or 
+``validate`` (in charge of validating the submitted value before saving)::
+
+    >>> class RomanNumberField(BaseField):
+    >>>     """ This field stores integers as roman numerals
+    >>>     """
+    >>>     implements(IRomanNumberField)
+    >>>     
+    >>>     plomino_field_parameters = {'interface': IRomanNumberField,
+    >>>                                 'label': "RomanNumber",
+    >>>                                 'index_type': "FieldIndex"}
+    >>>     
+    >>>     read_template = PageTemplateFile('roman_read.pt')
+    >>>     edit_template = PageTemplateFile('roman_edit.pt')
+    >>>     
+    >>>    def validate(self, strValue):
+    >>>         """
+    >>>         """
+    >>>         errors=[]
+    >>>         fieldname = self.context.id
+    >>>         try:
+    >>>             v = int(submittedValue)
+    >>>         except:
+    >>>             errors.append(fieldname + " must be an integer.")
+    >>>         return errors
+    >>>     
+    >>>     def processInput(self, strValue):
+    >>>         """ convert int to roman (example based on vegaseat code snippet)
+    >>>         """
+    >>>         number = int(strValue)
+    >>>         numerals = { 1 : "I", 4 : "IV", 5 : "V", 9 : "IX", 10 : "X", 40 : "XL", 
+    >>>                      50 : "L", 90 : "XC", 100 : "C", 400 : "CD", 500 : "D", 900 : "CM", 1000 : "M" }
+    >>>         result = ""
+    >>>         for value, numeral in sorted(numerals.items(), reverse=True):
+    >>>             while number >= value:
+    >>>                 result += numeral
+    >>>                 number -= value
+    >>>         return result
+
+The plugin field must be provided as an utility so Plomino can find it
+(the utility name must be in upper case)::
+
+    >>> component.provideUtility(RomanNumberField, IPlominoField, 'ROMANNUMBER')
+
+And the ``SettingForm`` must be based on the field's schema
+(no customization needed here)::
+
+    >>> for f in getFields(IRomanNumberField).values():
+    >>>     setattr(RomanNumberField, f.getName(), DictionaryProperty(f, 'parameters'))
+    >>> 
+    >>> class SettingForm(EditForm):
+    >>>     """
+    >>>     """
+    >>>     form_fields = form.Fields(IRomanNumberField)
+    >>>     
+
+Then in ``configure.zcml``, declare the field as adapter for
+``PlominoField`` (assuming that previous code is in ``romannumber.py``)::
+
+   <include package="Products.CMFPlomino.fields"/>
+   <adapter
+        for="Products.CMFPlomino.interfaces.IPlominoField"
+        provides=".romannumber.IRomanNumberField"
+        factory=".romannumber.RomanNumberField"
+        />
+
+and declare the settings form as a browser page 
+(its name must be ``xxxsettings``
+where ``xxx`` is the utility name in lowercase)::
+
+   <browser:page
+        name="romannumbersettings"
+        for="Products.CMFPlomino.interfaces.IPlominoField"
+        class=".romannumber.SettingForm"
+        permission="plomino.DESIGN_PERMISSION"
+        />
+
+The two page templates can be based on the following examples:
+
+``roman_read.pt``::
+
+    <tal:romannumber 
+        define="v options/fieldvalue"
+        content="python:str(v)">XXII</tal:romannumber>
+
+``roman_edit.pt``::
+
+    <span>
+        <input type="text"
+               tal:attributes="name options/fieldname;
+                               value options/fieldvalue" />
+    </span>

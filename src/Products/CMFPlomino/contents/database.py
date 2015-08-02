@@ -5,6 +5,7 @@ from zope import schema
 from zope.interface import implements
 
 from .. import _, config
+from ..design import DesignManager
 
 security = ClassSecurityInfo()
 
@@ -23,8 +24,15 @@ class IPlominoDatabase(model.Schema):
         required=False,
     )
 
+    debugMode = schema.Bool(
+        title=_('CMFPlomino_label_debugMode', default="Debug mode"),
+        description=_('CMFPlomino_help_debugMode', default="If enabled, script"
+        " and formula errors are logged."),
+        default=False,
+    )
 
-class PlominoDatabase(Container):
+
+class PlominoDatabase(Container, DesignManager):
     implements(IPlominoDatabase)
 
     security.declareProtected(config.READ_PERMISSION, 'getParentDatabase')

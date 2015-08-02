@@ -9,7 +9,9 @@
 
     <i18n:registerTranslations directory="locales" />
 
+    <include package="collective.instancebehavior" />
     <include package=".browser" />
+    <include package=".fields" />
 
 
     <genericsetup:registerProfile
@@ -26,5 +28,15 @@
         description="Post install import step from Products.CMFPlomino"
         handler=".setuphandlers.post_install">
     </genericsetup:importStep>
+
+    <subscriber
+        for="Products.CMFPlomino.contents.field.IPlominoField zope.lifecycleevent.interfaces.IObjectModifiedEvent"
+        handler=".events.afterFieldModified"
+        />
+
+    <subscriber
+        for="Products.CMFPlomino.contents.field.IPlominoField zope.lifecycleevent.interfaces.IObjectAddedEvent"
+        handler=".events.afterFieldModified"
+        />
 
 </configure>

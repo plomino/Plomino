@@ -1,0 +1,49 @@
+<tal:block 
+    define="field python:options['field'];
+            fieldname python:options['fieldname'];
+            request field/REQUEST;
+            v options/fieldvalue;
+            form field/getParentNode;
+            form_method form/getFormMethod;
+            widget python:field.getSettings('widget');">
+
+    <tal:read_dynamic condition="python:widget!='READ_STATIC'">
+        <script type="text/javascript" charset="utf-8"
+            tal:define="param python:field.getSettings().getParameters();
+                        request_items python:field.getSettings().request_items_aoData(request);"
+            tal:content="structure string:
+                        jQuery(document).ready(function() {
+                            jQuery('#${fieldname}_datagrid').dataTable( {
+                                'sAjaxSource': 'tojson?item=${fieldname}&rendered=true&datatables=true',
+                                'sServerMethod': '${form_method}',
+                                'fnServerParams': function ( aoData ) {
+                                    ${request_items}
+                                },
+                                'bJQueryUI': true,
+                                ${param},
+                                'oLanguage': {
+                                    'sUrl': '@@collective.js.datatables.translation'
+                                }
+                            } );
+                        } );">
+        </script>
+        <table class="display" tal:attributes="id string:${fieldname}_datagrid"></table>
+    </tal:read_dynamic>
+
+    <tal:read_static condition="python:widget=='READ_STATIC'">
+        <table class="plain staticDataTable" 
+            tal:define="rows python:field.getSettings().rows(v, rendered=True);
+                        column_labels python:field.getSettings().getColumnLabels();">
+            <thead>
+                <tr>
+                    <th tal:repeat="label column_labels" tal:content="label">column title</th>
+                </tr>
+            </thead>
+            <tr tal:define="nbcol python:len(column_labels);" tal:condition="python:len(rows)==0"><td tal:attributes="colspan string:${nbcol}" style="text-align:center">No data</td></tr>
+            <tr tal:repeat="row rows">
+                <td tal:repeat="cell row" 
+                    tal:content="structure cell">cell content</td>
+            </tr>
+        </table>
+    </tal:read_static>
+</tal:block>
