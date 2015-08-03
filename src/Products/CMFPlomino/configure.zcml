@@ -39,4 +39,14 @@
         handler=".events.afterFieldModified"
         />
 
+    <subscriber
+        for="Products.CMFPlomino.contents.form.IPlominoForm zope.lifecycleevent.interfaces.IObjectModifiedEvent"
+        handler=".events.afterFormModified"
+        />
+
+    <subscriber
+        for="Products.CMFPlomino.contents.form.IPlominoForm zope.lifecycleevent.interfaces.IObjectAddedEvent"
+        handler=".events.afterFormModified"
+        />
+
 </configure>

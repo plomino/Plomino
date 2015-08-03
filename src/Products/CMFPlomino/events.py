@@ -31,5 +31,22 @@ def afterFieldModified(obj, event):
 
         enable_behaviors(obj, [behavior, ], [])
 
+    # cleanup compiled formulas
     obj.cleanFormulaScripts(
         SCRIPT_ID_DELIMITER.join(["field", obj.getPhysicalPath()[-2], obj.id]))
+
+    # re-index
+    db = obj.getParentDatabase()
+    if obj.to_be_indexed and not db.do_not_reindex:
+        db.getIndex().createFieldIndex(
+            obj.id,
+            obj.field_type,
+            indextype=obj.index_type,
+            fieldmode=obj.field_mode,
+        )
+
+
+def afterFormModified(obj, event):
+    """
+    """
+    obj.cleanFormulaScripts(SCRIPT_ID_DELIMITER.join(["form", obj.id]))

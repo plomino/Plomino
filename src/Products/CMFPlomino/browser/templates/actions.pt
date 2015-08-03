@@ -1,0 +1,189 @@
+<div class="formControls" metal:define-macro="ReadDocumentActionBar">
+<span class="actionButtons">
+    <tal:defaultactions tal:condition="python:not(view.owner.hide_default_actions)">
+        <tal:block
+            tal:condition="python:test(context.hasEditPermission(context)==True and context.hasEditPermission(context.getParentDatabase())==True and context.isAuthor())">
+        <input type="button" class="context plominoEdit" value="Edit" name="plomino_edit"
+            i18n:domain="CMFPlomino" i18n:attributes="value"
+            tal:attributes="onclick python:'location.href=\''+context.navigationParent(context)+'/'+context.id+'/EditDocument\''" />
+        </tal:block>
+
+        <tal:block
+            tal:condition="python:test(context.hasRemovePermission(context)==True and context.hasRemovePermission(context.getParentDatabase())==True and context.isAuthor())">
+        <tal:block metal:use-macro="context/plomino_actions/macros/DeleteAction">display
+        delete action</tal:block></tal:block>
+
+
+        <tal:block metal:use-macro="context/plomino_actions/macros/CloseAction">display
+        close action</tal:block>
+        
+    </tal:defaultactions>
+    
+    <tal:block
+        tal:repeat="action_tuple python:[(a, parent_id) for a, parent_id in view.owner.getActions(context, True) if a.getInActionBar()==True]">
+        <tal:block
+            tal:define="plominoaction python:action_tuple[0];
+                        plominotarget python:context;
+                        plomino_parent_id python:action_tuple[1]">
+            <tal:block metal:use-macro="context/plomino_actions/macros/ButtonAction">
+            display action as a link </tal:block>
+        </tal:block>
+    </tal:block>
+</span>
+</div>
+
+<div class="formControls" metal:define-macro="EditDocumentActionBar">
+<span class="actionButtons">
+    <tal:defaultactions tal:condition="python:not(view.owner.hide_default_actions)">
+        <tal:block metal:use-macro="context/plomino_actions/macros/CloseAction">display
+        close action</tal:block>
+        <input type="submit" class="context plominoSave" name="plomino_save"
+            value="Save" i18n:domain="CMFPlomino" i18n:attributes="value" />
+        <tal:block
+            tal:condition="python:not(context.getCurrentMember().getUserName()=='Anonymous User')"><tal:block
+            metal:use-macro="context/plomino_actions/macros/DeleteAction">display
+        delete action</tal:block></tal:block>
+    </tal:defaultactions>
+        <tal:block
+            tal:repeat="action_tuple python:[(a, parent_id) for a, parent_id in view.owner.getActions(context, True) if a.getInActionBar()==True]">
+            <tal:block
+                tal:define="plominoaction python:action_tuple[0];
+                            plominotarget python:context;
+                            plomino_parent_id python:action_tuple[1]">
+                <tal:block metal:use-macro="context/plomino_actions/macros/ButtonAction">
+                display action as a link </tal:block>
+            </tal:block>
+        </tal:block>
+</span>
+</div>
+
+<div class="formControls" metal:define-macro="OpenFormActionBar">
+<span class="actionButtons">
+    <tal:defaultactions tal:condition="python:not(view.owner.hide_default_actions)">
+        <tal:block metal:use-macro="context/plomino_actions/macros/CloseAction">display
+        close action</tal:block>
+        <input type="submit" class="context plominoSave" name="plomino_save"
+            value="Save" i18n:domain="CMFPlomino" i18n:attributes="value" />
+    </tal:defaultactions>
+        <tal:block
+            tal:repeat="action_tuple python:[(a, parent_id) for a, parent_id in view.owner.getActions(context, True) if a.getInActionBar()==True]">
+            <tal:block
+                tal:define="plominoaction python:action_tuple[0];
+                            plominotarget python:context;
+                            plomino_parent_id python:action_tuple[1]">
+                <tal:block metal:use-macro="context/plomino_actions/macros/ButtonAction">
+                display action as a link </tal:block>
+            </tal:block>
+        </tal:block>
+</span>
+</div>
+
+<div class="formControls" metal:define-macro="SearchFormActionBar">
+<span class="actionButtons">
+    <tal:defaultactions tal:condition="python:not(view.owner.hide_default_actions)">
+        <tal:block metal:use-macro="context/plomino_actions/macros/CloseAction">display
+        close action</tal:block>
+        <input type="submit" class="context plominoSearch" value="Search" name="plomino_search"
+            i18n:domain="CMFPlomino" i18n:attributes="value" />
+    </tal:defaultactions>
+        <tal:block
+            tal:repeat="action_tuple python:[(a, parent_id) for a, parent_id in view.owner.getActions(context, True) if a.getInActionBar()==True]">
+            <tal:block
+                tal:define="plominoaction python:action_tuple[0];
+                            plominotarget python:context;
+                            plomino_parent_id python:action_tuple[1]">
+                <tal:block metal:use-macro="context/plomino_actions/macros/ButtonAction">
+                display action as a link </tal:block>
+            </tal:block>
+        </tal:block>
+</span>
+</div>
+
+<div class="formControls" metal:define-macro="ViewActionBar">
+<span class="actionButtons">
+<script>
+function selected_documents()
+{
+if (typeof(oDynamicTable)!="undefined") {
+    return dynamicview_selecteddocuments();
+} else {
+    var array_value = [];
+    $(".plominoviewform input[name='sdoc']:checked").each(function() {
+        array_value.push($(this).val());
+    });
+    
+    return array_value.join('@');
+}
+}
+
+</script>
+    <tal:defaultactions tal:define="hidedefault view/owner/HideDefaultActions|nothing" tal:condition="python:not(hidedefault)">
+        <input type="button" class="context plominoDelete" value="Delete" name="plomino_deletedocuments"
+            i18n:domain="CMFPlomino" i18n:attributes="value"
+            tal:condition="python:context.hasRemovePermission(context)==True"
+            tal:define="
+                plominotranslate nocall:modules/Products/CMFPlomino/PlominoUtils/PlominoTranslate;
+                msg python:plominotranslate('Do you really want to delete those documents', context, domain='CMFPlomino');"
+            tal:attributes="onclick string:if (confirm('${msg} ?')) {location.href='./manage_deleteDocuments?deldocs='+selected_documents()}" />
+    </tal:defaultactions>
+        <tal:block
+            tal:repeat="action_tuple python:[(a, parent_id) for a, parent_id in view.owner.getActions(context, True) if a.getInActionBar()==True]">
+            <tal:block
+                tal:define="plominoaction python:action_tuple[0];
+                            plominotarget python:context;
+                            plomino_parent_id python:action_tuple[1]">
+                <tal:block metal:use-macro="context/plomino_actions/macros/ButtonAction">
+                display action as a link </tal:block>
+            </tal:block>
+        </tal:block>
+</span>
+</div>
+
+<tal:block metal:define-macro="LinkAction"> <a
+    tal:attributes="href python:plominoaction.executeAction(plominotarget, plomino_parent_id)"
+    tal:content="python: plominoaction.Title()" /></tal:block>
+
+<tal:block metal:define-macro="SubmitAction"> <input type="submit"
+    class="context" tal:attributes="value python: plominoaction.Title(); name python:plominoaction.id; id python:plominoaction.id;" />
+</tal:block>
+
+<tal:block metal:define-macro="ButtonAction"> 
+  <tal:submit tal:condition="python:plominoaction.ActionType=='SAVE'">
+  <input type="submit"
+    class="context" tal:attributes="value python: plominoaction.Title(); name python:plominoaction.id" />
+  </tal:submit>
+  <tal:button tal:condition="python:not(plominoaction.ActionType=='SAVE')">
+  <input class="context"
+  
+    type="button"
+    tal:attributes="onclick python:'location.href=\''+plominoaction.executeAction(plominotarget, plomino_parent_id)+'\'';
+                    id python:plominoaction.id;
+                    name python:plominoaction.id;
+                    value python: plominoaction.Title();
+                    "/>
+  </tal:button>
+</tal:block>
+
+<tal:block metal:define-macro="CloseAction"> <tal:block
+    tal:define="is_search_form_or_view python:(hasattr(context.aq_parent,'getIsSearchForm') or hasattr(context.aq_parent,'getSelectionFormula'));">
+    <tal:backtoDB tal:condition="python:not(is_search_form_or_view)">
+        <input type="button" class="context plominoClose" value="Close" name="plomino_close"
+            i18n:domain="CMFPlomino" i18n:attributes="value"
+            tal:attributes="onclick python:'location.href=\''+context.getParentDatabase().absolute_url()+'\''" />
+    </tal:backtoDB>
+    <tal:backtoprevious tal:condition="python:is_search_form_or_view">
+        <input type="button" class="context plominoClose" value="Close" name="plomino_close"
+            i18n:domain="CMFPlomino" i18n:attributes="value"
+            onclick="history.go(-1)" />
+    </tal:backtoprevious>
+
+</tal:block> </tal:block>
+<tal:block metal:define-macro="DeleteAction"><tal:block tal:condition="python:context.hasCurrentUserRight(context.getSpecificRights('specific_deletedocument'))"><input type="button"
+    class="context plominoDelete" value="Delete" i18n:domain="CMFPlomino" name="plomino_delete"
+    i18n:attributes="value"
+    tal:define="
+        plominotranslate nocall:modules/Products/CMFPlomino/PlominoUtils/PlominoTranslate;
+        msg python:plominotranslate('Do you really want to delete this document', context, domain='CMFPlomino');"
+    tal:attributes="onclick python:'if(confirm(\''+msg+' ?\')){location.href=\''+context.absolute_url()+'/delete?returnurl='+context.getParentDatabase().absolute_url()+'\'}'" />
+    </tal:block>
+</tal:block>

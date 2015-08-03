@@ -20,10 +20,10 @@ class IAttachmentField(model.Schema):
     directives.fieldset(
         'settings',
         label=_(u'Settings'),
-        fields=('type', ),
+        fields=('single_or_multiple', ),
     )
 
-    type = schema.Choice(
+    single_or_multiple = schema.Choice(
         vocabulary=SimpleVocabulary.fromItems(
             [("Single file", "SINGLE"), ("Multiple files", "MULTI")]),
         title=u'Type',

@@ -1,13 +1,15 @@
 from collective.instancebehavior import IInstanceBehaviorAssignableContent
 from plone.dexterity.content import Item
 from plone.supermodel import model
+from zope import component
 from zope import schema
 from zope.interface import implements
 from zope.schema.vocabulary import SimpleVocabulary, SimpleTerm
+from ZPublisher.HTTPRequest import FileUpload
 
 from .. import _
 from ..config import SCRIPT_ID_DELIMITER, FIELD_MODES, FIELD_TYPES
-from ..utils import asUnicode
+from ..utils import asList, asUnicode
 from .. import fields
 
 field_types = SimpleVocabulary([
@@ -125,6 +127,58 @@ class IPlominoField(model.Schema):
 class PlominoField(Item):
     implements(IPlominoField, IInstanceBehaviorAssignableContent)
 
+    def validateFormat(self, submittedValue):
+        """check if submitted value match the field expected format
+        """
+        adapt = self.getSettings()
+        return adapt.validate(submittedValue)
+
+    def processInput(
+        self, submittedValue, doc, process_attachments, validation_mode=False
+    ):
+        """process submitted value according the field type
+        """
+
+        fieldtype = self.field_type
+        fieldname = self.id
+        adapt = self.getSettings()
+
+        if fieldtype == "ATTACHMENT" and process_attachments:
+
+            if isinstance(submittedValue, FileUpload):
+                submittedValue = asList(submittedValue)
+
+            current_files = doc.getItem(fieldname)
+            if not current_files:
+                current_files = {}
+
+            if submittedValue is not None:
+                for fl in submittedValue:
+                    (new_file, contenttype) = doc.setfile(fl)
+                    if new_file is not None:
+                        if self.single_or_multiple == "SINGLE":
+                            for filename in current_files.keys():
+                                if filename != new_file:
+                                    doc.deletefile(filename)
+                            current_files = {}
+                        current_files[new_file] = contenttype
+
+            v = current_files
+
+        else:
+            try:
+                v = adapt.processInput(submittedValue)
+            except Exception, e:
+                # TODO: Log exception
+                if validation_mode:
+                    # when validating, submitted values are potentially bad
+                    # but it must not break getHideWhens, getFormFields, etc.
+                    v = submittedValue
+                else:
+                    raise e
+
+        return v
+
     def getFieldRender(
             self, form, doc, editmode, creation=False, request=None):
         """ Rendering the field
@@ -184,3 +238,14 @@ class PlominoField(Item):
             "%sField" % self.field_type.capitalize())
 
         return fieldfactory(self)
+
+
+def get_field_types():
+    field_types = FIELD_TYPES
+    for plugin_field in component.getUtilitiesFor(IPlominoField):
+        params = plugin_field[1].plomino_field_parameters
+        field_types[str(plugin_field[0])] = [
+            params['label'],
+            params['index_type']
+        ]
+    return field_types

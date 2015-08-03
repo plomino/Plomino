@@ -21,10 +21,10 @@ class INumberField(model.Schema):
     directives.fieldset(
         'settings',
         label=_(u'Settings'),
-        fields=('type', 'size', 'format', ),
+        fields=('number_type', 'size', 'format', ),
     )
 
-    type = schema.Choice(
+    number_type = schema.Choice(
         vocabulary=SimpleVocabulary.fromItems([
             ("Integer", "INTEGER"),
             ("Float", "FLOAT"),
@@ -59,7 +59,7 @@ class NumberField(BaseField):
         """
         errors = []
         fieldname = self.context.id
-        if self.type == "INTEGER":
+        if self.context.number_type == "INTEGER":
             try:
                 long(submittedValue)
             except:
@@ -69,7 +69,7 @@ class NumberField(BaseField):
                         _(" must be an integer (submitted value was: "),
                         self.context) +
                     submittedValue + ")")
-        elif self.type == "FLOAT":
+        elif self.context.number_type == "FLOAT":
             try:
                 float(submittedValue)
             except:
@@ -79,7 +79,7 @@ class NumberField(BaseField):
                         _(" must be a float (submitted value was: "),
                         self.context) +
                     submittedValue + ")")
-        elif self.type == "DECIMAL":
+        elif self.context.number_type == "DECIMAL":
             try:
                 Decimal(str(submittedValue))
             except:
@@ -95,11 +95,11 @@ class NumberField(BaseField):
     def processInput(self, submittedValue):
         """
         """
-        if self.type == "INTEGER":
+        if self.context.number_type == "INTEGER":
             return long(submittedValue)
-        elif self.type == "FLOAT":
+        elif self.context.number_type == "FLOAT":
             return float(submittedValue)
-        elif self.type == "DECIMAL":
+        elif self.context.number_type == "DECIMAL":
             return Decimal(str(submittedValue))
         else:
             return submittedValue

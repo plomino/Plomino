@@ -17,4 +17,18 @@
         permission="zope.Public"
         />
 
+    <browser:page
+        for="Products.CMFPlomino.interfaces.IPlominoContext"
+        name="plomino_errors"
+        class=".errors.ErrorMessages"
+        permission="zope.Public"
+        />
+
+    <browser:page
+        for="Products.CMFPlomino.interfaces.IPlominoContext"
+        name="plomino_actions"
+        class=".actions.Actions"
+        permission="zope.Public"
+        />
+
 </configure>

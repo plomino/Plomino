@@ -26,7 +26,7 @@ class TestSetup(unittest.TestCase):
         self.assertFalse(self.installer.isProductInstalled('Products.CMFPlomino'))
 
     def test_browserlayer(self):
-        """Test that IProductsCmfplominoLayer is registered."""
-        from Products.CMFPlomino.interfaces import IProductsCmfplominoLayer
+        """Test that IPlominoLayer is registered."""
+        from Products.CMFPlomino.interfaces import IPlominoLayer
         from plone.browserlayer import utils
-        self.assertIn(IProductsCmfplominoLayer, utils.registered_layers())
+        self.assertIn(IPlominoLayer, utils.registered_layers())

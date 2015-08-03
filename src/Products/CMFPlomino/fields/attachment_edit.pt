@@ -9,10 +9,10 @@
 
     </tal:block>
 
-    <tal:widget tal:condition="python:field.type=='SINGLE'" >
+    <tal:widget tal:condition="python:field.single_or_multiple=='SINGLE'" >
         <input type="file" tal:attributes="id field/id; name field/id;" />
     </tal:widget>
-    <tal:widget tal:condition="python:not field.type=='SINGLE'" >
+    <tal:widget tal:condition="python:not field.single_or_multiple=='SINGLE'" >
         <input type="file" multiple tal:attributes="id field/id; name field/id;" />
     </tal:widget>
 </tal:define>

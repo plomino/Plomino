@@ -2,6 +2,6 @@
 <layers>
   <layer
     name="Products.CMFPlomino"
-    interface="Products.CMFPlomino.interfaces.IProductsCmfplominoLayer"
+    interface="Products.CMFPlomino.interfaces.IPlominoLayer"
   />
 </layers>

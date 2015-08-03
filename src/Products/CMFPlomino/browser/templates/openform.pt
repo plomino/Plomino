@@ -1,20 +1,28 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en"
-xmlns:tal="http://xml.zope.org/namespaces/tal"
-xmlns:metal="http://xml.zope.org/namespaces/metal"
-xmlns:i18n="http://xml.zope.org/namespaces/i18n"
-lang="en"
-metal:use-macro="context/main_template/macros/master"
-i18n:domain="plone">
+    xmlns:tal="http://xml.zope.org/namespaces/tal"
+    xmlns:metal="http://xml.zope.org/namespaces/metal"
+    xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+    lang="en"
+    metal:use-macro="context/main_template/macros/master"
+    i18n:domain="plone">
 <body>
 <metal:content-core fill-slot="content-core">
     <form enctype="multipart/form-data"
         method="POST"
         id="plomino_form"
+        tal:define="hasCreatePermissionOnDatabase python:view.context.hasCreatePermission(view.context.getParentDatabase());
+            hasCreatePermissionOnForm python:view.context.hasCreatePermission(view.context);"
         tal:attributes="
             name context/id;
-            action string:${context/absolute_url};">
+            action string:${context/absolute_url}/createDocument;">
+
         <tal:layout
             tal:content="structure python:context.openBlankForm(request)">layout</tal:layout>
+
+        <tal:block_has_createpermission
+            condition="python:hasCreatePermissionOnDatabase and hasCreatePermissionOnForm">
+            <span metal:use-macro="context/plomino_actions/macros/OpenFormActionBar">display form actions</span><br/>
+        </tal:block_has_createpermission>
     </form>
 </metal:content-core>
 </body>

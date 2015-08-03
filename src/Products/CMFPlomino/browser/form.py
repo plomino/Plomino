@@ -6,5 +6,10 @@ class FormView(BrowserView):
 
     template = ViewPageTemplateFile("templates/openform.pt")
 
+    def __init__(self, context, request):
+        self.context = context
+        self.request = request
+        self.owner = self.context
+
     def openform(self):
         return self.template()
