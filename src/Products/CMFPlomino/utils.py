@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 
-# From the standard library
 from cStringIO import StringIO
 from datetime import datetime
 from dateutil.parser import parse
@@ -16,34 +15,20 @@ import Missing
 import re
 import urllib
 import transaction
-
-# 3rd party Python
 from jsonutil import jsonutil as json
-
-# Zope
 from AccessControl import ClassSecurityInfo
 from AccessControl.unauthorized import Unauthorized
 try:
     from AccessControl.class_init import InitializeClass
 except ImportError:
     from App.class_init import InitializeClass
-
 from DateTime import DateTime
 from zope import component
-
-# Plone
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import normalizeString as utils_normalizeString
+
 from .interfaces import IPlominoSafeDomains
-
-
-try:
-    from plone.app.upgrade import v40
-    HAS_PLONE40 = True
-except ImportError:
-    HAS_PLONE40 = False
-
-from Products.CMFPlomino.config import SCRIPT_ID_DELIMITER
+from .config import TIMEZONE
 
 import logging
 logger = logging.getLogger('Plomino')
@@ -68,6 +53,7 @@ def Log(message, summary='', severity='info', exc_info=False):
         message,
         exc_info=exc_info
     )
+
 
 def DateToString(d, format=None, db=None):
     """ Return the date as string using the given format.
@@ -210,18 +196,12 @@ def PlominoTranslate(msgid, context, domain='CMFPlomino'):
         except (TypeError, IndexError):
             logging.exception("Couldn't subscript msgid: %s" % msgid, exc_info=True)
             pass
-    if HAS_PLONE40:
-        msg = translation_service.utranslate(
-                domain=domain,
-                msgid=msgid,
-                context=context
-                )
-    else:
-        msg = translation_service.utranslate(
-                msgid=msgid,
-                domain=domain,
-                context=context
-                )
+
+    msg = translation_service.utranslate(
+        msgid=msgid,
+        domain=domain,
+        context=context
+    )
     # this converts unicode to site encoding:
     return translation_service.encode(msg)
 
