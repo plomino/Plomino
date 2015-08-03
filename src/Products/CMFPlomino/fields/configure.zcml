@@ -18,7 +18,63 @@
 
   <!-- behaviors -->
   <plone:behavior
+    title="Attachment field"
+    description="Plomino field type"
+    provides=".attachment.IAttachmentField"
+    />
+  <plone:behavior
+    title="Boolean field"
+    description="Plomino field type"
+    provides=".boolean.IBooleanField"
+    />
+  <!-- <plone:behavior
+    title="Datagrid field"
+    description="Plomino field type"
+    provides=".datagrid.IDatagridField"
+    /> -->
+  <plone:behavior
+    title="Date/time field"
+    description="Plomino field type"
+    provides=".datetime.IDatetimeField"
+    />
+  <plone:behavior
+    title="Doclink field"
+    description="Plomino field type"
+    provides=".doclink.IDoclinkField"
+    />
+  <plone:behavior
+    title="Google chart field"
+    description="Plomino field type"
+    provides=".googlechart.IGooglechartField"
+    />
+  <plone:behavior
+    title="Google visualization field"
+    description="Plomino field type"
+    provides=".googlevisualization.IGooglevisualizationField"
+    />
+  <plone:behavior
+    title="Name field"
+    description="Plomino field type"
+    provides=".name.INameField"
+    />
+  <plone:behavior
+    title="Number field"
+    description="Plomino field type"
+    provides=".number.INumberField"
+    />
+  <plone:behavior
+    title="Rich text field"
+    description="Plomino field type"
+    provides=".richtext.IRichtextField"
+    />
+  <plone:behavior
+    title="Selection field"
+    description="Plomino field type"
+    provides=".selection.ISelectionField"
+    />
+  <plone:behavior
     title="Text field"
+    description="Plomino field type"
     provides=".text.ITextField"
     />
 

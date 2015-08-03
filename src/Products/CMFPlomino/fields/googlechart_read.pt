@@ -1,0 +1,3 @@
+<img src="" tal:define="fieldvalue python:options['fieldvalue'];
+                        params python:test(fieldvalue, fieldvalue, {});"
+      tal:attributes="src python:'http://chart.apis.google.com/chart?'+'&'.join([k+'='+params[k] for k in params.keys()])" />

@@ -1,0 +1,1 @@
+<tal:block tal:content="structure python:options['fieldvalue']">Rich text read template</tal:block>

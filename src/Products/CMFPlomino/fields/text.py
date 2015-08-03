@@ -1,12 +1,10 @@
 # -*- coding: utf-8 -*-
 
 from plone.autoform.interfaces import IFormFieldProvider
-from plone.supermodel import directives
-from plone.supermodel import model
-from zope.interface import implementer
-from zope.interface import provider
+from plone.supermodel import directives, model
+from zope.interface import implementer, provider
 from zope.pagetemplate.pagetemplatefile import PageTemplateFile
-from zope.schema import TextLine, Choice
+from zope import schema
 from zope.schema.vocabulary import SimpleVocabulary
 
 from .. import _
@@ -24,7 +22,7 @@ class ITextField(model.Schema):
         fields=('widget', 'size', ),
     )
 
-    widget = Choice(
+    widget = schema.Choice(
         vocabulary=SimpleVocabulary.fromItems([
             ("Text", "TEXT"),
             ("Long text", "TEXTAREA"),
@@ -34,7 +32,7 @@ class ITextField(model.Schema):
         description=u'Field rendering',
         default="TEXT",
         required=True)
-    size = TextLine(
+    size = schema.TextLine(
         title=u'Size',
         description=u'Length or rows (depending on the widget)',
         required=False)
@@ -47,6 +45,3 @@ class TextField(BaseField):
 
     read_template = PageTemplateFile('text_read.pt')
     edit_template = PageTemplateFile('text_edit.pt')
-
-    def __init__(self, context):
-        self.context = context

@@ -1,28 +1,41 @@
 # -*- coding: utf-8 -*-
 
-from zope.formlib import form
-from zope.interface import implements
-from zope.schema import getFields
-from zope.schema import TextLine
+from plone.autoform.interfaces import IFormFieldProvider
+from plone.supermodel import directives, model
+from zope.interface import implementer, provider
+from zope.pagetemplate.pagetemplatefile import PageTemplateFile
+from zope import schema
+from zope.schema.vocabulary import SimpleVocabulary
 
-from base import IBaseField, BaseField, BaseForm
-from dictionaryproperty import DictionaryProperty
+from .. import _
+from base import BaseField
 
 
-class IGooglechartField(IBaseField):
+@provider(IFormFieldProvider)
+class IGooglechartField(model.Schema):
     """ Google chart field schema
     """
-    editrows = TextLine(
+
+    directives.fieldset(
+        'settings',
+        label=_(u'Settings'),
+        fields=('editrows', ),
+    )
+
+    editrows = schema.TextLine(
         title=u'Rows',
         description=u'Size of the editable text area',
         default=u"6",
         required=False)
 
 
+@implementer(IGooglechartField)
 class GooglechartField(BaseField):
     """
     """
-    implements(IGooglechartField)
+
+    read_template = PageTemplateFile('googlechart_read.pt')
+    edit_template = PageTemplateFile('googlechart_edit.pt')
 
     def validate(self, submittedValue):
         """
@@ -45,15 +58,3 @@ class GooglechartField(BaseField):
                 value = ''
             params[key] = value
         return params
-
-
-for f in getFields(IGooglechartField).values():
-    setattr(GooglechartField,
-            f.getName(),
-            DictionaryProperty(f, 'parameters'))
-
-
-class SettingForm(BaseForm):
-    """
-    """
-    form_fields = form.Fields(IGooglechartField)

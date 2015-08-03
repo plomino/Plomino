@@ -1,20 +1,29 @@
 # -*- coding: utf-8 -*-
 
-from zope.formlib import form
-from zope.interface import implements
-from zope.schema import getFields, Choice
+from plone.autoform.interfaces import IFormFieldProvider
+from plone.supermodel import directives, model
+from Products.CMFPlone.utils import normalizeString
+from zope.interface import implementer, provider
+from zope.pagetemplate.pagetemplatefile import PageTemplateFile
+from zope import schema
 from zope.schema.vocabulary import SimpleVocabulary
 
-from Products.CMFPlone.utils import normalizeString
-
-from base import IBaseField, BaseField, BaseForm
-from dictionaryproperty import DictionaryProperty
+from .. import _
+from base import BaseField
 
 
-class IAttachmentField(IBaseField):
+@provider(IFormFieldProvider)
+class IAttachmentField(model.Schema):
     """ Attachment field schema
     """
-    type = Choice(
+
+    directives.fieldset(
+        'settings',
+        label=_(u'Settings'),
+        fields=('type', ),
+    )
+
+    type = schema.Choice(
         vocabulary=SimpleVocabulary.fromItems(
             [("Single file", "SINGLE"), ("Multiple files", "MULTI")]),
         title=u'Type',
@@ -23,10 +32,13 @@ class IAttachmentField(IBaseField):
         required=True)
 
 
+@implementer(IAttachmentField)
 class AttachmentField(BaseField):
     """
     """
-    implements(IAttachmentField)
+
+    read_template = PageTemplateFile('attachment_read.pt')
+    edit_template = PageTemplateFile('attachment_edit.pt')
 
     def processInput(self, strValue):
         """
@@ -36,15 +48,3 @@ class AttachmentField(BaseField):
             return None
         strValue = normalizeString(strValue)
         return {strValue: 'application/unknown'}
-
-
-for f in getFields(IAttachmentField).values():
-    setattr(AttachmentField,
-            f.getName(),
-            DictionaryProperty(f, 'parameters'))
-
-
-class SettingForm(BaseForm):
-    """
-    """
-    form_fields = form.Fields(IAttachmentField)

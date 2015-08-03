@@ -1,0 +1,4 @@
+<textarea tal:define="field python:options['field'];
+        fieldvalue python:options['fieldvalue'];"
+    tal:attributes="id field/id; name field/id;"
+    tal:content="structure fieldvalue" class="pat-tinymce"></textarea>

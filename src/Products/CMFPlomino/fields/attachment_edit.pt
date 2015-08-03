@@ -1,0 +1,18 @@
+<tal:define tal:define="field python:options['field'];">
+    <tal:block tal:repeat="attachment options/fieldvalue">
+        <a href="#" tal:attributes="href python:'getfile?filename='+attachment" 
+            tal:content="attachment">filename</a>
+         <a href="#" tal:attributes="href string:deleteAttachment?field=${field/id}&filename=$attachment">
+            <img alt="Delete file" src="delete_icon.gif" />
+         </a>
+        <br/>
+
+    </tal:block>
+
+    <tal:widget tal:condition="python:field.type=='SINGLE'" >
+        <input type="file" tal:attributes="id field/id; name field/id;" />
+    </tal:widget>
+    <tal:widget tal:condition="python:not field.type=='SINGLE'" >
+        <input type="file" multiple tal:attributes="id field/id; name field/id;" />
+    </tal:widget>
+</tal:define>

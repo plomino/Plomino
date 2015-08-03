@@ -76,7 +76,7 @@ def DateToString(d, format=None, db=None):
     """
     if not format:
         if db:
-            format = db.getDateTimeFormat()
+            format = db.datetime_format
         if not format:
             format = '%Y-%m-%d'
     return d.toZone(TIMEZONE).strftime(format)
@@ -93,7 +93,7 @@ def StringToDate(str_d, format='%Y-%m-%d', db=None):
     """
     try:
         if db:
-            format = db.getDateTimeFormat()
+            format = db.datetime_format
         if format:
             dt = datetime.strptime(str_d, format)
         else:

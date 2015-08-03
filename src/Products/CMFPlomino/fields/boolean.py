@@ -1,33 +1,44 @@
 # -*- coding: utf-8 -*-
 
-from zope.formlib import form
-from zope.interface import implements
-from zope.schema import getFields
-from zope.schema import Choice
+from plone.autoform.interfaces import IFormFieldProvider
+from plone.supermodel import directives, model
+from zope.interface import implementer, provider
+from zope.pagetemplate.pagetemplatefile import PageTemplateFile
+from zope import schema
 from zope.schema.vocabulary import SimpleVocabulary
 
-from dictionaryproperty import DictionaryProperty
+from .. import _
+from base import BaseField
 
-from base import IBaseField, BaseField, BaseForm
 
-
-class IBooleanField(IBaseField):
+@provider(IFormFieldProvider)
+class IBooleanField(model.Schema):
     """
-    Boolean field schema
     """
-    widget = Choice(
-        vocabulary=SimpleVocabulary.fromItems(
-            [("Single checkbox", "CHECKBOX"), ]),
+
+    directives.fieldset(
+        'settings',
+        label=_(u'Settings'),
+        fields=('widget', ),
+    )
+
+    widget = schema.Choice(
+        vocabulary=SimpleVocabulary.fromItems([
+            ("Single checkbox", "CHECKBOX")
+        ]),
         title=u'Widget',
         description=u'Field rendering',
         default="CHECKBOX",
         required=True)
 
 
+@implementer(IBooleanField)
 class BooleanField(BaseField):
     """
     """
-    implements(IBooleanField)
+
+    read_template = PageTemplateFile('boolean_read.pt')
+    edit_template = PageTemplateFile('boolean_edit.pt')
 
     def processInput(self, strValue):
         """
@@ -36,12 +47,3 @@ class BooleanField(BaseField):
             return True
         else:
             return False
-
-for f in getFields(IBooleanField).values():
-    setattr(BooleanField, f.getName(), DictionaryProperty(f, 'parameters'))
-
-
-class SettingForm(BaseForm):
-    """
-    """
-    form_fields = form.Fields(IBooleanField)

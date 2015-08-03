@@ -1,0 +1,9 @@
+<tal:block tal:define="field python:options['field'];
+        v python:options['fieldvalue'];
+        db python:field.getParentDatabase();
+        defaultformat python:db.datetime_format;
+        fieldformat python:field.format;
+        format python:(not(fieldformat) and defaultformat) or fieldformat;"
+    tal:condition="v">
+<tal:block tal:content="python:v.strftime(format)">Datetime read template</tal:block>
+</tal:block>

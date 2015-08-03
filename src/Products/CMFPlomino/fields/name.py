@@ -2,20 +2,29 @@
 
 from jsonutil import jsonutil as json
 from plone import api
-from zope.formlib import form
-from zope.interface import implements
-from zope.schema import getFields
-from zope.schema import TextLine, Choice
+from plone.autoform.interfaces import IFormFieldProvider
+from plone.supermodel import directives, model
+from zope.interface import implementer, provider
+from zope.pagetemplate.pagetemplatefile import PageTemplateFile
+from zope import schema
 from zope.schema.vocabulary import SimpleVocabulary
 
-from base import IBaseField, BaseField, BaseForm
-from dictionaryproperty import DictionaryProperty
+from .. import _
+from base import BaseField
 
 
-class INameField(IBaseField):
+@provider(IFormFieldProvider)
+class INameField(model.Schema):
     """ Name field schema
     """
-    type = Choice(
+
+    directives.fieldset(
+        'settings',
+        label=_(u'Settings'),
+        fields=('type', 'selector', 'restricttogroup', 'separator', ),
+    )
+
+    type = schema.Choice(
         vocabulary=SimpleVocabulary.fromItems([
             ("Single valued", "SINGLE"),
             ("Multi valued", "MULTI")
@@ -24,7 +33,8 @@ class INameField(IBaseField):
         description=u'Single or multi-valued name field',
         default="SINGLE",
         required=True)
-    selector = Choice(
+
+    selector = schema.Choice(
         vocabulary=SimpleVocabulary.fromItems([
             ("Select in a list", "LIST"),
             ("Fill a field", "FIELD"),
@@ -34,38 +44,43 @@ class INameField(IBaseField):
         description=u'How the name is selected',
         default="LIST",
         required=True)
-    restricttogroup = TextLine(
+
+    restricttogroup = schema.TextLine(
         title=u'Restrict to group',
         description=u'The field will only display members of the specified'
         ' group (empty = no group restriction)',
         required=False)
-    separator = TextLine(
+
+    separator = schema.TextLine(
         title=u'Separator',
         description=u'Only apply if multiple values will be displayed',
         required=False)
 
 
+@implementer(INameField)
 class NameField(BaseField):
-    """ Field representing a Plomino user's name.
     """
-    implements(INameField)
+    """
+
+    read_template = PageTemplateFile('name_read.pt')
+    edit_template = PageTemplateFile('name_edit.pt')
 
     def _getNamesIds(self):
         """ Return Plone members as [(name, userid), ...]
 
-        Honor the restricttogroup field and the portal's DoNotListUsers
+        Honor the restricttogroup field and the portal's do_not_list_users
         property.
         """
-        if self.restricttogroup:
+        if self.context.restricttogroup:
             group = self.context.portal_groups.getGroupById(
-                self.restricttogroup)
+                self.context.restricttogroup)
             if group:
                 names_ids = [
                     (m.getProperty("fullname"), m.getProperty('id'))
                     for m in group.getGroupMembers()]
             else:
                 return []
-        elif self.context.getParentDatabase().getDoNotListUsers():
+        elif self.context.getParentDatabase().do_not_list_users:
             return None
         else:
             names_ids = [
@@ -116,12 +131,3 @@ class NameField(BaseField):
                 if filter in username or filter in userid]
 
         return json.dumps(names_ids)
-
-for f in getFields(INameField).values():
-    setattr(NameField, f.getName(), DictionaryProperty(f, 'parameters'))
-
-
-class SettingForm(BaseForm):
-    """
-    """
-    form_fields = form.Fields(INameField)

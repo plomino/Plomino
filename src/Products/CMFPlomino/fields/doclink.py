@@ -1,23 +1,39 @@
 # -*- coding: utf-8 -*-
 
 from jsonutil import jsonutil as json
-from zope.formlib import form
-from zope.interface import implements
-from zope.schema import getFields
-from zope.schema import TextLine, Text, Choice
+from plone.autoform.interfaces import IFormFieldProvider
+from plone.supermodel import directives, model
+from zope.interface import implementer, provider
+from zope.pagetemplate.pagetemplatefile import PageTemplateFile
+from zope import schema
 from zope.schema.vocabulary import SimpleVocabulary
 
-from base import IBaseField, BaseField, BaseForm
-from dictionaryproperty import DictionaryProperty
+from .. import _
 from ..config import SCRIPT_ID_DELIMITER
 from ..exceptions import PlominoScriptException
 from ..utils import asUnicode
+from base import BaseField
 
 
-class IDoclinkField(IBaseField):
+@provider(IFormFieldProvider)
+class IDoclinkField(model.Schema):
     """ Selection field schema
     """
-    widget = Choice(
+
+    directives.fieldset(
+        'settings',
+        label=_(u'Settings'),
+        fields=(
+            'widget',
+            'sourceview',
+            'labelcolumn',
+            'documentslistformula',
+            'separator',
+            'dynamictableparam',
+        ),
+    )
+
+    widget = schema.Choice(
         vocabulary=SimpleVocabulary.fromItems([
             ("Selection list", "SELECT"),
             ("Multi-selection list", "MULTISELECT"),
@@ -30,27 +46,27 @@ class IDoclinkField(IBaseField):
         default="SELECT",
         required=True)
 
-    sourceview = Choice(
+    sourceview = schema.Choice(
         vocabulary='Products.CMFPlomino.fields.vocabularies.get_views',
         title=u'Source view',
         description=u'View containing the linkable documents',
         required=False)
 
-    labelcolumn = TextLine(
+    labelcolumn = schema.TextLine(
         title=u'Label column',
         description=u'View column used as label',
         required=False)
 
-    documentslistformula = Text(
+    documentslistformula = schema.Text(
         title=u'Documents list formula',
         description=u"Formula to compute the linkable documents list "
         "(must return a list of 'label|docid_or_path')",
         required=False)
-    separator = TextLine(
+    separator = schema.TextLine(
         title=u'Separator',
         description=u'Only apply if multiple values will be displayed',
         required=False)
-    dynamictableparam = Text(
+    dynamictableparam = schema.Text(
         title=u"Dynamic Table Parameters",
         description=u"Change these options to customize the dynamic table",
         default=u"""
@@ -63,10 +79,13 @@ class IDoclinkField(IBaseField):
     )
 
 
+@implementer(IDoclinkField)
 class DoclinkField(BaseField):
     """
     """
-    implements(IDoclinkField)
+
+    read_template = PageTemplateFile('doclink_read.pt')
+    edit_template = PageTemplateFile('doclink_edit.pt')
 
     def getSelectionList(self, doc):
         """ Return the documents list, format: label|docid_or_path, use
@@ -188,12 +207,3 @@ class DoclinkField(BaseField):
                             self.labelcolumn)
         else:
             return 0
-
-for f in getFields(IDoclinkField).values():
-    setattr(DoclinkField, f.getName(), DictionaryProperty(f, 'parameters'))
-
-
-class SettingForm(BaseForm):
-    """
-    """
-    form_fields = form.Fields(IDoclinkField)

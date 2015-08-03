@@ -5,7 +5,7 @@
             v options/fieldvalue;
             form field/getParentNode;
             form_method form/getFormMethod;
-            widget python:field.getSettings('widget');">
+            widget python:field.widget;">
 
     <tal:read_dynamic condition="python:widget!='READ_STATIC'">
         <script type="text/javascript" charset="utf-8"

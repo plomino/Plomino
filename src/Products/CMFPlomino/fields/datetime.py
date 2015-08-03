@@ -1,21 +1,29 @@
 # -*- coding: utf-8 -*-
 
-from zope.formlib import form
-from zope.interface import implements
-from zope.schema import getFields
-from zope.schema import TextLine, Choice
+from plone.autoform.interfaces import IFormFieldProvider
+from plone.supermodel import directives, model
+from zope.interface import implementer, provider
+from zope.pagetemplate.pagetemplatefile import PageTemplateFile
+from zope import schema
 from zope.schema.vocabulary import SimpleVocabulary
 
-from base import IBaseField, BaseField, BaseForm
-from dictionaryproperty import DictionaryProperty
+from .. import _
 from ..utils import StringToDate
+from base import BaseField
 
 
-class IDatetimeField(IBaseField):
+@provider(IFormFieldProvider)
+class IDatetimeField(model.Schema):
+    """ DateTime field schema
     """
-    DateTime field schema
-    """
-    widget = Choice(
+
+    directives.fieldset(
+        'settings',
+        label=_(u'Settings'),
+        fields=('widget', 'format', 'startingyear'),
+    )
+
+    widget = schema.Choice(
         vocabulary=SimpleVocabulary.fromItems([
             ("Default", "SERVER"),
             ("JQuery datetime widget", "JQUERY")
@@ -24,21 +32,26 @@ class IDatetimeField(IBaseField):
         description=u'Field rendering',
         default="SERVER",
         required=True)
-    format = TextLine(
+
+    format = schema.TextLine(
         title=u'Format',
         description=u"Date/time format (if different than "
         "database default format)",
         required=False)
-    startingyear = TextLine(
+
+    startingyear = schema.TextLine(
         title=u"Starting year",
         description=u"Oldest year selectable in the calendar widget",
         required=False)
 
 
+@implementer(IDatetimeField)
 class DatetimeField(BaseField):
     """
     """
-    implements(IDatetimeField)
+
+    read_template = PageTemplateFile('datetime_read.pt')
+    edit_template = PageTemplateFile('datetime_edit.pt')
 
     def validate(self, submittedValue):
         """
@@ -85,7 +98,7 @@ class DatetimeField(BaseField):
             # using calendar widget default format
             fmt = self.format
             if not fmt:
-                fmt = self.context.getParentDatabase().getDateTimeFormat()
+                fmt = self.context.getParentDatabase().datetime_format
             return StringToDate(submittedValue, fmt)
 
     def getFieldValue(self, form, doc=None, editmode_obsolete=False,
@@ -106,15 +119,6 @@ class DatetimeField(BaseField):
         if fieldValue and isinstance(fieldValue, basestring):
             fmt = self.format
             if not fmt:
-                fmt = form.getParentDatabase().getDateTimeFormat()
+                fmt = form.getParentDatabase().datetime_format
             fieldValue = StringToDate(fieldValue, fmt)
         return fieldValue
-
-for f in getFields(IDatetimeField).values():
-    setattr(DatetimeField, f.getName(), DictionaryProperty(f, 'parameters'))
-
-
-class SettingForm(BaseForm):
-    """
-    """
-    form_fields = form.Fields(IDatetimeField)

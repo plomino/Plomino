@@ -1,35 +1,36 @@
 # -*- coding: utf-8 -*-
 
-from zope.formlib import form
-from zope.interface import implements
-from zope.schema import getFields
-from zope.schema import TextLine
+from plone.autoform.interfaces import IFormFieldProvider
+from plone.supermodel import directives, model
+from zope.interface import implementer, provider
+from zope.pagetemplate.pagetemplatefile import PageTemplateFile
+from zope import schema
 
-from base import IBaseField, BaseField, BaseForm
-from dictionaryproperty import DictionaryProperty
+from .. import _
+from base import BaseField
 
 
-class IRichtextField(IBaseField):
-    """ Text field schema
+@provider(IFormFieldProvider)
+class IRichtextField(model.Schema):
+    """ Rich text field schema
     """
-    height = TextLine(
+
+    directives.fieldset(
+        'settings',
+        label=_(u'Settings'),
+        fields=('height', ),
+    )
+
+    height = schema.TextLine(
         title=u'Height',
         description=u'Height in pixels',
         required=False)
 
 
+@implementer(IRichtextField)
 class RichtextField(BaseField):
     """
     """
-    implements(IRichtextField)
 
-for f in getFields(IRichtextField).values():
-    setattr(RichtextField,
-            f.getName(),
-            DictionaryProperty(f, 'parameters'))
-
-
-class SettingForm(BaseForm):
-    """
-    """
-    form_fields = form.Fields(IRichtextField)
+    read_template = PageTemplateFile('richtext_read.pt')
+    edit_template = PageTemplateFile('richtext_edit.pt')

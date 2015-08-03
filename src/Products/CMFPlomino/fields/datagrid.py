@@ -2,27 +2,37 @@
 
 from jsonutil import jsonutil as json
 from DateTime import DateTime
-from zope.formlib import form
-from zope.interface import implements
-from zope import component
+from plone.autoform.interfaces import IFormFieldProvider
+from plone.supermodel import directives, model
+from zope.interface import implementer, provider
 from zope.pagetemplate.pagetemplatefile import PageTemplateFile
-from zope.schema import getFields
+from zope import schema
 from zope.schema.vocabulary import SimpleVocabulary
-from zope.schema import Text, TextLine, Choice
 
-# Plomino
 from .. import _
-from Products.CMFPlomino.fields.base import IBaseField, BaseField, BaseForm
-from Products.CMFPlomino.fields.dictionaryproperty import DictionaryProperty
-from Products.CMFPlomino.contents.field import IPlominoField
-from Products.CMFPlomino.PlominoDocument import TemporaryDocument
-from Products.CMFPlomino.PlominoUtils import DateToString, PlominoTranslate
+from base import BaseField
+from ..contents.document import TemporaryDocument
+from ..utils import DateToString, PlominoTranslate
 
 
-class IDatagridField(IBaseField):
-    """ Text field schema
+@provider(IFormFieldProvider)
+class IDatagridField(model.Schema):
+    """ Datagrid field schema
     """
-    widget = Choice(
+
+    directives.fieldset(
+        'settings',
+        label=_(u'Settings'),
+        fields=(
+            'widget',
+            'associated_form',
+            'associated_form_rendering',
+            'field_mapping',
+            'jssettings',
+        ),
+    )
+
+    widget = schema.Choice(
         vocabulary=SimpleVocabulary.fromItems([
             ("Always dynamic", "REGULAR"),
             ("Static in read mode", "READ_STATIC"),
@@ -32,13 +42,13 @@ class IDatagridField(IBaseField):
         default="REGULAR",
         required=True)
 
-    associated_form = Choice(
+    associated_form = schema.Choice(
         vocabulary='Products.CMFPlomino.fields.vocabularies.get_forms',
         title=u'Associated form',
         description=u'Form to use to create/edit rows',
         required=False)
 
-    associated_form_rendering = Choice(
+    associated_form_rendering = schema.Choice(
         vocabulary=SimpleVocabulary.fromItems([
             ("Modal", "MODAL"),
             ("Inline editing", "INLINE"),
@@ -48,13 +58,13 @@ class IDatagridField(IBaseField):
         default="MODAL",
         required=True)
 
-    field_mapping = TextLine(
+    field_mapping = schema.TextLine(
         title=u'Columns/fields mapping',
         description=u'Field ids from the associated form, '
         'ordered as the columns, separated by commas',
         required=False)
 
-    jssettings = Text(
+    jssettings = schema.Text(
         title=u'Javascript settings',
         description=u'jQuery datatable parameters',
         default=u"""
@@ -76,15 +86,10 @@ class IDatagridField(IBaseField):
         required=False)
 
 
+@implementer(IDatagridField)
 class DatagridField(BaseField):
     """
     """
-    implements(IDatagridField)
-
-    plomino_field_parameters = {
-        'interface': IDatagridField,
-        'label': "Datagrid",
-        'index_type': "ZCTextIndex"}
 
     read_template = PageTemplateFile('datagrid_read.pt')
     edit_template = PageTemplateFile('datagrid_edit.pt')
@@ -300,17 +305,6 @@ class DatagridField(BaseField):
                 fieldValue = mapped
 
         return {'rawdata': rawValue, 'rendered': fieldValue}
-
-component.provideUtility(DatagridField, IPlominoField, 'DATAGRID')
-
-for f in getFields(IDatagridField).values():
-    setattr(DatagridField, f.getName(), DictionaryProperty(f, 'parameters'))
-
-
-class SettingForm(BaseForm):
-    """
-    """
-    form_fields = form.Fields(IDatagridField)
 
 
 class EditFieldsAsJson(object):

@@ -1,0 +1,6 @@
+<span tal:define="field python:options['field'];
+        fieldvalue python:options['fieldvalue'];">
+    <input type="checkbox" value="1"
+        tal:attributes="id field/id; name field/id;
+        checked python:(fieldvalue and 1) or 0;" />
+</span>

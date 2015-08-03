@@ -1,13 +1,14 @@
 # -*- coding: utf-8 -*-
 
-from zope.formlib import form
-from zope.interface import implements
-from zope.schema import getFields
-from zope.schema import Text, TextLine
+from plone.autoform.interfaces import IFormFieldProvider
+from plone.supermodel import directives, model
+from zope.interface import implementer, provider
+from zope.pagetemplate.pagetemplatefile import PageTemplateFile
+from zope import schema
 
-from base import IBaseField, BaseField, BaseForm
-from dictionaryproperty import DictionaryProperty
+from .. import _
 from ..utils import asList
+from base import BaseField
 
 js_func_template = """\
 %(jssettings)s
@@ -22,11 +23,18 @@ js_row_template = """\
 """
 
 
-class IGooglevisualizationField(IBaseField):
+@provider(IFormFieldProvider)
+class IGooglevisualizationField(model.Schema):
+    """ Google viz field schema
     """
-    Google chart field schema
-    """
-    jssettings = Text(
+
+    directives.fieldset(
+        'settings',
+        label=_(u'Settings'),
+        fields=('jssettings', 'chartid', ),
+    )
+
+    jssettings = schema.Text(
         title=u'Javascript settings',
         description=u'Google Vizualization code',
         default=u"""
@@ -59,7 +67,7 @@ function gvisudata_drawChart() {
 """,
         required=False)
 
-    chartid = TextLine(
+    chartid = schema.TextLine(
         title=u'Chart id',
         description=u"Used to name the javascript variable/functions "
         "and the DIV element",
@@ -67,6 +75,7 @@ function gvisudata_drawChart() {
         default=u'gvisudata')
 
 
+@implementer(IGooglevisualizationField)
 class GooglevisualizationField(BaseField):
     """ GooglevisualizationField allows to render a datatable using the
     Google Visualization tools.
@@ -102,7 +111,9 @@ class GooglevisualizationField(BaseField):
     More information about Google Visualization javascript APIs:
     http://code.google.com/intl/en/apis/visualization/documentation/
     """
-    implements(IGooglevisualizationField)
+
+    read_template = PageTemplateFile('googlevisualization_read.pt')
+    edit_template = PageTemplateFile('googlevisualization_edit.pt')
 
     def validate(self, submittedValue):
         """
@@ -158,15 +169,3 @@ class GooglevisualizationField(BaseField):
             'rows': ''.join(rows)}
 
         return js
-
-
-for f in getFields(IGooglevisualizationField).values():
-    setattr(GooglevisualizationField,
-            f.getName(),
-            DictionaryProperty(f, 'parameters'))
-
-
-class SettingForm(BaseForm):
-    """
-    """
-    form_fields = form.Fields(IGooglevisualizationField)

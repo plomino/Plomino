@@ -2,7 +2,6 @@
 
 from AccessControl import ClassSecurityInfo
 from AccessControl import getSecurityManager
-from Persistence import Persistent
 from plone import api
 from Products.CMFCore import permissions
 from Products.DCWorkflow.DCWorkflow import DCWorkflowDefinition
@@ -12,7 +11,7 @@ import config
 from utils import asList
 
 
-class PlominoAccessControl(Persistent):
+class AccessControl:
     """ Plomino access control utilities
     """
     security = ClassSecurityInfo()
@@ -49,7 +48,7 @@ class PlominoAccessControl(Persistent):
             config.CREATE_PERMISSION,
             config.DESIGN_PERMISSION,
             config.ADD_CONTENT_PERMISSION,
-            config.ADD_config.DESIGN_PERMISSION,
+            config.ADD_DESIGN_PERMISSION,
             permissions.View,
             permissions.AccessContentsInformation,
             'Copy or Move',
@@ -62,7 +61,7 @@ class PlominoAccessControl(Persistent):
             config.CREATE_PERMISSION,
             config.DESIGN_PERMISSION,
             config.ADD_CONTENT_PERMISSION,
-            config.ADD_config.DESIGN_PERMISSION,
+            config.ADD_DESIGN_PERMISSION,
             config.ACL_PERMISSION,
             permissions.View,
             permissions.AccessContentsInformation,

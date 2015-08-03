@@ -1,22 +1,30 @@
 # -*- coding: utf-8 -*-
 
 from decimal import Decimal
-from zope.formlib import form
-from zope.interface import implements
-from zope.schema import getFields
-from zope.schema import TextLine, Choice
+from plone.autoform.interfaces import IFormFieldProvider
+from plone.supermodel import directives, model
+from zope.interface import implementer, provider
+from zope.pagetemplate.pagetemplatefile import PageTemplateFile
+from zope import schema
 from zope.schema.vocabulary import SimpleVocabulary
 
 from .. import _
 from ..utils import PlominoTranslate
-from base import IBaseField, BaseField, BaseForm
-from dictionaryproperty import DictionaryProperty
+from base import BaseField
 
 
-class INumberField(IBaseField):
+@provider(IFormFieldProvider)
+class INumberField(model.Schema):
     """ Number field schema
     """
-    type = Choice(
+
+    directives.fieldset(
+        'settings',
+        label=_(u'Settings'),
+        fields=('type', 'size', 'format', ),
+    )
+
+    type = schema.Choice(
         vocabulary=SimpleVocabulary.fromItems([
             ("Integer", "INTEGER"),
             ("Float", "FLOAT"),
@@ -26,20 +34,25 @@ class INumberField(IBaseField):
         description=u'Number type',
         default="INTEGER",
         required=True)
-    size = TextLine(
+
+    size = schema.TextLine(
         title=u'Size',
         description=u'Length',
         required=False)
-    format = TextLine(
+
+    format = schema.TextLine(
         title=u'Format',
         description=u'Number formatting (example: %1.2f)',
         required=False)
 
 
+@implementer(INumberField)
 class NumberField(BaseField):
     """
     """
-    implements(INumberField)
+
+    read_template = PageTemplateFile('number_read.pt')
+    edit_template = PageTemplateFile('number_edit.pt')
 
     def validate(self, submittedValue):
         """
@@ -103,12 +116,3 @@ class NumberField(BaseField):
         else:
             str_v = str(v)
         return str_v
-
-for f in getFields(INumberField).values():
-    setattr(NumberField, f.getName(), DictionaryProperty(f, 'parameters'))
-
-
-class SettingForm(BaseForm):
-    """
-    """
-    form_fields = form.Fields(INumberField)

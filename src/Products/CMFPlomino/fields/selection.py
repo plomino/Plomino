@@ -1,23 +1,38 @@
 # -*- coding: utf-8 -*-
 
 from jsonutil import jsonutil as json
-from zope.formlib import form
-from zope.interface import implements
-from zope.schema import getFields
-from zope.schema import TextLine, Text, List, Choice
+from plone.autoform.interfaces import IFormFieldProvider
+from plone.supermodel import directives, model
+from zope.interface import implementer, provider
+from zope.pagetemplate.pagetemplatefile import PageTemplateFile
+from zope import schema
 from zope.schema.vocabulary import SimpleVocabulary
-from dictionaryproperty import DictionaryProperty
 
+from .. import _
 from ..config import SCRIPT_ID_DELIMITER
 from ..exceptions import PlominoScriptException
 from ..utils import asUnicode
-from base import IBaseField, BaseField, BaseForm
+from base import BaseField
 
 
-class ISelectionField(IBaseField):
+@provider(IFormFieldProvider)
+class ISelectionField(model.Schema):
     """ Selection field schema
     """
-    widget = Choice(
+
+    directives.fieldset(
+        'settings',
+        label=_(u'Settings'),
+        fields=(
+            'widget',
+            'selectionlist',
+            'selectionlistformula',
+            'separator',
+            'dynamictableparam',
+        ),
+    )
+
+    widget = schema.Choice(
         vocabulary=SimpleVocabulary.fromItems([
             ("Selection list", "SELECT"),
             ("Multi-selection list", "MULTISELECT"),
@@ -29,23 +44,26 @@ class ISelectionField(IBaseField):
         description=u'Field rendering',
         default="SELECT",
         required=True)
-    selectionlist = List(
+
+    selectionlist = schema.List(
         title=u'Selection list',
         description=u"List of values to select, one per line, "
         "formatted as 'label|value'",
         required=False,
         default=[],
-        value_type=TextLine(title=u'Entry'))
-    selectionlistformula = Text(
+        value_type=schema.TextLine(title=u'Entry'))
+
+    selectionlistformula = schema.Text(
         title=u'Selection list formula',
         description=u'Formula to compute the selection list elements',
         required=False)
-    separator = TextLine(
+
+    separator = schema.TextLine(
         title=u'Separator',
         description=u'Only apply if multiple values will be displayed',
         required=False)
 
-    dynamictableparam = Text(
+    dynamictableparam = schema.Text(
         title=u"Dynamic Table Parameters",
         description=u"Change these options to customize the dynamic table",
         default=u"""
@@ -58,17 +76,20 @@ class ISelectionField(IBaseField):
     )
 
 
+@implementer(ISelectionField)
 class SelectionField(BaseField):
     """
     """
-    implements(ISelectionField)
+
+    read_template = PageTemplateFile('selection_read.pt')
+    edit_template = PageTemplateFile('selection_edit.pt')
 
     def getSelectionList(self, doc):
         """ Return the values list.
         Format: label|value, use label as value if no label.
         """
         # if formula available, use formula, else use manual entries
-        f = self.selectionlistformula
+        f = self.context.selectionlistformula
         if f:
             # if no doc provided (if OpenForm action), we use the PlominoForm
             if doc:
@@ -90,7 +111,7 @@ class SelectionField(BaseField):
                     path=p + '/getSettings?key=selectionlistformula')
                 s = []
         else:
-            s = self.selectionlist
+            s = self.context.selectionlist
             if not s:
                 return []
 
@@ -118,12 +139,3 @@ class SelectionField(BaseField):
         """ Return a JSON table storing documents to be displayed
         """
         return json.dumps([v.split('|')[::-1] for v in selection])
-
-for f in getFields(ISelectionField).values():
-    setattr(SelectionField, f.getName(), DictionaryProperty(f, 'parameters'))
-
-
-class SettingForm(BaseForm):
-    """
-    """
-    form_fields = form.Fields(ISelectionField)

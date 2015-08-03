@@ -1,0 +1,50 @@
+<tal:block tal:define="field python:options['field'];
+    v python:options['fieldvalue'];
+    db python:field.getParentDatabase();
+    defaultformat python:db.datetime_format;
+    fieldformat python:field.format;
+    starting_year python:field.startingyear;
+    format python:(not(fieldformat) and defaultformat) or fieldformat;
+    hm python:('%H' in format or '%I' in format);
+    ymd python:('%Y' in format or '%y' in format);
+    mandatory python: 'mandatory' if field.mandatory else '';
+    widget python:field.widget;">
+    <tal:widget tal:condition="python: widget=='JQUERY'">
+        <input type="text"
+            tal:define="inputvalue python: '' if not v else v.strftime(format);"
+            tal:attributes="name field/id;
+                id field/id;
+                class python: 'date' if not mandatory else 'date mandatory';
+                data-datepicker-dateformat python: format.replace('%Y', 'yy').replace('%m', 'mm').replace('%d', 'dd');
+                data-datepicker-mindate python: '' if (not starting_year) or (not starting_year.isdigit()) else DateTime(int(starting_year), 1, 1).strftime(format);
+                value inputvalue">
+    </tal:widget>
+    <tal:widget tal:condition="python:widget=='SERVER'">
+        <tal:block tal:condition="python:v">
+            <tal:define tal:define="id field/id;
+                show_hm hm|nothing;
+                show_ymd ymd|nothing;
+                inputvalue python:same_type(v, '') and v or v.strftime(' '.join([ymd_fmt, hm_fmt]).strip());">
+                <input tal:attributes="
+                    type python:(show_hm and show_ymd and 'datetime-local') or (show_hm and 'time') or (show_ymd and 'date');
+                    min python: (starting_year and str(starting_year)+'-01-01') or '';
+                    name field/id;
+                    id field/id;
+                    value inputvalue;
+                    ">
+            </tal:define>
+        </tal:block>
+        <tal:block tal:condition="python:not(v)">
+            <tal:define tal:define="id field/id;
+                show_hm hm|nothing;
+                show_ymd ymd|nothing;">
+                <input tal:attributes="
+                    type python:(show_hm and show_ymd and 'datetime-local') or (show_hm and 'time') or (show_ymd and 'date');
+                    min python: (starting_year and str(starting_year)+'-01-01') or '';
+                    name field/id;
+                    id field/id;
+                    ">
+            </tal:define>
+        </tal:block>
+    </tal:widget>
+</tal:block>
