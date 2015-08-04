@@ -2,6 +2,8 @@ import os
 import logging
 logger = logging.getLogger('Plomino')
 
+VERSION = "2.0"
+
 TIMEZONE = os.environ.get('TZ', None)
 if TIMEZONE:
     from DateTime import Timezones
@@ -25,6 +27,10 @@ ACL_PERMISSION = 'CMFPlomino: Control Database ACL'
 SCRIPT_ID_DELIMITER = '_-_'
 
 PLOMINO_REQUEST_CACHE_KEY = "plomino.cache"
+
+MSG_SEPARATOR = '\n'
+
+PLOMINO_RESOURCE_NAME = "plomino"
 
 FIELD_TYPES = {
     "TEXT": ["Text", "FieldIndex"],

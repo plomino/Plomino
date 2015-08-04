@@ -38,8 +38,6 @@ class IDoclinkField(model.Schema):
             ("Selection list", "SELECT"),
             ("Multi-selection list", "MULTISELECT"),
             ("Embedded view", "VIEW"),
-            ("Dynamic table", "DYNAMICTABLE"),
-            ("Dynamic picklist", "PICKLIST")
         ]),
         title=u'Widget',
         description=u'Field rendering',
@@ -123,7 +121,7 @@ class DoclinkField(BaseField):
                         self.context.id,
                         'DocumentListFormula']),
                     obj,
-                    lambda: f)
+                    f)
             except PlominoScriptException, e:
                 p = self.context.absolute_url_path()
                 e.reportError(

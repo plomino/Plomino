@@ -6,24 +6,81 @@
     metal:use-macro="context/main_template/macros/master"
     i18n:domain="plone">
 <body>
-<metal:content-core fill-slot="content-core">
-    <form enctype="multipart/form-data"
-        method="POST"
-        id="plomino_form"
-        tal:define="hasCreatePermissionOnDatabase python:view.context.hasCreatePermission(view.context.getParentDatabase());
-            hasCreatePermissionOnForm python:view.context.hasCreatePermission(view.context);"
-        tal:attributes="
-            name context/id;
-            action string:${context/absolute_url}/createDocument;">
 
-        <tal:layout
-            tal:content="structure python:context.openBlankForm(request)">layout</tal:layout>
+<metal:javascript_head fill-slot="javascript_head_slot">
 
-        <tal:block_has_createpermission
-            condition="python:hasCreatePermissionOnDatabase and hasCreatePermissionOnForm">
-            <span metal:use-macro="context/plomino_actions/macros/OpenFormActionBar">display form actions</span><br/>
-        </tal:block_has_createpermission>
-    </form>
-</metal:content-core>
+    <script 
+        tal:condition="context/hasDynamicHidewhen"
+        tal:define="form python:context;
+                    form_method python:form.form_method;
+                    "
+        type="text/javascript"
+        tal:content="string:
+function refreshHidewhen() {
+    var onsuccess = function(data, textStatus, xhr) {
+        for (var hw in data)
+            jQuery('.hidewhen-' + hw).css('display', data[hw]?'none':'block');
+    }
+    jQuery.ajax({
+        type: '${form_method}',
+        url: 'computehidewhens',
+        data: jQuery('#plomino_form').serialize(),
+        success: onsuccess,
+        dataType: 'json' 
+    });
+}
+jQuery(document).ready( function() {
+    jQuery('#plomino_form :input').change(refreshHidewhen);
+});
+">
+    </script>
+    <tal:block_hasjsresources 
+        tal:define="jsresources python:context.get_resources_js()"
+        tal:condition="jsresources"
+        tal:repeat="js jsresources">
+        <script
+            type="text/javascript"
+            charset="iso-8859-1"
+            tal:attributes="src js">
+        </script>
+    </tal:block_hasjsresources>
+</metal:javascript_head>
+
+<metal:css fill-slot="style_slot">
+    <tal:block_hascssresources
+        tal:define="cssresources python:context.get_resources_css()"
+        tal:condition="cssresources"
+        tal:repeat="css cssresources">
+        <link rel="stylesheet"
+            type="text/css"
+            media="all"
+            tal:attributes="href css" />
+    </tal:block_hascssresources>
+</metal:css>
+
+<metal:content fill-slot="main">
+
+    <h1 class="documentFirstHeading" tal:content="context/Title">Title</h1>
+
+    <div id="content-core">
+        <form enctype="multipart/form-data"
+            method="POST"
+            id="plomino_form"
+            tal:define="hasCreatePermissionOnDatabase python:context.hasCreatePermission(context.getParentDatabase());
+                hasCreatePermissionOnForm python:context.hasCreatePermission(context);"
+            tal:attributes="
+                name context/id;
+                action string:${context/absolute_url}/createDocument;">
+
+            <tal:layout
+                tal:content="structure python:context.openBlankForm(request)">layout</tal:layout>
+
+            <tal:block_has_createpermission
+                condition="python:hasCreatePermissionOnDatabase and hasCreatePermissionOnForm">
+                <span metal:use-macro="context/plomino_actions/macros/OpenFormActionBar">display form actions</span><br/>
+            </tal:block_has_createpermission>
+        </form>
+    </div>
+</metal:content>
 </body>
 </html>

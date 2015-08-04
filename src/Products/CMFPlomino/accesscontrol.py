@@ -79,15 +79,6 @@ class AccessControl:
         "PlominoManager",
         "Owner"]
 
-    # Methods
-    security.declarePublic('__init__')
-
-    def __init__(self):
-        """
-        """
-        self.ACL_initialized = 0
-        self.UserRoles = {}
-
     def _redirectIfResponse(self, target):
         request = getattr(self, 'REQUEST', None)
         response = getattr(request, 'RESPONSE', None)

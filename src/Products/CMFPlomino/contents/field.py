@@ -7,7 +7,7 @@ from zope.interface import implements
 from zope.schema.vocabulary import SimpleVocabulary, SimpleTerm
 from ZPublisher.HTTPRequest import FileUpload
 
-from .. import _
+from .. import _, plomino_profiler
 from ..config import SCRIPT_ID_DELIMITER, FIELD_MODES, FIELD_TYPES
 from ..utils import asList, asUnicode
 from .. import fields
@@ -179,6 +179,7 @@ class PlominoField(Item):
 
         return v
 
+    @plomino_profiler('fields')
     def getFieldRender(
             self, form, doc, editmode, creation=False, request=None):
         """ Rendering the field

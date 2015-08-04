@@ -73,6 +73,7 @@ class IPlominoForm(model.Schema):
             default="Document title formula"),
         description=_('CMFPlomino_help_DocumentTitle',
             default='Compute the document title'),
+        required=False,
     )
 
     dynamic_document_title = schema.Bool(
@@ -96,6 +97,7 @@ class IPlominoForm(model.Schema):
         description=_('CMFPlomino_help_DocumentId',
             default='Compute the document id at creation. '
             '(Undergoes normalization.)'),
+        required=False,
     )
 
     hide_default_actions = schema.Bool(
@@ -256,7 +258,10 @@ class PlominoForm(Container):
         Pass through fully specified URLs and un-found URLs (they may be
         statically served outside of Zope).
         """
-        value = getattr(self, field_name).splitlines()
+        value = getattr(self, field_name)
+        if not value:
+            return
+        value = value.splitlines()
         for url in value:
             url = url.strip()
             if url:
@@ -326,7 +331,7 @@ class PlominoForm(Container):
         ################################################################
         # Add a document to the database
         doc = db.createDocument()
-        doc.setItem('Form', self.getFormName())
+        doc.setItem('Form', self.id)
 
         # execute the onCreateDocument code of the form
         valid = ''
@@ -724,7 +729,7 @@ class PlominoForm(Container):
                     SCRIPT_ID_DELIMITER.join(
                         ['hidewhen', self.id, hidewhen.id, 'formula']),
                     target,
-                    hidewhen.Formula)
+                    hidewhen.formula)
             except PlominoScriptException, e:
                 if not silent_error:
                     # applyHideWhen is called by getFormFields and
@@ -842,7 +847,7 @@ class PlominoForm(Container):
                             'hidewhen', parent_form.id, hidewhen.id, 'formula'
                         ]),
                         target,
-                        hidewhen.Formula)
+                        hidewhen.formula)
                 except PlominoScriptException, e:
                     e.reportError(
                         '%s hide-when formula failed' % hidewhen.id)
@@ -884,7 +889,7 @@ class PlominoForm(Container):
                 cachekey = self.runFormulaScript(
                     "cache_" + self.id + "_" + cacheid + "_formula",
                     target,
-                    cacheformula.Formula)
+                    cacheformula.formula)
             except PlominoScriptException, e:
                 e.reportError(
                     '%s cache formula failed' % cacheid,
@@ -1025,7 +1030,7 @@ class PlominoForm(Container):
                     SCRIPT_ID_DELIMITER.join(
                         ['field', self.id, fieldname, 'formula']),
                     target,
-                    field.Formula,
+                    field.formula,
                     True,
                     self,
                 )
@@ -1231,7 +1236,7 @@ class PlominoForm(Container):
                             SCRIPT_ID_DELIMITER.join(
                                 ['form', self.id, 'searchformula']),
                             doc.getObject(),
-                            self.SearchFormula)
+                            self.searchFormula)
                         if valid:
                             filteredResults.append(doc)
                 except PlominoScriptException, e:
@@ -1389,7 +1394,7 @@ class PlominoForm(Container):
                                 'field', self.id, f.id,
                                 'ValidationFormula']),
                             tmp,
-                            f.ValidationFormula)
+                            f.validation_formula)
                     except PlominoScriptException, e:
                         e.reportError('%s validation formula failed' % f.id)
                     if error_msg:

@@ -93,20 +93,22 @@ class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
         else:
             raise Unauthorized("You cannot read this content")
 
+    def absolute_url(self):
+        db_url = self.getParentDatabase().absolute_url()
+        return "%s/document/%s" % (db_url, self.id)
+
     def doc_path(self):
-        return self.getPhysicalPath()
+        db_path = self.getParentDatabase().getPhysicalPath()
+        return list(db_path) + ["document", self.id]
 
     def doc_url(self):
-        """ Return valid and nice url:
-        - hide plomino_documents
-        - use physicalPathToURL if REQUEST available
+        """ Return valid and nice url
         """
         path = self.doc_path()
-        short_path = [p for p in path if p != "plomino_documents"]
         if hasattr(self, "REQUEST"):
-            return self.REQUEST.physicalPathToURL(short_path)
+            return self.REQUEST.physicalPathToURL(path)
         else:
-            return "/".join(short_path)
+            return "/".join(path)
 
     security.declarePublic('setItem')
 
@@ -385,7 +387,7 @@ class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
             error = self.runFormulaScript(
                 SCRIPT_ID_DELIMITER.join(['form', form.id, 'beforesave']),
                 self,
-                form.getBeforeSaveDocument)
+                form.beforeSaveDocument)
         except PlominoScriptException, e:
             e.reportError('Form submitted, but beforeSave formula failed')
 
@@ -396,7 +398,7 @@ class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
         if errors:
             return form.notifyErrors(errors)
 
-        self.setItem('Form', form.getFormName())
+        self.setItem('Form', form.id)
 
         # process editable fields (we read the submitted value in the request)
         form.readInputs(self, REQUEST, process_attachments=True)
@@ -441,7 +443,7 @@ class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
         if not form:
             form = self.getForm()
         else:
-            self.setItem('Form', form.getFormName())
+            self.setItem('Form', form.id)
 
         db = self.getParentDatabase()
         if form:
@@ -455,14 +457,14 @@ class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
                     self.setItem(fieldname, result)
 
             # compute the document title
-            title_formula = form.getDocumentTitle()
+            title_formula = form.document_title
             if title_formula:
                 # Use the formula if we have one
                 try:
                     title = self.runFormulaScript(
                         SCRIPT_ID_DELIMITER.join(['form', form.id, 'title']),
                         self,
-                        form.DocumentTitle)
+                        form.document_title)
                     if title != self.Title():
                         self.setTitle(title)
                 except PlominoScriptException, e:
@@ -477,7 +479,7 @@ class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
                     self.setTitle(title)
 
             # update the document id
-            if creation and form.getDocumentId():
+            if creation and form.document_id:
                 new_id = self.generateNewId()
                 if new_id:
                     transaction.savepoint(optimistic=True)
@@ -511,7 +513,7 @@ class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
             # update index
             db.getIndex().indexDocument(self)
             # update portal_catalog
-            if db.getIndexInPortal():
+            if db.indexInPortal:
                 db.portal_catalog.catalog_object(
                     self,
                     "/".join(db.getPhysicalPath() + (self.id,))
@@ -525,7 +527,7 @@ class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
 
         onOpenDocument_error = ''
         try:
-            if form.getOnOpenDocument():
+            if form.onOpenDocument:
                 onOpenDocument_error = self.runFormulaScript(
                     SCRIPT_ID_DELIMITER.join(['form', form.id, 'onopen']),
                     self,
@@ -597,17 +599,17 @@ class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
         """ Return the stored title or compute the title (if dynamic).
         """
         form = self.getForm()
-        if form.getDynamicDocumentTitle():
+        if form.dynamic_document_title:
             # compute the document title
-            title_formula = form.getDocumentTitle()
+            title_formula = form.document_title
             if title_formula:
                 # Use the formula if we have one
                 try:
                     title = self.runFormulaScript(
                         SCRIPT_ID_DELIMITER.join(['form', form.id, 'title']),
                         self,
-                        form.DocumentTitle)
-                    if (form.getStoreDynamicDocumentTitle() and
+                        form.document_title)
+                    if (form.store_dynamic_document_title and
                             title != super(PlominoDocument, self).Title()):
                         self.setTitle(title)
                     return title
@@ -680,7 +682,7 @@ class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
             result = self.runFormulaScript(
                 SCRIPT_ID_DELIMITER.join(['view', v.id, 'selection']),
                 self,
-                v.SelectionFormula)
+                v.selection_formula)
             return result
         except PlominoScriptException, e:
             e.reportError('%s view selection formula failed' % viewname)
@@ -700,7 +702,7 @@ class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
             return self.runFormulaScript(
                 SCRIPT_ID_DELIMITER.join(['column', v.id, c.id, 'formula']),
                 self,
-                c.Formula)
+                c.formula)
         except PlominoScriptException, e:
             e.reportError('"%s" column formula failed in %s view' % (
                 c.Title(), viewname))
@@ -744,7 +746,7 @@ class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
         """ Return value for the Plone catalog's `SearchableText` index.
         """
         values = []
-        index_attachments = self.getParentDatabase().getIndexAttachments()
+        index_attachments = self.getParentDatabase().indexAttachments
         form = self.getForm()
 
         for itemname in self.items.keys():
@@ -961,7 +963,7 @@ class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
         if not form:
             return None
 
-        if not form.getDocumentId():
+        if not form.document_id:
             return None
 
         result = None
@@ -969,7 +971,7 @@ class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
             result = self.runFormulaScript(
                 SCRIPT_ID_DELIMITER.join(['form', form.id, 'docid']),
                 self,
-                form.DocumentId
+                form.document_id
             )
         except PlominoScriptException, e:
             e.reportError('Document id formula failed')

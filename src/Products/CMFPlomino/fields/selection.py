@@ -38,7 +38,6 @@ class ISelectionField(model.Schema):
             ("Multi-selection list", "MULTISELECT"),
             ("Checkboxes", "CHECKBOX"),
             ("Radio buttons", "RADIO"),
-            ("Dynamic picklist", "PICKLIST")
         ]),
         title=u'Widget',
         description=u'Field rendering',
@@ -102,7 +101,7 @@ class SelectionField(BaseField):
                         self.context.getParentNode().id,
                         self.context.id, 'SelectionListFormula']),
                     obj,
-                    lambda: f)
+                    f)
             except PlominoScriptException, e:
                 p = self.context.absolute_url_path()
                 e.reportError(

@@ -1,17 +1,23 @@
-from AccessControl import ClassSecurityInfo
+from AccessControl import ClassSecurityInfo, Unauthorized
+from OFS.ObjectManager import ObjectManager
 from plone.dexterity.content import Container
 from plone.memoize.interfaces import ICacheChooser
 from plone.supermodel import model
+from Products.CMFCore.PortalFolder import PortalFolderBase as PortalFolder
+import uuid
 from zope import schema
 from zope.annotation.interfaces import IAnnotations
 from zope.component import queryUtility
+from zope.container.contained import ObjectRemovedEvent
+from zope import event
 from zope.interface import implements
 
 from .. import _, config
 from ..accesscontrol import AccessControl
-from ..exceptions import PlominoCacheException
+from ..exceptions import PlominoCacheException, PlominoScriptException
 from ..interfaces import IPlominoContext
 from ..design import DesignManager
+from ..document import addPlominoDocument
 
 security = ClassSecurityInfo()
 
@@ -30,6 +36,39 @@ class IPlominoDatabase(model.Schema):
         required=False,
     )
 
+    indexAttachments = schema.Bool(
+        title=_('CMFPlomino_label_IndexAttachments',
+            default="Index file attachments"),
+        description=_('CMFPlomino_help_IndexAttachments',
+            default="If enabled, files attached in File Attachment fields "
+            "will be indexed. It might increase the index size."),
+        default=False,
+    )
+
+    fulltextIndex = schema.Bool(
+        title=_('CMFPlomino_label_FulltextIndex',
+            default="Local full-text index"),
+        description=_('CMFPlomino_help_FulltextIndex',
+            default='If enabled, documents are full-text indexed in the '
+            'Plomino index.'),
+        default=True,
+    )
+
+    indexInPortal = schema.Bool(
+        title=_('CMFPlomino_label_IndexInPortal',
+            default="Index documents in Plone portal"),
+        description=_('CMFPlomino_help_IndexInPortal',
+            default="If enabled, documents are searchable in Plone search."),
+        default=False,
+    )
+
+    debugMode = schema.Bool(
+        title=_('CMFPlomino_label_debugMode', default="Debug mode"),
+        description=_('CMFPlomino_help_debugMode', default="If enabled, script"
+        " and formula errors are logged."),
+        default=False,
+    )
+
     datetime_format = schema.TextLine(
         title=_('CMFPlomino_label_DateTimeFormat', default="Date/time format"),
         description=_(
@@ -39,11 +78,19 @@ class IPlominoDatabase(model.Schema):
         required=False,
     )
 
-    debugMode = schema.Bool(
-        title=_('CMFPlomino_label_debugMode', default="Debug mode"),
-        description=_('CMFPlomino_help_debugMode', default="If enabled, script"
-        " and formula errors are logged."),
-        default=False,
+    startPage = schema.TextLine(
+        title=_('CMFPlomino_label_StartPage', default="Start page"),
+        description=_('CMFPlomino_help_StartPage',
+            default="Element to display instead of the regular database "
+            "menu."),
+        required=False,
+    )
+
+    i18n = schema.TextLine(
+        title=_('CMFPlomino_label_i18n', default="i18n domain"),
+        description=_('CMFPlomino_help_i18n',
+            default="i18n domain to use for Plomino internal translation"),
+        required=False,
     )
 
     do_not_list_users = schema.Bool(
@@ -66,9 +113,147 @@ class IPlominoDatabase(model.Schema):
         default=False,
     )
 
+    isDatabaseTemplate = schema.Bool(
+        title=_("CMFPlomino_label_IsDatabaseTemplate",
+            default="Use it as a template"),
+        description=_("CMFPlomino_help_IsDatabaseTemplate",
+            default="If True, the database design can be exported in a "
+            "GenericSetup profile and can then be used as a template in "
+            "any Plomino database."),
+        default=False,
+    )
+
 
 class PlominoDatabase(Container, AccessControl, DesignManager):
     implements(IPlominoDatabase, IPlominoContext)
+
+    @property
+    def documents(self):
+        return self.plomino_documents
+
+    def allowedContentTypes(self):
+        # Make sure PlominoDocument is hidden in Plone "Add..." menu
+        filterOut = ['PlominoDocument']
+        types = PortalFolder.allowedContentTypes(self)
+        return [ctype for ctype in types if ctype.getId() not in filterOut]
+
+    security.declarePublic('getStatus')
+
+    def getStatus(self):
+        """ Return DB current status
+        """
+        return getattr(self, "plomino_status", "Ready")
+
+    security.declarePublic('setStatus')
+
+    def setStatus(self, status):
+        """ Set DB current status
+        """
+        self.plomino_status = status
+
+    security.declarePublic('checkBeforeOpenDatabase')
+
+    def checkBeforeOpenDatabase(self):
+        """ Check if custom start page
+        """
+        if self.checkUserPermission(config.READ_PERMISSION):
+            try:
+                if self.StartPage:
+                    if hasattr(self, self.getStartPage()):
+                        target = getattr(self, self.getStartPage())
+                    return getattr(target, target.defaultView())()
+                else:
+                    return self.OpenDatabase()
+            except:
+                return self.OpenDatabase()
+        else:
+            raise Unauthorized("You cannot read this content")
+
+    security.declarePublic('getForm')
+
+    def getForm(self, formname):
+        """ Return a PlominoForm
+        """
+        obj = getattr(self, formname, None)
+        if obj and obj.__class__.__name__ == 'PlominoForm':
+            return obj
+
+    security.declarePublic('getForms')
+
+    def getForms(self, sortbyid=True):
+        """ Return the database forms list
+        """
+        form_list = [obj for obj in self.objectValues()
+            if obj.__class__.__name__ == 'PlominoForm']
+        if sortbyid:
+            form_list.sort(key=lambda elt: elt.id.lower())
+        else:
+            form_list.sort(key=lambda elt: elt.getPosition())
+        return form_list
+
+    security.declarePublic('getView')
+
+    def getView(self, viewname):
+        """ Return a PlominoView
+        """
+        obj = getattr(self, viewname, None)
+        if obj and obj.__class__.__name__ == 'PlominoView':
+            return obj
+
+    def getViews(self, sortbyid=True):
+        """ Return the list of PlominoView instances in the database.
+        """
+        view_list = [obj for obj in self.objectValues()
+            if obj.__class__.__name__ == 'PlominoView']
+        if sortbyid:
+            view_list.sort(key=lambda elt: elt.id.lower())
+        else:
+            view_list.sort(key=lambda elt: elt.getPosition())
+        return view_list
+
+    security.declarePublic('getAgent')
+
+    def getAgent(self, agentid):
+        """ Return a PlominoAgent, or None.
+        """
+        obj = getattr(self, agentid, None)
+        if obj and obj.__class__.__name__ == 'PlominoAgent':
+            return obj
+
+    security.declarePublic('getAgents')
+
+    def getAgents(self):
+        """ Returns all the PlominoAgent objects stored in the database.
+        """
+        agent_list = [obj for obj in self.objectValues()
+            if obj.__class__.__name__ == 'PlominoAgent']
+        agent_list.sort(key=lambda agent: agent.id.lower())
+        return agent_list
+
+    security.declareProtected(config.CREATE_PERMISSION, 'createDocument')
+
+    def createDocument(self, docid=None):
+        """ Invoke PlominoDocument factory.
+        Returns a new empty document.
+        """
+        if not docid:
+            docid = str(uuid.uuid4())
+        self.documents[docid] = addPlominoDocument(docid)
+        doc = self.documents.get(docid)
+        return doc
+
+    security.declarePublic('getDocument')
+
+    def getDocument(self, docid):
+        """ Return a PlominoDocument, or None.
+        If ``docid`` contains a "/", assume it's a path not a docid.
+        """
+        if not docid:
+            return None
+        if "/" in docid:
+            # let's assume it is a path
+            docid = docid.split("/")[-1]
+        return self.documents.get(docid)
 
     security.declareProtected(config.READ_PERMISSION, 'getParentDatabase')
 
@@ -81,17 +266,88 @@ class PlominoDatabase(Container, AccessControl, DesignManager):
             obj = obj.aq_parent
         return obj
 
-    def getViews(self, sortbyid=True):
-        """ Return the list of PlominoView instances in the database.
+    security.declareProtected(config.REMOVE_PERMISSION, 'deleteDocument')
+
+    def deleteDocument(self, doc):
+        """ Delete the document from database.
         """
-        view_list = [obj for obj in self.objectValues()
-            if obj.__class__.__name__ == 'PlominoView']
-        view_obj_list = [a for a in view_list]
-        if sortbyid:
-            view_obj_list.sort(key=lambda elt: elt.id.lower())
+        if not self.isCurrentUserAuthor(doc):
+            if hasattr(self, 'REQUEST'):
+                self.writeMessageOnPage("You cannot delete this document.",
+                        self.REQUEST, error=False)
+            raise Unauthorized("You cannot delete this document.")
         else:
-            view_obj_list.sort(key=lambda elt: elt.getPosition())
-        return view_obj_list
+            # execute the onDeleteDocument code of the form
+            form = doc.getForm()
+            if form:
+                message = None
+                try:
+                    message = self.runFormulaScript(
+                        config.SCRIPT_ID_DELIMITER.join(
+                            ['form', form.id, 'ondelete']),
+                        doc,
+                        form.onDeleteDocument)
+                except PlominoScriptException, e:
+                    e.reportError('Document has been deleted, '
+                            'but onDelete event failed.')
+                if message:
+                    # Abort deletion
+                    if hasattr(self, 'REQUEST'):
+                        doc.writeMessageOnPage(message, self.REQUEST, False)
+                        self.REQUEST.RESPONSE.redirect(doc.absolute_url())
+                    return None
+
+            self.getIndex().unindexDocument(doc)
+            if self.indexInPortal:
+                self.portal_catalog.uncatalog_object(
+                    "/".join(self.getPhysicalPath() + (doc.id,)))
+            event.notify(ObjectRemovedEvent(doc, self.documents, doc.id))
+            self.documents._delOb(doc.id)
+
+    security.declareProtected(config.REMOVE_PERMISSION, 'deleteDocuments')
+
+    def deleteDocuments(self, ids=None, massive=True):
+        """ Batch delete documents from database.
+        If ``massive`` is True, the ``onDelete`` formula and index
+        updating are not performed (use ``refreshDB`` to update).
+        """
+        if ids is None:
+            ids = [doc.id for doc in self.getAllDocuments()]
+
+        if massive:
+            ObjectManager.manage_delObjects(self.documents, ids)
+        else:
+            for id in ids:
+                self.deleteDocument(self.getDocument(id))
+
+    security.declareProtected(
+        config.REMOVE_PERMISSION, 'manage_deleteDocuments')
+
+    def manage_deleteDocuments(self, REQUEST):
+        """ Delete documents action.
+        """
+        strids = REQUEST.get('deldocs', None)
+        if strids is not None:
+            ids = [i for i in strids.split('@') if i is not '']
+            self.deleteDocuments(ids=ids, massive=False)  # Trigger events
+        REQUEST.RESPONSE.redirect('.')
+
+    security.declarePublic('getIndex')
+
+    def getIndex(self):
+        """ Return the database index.
+        """
+        return getattr(self, 'plomino_index')
+
+    security.declarePublic('getAllDocuments')
+
+    def getAllDocuments(self, getObject=True):
+        """ Return all the database documents.
+        """
+        if getObject is False:
+            # XXX: TODO: Return brains
+            pass
+        return self.documents.values()
 
     def _cache(self):
         chooser = queryUtility(ICacheChooser)

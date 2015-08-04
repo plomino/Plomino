@@ -1,0 +1,33 @@
+<?xml version="1.0"?>
+<object name="portal_workflow" meta_type="Plone Workflow Tool">
+ <object name="plomino_workflow" meta_type="Workflow"/>
+ <bindings>
+  <type type_id="PlominoAction">
+   <bound-workflow workflow_id="plomino_workflow" />
+  </type>
+  <type type_id="PlominoForm">
+   <bound-workflow workflow_id="plomino_workflow" />
+  </type>
+  <type type_id="PlominoField">
+   <bound-workflow workflow_id="plomino_workflow" />
+  </type>
+  <type type_id="PlominoView">
+   <bound-workflow workflow_id="plomino_workflow" />
+  </type>
+  <type type_id="PlominoColumn">
+   <bound-workflow workflow_id="plomino_workflow" />
+  </type>
+  <type type_id="PlominoDocument">
+   <bound-workflow workflow_id="plomino_workflow" />
+  </type>
+  <type type_id="PlominoHidewhen">
+   <bound-workflow workflow_id="plomino_workflow" />
+  </type>
+  <type type_id="PlominoAgent">
+   <bound-workflow workflow_id="plomino_workflow" />
+  </type>
+  <type type_id="PlominoCache">
+   <bound-workflow workflow_id="plomino_workflow" />
+  </type>
+ </bindings>
+</object>

@@ -81,7 +81,7 @@ class PlominoIndex(UniqueObject, CatalogTool):
             if fieldname not in self.indexes():
                 self.addIndex(fieldname, 'ZCTextIndex', plaintext_extra)
             if (fieldtype == 'ATTACHMENT' and
-                    self.getParentDatabase().getIndexAttachments()):
+                    self.getParentDatabase().indexAttachments):
                 if 'PlominoFiles_' + fieldname not in self.indexes():
                     self._catalog.addIndex(
                         'PlominoFiles_%s' % fieldname,

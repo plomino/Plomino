@@ -28,7 +28,7 @@ from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import normalizeString as utils_normalizeString
 
 from .interfaces import IPlominoSafeDomains
-from .config import TIMEZONE
+from .config import TIMEZONE, SCRIPT_ID_DELIMITER
 
 import logging
 logger = logging.getLogger('Plomino')

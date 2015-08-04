@@ -15,7 +15,7 @@
     <element value="PlominoField"/>
   </property>
   <property name="allow_discussion">False</property>
-  <property name="default_view">view</property>
+  <property name="default_view">OpenForm</property>
   <property name="view_methods">
     <element value="view"/>
   </property>

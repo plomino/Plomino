@@ -38,7 +38,6 @@ class INameField(model.Schema):
         vocabulary=SimpleVocabulary.fromItems([
             ("Select in a list", "LIST"),
             ("Fill a field", "FIELD"),
-            ("Search", "SEARCH")
         ]),
         title=u'Selection mode',
         description=u'How the name is selected',
@@ -127,7 +126,15 @@ class NameField(BaseField):
         names_ids = self._getNamesIds()
         if filter:
             names_ids = [
-                (username, userid) for (username, userid) in names_ids
-                if filter in username or filter in userid]
+                {'id': userid, 'text': username}
+                for (username, userid) in names_ids[:20]
+                if filter.lower() in username.lower()
+                or filter.lower() in userid.lower()]
 
-        return json.dumps(names_ids)
+        return json.dumps(
+            {'results': names_ids, 'total': len(names_ids)})
+
+    def getCurrent(self, values):
+        if isinstance(values, basestring):
+            values = [values]
+        return ["%s:%s" % (id, self.getFullname(id)) for id in values]

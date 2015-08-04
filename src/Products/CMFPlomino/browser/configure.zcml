@@ -19,6 +19,13 @@
 
     <browser:page
         for="Products.CMFPlomino.interfaces.IPlominoContext"
+        name="document"
+        permission="zope.Public"
+        class=".document.DocumentView"
+        />
+
+    <browser:page
+        for="Products.CMFPlomino.interfaces.IPlominoContext"
         name="plomino_errors"
         class=".errors.ErrorMessages"
         permission="zope.Public"
@@ -28,6 +35,14 @@
         for="Products.CMFPlomino.interfaces.IPlominoContext"
         name="plomino_actions"
         class=".actions.Actions"
+        permission="zope.Public"
+        />
+
+    <browser:page
+        for="Products.CMFPlomino.contents.field.IPlominoField"
+        name="filterusers"
+        class=".field.FieldView"
+        attribute="filterusers"
         permission="zope.Public"
         />
 

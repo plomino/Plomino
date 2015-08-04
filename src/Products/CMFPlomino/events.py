@@ -5,8 +5,26 @@ from collective.instancebehavior import (
     instance_behaviors_of,
     disable_behaviors,
 )
+from Products.CMFCore.CMFBTreeFolder import manage_addCMFBTreeFolder
+from Products.CMFPlone.interfaces import IHideFromBreadcrumbs
+from zope.interface import directlyProvides
 
-from .config import SCRIPT_ID_DELIMITER
+from .config import SCRIPT_ID_DELIMITER, VERSION
+from .index.index import PlominoIndex
+
+
+def afterDatabaseCreated(obj, event):
+    obj.plomino_version = VERSION
+    obj.setStatus("Ready")
+    manage_addCMFBTreeFolder(obj, id='plomino_documents')
+    directlyProvides(obj.documents, IHideFromBreadcrumbs)
+    obj.ACL_initialized = 0
+    obj.UserRoles = {}
+    obj.initializeACL()
+    index = PlominoIndex(FULLTEXT=obj.fulltextIndex)
+    obj._setObject('plomino_index', index)
+    for i in ['resources', 'scripts']:
+        manage_addCMFBTreeFolder(obj, id=i)
 
 
 def afterFieldModified(obj, event):

@@ -1,6 +1,6 @@
 <span tal:define="field python:options['field'];
                   fieldvalue python:options['fieldvalue'];
-                  cells python:test(fieldvalue, fieldvalue, [])">
+                  cells python:fieldvalue or []">
 <textarea tal:attributes="id field/id; name field/id;"
                    tal:content="python:'\n'.join(['|'.join(l) for l in cells])">params</textarea>
 </span>

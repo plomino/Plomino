@@ -30,6 +30,11 @@
     </genericsetup:importStep>
 
     <subscriber
+        for="Products.CMFPlomino.contents.database.IPlominoDatabase zope.lifecycleevent.interfaces.IObjectAddedEvent"
+        handler=".events.afterDatabaseCreated"
+        />
+
+    <subscriber
         for="Products.CMFPlomino.contents.field.IPlominoField zope.lifecycleevent.interfaces.IObjectModifiedEvent"
         handler=".events.afterFieldModified"
         />

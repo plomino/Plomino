@@ -1,0 +1,66 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en"
+    xmlns:tal="http://xml.zope.org/namespaces/tal"
+    xmlns:metal="http://xml.zope.org/namespaces/metal"
+    xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+    lang="en"
+    metal:use-macro="context/main_template/macros/master"
+    i18n:domain="plone">
+<body>
+
+<metal:javascript_head fill-slot="javascript_head_slot">
+    <tal:block_hasjsresources 
+        tal:define="form python:view.doc.getForm();
+                    jsresources python:form.get_resources_js()"
+        tal:condition="jsresources"
+        tal:repeat="js jsresources">
+        <script
+            type="text/javascript"
+            charset="iso-8859-1"
+            tal:attributes="src js">
+        </script>
+    </tal:block_hasjsresources>
+</metal:javascript_head>
+
+<metal:css fill-slot="style_slot">
+    <tal:block_hascssresources
+        tal:define="form python:view.doc.getForm();
+                    cssresources python:form.get_resources_css()"
+        tal:condition="cssresources"
+        tal:repeat="css cssresources">
+        <link rel="stylesheet"
+            type="text/css"
+            media="all"
+            tal:attributes="href css" />
+    </tal:block_hascssresources>
+</metal:css>
+
+<metal:content fill-slot="main">
+
+    <h1 class="documentFirstHeading" tal:content="view/doc/Title">Title</h1>
+
+    <div id="content-core">
+        <form tal:define="form python:view.doc.getForm();"
+            tal:attributes="name python:form.id">
+            <span style="display: none" id="plomino_path"
+                tal:content="python:'/'.join(view.doc.getPhysicalPath())">path</span>
+            <span style="display: none" id="plomino_childof" 
+                tal:condition="python:view.doc.hasItem('Plomino_ChildOf')"
+                tal:content="python:view.doc.getItem('Plomino_ChildOf')">Plomino_ChildOf</span>
+            <span style="display: none" id="plomino_doclink_field" 
+                tal:condition="python:view.doc.hasItem('Plomino_Doclink_Field')"
+                tal:content="python:view.doc.getItem('Plomino_Doclink_Field')">Plomino_Doclink_Field</span>
+            <span style="display: none" id="plomino_parent_field" 
+                tal:condition="python:view.doc.hasItem('Plomino_Parent_Field')"
+                tal:content="python:view.doc.getItem('Plomino_Parent_Field')">Plomino_Parent_Field</span>
+        
+            <div id="renderedForm" tal:content="structure python:view.doc.openWithForm(form)" />
+
+            <span metal:use-macro="context/plomino_actions/macros/ReadDocumentActionBar" >
+                display form actions
+            </span>
+        </form>
+    </div>
+
+</metal:content>
+</body>
+</html>

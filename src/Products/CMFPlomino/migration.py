@@ -1,0 +1,5 @@
+
+def migrate(db):
+    """
+    """
+    pass

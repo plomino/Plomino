@@ -6,7 +6,7 @@
     <tal:widget condition="python:widget=='HIDDEN'">
         <input type="hidden" tal:attributes="id field/id; name field/id; value fieldvalue" />
     </tal:widget>
-    <tal:widget condition="python:test(widget!='HIDDEN')">
+    <tal:widget condition="python:widget!='HIDDEN'">
         <tal:block tal:define="v fieldvalue" tal:content="structure v">text</tal:block>
     </tal:widget>
 </span>

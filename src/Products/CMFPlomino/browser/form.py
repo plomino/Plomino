@@ -9,7 +9,8 @@ class FormView(BrowserView):
     def __init__(self, context, request):
         self.context = context
         self.request = request
-        self.owner = self.context
+        self.form = self.context
+        self.target = self.context
 
     def openform(self):
         return self.template()

@@ -2,7 +2,7 @@
                   fieldvalue python:options['fieldvalue'];
                   hasparams fieldvalue|nothing;
                   rows python:field.editrows;
-                  params python:test(fieldvalue, fieldvalue, {})">
+                  params python:fieldvalue or {}">
 <textarea tal:attributes="id field/id; name field/id; rows rows"
                    tal:content="python:'\n'.join([k+'='+params[k] for k in params.keys()])">params</textarea>
 </span>
