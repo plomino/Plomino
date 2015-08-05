@@ -9,6 +9,7 @@ Changelog
 - Pass a TemporaryDocument context to hidewhen evaluation [instification]
 - Allow to display request data with alternate forms and read/edit mode [instification]
 - Check for hidden subforms when validating inputs [instification]
+- Adapt to rows for datagrid field in PlominoForm.tojson [instification]
 
 1.19.4 (2015-04-10)
 -------------------
