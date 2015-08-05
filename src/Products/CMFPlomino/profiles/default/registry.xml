@@ -1,0 +1,71 @@
+<registry>
+  <record name="plone.inline_styles" interface="Products.CMFPlone.interfaces.controlpanel.ITinyMCESchema" field="inline_styles">
+    <field type="plone.registry.field.List">
+      <default>
+        <element>Bold|bold|bold</element>
+        <element>Italic|italic|italic</element>
+        <element>Underline|underline|underline</element>
+        <element>Strikethrough|strikethrough|strikethrough</element>
+        <element>Superscript|superscript|superscript</element>
+        <element>Subscript|subscript|subscript</element>
+        <element>Code|code|code</element>
+      </default>
+      <description xmlns:ns0="http://xml.zope.org/namespaces/i18n" ns0:domain="plone" ns0:translate="">Name|format|icon</description>
+      <title xmlns:ns0="http://xml.zope.org/namespaces/i18n" ns0:domain="plone" ns0:translate="">Inline styles</title>
+      <value_type type="plone.registry.field.TextLine"/>
+    </field>
+    <value>
+      <element>Bold|bold|bold</element>
+      <element>Italic|italic|italic</element>
+      <element>Underline|underline|underline</element>
+      <element>Strikethrough|strikethrough|strikethrough</element>
+      <element>Superscript|superscript|superscript</element>
+      <element>Subscript|subscript|subscript</element>
+      <element>Code|code|code</element>
+      <element>Plomino field|plominofield|plominofield</element>
+      <element>Plomino action|plominoaction|plominoaction</element>
+    </value>
+  </record>
+  <record name="plone.formats" interface="Products.CMFPlone.interfaces.controlpanel.ITinyMCESchema" field="formats">
+    <field type="plone.registry.field.Text">
+      <default>{
+    "clearfix": {
+        "classes": "clearfix", 
+        "block": "div"
+    }, 
+    "discreet": {
+        "inline": "span", 
+        "classes": "discreet"
+    }
+}</default>
+      <description xmlns:ns0="http://xml.zope.org/namespaces/i18n" ns0:domain="plone" ns0:translate="">Enter a JSON-formatted style format configuration. A format is for example the style that get applied when you press the bold button inside the editor. See http://www.tinymce.com/wiki.php/Configuration:formats</description>
+      <title xmlns:ns0="http://xml.zope.org/namespaces/i18n" ns0:domain="plone" ns0:translate="">Formats</title>
+    </field>
+    <value>{
+    "clearfix": {
+        "classes": "clearfix", 
+        "block": "div"
+    }, 
+    "discreet": {
+        "inline": "span", 
+        "classes": "discreet"
+    },
+    "plominofield": {
+        "inline": "span", 
+        "classes": "plominoFieldClass"
+    },
+    "plominoaction": {
+        "inline": "span", 
+        "classes": "plominoActionClass"
+    }
+}</value>
+  </record>
+
+  <records interface="Products.CMFPlone.interfaces.ITinyMCESchema"
+           prefix="plone">
+    <value purge="false" key="content_css">
+      <element>++resource++Products.CMFPlomino/tinymce.css</element>
+    </value>
+  </records>
+
+</registry>

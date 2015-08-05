@@ -19,3 +19,4 @@ htmlcov/
 output.xml
 *.swp
 eggs
+develop.cfg
