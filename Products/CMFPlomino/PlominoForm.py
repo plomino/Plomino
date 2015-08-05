@@ -1624,8 +1624,9 @@ class PlominoForm(ATFolder):
             if field:
                 adapt = field.getSettings()
                 result = adapt.getFieldValue(self, request=REQUEST)
-                result = adapt.rows(
-                        result, rendered=rendered)
+                if field.getFieldType() == 'DATAGRID':
+                    result = adapt.rows(
+                            result, rendered=rendered)
 
         if datatables_format:
             result = {
