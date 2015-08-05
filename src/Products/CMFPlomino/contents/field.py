@@ -1,4 +1,5 @@
 from collective.instancebehavior import IInstanceBehaviorAssignableContent
+from plone.autoform import directives
 from plone.dexterity.content import Item
 from plone.supermodel import model
 from zope import component
@@ -50,6 +51,7 @@ class IPlominoField(model.Schema):
         vocabulary=field_modes,
     )
 
+    directives.widget('formula', klass='plomino-formula')
     formula = schema.Text(
         title=_('CMFPlomino_label_FieldFormula', default="Formula"),
         description=_('CMFPlomino_help_FieldFormula',
@@ -82,6 +84,7 @@ class IPlominoField(model.Schema):
         required=True,
     )
 
+    directives.widget('validation_formula', klass='plomino-formula')
     validation_formula = schema.Text(
         title=_('CMFPlomino_label_FieldValidation',
             default="Validation formula"),
@@ -115,6 +118,7 @@ class IPlominoField(model.Schema):
         vocabulary=index_types,
     )
 
+    directives.widget('html_attributes_formula', klass='plomino-formula')
     html_attributes_formula = schema.Text(
         title=_('CMFPlomino_label_HTMLAttributesFormula',
             default="HTML attributes formula"),

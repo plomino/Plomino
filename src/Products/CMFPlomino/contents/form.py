@@ -68,6 +68,7 @@ class IPlominoForm(model.Schema):
         default="Auto",
     )
 
+    form.widget('document_title', klass='plomino-formula')
     document_title = schema.Text(
         title=_('CMFPlomino_label_DocumentTitle',
             default="Document title formula"),
@@ -92,6 +93,7 @@ class IPlominoForm(model.Schema):
         default=False,
     )
 
+    form.widget('document_id', klass='plomino-formula')
     document_id = schema.Text(
         title=_('CMFPlomino_label_DocumentId', default="Document id formula"),
         description=_('CMFPlomino_help_DocumentId',
@@ -133,6 +135,7 @@ class IPlominoForm(model.Schema):
         required=False,
     )
 
+    form.widget('search_formula', klass='plomino-formula')
     search_formula = schema.Text(
         title=_('CMFPlomino_label_SearchFormula', default="Search formula"),
         description=_('CMFPlomino_help_SearchFormula',
@@ -171,6 +174,7 @@ class IPlominoForm(model.Schema):
         ),
     )
 
+    form.widget('onCreateDocument', klass='plomino-formula')
     onCreateDocument = schema.Text(
         title=_('CMFPlomino_label_onCreateDocument',
             default="On create document"),
@@ -179,6 +183,7 @@ class IPlominoForm(model.Schema):
         required=False,
     )
 
+    form.widget('onOpenDocument', klass='plomino-formula')
     onOpenDocument = schema.Text(
         title=_('CMFPlomino_label_onOpenDocument', default="On open document"),
         description=_('CMFPlomino_help_onOpenDocument',
@@ -186,6 +191,7 @@ class IPlominoForm(model.Schema):
         required=False,
     )
 
+    form.widget('beforeSaveDocument', klass='plomino-formula')
     beforeSaveDocument = schema.Text(
         title=_('CMFPlomino_label_beforeSaveDocument',
             default="Before save document"),
@@ -195,6 +201,7 @@ class IPlominoForm(model.Schema):
         required=False,
     )
 
+    form.widget('onSaveDocument', klass='plomino-formula')
     onSaveDocument = schema.Text(
         title=_('CMFPlomino_label_onSaveDocument', default="On save document"),
         description=_('CMFPlomino_help_onSaveDocument',
@@ -202,6 +209,7 @@ class IPlominoForm(model.Schema):
         required=False,
     )
 
+    form.widget('onDeleteDocument', klass='plomino-formula')
     onDeleteDocument = schema.Text(
         title=_('CMFPlomino_label_onDeleteDocument',
             default="On delete document"),
@@ -210,6 +218,7 @@ class IPlominoForm(model.Schema):
         required=False,
     )
 
+    form.widget('onSearch', klass='plomino-formula')
     onSearch = schema.Text(
         title=_('CMFPlomino_label_onSearch',
             default="On submission of search form"),
@@ -218,6 +227,7 @@ class IPlominoForm(model.Schema):
         required=False,
     )
 
+    form.widget('beforeCreateDocument', klass='plomino-formula')
     beforeCreateDocument = schema.Text(
         title=_('CMFPlomino_label_beforeCreateDocument',
             default="Before document creation"),

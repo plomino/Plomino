@@ -68,4 +68,19 @@
     </value>
   </records>
 
+  <records prefix="plone.resources/plominoformula"
+           interface='Products.CMFPlone.interfaces.IResourceRegistry'>
+    <value key="js">++resource++Products.CMFPlomino/formula.js</value>
+  </records>
+
+<records prefix="plone.bundles/plomino"
+         interface='Products.CMFPlone.interfaces.IBundleRegistry'>
+  <value key="resources">
+    <element>plominoformula</element>
+  </value>
+  <value key="enabled">True</value>
+  <value key="jscompilation">++resource++plomino-compiled.min.js</value>
+  <value key="last_compilation">2015-02-06 00:00:00</value>
+</records>
+
 </registry>

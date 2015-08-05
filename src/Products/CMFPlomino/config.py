@@ -54,4 +54,18 @@ FIELD_MODES = [
     ["COMPUTEDONSAVE", "Computed on save"],
 ]
 
+ACTION_TYPES = [
+    ["OPENFORM", "Open form"],
+    ["OPENVIEW", "Open view"],
+    ["CLOSE", "Close"],
+    ["SAVE", "Save"],
+    ["PYTHON", "Python script"],
+    ["REDIRECT", "Redirect formula"]
+]
+ACTION_DISPLAY = [
+    ["LINK", "Link"],
+    ["SUBMIT", "Submit button"],
+    ["BUTTON", "Button"]
+]
+
 RENAME_AFTER_CREATION_ATTEMPTS = 100

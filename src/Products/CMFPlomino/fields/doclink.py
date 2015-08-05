@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from jsonutil import jsonutil as json
+from plone.autoform import directives as form
 from plone.autoform.interfaces import IFormFieldProvider
 from plone.supermodel import directives, model
 from zope.interface import implementer, provider
@@ -29,7 +30,6 @@ class IDoclinkField(model.Schema):
             'labelcolumn',
             'documentslistformula',
             'separator',
-            'dynamictableparam',
         ),
     )
 
@@ -55,26 +55,17 @@ class IDoclinkField(model.Schema):
         description=u'View column used as label',
         required=False)
 
+    form.widget('documentslistformula', klass='plomino-formula')
     documentslistformula = schema.Text(
         title=u'Documents list formula',
         description=u"Formula to compute the linkable documents list "
         "(must return a list of 'label|docid_or_path')",
         required=False)
+
     separator = schema.TextLine(
         title=u'Separator',
         description=u'Only apply if multiple values will be displayed',
         required=False)
-    dynamictableparam = schema.Text(
-        title=u"Dynamic Table Parameters",
-        description=u"Change these options to customize the dynamic table",
-        default=u"""
-'bPaginate': true,
-'bLengthChange': true,
-'bFilter': true,
-'bSort': true,
-'bInfo': true,
-'bAutoWidth': false"""
-    )
 
 
 @implementer(IDoclinkField)
@@ -174,34 +165,3 @@ class DoclinkField(BaseField):
             datatable = [v.split('|')[::-1] for v in selectionlist]
 
         return json.dumps(datatable)
-
-    def getJQueryColumns(self):
-        """ Returns a JSON representation of columns headers.
-        Designed for JQuery DataTables.
-        """
-        if self.sourceview is not None:
-            sourceview = self.context.getParentDatabase().getView(
-                self.sourceview)
-            columns = [col for col in sourceview.getColumns()
-                    if not(col.getHiddenColumn())]
-            column_labels = [col.Title() for col in columns]
-        else:
-            column_labels = [""]
-
-        column_dicts = [{"sTitle": col} for col in column_labels]
-        column_dicts.insert(
-            0,
-            {"bVisible": False, "bSearchable": False})
-
-        return json.dumps(column_dicts)
-
-    def getColumnLabelIndex(self):
-        """ Return the column index used to display the document label
-        """
-        if self.sourceview:
-            return [col.id for col in
-                    self.context.getParentDatabase().getView(
-                        self.sourceview).getColumns()].index(
-                            self.labelcolumn)
-        else:
-            return 0

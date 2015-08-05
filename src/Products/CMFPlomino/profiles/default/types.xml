@@ -3,4 +3,5 @@
   <object name="PlominoDatabase" meta_type="Dexterity FTI"/>
   <object name="PlominoForm" meta_type="Dexterity FTI"/>
   <object name="PlominoField" meta_type="Dexterity FTI"/>
+  <object name="PlominoAction" meta_type="Dexterity FTI"/>
 </object>

@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from jsonutil import jsonutil as json
+from plone.autoform import directives as form
 from plone.autoform.interfaces import IFormFieldProvider
 from plone.supermodel import directives, model
 from zope.interface import implementer, provider
@@ -28,7 +29,6 @@ class ISelectionField(model.Schema):
             'selectionlist',
             'selectionlistformula',
             'separator',
-            'dynamictableparam',
         ),
     )
 
@@ -52,6 +52,7 @@ class ISelectionField(model.Schema):
         default=[],
         value_type=schema.TextLine(title=u'Entry'))
 
+    form.widget('selectionlistformula', klass='plomino-formula')
     selectionlistformula = schema.Text(
         title=u'Selection list formula',
         description=u'Formula to compute the selection list elements',
@@ -61,18 +62,6 @@ class ISelectionField(model.Schema):
         title=u'Separator',
         description=u'Only apply if multiple values will be displayed',
         required=False)
-
-    dynamictableparam = schema.Text(
-        title=u"Dynamic Table Parameters",
-        description=u"Change these options to customize the dynamic table",
-        default=u"""
-'bPaginate': true,
-'bLengthChange': true,
-'bFilter': true,
-'bSort': true,
-'bInfo': true,
-'bAutoWidth': false"""
-    )
 
 
 @implementer(ISelectionField)

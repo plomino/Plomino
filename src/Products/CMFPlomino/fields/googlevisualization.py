@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from plone.autoform.interfaces import IFormFieldProvider
+from plone.autoform import directives as form
 from plone.supermodel import directives, model
 from zope.interface import implementer, provider
 from zope.pagetemplate.pagetemplatefile import PageTemplateFile
@@ -34,6 +35,7 @@ class IGooglevisualizationField(model.Schema):
         fields=('jssettings', 'chartid', ),
     )
 
+    form.widget('jssettings', klass='plomino-formula')
     jssettings = schema.Text(
         title=u'Javascript settings',
         description=u'Google Vizualization code',
