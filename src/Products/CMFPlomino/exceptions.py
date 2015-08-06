@@ -43,8 +43,7 @@ class PlominoScriptException(Exception):
         if self.context.getParentDatabase().debugMode:
             code = ["Code : "]
             line_number = 6
-            formula = self.formula()
-            formula = _expandIncludes(self.context, formula)
+            formula = _expandIncludes(self.context, self.formula)
             for l in formula.replace('\r', '').split('\n'):
                 code.append("%d: %s" % (line_number, l))
                 line_number += 1

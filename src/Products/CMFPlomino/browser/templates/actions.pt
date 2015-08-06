@@ -20,7 +20,7 @@
     </tal:defaultactions>
     
     <tal:block
-        tal:repeat="action_tuple python:[(a, parent_id) for a, parent_id in view.form.getActions(view.target, True) if a.getInActionBar()==True]">
+        tal:repeat="action_tuple python:[(a, parent_id) for a, parent_id in view.form.getActions(view.target, True) if a.in_action_bar==True]">
         <tal:block
             tal:define="plominoaction python:action_tuple[0];
                         plominotarget python:view.target;
@@ -45,7 +45,7 @@
         delete action</tal:block></tal:block>
     </tal:defaultactions>
         <tal:block
-            tal:repeat="action_tuple python:[(a, parent_id) for a, parent_id in view.form.getActions(view.target, True) if a.getInActionBar()==True]">
+            tal:repeat="action_tuple python:[(a, parent_id) for a, parent_id in view.form.getActions(view.target, True) if a.in_action_bar==True]">
             <tal:block
                 tal:define="plominoaction python:action_tuple[0];
                             plominotarget python:view.target;
@@ -66,7 +66,7 @@
             value="Save" i18n:domain="CMFPlomino" i18n:attributes="value" />
     </tal:defaultactions>
         <tal:block
-            tal:repeat="action_tuple python:[(a, parent_id) for a, parent_id in view.form.getActions(view.target, True) if a.getInActionBar()==True]">
+            tal:repeat="action_tuple python:[(a, parent_id) for a, parent_id in view.form.getActions(view.target, True) if a.in_action_bar==True]">
             <tal:block
                 tal:define="plominoaction python:action_tuple[0];
                             plominotarget python:view.target;
@@ -87,7 +87,7 @@
             i18n:domain="CMFPlomino" i18n:attributes="value" />
     </tal:defaultactions>
         <tal:block
-            tal:repeat="action_tuple python:[(a, parent_id) for a, parent_id in view.form.getActions(view.target, True) if a.getInActionBar()==True]">
+            tal:repeat="action_tuple python:[(a, parent_id) for a, parent_id in view.form.getActions(view.target, True) if a.in_action_bar==True]">
             <tal:block
                 tal:define="plominoaction python:action_tuple[0];
                             plominotarget python:view.target;
@@ -101,22 +101,6 @@
 
 <div class="formControls" metal:define-macro="ViewActionBar">
 <span class="actionButtons">
-<script>
-function selected_documents()
-{
-if (typeof(oDynamicTable)!="undefined") {
-    return dynamicview_selecteddocuments();
-} else {
-    var array_value = [];
-    $(".plominoviewform input[name='sdoc']:checked").each(function() {
-        array_value.push($(this).val());
-    });
-    
-    return array_value.join('@');
-}
-}
-
-</script>
     <tal:defaultactions tal:define="hidedefault view/form/HideDefaultActions|nothing" tal:condition="python:not(hidedefault)">
         <input type="button" class="context plominoDelete" value="Delete" name="plomino_deletedocuments"
             i18n:domain="CMFPlomino" i18n:attributes="value"
@@ -127,7 +111,7 @@ if (typeof(oDynamicTable)!="undefined") {
             tal:attributes="onclick string:if (confirm('${msg} ?')) {location.href='./manage_deleteDocuments?deldocs='+selected_documents()}" />
     </tal:defaultactions>
         <tal:block
-            tal:repeat="action_tuple python:[(a, parent_id) for a, parent_id in view.form.getActions(view.target, True) if a.getInActionBar()==True]">
+            tal:repeat="action_tuple python:[(a, parent_id) for a, parent_id in view.form.getActions(view.target, True) if a.in_action_bar==True]">
             <tal:block
                 tal:define="plominoaction python:action_tuple[0];
                             plominotarget python:view.target;
@@ -148,11 +132,11 @@ if (typeof(oDynamicTable)!="undefined") {
 </tal:block>
 
 <tal:block metal:define-macro="ButtonAction"> 
-  <tal:submit tal:condition="python:plominoaction.ActionType=='SAVE'">
+  <tal:submit tal:condition="python:plominoaction.action_type=='SAVE'">
   <input type="submit"
     class="context" tal:attributes="value python: plominoaction.Title(); name python:plominoaction.id" />
   </tal:submit>
-  <tal:button tal:condition="python:not(plominoaction.ActionType=='SAVE')">
+  <tal:button tal:condition="python:not(plominoaction.action_type=='SAVE')">
   <input class="context"
   
     type="button"

@@ -68,3 +68,10 @@ def afterFormModified(obj, event):
     """
     """
     obj.cleanFormulaScripts(SCRIPT_ID_DELIMITER.join(["form", obj.id]))
+
+
+def afterActionModified(obj, event):
+    """
+    """
+    obj.cleanFormulaScripts(SCRIPT_ID_DELIMITER.join(
+        ['action', obj.getParentNode().id, obj.id]))

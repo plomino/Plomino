@@ -651,13 +651,11 @@ class PlominoForm(Container):
                 action_id)
             if action_span in html_content:
                 if not action.isHidden(target, form):
-                    template = action.ActionDisplay
-                    pt = self.getRenderingTemplate(template + "Action")
-                    if pt is None:
-                        pt = self.getRenderingTemplate("LINKAction")
-                    action_render = pt(plominoaction=action,
-                                       plominotarget=target,
-                                       plomino_parent_id=form.id)
+                    pt = form.unrestrictedTraverse("@@plomino_actions").embedded_action
+                    action_render = pt(display=action.action_display,
+                        plominoaction=action,
+                        plominotarget=target,
+                        plomino_parent_id=form.id)
                 else:
                     action_render = ''
                 html_content = html_content.replace(action_span, action_render)
@@ -1237,7 +1235,7 @@ class PlominoForm(Container):
                 reverse=searchview.getReverseSorting())
 
             # filter search with searchformula
-            searchformula = self.getSearchFormula()
+            searchformula = self.search_formula
             if searchformula:
                 filteredResults = []
                 try:
@@ -1473,8 +1471,8 @@ class PlominoForm(Container):
             'PlominoAction',
             id='add_new',
             title="Add a new " + self.Title(),
-            ActionType="OPENFORM",
-            ActionDisplay="BUTTON",
+            action_type="OPENFORM",
+            action_display="BUTTON",
             Content=self.id)
 
         if REQUEST:

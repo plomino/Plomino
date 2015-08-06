@@ -19,29 +19,6 @@
             tal:attributes="src js">
         </script>
     </tal:block_hasjsresources>
-    <tal:block tal:define="form python:view.doc.getForm();">
-        <script type="text/javascript" tal:condition="form/hasDynamicHidewhen"
-            tal:define="form_method python:form.form_method;"
-            tal:content="string:
-function refreshHidewhen() {
-    var onsuccess = function(data, textStatus, xhr) {
-        for (var hw in data)
-            jQuery('.hidewhen-' + hw).css('display', data[hw]?'none':'block');
-    }
-    jQuery.ajax({
-        type: '${form_method}',
-        url: 'computehidewhens',
-        data: jQuery('#plomino_form').serialize(),
-        success: onsuccess,
-        dataType: 'json' 
-    });
-}
-jQuery(document).ready( function() {
-    jQuery('#plomino_form :input').change(refreshHidewhen);
-});
-">
-        </script>
-    </tal:block>
 </metal:javascript_head>
 
 <metal:css fill-slot="style_slot">

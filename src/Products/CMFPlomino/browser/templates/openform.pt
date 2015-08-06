@@ -8,32 +8,6 @@
 <body>
 
 <metal:javascript_head fill-slot="javascript_head_slot">
-
-    <script 
-        tal:condition="context/hasDynamicHidewhen"
-        tal:define="form python:context;
-                    form_method python:form.form_method;
-                    "
-        type="text/javascript"
-        tal:content="string:
-function refreshHidewhen() {
-    var onsuccess = function(data, textStatus, xhr) {
-        for (var hw in data)
-            jQuery('.hidewhen-' + hw).css('display', data[hw]?'none':'block');
-    }
-    jQuery.ajax({
-        type: '${form_method}',
-        url: 'computehidewhens',
-        data: jQuery('#plomino_form').serialize(),
-        success: onsuccess,
-        dataType: 'json' 
-    });
-}
-jQuery(document).ready( function() {
-    jQuery('#plomino_form :input').change(refreshHidewhen);
-});
-">
-    </script>
     <tal:block_hasjsresources 
         tal:define="jsresources python:context.get_resources_js()"
         tal:condition="jsresources"
@@ -71,6 +45,7 @@ jQuery(document).ready( function() {
             tal:attributes="
                 name context/id;
                 action string:${context/absolute_url}/createDocument;">
+            <span tal:replace="structure context/@@authenticator/authenticator"/>
 
             <tal:layout
                 tal:content="structure python:context.openBlankForm(request)">layout</tal:layout>

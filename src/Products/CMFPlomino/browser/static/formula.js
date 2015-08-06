@@ -15,6 +15,7 @@ require([
             var ed = $('<pre></pre>');
             ed.appendTo(self.$el.parent());
             self.ace = new TextEditor(ed);
+            self.ace.editor.getSession().setMode('ace/mode/python');
             ed.css('width', width);
             self.ace.editor.resize();
             self.ace.setText(self.$el.val());

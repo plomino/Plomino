@@ -1,0 +1,21 @@
+<tal:block tal:define="plominoaction python:options['plominoaction'];
+    plominotarget python:options['plominotarget'];
+    plomino_parent_id python:options['plomino_parent_id'];
+    mode python:options['display'];
+    ">
+    <tal:test tal:condition="python:mode=='LINK'">
+        <span metal:use-macro="view/macros/LinkAction" >
+            display action as a link
+        </span>
+    </tal:test>
+    <tal:test tal:condition="python:mode=='BUTTON'">
+        <span metal:use-macro="view/macros/ButtonAction" >
+            display action as a link
+        </span>
+    </tal:test>
+    <tal:test tal:condition="python:mode=='SUBMIT'">
+        <span metal:use-macro="view/macros/SubmitAction" >
+            display action as a link
+        </span>
+    </tal:test>
+</tal:block>

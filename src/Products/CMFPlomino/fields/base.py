@@ -111,7 +111,7 @@ class BaseField(object):
                 fieldValue = ""
 
         elif mode in ["DISPLAY", "COMPUTED"]:
-            if mode == "DISPLAY" and not self.context.Formula() and doc:
+            if mode == "DISPLAY" and not self.context.formula and doc:
                 fieldValue = doc.getItem(fieldName)
             else:
                 fieldValue = form.computeFieldValue(fieldName, target)

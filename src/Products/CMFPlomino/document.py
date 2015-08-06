@@ -19,6 +19,7 @@ from plone.indexer.interfaces import (
     IIndexer
 )
 from plone.indexer.wrapper import IndexableObjectWrapper
+from plone.protect.utils import addTokenToUrl
 from Products.CMFCore.CMFBTreeFolder import CMFBTreeFolder
 from Products.CMFCore.CMFCatalogAware import CatalogAware
 from Products.CMFCore.exceptions import BadRequest
@@ -416,7 +417,7 @@ class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
             redirect = "./async_callback?" + urlencode(redirect)
         if not redirect:
             redirect = self.absolute_url()
-        REQUEST.RESPONSE.redirect(redirect)
+        REQUEST.RESPONSE.redirect(addTokenToUrl(redirect))
 
     security.declareProtected(EDIT_PERMISSION, 'refresh')
 
