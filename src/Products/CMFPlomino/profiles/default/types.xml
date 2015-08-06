@@ -4,4 +4,6 @@
   <object name="PlominoForm" meta_type="Dexterity FTI"/>
   <object name="PlominoField" meta_type="Dexterity FTI"/>
   <object name="PlominoAction" meta_type="Dexterity FTI"/>
+  <object name="PlominoView" meta_type="Dexterity FTI"/>
+  <object name="PlominoColumn" meta_type="Dexterity FTI"/>
 </object>

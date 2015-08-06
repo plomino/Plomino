@@ -75,3 +75,14 @@ def afterActionModified(obj, event):
     """
     obj.cleanFormulaScripts(SCRIPT_ID_DELIMITER.join(
         ['action', obj.getParentNode().id, obj.id]))
+
+
+def afterColumnModified(obj, event):
+    """
+    """
+    view = obj.getParentView()
+    view.declareColumn(obj.getColumnName(), obj)
+    obj.cleanFormulaScripts('column_%s_%s' % (view.id, obj.id))
+    db = obj.getParentDatabase()
+    if not db.do_not_reindex:
+        db.getIndex().refresh()

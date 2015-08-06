@@ -1,0 +1,62 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en"
+    xmlns:tal="http://xml.zope.org/namespaces/tal"
+    xmlns:metal="http://xml.zope.org/namespaces/metal"
+    xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+    lang="en"
+    metal:use-macro="context/main_template/macros/master"
+    i18n:domain="plone">
+<body>
+
+<metal:content fill-slot="main">
+
+    <h1 class="documentFirstHeading" tal:content="context/Title">Title</h1>
+
+    <div id="content-core">
+           <table class="pat-tablesorter">
+     <thead>
+       <th>First Name</th>
+       <th>Last Name</th>
+       <th>Occupation</th>
+       <th>Age</th>
+     </thead>
+     <tr>
+       <td>Buster</td>
+       <td>Bluth</td>
+       <td>Army</td>
+       <td>35</td>
+     </tr>
+     <tr>
+       <td>Michael</td>
+       <td>Bluth</td>
+       <td>Company President</td>
+       <td>39</td>
+     </tr>
+     <tr>
+       <td>GOB</td>
+       <td>Bluth</td>
+       <td>Magician</td>
+       <td>37</td>
+     </tr>
+     <tr>
+       <td>Lindsay</td>
+       <td>Fünke</td>
+       <td>Protester</td>
+       <td>36</td>
+     </tr>
+     <tr>
+       <td>Tony</td>
+       <td>Wonder</td>
+       <td>Magician</td>
+       <td>35</td>
+     </tr>
+     <tr>
+       <td>Tobias</td>
+       <td>Fünke</td>
+       <td>Therapist</td>
+       <td>40</td>
+     </tr>
+   </table>
+    </div>
+</metal:content>
+</body>
+</html>

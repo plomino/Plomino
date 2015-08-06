@@ -25,6 +25,14 @@
         />
 
     <browser:page
+        for="Products.CMFPlomino.contents.view.IPlominoView"
+        name="OpenView"
+        class=".plominoview.ViewView"
+        attribute="openview"
+        permission="zope.Public"
+        />
+
+    <browser:page
         for="Products.CMFPlomino.interfaces.IPlominoContext"
         name="plomino_errors"
         class=".errors.ErrorMessages"

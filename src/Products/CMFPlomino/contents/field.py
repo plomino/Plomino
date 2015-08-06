@@ -188,7 +188,6 @@ class PlominoField(Item):
             self, form, doc, editmode, creation=False, request=None):
         """ Rendering the field
         """
-        mode = self.field_mode
         if doc is None:
             target = form
         else:
@@ -198,6 +197,13 @@ class PlominoField(Item):
         fieldvalue = adapt.getFieldValue(
             form, doc, editmode, creation, request)
 
+        return self.getRenderedValue(fieldvalue, editmode, target)
+
+    def getRenderedValue(self, fieldvalue, editmode, target):
+        """
+        """
+        mode = self.field_mode
+        adapt = self.getSettings()
         if mode == "EDITABLE" and editmode:
             renderer = adapt.render_edit
         else:
@@ -205,35 +211,35 @@ class PlominoField(Item):
 
         selection = self.getSettings().getSelectionList(target)
 
-        # try:
-        html = renderer(
-            field=self,
-            fieldvalue=fieldvalue,
-            selection=selection,
-            doc=target,
-        )
-
-        injection_zone = 'name="%s"' % self.id
-        if (injection_zone in html
-        and self.html_attributes_formula):
-            injection_position = html.index(injection_zone)
-            html_attributes = self.runFormulaScript(
-                SCRIPT_ID_DELIMITER.join([
-                    'field', self.getParentNode().id, self.id,
-                    'attributes']),
-                target,
-                self.html_attributes_formula
+        try:
+            html = renderer(
+                field=self,
+                fieldvalue=fieldvalue,
+                selection=selection,
+                doc=target,
             )
-            html = ' '.join([
-                html[:injection_position],
-                asUnicode(html_attributes),
-                html[injection_position:],
-            ])
-        return html
 
-        # except Exception, e:
-        #     self.traceRenderingErr(e, self)
-        #     return ""
+            injection_zone = 'name="%s"' % self.id
+            if (injection_zone in html
+            and self.html_attributes_formula):
+                injection_position = html.index(injection_zone)
+                html_attributes = self.runFormulaScript(
+                    SCRIPT_ID_DELIMITER.join([
+                        'field', self.getParentNode().id, self.id,
+                        'attributes']),
+                    target,
+                    self.html_attributes_formula
+                )
+                html = ' '.join([
+                    html[:injection_position],
+                    asUnicode(html_attributes),
+                    html[injection_position:],
+                ])
+            return html
+
+        except Exception, e:
+            self.traceRenderingErr(e, self)
+            return ""
 
     def getSettings(self):
         """

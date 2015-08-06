@@ -59,4 +59,19 @@
         handler=".events.afterActionModified"
         />
 
+    <subscriber
+        for="Products.CMFPlomino.contents.action.IPlominoAction zope.lifecycleevent.interfaces.IObjectModifiedEvent"
+        handler=".events.afterActionModified"
+        />
+
+    <subscriber
+        for="Products.CMFPlomino.contents.column.IPlominoColumn zope.lifecycleevent.interfaces.IObjectAddedEvent"
+        handler=".events.afterColumnModified"
+        />
+
+    <subscriber
+        for="Products.CMFPlomino.contents.column.IPlominoColumn zope.lifecycleevent.interfaces.IObjectModifiedEvent"
+        handler=".events.afterColumnModified"
+        />
+
 </configure>
