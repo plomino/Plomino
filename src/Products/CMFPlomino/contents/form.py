@@ -1194,7 +1194,7 @@ class PlominoForm(Container):
 
             # index search
             index = db.getIndex()
-            query = {'PlominoViewFormula_' + searchview.getViewName(): True}
+            query = {'PlominoViewFormula_' + searchview.id: True}
 
             for f in self.getFormFields(
                 includesubforms=True,
@@ -1226,13 +1226,13 @@ class PlominoForm(Container):
                         fieldname = "SearchableText"
                     query[fieldname] = v
 
-            sortindex = searchview.getSortColumn()
+            sortindex = searchview.sort_column
             if not sortindex:
                 sortindex = None
             results = index.dbsearch(
                 query,
                 sortindex=sortindex,
-                reverse=searchview.getReverseSorting())
+                reverse=searchview.reverse_sorting)
 
             # filter search with searchformula
             searchformula = self.search_formula

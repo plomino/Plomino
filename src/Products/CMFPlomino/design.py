@@ -133,20 +133,20 @@ class DesignManager:
         # declare all indexed fields
         for f_obj in self.getForms():
             for f in f_obj.getFormFields():
-                if f.getToBeIndexed():
+                if f.to_be_indexed:
                     index.createFieldIndex(
                         f.id,
-                        f.getFieldType(),
-                        indextype=f.getIndexType(),
-                        fieldmode=f.getFieldMode())
+                        f.field_type,
+                        indextype=f.index_type,
+                        fieldmode=f.field_mode)
         logger.info('Field indexing initialized')
 
         # declare all the view formulas and columns index entries
         for v_obj in self.getViews():
             index.createSelectionIndex(
-                'PlominoViewFormula_' + v_obj.getViewName())
+                'PlominoViewFormula_' + v_obj.id)
             for c in v_obj.getColumns():
-                v_obj.declareColumn(c.getColumnName(), c, index=index)
+                v_obj.declareColumn(c.id, c, index=index)
         # add fulltext if needed
         if self.FulltextIndex:
             index.createFieldIndex('SearchableText', 'RICHTEXT')

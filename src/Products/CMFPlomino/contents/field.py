@@ -111,11 +111,12 @@ class IPlominoField(model.Schema):
     )
 
     index_type = schema.Choice(
-        title=_('CMFPlomino_label_FieldIndexType'),
+        title=_('CMFPlomino_label_FieldIndexType', default="Index type"),
         description=_('CMFPlomino_help_FieldIndexType',
             default='The way the field values will be indexed'),
-        required=False,
-        vocabulary=index_types,
+        required=True,
+        default="DEFAULT",
+        vocabulary="Products.CMFPlomino.columns.vocabularies.get_index_types",
     )
 
     directives.widget('html_attributes_formula', klass='plomino-formula')

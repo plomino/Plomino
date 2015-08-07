@@ -77,11 +77,32 @@ def afterActionModified(obj, event):
         ['action', obj.getParentNode().id, obj.id]))
 
 
+def afterViewCreated(obj, event):
+    """
+    """
+    db = obj.getParentDatabase()
+    refresh = not db.do_not_reindex
+    db.getIndex().createSelectionIndex(
+        'PlominoViewFormula_' + obj.id,
+        refresh=refresh)
+    if refresh:
+        obj.getParentDatabase().getIndex().refresh()
+
+
+def afterViewModified(obj, event):
+    """
+    """
+    db = obj.getParentDatabase()
+    obj.cleanFormulaScripts(SCRIPT_ID_DELIMITER.join(["view", obj.id]))
+    if not db.do_not_reindex:
+        obj.getParentDatabase().getIndex().refresh()
+
+
 def afterColumnModified(obj, event):
     """
     """
     view = obj.getParentView()
-    view.declareColumn(obj.getColumnName(), obj)
+    view.declareColumn(obj.id, obj)
     obj.cleanFormulaScripts('column_%s_%s' % (view.id, obj.id))
     db = obj.getParentDatabase()
     if not db.do_not_reindex:

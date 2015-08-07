@@ -27,8 +27,16 @@
     <browser:page
         for="Products.CMFPlomino.contents.view.IPlominoView"
         name="OpenView"
-        class=".plominoview.ViewView"
+        class=".view.ViewView"
         attribute="openview"
+        permission="zope.Public"
+        />
+
+    <browser:page
+        for="Products.CMFPlomino.contents.view.IPlominoView"
+        name="json"
+        class=".view.ViewView"
+        attribute="json"
         permission="zope.Public"
         />
 

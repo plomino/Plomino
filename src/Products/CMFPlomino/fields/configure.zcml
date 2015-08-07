@@ -78,13 +78,4 @@
     provides=".text.ITextField"
     />
 
-  <!-- vocabularies -->
-  <utility
-    name="Products.CMFPlomino.fields.vocabularies.get_forms"
-    component=".vocabularies.get_forms"
-    />
-  <utility
-    name="Products.CMFPlomino.fields.vocabularies.get_views"
-    component=".vocabularies.get_views"
-    />
 </configure>

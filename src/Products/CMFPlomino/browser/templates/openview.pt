@@ -12,50 +12,50 @@
     <h1 class="documentFirstHeading" tal:content="context/Title">Title</h1>
 
     <div id="content-core">
-           <table class="pat-tablesorter">
-     <thead>
-       <th>First Name</th>
-       <th>Last Name</th>
-       <th>Occupation</th>
-       <th>Age</th>
-     </thead>
-     <tr>
-       <td>Buster</td>
-       <td>Bluth</td>
-       <td>Army</td>
-       <td>35</td>
-     </tr>
-     <tr>
-       <td>Michael</td>
-       <td>Bluth</td>
-       <td>Company President</td>
-       <td>39</td>
-     </tr>
-     <tr>
-       <td>GOB</td>
-       <td>Bluth</td>
-       <td>Magician</td>
-       <td>37</td>
-     </tr>
-     <tr>
-       <td>Lindsay</td>
-       <td>Fünke</td>
-       <td>Protester</td>
-       <td>36</td>
-     </tr>
-     <tr>
-       <td>Tony</td>
-       <td>Wonder</td>
-       <td>Magician</td>
-       <td>35</td>
-     </tr>
-     <tr>
-       <td>Tobias</td>
-       <td>Fünke</td>
-       <td>Therapist</td>
-       <td>40</td>
-     </tr>
-   </table>
+        <tal:actions>
+            <span metal:use-macro="context/plomino_actions/macros/ViewActionBar" >
+                display view actions
+            </span>
+        </tal:actions>
+        <table
+            tal:define="columns python:context.getColumns()"
+            tal:attributes="class python:(context.static_rendering and 'listing') or 'listing plomino-table';
+            data-pat-plominotable string:source:${context/absolute_url}/json;">
+            <tr class="header-row">
+                <tal:headers tal:repeat="column columns">
+                    <th tal:condition="not: column/hidden_column|nothing"
+                        tal:content="column/title">title</th>
+                </tal:headers>
+            </tr>
+            <tal:static tal:condition="context/static_rendering">
+                <tal:rows
+                    tal:define="listdocuments python:context.getAllDocuments(getObject=False);
+                    count python:len(listdocuments);
+                    paramstart request/start|python:'1';
+                    paramlimit request/limit|python:'100';
+                    start python:int(paramstart);
+                    limit python:int(paramlimit);
+                    overlimit python:count>limit;
+                    nextstart python:start+limit;
+                    previousstart python:max(0,start-limit);
+                    baseurl python:context.getParentDatabase().absolute_url();
+                ">
+                    <tr tal:repeat="brain python:listdocuments[start-1:start-1+limit]">
+                        <tal:row
+                            tal:define="docurl python:baseurl+'/document/'+brain.id">
+                            <tal:columns tal:repeat="column columns">
+                                <td tal:condition="not: column/hidden_column|nothing"
+                                    ><a tal:attributes="href string:${docurl}"
+                                    tal:define="column_name column/id;
+                                    column_value python:getattr(brain, context.getIndexKey(column_name), '');"
+                                    ><span tal:content="structure python:column.getColumnRender(column_value)"
+                                    ></span></a></td>
+                            </tal:columns>
+                        </tal:row>
+                    </tr>
+                </tal:rows>
+            </tal:static>
+        </table>
     </div>
 </metal:content>
 </body>
