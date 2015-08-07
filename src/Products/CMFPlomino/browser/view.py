@@ -32,14 +32,10 @@ class ViewView(BrowserView):
             search = ' '.join([term + '*' for term in search.split(' ')])
         sort_column = self.request.get('sorton')
         if sort_column:
-            sort_index = self.context.getIndexKey(
-                self.context.getColumns()[int(sort_column) - 1].id)
+            sort_index = self.context.getIndexKey(sort_column)
         else:
             sort_index = None
-        if self.request.get('reverse', None):
-            reverse = True
-        else:
-            reverse = False
+        reverse = int(self.request.get('reverse', '0'))
 
         if 'request_query' in self.request:
             # query parameter in self.request is supposed to be a json object

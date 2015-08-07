@@ -10,12 +10,14 @@ require([
         init: function() {
             var self = this;
             self.init_search();
+            self.init_sorting();
             self.refresh({});
+            self.params = {};
         },
-        refresh: function(options) {
+        refresh: function() {
             var self = this;
             if(self.options.source) {
-                $.get(self.options.source, options, function(data) {
+                $.get(self.options.source, self.params, function(data) {
                     self.$el.find('tr:not(.header-row)').remove();
                     for(var i=0; i<data.rows.length; i++) {
                         var row = data.rows[i];
@@ -51,7 +53,8 @@ require([
                     clearTimeout(wait);
                 }
                 wait = setTimeout(function() {
-                    self.refresh({search: query});
+                    self.params.search = query;
+                    self.refresh();
                     if(query) {
                         filtered = true;
                     } else {
@@ -59,6 +62,19 @@ require([
                     }
                     clearTimeout(wait);
                 }, 1000);
+            });
+        },
+        init_sorting: function() {
+            var self = this;
+            self.$el.find('th').on('click', function() {
+                var sort_on = $(this).attr('data-column');
+                if(sort_on == self.params.sorton) {
+                    self.params.reverse = (self.params.reverse==1) ? 0 : 1;
+                } else {
+                    self.params.sorton = sort_on;
+                    self.params.reverse = 0;
+                }
+                self.refresh();
             });
         }
     });
