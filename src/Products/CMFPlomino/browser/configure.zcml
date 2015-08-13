@@ -54,4 +54,57 @@
         permission="zope.Public"
         />
 
+    <!-- TinyMCE -->
+
+    <browser:page
+        for="Products.CMFPlomino.contents.form.IPlominoForm"
+        name="tinymceplominoform"
+        class=".tinymce.TinyMCEPlominoFormView"
+        allowed_interface=".tinymce.ITinyMCEPlominoFormView"
+        allowed_attributes="action_form cache_form field_form hidewhen_form subform_form error_page valid_page"
+        permission="zope2.View"
+        />
+
+    <browser:page
+        name="tinyform"
+        for="Products.CMFPlomino.contents.form.IPlominoForm"
+        class=".tinymce.PlominoForm"
+        permission="zope.Public"
+        allowed_attributes="getField addField addAction addHidewhen addCache action_template"
+        />
+
+   <browser:page
+        name="tinyfield"
+        for="Products.CMFPlomino.contents.field.IPlominoField"
+        class=".tinymce.PlominoField"
+        permission="zope.Public"
+        allowed_attributes="setFieldProperties"
+        />
+
+   <browser:page
+        name="tinyaction"
+        for="Products.CMFPlomino.contents.action.IPlominoAction"
+        class=".tinymce.PlominoAction"
+        permission="zope.Public"
+        allowed_attributes="setActionProperties"
+        />
+
+    <!--
+   <browser:page
+        name="tinyhidewhen"
+        for="Products.CMFPlomino.contents..IPlominoHidewhen"
+        class=".hidewhen.PlominoHidewhen"
+        permission="zope.Public"
+        allowed_attributes="setHidewhenProperties"
+        />
+
+   <browser:page
+        name="tinycache"
+        for="Products.CMFPlomino.contents..IPlominoCache"
+        class=".cache.PlominoCache"
+        permission="zope.Public"
+        allowed_attributes="setCacheProperties"
+        />
+    -->
+
 </configure>

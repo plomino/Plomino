@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html id="region-content"
+	lang="en"
+	i18n:domain="plomino.tinymce">
+<head>
+	<meta http-equiv="Content-type" content="text/html;charset=UTF-8" />
+	<title i18n:translate="plominoaction_title">Add/edit a Plomino Action</title>
+    <!--
+	<script type="text/javascript" src="../../tiny_mce_popup.js"></script>
+	<script type="text/javascript" src="../../utils/mctabs.js"></script>
+	<script type="text/javascript" src="../../utils/form_utils.js"></script>
+	<link rel="stylesheet" type="text/css" tal:attributes="href string:../../plugins/plonebrowser/css/plonebrowser.css" />
+	<link rel="stylesheet" type="text/css" tal:attributes="href string:../../portal_css/columns.css" />
+	-->
+	<link rel="stylesheet" type="text/css" href="++resource++Products.CMFPlomino/css/plomino.tinymce.css" />
+</head>
+<body id="plonebrowser" tal:define="form python:view.context;
+                  actionid view/request/actionid|nothing;
+                  adapted form/tinyform|nothing;
+                  actionProperties adapted/getActionProperties;
+                  action adapted/getAction;
+				  ">
+
+	<div class="dialog-wrapper" id="content">
+		<!-- Form which selects an existing action -->
+		<fieldset tal:condition="action">
+			<legend i18n:translate="plominoaction_selection">Select a Plomino Action</legend>
+
+			<form id="actionSelection" method="get">
+				<p>
+					<label for="actionid" i18n:translate="plominoaction_id">Action ID</label>
+					<select id="actionid" name="actionid" onchange="this.form.submit();">
+						<option
+							tal:repeat="item adapted/getActions"
+							tal:content="item/id"
+							tal:attributes="value item/id; selected python:item.id==actionid"></option>
+					</select>
+				</p>
+			</form>
+		</fieldset>
+
+		<!-- Form which edits the selected action -->
+		<form method="post"
+			tal:attributes="action python:action and action.absolute_url() + '/tinyaction/setActionProperties' or form.absolute_url() + '/tinyform/addAction'">
+			<fieldset tal:condition="python:not action">
+				<legend i18n:translate="plominoaction_createaction">Create a Plomino Action</legend>
+
+				<label for="actionid" i18n:translate="plominoaction_id">Action ID</label>
+				<input type="text" name="actionid" id="actionid" tal:attributes="value actionid" />
+			</fieldset>
+
+			<fieldset>
+				<legend i18n:translate="plominoaction_edit">Edit Action Properties</legend>
+
+				<p>
+					<label for="actionTitle" i18n:translate="plominoaction_actiontitle">Action title</label>
+					<input id="actionTitle" name="actiontitle" tal:attributes="value python:actionProperties['title']" />
+				</p>
+
+				<p>
+					<label for="actionTypesList" i18n:translate="plominoaction_type">Action type</label>
+					<select id="actionTypesList" name="actiontype">
+						<option tal:repeat="type adapted/getActionTypes"
+								tal:content="python:type[1]"
+								tal:attributes="value python:type[0]; selected python:type[0]==actionProperties['actionType']"></option>
+					</select>
+				</p>
+
+				<p>
+					<label for="actionDisplayList" i18n:translate="plominoaction_display">Action display</label>
+					<select id="actionDisplayList" name="actiondisplay">
+						<option tal:repeat="display adapted/getActionDisplay"
+								tal:content="python:display[1]"
+								tal:attributes="value python:display[0]; selected python:display[0]==actionProperties['actionDisplay']"></option>
+					</select>
+				</p>
+
+				<p>
+					<label for="actionContent" i18n:translate="plominoaction_code">Action code</label>
+					<textarea id="actionContent" name="actioncontent" tal:content="python:actionProperties['content']"></textarea>
+				</p>
+
+				<p>
+					<label for="actionHideWhen" i18n:translate="plominoaction_hidewhen">Hide-when formula</label>
+					<textarea id="actionHideWhen" name="actionhidewhen" tal:content="python:actionProperties['hideWhen']"></textarea>
+				</p>
+
+				<p>
+					<input type="checkbox" id="actionInActionBar" name="actioninactionbar"
+						tal:attributes="checked python:actionProperties['inActionBar']" />
+					<label for="actionInActionBar" i18n:translate="plominoaction_inactionbar">Display action in action bar</label>
+				</p>
+			</fieldset>
+
+			<div class="mceActionPanel formControls" i18n:domain="tinymce">
+				<span class="actionButtons">
+					<input type="submit" id="insert" class="context" name="insert" value="Insert" i18n:attributes="value;" />
+					<input type="button" id="cancel" class="standalone" name="cancel" value="Cancel" i18n:attributes="value;" onclick="top.tinymce.activeEditor.windowManager.close();" />
+				</span>
+			</div>
+		</form>
+	</div>
+
+</body>
+</html>
