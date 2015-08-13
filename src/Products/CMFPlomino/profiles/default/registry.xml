@@ -64,13 +64,23 @@
   <records interface="Products.CMFPlone.interfaces.ITinyMCESchema"
            prefix="plone">
     <value purge="false" key="content_css">
-      <element>++resource++Products.CMFPlomino/tinymce.css</element>
+      <element>++resource++Products.CMFPlomino/css/tinymce.css</element>
+    </value>
+    <value purge="false" key="custom_plugins">
+      <element>plomino|++resource++Products.CMFPlomino/js/tinymce.js</element>
+    </value>
+    <value purge="false" key="custom_buttons">
+      <element>plominofield</element>
+      <element>plominoaction</element>
+      <element>plominosubform</element>
+      <element>plominohidewhen</element>
+      <element>plominocache</element>
     </value>
   </records>
 
   <records prefix="plone.resources/plominoformula"
            interface='Products.CMFPlone.interfaces.IResourceRegistry'>
-    <value key="js">++resource++Products.CMFPlomino/formula.js</value>
+    <value key="js">++resource++Products.CMFPlomino/js/formula.js</value>
   </records>
 
 <records prefix="plone.bundles/plomino"
