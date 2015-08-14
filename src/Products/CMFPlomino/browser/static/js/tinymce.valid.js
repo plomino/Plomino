@@ -2,7 +2,8 @@
 var PlominoDialog = {
 	// Called when the "submit" button is clicked
 	submit : function(type, value) {
-		var ed = tinyMCEPopup.editor;
+        
+		var ed = top.tinymce.activeEditor;
 
 		if (type == 'action')
 			var plominoClass = 'plominoActionClass';
@@ -17,9 +18,11 @@ var PlominoDialog = {
 			var span = '<span class="' + plominoClass + '">' + value + '</span>';
 
 			// Insert or replace the selection
-			tinyMCEPopup.restoreSelection();
+
+            // TinyMCE 3, still needed ?
+			//tinyMCEPopup.restoreSelection();
 			var selection = ed.selection.getNode();
-			if (tinymce.DOM.hasClass(selection, 'plominoActionClass') || tinymce.DOM.hasClass(selection, 'plominoFieldClass') || tinymce.DOM.hasClass(selection, 'plominoSubformClass'))
+			if (top.tinymce.DOM.hasClass(selection, 'plominoActionClass') || top.tinymce.DOM.hasClass(selection, 'plominoFieldClass') || top.tinymce.DOM.hasClass(selection, 'plominoSubformClass'))
 				ed.dom.setOuterHTML(selection, span);
 			else
 				ed.execCommand('mceInsertContent', false, span, {skip_undo : 1});
@@ -27,12 +30,14 @@ var PlominoDialog = {
 		else if (type == "hidewhen")
 		{
 			// Insert or replace the selection
-			tinyMCEPopup.restoreSelection();
+
+            // TinyMCE 3, still needed ?
+			//tinyMCEPopup.restoreSelection();
 
 			// Select the parent node of the selection
 			var selection = ed.selection.getNode();
 			// If the node is a <span class="plominoFieldClass"/>, select all its content
-			if (tinymce.DOM.hasClass(selection, 'plominoHidewhenClass'))
+			if (top.tinymce.DOM.hasClass(selection, 'plominoHidewhenClass'))
 			{
 				// get the old hide-when id
 				var oldId = selection.firstChild.nodeValue;
@@ -41,7 +46,7 @@ var PlominoDialog = {
 					oldId = splittedId[1];
 
 				// get a list of hide-when opening and closing spans
-				var hidewhens = tinyMCE.activeEditor.dom.select('span.plominoHidewhenClass');
+				var hidewhens = ed.dom.select('span.plominoHidewhenClass');
 				// find the selected span
 				var i;
 				for (i = 0; i < hidewhens.length; i++) {
@@ -82,12 +87,14 @@ var PlominoDialog = {
 		else if (type == "cache")
 		{
 			// Insert or replace the selection
-			tinyMCEPopup.restoreSelection();
+
+            // TinyMCE 3, still needed ?
+			//tinyMCEPopup.restoreSelection();
 
 			// Select the parent node of the selection
 			var selection = ed.selection.getNode();
 			// If the node is a <span class="plominoFieldClass"/>, select all its content
-			if (tinymce.DOM.hasClass(selection, 'plominoCacheClass'))
+			if (top.tinymce.DOM.hasClass(selection, 'plominoCacheClass'))
 			{
 				// get the old cache id
 				var oldId = selection.firstChild.nodeValue;
@@ -96,7 +103,7 @@ var PlominoDialog = {
 					oldId = splittedId[1];
 
 				// get a list of cache opening and closing spans
-				var caches = tinyMCE.activeEditor.dom.select('span.plominoCacheClass');
+				var caches = ed.dom.select('span.plominoCacheClass');
 				// find the selected span
 				var i;
 				for (i = 0; i < caches.length; i++) {
@@ -136,6 +143,6 @@ var PlominoDialog = {
 		}
 
 		if (type !== "field")
-			tinyMCEPopup.close();
+			top.tinymce.activeEditor.windowManager.close();
 	}
 }

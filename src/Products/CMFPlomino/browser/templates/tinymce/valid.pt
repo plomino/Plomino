@@ -11,7 +11,7 @@
 	<script type="text/javascript" src="../../utils/mctabs.js"></script>
 	<script type="text/javascript" src="../../utils/form_utils.js"></script>
 	-->
-	<script type="text/javascript" src="++resource++plomino.tinymce/plomino_tinymce/js/tinymce.valid.js"></script>
+	<script type="text/javascript" src="++resource++Products.CMFPlomino/js/tinymce.valid.js"></script>
 	<script type="text/javascript" tal:content="structure string: PlominoDialog.submit('$type', '$value');"></script>
     <!--
 	<link rel="stylesheet" type="text/css" tal:attributes="href string:../../plugins/plonebrowser/css/plonebrowser.css" />
