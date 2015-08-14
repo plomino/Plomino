@@ -2,7 +2,7 @@
 var PlominoDialog = {
 	// Called when the "submit" button is clicked
 	submit : function(type, value) {
-        
+
 		var ed = top.tinymce.activeEditor;
 
 		if (type == 'action')

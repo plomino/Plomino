@@ -237,7 +237,6 @@ class PlominoForm(object):
                     hidewhen=hideWhen,
                     in_action_bar=inActionBar,
                 )
-                self.context[actionid] = action
 
                 self.request.RESPONSE.redirect(self.context.absolute_url() + "/@@tinymceplominoform/valid_page?type=action&value=" + actionid)
 
