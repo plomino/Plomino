@@ -11,7 +11,7 @@
 	<script type="text/javascript" src="../../utils/mctabs.js"></script>
 	<script type="text/javascript" src="../../utils/form_utils.js"></script>
 	-->
-	<script type="text/javascript" src="++resource++plomino.tinymce/plomino_tinymce/js/plomino.tinymce.js"></script>
+	<script type="text/javascript" src="++resource++plomino.tinymce/plomino_tinymce/js/tinymce.valid.js"></script>
 	<script type="text/javascript" tal:content="structure string: PlominoDialog.submit('$type', '$value');"></script>
     <!--
 	<link rel="stylesheet" type="text/css" tal:attributes="href string:../../plugins/plonebrowser/css/plonebrowser.css" />
@@ -26,7 +26,7 @@
 				<p>
 					<a tal:attributes="href python:field.absolute_url() + '/edit'" target="_blank"
 						i18n:translate="plominofield_mainsettings">Edit the field</a><br />
-					<a tal:attributes="href python:field.absolute_url() + '/' + field.FieldType.lower() + 'settings'"
+					<a tal:attributes="href python:field.absolute_url() + '/' + field.field_type.lower() + 'settings'"
 						target="_blank" i18n:translate="plominofield_specificsettings">Edit field settings</a>
 				</p>
 			</fieldset>

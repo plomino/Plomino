@@ -2,6 +2,7 @@ from zope import component, interface
 
 from Products.Five import BrowserView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
+from plone.dexterity.utils import createContentInContainer
 
 from Products.CMFPlomino.config import FIELD_MODES
 from Products.CMFPlomino.contents.field import get_field_types
@@ -21,7 +22,7 @@ class TinyMCEPlominoFormView(BrowserView):
     """
     interface.implements(ITinyMCEPlominoFormView)
     
-    #action_template = ViewPageTemplateFile('templates/tinymce/action.pt')
+    action_template = ViewPageTemplateFile('templates/tinymce/action.pt')
     def action_form(self, **params):
         """."""
         params = {}
@@ -114,9 +115,9 @@ class PlominoForm(object):
         """
         field = self.getField()
         if field:
-            return {'fieldType': field.FieldType,
-                    'fieldMode': field.FieldMode,
-                    'formula': field.Formula
+            return {'fieldType': field.field_type,
+                    'fieldMode': field.field_mode,
+                    'formula': field.formula
                     }
         else:
              return {'fieldType': 'TEXT',
@@ -135,11 +136,15 @@ class PlominoForm(object):
         # self.context is the current form
         if fieldid:
             if not hasattr(self.context, fieldid):
-                self.context.invokeFactory('PlominoField', Title=fieldid, id=fieldid, FieldType=fieldtype, FieldMode=fieldmode)
-                field = self.context.aq_inner.getFormField(fieldid)
-                field.setFormula(fieldformula)
-                field.setTitle(fieldid)
-                field.at_post_create_script()
+                field = createContentInContainer(
+                    self.context,
+                    'PlominoField',
+                    title=fieldid,
+                    id=fieldid,
+                    field_type=fieldtype,
+                    field_mode=fieldmode,
+                    formula=fieldformula,
+                )
 
                 self.request.RESPONSE.redirect(self.context.absolute_url() + "/@@tinymceplominoform/valid_page?type=field&value=" + fieldid + "&fieldurl=" + "/".join(field.getPhysicalPath()))
 
@@ -191,12 +196,12 @@ class PlominoForm(object):
         """
         action = self.getAction()
         if action:
-            return {'title': action.Title(),
-                    'actionType': action.ActionType,
-                    'actionDisplay': action.ActionDisplay,
-                    'content': action.Content,
-                    'hideWhen': action.Hidewhen,
-                    'inActionBar': action.InActionBar
+            return {'title': action.title,
+                    'actionType': action.action_type,
+                    'actionDisplay': action.action_display,
+                    'content': action.content,
+                    'hideWhen': action.hidewhen,
+                    'inActionBar': action.in_action_bar
                     }
         else:
              return {'title': '',
@@ -221,11 +226,18 @@ class PlominoForm(object):
         # self.context is the current form
         if actionid:
             if not hasattr(self.context, actionid):
-                self.context.invokeFactory('PlominoAction', Title=title, id=actionid, ActionType=actionType, ActionDisplay=actionDisplay, Content=content, Hidewhen=hideWhen, InActionBar=inActionBar)
-                action = getattr(self.context.aq_inner, actionid)
-                action.setTitle(title)
-                #action = getattr(self.context.aq_parent.aq_parent, actionid)
-                #action.at_post_edit_script()
+                action = createContentInContainer(
+                    self.context,
+                    'PlominoAction',
+                    title=title,
+                    id=actionid,
+                    action_type=actionType,
+                    action_display=actionDisplay,
+                    contnet=content,
+                    hidewhen=hideWhen,
+                    in_action_bar=inActionBar,
+                )
+                self.context[actionid] = action
 
                 self.request.RESPONSE.redirect(self.context.absolute_url() + "/@@tinymceplominoform/valid_page?type=action&value=" + actionid)
 
@@ -387,10 +399,9 @@ class PlominoField(object):
         fieldformula = self.request.get("fieldformula", '')
 
         # self.context is the current field
-        self.context.setFieldType(fieldtype)
-        self.context.setFieldMode(fieldmode)
-        self.context.setFormula(fieldformula)
-        self.context.aq_inner.at_post_edit_script()
+        self.context.field_type = fieldtype
+        self.context.field_mode = fieldmode
+        self.context.formula = fieldformula
 
         self.request.RESPONSE.redirect(self.context.absolute_url() + "/../@@tinymceplominoform/valid_page?type=field&value=" + self.context.id)
 

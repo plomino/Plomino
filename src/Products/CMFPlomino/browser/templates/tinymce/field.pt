@@ -10,12 +10,11 @@
 	<script type="text/javascript" src="../../utils/mctabs.js"></script>
 	<script type="text/javascript" src="../../utils/form_utils.js"></script>
 	-->
-	<script type="text/javascript" src="++resource++Products.CMFPlomino/js/plominofield.js"></script>
+	<script type="text/javascript" src="++resource++Products.CMFPlomino/js/tinymce.plominofield.js"></script>
     <!--
 	<link rel="stylesheet" type="text/css" tal:attributes="href string:../../plugins/plonebrowser/css/plonebrowser.css" />
 	<link rel="stylesheet" type="text/css" tal:attributes="href string:../../portal_css/columns.css" />
 	-->
-	<link rel="stylesheet" type="text/css" href="++resource++Products.CMFPlomino/css/plomino.tinymce.css" />
 </head>
 <body id="plonebrowser" tal:define="form python:view.context;
                   fieldid view/request/fieldid|nothing;
