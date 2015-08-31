@@ -78,11 +78,17 @@
     <value key="js">++resource++Products.CMFPlomino/table.js</value>
   </records>
 
+  <records prefix="plone.resources/plominodesign"
+           interface='Products.CMFPlone.interfaces.IResourceRegistry'>
+    <value key="js">++resource++Products.CMFPlomino/design.js</value>
+  </records>
+
   <records prefix="plone.bundles/plomino"
            interface='Products.CMFPlone.interfaces.IBundleRegistry'>
     <value key="resources">
       <element>plominoformula</element>
       <element>plominotable</element>
+      <element>plominodesign</element>
     </value>
     <value key="enabled">True</value>
     <value key="jscompilation">++resource++plomino-compiled.min.js</value>

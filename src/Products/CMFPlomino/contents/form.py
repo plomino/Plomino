@@ -444,14 +444,21 @@ class PlominoForm(Container):
             if obj.__class__.__name__ == 'PlominoHidewhen']
         return hidewhens
 
-    security.declarePublic('getActions')
+    security.declarePublic('getFormActions')
 
-    def getActions(self, target, hide=True):
-        """ Get filtered form actions for the target (page or document).
+    def getFormActions(self):
+        """ Get all actions
         """
         actions = [obj for obj in self.objectValues()
             if obj.__class__.__name__ == 'PlominoAction']
+        return actions
 
+    security.declarePublic('getActions')
+
+    def getActions(self, target=None, hide=True):
+        """ Get filtered form actions for the target (page or document).
+        """
+        actions = self.getFormActions()
         filtered = []
         for action in actions:
             if hide:
@@ -651,7 +658,8 @@ class PlominoForm(Container):
                 action_id)
             if action_span in html_content:
                 if not action.isHidden(target, form):
-                    pt = form.unrestrictedTraverse("@@plomino_actions").embedded_action
+                    pt = form.unrestrictedTraverse(
+                        "@@plomino_actions").embedded_action
                     action_render = pt(display=action.action_display,
                         plominoaction=action,
                         plominotarget=target,

@@ -10,6 +10,22 @@
         />
 
     <browser:page
+        for="Products.CMFPlomino.contents.database.IPlominoDatabase"
+        name="DatabaseDesign"
+        class=".database.DatabaseView"
+        attribute="design"
+        permission="zope.Public"
+        />
+
+    <browser:page
+        for="Products.CMFPlomino.contents.database.IPlominoDatabase"
+        name="designtree"
+        class=".database.DatabaseView"
+        attribute="tree"
+        permission="zope.Public"
+        />
+
+    <browser:page
         for="Products.CMFPlomino.contents.form.IPlominoForm"
         name="OpenForm"
         class=".form.FormView"
