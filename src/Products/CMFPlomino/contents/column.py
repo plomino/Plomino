@@ -24,7 +24,8 @@ class IPlominoColumn(model.Schema):
         required=False,
     )
 
-    displayed_field = schema.TextLine(
+    displayed_field = schema.Choice(
+        vocabulary='Products.CMFPlomino.columns.vocabularies.get_fields',
         title=_('CMFPlomino_label_DisplayedField', default="Displayed field"),
         description=_('CMFPlomino_help_DisplayedField', default="Field value "
             "to display in the column. It does not apply if Formula is "
@@ -58,29 +59,6 @@ class PlominoColumn(Item):
 
     security = ClassSecurityInfo()
 
-    security.declarePublic('getFormFields')
-
-    def getFormFields(self):
-        """ Get a list of all the fields in the database
-        """
-        fields = []
-        counter = 1
-        for form in self.getParentView().getParentDatabase().getForms():
-            fields.append(
-                ['PlominoPlaceholder%s' % counter, '=== ' + form.id + ' ==='])
-            counter += 1
-            fields.extend([
-                (form.id + '/' + f.id, f.id) for f in form.getFormFields()
-            ])
-        return fields
-
-    security.declarePublic('getColumnName')
-
-    def getColumnName(self):
-        """ Get column name
-        """
-        return self.id
-
     security.declarePublic('getColumnRender')
 
     def getColumnRender(self, fieldvalue):
@@ -100,7 +78,7 @@ class PlominoColumn(Item):
         field = form.getFormField(fieldname)
 
         try:
-            return field.getRenderedValue(fieldvalue, "READ", form)
+            return field.getRenderedValue(fieldvalue, False, form)
         except Exception, e:
             self.traceRenderingErr(e, self)
             return ""

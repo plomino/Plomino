@@ -65,6 +65,16 @@
         />
 
     <subscriber
+        for="Products.CMFPlomino.contents.view.IPlominoView zope.lifecycleevent.interfaces.IObjectAddedEvent"
+        handler=".events.afterViewCreated"
+        />
+
+    <subscriber
+        for="Products.CMFPlomino.contents.view.IPlominoView zope.lifecycleevent.interfaces.IObjectModifiedEvent"
+        handler=".events.afterViewModified"
+        />
+
+    <subscriber
         for="Products.CMFPlomino.contents.column.IPlominoColumn zope.lifecycleevent.interfaces.IObjectAddedEvent"
         handler=".events.afterColumnModified"
         />
@@ -73,5 +83,27 @@
         for="Products.CMFPlomino.contents.column.IPlominoColumn zope.lifecycleevent.interfaces.IObjectModifiedEvent"
         handler=".events.afterColumnModified"
         />
+
+    <!-- vocabularies -->
+    <utility
+        name="Products.CMFPlomino.fields.vocabularies.get_forms"
+        component=".fields.vocabularies.get_forms"
+    />
+    <utility
+        name="Products.CMFPlomino.fields.vocabularies.get_views"
+        component=".fields.vocabularies.get_views"
+    />
+    <utility
+        name="Products.CMFPlomino.columns.vocabularies.get_fields"
+        component=".contents.vocabularies.get_fields"
+    />
+    <utility
+        name="Products.CMFPlomino.columns.vocabularies.get_columns"
+        component=".contents.vocabularies.get_columns"
+    />
+    <utility
+        name="Products.CMFPlomino.columns.vocabularies.get_index_types"
+        component=".contents.vocabularies.get_index_types"
+    />
 
 </configure>
