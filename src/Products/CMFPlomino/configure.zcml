@@ -84,6 +84,11 @@
         handler=".events.afterColumnModified"
         />
 
+    <subscriber
+        for="Products.CMFPlomino.contents.agent.IPlominoAgent zope.lifecycleevent.interfaces.IObjectModifiedEvent"
+        handler=".events.afterAgentModified"
+        />
+
     <!-- vocabularies -->
     <utility
         name="Products.CMFPlomino.fields.vocabularies.get_forms"

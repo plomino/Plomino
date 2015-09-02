@@ -6,4 +6,5 @@
   <object name="PlominoAction" meta_type="Dexterity FTI"/>
   <object name="PlominoView" meta_type="Dexterity FTI"/>
   <object name="PlominoColumn" meta_type="Dexterity FTI"/>
+  <object name="PlominoAgent" meta_type="Dexterity FTI"/>
 </object>

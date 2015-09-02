@@ -107,3 +107,9 @@ def afterColumnModified(obj, event):
     db = obj.getParentDatabase()
     if not db.do_not_reindex:
         db.getIndex().refresh()
+
+
+def afterAgentModified(obj, event):
+    """
+    """
+    obj.cleanFormulaScripts(SCRIPT_ID_DELIMITER.join(["agent", obj.id]))

@@ -1,23 +1,20 @@
 <?xml version="1.0"?>
-<object name="PlominoDatabase" meta_type="Dexterity FTI" i18n:domain="Products.CMFPlomino"
+<object name="PlominoAgent" meta_type="Dexterity FTI" i18n:domain="Products.CMFPlomino"
    xmlns:i18n="http://xml.zope.org/namespaces/i18n">
-  <property name="title" i18n:translate="">PlominoDatabase</property>
+  <property name="title" i18n:translate="">PlominoAgent</property>
   <property name="description"
     i18n:translate=""></property>
   <property name="icon_expr"></property>
-  <property name="factory">PlominoDatabase</property>
-  <property name="add_view_expr">string:${folder_url}/++add++PlominoDatabase</property>
+  <property name="factory">PlominoAgent</property>
+  <property name="add_view_expr">string:${folder_url}/++add++PlominoAgent</property>
   <property name="link_target"></property>
   <property name="immediate_view">view</property>
-  <property name="global_allow">True</property>
+  <property name="global_allow">False</property>
   <property name="filter_content_types">True</property>
   <property name="allowed_content_types">
-    <element value="PlominoForm"/>
-    <element value="PlominoView"/>
-    <element value="PlominoAgent"/>
   </property>
   <property name="allow_discussion">False</property>
-  <property name="default_view">view</property>
+  <property name="default_view">edit</property>
   <property name="view_methods">
     <element value="view"/>
   </property>
@@ -26,8 +23,8 @@
   <property name="behaviors">
     <element value="plone.app.content.interfaces.INameFromTitle"/>
   </property>
-  <property name="schema">Products.CMFPlomino.contents.database.IPlominoDatabase</property>
-  <property name="klass">Products.CMFPlomino.contents.database.PlominoDatabase</property>
+  <property name="schema">Products.CMFPlomino.contents.agent.IPlominoAgent</property>
+  <property name="klass">Products.CMFPlomino.contents.agent.PlominoAgent</property>
   <property name="model_source"></property>
   <property name="model_file"></property>
   <alias from="(Default)" to="(dynamic view)"/>
@@ -42,11 +39,6 @@
   <action title="Edit" action_id="edit" category="object" condition_expr=""
     description="" icon_expr="" link_target=""
     url_expr="string:${object_url}/edit" visible="True">
-    <permission value="Modify portal content"/>
-  </action>
-  <action title="Manage database" action_id="manage_db" category="object_buttons" condition_expr=""
-    description="" icon_expr="" link_target=""
-    url_expr="string:${object_url}/DatabaseDesign" visible="True">
     <permission value="Modify portal content"/>
   </action>
 </object>
