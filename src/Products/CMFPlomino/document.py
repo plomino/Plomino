@@ -9,6 +9,7 @@ from Acquisition import aq_parent, aq_inner
 from DateTime import DateTime
 from OFS.ObjectManager import BadRequestException
 from persistent.dict import PersistentDict
+from plone import api
 from plone.app.blob.field import BlobWrapper
 from plone.app.blob.utils import guessMimetype
 from plone.i18n.normalizer.interfaces import IUserPreferredURLNormalizer
@@ -981,7 +982,8 @@ class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
             return None
 
         if not isinstance(result, unicode):
-            charset = self.getCharset()
+            site_properties = api.portal.get().portal_properties.site_properties
+            charset = site_properties.getProperty("default_charset")
             result = unicode(result, charset)
 
         request = getattr(self, 'REQUEST', None)

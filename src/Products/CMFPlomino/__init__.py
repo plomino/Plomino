@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 """Init and utils."""
 
+from AccessControl.Permission import registerPermissions
 from DateTime import DateTime
 import decimal
 from Globals import DevelopmentMode
@@ -8,13 +9,24 @@ from json import JSONDecoder, JSONEncoder
 from jsonutil import jsonutil as json
 from time import time
 from plone.resource.interfaces import IResourceDirectory
+from Products.CMFCore import utils as cmfutils
 from Products.PythonScripts.Utility import allow_module
 from zope.i18nmessageid import MessageFactory
 from zope import component
 from zope.interface import implements
 
 import interfaces
-from config import PLOMINO_RESOURCE_NAME
+from config import (
+    ADD_DESIGN_PERMISSION,
+    ADD_CONTENT_PERMISSION,
+    READ_PERMISSION,
+    EDIT_PERMISSION,
+    CREATE_PERMISSION,
+    REMOVE_PERMISSION,
+    DESIGN_PERMISSION,
+    ACL_PERMISSION,
+    PLOMINO_RESOURCE_NAME,
+)
 from utils import StringToDate
 
 _ = MessageFactory('Products.CMFPlomino')
@@ -184,3 +196,36 @@ else:
 
             newf.__doc__ = f.__doc__
             return newf
+
+
+def initialize(context):
+    """ Initialize product (standard Zope hook)
+    """
+    registerPermissions([(ADD_DESIGN_PERMISSION, []),
+                         (ADD_CONTENT_PERMISSION, []),
+                         (READ_PERMISSION, []),
+                         (EDIT_PERMISSION, []),
+                         (CREATE_PERMISSION, []),
+                         (REMOVE_PERMISSION, []),
+                         (DESIGN_PERMISSION, []),
+                         (ACL_PERMISSION, [])])
+    from .document import PlominoDocument, addPlominoDocument
+
+    all_content_types = (PlominoDocument,)
+    all_constructors = (addPlominoDocument,)
+    all_ftis = ({
+        'meta_type': 'PlominoDocument',
+        'allowed_content_types': [],
+        'allow_discussion': 0,
+        'immediate_view': 'checkBeforeOpenDocument',
+        'global_allow': 0,
+        'filter_content_types': 1,
+    }, )
+
+    cmfutils.ContentInit(
+        'CMFPlomino Content',
+        content_types=all_content_types,
+        permission=ADD_CONTENT_PERMISSION,
+        extra_constructors=all_constructors,
+        fti=all_ftis,
+    ).initialize(context)
