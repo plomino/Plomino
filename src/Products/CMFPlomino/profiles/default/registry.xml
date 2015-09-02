@@ -85,12 +85,12 @@
 
   <records prefix="plone.resources/plominotable"
            interface='Products.CMFPlone.interfaces.IResourceRegistry'>
-    <value key="js">++resource++Products.CMFPlomino/table.js</value>
+    <value key="js">++resource++Products.CMFPlomino/js/table.js</value>
   </records>
 
   <records prefix="plone.resources/plominodesign"
            interface='Products.CMFPlone.interfaces.IResourceRegistry'>
-    <value key="js">++resource++Products.CMFPlomino/design.js</value>
+    <value key="js">++resource++Products.CMFPlomino/js/design.js</value>
   </records>
 
   <records prefix="plone.bundles/plomino"
@@ -101,8 +101,8 @@
       <element>plominodesign</element>
     </value>
     <value key="enabled">True</value>
-    <value key="jscompilation">++resource++plomino-compiled.min.js</value>
-    <value key="last_compilation">2015-02-06 00:00:00</value>
+    <value key="jscompilation">++resource++Products.CMFPlomino/js/plomino-compiled.js</value>
+    <value key="last_compilation">2015-09-02 00:00:00</value>
   </records>
 
 </registry>

@@ -1,0 +1,570 @@
+Add different users for Plomino database testing:
+Reader, Designer, Author, Editor, Manager::
+
+    >>> portal = layer['portal']
+    >>> memberName = 'siteManager'
+    >>> portal.portal_membership.addMember(
+    ...         memberName,
+    ...         memberName,
+    ...         ('Member', 'Manager',),
+    ...         '',
+    ...         {'fullname': memberName, 'email': memberName+'@dummy.fr',}
+    ...         )
+    >>> memberName = 'userReader'
+    >>> portal.portal_membership.addMember(
+    ...         memberName,
+    ...         memberName,
+    ...         ('Member',),
+    ...         '',
+    ...         {'fullname': memberName, 'email': memberName+'@dummy.fr',}
+    ...         )
+    >>> memberName = 'userDesigner'
+    >>> portal.portal_membership.addMember(
+    ...         memberName,
+    ...         memberName,
+    ...         ('Member',),
+    ...         '',
+    ...         {'fullname': memberName, 'email': memberName+'@dummy.fr',}
+    ...         )
+    >>> memberName = 'userAuthor'
+    >>> portal.portal_membership.addMember(
+    ...         memberName,
+    ...         memberName,
+    ...         ('Member',),
+    ...         '',
+    ...         {'fullname': memberName, 'email': memberName+'@dummy.fr',}
+    ...         )
+    >>> memberName = 'userAuthor2'
+    >>> portal.portal_membership.addMember(
+    ...         memberName,
+    ...         memberName,
+    ...         ('Member',),
+    ...         '',
+    ...         {'fullname': memberName, 'email': memberName+'@dummy.fr',}
+    ...         )
+    >>> memberName = 'userEditor'
+    >>> portal.portal_membership.addMember(
+    ...         memberName,
+    ...         memberName,
+    ...         ('Member',),
+    ...         '',
+    ...         {'fullname': memberName, 'email': memberName+'@dummy.fr',}
+    ...         )
+    >>> memberName = 'userManager'
+    >>> portal.portal_membership.addMember(
+    ...         memberName,
+    ...         memberName,
+    ...         ('Member',),
+    ...         '',
+    ...         {'fullname': memberName, 'email': memberName+'@dummy.fr',}
+    ...         )
+
+Add a group::
+
+    >>> test = portal.portal_groups.addGroup("PowerfulPeople")
+    >>> portal.portal_groups.getGroupById('PowerfulPeople'
+    ...         ).addMember('userAuthor')
+    >>> portal.portal_groups.getGroupById('PowerfulPeople'
+    ...         ).addMember('userAuthor2')
+
+Create plomino database and publish it::
+
+    >>> id = portal.invokeFactory('PlominoDatabase', id='ACLTestsDB')
+    >>> db = portal.ACLTestsDB
+    >>> wf_tool = portal.portal_workflow
+    >>> wf_tool.doActionFor(db, 'publish')
+    >>> base_url = db.REQUEST.physicalPathToURL(db.getPhysicalPath())
+
+Set plomino roles and permissions::
+
+    >>> db.manage_setLocalRoles('userManager', ['PlominoManager'])
+    >>> db.manage_setLocalRoles('userDesigner', ['PlominoDesigner'])
+    >>> db.manage_setLocalRoles('userEditor', ['PlominoEditor'])
+    >>> db.manage_setLocalRoles('userAuthor', ['PlominoAuthor'])
+    >>> db.manage_setLocalRoles('userReader', ['PlominoReader'])
+
+Add some minimal content to test access (view 1 displays all documents)::
+
+    >>> id = db.invokeFactory('PlominoForm', id='form1', Title='Form 1')
+    >>> id = db.form1.invokeFactory('PlominoField',
+    ...         id='field1',
+    ...         title='field1',
+    ...         field_type="TEXT",
+    ...         field_mode="EDITABLE")
+    >>> db.form1.field1.widget="TEXT"
+    >>> db.form1.form_layout = """<p>field1 : <span class="plominoFieldClass">field1</span></p>
+    ... <p>action : <span class="plominoActionClass">powerful_action</span></p>"""
+    >>> id = db.invokeFactory('PlominoView',
+    ...         id='view1', title='View 1', selection_formula='True')
+    >>> doc = db.createDocument()
+    >>> doc.setItem('Form', 'form1')
+    >>> doc.setItem('field1', 'what a value')
+    >>> docid = doc.id
+    >>> docUrl = doc.doc_url()
+    >>> docUrl == base_url + '/' + docid
+    True
+    >>> doc2 = db.createDocument()
+    >>> doc2.setItem('Form', 'form1')
+    >>> doc2.setItem('field1', 'I prefer this value')
+    >>> docid2 = doc2.id
+    >>> docUrl2 = doc2.doc_url()
+
+Add an action which performs a task only allowed for a site manager::
+
+    >>> actionid = db.form1.invokeFactory('PlominoAction',
+    ...         id='powerful_action',
+    ...         action_type='PYTHON',
+    ...         action_display='LINK',
+    ...         in_action_bar=False,
+    ...         content='''
+    ... portal = plominoContext.getParentDatabase().getParentNode()
+    ... newpage = portal.invokeFactory('Document', id='newpage')
+    ... ''')
+    >>> db.form1.powerful_action.title = "powerful_action"
+
+Add an agent which will run as its owner::
+
+    >>> agentid = db.invokeFactory('PlominoAgent',
+    ...         id='ownersagent',
+    ...         run_as='OWNER',
+    ...         content='''
+    ... db = plominoContext.getParentDatabase()
+    ... req = getattr(plominoContext, 'REQUEST')
+    ... docid = req.get('docid')
+    ... doctitle = req.get('doctitle')
+    ... doc = db.getDocument(docid)
+    ... doc.setTitle(doctitle)
+    ... doc.save()
+    ... ''')
+
+Add form with a computed-on-display field that calls an agent::
+
+    >>> doc2 = db.createDocument()
+    >>> doc2.setItem('Form', 'form2')
+    >>> docid2 = doc2.id
+    >>> docUrl2 = doc2.doc_url()
+    >>> id = db.invokeFactory('PlominoForm', id='form2', Title='Form 2')
+    >>> id = db.form2.invokeFactory('PlominoField',
+    ...         id='editingdisplayfield',
+    ...         Title='editingdisplayfield',
+    ...         field_type="TEXT",
+    ...         field_mode="DISPLAY",
+    ...         Formula="""
+    ... db = plominoContext.getParentDatabase()
+    ... req = getattr(plominoContext, 'REQUEST')
+    ... req.set('docid', '%(docid)s')
+    ... req.set('doctitle', '%(doctitle)s')
+    ... agent = db.getAgent('ownersagent')
+    ... # This successfully edits doc2, because the agent runs as its owner.
+    ... agent.runAgent()
+    ... # This should fail, because we've dropped back to Reader rights.
+    ... doc = db.getDocument('%(docid)s')
+    ... doc.save()
+    ... return 'I made a change in %(docid)s'
+    ... """ % {'docid': docid2, 'doctitle': "Set by Agent"})
+    >>> db.form2.editingdisplayfield.at_post_create_script()
+    >>> from Products.CMFPlomino.fields.text import ITextField
+    >>> adapted=ITextField(db.form2.editingdisplayfield)
+    >>> adapted.widget="TEXT"
+    >>> db.form2.setFormLayout(
+    ... """<p>editingdisplayfield : <span class="plominoFieldClass">editingdisplayfield</span></p>""")
+
+Create the browser object we'll be using::
+
+    >>> browser = Browser(layer['app'])
+    >>> transaction.commit()  # enable the browser to see our changes
+
+Words in content indicating insufficient privileges::
+
+    >>> InsufficientPrivileges = 'credentials_cookie_auth'
+
+Open portal::
+
+    >>> portal_url = portal.absolute_url()
+    >>> browser.open(portal_url)
+
+========
+READER
+========
+
+Log in with ``PlominoReader`` access rights::
+
+    >>> browser.getLink('Log in').click()
+    >>> browser.getControl('Login Name').value = 'userReader'
+    >>> browser.getControl('Password').value = 'userReader'
+    >>> browser.getControl('Log in').click()
+    >>> browser.open(base_url)
+    >>> InsufficientPrivileges in browser.url
+    False
+
+Reader cannot edit database::
+
+    >>> browser.open(base_url + '/base_edit')
+    >>> InsufficientPrivileges in browser.url
+    True
+    >>> browser.open(base_url + '/DatabaseACL')
+    >>> InsufficientPrivileges in browser.url
+    True
+    >>> browser.open(base_url + '/DatabaseDesign')
+    >>> InsufficientPrivileges in browser.url
+    True
+
+Reader cannot see edit or delete buttons::
+
+    >>> browser.open(docUrl)
+    >>> """<input type="button" class="context" value="Edit" """ \
+    ... in browser.contents
+    False
+    >>> """<input type="button" class="context" value="Delete" """ \
+    ... in browser.contents
+    False
+    >>> browser.open(docUrl + '/checkBeforeOpenDocument')
+    >>> """<input type="button" class="context" value="Edit" """ \
+    ... in browser.contents
+    False
+    >>> """<input type="button" class="context" value="Delete" """ \
+    ... in browser.contents
+    False
+
+Reader cannot edit or delete documents::
+
+    >>> browser.open(docUrl+'/EditDocument')
+    >>> InsufficientPrivileges in browser.url
+    True
+    >>> browser.open(docUrl+'/delete')
+    >>> InsufficientPrivileges in browser.url
+    True
+
+Reader can edit a document using an agent which runs with more rights::
+
+    >>> browser.open('%s/%s/runAgent?docid=%s&doctitle=MyTitle' % (
+    ...         base_url, agentid, docid))
+    >>> browser.open(docUrl)
+    >>> "MyTitle" in browser.contents
+    True
+
+After using an agent which runs with more rights, Reader is dropped back
+to restricted rights::
+
+    >>> browser.open(docUrl2)
+    >>> "I made a change in doc2" in browser.contents
+    False
+
+Reader cannot open a form::
+
+    >>> browser.open(base_url + '/form1/OpenForm')
+    >>> """Please log in""" in browser.contents
+    True
+
+A reader cannot edit documents or view properties via URLs::
+
+    >>> browser.open(docUrl + '/EditDocument')
+    >>> InsufficientPrivileges in browser.url
+    True
+    >>> browser.open(docUrl + '/DocumentProperties')
+    >>> InsufficientPrivileges in browser.url
+    True
+
+A reader can click on an action, but its execution will be restricted to his
+actual rights::
+
+    >>> browser.open(docUrl)
+    >>> browser.getLink('powerful_action').click()
+    >>> "action failed" in browser.contents
+    True
+
+Log out::
+
+    >>> browser.open(portal_url+'/logout')
+
+=======
+AUTHOR
+=======
+
+Log in with ``PlominoAuthor`` access rights::
+
+    >>> browser.open(portal_url+'/login_form')
+    >>> browser.getControl('Login Name').value = 'userAuthor'
+    >>> browser.getControl('Password').value = 'userAuthor'
+    >>> browser.getControl('Log in').click()
+    >>> browser.open(base_url)
+    >>> InsufficientPrivileges in browser.url
+    False
+
+Author cannot edit database::
+
+    >>> browser.open(base_url + '/base_edit')
+    >>> InsufficientPrivileges in browser.url
+    True
+    >>> browser.open(base_url + '/DatabaseACL')
+    >>> InsufficientPrivileges in browser.url
+    True
+    >>> browser.open(base_url + '/DatabaseDesign')
+    >>> InsufficientPrivileges in browser.url
+    True
+
+Author cannot edit or delete document created by other users::
+
+    >>> browser.open(docUrl)
+    >>> """<input type="button" class="context" value="Edit" """ \
+    ... in browser.contents
+    False
+    >>> """<input type="button" class="context" value="Delete" """ \
+    ... in browser.contents
+    False
+    >>> browser.open(docUrl + '/checkBeforeOpenDocument')
+    >>> """<input type="button" class="context" value="Edit" """ \
+    ... in browser.contents
+    False
+    >>> """<input type="button" class="context" value="Delete" """ \
+    ... in browser.contents
+    False
+    >>> browser.open(docUrl+'/EditDocument')
+    >>> InsufficientPrivileges in browser.url
+    True
+    >>> browser.open(docUrl+'/delete')
+    >>> InsufficientPrivileges in browser.url
+    True
+
+Author can open a form and create a document::
+
+    >>> browser.open(base_url + '/form1/OpenForm')
+    >>> InsufficientPrivileges in browser.url
+    False
+    >>> browser.getControl(name='field1').value="My value 1"
+    >>> browser.getForm(name='form1').submit(name='plomino_save')
+    >>> InsufficientPrivileges in browser.url
+    False
+    >>> """My value 1""" in browser.contents
+    True
+
+Author can edit his own documents::
+
+    >>> browser.open(browser.url + '/EditDocument')
+    >>> InsufficientPrivileges in browser.url
+    False
+    >>> browser.getControl(name='field1').value="My new value 1"
+    >>> browser.getForm(name='form1').submit(name='plomino_save')
+    >>> InsufficientPrivileges in browser.url
+    False
+    >>> """My new value 1""" in browser.contents
+    True
+
+Author can delete his own documents::
+
+    >>> browser.open(browser.url + '/delete?returnurl='+base_url)
+    >>> InsufficientPrivileges in browser.url
+    False
+
+Author cannot view properties via URLs::
+
+    >>> browser.open(docUrl + '/DocumentProperties')
+    >>> InsufficientPrivileges in browser.url
+    True
+
+Log out::
+
+    >>> browser.open(portal_url+'/logout')
+
+=======
+EDITOR
+=======
+
+Log in with PlominoEditor access rights::
+
+    >>> browser.open(portal_url+'/login_form')
+    >>> browser.getControl('Login Name').value = 'userEditor'
+    >>> browser.getControl('Password').value = 'userEditor'
+    >>> browser.getControl('Log in').click()
+    >>> browser.open(base_url)
+    >>> InsufficientPrivileges in browser.url
+    False
+
+Editor cannot edit database::
+
+    >>> browser.open(base_url + '/base_edit')
+    >>> InsufficientPrivileges in browser.url
+    True
+    >>> browser.open(base_url + '/DatabaseACL')
+    >>> InsufficientPrivileges in browser.url
+    True
+    >>> browser.open(base_url + '/DatabaseDesign')
+    >>> InsufficientPrivileges in browser.url
+    True
+
+Editor can edit or delete document created by other users::
+
+    >>> browser.open(docUrl+'/EditDocument')
+    >>> InsufficientPrivileges in browser.url
+    False
+    >>> browser.getControl(name='field1').value="The very best value 1"
+    >>> browser.getForm(name='form1').submit(name='plomino_save')
+    >>> InsufficientPrivileges in browser.url
+    False
+    >>> """The very best value 1""" in browser.contents
+    True
+    >>> browser.open(docUrl2+'/delete?returnurl='+base_url)
+    >>> InsufficientPrivileges in browser.url
+    False
+
+Editor cannot view properties via URLs::
+
+    >>> browser.open(docUrl + '/DocumentProperties')
+    >>> InsufficientPrivileges in browser.url
+    True
+
+Log out::
+
+    >>> browser.open(portal_url+'/logout')
+
+==========================================
+AUTHOR RIGHT FOR GROUPS
+==========================================
+
+::
+
+    >>> db.manage_setLocalRoles('PowerfulPeople', ['PlominoAuthor'])
+    >>> transaction.commit()  # enable the browser to see our changes
+
+Log in with account from the author group and create a doc::
+
+    >>> browser.open(portal_url+'/login_form')
+    >>> browser.getControl('Login Name').value = 'userAuthor'
+    >>> browser.getControl('Password').value = 'userAuthor'
+    >>> browser.getControl('Log in').click()
+    >>> browser.open(base_url + '/form1/OpenForm')
+    >>> browser.getControl(name='field1').value="My value as author 1"
+    >>> browser.getForm(name='form1').submit(name='plomino_save')
+    >>> currentDocUrl = browser.url
+    >>> browser.open(portal_url+'/logout')
+
+Log as other group member::
+
+    >>> browser.open(portal_url+'/login_form')
+    >>> browser.getControl('Login Name').value = 'userAuthor2'
+    >>> browser.getControl('Password').value = 'userAuthor2'
+    >>> browser.getControl('Log in').click()
+    >>> browser.open(currentDocUrl)
+    >>> InsufficientPrivileges in browser.url
+    False
+
+This user is not author of the document::
+
+    >>> browser.open(currentDocUrl+'/EditDocument')
+    >>> InsufficientPrivileges in browser.url
+    True
+    >>> browser.open(portal_url+'/logout')
+
+==========================================
+Plomino_Authors ITEM
+==========================================
+
+All PlominoDocuments contain a ``Plomino_Authors`` item.
+``Plomino_Authors`` allows one to define the list of users, groups, and/or
+user roles allowed to edit the document.
+Whenever the document is saved, the id of the current user is added to
+``Plomino_Authors``::
+
+    >>> browser.open(portal_url+'/login_form')
+    >>> browser.getControl('Login Name').value = 'userAuthor'
+    >>> browser.getControl('Password').value = 'userAuthor'
+    >>> browser.getControl('Log in').click()
+    >>> browser.open(base_url + '/form1/OpenForm')
+    >>> browser.getControl(name='field1'
+    ...         ).value="Another value entered by author 1"
+    >>> browser.getForm(name='form1').submit(name='plomino_save')
+    >>> currentDocUrl = browser.url
+    >>> doc = db.getDocument(currentDocUrl.split('/')[-1])
+    >>> doc.Plomino_Authors
+    ['userAuthor']
+
+Other authors not mentioned in ``Plomino_Authors`` cannot edit the document::
+
+    >>> browser.open(portal_url+'/login_form')
+    >>> browser.getControl('Login Name').value = 'userAuthor2'
+    >>> browser.getControl('Password').value = 'userAuthor2'
+    >>> browser.getControl('Log in').click()
+    >>> browser.open(currentDocUrl+'/EditDocument')
+    >>> InsufficientPrivileges in browser.url
+    True
+
+But if, for some reasons, we need to grant edit access to other users
+than the original author, ``Plomino_Authors`` might be dynamically computed
+(using the ``onSave`` event, or an action, or a field...)::
+
+    >>> doc.setItem('Plomino_Authors', ['userAuthor', 'userAuthor2'])
+    >>> transaction.commit()  # enable the browser to see our changes
+    >>> browser.open(currentDocUrl+'/EditDocument')
+    >>> InsufficientPrivileges in browser.url
+    False
+
+``Plomino_Authors`` can contain users or groups, but also Plomino user roles
+(mentioned within brackets).::
+
+    >>> db.UserRoles = {'[HR]': {'userAuthor2': 1}}
+    >>> doc.setItem('Plomino_Authors', ['userAuthor', '[HR]'])
+    >>> transaction.commit()  # enable the browser to see our changes
+    >>> browser.open(currentDocUrl+'/EditDocument')
+    >>> InsufficientPrivileges in browser.url
+    False
+
+==========================================
+Plomino_Readers ITEM
+==========================================
+
+Any ``PlominoDocument`` may contain a ``Plomino_Readers`` item.
+``Plomino_Readers`` allows one to restrict the list of users, groups, and/or
+user roles allowed to view the document.
+By default, ``Plomino_Readers`` is not created, meaning that any user
+allowed to view documents according to the ACL will be allowed to view the
+document::
+
+    >>> doc.hasItem("Plomino_Readers")
+    False
+    >>> browser.open(portal_url+'/logout')
+    >>> browser.open(portal_url+'/login_form')
+    >>> browser.getControl('Login Name').value = 'userReader'
+    >>> browser.getControl('Password').value = 'userReader'
+    >>> browser.getControl('Log in').click()
+    >>> browser.open(currentDocUrl)
+    >>> InsufficientPrivileges in browser.url
+    False
+
+If we create a ``Plomino_Readers`` item, it will restrict the regular ACL
+settings::
+
+    >>> doc.setItem('Plomino_Readers', ['userAuthor'])
+    >>> transaction.commit()  # enable the browser to see our changes
+    >>> browser.open(currentDocUrl)
+    >>> InsufficientPrivileges in browser.url
+    True
+    >>> browser.open(currentDocUrl+"/OpenDocument")
+    >>> InsufficientPrivileges in browser.url
+    True
+    >>> doc.setItem('Plomino_Readers', ['userReader'])
+    >>> transaction.commit()  # enable the browser to see our changes
+    >>> browser.open(currentDocUrl)
+    >>> InsufficientPrivileges in browser.url
+    False
+
+As ``Plomino_Authors``, ``Plomino_Readers`` can contain users or groups, but
+also Plomino user roles (mentioned within brackets)::
+
+    >>> db.UserRoles = {
+    ...         '[HR]': {'userAuthor2': 1},
+    ...         '[Artist]': {'userReader': 1}}
+    >>> doc.setItem('Plomino_Readers', ['[Artist]'])
+    >>> transaction.commit()  # enable the browser to see our changes
+    >>> browser.open(currentDocUrl)
+    >>> InsufficientPrivileges in browser.url
+    False
+
+.. Note: debugging server errors (from
+    https://plone.org/documentation/kb/testing/functional-tests):
+
+    ### try:
+    ###     browser.getControl('Save').click()
+    ### except:
+    ###     print db.error_log.getLogEntries()[0]['tb_text']
+    ###     import pdb; pdb.set_trace()
+
