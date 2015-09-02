@@ -59,36 +59,14 @@ and add the following in the ``eggs`` section::
          ...
          Products.CMFPlomino
 
-and also add the following in the ``versions`` block::
-
-    [versions]
-    ...
-    collective.js.datatables = 2.0.1
-
 Then you have to run ``buildout`` to realize your configuration::
 
     bin/buildout -N
 
-Installation on Plone 4.0 and 4.1
-=================================
+Compliancy
+==========
 
-If you're using Plone version older than 4.2 you'll need to add some
-more directives to your ``buildout.cfg``.
-
-Plomino depends on ``plone.app.registry``, and ``plomino.tinymce`` requires
-``Products.TinyMCE>=1.2.13``. To make Plomino work on pre-4.2 Plone sites
-you need to pin those versions in your ``versions.cfg`` section::
-
-    Products.TinyMCE=1.2.13
-    collective.js.jqueryui=1.8.16.9
-
-and use a known good set for ``plone.app.registry``.
-
-This means extending your buildout from::
-
-    http://good-py.appspot.com/release/plone.app.registry/1.0b2?plone=4.0.9
-
-replacing 4.0.9 with the actual version you need.
+Use version 2.x on Plone 5, and 1.x for Plone 4.
 
 Support
 =======

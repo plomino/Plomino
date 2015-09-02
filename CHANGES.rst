@@ -1,10 +1,11 @@
 Changelog
 =========
 
-2.0 (unreleased)
--------------------
+2.0a1 (2015-09-02)
+------------------
 
-- Plone 5 compliancy [ebrehault]
+- Plone 5 compliancy (WIP)
+  [ebrehault]
 
 1.19.5 (unreleased)
 -------------------
