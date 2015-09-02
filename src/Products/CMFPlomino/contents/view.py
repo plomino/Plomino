@@ -87,7 +87,7 @@ class IPlominoView(model.Schema):
             default="Action to take when the view is opened. If a string is "
             "returned, it is considered an error message, and the opening is "
             "not allowed."),
-        required=False
+        required=False,
     )
 
     sort_column = schema.Choice(
@@ -95,6 +95,15 @@ class IPlominoView(model.Schema):
         title=_('CMFPlomino_label_SortColumn', default="Sort column"),
         description=_('CMFPlomino_help_SortColumn',
             default="Column used to sort the view, and for key lookup"),
+        required=False,
+    )
+
+    key_column = schema.Choice(
+        vocabulary="Products.CMFPlomino.columns.vocabularies.get_columns",
+        title=_('CMFPlomino_label_KeyColumn', default="Key column"),
+        description=_('CMFPlomino_help_KeyColumn',
+            default="Column used for key lookup, if different from sort column"),
+        required=False,
     )
 
     categorized = schema.Bool(
@@ -499,7 +508,7 @@ class PlominoView(Container):
         """ Get documents where key or sorted column matches the given key
         """
         index = self.getParentDatabase().getIndex()
-        keycolumn = self.getKeyColumn()
+        keycolumn = self.key_column
         sortcolumn = self.sort_column
 
         if not (keycolumn or sortcolumn):
