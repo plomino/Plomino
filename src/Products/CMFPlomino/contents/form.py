@@ -512,7 +512,7 @@ class PlominoForm(Container):
 
             # Handle input groups:
             if field_type in ('DATETIME', 'SELECTION', ) and widget_name in (
-                'CHECKBOX', 'RADIO', 'PICKLIST', 'SERVER',
+                'CHECKBOX', 'RADIO', 'SERVER',
             ):
                 # Delete processed label
                 html_content_processed = label_re.sub(

@@ -31,10 +31,10 @@
                     tal:attributes="name field/id;
                             value python:l[1];
                             checked python:((currentaslist and l[1] in currentaslist) and 1) or 0;
-                            id python:options['fieldname'] + '-' + l[1]">
-                    <label tal:attributes="for python:options['fieldname'] + '-' + l[1]" tal:content="structure python:l[0]">value</label>
+                            id python:field.id + '-' + l[1]">
+                    <label tal:attributes="for python:field.id + '-' + l[1]" tal:content="structure python:l[0]">value</label>
                 </span>
-                <tal:sep tal:condition="not:repeat/v/end" tal:content="structure python:options['field'].getSettings('separator')">separator</tal:sep>
+                <tal:sep tal:condition="not:repeat/v/end" tal:content="structure python:field.separator">separator</tal:sep>
             </tal:block>
         </tal:block>
     </tal:widget>
@@ -48,10 +48,10 @@
                         tal:attributes="name field/id;
                             value python:l[1];
                             checked python:((currentaslist and l[1] in currentaslist) and 1) or 0;
-                            id python:options['fieldname'] + '-' + l[1]">
-                    <label tal:attributes="for python:options['fieldname'] + '-' + l[1]" tal:content="structure python:l[0]">value</label>
+                            id python:field.id + '-' + l[1]">
+                    <label tal:attributes="for python:field.id + '-' + l[1]" tal:content="structure python:l[0]">value</label>
                 </span>
-                <tal:sep tal:condition="not:repeat/v/end" tal:content="structure python:options['field'].getSettings('separator')">separator</tal:sep>
+                <tal:sep tal:condition="not:repeat/v/end" tal:content="structure python:field.separator">separator</tal:sep>
             </tal:block>
         </tal:block>
     </tal:widget>
