@@ -1,7 +1,11 @@
 # -*- coding: utf-8 -*-
 """Init and utils."""
 
+from DateTime import DateTime
+import decimal
 from Globals import DevelopmentMode
+from json import JSONDecoder, JSONEncoder
+from jsonutil import jsonutil as json
 from time import time
 from plone.resource.interfaces import IResourceDirectory
 from Products.PythonScripts.Utility import allow_module
@@ -11,8 +15,42 @@ from zope.interface import implements
 
 import interfaces
 from config import PLOMINO_RESOURCE_NAME
+from utils import StringToDate
 
 _ = MessageFactory('Products.CMFPlomino')
+
+
+# Override default JSONEncoder/JSONDecoder classes in jsonutil to handle
+# dates:
+def _extended_json_encoding(obj):
+    if isinstance(obj, DateTime):
+        return {'<datetime>': True, 'datetime': obj.ISO()}
+    return json.dumps(obj)
+
+json._default_encoder = JSONEncoder(
+    skipkeys=False,
+    ensure_ascii=True,
+    check_circular=True,
+    allow_nan=True,
+    indent=None,
+    separators=None,
+    encoding='utf-8',
+    default=_extended_json_encoding,
+)
+
+
+def _extended_json_decoding(dct):
+    if '<datetime>' in dct:
+        # 2013-10-18T20:35:18+07:00
+        return StringToDate(dct['datetime'], format=None)
+    return dct
+
+
+json._default_decoder = JSONDecoder(
+    encoding=None,
+    object_hook=_extended_json_decoding,
+    object_pairs_hook=None,
+    parse_float=decimal.Decimal)
 
 
 class PlominoCoreUtils:
