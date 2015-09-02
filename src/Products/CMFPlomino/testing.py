@@ -18,6 +18,7 @@ class ProductsCmfplominoLayer(PloneSandboxLayer):
 
     def setUpZope(self, app, configurationContext):
         self.loadZCML(package=Products.CMFPlomino)
+        z2.installProduct(app, 'Products.CMFPlomino')
 
     def setUpPloneSite(self, portal):
         applyProfile(portal, 'Products.CMFPlomino:default')

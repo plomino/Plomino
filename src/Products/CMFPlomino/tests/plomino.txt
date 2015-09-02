@@ -1,0 +1,747 @@
+Plomino tests
+=========================
+
+Overview
+--------
+
+The main objective of Plomino is to enable building business-specific
+applications in Plone without involving Plone product development.
+Plomino allows, entirely through the Plone web interface,
+to create forms,
+to use those forms to view or edit structured contents,
+to filter and list those contents, to perform search requests,
+to add business-specific features and to automate complex processing.
+
+Note: Plomino is widely inspired by the IBM Lotus Domino commercial product,
+it reproduces its main concepts and features,
+and it uses its terminology
+(which sometimes overlaps with the Plone terminology).
+
+Plomino database
+----------------
+
+A Plomino application is supported by a Plomino database.
+The Plomino database is the Plone object which contains the application data
+(i.e. the documents, see below),
+and its structure (i.e. the design, see below).
+
+Let's start testing::
+
+    >>> portal = layer['portal']
+    >>> db = portal.mydb
+    >>> id = db.invokeFactory('PlominoForm', id='frm1', title='Form 1')
+    >>> id = db.invokeFactory('PlominoForm', id='frm2', title='Form 2')
+    >>> id = db.invokeFactory('PlominoForm', id='frm3', title='Search Form')
+    >>> id = db.invokeFactory('PlominoView', id='view1',
+    ...         title='View 1', selection_formula='True')
+    >>> id = db.view1.invokeFactory('PlominoColumn', id='col1',
+    ...         title='Col 1', formula='plominoDocument.field1')
+    >>> db.view1.sort_column = 'col1'
+    >>> id = db.invokeFactory('PlominoView', id='view2',
+    ...         title='View 2',
+    ...         selection_formula="plominoDocument.field1=='bonjour'")
+    >>> db.frm1 == db.getForm('frm1')
+    True
+    >>> db.view1 == db.getView('view1')
+    True
+    >>> doc = db.createDocument()
+    >>> docid = doc.id
+    >>> doc.getPortalTypeName() == 'PlominoDocument'
+    True
+    >>> db.getDocument(docid) == doc
+    True
+    >>> db.getDocument('wrong_id') is None
+    True
+    >>> db.deleteDocument(doc)
+    >>> db.getDocument(docid) is None
+    True
+    >>> doc1 = db.createDocument()
+    >>> doc2 = db.createDocument()
+    >>> doc3 = db.createDocument()
+
+Forms
+---------------
+
+A form allows users to view and/or to edit information.
+A form contains some fields of different types (text, date, rich text, check
+box, attached files, etc.).
+The application designer designs the layout he needs for the form, and he
+inserts the fields wherever he wants.
+A form can also contain some action buttons to trigger specific processing::
+
+    >>> id = db.frm1.invokeFactory('PlominoField', id='field1',
+    ...         title='Title for field1',
+    ...         mandatory=True,
+    ...         field_type="TEXT",
+    ...         field_mode="EDITABLE")
+    >>> db.frm1.form_layout = """1 <p>please enter a value for field1:
+    ... <span class="plominoFieldClass">field1</span></p>"""
+    >>> db.frm1.displayDocument(None, True, True)
+    u'<input type=\'hidden\' name=\'Form\' value=\'frm1\' />1 <p>please enter a value for field1:<span>\n    \n    \n        <input type="text" id="field1" name="field1" value="" />\n    \n    \n</span></p>'
+
+A form can contain editable fields and also computed fields::
+
+    >>> id = db.frm1.invokeFactory('PlominoField',
+    ...         id='field2',
+    ...         title='Title for field2',
+    ...         field_type="TEXT",
+    ...         field_mode="COMPUTED",
+    ...         formula="plominoDocument.setItem('field4', 'side-effect')\nreturn 'My favorite song is '+plominoDocument.field1")
+
+A form can contain *display* fields. A display field is computed but the
+result is not saved on the document::
+
+    >>> id = db.frm1.invokeFactory('PlominoField',
+    ...         id='field3',
+    ...         title='Title for field3',
+    ...         field_type="TEXT",
+    ...         field_mode="DISPLAY",
+    ...         formula="return plominoDocument.field1.upper()")
+
+If a display field does not specify a formula, it will display the item with
+the id corresponding to the field name (if any). Here's a field without
+formula, the item value was set by the formula for ``field2``::
+
+    >>> id = db.frm1.invokeFactory('PlominoField',
+    ...         id='field4',
+    ...         title='Title for field4',
+    ...         field_type="TEXT",
+    ...         field_mode="EDITABLE",
+    ...         formula="")
+
+Let's set a layout which contains our fields::
+
+    >>> db.frm1.form_layout = """2 <p>please enter a value for field1:
+    ... <span class="plominoLabelClass">field1</span>
+    ... <span class="plominoFieldClass">field1</span></p><p>Comment:
+    ... <span class="plominoLabelClass">field2</span>
+    ... <span class="plominoFieldClass">field2</span></p><p>
+    ... <span class="plominoFieldClass">field3</span></p><p>
+    ... <span class="plominoFieldClass">field4</span></p>"""
+
+
+Formulas can include scripts from resources
+--------------------------------------------
+
+A formula can include scripts from ``resources``::
+
+    >>> from Products.PythonScripts.PythonScript import PythonScript
+    >>> ps = PythonScript('script')
+    >>> script_id = db.resources._setObject('script', ps)
+    >>> ps.write('return "hello"')
+    >>> id = db.frm1.invokeFactory('PlominoField',
+    ...         id='field5',
+    ...         title='Field with import',
+    ...         field_type="TEXT",
+    ...         field_mode="DISPLAY",
+    ...         formula="#Plomino import script")
+    >>> db.frm1.computeFieldValue('field5', db.frm1)
+    'hello'
+
+Scripts can also include other scripts, and script names can be prefixes of
+other scripts. A script is only included the first time it's seen; subsequent
+mentions are blanked::
+
+    >>> ps = PythonScript('script_too')
+    >>> script_id = db.resources._setObject('script_too', ps)
+    >>> ps.write('#Plomino import script\n#Plomino import script_too')
+    >>> id = db.frm1.invokeFactory('PlominoField',
+    ...         id='field6',
+    ...         title='Field with import',
+    ...         field_type="TEXT",
+    ...         field_mode="DISPLAY",
+    ...         formula="#Plomino import script_too")
+    >>> db.frm1.computeFieldValue('field6', db.frm1)
+    'hello'
+
+You can also spell it ``include`` (because what we're doing is really
+not much like Python's ``import``, it's straight string interpolation).
+And scripts can include scripts that include scripts ...::
+
+    >>> ps = PythonScript('script_three')
+    >>> script_id = db.resources._setObject('script_three', ps)
+    >>> ps.write('#Plomino include script_too')
+    >>> id = db.frm1.invokeFactory('PlominoField',
+    ...         id='field7',
+    ...         title='Field with import',
+    ...         field_type="TEXT",
+    ...         field_mode="DISPLAY",
+    ...         formula="#Plomino include script_three")
+    >>> db.frm1.computeFieldValue('field7', db.frm1)
+    'hello'
+
+When formulas fail, and the database is in debug mode, the error is logged
+--------------------------------------------------------------------------
+
+TODO
+
+Documents
+---------------
+
+A document is a set of data.
+Data can be submitted by a user using a given form.
+Important note: a document can be created using one form and then viewed or
+edited using another form. This mechanism allows to change the document
+rendering and the displayed action buttons according different parameters
+(user access rights, current document state, field values, etc.).
+
+You can add any type of item in a document::
+
+    >>> doc1.setItem('country', 'Finland')
+    >>> doc1.getItem('country')
+    u'Finland'
+    >>> doc1.removeItem('country')
+    >>> doc1.getItem('country')
+    ''
+    >>> doc1.setItem('country', 'Finland')
+    >>> doc1.getItem('country')
+    u'Finland'
+
+``getItem`` returns a copy, not a reference on the item::
+
+    >>> country = doc1.getItem('country')
+    >>> country = country + " (Europe)"
+    >>> country
+    u'Finland (Europe)'
+    >>> doc1.getItem('country')
+    u'Finland'
+
+To change the value of an item, we use the ``setItem`` method::
+
+    >>> doc1.setItem('area', 338145)
+    >>> doc1.getItem('area')
+    338145
+
+You can access item values as attributes::
+
+    >>> doc1.area
+    338145
+
+A document can be displayed or edited with a form.
+Only items which match a form field will be considered::
+
+    >>> doc1.setItem('field1', 'where is my mind?')
+    >>> db.frm1.displayDocument(doc1, editmode=False)
+    u'2 <p>please enter a value for field1:<span class=\'label\' title=\'Label for field1\'>Title for field1</span><span class="TEXTFieldRead-TEXT">\n    \n    \n        where is my mind?\n    \n</span></p><p>Comment:<span class=\'label\' title=\'Label for field2\'>Title for field2</span><span class="TEXTFieldRead-TEXT">\n    \n    \n        My favorite song is where is my mind?\n    \n</span></p><p><span class="TEXTFieldRead-TEXT">\n    \n    \n        WHERE IS MY MIND?\n    \n</span></p><p><span class="TEXTFieldRead-TEXT">\n    \n    \n        side-effect\n    \n</span></p>'
+    >>> db.frm1.displayDocument(doc1, editmode=True)
+    u'<input type=\'hidden\' name=\'Form\' value=\'frm1\' />2 <p>please enter a value for field1:<label for=\'field1\' class=\'required\'>Title for field1</label><span>\n    \n    \n        <input type="text" id="field1" name="field1" value="where is my mind?" />\n    \n    \n</span></p><p>Comment:<label for=\'field2\'>Title for field2</label><span class="TEXTFieldRead-TEXT">\n    \n    \n        My favorite song is where is my mind?\n    \n</span></p><p><span class="TEXTFieldRead-TEXT">\n    \n    \n        WHERE IS MY MIND?\n    \n</span></p><p><span>\n    \n    \n        <input type="text" id="field4" name="field4" value="side-effect" />\n    \n    \n</span></p>'
+
+``Form`` is a reserved item which allows to indicate the document default
+form::
+
+    >>> doc1.setItem('Form', 'frm1')
+
+Calling the ``save`` method will (re-)index the document in the Plomino
+index and will evaluate the computed fields according to its form::
+
+    >>> doc1.setItem('field1', 'London calling')
+    >>> doc1.save(creation=True)
+    >>> doc1.field2
+    u'My favorite song is London calling'
+
+The document title formula allows to compute the document title.
+By default, during document creation, the title is the form's title::
+
+    >>> doc1.Title()
+    'Form 1'
+    >>> db.frm1.document_title = """'A document about ' + plominoDocument.getItem('field1', "nothing")"""
+    >>> doc1.save()
+    >>> doc1.Title()
+    u'A document about London calling'
+
+The document title can be computed dynamically, upon every page view::
+
+    >>> db.frm1.dynamic_document_title = True
+    >>> doc1.setItem('field1', 'Saigon')
+    >>> doc1.Title()
+    u'A document about Saigon'
+
+By default, the computed title isn't stored,
+so if we stop computing it, it falls back to the last stored value::
+
+    >>> db.frm1.dynamic_document_title = False
+    >>> doc1.Title()
+    u'A document about London calling'
+
+It's possible to specify storing the computed value, but note that
+this introduces complications: write on read, and Author rights::
+
+    >>> db.frm1.dynamic_document_title = True
+    >>> db.frm1.store_dynamic_document_title = True
+    >>> doc1.setItem('field1', 'Ho Chi Minh City calling')
+    >>> doc1.Title()
+    u'A document about Ho Chi Minh City calling'
+    >>> db.frm1.dynamic_document_title = False
+    >>> db.frm1.store_dynamic_document_title = False
+    >>> doc1.Title()
+    u'A document about Ho Chi Minh City calling'
+
+The document id formula allows to compute the document's id.
+Note: it will be normalized according Plone rules
+(ascii only, lower case, spaces replaced by dash,
+and appended incremented index if the id already exists).
+The document id formula is evaluated at creation,
+so it only applies to new documents::
+
+    >>> db.frm1.document_id = """'A document about ' + plominoDocument.getItem('field1', "nothing")"""
+    >>> doc11 = db.createDocument()
+    >>> doc11.setItem('Form', 'frm1')
+    >>> doc11.setItem('field1', 'Rhythm is love')
+    >>> doc11.save(creation=True)
+    >>> doc11.id
+    'a-document-about-rhythm-is-love'
+    >>> doc12 = db.createDocument()
+    >>> doc12.setItem('Form', 'frm1')
+    >>> doc12.setItem('field1', 'Rhythm is love')
+    >>> doc12.save(creation=True)
+    >>> doc12.id
+    'a-document-about-rhythm-is-love-1'
+    >>> doc12.setItem('field1', 'A rhythm is love')
+    >>> doc12.save()
+
+Views
+------
+
+A view allows to display a list of documents.
+A view contains columns which content is computed using data stored in the
+documents.
+A view has a selection formula which filters the documents the application
+designer wants to be display in the view::
+
+    >>> doc2.setItem('field1', 'hello')
+    >>> doc2.setItem('Form', 'frm1')
+    >>> doc2.save()
+    >>> doc3.setItem('field1', 'bonjour')
+    >>> doc3.setItem('Form', 'frm1')
+    >>> doc3.save()
+    >>> len(db.view1.getAllDocuments())
+    5
+    >>> len(db.view2.getAllDocuments())
+    1
+    >>> len(db.view1.getDocumentsByKey('hello'))
+    1
+
+Views can be exported as CSV::
+
+    >>> db.view1.exportCSV()
+    '"A rhythm is love"\r\n"London calling"\r\n"Rhythm is love"\r\n"bonjour"\r\n"hello"\r\n'
+
+JSON API
+--------
+
+A document can be exported as JSON::
+
+    >>> doc11.tojson()
+    '{"field2": "My favorite song is Rhythm is love", "Plomino_Authors": ["test-user"], "field1": "Rhythm is love", "field4": "side-effect", "Form": "frm1"}'
+
+We can export only one field::
+
+    >>> doc11.tojson(item="field2")
+    '"My favorite song is Rhythm is love"'
+
+We can get the ``lastmodified`` value::
+
+    >>> doc11.tojson(item="field2", lastmodified=True)
+    '{"lastmodified": {"<datetime>": true, "datetime": "..."}, "data": "My favorite song is Rhythm is love"}'
+
+Field types
+---------------
+
+There are several type of fields: text, selection, number, rich text,
+date/time, name (=Plone member id), attachment, document link (=reference).
+A field type may offer several widgets.
+
+For accessibility purposes, a label may be provided for a field. In the case
+of single inputs, the label is rendered as an HTML 'label' element. In the
+case of grouped inputs such as radio buttons or checkboxes, the group is
+enclosed in an HTML 'fieldset' element, and the label is rendered as an
+HTML 'legend' element.
+
+Text field:
+The default text widget is a basic HTML text input::
+
+    >>> id = db.frm2.invokeFactory('PlominoField',
+    ...         id='guitarist',
+    ...         title='Title for guitarist',
+    ...         field_type="TEXT",
+    ...         field_mode="EDITABLE")
+    >>> id = db.frm2.invokeFactory('PlominoField',
+    ...         id='bassist',
+    ...         title='Title for bassist',
+    ...         mandatory=True,
+    ...         field_type="SELECTION",
+    ...         field_mode="EDITABLE")
+    >>> id = db.frm2.invokeFactory('PlominoField',
+    ...         id='drummer',
+    ...         title='Title for drummer',
+    ...         field_type="SELECTION",
+    ...         field_mode="EDITABLE")
+    >>> db.frm2.form_layout = """3 <p>Who is the guitarist:
+    ... <span class="plominoLabelClass">guitarist</span></p>
+    ... <span class="plominoFieldClass">guitarist</span></p>
+    ... <span class="plominoLabelClass">bassist: Label for bassist</span></p>
+    ... <span class="plominoFieldClass">bassist</span></p>
+    ... <span class="plominoLabelClass">drummer</span></p>
+    ... <span class="plominoFieldClass">drummer</span></p>
+    ... """
+    >>> db.frm2.bassist.widget = "CHECKBOX"
+    >>> db.frm2.bassist.selectionlist = [u"John Paul Jones", u"Chris Chameleon"]
+    >>> db.frm2.drummer.widget = "RADIO"
+    >>> db.frm2.drummer.selectionlist = [u"John Bonham", u"Princess Leonie"]
+    >>> db.frm2.displayDocument(None, True, True).replace('\n', '').replace('\t', '')
+    u'<input type=\'hidden\' name=\'Form\' value=\'frm2\' />3 <p>Who is the guitarist:<label for=\'guitarist\'>Title for guitarist</label></p><span>                <input type="text" id="guitarist" name="guitarist" value="" />        </span></p></p><fieldset><legend class=\'required\'>Label for bassist</legend><span class="bassist-selectionfield">                                                <span>                    <input type="checkbox" name="bassist" value="John Paul Jones" id="bassist-John Paul Jones">                    <label for="bassist-John Paul Jones">John Paul Jones</label>                </span>                                                                <span>                    <input type="checkbox" name="bassist" value="Chris Chameleon" id="bassist-Chris Chameleon">                    <label for="bassist-Chris Chameleon">Chris Chameleon</label>                </span>                                            </span></fieldset></p></p><fieldset><legend>Title for drummer</legend><span class="drummer-selectionfield">                                                    <span>                    <input type="radio" name="drummer" value="John Bonham" id="drummer-John Bonham">                    <label for="drummer-John Bonham">John Bonham</label>                </span>                                                                <span>                    <input type="radio" name="drummer" value="Princess Leonie" id="drummer-Princess Leonie">                    <label for="drummer-Princess Leonie">Princess Leonie</label>                </span>                                        </span></fieldset></p>'
+    >>> db.frm2.guitarist.widget="TEXTAREA"
+    >>> db.frm2.displayDocument(None, True, True).replace('\n', '').replace('\t', '')
+    u'<input type=\'hidden\' name=\'Form\' value=\'frm2\' />3 <p>Who is the guitarist:<label for=\'guitarist\'>Title for guitarist</label></p><span>                    <textarea id="guitarist" name="guitarist"></textarea>    </span></p></p><fieldset><legend class=\'required\'>Label for bassist</legend><span class="bassist-selectionfield">                                                <span>                    <input type="checkbox" name="bassist" value="John Paul Jones" id="bassist-John Paul Jones">                    <label for="bassist-John Paul Jones">John Paul Jones</label>                </span>                                                                <span>                    <input type="checkbox" name="bassist" value="Chris Chameleon" id="bassist-Chris Chameleon">                    <label for="bassist-Chris Chameleon">Chris Chameleon</label>                </span>                                            </span></fieldset></p></p><fieldset><legend>Title for drummer</legend><span class="drummer-selectionfield">                                                    <span>                    <input type="radio" name="drummer" value="John Bonham" id="drummer-John Bonham">                    <label for="drummer-John Bonham">John Bonham</label>                </span>                                                                <span>                    <input type="radio" name="drummer" value="Princess Leonie" id="drummer-Princess Leonie">                    <label for="drummer-Princess Leonie">Princess Leonie</label>                </span>                                        </span></fieldset></p>'
+
+.. todo:: We need a test for a selection list with no value in edit mode. It should not render a label.
+
+Note: a field can have extra html attributes produced by a formula::
+
+    >>> db.frm2.guitarist.html_attributes_formula = """'placeholder="Enter the name here"'"""
+    >>> 'placeholder="Enter the name here" name="guitarist"' in db.frm2.displayDocument(None, True, True)
+    True
+
+Selection field::
+
+    >>> id = db.frm2.invokeFactory('PlominoField',
+    ...         id='artistsfield',
+    ...         title='artistsfield',
+    ...         field_type="SELECTION",
+    ...         field_mode="EDITABLE")
+    >>> db.frm2.artistsfield.selectionlist = [u'The Beatles', u'The Doors', u'The Pixies']
+    >>> db.frm2.artistsfield.widget="SELECT"
+    >>> db.frm2.form_layout = """4 <p>choose:<span class="plominoFieldClass">artistsfield</span></p>"""
+    >>> db.cleanRequestCache()
+    >>> db.frm2.displayDocument(None, True, True
+    ...         ).replace('\n', '').replace('\t', '')
+    u'<input type=\'hidden\' name=\'Form\' value=\'frm2\' />4 <p>choose:<span class="artistsfield-selectionfield">            <select class="pat-select2" id="artistsfield" name="artistsfield">            <option value="The Beatles">The Beatles</option>                    <option value="The Doors">The Doors</option>                    <option value="The Pixies">The Pixies</option>        </select>                </span></p>'
+    >>> db.frm2.artistsfield.widget = "CHECKBOX"
+    >>> db.frm2.displayDocument(None, True, True
+    ...         ).replace('\n', '').replace('\t', '')
+    u'<input type=\'hidden\' name=\'Form\' value=\'frm2\' />4 <p>choose:<span class="artistsfield-selectionfield">                                                <span>                    <input type="checkbox" name="artistsfield" value="The Beatles" id="artistsfield-The Beatles">                    <label for="artistsfield-The Beatles">The Beatles</label>                </span>                                                                <span>                    <input type="checkbox" name="artistsfield" value="The Doors" id="artistsfield-The Doors">                    <label for="artistsfield-The Doors">The Doors</label>                </span>                                                                <span>                    <input type="checkbox" name="artistsfield" value="The Pixies" id="artistsfield-The Pixies">                    <label for="artistsfield-The Pixies">The Pixies</label>                </span>                                            </span></p>'
+
+Date/Time field::
+
+    >>> id = db.frm2.invokeFactory('PlominoField',
+    ...         id='lastalbum',
+    ...         title='lastalbum',
+    ...         field_type="DATETIME",
+    ...         field_mode="EDITABLE")
+    >>> db.frm2.form_layout = """5 <p>last album release date:
+    ... <span class="plominoFieldClass">lastalbum</span></p>"""
+    >>> doc4=db.createDocument()
+    >>> doc4.setItem('field1', 'ola')
+    >>> from DateTime import DateTime
+    >>> doc4.setItem('lastalbum', DateTime(2009, 1, 17, 18, 49))
+    >>> doc4.setItem('Form', 'frm2')
+    >>> doc4.save()
+    >>> db.frm2.displayDocument(doc4)
+    u'5 <p>last album release date:\n2009-01-17\n\n</p>'
+    >>> db.frm2.lastalbum.format=u'%d/%m/%Y %H:%M'
+    >>> db.frm2.displayDocument(doc4)
+    u'5 <p>last album release date:\n17/01/2009 18:49\n\n</p>'
+    >>> doc4.getRenderedItem('lastalbum')
+    u'\n17/01/2009 18:49\n\n'
+
+Number field::
+
+    >>> id = db.frm2.invokeFactory('PlominoField',
+    ...         id='price',
+    ...         title='price',
+    ...         field_type="NUMBER",
+    ...         field_mode="EDITABLE")
+    >>> db.frm2.form_layout = """6 <p>Price:<span class="plominoFieldClass">price</span></p>"""
+    >>> db.frm2.price.number_type = u'INTEGER'
+    >>> db.frm2.price.getSettings().validate("3")
+    []
+    >>> db.frm2.price.getSettings().validate("4.5")
+    ['price must be an integer (submitted value was: 4.5)']
+    >>> db.frm2.price.number_type = u'FLOAT'
+    >>> db.frm2.price.getSettings().validate("3")
+    []
+    >>> db.frm2.price.getSettings().validate("4.5")
+    []
+    >>> REQUEST = {'price': "zero"}
+    >>> db.cleanRequestCache()
+    >>> db.frm2.validateInputs(REQUEST)
+    ['price must be a float (submitted value was: zero)']
+
+Rich-text field::
+
+    >>> id = db.frm2.invokeFactory('PlominoField',
+    ...         id='comments',
+    ...         title='Comments',
+    ...         field_type="RICHTEXT",
+    ...         field_mode="EDITABLE")
+    >>> db.frm2.form_layout = """7 <p>My comments:
+    ...  <span class="plominoFieldClass">comments</span></p>"""
+    >>> doc4.setItem('comments',
+    ... """I am not sure it is <b>correct</b><br/>.\n
+    ... So please, check <a href='http://www.google.com'>here</a>""")
+    >>> doc4.save()
+    >>> db.cleanRequestCache()
+    >>> db.frm2.displayDocument(doc4).replace('\n', '')
+    u"7 <p>My comments: I am not sure it is <b>correct</b><br/>.So please, check <a href='http://www.google.com'>here</a></p>"
+    >>> REQUEST = {'comments': """I am not sure it is <b>correct</b><br/>.\n
+    ... So please, check <a href='http://www.google.com'>here</a>"""}
+    >>> db.frm2.validateInputs(REQUEST)
+    []
+
+Name field:
+A name field allow to select a user in the Plone portal members list::
+
+    >>> id = db.frm2.invokeFactory('PlominoField',
+    ...         id='buyer',
+    ...         title='buyer',
+    ...         field_type="NAME",
+    ...         field_mode="EDITABLE")
+    >>> db.frm2.buyer.type = u'MULTI'
+    >>> db.frm2.form_layout = """9 <p>Who: <span class="plominoFieldClass">buyer</span></p>"""
+    >>> db.cleanRequestCache()
+    >>> db.frm2.displayDocument(None, True, True).replace('\n', '').replace('\t', '')
+    u'<input type=\'hidden\' name=\'Form\' value=\'frm2\' />9 <p>Who: <span>                            <input type="text" class="pat-select2" id="buyer" name="buyer" data-pat-select2="vocabularyUrl:http://nohost/plone/mydb/frm2/buyer/filterusers;multiple:true;initialValues:[\':\']">            </input>                                </span></p>'
+
+# TO BE FIXED
+# Doclink field:
+# A Doclink field allows to create a reference to another document::
+
+#     >>> id = db.frm2.invokeFactory('PlominoField',
+#     ...         id='relatedartist',
+#     ...         title='Related artist',
+#     ...         field_type="DOCLINK",
+#     ...         field_mode="EDITABLE")
+#     >>> db.frm2.relatedartist.widget = u'SELECT'
+#     >>> db.frm2.relatedartist.sourceview = u'view1'
+#     >>> db.frm2.relatedartist.labelcolumn = u'col1'
+#     >>> db.frm2.form_layout = """10 <p>Related artist:
+#     ... <span class="plominoFieldClass">relatedartist</span></p>"""
+#     >>> db.cleanRequestCache()
+#     >>> result = db.frm2.displayDocument(None, True, True)
+#     >>> """<option value="%s">London calling</option>""" % (doc1.id) in result
+#     True
+#     >>> """<option value="%s">bonjour</option>""" % (doc3.id) in result
+#     True
+#     >>> """<option value="%s">hello</option>""" % (doc2.id) in result
+#     True
+#     >>> """<option value="%s">ola</option>""" % (doc4.id) in result
+#     True
+
+A field can be computed::
+
+    >>> id = db.frm2.invokeFactory('PlominoField',
+    ...         id='welcome',
+    ...         title='Welcome message',
+    ...         field_type="TEXT",
+    ...         field_mode="COMPUTED")
+    >>> db.frm2.welcome.formula = """message="Welcome "+plominoDocument.buyer\nreturn message"""
+    >>> db.frm2.form_layout = """11 <p><span class="plominoFieldClass">welcome</span></p>"""
+    >>> doc4.setItem('buyer',"test_user_1_")
+    >>> doc4.save()
+    >>> db.cleanRequestCache()
+    >>> db.frm2.displayDocument(doc4)
+    u'11 <p><span class="TEXTFieldRead-TEXT">\n    \n    \n        Welcome test_user_1_\n    \n</span></p>'
+
+Events
+-------
+
+A form can define actions to take when specific events occur on a document.
+
+``onCreateDocument`` is executed only once, when the document is created::
+
+    >>> db.frm1.onCreateDocument = """
+    ... plominoDocument.setItem('whoisnew', "I am new")
+    ... plominoDocument.save()
+    ... """
+
+.. TODO:: create a fake REQUEST to complete the test
+
+``onOpenDocument`` is executed each time the document is opened::
+
+    >>> db.frm1.onOpenDocument = """
+    ... plominoDocument.setItem(
+    ...         'field1',
+    ...         plominoDocument.field1+" by The Clash")
+    ... plominoDocument.save()"""
+    >>> doc1.field1
+    u'Ho Chi Minh City calling'
+    >>> content = doc1.openWithForm(db.frm1)
+    >>> doc1.field1
+    u'Ho Chi Minh City calling by The Clash'
+
+``onSaveDocument`` is executed each time the document is saved::
+
+    >>> db.frm1.onSaveDocument = """
+    ... newcountry='Chile'
+    ... plominoDocument.setItem('country', newcountry)
+    ... """
+    >>> from Products.CMFPlomino.config import SCRIPT_ID_DELIMITER
+    >>> db.cleanFormulaScripts("form"+SCRIPT_ID_DELIMITER+"frm1")
+    >>> doc1.country
+    u'Finland'
+    >>> doc1.save(db.frm1)
+    >>> doc1.country
+    u'Chile'
+
+``onDeleteDocument`` is executed each time a document is deleted, if
+it returns a string, it is considered as an error message and the deletion is
+aborted::
+    >>> db.frm1.onDeleteDocument = """
+    ... if plominoDocument.getItem('country') == 'Chile':
+    ...     return "Chile cannot be deleted"
+    ... return None
+    ... """
+    >>> from Products.CMFPlomino.config import SCRIPT_ID_DELIMITER
+    >>> db.cleanFormulaScripts("form"+SCRIPT_ID_DELIMITER+"frm1")
+    >>> doc1_id = doc1.id
+    >>> db.deleteDocument(doc1)
+    >>> db.getDocument(doc1_id) is None
+    False
+
+Plomino index
+-------------
+
+The Plomino index is a ``ZCatalog`` indexing view selection formulas,
+view columns, and all the fields flagged as indexed::
+
+    >>> id = db.frm2.invokeFactory('PlominoField',
+    ...         id='question',
+    ...         title='A question',
+    ...         field_type="RICHTEXT",
+    ...         to_be_indexed=True)
+    >>> doc5 = db.createDocument()
+    >>> doc5.setItem('Form', 'frm2')
+    >>> doc5.setItem('question', 'where is my mind ?')
+    >>> doc5.save()
+    >>> len(db.getIndex().dbsearch({'question': 'where'}))
+    1
+    >>> db.getIndex().dbsearch({'question': 'where'})[0].getObject()==doc5
+    True
+    >>> doc5.setItem('question', u'\xe7\xe9')
+    >>> doc5.save()
+    >>> len(db.getIndex().dbsearch({'question': 'where'}))
+    0
+    >>> len(db.getIndex().dbsearch({'question': u'\xe7\xe9'}))
+    1
+
+An index and a metadata column are created for each view column::
+
+    >>> 'PlominoViewColumn_view1_col1' in db.getIndex().indexes()
+    True
+
+A column can be a reference to a field.
+In this case, it doesn't create a special index for the already indexed
+field::
+
+    >>> id = db.view1.invokeFactory('PlominoColumn',
+    ...         id='col2',
+    ...         title='Col 2',
+    ...         displayed_field='frm1/field2')
+    >>> 'PlominoViewColumn_view1_col2' in db.getIndex().indexes()
+    False
+    >>> 'field2' in db.getIndex().indexes()
+    True
+
+If we don't want the sort column to double as the key column, we can set
+another column as key column::
+
+    >>> db.view1.key_column = 'col2'
+    >>> len(db.view1.getDocumentsByKey('hello'))
+    0
+    >>> len(db.view1.getDocumentsByKey('My favorite song is Ho Chi Minh City calling by The Clash'))
+    1
+
+Let's create a key column that returns multiple documents::
+
+    >>> id = db.view1.invokeFactory('PlominoColumn',
+    ...         id='col3',
+    ...         title='Col 3',
+    ...         displayed_field='frm1/field4')
+    >>> db.view1.key_column = 'col3'
+
+Results from views are sorted on the sort column::
+
+    >>> [o.getItem('field1') for o in db.view1.getAllDocuments()]
+    [u'A rhythm is love', u'Ho Chi Minh City calling by The Clash', u'Rhythm is love', u'bonjour', u'hello', u'ola']
+    >>> [o.getItem('field1') for o in db.view1.getDocumentsByKey('side-effect')]
+    [u'A rhythm is love', u'Ho Chi Minh City calling by The Clash', u'Rhythm is love', u'bonjour', u'hello']
+
+
+# TO BE FIXED
+# Import/export design
+# ---------------------
+
+# The database design (forms, views, agents, etc.)
+# can be exported or imported from one database to another,
+# e.g. between two Zope instances over HTTP, using a specific XML format::
+
+# .. TODO:: Fix this
+# ..  >>> db.exportDesignAsXML(elementids=['frm2'])
+# ..  ''
+# ..  >>> db.frm2.welcome.formula
+# ..  'message="Welcome "+plominoDocument.buyer\nreturn message'
+
+# Here we change the 'welcome' formula in the XML string::
+
+# .. TODO:: Fix this
+# ..  >>> s = ''
+# ..  >>> db.importDesignFromXML(xmlstring=s)
+# ..  >>> db.frm2.welcome.getFormula()
+# ..  'message="Be welcome "+plominoDocument.buyer\nreturn message'
+
+# ::
+
+#     >>> id = portal.invokeFactory('PlominoDatabase', id='test')
+#     >>> db = portal.test
+
+# Import design from XML::
+
+#     >>> import os
+#     >>> dir, _f = os.path.split(os.path.abspath(__file__))
+#     >>> f1 = open(os.path.join(dir, "filestoimport", "devplomino.xml"))
+#     >>> xmlstring = f1.read()
+#     >>> db.importDesignFromXML(xmlstring)
+#     >>> db.refreshDB()
+#     [...]
+#     >>> f1.close()
+
+# Check whether forms and views are imported::
+
+#     >>> db.frmBillet == portal.test.getForm('frmBillet')
+#     True
+#     >>> db.allArticle == portal.test.getView('allArticle')
+#     True
+
+# Import CSV file (API)::
+
+#     >>> fileToImport = open(
+#     ...         os.path.join(dir, "filestoimport", "allArticle.csv"))
+#     >>> db.processImportAPI(
+#     ...         formName="frmBillet",
+#     ...         separator = "\t",
+#     ...         fileToImport=fileToImport)
+#     >>> fileToImport.close()
+
+# Check the documents imported::
+
+#     >>> allDocuments = db.allArticle.getAllDocuments()
+#     >>> test = [d.editDate.year() for d in allDocuments]
+#     >>> test.sort()
+#     >>> test
+#     [2008, 2009]
+#     >>> test = [d.articleTitle for d in allDocuments]
+#     >>> test.sort()
+#     >>> test
+#     [u'test1', u'test2']
+
+# Databases marked as template can also be exported to a GenericSetup profile::
+
+#     >>> db.setIsDatabaseTemplate(True)
+#     >>> from Products.GenericSetup.tests.common import DummyExportContext
+#     >>> from Products.CMFPlomino.setuphandlers import export_database_templates
+#     >>> context = DummyExportContext(portal)
+#     >>> export_database_templates(context)
+#     >>> context._wrote[0][0]
+#     'plomino/test/frmBillet.xml'
+
+# TODO: TEST ALSO IMPORT
