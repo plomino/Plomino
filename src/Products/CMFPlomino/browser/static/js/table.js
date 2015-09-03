@@ -39,7 +39,7 @@ require([
         },
         init_search: function() {
             var self = this;
-            var search = $('<form id="plomino-search"><input type="text" /></form>');
+            var search = $('<form id="plomino-search"><input type="text" placeholder="Search"/></form>');
             self.$el.before(search);
             search.on('submit', function() {return false;});
             var wait;
