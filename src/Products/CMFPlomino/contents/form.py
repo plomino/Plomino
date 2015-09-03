@@ -1455,16 +1455,15 @@ class PlominoForm(Container):
             'PlominoView',
             id=view_id,
             title=view_title,
-            SelectionFormula=formula)
+            selection_formula=formula)
         view_obj = getattr(db, view_id)
-        view_obj.at_post_create_script()
 
         fields = self.getFormFields(includesubforms=True)
         acceptable_types = ["TEXT", "NUMBER", "NAME", "SELECTION",
                 "DATETIME"]
         fields = [f for f in fields
                 if f.field_mode == "EDITABLE" and
-                f.FieldType in acceptable_types]
+                f.field_type in acceptable_types]
         for f in fields:
             col_id = f.id.replace('_', '').replace('-', '')
             col_title = col_id
@@ -1473,15 +1472,14 @@ class PlominoForm(Container):
                 'PlominoColumn',
                 id=col_id,
                 title=col_title,
-                SelectedField=col_definition)
-            getattr(view_obj, col_id).at_post_create_script()
+                displayed_field=col_definition)
         view_obj.invokeFactory(
             'PlominoAction',
             id='add_new',
             title="Add a new " + self.Title(),
             action_type="OPENFORM",
             action_display="BUTTON",
-            Content=self.id)
+            content=self.id)
 
         if REQUEST:
             REQUEST.RESPONSE.redirect(view_obj.absolute_url_path())
