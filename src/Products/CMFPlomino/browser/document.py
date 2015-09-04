@@ -27,6 +27,8 @@ class DocumentView(BrowserView):
             return self.doc.saveDocument(self.request)
         if name == "delete":
             return self.doc.delete(self.request)
+        if name == "tojson":
+            return self.doc.tojson(self.request)
 
         doc = self.context.getParentDatabase().getDocument(name)
         if not doc:
