@@ -4,6 +4,20 @@
     xmlns:plone="http://namespaces.plone.org/plone"
     i18n_domain="Products.CMFPlomino">
 
+    <!-- permissions -->
+    <permission
+        id="plomino.DESIGN_PERMISSION"
+        title="CMFPlomino: Modify Database design"
+        />
+    <permission
+        id="plomino.EDIT_PERMISSION"
+        title="CMFPlomino: Edit documents"
+        />
+    <permission
+        id="plomino.ACL_PERMISSION"
+        title="CMFPlomino: Control Database ACL"
+        />
+
     <browser:resourceDirectory
         name="Products.CMFPlomino"
         directory="static"
@@ -14,7 +28,7 @@
         name="DatabaseDesign"
         class=".database.DatabaseView"
         attribute="design"
-        permission="zope.Public"
+        permission="plomino.DESIGN_PERMISSION"
         />
 
     <browser:page
@@ -23,6 +37,14 @@
         class=".database.DatabaseView"
         attribute="tree"
         permission="zope.Public"
+        />
+
+    <browser:page
+        for="Products.CMFPlomino.contents.database.IPlominoDatabase"
+        name="DatabaseACL"
+        class=".database.DatabaseView"
+        attribute="acl"
+        permission="plomino.ACL_PERMISSION"
         />
 
     <browser:page

@@ -85,7 +85,7 @@ Set plomino roles and permissions::
 
 Add some minimal content to test access (view 1 displays all documents)::
 
-    >>> id = db.invokeFactory('PlominoForm', id='form1', Title='Form 1')
+    >>> id = db.invokeFactory('PlominoForm', id='form1', title='Form 1')
     >>> id = db.form1.invokeFactory('PlominoField',
     ...         id='field1',
     ...         title='field1',
@@ -101,7 +101,7 @@ Add some minimal content to test access (view 1 displays all documents)::
     >>> doc.setItem('field1', 'what a value')
     >>> docid = doc.id
     >>> docUrl = doc.doc_url()
-    >>> docUrl == base_url + '/' + docid
+    >>> docUrl == base_url + '/document/' + docid
     True
     >>> doc2 = db.createDocument()
     >>> doc2.setItem('Form', 'form1')
@@ -143,13 +143,13 @@ Add form with a computed-on-display field that calls an agent::
     >>> doc2.setItem('Form', 'form2')
     >>> docid2 = doc2.id
     >>> docUrl2 = doc2.doc_url()
-    >>> id = db.invokeFactory('PlominoForm', id='form2', Title='Form 2')
+    >>> id = db.invokeFactory('PlominoForm', id='form2', title='Form 2')
     >>> id = db.form2.invokeFactory('PlominoField',
     ...         id='editingdisplayfield',
-    ...         Title='editingdisplayfield',
+    ...         title='editingdisplayfield',
     ...         field_type="TEXT",
     ...         field_mode="DISPLAY",
-    ...         Formula="""
+    ...         formula="""
     ... db = plominoContext.getParentDatabase()
     ... req = getattr(plominoContext, 'REQUEST')
     ... req.set('docid', '%(docid)s')
@@ -162,12 +162,8 @@ Add form with a computed-on-display field that calls an agent::
     ... doc.save()
     ... return 'I made a change in %(docid)s'
     ... """ % {'docid': docid2, 'doctitle': "Set by Agent"})
-    >>> db.form2.editingdisplayfield.at_post_create_script()
-    >>> from Products.CMFPlomino.fields.text import ITextField
-    >>> adapted=ITextField(db.form2.editingdisplayfield)
-    >>> adapted.widget="TEXT"
-    >>> db.form2.setFormLayout(
-    ... """<p>editingdisplayfield : <span class="plominoFieldClass">editingdisplayfield</span></p>""")
+    >>> db.form2.editingdisplayfield.widget="TEXT"
+    >>> db.form2.form_layout = """<p>editingdisplayfield : <span class="plominoFieldClass">editingdisplayfield</span></p>"""
 
 Create the browser object we'll be using::
 
@@ -199,7 +195,7 @@ Log in with ``PlominoReader`` access rights::
 
 Reader cannot edit database::
 
-    >>> browser.open(base_url + '/base_edit')
+    >>> browser.open(base_url + '/edit')
     >>> InsufficientPrivileges in browser.url
     True
     >>> browser.open(base_url + '/DatabaseACL')
@@ -212,13 +208,6 @@ Reader cannot edit database::
 Reader cannot see edit or delete buttons::
 
     >>> browser.open(docUrl)
-    >>> """<input type="button" class="context" value="Edit" """ \
-    ... in browser.contents
-    False
-    >>> """<input type="button" class="context" value="Delete" """ \
-    ... in browser.contents
-    False
-    >>> browser.open(docUrl + '/checkBeforeOpenDocument')
     >>> """<input type="button" class="context" value="Edit" """ \
     ... in browser.contents
     False
@@ -306,13 +295,6 @@ Author cannot edit database::
 Author cannot edit or delete document created by other users::
 
     >>> browser.open(docUrl)
-    >>> """<input type="button" class="context" value="Edit" """ \
-    ... in browser.contents
-    False
-    >>> """<input type="button" class="context" value="Delete" """ \
-    ... in browser.contents
-    False
-    >>> browser.open(docUrl + '/checkBeforeOpenDocument')
     >>> """<input type="button" class="context" value="Edit" """ \
     ... in browser.contents
     False

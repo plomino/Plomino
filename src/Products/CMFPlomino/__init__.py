@@ -217,7 +217,6 @@ def initialize(context):
         'meta_type': 'PlominoDocument',
         'allowed_content_types': [],
         'allow_discussion': 0,
-        'immediate_view': 'checkBeforeOpenDocument',
         'global_allow': 0,
         'filter_content_types': 1,
     }, )

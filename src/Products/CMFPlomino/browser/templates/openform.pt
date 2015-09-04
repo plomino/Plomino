@@ -47,11 +47,17 @@
                 action string:${context/absolute_url}/createDocument;">
             <span tal:replace="structure context/@@authenticator/authenticator"/>
 
-            <tal:layout
-                tal:content="structure python:context.openBlankForm(request)">layout</tal:layout>
+            <tal:block_no_createpermission
+                condition="python:not(hasCreatePermissionOnDatabase and hasCreatePermissionOnForm)">
+                <p i18n:domain="CMFPlomino" i18n:translate="Please log in">Please log in</p>
+            </tal:block_no_createpermission>
 
             <tal:block_has_createpermission
                 condition="python:hasCreatePermissionOnDatabase and hasCreatePermissionOnForm">
+
+                <tal:layout
+                    tal:content="structure python:context.openBlankForm(request)">layout</tal:layout>
+
                 <span metal:use-macro="context/plomino_actions/macros/OpenFormActionBar">display form actions</span><br/>
             </tal:block_has_createpermission>
         </form>

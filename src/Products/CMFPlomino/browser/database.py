@@ -6,6 +6,7 @@ from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 class DatabaseView(BrowserView):
 
     design_template = ViewPageTemplateFile("templates/design.pt")
+    acl_template = ViewPageTemplateFile("templates/acl.pt")
 
     def __init__(self, context, request):
         self.context = context
@@ -43,3 +44,6 @@ class DatabaseView(BrowserView):
         self.request.RESPONSE.setHeader(
             'content-type', 'application/json; charset=utf-8')
         return json.dumps(elements)
+
+    def acl(self):
+        return self.acl_template()

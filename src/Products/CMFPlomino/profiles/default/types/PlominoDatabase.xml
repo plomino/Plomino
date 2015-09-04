@@ -49,4 +49,9 @@
     url_expr="string:${object_url}/DatabaseDesign" visible="True">
     <permission value="Modify portal content"/>
   </action>
+  <action title="Access control" action_id="manage_acl" category="object_buttons" condition_expr=""
+    description="" icon_expr="" link_target=""
+    url_expr="string:${object_url}/DatabaseACL" visible="True">
+    <permission value="Modify portal content"/>
+  </action>
 </object>

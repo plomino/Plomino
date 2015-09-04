@@ -17,12 +17,12 @@ doctest.set_unittest_reportflags(
 def test_suite():
     suite = doctest.DocFileSuite(
         'plomino.txt',
-        # 'plomino_accessControl.txt',
+        # 'plomino_accesscontrol.txt',
         # 'samples.txt',
         # 'plomino_usage.txt',
         # 'form-resources.txt',
         # 'searchableview.txt',
-        globs = {
+        globs={
             'TEST_USER_ID': TEST_USER_ID,
             'Browser': Browser,
             'transaction': transaction
