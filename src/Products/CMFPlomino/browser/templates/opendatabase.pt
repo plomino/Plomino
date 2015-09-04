@@ -1,0 +1,78 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en"
+    xmlns:tal="http://xml.zope.org/namespaces/tal"
+    xmlns:metal="http://xml.zope.org/namespaces/metal"
+    xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+    lang="en"
+    metal:use-macro="context/main_template/macros/master"
+    i18n:domain="plone">
+<body>
+
+<metal:content fill-slot="main">
+
+    <h1 class="documentFirstHeading" tal:content="context/Title">Title</h1>
+
+    <div id="content-core">
+        <tal:block
+        tal:condition="python:context.hasReadPermission(context) or context.hasCreatePermission(context)"
+        tal:define="composeforms python:[f for f in context.getForms() if not f.isSearchForm and f.hasCreatePermission(f)];
+        searchforms python:[f for f in context.getForms() if f.isSearchForm and f.hasReadPermission(f)];
+        views python:[v for v in context.getViews() if v.hasReadPermission(v)];">
+
+        <tal:block
+            tal:condition="python:context.hasReadPermission(context)">
+            <tal:views tal:condition="python:len(views)>0">
+                <h3 i18n:domain="CMFPlomino" i18n:translate="Browse">Browse</h3>
+                <p tal:repeat="v views">
+                    <a href="#" 
+                        tal:attributes="href v/absolute_url_path"
+                        tal:content="v/Title">view link</a>
+                    <br/>
+                </p>
+            </tal:views>
+            <tal:search tal:condition="python:len(searchforms)>0">
+                <h3 i18n:domain="CMFPlomino" i18n:translate="Search">Search</h3>
+                <p tal:repeat="f searchforms"><a href="#"
+                    tal:attributes="href python:f.absolute_url_path()+'/OpenForm'"
+                    tal:content="f/Title">form link</a> <br />
+                </p>
+            </tal:search>
+
+        </tal:block>
+
+        <tal:block tal:condition="python:context.hasCreatePermission(context)">
+
+            <tal:forms tal:condition="python:len(composeforms)>0">
+                <h3 i18n:domain="CMFPlomino" i18n:translate="Add new content">Add
+                new content</h3>
+                <p tal:repeat="f composeforms"><a href="#"
+                    tal:attributes="href python:f.absolute_url_path()+'/OpenForm'"
+                    tal:content="f/Title">form link</a> <br />
+                </p>
+            </tal:forms>
+        </tal:block>
+
+        <tal:block
+            tal:condition="python:not(len(composeforms)>0 or len(searchforms)>0 or len(views)>0)">
+            <p>The database is empty</p>
+            <tal:template-picker tal:condition="python:context.hasDesignPermission()">
+                <form tal:define="template_list python:context.getTemplateList()"
+                    tal:condition="template_list"
+                    name="ImportTemplate" action="importTemplate" method="POST">
+                    <label for="template">Import a template</label>
+                    <select name="template_id">
+                        <option value="">== Templates ==</option>
+                        <tal:block tal:repeat="f template_list">
+                            <option tal:attributes="value f;"
+                                tal:content="python:f">value</option>
+                        </tal:block>
+                    </select>
+                    <input type="submit" value="Import template"/>
+                </form>
+            </tal:template-picker>
+        </tal:block>
+
+    </tal:block>
+    </div>
+</metal:content>
+</body>
+</html>

@@ -78,7 +78,7 @@ class IPlominoDatabase(model.Schema):
         required=False,
     )
 
-    startPage = schema.TextLine(
+    start_page = schema.TextLine(
         title=_('CMFPlomino_label_StartPage', default="Start page"),
         description=_('CMFPlomino_help_StartPage',
             default="Element to display instead of the regular database "
@@ -150,24 +150,6 @@ class PlominoDatabase(Container, AccessControl, DesignManager):
         """ Set DB current status
         """
         self.plomino_status = status
-
-    security.declarePublic('checkBeforeOpenDatabase')
-
-    def checkBeforeOpenDatabase(self):
-        """ Check if custom start page
-        """
-        if self.checkUserPermission(config.READ_PERMISSION):
-            try:
-                if self.StartPage:
-                    if hasattr(self, self.getStartPage()):
-                        target = getattr(self, self.getStartPage())
-                    return getattr(target, target.defaultView())()
-                else:
-                    return self.OpenDatabase()
-            except:
-                return self.OpenDatabase()
-        else:
-            raise Unauthorized("You cannot read this content")
 
     security.declarePublic('getForm')
 

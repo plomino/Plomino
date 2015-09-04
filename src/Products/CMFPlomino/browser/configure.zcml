@@ -25,6 +25,14 @@
 
     <browser:page
         for="Products.CMFPlomino.contents.database.IPlominoDatabase"
+        name="view"
+        class=".database.DatabaseView"
+        attribute="view"
+        permission="zope2.View"
+        />
+
+    <browser:page
+        for="Products.CMFPlomino.contents.database.IPlominoDatabase"
         name="DatabaseDesign"
         class=".database.DatabaseView"
         attribute="design"
