@@ -82,14 +82,14 @@ class DoclinkField(BaseField):
         """
 
         # if formula available, use formula, else use view entries
-        f = self.documentslistformula
+        f = self.context.documentslistformula
         if not f:
-            if not(self.sourceview and self.labelcolumn):
+            if not(self.context.sourceview and self.context.labelcolumn):
                 return []
-            v = self.context.getParentDatabase().getView(self.sourceview)
+            v = self.context.getParentDatabase().getView(self.context.sourceview)
             if not v:
                 return []
-            label_key = v.getIndexKey(self.labelcolumn)
+            label_key = v.getIndexKey(self.context.labelcolumn)
             if not label_key:
                 return []
             result = []
@@ -110,7 +110,7 @@ class DoclinkField(BaseField):
                     SCRIPT_ID_DELIMITER.join(['field',
                         self.context.getParentNode().id,
                         self.context.id,
-                        'DocumentListFormula']),
+                        'documentslistformula']),
                     obj,
                     f)
             except PlominoScriptException, e:
@@ -144,7 +144,7 @@ class DoclinkField(BaseField):
     def tojson(self, selectionlist):
         """Return a JSON table storing documents to be displayed
         """
-        if self.sourceview:
+        if self.context.sourceview:
             sourceview = self.context.getParentDatabase().getView(
                 self.sourceview)
             brains = sourceview.getAllDocuments(getObject=False)
