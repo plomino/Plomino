@@ -12,10 +12,40 @@
     <h1 class="documentFirstHeading" tal:content="context/Title">Title</h1>
 
     <div id="content-core">
-    <div class="plomino-design"
-        tal:attributes="data-pat-plominodesign string:treeUrl:${context/absolute_url}/designtree">
-        <div class="tree"></div>
-    </div>
+        <div class="pat-autotoc autotabs" data-pat-autotoc="section:fieldset;levels:legend;">
+            <fieldset>
+                <legend>Structure</legend>
+                <div class="plomino-design"
+                    tal:attributes="data-pat-plominodesign string:treeUrl:${context/absolute_url}/designtree">
+                    <div class="tree"></div>
+                </div>
+            </fieldset>
+
+            <fieldset>
+                <legend>Manage</legend>
+                <ul><li><a href="./resources/manage_main" target="_new" i18n:translate="">Resources folder (ZMI)</a></li>
+                    <li><a href="./plomino_index/manage_catalogView" target="_new" i18n:translate="">Index (ZMI)</a></li>
+                    <li><a href="./plomino_documents/manage_main" i18n:translate="">Documents folder</a></li>       
+                </ul>
+                <ul>
+                    <li><form name="Refresh" action="manage_refreshDB" method="POST">
+                        <input type="submit" name="submit_refresh" class="context" value="Refresh database" i18n:attributes="value"/></form>
+                        <span i18n:translate="">(clean scripts, re-index documents, and check Plomino version migration)</span></li>     
+                    <li><form name="Recompute" action="recomputeAllDocuments" method="POST">
+                        <input type="submit" name="submit_recompute" class="context" value="Re-compute documents" i18n:attributes="value"/></form>
+                        <span i18n:translate="">(save all documents with their current form: computed fields and computed on save fields will be re-computed and stored, and documents are re-indexed)</span></li>
+                    <li><form name="RefreshCatalog" action="refreshPortalCatalog" method="POST">
+                        <input type="submit" name="submit_refreshcatalog" class="context" value="Re-index documents in portal catalog" i18n:attributes="value"/></form>
+                        <span i18n:translate="">(if the database allows portal catalog indexing, documents are re-indexed, else they are removed from the catalog)</span>
+                    </li>
+                </ul>
+            </fieldset>
+
+            <fieldset>
+                <legend>Import/export</legend>
+                boom
+            </fieldset>
+        </div>
     </div>
 </metal:content>
 </body>

@@ -81,20 +81,6 @@ class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
         self.items = PersistentDict()
         self.plomino_modification_time = DateTime().toZone(TIMEZONE)
 
-    security.declarePublic('checkBeforeOpenDocument')
-
-    def checkBeforeOpenDocument(self):
-        """ Check read permission and open view.
-
-        .. NOTE:: if ``READ_PERMISSION`` is set on the ``view`` action
-            itself, it causes an error ('maximum recursion depth exceeded')
-            if user hasn't permission.
-        """
-        if self.isReader():
-            return self.OpenDocument()
-        else:
-            raise Unauthorized("You cannot read this content")
-
     def absolute_url(self):
         db_url = self.getParentDatabase().absolute_url()
         return "%s/document/%s" % (db_url, self.id)

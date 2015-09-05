@@ -282,7 +282,7 @@ Log in with ``PlominoAuthor`` access rights::
 
 Author cannot edit database::
 
-    >>> browser.open(base_url + '/base_edit')
+    >>> browser.open(base_url + '/edit')
     >>> InsufficientPrivileges in browser.url
     True
     >>> browser.open(base_url + '/DatabaseACL')

@@ -1,8 +1,11 @@
+from AccessControl import Unauthorized
 from zope.interface import implements
 from zope.publisher.interfaces import IPublishTraverse
 from zope.publisher.interfaces import NotFound
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from Products.Five.browser import BrowserView
+
+from ..config import DESIGN_PERMISSION
 
 
 class DocumentView(BrowserView):
@@ -10,6 +13,8 @@ class DocumentView(BrowserView):
 
     view_template = ViewPageTemplateFile('templates/opendocument.pt')
     edit_template = ViewPageTemplateFile('templates/editdocument.pt')
+    properties_template = ViewPageTemplateFile(
+        'templates/documentproperties.pt')
 
     def __init__(self, context, request):
         self.context = context
@@ -29,6 +34,12 @@ class DocumentView(BrowserView):
             return self.doc.delete(self.request)
         if name == "tojson":
             return self.doc.tojson(self.request)
+        if name == "DocumentProperties":
+            db = self.doc.getParentDatabase()
+            if db.checkUserPermission(DESIGN_PERMISSION):
+                return self.properties_template()
+            else:
+                raise Unauthorized("You cannot read this content")
 
         doc = self.context.getParentDatabase().getDocument(name)
         if not doc:
