@@ -42,7 +42,7 @@
         <tal:has_form condition="form">
             <form 
                 tal:define="
-                    form_method python:form.form_method;
+                    form_method python:form.getFormMethod();
                     enctype python:(form_method == 'POST') and 'multipart/form-data'
                     "
                 tal:attributes="

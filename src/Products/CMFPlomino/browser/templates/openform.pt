@@ -38,13 +38,13 @@
 
     <div id="content-core">
         <form enctype="multipart/form-data"
-            method="POST"
             id="plomino_form"
             tal:define="hasCreatePermissionOnDatabase python:context.hasCreatePermission(context.getParentDatabase());
                 hasCreatePermissionOnForm python:context.hasCreatePermission(context);"
             tal:attributes="
                 name context/id;
-                action string:${context/absolute_url}/createDocument;">
+                action string:${context/absolute_url}/createDocument;
+                method python:context.getFormMethod();">
             <span tal:replace="structure context/@@authenticator/authenticator"/>
 
             <tal:block_no_createpermission
