@@ -333,17 +333,17 @@ Author can edit his own documents::
     >>> """My new value 1""" in browser.contents
     True
 
+Author cannot view properties via URLs::
+
+    >>> browser.open(newdocUrl.replace('?', '/DocumentProperties?'))
+    >>> InsufficientPrivileges in browser.url
+    True
+
 Author can delete his own documents::
 
     >>> browser.open(newdocUrl.replace('?', '/delete?returnurl=' + base_url + '&'))
     >>> InsufficientPrivileges in browser.url
     False
-
-Author cannot view properties via URLs::
-
-    >>> browser.open(newdocUrl.replace('?', '/DocumentProperties?')
-    >>> InsufficientPrivileges in browser.url
-    True
 
 Log out::
 
@@ -365,7 +365,7 @@ Log in with PlominoEditor access rights::
 
 Editor cannot edit database::
 
-    >>> browser.open(base_url + '/base_edit')
+    >>> browser.open(base_url + '/edit')
     >>> InsufficientPrivileges in browser.url
     True
     >>> browser.open(base_url + '/DatabaseACL')
@@ -433,7 +433,7 @@ Log as other group member::
 
 This user is not author of the document::
 
-    >>> browser.open(currentDocUrl+'/EditDocument')
+    >>> browser.open(currentDocUrl.replace('?', '/EditDocument?'))
     >>> InsufficientPrivileges in browser.url
     True
     >>> browser.open(portal_url+'/logout')
@@ -456,7 +456,7 @@ Whenever the document is saved, the id of the current user is added to
     >>> browser.getControl(name='field1'
     ...         ).value="Another value entered by author 1"
     >>> browser.getForm(name='form1').submit(name='plomino_save')
-    >>> currentDocUrl = browser.url
+    >>> currentDocUrl = browser.url.split('?')[0]
     >>> doc = db.getDocument(currentDocUrl.split('/')[-1])
     >>> doc.Plomino_Authors
     ['userAuthor']
