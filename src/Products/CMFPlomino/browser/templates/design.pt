@@ -54,7 +54,7 @@
                             <td colspan="2"><label for="sourcetype-file" i18n:translate="">From file</label></td>
                         </tr>
                         <tr><td></td>
-                            <td i18n:translate="">Plomino XML file or in zip file</td>
+                            <td i18n:translate="">Plomino JSON file or in zip file</td>
                             <td><input type="file" name="sourceFile" /></td>
                         </tr>
                         <tr>
@@ -138,7 +138,7 @@
                     <table>
                         <tr>
                             <td><input type="radio" name="targettype" value="file" id="targettype-file" checked="checked"/></td>
-                            <td colspan="2"><label for="targettype-file" i18n:translate="">To XML file</label></td>
+                            <td colspan="2"><label for="targettype-file" i18n:translate="">To JSON file</label></td>
                         </tr>
                         <tr>
                             <td><input type="radio" name="targettype" value="zipfile" id="targettype-zipfile"/></td>

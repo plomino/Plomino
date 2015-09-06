@@ -6,6 +6,7 @@ import codecs
 from cStringIO import StringIO
 from DateTime import DateTime
 import glob
+import json
 import logging
 from OFS.Folder import Folder
 from OFS.Image import manage_addImage
@@ -22,7 +23,6 @@ from Products.PythonScripts.PythonScript import (
 import sys
 import traceback
 import transaction
-from xml.dom.minidom import getDOMImplementation
 from xml.dom.minidom import parseString
 import xmlrpclib
 from webdav.Lockable import wl_isLocked
@@ -45,7 +45,6 @@ import contents
 from .exceptions import PlominoDesignException, PlominoScriptException
 from .HttpUtils import authenticateAndLoadURL, authenticateAndPostToURL
 from .index.index import PlominoIndex
-from .interfaces import IXMLImportExportSubscriber
 from .migration import migrate
 from .utils import (
     _expandIncludes,
@@ -348,7 +347,7 @@ class DesignManager:
 
     def exportDesign(self, targettype='file', targetfolder='', dbsettings=True,
             designelements=None, REQUEST=None, **kw):
-        """ Export design elements to XML.
+        """ Export design elements to JSON.
         The targettype can be file, zipfile, server, or folder.
         """
         if REQUEST:
@@ -372,7 +371,7 @@ class DesignManager:
                         designelements = [designelements]
 
         if targettype in ["server", "file"]:
-            xmlstring = self.exportDesignAsXML(
+            jsonstring = self.exportDesignAsJSON(
                 elementids=designelements,
                 dbsettings=dbsettings)
 
@@ -382,20 +381,21 @@ class DesignManager:
                     username = REQUEST.get('username')
                     password = REQUEST.get('password')
                 authenticateAndPostToURL(
-                    targetURL + "/importDesignFromXML",
+                    targetURL + "/importDesignFromJSON",
                     username,
                     password,
-                    'exportDesignAsXML.xml',
-                    xmlstring)
+                    'exportDesignAsJSON.json',
+                    jsonstring)
                 REQUEST.RESPONSE.redirect(
                     self.absolute_url() + "/DatabaseDesign")
             elif targettype == "file":
                 if REQUEST:
-                    REQUEST.RESPONSE.setHeader('content-type', 'text/xml')
+                    REQUEST.RESPONSE.setHeader(
+                        'content-type', 'application/json')
                     REQUEST.RESPONSE.setHeader(
                         "Content-Disposition",
-                        "attachment; filename=%s.xml" % self.id)
-                return xmlstring
+                        "attachment; filename=%s.json" % self.id)
+                return jsonstring
         elif targettype == "zipfile":
             zip_string = self.exportDesignAsZip(
                 designelements=designelements,
@@ -421,11 +421,11 @@ class DesignManager:
             resources_exportpath = os.path.join(exportpath, 'resources')
             if os.path.isdir(exportpath):
                 # remove previous export
-                for f in glob.glob(os.path.join(exportpath, "*.xml")):
+                for f in glob.glob(os.path.join(exportpath, "*.json")):
                     os.remove(f)
                 if os.path.isdir(resources_exportpath):
                     for f in glob.glob(
-                            os.path.join(resources_exportpath, "*.xml")):
+                            os.path.join(resources_exportpath, "*.json")):
                         os.remove(f)
             else:
                 os.makedirs(exportpath)
@@ -437,23 +437,23 @@ class DesignManager:
                 if id.startswith('resources/'):
                     path = os.path.join(
                         resources_exportpath,
-                        id.split('/')[-1] + '.xml')
-                    xmlstring = self.exportDesignAsXML(
+                        id.split('/')[-1] + '.json')
+                    jsonstring = self.exportDesignAsJSON(
                         elementids=[id],
                         dbsettings=False)
-                    self.saveFile(path, xmlstring)
+                    self.saveFile(path, jsonstring)
                 else:
-                    path = os.path.join(exportpath, (id + '.xml'))
-                    xmlstring = self.exportDesignAsXML(
+                    path = os.path.join(exportpath, (id + '.json'))
+                    jsonstring = self.exportDesignAsJSON(
                         elementids=[id],
                         dbsettings=False)
-                    self.saveFile(path, xmlstring)
+                    self.saveFile(path, jsonstring)
             if dbsettings:
-                path = os.path.join(exportpath, ('dbsettings.xml'))
-                xmlstring = self.exportDesignAsXML(
+                path = os.path.join(exportpath, ('dbsettings.json'))
+                jsonstring = self.exportDesignAsJSON(
                     elementids=[],
                     dbsettings=True)
-                self.saveFile(path, xmlstring.decode('utf-8'))
+                self.saveFile(path, jsonstring.decode('utf-8'))
 
     @staticmethod
     def saveFile(path, content):
@@ -481,7 +481,7 @@ class DesignManager:
         replace = replace_design == "Yes"
         if submit_import:
             if sourcetype == "server":
-                export_url = sourceURL + "/exportDesignAsXML"
+                export_url = sourceURL + "/exportDesignAsJSON"
                 if not entire == "Yes":
                     designelements = REQUEST.get('designelements')
                     if designelements:
@@ -491,13 +491,13 @@ class DesignManager:
                             export_url,
                             "@".join(designelements)
                         )
-                xmlstring = authenticateAndLoadURL(
+                jsonstring = authenticateAndLoadURL(
                     export_url, username, password).read()
-                self.importDesignFromXML(xmlstring, replace=replace)
+                self.importDesignFromJSON(jsonstring, replace=replace)
 
             elif sourcetype == "folder":
                 path = REQUEST.get('sourcefolder')
-                self.importDesignFromXML(from_folder=path, replace=replace)
+                self.importDesignFromJSON(from_folder=path, replace=replace)
             else:
                 fileToImport = REQUEST.get('sourceFile', None)
                 if not fileToImport:
@@ -511,8 +511,8 @@ class DesignManager:
                     zip_file = ZipFile(fileToImport)
                     self.importDesignFromZip(zip_file, replace=replace)
                 else:
-                    xmlstring = fileToImport.read()
-                    self.importDesignFromXML(xmlstring, replace=replace)
+                    jsonstring = fileToImport.read()
+                    self.importDesignFromXML(jsonstring, replace=replace)
 
             no_refresh_documents = REQUEST.get('no_refresh_documents', 'No')
             if no_refresh_documents == 'No':
@@ -834,37 +834,34 @@ class DesignManager:
                 filename = os.path.join(
                     db_id,
                     'resources',
-                    id.split('/')[-1] + '.xml')
-                xmlstring = self.exportDesignAsXML(
+                    id.split('/')[-1] + '.json')
+                jsonstring = self.exportDesignAsJSON(
                     elementids=[id],
                     dbsettings=False)
-                zip_file.writestr(filename, xmlstring)
+                zip_file.writestr(filename, jsonstring)
             else:
-                filename = os.path.join(db_id, id + '.xml')
-                xmlstring = self.exportDesignAsXML(
+                filename = os.path.join(db_id, id + '.json')
+                jsonstring = self.exportDesignAsJSON(
                     elementids=[id],
                     dbsettings=False)
-                zip_file.writestr(filename, xmlstring)
+                zip_file.writestr(filename, jsonstring)
         if dbsettings:
-            filename = os.path.join(db_id, 'dbsettings.xml')
-            xmlstring = self.exportDesignAsXML(
+            filename = os.path.join(db_id, 'dbsettings.json')
+            jsonstring = self.exportDesignAsJSON(
                 elementids=[],
                 dbsettings=True)
-            zip_file.writestr(filename, xmlstring)
+            zip_file.writestr(filename, jsonstring)
         zip_file.close()
         return file_string
 
-    security.declareProtected(DESIGN_PERMISSION, 'exportDesignAsXML')
+    security.declareProtected(DESIGN_PERMISSION, 'exportDesignAsJSON')
 
-    def exportDesignAsXML(
+    def exportDesignAsJSON(
         self, elementids=None, REQUEST=None, dbsettings=True
     ):
         """
         """
-        impl = getDOMImplementation()
-        doc = impl.createDocument(None, "plominodatabase", None)
-        root = doc.documentElement
-        root.setAttribute("id", self.id)
+        data = {'id': self.id, }
 
         if REQUEST:
             str_elementids = REQUEST.get("elementids")
@@ -890,54 +887,36 @@ class DesignManager:
         elements.sort(key=lambda elt: elt.getId())
         elements.sort(key=lambda elt: elt.Type())
 
-        designNode = doc.createElement('design')
-
+        design = {}
         # export database settings
         if dbsettings:
-            node = self.exportElementAsXML(doc, self, isDatabase=True)
-            designNode.appendChild(node)
+            design['dbsettings'] = self.exportElementAsJSON(
+                self, isDatabase=True)
 
         # export database design elements
-        for e in elements:
-            if 'Dexterity' in e.meta_type:
-                node = self.exportElementAsXML(doc, e)
+        for element in elements:
+            if 'Dexterity' in element.meta_type:
+                design[element.id] = self.exportElementAsJSON(element)
             else:
-                node = self.exportResourceAsXML(doc, e)
+                design[element.id] = self.exportResourceAsJSON(element)
 
-            designNode.appendChild(node)
-
-        root.appendChild(designNode)
-        s = doc.toxml()
+        data['design'] = design
 
         if REQUEST:
             REQUEST.RESPONSE.setHeader(
-                'content-type', "text/xml;charset=utf-8")
+                'content-type', "application/json;charset=utf-8")
+        return json.dumps(data, sort_keys=True, indent=4).encode('utf-8')
 
-        # Usage of lxml to make a pretty output
-        try:
-            from lxml import etree
-            parser = etree.XMLParser(strip_cdata=False, encoding="utf-8")
-            return etree.tostring(
-                etree.XML(s, parser),
-                encoding="utf-8",
-                pretty_print=True)
-        except ImportError:
-            # XXX: Blunt object replace:
-            return s.encode('utf-8').replace("><", ">\n<")
+    security.declareProtected(DESIGN_PERMISSION, 'exportElementAsJSON')
 
-    security.declareProtected(DESIGN_PERMISSION, 'exportElementAsXML')
-
-    def exportElementAsXML(self, xmldoc, obj, isDatabase=False):
+    def exportElementAsJSON(self, obj, isDatabase=False):
         """
         """
-        if isDatabase:
-            node = xmldoc.createElement('dbsettings')
-        else:
-            node = xmldoc.createElement('element')
-            node.setAttribute('id', obj.id)
-            node.setAttribute('type', obj.portal_type)
-            title = obj.title
-            node.setAttribute('title', title)
+        data = {}
+        if not isDatabase:
+            data['id'] = obj.id
+            data['type'] = obj.portal_type
+            data['title'] = obj.title
         schema = component.getUtility(
             IDexterityFTI, name=obj.portal_type).lookupSchema()
 
@@ -947,115 +926,63 @@ class DesignManager:
             for param in specific_schema.names():
                 attributes.append((param, specific_schema.get(param)))
 
-        for (field_id, field) in attributes:
-            fieldNode = xmldoc.createElement(field_id)
-            field_type = field.__class__.__name__
-            fieldNode.setAttribute('type', field_type)
-            v = getattr(obj, field_id)
-            if v is not None:
-                if field_type in ["Text", "TextLine"]:
-                    if field_id == 'FormLayout':
-                        try:
-                            from lxml import etree
-                            text_value = etree.tostring(
-                                etree.HTML(v.decode('utf-8')),
-                                encoding="utf-8",
-                                pretty_print=True,
-                                method='html')
-                            text_value = text_value.split(
-                                '<html><body>')[1].split('</body></html>')[0]
-                        except ImportError:
-                            # XXX: Blunt object replace:
-                            text_value = text_value.replace("><", ">\n<")
-                    else:
-                        text_value = v
-                    text_node = xmldoc.createCDATASection(
-                        text_value.decode('utf-8'))
-                else:
-                    text_node = xmldoc.createTextNode(str(v))
-                fieldNode.appendChild(text_node)
-            node.appendChild(fieldNode)
+        params = {}
+        for (id, attr) in attributes:
+            params[id] = {
+                'type': attr.__class__.__name__,
+                'value': getattr(obj, id),
+            }
+        data['params'] = params
 
         if not isDatabase:
             elementslist = obj.objectIds()
             if elementslist:
-                elements = xmldoc.createElement('elements')
-                for i in elementslist:
-                    elementNode = self.exportElementAsXML(
-                        xmldoc,
-                        getattr(obj, i))
-                    elements.appendChild(elementNode)
-                node.appendChild(elements)
+                elements = {}
+                for id in elementslist:
+                    elements[id] = self.exportElementAsJSON(getattr(obj, id))
+                data['elements'] = elements
 
         if isDatabase:
-            acl = xmldoc.createElement('acl')
-            acl.setAttribute(
-                'AnomynousAccessRight', obj.AnomynousAccessRight)
-            acl.setAttribute(
-                'AuthenticatedAccessRight', obj.AuthenticatedAccessRight)
-            str_UserRoles = xmlrpclib.dumps((obj.UserRoles,), allow_none=1)
-            dom_UserRoles = parseString(str_UserRoles)
-            dom_UserRoles.firstChild.setAttribute('id', 'UserRoles')
-            acl.appendChild(dom_UserRoles.documentElement)
-            str_SpecificRights = xmlrpclib.dumps(
-                (obj.getSpecificRights(),),
-                allow_none=1)
-            dom_SpecificRights = parseString(str_SpecificRights)
-            dom_SpecificRights.firstChild.setAttribute(
-                'id', 'SpecificRights')
-            acl.appendChild(dom_SpecificRights.documentElement)
-            node.appendChild(acl)
-            node.setAttribute('version', obj.plomino_version)
+            data['acl'] = {
+                'AnomynousAccessRight': obj.AnomynousAccessRight,
+                'AuthenticatedAccessRight': obj.AuthenticatedAccessRight,
+                'UserRoles': obj.UserRoles,
+                'SpecificRights': obj.getSpecificRights(),
+                'version': obj.plomino_version,
+            }
 
-        subscribers = component.subscribers(
-            (obj,),
-            IXMLImportExportSubscriber)
+        return data
 
-        for subscriber in subscribers:
-            name = (subscriber.__module__
-                    + '.'
-                    + subscriber.__class__.__name__)
-            doc = parseString(subscriber.export_xml())
-            customnode = doc.childNodes[0]
-            customnode.setAttribute("ExportImportClass", name)
-            wrapper = doc.createElement("CustomData")
-            wrapper.appendChild(customnode)
-            node.appendChild(wrapper)
-        return node
+    security.declareProtected(DESIGN_PERMISSION, 'exportResourceAsJSON')
 
-    security.declareProtected(DESIGN_PERMISSION, 'exportResourceAsXML')
-
-    def exportResourceAsXML(self, xmldoc, obj):
+    def exportResourceAsJSON(self, obj):
         """
-        xmldoc is a xml.dom.minidom.Document node
         """
-        node = xmldoc.createElement('resource')
         id = obj.id
         if callable(id):
             id = id()
-        node.setAttribute('id', id)
-        resource_type = obj.meta_type
-        node.setAttribute('type', resource_type)
-        node.setAttribute('title', obj.title)
+        data = {
+            'id': id,
+            'type': obj.meta_type,
+            'title': obj.title,
+        }
         if hasattr(obj, 'read'):
-            data = xmldoc.createCDATASection(obj.read())
-            node.appendChild(data)
+            data['data'] = obj.read()
         elif isinstance(obj, Folder):
             for name, sub_obj in obj.objectItems():
-                sub_node = self.exportResourceAsXML(xmldoc, sub_obj)
-                node.appendChild(sub_node)
+                data[name] = self.exportResourceAsJSON(sub_obj)
         else:
-            node.setAttribute('contenttype', obj.getContentType())
+            data['contenttype'] = obj.getContentType()
             stream = obj.data
             if not hasattr(stream, "encode"):
                 stream = stream.data
-            data = xmldoc.createCDATASection(stream.encode('base64'))
-            node.appendChild(data)
-        return node
+            data['data'] = stream.encode('base64')
 
-    security.declareProtected(DESIGN_PERMISSION, 'importDesignFromXML')
+        return data
 
-    def importDesignFromXML(self, xmlstring=None, REQUEST=None,
+    security.declareProtected(DESIGN_PERMISSION, 'importDesignFromJSON')
+
+    def importDesignFromJSON(self, jsonstring=None, REQUEST=None,
             from_folder=None, replace=False):
         """
         """
@@ -1063,18 +990,18 @@ class DesignManager:
         self.setStatus("Importing design")
         self.getIndex().no_refresh = True
         txn = transaction.get()
-        xml_strings = []
+        json_strings = []
         count = 0
         total = 0
         if from_folder:
             if not os.path.isdir(from_folder):
                 raise PlominoDesignException('%s does not exist' % from_folder)
-            xml_files = (glob.glob(os.path.join(from_folder, '*.xml')) +
-                glob.glob(os.path.join(from_folder, 'resources/*.xml')))
-            total_elements = len(xml_files)
-            for p in xml_files:
+            json_files = (glob.glob(os.path.join(from_folder, '*.json')) +
+                glob.glob(os.path.join(from_folder, 'resources/*.json')))
+            total_elements = len(json_files)
+            for p in json_files:
                 fileobj = codecs.open(p, 'r', 'utf-8')
-                xml_strings.append(fileobj.read())
+                json_strings.append(fileobj.read())
         else:
             if REQUEST:
                 filename = REQUEST.get('filename')
@@ -1084,9 +1011,9 @@ class DesignManager:
                     filecontent = base64.decodestring(f.read())
                 else:
                     filecontent = f.read()
-                xml_strings.append(asUnicode(filecontent))
+                json_strings.append(asUnicode(filecontent))
             else:
-                xml_strings.append(asUnicode(xmlstring))
+                json_strings.append(asUnicode(jsonstring))
             total_elements = None
 
         if replace:
@@ -1102,10 +1029,10 @@ class DesignManager:
                 list(self.resources.objectIds()))
             logger.info("Current design removed")
 
-        for xmlstring in xml_strings:
-            xmlstring = xmlstring.replace(">\n<", "><")
-            xmldoc = parseString(xmlstring.encode('utf-8'))
-            design = xmldoc.getElementsByTagName("design")[0]
+        for jsonstring in json_strings:
+            jsonstring = jsonstring.replace(">\n<", "><")
+            jsondoc = parseString(jsonstring.encode('utf-8'))
+            design = jsondoc.getElementsByTagName("design")[0]
             elements = [e for e in design.childNodes
                 if e.nodeName in ('resource', 'element', 'dbsettings')]
 
@@ -1118,13 +1045,13 @@ class DesignManager:
                 if name in ('resource', 'element', 'dbsettings'):
                     if name == 'dbsettings':
                         logger.info("Import db settings")
-                        self.importDbSettingsFromXML(e)
+                        self.importDbSettingsFromJSON(e)
                     if name == 'element':
                         logger.info("Import " + e.getAttribute('id'))
-                        self.importElementFromXML(self, e)
+                        self.importElementFromJSON(self, e)
                     if name == 'resource':
                         logger.info("Import resource " + e.getAttribute('id'))
-                        self.importResourceFromXML(self.resources, e)
+                        self.importResourceFromJSON(self.resources, e)
                     count = count + 1
                     total = total + 1
                 if count == 10:
@@ -1167,13 +1094,13 @@ class DesignManager:
         total_elements = None
         file_names = zip_file.namelist()
         for file_name in file_names:
-            xml_string = zip_file.open(file_name).read()
-            if not xml_string:
+            json_string = zip_file.open(file_name).read()
+            if not json_string:
                 # E.g. if the zipfile contains entries for directories
                 continue
-            xml_string = xml_string.replace(">\n<", "><")
-            xmldoc = parseString(xml_string)
-            design = xmldoc.getElementsByTagName("design")[0]
+            json_string = json_string.replace(">\n<", "><")
+            jsondoc = parseString(json_string)
+            design = jsondoc.getElementsByTagName("design")[0]
             elements = [e
                 for e in design.childNodes if e.nodeName in (
                     'resource', 'element', 'dbsettings')]
@@ -1185,13 +1112,13 @@ class DesignManager:
                 if name in ('resource', 'element', 'dbsettings'):
                     if name == 'dbsettings':
                         logger.info("Import db settings")
-                        self.importDbSettingsFromXML(e)
+                        self.importDbSettingsFromJSON(e)
                     if name == 'element':
                         logger.info("Import " + e.getAttribute('id'))
-                        self.importElementFromXML(self, e)
+                        self.importElementFromJSON(self, e)
                     if name == 'resource':
                         logger.info("Import resource " + e.getAttribute('id'))
-                        self.importResourceFromXML(self.resources, e)
+                        self.importResourceFromJSON(self.resources, e)
                     count = count + 1
                     total = total + 1
                 if count == 10:
@@ -1208,9 +1135,9 @@ class DesignManager:
         txn.commit()
         self.getIndex().no_refresh = False
 
-    security.declareProtected(DESIGN_PERMISSION, 'importElementFromXML')
+    security.declareProtected(DESIGN_PERMISSION, 'importElementFromJSON')
 
-    def importElementFromXML(self, container, node):
+    def importElementFromJSON(self, container, node):
         """
         """
         id = node.getAttribute('id')
@@ -1222,81 +1149,43 @@ class DesignManager:
             container.manage_delObjects([id])
         container.invokeFactory(element_type, id=id)
         obj = getattr(container, id)
-        if obj.Type() == element_type:
-            # note: there might be an existing object with the same id but with
-            # a different type, in this case, we do not import
-            title = node.getAttribute('title')
-            obj.setTitle(title)
-            child = node.firstChild
-            at_values = {}
-            settings_values = {}
-            while child is not None:
-                name = child.nodeName
-                if name == 'id':
-                    pass
-                elif name == 'elements':
-                    # current object is a form or a view, it contains
-                    # sub-objects (fields, actions, columns, hide-when)
-                    subchild = child.firstChild
-                    while subchild is not None:
-                        if subchild.nodeType == subchild.ELEMENT_NODE:
-                            self.importElementFromXML(obj, subchild)
-                        subchild = subchild.nextSibling
-                elif name == 'params':
-                    # current object is a field, the params tag contains the
-                    # specific settings
-                    result, method = xmlrpclib.loads(
-                        node.toxml().encode('utf-8'))
-                    parameters = result[0]
-                    for key in parameters.keys():
-                        v = parameters[key]
-                        if v is not None:
-                            if hasattr(v, 'encode'):
-                                v = unicode(v)
-                            else:
-                                if hasattr(v, 'append'):
-                                    uv = []
-                                    for e in v:
-                                        if hasattr(e, 'encode'):
-                                            uv.append(unicode(e))
-                                        else:
-                                            uv.append(e)
-                                    v = uv
-                            settings_values[key] = v
-                elif name == "CustomData":
-                    # Only one non.text child is expected
-                    customnode = [el for el
-                        in child.childNodes if el.nodeName != '#text'][0]
-                    classname = customnode.getAttribute('ExportImportClass')
-                    importer = resolve(classname)(obj)
-                    importer.import_xml(customnode.toxml())
-                else:
-                    if child.hasChildNodes():
-                        # Get cdata content if available, else get text node
-                        cdatas = [n for n in child.childNodes
-                            if n.nodeType == n.CDATA_SECTION_NODE]
-                        if len(cdatas) > 0:
-                            v = cdatas[0].data
-                        else:
-                            v = child.firstChild.data
-                        v = v.strip()
-                        at_values[name] = v
-                child = child.nextSibling
+        obj.title = node.getAttribute('title')
+        child = node.firstChild
+        while child is not None:
+            name = child.nodeName
+            if name == 'id':
+                pass
+            elif name == 'elements':
+                # current object is a form or a view, it contains
+                # sub-objects (fields, actions, columns, hide-when)
+                subchild = child.firstChild
+                while subchild is not None:
+                    if subchild.nodeType == subchild.ELEMENT_NODE:
+                        self.importElementFromJSON(obj, subchild)
+                    subchild = subchild.nextSibling
+            elif name == "CustomData":
+                # Only one non.text child is expected
+                customnode = [el for el
+                    in child.childNodes if el.nodeName != '#text'][0]
+                classname = customnode.getAttribute('ExportImportClass')
+                importer = resolve(classname)(obj)
+                importer.import_xml(customnode.toxml())
+            else:
+                if child.hasChildNodes():
+                    # Get cdata content if available, else get text node
+                    cdatas = [n for n in child.childNodes
+                        if n.nodeType == n.CDATA_SECTION_NODE]
+                    if len(cdatas) > 0:
+                        value = cdatas[0].data.strip().decode('utf-8')
 
-            if element_type == "PlominoForm":
-                at_values['FormLayout_text_format'] = "text/html"
+                    else:
+                        value = json.loads(child.firstChild.data)
+                    setattr(obj, name, value)
+            child = child.nextSibling
 
-            if len(at_values) > 0:
-                obj.processForm(REQUEST=None, values=at_values)
+    security.declareProtected(DESIGN_PERMISSION, 'importDbSettingsFromJSON')
 
-            if len(settings_values) > 0:
-                adapt = obj.getSettings()
-                for key in settings_values.keys():
-                    getattr(adapt, 'parameters')[key] = settings_values[key]
-
-    security.declareProtected(DESIGN_PERMISSION, 'importDbSettingsFromXML')
-
-    def importDbSettingsFromXML(self, node):
+    def importDbSettingsFromJSON(self, node):
         """
         """
         version = node.getAttribute('version')
@@ -1338,9 +1227,9 @@ class DesignManager:
                         field.set(self, result[0])
             child = child.nextSibling
 
-    security.declareProtected(DESIGN_PERMISSION, 'importResourceFromXML')
+    security.declareProtected(DESIGN_PERMISSION, 'importResourceFromJSON')
 
-    def importResourceFromXML(self, container, node):
+    def importResourceFromJSON(self, container, node):
         """
         """
         id = str(node.getAttribute('id'))
@@ -1367,7 +1256,7 @@ class DesignManager:
             elements = [e for e in node.childNodes
                 if e.nodeName == 'resource']
             for subnode in elements:
-                self.importResourceFromXML(subfolder, subnode)
+                self.importResourceFromJSON(subfolder, subnode)
         else:
             container.manage_addFile(id)
             obj = getattr(container, id)
@@ -1458,5 +1347,5 @@ class DesignManager:
             if source.isDirectory(name):
                 self.importTemplateElement(source[name])
             else:
-                xml = source.readFile(name)
-                self.importDesignFromXML(xmlstring=xml)
+                json = source.readFile(name)
+                self.importDesignFromJSON(jsonstring=json)
