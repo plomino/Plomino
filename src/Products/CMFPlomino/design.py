@@ -12,6 +12,7 @@ from OFS.Image import manage_addImage
 from OFS.ObjectManager import ObjectManager
 import os
 from plone import api
+from plone.dexterity.interfaces import IDexterityFTI
 from Products.DCWorkflow.DCWorkflow import DCWorkflowDefinition
 from Products.PageTemplates.ZopePageTemplate import manage_addPageTemplate
 from Products.PythonScripts.PythonScript import (
@@ -23,12 +24,12 @@ import traceback
 import transaction
 from xml.dom.minidom import getDOMImplementation
 from xml.dom.minidom import parseString
-from xml.parsers.expat import ExpatError
 import xmlrpclib
 from webdav.Lockable import wl_isLocked
 from zipfile import ZipFile, ZIP_DEFLATED
 from zope import component
 from zope.dottedname.resolve import resolve
+from zope.schema import getFieldsInOrder
 from ZPublisher.HTTPRequest import FileUpload
 from ZPublisher.HTTPRequest import HTTPRequest
 from ZPublisher.HTTPResponse import HTTPResponse
@@ -50,7 +51,6 @@ from .utils import (
     _expandIncludes,
     asUnicode,
     DateToString,
-    escape_xml_illegal_chars,
 )
 
 logger = logging.getLogger('Plomino')
@@ -932,28 +932,33 @@ class DesignManager:
         """
         if isDatabase:
             node = xmldoc.createElement('dbsettings')
-            schema = sys.modules[self.__module__].schema
         else:
             node = xmldoc.createElement('element')
             node.setAttribute('id', obj.id)
-            node.setAttribute('type', obj.Type())
+            node.setAttribute('type', obj.portal_type)
             title = obj.title
             node.setAttribute('title', title)
-            schema = getattr(contents, obj.Type())
+        schema = component.getUtility(
+            IDexterityFTI, name=obj.portal_type).lookupSchema()
 
-        for f in schema.fields():
-            fieldNode = xmldoc.createElement(f.getName())
-            field_type = f.getType()
+        attributes = getFieldsInOrder(schema)
+        if obj.Type() == "PlominoField":
+            specific_schema = obj.getSchema()
+            for param in specific_schema.names():
+                attributes.append((param, specific_schema.get(param)))
+
+        for (field_id, field) in attributes:
+            fieldNode = xmldoc.createElement(field_id)
+            field_type = field.__class__.__name__
             fieldNode.setAttribute('type', field_type)
-            v = f.get(obj)
+            v = getattr(obj, field_id)
             if v is not None:
-                if field_type == "Products.Archetypes.Field.TextField":
-                    text_value = f.getRaw(obj)
-                    if text_value and f.__name__ == 'FormLayout':
+                if field_type in ["Text", "TextLine"]:
+                    if field_id == 'FormLayout':
                         try:
                             from lxml import etree
                             text_value = etree.tostring(
-                                etree.HTML(text_value.decode('utf-8')),
+                                etree.HTML(v.decode('utf-8')),
                                 encoding="utf-8",
                                 pretty_print=True,
                                 method='html')
@@ -962,29 +967,15 @@ class DesignManager:
                         except ImportError:
                             # XXX: Blunt object replace:
                             text_value = text_value.replace("><", ">\n<")
+                    else:
+                        text_value = v
                     text_node = xmldoc.createCDATASection(
                         text_value.decode('utf-8'))
                 else:
-                    text_node = xmldoc.createTextNode(str(f.get(obj)))
+                    text_node = xmldoc.createTextNode(str(v))
                 fieldNode.appendChild(text_node)
             node.appendChild(fieldNode)
 
-        if obj.Type() == "PlominoField":
-            adapt = obj.getSettings()
-            if adapt is not None:
-                items = {}
-                for k in adapt.parameters.keys():
-                    if hasattr(adapt, k):
-                        items[k] = adapt.parameters[k]
-                if items:
-                    # export field settings
-                    str_items = xmlrpclib.dumps((items,), allow_none=1)
-                    try:
-                        dom_items = parseString(str_items)
-                    except ExpatError:
-                        dom_items = parseString(
-                            escape_xml_illegal_chars(str_items))
-                    node.appendChild(dom_items.documentElement)
         if not isDatabase:
             elementslist = obj.objectIds()
             if elementslist:

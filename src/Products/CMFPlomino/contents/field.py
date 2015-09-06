@@ -251,6 +251,14 @@ class PlominoField(Item):
 
         return fieldfactory(self)
 
+    def getSchema(self):
+        """
+        """
+        schema = getattr(
+            getattr(fields, self.field_type.lower()),
+            "I%sField" % self.field_type.capitalize())
+        return schema
+
 
 def get_field_types():
     field_types = FIELD_TYPES

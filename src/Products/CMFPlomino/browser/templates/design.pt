@@ -43,7 +43,168 @@
 
             <fieldset>
                 <legend>Import/export</legend>
-                boom
+                <h3>Import</h3>
+                    <form name="ImportDesign" action="importDesign"  method="POST" enctype="multipart/form-data">
+                        <input type="hidden" name="mode" value="refresh"/>
+                    <table tal:define="sourceURL request/sourceURL|nothing;
+                                    username request/username|nothing;
+                                    password request/password|nothing">
+                        <tr>
+                        <td><input type="radio" name="sourcetype" value="file" id="sourcetype-file" checked="checked"/></td>
+                            <td colspan="2"><label for="sourcetype-file" i18n:translate="">From file</label></td>
+                        </tr>
+                        <tr><td></td>
+                            <td i18n:translate="">Plomino XML file or in zip file</td>
+                            <td><input type="file" name="sourceFile" /></td>
+                        </tr>
+                        <tr>
+                        <td><input type="radio" name="sourcetype" value="folder" id="sourcetype-folder"/></td>
+                            <td colspan="2"><label for="sourcetype-folder" i18n:translate="">From server folder</label></td>
+                        </tr>
+                        <tr><td></td>
+                            <td i18n:translate="">Path</td>
+                            <td><input type="text" name="sourcefolder" value="/tmp"/></td>
+                        </tr>
+                        <tr>
+                            <td><input type="radio" name="sourcetype" value="server" id="sourcetype-server"/></td>
+                            <td colspan="2"><label for="sourcetype-server" i18n:translate="">From remote server</label></td>
+                        </tr>
+                        <tr><td></td>
+                            <td i18n:translate="">Source URL</td>
+                            <td><input type="text" name="sourceURL" id="sourceurl-import"
+                                tal:attributes="value sourceURL"
+                                /></td>
+                        </tr>
+                        <tr><td></td>
+                            <td i18n:translate="">Username</td>
+                            <td><input type="text" name="username" id="username-import"
+                                tal:attributes="value username"/></td>
+                        </tr>
+                        <tr><td></td>
+                            <td i18n:translate="">Password</td>
+                            <td><input type="password" name="password" id="password-import"
+                                tal:attributes="value password"/></td>
+                        </tr>
+                        <tr><td></td>
+                            <td><label for="import-entire" i18n:translate="">Entire design</label></td>
+                            <td><input type="checkbox" name="entire" value="Yes" id="import-entire"/></td>
+                        </tr>
+                        <tr><td></td>
+                            <td i18n:translate="">or elements</td>
+                            <td>
+                            <select name="designelements" multiple="true" size="10">
+                                <tal:block tal:condition="sourceURL">
+                                    <option value="">== Forms ==</option>
+                                    <tal:block tal:repeat="f python:here.getRemoteForms(sourceURL, username, password)">
+                                        <option tal:attributes="value f;"
+                                            tal:content="python:f">value</option>
+                                    </tal:block>
+                                    <option value="">== Views ==</option>
+                                    <tal:block tal:repeat="v python:here.getRemoteViews(sourceURL, username, password)">
+                                        <option tal:attributes="value v;"
+                                            tal:content="python:v">value</option>
+                                    </tal:block>
+                                    <option value="">== Agents ==</option>
+                                    <tal:block tal:repeat="a python:here.getRemoteAgents(sourceURL, username, password)">
+                                        <option tal:attributes="value a;"
+                                            tal:content="python:a">value</option>
+                                    </tal:block>
+                                    <option value="">== Resources ==</option>
+                                    <tal:block tal:repeat="v python:here.getRemoteResources(sourceURL, username, password)">
+                                        <option tal:attributes="value v;"
+                                            tal:content="python:v">value</option>
+                                    </tal:block>
+                                </tal:block>
+                            </select>
+                            <input type="submit" name="submit_refresh_import" class="context" value="Refresh" i18n:attributes="value"/>
+                            </td>
+                        </tr>
+                        <tr><td colspan="3">
+                                 <label for="no_refresh_documents" i18n:translate="">Do not refresh database after design update:</label>
+                                 <input type="checkbox" name="no_refresh_documents" id="no_refresh_documents" value="Yes"/><br/>
+                            </td></tr>
+                        <tr><td colspan="3">
+                                 <label for="replace_design" i18n:translate="">Replace mode:</label>
+                                 <input type="checkbox" name="replace_design" id="replace_design" value="Yes"/><br/>
+                             </td></tr>
+                        <tr><td colspan="3">
+                                 <input type="submit" class="context" value="Import" name="submit_import" i18n:attributes="value"/>
+                            </td></tr>
+                    </table>
+                </form>
+
+                <h3>Export</h3>
+                <form name="ExportDesign" action="exportDesign" method="POST">
+                    <table>
+                        <tr>
+                            <td><input type="radio" name="targettype" value="file" id="targettype-file" checked="checked"/></td>
+                            <td colspan="2"><label for="targettype-file" i18n:translate="">To XML file</label></td>
+                        </tr>
+                        <tr>
+                            <td><input type="radio" name="targettype" value="zipfile" id="targettype-zipfile"/></td>
+                            <td colspan="2"><label for="targettype-zipfile" i18n:translate="">To ZIP file</label></td>
+                        </tr>
+                        <tr>
+                            <td><input type="radio" name="targettype" value="folder" id="targettype-folder"/></td>
+                            <td colspan="2"><label for="targettype-folder" i18n:translate="">To server folder</label></td>
+                        </tr>
+                        <tr><td></td>
+                            <td i18n:translate="">Path</td>
+                            <td><input type="text" name="targetfolder" value="/tmp"/></td>
+                        </tr>
+                        <tr>
+                            <td><input type="radio" name="targettype" value="server" id="targettype-server"/></td>
+                            <td colspan="2"><label for="targettype-server" i18n:translate="">To remote server</label></td>
+                        </tr>
+                        <tr><td></td>
+                            <td i18n:translate="">Target URL</td>
+                            <td><input type="text" name="targetURL"/></td>
+                        </tr>
+                        <tr><td></td>
+                            <td i18n:translate="">Username</td>
+                            <td><input type="text" name="username"/></td>
+                        </tr>
+                        <tr><td></td>
+                            <td i18n:translate="">Password</td>
+                            <td><input type="password" name="password"/></td>
+                        </tr>
+                        <tr>
+                            <td colspan="2"><label for="export-entire" i18n:translate="">Entire design</label></td>
+                            <td><input type="checkbox" name="entire" value="Yes" checked="checked" id="export-entire"/></td>
+                        </tr>
+                        <tr>
+                            <td colspan="2" i18n:translate="">or elements</td>
+                            <td>
+                            <select name="designelements" multiple="true" size="10">
+                                <tal:block tal:repeat="f python:here.getForms()">
+                                    <option tal:attributes="value f/id;"
+                                        tal:content="python:f.id+' (Form)'">value</option>
+                                </tal:block>
+                                <tal:block tal:repeat="v python:here.getViews()">
+                                    <option tal:attributes="value v/id;"
+                                        tal:content="python:v.id+' (View)'">value</option>
+                                </tal:block>
+                                <tal:block tal:repeat="a python:here.getAgents()">
+                                    <option tal:attributes="value a/id;"
+                                        tal:content="python:a.id+' (Agent)'">value</option>
+                                </tal:block>
+                                <tal:block tal:define="resources python:['resources/'+i for i in here.resources.objectIds()];                         
+                                dummy python:resources.sort()" 
+                                tal:repeat="v python:resources">
+                                    <option tal:attributes="value v;"
+                                        tal:content="python:v+' (Resource)'">value</option>
+                                </tal:block>
+                            </select>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="2"><label for="export-dbsettings" i18n:translate="">Include db settings</label></td>
+                            <td><input type="checkbox" name="dbsettings" value="Yes" checked="checked" id="export-dbsettings"/></td>
+                        </tr>
+                        <tr><td colspan="2"><input type="submit" class="context" value="Export" name="submit_export" i18n:attributes="value"/></td><td></td></tr>
+                    </table>
+                </form>
+
             </fieldset>
         </div>
     </div>
