@@ -20,26 +20,27 @@ class DocumentView(BrowserView):
         self.context = context
         self.request = request
         self.doc = None
-        self.edit_mode = False
+        self.action = None
 
     def publishTraverse(self, request, name):
         if name == "OpenDocument" or name == "view":
+            self.action = "view"
             return self
         if name == "EditDocument":
-            self.edit_mode = True
+            self.action = "edit"
             return self
         if name == "saveDocument":
-            return self.doc.saveDocument(self.request)
+            self.action = "save"
+            return self
         if name == "delete":
-            return self.doc.delete(self.request)
+            self.action = "delete"
+            return self
         if name == "tojson":
-            return self.doc.tojson(self.request)
+            self.action = "json"
+            return self
         if name == "DocumentProperties":
-            db = self.doc.getParentDatabase()
-            if db.checkUserPermission(DESIGN_PERMISSION):
-                return self.properties_template()
-            else:
-                raise Unauthorized("You cannot read this content")
+            self.action = "properties"
+            return self
 
         doc = self.context.getParentDatabase().getDocument(name)
         if not doc:
@@ -50,9 +51,20 @@ class DocumentView(BrowserView):
         return self
 
     def render(self):
-
-        if self.edit_mode:
+        if self.action == "edit":
             return self.edit_template()
+        elif self.action == "save":
+            return self.doc.saveDocument(self.request)
+        elif self.action == "delete":
+            return self.doc.delete(self.request)
+        elif self.action == "json":
+            return self.doc.tojson(self.request)
+        elif self.action == "properties":
+            db = self.doc.getParentDatabase()
+            if db.checkUserPermission(DESIGN_PERMISSION):
+                return self.properties_template()
+            else:
+                raise Unauthorized("You cannot read this content")
         else:
             return self.view_template()
 
