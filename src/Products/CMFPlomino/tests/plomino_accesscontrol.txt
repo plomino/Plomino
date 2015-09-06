@@ -322,7 +322,8 @@ Author can open a form and create a document::
 
 Author can edit his own documents::
 
-    >>> browser.open(browser.url + '/EditDocument')
+    >>> newdocUrl = browser.url
+    >>> browser.open(newdocUrl.replace('?', '/EditDocument?'))
     >>> InsufficientPrivileges in browser.url
     False
     >>> browser.getControl(name='field1').value="My new value 1"
@@ -334,13 +335,13 @@ Author can edit his own documents::
 
 Author can delete his own documents::
 
-    >>> browser.open(browser.url + '/delete?returnurl='+base_url)
+    >>> browser.open(newdocUrl.replace('?', '/delete?returnurl=' + base_url + '&'))
     >>> InsufficientPrivileges in browser.url
     False
 
 Author cannot view properties via URLs::
 
-    >>> browser.open(docUrl + '/DocumentProperties')
+    >>> browser.open(newdocUrl.replace('?', '/DocumentProperties?')
     >>> InsufficientPrivileges in browser.url
     True
 
