@@ -167,7 +167,8 @@
     i18n:attributes="value"
     tal:define="
         plominotranslate nocall:modules/Products/CMFPlomino/utils/PlominoTranslate;
-        msg python:plominotranslate('Do you really want to delete this document', view.target, domain='CMFPlomino');"
-    tal:attributes="onclick python:'if(confirm(\''+msg+' ?\')){location.href=\''+view.target.absolute_url()+'/delete?returnurl='+view.target.getParentDatabase().absolute_url()+'\'}'" />
+        msg python:plominotranslate('Do you really want to delete this document', view.target, domain='CMFPlomino');
+        token python:view.target.restrictedTraverse('@@authenticator').token()"
+    tal:attributes="onclick python:'if(confirm(\''+msg+' ?\')){location.href=\''+view.target.absolute_url()+'/delete?_authenticator='+token+'&returnurl='+view.target.getParentDatabase().absolute_url()+'\'}'" />
     </tal:block>
 </tal:block>
