@@ -12,6 +12,7 @@ from OFS.Image import manage_addImage
 from OFS.ObjectManager import ObjectManager
 import os
 from plone import api
+from Products.DCWorkflow.DCWorkflow import DCWorkflowDefinition
 from Products.PageTemplates.ZopePageTemplate import manage_addPageTemplate
 from Products.PythonScripts.PythonScript import (
     PythonScript,
@@ -148,7 +149,7 @@ class DesignManager:
             for c in v_obj.getColumns():
                 v_obj.declareColumn(c.id, c, index=index)
         # add fulltext if needed
-        if self.FulltextIndex:
+        if self.fulltextIndex:
             index.createFieldIndex('SearchableText', 'RICHTEXT')
         logger.info('Views indexing initialized')
 
@@ -329,6 +330,19 @@ class DesignManager:
         if REQUEST:
             self.writeMessageOnPage(msg, REQUEST, False)
             REQUEST.RESPONSE.redirect(self.absolute_url() + "/DatabaseDesign")
+
+    security.declareProtected(DESIGN_PERMISSION, 'refreshWorkflowState')
+
+    def refreshWorkflowState(self):
+        """ Prevent Plone security inconsistencies when refreshing design
+        """
+        workflow_tool = api.portal.get().portal_workflow
+        wfs = workflow_tool.getWorkflowsFor(self)
+        for wf in wfs:
+            if not isinstance(wf, DCWorkflowDefinition):
+                continue
+            wf.updateRoleMappingsFor(self)
+        logger.info('Plone workflow update')
 
     security.declareProtected(DESIGN_PERMISSION, 'exportDesign')
 

@@ -2,4 +2,4 @@
 def migrate(db):
     """
     """
-    pass
+    return []
