@@ -1466,7 +1466,7 @@ class PlominoForm(Container):
                 f.field_type in acceptable_types]
         for f in fields:
             col_id = f.id.replace('_', '').replace('-', '')
-            col_title = col_id
+            col_title = f.title
             col_definition = self.id + '/' + f.id
             view_obj.invokeFactory(
                 'PlominoColumn',
@@ -1476,7 +1476,7 @@ class PlominoForm(Container):
         view_obj.invokeFactory(
             'PlominoAction',
             id='add_new',
-            title="Add a new " + self.Title(),
+            title="Add a new " + self.title,
             action_type="OPENFORM",
             action_display="BUTTON",
             content=self.id)
