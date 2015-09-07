@@ -23,12 +23,9 @@ from Products.PythonScripts.PythonScript import (
 import sys
 import traceback
 import transaction
-from xml.dom.minidom import parseString
-import xmlrpclib
 from webdav.Lockable import wl_isLocked
 from zipfile import ZipFile, ZIP_DEFLATED
 from zope import component
-from zope.dottedname.resolve import resolve
 from zope.schema import getFieldsInOrder
 from ZPublisher.HTTPRequest import FileUpload
 from ZPublisher.HTTPRequest import HTTPRequest
@@ -512,7 +509,7 @@ class DesignManager:
                     self.importDesignFromZip(zip_file, replace=replace)
                 else:
                     jsonstring = fileToImport.read()
-                    self.importDesignFromXML(jsonstring, replace=replace)
+                    self.importDesignFromJSON(jsonstring, replace=replace)
 
             no_refresh_documents = REQUEST.get('no_refresh_documents', 'No')
             if no_refresh_documents == 'No':
@@ -887,7 +884,7 @@ class DesignManager:
         elements.sort(key=lambda elt: elt.getId())
         elements.sort(key=lambda elt: elt.Type())
 
-        design = {}
+        design = {'resources': {}, }
         # export database settings
         if dbsettings:
             design['dbsettings'] = self.exportElementAsJSON(
@@ -898,7 +895,8 @@ class DesignManager:
             if 'Dexterity' in element.meta_type:
                 design[element.id] = self.exportElementAsJSON(element)
             else:
-                design[element.id] = self.exportResourceAsJSON(element)
+                design['resources'][element.id] = self.exportResourceAsJSON(
+                    element)
 
         data['design'] = design
 
@@ -928,10 +926,7 @@ class DesignManager:
 
         params = {}
         for (id, attr) in attributes:
-            params[id] = {
-                'type': attr.__class__.__name__,
-                'value': getattr(obj, id),
-            }
+            params[id] = getattr(obj, id)
         data['params'] = params
 
         if not isDatabase:
@@ -948,8 +943,8 @@ class DesignManager:
                 'AuthenticatedAccessRight': obj.AuthenticatedAccessRight,
                 'UserRoles': obj.UserRoles,
                 'SpecificRights': obj.getSpecificRights(),
-                'version': obj.plomino_version,
             }
+            data['version'] = obj.plomino_version
 
         return data
 
@@ -1030,30 +1025,26 @@ class DesignManager:
             logger.info("Current design removed")
 
         for jsonstring in json_strings:
-            jsonstring = jsonstring.replace(">\n<", "><")
-            jsondoc = parseString(jsonstring.encode('utf-8'))
-            design = jsondoc.getElementsByTagName("design")[0]
-            elements = [e for e in design.childNodes
-                if e.nodeName in ('resource', 'element', 'dbsettings')]
+            design = json.loads(jsonstring.encode('utf-8'))["design"]
+            elements = design.items()
 
             if not total_elements:
                 total_elements = len(elements)
 
-            e = design.firstChild
-            while e is not None:
-                name = str(e.nodeName)
-                if name in ('resource', 'element', 'dbsettings'):
-                    if name == 'dbsettings':
-                        logger.info("Import db settings")
-                        self.importDbSettingsFromJSON(e)
-                    if name == 'element':
-                        logger.info("Import " + e.getAttribute('id'))
-                        self.importElementFromJSON(self, e)
-                    if name == 'resource':
-                        logger.info("Import resource " + e.getAttribute('id'))
-                        self.importResourceFromJSON(self.resources, e)
-                    count = count + 1
-                    total = total + 1
+            for (name, element) in design.items():
+                if name == 'dbsettings':
+                    logger.info("Import db settings")
+                    self.importDbSettingsFromJSON(element)
+                elif name == 'resources':
+                    for (res_id, res) in design['resources'].items():
+                        logger.info("Import resource" + res_id)
+                        self.importResourceFromJSON(
+                            self.resources, res_id, res)
+                else:
+                    logger.info("Import " + name)
+                    self.importElementFromJSON(self, name, element)
+                count = count + 1
+                total = total + 1
                 if count == 10:
                     self.setStatus(
                         "Importing design (%d%%)" % int(
@@ -1062,7 +1053,6 @@ class DesignManager:
                         "(%d elements committed, still running...)" % total)
                     txn.savepoint(optimistic=True)
                     count = 0
-                e = e.nextSibling
 
         logger.info("(%d elements imported)" % total)
         self.setStatus("Ready")
@@ -1098,27 +1088,22 @@ class DesignManager:
             if not json_string:
                 # E.g. if the zipfile contains entries for directories
                 continue
-            json_string = json_string.replace(">\n<", "><")
-            jsondoc = parseString(json_string)
-            design = jsondoc.getElementsByTagName("design")[0]
-            elements = [e
-                for e in design.childNodes if e.nodeName in (
-                    'resource', 'element', 'dbsettings')]
+            design = json.loads(json_string)["design"]
+            elements = design.items()
             if not total_elements:
                 total_elements = len(elements)
-            e = design.firstChild
-            while e is not None:
-                name = str(e.nodeName)
+            for (name, element) in elements:
                 if name in ('resource', 'element', 'dbsettings'):
                     if name == 'dbsettings':
                         logger.info("Import db settings")
-                        self.importDbSettingsFromJSON(e)
+                        self.importDbSettingsFromJSON(name, element)
                     if name == 'element':
-                        logger.info("Import " + e.getAttribute('id'))
-                        self.importElementFromJSON(self, e)
+                        logger.info("Import " + name)
+                        self.importElementFromJSON(self, name, element)
                     if name == 'resource':
-                        logger.info("Import resource " + e.getAttribute('id'))
-                        self.importResourceFromJSON(self.resources, e)
+                        logger.info("Import resource " + name)
+                        self.importResourceFromJSON(
+                            self.resources, name, element)
                     count = count + 1
                     total = total + 1
                 if count == 10:
@@ -1128,7 +1113,6 @@ class DesignManager:
                         "(%d elements committed, still running...)" % total)
                     txn.savepoint(optimistic=True)
                     count = 0
-                e = e.nextSibling
 
         logger.info("(%d elements imported)" % total)
         self.setStatus("Ready")
@@ -1137,136 +1121,78 @@ class DesignManager:
 
     security.declareProtected(DESIGN_PERMISSION, 'importElementFromJSON')
 
-    def importElementFromJSON(self, container, node):
+    def importElementFromJSON(self, container, id, element):
         """
         """
-        id = node.getAttribute('id')
-        element_type = node.getAttribute('type')
+        element_type = element['type']
         if id in container.objectIds():
             ob = getattr(container, id)
             if wl_isLocked(ob):
                 ob.wl_clearLocks()
             container.manage_delObjects([id])
-        container.invokeFactory(element_type, id=id)
+        params = element['params']
+        container.invokeFactory(element_type, id=id, **params)
         obj = getattr(container, id)
-        obj.title = node.getAttribute('title')
-        child = node.firstChild
-        while child is not None:
-            name = child.nodeName
-            if name == 'id':
-                pass
-            elif name == 'elements':
-                # current object is a form or a view, it contains
-                # sub-objects (fields, actions, columns, hide-when)
-                subchild = child.firstChild
-                while subchild is not None:
-                    if subchild.nodeType == subchild.ELEMENT_NODE:
-                        self.importElementFromJSON(obj, subchild)
-                    subchild = subchild.nextSibling
-            elif name == "CustomData":
-                # Only one non.text child is expected
-                customnode = [el for el
-                    in child.childNodes if el.nodeName != '#text'][0]
-                classname = customnode.getAttribute('ExportImportClass')
-                importer = resolve(classname)(obj)
-                importer.import_xml(customnode.toxml())
-            else:
-                if child.hasChildNodes():
-                    # Get cdata content if available, else get text node
-                    cdatas = [n for n in child.childNodes
-                        if n.nodeType == n.CDATA_SECTION_NODE]
-                    if len(cdatas) > 0:
-                        value = cdatas[0].data.strip().decode('utf-8')
-
-                    else:
-                        value = json.loads(child.firstChild.data)
-                    setattr(obj, name, value)
-            child = child.nextSibling
+        if 'elements' in element:
+            for (child_id, child) in element['elements'].items():
+                self.importElementFromJSON(obj, child_id, child)
 
     security.declareProtected(DESIGN_PERMISSION, 'importDbSettingsFromJSON')
 
-    def importDbSettingsFromJSON(self, node):
+    def importDbSettingsFromJSON(self, settings):
         """
         """
-        version = node.getAttribute('version')
+        version = settings['version']
         if version:
             self.plomino_version = version
-        child = node.firstChild
-        while child is not None:
-            name = child.nodeName
-            if name == 'acl':
-                anonymousaccessright = child.getAttribute(
-                    'AnomynousAccessRight')
-                self.AnomynousAccessRight = anonymousaccessright
-                self.setPlominoPermissions("Anonymous", anonymousaccessright)
-                authenticatedaccessright = child.getAttribute(
-                    'AuthenticatedAccessRight')
-                self.AuthenticatedAccessRight = authenticatedaccessright
+        if 'params' in settings:
+            for (key, value) in settings['params'].items():
+                setattr(self, key, value)
+        if 'acl' in settings:
+            acl = settings['acl']
+            if 'AnomynousAccessRight' in acl:
+                self.AnomynousAccessRight = acl['AnomynousAccessRight']
                 self.setPlominoPermissions(
-                    "Authenticated", authenticatedaccessright)
-                subchild = child.firstChild
-                while subchild is not None:
-                    if subchild.nodeType == subchild.ELEMENT_NODE:
-                        result, method = xmlrpclib.loads(subchild.toxml())
-                        object_type = subchild.getAttribute('id')
-                        if object_type == "SpecificRights":
-                            self.specific_rights = result[0]
-                        else:
-                            self.UserRoles = result[0]
-                    subchild = subchild.nextSibling
-
-            else:
-                if child.hasChildNodes():
-                    field = self.Schema().getField(name)
-                    if field:
-                        result = field.widget.process_form(
-                            self,
-                            field,
-                            {name: child.firstChild.data}
-                        )
-                        field.set(self, result[0])
-            child = child.nextSibling
+                    "Anonymous", acl['AnomynousAccessRight'])
+            if 'AuthenticatedAccessRight' in acl:
+                self.AuthenticatedAccessRight = acl['AuthenticatedAccessRight']
+                self.setPlominoPermissions(
+                    "Authenticated", acl['AuthenticatedAccessRight'])
+            if 'SpecificRights' in acl:
+                self.specific_rights = acl['SpecificRights']
+            if 'UserRoles' in acl:
+                self.UserRoles = acl['UserRoles']
 
     security.declareProtected(DESIGN_PERMISSION, 'importResourceFromJSON')
 
-    def importResourceFromJSON(self, container, node):
+    def importResourceFromJSON(self, container, id, element):
         """
         """
-        id = str(node.getAttribute('id'))
-        resource_type = node.getAttribute('type')
+        id = id.encode('utf-8')
+        resource_type = element['type']
         if id in container.objectIds():
             container.manage_delObjects([id])
 
         if resource_type == "Page Template":
             obj = manage_addPageTemplate(container, id)
-            obj.title = node.getAttribute('title')
-            obj.write(node.firstChild.data)
+            obj.title = element['title']
+            obj.write(element['data'])
         elif resource_type == "Script (Python)":
             manage_addPythonScript(container, id)
             obj = container._getOb(id)
-            obj.ZPythonScript_setTitle(node.getAttribute('title'))
-            obj.write(node.firstChild.data)
+            obj.ZPythonScript_setTitle(element['title'])
+            obj.write(element['data'])
         elif resource_type == "Image":
             id = manage_addImage(container, id,
-                    node.firstChild.data.decode('base64'),
-                    content_type=node.getAttribute('contenttype'))
-        elif resource_type in ('Folder', 'ATFolder'):
-            container.manage_addFolder(id)
-            subfolder = container[id]
-            elements = [e for e in node.childNodes
-                if e.nodeName == 'resource']
-            for subnode in elements:
-                self.importResourceFromJSON(subfolder, subnode)
+                element['data'].decode('base64'),
+                content_type=element['contenttype'])
         else:
             container.manage_addFile(id)
             obj = getattr(container, id)
             obj.meta_type = resource_type
-            obj.title = node.getAttribute('title')
-            data = ''
-            if node.hasChildNodes():
-                data = node.firstChild.data.decode('base64')
-            obj.update_data(data,
-                            content_type=node.getAttribute('contenttype'))
+            obj.title = element['title']
+            data = element['data'].decode('base64')
+            obj.update_data(data, content_type=element['contenttype'])
 
     def is_profiling(self):
         from Products.CMFPlomino import PROFILING
