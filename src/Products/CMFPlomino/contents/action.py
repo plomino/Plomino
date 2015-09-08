@@ -142,7 +142,7 @@ class PlominoAction(Item):
                         'action', self.getParentNode().id, self.id,
                         'script']),
                     target,
-                    self.Content,
+                    self.content,
                     True,
                     form_id)
                 return str(redirecturl)
