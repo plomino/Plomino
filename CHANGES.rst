@@ -1,6 +1,12 @@
 Changelog
 =========
 
+2.0a2 (2015-09-02)
+------------------
+
+- Design import/export from/to JSON
+  [ebrehault]
+
 2.0a1 (2015-09-02)
 ------------------
 
