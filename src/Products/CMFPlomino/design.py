@@ -1133,6 +1133,11 @@ class DesignManager:
         params = element['params']
         container.invokeFactory(element_type, id=id, **params)
         obj = getattr(container, id)
+        if element_type == "PlominoField":
+            # some params comes from the type-specific schema
+            # they must be re-set
+            for param in params:
+                setattr(obj, param, params[param])
         if 'elements' in element:
             for (child_id, child) in element['elements'].items():
                 self.importElementFromJSON(obj, child_id, child)
