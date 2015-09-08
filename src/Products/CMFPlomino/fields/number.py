@@ -108,7 +108,7 @@ class NumberField(BaseField):
         """
         """
         str_v = ""
-        if v not in (None, "") and self.format:
+        if v not in (None, "") and self.context.format:
             try:
                 str_v = self.format % v
             except TypeError:
