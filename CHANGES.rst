@@ -1,7 +1,7 @@
 Changelog
 =========
 
-2.0a2 (2015-09-02)
+2.0a2 (2015-09-08)
 ------------------
 
 - Design import/export from/to JSON
