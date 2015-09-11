@@ -376,6 +376,18 @@ class PlominoForm(ATFolder):
                 return 'POST'
         return value
 
+    def getFormAction(self):
+        """
+        A multi page form should post back to itself.
+        A normal form should createDocument
+        """
+        if self.getIsMulti():
+            return 'OpenForm'
+        return 'createDocument'
+
+    def getIsMulti(self):
+        return getattr(self, 'isMulti', False)
+
     def _get_resource_urls(self, field_name):
         """ Return canonicalized URLs if local.
 
