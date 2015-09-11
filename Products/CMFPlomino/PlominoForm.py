@@ -264,6 +264,17 @@ schema = Schema((
             i18n_domain='CMFPlomino',
         ),
     ),
+    BooleanField(
+        name='isMulti',
+        default=False,
+        widget=BooleanField._properties['widget'](
+            label="Multi page form",
+            description="Split the form into pages",
+            label_msgid=_('CMFPlomino_label_MultiPage', default="Multi page form"),
+            description_msgid=_('CMFPlomino_help_MultiPage', default="Split the form into pages"),
+            i18n_domain='CMFPlomino',
+        ),
+    ),
     StringField(
         name='SearchView',
         widget=SelectionWidget(
