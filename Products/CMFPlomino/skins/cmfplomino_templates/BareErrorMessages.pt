@@ -1,0 +1,7 @@
+<div id="validation_failed">
+    <h1>Validation failed</h1>
+    <ul id="error_list" tal:repeat="e options/errors">
+        <li tal:content="structure e/error"
+            tal:attributes="id string: error_${e/field}" />
+    </ul>
+</div>
