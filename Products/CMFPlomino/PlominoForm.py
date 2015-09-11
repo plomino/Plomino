@@ -1456,12 +1456,39 @@ class PlominoForm(ATFolder):
 
         return self.OpenForm(searchresults=results)
 
+    def _page_validation_errors(self, REQUEST, current_page=None):
+        # Validate and exit early if there are no errors
+        errors = self.validateInputs(REQUEST)
+        if not errors:
+            return errors
+
+        # Get the current_page if possible
+        if not current_page:
+            db = self.getParentDatabase()
+            # Create a temp doc
+            doc = getTemporaryDocument(
+                db,
+                self,
+                REQUEST
+            )
+            html_content = self.applyHideWhen(doc, silent_error=False)
+            d = pq(html_content)
+            page = int(REQUEST.get('plomino_current_page', 0))
+            current_page = d('div.plomino-accordion-content').eq(page)
+
+        # Check for errors on the current page
+        fields_on_page = [f.text for f in current_page.find('span.plominoFieldClass')]
+        page_errors = [e for e in errors if e['field'] in fields_on_page]
+        return page_errors
 
     security.declarePublic('validation_errors')
     def validation_errors(self, REQUEST):
         """ Check submitted values
         """
-        errors = self.validateInputs(REQUEST)
+        if self.getIsMulti():
+            errors = self._page_validation_errors(REQUEST)
+        else:
+            errors = self.validateInputs(REQUEST)
         if errors:
             return self.errors_json(
                     errors=json.dumps({'success': False, 'errors': errors}))
