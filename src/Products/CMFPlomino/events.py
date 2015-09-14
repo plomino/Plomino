@@ -113,3 +113,10 @@ def afterAgentModified(obj, event):
     """
     """
     obj.cleanFormulaScripts(SCRIPT_ID_DELIMITER.join(["agent", obj.id]))
+
+
+def afterHidewhenModified(obj, event):
+    """
+    """
+    obj.cleanFormulaScripts(SCRIPT_ID_DELIMITER.join(
+        ['hidewhen', obj.getParentNode().id, obj.id]))

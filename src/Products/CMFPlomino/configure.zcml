@@ -89,6 +89,11 @@
         handler=".events.afterAgentModified"
         />
 
+    <subscriber
+        for="Products.CMFPlomino.contents.hidewhen.IPlominoHidewhen zope.lifecycleevent.interfaces.IObjectModifiedEvent"
+        handler=".events.afterHidewhenModified"
+        />
+
     <!-- vocabularies -->
     <utility
         name="Products.CMFPlomino.fields.vocabularies.get_forms"

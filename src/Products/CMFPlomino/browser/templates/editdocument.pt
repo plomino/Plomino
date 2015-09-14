@@ -49,7 +49,8 @@
                     name form/id;
                     action python:view.doc.doc_url()+'/saveDocument';
                     method form_method;
-                    enctype enctype|nothing
+                    enctype enctype|nothing;
+                    data-pat-plominodynamic string:url:${form/absolute_url};;docid:${view/doc/id};
                     "
                 id="plomino_form">
                 

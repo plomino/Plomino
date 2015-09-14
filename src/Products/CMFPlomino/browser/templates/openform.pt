@@ -44,7 +44,8 @@
             tal:attributes="
                 name context/id;
                 action string:${context/absolute_url}/createDocument;
-                method python:context.getFormMethod();">
+                method python:context.getFormMethod();
+                data-pat-plominodynamic string:url:${context/absolute_url};">
             <span tal:replace="structure context/@@authenticator/authenticator"/>
 
             <tal:block_no_createpermission
