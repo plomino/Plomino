@@ -1,100 +1,98 @@
 <!DOCTYPE html>
 <html id="region-content"
-	lang="en"
-	i18n:domain="plomino.tinymce">
-<head>
-	<meta http-equiv="Content-type" content="text/html;charset=UTF-8" /> 
-	<title i18n:translate="plominofield_title">Add/edit a Plomino Field</title>
-    <!--
-	<script type="text/javascript" src="../../tiny_mce_popup.js"></script>
-	<script type="text/javascript" src="../../utils/mctabs.js"></script>
-	<script type="text/javascript" src="../../utils/form_utils.js"></script>
-	-->
-	<script type="text/javascript" src="++resource++Products.CMFPlomino/js/tinymce.plominofield.js"></script>
-    <!--
-	<link rel="stylesheet" type="text/css" tal:attributes="href string:../../plugins/plonebrowser/css/plonebrowser.css" />
-	<link rel="stylesheet" type="text/css" tal:attributes="href string:../../portal_css/columns.css" />
-	-->
-</head>
-<body id="plonebrowser" tal:define="form python:view.context;
-                  fieldid view/request/fieldid|nothing;
-                  adapted form/tinyform|nothing;
-                  fieldproperties adapted/getFieldProperties;
-                  field adapted/getField;
-                  ">
-                  
-	<div class="dialog-wrapper" id="content">
-		<!-- Form which selects an existing field -->
-		<fieldset tal:condition="field">
-			<legend i18n:translate="plominofield_selection">Select a Plomino Field</legend>
-			
-			<form id="fieldSelection" method="get">
-				<p>
-					<label i18n:translate="plominofield_id" for="plominoFieldId">Field ID YOO</label>
-					<select id="plominoFieldId" name="fieldid" onchange="this.form.submit();">
-						<option
-							tal:repeat="item python:form.getFormFields()"
-							tal:content="item/id"
-							tal:attributes="value item/id; selected python:item.id==fieldid"></option>
-					</select>
-				</p>
-			</form>
-		</fieldset>
-		
-		<fieldset tal:condition="field">
-			<legend i18n:translate="plominofield_advanced">Advanced edition</legend>
-			<p>
-				<a i18n:translate="plominofield_mainsettings" tal:attributes="href python:field.absolute_url() + '/edit'" target="_blank">Main parameters</a><br />
-				<a tal:attributes="href python:field.absolute_url() + '/' + field.FieldType.lower() + 'settings'"
-					target="_blank" id="fieldSettingsLink" i18n:translate="plominofield_specificsettings">Specific settings</a>
-			</p>
-		</fieldset>
-		
-		<!-- Form which edits the selected field -->
-		<form method="post"
-				tal:attributes="action python:field and field.absolute_url() + '/tinyfield/setFieldProperties' or form.absolute_url() + '/tinyform/addField'">
-				
-			<fieldset tal:condition="python:not field">
-				<legend i18n:translate="plominofield_createfield">Create a Plomino Field</legend>
-				
-				<label for="plominoFieldId" i18n:translate="plominofield_id">Field ID</label>
-				<input type="text" name="fieldid" id="plominoFieldId" tal:attributes="value fieldid" />
-			</fieldset>
-			
-			<fieldset>
-				<legend i18n:translate="plominofield_edit">Edit Field Properties</legend>
-				
-				<p>
-					<label for="fieldTypesList" i18n:translate="plominofield_type">Field type</label>
-					<select id="fieldTypesList" name="fieldtype" onchange="updateFieldSettingsLink(this.options[this.selectedIndex].value);">
-						<option tal:repeat="type adapted/getFieldTypes"
-								tal:content="python:type[1]"
-								tal:attributes="value python:type[0]; selected python:fieldproperties['fieldType']==type[0]"></option>
-					</select>
-				</p>
-				
-				<p>
-					<label for="fieldModesList" i18n:translate="plominofield_mode">Field mode</label>
-					<select id="fieldModesList" name="fieldmode">
-						<option tal:repeat="mode adapted/getFieldModes"
-								tal:content="python:mode[1]"
-								tal:attributes="value python:mode[0]; selected python:fieldproperties['fieldMode']==mode[0]"></option>
-					</select>
-				</p>
-				
-				<p>
-					<label for="fieldFormula" i18n:translate="plominofield_formula">Formula</label><br />
-					<textarea id="fieldFormula" name="fieldformula" tal:content="python:fieldproperties['formula']"></textarea>
-				</p>
-			</fieldset>
-			<div i18n:domain="tinymce" class="mceActionPanel formControls">
-					<span class="actionButtons">
-						<input type="submit" id="insert" class="context" name="insert" value="Insert" i18n:attributes="value;" />
-						<input type="button" id="cancel" class="standalone" name="cancel" value="Cancel" i18n:attributes="value;" onclick="top.tinymce.activeEditor.windowManager.close();" />
-					</span>
-			</div>
-		</form>
-	</div>
-	
-</body>
+    lang="en"
+    i18n:domain="plomino.tinymce">
+    <head>
+        <meta http-equiv="Content-type" content="text/html;charset=UTF-8" /> 
+        <title i18n:translate="plominofield_title">Add/edit a Plomino Field</title>
+        <script type="text/javascript" src="++resource++Products.CMFPlomino/js/tinymce.plominofield.js"></script>
+        <link tal:replace="structure provider:plone.htmlhead.links" />
+    </head>
+    <body id="plonebrowser" tal:define="form python:view.context;
+        fieldid view/request/fieldid|nothing;
+        adapted form/tinyform|nothing;
+        fieldproperties adapted/getFieldProperties;
+        field adapted/getField;
+        ">
+        <div class="plone-modal-dialog">
+            <div class="plone-modal-content">
+                <div class="plone-modal-header">
+                    <a class="plone-modal-close">×</a>
+                    <h2 class="plone-modal-title">Add/edit a Plomino Field</h2>
+                </div>
+                <div class="plone-modal-body">
+                    <fieldset tal:condition="field">
+                        <legend i18n:translate="plominofield_selection">Select a Plomino Field</legend>
+                        
+                        <form id="fieldSelection" method="get">
+                            <p>
+                                <label i18n:translate="plominofield_id" for="plominoFieldId">Field ID YOO</label>
+                                <select id="plominoFieldId" name="fieldid" onchange="this.form.submit();">
+                                    <option
+                                        tal:repeat="item python:form.getFormFields()"
+                                        tal:content="item/id"
+                                        tal:attributes="value item/id; selected python:item.id==fieldid"></option>
+                                </select>
+                            </p>
+                        </form>
+                    </fieldset>
+                        
+                    <fieldset tal:condition="field">
+                        <legend i18n:translate="plominofield_advanced">Advanced edition</legend>
+                        <p>
+                            <a i18n:translate="plominofield_mainsettings" tal:attributes="href python:field.absolute_url() + '/edit'" target="_blank">Main parameters</a><br />
+                            <a tal:attributes="href python:field.absolute_url() + '/' + field.FieldType.lower() + 'settings'"
+                                target="_blank" id="fieldSettingsLink" i18n:translate="plominofield_specificsettings">Specific settings</a>
+                        </p>
+                    </fieldset>
+                            
+                    <!-- Form which edits the selected field -->
+                    <form method="post"
+                        tal:attributes="action python:field and field.absolute_url() + '/tinyfield/setFieldProperties' or form.absolute_url() + '/tinyform/addField'">
+                        
+                        <fieldset tal:condition="python:not field">
+                            <legend i18n:translate="plominofield_createfield">Create a Plomino Field</legend>
+                            
+                            <label for="plominoFieldId" i18n:translate="plominofield_id">Field ID</label>
+                            <input type="text" name="fieldid" id="plominoFieldId" tal:attributes="value fieldid" />
+                        </fieldset>
+                        
+                        <fieldset>
+                            <legend i18n:translate="plominofield_edit">Edit Field Properties</legend>
+                            
+                            <p>
+                                <label for="fieldTypesList" i18n:translate="plominofield_type">Field type</label>
+                                <select id="fieldTypesList" name="fieldtype" onchange="updateFieldSettingsLink(this.options[this.selectedIndex].value);">
+                                    <option tal:repeat="type adapted/getFieldTypes"
+                                        tal:content="python:type[1]"
+                                        tal:attributes="value python:type[0]; selected python:fieldproperties['fieldType']==type[0]"></option>
+                                </select>
+                            </p>
+                                
+                            <p>
+                                <label for="fieldModesList" i18n:translate="plominofield_mode">Field mode</label>
+                                <select id="fieldModesList" name="fieldmode">
+                                    <option tal:repeat="mode adapted/getFieldModes"
+                                        tal:content="python:mode[1]"
+                                        tal:attributes="value python:mode[0]; selected python:fieldproperties['fieldMode']==mode[0]"></option>
+                                </select>
+                            </p>
+                                    
+                            <p>
+                                <label for="fieldFormula" i18n:translate="plominofield_formula">Formula</label><br />
+                                <textarea id="fieldFormula" name="fieldformula" tal:content="python:fieldproperties['formula']"></textarea>
+                            </p>
+                        </fieldset>
+                        <div class="pattern-modal-buttons">
+                            <input type="submit" id="insert" class="context" name="insert" value="Insert" i18n:attributes="value;" />
+                            <input type="button" id="cancel" class="standalone" name="cancel" value="Cancel" i18n:attributes="value;" onclick="top.tinymce.activeEditor.windowManager.close();" />
+                        </div>
+                    </form>
+                    <div class="plone-modal-footer">
+                    </div>
+                </div>
+            </div>
+        </div>
+                    
+    </body>
 </html>

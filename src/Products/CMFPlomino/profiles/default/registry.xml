@@ -22,8 +22,9 @@
       <element>Superscript|superscript|superscript</element>
       <element>Subscript|subscript|subscript</element>
       <element>Code|code|code</element>
-      <element>Plomino field|plominofield|plominofield</element>
       <element>Plomino action|plominoaction|plominoaction</element>
+      <element>Plomino field|plominofield|plominofield</element>
+      <element>Plomino hide-when|plominohidewhen|plominohidewhen</element>
     </value>
   </record>
   <record name="plone.formats" interface="Products.CMFPlone.interfaces.controlpanel.ITinyMCESchema" field="formats">
@@ -57,6 +58,10 @@
     "plominoaction": {
         "inline": "span", 
         "classes": "plominoActionClass"
+    },
+    "plominohidewhen": {
+        "inline": "span", 
+        "classes": "plominoHidewhenClass"
     }
 }</value>
   </record>
