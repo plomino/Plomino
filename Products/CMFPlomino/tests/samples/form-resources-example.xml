@@ -101,6 +101,10 @@
 <value><string>1940</string></value>
 </member>
 <member>
+<name>endingyear</name>
+<value><string>2019</string></value>
+</member>
+<member>
 <name>format</name>
 <value><string>%d-%m-%Y</string></value>
 </member>

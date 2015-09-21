@@ -3,6 +3,7 @@
                        defaultformat python:db.getDateTimeFormat();
                        fieldformat python:options['field'].getSettings('format');
                        starting_year python:options['field'].getSettings('startingyear');
+                       ending_year python:options['field'].getSettings('endingyear');
                        format python:test(not(fieldformat), defaultformat, fieldformat);
                        hm python:('%H' in format or '%I' in format);
                        ymd python:('%Y' in format or '%y' in format);
@@ -16,6 +17,7 @@
                 class python: 'date' if not mandatory else 'date mandatory';
                 data-datepicker-dateformat python: format.replace('%Y', 'yy').replace('%m', 'mm').replace('%d', 'dd');
                 data-datepicker-mindate python: '' if (not starting_year) or (not starting_year.isdigit()) else DateTime(int(starting_year), 1, 1).strftime(format);
+                data-datepicker-maxdate python: '' if (not ending_year) or (not ending_year.isdigit()) else DateTime(int(ending_year), 12, 31).strftime(format);
                 value inputvalue">
     </tal:widget>
     <tal:widget tal:condition="python:test(widget=='SERVER')">
@@ -24,7 +26,6 @@
                 <tal:define tal:define="id options/fieldname;
                                 show_hm hm|nothing;
                                 show_ymd ymd|nothing;
-                                ending_year nothing;
                                 future_years nothing;
                                 inputname options/fieldname;
                                 formname string:edit_form;
@@ -43,7 +44,7 @@
                                 show_hm hm|nothing;
                                 show_ymd ymd|nothing;
                                 starting_year python:options['field'].getSettings('startingyear');
-                                ending_year nothing;
+                                ending_year python:options['field'].getSettings('endingyear');
                                 future_years nothing;
                                 inputname options/fieldname;
                                 formname string:edit_form;
