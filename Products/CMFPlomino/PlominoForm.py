@@ -647,17 +647,20 @@ class PlominoForm(ATFolder):
             parent_form_id=False, request=None):
         """ Display the document using the form's layout
         """
-        # remove the hidden content
+        # Create a temp doc to work with
         if doc is None:
             db = self.getParentDatabase()
-            hidewhen_target = getTemporaryDocument(
+            temp_doc = getTemporaryDocument(
                 db,
                 self,
                 self.REQUEST
             )
         else:
-            hidewhen_target = doc
-        html_content = self.applyHideWhen(hidewhen_target, silent_error=False)
+            # If there is already a doc, use this
+            temp_doc = doc
+
+        # remove the hidden content
+        html_content = self.applyHideWhen(temp_doc, silent_error=False)
         if request:
             parent_form_ids = request.get('parent_form_ids', [])
             if parent_form_id:
@@ -711,7 +714,7 @@ class PlominoForm(ATFolder):
                         fieldblock,
                         field.getFieldRender(
                             self,
-                            doc,
+                            temp_doc,
                             editmode,
                             creation,
                             request=request)
