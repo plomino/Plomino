@@ -11,6 +11,9 @@ $(document).ready(function() {
         if ( $(this).data('datepickerMindate') ) {
             options['minDate'] = $(this).data('datepickerMindate');
         };
+        if ( $(this).data('datepickerMaxdate') ) {
+            options['maxDate'] = $(this).data('datepickerMaxdate');
+        };
         $(this).datepicker( "option", options );
         $(this).datepicker( "setDate", value );
         $('#btn_' + this.id).click(function() {
