@@ -1,3 +1,6 @@
-<tal:block tal:define="v options/fieldvalue;
-                       formatted_value python:options['field'].getSettings().format_value(v)"
-           tal:content="formatted_value">number</tal:block>
+<span tal:define="v options/fieldvalue;
+                  formatted_value python:options['field'].getSettings().format_value(v);
+                  display python:options['field'].getFieldMode() == 'DISPLAYCOMPUTED';
+                  field_id python:options['field'].id"
+           tal:content="formatted_value"
+           tal:attributes="class python:display and 'displayfield display-%s' % field_id">number</span>
