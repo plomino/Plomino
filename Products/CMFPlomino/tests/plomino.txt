@@ -232,9 +232,9 @@ Only items which match a form field will be considered::
 
     >>> doc1.setItem('field1', 'where is my mind?')
     >>> db.frm1.displayDocument(doc1, editmode=False)
-    u'2 <p>please enter a value for field1:<span class=\'label\' title=\'Label for field1\'>Title for field1</span><span class="TEXTFieldRead-TEXT">\n    \n    \n        where is my mind?\n    \n</span>\n</p><p>Comment:<span class=\'label\' title=\'Label for field2\'>Title for field2</span><span class="TEXTFieldRead-TEXT">\n    \n    \n        My favorite song is where is my mind?\n    \n</span>\n</p><p><span class="TEXTFieldRead-TEXT">\n    \n    \n        WHERE IS MY MIND?\n    \n</span>\n</p><p><span class="TEXTFieldRead-TEXT">\n    \n    \n        side-effect\n    \n</span>\n</p>'
+    u'2 <p>please enter a value for field1:<span class=\'label\' title=\'Label for field1\'>Title for field1</span>\n    \n    \n        <span class="TEXTFieldRead-TEXT">where is my mind?</span>\n    \n\n</p><p>Comment:<span class=\'label\' title=\'Label for field2\'>Title for field2</span>\n    \n    \n        <span class="TEXTFieldRead-TEXT">My favorite song is where is my mind?</span>\n    \n\n</p><p>\n    \n    \n        <span class="TEXTFieldRead-TEXT">WHERE IS MY MIND?</span>\n    \n\n</p><p>\n    \n    \n        <span class="TEXTFieldRead-TEXT">side-effect</span>\n    \n\n</p>'
     >>> db.frm1.displayDocument(doc1, editmode=True)
-    u'<input type=\'hidden\' name=\'Form\' value=\'frm1\' />2 <p>please enter a value for field1:<label for=\'field1\' class=\'required\'>Title for field1</label><span>\n    \n    \n        <input type="text" id="field1" value="where is my mind?" name="field1" />\n    \n    \n</span>\n</p><p>Comment:<label for=\'field2\'>Title for field2</label><span class="TEXTFieldRead-TEXT">\n    \n    \n        My favorite song is where is my mind?\n    \n</span>\n</p><p><span class="TEXTFieldRead-TEXT">\n    \n    \n        WHERE IS MY MIND?\n    \n</span>\n</p><p><span>\n    \n    \n        <input type="text" id="field4" value="side-effect" name="field4" />\n    \n    \n</span>\n</p>'
+    u'<input type=\'hidden\' name=\'Form\' value=\'frm1\' />2 <p>please enter a value for field1:<label for=\'field1\' class=\'required\'>Title for field1</label><span>\n    \n    \n        <input type="text" id="field1" value="where is my mind?" name="field1" />\n    \n    \n</span>\n</p><p>Comment:<label for=\'field2\'>Title for field2</label>\n    \n    \n        <span class="TEXTFieldRead-TEXT">My favorite song is where is my mind?</span>\n    \n\n</p><p>\n    \n    \n        <span class="TEXTFieldRead-TEXT">WHERE IS MY MIND?</span>\n    \n\n</p><p><span>\n    \n    \n        <input type="text" id="field4" value="side-effect" name="field4" />\n    \n    \n</span>\n</p>'
 
 ``Form`` is a reserved item which allows to indicate the document default
 form::
@@ -593,7 +593,7 @@ A field can be computed::
     >>> doc4.save()
     >>> db.cleanRequestCache()
     >>> db.frm2.displayDocument(doc4)
-    u'11 <p><span class="TEXTFieldRead-TEXT">\n    \n    \n        Welcome test_user_1_\n    \n</span>\n</p>'
+    u'11 <p>\n    \n    \n        <span class="TEXTFieldRead-TEXT">Welcome test_user_1_</span>\n    \n\n</p>'
 
 Events
 -------
