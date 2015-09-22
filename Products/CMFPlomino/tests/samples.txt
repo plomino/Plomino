@@ -73,7 +73,9 @@ Scenario::
     True
     >>> browser.getLink('Birthday').click()
     >>> browser.getControl(name='personName').value = 'Eric'
-    >>> browser.getControl(name='birthDate').value = '1974-10-20 00:00'
+    >>> browser.getControl(name='birthDate.year:record').value = '1974'
+    >>> browser.getControl(name='birthDate.month:record').value = '10'
+    >>> browser.getControl(name='birthDate.day:record').value = '20'
     >>> browser.getControl(name='personCategory').value = ['Friend']
     >>> browser.getControl(name='plomino_save').click()
     >>> '20-10-1974' in browser.contents
