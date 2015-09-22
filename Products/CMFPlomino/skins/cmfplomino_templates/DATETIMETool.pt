@@ -18,7 +18,7 @@
          hours values/hours;
          minutes values/minutes;
          ampm values/ampm;
-         yearStart python:years[0]['value'];
+         yearStart python:years[1]['value'];
          yearEnd python:years[-1]['value'];"
          class="plone_jscalendar">
 
