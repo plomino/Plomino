@@ -83,7 +83,7 @@ class DatetimeField(BaseField):
             # it is instance type when no js is detected
             # submittedValue = ampm: , day: 09, hour: 00, minute: 00, month: 03, year: 1993
             try:
-                # check if date only:
+                submitted_string = ''
                 if not('year' in submittedValue and
                    'month' in submittedValue and
                    'day' in submittedValue and
@@ -108,11 +108,17 @@ class DatetimeField(BaseField):
                     errors.append(
                         "%s must be a AM/PM format." % (
                             fieldname))
+                if submittedValue.ampm.upper() == 'AM' or submittedValue.ampm.upper() == 'PM':
+                    submitted_string = "{v.year}-{v.month}-{v.day} {v.hour}:{v.minute} {v.ampm}".format(v=submittedValue)
+                    date_input = StringToDate(submitted_string, '%Y-%m-%d %I:%M %p')
+                else:
+                    submitted_string = "{v.year}-{v.month}-{v.day} {v.hour}:{v.minute}".format(v=submittedValue)
+                    date_input = StringToDate(submitted_string, '%Y-%m-%d %H:%M')
             except:
                 errors.append(
-                        "%s must be a date/time (submitted value was: %s)" % (
+                        "%s must be a valid date/time (submitted value was: %s)" % (
                             fieldname,
-                            submittedValue))
+                            submitted_string))
 
         return errors
 
