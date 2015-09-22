@@ -108,6 +108,11 @@ class DatetimeField(BaseField):
                     errors.append(
                         "%s must be a AM/PM format." % (
                             fieldname))
+                # should not raise any error if date is empty or half filled
+                if submittedValue.year == '0000' or \
+                   submittedValue.month == '00' or \
+                   submittedValue.day == '00':
+                    return errors
                 if submittedValue.ampm.upper() == 'AM' or submittedValue.ampm.upper() == 'PM':
                     submitted_string = "{v.year}-{v.month}-{v.day} {v.hour}:{v.minute} {v.ampm}".format(v=submittedValue)
                     date_input = StringToDate(submitted_string, '%Y-%m-%d %I:%M %p')
@@ -148,6 +153,11 @@ class DatetimeField(BaseField):
                 return StringToDate(submittedValue, fmt)
         # it is instance type when no js is detected
         # submittedValue = ampm: , day: 09, hour: 00, minute: 00, month: 03, year: 1993
+        if submittedValue.year == '0000' or \
+           submittedValue.month == '00' or \
+           submittedValue.day == '00':
+            return None
+
         if submittedValue.ampm.upper() == 'AM' or submittedValue.ampm.upper() == 'PM':
             submitted_string = "{v.year}-{v.month}-{v.day} {v.hour}:{v.minute} {v.ampm}".format(v=submittedValue)
             date_input = StringToDate(submitted_string, '%Y-%m-%d %I:%M %p')
