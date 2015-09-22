@@ -1,6 +1,9 @@
 <tal:field define="widget python:options['field'].getSettings('widget');
                    size python:options['field'].getSettings('size');
-                   klass string:TEXTFieldRead-${widget}">
+                   display python:options['field'].getFieldMode() == 'DISPLAYCOMPUTED';
+                   field_id python:options['field'].id;
+                   default_klass string:TEXTFieldRead-${widget};
+                   klass python:display and '%s displayfield display-%s' % (default_klass, field_id) or default_klass">
     <tal:widget condition="python:test(widget=='HIDDEN')">
         <span tal:attributes="class klass">
             <input type="hidden" tal:attributes="id options/fieldname; name options/fieldname; value options/fieldvalue" />
