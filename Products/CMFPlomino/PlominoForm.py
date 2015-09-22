@@ -432,7 +432,7 @@ class PlominoForm(ATFolder):
             tmp.setItem(
                     parent_field + "_itemnames",
                     [f.getId() for f in self.getFormFields(request=REQUEST)
-                        if not f.getFieldMode() == 'DISPLAY']
+                        if not f.getFieldMode() in ['DISPLAY', 'DISPLAYCOMPUTED']]
                     )
             return self.ChildForm(temp_doc=tmp)
 

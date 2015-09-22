@@ -281,7 +281,7 @@ class DatagridField(BaseField):
                 #DBG fields_to_render = [f.id for f in field_objs if f.getFieldType() not in ["DATETIME", "NUMBER", "TEXT", "RICHTEXT"]]
                 #DBG fields_to_render = [f.id for f in field_objs if f.getFieldType() not in ["DOCLINK", ]]
                 fields_to_render = [f.id for f in field_objs 
-                        if f.getFieldMode() in ["DISPLAY", ] or 
+                        if f.getFieldMode() in ["DISPLAY", "DISPLAYCOMPUTED" ] or
                         f.getFieldType() not in ["TEXT", "RICHTEXT"]]
 
                 if fields_to_render:

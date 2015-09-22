@@ -57,6 +57,7 @@ FIELD_MODES = [
         ["COMPUTED", "Computed"],
         ["CREATION", "Computed on creation"],
         ["DISPLAY", "Computed for display"],
+        ["DISPLAYCOMPUTED", "Computed dynamically for display"],
         ["COMPUTEDONSAVE", "Computed on save"]
         ]
 
