@@ -60,49 +60,97 @@ class DatetimeField(BaseField):
         """
         """
         errors = []
-        submittedValue = submittedValue.strip()
-        try:
-            # check if date only:
-            if len(submittedValue) == 10:
-                v = StringToDate(submittedValue, '%Y-%m-%d')
-            else:
-                # calendar widget default format is '%Y-%m-%d %H:%M' and
-                # might use the AM/PM format
-                if submittedValue[-2:] in ['AM', 'PM']:
-                    v = StringToDate(submittedValue, '%Y-%m-%d %I:%M %p')
+        fieldname = self.context.id
+        if isinstance(submittedValue, basestring):
+            submittedValue = submittedValue.strip()
+            try:
+                # check if date only:
+                if len(submittedValue) == 10:
+                    v = StringToDate(submittedValue, '%Y-%m-%d')
                 else:
-                    v = StringToDate(submittedValue, '%Y-%m-%d %H:%M')
-        except:
-            fieldname = self.context.id
-            errors.append(
-                    "%s must be a date/time (submitted value was: %s)" % (
-                        fieldname,
-                        submittedValue))
+                    # calendar widget default format is '%Y-%m-%d %H:%M' and
+                    # might use the AM/PM format
+                    if submittedValue[-2:] in ['AM', 'PM']:
+                        v = StringToDate(submittedValue, '%Y-%m-%d %I:%M %p')
+                    else:
+                        v = StringToDate(submittedValue, '%Y-%m-%d %H:%M')
+            except:
+                errors.append(
+                        "%s must be a date/time (submitted value was: %s)" % (
+                            fieldname,
+                            submittedValue))
+        else:
+            # it is instance type when no js is detected
+            # submittedValue = ampm: , day: 09, hour: 00, minute: 00, month: 03, year: 1993
+            try:
+                # check if date only:
+                if not('year' in submittedValue and
+                   'month' in submittedValue and
+                   'day' in submittedValue and
+                   'hour' in submittedValue and
+                   'minute' in submittedValue and
+                   'ampm' in submittedValue):
+                    errors.append(
+                        "%s must be a date/time format" % (
+                            fieldname))
+                if not(submittedValue.year.isdigit() and
+                   submittedValue.month.isdigit() and
+                   submittedValue.day.isdigit() and
+                   submittedValue.hour.isdigit() and
+                   submittedValue.minute.isdigit()):
+                    errors.append(
+                        "%s must be a digit format" % (
+                            fieldname))
+
+                if not(submittedValue.ampm == '' or
+                   submittedValue.ampm.upper() == 'AM' or
+                   submittedValue.ampm.upper() == 'PM'):
+                    errors.append(
+                        "%s must be a AM/PM format." % (
+                            fieldname))
+            except:
+                errors.append(
+                        "%s must be a date/time (submitted value was: %s)" % (
+                            fieldname,
+                            submittedValue))
+
         return errors
 
     def processInput(self, submittedValue):
         """
         """
-        submittedValue = submittedValue.strip()
-        try:
-            # check if date only:
-            if len(submittedValue) == 10:
-                d = StringToDate(submittedValue, '%Y-%m-%d')
-            else:
-                # calendar widget default format is '%Y-%m-%d %H:%M' and
-                # might use the AM/PM format
-                if submittedValue[-2:] in ['AM', 'PM']:
-                    d = StringToDate(submittedValue, '%Y-%m-%d %I:%M %p')
+        if isinstance(submittedValue, basestring):
+            submittedValue = submittedValue.strip()
+            try:
+                # check if date only:
+                if len(submittedValue) == 10:
+                    d = StringToDate(submittedValue, '%Y-%m-%d')
                 else:
-                    d = StringToDate(submittedValue, '%Y-%m-%d %H:%M')
-            return d
-        except:
-            # with datagrid, we might get dates formatted differently than
-            # using calendar widget default format
-            fmt = self.format
-            if not fmt:
-                fmt = self.context.getParentDatabase().getDateTimeFormat()
-            return StringToDate(submittedValue, fmt)
+                    # calendar widget default format is '%Y-%m-%d %H:%M' and
+                    # might use the AM/PM format
+                    if submittedValue[-2:] in ['AM', 'PM']:
+                        d = StringToDate(submittedValue, '%Y-%m-%d %I:%M %p')
+                    else:
+                        d = StringToDate(submittedValue, '%Y-%m-%d %H:%M')
+                return d
+            except:
+                # with datagrid, we might get dates formatted differently than
+                # using calendar widget default format
+                fmt = self.format
+                if not fmt:
+                    fmt = self.context.getParentDatabase().getDateTimeFormat()
+                return StringToDate(submittedValue, fmt)
+        # it is instance type when no js is detected
+        # submittedValue = ampm: , day: 09, hour: 00, minute: 00, month: 03, year: 1993
+        if submittedValue.ampm.upper() == 'AM' or submittedValue.ampm.upper() == 'PM':
+            submitted_string = "{v.year}-{v.month}-{v.day} {v.hour}:{v.minute} {v.ampm}".format(v=submittedValue)
+            date_input = StringToDate(submitted_string, '%Y-%m-%d %I:%M %p')
+        else:
+            submitted_string = "{v.year}-{v.month}-{v.day} {v.hour}:{v.minute}".format(v=submittedValue)
+            date_input = StringToDate(submitted_string, '%Y-%m-%d %H:%M')
+
+        return date_input
+
 
     def getFieldValue(self, form, doc=None, editmode_obsolete=False,
             creation=False, request=None):
