@@ -606,7 +606,8 @@ A field can be computed dynamically::
     ...         id='dynamic_display',
     ...         Title='Dynamic display',
     ...         FieldType="TEXT",
-    ...         FieldMode="DISPLAYCOMPUTED")
+    ...         FieldMode="DISPLAY",
+    ...         isDynamicField=True)
     >>> db.frm2.dynamic.at_post_create_script()
     >>> db.frm2.dynamic_display.at_post_create_script()
     >>> db.frm2.dynamic_display.setFormula(
@@ -617,7 +618,7 @@ A field can be computed dynamically::
     >>> doc4.save()
     >>> db.cleanRequestCache()
     >>> db.frm2.displayDocument(doc4)
-    u'12 <p>\n    \n    \n        <span class="TEXTFieldRead-TEXT displayfield display-dynamic_display">this is dynamic</span>\n    \n\n</p>'
+    u'12 <p>\n    \n    \n        <span class="TEXTFieldRead-TEXT dynamicfield dynamic-dynamic_display">this is dynamic</span>\n    \n\n</p>'
 
 
 Events
