@@ -25,6 +25,7 @@ from zope.schema.vocabulary import SimpleVocabulary
 from base import IBaseField, BaseField, BaseForm
 from dictionaryproperty import DictionaryProperty
 from Products.CMFPlomino.PlominoUtils import StringToDate
+from Products.CMFPlomino.PlominoUtils import PlominoTranslate
 
 
 class IDatetimeField(IBaseField):
@@ -156,7 +157,12 @@ class DatetimeField(BaseField):
         if submittedValue.year == '0000' or \
            submittedValue.month == '00' or \
            submittedValue.day == '00':
-            return None
+            if self.context.getMandatory():
+                errors.append("%s %s" % (
+                    self.context.Title(),
+                    PlominoTranslate("is mandatory", self)))
+            else:
+                return None
 
         if submittedValue.ampm.upper() == 'AM' or submittedValue.ampm.upper() == 'PM':
             submitted_string = "{v.year}-{v.month}-{v.day} {v.hour}:{v.minute} {v.ampm}".format(v=submittedValue)
