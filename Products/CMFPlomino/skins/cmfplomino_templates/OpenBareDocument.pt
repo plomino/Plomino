@@ -16,8 +16,8 @@
             var onsuccess = function(data, textStatus, xhr) {
                 for (var hw in data.hidewhen)
                     $('.hidewhen-' + hw).css('display', data.hidewhen[hw]?'none':'block');
-                for (var df in data.displayfields)
-                    $('.display-' + df).text(data.displayfields[df]);
+                for (var df in data.dynamicfields)
+                    $('.dynamic-' + df).text(data.dynamicfields[df]);
               }
             $.post('computedynamiccontent', $('#plomino_form').serialize(), onsuccess, 'json');
         }

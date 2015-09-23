@@ -432,7 +432,7 @@ class PlominoForm(ATFolder):
             tmp.setItem(
                     parent_field + "_itemnames",
                     [f.getId() for f in self.getFormFields(request=REQUEST)
-                        if not f.getFieldMode() in ['DISPLAY', 'DISPLAYCOMPUTED']]
+                        if not f.getFieldMode() == 'DISPLAY']
                     )
             return self.ChildForm(temp_doc=tmp)
 
@@ -894,16 +894,16 @@ class PlominoForm(ATFolder):
         """Check for dynamic content on the form"""
         if self.hasDynamicHidewhen():
             return True
-        if self.hasDisplayFields():
+        if self.hasDynamicFields():
             return True
         return False
 
-    security.declareProtected(READ_PERMISSION, 'hasDisplayFields')
-    def hasDisplayFields(self):
+    security.declareProtected(READ_PERMISSION, 'hasDynamicFields')
+    def hasDynamicFields(self):
         """ Search for computed display fields """
         fields = self.getFormFields()
         for field in fields:
-            if field.getFieldMode() == 'DISPLAYCOMPUTED':
+            if getattr(field, 'isDynamicField', False):
                 return True
         return False
 
@@ -930,7 +930,7 @@ class PlominoForm(ATFolder):
     def getDynamicContentAsJSON(self, REQUEST, parent_form=None, doc=None, validation_mode=False):
         result = {
             'hidewhen': {},
-            'displayfields': {},
+            'dynamicfields': {},
         }
         if self.hasDynamicHidewhen():
             result['hidewhen'] = self.getHidewhen(
@@ -939,17 +939,20 @@ class PlominoForm(ATFolder):
                 doc=doc,
                 validation_mode=validation_mode,
             )
-        if self.hasDisplayFields():
-            result['displayfields'] = self.getDisplayFields(
+        if self.hasDynamicFields():
+            result['dynamicfields'] = self.getDynamicFields(
                 REQUEST,
                 parent_form=parent_form,
                 doc=doc,
             )
         return json.dumps(result)
 
-    security.declareProtected(READ_PERMISSION,'getDisplayFields')
-    def getDisplayFields(self,REQUEST,parent_form=None,doc=None):
-        """Return a python object to to dynamically update calculated fields"""
+    security.declareProtected(READ_PERMISSION,'getDynamicFields')
+    def getDynamicFields(self,REQUEST,parent_form=None,doc=None):
+        """
+        Return a python object to dynamically update dynamic fields
+        Currently this only works for dynamic, computed fields
+        """
         if parent_form is None:
             parent_form = self
         if doc is None:
@@ -962,11 +965,10 @@ class PlominoForm(ATFolder):
             )
         result = {}
         fields = self.getFormFields()
-        display = [f for f in fields if f.getFieldMode() == 'DISPLAYCOMPUTED']
-        for field in display:
+        dynamic = [f for f in fields if getattr(f, 'isDynamicField', False)]
+        for field in dynamic:
+            # For now, only handle dynamic computed fields
             value = self.computeFieldValue(field.id, doc)
-            #adapt = field.getSettings()
-            #value = adapt.getFieldValue(self, doc, False, False, REQUEST)
             result[field.id] = value
         return result
 

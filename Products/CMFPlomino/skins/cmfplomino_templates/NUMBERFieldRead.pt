@@ -1,6 +1,6 @@
 <span tal:define="v options/fieldvalue;
                   formatted_value python:options['field'].getSettings().format_value(v);
-                  display python:options['field'].getFieldMode() == 'DISPLAYCOMPUTED';
+                  dynamic python:getattr(options['field'], 'isDynamicField', False);
                   field_id python:options['field'].id"
            tal:content="formatted_value"
-           tal:attributes="class python:display and 'displayfield display-%s' % field_id">number</span>
+           tal:attributes="class python:dynamic and 'dynamicfield dynamic-%s' % field_id">number</span>

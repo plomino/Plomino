@@ -133,8 +133,8 @@ class BaseField(object):
                 #DBG _logger.info('BaseField.getFieldValue> 4 blank') 
                 fieldValue = ""
 
-        elif mode in ["DISPLAY", "DISPLAYCOMPUTED", "COMPUTED"]:
-            if mode in ["DISPLAY", "DISPLAYCOMPUTED"] and not self.context.Formula() and doc:
+        elif mode in ["DISPLAY", "COMPUTED"]:
+            if mode == "DISPLAY" and not self.context.Formula() and doc:
                 fieldValue = doc.getItem(fieldName)
             else:
                 fieldValue = form.computeFieldValue(fieldName, target)

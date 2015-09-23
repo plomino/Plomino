@@ -39,8 +39,8 @@ function refreshDynamicContent() {
     var onsuccess = function(data, textStatus, xhr) {
         for (var hw in data.hidewhen)
             jQuery('.hidewhen-' + hw).css('display', data.hidewhen[hw]?'none':'block');
-        for (var df in data.displayfields)
-            jQuery('.display-' + df).text(data.displayfields[df]);
+        for (var df in data.dynamicfields)
+            jQuery('.dynamic-' + df).text(data.dynamicfields[df]);
     }
     jQuery.ajax({
         type: '${form_method}',
