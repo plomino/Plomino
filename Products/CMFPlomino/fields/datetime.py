@@ -113,7 +113,12 @@ class DatetimeField(BaseField):
                 if submittedValue.year == '0000' or \
                    submittedValue.month == '00' or \
                    submittedValue.day == '00':
+                    if self.context.getMandatory():
+                       errors.append("%s %s" % (
+                           self.context.Title(),
+                           PlominoTranslate("is mandatory", self.context)))
                     return errors
+
                 if submittedValue.ampm.upper() == 'AM' or submittedValue.ampm.upper() == 'PM':
                     submitted_string = "{v.year}-{v.month}-{v.day} {v.hour}:{v.minute} {v.ampm}".format(v=submittedValue)
                     date_input = StringToDate(submitted_string, '%Y-%m-%d %I:%M %p')
@@ -157,12 +162,7 @@ class DatetimeField(BaseField):
         if submittedValue.year == '0000' or \
            submittedValue.month == '00' or \
            submittedValue.day == '00':
-            if self.context.getMandatory():
-                errors.append("%s %s" % (
-                    self.context.Title(),
-                    PlominoTranslate("is mandatory", self)))
-            else:
-                return None
+            return None
 
         if submittedValue.ampm.upper() == 'AM' or submittedValue.ampm.upper() == 'PM':
             submitted_string = "{v.year}-{v.month}-{v.day} {v.hour}:{v.minute} {v.ampm}".format(v=submittedValue)
@@ -190,10 +190,15 @@ class DatetimeField(BaseField):
             fieldValue = request.get(fieldname, fieldValue)
 
         if fieldValue and isinstance(fieldValue, basestring):
-            fmt = self.format
-            if not fmt:
-                fmt = form.getParentDatabase().getDateTimeFormat()
-            fieldValue = StringToDate(fieldValue, fmt)
+            if "year:" in fieldValue and "month:" in fieldValue and \
+               "day:" in fieldValue and "ampm:" in fieldValue and \
+               "hour:" in fieldValue and "minute:" in fieldValue:
+                fieldValue = ""
+            else:
+                fmt = self.format
+                if not fmt:
+                    fmt = form.getParentDatabase().getDateTimeFormat()
+                fieldValue = StringToDate(fieldValue, fmt)
         return fieldValue
 
 for f in getFields(IDatetimeField).values():
