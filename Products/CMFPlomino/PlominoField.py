@@ -75,6 +75,18 @@ schema = Schema((
         ),
         vocabulary= FIELD_MODES,
     ),
+    BooleanField(
+        name='isDynamicField',
+        default=False,
+        widget=BooleanField._properties['widget'](
+            label="Dynamic rendering",
+            description="The field will be rendered dynamically "
+                "when the user enters information",
+            label_msgid=_('CMFPlomino_label_isDynamicField', default="Dynamic rendering"),
+            description_msgid=_('CMFPlomino_help_isDynamicField', default="The field will be rendererd dynamically when the user enters information"),
+            i18n_domain='CMFPlomino',
+        ),
+    ),
     TextField(
         name='Formula',
         widget=TextAreaWidget(

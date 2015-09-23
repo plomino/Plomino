@@ -1,3 +1,0 @@
-<tal:block define="_dummy python:request.response.setHeader('content-type','application/json;;charset=utf-8')" />
-<tal:block tal:condition="python:not hasattr(here, 'getHidewhenAsJSON')" tal:replace="python:here.getForm().getHidewhenAsJSON(here.REQUEST)" />
-<tal:block tal:condition="python:hasattr(here, 'getHidewhenAsJSON')" tal:replace="python:here.getHidewhenAsJSON(here.REQUEST)" />
