@@ -91,6 +91,28 @@ Scenario::
     True
     >>> browser.open(base_url+'/basic-example/all')
 
+Test DateTime field::
+
+    >>> browser.open(base_url+'/basic-example')
+    >>> 'Birthday' in browser.contents
+    True
+    >>> browser.getLink('Birthday').click()
+    >>> browser.getControl(name='personName').value = 'Eric'
+    >>> browser.getControl(name='birthDate.year:record').value = ['1974']
+    >>> browser.getControl(name='birthDate.month:record').value = ['00']
+    >>> browser.getControl(name='birthDate.day:record').value = ['20']
+    >>> browser.getControl(name='personCategory').value = ['Friend']
+    >>> browser.getControl(name='plomino_save').click()
+    >>> '20-00-1974' in browser.contents
+    False
+    >>> browser.open(browser.url+"/EditDocument")
+    >>> browser.getControl(name='birthDate.year:record').value
+    ['0000']
+    >>> browser.getControl(name='birthDate.month:record').value
+    ['00']
+    >>> browser.getControl(name='birthDate.day:record').value
+    ['00']
+
 Import example-with-config-doc db::
 
     >>> f = open(os.path.join(dir, "samples", "example-with-config-doc.xml"))
