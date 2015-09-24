@@ -145,6 +145,23 @@ Test mandatory DateTime field when it is not touched::
     >>> 'birthDate is mandatory' in browser.contents
     True
 
+    Test DateTime field in page form::
+
+        >>> browser.open(base_url+'/basic-example/frmBirthday/edit')
+        >>> browser.getControl(name='isPage:boolean').value = [True]
+        >>> browser.getControl(name='form.button.save').click()
+
+        >>> browser.open(base_url+'/basic-example')
+        >>> 'Birthday' in browser.contents
+        True
+        >>> browser.getLink('Birthday').click()
+        >>> browser.getControl(name='personName').value = 'Eric'
+        >>> browser.getControl(name='personCategory').value = ['Friend']
+        >>> browser.getControl(name='birthDate.year:record').value = ['1974']
+        >>> browser.getControl(name='birthDate.month:record').value = ['10']
+        >>> browser.getControl(name='birthDate.day:record').value = ['20']
+        >>> browser.getLink('Submit').click()
+
 Import example-with-config-doc db::
 
     >>> f = open(os.path.join(dir, "samples", "example-with-config-doc.xml"))

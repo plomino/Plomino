@@ -179,15 +179,19 @@ class DatetimeField(BaseField):
             fieldname = self.context.id
             fieldValue = request.get(fieldname, fieldValue)
 
-        if fieldValue and isinstance(fieldValue, basestring):
-            fmt = self.format
-            if not fmt:
-                fmt = form.getParentDatabase().getDateTimeFormat()
-            fieldValue = StringToDate(fieldValue, fmt)
-        elif "year" in fieldValue and "month" in fieldValue and \
-           "day" in fieldValue and "ampm" in fieldValue and \
-           "hour" in fieldValue and "minute" in fieldValue:
-           fieldValue = self.recordToDate(fieldValue)
+        try:
+            if fieldValue and isinstance(fieldValue, basestring):
+                fmt = self.format
+                if not fmt:
+                    fmt = form.getParentDatabase().getDateTimeFormat()
+                fieldValue = StringToDate(fieldValue, fmt)
+            elif "year" in fieldValue and "month" in fieldValue and \
+                 "day" in fieldValue and "ampm" in fieldValue and \
+                 "hour" in fieldValue and "minute" in fieldValue:
+               fieldValue = self.recordToDate(fieldValue)
+        except TypeError:
+            # fieldValue could be DateTime type
+            pass
 
         return fieldValue
 
