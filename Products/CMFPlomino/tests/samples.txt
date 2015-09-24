@@ -98,12 +98,12 @@ Test DateTime field::
     True
     >>> browser.getLink('Birthday').click()
     >>> browser.getControl(name='personName').value = 'Eric'
-    >>> browser.getControl(name='birthDate.year:record').value = ['1974']
+    >>> browser.getControl(name='birthDate.year:record').value = ['0000']
     >>> browser.getControl(name='birthDate.month:record').value = ['00']
-    >>> browser.getControl(name='birthDate.day:record').value = ['20']
+    >>> browser.getControl(name='birthDate.day:record').value = ['00']
     >>> browser.getControl(name='personCategory').value = ['Friend']
     >>> browser.getControl(name='plomino_save').click()
-    >>> '20-00-1974' in browser.contents
+    >>> '00-00-0000' in browser.contents
     False
     >>> browser.open(browser.url+"/EditDocument")
     >>> browser.getControl(name='birthDate.year:record').value
@@ -112,6 +112,38 @@ Test DateTime field::
     ['00']
     >>> browser.getControl(name='birthDate.day:record').value
     ['00']
+
+Test DateTime field on editing a date by reseting it::
+
+    >>> browser.getControl(name='birthDate.year:record').value = ['1974']
+    >>> browser.getControl(name='birthDate.month:record').value = ['10']
+    >>> browser.getControl(name='birthDate.day:record').value = ['20']
+    >>> browser.getControl(name='plomino_save').click()
+    >>> '20-10-1974' in browser.contents
+    True
+    >>> browser.open(browser.url+"/EditDocument")
+    >>> browser.getControl(name='birthDate.year:record').value = ['0000']
+    >>> browser.getControl(name='birthDate.month:record').value = ['00']
+    >>> browser.getControl(name='birthDate.day:record').value = ['00']
+    >>> browser.getControl(name='plomino_save').click()
+    >>> '20-10-1974' in browser.contents
+    False
+
+Test mandatory DateTime field when it is not touched::
+
+    >>> browser.open(base_url+'/basic-example/frmBirthday/birthDate')
+    >>> browser.getControl(name='Mandatory:boolean').value = [True]
+    >>> browser.getControl(name='form.button.save').click()
+
+    >>> browser.open(base_url+'/basic-example')
+    >>> 'Birthday' in browser.contents
+    True
+    >>> browser.getLink('Birthday').click()
+    >>> browser.getControl(name='personName').value = 'Eric'
+    >>> browser.getControl(name='personCategory').value = ['Friend']
+    >>> browser.getControl(name='plomino_save').click()
+    >>> 'birthDate is mandatory' in browser.contents
+    True
 
 Import example-with-config-doc db::
 
@@ -164,4 +196,3 @@ Scenario::
     True
     >>> '2007' in browser.contents
     True
-
