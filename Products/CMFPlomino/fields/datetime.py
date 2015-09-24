@@ -119,12 +119,7 @@ class DatetimeField(BaseField):
                            PlominoTranslate("is mandatory", self.context)))
                     return errors
 
-                if submittedValue.ampm.upper() == 'AM' or submittedValue.ampm.upper() == 'PM':
-                    submitted_string = "{v.year}-{v.month}-{v.day} {v.hour}:{v.minute} {v.ampm}".format(v=submittedValue)
-                    date_input = StringToDate(submitted_string, '%Y-%m-%d %I:%M %p')
-                else:
-                    submitted_string = "{v.year}-{v.month}-{v.day} {v.hour}:{v.minute}".format(v=submittedValue)
-                    date_input = StringToDate(submitted_string, '%Y-%m-%d %H:%M')
+                date_input = self.recordToDate(submittedValue)
             except:
                 errors.append(
                         "%s must be a valid date/time (submitted value was: %s)" % (
@@ -164,12 +159,7 @@ class DatetimeField(BaseField):
            submittedValue.day == '00':
             return None
 
-        if submittedValue.ampm.upper() == 'AM' or submittedValue.ampm.upper() == 'PM':
-            submitted_string = "{v.year}-{v.month}-{v.day} {v.hour}:{v.minute} {v.ampm}".format(v=submittedValue)
-            date_input = StringToDate(submitted_string, '%Y-%m-%d %I:%M %p')
-        else:
-            submitted_string = "{v.year}-{v.month}-{v.day} {v.hour}:{v.minute}".format(v=submittedValue)
-            date_input = StringToDate(submitted_string, '%Y-%m-%d %H:%M')
+        date_input = self.recordToDate(submittedValue)
 
         return date_input
 
@@ -190,16 +180,26 @@ class DatetimeField(BaseField):
             fieldValue = request.get(fieldname, fieldValue)
 
         if fieldValue and isinstance(fieldValue, basestring):
-            if "year:" in fieldValue and "month:" in fieldValue and \
-               "day:" in fieldValue and "ampm:" in fieldValue and \
-               "hour:" in fieldValue and "minute:" in fieldValue:
-                fieldValue = ""
-            else:
-                fmt = self.format
-                if not fmt:
-                    fmt = form.getParentDatabase().getDateTimeFormat()
-                fieldValue = StringToDate(fieldValue, fmt)
+            fmt = self.format
+            if not fmt:
+                fmt = form.getParentDatabase().getDateTimeFormat()
+            fieldValue = StringToDate(fieldValue, fmt)
+        elif "year" in fieldValue and "month" in fieldValue and \
+           "day" in fieldValue and "ampm" in fieldValue and \
+           "hour" in fieldValue and "minute" in fieldValue:
+           fieldValue = self.recordToDate(fieldValue)
+
         return fieldValue
+
+    def recordToDate(self, record):
+        if record.ampm.upper() == 'AM' or record.ampm.upper() == 'PM':
+            submitted_string = "{v.year}-{v.month}-{v.day} {v.hour}:{v.minute} {v.ampm}".format(v=record)
+            date_input = StringToDate(submitted_string, '%Y-%m-%d %I:%M %p')
+        else:
+            submitted_string = "{v.year}-{v.month}-{v.day} {v.hour}:{v.minute}".format(v=record)
+            date_input = StringToDate(submitted_string, '%Y-%m-%d %H:%M')
+
+        return date_input
 
 for f in getFields(IDatetimeField).values():
     setattr(DatetimeField, f.getName(), DictionaryProperty(f, 'parameters'))

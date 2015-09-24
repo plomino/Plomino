@@ -110,13 +110,13 @@ class BaseField(object):
             # if (not doc) or creation:
             if doc:
                 fieldValue = doc.getItem(fieldName)
-                #DBG _logger.info('BaseField.getFieldValue> 1 got doc') 
-    
+                #DBG _logger.info('BaseField.getFieldValue> 1 got doc')
+
             if (not fieldValue) and self.context.Formula():
-                # This implies that if a falsy fieldValue is possible, 
+                # This implies that if a falsy fieldValue is possible,
                 # Formula needs to take it into account, e.g. using hasItem
                 fieldValue = form.computeFieldValue(fieldName, target)
-                #DBG _logger.info('BaseField.getFieldValue> 2 default formula') 
+                #DBG _logger.info('BaseField.getFieldValue> 2 default formula')
             elif (not fieldValue) and request:
                 # if no doc context and no default formula, we accept
                 # value passed in the REQUEST so we look for 'fieldName'
@@ -124,13 +124,18 @@ class BaseField(object):
                 # pass value via the querystring without messing the
                 # POST content
                 request_value = request.get(fieldName, '')
-                #DBG _logger.info('BaseField.getFieldValue> 3 request') 
+                #DBG _logger.info('BaseField.getFieldValue> 3 request')
                 if not request_value:
                     request_value = request.get(fieldName + '_querystring', '')
-                    #DBG _logger.info('BaseField.getFieldValue> 3 request _querystring') 
-                fieldValue = asUnicode(request_value)
+                    #DBG _logger.info('BaseField.getFieldValue> 3 request _querystring')
+                # Assuming all `fieldValue` are string except those are using 
+                # http://docs.zope.org/zope2/zope2book/ScriptingZope.html#passing-parameters-to-scripts
+                if isinstance(fieldValue, basestring):
+                    fieldValue = asUnicode(request_value)
+                else:
+                    fieldValue = request_value
             if not fieldValue:
-                #DBG _logger.info('BaseField.getFieldValue> 4 blank') 
+                #DBG _logger.info('BaseField.getFieldValue> 4 blank')
                 fieldValue = ""
 
         elif mode in ["DISPLAY", "COMPUTED"]:
@@ -153,7 +158,7 @@ class BaseField(object):
         if fieldValue is None:
             fieldValue = ""
 
-        #DBG _logger.info('BaseField.getFieldValue> doc: %s, fieldName: %s, fieldValue: %s, creation: %s' % (`doc`, `fieldName`, `fieldValue`[:20], creation)) 
+        #DBG _logger.info('BaseField.getFieldValue> doc: %s, fieldName: %s, fieldValue: %s, creation: %s' % (`doc`, `fieldName`, `fieldValue`[:20], creation))
         return fieldValue
 
 
