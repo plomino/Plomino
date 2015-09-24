@@ -1242,7 +1242,10 @@ class PlominoForm(ATFolder):
                                 doc,
                                 process_attachments,
                                 validation_mode=validation_mode)
-                        if v != None:
+                        # this case where 'None' can happen in the case of
+                        # datetimes which need to process the input first before
+                        # its possible to work out they are empty.
+                        if v is not None:
                             if f.getFieldType() == 'SELECTION':
                                 if f.getSettings().widget in [
                                         'MULTISELECT', 'CHECKBOX', 'PICKLIST']:

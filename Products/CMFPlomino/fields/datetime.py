@@ -110,8 +110,8 @@ class DatetimeField(BaseField):
                         "%s must be a AM/PM format." % (
                             fieldname))
                 # should not raise any error if date is empty or half filled
-                if submittedValue.year == '0000' or \
-                   submittedValue.month == '00' or \
+                if submittedValue.year == '0000' and \
+                   submittedValue.month == '00' and \
                    submittedValue.day == '00':
                     if self.context.getMandatory():
                        errors.append("%s %s" % (
@@ -159,8 +159,8 @@ class DatetimeField(BaseField):
                 return StringToDate(submittedValue, fmt)
         # it is instance type when no js is detected
         # submittedValue = ampm: , day: 09, hour: 00, minute: 00, month: 03, year: 1993
-        if submittedValue.year == '0000' or \
-           submittedValue.month == '00' or \
+        if submittedValue.year == '0000' and \
+           submittedValue.month == '00' and \
            submittedValue.day == '00':
             return None
 
