@@ -781,7 +781,7 @@ class PlominoForm(ATFolder):
                     text = 'Go to %s' % field.Title()
                 # Multi page forms may involve paging
                 if self.getIsMulti():
-                    link = '<input type="submit" name="plominogoto-%s" value="%s" />' % (fieldname, text)
+                    link = '<input type="submit" name="plominolinkto-%s" value="%s" />' % (fieldname, text)
                 else:
                     link = '<a href="#%s">%s</a>' % (fieldname, text)
 
@@ -807,17 +807,17 @@ class PlominoForm(ATFolder):
         else:
             page = int(request.get('plomino_current_page'))
 
-            # Check if this is a "goto" action
-            goto = False
+            # Check if this is a "linkto" action
+            linkto = False
             for key in request.form.keys():
-                if key.startswith('plominogoto-'):
-                    goto = key
+                if key.startswith('plominolinkto-'):
+                    linkto = key
 
             # Determine the action. If continue or next are in the form,
             # we want to page forwards. If back is in the form, we want to
             # move backwards. Otherwise we submit.
-            if goto:
-                action = 'goto'
+            if linkto:
+                action = 'linkto'
             elif request.get('continue') or request.get('next'):
                 action = 'continue'
             elif request.get('back'):
@@ -853,7 +853,7 @@ class PlominoForm(ATFolder):
                     if action == 'continue':
                         page = page + 1
                     else:
-                        # If it's a goto, page back through the form as well
+                        # If it's a linkto, page back through the form as well
                         page = page - 1
                     new_page = d('div.plomino-accordion-content').eq(page)
 
@@ -874,18 +874,18 @@ class PlominoForm(ATFolder):
                     # it is wrapped in hidden hidewhens, then continue paging
                     children = pq(new_page).children()
 
-                    # Check for the goto field on this page. If it's not
+                    # Check for the linkto field on this page. If it's not
                     # there we need to continue looking for it
-                    if goto:
-                        hasgoto = False
-                        fieldname = goto.split('-', 1)[-1]
+                    if linkto:
+                        haslinkto = False
+                        fieldname = linkto.split('-', 1)[-1]
                         # See if this field is on the current page
                         for span in children.find('span.plominoFieldClass'):
                             if span.text.strip().split(':', 1)[0] == fieldname:
-                                hasgoto = True
+                                haslinkto = True
                                 break
                         # If the field wasn't on the page, keep paging
-                        if not hasgoto:
+                        if not haslinkto:
                             continue
 
                     for child in children:
@@ -1689,7 +1689,7 @@ class PlominoForm(ATFolder):
         if REQUEST.get('plomino_clicked_name') == 'back':
             return []
         # Or if a 'go-to' link has been clicked
-        if REQUEST.get('plomino_clicked_name', '').startswith('plominogoto-'):
+        if REQUEST.get('plomino_clicked_name', '').startswith('plominolinkto-'):
             return []
 
         # Validate and exit early if there are no errors
