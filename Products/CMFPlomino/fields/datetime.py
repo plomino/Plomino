@@ -50,7 +50,10 @@ class IDatetimeField(IBaseField):
             title=u"Starting year",
             description=u"Oldest year selectable in the calendar widget",
             required=False)
-
+    endingyear = TextLine(
+            title=u"Ending year",
+            description=u"Newest year selectable in the calendar widget",
+            required=False)
 
 class DatetimeField(BaseField):
     """
