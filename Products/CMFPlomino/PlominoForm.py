@@ -850,17 +850,20 @@ class PlominoForm(ATFolder):
             parent_form_id=False, request=None):
         """ Display the document using the form's layout
         """
-        # remove the hidden content
+        # Create a temp doc to work with
         if doc is None:
             db = self.getParentDatabase()
-            hidewhen_target = getTemporaryDocument(
+            temp_doc = getTemporaryDocument(
                 db,
                 self,
                 self.REQUEST
             )
         else:
-            hidewhen_target = doc
-        html_content = self.applyHideWhen(hidewhen_target, silent_error=False)
+            # If there is already a doc, use this
+            temp_doc = doc
+
+        # remove the hidden content
+        html_content = self.applyHideWhen(temp_doc, silent_error=False)
         if request:
             parent_form_ids = request.get('parent_form_ids', [])
             if parent_form_id:
@@ -920,7 +923,7 @@ class PlominoForm(ATFolder):
                         fieldblock,
                         field.getFieldRender(
                             self,
-                            doc,
+                            temp_doc,
                             editmode,
                             creation,
                             request=request)
@@ -1095,6 +1098,24 @@ class PlominoForm(ATFolder):
 
         return html_content
 
+    security.declareProtected(READ_PERMISSION, 'hasDynamicContent')
+    def hasDynamicContent(self):
+        """Check for dynamic content on the form"""
+        if self.hasDynamicHidewhen():
+            return True
+        if self.hasDynamicFields():
+            return True
+        return False
+
+    security.declareProtected(READ_PERMISSION, 'hasDynamicFields')
+    def hasDynamicFields(self):
+        """ Search for computed display fields """
+        fields = self.getFormFields()
+        for field in fields:
+            if getattr(field, 'isDynamicField', False):
+                return True
+        return False
+
     security.declareProtected(READ_PERMISSION, 'hasDynamicHidewhen')
     def hasDynamicHidewhen(self):
         """ Search if a dynamic hidewhen is stored in the form
@@ -1113,6 +1134,52 @@ class PlominoForm(ATFolder):
                 logger.info(msg)
 
         return False
+
+    security.declareProtected(READ_PERMISSION, 'getDynamicContentAsJSON')
+    def getDynamicContentAsJSON(self, REQUEST, parent_form=None, doc=None, validation_mode=False):
+        result = {
+            'hidewhen': {},
+            'dynamicfields': {},
+        }
+        if self.hasDynamicHidewhen():
+            result['hidewhen'] = self.getHidewhen(
+                REQUEST,
+                parent_form=parent_form,
+                doc=doc,
+                validation_mode=validation_mode,
+            )
+        if self.hasDynamicFields():
+            result['dynamicfields'] = self.getDynamicFields(
+                REQUEST,
+                parent_form=parent_form,
+                doc=doc,
+            )
+        return json.dumps(result)
+
+    security.declareProtected(READ_PERMISSION,'getDynamicFields')
+    def getDynamicFields(self,REQUEST,parent_form=None,doc=None):
+        """
+        Return a python object to dynamically update dynamic fields
+        Currently this only works for dynamic, computed fields
+        """
+        if parent_form is None:
+            parent_form = self
+        if doc is None:
+            db = self.getParentDatabase()
+            doc = getTemporaryDocument(
+                db,
+                parent_form,
+                REQUEST,
+                doc
+            )
+        result = {}
+        fields = self.getFormFields()
+        dynamic = [f for f in fields if getattr(f, 'isDynamicField', False)]
+        for field in dynamic:
+            # For now, only handle dynamic computed fields
+            value = self.computeFieldValue(field.id, doc)
+            result[field.id] = value
+        return result
 
     security.declareProtected(READ_PERMISSION,'getHidewhen')
     def getHidewhen(self,REQUEST,parent_form=None, doc=None,validation_mode=False):
@@ -1162,19 +1229,6 @@ class PlominoForm(ATFolder):
                 result[hidewhen.id] = isHidden
 
         return result
-
-
-    security.declareProtected(READ_PERMISSION, 'getHidewhenAsJSON')
-    def getHidewhenAsJSON(self, REQUEST, parent_form=None, doc=None, validation_mode=False):
-        """ Return a JSON object to dynamically show or hide hidewhens
-        (works only with isDynamicHidewhen)
-        """
-        result = self.getHidewhen(
-            REQUEST,
-            parent_form=parent_form,
-            doc=doc,
-            validation_mode=validation_mode)
-        return json.dumps(result)
 
     security.declareProtected(READ_PERMISSION, 'applyCache')
     def applyCache(self, html_content, doc=None):

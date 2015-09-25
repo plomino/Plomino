@@ -51,7 +51,9 @@ setup(name='Products.CMFPlomino',
               'Products.PloneTestCase',
               'selenium',
               # to test import/export of extended fields:
-              'archetypes.schemaextender'
+              'archetypes.schemaextender',
+              # For pretty-printing. Would be good if we didn't need this.
+              'BeautifulSoup',
               ],
           },
       entry_points="""

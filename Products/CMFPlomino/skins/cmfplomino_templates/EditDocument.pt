@@ -17,7 +17,7 @@
         form python:here.getForm();
         form_method python:form.getFormMethod();
         hasDateTimeField python:form.hasDateTimeField();
-        hasDynamicHidewhen python:form.hasDynamicHidewhen();
+        hasDynamicContent python:form.hasDynamicContent();
         hasGoogleVisualizationField python:form.hasGoogleVisualizationField()
         ">
     <tal:has_form condition="has_form">
@@ -34,22 +34,24 @@
         <tal:has_googleviz condition="hasGoogleVisualizationField">
             <tal:script metal:use-macro="here/googlevisualization_macro/macros/js_library">//load google js</tal:script>
         </tal:has_googleviz>
-        <script type="text/javascript" tal:condition="hasDynamicHidewhen" tal:content="string:
-function refreshHidewhen() {
+        <script type="text/javascript" tal:condition="hasDynamicContent" tal:content="string:
+function refreshDynamicContent() {
     var onsuccess = function(data, textStatus, xhr) {
-        for (var hw in data)
-            jQuery('.hidewhen-' + hw).css('display', data[hw]?'none':'block');
+        for (var hw in data.hidewhen)
+            jQuery('.hidewhen-' + hw).css('display', data.hidewhen[hw]?'none':'block');
+        for (var df in data.dynamicfields)
+            jQuery('.dynamic-' + df).text(data.dynamicfields[df]);
     }
     jQuery.ajax({
         type: '${form_method}',
-        url: 'computehidewhens',
+        url: 'computedynamiccontent',
         data: jQuery('#plomino_form').serialize(),
         success: onsuccess,
         dataType: 'json' 
     });
 }
 jQuery(document).ready( function() {
-    jQuery('#plomino_form :input').change(refreshHidewhen);
+    jQuery('#plomino_form :input').change(refreshDynamicContent);
 });
 ">
         </script>

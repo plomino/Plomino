@@ -11,16 +11,18 @@
       tal:condition="python: not ajax_load or ajax_include_head">
     <div tal:replace="structure provider:plone.resourceregistries.styles" />
     <div tal:replace="structure provider:plone.resourceregistries.scripts" />
-    <script type="text/javascript" tal:condition="python:here.getForm().hasDynamicHidewhen()">
-        function refreshHidewhen() {
+    <script type="text/javascript" tal:condition="python:here.getForm().hasDynamicContent()">
+        function refreshDynamicContent() {
             var onsuccess = function(data, textStatus, xhr) {
-                for (var hw in data)
-                    $('.hidewhen-' + hw).css('display', data[hw]?'none':'block');
-            }
-            $.post('computehidewhens', $('#plomino_form').serialize(), onsuccess, 'json');
+                for (var hw in data.hidewhen)
+                    $('.hidewhen-' + hw).css('display', data.hidewhen[hw]?'none':'block');
+                for (var df in data.dynamicfields)
+                    $('.dynamic-' + df).text(data.dynamicfields[df]);
+              }
+            $.post('computedynamiccontent', $('#plomino_form').serialize(), onsuccess, 'json');
         }
         $(document).ready( function() {
-            $('form :input').change(refreshHidewhen);
+            $('form :input').change(refreshDynamicContent);
         });
     </script>
     <tal:block_hasjsresources 
