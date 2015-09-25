@@ -46,6 +46,7 @@ $("#plomino_form").submit(function(){
         files.each(function(index, object) {
             form_values = form_values + "&" + object.name +"="+ $.URLEncode($(object).val());
         });
+        form_values = form_values + "&plomino_clicked_name=" + plomino_clicked_name;
         $.post(
             this.action ? this.action+"/../validation_errors" : "validation_errors",
             form_values,

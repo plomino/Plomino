@@ -264,6 +264,17 @@ schema = Schema((
             i18n_domain='CMFPlomino',
         ),
     ),
+    BooleanField(
+        name='isMulti',
+        default=False,
+        widget=BooleanField._properties['widget'](
+            label="Multi page form",
+            description="Split the form into pages",
+            label_msgid=_('CMFPlomino_label_MultiPage', default="Multi page form"),
+            description_msgid=_('CMFPlomino_help_MultiPage', default="Split the form into pages"),
+            i18n_domain='CMFPlomino',
+        ),
+    ),
     StringField(
         name='SearchView',
         widget=SelectionWidget(
@@ -364,6 +375,18 @@ class PlominoForm(ATFolder):
             else:
                 return 'POST'
         return value
+
+    def getFormAction(self):
+        """
+        A multi page form should post back to itself.
+        A normal form should createDocument
+        """
+        if self.getIsMulti():
+            return 'OpenForm'
+        return 'createDocument'
+
+    def getIsMulti(self):
+        return getattr(self, 'isMulti', False)
 
     def _get_resource_urls(self, field_name):
         """ Return canonicalized URLs if local.
@@ -731,6 +754,95 @@ class PlominoForm(ATFolder):
 
         return d.html()
 
+    def _handleMultiPage(self, html_content_orig, request):
+        """
+        Split the HTML into multiple pages and return the current page
+        - inject back/continue buttons
+        - if there are no more pages to view, return None so that the form can
+        be submitted and a document created
+        """
+
+        action = None
+        # If this is initial page load, show the first page and don't
+        # try to do any paging
+        if not request.get('plomino_current_page'):
+            page = 0
+        else:
+            page = int(request.get('plomino_current_page'))
+            # Determine the action. If continue or next are in the form,
+            # we want to page forwards. If back is in the form, we want to
+            # move backwards. Otherwise we submit.
+            if request.get('continue') or request.get('next'):
+                action = 'continue'
+            elif request.get('back'):
+                action = 'back'
+            else:
+                # If it's a form form, return.
+                if not self.isPage:
+                    return None
+
+        d = pq(html_content_orig)
+        # Remove any accordion headers
+        d.remove('h3.plomino-accordion-header')
+        num_pages = d('div.plomino-accordion-content').size()
+
+        # If we have a continue action, validate the fields on the page
+        # before continuuing
+        page_errors = None
+        if action == 'continue':
+            # The current page
+            new_page = d('div.plomino-accordion-content').eq(page)
+            page_errors = self._page_validation_errors(
+                request,
+                current_page=new_page
+            )
+
+        if not page_errors:
+            # Handle paging
+            if action is None:
+                new_page = d('div.plomino-accordion-content').eq(page)
+            else:
+                has_content = False
+                while not has_content:
+                    if action == 'continue':
+                        page = page + 1
+                    else:
+                        page = page - 1
+                    new_page = d('div.plomino-accordion-content').eq(page)
+                    if new_page.size() == 0:
+                        # We no longer have a page
+                        if not self.isPage:
+                            return None
+
+                    # Check for page content. If the page is empty (because)
+                    # it is wrapped in hidden hidewhens, then continue paging
+                    children = pq(new_page).children()
+                    for child in children:
+                        if pq(child).attr('style') == 'display: none':
+                            continue
+                        if pq(child).text():
+                            has_content = True
+                            break
+        else:
+            new_page.prepend(self.BareErrorMessages(errors=page_errors))
+
+        # Add the current page into the form
+        new_page.append(
+            '<input type="hidden" name="plomino_current_page" value="%s" />' %
+            page
+        )
+
+        # Add a back and a continue button
+        paging = pq('<div id="plomino_page_actions"></div>')
+        if page > 0:
+            paging.append('<input type="submit" name="back" value="Back" />')
+        if page < (num_pages - 1):
+            paging.append(
+                '<input type="submit" name="continue" value="Continue" />'
+            )
+        new_page.append(paging)
+
+        return new_page.html()
 
     security.declareProtected(READ_PERMISSION, 'displayDocument')
     @plomino_profiler('form')
@@ -757,6 +869,12 @@ class PlominoForm(ATFolder):
             if parent_form_id:
                 parent_form_ids.append(parent_form_id)
                 request.set('parent_form_ids', parent_form_ids)
+
+        # Handle multi page forms
+        if self.getIsMulti():
+            html_content = self._handleMultiPage(html_content, request)
+            if html_content is None:
+                return self.createDocument(request)
 
         # get the field lists
         fields = self.getFormFields(doc=doc, request=request)
@@ -1487,12 +1605,42 @@ class PlominoForm(ATFolder):
 
         return self.OpenForm(searchresults=results)
 
+    def _page_validation_errors(self, REQUEST, current_page=None):
+        # Don't validate if this is a back request
+        if REQUEST.get('plomino_clicked_name') == 'back':
+            return []
+        # Validate and exit early if there are no errors
+        errors = self.validateInputs(REQUEST)
+        if not errors:
+            return errors
+
+        # Get the current_page if possible
+        if not current_page:
+            db = self.getParentDatabase()
+            # Create a temp doc
+            doc = getTemporaryDocument(
+                db,
+                self,
+                REQUEST
+            )
+            html_content = self.applyHideWhen(doc, silent_error=False)
+            d = pq(html_content)
+            page = int(REQUEST.get('plomino_current_page', 0))
+            current_page = d('div.plomino-accordion-content').eq(page)
+
+        # Check for errors on the current page
+        fields_on_page = [f.text for f in current_page.find('span.plominoFieldClass')]
+        page_errors = [e for e in errors if e['field'] in fields_on_page]
+        return page_errors
 
     security.declarePublic('validation_errors')
     def validation_errors(self, REQUEST):
         """ Check submitted values
         """
-        errors = self.validateInputs(REQUEST)
+        if self.getIsMulti():
+            errors = self._page_validation_errors(REQUEST)
+        else:
+            errors = self.validateInputs(REQUEST)
         if errors:
             return self.errors_json(
                     errors=json.dumps({'success': False, 'errors': errors}))
