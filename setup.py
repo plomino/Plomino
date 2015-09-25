@@ -42,6 +42,7 @@ setup(name='Products.CMFPlomino',
           'zope.globalrequest',  # This one too.
           'plone.resource',
           'pyquery',
+          'BeautifulSoup',
       ],
       extras_require={
           'test': [
