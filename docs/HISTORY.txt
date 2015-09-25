@@ -11,6 +11,7 @@ Changelog
 - Check for hidden subforms when validating inputs [instification]
 - Adapt to rows for datagrid field in PlominoForm.tojson [instification]
 - Fix saving date/time field when no JavaScript detected [ivanteoh]
+- Add max year option for date/time field [ivanteoh]
 
 1.19.4 (2015-04-10)
 -------------------

@@ -46,7 +46,7 @@
       <onDeleteDocument type="Products.Archetypes.Field.TextField"><![CDATA[]]></onDeleteDocument>
       <onSearch type="Products.Archetypes.Field.TextField"><![CDATA[]]></onSearch>
       <beforeCreateDocument type="Products.Archetypes.Field.TextField"><![CDATA[]]></beforeCreateDocument>
-      <FormLayout type="Products.Archetypes.Field.TextField"><![CDATA[<p>Name: <span class="plominoFieldClass">personName</span></p><p>Date of birth: <span class="plominoFieldClass">birthDate</span></p><p>Category: <span class="plominoFieldClass">personCategory</span></p><p> </p><p><span class="discreet">Today : <span class="plominoFieldClass">todayDate</span></span></p>]]></FormLayout>
+      <FormLayout type="Products.Archetypes.Field.TextField"><![CDATA[<p>Name: <span class="plominoFieldClass">personName</span></p><p>Date of birth: <span class="plominoFieldClass">birthDate</span></p><p>Category: <span class="plominoFieldClass">personCategory</span></p><p> </p><p><span class="discreet">Today : <span class="plominoFieldClass">todayDate</span></span><span class="plominoActionClass">submit</span></p>]]></FormLayout>
       <DocumentTitle type="Products.Archetypes.Field.TextField"><![CDATA[plominoDocument.personName]]></DocumentTitle>
       <DocumentId type="Products.Archetypes.Field.TextField"><![CDATA[]]></DocumentId>
       <ActionBarPosition type="Products.Archetypes.Field.StringField">TOP</ActionBarPosition>
@@ -88,6 +88,10 @@
 <member>
 <name>startingyear</name>
 <value><string>1940</string></value>
+</member>
+<member>
+<name>endingyear</name>
+<value><string>2019</string></value>
 </member>
 <member>
 <name>format</name>
@@ -134,6 +138,14 @@
 </struct></value>
 </param>
 </params>
+        </element>
+        <element id="submit" title="Submit" type="PlominoAction">
+          <id type="Products.Archetypes.Field.StringField">submit</id>
+          <ActionType type="Products.Archetypes.Field.StringField">SAVE</ActionType>
+          <ActionDisplay type="Products.Archetypes.Field.StringField">LINK</ActionDisplay>
+          <Content type="Products.Archetypes.Field.TextField"><![CDATA[]]></Content>
+          <Hidewhen type="Products.Archetypes.Field.TextField"><![CDATA[]]></Hidewhen>
+          <InActionBar type="Products.Archetypes.Field.BooleanField">False</InActionBar>
         </element>
       </elements>
     </element>

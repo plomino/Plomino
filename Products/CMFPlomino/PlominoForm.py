@@ -1296,11 +1296,17 @@ class PlominoForm(ATFolder):
                                 doc,
                                 process_attachments,
                                 validation_mode=validation_mode)
-                        if f.getFieldType() == 'SELECTION':
-                            if f.getSettings().widget in [
-                                    'MULTISELECT', 'CHECKBOX', 'PICKLIST']:
-                                v = asList(v)
-                        doc.setItem(fieldName, v)
+                        # this case where 'None' can happen in the case of
+                        # datetimes which need to process the input first before
+                        # its possible to work out they are empty.
+                        if v is not None:
+                            if f.getFieldType() == 'SELECTION':
+                                if f.getSettings().widget in [
+                                        'MULTISELECT', 'CHECKBOX', 'PICKLIST']:
+                                    v = asList(v)
+                            doc.setItem(fieldName, v)
+                        else:
+                            doc.removeItem(fieldName)
                 else:
                     # The field was not submitted, probably because it is
                     # not part of the form (hide-when, ...) so we just leave
