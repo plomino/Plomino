@@ -781,9 +781,9 @@ class PlominoForm(ATFolder):
                     text = 'Go to %s' % field.Title()
                 # Multi page forms may involve paging
                 if self.getIsMulti():
-                    link = '<input type="submit" name="plominolinkto-%s" value="%s" />' % (fieldname, text)
+                    link = '<input class="linkto" type="submit" name="plominolinkto-%s" value="%s" />' % (fieldname, text)
                 else:
-                    link = '<a href="#%s">%s</a>' % (fieldname, text)
+                    link = '<a class="linkto" href="#%s">%s</a>' % (fieldname, text)
 
             pq(link).insert_before(pq(linkto_node))
             # Remove the old node
