@@ -42,6 +42,7 @@ from Products.CMFPlomino.PlominoUtils import DateToString
 from Products.CMFPlomino.PlominoUtils import StringToDate
 from Products.CMFPlomino.PlominoUtils import PlominoTranslate
 from Products.CMFPlomino.PlominoUtils import translate
+from ZPublisher import HTTPRequest
 import interfaces
 from pyquery import PyQuery as pq
 
@@ -962,12 +963,26 @@ class PlominoForm(ATFolder):
         if creation and request is not None:
             for field_id in fieldids_not_in_layout:
                 if request.has_key(field_id):
-                    html_content = (
+                    # Handle records
+                    value = request.get(field_id, '')
+                    if isinstance(value, HTTPRequest.record):
+                        for key in value:
+                            html_content = (
+                            "<input type='hidden' "
+                            "name='%s.%s:record' "
+                            "value='%s' />%s" % (
+                                field_id,
+                                key,
+                                asUnicode(value[key]),
+                                html_content)
+                            )
+                    else:
+                        html_content = (
                             "<input type='hidden' "
                             "name='%s' "
                             "value='%s' />%s" % (
                                 field_id,
-                                asUnicode(request.get(field_id, '')),
+                                asUnicode(value),
                                 html_content)
                             )
 
