@@ -16,7 +16,7 @@
     <div id="bodyContent" tal:define="asparam request/error|nothing">
     	<h1 i18n:domain="CMFPlomino" i18n:translate="Validation failed">Validation failed</h1>
 		<ul id="error_list" tal:condition="not:asparam" tal:repeat="e options/errors">
-			<li tal:content="structure e">error message</li>
+			<li tal:content="structure e/error">error message</li>
 		</ul>
 		<ul tal:condition="asparam">
 			<li tal:content="structure request/error">error message</li>

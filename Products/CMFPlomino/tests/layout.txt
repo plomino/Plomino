@@ -1,0 +1,477 @@
+Plomino Layout tests
+=========================
+
+We need to test code for
+ - automatically creating fieldsets
+ - doing labels
+ - handling labels and hidewhens
+ - doing clean up of various non-useful plomino style combinations
+
+
+>>> from lxml import etree, html; from StringIO import StringIO
+>>> parser = etree.HTMLParser(remove_blank_text=True)
+>>> pphtml = lambda myhtml: etree.tostring(html.fromstring(myhtml.replace('\n','')), pretty_print=True)
+>>> from BeautifulSoup import BeautifulSoup; pphtml = lambda myhtml: BeautifulSoup(myhtml).prettify()
+
+
+Let's start testing::
+
+    >>> portal = layer['portal']
+    >>> db = portal.mydb
+    >>> id = db.invokeFactory('PlominoForm', id='frm1', title='Form 1')
+    >>> id = db.invokeFactory('PlominoForm', id='frm2', title='Form 2')
+    >>> db.frm1 == db.getForm('frm1')
+    True
+
+    >>> id = db.frm1.invokeFactory('PlominoField', id='field1',
+    ...         title='Title for field1',
+    ...         Mandatory='1',
+    ...         FieldType="TEXT",
+    ...         FieldMode="EDITABLE")
+    >>> db.frm1.field1.at_post_create_script()
+    >>> db.frm1.setFormLayout("""1 <p>please enter a value for field1:
+    ... <span class="plominoFieldClass">field1</span></p>""")
+    >>> print pphtml(db.frm1.displayDocument(None, True, True))
+    <input type="hidden" name="Form" value="frm1" />
+    1
+    <p>
+      please enter a value for field1:
+      <span>
+        <input type="text" id="field1" value="" name="field1" />
+      </span>
+    </p>
+
+
+
+For accessibility purposes, a label may be provided for a field. In the case
+of single inputs, the label is rendered as an HTML 'label' element.
+
+If labels are inline then no fieldset is used. A span is used instead.
+
+     >>> db.frm1.setFormLayout("""
+     ... <p><span class="plominoLabelClass">field1:my label</span>
+     ... <span class="plominoFieldClass">field1</span></p>
+     ... """)
+     >>> print pphtml(db.frm1.displayDocument(None, True, True))
+     <input type="hidden" name="Form" value="frm1" />
+     <p>
+      <span class="plominoFieldGroup required">
+       <label for="field1">
+        my label
+       </label>
+       <span>
+        <input type="text" id="field1" value="" name="field1" />
+       </span>
+      </span>
+     </p>
+
+If no label text is specified then the field Title is used
+
+     >>> db.frm1.setFormLayout("""
+     ... <p><span class="plominoLabelClass">field1</span>
+     ... <span class="plominoFieldClass">field1</span></p>
+     ... """)
+     >>> print pphtml(db.frm1.displayDocument(None, True, True))
+     <input type="hidden" name="Form" value="frm1" />
+     <p>
+      <span class="plominoFieldGroup required">
+       <label for="field1">
+        Title for field1
+       </label>
+       <span>
+        <input type="text" id="field1" value="" name="field1" />
+       </span>
+      </span>
+     </p>
+
+
+If labels are different paragraphs then a fieldset won't be used but it will be grouped in a
+a grouping div. This can be useful to highlight an error message affecting the field as a whole.
+
+     >>> db.frm1.setFormLayout("""
+     ... <p><span class="plominoLabelClass">field1:my label</span></p>
+     ... <p><span class="plominoFieldClass">field1</span></p>
+     ... """)
+     >>> print pphtml(db.frm1.displayDocument(None, True, True))
+     <input type="hidden" name="Form" value="frm1" />
+     <div class="plominoFieldGroup required">
+      <p>
+       <label for="field1">
+        my label
+       </label>
+      </p>
+      <p>
+       <span>
+        <input type="text" id="field1" value="" name="field1" />
+       </span>
+      </p>
+     </div>
+
+if we have some text inbetween just as help text this will be preserved
+
+     >>> db.frm1.setFormLayout("""
+     ... <p><span class="plominoLabelClass">field1:my label</span></p>
+     ... <p>Some help text</p>
+     ... <p><span class="plominoFieldClass">field1</span></p>
+     ... """)
+     >>> print pphtml(db.frm1.displayDocument(None, True, True))
+     <input type="hidden" name="Form" value="frm1" />
+     <div class="plominoFieldGroup required">
+      <p>
+       <label for="field1">
+        my label
+       </label>
+      </p>
+      <p>
+        Some help text
+      </p>
+      <p>
+       <span>
+        <input type="text" id="field1" value="" name="field1" />
+       </span>
+      </p>
+     </div>
+
+It won't group when label and field are in a table
+     >>> db.frm1.setFormLayout("""
+     ... <table><tr><td><span class="plominoLabelClass">field1:my label</span></td>
+     ... <td><span class="plominoFieldClass">field1</span></td></tr></table>
+     ... """)
+     >>> print pphtml(db.frm1.displayDocument(None, True, True))
+     <input type="hidden" name="Form" value="frm1" />
+     <table>
+      <tr>
+       <td>
+        <label for="field1">
+         my label
+        </label>
+       </td>
+       <td>
+        <span>
+         <input type="text" id="field1" value="" name="field1" />
+        </span>
+       </td>
+      </tr>
+     </table>
+
+
+It's legal to have two labels for the same field
+
+
+    >>> db.frm1.setFormLayout("""
+    ... <p><span class="plominoLabelClass">field1:my label 1</span></p>
+    ... <p><span class="plominoLabelClass">field1:my label 2</span></p>
+    ... <p><span class="plominoFieldClass">field1</span></p>
+    ... """)
+    >>> print pphtml(db.frm1.displayDocument(None, True, True))
+    <input type="hidden" name="Form" value="frm1" />
+    <div class="plominoFieldGroup required">
+     <p>
+      <label for="field1">
+       my label 1
+      </label>
+     </p>
+     <p>
+      <label for="field1">
+       my label 2
+      </label>
+     </p>
+     <p>
+      <span>
+       <input type="text" id="field1" value="" name="field1" />
+      </span>
+     </p>
+    </div>
+
+#TODO: can you have multiple legends?
+
+The label can be below the field
+
+    >>> db.frm1.setFormLayout("""
+    ... <p><span class="plominoFieldClass">field1</span></p>
+    ... <p><span class="plominoLabelClass">field1:my label 2</span></p>
+    ... """)
+    >>> print pphtml(db.frm1.displayDocument(None, True, True))
+    <input type="hidden" name="Form" value="frm1" />
+    <div class="plominoFieldGroup required">
+     <p>
+      <span>
+       <input type="text" id="field1" value="" name="field1" />
+      </span>
+     </p>
+     <p>
+      <label for="field1">
+       my label 2
+      </label>
+     </p>
+    </div>
+
+
+It will still group with a label on either side
+    >>> db.frm1.setFormLayout("""
+    ... <p><span class="plominoLabelClass">field1:my label 1</span></p>
+    ... <p><span class="plominoFieldClass">field1</span></p>
+    ... <p><span class="plominoLabelClass">field1:my label 2</span></p>
+    ... """)
+    >>> print pphtml(db.frm1.displayDocument(None, True, True))
+    <input type="hidden" name="Form" value="frm1" />
+    <div class="plominoFieldGroup required">
+     <p>
+      <label for="field1">
+       my label 1
+      </label>
+     </p>
+     <p>
+      <span>
+       <input type="text" id="field1" value="" name="field1" />
+      </span>
+     </p>
+     <p>
+      <label for="field1">
+       my label 2
+      </label>
+     </p>
+    </div>
+
+ In the
+case of grouped inputs such as radio buttons or checkboxes, the group is
+enclosed in an HTML 'fieldset' element, and the label is rendered as an
+HTML 'legend' element.
+
+
+    >>> id = db.frm2.invokeFactory('PlominoField',
+    ...         id='guitarist',
+    ...         title='Title for guitarist',
+    ...         FieldType="TEXT",
+    ...         FieldMode="EDITABLE")
+    >>> db.frm2.guitarist.at_post_create_script()
+    >>> id = db.frm2.invokeFactory('PlominoField',
+    ...         id='bassist',
+    ...         title='Title for bassist',
+    ...         Mandatory='1',
+    ...         FieldType="SELECTION",
+    ...         FieldMode="EDITABLE")
+    >>> db.frm2.bassist.at_post_create_script()
+    >>> id = db.frm2.invokeFactory('PlominoField',
+    ...         id='drummer',
+    ...         title='Title for drummer',
+    ...         FieldType="SELECTION",
+    ...         FieldMode="EDITABLE")
+    >>> db.frm2.drummer.at_post_create_script()
+    >>> from Products.CMFPlomino.fields.text import ITextField
+    >>> from Products.CMFPlomino.fields.selection import ISelectionField
+    >>> db.frm2.setFormLayout("""3 <p>Who is the guitarist:
+    ... <span class="plominoLabelClass">guitarist</span></p>
+    ... <p><span class="plominoFieldClass">guitarist</span></p>
+    ... <p><span class="plominoLabelClass">bassist: Label for bassist</span></p>
+    ... <p><span class="plominoFieldClass">bassist</span></p>
+    ... <p><span class="plominoLabelClass">drummer</span></p>
+    ... <p><span class="plominoFieldClass">drummer</span></p>
+    ... """)
+    >>> adapted = ISelectionField(db.frm2.bassist)
+    >>> adapted.widget = "CHECKBOX"
+    >>> adapted.selectionlist = [u"John Paul Jones", u"Chris Chameleon"]
+    >>> adapted = ISelectionField(db.frm2.drummer)
+    >>> adapted.widget = "RADIO"
+    >>> adapted.selectionlist = [u"John Bonham", u"Princess Leonie"]
+    >>> print pphtml(db.frm2.displayDocument(None, True, True))
+    <input type="hidden" name="Form" value="frm2" />
+    3
+    <div class="plominoFieldGroup">
+     <p>
+      Who is the guitarist:
+      <label for="guitarist">
+       Title for guitarist
+      </label>
+     </p>
+     <p>
+      <span>
+       <input type="text" id="guitarist" value="" name="guitarist" />
+      </span>
+     </p>
+    </div>
+    <fieldset class="required">
+     <p>
+      <legend>
+       Label for bassist
+      </legend>
+     </p>
+     <p>
+      <span class="bassist-selectionfield">
+       <span>
+        <input type="checkbox" name="bassist" value="John Paul Jones" id="bassist-John Paul Jones" />
+        <label for="bassist-John Paul Jones">
+         John Paul Jones
+        </label>
+       </span>
+       <span>
+        <input type="checkbox" name="bassist" value="Chris Chameleon" id="bassist-Chris Chameleon" />
+        <label for="bassist-Chris Chameleon">
+         Chris Chameleon
+        </label>
+       </span>
+      </span>
+     </p>
+    </fieldset>
+    <fieldset>
+     <p>
+      <legend>
+       Title for drummer
+      </legend>
+     </p>
+     <p>
+      <span class="drummer-selectionfield">
+       <span>
+        <input type="radio" name="drummer" value="John Bonham" id="drummer-John Bonham" />
+        <label for="drummer-John Bonham">
+         John Bonham
+        </label>
+       </span>
+       <span>
+        <input type="radio" name="drummer" value="Princess Leonie" id="drummer-Princess Leonie" />
+        <label for="drummer-Princess Leonie">
+         Princess Leonie
+        </label>
+       </span>
+      </span>
+     </p>
+    </fieldset>
+
+
+We could have two alternative labels using hidewhens.
+
+    >>> id = db.frm1.invokeFactory('PlominoHidewhen', id='is_true',
+    ...         title='is true', formula="True", isDynamicHidewhen=True)
+    >>> id = db.frm1.invokeFactory('PlominoHidewhen', id='is_false',
+    ...         title='is false', formula="False", isDynamicHidewhen=True)
+    >>> db.frm1.field1.at_post_create_script()
+    >>> db.frm1.setFormLayout("""
+    ... <p><span class="plominoLabelClass"><span class="plominoHidewhenClass">start:is_true</span> field1:true <span class="plominoHidewhenClass">end:is_true</span></span></p>
+    ... <p><span class="plominoLabelClass"><span class="plominoHidewhenClass">start:is_false</span> field1:false <span class="plominoHidewhenClass">end:is_false</span></span></p>
+    ... <p><span class="plominoFieldClass">field1</span></p>
+    ... """)
+    >>> print pphtml(db.frm1.displayDocument(None, True, True))
+    <input type="hidden" name="Form" value="frm1" />
+    <div class="plominoFieldGroup required">
+     <p>
+      <label for="field1">
+       <div class="hidewhen-is_true">
+        true
+       </div>
+      </label>
+     </p>
+     <p>
+      <label for="field1">
+       <div class="hidewhen-is_false">
+        false
+       </div>
+      </label>
+     </p>
+     <p>
+      <span>
+       <input type="text" id="field1" value="" name="field1" />
+      </span>
+     </p>
+    </div>
+
+
+
+#TODO: test a label for a computed field
+#TODO: test a computed field in the help text
+
+#TODO: test a computed field inside a label
+
+
+If we have a label without a field
+
+     >>> db.frm1.setFormLayout("""
+     ... <p><span class="plominoLabelClass">fieldX:my label</span></p>
+     ... <p>Some help text</p>
+     ... """)
+     >>> print pphtml(db.frm1.displayDocument(None, True, True))
+     <input type="hidden" name="Form" value="frm1" />
+     <p>
+      <span class="plominoLabelClass">
+        fieldX:my label
+      </span>
+     </p>
+     <p>
+      Some help text
+     </p>
+
+and without a field or label text
+
+     >>> db.frm1.setFormLayout("""
+     ... <p><span class="plominoLabelClass">fieldX</span></p>
+     ... <p>Some help text</p>
+     ... """)
+     >>> print pphtml(db.frm1.displayDocument(None, True, True))
+     <input type="hidden" name="Form" value="frm1" />
+     <p>
+      <span class="plominoLabelClass">
+       fieldX
+      </span>
+     </p>
+     <p>
+      Some help text
+     </p>
+
+#TODO: a field without a label and its a checkbox should still be wrapped in a fieldset
+
+#TODO: what if the field exists but isn't in the layout? Should warn the user on save?
+
+
+
+<h2>About what you need</h2>
+<p class=" "><strong>Applying for a loan does not mean you will get one. It is recommended you do not spend the money you have applied for until we have notified you of our decision</strong></p>
+<p><span>The minimum amount you can apply for is </span><strong>£100</strong></p>
+<p><span><span>The maximum amount for a </span><span>c</span><span>ouple </span><span>without children or </span><span>dependent</span><span>Ê</span><span>young pe</span><span>rsons is </span><strong>£464</strong></span></p>
+<p><span><span>The maximum amount for a one or two parent family with</span><span> children or</span><span> dependent</span><span> young p</span><span>ersons</span><span>Ê</span><span>is </span><strong>£812</strong></span></p>
+<p>We use dependent young people to meanÊyoung people aged 16, 17, 18 or 19 that you are getting child benefit for.</p>
+<p><strong>We cannot make a payment for a loan if you already owe £1,500 to Social Fund for a Crisis Loan or Budgeting Loan combined.</strong></p>
+<p><strong><span>If you already owe money to social fund, this will effect how much we can pay you.</span></strong></p>
+<p><strong><span>Total amount you want to apply for £<span class="plominoFieldClass">loanamount</span></span></strong></p>
+
+
+
+<p><span class="plominoLabelClass">disabilitypaymentpartner:Does you partner look after someone who is getting, or waiting to hear about:</span></p>
+<ul class="listTypeCircle">
+<li>Attendance Allowance</li>
+<li>Disability Living Allowance for personal care at the middle or higherÊrate</li>
+<li>Persoanl Independence Payment for personal care atÊthe standard or enhanced rate?</li>
+</ul>
+<p><span class="plominoFieldClass">disabilitypaymentpartner</span></p>
+<p><span class="plominoFieldClass"><span class="plominoHidewhenClass"><span class="plominoHidewhenClass">start:disability_payment_partner</span></span></span></p>
+
+
+<h2>ÊSerious illness</h2>
+<p><span class="plominoLabelClass">seriousillness:AreÊyou suffering from a serious illness?</span></p>
+<p><span class="plominoFieldClass">seriousillness</span></p>
+<p><span class="plominoFieldClass"><span class="plominoHidewhenClass">start:serious_illness_affect</span></span></p>
+<p><span class="plominoLabelClass">howitaffects:What is your serious illness and how does it affect you?</span></p>
+<p><span class="plominoFieldClass">howitaffects</span></p>
+<p><span class="plominoFieldClass"><span class="plominoHidewhenClass">end:serious_illness_affect</span></span></p>
+
+
+
+.. todo:: test text area
+
+.. todo:: We need a test for a selection list with no value in edit mode. It should not render a label.
+
+.. todo:: test labels below fields
+
+.. todo:: test labels without fieldid
+
+.. todo:: test hidewhens inside a label
+
+.. todo:: fix other tests
+
+.. todo:: test span for label and p for field
+
+.. todo:: test fields in tables and lists
+
+.. todo:: test inline compound field like simple yes no
+
+.. todo:: test boolean field
+
+
