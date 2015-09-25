@@ -104,7 +104,9 @@ Scenario: frmBirthday has one JS resource and one CSS resource
     True
 
     >>> browser.getControl(name='personName').value = 'Eric'
-    >>> browser.getControl(name='birthDate').value = '1974-10-20 00:00'
+    >>> browser.getControl(name='birthDate.year:record').value = ['1974']
+    >>> browser.getControl(name='birthDate.month:record').value = ['10']
+    >>> browser.getControl(name='birthDate.day:record').value = ['20']
     >>> browser.getControl(name='personCategory').value = ['Friend']
     >>> browser.getControl(name='plomino_save').click()
     >>> document_url = browser.url

@@ -15,23 +15,25 @@
       tal:condition="python: not ajax_load or ajax_include_head">
     <div tal:replace="structure provider:plone.resourceregistries.styles" />
     <div tal:replace="structure provider:plone.resourceregistries.scripts" />
-    <script type="text/javascript" tal:condition="here/hasDynamicHidewhen" 
+    <script type="text/javascript" tal:condition="here/hasDynamicContent"
         tal:content="string:
-function refreshHidewhen() {
+function refreshDynamicContent() {
     var onsuccess = function(data, textStatus, xhr) {
-        for (var hw in data)
-            jQuery('.hidewhen-' + hw).css('display', data[hw]?'none':'block');
+        for (var hw in data.hidewhen)
+            jQuery('.hidewhen-' + hw).css('display', data.hidewhen[hw]?'none':'block');
+        for (var df in data.dynamicfields)
+            jQuery('.dynamic-' + df).text(data.dynamicfields[df]);
     }
     jQuery.ajax({
         type: '${form_method}',
-        url: 'computehidewhens',
+        url: 'computedynamiccontent',
         data: jQuery('#plomino_form').serialize(),
         success: onsuccess,
         dataType: 'json' 
     });
 }
 jQuery(document).ready( function() {
-    jQuery('#plomino_form :input').change(refreshHidewhen);
+    jQuery('#plomino_form :input').change(refreshDynamicContent);
 });
     ">
     </script>

@@ -1,10 +1,17 @@
-<span tal:define="widget python:options['field'].getSettings('widget');
-                  size python:options['field'].getSettings('size')"
-    tal:attributes="class string:TEXTFieldRead-${widget}">
+<tal:field define="widget python:options['field'].getSettings('widget');
+                   size python:options['field'].getSettings('size');
+                   dynamic python:getattr(options['field'], 'isDynamicField', False);
+                   field_id python:options['field'].id;
+                   default_klass string:TEXTFieldRead-${widget};
+                   klass python:dynamic and '%s dynamicfield dynamic-%s' % (default_klass, field_id) or default_klass">
     <tal:widget condition="python:test(widget=='HIDDEN')">
-        <input type="hidden" tal:attributes="id options/fieldname; name options/fieldname; value options/fieldvalue" />
+        <span tal:attributes="class klass">
+            <input type="hidden" tal:attributes="id options/fieldname; name options/fieldname; value options/fieldvalue" />
+        </span>
     </tal:widget>
     <tal:widget condition="python:test(widget!='HIDDEN')">
-        <tal:block tal:define="v options/fieldvalue" tal:content="structure v">text</tal:block>
+        <span tal:define="v options/fieldvalue"
+              tal:attributes="class klass"
+              tal:content="structure v">text</span>
     </tal:widget>
-</span>
+</tal:field>

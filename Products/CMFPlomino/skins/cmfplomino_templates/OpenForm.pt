@@ -23,27 +23,29 @@
         <tal:script metal:use-macro="here/googlevisualization_macro/macros/js_library">//load google js</tal:script>
     </tal:block_hasgooglevisualizationfield>
     <script 
-        tal:condition="here/hasDynamicHidewhen"
+        tal:condition="here/hasDynamicContent"
         tal:define="form python:here;
                     form_method python:form.getFormMethod();
                     "
         type="text/javascript"
         tal:content="string:
-function refreshHidewhen() {
+function refreshDynamicContent() {
     var onsuccess = function(data, textStatus, xhr) {
-        for (var hw in data)
-            jQuery('.hidewhen-' + hw).css('display', data[hw]?'none':'block');
+        for (var hw in data.hidewhen)
+            jQuery('.hidewhen-' + hw).css('display', data.hidewhen[hw]?'none':'block');
+        for (var df in data.dynamicfields)
+            jQuery('.dynamic-' + df).text(data.dynamicfields[df]);
     }
     jQuery.ajax({
         type: '${form_method}',
-        url: 'computehidewhens',
+        url: 'computedynamiccontent',
         data: jQuery('#plomino_form').serialize(),
         success: onsuccess,
         dataType: 'json' 
     });
 }
 jQuery(document).ready( function() {
-    jQuery('#plomino_form :input').change(refreshHidewhen);
+    jQuery('#plomino_form :input').change(refreshDynamicContent);
 });
 ">
     </script>
@@ -214,12 +216,14 @@ jQuery(document).ready( function() {
                         <tal:results
                             define="searchviewname python:here.getSearchView();
                                     searchviewobj python:here.getParentDatabase().getView(searchviewname);
+                                    searchviewfound python: searchviewobj is not None;
                                     ">
                             <tal:block_no_view_found
-                                condition="not:searchviewobj"
-                                define="error python:here.writeMessageOnPage(searchviewname+' view does not exist.', here.REQUEST, error=True);" />
+                                condition="not:searchviewfound">
+                                <span tal:define="error python:here.writeMessageOnPage(searchviewname+' view does not exist.', here.REQUEST, error=True);" />
+                            </tal:block_no_view_found>
 
-                            <tal:block_view_found condition="searchviewobj">
+                            <tal:block_view_found condition="searchviewfound">
                                 <table 
                                     tal:define="results python:options.get('searchresults');
                                                 count python:len(results) if results else 0;

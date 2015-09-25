@@ -669,7 +669,33 @@ A field can be computed::
     >>> doc4.save()
     >>> db.cleanRequestCache()
     >>> db.frm2.displayDocument(doc4)
-    u'11 <p><span class="TEXTFieldRead-TEXT">\n    \n    \n        Welcome test_user_1_\n    \n</span>\n</p>'
+    u'11 <p>\n    \n    \n        <span class="TEXTFieldRead-TEXT">Welcome test_user_1_</span>\n    \n\n</p>'
+
+A field can be computed dynamically::
+
+    >>> id = db.frm2.invokeFactory('PlominoField',
+    ...         id='dynamic',
+    ...         Title='Dynamic',
+    ...         FieldType="TEXT",
+    ...         FieldMode="EDITABLE")
+    >>> id = db.frm2.invokeFactory('PlominoField',
+    ...         id='dynamic_display',
+    ...         Title='Dynamic display',
+    ...         FieldType="TEXT",
+    ...         FieldMode="DISPLAY",
+    ...         isDynamicField=True)
+    >>> db.frm2.dynamic.at_post_create_script()
+    >>> db.frm2.dynamic_display.at_post_create_script()
+    >>> db.frm2.dynamic_display.setFormula(
+    ... """return plominoContext.getItem('dynamic')""")
+    >>> db.frm2.setFormLayout(
+    ... """12 <p><span class="plominoFieldClass">dynamic_display</span></p>""")
+    >>> doc4.setItem('dynamic', 'this is dynamic')
+    >>> doc4.save()
+    >>> db.cleanRequestCache()
+    >>> db.frm2.displayDocument(doc4)
+    u'12 <p>\n    \n    \n        <span class="TEXTFieldRead-TEXT dynamicfield dynamic-dynamic_display">this is dynamic</span>\n    \n\n</p>'
+
 
 Events
 -------
