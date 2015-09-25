@@ -754,6 +754,43 @@ class PlominoForm(ATFolder):
 
         return d.html()
 
+    def _handleLinks(self, html_content_orig, editmode):
+        """ Parse the layout for link tags,
+
+        - add a link to the field for forms
+        - for multipage forms, add a button that will page through the form to
+          find the field
+        """
+
+        html_content_processed = html_content_orig  # We edit the copy
+        d = pq(html_content_processed)
+
+        # Handle links to fields
+        for linkto_node in d("span.plominoLinktoClass"):
+            linkto_text = linkto_node.text.strip()
+            if ':' in linkto_text:
+                fieldname, text = linkto_text.split(':', 1)
+            else:
+                fieldname = linkto_text
+                text = None
+
+            # Make sure the field exists
+            field = self.getFormField(fieldname)
+            if field is not None:
+                if text is None:
+                    text = 'Go to %s' % field.Title()
+                # Multi page forms may involve paging
+                if self.getIsMulti():
+                    link = '<input type="submit" name="plominogoto-%s" value="%s" />' % (fieldname, text)
+                else:
+                    link = '<a href="#%s">%s</a>' % (fieldname, text)
+
+            pq(link).insert_before(pq(linkto_node))
+            # Remove the old node
+            pq(linkto_node).remove()
+
+        return d.html()
+
     def _handleMultiPage(self, html_content_orig, request):
         """
         Split the HTML into multiple pages and return the current page
@@ -769,10 +806,19 @@ class PlominoForm(ATFolder):
             page = 0
         else:
             page = int(request.get('plomino_current_page'))
+
+            # Check if this is a "goto" action
+            goto = False
+            for key in request.form.keys():
+                if key.startswith('plominogoto-'):
+                    goto = key
+
             # Determine the action. If continue or next are in the form,
             # we want to page forwards. If back is in the form, we want to
             # move backwards. Otherwise we submit.
-            if request.get('continue') or request.get('next'):
+            if goto:
+                action = 'goto'
+            elif request.get('continue') or request.get('next'):
                 action = 'continue'
             elif request.get('back'):
                 action = 'back'
@@ -807,16 +853,41 @@ class PlominoForm(ATFolder):
                     if action == 'continue':
                         page = page + 1
                     else:
+                        # If it's a goto, page back through the form as well
                         page = page - 1
                     new_page = d('div.plomino-accordion-content').eq(page)
-                    if new_page.size() == 0:
-                        # We no longer have a page
-                        if not self.isPage:
+
+                    # Don't escape the bounds of the pages
+                    if page < 0:
+                        page = 0
+                        new_page = d('div.plomino-accordion-content').eq(page)
+                        break
+
+                    # We've passed the end of the pages
+                    if page > num_pages:
+                        # Return none for a form so a doc can be created
+                        # Otherwise it's up to form events to handle paging
+                        if not self.isPage():
                             return None
 
                     # Check for page content. If the page is empty (because)
                     # it is wrapped in hidden hidewhens, then continue paging
                     children = pq(new_page).children()
+
+                    # Check for the goto field on this page. If it's not
+                    # there we need to continue looking for it
+                    if goto:
+                        hasgoto = False
+                        fieldname = goto.split('-', 1)[-1]
+                        # See if this field is on the current page
+                        for span in children.find('span.plominoFieldClass'):
+                            if span.text.strip().split(':', 1)[0] == fieldname:
+                                hasgoto = True
+                                break
+                        # If the field wasn't on the page, keep paging
+                        if not hasgoto:
+                            continue
+
                     for child in children:
                         if pq(child).attr('style') == 'display: none':
                             continue
@@ -914,6 +985,8 @@ class PlominoForm(ATFolder):
         # Handle legends and labels
         html_content = self._handleLabels(html_content, editmode)
         # html_content = self._handleLabels(legend_re, html_content)
+
+        html_content = self._handleLinks(html_content, editmode)
 
         # insert the fields with proper value and rendering
         for (field, fieldblock) in fields_in_layout:
@@ -1615,6 +1688,10 @@ class PlominoForm(ATFolder):
         # Don't validate if this is a back request
         if REQUEST.get('plomino_clicked_name') == 'back':
             return []
+        # Or if a 'go-to' link has been clicked
+        if REQUEST.get('plomino_clicked_name', '').startswith('plominogoto-'):
+            return []
+
         # Validate and exit early if there are no errors
         errors = self.validateInputs(REQUEST)
         if not errors:
