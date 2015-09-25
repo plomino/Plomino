@@ -968,13 +968,24 @@ class PlominoForm(ATFolder):
                     if isinstance(value, HTTPRequest.record):
                         for key in value:
                             html_content = (
-                            "<input type='hidden' "
-                            "name='%s.%s:record' "
-                            "value='%s' />%s" % (
-                                field_id,
-                                key,
-                                asUnicode(value[key]),
-                                html_content)
+                                "<input type='hidden' "
+                                "name='%s.%s:record' "
+                                "value='%s' />%s" % (
+                                    field_id,
+                                    key,
+                                    asUnicode(value[key]),
+                                    html_content)
+                            )
+                    # And lists
+                    elif isinstance(value, list):
+                        for item in value:
+                            html_content = (
+                                "<input type='hidden' "
+                                "name='%s' "
+                                "value='%s' />%s" % (
+                                    field_id,
+                                    asUnicode(item),
+                                    html_content)
                             )
                     else:
                         html_content = (
