@@ -2,9 +2,10 @@ from AccessControl import ClassSecurityInfo
 from AccessControl.SecurityManagement import newSecurityManager
 from plone.autoform import directives
 from plone.dexterity.content import Item
+from plone.protect.interfaces import IDisableCSRFProtection
 from plone.supermodel import model
 from zope import schema
-from zope.interface import implements
+from zope.interface import implements, alsoProvides
 from zope.schema.vocabulary import SimpleVocabulary
 
 from .. import _
@@ -96,6 +97,8 @@ class PlominoAgent(Item):
         plominoContext = self
         plominoReturnURL = self.getParentDatabase().absolute_url()
         request = getattr(self, 'REQUEST', None)
+        if request:
+            alsoProvides(request, IDisableCSRFProtection)
         try:
             if self.run_as == "OWNER":
                 # Remember the current user
