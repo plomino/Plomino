@@ -195,7 +195,9 @@ class DatetimeField(BaseField):
 
         try:
             if fieldValue and isinstance(fieldValue, basestring):
-                if fieldValue == u'ampm: , day: , hour: 00, minute: 00, month: , year: ':
+                if "year" in fieldValue and "month" in fieldValue and \
+                   "day" in fieldValue and "ampm" in fieldValue and \
+                   "hour" in fieldValue and "minute" in fieldValue:
                     return None
                 fmt = self.format
                 if not fmt:
