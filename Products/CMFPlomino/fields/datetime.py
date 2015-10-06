@@ -24,6 +24,7 @@ from zope.schema.vocabulary import SimpleVocabulary
 # Plomino
 from base import IBaseField, BaseField, BaseForm
 from dictionaryproperty import DictionaryProperty
+from DateTime.interfaces import DateTimeError
 from Products.CMFPlomino.PlominoUtils import StringToDate
 from Products.CMFPlomino.PlominoUtils import PlominoTranslate
 
@@ -214,12 +215,17 @@ class DatetimeField(BaseField):
         return fieldValue
 
     def recordToDate(self, record):
-        if record.ampm.upper() == 'AM' or record.ampm.upper() == 'PM':
-            submitted_string = "{v.year}-{v.month}-{v.day} {v.hour}:{v.minute} {v.ampm}".format(v=record)
-            date_input = StringToDate(submitted_string, '%Y-%m-%d %I:%M %p')
-        else:
-            submitted_string = "{v.year}-{v.month}-{v.day} {v.hour}:{v.minute}".format(v=record)
-            date_input = StringToDate(submitted_string, '%Y-%m-%d %H:%M')
+        try:
+            if record.ampm.upper() == 'AM' or record.ampm.upper() == 'PM':
+                submitted_string = "{v.year}-{v.month}-{v.day} {v.hour}:{v.minute} {v.ampm}".format(v=record)
+                date_input = StringToDate(submitted_string, '%Y-%m-%d %I:%M %p')
+            else:
+                submitted_string = "{v.year}-{v.month}-{v.day} {v.hour}:{v.minute}".format(v=record)
+                date_input = StringToDate(submitted_string, '%Y-%m-%d %H:%M')
+        except DateTimeError:
+            # processInput trigger everytime combox box is changed,
+            # record could be 2003-00-00 00:00
+            return None
 
         return date_input
 
