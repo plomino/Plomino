@@ -97,11 +97,16 @@ class DatetimeField(BaseField):
                     errors.append(
                         "%s must be a date/time format" % (
                             fieldname))
-                if not(submittedValue.year.isdigit() and
-                   submittedValue.month.isdigit() and
-                   submittedValue.day.isdigit() and
-                   submittedValue.hour.isdigit() and
-                   submittedValue.minute.isdigit()):
+                if (submittedValue.year and
+                   not(submittedValue.year.isdigit())) or \
+                   (submittedValue.month and
+                   not(submittedValue.month.isdigit())) or \
+                   (submittedValue.day and
+                   not(submittedValue.day.isdigit())) or \
+                   (submittedValue.hour and
+                   not(submittedValue.hour.isdigit())) or \
+                   (submittedValue.minute and
+                   not(submittedValue.minute.isdigit())):
                     errors.append(
                         "%s must be a digit format" % (
                             fieldname))
@@ -113,9 +118,12 @@ class DatetimeField(BaseField):
                         "%s must be a AM/PM format." % (
                             fieldname))
                 # should not raise any error if date is empty or half filled
-                if submittedValue.year == '0000' and \
-                   submittedValue.month == '00' and \
-                   submittedValue.day == '00':
+                if (submittedValue.year == '0000' and
+                   submittedValue.month == '00' and
+                   submittedValue.day == '00') or \
+                   (submittedValue.year == '' and
+                   submittedValue.month == '' and
+                   submittedValue.day == ''):
                     if self.context.getMandatory():
                        errors.append("%s %s" % (
                            self.context.Title(),
@@ -157,9 +165,12 @@ class DatetimeField(BaseField):
                 return StringToDate(submittedValue, fmt)
         # it is instance type when no js is detected
         # submittedValue = ampm: , day: 09, hour: 00, minute: 00, month: 03, year: 1993
-        if submittedValue.year == '0000' and \
-           submittedValue.month == '00' and \
-           submittedValue.day == '00':
+        if (submittedValue.year == '0000' and
+           submittedValue.month == '00' and
+           submittedValue.day == '00') or \
+           (submittedValue.year == '' and
+           submittedValue.month == '' and
+           submittedValue.day == ''):
             return None
 
         date_input = self.recordToDate(submittedValue)
@@ -184,6 +195,8 @@ class DatetimeField(BaseField):
 
         try:
             if fieldValue and isinstance(fieldValue, basestring):
+                if fieldValue == u'ampm: , day: , hour: 00, minute: 00, month: , year: ':
+                    return None
                 fmt = self.format
                 if not fmt:
                     fmt = form.getParentDatabase().getDateTimeFormat()
