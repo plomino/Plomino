@@ -81,8 +81,10 @@ class DatetimeField(BaseField):
                         v = StringToDate(submittedValue, '%Y-%m-%d %H:%M')
             except:
                 errors.append(
-                        "%s must be a date/time (submitted value was: %s)" % (
+                        "%s %s (%s: %s)" % (
                             fieldname,
+                            PlominoTranslate("must be a date/time", self.context),
+                            PlominoTranslate("submitted value was", self.context),
                             submittedValue))
         else:
             # it is instance type when no js is detected
@@ -99,8 +101,9 @@ class DatetimeField(BaseField):
                    'minute' in submittedValue and
                    'ampm' in submittedValue):
                     errors.append(
-                        "%s must be a date/time format" % (
-                            fieldname))
+                        "%s %s" % (
+                            fieldname,
+                            PlominoTranslate("must be a date/time format", self.context)))
 
                 if submittedValue.year:
                     if submittedValue.year.isdigit():
@@ -109,72 +112,98 @@ class DatetimeField(BaseField):
                         max_year = self.maxYear()
                         if year_value and year_value < min_year:
                             errors.append(
-                                "%s: year field (%d) must be more than or equal to %d" % (
-                                    fieldname, min_year, year_value))
+                                "%s: %s (%d) %s %d" % (
+                                    fieldname,
+                                    PlominoTranslate("year field", self.context),
+                                    year_value,
+                                    PlominoTranslate("must be more than or equal to", self.context),
+                                    min_year))
                         if year_value > max_year:
                             errors.append(
-                                "%s: year field (%d) must be less than or equal to %d" % (
-                                    fieldname, max_year, year_value))
+                                "%s: %s (%d) %s %d" % (
+                                    fieldname,
+                                    PlominoTranslate("year field", self.context),
+                                    year_value,
+                                    PlominoTranslate("must be less than or equal to", self.context),
+                                    max_year))
 
                     else:
                         errors.append(
-                            "%s: year field must be a digit format" % (
-                                fieldname))
+                            "%s: %s" % (
+                                fieldname,
+                                PlominoTranslate("year field must be a digit format", self.context)))
 
                 if submittedValue.month:
                     if submittedValue.month.isdigit():
                         month_value = int(submittedValue.month)
                         if month_value < 0 or month_value > 12:
                             errors.append(
-                                "%s: month field (%d) must be less than or equal to 12" % (
-                                    fieldname, month_value))
+                                "%s: %s (%d) %s" % (
+                                    fieldname,
+                                    PlominoTranslate("month field", self.context),
+                                    month_value,
+                                    PlominoTranslate("must be less than or equal to 12", self.context)))
                     else:
                         errors.append(
-                            "%s: month field must be a digit format" % (
-                                fieldname))
+                            "%s: %s" % (
+                                fieldname,
+                                PlominoTranslate("month field must be a digit format", self.context)))
 
                 if submittedValue.day:
                     if submittedValue.day.isdigit():
                         day_value = int(submittedValue.day)
                         if day_value < 0 or day_value > 31:
                             errors.append(
-                                "%s: day field (%d) must be less than or equal to 31" % (
-                                    fieldname, day_value))
+                                "%s: %s (%d) %s" % (
+                                    fieldname,
+                                    PlominoTranslate("day field", self.context),
+                                    day_value,
+                                    PlominoTranslate("must be less than or equal to 31", self.context)))
                     else:
                         errors.append(
-                            "%s: day field must be a digit format" % (
-                                fieldname))
+                            "%s: %s" % (
+                                fieldname,
+                                PlominoTranslate("day field must be a digit format", self.context)))
 
                 if submittedValue.hour:
                     if submittedValue.hour.isdigit():
                         hour_value = int(submittedValue.hour)
                         if hour_value < 0 or hour_value > 12:
                             errors.append(
-                                "%s: hour field (%d) must be less than or equal to 12" % (
-                                    fieldname, hour_value))
+                                "%s: %s (%d) %s" % (
+                                    fieldname,
+                                    PlominoTranslate("hour field", self.context),
+                                    hour_value,
+                                    PlominoTranslate("must be less than or equal to 12", self.context)))
                     else:
                         errors.append(
-                            "%s: hour field must be a digit format" % (
-                                fieldname))
+                            "%s: %s" % (
+                                fieldname,
+                                PlominoTranslate("hour field must be a digit format", self.context)))
 
                 if submittedValue.minute:
                     if submittedValue.minute.isdigit():
                         minute_value = int(submittedValue.minute)
                         if minute_value < 0 or minute_value > 59:
                             errors.append(
-                                "%s: minute field (%d) must be less than or equal to 59" % (
-                                    fieldname, minute_value))
+                                "%s: %s (%d) %s" % (
+                                    fieldname,
+                                    PlominoTranslate("minute field", self.context),
+                                    minute_value,
+                                    PlominoTranslate("must be less than or equal to 59", self.context)))
                     else:
                         errors.append(
-                            "%s: minute field must be a digit format" % (
-                                fieldname))
+                            "%s: %s" % (
+                                fieldname,
+                                PlominoTranslate("minute field must be a digit format", self.context)))
 
                 if not(submittedValue.ampm == '' or
                    submittedValue.ampm.upper() == 'AM' or
                    submittedValue.ampm.upper() == 'PM'):
                     errors.append(
-                        "%s must be a AM/PM format" % (
-                            fieldname))
+                        "%s %s" % (
+                            fieldname,
+                            PlominoTranslate("must be a AM/PM format", self.context)))
                 # should not raise any error if date is empty or half filled
                 if (submittedValue.year == '0000' and
                    submittedValue.month == '00' and
@@ -192,8 +221,10 @@ class DatetimeField(BaseField):
                     date_input, submitted_string = self.recordToDate(submittedValue)
             except:
                 errors.append(
-                        "%s must be a valid date/time (submitted value was: %s)" % (
+                        "%s %s (%s: %s)" % (
                             fieldname,
+                            PlominoTranslate("must be a valid date/time", self.context),
+                            PlominoTranslate("submitted value was", self.context),
                             submitted_string))
 
         return errors
