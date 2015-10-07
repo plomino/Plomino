@@ -89,6 +89,9 @@ class DatetimeField(BaseField):
             # submittedValue = ampm: , day: 09, hour: 00, minute: 00, month: 03, year: 1993
             try:
                 submitted_string = ''
+                year_value = 0
+                month_value = 0
+                day_value = 0
                 if not('year' in submittedValue and
                    'month' in submittedValue and
                    'day' in submittedValue and
@@ -98,25 +101,79 @@ class DatetimeField(BaseField):
                     errors.append(
                         "%s must be a date/time format" % (
                             fieldname))
-                if (submittedValue.year and
-                   not(submittedValue.year.isdigit())) or \
-                   (submittedValue.month and
-                   not(submittedValue.month.isdigit())) or \
-                   (submittedValue.day and
-                   not(submittedValue.day.isdigit())) or \
-                   (submittedValue.hour and
-                   not(submittedValue.hour.isdigit())) or \
-                   (submittedValue.minute and
-                   not(submittedValue.minute.isdigit())):
-                    errors.append(
-                        "%s must be a digit format" % (
-                            fieldname))
+
+                if submittedValue.year:
+                    if submittedValue.year.isdigit():
+                        year_value = int(submittedValue.year)
+                        min_year = self.minYear()
+                        max_year = self.maxYear()
+                        if year_value and year_value < min_year:
+                            errors.append(
+                                "%s: year field (%d) must be more than or equal to %d" % (
+                                    fieldname, min_year, year_value))
+                        if year_value > max_year:
+                            errors.append(
+                                "%s: year field (%d) must be less than or equal to %d" % (
+                                    fieldname, max_year, year_value))
+
+                    else:
+                        errors.append(
+                            "%s: year field must be a digit format" % (
+                                fieldname))
+
+                if submittedValue.month:
+                    if submittedValue.month.isdigit():
+                        month_value = int(submittedValue.month)
+                        if month_value < 0 or month_value > 12:
+                            errors.append(
+                                "%s: month field (%d) must be less than or equal to 12" % (
+                                    fieldname, month_value))
+                    else:
+                        errors.append(
+                            "%s: month field must be a digit format" % (
+                                fieldname))
+
+                if submittedValue.day:
+                    if submittedValue.day.isdigit():
+                        day_value = int(submittedValue.day)
+                        if day_value < 0 or day_value > 31:
+                            errors.append(
+                                "%s: day field (%d) must be less than or equal to 31" % (
+                                    fieldname, day_value))
+                    else:
+                        errors.append(
+                            "%s: day field must be a digit format" % (
+                                fieldname))
+
+                if submittedValue.hour:
+                    if submittedValue.hour.isdigit():
+                        hour_value = int(submittedValue.hour)
+                        if hour_value < 0 or hour_value > 12:
+                            errors.append(
+                                "%s: hour field (%d) must be less than or equal to 12" % (
+                                    fieldname, hour_value))
+                    else:
+                        errors.append(
+                            "%s: hour field must be a digit format" % (
+                                fieldname))
+
+                if submittedValue.minute:
+                    if submittedValue.minute.isdigit():
+                        minute_value = int(submittedValue.minute)
+                        if minute_value < 0 or minute_value > 59:
+                            errors.append(
+                                "%s: minute field (%d) must be less than or equal to 59" % (
+                                    fieldname, minute_value))
+                    else:
+                        errors.append(
+                            "%s: minute field must be a digit format" % (
+                                fieldname))
 
                 if not(submittedValue.ampm == '' or
                    submittedValue.ampm.upper() == 'AM' or
                    submittedValue.ampm.upper() == 'PM'):
                     errors.append(
-                        "%s must be a AM/PM format." % (
+                        "%s must be a AM/PM format" % (
                             fieldname))
                 # should not raise any error if date is empty or half filled
                 if (submittedValue.year == '0000' and
@@ -131,7 +188,8 @@ class DatetimeField(BaseField):
                            PlominoTranslate("is mandatory", self.context)))
                     return errors
 
-                date_input = self.recordToDate(submittedValue)
+                if not errors and year_value and month_value and day_value:
+                    date_input, submitted_string = self.recordToDate(submittedValue)
             except:
                 errors.append(
                         "%s must be a valid date/time (submitted value was: %s)" % (
@@ -164,17 +222,25 @@ class DatetimeField(BaseField):
                 if not fmt:
                     fmt = self.context.getParentDatabase().getDateTimeFormat()
                 return StringToDate(submittedValue, fmt)
+
         # it is instance type when no js is detected
         # submittedValue = ampm: , day: 09, hour: 00, minute: 00, month: 03, year: 1993
+        date_input = None
         if (submittedValue.year == '0000' and
            submittedValue.month == '00' and
            submittedValue.day == '00') or \
            (submittedValue.year == '' and
            submittedValue.month == '' and
            submittedValue.day == ''):
-            return None
+            return date_input
 
-        date_input = self.recordToDate(submittedValue)
+        if submittedValue.year and \
+           submittedValue.month and \
+           submittedValue.day and \
+           int(submittedValue.year) and \
+           int(submittedValue.month) and \
+           int(submittedValue.day):
+            date_input, submitted_string = self.recordToDate(submittedValue)
 
         return date_input
 
@@ -214,6 +280,16 @@ class DatetimeField(BaseField):
 
         return fieldValue
 
+    def minYear(self):
+        if self.startingyear and self.startingyear.isdigit():
+            return int(self.startingyear)
+        return 1
+
+    def maxYear(self):
+        if self.endingyear and self.endingyear.isdigit():
+            return int(self.endingyear)
+        return 9999
+
     def recordToDate(self, record):
         try:
             if record.ampm.upper() == 'AM' or record.ampm.upper() == 'PM':
@@ -225,9 +301,9 @@ class DatetimeField(BaseField):
         except DateTimeError:
             # processInput trigger everytime combox box is changed,
             # record could be 2003-00-00 00:00
-            return None
+            return (None, submitted_string)
 
-        return date_input
+        return (date_input, submitted_string)
 
 for f in getFields(IDatetimeField).values():
     setattr(DatetimeField, f.getName(), DictionaryProperty(f, 'parameters'))
