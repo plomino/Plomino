@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from zope.interface.interface import Attribute
 from zope.interface import Interface
+from zope.component.interfaces import IObjectEvent
 
 
 class IPlominoDatabase(Interface):
@@ -64,3 +65,6 @@ class IPlominoSafeDomains(Interface):
     """Marker interface for PlominoSafeDomains
     """
 
+class IPlominoAfterDocumentSaveEvent(IObjectEvent):
+    """An object has been modified
+    """
