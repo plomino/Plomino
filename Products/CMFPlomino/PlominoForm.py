@@ -623,7 +623,7 @@ class PlominoForm(ATFolder):
                     continue
                 field = self.getFormField(field_id)
                 if field is not None:
-                    pq(label_node).text(field.Title())
+                    pq(label_node).text(asUnicode(field.Title()))
                 else:
                     #TODO? should we produce a label anyway?
                     # We could also look and see if the next field doesn't have a label and use that.
