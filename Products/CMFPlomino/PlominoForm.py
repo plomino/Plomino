@@ -1877,6 +1877,22 @@ class PlominoForm(ATFolder):
                         field_errors.append("%s %s" % (
                             f.Title(),
                             PlominoTranslate("is mandatory", self)))
+                else:
+                    formula = f.getValidationFormula()
+                    if formula:
+                        error_msg = ''
+                        try:
+                            error_msg = self.runFormulaScript(
+                                SCRIPT_ID_DELIMITER.join([
+                                    'field', self.id, f.id,
+                                    'ValidationFormula']),
+                                tmp,
+                                # doc,
+                                f.ValidationFormula)
+                        except PlominoScriptException, e:
+                            e.reportError('%s validation formula failed' % f.id)
+                        if error_msg:
+                            field_errors.append(error_msg)
             else:
                 #
                 # STEP 2: check validation formula
