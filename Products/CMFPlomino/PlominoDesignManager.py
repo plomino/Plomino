@@ -1111,6 +1111,79 @@ class PlominoDesignManager(Persistent):
             node.appendChild(data)
         return node
 
+    security.declareProtected(DESIGN_PERMISSION, 'exportDesignAsJSON')
+    def exportDesignAsJSON(self, elementids=None, REQUEST=None, dbsettings=True):
+        """
+        """
+        impl = getDOMImplementation()
+        doc = impl.createDocument(None, "plominodatabase", None)
+        root = doc.documentElement
+        root.setAttribute("id", self.id)
+
+        if REQUEST:
+            str_elementids = REQUEST.get("elementids")
+            if str_elementids is not None:
+                elementids = str_elementids.split("@")
+
+        if elementids is None:
+            elements = (self.getForms()
+                    + self.getViews()
+                    + self.getAgents()
+                    + [o for o in self.resources.getChildNodes()]
+                    )
+        else:
+            elements = []
+            for id in elementids:
+                if id.startswith('resources/'):
+                    e = getattr(self.resources, id.split('/')[1])
+                else:
+                    e = getattr(self, id)
+                elements.append(e)
+
+        # Sort elements by type (to store forms before views), then by id
+        elements.sort(key=lambda elt: elt.getId())
+        elements.sort(key=lambda elt: elt.Type())
+
+        designNode = doc.createElement('design')
+
+        # export database settings
+        if dbsettings:
+            node = self.exportElementAsXML(doc, self, isDatabase=True)
+            designNode.appendChild(node)
+
+        # export database design elements
+        for e in elements:
+            if e.meta_type in plomino_schemas.keys():
+                node = self.exportElementAsXML(doc, e)
+            else:
+                node = self.exportResourceAsXML(doc, e)
+
+            designNode.appendChild(node)
+
+        root.appendChild(designNode)
+        s = doc.toxml()
+
+        if REQUEST:
+            REQUEST.RESPONSE.setHeader(
+                    'content-type', "application/json")
+
+        # Usage of lxml to make a pretty output
+        import xmltodict, simplejson as json
+
+        try:
+            from lxml import etree
+            parser = etree.XMLParser(strip_cdata=False, encoding="utf-8")
+            text = etree.tostring(
+                    etree.XML(s, parser),
+                    encoding="utf-8",
+                    pretty_print=True)
+            o = xmltodict.parse(text)
+            return json.dumps(o)
+        except ImportError:
+            # XXX: Blunt object replace:
+            return s.encode('utf-8').replace("><", ">\n<")
+
+
     security.declareProtected(DESIGN_PERMISSION, 'importDesignFromXML')
     def importDesignFromXML(self, xmlstring=None, REQUEST=None,
             from_folder=None, replace=False):
