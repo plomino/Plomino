@@ -42,9 +42,10 @@ from Products.CMFPlomino.config import *
 from HttpUtils import authenticateAndLoadURL
 from HttpUtils import authenticateAndPostToURL
 from Products.CMFPlomino.exceptions import PlominoReplicationException
-from Products.CMFPlomino.PlominoUtils import StringToDate
+from Products.CMFPlomino.PlominoUtils import StringToDate, DateToString
 from Products.CMFPlomino.PlominoUtils import escape_xml_illegal_chars
 from Products.CMFPlomino.PlominoUtils import plomino_decimal
+import simplejson as json
 
 REMOTE_DOC_ID_SEPARATOR = '#'
 REMOTE_DOC_DATE_SEPARATOR = '@'
@@ -1240,6 +1241,21 @@ class PlominoReplicationManager(Persistent):
                         self.id, label))
         return self.exportAsXML(docids, REQUEST=REQUEST)
 
+    security.declareProtected(READ_PERMISSION, 'manage_exportAsJSON')
+    def manage_exportAsJSON(self, REQUEST):
+        """
+        """
+        docids = [b.id for b in self.getAllDocuments(getObject=False)]
+        #import pdb;pdb.set_trace()
+        if REQUEST.get('targettype') == "jsonfile":
+            REQUEST.RESPONSE.setHeader('content-type', 'application/json')
+            label = "all"
+            REQUEST.RESPONSE.setHeader(
+                    "Content-Disposition",
+                    "attachment; filename=%s-%s-documents.json" % (
+                        self.id, label))
+        return self.exportAsJSON(docids, REQUEST=REQUEST)
+
     security.declareProtected(READ_PERMISSION, 'exportAsXML')
     def exportAsXML(self, docids=None, targettype='file', targetfolder='', REQUEST=None):
         """ Export documents to XML.
@@ -1298,6 +1314,50 @@ class PlominoReplicationManager(Persistent):
                 xmlstring = xmldoc.toxml()
                 self.saveFile(docfilepath, xmlstring)
 
+    def exportAsJSON(self, docids=None, targettype='file', targetfolder='', REQUEST=None):
+        """ Export documents to JSON.
+        The targettype can be file or folder.
+        If supplied, the values on REQUEST override keyword parameters.
+        """
+        if REQUEST:
+            targettype = REQUEST.get('targettype', 'jsonfile')
+            targetfolder = REQUEST.get('targetfolder')
+            str_docids = REQUEST.get("docids")
+            if str_docids:
+                docids = str_docids.split("@")
+
+        if docids:
+            docs = [self.getDocument(i) for i in docids]
+        else:
+            docs = self.getAllDocuments()
+
+        if targettype == 'jsonfile':
+            data = []
+            for doc in docs:
+                data.append(self.exportDocumentAsJSON(doc))
+
+            if REQUEST is not None:
+                REQUEST.RESPONSE.setHeader('content-type', 'application/json')
+            return json.dumps(data)
+
+        if targettype == 'folder':
+            if REQUEST:
+                targetfolder = REQUEST.get('targetfolder')
+
+            exportpath = os.path.join(targetfolder, self.id)
+            if os.path.isdir(exportpath):
+                # remove previous export
+                for f in glob.glob(os.path.join(exportpath, "*.json")):
+                    os.remove(f)
+            else:
+                os.makedirs(exportpath)
+
+            for doc in docs:
+                docfilepath = os.path.join(exportpath, (doc.id + '.json'))
+                logger.info("Exporting %s" % docfilepath)
+                data = self.exportDocumentAsJSON(doc)
+                self.saveFile(docfilepath, json.dumps(data))
+
     @staticmethod
     def saveFile(path, content):
         fileobj = codecs.open(path, "w", "utf-8")
@@ -1340,6 +1400,43 @@ class PlominoReplicationManager(Persistent):
 
         return node
 
+    security.declareProtected(READ_PERMISSION, 'exportDocumentAsJSON')
+
+    def exportDocumentAsJSON(self, doc):
+        """
+        """
+        data = {
+            'id': doc.id,
+            'lastmodified': doc.getLastModified(asString=True),
+        }
+        # export items
+        items_data = {}
+        for (id, value) in doc.items.items():
+            classname = value.__class__.__name__
+            if classname == "DateTime":
+                value = DateToString(value, format="%Y-%m-%dT%H:%M:%S")
+            items_data[id] = {
+                'class': classname,
+                'value': value,
+            }
+        data['items'] = items_data
+
+        # export attached files
+        files = []
+        for f in doc.getFilenames():
+            attached_file = doc.getfile(f)
+            if not attached_file:
+                continue
+            file_data = {
+                'id': f,
+                'contenttype': getattr(attached_file, 'content_type', ''),
+                'data': str(attached_file).encode('base64'),
+            }
+            files.append(file_data)
+        data['files'] = files
+
+        return data
+
     security.declareProtected(REMOVE_PERMISSION, 'manage_importFromXML')
     @postonly
     def manage_importFromXML(self, REQUEST):
@@ -1352,6 +1449,7 @@ class PlominoReplicationManager(Persistent):
                     imports, errors),
                 REQUEST, error=False)
         REQUEST.RESPONSE.redirect(self.absolute_url()+"/DatabaseReplication")
+
 
     security.declareProtected(REMOVE_PERMISSION, 'importFromXML')
     @postonly
