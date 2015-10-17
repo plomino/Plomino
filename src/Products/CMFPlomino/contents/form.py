@@ -40,17 +40,6 @@ class IPlominoForm(model.Schema):
     """ Plomino form schema
     """
 
-    # MAIN
-    title = schema.TextLine(
-        title=_(u"Title"),
-        required=True,
-    )
-
-    description = schema.Text(
-        title=_(u"Description"),
-        required=False,
-    )
-
     form.widget('form_layout', WysiwygFieldWidget)
     form_layout = schema.Text(
         title=_('CMFPlomino_label_FormLayout', default="Form layout"),

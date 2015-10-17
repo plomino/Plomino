@@ -27,16 +27,6 @@ class IPlominoAction(model.Schema):
     """ Plomino action schema
     """
 
-    title = schema.TextLine(
-        title=_(u"Title"),
-        required=True,
-    )
-
-    description = schema.Text(
-        title=_(u"Description"),
-        required=False,
-    )
-
     action_type = schema.Choice(
         title=_('CMFPlomino_label_ActionType',
             default="Select the type for this action"),
