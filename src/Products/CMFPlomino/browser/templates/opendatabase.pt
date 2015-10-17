@@ -57,7 +57,7 @@
             <tal:template-picker tal:condition="python:context.hasDesignPermission()">
                 <form tal:define="template_list python:context.getTemplateList()"
                     tal:condition="template_list"
-                    name="ImportTemtlate" action="importTemplate" method="POST">
+                    name="ImportTemplate" action="importTemplate" method="POST">
                     <label for="template">Import a template</label>
                     <select name="template_id">
                         <option value="">== Templates ==</option>

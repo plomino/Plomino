@@ -31,7 +31,6 @@ def afterDatabaseCreated(obj, event):
     write_on_read = get_resource_directory()
 
 
-
 def afterFieldModified(obj, event):
     """
     """
