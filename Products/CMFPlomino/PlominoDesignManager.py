@@ -464,6 +464,18 @@ class PlominoDesignManager(Persistent):
                         "attachment; filename=%s.zip" % self.id)
                 REQUEST.RESPONSE.setHeader('Content-Length', len(zip_string.getvalue()))
             return zip_string.getvalue()
+        elif targettype == "jsonfile":
+            json_string = self.exportDesignAsJSON(
+                    elementids=designelements,
+                    dbsettings=dbsettings)
+
+            if REQUEST:
+                REQUEST.RESPONSE.setHeader('Content-Type', 'application/json')
+                REQUEST.RESPONSE.setHeader(
+                        "Content-Disposition",
+                        "attachment; filename=%s.json" % self.id)
+                REQUEST.RESPONSE.setHeader('Content-Length', len(json_string))
+            return json_string
         elif targettype == "folder":
             if not designelements:
                 designelements = (
