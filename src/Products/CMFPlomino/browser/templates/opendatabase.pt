@@ -23,7 +23,7 @@
             <tal:views tal:condition="python:len(views)>0">
                 <h3 i18n:domain="CMFPlomino" i18n:translate="Browse">Browse</h3>
                 <p tal:repeat="v views">
-                    <a href="#" 
+                    <a href="#"
                         tal:attributes="href v/absolute_url_path"
                         tal:content="v/Title">view link</a>
                     <br/>
@@ -57,7 +57,7 @@
             <tal:template-picker tal:condition="python:context.hasDesignPermission()">
                 <form tal:define="template_list python:context.getTemplateList()"
                     tal:condition="template_list"
-                    name="ImportTemplate" action="importTemplate" method="POST">
+                    name="ImportTemtlate" action="importTemplate" method="POST">
                     <label for="template">Import a template</label>
                     <select name="template_id">
                         <option value="">== Templates ==</option>
