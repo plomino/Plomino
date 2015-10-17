@@ -1,0 +1,226 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en"
+      xmlns:tal="http://xml.zope.org/namespaces/tal"
+      xmlns:metal="http://xml.zope.org/namespaces/metal"
+      xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+      lang="en"
+      metal:use-macro="here/main_template/macros/master"
+      i18n:domain="plone">
+<body>
+
+<metal:main fill-slot="main">
+    <tal:main-macro metal:define-macro="main">
+
+        <h1 class="documentFirstHeading"><tal:block tal:content="here/Title">Title or id</tal:block> replication</h1>
+        
+        <div class="pat-autotoc autotabs" data-pat-autotoc="section:fieldset;levels:legend;">           
+            <fieldset>
+                <legend>CSV Importation</legend>
+                <form name="importCSV" id="importCSV" action="manage_importation" method="POST" enctype="multipart/form-data">
+                    <tal:vars tal:define="report here/getReport"
+                        tal:condition="report">
+                        <dl class="collapsible inline collapsedOnLoad">
+                            <dt class="collapsibleHeader">Import report</dt>
+                            <dd class="collapsibleContent">
+                                <table class="listing">
+                                    <thead>
+                                        <tr>
+                                            <th>Line</th>
+                                            <th>State</th>
+                                            <th>Message</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tal:boucle tal:repeat="rep report">
+                                            <tr>
+                                                <td tal:content="python:str(rep['line'])">Line</td>
+                                                <td tal:content="python:str(rep['state'])">State</td>
+                                                <td tal:content="python:str(rep['infoMsg'])">Message</td>
+                                            </tr>
+                                        </tal:boucle>
+                                    </tbody>
+                                </table>    
+                            </dd>
+                        </dl>
+                        <br/>
+                        <br/>
+                    </tal:vars>
+                    <div class="field">
+                        <div class="widget">
+                            <label for="formElements">Form used to create documents</label>
+                            <span class="fieldRequired"
+                                title="Required"
+                                i18n:translate="label_required"
+                                i18n:attributes="title title_required;">
+                                (Required)
+                            </span>
+                            <div class="formHelp">Column values stored as items in document and document is saved with selected form</div>
+                            <select name="formSelected">
+                                <tal:block tal:repeat="f python:here.getForms()">
+                                    <option tal:attributes="value python:f.getId();"
+                                        tal:content="python:f.getId()">value</option>
+                                </tal:block>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="field">
+                        <div class="widget">
+                            <label for="separator">Separator</label>
+                            <div class="formHelp">Choose columns separator. Text separator : double quote ("). </div>
+                            <tal:separators tal:define="separators here/getSeparators">
+                                <select name="separator">
+                                    <tal:block tal:repeat="sepName separators">
+                                        <option tal:attributes="value python:sepName;"
+                                            tal:content="sepName">separator</option>
+                                    </tal:block>
+                                </select>                                                       
+                            </tal:separators>
+                        </div>
+                    </div>
+                    <div class="field">
+                        <div class="widget">
+                            <label for="file_encoding">Encoding</label>
+                            <div class="formHelp">Default is UTF-8.</div>
+                            <input type="text" value="utf-8" name="file_encoding" />
+                        </div>
+                    </div>
+                    <div class="field">
+                        <div class="widget">
+                            <label for="import_file">CSV File</label>
+                            <span class="fieldRequired"
+                                title="Required"
+                                i18n:translate="label_required"
+                                i18n:attributes="title title_required;">
+                                (Required)
+                            </span>
+                            <div class="formHelp">File containing documents to import</div>
+                            <input name="import_file"
+                                    size="30"
+                                    id="import_file"
+                                    type="file" />
+                        </div>
+                    </div>                  
+                    <div class="formControls">
+                        <span class="actionButtons">
+                            <input tal:condition="python:True" 
+                                    value="Import"
+                                    name="import_csv"
+                                    id="import_csv"
+                                    class="context"
+                                    type="button"
+                                    onClick="document.forms['importCSV'].actionType.value='import';document.forms['importCSV'].submit();;"/>
+                        </span>
+                    </div>
+                    <input type="hidden" name="actionType" id ="actionType" value=""/>
+                </form>
+            </fieldset>
+
+            <fieldset>
+                <legend>JSON import/export</legend>
+                <h2>Import</h2>
+                <form name="importJSON" action="manage_importFromJSON" method="POST" enctype="multipart/form-data">
+                        <div class="field">
+                            <div class="widget">
+                                <input type="radio" checked="checked" name="sourcetype" value="sourceFile" id="sourcetype-sourceFile"/>
+                                <label for="import_file">From a JSON file</label>
+                                <span class="fieldRequired"
+                                    title="Required"
+                                    i18n:translate="label_required"
+                                    i18n:attributes="title title_required;">
+                                    (Required)
+                                </span>
+                                <div class="formHelp">File containing documents to import</div>
+                                <input name="file"
+                                        size="30"
+                                        id="import_file"
+                                        type="file" />
+                            </div>
+                        <div class="widget">
+                            <input type="radio" name="sourcetype" value="folder" id="sourcetype-folder"/>
+                            <label for="import_target">From server folder</label>
+                            <span class="fieldRequired"
+                                title="Required"
+                                i18n:translate="label_required"
+                                i18n:attributes="title title_required;">
+                                (Required)
+                            </span>
+                            <p><input type="text" name="from_folder" value="/tmp"/>
+                            </p>
+                        </div>
+                        </div>
+                        <div class="formControls">
+                            <span class="actionButtons">
+                                <input value="Import"
+                                        name="import_json"
+                                        id="import_json"
+                                        class="context"
+                                        type="submit"
+                                        />
+                            </span>
+                        </div>
+                    </form>
+                
+                <h2>Export</h2>
+                <form name="exportJSON" action="manage_exportAsJSON" method="POST">
+                   <div class="field">
+                        <div class="widget">
+                            <label for="export_restricttoview">Restrict to view</label>
+                            <span class="fieldRequired"
+                                title="Required"
+                                i18n:translate="label_required"
+                                i18n:attributes="title title_required;">
+                                (Required)
+                            </span>
+                            <div class="formHelp">Exported file will only contain documents listed in this view.</div>
+                            <select name="restricttoview" id="restricttoview">
+                               <option value="">[All documents]</option>
+                               <tal:views tal:repeat="v python:here.getViews()">
+                                   <option tal:attributes="value v/id"
+                                    tal:content="v/id">view id</option>
+                               </tal:views>
+                            </select>
+                        </div>
+                        <div class="widget">
+                            <input type="radio" name="targettype" value="file" id="targettype-file" checked="checked"/>
+                            <label for="export_target">To JSON file</label>
+                            <span class="fieldRequired"
+                                title="Required"
+                                i18n:translate="label_required"
+                                i18n:attributes="title title_required;">
+                                (Required)
+                            </span>
+                        </div>
+                        <div class="widget">
+                            <input type="radio" name="targettype" value="folder" id="targettype-folder"/>
+                            <label for="export_target">To server folder</label>
+                            <span class="fieldRequired"
+                                title="Required"
+                                i18n:translate="label_required"
+                                i18n:attributes="title title_required;">
+                                (Required)
+                            </span>
+                            <p><input type="text" name="targetfolder" value="/tmp"/>
+                            </p>
+                        </div>
+                    </div>
+                    
+                    <div class="formControls">
+                        <span class="actionButtons">
+                            <input value="Export"
+                                    name="export_json"
+                                    id="export_json"
+                                    class="context"
+                                    type="submit"
+                                    />
+                        </span>
+                    </div>
+                </form>
+            </fieldset>
+        </div>
+
+    </tal:main-macro>
+</metal:main>
+
+</body>
+</html>
+
+

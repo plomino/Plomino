@@ -17,6 +17,7 @@ from ..accesscontrol import AccessControl
 from ..exceptions import PlominoCacheException, PlominoScriptException
 from ..interfaces import IPlominoContext
 from ..design import DesignManager
+from ..replication import ReplicationManager
 from ..document import addPlominoDocument
 
 security = ClassSecurityInfo()
@@ -124,7 +125,8 @@ class IPlominoDatabase(model.Schema):
     )
 
 
-class PlominoDatabase(Container, AccessControl, DesignManager):
+class PlominoDatabase(
+        Container, AccessControl, DesignManager, ReplicationManager):
     implements(IPlominoDatabase, IPlominoContext)
 
     @property
