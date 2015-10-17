@@ -41,6 +41,12 @@ class DocumentView(BrowserView):
         if name == "DocumentProperties":
             self.action = "properties"
             return self
+        if name == "getfile":
+            self.action = "getfile"
+            return self
+        if name == "deleteAttachment":
+            self.action = "deleteAttachment"
+            return self
 
         doc = self.context.getParentDatabase().getDocument(name)
         if not doc:
@@ -59,6 +65,10 @@ class DocumentView(BrowserView):
             return self.doc.delete(self.request)
         elif self.action == "json":
             return self.doc.tojson(self.request)
+        elif self.action == "getfile":
+            return self.doc.getfile(REQUEST=self.request)
+        elif self.action == "deleteAttachment":
+            return self.doc.deleteAttachment(REQUEST=self.request)
         elif self.action == "properties":
             db = self.doc.getParentDatabase()
             if db.checkUserPermission(DESIGN_PERMISSION):
