@@ -9,6 +9,7 @@
 
 <metal:content fill-slot="main">
 
+    <section id="viewlet-above-content-title" tal:content="structure provider:plone.abovecontenttitle" />
     <h1 class="documentFirstHeading" tal:content="context/Title">Title</h1>
 
     <div id="content-core">

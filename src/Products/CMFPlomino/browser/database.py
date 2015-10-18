@@ -1,5 +1,6 @@
 from AccessControl import Unauthorized
 from jsonutil import jsonutil as json
+from plone.app.layout.viewlets import ViewletBase
 from Products.Five import BrowserView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 
@@ -11,6 +12,7 @@ class DatabaseView(BrowserView):
     acl_template = ViewPageTemplateFile("templates/acl.pt")
     design_template = ViewPageTemplateFile("templates/design.pt")
     view_template = ViewPageTemplateFile("templates/opendatabase.pt")
+    design_modal = ViewPageTemplateFile("templates/designmodal.pt")
 
     def __init__(self, context, request):
         self.context = context
@@ -32,33 +34,97 @@ class DatabaseView(BrowserView):
     def design(self):
         return self.design_template()
 
+    def designmodal(self):
+        return self.design_modal()
+
     def tree(self):
+        database = self.context.getParentDatabase()
+
+        # Create form tree
         forms = []
-        for form in self.context.getForms():
+        for form in database.getForms():
             fields = []
             for field in form.getFormFields():
-                fields.append({"label": field.id, "url": field.absolute_url()})
+                fields.append({
+                    "label": field.id,
+                    "url": field.absolute_url(),
+                    "type" : 'field'
+                })
+            plomino_form = []
+            plomino_form.append({
+                "label" : "Fields",
+                "folder" : True,
+                "children" : fields,
+                "type" : "fields",
+            })
             actions = []
             for action in form.getFormActions():
-                actions.append({"label": action.id, })
-            fields.append({
+                actions.append({
+                    "label": action.id,
+                    'type' : 'action',
+                    "url" : action.absolute_url()
+                })
+            plomino_form.append({
                 "label": "Actions",
                 "folder": True,
                 "children": actions,
+                "type" : "actions",
             })
             forms.append({
                 "label": form.id,
                 "folder": True,
-                "children": fields,
+                "children": plomino_form,
+                "type" : "form",
+                "url" : form.absolute_url(),
             })
-        elements = [{
-            "label": "forms",
-            "folder": True,
-            "children": forms,
-        }, ]
+
+        # Create Views Tree
+        views = []
+        for view in database.getViews():
+            views.append({
+                "label": view.id,
+                "type" : "view",
+                "url" : view.absolute_url(),
+            })
+
+
+        # Create Agents View
+        agents = []
+        for agent in database.getAgents():
+
+            agents.append({
+                "label" : agent.id,
+                "type" : "agent",
+                "url" : agent.absolute_url()
+            })
+
+        # Build the final element tree
+        elements = [
+            {
+                "label": "Forms",
+                "folder": True,
+                "children": forms,
+                "type" : 'database'
+            },
+            {
+                "label": "Views",
+                "folder": True,
+                "children": views,
+                "type" : 'views'
+            },
+            {
+                "label": "Agents",
+                "folder": True,
+                "children": agents ,
+                "type" : 'agents'
+            }
+        ]
         self.request.RESPONSE.setHeader(
             'content-type', 'application/json; charset=utf-8')
         return json.dumps(elements)
 
     def acl(self):
         return self.acl_template()
+
+class DesignViewlet(ViewletBase):
+    pass

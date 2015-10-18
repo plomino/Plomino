@@ -31,6 +31,23 @@
         permission="zope2.View"
         />
 
+    <browser:viewlet
+      name="design"
+      for="Products.CMFPlomino.contents.database.IPlominoDatabase"
+      manager="plone.app.layout.viewlets.interfaces.IAboveContentTitle"
+      class=".database.DesignViewlet"
+      template="templates/designviewlet.pt"
+      permission="plomino.DESIGN_PERMISSION"
+      />
+
+    <browser:page
+        for="Products.CMFPlomino.contents.database.IPlominoDatabase"
+        name="DesignModal"
+        class=".database.DatabaseView"
+        attribute="designmodal"
+        permission="plomino.DESIGN_PERMISSION"
+        />
+
     <browser:page
         for="Products.CMFPlomino.contents.database.IPlominoDatabase"
         name="DatabaseDesign"
