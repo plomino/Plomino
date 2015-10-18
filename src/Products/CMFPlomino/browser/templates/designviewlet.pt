@@ -1,0 +1,10 @@
+<div id="plomino-design-modal" class="plomino-design">
+  <a tal:attributes="href string:${context/absolute_url}/DesignModal"
+     id="modal-test" class="pat-plone-modal plone-btn plone-btn-primary"
+     data-pat-plone-modal='{
+      "loadLinksWithinModal" : false,
+      "backdropOptions": { "closeOnClick" : false },
+      "position" : "top middle",
+      "height" : "80%"}'
+  ><span class="icon-database"></span> Database Design</a>
+</div>
