@@ -288,7 +288,7 @@
             </tr>
 			<tr>
                 <td><input type="radio" name="targettype" value="jsonfile" id="targettype-jsonfile"/></td>
-                <td colspan="2"><label for="targettype-jsonfile" i18n:translate="">To Json File (Export To Plomino 2)</label></td>
+                <td colspan="2"><label for="targettype-jsonfile" i18n:translate="">To Json File (Migrate to Plomino 2)</label></td>
             </tr>
             <tr>
                 <td><input type="radio" name="targettype" value="folder" id="targettype-folder"/></td>
