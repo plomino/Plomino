@@ -26,16 +26,6 @@ class IPlominoField(model.Schema):
     """ Plomino field schema
     """
 
-    title = schema.TextLine(
-        title=_(u"Title"),
-        required=True,
-    )
-
-    description = schema.Text(
-        title=_(u"Description"),
-        required=False,
-    )
-
     field_type = schema.Choice(
         title=_('CMFPlomino_label_FieldType', default="Field type"),
         description=_('CMFPlomino_label_FieldType', default="Field type"),

@@ -16,16 +16,6 @@ class IPlominoAgent(model.Schema):
     """ Plomino agent schema
     """
 
-    title = schema.TextLine(
-        title=_(u"Title"),
-        required=True,
-    )
-
-    description = schema.Text(
-        title=_(u"Description"),
-        required=False,
-    )
-
     directives.widget('content', klass='plomino-formula')
     content = schema.Text(
         title=_("CMFPlomino_label_AgentContent", default="Code to execute"),

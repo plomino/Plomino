@@ -24,7 +24,7 @@
             <tal:views tal:condition="python:len(views)>0">
                 <h3 i18n:domain="CMFPlomino" i18n:translate="Browse">Browse</h3>
                 <p tal:repeat="v views">
-                    <a href="#" 
+                    <a href="#"
                         tal:attributes="href v/absolute_url_path"
                         tal:content="v/Title">view link</a>
                     <br/>

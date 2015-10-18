@@ -17,6 +17,7 @@ from ..accesscontrol import AccessControl
 from ..exceptions import PlominoCacheException, PlominoScriptException
 from ..interfaces import IPlominoContext
 from ..design import DesignManager
+from ..replication import ReplicationManager
 from ..document import addPlominoDocument
 
 security = ClassSecurityInfo()
@@ -25,16 +26,6 @@ security = ClassSecurityInfo()
 class IPlominoDatabase(model.Schema):
     """ Plomino database schema
     """
-
-    title = schema.TextLine(
-        title=_(u"Title"),
-        required=True,
-    )
-
-    description = schema.Text(
-        title=_(u"Description"),
-        required=False,
-    )
 
     indexAttachments = schema.Bool(
         title=_('CMFPlomino_label_IndexAttachments',
@@ -124,7 +115,8 @@ class IPlominoDatabase(model.Schema):
     )
 
 
-class PlominoDatabase(Container, AccessControl, DesignManager):
+class PlominoDatabase(
+        Container, AccessControl, DesignManager, ReplicationManager):
     implements(IPlominoDatabase, IPlominoContext)
 
     @property

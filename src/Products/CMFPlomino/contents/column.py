@@ -14,16 +14,6 @@ class IPlominoColumn(model.Schema):
     """ Plomino view schema
     """
 
-    title = schema.TextLine(
-        title=_(u"Title"),
-        required=True,
-    )
-
-    description = schema.Text(
-        title=_(u"Description"),
-        required=False,
-    )
-
     displayed_field = schema.Choice(
         vocabulary='Products.CMFPlomino.columns.vocabularies.get_fields',
         title=_('CMFPlomino_label_DisplayedField', default="Displayed field"),

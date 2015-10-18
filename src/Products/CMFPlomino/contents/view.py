@@ -37,16 +37,6 @@ class IPlominoView(model.Schema):
     """ Plomino view schema
     """
 
-    title = schema.TextLine(
-        title=_(u"Title"),
-        required=True,
-    )
-
-    description = schema.Text(
-        title=_(u"Description"),
-        required=False,
-    )
-
     directives.widget('selection_formula', klass='plomino-formula')
     selection_formula = schema.Text(
         title=_('CMFPlomino_label_SelectionFormula',

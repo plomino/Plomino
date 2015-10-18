@@ -11,6 +11,7 @@ class DatabaseView(BrowserView):
 
     acl_template = ViewPageTemplateFile("templates/acl.pt")
     design_template = ViewPageTemplateFile("templates/design.pt")
+    replication_template = ViewPageTemplateFile("templates/replication.pt")
     view_template = ViewPageTemplateFile("templates/opendatabase.pt")
     design_modal = ViewPageTemplateFile("templates/designmodal.pt")
 
@@ -125,6 +126,9 @@ class DatabaseView(BrowserView):
 
     def acl(self):
         return self.acl_template()
+
+    def replication(self):
+        return self.replication_template()
 
 class DesignViewlet(ViewletBase):
     pass

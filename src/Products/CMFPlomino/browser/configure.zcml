@@ -61,7 +61,7 @@
         name="designtree"
         class=".database.DatabaseView"
         attribute="tree"
-        permission="zope.Public"
+        permission="plomino.DESIGN_PERMISSION"
         />
 
     <browser:page
@@ -70,6 +70,14 @@
         class=".database.DatabaseView"
         attribute="acl"
         permission="plomino.ACL_PERMISSION"
+        />
+
+    <browser:page
+        for="Products.CMFPlomino.contents.database.IPlominoDatabase"
+        name="DatabaseReplication"
+        class=".database.DatabaseView"
+        attribute="replication"
+        permission="zope.Public"
         />
 
     <browser:page

@@ -11,6 +11,7 @@ from zope.interface import directlyProvides
 
 from .config import SCRIPT_ID_DELIMITER, VERSION
 from .index.index import PlominoIndex
+from . import get_resource_directory
 
 
 def afterDatabaseCreated(obj, event):
@@ -25,6 +26,9 @@ def afterDatabaseCreated(obj, event):
     obj._setObject('plomino_index', index)
     for i in ['resources', 'scripts']:
         manage_addCMFBTreeFolder(obj, id=i)
+
+    # Due to plone.protect we need to ensure the resource directory is created
+    write_on_read = get_resource_directory()
 
 
 def afterFieldModified(obj, event):

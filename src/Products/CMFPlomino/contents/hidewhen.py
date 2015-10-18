@@ -11,16 +11,6 @@ class IPlominoHidewhen(model.Schema):
     """ Plomino hide-when schema
     """
 
-    title = schema.TextLine(
-        title=_(u"Title"),
-        required=True,
-    )
-
-    description = schema.Text(
-        title=_(u"Description"),
-        required=False,
-    )
-
     directives.widget('formula', klass='plomino-formula')
     formula = schema.Text(
         title=_('CMFPlomino_label_HidewhenFormula', default="Formula"),
