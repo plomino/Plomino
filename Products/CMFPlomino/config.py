@@ -69,3 +69,96 @@ try:
     from Products.CMFPlomino.AppConfig import *
 except ImportError:
     pass
+
+schemaMigration = dict(
+    PlominoDatabase = dict(
+        AboutDescription = None,
+        CountDocuments = None,
+        DateTimeFormat = "datetime_format",
+        DoNotListUsers = "do_not_list_users",
+        DoNotReindex = "do_not_reindex",
+        FulltextIndex = "fulltextIndex",
+        IndexAttachments = "indexAttachments",
+        IndexInPortal = "indexInPortal",
+        IsDatabaseTemplate = "isDatabaseTemplate",
+        StartPage = "start_page",
+        UsingDescription = None,
+        debugMode = "debugMode",
+        i18n = "i18n"
+    ),
+    PlominoField = dict(
+        FieldEditTemplate = "edit_template", 
+        FieldMode = "field_mode",
+        FieldType = "field_type",
+        Formula = "formula",
+        HTMLAttributesFormula = "html_attributes_formula",
+        IndexType = "index_type", 
+        Mandatory = "mandatory",
+        FieldReadTemplate = "read_template",
+        ToBeIndexed = "to_be_indexed",
+        ValidationFormula ="validation_formula",
+    ),
+    PlominoForm = dict(
+        onCreateDocument = "onCreateDocument",
+        onOpenDocument = "onOpenDocument", 
+        beforeSaveDocument = "beforeSaveDocument", 
+        onSaveDocument = "onSaveDocument", 
+        onDeleteDocument = "onDeleteDocument", 
+        onSearch = "onSearch", 
+        beforeCreateDocument = "beforeCreateDocument", 
+        FormLayout = "form_layout", 
+        FormMethod = "form_method", 
+        DocumentTitle = "document_title", 
+        DynamicDocumentTitle= "dynamic_document_title", 
+        StoreDynamicDocumentTitle = "store_dynamic_document_title", 
+        DocumentId = "document_id", 
+        ActionBarPosition = None, 
+        HideDefaultActions = "hide_default_actions", 
+        HideInMenu = None, 
+        isSearchForm = "isSearchForm", 
+        isPage = "isPage", 
+        SearchView = "search_view", 
+        SearchFormula = "search_formula", 
+        Position = None, 
+        ResourcesJS = "resources_js", 
+        ResourcesCSS = "resources_css"
+    ),
+    PlominoView = dict(
+        SelectionFormula = "selection_formula",
+        SortColumn = "sort_column",
+        KeyColumn = "key_column",
+        Categorized = "categorized",
+        FormFormula = "form_formula",
+        ReverseSorting = "reverse_sorting",
+        ActionBarPosition = None,
+        HideDefaultActions = "hide_default_actions",
+        HideCheckboxes = None,
+        HideInMenu = None,
+        Widget = None,
+        DynamicTableParameters = None,
+        ViewTemplate = None,
+        onOpenView = "onOpenView",
+        Position = None
+    ),
+    PlominoColumn = dict(
+        SelectedField = "displayed_field",
+        Formula = "formula",
+        HiddenColumn = "hidden_column"
+    ),
+    PlominoAgent = dict(
+        Content = "content",
+        RunAs = "run_as",
+        
+    ),
+    PlominoAction = dict(
+        ActionType = "action_type",
+        ActionDisplay = "action_display",
+        Content = "content",
+        Hidewhen = "hidewhen",
+        InActionBar = "in_action_bar"
+    ),
+    PlominoHideWhen = dict(
+        Formula = "formula",
+        isDynamicHidewhen = "is_dynamic_hide_when"
+    )
+)

@@ -286,6 +286,10 @@
                 <td><input type="radio" name="targettype" value="zipfile" id="targettype-zipfile"/></td>
                 <td colspan="2"><label for="targettype-zipfile" i18n:translate="">To ZIP file</label></td>
             </tr>
+			<tr>
+                <td><input type="radio" name="targettype" value="jsonfile" id="targettype-jsonfile"/></td>
+                <td colspan="2"><label for="targettype-jsonfile" i18n:translate="">To Json File (Export To Plomino 2)</label></td>
+            </tr>
             <tr>
                 <td><input type="radio" name="targettype" value="folder" id="targettype-folder"/></td>
                 <td colspan="2"><label for="targettype-folder" i18n:translate="">To server folder</label></td>

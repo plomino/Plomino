@@ -80,6 +80,8 @@ from Products.CMFPlomino.PlominoHidewhen import schema as hidewhen_schema
 from Products.CMFPlomino.PlominoView import schema as view_schema
 from Products.CMFPlomino import get_resource_directory
 
+import simplejson as json
+
 plomino_schemas = {
         'PlominoAction': action_schema,
         'PlominoAgent': agent_schema,
@@ -462,6 +464,18 @@ class PlominoDesignManager(Persistent):
                         "attachment; filename=%s.zip" % self.id)
                 REQUEST.RESPONSE.setHeader('Content-Length', len(zip_string.getvalue()))
             return zip_string.getvalue()
+        elif targettype == "jsonfile":
+            json_string = self.exportDesignAsJSON(
+                    elementids=designelements,
+                    dbsettings=dbsettings)
+
+            if REQUEST:
+                REQUEST.RESPONSE.setHeader('Content-Type', 'application/json')
+                REQUEST.RESPONSE.setHeader(
+                        "Content-Disposition",
+                        "attachment; filename=%s.json" % self.id)
+                REQUEST.RESPONSE.setHeader('Content-Length', len(json_string))
+            return json_string
         elif targettype == "folder":
             if not designelements:
                 designelements = (
@@ -1110,6 +1124,153 @@ class PlominoDesignManager(Persistent):
             data = xmldoc.createCDATASection(stream.encode('base64'))
             node.appendChild(data)
         return node
+
+    security.declareProtected(DESIGN_PERMISSION, 'exportDesignAsJSON')
+    def exportDesignAsJSON(self, elementids=None, REQUEST=None, dbsettings=True):
+        """
+        """
+        data = {'id': self.id, }
+
+        if REQUEST:
+            str_elementids = REQUEST.get("elementids")
+            if str_elementids is not None:
+                elementids = str_elementids.split("@")
+
+        if elementids is None:
+            elements = (self.getForms()
+                + self.getViews()
+                + self.getAgents()
+                + [o for o in self.resources.getChildNodes()]
+            )
+        else:
+            elements = []
+            for id in elementids:
+                if id.startswith('resources/'):
+                    e = getattr(self.resources, id.split('/')[1])
+                else:
+                    e = getattr(self, id)
+                elements.append(e)
+
+        # Sort elements by type (to store forms before views), then by id
+        elements.sort(key=lambda elt: elt.getId())
+        elements.sort(key=lambda elt: elt.Type())
+
+        design = {'resources': {}, }
+        # export database settings
+        if dbsettings:
+            design['dbsettings'] = self.exportElementAsJSON(
+                self, isDatabase=True)
+
+        # export database design elements
+        for element in elements:
+            if element.meta_type in plomino_schemas.keys():
+                design[element.getId()] = self.exportElementAsJSON(element)
+            else:
+                design['resources'][element.getId()] = self.exportResourceAsJSON(
+                    element)
+
+        data['design'] = design
+
+        if REQUEST:
+            REQUEST.RESPONSE.setHeader(
+                'content-type', "application/json;charset=utf-8")
+        return json.dumps(data, sort_keys=True, indent=4).encode('utf-8')
+
+    security.declareProtected(DESIGN_PERMISSION, 'exportElementAsJSON')
+    def exportElementAsJSON(self, obj, isDatabase=False):
+        """
+        """
+        data = {}
+        if not isDatabase:
+            data['id'] = obj.getId()
+            data['type'] = obj.portal_type
+            data['title'] = obj.title
+            schema = plomino_schemas[obj.Type()]
+        else:
+            schema = sys.modules[self.__module__].schema 
+        #attributes = getFieldsInOrder(schema)
+        attributes = dict()
+        sk_fields = schema.fields()
+        for sk in sk_fields:
+            attributes[sk.__name__] = sk  
+        
+        params = {}
+        objType = obj.Type()
+                
+        if objType in schemaMigration.keys():
+            for k,v in schemaMigration[objType].iteritems():
+                try:
+                    newkey = schemaMigration[objType][k]
+                except:
+                    newkey = k
+                if k in attributes.keys():
+                    sk = attributes[k]
+                    if sk.getType() == "Products.Archetypes.Field.TextField":
+                        params[newkey] = sk.getRaw(obj)
+                    else:
+                        params[newkey] = sk.get(obj) #getattr(obj, id)
+                        
+            params['title'] = obj.title
+            params['description'] = obj.description
+        
+        
+        if obj.Type() == "PlominoField":
+            #specific_schema = obj.getSchema()
+            #for param in specific_schema.names():
+                #attributes.append((param, specific_schema.get(param)))
+            adapt = obj.getSettings()
+            if adapt is not None:
+                items = {}
+                for k in adapt.parameters.keys():
+                    if hasattr(adapt, k):
+                        params[k] = adapt.parameters[k]
+                
+        data['params'] = params
+        
+        if not isDatabase:
+            elementslist = obj.objectIds()
+            if elementslist:
+                elements = {}
+                for id in elementslist:
+                    elements[id] = self.exportElementAsJSON(getattr(obj, id))
+                data['elements'] = elements
+
+        if isDatabase:
+            data['acl'] = {
+                'AnomynousAccessRight': obj.AnomynousAccessRight,
+                'AuthenticatedAccessRight': obj.AuthenticatedAccessRight,
+                'UserRoles': obj.UserRoles,
+                'SpecificRights': obj.getSpecificRights(),
+            }
+            data['version'] = obj.plomino_version
+
+        return data
+
+    security.declareProtected(DESIGN_PERMISSION, 'exportResourceAsJSON')
+    def exportResourceAsJSON(self, obj):
+        """
+        """
+        id = obj.getId()
+        #if callable(id):
+        #    id = id()
+        data = {
+            'id': obj.getId(),
+            'type': obj.meta_type,
+            'title': obj.title,
+        }
+        if hasattr(obj, 'read'):
+            data['data'] = obj.read()
+        elif isinstance(obj, OFS.Folder.Folder):
+            for name, sub_obj in obj.objectItems():
+                data[name] = self.exportResourceAsJSON(sub_obj)
+        else:
+            data['contenttype'] = obj.getContentType()
+            stream = obj.data
+            if not hasattr(stream, "encode"):
+                stream = stream.data
+            data['data'] = stream.encode('base64')
+
+        return data
 
     security.declareProtected(DESIGN_PERMISSION, 'importDesignFromXML')
     def importDesignFromXML(self, xmlstring=None, REQUEST=None,
