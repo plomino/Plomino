@@ -613,7 +613,7 @@
 		                </div>
 						<div class="formControls">
 	                    <span class="actionButtons">
-	                        <input value="Export"
+	                        <input value="Export JSON"
 	                                name="export_json"
 	                                id="export_json"
 	                                class="context"
