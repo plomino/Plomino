@@ -18,7 +18,7 @@ def test_suite():
     suite = doctest.DocFileSuite(
         'plomino.txt', 'plomino_accessControl.txt', 'samples.txt',
         'plomino_usage.txt', 'form-resources.txt', 'layout.txt',
-        'searchableview.txt',
+        'searchableview.txt', 'mandatory.txt',
         globs = {
             'TEST_USER_ID': TEST_USER_ID,
             'Browser': Browser,

@@ -1,0 +1,194 @@
+Plomino Mandatory tests
+=========================
+
+We need to test code for mandatory field where
+ - field is not empty and not mandatory and no validation formula
+ - field is empty and not mandatory and no validation formula
+ - field is not empty and not mandatory and got validation formula
+ - field is empty and not mandatory and got validation formula
+ - field is empty and mandatory and got validation formula
+ - field is empty and mandatory and no validation formula
+
+    >>> from lxml import etree, html; from StringIO import StringIO
+    >>> parser = etree.HTMLParser(remove_blank_text=True)
+    >>> pphtml = lambda myhtml: etree.tostring(html.fromstring(myhtml.replace('\n','')), pretty_print=True)
+    >>> from BeautifulSoup import BeautifulSoup; pphtml = lambda myhtml: BeautifulSoup(myhtml).prettify()
+
+Setup::
+
+    >>> portal = layer['portal']
+    >>> id = portal.invokeFactory('Folder', id='samples')
+    >>> folder = portal.samples
+    >>> base_url = folder.absolute_url()
+
+Create some users::
+
+    >>> memberName = 'siteManager'
+    >>> portal.portal_membership.addMember(memberName, memberName, ('Member, Manager',), '', {'fullname': memberName, 'email': memberName+'@dummy.fr',} )
+    >>> memberName = 'userReader'
+    >>> portal.portal_membership.addMember(memberName, memberName, ('Member',), '', {'fullname': memberName, 'email': memberName+'@dummy.fr',} )
+    >>> memberName = 'userDesigner'
+    >>> portal.portal_membership.addMember(memberName, memberName, ('Member',), '', {'fullname': memberName, 'email': memberName+'@dummy.fr',} )
+    >>> memberName = 'userAuthor'
+    >>> portal.portal_membership.addMember(memberName, memberName, ('Member',), '', {'fullname': memberName, 'email': memberName+'@dummy.fr',} )
+    >>> memberName = 'userAuthor2'
+    >>> portal.portal_membership.addMember(memberName, memberName, ('Member',), '', {'fullname': memberName, 'email': memberName+'@dummy.fr',} )
+    >>> memberName = 'userEditor'
+    >>> portal.portal_membership.addMember(memberName, memberName, ('Member',), '', {'fullname': memberName, 'email': memberName+'@dummy.fr',} )
+    >>> memberName = 'userManager'
+    >>> portal.portal_membership.addMember(memberName, memberName, ('Member',), '', {'fullname': memberName, 'email': memberName+'@dummy.fr',} )
+    >>> memberName = 'demouser'
+    >>> portal.portal_membership.addMember(memberName, memberName, ('Member',), '', {'fullname': memberName, 'email': memberName+'@dummy.fr',} )
+
+
+Create the browser object we'll be using and log in as userEditor::
+
+    >>> browser = Browser(layer['app'])
+    >>> transaction.commit()  # enable the browser to see our changes
+    >>> portal_url = portal.absolute_url()
+    >>> browser.open(portal_url)
+    >>> browser.getLink('Log in').click()
+    >>> browser.getControl('Login Name').value = 'userManager'
+    >>> browser.getControl('Password').value = 'userManager'
+    >>> browser.getControl('Log in').click()
+
+    >>> import os.path
+    >>> dir, _f = os.path.split(os.path.abspath(__file__))
+
+Create mandatory db::
+
+    >>> id = folder.invokeFactory('PlominoDatabase', id='mandatorydb')
+    >>> db = getattr(folder, 'mandatorydb')
+    >>> db.at_post_create_script()
+    >>> wf_tool = portal.portal_workflow
+    >>> wf_tool.doActionFor(db, 'publish')
+
+Set plomino roles and permissions::
+
+    >>> db.manage_setLocalRoles('userManager', ['PlominoManager'])
+    >>> db.manage_setLocalRoles('userDesigner', ['PlominoDesigner'])
+    >>> db.manage_setLocalRoles('userEditor', ['PlominoEditor'])
+    >>> db.manage_setLocalRoles('userAuthor', ['PlominoAuthor'])
+    >>> db.manage_setLocalRoles('userReader', ['PlominoReader'])
+    >>> transaction.commit()  # enable the browser to see our changes
+
+Let's create a form and a text field::
+
+    >>> id = db.invokeFactory('PlominoForm', id='frm1', title='Form 1')
+    >>> db.frm1 == db.getForm('frm1')
+    True
+    >>> id = db.frm1.invokeFactory('PlominoField', id='field1',
+    ...         title='Title for field1',
+    ...         FieldType="TEXT",
+    ...         FieldMode="EDITABLE")
+    >>> db.frm1.field1.at_post_create_script()
+    >>> db.frm1.setFormLayout("""1 <p>please enter a value for field1:
+    ... <span class="plominoFieldClass">field1</span></p>""")
+    >>> print pphtml(db.frm1.displayDocument(None, True, True))
+    <input type="hidden" name="Form" value="frm1" />
+    1
+    <p>
+      please enter a value for field1:
+      <span>
+        <input type="text" id="field1" value="" name="field1" />
+      </span>
+    </p>
+    >>> transaction.commit()  # enable the browser to see our changes
+
+Let's start testing::
+
+    >>> browser.open(base_url+'/mandatorydb/frm1')
+    >>> 'field1' in browser.contents
+    True
+
+Case: field is not empty and not mandatory and no validation formula::
+
+    >>> browser.getControl(name='field1').value = 'Eric'
+    >>> browser.getControl(name='plomino_save').click()
+    >>> 'Eric' in browser.contents
+    True
+    >>> browser.open(browser.url+"/EditDocument")
+    >>> browser.getControl(name='field1').value
+    'Eric'
+
+Case: field is empty and not mandatory and no validation formula::
+
+    >>> browser.open(base_url+'/mandatorydb/frm1')
+    >>> 'field1' in browser.contents
+    True
+    >>> browser.getControl(name='field1').value = ''
+    >>> browser.getControl(name='plomino_save').click()
+    >>> browser.open(browser.url+"/EditDocument")
+    >>> browser.getControl(name='field1').value
+    ''
+
+Case: field is not empty and not mandatory and got validation formula::
+
+    >>> browser.open(base_url+'/mandatorydb/frm1/field1/edit')
+    >>> browser.getControl(name='ValidationFormula').value = "return 'field1 is must.' if not getattr(plominoDocument, 'REQUEST').get('field1', '') else ''"
+    >>> browser.getControl(name='form.button.save').click()
+
+    >>> browser.open(base_url+'/mandatorydb/frm1')
+    >>> 'field1' in browser.contents
+    True
+
+    >>> browser.getControl(name='field1').value = 'Eric'
+    >>> browser.getControl(name='plomino_save').click()
+    >>> 'field1 is must.' in browser.contents
+    False
+    >>> 'Eric' in browser.contents
+    True
+    >>> 'field1 is mandatory' in browser.contents
+    False
+
+Case: field is empty and not mandatory and got validation formula::
+
+    >>> browser.open(base_url+'/mandatorydb/frm1')
+    >>> 'field1' in browser.contents
+    True
+
+    >>> browser.getControl(name='field1').value = ''
+    >>> browser.getControl(name='plomino_save').click()
+    >>> 'field1 is must.' in browser.contents
+    True
+    >>> 'Eric' in browser.contents
+    False
+    >>> 'field1 is mandatory' in browser.contents
+    False
+
+Case: field is empty and mandatory and got validation formula::
+
+    >>> browser.open(base_url+'/mandatorydb/frm1/field1/edit')
+    >>> browser.getControl(name='Mandatory:boolean').value = [True]
+    >>> browser.getControl(name='form.button.save').click()
+
+    >>> browser.open(base_url+'/mandatorydb/frm1')
+    >>> 'field1' in browser.contents
+    True
+
+    >>> browser.getControl(name='field1').value = ''
+    >>> browser.getControl(name='plomino_save').click()
+    >>> 'field1 is must.' in browser.contents
+    False
+    >>> 'Eric' in browser.contents
+    False
+    >>> 'field1 is mandatory' in browser.contents
+    True
+
+Case: field is empty and mandatory and no validation formula::
+
+    >>> browser.open(base_url+'/mandatorydb/frm1/field1/edit')
+    >>> browser.getControl(name='ValidationFormula').value = ""
+    >>> browser.getControl(name='form.button.save').click()
+
+    >>> browser.open(base_url+'/mandatorydb/frm1')
+    >>> 'field1' in browser.contents
+    True
+    >>> browser.getControl(name='field1').value = ''
+    >>> browser.getControl(name='plomino_save').click()
+    >>> 'field1 is must.' in browser.contents
+    False
+    >>> 'Eric' in browser.contents
+    False
+    >>> 'field1 is mandatory' in browser.contents
+    True
