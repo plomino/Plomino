@@ -94,26 +94,4 @@
         handler=".events.afterHidewhenModified"
         />
 
-    <!-- vocabularies -->
-    <utility
-        name="Products.CMFPlomino.fields.vocabularies.get_forms"
-        component=".fields.vocabularies.get_forms"
-    />
-    <utility
-        name="Products.CMFPlomino.fields.vocabularies.get_views"
-        component=".fields.vocabularies.get_views"
-    />
-    <utility
-        name="Products.CMFPlomino.columns.vocabularies.get_fields"
-        component=".contents.vocabularies.get_fields"
-    />
-    <utility
-        name="Products.CMFPlomino.columns.vocabularies.get_columns"
-        component=".contents.vocabularies.get_columns"
-    />
-    <utility
-        name="Products.CMFPlomino.columns.vocabularies.get_index_types"
-        component=".contents.vocabularies.get_index_types"
-    />
-
 </configure>

@@ -8,6 +8,7 @@ from zope.interface import implements, invariant, Invalid
 
 from .. import _
 from ..utils import translate
+from .field import get_fields
 
 
 class IPlominoColumn(model.Schema):
@@ -15,7 +16,7 @@ class IPlominoColumn(model.Schema):
     """
 
     displayed_field = schema.Choice(
-        vocabulary='Products.CMFPlomino.columns.vocabularies.get_fields',
+        source=get_fields,
         title=_('CMFPlomino_label_DisplayedField', default="Displayed field"),
         description=_('CMFPlomino_help_DisplayedField', default="Field value "
             "to display in the column. It does not apply if Formula is "

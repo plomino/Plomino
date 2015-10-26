@@ -8,7 +8,9 @@ from plone.supermodel import model
 from Products.PluginIndexes.DateIndex.DateIndex import DateIndex
 from zipfile import ZipFile, ZIP_DEFLATED
 from zope import schema
-from zope.interface import implements
+from zope.interface import implements, directlyProvides
+from zope.schema.interfaces import IContextSourceBinder
+from zope.schema.vocabulary import SimpleVocabulary
 
 # 3rd party Python
 from jsonutil import jsonutil as json
@@ -31,6 +33,16 @@ XLS_TABLE = """<html><head>
 </table></body></html>"""
 TR = """<tr>%s</tr>"""
 TD = """<td>%s</td>"""
+
+
+def get_columns(obj):
+    """ Get a list of current view's columns
+    """
+    if not hasattr(obj, 'getColumns'):
+        return None
+    columns = [(c.id, c.id) for c in obj.getColumns()]
+    return SimpleVocabulary.fromItems(columns)
+directlyProvides(get_columns, IContextSourceBinder)
 
 
 class IPlominoView(model.Schema):
@@ -80,16 +92,16 @@ class IPlominoView(model.Schema):
         required=False,
     )
 
-    sort_column = schema.Choice(
-        vocabulary="Products.CMFPlomino.columns.vocabularies.get_columns",
+    sort_column = schema.TextLine(
+        # source=get_columns,
         title=_('CMFPlomino_label_SortColumn', default="Sort column"),
         description=_('CMFPlomino_help_SortColumn',
             default="Column used to sort the view, and for key lookup"),
         required=False,
     )
 
-    key_column = schema.Choice(
-        vocabulary="Products.CMFPlomino.columns.vocabularies.get_columns",
+    key_column = schema.TextLine(
+        # source=get_columns,
         title=_('CMFPlomino_label_KeyColumn', default="Key column"),
         description=_('CMFPlomino_help_KeyColumn',
             default="Column used for key lookup, if different from sort column"),

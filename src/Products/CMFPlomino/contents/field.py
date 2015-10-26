@@ -4,7 +4,8 @@ from plone.dexterity.content import Item
 from plone.supermodel import model
 from zope import component
 from zope import schema
-from zope.interface import implements
+from zope.interface import directlyProvides, implements
+from zope.schema.interfaces import IContextSourceBinder
 from zope.schema.vocabulary import SimpleVocabulary, SimpleTerm
 from ZPublisher.HTTPRequest import FileUpload
 
@@ -20,6 +21,60 @@ field_modes = SimpleVocabulary([
     SimpleTerm(value=mode[0], title=_(mode[1])) for mode in FIELD_MODES
 ])
 index_types = SimpleVocabulary([])
+
+
+def get_field_types():
+    field_types = FIELD_TYPES
+    for plugin_field in component.getUtilitiesFor(IPlominoField):
+        params = plugin_field[1].plomino_field_parameters
+        field_types[str(plugin_field[0])] = [
+            params['label'],
+            params['index_type']
+        ]
+    return field_types
+
+
+def get_fields(obj):
+    """ Get a list of all the fields in the database
+    """
+    fields = []
+    counter = 1
+    for form in obj.getParentDatabase().getForms():
+        fields.append(
+            ['=== ' + form.id + ' ===', 'PlominoPlaceholder%s' % counter])
+        counter += 1
+        fields += [(field.id, form.id + '/' + field.id)
+            for field in form.getFormFields()]
+    return SimpleVocabulary.fromItems(fields)
+directlyProvides(get_fields, IContextSourceBinder)
+
+
+def get_index_types(obj):
+    """ Vocabulary for the 'Index type' dropdown.
+    """
+    types = get_field_types()
+    if isinstance(obj, PlominoField):
+        default_index = types[obj.field_type][1]
+        indexes = [('Default (%s)' % default_index, 'DEFAULT'), ]
+    else:
+        indexes = [('Default', 'DEFAULT'), ]
+    db = obj.getParentDatabase()
+    idx = db.getIndex()
+    index_ids = [i['name'] for i in idx.Indexes.filtered_meta_types()]
+    for i in index_ids:
+        if i in ['GopipIndex', 'UUIDIndex']:
+            # Index types internal to Plone
+            continue
+        label = "%s%s" % (
+            i, {
+                "FieldIndex": " (match exact value)",
+                "ZCTextIndex": " (match any contained words)",
+                "KeywordIndex": " (match list elements)"
+            }.get(i, '')
+        )
+        indexes.append((label, i))
+    return SimpleVocabulary.fromItems(indexes)
+directlyProvides(get_index_types, IContextSourceBinder)
 
 
 class IPlominoField(model.Schema):
@@ -106,7 +161,7 @@ class IPlominoField(model.Schema):
             default='The way the field values will be indexed'),
         required=True,
         default="DEFAULT",
-        vocabulary="Products.CMFPlomino.columns.vocabularies.get_index_types",
+        source=get_index_types,
     )
 
     directives.widget('html_attributes_formula', klass='plomino-formula')
@@ -248,14 +303,3 @@ class PlominoField(Item):
             getattr(fields, self.field_type.lower()),
             "I%sField" % self.field_type.capitalize())
         return schema
-
-
-def get_field_types():
-    field_types = FIELD_TYPES
-    for plugin_field in component.getUtilitiesFor(IPlominoField):
-        params = plugin_field[1].plomino_field_parameters
-        field_types[str(plugin_field[0])] = [
-            params['label'],
-            params['index_type']
-        ]
-    return field_types
