@@ -11,7 +11,7 @@ from zope.schema.vocabulary import SimpleVocabulary
 
 from .. import _
 from base import BaseField
-from ..contents.document import TemporaryDocument
+from ..document import TemporaryDocument
 from ..utils import DateToString, PlominoTranslate
 
 
@@ -97,7 +97,7 @@ class DatagridField(BaseField):
     def getParameters(self):
         """
         """
-        return self.jssettings
+        return self.context.jssettings
 
     def processInput(self, submittedValue):
         """
@@ -150,7 +150,7 @@ class DatagridField(BaseField):
         if action_id == "add":
             label = PlominoTranslate(
                 _("datagrid_add_button_label", default="Add"), db)
-            child_form_id = self.associated_form
+            child_form_id = self.context.associated_form
             if child_form_id:
                 child_form = db.getForm(child_form_id)
                 if child_form:
@@ -167,12 +167,12 @@ class DatagridField(BaseField):
     def getColumnLabels(self):
         """
         """
-        if not self.field_mapping:
+        if not self.context.field_mapping:
             return []
 
-        mapped_fields = [f.strip() for f in self.field_mapping.split(',')]
+        mapped_fields = [f.strip() for f in self.context.field_mapping.split(',')]
 
-        child_form_id = self.associated_form
+        child_form_id = self.context.associated_form
         if not child_form_id:
             return mapped_fields
 
@@ -191,15 +191,15 @@ class DatagridField(BaseField):
     def getRenderedFields(self, editmode=True, creation=False, request={}):
         """ Return an array of rows rendered using the associated form fields
         """
-        if not self.field_mapping:
+        if not self.context.field_mapping:
             return []
 
         db = self.context.getParentDatabase()
 
-        mapped_fields = [f.strip() for f in self.field_mapping.split(',')]
+        mapped_fields = [f.strip() for f in self.context.field_mapping.split(',')]
 
         # get associated form id
-        child_form_id = self.associated_form
+        child_form_id = self.context.associated_form
         if not child_form_id:
             return mapped_fields
 
@@ -226,7 +226,7 @@ class DatagridField(BaseField):
         return json.dumps(child_form_fields)
 
     def getAssociateForm(self):
-        child_form_id = self.associated_form
+        child_form_id = self.context.associated_form
         if child_form_id:
             db = self.context.getParentDatabase()
             return db.getForm(child_form_id)
@@ -247,9 +247,9 @@ class DatagridField(BaseField):
         rawValue = fieldValue
 
         mapped_fields = []
-        if self.field_mapping:
+        if self.context.field_mapping:
             mapped_fields = [
-                f.strip() for f in self.field_mapping.split(',')]
+                f.strip() for f in self.context.field_mapping.split(',')]
         # item names is set by `PlominoForm.createDocument`
         item_names = doc.getItem(self.context.id + '_itemnames')
 
@@ -259,7 +259,7 @@ class DatagridField(BaseField):
 
             # fieldValue is a array, where we must replace raw values with
             # rendered values
-            child_form_id = self.associated_form
+            child_form_id = self.context.associated_form
             if child_form_id:
                 db = self.context.getParentDatabase()
                 child_form = db.getForm(child_form_id)

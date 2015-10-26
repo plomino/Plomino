@@ -37,6 +37,7 @@ FIELD_TYPES = {
     "NUMBER": ["Number", "FieldIndex"],
     "RICHTEXT": ["Rich text", "ZCTextIndex"],
     "DATETIME": ["Date/Time", "DateIndex"],
+    "DATAGRID": ["Datagrid", "ZCTextIndex"],
     "NAME": ["Name", "FieldIndex"],
     "SELECTION": ["Selection list", "KeywordIndex"],
     "ATTACHMENT": ["File attachment", "ZCTextIndex"],

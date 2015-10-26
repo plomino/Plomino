@@ -17,11 +17,11 @@
     description="Plomino field type"
     provides=".boolean.IBooleanField"
     />
-  <!-- <plone:behavior
+  <plone:behavior
     title="Datagrid field"
     description="Plomino field type"
     provides=".datagrid.IDatagridField"
-    /> -->
+    />
   <plone:behavior
     title="Date/time field"
     description="Plomino field type"

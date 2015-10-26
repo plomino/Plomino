@@ -10,7 +10,7 @@
             form_method form/getFormMethod;
             associated_form python:field.getSettings().getAssociateForm();
             associated_form_url python:associated_form and associated_form.absolute_url();
-            associated_form_rendering python:field.getSettings().associated_form_rendering;
+            associated_form_rendering python:field.associated_form_rendering;
             new_fields python:field.getSettings().getRenderedFields(creation=True,request=request);
             ">
 <input type='hidden'
