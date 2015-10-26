@@ -23,6 +23,8 @@ alsoProvides(get_fields, IVocabularyFactory)
 def get_columns(obj):
     """ Get a list of current view's columns
     """
+    if not hasattr(obj, 'getColumns'):
+        return None
     columns = [(c.id, c.id) for c in obj.getColumns()]
     return SimpleVocabulary.fromItems(columns)
 alsoProvides(get_columns, IVocabularyFactory)
