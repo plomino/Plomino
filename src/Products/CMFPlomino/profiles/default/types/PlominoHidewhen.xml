@@ -21,6 +21,7 @@
   <property name="default_view_fallback">False</property>
   <property name="add_permission">cmf.AddPortalContent</property>
   <property name="behaviors">
+    <element value="plone.app.dexterity.behaviors.metadata.IDublinCore"/>
     <element value="plone.app.content.interfaces.INameFromTitle"/>
   </property>
   <property name="schema">Products.CMFPlomino.contents.hidewhen.IPlominoHidewhen</property>
