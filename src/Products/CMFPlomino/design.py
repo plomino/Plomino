@@ -625,9 +625,14 @@ class DesignManager:
     security.declarePublic('cleanFormulaScripts')
 
     def cleanFormulaScripts(self, script_id_pattern=None):
-        for script_id in self.scripts.objectIds():
-            if not script_id_pattern or script_id_pattern in script_id:
-                self.scripts._delObject(script_id)
+        to_delete = []
+        if not script_id_pattern:
+            to_delete = self.scripts.objectIds()
+        else:
+            for script_id in self.scripts.objectIds():
+                if script_id_pattern in script_id:
+                    to_delete.append(script_id)
+        self.scripts.manage_delObjects(to_delete)
 
     security.declarePublic('compileFormulaScript')
 
