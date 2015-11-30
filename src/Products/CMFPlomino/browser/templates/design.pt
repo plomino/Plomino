@@ -23,14 +23,14 @@
 
             <fieldset>
                 <legend>Manage</legend>
-                <ul><li><a href="./resources/manage_main" target="_new" i18n:translate="">Resources folder (ZMI)</a></li>
-                    <li><a href="./plomino_index/manage_catalogView" target="_new" i18n:translate="">Index (ZMI)</a></li>
-                    <li><a href="./plomino_documents/manage_main" i18n:translate="">Documents folder</a></li>       
+                <ul><li><a class="standalone" href="./resources/manage_main" target="_new" i18n:translate="">Resources folder (ZMI)</a></li>
+                    <li><a class="standalone" href="./plomino_index/manage_catalogView" target="_new" i18n:translate="">Index (ZMI)</a></li>
+                    <li><a class="standalone" href="./plomino_documents/manage_main" i18n:translate="">Documents folder</a></li>
                 </ul>
                 <ul>
                     <li><form name="Refresh" action="manage_refreshDB" method="POST">
                         <input type="submit" name="submit_refresh" class="context" value="Refresh database" i18n:attributes="value"/></form>
-                        <span i18n:translate="">(clean scripts, re-index documents, and check Plomino version migration)</span></li>     
+                        <span i18n:translate="">(clean scripts, re-index documents, and check Plomino version migration)</span></li>
                     <li><form name="Recompute" action="recomputeAllDocuments" method="POST">
                         <input type="submit" name="submit_recompute" class="context" value="Re-compute documents" i18n:attributes="value"/></form>
                         <span i18n:translate="">(save all documents with their current form: computed fields and computed on save fields will be re-computed and stored, and documents are re-indexed)</span></li>
