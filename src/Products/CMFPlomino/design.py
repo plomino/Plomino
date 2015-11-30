@@ -1138,6 +1138,8 @@ class DesignManager:
         params = element['params']
         container.invokeFactory(element_type, id=id, **params)
         obj = getattr(container, id)
+        obj.setTitle(element['title'])
+
         if element_type == "PlominoField":
             # some params comes from the type-specific schema
             # they must be re-set
