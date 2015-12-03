@@ -1,0 +1,169 @@
+{
+    "design": {
+        "configuration_holder": {
+            "elements": {
+                "frmConfig_config_id": {
+                    "id": "frmConfig_config_id", 
+                    "params": {
+                        "edit_template": "", 
+                        "field_mode": "EDITABLE", 
+                        "field_type": "TEXT", 
+                        "formula": "", 
+                        "html_attributes_formula": "", 
+                        "index_type": "DEFAULT", 
+                        "mandatory": false, 
+                        "read_template": "", 
+                        "size": null, 
+                        "to_be_indexed": false, 
+                        "validation_formula": "", 
+                        "widget": "TEXT"
+                    }, 
+                    "title": "frmConfig_config_id", 
+                    "type": "PlominoField"
+                }, 
+                "frmConfig_config_value": {
+                    "id": "frmConfig_config_value", 
+                    "params": {
+                        "edit_template": null, 
+                        "field_mode": "EDITABLE", 
+                        "field_type": "TEXT", 
+                        "formula": "config_id = context.REQUEST.get('frmConfig_config_id')\r\nconfig_value = context.REQUEST.get('frmConfig_config_value')\r\nif config_value:\r\n    return config_value\r\nif config_id:\r\n    if config_id not in context.objectIds():\r\n        return \"\"\r\n    if config_id.endswith('_formula'):\r\n        return context.getFormField(config_id).formula\r\n    return context.computeFieldValue(config_id, context)", 
+                        "html_attributes_formula": null, 
+                        "index_type": "DEFAULT", 
+                        "mandatory": false, 
+                        "read_template": null, 
+                        "size": "10", 
+                        "to_be_indexed": false, 
+                        "validation_formula": null, 
+                        "widget": "TEXTAREA"
+                    }, 
+                    "title": "frmConfig_config_value", 
+                    "type": "PlominoField"
+                }, 
+                "frmConfig_delete_button": {
+                    "id": "frmConfig_delete_button", 
+                    "params": {
+                        "edit_template": "", 
+                        "field_mode": "DISPLAY", 
+                        "field_type": "RICHTEXT", 
+                        "formula": "db = context.getParentDatabase()\nconfig_id = context.REQUEST.get('frmConfig_config_id')\nif not config_id:\n    return ''\nif config_id.startswith('frmConfig_'):\n    return ''\nif config_id not in context.objectIds():\n    return \"\"\nhtml = \"\"\"<input type='button' onclick=\"location.href='%s/%s/delete_confirmation'\" value=\"Delete\" />\"\"\" % (context.absolute_url(), config_id)\nreturn html", 
+                        "height": null, 
+                        "html_attributes_formula": "", 
+                        "index_type": "DEFAULT", 
+                        "mandatory": false, 
+                        "read_template": "", 
+                        "to_be_indexed": false, 
+                        "validation_formula": ""
+                    }, 
+                    "title": "frmConfig_delete_button", 
+                    "type": "PlominoField"
+                }, 
+                "frmConfig_go_to_field": {
+                    "id": "frmConfig_go_to_field", 
+                    "params": {
+                        "edit_template": null, 
+                        "field_mode": "DISPLAY", 
+                        "field_type": "RICHTEXT", 
+                        "formula": "html=\"\"\"\r\n<script>\r\n$(document).ready(function(){\r\n    $('#plomino_form').attr('method', \"GET\");\r\n});\r\nfunction go_to(key) {\r\n    location.href = '%s?frmConfig_config_id=' + key + '&_authenticator=' + $('input[name=\"_authenticator\"]').val();\r\n}\r\n</script><select onchange=\"go_to(this.value)\"><option value=\"\">Go to...</option>\"\"\" % context.absolute_url()\r\nfor field in context.getFormFields():\r\n    if field.id.startswith('frmConfig_'):\r\n        continue\r\n    html += \"\"\"<option value='%s'>%s</option>\"\"\" % (field.id, field.id)\r\nhtml += \"\"\"</select>\"\"\"\r\nreturn html", 
+                        "height": null, 
+                        "html_attributes_formula": null, 
+                        "index_type": "DEFAULT", 
+                        "mandatory": false, 
+                        "read_template": null, 
+                        "to_be_indexed": false, 
+                        "validation_formula": null
+                    }, 
+                    "title": "frmConfig_go_to_field", 
+                    "type": "PlominoField"
+                }, 
+                "frmConfig_save_button": {
+                    "id": "frmConfig_save_button", 
+                    "params": {
+                        "action_display": "SUBMIT", 
+                        "action_type": "SAVE", 
+                        "content": "", 
+                        "hidewhen": "", 
+                        "in_action_bar": false
+                    }, 
+                    "title": "Save", 
+                    "type": "PlominoAction"
+                }, 
+                "frmConfig_update": {
+                    "id": "frmConfig_update", 
+                    "params": {
+                        "edit_template": null, 
+                        "field_mode": "DISPLAY", 
+                        "field_type": "RICHTEXT", 
+                        "formula": "db = context.getParentDatabase()\r\nconfig_id = context.REQUEST.get('frmConfig_config_id')\r\nif not config_id:\r\n    return ''\r\nconfig_value = context.REQUEST.get('frmConfig_config_value')\r\nif not config_value:\r\n    return ''\r\nmessage = ''\r\nif config_id.startswith('frmConfig_'):\r\n    db.writeMessageOnPage(\"Invalid id\", context.REQUEST, error=True)\r\n    return \"\"\r\nif config_id not in context.objectIds():\r\n    message = \"The new configuration %s has been created.\" % config_id\r\n    context.invokeFactory('PlominoField', Title=config_id, id=config_id, FieldType=\"TEXT\", FieldMode=\"EDITABLE\")\r\nelse:\r\n    message = \"The configuration %s has been updated.\" % config_id\r\nfield = context.getFormField(config_id)\r\nif config_id.endswith('_formula'):\r\n    formula = config_value\r\nelse:\r\n    formula = \"\"\"return \\\"\\\"\\\"%s\\\"\\\"\\\" \"\"\" % config_value\r\nset_attr(field, 'formula', formula)\r\nfield.cleanFormulaScripts('_-_'.join([\"field\", field.getPhysicalPath()[-2], field.id]))\r\ndb.writeMessageOnPage(message, context.REQUEST)", 
+                        "height": null, 
+                        "html_attributes_formula": null, 
+                        "index_type": "DEFAULT", 
+                        "mandatory": false, 
+                        "read_template": null, 
+                        "to_be_indexed": false, 
+                        "validation_formula": null
+                    }, 
+                    "title": "frmConfig_update", 
+                    "type": "PlominoField"
+                }
+            }, 
+            "id": "configuration_holder", 
+            "params": {
+                "beforeCreateDocument": null, 
+                "beforeSaveDocument": null, 
+                "document_id": null, 
+                "document_title": null, 
+                "dynamic_document_title": false, 
+                "form_layout": "<p><span class=\"plominoFieldClass\">frmConfig_go_to_field</span></p>\r\n<p><span class=\"plominoFieldClass\">frmConfig_update</span></p>\r\n<p>Config id: <span class=\"plominoFieldClass\">frmConfig_config_id</span></p>\r\n<p>Config value:</p>\r\n<p><span class=\"plominoFieldClass\">frmConfig_config_value</span></p>\r\n<p><span class=\"plominoActionClass\">frmConfig_save_button</span> <span class=\"plominoFieldClass\">frmConfig_delete_button</span></p>", 
+                "form_method": "Auto", 
+                "hide_default_actions": true, 
+                "isPage": true, 
+                "isSearchForm": false, 
+                "onCreateDocument": null, 
+                "onDeleteDocument": null, 
+                "onOpenDocument": null, 
+                "onSaveDocument": null, 
+                "onSearch": null, 
+                "resources_css": null, 
+                "resources_js": null, 
+                "search_formula": null, 
+                "search_view": null, 
+                "store_dynamic_document_title": false
+            }, 
+            "title": "Configuration", 
+            "type": "PlominoForm"
+        }, 
+        "dbsettings": {
+            "acl": {
+                "AnomynousAccessRight": "NoAccess", 
+                "AuthenticatedAccessRight": "NoAccess", 
+                "SpecificRights": {
+                    "specific_deletedocument": "PlominoAuthor"
+                }, 
+                "UserRoles": {}
+            }, 
+            "params": {
+                "datetime_format": "%Y-%m-%d", 
+                "debugMode": false, 
+                "do_not_list_users": false, 
+                "do_not_reindex": false, 
+                "fulltextIndex": true, 
+                "i18n": "", 
+                "indexAttachments": false, 
+                "indexInPortal": false, 
+                "isDatabaseTemplate": false, 
+                "start_page": ""
+            }, 
+            "version": "1.19.2"
+        }, 
+        "resources": {
+            "scriptConfig": {
+                "data": "## Script (Python) \"scriptConfig\"\n##bind container=container\n##bind context=context\n##bind namespace=\n##bind script=script\n##bind subpath=traverse_subpath\n##parameters=\n##title=\n##\ndef getConfigValue(db, key, default=\"\"):\n  \"\"\" Look up a config by name, return the value as a string.\n  \"\"\"\n  config_form = db.getForm('configuration_holder')\n  if key not in config_form.objectIds():\n    return default\n  return config_form.computeFieldValue(key, config_form)\n\ndef getConfigValuesAsList(db, key, default=[]):\n  \"\"\" Look up a config document by name, return the value as a list, splitting the string on newlines.\n  \"\"\"\n  value_string = getConfigValue(db, key, default=None)\n  if value_string is None:\n    db.portal_skins.plone_scripts.plone_log('getConfigValue> Absent key: %s'%key)\n    return default\n  value_string = value_string.strip()\n  return value_string.replace('\\r', '').split('\\n')\n\ndef getConfigValuesAsDict(db, key, separator='|'):\n  \"\"\" Look up a config document by name, return the value as a dictionary, splitting each line on `separator`.\n  \"\"\"\n  # TODO: Use csv module to parse the value, treating the first line as a header row.\n  value_list = getConfigValuesAsList(db, key)\n  d = {}\n  for row in value_list:\n    (label, key) = row.split(separator)\n    d[key] = label\n  return d\n", 
+                "id": "scriptConfig", 
+                "title": "", 
+                "type": "Script (Python)"
+            }
+        }
+    }, 
+    "id": "configdb"
+}
