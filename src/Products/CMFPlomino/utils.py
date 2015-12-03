@@ -518,3 +518,6 @@ def _expandIncludes(context, formula):
 
     return formula
 
+
+def set_attr(obj, attr, value):
+    return setattr(obj, attr, value)

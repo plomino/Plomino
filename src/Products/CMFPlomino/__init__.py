@@ -99,6 +99,7 @@ class PlominoCoreUtils:
         'translate',
         'SCRIPT_ID_DELIMITER',
         'save_point',
+        'set_attr',
     ]
 
 component.provideUtility(PlominoCoreUtils, interfaces.IPlominoUtils)
