@@ -1139,12 +1139,8 @@ class DesignManager:
         params = element['params']
         container.invokeFactory(element_type, id=id, **params)
         obj = getattr(container, id)
-<<<<<<< Updated upstream
-        obj.setTitle(element['title'])
-        obj.reindexObject()
-=======
         obj.title = element['title']
->>>>>>> Stashed changes
+        obj.reindexObject()
 
         if element_type == "PlominoField":
             # some params comes from the type-specific schema
