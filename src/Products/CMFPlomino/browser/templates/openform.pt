@@ -36,16 +36,21 @@
 
     <h1 class="documentFirstHeading" tal:content="context/Title">Title</h1>
 
-    <div id="content-core">
-        <form enctype="multipart/form-data"
+    <div id="content-core"
+        tal:define="
+            ispage context/isPage;
+            form_method python:context.getFormMethod();">
+        <form tal:condition="not:ispage"
             id="plomino_form"
             tal:define="hasCreatePermissionOnDatabase python:context.hasCreatePermission(context.getParentDatabase());
-                hasCreatePermissionOnForm python:context.hasCreatePermission(context);"
+                hasCreatePermissionOnForm python:context.hasCreatePermission(context);
+                enctype python:(form_method == 'POST') and 'multipart/form-data'"
             tal:attributes="
                 name context/id;
                 action string:${context/absolute_url}/createDocument;
                 method python:context.getFormMethod();
-                data-pat-plominodynamic string:url:${context/absolute_url};">
+                data-pat-plominodynamic string:url:${context/absolute_url};
+                enctype enctype|nothing">
             <span tal:replace="structure context/@@authenticator/authenticator"/>
 
             <tal:block_no_createpermission
@@ -61,6 +66,25 @@
 
                 <span metal:use-macro="context/plomino_actions/macros/OpenFormActionBar">display form actions</span><br/>
             </tal:block_has_createpermission>
+        </form>
+
+        <form tal:condition="ispage"
+            enctype="multipart/form-data"
+            id="plomino_form"
+            tal:define="hasCreatePermissionOnDatabase python:context.hasCreatePermission(context.getParentDatabase());
+                hasCreatePermissionOnForm python:context.hasCreatePermission(context);
+                enctype python:(form_method == 'POST') and 'multipart/form-data'"
+            tal:attributes="
+                name context/id;
+                method python:context.getFormMethod();
+                data-pat-plominodynamic string:url:${context/absolute_url};
+                enctype enctype|nothing;">
+            <span tal:replace="structure context/@@authenticator/authenticator"/>
+
+            <tal:layout
+                tal:content="structure python:context.openBlankForm(request)">layout</tal:layout>
+
+            <span metal:use-macro="context/plomino_actions/macros/OpenFormActionBar">display form actions</span><br/>
         </form>
     </div>
 </metal:content>
