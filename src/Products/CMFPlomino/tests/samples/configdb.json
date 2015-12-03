@@ -154,7 +154,7 @@
                 "isDatabaseTemplate": false, 
                 "start_page": ""
             }, 
-            "version": "1.19.2"
+            "version": "2.0"
         }, 
         "resources": {
             "scriptConfig": {
