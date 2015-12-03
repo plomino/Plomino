@@ -14,6 +14,7 @@ from OFS.ObjectManager import ObjectManager
 import os
 from plone import api
 from plone.dexterity.interfaces import IDexterityFTI
+from plone.protect.interfaces import IDisableCSRFProtection
 from Products.DCWorkflow.DCWorkflow import DCWorkflowDefinition
 from Products.PageTemplates.ZopePageTemplate import manage_addPageTemplate
 from Products.PythonScripts.PythonScript import (
@@ -26,6 +27,7 @@ import transaction
 from webdav.Lockable import wl_isLocked
 from zipfile import ZipFile, ZIP_DEFLATED
 from zope import component
+from zope.interface import alsoProvides
 from zope.schema import getFieldsInOrder
 from ZPublisher.HTTPRequest import FileUpload
 from ZPublisher.HTTPRequest import HTTPRequest
@@ -638,6 +640,10 @@ class DesignManager:
     security.declarePublic('compileFormulaScript')
 
     def compileFormulaScript(self, script_id, formula, with_args=False):
+        # disable CSRF to allow script saving
+        if hasattr(self, "REQUEST"):
+            alsoProvides(self.REQUEST, IDisableCSRFProtection)
+
         # Remember the current user
         member = self.getCurrentMember()
         if member.__class__.__name__ == "SpecialUser":
