@@ -632,7 +632,8 @@ class DesignManager:
             for script_id in self.scripts.objectIds():
                 if script_id_pattern in script_id:
                     to_delete.append(script_id)
-        self.scripts.manage_delObjects(to_delete)
+        for id in to_delete:
+            del self.scripts[id]
 
     security.declarePublic('compileFormulaScript')
 
