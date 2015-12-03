@@ -932,7 +932,7 @@ class DesignManager:
 
         params = {}
         for (id, attr) in attributes:
-            params[id] = getattr(obj, id)
+            params[id] = getattr(obj, id, None)
         data['params'] = params
 
         if not isDatabase:
@@ -1139,8 +1139,12 @@ class DesignManager:
         params = element['params']
         container.invokeFactory(element_type, id=id, **params)
         obj = getattr(container, id)
+<<<<<<< Updated upstream
         obj.setTitle(element['title'])
         obj.reindexObject()
+=======
+        obj.title = element['title']
+>>>>>>> Stashed changes
 
         if element_type == "PlominoField":
             # some params comes from the type-specific schema
