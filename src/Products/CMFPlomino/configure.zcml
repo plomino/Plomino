@@ -94,4 +94,16 @@
         handler=".events.afterHidewhenModified"
         />
 
+    <utility
+        name="Products.CMFPlomino.fields.vocabularies.get_views"
+        provides="zope.schema.interfaces.IVocabularyFactory"
+        component=".fields.vocabularies.get_views"
+    />
+
+    <utility
+        name="Products.CMFPlomino.fields.vocabularies.get_forms"
+        provides="zope.schema.interfaces.IVocabularyFactory"
+        component=".fields.vocabularies.get_forms"
+    />
+
 </configure>
