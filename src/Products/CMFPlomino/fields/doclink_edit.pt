@@ -1,6 +1,6 @@
-<span tal:define="widget python:field.widget;
-                selection python:options['selection'];
+<span tal:define="selection python:options['selection'];
                 field python:options['field'];
+                widget python:field.widget;
                 name python:field.id;
                 current python:options['fieldvalue'];
                 lcurrent python:(hasattr(current,'split') and [current]) or current;
@@ -9,7 +9,8 @@
     <tal:widget tal:condition="python:widget=='SELECT'">
         <select class="pat-select2" tal:attributes="id name; name name"><tal:loop tal:repeat="v selection">
             <option tal:define="l python:v.split('|')"
-                tal:attributes="value python:l[1]; selected python:((lcurrent and (lcurrent[0]==l[1] or lcurrent_ids[0]==l[1]) and 1) or 0"
+                tal:attributes="value python:l[1];
+                    selected python:(lcurrent and (lcurrent[0]==l[1] or lcurrent_ids[0]==l[1]) and 1) or 0"
                 tal:content="python:l[0]">value</option>
         </tal:loop></select>
     </tal:widget>

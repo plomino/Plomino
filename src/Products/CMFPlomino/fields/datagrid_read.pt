@@ -1,6 +1,6 @@
 <tal:block 
     define="field python:options['field'];
-            fieldname python:options['fieldname'];
+            fieldname python:field.id;
             request field/REQUEST;
             v options/fieldvalue;
             form field/getParentNode;
