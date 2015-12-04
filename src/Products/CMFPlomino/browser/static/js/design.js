@@ -13,7 +13,6 @@ require([
             self.tree = new Tree(self.$el.find('.tree'), {
                 dataUrl: self.options.treeUrl,
                 onCreateLi: function(node, li) {
-                    console.log(node);
                     var element = li.find('.jqtree-element');
 
                     // Database icon
