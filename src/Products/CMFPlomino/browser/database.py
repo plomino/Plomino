@@ -82,10 +82,39 @@ class DatabaseView(BrowserView):
         # Create Views Tree
         views = []
         for view in database.getViews():
+            plomino_view = []
+            actions = []
+            for action in view.getActions():
+                # view.getActions() returns tuples
+                actions.append({
+                    "label": action[0].id,
+                    "type": 'action',
+                    "url": action[0].absolute_url()
+                })
+            plomino_view.append({
+                "label": "Actions",
+                "folder": True,
+                "children": actions,
+                "type": "actions",
+            })
+            columns = []
+            for column in view.getColumns():
+                columns.append({
+                    "label": column.id,
+                    "type": 'column',
+                    "url": column.absolute_url()
+                })
+            plomino_view.append({
+                "label": "Columns",
+                "folder": True,
+                "children": columns,
+                "type": "columns",
+            })
             views.append({
                 "label": view.id,
-                "type" : "view",
-                "url" : view.absolute_url(),
+                "type": "view",
+                "children": plomino_view,
+                "url": view.absolute_url(),
             })
 
 

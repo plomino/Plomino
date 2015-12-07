@@ -61,11 +61,39 @@ require([
                           '<span class="icon-cog"></span>'
                         );
                         element.append(
-                          '&nbsp;<a href="' + node.url + '/edit"><span class="icon-pencil" />Edit</a></span>'
+                          '&nbsp;<span class="jqtree-common jqtree-title"><a href="' + node.url + '/edit"><span class="icon-pencil" />Edit</a></span>'
                         );
                     }
 
-                    // TODO: View icons (views currently broken)
+                    // View icons
+                    if (node.type == 'views'){
+                        element.prepend(
+                          '<span class="icon-doc-text"></span>'
+                        );
+                    }
+                    if (node.type == 'view'){
+                        element.prepend(
+                          '<span class="icon-doc-text"></span>'
+                        );
+                        element.append(
+                          '&nbsp;<span class="jqtree-common jqtree-title"><a href="' + node.url + '/edit"><span class="icon-pencil" />Edit</a></span>' +
+                          '&nbsp;<span class="jqtree-common jqtree-title"><a href="' + node.url + '/view"><span class="icon-doc-text" />View</a></span>' +
+                          '&nbsp;<span class="jqtree-common jqtree-title"><a href="' + node.url + '/folder_contents"><span class="icon-folder-open" />Contents</a></span>'
+                        );
+                    }
+                    if (node.type == 'columns'){
+                        element.prepend(
+                          '<span class="icon-table"></span>'
+                        );
+                    }
+                    if (node.type == 'column'){
+                        element.prepend(
+                          '<span class="icon-table"></span>'
+                        );
+                        element.append(
+                          '&nbsp;<span class="jqtree-common jqtree-title"><a href="' + node.url + '/edit"><span class="icon-pencil" />Edit</a></span>'
+                        );
+                    }
 
                     // Agent icons
                     if (node.type == 'agents'){
@@ -78,8 +106,8 @@ require([
                           '<span class="icon-cog-alt"></span>'
                         );
                         element.append(
-                          '&nbsp;<a href="' + node.url + '/edit"><span class="icon-pencil" />Edit</a></span>' +
-                          '&nbsp;<a href="' + node.url + '/runAgent"><span class="icon-link-ext" />Run</a></span>'
+                          '&nbsp;<span class="jqtree-common jqtree-title"><a href="' + node.url + '/edit"><span class="icon-pencil" />Edit</a></span>' +
+                          '&nbsp;<span class="jqtree-common jqtree-title"><a href="' + node.url + '/runAgent"><span class="icon-link-ext" />Run</a></span>'
                         );
                     }
                 }
