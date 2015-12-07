@@ -4,7 +4,7 @@ Changelog
 2.0a4 (unreleased)
 ------------------
 
-- Create modal database deisgn view [instification]
+- Create modal database design view [instification]
 
 2.0a3 (2015-09-29)
 ------------------
