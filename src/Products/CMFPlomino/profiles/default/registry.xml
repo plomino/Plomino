@@ -32,11 +32,11 @@
     <field type="plone.registry.field.Text">
       <default>{
     "clearfix": {
-        "classes": "clearfix", 
+        "classes": "clearfix",
         "block": "div"
-    }, 
+    },
     "discreet": {
-        "inline": "span", 
+        "inline": "span",
         "classes": "discreet"
     }
 }</default>
@@ -45,27 +45,27 @@
     </field>
     <value>{
     "clearfix": {
-        "classes": "clearfix", 
+        "classes": "clearfix",
         "block": "div"
-    }, 
+    },
     "discreet": {
-        "inline": "span", 
+        "inline": "span",
         "classes": "discreet"
     },
     "plominofield": {
-        "inline": "span", 
+        "inline": "span",
         "classes": "plominoFieldClass"
     },
     "plominoaction": {
-        "inline": "span", 
+        "inline": "span",
         "classes": "plominoActionClass"
     },
     "plominohidewhen": {
-        "inline": "span", 
+        "inline": "span",
         "classes": "plominoHidewhenClass"
     },
     "plominosubform": {
-        "inline": "span", 
+        "inline": "span",
         "classes": "plominoSubformClass"
     }
 }</value>
@@ -123,7 +123,7 @@
     <value key="depends">plone</value>
     <value key="jscompilation">++resource++Products.CMFPlomino/js/plomino-compiled.js</value>
     <value key="csscompilation">++resource++Products.CMFPlomino/css/plomino-compiled.css</value>
-    <value key="last_compilation">2015-12-03 00:00:00</value>
+    <value key="last_compilation">2015-12-08 00:00:00</value>
   </records>
 
 </registry>
