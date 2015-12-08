@@ -1,16 +1,16 @@
-/* line 2, http://localhost:8080/test2/++resource++Products.CMFPlomino/css/design.less */
+/* line 2, http://localhost:8080/Plone/++resource++Products.CMFPlomino/css/design.less */
 .plomino-design ul.jqtree-tree div.jqtree-element {
   padding-left: 18px;
 }
-/* line 6, http://localhost:8080/test2/++resource++Products.CMFPlomino/css/design.less */
+/* line 6, http://localhost:8080/Plone/++resource++Products.CMFPlomino/css/design.less */
 .plomino-design ul.jqtree-tree ul.jqtree_common {
   margin-left: 18px;
 }
-/* line 10, http://localhost:8080/test2/++resource++Products.CMFPlomino/css/design.less */
+/* line 10, http://localhost:8080/Plone/++resource++Products.CMFPlomino/css/design.less */
 .plomino-design a.jqtree-toggler {
   left: 6px;
 }
-/* line 14, http://localhost:8080/test2/++resource++Products.CMFPlomino/css/design.less */
+/* line 14, http://localhost:8080/Plone/++resource++Products.CMFPlomino/css/design.less */
 .plomino-design span.jqtree-title {
   margin-left: 0;
 }
@@ -31,7 +31,7 @@
   }
 }
 */
-/* line 39, http://localhost:8080/test2/++resource++Products.CMFPlomino/css/design.less */
+/* line 39, http://localhost:8080/Plone/++resource++Products.CMFPlomino/css/design.less */
 .plomino-design [class^="icon-"]:before,
 [class*=" icon-"]:before {
   font-family: "plomino-icons";
@@ -60,93 +60,93 @@
   /* Uncomment for 3D effect */
   /* text-shadow: 1px 1px 1px rgba(127, 127, 127, 0.3); */
 }
-/* line 74, http://localhost:8080/test2/++resource++Products.CMFPlomino/css/design.less */
+/* line 74, http://localhost:8080/Plone/++resource++Products.CMFPlomino/css/design.less */
 .plomino-design .icon-database:before {
   content: '\e800';
 }
 /* '' */
-/* line 75, http://localhost:8080/test2/++resource++Products.CMFPlomino/css/design.less */
+/* line 75, http://localhost:8080/Plone/++resource++Products.CMFPlomino/css/design.less */
 .plomino-design .icon-th:before {
   content: '\e801';
 }
 /* '' */
-/* line 76, http://localhost:8080/test2/++resource++Products.CMFPlomino/css/design.less */
+/* line 76, http://localhost:8080/Plone/++resource++Products.CMFPlomino/css/design.less */
 .plomino-design .icon-tasks:before {
   content: '\e802';
 }
 /* '' */
-/* line 77, http://localhost:8080/test2/++resource++Products.CMFPlomino/css/design.less */
+/* line 77, http://localhost:8080/Plone/++resource++Products.CMFPlomino/css/design.less */
 .plomino-design .icon-table:before {
   content: '\e803';
 }
 /* '' */
-/* line 78, http://localhost:8080/test2/++resource++Products.CMFPlomino/css/design.less */
+/* line 78, http://localhost:8080/Plone/++resource++Products.CMFPlomino/css/design.less */
 .plomino-design .icon-folder-open-empty:before {
   content: '\e804';
 }
 /* '' */
-/* line 79, http://localhost:8080/test2/++resource++Products.CMFPlomino/css/design.less */
+/* line 79, http://localhost:8080/Plone/++resource++Products.CMFPlomino/css/design.less */
 .plomino-design .icon-folder-empty:before {
   content: '\e805';
 }
 /* '' */
-/* line 80, http://localhost:8080/test2/++resource++Products.CMFPlomino/css/design.less */
+/* line 80, http://localhost:8080/Plone/++resource++Products.CMFPlomino/css/design.less */
 .plomino-design .icon-folder-open:before {
   content: '\e806';
 }
 /* '' */
-/* line 81, http://localhost:8080/test2/++resource++Products.CMFPlomino/css/design.less */
+/* line 81, http://localhost:8080/Plone/++resource++Products.CMFPlomino/css/design.less */
 .plomino-design .icon-folder:before {
   content: '\e807';
 }
 /* '' */
-/* line 82, http://localhost:8080/test2/++resource++Products.CMFPlomino/css/design.less */
+/* line 82, http://localhost:8080/Plone/++resource++Products.CMFPlomino/css/design.less */
 .plomino-design .icon-file-code:before {
   content: '\e808';
 }
 /* '' */
-/* line 83, http://localhost:8080/test2/++resource++Products.CMFPlomino/css/design.less */
+/* line 83, http://localhost:8080/Plone/++resource++Products.CMFPlomino/css/design.less */
 .plomino-design .icon-cog:before {
   content: '\e809';
 }
 /* '' */
-/* line 84, http://localhost:8080/test2/++resource++Products.CMFPlomino/css/design.less */
+/* line 84, http://localhost:8080/Plone/++resource++Products.CMFPlomino/css/design.less */
 .plomino-design .icon-pencil:before {
   content: '\e80a';
 }
 /* '' */
-/* line 85, http://localhost:8080/test2/++resource++Products.CMFPlomino/css/design.less */
+/* line 85, http://localhost:8080/Plone/++resource++Products.CMFPlomino/css/design.less */
 .plomino-design .icon-doc-text:before {
   content: '\e80b';
 }
 /* '' */
-/* line 86, http://localhost:8080/test2/++resource++Products.CMFPlomino/css/design.less */
+/* line 86, http://localhost:8080/Plone/++resource++Products.CMFPlomino/css/design.less */
 .plomino-design .icon-cog-alt:before {
   content: '\e80c';
 }
 /* '' */
-/* line 87, http://localhost:8080/test2/++resource++Products.CMFPlomino/css/design.less */
+/* line 87, http://localhost:8080/Plone/++resource++Products.CMFPlomino/css/design.less */
 .plomino-design .icon-link-ext:before {
   content: '\e80d';
 }
 /* '' */
-/* line 88, http://localhost:8080/test2/++resource++Products.CMFPlomino/css/design.less */
+/* line 88, http://localhost:8080/Plone/++resource++Products.CMFPlomino/css/design.less */
 .plomino-design .icon-user:before {
   content: '\e80e';
   font-family: 'plomino-icons';
 }
 /* '' */
-/* line 89, http://localhost:8080/test2/++resource++Products.CMFPlomino/css/design.less */
+/* line 89, http://localhost:8080/Plone/++resource++Products.CMFPlomino/css/design.less */
 .plomino-design .icon-users:before {
   content: '\e80f';
 }
 /* '' */
-/* line 90, http://localhost:8080/test2/++resource++Products.CMFPlomino/css/design.less */
+/* line 90, http://localhost:8080/Plone/++resource++Products.CMFPlomino/css/design.less */
 .plomino-design .icon-field:before {
   content: '\e810';
 }
 /* '' */
-/* line 92, http://localhost:8080/test2/++resource++Products.CMFPlomino/css/design.less */
+/* line 92, http://localhost:8080/Plone/++resource++Products.CMFPlomino/css/design.less */
 #plomino-design-modal {
   position: absolute;
   right: 1em;
