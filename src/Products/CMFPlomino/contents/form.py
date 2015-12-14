@@ -975,7 +975,7 @@ class PlominoForm(Container):
         else:
             self.REQUEST.RESPONSE.redirect(
                 db.absolute_url() +
-                "/ErrorMessages?disable_border=1&error=" +
+                "/plomino_errors?error=" +
                 invalid)
 
     security.declarePublic('getFormField')
