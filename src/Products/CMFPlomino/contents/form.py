@@ -959,6 +959,7 @@ class PlominoForm(Container):
             except PlominoScriptException, e:
                 e.reportError('beforeCreate formula failed')
 
+        import pdb; pdb.set_trace()
         tmp = None
         if not self.isPage and hasattr(self, 'REQUEST'):
             # hideWhens need a TemporaryDocument
@@ -975,7 +976,7 @@ class PlominoForm(Container):
         else:
             self.REQUEST.RESPONSE.redirect(
                 db.absolute_url() +
-                "/ErrorMessages?disable_border=1&error=" +
+                "/plomino_errors?error=" +
                 invalid)
 
     security.declarePublic('getFormField')
