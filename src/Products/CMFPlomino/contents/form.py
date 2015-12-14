@@ -959,6 +959,7 @@ class PlominoForm(Container):
             except PlominoScriptException, e:
                 e.reportError('beforeCreate formula failed')
 
+        import pdb; pdb.set_trace()
         tmp = None
         if not self.isPage and hasattr(self, 'REQUEST'):
             # hideWhens need a TemporaryDocument
