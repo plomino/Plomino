@@ -43,7 +43,7 @@ def get_fields(obj):
         fields.append(
             ['=== ' + form.id + ' ===', 'PlominoPlaceholder%s' % counter])
         counter += 1
-        fields += [(field.id, form.id + '/' + field.id)
+        fields += [(form.id + '/' + field.id, form.id + '/' + field.id)
             for field in form.getFormFields()]
     return SimpleVocabulary.fromItems(fields)
 directlyProvides(get_fields, IContextSourceBinder)
