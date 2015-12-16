@@ -1,8 +1,14 @@
+from AccessControl import Unauthorized
 from jsonutil import jsonutil as json
 from Products.Five import BrowserView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 
+from ..config import (
+    READ_PERMISSION,
+    SCRIPT_ID_DELIMITER,
+)
 from ..utils import asList, asUnicode
+from ..exceptions import PlominoScriptException
 
 
 class ViewView(BrowserView):
@@ -15,7 +21,31 @@ class ViewView(BrowserView):
         self.target = self.context
 
     def openview(self):
-        return self.template()
+        """ Check read permission and open view.
+
+        NOTE: if READ_PERMISSION is set on the 'view' action itself, it
+        causes error 'maximum recursion depth exceeded' if user hasn't
+        permission.
+        """
+        if self.context.checkUserPermission(READ_PERMISSION):
+            valid = ''
+            try:
+                if self.context.onOpenView:
+                    valid = self.context.runFormulaScript(
+                        SCRIPT_ID_DELIMITER.join(
+                            ['view', self.context.id, 'onopen']),
+                        self.context,
+                        self.context.onOpenView)
+            except PlominoScriptException, e:
+                e.reportError('onOpenView event failed')
+
+            if valid:
+                return self.context.unrestrictedTraverse('@@plomino_errors')(
+                    errors=[valid])
+
+            return self.template()
+        else:
+            raise Unauthorized("You cannot read this content")
 
     def json(self):
         """ Returns a JSON representation of view data

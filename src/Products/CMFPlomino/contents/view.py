@@ -136,37 +136,6 @@ class PlominoView(Container):
 
     security = ClassSecurityInfo()
 
-    security.declarePublic('checkBeforeOpenView')
-
-    def checkBeforeOpenView(self):
-        """ Check read permission and open view.
-
-        NOTE: if READ_PERMISSION is set on the 'view' action itself, it
-        causes error 'maximum recursion depth exceeded' if user hasn't
-        permission.
-        """
-        if self.checkUserPermission(READ_PERMISSION):
-            valid = ''
-            try:
-                if self.getOnOpenView():
-                    valid = self.runFormulaScript(
-                        SCRIPT_ID_DELIMITER.join(['view', self.id, 'onopen']),
-                        self,
-                        self.getOnOpenView)
-            except PlominoScriptException, e:
-                e.reportError('onOpenView event failed')
-
-            if valid:
-                return self.ErrorMessages(errors=[valid])
-
-            if self.getViewTemplate():
-                pt = self.resources._getOb(self.getViewTemplate())
-                return pt.__of__(self)()
-            else:
-                return self.OpenView()
-        else:
-            raise Unauthorized("You cannot read this content")
-
     security.declarePublic('getAllDocuments')
 
     def getAllDocuments(
