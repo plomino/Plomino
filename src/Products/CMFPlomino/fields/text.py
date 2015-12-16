@@ -19,7 +19,7 @@ class ITextField(model.Schema):
     directives.fieldset(
         'settings',
         label=_(u'Settings'),
-        fields=('widget', 'size', ),
+        fields=('widget', 'size', 'preserve_carriage_returns'),
     )
 
     widget = schema.Choice(
@@ -32,10 +32,20 @@ class ITextField(model.Schema):
         description=u'Field rendering',
         default="TEXT",
         required=True)
+
     size = schema.TextLine(
         title=u'Size',
         description=u'Length or rows (depending on the widget)',
         required=False)
+
+    preserve_carriage_returns = schema.Bool(
+        title=_('CMFPlomino_label_preserve_carriage_returns',
+            default='Preserve carriage returns'),
+        description=_('CMFPlomino_help_preserve_carriage_returns',
+            default='Render carriage returns in HTML'),
+        default=False,
+        required=False,
+    )
 
 
 @implementer(ITextField)
