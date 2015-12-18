@@ -27,6 +27,12 @@ from zope import component
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import normalizeString as utils_normalizeString
 
+try:
+    from plone.app.upgrade import v40
+    HAS_PLONE40 = True
+except ImportError:
+    HAS_PLONE40 = False
+
 from .interfaces import IPlominoSafeDomains
 from .config import TIMEZONE, SCRIPT_ID_DELIMITER
 
