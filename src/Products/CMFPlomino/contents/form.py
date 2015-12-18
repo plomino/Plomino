@@ -27,6 +27,7 @@ from ..utils import (
     PlominoTranslate,
     StringToDate,
     translate,
+    urlquote,
 )
 from ..document import getTemporaryDocument
 
@@ -976,7 +977,7 @@ class PlominoForm(Container):
             self.REQUEST.RESPONSE.redirect(
                 db.absolute_url() +
                 "/plomino_errors?error=" +
-                invalid)
+                urlquote(invalid.encode('utf-8')))
 
     security.declarePublic('getFormField')
 
