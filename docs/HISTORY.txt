@@ -1,7 +1,11 @@
 Changelog
 =========
 
-1.19.5 (unreleased)
+1.19.6 (2016-01-04)
+-------------------
+- JSON export compliant with Plomino 2 [mamogmx]
+
+1.19.5 (2015-06-05)
 -------------------
 
 - Enable fields validation in Page forms [ebrehault]
