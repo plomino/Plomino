@@ -1,7 +1,13 @@
 Changelog
 =========
 
-2.0a4 (unreleased)
+2.0a5 (unreleased)
+------------------
+
+- Nothing changed yet.
+
+
+2.0a4 (2016-01-06)
 ------------------
 
 - Create modal database design view [instification]
