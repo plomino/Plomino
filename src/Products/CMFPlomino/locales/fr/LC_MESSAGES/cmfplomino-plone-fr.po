@@ -1,0 +1,64 @@
+# ArchGenXML generated POT File
+# [Eric BREHAULT] <[ebrehault@gmail.com]>, 2006.
+msgid ""
+msgstr ""
+"Project-Id-Version: CMFPlomino\n"
+"POT-Creation-Date: Thu Sep 28 15:52:32 2006\n"
+"PO-Revision-Date: 2013-07-24 13:50+0700\n"
+"Last-Translator: [Eric BREHAULT] <[ebrehault@gmail.com]>\n"
+"Language-Team: [Eric BREHAULT] <[ebrehault@gmail.com]>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0\n"
+"Language-Code: fr\n"
+"Language-Name: French\n"
+"X-Is-Fallback-For: fr-be fr-ca fr-lu fr-mc fr-ch fr-fr\n"
+"Preferred-Encodings: latin1 utf-8\n"
+"Domain: plone\n"
+
+msgid "PlominoAction"
+msgstr "Plomino: Action"
+
+#. Default: "Plomino: Cache"
+msgid "PlominoCache"
+msgstr ""
+
+msgid "PlominoColumn"
+msgstr "Plomino: Colonne"
+
+msgid "PlominoDatabase"
+msgstr "Plomino: Database"
+
+msgid "PlominoDocument"
+msgstr "Plomino: Document"
+
+msgid "PlominoField"
+msgstr "Plomino: Champ"
+
+msgid "PlominoForm"
+msgstr "Plomino: Formulaire"
+
+msgid "PlominoHidewhen"
+msgstr "Plomino: Cacher quand"
+
+msgid "PlominoView"
+msgstr "Plomino: Vue"
+
+msgid "Forms"
+msgstr "Formulaires"
+
+msgid "Views"
+msgstr "Vues"
+
+msgid "ACL"
+msgstr "ACL"
+
+msgid "About"
+msgstr "A propos"
+
+msgid "Using"
+msgstr "Aide"
+
+msgid "Compose"
+msgstr "Rédiger"
