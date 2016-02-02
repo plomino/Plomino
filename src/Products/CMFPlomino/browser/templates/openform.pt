@@ -4,7 +4,7 @@
     xmlns:i18n="http://xml.zope.org/namespaces/i18n"
     lang="en"
     metal:use-macro="context/main_template/macros/master"
-    i18n:domain="plone">
+    i18n:domain="Products.CMFPlomino">
 <body>
 
 <metal:javascript_head fill-slot="javascript_head_slot">
@@ -55,7 +55,7 @@
 
             <tal:block_no_createpermission
                 condition="python:not(hasCreatePermissionOnDatabase and hasCreatePermissionOnForm)">
-                <p i18n:domain="CMFPlomino" i18n:translate="Please log in">Please log in</p>
+                <p i18n:domain="Products.CMFPlomino" i18n:translate="Please log in">Please log in</p>
             </tal:block_no_createpermission>
 
             <tal:block_has_createpermission

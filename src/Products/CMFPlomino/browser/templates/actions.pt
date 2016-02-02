@@ -1,10 +1,16 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en"
+      lang="en"
+      metal:use-macro="here/main_template/macros/master"
+      i18n:domain="Products.CMFPlomino">
+<body>
+
 <div class="formControls" metal:define-macro="ReadDocumentActionBar">
 <span class="actionButtons">
     <tal:defaultactions tal:condition="python:not(view.form.hide_default_actions)">
         <tal:block
             tal:condition="python:view.target.hasEditPermission(view.target)==True and view.target.hasEditPermission(view.target.getParentDatabase())==True and view.target.isAuthor()">
         <input type="button" class="context plominoEdit" value="Edit" name="plomino_edit"
-            i18n:domain="CMFPlomino" i18n:attributes="value"
+            i18n:domain="Products.CMFPlomino" i18n:attributes="value"
             tal:attributes="onclick python:'location.href=\''+view.target.doc_url()+'/EditDocument\''" />
         </tal:block>
 
@@ -38,7 +44,7 @@
         <tal:block metal:use-macro="context/plomino_actions/macros/CloseAction">display
         close action</tal:block>
         <input type="submit" class="context plominoSave" name="plomino_save"
-            value="Save" i18n:domain="CMFPlomino" i18n:attributes="value" />
+            value="Save" i18n:domain="Products.CMFPlomino" i18n:attributes="value" />
         <tal:block
             tal:condition="python:not(view.target.getCurrentMember().getUserName()=='Anonymous User')"><tal:block
             metal:use-macro="context/plomino_actions/macros/DeleteAction">display
@@ -63,7 +69,7 @@
         <tal:block metal:use-macro="context/plomino_actions/macros/CloseAction">display
         close action</tal:block>
         <input type="submit" class="context plominoSave" name="plomino_save"
-            value="Save" i18n:domain="CMFPlomino" i18n:attributes="value" />
+            value="Save" i18n:domain="Products.CMFPlomino" i18n:attributes="value" />
     </tal:defaultactions>
         <tal:block
             tal:repeat="action_tuple python:[(a, parent_id) for a, parent_id in view.form.getActions(view.target, True) if a.in_action_bar==True]">
@@ -84,7 +90,7 @@
         <tal:block metal:use-macro="context/plomino_actions/macros/CloseAction">display
         close action</tal:block>
         <input type="submit" class="context plominoSearch" value="Search" name="plomino_search"
-            i18n:domain="CMFPlomino" i18n:attributes="value" />
+            i18n:domain="Products.CMFPlomino" i18n:attributes="value" />
     </tal:defaultactions>
         <tal:block
             tal:repeat="action_tuple python:[(a, parent_id) for a, parent_id in view.form.getActions(view.target, True) if a.in_action_bar==True]">
@@ -103,7 +109,7 @@
 <span class="actionButtons">
     <tal:defaultactions tal:condition="python:not(context.hide_default_actions)">
         <input type="button" class="context plominoDelete" value="Delete" name="plomino_deletedocuments"
-            i18n:domain="CMFPlomino" i18n:attributes="value"
+            i18n:domain="Products.CMFPlomino" i18n:attributes="value"
             tal:condition="python:view.target.hasRemovePermission(view.target)==True"
             tal:define="
                 plominotranslate nocall:modules/Products/CMFPlomino/utils/PlominoTranslate;
@@ -152,18 +158,18 @@
     tal:define="is_search_form_or_view python:(hasattr(view.target.aq_parent,'getIsSearchForm') or hasattr(view.target.aq_parent,'getSelectionFormula'));">
     <tal:backtoDB tal:condition="python:not(is_search_form_or_view)">
         <input type="button" class="standalone plominoClose" value="Close" name="plomino_close"
-            i18n:domain="CMFPlomino" i18n:attributes="value"
+            i18n:domain="Products.CMFPlomino" i18n:attributes="value"
             tal:attributes="onclick python:'location.href=\''+view.target.getParentDatabase().absolute_url()+'\''" />
     </tal:backtoDB>
     <tal:backtoprevious tal:condition="python:is_search_form_or_view">
         <input type="button" class="standalone plominoClose" value="Close" name="plomino_close"
-            i18n:domain="CMFPlomino" i18n:attributes="value"
+            i18n:domain="Products.CMFPlomino" i18n:attributes="value"
             onclick="history.go(-1)" />
     </tal:backtoprevious>
 
 </tal:block> </tal:block>
 <tal:block metal:define-macro="DeleteAction"><tal:block tal:condition="python:view.target.hasCurrentUserRight(view.target.getSpecificRights('specific_deletedocument'))"><input type="button"
-    class="destructive plominoDelete" value="Delete" i18n:domain="CMFPlomino" name="plomino_delete"
+    class="destructive plominoDelete" value="Delete" i18n:domain="Products.CMFPlomino" name="plomino_delete"
     i18n:attributes="value"
     tal:define="
         plominotranslate nocall:modules/Products/CMFPlomino/utils/PlominoTranslate;
@@ -172,3 +178,6 @@
     tal:attributes="onclick python:'if(confirm(\''+msg+' ?\')){location.href=\''+view.target.absolute_url()+'/delete?_authenticator='+token+'&returnurl='+view.target.getParentDatabase().absolute_url()+'\'}'" />
     </tal:block>
 </tal:block>
+
+</body>
+</html>

@@ -4,7 +4,7 @@
     xmlns:i18n="http://xml.zope.org/namespaces/i18n"
     lang="en"
     metal:use-macro="context/main_template/macros/master"
-    i18n:domain="plone">
+    i18n:domain="Products.CMFPlomino">
 <body>
 
 <metal:content fill-slot="main">
@@ -22,7 +22,7 @@
         <tal:block
             tal:condition="python:context.hasReadPermission(context)">
             <tal:views tal:condition="python:len(views)>0">
-                <h3 i18n:domain="CMFPlomino" i18n:translate="Browse">Browse</h3>
+                <h3 i18n:domain="Products.CMFPlomino" i18n:translate="Browse">Browse</h3>
                 <p tal:repeat="v views">
                     <a href="#"
                         tal:attributes="href v/absolute_url_path"
@@ -31,7 +31,7 @@
                 </p>
             </tal:views>
             <tal:search tal:condition="python:len(searchforms)>0">
-                <h3 i18n:domain="CMFPlomino" i18n:translate="Search">Search</h3>
+                <h3 i18n:domain="Products.CMFPlomino" i18n:translate="Search">Search</h3>
                 <p tal:repeat="f searchforms"><a href="#"
                     tal:attributes="href python:f.absolute_url_path()+'/OpenForm'"
                     tal:content="f/Title">form link</a> <br />
@@ -43,7 +43,7 @@
         <tal:block tal:condition="python:context.hasCreatePermission(context)">
 
             <tal:forms tal:condition="python:len(composeforms)>0">
-                <h3 i18n:domain="CMFPlomino" i18n:translate="Add new content">Add
+                <h3 i18n:domain="Products.CMFPlomino" i18n:translate="Add new content">Add
                 new content</h3>
                 <p tal:repeat="f composeforms"><a href="#"
                     tal:attributes="href python:f.absolute_url_path()+'/OpenForm'"
