@@ -969,7 +969,7 @@ class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
 
         if not isinstance(result, unicode):
             site_properties = api.portal.get().portal_properties.site_properties
-            charset = site_properties.getProperty("default_charset")
+            charset = site_properties.getProperty("default_charset", 'utf-8')
             result = unicode(result, charset)
 
         request = getattr(self, 'REQUEST', None)
