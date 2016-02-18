@@ -1,5 +1,6 @@
 from AccessControl import ClassSecurityInfo
 from AccessControl.SecurityManagement import newSecurityManager
+from jsonutil import jsonutil as json
 from plone.autoform import directives
 from plone.dexterity.content import Item
 from plone.protect.interfaces import IDisableCSRFProtection
@@ -102,7 +103,7 @@ class PlominoAgent(Item):
                 owner = self.getOwner()
                 newSecurityManager(None, owner)
 
-            plominoReturnURL = self.runFormulaScript(
+            result = self.runFormulaScript(
                 "agent_" + self.id,
                 plominoContext,
                 self.content,
@@ -114,8 +115,15 @@ class PlominoAgent(Item):
             if self.run_as == "OWNER":
                 newSecurityManager(None, user)
 
-            if request and request.get('REDIRECT', False):
-                request.RESPONSE.redirect(plominoReturnURL)
+            if request:
+                if request.get('REDIRECT', False):
+                    # result is supposed to be an URL
+                    plominoReturnURL = result or plominoReturnURL
+                    request.RESPONSE.redirect(plominoReturnURL)
+
+                if "application/json" in request.getHeader('Accept', ''):
+                    # result will be serialized in JSON
+                    return json.dumps(result)
 
         except PlominoScriptException, e:
             # Exception logged already in runFormulaScript
