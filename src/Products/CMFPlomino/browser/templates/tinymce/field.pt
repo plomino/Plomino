@@ -17,7 +17,6 @@
         <div class="plone-modal-dialog">
             <div class="plone-modal-content">
                 <div class="plone-modal-header">
-                    <a class="plone-modal-close">×</a>
                     <h2 class="plone-modal-title">Add/edit a Plomino Field</h2>
                 </div>
                 <div class="plone-modal-body">
@@ -26,7 +25,7 @@
                         
                         <form id="fieldSelection" method="get">
                             <p>
-                                <label i18n:translate="plominofield_id" for="plominoFieldId">Field ID YOO</label>
+                                <label i18n:translate="plominofield_id" for="plominoFieldId">Field ID</label>
                                 <select id="plominoFieldId" name="fieldid" onchange="this.form.submit();">
                                     <option
                                         tal:repeat="item python:form.getFormFields()"
@@ -41,7 +40,7 @@
                         <legend i18n:translate="plominofield_advanced">Advanced edition</legend>
                         <p>
                             <a i18n:translate="plominofield_mainsettings" tal:attributes="href python:field.absolute_url() + '/edit'" target="_blank">Main parameters</a><br />
-                            <a tal:attributes="href python:field.absolute_url() + '/' + field.FieldType.lower() + 'settings'"
+                            <a tal:attributes="href python:field.absolute_url() + '#autotoc-item-autotoc-4'"
                                 target="_blank" id="fieldSettingsLink" i18n:translate="plominofield_specificsettings">Specific settings</a>
                         </p>
                     </fieldset>

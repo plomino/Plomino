@@ -6,36 +6,35 @@
 				  ">
 	<meta http-equiv="Content-type" content="text/html;charset=UTF-8" />
 	<title i18n:translate="plominofield_title">Add/edit a Plomino Field</title>
-    <!--
-	<script type="text/javascript" src="../../tiny_mce_popup.js"></script>
-	<script type="text/javascript" src="../../utils/mctabs.js"></script>
-	<script type="text/javascript" src="../../utils/form_utils.js"></script>
-	-->
+	<link tal:replace="structure provider:plone.htmlhead.links" />
 	<script type="text/javascript" src="++resource++Products.CMFPlomino/js/tinymce.valid.js"></script>
 	<script type="text/javascript" tal:content="structure string: PlominoDialog.submit('$type', '$value');"></script>
-    <!--
-	<link rel="stylesheet" type="text/css" tal:attributes="href string:../../plugins/plonebrowser/css/plonebrowser.css" />
-	<link rel="stylesheet" type="text/css" tal:attributes="href string:../../portal_css/columns.css" />
-	-->
 </head>
 <body id="plonebrowser" tal:define="fieldurl here/REQUEST/fieldurl|nothing;">
-	<div class="dialog-wrapper" id="content">
-		<form tal:condition="fieldurl">
-			<fieldset tal:define="field python:here.restrictedTraverse(fieldurl);">
-				<legend i18n:translate="plominofield_advanced">Advanced edition</legend>
-				<p>
-					<a tal:attributes="href python:field.absolute_url() + '/edit'" target="_blank"
-						i18n:translate="plominofield_mainsettings">Edit the field</a><br />
-					<a tal:attributes="href python:field.absolute_url() + '/' + field.field_type.lower() + 'settings'"
-						target="_blank" i18n:translate="plominofield_specificsettings">Edit field settings</a>
-				</p>
-			</fieldset>
+    <div class="plone-modal-dialog">
+        <div class="plone-modal-content">
+            <div class="plone-modal-header">
+                <h2 class="plone-modal-title"  i18n:translate="plominofield_advanced">Advanced edition</h2>
+            </div>
+            <div class="plone-modal-body">
 
-			<p i18n:domain="tinymce">
-				<input type="button" id="close" class="context" name="close" value="Close" i18n:attributes="value;" onclick="top.tinymce.activeEditor.windowManager.close();" />
-			</p>
-		</form>
-		<script type="text/javascript" tal:condition="python:not fieldurl">top.tinymce.activeEditor.windowManager.close();</script>
+				<form tal:condition="fieldurl">
+					<fieldset tal:define="field python:here.restrictedTraverse(fieldurl);">
+						<p>
+							<a tal:attributes="href python:field.absolute_url() + '/edit'" target="_blank"
+								i18n:translate="plominofield_mainsettings">Edit the field</a><br />
+							<a tal:attributes="href python:field.absolute_url() + '#autotoc-item-autotoc-4'"
+								target="_blank" i18n:translate="plominofield_specificsettings">Edit field settings</a>
+						</p>
+					</fieldset>
+
+					<p i18n:domain="tinymce">
+						<input type="button" id="close" class="context" name="close" value="Close" i18n:attributes="value;" onclick="top.tinymce.activeEditor.windowManager.close();" />
+					</p>
+				</form>
+				<script type="text/javascript" tal:condition="python:not fieldurl">top.tinymce.activeEditor.windowManager.close();</script>
+			</div>
+		</div>
 	</div>
 </body>
 </html>

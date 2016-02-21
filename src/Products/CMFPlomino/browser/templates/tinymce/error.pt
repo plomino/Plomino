@@ -1,34 +1,35 @@
 <!DOCTYPE html>
 <html id="region-content"
-	lang="en"
-	i18n:domain="plomino.tinymce">
+    lang="en"
+    i18n:domain="plomino.tinymce">
 <head>
-	<meta http-equiv="Content-type" content="text/html;charset=UTF-8" />
-	<title i18n:translate="plominoerror_title">Error message</title>
-    <!--
-	<script type="text/javascript" src="../../tiny_mce_popup.js"></script>
-	<script type="text/javascript" src="../../utils/mctabs.js"></script>
-	<script type="text/javascript" src="../../utils/form_utils.js"></script>
-	<link rel="stylesheet" type="text/css" tal:attributes="href string:../../plugins/plonebrowser/css/plonebrowser.css" />
-	<link rel="stylesheet" type="text/css" tal:attributes="href string:../../portal_css/columns.css" />
-	-->
+    <meta http-equiv="Content-type" content="text/html;charset=UTF-8" />
+    <title i18n:translate="plominoerror_title">Error message</title>
+    <link tal:replace="structure provider:plone.htmlhead.links" />
 </head>
 <body id="plonebrowser" tal:define="error here/REQUEST/error|nothing;">
-	<div class="dialog-wrapper" id="content">
-		<form>
-			<fieldset>
-				<legend i18n:translate="plominoerror_subtitle">Error in submitted data</legend>
-				<p tal:condition="python:error=='no_field'" i18n:translate="plominoerror_nofield">The field name is incorrect.</p>
-				<p tal:condition="python:error=='no_action'" i18n:translate="plominoerror_noaction">The action name is incorrect.</p>
-				<p tal:condition="python:error=='no_hidewhen'" i18n:translate="plominoerror_nohidewhen">The hide-when name is incorrect.</p>
-				<p tal:condition="python:error=='no_cache'" i18n:translate="plominoerror_nocache">The cache name is incorrect.</p>
-				<p tal:condition="python:error=='object_exists'" i18n:translate="plominoerror_objectexists">An object with the same name already exists.</p>
-			</fieldset>
-			<p i18n:domain="tinymce">
-				<input type="button" id="cancel" class="standalone" name="cancel" value="Cancel" i18n:attributes="value;"
-					onclick="top.tinymce.activeEditor.windowManager.close();" />
-			</p>
-		</form>
-	</div>
+    <div class="plone-modal-dialog">
+        <div class="plone-modal-content">
+            <div class="plone-modal-header">
+                <h2 class="plone-modal-title" i18n:translate="plominoerror_subtitle">Error in submitted data</h2>
+            </div>
+            <div class="plone-modal-body">
+
+                <form>
+                    <fieldset>
+                        <p tal:condition="python:error=='no_field'" i18n:translate="plominoerror_nofield">The field name is incorrect.</p>
+                        <p tal:condition="python:error=='no_action'" i18n:translate="plominoerror_noaction">The action name is incorrect.</p>
+                        <p tal:condition="python:error=='no_hidewhen'" i18n:translate="plominoerror_nohidewhen">The hide-when name is incorrect.</p>
+                        <p tal:condition="python:error=='no_cache'" i18n:translate="plominoerror_nocache">The cache name is incorrect.</p>
+                        <p tal:condition="python:error=='object_exists'" i18n:translate="plominoerror_objectexists">An object with the same name already exists.</p>
+                    </fieldset>
+                    <p i18n:domain="tinymce">
+                        <input type="button" id="cancel" class="standalone" name="cancel" value="Cancel" i18n:attributes="value;"
+                            onclick="top.tinymce.activeEditor.windowManager.close();" />
+                    </p>
+                </form>
+            </div>
+        </div>
+    </div>
 </body>
 </html>
