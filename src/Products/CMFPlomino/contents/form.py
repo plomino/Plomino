@@ -311,22 +311,22 @@ class PlominoForm(Container):
         errors = self.validateInputs(REQUEST)
         if errors:
             if is_childform:
-                return ("""<html><body><span id="plomino_child_errors">"""
-                    """%s</span></body></html>""" % " - ".join(errors))
+                REQUEST.RESPONSE.setHeader(
+                    'content-type', 'application/json; charset=utf-8')
+                return json.dumps({'errors': errors})
             return self.notifyErrors(errors)
 
         ################################################################
-        # If child form, return a TemporaryDocument
+        # If child form, return a values as JSON
         if is_childform:
             tmp = getTemporaryDocument(db, self, REQUEST).__of__(db)
-            tmp.setItem("Plomino_Parent_Field", parent_field)
-            tmp.setItem("Plomino_Parent_Form", parent_form)
-            tmp.setItem(
-                parent_field + "_itemnames",
-                [f.getId() for f in self.getFormFields(request=REQUEST)
-                    if not f.field_mode == 'DISPLAY']
-            )
-            return self.ChildForm(temp_doc=tmp)
+            rowdata = {}
+            for field in self.getFormFields(request=REQUEST):
+                if not field.field_mode == 'DISPLAY':
+                    rowdata[field.id] = tmp.getItem(field.id)
+            REQUEST.RESPONSE.setHeader(
+                'content-type', 'application/json; charset=utf-8')
+            return json.dumps(rowdata)
 
         ################################################################
         # Add a document to the database
@@ -800,7 +800,6 @@ class PlominoForm(Container):
         """ Return a JSON object to dynamically refresh the form
         (hidewhens, field validation)
         """
-        results = {}
         db = self.getParentDatabase()
         docid = REQUEST.get('_docid')
         if not docid:
@@ -813,7 +812,12 @@ class PlominoForm(Container):
             self,
             REQUEST,
             doc,
-            validation_mode=False)
+            validation_mode=True).__of__(db)
+
+        results = {
+            'errors': self.validateInputs(REQUEST, doc=doc, tmp=temp[self.id])
+        }
+
         hidewhens = asList(REQUEST.get('_hidewhens[]', []))
         hidewhens_results = []
         for token in hidewhens:
@@ -1242,16 +1246,17 @@ class PlominoForm(Container):
 
     security.declarePublic('validateInputs')
 
-    def validateInputs(self, REQUEST, doc=None):
+    def validateInputs(self, REQUEST, doc=None, tmp=None):
         """
         """
         db = self.getParentDatabase()
-        tmp = getTemporaryDocument(
-            db,
-            self,
-            REQUEST,
-            doc,
-            validation_mode=True).__of__(db)
+        if not tmp:
+            tmp = getTemporaryDocument(
+                db,
+                self,
+                REQUEST,
+                doc,
+                validation_mode=True).__of__(db)
 
         fields = self.getFormFields(
             includesubforms=True,

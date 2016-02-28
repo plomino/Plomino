@@ -63,6 +63,14 @@
 
                 <tal:layout
                     tal:content="structure python:context.openBlankForm(request)">layout</tal:layout>
+                <input tal:condition="view/request/Plomino_Parent_Field | nothing"
+                    type="hidden"
+                    name="Plomino_Parent_Field"
+                    tal:attributes="value view/request/Plomino_Parent_Field;" />
+                <input tal:condition="view/request/Plomino_Parent_Form | nothing"
+                    type="hidden"
+                    name="Plomino_Parent_Form | nothing"
+                    tal:attributes="value view/request/Plomino_Parent_Form;" />
 
                 <span metal:use-macro="context/plomino_actions/macros/OpenFormActionBar">display form actions</span><br/>
             </tal:block_has_createpermission>

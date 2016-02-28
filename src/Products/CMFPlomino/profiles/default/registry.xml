@@ -112,6 +112,11 @@
     <value key="js">++resource++Products.CMFPlomino/js/dynamic.js</value>
   </records>
 
+  <records prefix="plone.resources/plominodatagrid"
+           interface='Products.CMFPlone.interfaces.IResourceRegistry'>
+    <value key="js">++resource++Products.CMFPlomino/js/datagrid.js</value>
+  </records>
+
   <records prefix="plone.bundles/plomino"
            interface='Products.CMFPlone.interfaces.IBundleRegistry'>
     <value key="resources">
@@ -119,6 +124,7 @@
       <element>plominotable</element>
       <element>plominodesign</element>
       <element>plominodynamic</element>
+      <element>plominodatagrid</element>
     </value>
     <value key="enabled">True</value>
     <value key="depends">plone</value>

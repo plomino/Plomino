@@ -473,8 +473,7 @@ def getDatagridRowdata(context, REQUEST):
     if form_id and field_id:
         form = context.getParentDatabase().getForm(form_id)
         field = form.getFormField(field_id)
-        settings = field.getSettings()
-        mapped_field_ids = [f.strip() for f in settings.field_mapping.split(',')]
+        mapped_field_ids = [f.strip() for f in field.field_mapping.split(',')]
     rowdata_json = getattr(REQUEST, 'Plomino_datagrid_rowdata', None)
     if rowdata_json:
         rowdata = json.loads(

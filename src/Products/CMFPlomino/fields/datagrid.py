@@ -107,41 +107,17 @@ class DatagridField(BaseField):
         except:
             return []
 
-    def rows(self, value, rendered=False):
-        """
-        """
-        if value in [None, '']:
-            value = []
-        if isinstance(value, basestring):
-            return value
-        elif isinstance(value, DateTime):
-            db = self.context.getParentDatabase()
-            value = DateToString(value, db=db)
-            # TODO does anything require that format here?
-            # value = DateToString(value, '%Y-%m-%d')
-        elif isinstance(value, dict):
-            if rendered:
-                value = value['rendered']
-            else:
-                value = value['rawdata']
-        return value
-
     def tojson(self, value, rendered=False):
         """
         """
-        rows = self.rows(value, rendered)
-
-        return json.dumps(rows)
-
-    def request_items_aoData(self, request):
-        """ Return a string representing REQUEST.items as aoData.push calls.
-        """
-        aoData_templ = "aoData.push(%s); "
-        aoDatas = []
-        for k, v in request.form.items():
-            j = json.dumps({'name': k, 'value': v})
-            aoDatas.append(aoData_templ % j)
-        return '\n'.join(aoDatas)
+        if not value:
+            return "[]"
+        if type(value) is dict:
+            if rendered and 'rendered' in value:
+                value = value['rendered']
+            if not(rendered) and 'rawdata' in value:
+                value = value['rawdata']
+        return json.dumps(value)
 
     def getActionLabel(self, action_id):
         """
@@ -225,7 +201,7 @@ class DatagridField(BaseField):
         ) for f in [child_form.getFormField(f) for f in mapped_fields] if f]
         return json.dumps(child_form_fields)
 
-    def getAssociateForm(self):
+    def getAssociatedForm(self):
         child_form_id = self.context.associated_form
         if child_form_id:
             db = self.context.getParentDatabase()
@@ -244,7 +220,7 @@ class DatagridField(BaseField):
         if not doc or doc.isNewDocument():
             return fieldValue
 
-        rawValue = fieldValue
+        rawValue = fieldValue or []
 
         mapped_fields = []
         if self.context.field_mapping:
