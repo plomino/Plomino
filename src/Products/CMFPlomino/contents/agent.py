@@ -10,6 +10,7 @@ from zope.interface import implements, alsoProvides
 from zope.schema.vocabulary import SimpleVocabulary
 
 from .. import _
+from ..config import SCRIPT_ID_DELIMITER
 from ..exceptions import PlominoScriptException
 
 
@@ -63,7 +64,7 @@ class PlominoAgent(Item):
                 newSecurityManager(None, owner)
 
             result = self.runFormulaScript(
-                "agent_" + self.id,
+                SCRIPT_ID_DELIMITER.join(["agent", self.id]),
                 plominoContext,
                 self.content,
                 True,
@@ -104,7 +105,7 @@ class PlominoAgent(Item):
                 newSecurityManager(None, owner)
 
             result = self.runFormulaScript(
-                "agent_" + self.id,
+                SCRIPT_ID_DELIMITER.join(["agent", self.id]),
                 plominoContext,
                 self.content,
                 True,
