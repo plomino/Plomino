@@ -1,6 +1,11 @@
 Changelog
 =========
 
+1.19.7 (unreleased)
+-------------------
+- Fix datetime support in search form
+  [ebrehault]
+
 1.19.6 (2016-01-04)
 -------------------
 - JSON export compliant with Plomino 2 [mamogmx]

@@ -1457,8 +1457,10 @@ class PlominoForm(ATFolder):
                         elif settings.type == "DECIMAL":
                             v = decimal(submittedValue)
                     elif f.getFieldType() == "DATETIME":
-                        # The format submitted by the datetime widget:
-                        v = StringToDate(submittedValue, format='%Y-%m-%d %H:%M ')
+                        # if datetime widget, the request param contains an object
+                        if getattr(REQUEST.get(fieldname), 'year'):
+                            submittedValue = "%(year)s-%(month)s-%(day)s %(hour)s:%(minute)s" % self.REQUEST.get('birthDate')
+                        v = StringToDate(submittedValue, format='%Y-%m-%d %H:%M')
                     else:
                         v = submittedValue
                     # rename Plomino_SearchableText to perform full-text
