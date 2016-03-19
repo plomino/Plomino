@@ -1,7 +1,7 @@
 <div tal:define="
     field python:options['field'];
     fieldvalue python:options['fieldvalue']['rendered'];
-    columns python:field.field_mapping.split(',');">
+    columns python:field.getSettings().getColumnLabels();">
     <table>
         <tr>
             <th tal:repeat="col columns"

@@ -26,9 +26,7 @@ class IDatagridField(model.Schema):
         fields=(
             'widget',
             'associated_form',
-            'associated_form_rendering',
             'field_mapping',
-            'jssettings',
         ),
     )
 
@@ -48,41 +46,9 @@ class IDatagridField(model.Schema):
         description=u'Form to use to create/edit rows',
         required=False)
 
-    associated_form_rendering = schema.Choice(
-        vocabulary=SimpleVocabulary.fromItems([
-            ("Modal", "MODAL"),
-            ("Inline editing", "INLINE"),
-        ]),
-        title=u'Associate form rendering',
-        description=u'Associate form rendering',
-        default="MODAL",
-        required=True)
-
     field_mapping = schema.TextLine(
-        title=u'Columns/fields mapping',
-        description=u'Field ids from the associated form, '
-        'ordered as the columns, separated by commas',
-        required=False)
-
-    jssettings = schema.Text(
-        title=u'Javascript settings',
-        description=u'jQuery datatable parameters',
-        default=u"""
-"aoColumns": [
-    { "sTitle": "Column 1" },
-    { "sTitle": "Column 2", "sClass": "center" }
-],
-"bPaginate": false,
-"bLengthChange": false,
-"bFilter": false,
-"bSort": false,
-"bInfo": false,
-"bAutoWidth": false,
-"plominoDialogOptions": {
-        "width": 400,
-        "height": 300
-    }
-""",
+        title=u'Fields/columns mapping',
+        description=u'Field ids from the associated form, separated by commas.',
         required=False)
 
 
@@ -93,11 +59,6 @@ class DatagridField(BaseField):
 
     read_template = PageTemplateFile('datagrid_read.pt')
     edit_template = PageTemplateFile('datagrid_edit.pt')
-
-    def getParameters(self):
-        """
-        """
-        return self.context.jssettings
 
     def processInput(self, submittedValue):
         """
@@ -118,27 +79,6 @@ class DatagridField(BaseField):
             if not(rendered) and 'rawdata' in value:
                 value = value['rawdata']
         return json.dumps(value)
-
-    def getActionLabel(self, action_id):
-        """
-        """
-        db = self.context.getParentDatabase()
-        if action_id == "add":
-            label = PlominoTranslate(
-                _("datagrid_add_button_label", default="Add"), db)
-            child_form_id = self.context.associated_form
-            if child_form_id:
-                child_form = db.getForm(child_form_id)
-                if child_form:
-                    label += " " + child_form.Title()
-            return label
-        elif action_id == "delete":
-            return PlominoTranslate(
-                _("datagrid_delete_button_label", default="Delete"), db)
-        elif action_id == "edit":
-            return PlominoTranslate(
-                _("datagrid_edit_button_label", default="Edit"), db)
-        return ""
 
     def getColumnLabels(self):
         """

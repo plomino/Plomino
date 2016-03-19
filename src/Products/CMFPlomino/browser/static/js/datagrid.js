@@ -11,6 +11,7 @@ require([
         init: function() {
             var self = this;
             self.fields = self.$el.attr('data-fields').split(',');
+            self.columns = self.$el.attr('data-columns').split(',');
             self.input = self.$el.find('input[type="hidden"]');
             self.values = JSON.parse(self.input.val());
             self.rows = JSON.parse(self.$el.find('table').attr('data-rows'));
@@ -23,7 +24,7 @@ require([
             var table = self.$el.find('table');
             var html = '<tr><th></th>';
             for(var i=0;i<self.col_number;i++) {
-                html += '<th>' + self.fields[i] + '</th>';
+                html += '<th>' + self.columns[i] + '</th>';
             }
             html += '</tr>';
             for(var j=0;j<self.rows.length;j++) {
