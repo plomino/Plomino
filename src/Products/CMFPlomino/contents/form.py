@@ -323,7 +323,10 @@ class PlominoForm(Container):
             rowdata = {}
             for field in self.getFormFields(request=REQUEST):
                 if not field.field_mode == 'DISPLAY':
-                    rowdata[field.id] = tmp.getItem(field.id)
+                    rowdata[field.id] = {
+                        'raw': tmp.getItem(field.id),
+                        'rendered': tmp.getRenderedItem(field.id),
+                    }
             REQUEST.RESPONSE.setHeader(
                 'content-type', 'application/json; charset=utf-8')
             return json.dumps(rowdata)

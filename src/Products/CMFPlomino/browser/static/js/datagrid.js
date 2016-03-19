@@ -29,7 +29,7 @@ require([
             for(var j=0;j<self.rows.length;j++) {
                 var edit_url = self.form_url;
                 for(var k=0;k<self.col_number;k++) {
-                    edit_url += '&' + self.fields[k] + '=' + self.rows[j][k];
+                    edit_url += '&' + self.fields[k] + '=' + self.values[j][k];
                 }
                 html += '<tr><td><a class="edit-row" href="' + edit_url + '">Edit</a>';
                 html += ' - <span class="remove-row">Remove</span>';
@@ -82,13 +82,15 @@ require([
             var self = this;
             if(!response.errors) {
                 modal.hide();
-                var row = [];
+                var raw = [];
+                var rendered = [];
                 for(var i=0;i<self.col_number;i++) {
-                    row.push(response[self.fields[i]]);
+                    raw.push(response[self.fields[i]].raw);
+                    rendered.push(response[self.fields[i]].rendered);
                 }
-                self.values.push(row);
+                self.values.push(raw);
                 self.input.val(JSON.stringify(self.values));
-                self.rows.push(row);
+                self.rows.push(rendered);
                 self.render();
             }
             return false;
@@ -98,13 +100,15 @@ require([
             var row_index = this.row;
             if(!response.errors) {
                 modal.hide();
-                var row = [];
+                var raw = [];
+                var rendered = [];
                 for(var i=0;i<self.col_number;i++) {
-                    row.push(response[self.fields[i]]);
+                    raw.push(response[self.fields[i]].raw);
+                    rendered.push(response[self.fields[i]].rendered);
                 }
-                self.values[row_index] = row;
+                self.values[row_index] = raw;
                 self.input.val(JSON.stringify(self.values));
-                self.rows[row_index] = row;
+                self.rows[row_index] = rendered;
                 self.render();
             }
             return false;
