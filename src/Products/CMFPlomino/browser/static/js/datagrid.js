@@ -27,7 +27,14 @@ require([
             }
             html += '</tr>';
             for(var j=0;j<self.rows.length;j++) {
-                html += '<tr><td>Edit - <span class="remove-row">Remove</span> - <span class="up-row">Up</span> - <span class="down-row">Down</span></td>';
+                var edit_url = self.form_url;
+                for(var k=0;k<self.col_number;k++) {
+                    edit_url += '&' + self.fields[k] + '=' + self.rows[j][k];
+                }
+                html += '<tr><td><a class="edit-row" href="' + edit_url + '">Edit</a>';
+                html += ' - <span class="remove-row">Remove</span>';
+                html += ' - <span class="up-row">Up</span>';
+                html += ' - <span class="down-row">Down</span></td>';
                 for(var i=0;i<self.col_number;i++) {
                     html += '<td>' + self.rows[j][i] + '</td>';
                 }
@@ -35,7 +42,7 @@ require([
             }
             html += '<tr><td><a class="add-row" href="'+self.form_url+'">+</a></td></tr>';
             table.html(html);
-            var modal = new Modal(self.$el.find('.add-row'), {
+            var add_modal = new Modal(self.$el.find('.add-row'), {
                 actions: {
                     'input.plominoSave': {
                         onSuccess: self.add.bind(self),
@@ -46,6 +53,20 @@ require([
                         }
                     }
                 }
+            });
+            self.$el.find('.edit-row').each(function(i, el) {
+                var edit_modal = new Modal($(el), {
+                    actions: {
+                        'input.plominoSave': {
+                            onSuccess: self.edit.bind({grid: self, row: i}),
+                            onError: function() {
+                                // TODO: render errors in the form
+                                window.alert(response.errors);
+                                return false;
+                            }
+                        }
+                    }
+                });
             });
             self.$el.find('.remove-row').each(function(index, el) {
                 $(el).click(function() {self.remove(self, index);});
@@ -68,6 +89,22 @@ require([
                 self.values.push(row);
                 self.input.val(JSON.stringify(self.values));
                 self.rows.push(row);
+                self.render();
+            }
+            return false;
+        },
+        edit: function(modal, response, state, xhr, form) {
+            var self = this.grid;
+            var row_index = this.row;
+            if(!response.errors) {
+                modal.hide();
+                var row = [];
+                for(var i=0;i<self.col_number;i++) {
+                    row.push(response[self.fields[i]]);
+                }
+                self.values[row_index] = row;
+                self.input.val(JSON.stringify(self.values));
+                self.rows[row_index] = row;
                 self.render();
             }
             return false;
