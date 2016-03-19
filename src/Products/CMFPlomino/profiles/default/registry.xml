@@ -126,6 +126,7 @@
       <element>plominodynamic</element>
       <element>plominodatagrid</element>
     </value>
+    <value key="merge_with">default</value>
     <value key="enabled">True</value>
     <value key="depends">plone</value>
     <value key="jscompilation">++resource++Products.CMFPlomino/js/plomino-compiled.js</value>
