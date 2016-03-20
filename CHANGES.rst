@@ -4,8 +4,8 @@ Changelog
 2.0a5 (unreleased)
 ------------------
 
-- Nothing changed yet.
-
+- Datagrid
+  [ebrehault]
 
 2.0a4 (2016-01-06)
 ------------------
