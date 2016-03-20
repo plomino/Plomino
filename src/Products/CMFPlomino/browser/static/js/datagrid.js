@@ -1,6 +1,6 @@
 require([
     'jquery',
-    'mockup-patterns-base',
+    'pat-base',
     'mockup-patterns-modal'
 ], function($, Base, Modal) {
     'use strict';
@@ -32,16 +32,16 @@ require([
                 for(var k=0;k<self.col_number;k++) {
                     edit_url += '&' + self.fields[k] + '=' + self.values[j][k];
                 }
-                html += '<tr><td><a class="edit-row" href="' + edit_url + '">Edit</a>';
-                html += ' - <span class="remove-row">Remove</span>';
-                html += ' - <span class="up-row">Up</span>';
-                html += ' - <span class="down-row">Down</span></td>';
+                html += '<tr><td class="actions"><a class="edit-row" href="' + edit_url + '"><i class="icon-pencil"></i></a>';
+                html += '<a class="remove-row" href="#"><i class="icon-cancel"></i></a>';
+                html += '<a class="up-row" href="#"><i class="icon-up-dir"></i></a>';
+                html += '<a class="down-row" href="#"><i class="icon-down-dir"></i></a></td>';
                 for(var i=0;i<self.col_number;i++) {
                     html += '<td>' + self.rows[j][i] + '</td>';
                 }
                 html += '</tr>';
             }
-            html += '<tr><td><a class="add-row" href="'+self.form_url+'">+</a></td></tr>';
+            html += '<tr><td class="actions"><a class="add-row" href="'+self.form_url+'"><i class="icon-plus"></i></a></td></tr>';
             table.html(html);
             var add_modal = new Modal(self.$el.find('.add-row'), {
                 actions: {
@@ -119,6 +119,7 @@ require([
             self.input.val(JSON.stringify(self.values));
             self.rows.splice(index, 1);
             self.render();
+            return false;
         },
         up: function(self, index) {
             if(index==0) return;
@@ -126,6 +127,7 @@ require([
             self.input.val(JSON.stringify(self.values));
             self.rows.splice(index-1, 0, self.rows.splice(index, 1)[0]);
             self.render();
+            return false;
         },
         down: function(self, index) {
             if(index==self.values.length-1) return;
@@ -133,6 +135,7 @@ require([
             self.input.val(JSON.stringify(self.values));
             self.rows.splice(index, 0, self.rows.splice(index+1, 1)[0]);
             self.render();
+            return false;
         }
     });
     return DataGrid;

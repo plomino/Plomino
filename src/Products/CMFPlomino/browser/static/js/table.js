@@ -1,6 +1,6 @@
 require([
     'jquery',
-    'mockup-patterns-base'
+    'pat-base'
 ], function($, Base) {
     'use strict';
     var Table = Base.extend({

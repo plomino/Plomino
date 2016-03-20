@@ -1,6 +1,6 @@
 require([
     'jquery',
-    'mockup-patterns-base',
+    'pat-base',
     'mockup-patterns-tree'
 ], function($, Base, Tree) {
     'use strict';
