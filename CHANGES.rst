@@ -1,7 +1,7 @@
 Changelog
 =========
 
-2.0a5 (unreleased)
+2.0a5 (2016-03-23)
 ------------------
 
 - Datagrid
