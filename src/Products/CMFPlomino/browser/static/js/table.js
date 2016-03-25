@@ -5,6 +5,7 @@ require([
     'use strict';
     var Table = Base.extend({
         name: 'plominotable',
+        parser: 'mockup',
         trigger: '.plomino-table',
         defaults: {},
         init: function() {

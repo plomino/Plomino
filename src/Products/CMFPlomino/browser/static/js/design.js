@@ -6,6 +6,7 @@ require([
     'use strict';
     var PlominoDesign = Base.extend({
         name: 'plominodesign',
+        parser: 'mockup',
         trigger: '.plomino-design',
         defaults: {},
         init: function() {

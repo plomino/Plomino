@@ -6,6 +6,7 @@ require([
     'use strict';
     var PlominoFormula = Base.extend({
         name: 'plominoformula',
+        parser: 'mockup',
         trigger: '.plomino-formula',
         defaults: {},
         init: function() {

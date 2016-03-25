@@ -5,6 +5,7 @@ require([
     'use strict';
     var Dynamic = Base.extend({
         name: 'plominodynamic',
+        parser: 'mockup',
         trigger: '#plomino_form',
         defaults: {},
         init: function() {

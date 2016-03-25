@@ -6,6 +6,7 @@ require([
     'use strict';
     var DataGrid = Base.extend({
         name: 'plominodatagrid',
+        parser: 'mockup',
         trigger: '.plomino-datagrid',
         defaults: {},
         init: function() {
