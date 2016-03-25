@@ -1,7 +1,7 @@
 Changelog
 =========
 
-2.0a6 (unreleased)
+2.0a6 (2016-03-25)
 ------------------
 
 - Fix hidden columns.
