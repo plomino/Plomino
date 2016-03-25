@@ -149,7 +149,7 @@ class DoclinkField(BaseField):
                 self.sourceview)
             brains = sourceview.getAllDocuments(getObject=False)
             columns = [col for col in sourceview.getColumns()
-                    if not(col.getHiddenColumn())]
+                    if not col.hidden_column]
             column_ids = [col.id for col in columns]
 
             datatable = []

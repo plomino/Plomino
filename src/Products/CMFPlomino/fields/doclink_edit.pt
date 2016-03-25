@@ -30,7 +30,7 @@
             <tr>
                 <th>&nbsp;&nbsp;</th>
                 <tal:block tal:repeat="c columns">
-                    <th tal:condition="not: c/HiddenColumn|nothing">&nbsp;<span
+                    <th tal:condition="not: c/hidden_column|nothing">&nbsp;<span
                         tal:content="c/Title">Title</span>&nbsp;</th>
                 </tal:block>
             </tr>
@@ -44,7 +44,7 @@
                             checked python:((current and brain.id in lcurrent_ids) and 1) or 0">
                     </td>
                     <tal:block tal:repeat="c columns">
-                        <td tal:condition="not: c/HiddenColumn|nothing"><span
+                        <td tal:condition="not: c/hidden_column|nothing"><span
                             tal:define="cname c/id;
                                         vname v/id;
                                         cvalue python:getattr(brain, v.getIndexKey(cname));

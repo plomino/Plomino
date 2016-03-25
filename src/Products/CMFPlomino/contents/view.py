@@ -369,8 +369,8 @@ class PlominoView(Container):
         if brain_docs is None:
             brain_docs = self.getAllDocuments(getObject=False)
 
-        columns = [c for c in self.getColumns()
-            if not getattr(c, 'HiddenColumn', False)]
+        columns = [col for col in self.getColumns()
+            if not col.hidden_column]
 
         stream = cStringIO.StringIO()
         writer = csv.writer(stream,
@@ -452,15 +452,14 @@ class PlominoView(Container):
         if brain_docs is None:
             brain_docs = self.getAllDocuments(getObject=False)
 
-        columns = [c for c in self.getColumns()
-            if not getattr(c, 'HiddenColumn', False)]
+        columns = [col for col in self.getColumns() if not col.hidden_column]
 
         rows = self.makeArray(brain_docs, columns)
 
         # add column titles
         if displayColumnsTitle == 'True':
-            titles = [c.title.encode('utf-8') for c in self.getColumns()
-                if not getattr(c, 'HiddenColumn', False)]
+            titles = [col.title.encode('utf-8') for col in self.getColumns()
+                if not col.hidden_column]
             rows = [titles] + rows
 
         html = XLS_TABLE % (

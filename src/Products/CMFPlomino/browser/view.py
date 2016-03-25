@@ -88,7 +88,7 @@ class ViewView(BrowserView):
         else:
             display_total = total
         columns = [column for column in self.context.getColumns()
-            if not getattr(column, 'HiddenColumn', False)]
+            if not column.hidden_column]
         for brain in results:
             row = [brain.id, ]
             for column in columns:
