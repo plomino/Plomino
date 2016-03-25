@@ -4,7 +4,8 @@ Changelog
 2.0a6 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Fix hidden columns.
+  [ebrehault]
 
 
 2.0a5 (2016-03-23)
