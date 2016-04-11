@@ -1,0 +1,6 @@
+<p>{{data.name}}</p>
+<ul>
+    <li *ngFor="#child of data.children">
+        <my-tree-element [data]="child"></my-tree-element>
+    </li>
+</ul>
