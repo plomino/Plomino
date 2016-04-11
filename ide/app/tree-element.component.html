@@ -1,5 +1,7 @@
-<p>{{data.name}}</p>
-<ul>
+<p class='name'
+[class.displayed]=display
+(click)="toggleDisplayChild()">{{data.name}}</p>
+<ul *ngIf="display">
     <li *ngFor="#child of data.children">
         <my-tree-element [data]="child"></my-tree-element>
     </li>

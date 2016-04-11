@@ -1,0 +1,10 @@
+ul { list-style:none; }
+.name { user-select: none; }
+.name:before {
+    content: "+";
+    position: absolute;
+    margin-left: -15px;
+}
+.displayed:before {
+    content: "-";
+}
