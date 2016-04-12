@@ -1,8 +1,10 @@
 <div *ngFor="#elt of data">
-    <p class='name'
+    <div class='name'
     [class.displayed]=display
-    [class.folder]="elt.folder==true"
-    (click)="toggleDisplayChild()">{{elt.label}}</p>
+    [class.folder]="elt.children">
+        <p (click)="toggleDisplayChild()">{{elt.label}}</p>
+        <a class='link' *ngIf=elt.url href="{{elt.url}}">Edit</a>
+    </div>
     <ul *ngIf="display">
         <li *ngFor="#child of elt.children">
             <my-tree-element [data]="[child]"></my-tree-element>
