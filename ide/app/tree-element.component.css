@@ -1,10 +1,10 @@
 ul { list-style:none; }
 .name { user-select: none; }
-.name:before {
+.folder:before {
     content: "+";
     position: absolute;
     margin-left: -15px;
 }
-.displayed:before {
+.folder.displayed:before {
     content: "-";
 }

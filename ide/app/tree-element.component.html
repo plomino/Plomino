@@ -1,8 +1,11 @@
-<p class='name'
-[class.displayed]=display
-(click)="toggleDisplayChild()">{{data.name}}</p>
-<ul *ngIf="display">
-    <li *ngFor="#child of data.children">
-        <my-tree-element [data]="child"></my-tree-element>
-    </li>
-</ul>
+<div *ngFor="#elt of data">
+    <p class='name'
+    [class.displayed]=display
+    [class.folder]="elt.folder==true"
+    (click)="toggleDisplayChild()">{{elt.label}}</p>
+    <ul *ngIf="display">
+        <li *ngFor="#child of elt.children">
+            <my-tree-element [data]="[child]"></my-tree-element>
+        </li>
+    </ul>
+</div>
