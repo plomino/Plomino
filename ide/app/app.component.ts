@@ -1,5 +1,5 @@
 import {Component} from 'angular2/core';
-import {TreeComponent} from './tree.component';
+import {TreeComponent} from './tree-view/tree.component';
 
 @Component({
     selector: 'my-app',
@@ -7,5 +7,5 @@ import {TreeComponent} from './tree.component';
     directives: [TreeComponent]
 })
 export class AppComponent {
-
+    
 }
