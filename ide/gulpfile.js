@@ -1,3 +1,5 @@
+/*jshint esversion: 6 */
+
 const gulp = require('gulp');
 const del = require('del');
 const typescript = require('gulp-typescript');
@@ -5,11 +7,12 @@ const tscConfig = require('./tsconfig.json');
 const sourcemaps = require('gulp-sourcemaps');
 const browserSync = require('browser-sync');
 const autoprefixer = require('gulp-autoprefixer');
+const plumber = require('gulp-plumber');
 const reload = browserSync.reload;
 
 // clean the contents of the distribution directory
 gulp.task('clean', function () {
-  return del('dist/**/*');
+  return del.sync('dist/**/*');
 });
 
 // copy static assets - i.e. non TypeScript compiled source
@@ -20,6 +23,7 @@ gulp.task('copy:assets', ['clean','autoprefixer'], function() {
 
 gulp.task('autoprefixer', function () {
 	return gulp.src(['styles.css','app/**/*.css'], { base : './' })
+        .pipe(plumber())
 		.pipe(autoprefixer({
 			browsers: ['last 2 versions'],
 			cascade: false
