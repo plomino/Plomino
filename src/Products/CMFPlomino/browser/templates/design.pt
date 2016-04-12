@@ -15,10 +15,106 @@
         <div class="pat-autotoc autotabs" data-pat-autotoc="section:fieldset;levels:legend;">
             <fieldset>
                 <legend>Structure</legend>
-                <div class="plomino-design"
-                    tal:attributes="data-pat-plominodesign string:treeUrl:${context/absolute_url}/designtree">
-                    <div class="tree"></div>
-                </div>
+                <ul class="design-tree plomino-design"
+                    tal:define="db python:context.getParentDatabase();">
+                    <li>
+                        <input type="checkbox" id="designtree-forms" />
+                        <label for="designtree-forms" i18n:translate="">Forms</label>
+                        <ul>
+                            <li tal:repeat="form python:db.getForms(sortbyid=True)">
+                                <input type="checkbox" tal:attributes="id string:designtree-forms-${form/id}" />
+                                <label tal:attributes="for string:designtree-forms-${form/id}" tal:content="form/id">form id</label>
+                                <a tal:attributes="href python:form.absolute_url_path()+'/edit'" class="link-icon"><i class="icon-pencil" /></a>
+                                <a tal:attributes="href python:form.absolute_url_path()+'/view'" class="link-icon"><i class="icon-doc-text" /></a>
+                                <a tal:attributes="href python:form.absolute_url_path()+'/folder_contents'" class="link-icon"><i class="icon-folder-empty" /></a>
+                                <ul>
+                                    <li><span i18n:translate="">Fields</span>
+                                        <ul>
+                                        <tal:fieldsforms tal:repeat="field python:form.getFormFields()">
+                                            <li>
+                                                <a href="" tal:attributes="href python:field.absolute_url_path()+'/edit'" tal:content="field/id">Field name</a>
+                                            </li>
+                                        </tal:fieldsforms>
+                                        </ul>
+                                    </li>
+                                    <li><span i18n:translate="">Hide when</span> 
+                                        <ul>
+                                        <tal:hidewhens tal:repeat="h python:form.getHidewhenFormulas()">
+                                            <li>
+                                                <a href="" tal:attributes="href python:h.absolute_url_path()+'/edit'" tal:content="h/id">Hide when name</a>
+                                            </li>
+                                        </tal:hidewhens>
+                                        </ul>
+                                    </li>
+                                    <li><span i18n:translate="">Actions</span>
+                                        <ul>
+                                            <tal:actionsforms tal:repeat="action_tuple python:form.getActions(None, False)">
+                                                <li tal:define="action python:action_tuple[0]">
+                                                    <a href="" tal:attributes="href python:action.absolute_url()+'/edit'" tal:replace="action/id">action name</a>
+                                                </li>
+                                            </tal:actionsforms>
+                                        </ul>
+                                    </li>
+                                    <li><span i18n:translate="">Caches</span>
+                                        <tal:caches tal:repeat="c python:form.getCacheFormulas()">
+                                        <ul>
+                                            <li>
+                                                <a href="" tal:attributes="href python:c.absolute_url_path()+'/edit'" tal:content="c/id">Cache name</a>
+                                            </li>
+                                        </ul>
+                                        </tal:caches>
+                                    </li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </li>
+                    <li>
+                        <input type="checkbox" id="designtree-views" />
+                        <label for="designtree-views" i18n:translate="">Views</label>
+                        <ul>
+                            <li tal:repeat="plominoview python:db.getViews(sortbyid=True)">
+                                <input type="checkbox" tal:attributes="id string:designtree-views-${plominoview/id}" />
+                                <label tal:attributes="for string:designtree-views-${plominoview/id}" tal:content="plominoview/id">view id</label>
+                                <a tal:attributes="href python:plominoview.absolute_url_path()+'/edit'" class="link-icon"><i class="icon-pencil" /></a>
+                                <a tal:attributes="href python:plominoview.absolute_url_path()+'/view'" class="link-icon"><i class="icon-doc-text" /></a>
+                                <a tal:attributes="href python:plominoview.absolute_url_path()+'/folder_contents'" class="link-icon"><i class="icon-folder-empty" /></a>
+                                <a tal:attributes="href python:plominoview.absolute_url_path()+'/exportCSV'" class="link-icon"><i class="icon-link-ext" /></a>
+                                <ul>
+                                    <li><span i18n:translate="">Columns</span>
+                                        <ul>
+                                            <li tal:repeat="column python:plominoview.getColumns()">
+                                            <a href="" tal:attributes="href python:column.absolute_url()+'/edit'" tal:content="python:column.id">column name</a>
+                                            </li>
+                                        </ul>
+                                    </li>
+                                    <!--View actions-->
+                                    <li><span i18n:translate="">Actions</span>
+                                        <ul>
+                                            <tal:actionsviews tal:repeat="action_tuple python:plominoview.getActions(False)">
+                                                <li tal:define="action python:action_tuple[0]">
+                                                    <a href="" tal:attributes="href python:action.absolute_url()+'/edit'" tal:content="action/id">action name</a>
+                                                </li>
+                                            </tal:actionsviews>
+                                        </ul>
+                                    </li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </li>
+                    <li>
+                        <input type="checkbox" id="designtree-agents" />
+                        <label for="designtree-agents" i18n:translate="">Agents</label>
+                        <ul>
+                            <tal:blockagents tal:repeat="agent python:db.getAgents()">
+                                <li>
+                                    <tal:block tal:content="agent/id">agent name</tal:block>
+                                    <a href="" tal:attributes="href python:agent.absolute_url()+'/edit'" class="link-icon"><i class="icon-pencil" /></a>
+                                    <a href="" target="_new" tal:attributes="href python:agent.absolute_url()+'/runAgent'" class="link-icon"><i class="icon-cog-alt" /></a>
+                                </li>
+                            </tal:blockagents>
+                        </ul>
+                    </li>
+                </ul>
             </fieldset>
 
             <fieldset>

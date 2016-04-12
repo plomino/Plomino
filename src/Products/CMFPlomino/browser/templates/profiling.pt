@@ -1,0 +1,27 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en"
+    xmlns:tal="http://xml.zope.org/namespaces/tal"
+    xmlns:metal="http://xml.zope.org/namespaces/metal"
+    xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+    lang="en"
+    metal:use-macro="context/main_template/macros/master"
+    i18n:domain="Products.CMFPlomino">
+<body>
+
+<metal:content fill-slot="main">
+    <h1 class="documentFirstHeading">PROFILING</h1>
+    <tal:aspects tal:repeat="aspect python:here.profiling_results().items()">
+        <div><dl class="collapsible inline collapsedOnLoad">
+            <dt class="collapsibleHeader" tal:content="python:'%s (%d)' % (aspect[0], len(aspect[1])) ">aspect name</dt>
+            <dd class="collapsibleContent">
+                <tal:durations tal:repeat="duration python:aspect[1]">
+                    <div tal:content="python:'%s: %f ms' % (duration[0], duration[1])">id: time</div>
+                    <div style="border:1px solid blue; width: 100%">
+                        <div tal:attributes="style python:'width:%d%%;;background-color:blue' % duration[2]">&nbsp;</div>
+                    </div>
+                </tal:durations>
+            </dd>
+        </dl></div>
+    </tal:aspects>
+</metal:content>
+</body>
+</html>

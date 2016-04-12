@@ -1,0 +1,16 @@
+<dl tal:define="header view/header;
+                element_layout view/elementLayout;
+                element_id view/data/element_id;"
+    tal:attributes="class string:portlet portlet-plomino portlet-plomino-$element_id">
+    
+    <tal:block tal:condition="view/hasGoogleVisualizationField">
+        <tal:script metal:use-macro="here/googlevisualization_macro/macros/js_library">//load google js</tal:script>
+    </tal:block>
+    
+    <dt class="portletHeader"><span tal:content="header"></span></dt>
+    <dd class="portletItem">
+        <form tal:attributes="name element_id; action view/action_url">
+            <span tal:content="structure element_layout"></span>
+        </form>
+    </dd>
+</dl>

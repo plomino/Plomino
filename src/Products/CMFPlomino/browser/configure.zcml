@@ -31,23 +31,6 @@
         permission="zope2.View"
         />
 
-    <browser:viewlet
-      name="design"
-      for="Products.CMFPlomino.contents.database.IPlominoDatabase"
-      manager="plone.app.layout.viewlets.interfaces.IAboveContentTitle"
-      class=".database.DesignViewlet"
-      template="templates/designviewlet.pt"
-      permission="plomino.DESIGN_PERMISSION"
-      />
-
-    <browser:page
-        for="Products.CMFPlomino.contents.database.IPlominoDatabase"
-        name="DesignModal"
-        class=".database.DatabaseView"
-        attribute="designmodal"
-        permission="plomino.DESIGN_PERMISSION"
-        />
-
     <browser:page
         for="Products.CMFPlomino.contents.database.IPlominoDatabase"
         name="DatabaseDesign"
@@ -61,6 +44,14 @@
         name="designtree"
         class=".database.DatabaseView"
         attribute="tree"
+        permission="plomino.DESIGN_PERMISSION"
+        />
+
+    <browser:page
+        for="Products.CMFPlomino.contents.database.IPlominoDatabase"
+        name="profiling"
+        class=".database.DatabaseView"
+        attribute="profiling"
         permission="plomino.DESIGN_PERMISSION"
         />
 
@@ -185,5 +176,27 @@
         allowed_attributes="setCacheProperties"
         />
     -->
+
+  <plone:portlet
+      name="plomino.designportlet"
+      interface=".portlet.IPortlet"
+      assignment=".portlet.Assignment"
+      view_permission="zope2.View"
+      edit_permission="plomino.DESIGN_PERMISSION"
+      renderer=".portlet.Renderer"
+      addview=".portlet.AddForm"
+      editview=".portlet.EditForm"
+    />
+
+  <plone:portlet
+      name="plomino.elementportlet"
+      interface=".portlet.IElementPortlet"
+      assignment=".portlet.ElementPortletAssignment"
+      view_permission="zope2.View"
+      edit_permission="plomino.DESIGN_PERMISSION"
+      renderer=".portlet.ElementPortletRenderer"
+      addview=".portlet.ElementPortletAddForm"
+      editview=".portlet.ElementPortletEditForm"
+    />
 
 </configure>

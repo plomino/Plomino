@@ -1,0 +1,42 @@
+<?xml version="1.0"?>
+<portlets>
+  <portlet
+    addview="plomino.designportlet"
+    title="Plomino design portlet"
+    description="Add/manage design items"
+  />
+ <assignment name="plomino-design-portlet" category="content_type"
+    key="PlominoDatabase" manager="plone.leftcolumn"
+    type="plomino.designportlet"/>
+ <assignment name="plomino-design-portlet" category="content_type"
+    key="PlominoForm" manager="plone.leftcolumn"
+    type="plomino.designportlet"/>
+ <assignment name="plomino-design-portlet" category="content_type"
+    key="PlominoField" manager="plone.leftcolumn"
+    type="plomino.designportlet"/>
+ <assignment name="plomino-design-portlet" category="content_type"
+    key="PlominoAction" manager="plone.leftcolumn"
+    type="plomino.designportlet"/>
+ <assignment name="plomino-design-portlet" category="content_type"
+    key="PlominoHidewhen" manager="plone.leftcolumn"
+    type="plomino.designportlet"/>
+ <assignment name="plomino-design-portlet" category="content_type"
+    key="PlominoView" manager="plone.leftcolumn"
+    type="plomino.designportlet"/>
+ <assignment name="plomino-design-portlet" category="content_type"
+    key="PlominoColumn" manager="plone.leftcolumn"
+    type="plomino.designportlet"/>
+ <assignment name="plomino-design-portlet" category="content_type"
+    key="PlominoAgent" manager="plone.leftcolumn"
+    type="plomino.designportlet"/>
+ <assignment name="plomino-design-portlet" category="content_type"
+    key="PlominoDocument" manager="plone.leftcolumn"
+    type="plomino.designportlet"/>
+    
+  <portlet
+    addview="plomino.elementportlet"
+    title="Plomino element portlet"
+    description="Display Plomino elements"
+  />
+
+</portlets>

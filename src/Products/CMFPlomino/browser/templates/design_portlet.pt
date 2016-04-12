@@ -1,0 +1,189 @@
+<dl i18n:domain="CMFPlomino" 
+    class="portlet portlet-design-plomino"
+    tal:define="db python:view.parentdatabase();
+                db_url python:db.absolute_url();
+                type python:view.currenttype();
+                url python:view.context.absolute_url();">
+    <dt class="portletHeader"><a tal:attributes="href string:${db_url}/DatabaseDesign"
+        i18n:translate="Design">Design</a></dt>
+    <dd class="portletItem">
+        <strong i18n:translate="Database">Database</strong>
+        <ul>
+        <li><a tal:attributes="href string:${db_url}/edit"
+            i18n:translate="">Parameters</a></li>
+        <li><a tal:attributes="href string:${db_url}/DatabaseDesign"
+            i18n:translate="">Design</a></li>
+        <li><a tal:attributes="href string:${db_url}/DatabaseACL"
+            i18n:translate="">Access control</a></li>
+        </ul>
+    </dd>
+    <dd class="portletItem" tal:condition="python:type=='PlominoDatabase'">
+        <strong i18n:translate="">Add new...</strong>
+        <ul>
+        <li><a tal:attributes="href string:${url}/createObject?type_name=PlominoForm"
+            i18n:translate="">Form</a></li>
+        <li><a tal:attributes="href string:${url}/createObject?type_name=PlominoView"
+            i18n:translate="">View</a></li>
+        <li><a tal:attributes="href string:${url}/createObject?type_name=PlominoAgent"
+            i18n:translate="">Agent</a></li>
+        </ul>
+    </dd>
+    <dd class="portletItem" tal:condition="python:type=='PlominoForm'">
+        <strong i18n:translate="">Form</strong>
+        <div i18n:translate="">Add new...</div>
+        <ul>
+        <li><a tal:attributes="href string:${url}/createObject?type_name=PlominoField"
+         i18n:translate="">Field</a></li>
+        <li><a tal:attributes="href string:${url}/createObject?type_name=PlominoHidewhen"
+         i18n:translate="">Hide when</a></li>
+        <li><a tal:attributes="href string:${url}/createObject?type_name=PlominoAction"
+         i18n:translate="">Action</a></li>
+        </ul>
+        <div i18n:translate="">or</div>
+        <a tal:attributes="href string:${url}/manage_generateView"
+          title="Create a view based on the current form definition"
+          i18n:translate="">Generate view</a>
+
+    </dd>
+    <dd class="portletItem" tal:condition="python:type=='PlominoView'">
+        <strong i18n:translate="">View</strong>
+        <div i18n:translate="">Add new...</div>
+         <ul>
+        <li><a tal:attributes="href string:${url}/createObject?type_name=PlominoColumn"
+            i18n:translate="">Column</a></li>
+        <li><a tal:attributes="href string:${url}/createObject?type_name=PlominoAction"
+            i18n:translate="">Action</a></li>
+        </ul>
+    </dd>
+    <dd class="portletItem" tal:define="status python:db.getStatus();
+                                        inprogress python:'%' in status">
+        <strong i18n:translate="">Status</strong><br/>
+        <tal:ready tal:condition="not:inprogress" tal:content="status" i18n:translate="">status</tal:ready>
+        <tal:inprogress tal:condition="inprogress">
+            <tal:block tal:define="str_status python:status[:status.index('(')];
+                                   progress python:status[status.index('(')+1:-1]">
+                <tal:block tal:content="str_status">status</tal:block>
+                <div style="border:1px solid blue; width: 100%"><div tal:attributes="style string:width:$progress;;background-color:blue">&nbsp;</div></div>
+            </tal:block>
+        </tal:inprogress>
+    </dd>
+    <dd class="portletItem" tal:condition="python:view.displayTree">
+        <strong i18n:translate="">Browse</strong>
+        <ul class="design-tree plomino-design">
+            <li>
+                <input type="checkbox" id="designportlet-forms" />
+                <label for="designportlet-forms" i18n:translate="">Forms</label>
+                <ul>
+                    <li tal:repeat="form python:db.getForms(sortbyid=True)">
+                        <input type="checkbox" tal:attributes="id string:designportlet-forms-${form/id}" />
+                        <label tal:attributes="for string:designportlet-forms-${form/id}" tal:content="form/id">form id</label>
+                        <a tal:attributes="href python:form.absolute_url_path()+'/edit'"><i class="icon-pencil" /></a>
+                        <a tal:attributes="href python:form.absolute_url_path()+'/view'"><i class="icon-doc-text" /></a>
+                        <a tal:attributes="href python:form.absolute_url_path()+'/folder_contents'"><i class="icon-folder-empty" /></a>
+                        <ul>
+                            <li><span i18n:translate="">Fields</span>
+                                <ul>
+                                <tal:fieldsforms tal:repeat="field python:form.getFormFields()">
+                                    <li>
+                                        <a href="" tal:attributes="href python:field.absolute_url_path()+'/edit'" tal:content="field/id">Field name</a>
+                                    </li>
+                                </tal:fieldsforms>
+                                </ul>
+                            </li>
+                            <li><span i18n:translate="">Hide when</span> 
+                                <ul>
+                                <tal:hidewhens tal:repeat="h python:form.getHidewhenFormulas()">
+                                    <li>
+                                        <a href="" tal:attributes="href python:h.absolute_url_path()+'/edit'" tal:content="h/id">Hide when name</a>
+                                    </li>
+                                </tal:hidewhens>
+                                </ul>
+                            </li>
+                            <li><span i18n:translate="">Actions</span>
+                                <ul>
+                                    <tal:actionsforms tal:repeat="action_tuple python:form.getActions(None, False)">
+                                        <li tal:define="action python:action_tuple[0]">
+                                            <a href="" tal:attributes="href python:action.absolute_url()+'/edit'" tal:replace="action/id">action name</a>
+                                        </li>
+                                    </tal:actionsforms>
+                                </ul>
+                            </li>
+                            <li><span i18n:translate="">Caches</span>
+                                <tal:caches tal:repeat="c python:form.getCacheFormulas()">
+                                <ul>
+                                    <li>
+                                        <a href="" tal:attributes="href python:c.absolute_url_path()+'/edit'" tal:content="c/id">Cache name</a>
+                                    </li>
+                                </ul>
+                                </tal:caches>
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+            </li>
+            <li>
+                <input type="checkbox" id="designportlet-views" />
+                <label for="designportlet-views" i18n:translate="">Views</label>
+                <ul>
+                    <li tal:repeat="plominoview python:db.getViews(sortbyid=True)">
+                        <input type="checkbox" tal:attributes="id string:designportlet-views-${plominoview/id}" />
+                        <label tal:attributes="for string:designportlet-views-${plominoview/id}" tal:content="plominoview/id">view id</label>
+                        <a tal:attributes="href python:plominoview.absolute_url_path()+'/edit'"><i class="icon-pencil" /></a>
+                        <a tal:attributes="href python:plominoview.absolute_url_path()+'/view'"><i class="icon-doc-text" /></a>
+                        <a tal:attributes="href python:plominoview.absolute_url_path()+'/folder_contents'"><i class="icon-folder-empty" /></a>
+                        <a tal:attributes="href python:plominoview.absolute_url_path()+'/exportCSV'"><i class="icon-link-ext" /></a>
+                        <ul>
+                            <li><span i18n:translate="">Columns</span>
+                                <ul>
+                                    <li tal:repeat="column python:plominoview.getColumns()">
+                                    <a href="" tal:attributes="href python:column.absolute_url()+'/edit'" tal:content="python:column.id">column name</a>
+                                    </li>
+                                </ul>
+                            </li>
+                            <!--View actions-->
+                            <li><span i18n:translate="">Actions</span>
+                                <ul>
+                                    <tal:actionsviews tal:repeat="action_tuple python:plominoview.getActions(False)">
+                                        <li tal:define="action python:action_tuple[0]">
+                                            <a href="" tal:attributes="href python:action.absolute_url()+'/edit'" tal:content="action/id">action name</a>
+                                        </li>
+                                    </tal:actionsviews>
+                                </ul>
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+            </li>
+            <li>
+                <input type="checkbox" id="designportlet-agents" />
+                <label for="designportlet-agents" i18n:translate="">Agents</label>
+                <ul>
+                    <tal:blockagents tal:repeat="agent python:db.getAgents()">
+                        <li>
+                            <tal:block tal:content="agent/id">agent name</tal:block>
+                            <a href="" tal:attributes="href python:agent.absolute_url()+'/edit'"><i class="icon-pencil" /></a>
+                            <a href="" target="_new" tal:attributes="href python:agent.absolute_url()+'/runAgent'"><i class="icon-cog-alt" /></a>
+                        </li>
+                    </tal:blockagents>
+                </ul>
+            </li>
+        </ul>
+    </dd>
+    <dd tal:condition="python:here.is_profiling()" class="portletItem">
+        <strong i18n:translate="Profiling">Profiling</strong>
+        <script>
+function set_profiling(base_url, level) {
+    location.href=base_url + "/set_profiling_level?level="+level;
+}
+        </script>
+        <br/><select id="profiling_level" tal:attributes="onchange string:set_profiling('${db_url}', this.value);"
+            tal:define="profiling_level python:here.REQUEST.cookies.get('plomino_profiler', '')">
+        <option value="">None</option>
+        <option tal:attributes="selected python:profiling_level=='form'" value="form">Form</option>
+        <option tal:attributes="selected python:profiling_level=='form:fields'" value="form:fields">Form and fields</option>
+        <option tal:attributes="selected python:profiling_level=='form:fields:formulas'" value="form:fields:formulas">Form, fields, and formulas</option>
+        </select>
+        <br/>
+        <a tal:attributes="href string:${db_url}/profiling" class="plone-btn plone-btn-primary pat-plone-modal">Show results</a>
+    </dd>
+</dl>

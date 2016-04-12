@@ -1,6 +1,5 @@
 from AccessControl import Unauthorized
 from jsonutil import jsonutil as json
-from plone.app.layout.viewlets import ViewletBase
 from Products.Five import BrowserView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 
@@ -13,7 +12,7 @@ class DatabaseView(BrowserView):
     design_template = ViewPageTemplateFile("templates/design.pt")
     replication_template = ViewPageTemplateFile("templates/replication.pt")
     view_template = ViewPageTemplateFile("templates/opendatabase.pt")
-    design_modal = ViewPageTemplateFile("templates/designmodal.pt")
+    profiling_template = ViewPageTemplateFile("templates/profiling.pt")
 
     def __init__(self, context, request):
         self.context = context
@@ -35,8 +34,8 @@ class DatabaseView(BrowserView):
     def design(self):
         return self.design_template()
 
-    def designmodal(self):
-        return self.design_modal()
+    def profiling(self):
+        return self.profiling_template()
 
     def tree(self):
         database = self.context.getParentDatabase()
@@ -158,6 +157,3 @@ class DatabaseView(BrowserView):
 
     def replication(self):
         return self.replication_template()
-
-class DesignViewlet(ViewletBase):
-    pass
