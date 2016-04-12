@@ -3,11 +3,11 @@ import {TreeElementComponent} from './tree-element.component';
 
 @Component({
     selector: 'my-tree',
-    template: '<my-tree-element [data]="arbo"></my-tree-element>',
+    templateUrl: 'app/tree.component.html',
     directives: [TreeElementComponent]
 })
 export class TreeComponent {
-    arbo:any = {name: 'Contact (form)',
+    /* data:any = [{name: 'Contact (form)',
         children: [
             {name: 'Layout',
             children: [
@@ -23,5 +23,7 @@ export class TreeComponent {
                 {name: 'Form2'}
             ]}
         ]
-    }
+    }];*/
+
+    data:any = [{"folder": true, "type": "database", "children": [{"url": "http://localhost:8080/Plone/testdb/test", "folder": true, "type": "form", "children": [{"folder": true, "type": "fields", "children": [{"url": "http://localhost:8080/Plone/testdb/test/mot", "type": "field", "label": "mot"}], "label": "Fields"}, {"folder": true, "type": "actions", "children": [{"url": "http://localhost:8080/Plone/testdb/test/testtest", "type": "action", "label": "testtest"}], "label": "Actions"}], "label": "test"}], "label": "Forms"}, {"folder": true, "type": "views", "children": [], "label": "Views"}, {"folder": true, "type": "agents", "children": [], "label": "Agents"}]
 }
