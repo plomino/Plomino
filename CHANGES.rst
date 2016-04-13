@@ -1,7 +1,7 @@
 Changelog
 =========
 
-2.0b1 (unreleased)
+2.0b1 (2016-04-13)
 ------------------
 
 - Restore design portlet.
