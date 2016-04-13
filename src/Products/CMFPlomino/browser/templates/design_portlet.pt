@@ -22,11 +22,11 @@
     <dd class="portletItem" tal:condition="python:type=='PlominoDatabase'">
         <strong i18n:translate="">Add new...</strong>
         <ul>
-        <li><a tal:attributes="href string:${url}/createObject?type_name=PlominoForm"
+        <li><a tal:attributes="href string:${url}/++add++PlominoForm"
             i18n:translate="">Form</a></li>
-        <li><a tal:attributes="href string:${url}/createObject?type_name=PlominoView"
+        <li><a tal:attributes="href string:${url}/++add++PlominoView"
             i18n:translate="">View</a></li>
-        <li><a tal:attributes="href string:${url}/createObject?type_name=PlominoAgent"
+        <li><a tal:attributes="href string:${url}/++add++PlominoAgent"
             i18n:translate="">Agent</a></li>
         </ul>
     </dd>
@@ -34,11 +34,11 @@
         <strong i18n:translate="">Form</strong>
         <div i18n:translate="">Add new...</div>
         <ul>
-        <li><a tal:attributes="href string:${url}/createObject?type_name=PlominoField"
+        <li><a tal:attributes="href string:${url}/++add++PlominoField"
          i18n:translate="">Field</a></li>
-        <li><a tal:attributes="href string:${url}/createObject?type_name=PlominoHidewhen"
+        <li><a tal:attributes="href string:${url}/++add++PlominoHidewhen"
          i18n:translate="">Hide when</a></li>
-        <li><a tal:attributes="href string:${url}/createObject?type_name=PlominoAction"
+        <li><a tal:attributes="href string:${url}/++add++PlominoAction"
          i18n:translate="">Action</a></li>
         </ul>
         <div i18n:translate="">or</div>
@@ -51,9 +51,9 @@
         <strong i18n:translate="">View</strong>
         <div i18n:translate="">Add new...</div>
          <ul>
-        <li><a tal:attributes="href string:${url}/createObject?type_name=PlominoColumn"
+        <li><a tal:attributes="href string:${url}/++add++PlominoColumn"
             i18n:translate="">Column</a></li>
-        <li><a tal:attributes="href string:${url}/createObject?type_name=PlominoAction"
+        <li><a tal:attributes="href string:${url}/++add++PlominoAction"
             i18n:translate="">Action</a></li>
         </ul>
     </dd>
