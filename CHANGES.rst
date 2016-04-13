@@ -1,10 +1,11 @@
 Changelog
 =========
 
-2.0a7 (unreleased)
+2.0b1 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Restore design portlet.
+  [ebrehault]
 
 
 2.0a6 (2016-03-25)
