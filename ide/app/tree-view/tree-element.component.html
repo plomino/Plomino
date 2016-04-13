@@ -1,13 +1,14 @@
 <div *ngFor="#elt of data">
     <div class='name'
+    [class.selected]="elt == selected"
     [class.displayed]=display
     [class.folder]="elt.children">
-        <p (click)="toggleDisplayChild()">{{elt.label}}</p>
+        <p (click)="toggleDisplayChild(elt)">{{elt.label}}</p>
         <a class='link' *ngIf=elt.url href="{{elt.url}}">Edit</a>
     </div>
     <ul *ngIf="display">
         <li *ngFor="#child of elt.children">
-            <my-tree-element [data]="[child]"></my-tree-element>
+            <my-tree-element [data]="[child]" (select)="onSelect($event)"></my-tree-element>
         </li>
     </ul>
 </div>

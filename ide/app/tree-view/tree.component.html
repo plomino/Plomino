@@ -1,2 +1,6 @@
-<my-tree-search [data]="data"></my-tree-search>
-<my-tree-element [data]="data"></my-tree-element>
+{{test}}
+<input (keyup)="search(data)"
+[(ngModel)]="input_value"
+value="{{input_value}}">
+<button (click)="createNew()">+</button>
+<my-tree-element [data]="result" (select)="onSelect($event)" ></my-tree-element>
