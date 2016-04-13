@@ -18,7 +18,7 @@ gulp.task('clean', function () {
 // copy static assets - i.e. non TypeScript compiled source
 gulp.task('copy:assets', ['clean','autoprefixer'], function() {
   return gulp.src(['app/**/*', 'index.html', '!app/**/*.ts','!app/**/*.css'], { base : './' })
-    .pipe(gulp.dest('dist'))
+    .pipe(gulp.dest('dist'));
 });
 
 gulp.task('autoprefixer', function () {
@@ -32,7 +32,7 @@ gulp.task('autoprefixer', function () {
 });
 
 // copy dependencies
-gulp.task('copy:libs', ['clean'], function() {
+gulp.task('copy:libs', ['clean','copy:moment'], function() {
   return gulp.src([
       'node_modules/es6-shim/es6-shim.min.js',
       'node_modules/systemjs/dist/system-polyfills.js',
@@ -41,9 +41,18 @@ gulp.task('copy:libs', ['clean'], function() {
       'node_modules/systemjs/dist/system.src.js',
       'node_modules/rxjs/bundles/Rx.js',
       'node_modules/angular2/bundles/angular2.dev.js',
-      'node_modules/angular2/bundles/router.dev.js'
+      'node_modules/angular2/bundles/router.dev.js',
+      'node_modules/ng2-bootstrap/bundles/ng2-bootstrap.min.js'
     ])
-    .pipe(gulp.dest('dist/lib'))
+    .pipe(gulp.dest('dist/lib'));
+});
+
+// Had to do this in order for moment to by recognized
+gulp.task('copy:moment', function(){
+    return gulp.src([
+        'node_modules/moment/moment.js'
+    ])
+    .pipe(gulp.dest('dist/lib/moment'));
 });
 
 // TypeScript compile
