@@ -15,6 +15,8 @@
             i18n:translate="">Design</a></li>
         <li><a tal:attributes="href string:${db_url}/DatabaseACL"
             i18n:translate="">Access control</a></li>
+        <li><a tal:attributes="href string:${db_url}/DatabaseReplication"
+            i18n:translate="">Import/export</a></li>
         </ul>
     </dd>
     <dd class="portletItem" tal:condition="python:type=='PlominoDatabase'">
