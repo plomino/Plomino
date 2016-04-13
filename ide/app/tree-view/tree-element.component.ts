@@ -1,4 +1,4 @@
-import {Input, Component} from 'angular2/core';
+import {Input, Output, EventEmitter, Component} from 'angular2/core';
 
 @Component({
     selector: 'my-tree-element',
@@ -7,12 +7,16 @@ import {Input, Component} from 'angular2/core';
     directives: [TreeElementComponent]
 })
 export class TreeElementComponent {
-    @Input()
-    data:any;
+    @Input() data: any;
+    @Output() select = new EventEmitter();
 
-    display:boolean = true;
+    display: boolean = true;
 
-    toggleDisplayChild(){
+    toggleDisplayChild(elt: any) {
         this.display = !this.display;
+        this.onSelect(elt);
+    }
+    onSelect(event: any) {
+        this.select.emit(event);
     }
 }

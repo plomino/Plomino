@@ -1,10 +1,14 @@
 ul {
     list-style:none;
     margin: 0;
+    padding-left: 25px;
 }
 .name {
     user-select: none;
     margin: 0;
+}
+.selected {
+    color: red;
 }
 .name>a,
 .name>p{
