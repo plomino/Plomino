@@ -1,8 +1,13 @@
 <div class="wrap-app">
   <my-tree class="well" (newName)="onAdd($event)"></my-tree>
-  <div class="main-app">
+  <div class="main-app panel">
     <tabset>
-        <tab *ngFor="#tabz of tabs" [heading]="tabz.title">{{tabz.content}}</tab>
+        <tab *ngFor="#tabz of tabs"
+        [heading]="tabz.title"
+        [removable]="true"
+        (removed)="onTabClose(tabz)">
+            {{tabz.content}}
+        </tab>
     </tabset>
   </div>
 
@@ -16,3 +21,5 @@
     <modal-footer [show-default-buttons]="true"></modal-footer>
   </modal>
 </div>
+
+<button type="button" name="button" (click)="showtabs()">Show tabs</button>
