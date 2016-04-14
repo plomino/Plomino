@@ -23,4 +23,10 @@ export class AppComponent {
     onModalClose(){
         this.tabs.push({title:this.newName,content:'I am the content of '+this.newName});
     }
+    onTabClose(tab:any){
+        this.tabs.splice(this.tabs.indexOf(tab), 1);
+    }
+    showtabs(){
+        console.table(this.tabs);
+    }
 }
