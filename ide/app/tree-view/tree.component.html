@@ -1,7 +1,7 @@
 <div class="wrap-search-button">
   <input (keyup)="search(data)" [(ngModel)]="input_value" value="{{input_value}}">
   <div class="btn-group">
-    <button (click)="createNew()" class="btn btn-primary">+</button>
+    <button (click)="createNew(input_value)" class="btn btn-primary">+</button>
     <button (click)="delete()" class="btn btn-primary">-</button>
   </div>
 </div>

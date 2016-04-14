@@ -1,8 +1,18 @@
 <div class="wrap-app">
-    <my-tree class="well"></my-tree>
-    <div class="main-app">
-        <div class="tab-bar">
-            <div class="tab">tab1</div>
-        </div>
-    </div>
+  <my-tree class="well" (newName)="onAdd($event)"></my-tree>
+  <div class="main-app">
+    <tabset>
+        <tab *ngFor="#tabz of tabs" [heading]="tabz.title">{{tabz.content}}</tab>
+    </tabset>
+  </div>
+
+  <modal #modal (onClose)="onModalClose()">
+    <modal-header [show-close]="true">
+      <h4 class="modal-title">Add new ...</h4>
+    </modal-header>
+    <modal-body>
+      <input [(ngModel)]="newName">
+    </modal-body>
+    <modal-footer [show-default-buttons]="true"></modal-footer>
+  </modal>
 </div>
