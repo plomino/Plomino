@@ -4,7 +4,8 @@ Changelog
 2.0b2 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Fix columns ordering
+- Fix formula editor
 
 
 2.0b1 (2016-04-13)

@@ -96,6 +96,9 @@ def afterViewCreated(obj, event):
 def afterViewModified(obj, event):
     """
     """
+    if not obj.getParentNode():
+        # modifying the view from folder_contents
+        return
     db = obj.getParentDatabase()
     obj.cleanFormulaScripts(SCRIPT_ID_DELIMITER.join(["view", obj.id]))
     if not db.do_not_reindex:
