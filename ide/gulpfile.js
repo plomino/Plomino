@@ -42,7 +42,10 @@ gulp.task('copy:libs', ['clean','copy:moment'], function() {
       'node_modules/rxjs/bundles/Rx.js',
       'node_modules/angular2/bundles/angular2.dev.js',
       'node_modules/angular2/bundles/router.dev.js',
-      'node_modules/ng2-bootstrap/bundles/ng2-bootstrap.min.js'
+      'node_modules/ng2-bootstrap/bundles/ng2-bootstrap.min.js',
+      'node_modules/ng2-bs3-modal/bundles/ng2-bs3-modal.min.js',
+      'node_modules/bootstrap/dist/css/bootstrap.min.css',
+      'node_modules/bootstrap/dist/js/bootstrap.min.js'
     ])
     .pipe(gulp.dest('dist/lib'));
 });

@@ -7,8 +7,8 @@ import {BUTTON_DIRECTIVES} from 'ng2-bootstrap/ng2-bootstrap';
     selector: 'my-tree',
     templateUrl: 'app/tree-view/tree.component.html',
     styleUrls: ['app/tree-view/tree.component.css'],
-    directives: [TreeElementComponent],
-    providers: [TreeService, BUTTON_DIRECTIVES]
+    directives: [TreeElementComponent, BUTTON_DIRECTIVES],
+    providers: [TreeService]
 })
 export class TreeComponent {
     data: any;
@@ -30,12 +30,12 @@ export class TreeComponent {
         this.selected = event;
     }
 
-    createNew(){
-        console.log("Create new "+this.selected.type+" with name "+this.input_value);
+    createNew() {
+        console.log("New");
     }
 
-    delete(){
-        console.log("Delete "+this.selected.type+" named "+this.selected.label);
+    delete() {
+        console.log("Delete " + this.selected.type + " named " + this.selected.label);
     }
 
     search(pdata: any) {
