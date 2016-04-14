@@ -1,6 +1,6 @@
 <div *ngFor="#elt of data">
     <div class='name'
-    [class.selected]="elt == selected"
+    [class.selected]=""
     [class.displayed]=display
     [class.folder]="elt.children">
         <p (click)="toggleDisplayChild(elt)">{{elt.label}}</p>
