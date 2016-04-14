@@ -1,4 +1,4 @@
-import {Component} from 'angular2/core';
+import {Component, EventEmitter, Output} from 'angular2/core';
 import {TreeElementComponent} from './tree-element.component';
 import {TreeService} from './tree.service';
 import {BUTTON_DIRECTIVES} from 'ng2-bootstrap/ng2-bootstrap';
@@ -11,6 +11,7 @@ import {BUTTON_DIRECTIVES} from 'ng2-bootstrap/ng2-bootstrap';
     providers: [TreeService]
 })
 export class TreeComponent {
+    @Output() newName = new EventEmitter();
     data: any;
     result: any;
     selected: any;
@@ -30,8 +31,10 @@ export class TreeComponent {
         this.selected = event;
     }
 
-    createNew() {
-        console.log("New");
+    createNew(event: string) {
+        this.newName.emit(event);
+        this.input_value = '';
+        this.search(this.data);
     }
 
     delete() {
