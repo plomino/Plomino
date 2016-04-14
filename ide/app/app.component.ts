@@ -3,7 +3,8 @@ import {TreeComponent} from './tree-view/tree.component';
 
 @Component({
     selector: 'my-app',
-    template: '<my-tree></my-tree>',
+    templateUrl: 'app/app.component.html',
+    styleUrls: ['app/app.component.css'],
     directives: [TreeComponent]
 })
 export class AppComponent {

@@ -1,6 +1,8 @@
-{{test}}
-<input (keyup)="search(data)"
-[(ngModel)]="input_value"
-value="{{input_value}}">
-<button (click)="createNew()">+</button>
-<my-tree-element [data]="result" (select)="onSelect($event)" ></my-tree-element>
+<div class="wrap-search-button">
+  <input (keyup)="search(data)" [(ngModel)]="input_value" value="{{input_value}}">
+  <div class="btn-group">
+    <button (click)="createNew()" class="btn btn-primary">+</button>
+    <button (click)="delete()" class="btn btn-primary">-</button>
+  </div>
+</div>
+<my-tree-element [element]="{'selected':selected,'data':result}" (select)="onSelect($event)"></my-tree-element>
