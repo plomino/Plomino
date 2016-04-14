@@ -107,7 +107,8 @@ def afterColumnModified(obj, event):
     """
     view = obj.getParentView()
     view.declareColumn(obj.id, obj)
-    obj.cleanFormulaScripts('column_%s_%s' % (view.id, obj.id))
+    obj.cleanFormulaScripts(
+        SCRIPT_ID_DELIMITER.join(["column", view.id, obj.id, 'formula']))
     db = obj.getParentDatabase()
     if not db.do_not_reindex:
         db.getIndex().refresh()
