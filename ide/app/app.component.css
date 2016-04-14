@@ -1,0 +1,27 @@
+.wrap-app {
+    display: flex;
+    flex-direction: row;
+}
+.main-app {
+    width: 100%;
+    text-align: center;
+    background-color: #ACACAC;
+
+    display: flex;
+    flex-direction: column;
+}
+.tab-bar{
+    height: 50px;
+    background-color: #212121;
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+}
+.tab{
+    width: 150px;
+    height: 100%;
+    background-color: #ACACAC;
+}
+my-tree {
+    min-width: 260px;
+}
