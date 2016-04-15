@@ -623,9 +623,6 @@ class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
         if request is not None:
             formname = request.get("openwithform", None)
         if not formname:
-            if hasattr(self, 'evaluateViewForm'):
-                formname = self.evaluateViewForm(self)
-        if not formname:
             formname = self.getItem('Form')
         form = self.getParentDatabase().getForm(formname)
         if not form:

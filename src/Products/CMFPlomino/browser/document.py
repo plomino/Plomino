@@ -21,6 +21,7 @@ class DocumentView(BrowserView):
         self.request = request
         self.doc = None
         self.action = None
+        self.form = None
 
     def publishTraverse(self, request, name):
         if name == "OpenDocument" or name == "view":
@@ -52,7 +53,12 @@ class DocumentView(BrowserView):
         if not doc:
             raise NotFound(self, name, request)
         self.doc = doc
-        self.form = doc.getForm()
+        if getattr(self.context, 'evaluateViewForm', None):
+            formname = self.context.evaluateViewForm(self.doc)
+            if formname:
+                self.form = self.context.getParentDatabase().getForm(formname)
+        if not self.form:
+            self.form = doc.getForm()
         self.target = self.doc
         return self
 

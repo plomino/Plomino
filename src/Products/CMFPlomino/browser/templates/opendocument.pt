@@ -9,7 +9,7 @@
 
 <metal:javascript_head fill-slot="javascript_head_slot">
     <tal:block_hasjsresources 
-        tal:define="form python:view.doc.getForm();
+        tal:define="form python:view.form;
                     jsresources python:form.get_resources_js()"
         tal:condition="jsresources"
         tal:repeat="js jsresources">
@@ -23,7 +23,7 @@
 
 <metal:css fill-slot="style_slot">
     <tal:block_hascssresources
-        tal:define="form python:view.doc.getForm();
+        tal:define="form python:view.form;
                     cssresources python:form.get_resources_css()"
         tal:condition="cssresources"
         tal:repeat="css cssresources">
@@ -39,7 +39,7 @@
     <h1 class="documentFirstHeading" tal:content="view/doc/Title">Title</h1>
 
     <div id="content-core">
-        <form tal:define="form python:view.doc.getForm();"
+        <form tal:define="form python:view.form;"
             tal:attributes="name python:form.id">
             <span style="display: none" id="plomino_path"
                 tal:content="python:'/'.join(view.doc.getPhysicalPath())">path</span>

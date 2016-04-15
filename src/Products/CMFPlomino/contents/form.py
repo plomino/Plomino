@@ -47,6 +47,7 @@ class IPlominoForm(model.Schema):
         description=_('CMFPlomino_help_FormLayout',
             default="Text with 'Plominofield' styles correspond to the"
                 " contained field elements."),
+        required=False,
     )
 
     form_method = schema.Choice(

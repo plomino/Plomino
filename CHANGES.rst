@@ -4,7 +4,7 @@ Changelog
 2.0b3 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Form formula
 
 
 2.0b2 (2016-04-14)
