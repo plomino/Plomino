@@ -5,6 +5,7 @@ Changelog
 ------------------
 
 - Form formula
+- Fix computed columns in datagrid
 
 
 2.0b2 (2016-04-14)

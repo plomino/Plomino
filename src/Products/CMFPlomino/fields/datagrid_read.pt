@@ -9,7 +9,7 @@
         </tr>
         <tr tal:repeat="row fieldvalue">
             <td tal:repeat="cell row"
-                tal:content="cell">cell</td>
+                tal:content="structure cell">cell</td>
         </tr>
     </table>
 </div>

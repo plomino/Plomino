@@ -323,11 +323,10 @@ class PlominoForm(Container):
             tmp = getTemporaryDocument(db, self, REQUEST).__of__(db)
             rowdata = {}
             for field in self.getFormFields(request=REQUEST):
-                if not field.field_mode == 'DISPLAY':
-                    rowdata[field.id] = {
-                        'raw': tmp.getItem(field.id),
-                        'rendered': tmp.getRenderedItem(field.id),
-                    }
+                rowdata[field.id] = {
+                    'raw': tmp.getItem(field.id, None),
+                    'rendered': tmp.getRenderedItem(field.id),
+                }
             REQUEST.RESPONSE.setHeader(
                 'content-type', 'application/json; charset=utf-8')
             return json.dumps(rowdata)
