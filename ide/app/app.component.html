@@ -1,13 +1,13 @@
 <div class="wrap-app">
-  <my-tree class="well" (newName)="onAdd($event)"></my-tree>
+  <my-tree class="well" (newName)="onAdd($event)" (edit)="onEdit($event)"></my-tree>
   <div class="main-app panel">
     <tabset>
-        <tab *ngFor="#tabz of tabs"
+      <tab *ngFor="#tabz of tabs"
         [heading]="tabz.title"
         [removable]="true"
-        (removed)="onTabClose(tabz)">
-            {{tabz.content}}
-        </tab>
+        (removed)="onTabClose(tabz)"
+        [innerHtml]="tabz.content">
+      </tab>
     </tabset>
   </div>
 
