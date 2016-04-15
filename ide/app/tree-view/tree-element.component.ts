@@ -9,6 +9,7 @@ import {Input, Output, EventEmitter, Component} from 'angular2/core';
 export class TreeElementComponent {
     @Input() data: any;
     @Output() select = new EventEmitter();
+    @Output() edit = new EventEmitter();
 
     display: boolean = true;
 
@@ -18,5 +19,9 @@ export class TreeElementComponent {
     }
     onSelect(event: any) {
         this.select.emit(event);
+    }
+
+    onEdit(event: any) {
+        this.edit.emit(event);
     }
 }

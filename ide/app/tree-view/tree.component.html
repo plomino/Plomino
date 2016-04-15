@@ -5,4 +5,4 @@
     <button (click)="delete()" class="btn btn-primary">-</button>
   </div>
 </div>
-<my-tree-element [data]="result" (select)="onSelect($event)"></my-tree-element>
+<my-tree-element [data]="result" (select)="onSelect($event)" (edit)="onEdit($event)"></my-tree-element>

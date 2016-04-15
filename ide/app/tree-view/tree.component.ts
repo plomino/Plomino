@@ -12,6 +12,8 @@ import {BUTTON_DIRECTIVES} from 'ng2-bootstrap/ng2-bootstrap';
 })
 export class TreeComponent {
     @Output() newName = new EventEmitter();
+    @Output() edit = new EventEmitter();
+    
     data: any;
     result: any;
     selected: any;
@@ -29,6 +31,10 @@ export class TreeComponent {
 
     onSelect(event: any) {
         this.selected = event;
+    }
+
+    onEdit(event: any){
+        this.edit.emit(event);
     }
 
     createNew(event: string) {

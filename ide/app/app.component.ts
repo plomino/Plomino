@@ -16,17 +16,21 @@ export class AppComponent {
     tabs: Array<any> = [];
     newName: string;
 
-    onAdd(event:string){
+    onAdd(event: string) {
         this.newName = event;
         this.modal.open();
     }
-    onModalClose(){
-        this.tabs.push({title:this.newName,content:'I am the content of '+this.newName});
+    onEdit(event: any) {
+        let newtab = { title: event.label, content: 'I am the content of <a>' + event.url+'</a>'};
+        this.tabs.push(newtab);
     }
-    onTabClose(tab:any){
+    onModalClose() {
+        this.tabs.push({ title: this.newName, content: 'I am the content of ' + this.newName });
+    }
+    onTabClose(tab: any) {
         this.tabs.splice(this.tabs.indexOf(tab), 1);
     }
-    showtabs(){
+    showtabs() {
         console.table(this.tabs);
     }
 }
