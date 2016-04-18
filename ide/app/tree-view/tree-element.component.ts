@@ -17,6 +17,7 @@ export class TreeElementComponent {
         this.display = !this.display;
         this.onSelect(elt);
     }
+    
     onSelect(event: any) {
         this.select.emit(event);
     }
