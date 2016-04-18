@@ -1,0 +1,13 @@
+<modal #modal (onClose)="onModalClose({name:newName,editor:editor})">
+  <modal-header [show-close]="true">
+    <h4 class="modal-title">Add new ...</h4>
+  </modal-header>
+  <modal-body>
+    <input [(ngModel)]="newName">
+    <select [ngModel]="editor" (change)="changeEditor($event.target.value)">
+      <option value="tinymce">TinyMCE</option>
+      <option value="aceeditor">ACE Editor</option>
+    </select>
+  </modal-body>
+  <modal-footer [show-default-buttons]="true"></modal-footer>
+</modal>

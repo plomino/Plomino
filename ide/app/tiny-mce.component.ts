@@ -17,7 +17,5 @@ export class TinyMCEComponent {
             height : "354"
         });
         tinymce.activeEditor.setContent(this.content);
-
-        console.log(this.content);
     }
 }

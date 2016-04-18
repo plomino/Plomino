@@ -3,24 +3,12 @@
   <div class="main-app panel">
     <tabset>
       <tab *ngFor="#tabz of tabs" [heading]="tabz.title" [removable]="true" (removed)="onTabClose(tabz)">
-        <my-tiny-mce [content]="tabz.content"></my-tiny-mce>
+        <my-tiny-mce *ngIf="tabz.editor==='tinymce'" [content]="tabz.content"></my-tiny-mce>
+        <p *ngIf="tabz.editor==='aceeditor'">ACE Editor</p>
       </tab>
     </tabset>
   </div>
-
-  <modal #modal (onClose)="onModalClose()">
-    <modal-header [show-close]="true">
-      <h4 class="modal-title">Add new ...</h4>
-    </modal-header>
-    <modal-body>
-      <input [(ngModel)]="newName">
-      <select>
-        <option value="tinymce">TinyMCE</option>
-        <option value="aceeditor">ACE Editor</option>
-      </select>
-    </modal-body>
-    <modal-footer [show-default-buttons]="true"></modal-footer>
-  </modal>
+  <my-modal *ngIf="isModalOpen" (modalClosed)="onModalClose($event)"></my-modal>
 </div>
 
 <button type="button" name="button" (click)="showtabs()">Show tabs</button>

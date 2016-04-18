@@ -13,11 +13,11 @@ import {BUTTON_DIRECTIVES} from 'ng2-bootstrap/ng2-bootstrap';
 export class TreeComponent {
     @Output() newName = new EventEmitter();
     @Output() edit = new EventEmitter();
-    
+
     data: any;
     result: any;
     selected: any;
-    input_value: string;
+    input_value: string = '';
 
     constructor(private _treeService: TreeService) { }
 
