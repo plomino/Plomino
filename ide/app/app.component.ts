@@ -1,33 +1,35 @@
 import {Component, ViewChild} from 'angular2/core';
 import {TreeComponent} from './tree-view/tree.component';
-import {MODAL_DIRECTIVES, ModalComponent } from 'ng2-bs3-modal/ng2-bs3-modal';
 import {TAB_DIRECTIVES} from 'ng2-bootstrap/ng2-bootstrap';
 import {TinyMCEComponent} from './tiny-mce.component';
+import {MyModalComponent} from './my-modal.component';
 
 @Component({
     selector: 'my-app',
     templateUrl: 'app/app.component.html',
     styleUrls: ['app/app.component.css'],
-    directives: [TreeComponent, MODAL_DIRECTIVES, TAB_DIRECTIVES, TinyMCEComponent]
+    directives: [TreeComponent, TAB_DIRECTIVES, TinyMCEComponent, MyModalComponent]
 })
 export class AppComponent {
-    @ViewChild('modal')
-    modal: ModalComponent;
 
     selectedEditor: string;
     tabs: Array<any> = [];
-    newName: string;
+
+    isModalOpen: boolean = false;
+    modalData: any;
 
     onAdd(event: string) {
-        this.newName = event;
-        this.modal.open();
+        this.modalData = {name: event};
+        this.isModalOpen = true;
     }
     onEdit(event: any) {
         let newtab = { title: event.label, content: 'I am the content of <a>' + event.url+'</a>'};
         this.tabs.push(newtab);
     }
-    onModalClose() {
-        this.tabs.push({ title: this.newName, content: 'content of '+this.newName });
+    onModalClose(event: any) {
+        this.tabs.push({ title: event.name, content: 'content of '+event.name, editor:event.editor });
+        this.isModalOpen = false;
+        console.log(event.editor);
     }
     onTabClose(tab: any) {
         this.tabs.splice(this.tabs.indexOf(tab), 1);
