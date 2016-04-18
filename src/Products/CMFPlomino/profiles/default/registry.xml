@@ -96,7 +96,10 @@
   <records prefix="plone.resources/plominotable"
            interface='Products.CMFPlone.interfaces.IResourceRegistry'>
     <value key="js">++resource++Products.CMFPlomino/js/table.js</value>
-  </records>
+    <value key="css">
+        <element>++resource++Products.CMFPlomino/css/table.less</element>
+    </value>
+</records>
 
   <records prefix="plone.resources/plominodesign"
            interface='Products.CMFPlone.interfaces.IResourceRegistry'>
