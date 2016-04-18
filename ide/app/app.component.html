@@ -4,7 +4,7 @@
     <tabset>
       <tab *ngFor="#tabz of tabs" [heading]="tabz.title" [removable]="true" (removed)="onTabClose(tabz)">
         <my-tiny-mce *ngIf="tabz.editor==='tinymce'" [content]="tabz.content"></my-tiny-mce>
-        <p *ngIf="tabz.editor==='aceeditor'">ACE Editor</p>
+        <my-ace-editor *ngIf="tabz.editor==='aceeditor'"></my-ace-editor>
       </tab>
     </tabset>
   </div>
