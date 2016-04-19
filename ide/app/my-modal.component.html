@@ -1,4 +1,4 @@
-<modal #modal (onClose)="onModalClose({name:newName,editor:editor})" (onDismiss)="onModalClose()">
+<modal #modal (onClose)="onModalClose({label:newName,editor:editor})" (onDismiss)="onModalClose()">
   <modal-header [show-close]="true">
     <h4 class="modal-title">Add new ...</h4>
   </modal-header>
@@ -8,8 +8,8 @@
       <div class="form-group" [class.has-error]="nameError">
         <input autofocus [(ngModel)]="newName" class="form-control input-sm">
         <select [ngModel]="editor" (change)="changeEditor($event.target.value)">
-          <option value="tinymce">TinyMCE</option>
-          <option value="aceeditor">ACE Editor</option>
+          <option value="layout">Layout</option>
+          <option value="code">Code</option>
         </select>
       </div>
     </form>

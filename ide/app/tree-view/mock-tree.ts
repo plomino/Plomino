@@ -1,6 +1,7 @@
 export var DATA: any =
 [{
     "folder": true,
+    "parent": true,
     "type": "database",
     "children": [{
         "url": "http://localhost:8080/Plone/testdb/formulaire2",
@@ -8,11 +9,13 @@ export var DATA: any =
         "type": "form",
         "children": [{
             "folder": true,
+            "parent": true,
             "type": "fields",
             "children": [],
             "label": "Fields"
         }, {
             "folder": true,
+            "parent": true,
             "type": "actions",
             "children": [],
             "label": "Actions"
@@ -24,6 +27,7 @@ export var DATA: any =
         "type": "form",
         "children": [{
             "folder": true,
+            "parent": true,
             "type": "fields",
             "children": [{
                 "url": "http://localhost:8080/Plone/testdb/test/mot",
@@ -33,6 +37,7 @@ export var DATA: any =
             "label": "Fields"
         }, {
             "folder": true,
+            "parent": true,
             "type": "actions",
             "children": [{
                 "url": "http://localhost:8080/Plone/testdb/test/testtest",
@@ -46,17 +51,20 @@ export var DATA: any =
     "label": "Forms"
 }, {
     "folder": true,
+    "parent": true,
     "type": "views",
     "children": [{
         "url": "http://localhost:8080/Plone/testdb/testview",
         "type": "view",
         "children": [{
             "folder": true,
+            "parent": true,
             "type": "actions",
             "children": [],
             "label": "Actions"
         }, {
             "folder": true,
+            "parent": true,
             "type": "columns",
             "children": [],
             "label": "Columns"
@@ -66,6 +74,7 @@ export var DATA: any =
     "label": "Views"
 }, {
     "folder": true,
+    "parent": true,
     "type": "agents",
     "children": [],
     "label": "Agents"

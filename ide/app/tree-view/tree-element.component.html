@@ -4,8 +4,18 @@
     [class.displayed]=display
     [class.folder]="elt.children">
         <p (click)="toggleDisplayChild(elt)">{{elt.label}}</p>
-        <!-- <a class='link' *ngIf=elt.url href="{{elt.url}}">Edit</a> -->
-        <a class='link' *ngIf=elt.url (click)='onEdit({label:elt.label, url:elt.url})'>Edit</a>
+        <a class='link' *ngIf="elt.parent==true">
+            <span class="glyphicon glyphicon-plus click-cursor"></span>
+        </a>
+        <a class='link' *ngIf=elt.url (click)='onEdit({label:elt.label, url:elt.url, editor:"layout"})'>
+            <span class="glyphicon glyphicon-file click-cursor"></span>
+        </a>
+        <a class='link' *ngIf=elt.url (click)='onEdit({label:elt.label, url:elt.url, editor:"code"})'>
+            <span class="glyphicon glyphicon-align-left click-cursor"></span>
+        </a>
+        <a class='link' *ngIf=elt.url (click)='onEdit({label:elt.label, url:elt.url, editor:"settings"})'>
+            <span class="glyphicon glyphicon-cog click-cursor"></span>
+        </a>
     </div>
     <ul *ngIf="display">
         <li *ngFor="#child of elt.children">
