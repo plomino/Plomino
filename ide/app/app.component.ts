@@ -19,23 +19,44 @@ export class AppComponent {
     isModalOpen: boolean = false;
     modalData: any;
 
+    aceNumber: number = 0;
+
     onAdd(event: string) {
-        this.modalData = {name: event};
+        this.modalData = { name: event };
         this.isModalOpen = true;
     }
     onEdit(event: any) {
-        let newtab = { title: event.label, content: 'I am the content of <a>' + event.url+'</a>'};
-        this.tabs.push(newtab);
+        this.tabs.push(this.buildTab(event));
     }
     onModalClose(event: any) {
-        if(event != undefined)
-            this.tabs.push({ title: event.name, content: 'content of '+event.name, editor:event.editor });
+        if (event != undefined)
+            this.tabs.push(this.buildTab(event));
+            //this.tabs.push({ title: event.name, content: 'content of ' + event.name, editor: event.editor });
 
         this.isModalOpen = false;
     }
     onTabClose(tab: any) {
         this.tabs.splice(this.tabs.indexOf(tab), 1);
+        if (tab.editor === 'code') this.aceNumber++;
     }
+
+    buildTab(tab: any){
+        let newtab = { title: tab.label, editor: tab.editor };
+        if (newtab.editor === 'code') {
+            newtab["code"] = "def " + newtab.title + `(param):
+    print \'test\'
+    return 4`;
+            this.aceNumber++;
+        }
+        else if (newtab.editor === 'layout') {
+            newtab["layout"] = "I am the content of " + newtab.title;
+        }
+        else if(newtab.editor === 'settings') {
+            newtab["settings"] = "Name : <input><br>Stuff : <input>";
+        }
+        return newtab;
+    }
+
     showtabs() {
         console.table(this.tabs);
     }

@@ -22,3 +22,6 @@ ul {
 .folder.displayed:before {
     content: "-";
 }
+.click-cursor{
+    cursor: pointer;
+}
