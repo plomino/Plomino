@@ -14,7 +14,8 @@ export class TinyMCEComponent {
             selector:'.tinymce-wrap',
             plugins: ["code"],
 		    menubar: true,
-            height : "354"
+            height : "398",
+            resize: false
         });
         tinymce.activeEditor.setContent(this.content);
     }

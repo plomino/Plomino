@@ -1,3 +1,24 @@
-input{
-    max-width: 150px;
+.collapse.in {
+    height: auto !important;
+}
+ul {
+    margin: 5px;
+    padding-left: 15px;
+    list-style: none;
+}
+.tree-wrap {
+    overflow: auto;
+    height: 500px;
+}
+.hasChild:before {
+    display: inline-block;
+    content: "▼";
+    transition: transform 0.2s;
+}
+.displayed:before {
+    transform: rotate(-90deg);
+}
+.link {
+    color: #337ab7;
+    cursor: pointer;
 }

@@ -8,12 +8,10 @@ import {Alert} from 'ng2-bootstrap/ng2-bootstrap';
     directives: [MODAL_DIRECTIVES, Alert]
 })
 export class MyModalComponent {
-    @Input() name: string;
+    @Input() data: any;
     @Output() modalClosed = new EventEmitter();
     @ViewChild('modal') modal: ModalComponent;
 
-    editor: string = 'tinymce';
-    newName: string = "";
     nameError: boolean = false;
 
     ngAfterViewInit() {
@@ -28,7 +26,7 @@ export class MyModalComponent {
             this.modalClosed.emit(event);
         }
     }
-    changeEditor(event: string) {
-        this.editor = event;
-    }
+    // changeEditor(event: string) {
+    //     this.editor = event;
+    // }
 }

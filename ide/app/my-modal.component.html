@@ -1,16 +1,12 @@
-<modal #modal (onClose)="onModalClose({label:newName,editor:editor})" (onDismiss)="onModalClose()">
+<modal #modal (onClose)="onModalClose(data)" (onDismiss)="onModalClose()">
   <modal-header [show-close]="true">
-    <h4 class="modal-title">Add new ...</h4>
+    <h4 class="modal-title">Add new element in {{data.type}}</h4>
   </modal-header>
   <modal-body>
     <alert *ngIf="nameError" [type]="'danger'">Please enter a name</alert>
     <form class="form-inline">
       <div class="form-group" [class.has-error]="nameError">
-        <input autofocus [(ngModel)]="newName" class="form-control input-sm">
-        <select [ngModel]="editor" (change)="changeEditor($event.target.value)">
-          <option value="layout">Layout</option>
-          <option value="code">Code</option>
-        </select>
+        <input autofocus [(ngModel)]="data.name" class="form-control input-sm">
       </div>
     </form>
   </modal-body>
