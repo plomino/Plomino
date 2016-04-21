@@ -110,14 +110,41 @@ export class AppComponent {
     }
 
     onModalClose(event: any) {
-        let index = this.indexOf(event);
-        console.table(index);
-        if (event.parent === undefined)
-            this.data[index.parent].children.push({label:event.name});
-        else
-            this.data[index.parent].children[index.index].children[index.child].children.push({label:event.name});
-
         this.isModalOpen = false;
+        let index = this.indexOf(event);
+        let exists = false;
+
+        if (event.parent === undefined) {
+
+            for (let i = 0; i < this.data[index.parent].children.length; i++)
+                if (this.data[index.parent].children[i].label === event.name) exists = true;
+
+            if(!exists) {
+                let newObject: any;
+                if (this.data[index.parent].label === 'Forms')
+                    newObject = {label:event.name,children:[{label:'Fields',collapsed:'true',children:[]},{label:'Actions',collapsed:'true',children:[]}]};
+                else if (this.data[index.parent].label === 'Views')
+                    newObject = {label:event.name,children:[{label:'Actions',collapsed:'true',children:[]},{label:'Columns',collapsed:'true',children:[]}]};
+                else
+                    newObject = {label:event.name};
+
+                this.data[index.parent].children.push(newObject);
+                this.data[index.parent].collapsed = false;
+            }
+        }
+        else {
+            let elt = this.data[index.parent].children[index.index].children[index.child];
+            for (let i = 0; i < elt.children.length; i++)
+                if (elt.children[i].label === event.name) exists = true;
+            if(!exists) {
+                elt.children.push({label:event.name});
+                elt.collapsed = false;
+            }
+        }
+
+        if(exists) {
+            console.log('Name already exists');
+        }
     }
 
     onTabClose(tab: any) {

@@ -6,7 +6,7 @@
     <alert *ngIf="nameError" [type]="'danger'">Please enter a name</alert>
     <form class="form-inline">
       <div class="form-group" [class.has-error]="nameError">
-        <input autofocus [(ngModel)]="data.name" class="form-control input-sm">
+        <input autofocus (keyup.enter)="onModalClose()" [(ngModel)]="data.name" class="form-control input-sm">
       </div>
     </form>
   </modal-body>
