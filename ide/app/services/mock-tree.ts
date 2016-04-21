@@ -1,4 +1,4 @@
-export var DATA: any =
+export var DATA: any = // [{"folder": true,"parent": true,"type": "database",children:[],"label": "Forms"},{"folder": true,"parent": true,"type": "database",children:[],"label": "Views"},{"folder": true,"parent": true,"type": "database",children:[],"label": "Agents"}]
 [{
     "folder": true,
     "parent": true,
@@ -46,7 +46,7 @@ export var DATA: any =
             }],
             "label": "Actions"
         }],
-        "label": "test"
+        "label": "onetest"
     }],
     "label": "Forms"
 }, {

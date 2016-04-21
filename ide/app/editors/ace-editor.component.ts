@@ -7,7 +7,7 @@ declare var ace: any;
     template: `
     <div [id]="id" class="ace-editor">{{content}}</div>
     `,
-    styles: ['.ace-editor{display: block; height: 354px; text-align: left;}']
+    styles: ['.ace-editor{display: block; height: 508px; text-align: left;}']
 })
 export class ACEEditorComponent {
     @Input() content: number;
