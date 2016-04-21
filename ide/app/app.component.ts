@@ -41,7 +41,7 @@ export class AppComponent {
         this._treeService.getTree().then(data => { this.data = data });
     }
 
-    onAddTest(event: any) {
+    onAdd(event: any) {
         this.modalData = event;
         this.isModalOpen = true;
     }
@@ -116,9 +116,6 @@ export class AppComponent {
             this.data[index.parent].children.push({label:event.name});
         else
             this.data[index.parent].children[index.index].children[index.child].children.push({label:event.name});
-
-        // if (event != undefined)
-        //     this.tabs.push(this.buildTab(event));
 
         this.isModalOpen = false;
     }

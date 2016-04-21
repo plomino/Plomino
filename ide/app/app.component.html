@@ -1,5 +1,5 @@
 <div class="wrap-app">
-  <my-tree class="well" [data]="data" (add)="onAddTest($event)" (edit)="onEdit($event)"></my-tree>
+  <my-tree class="well" [data]="data" (add)="onAdd($event)" (edit)="onEdit($event)"></my-tree>
   <div class="main-app panel">
     <tabset>
       <tab *ngFor="#tabz of tabs" [heading]="tabz.title+' / '+tabz.editor" [removable]="true" (removed)="onTabClose(tabz)">
@@ -9,5 +9,5 @@
       </tab>
     </tabset>
   </div>
-  <my-modal *ngIf="isModalOpen" [data]="modalData" (modalClosed)="onModalClose($event)"></my-modal>
+  <my-modal *ngIf="isModalOpen" [data]="modalData" (modalClosed)="onModalClose($event)" (modalDismissed)="isModalOpen = false"></my-modal>
 </div>

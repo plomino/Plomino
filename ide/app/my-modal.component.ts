@@ -10,6 +10,7 @@ import {Alert} from 'ng2-bootstrap/ng2-bootstrap';
 export class MyModalComponent {
     @Input() data: any;
     @Output() modalClosed = new EventEmitter();
+    @Output() modalDismissed = new EventEmitter();
     @ViewChild('modal') modal: ModalComponent;
 
     nameError: boolean = false;
@@ -17,16 +18,16 @@ export class MyModalComponent {
     ngAfterViewInit() {
         this.modal.open();
     }
-    onModalClose(event: any) {
-        if (event != undefined && !/\S/.test(event.name)) {
+    onModalClose() {
+        if (this.data.name === undefined || !/\S/.test(this.data.name)) {
             this.nameError = true;
             this.modal.open();
         }
         else {
-            this.modalClosed.emit(event);
+            this.modalClosed.emit(this.data);
         }
     }
-    // changeEditor(event: string) {
-    //     this.editor = event;
-    // }
+    onModalDismiss() {
+        this.modalDismissed.emit(true);
+    }
 }
