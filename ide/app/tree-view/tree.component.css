@@ -9,6 +9,7 @@ ul {
 .tree-wrap {
     overflow: auto;
     height: 500px;
+    width: 230px;
 }
 .hasChild:before {
     display: inline-block;
@@ -21,4 +22,8 @@ ul {
 .link {
     color: #337ab7;
     cursor: pointer;
+}
+.selected {
+    color: #337AB7;
+    font-weight: bold;
 }

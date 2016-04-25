@@ -22,8 +22,7 @@ import { TreeService }                  from './services/tree.service';
 })
 export class AppComponent {
     data: any;
-
-    selectedEditor: string;
+    selected: any;
     tabs: Array<any> = [];
 
     isModalOpen: boolean = false;
@@ -55,7 +54,7 @@ export class AppComponent {
         else
             parentToSearch = type.parentType;
 
-        switch(parentToSearch) {
+        switch (parentToSearch) {
             case 'Forms':
                 index.parent = 0;
                 break;
@@ -69,9 +68,9 @@ export class AppComponent {
 
         if (type.parent != undefined) {
             index.index = this.searchParentIndex(type.parent, index.parent);
-            switch(index.parent){
+            switch (index.parent) {
                 case 0:
-                    switch(type.type){
+                    switch (type.type) {
                         case 'Fields':
                             index.child = 0;
                             break;
@@ -81,7 +80,7 @@ export class AppComponent {
                     }
                     break;
                 case 1:
-                    switch(type.type){
+                    switch (type.type) {
                         case 'Actions':
                             index.child = 0;
                             break;
@@ -119,14 +118,14 @@ export class AppComponent {
             for (let i = 0; i < this.data[index.parent].children.length; i++)
                 if (this.data[index.parent].children[i].label === event.name) exists = true;
 
-            if(!exists) {
+            if (!exists) {
                 let newObject: any;
                 if (this.data[index.parent].label === 'Forms')
-                    newObject = {label:event.name,children:[{label:'Fields',collapsed:'true',children:[]},{label:'Actions',collapsed:'true',children:[]}]};
+                    newObject = { label: event.name, children: [{ label: 'Fields', collapsed: 'true', children: [] }, { label: 'Actions', collapsed: 'true', children: [] }] };
                 else if (this.data[index.parent].label === 'Views')
-                    newObject = {label:event.name,children:[{label:'Actions',collapsed:'true',children:[]},{label:'Columns',collapsed:'true',children:[]}]};
+                    newObject = { label: event.name, children: [{ label: 'Actions', collapsed: 'true', children: [] }, { label: 'Columns', collapsed: 'true', children: [] }] };
                 else
-                    newObject = {label:event.name};
+                    newObject = { label: event.name };
 
                 this.data[index.parent].children.push(newObject);
                 this.data[index.parent].collapsed = false;
@@ -136,13 +135,13 @@ export class AppComponent {
             let elt = this.data[index.parent].children[index.index].children[index.child];
             for (let i = 0; i < elt.children.length; i++)
                 if (elt.children[i].label === event.name) exists = true;
-            if(!exists) {
-                elt.children.push({label:event.name});
+            if (!exists) {
+                elt.children.push({ label: event.name });
                 elt.collapsed = false;
             }
         }
 
-        if(exists) {
+        if (exists) {
             console.log('Name already exists');
         }
     }
@@ -152,8 +151,64 @@ export class AppComponent {
         if (tab.editor === 'code') this.aceNumber++;
     }
 
+    index(type: string, parentIndex?: number) {
+        if (parentIndex === undefined)
+            switch (type) {
+                case 'Forms':
+                    return 0;
+                case 'Views':
+                    return 1;
+                case 'Agents':
+                    return 2;
+            }
+        else {
+            switch (parentIndex) {
+                case 0:
+                    switch (type) {
+                        case 'Fields':
+                            return 0;
+                        case 'Actions':
+                            return 1;
+                    }
+                    break;
+                case 1:
+                    switch (type) {
+                        case 'Actions':
+                            return 0;
+                        case 'Columns':
+                            return 1;
+                    }
+                    break;
+                case 2:
+                    return 0;
+            }
+        }
+    }
+
+    onTabSelect(path: any) {
+        for ( let i = 0; i < this.data[this.index(path[0].type)].children.length; i++ ) {
+            this.data[this.index(path[0].type)].collapsed = false;
+            let elt: any = this.data[this.index(path[0].type)].children[i];
+            if (elt.label == path[0].name) {
+                this.selected = elt;
+                if (path.length > 1) {
+                    elt.collapsed = false;
+                    for (let j = 0; j < elt.children[this.index(path[1].type, this.index(path[0].type))].children.length; j++) {
+                        elt.children[this.index(path[1].type, this.index(path[0].type))].collapsed = false;
+                        let celt: any = elt.children[this.index(path[1].type, this.index(path[0].type))].children[j];
+                        if (celt.label == path[1].name) {
+                            this.selected = celt;
+                            break;
+                        }
+                    }
+                }
+                break;
+            }
+        }
+    }
+
     buildTab(tab: any) {
-        let newtab = { title: tab.label, editor: tab.editor };
+        let newtab = { title: tab.label, editor: tab.editor, path: tab.path };
         if (newtab.editor === 'code') {
             newtab["code"] = "def " + newtab.title + `(param):
     print \'test\'
