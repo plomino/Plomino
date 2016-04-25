@@ -1,8 +1,8 @@
 <div class="wrap-app">
-  <my-tree class="well" [data]="data" (add)="onAdd($event)" (edit)="onEdit($event)"></my-tree>
+  <my-tree class="well" [data]="data" [selected]="selected" (add)="onAdd($event)" (edit)="onEdit($event)"></my-tree>
   <div class="main-app panel">
     <tabset>
-      <tab *ngFor="#tabz of tabs" [heading]="tabz.title+' / '+tabz.editor" [removable]="true" (removed)="onTabClose(tabz)">
+      <tab *ngFor="#tabz of tabs" [heading]="tabz.title+' / '+tabz.editor" [removable]="true" (removed)="onTabClose(tabz)" (select)="onTabSelect(tabz.path)">
         <my-tiny-mce *ngIf="tabz.editor==='layout'" [content]="tabz.layout"></my-tiny-mce>
         <my-ace-editor *ngIf="tabz.editor==='code'" [content]="tabz.code" [aceNumber]="aceNumber"></my-ace-editor>
         <div *ngIf="tabz.editor==='settings'" [innerHTML]="tabz.settings"></div>

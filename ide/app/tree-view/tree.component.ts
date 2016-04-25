@@ -8,7 +8,8 @@ import { Collapse }                               from 'ng2-bootstrap/ng2-bootst
     directives: [ Collapse ]
 })
 export class TreeComponent {
-    @Input() data:any;
+    @Input() data: any;
+    @Input() selected: any;
     @Output() edit = new EventEmitter();
     @Output() add = new EventEmitter();
 
