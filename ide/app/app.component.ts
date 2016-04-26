@@ -149,6 +149,7 @@ export class AppComponent {
     onTabClose(tab: any) {
         this.tabs.splice(this.tabs.indexOf(tab), 1);
         if (tab.editor === 'code') this.aceNumber++;
+        if (this.tabs.length === 0) this.selected = null;
     }
 
     index(type: string, parentIndex?: number) {
