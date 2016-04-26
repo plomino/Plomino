@@ -5,6 +5,7 @@ ul {
     margin: 5px;
     padding-left: 15px;
     list-style: none;
+    user-select: none;
 }
 .tree-wrap {
     overflow: auto;
