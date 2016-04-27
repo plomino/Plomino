@@ -1,10 +1,11 @@
+<input placeholder="Filter">
 <ul class="tree-wrap">
     <li *ngFor="#type of data" class="hasChild" [class.displayed]="type.collapsed || type.children.length === 0">
         <span (click)="type.collapsed = !type.collapsed">{{type.label}}</span>
         <span (click)="onAdd({type:type.label})" class="link glyphicon glyphicon-plus click-cursor"></span>
         <ul [collapse]="type.collapsed">
             <li *ngFor="#typeName of type.children" class="hasChild" [class.displayed]="typeName.collapsed || typeName.children.length === 0">
-                <span [class.selected]="typeName === selected" (click)="typeName.collapsed = !typeName.collapsed">{{typeName.label}}</span>
+                <span #selectable [class.selected]="typeName === selected" (click)="typeName.collapsed = !typeName.collapsed">{{typeName.label}}</span>
                 <span (click)='onEdit({label:typeName.label, url:typeName.url, editor:"layout",path:[{name:typeName.label,type:type.label}]})' class="link glyphicon glyphicon-file click-cursor"></span>
                 <span (click)='onEdit({label:typeName.label, url:typeName.url, editor:"code",path:[{name:typeName.label,type:type.label}]})' class="link glyphicon glyphicon-align-left click-cursor"></span>
                 <span (click)='onEdit({label:typeName.label, url:typeName.url, editor:"settings",path:[{name:typeName.label,type:type.label}]})' class="link glyphicon glyphicon-cog click-cursor"></span>
@@ -14,7 +15,7 @@
                         <span (click)="onAdd({type:childType.label,parentType:type.label,parent:typeName.label})" class="link glyphicon glyphicon-plus click-cursor"></span>
                         <ul [collapse]="childType.collapsed || childType.children.length === 0">
                             <li *ngFor="#childName of childType.children">
-                                <span [class.selected]="childName === selected">{{childName.label}}</span>
+                                <span #selectable [class.selected]="childName === selected">{{childName.label}}</span>
                                 <span (click)='onEdit({label:childName.label, url:childName.url, editor:"layout",path:[{name:typeName.label ,type:type.label},{name:childName.label,type:childType.label}]})' class="link glyphicon glyphicon-file click-cursor"></span>
                                 <span (click)='onEdit({label:childName.label, url:childName.url, editor:"code",path:[{name:typeName.label ,type:type.label},{name:childName.label,type:childType.label}]})' class="link glyphicon glyphicon-align-left click-cursor"></span>
                                 <span (click)='onEdit({label:childName.label, url:childName.url, editor:"settings",path:[{name:typeName.label ,type:type.label},{name:childName.label,type:childType.label}]})' class="link glyphicon glyphicon-cog click-cursor"></span>
