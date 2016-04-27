@@ -189,14 +189,14 @@ export class AppComponent {
     onTabSelect(path: any) {
         let pindex = this.index(path[0].type);
         for (let elt of this.data[pindex].children) {
-            elt.collapsed = false;
+            this.data[pindex].collapsed = false;
             if (elt.label == path[0].name) {
                 this.selected = elt;
                 if (path.length > 1) {
                     let cindex = this.index(path[1].type, pindex);
                     elt.collapsed = false;
+                    elt.children[cindex].collapsed = false;
                     for (let celt of elt.children[cindex].children) {
-                        elt.collapsed = false;
                         if (celt.label == path[1].name) {
                             this.selected = celt;
                             break;
