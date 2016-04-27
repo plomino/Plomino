@@ -8,6 +8,11 @@ import { TAB_DIRECTIVES }               from 'ng2-bootstrap/ng2-bootstrap';
 import { TreeComponent }                from './tree-view/tree.component';
 import { TinyMCEComponent }             from './editors/tiny-mce.component';
 import { ACEEditorComponent }           from './editors/ace-editor.component';
+import { FormsSettingsComponent }       from './editors/settings/forms-settings.component';
+import { FieldsSettingsComponent }      from './editors/settings/fields-settings.component';
+import { ActionsSettingsComponent }     from './editors/settings/actions-settings.component';
+import { ViewsSettingsComponent }       from './editors/settings/views-settings.component';
+import { ColumnsSettingsComponent }     from './editors/settings/columns-settings.component';
 import { MyModalComponent }             from './my-modal.component';
 
 // Services
@@ -17,7 +22,18 @@ import { TreeService }                  from './services/tree.service';
     selector: 'my-app',
     templateUrl: 'app/app.component.html',
     styleUrls: ['app/app.component.css'],
-    directives: [TreeComponent, TAB_DIRECTIVES, TinyMCEComponent, ACEEditorComponent, MyModalComponent],
+    directives: [
+        TreeComponent,
+        TAB_DIRECTIVES,
+        TinyMCEComponent,
+        ACEEditorComponent,
+        MyModalComponent,
+        FormsSettingsComponent,
+        FieldsSettingsComponent,
+        ActionsSettingsComponent,
+        ViewsSettingsComponent,
+        ColumnsSettingsComponent
+    ],
     providers: [TreeService]
 })
 export class AppComponent {
