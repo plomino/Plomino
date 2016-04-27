@@ -1,0 +1,81 @@
+<form>
+  <div class="form-group">
+    <label for="title">Titre</label>
+    <input type="text" class="form-control" id="title" required="true">
+  </div>
+  <div class="form-group">
+    <label for="desc">Description</label>
+    <p class="help-block">Utilisé dans les pages listant des éléments et les pages de résultats de recherche.</p>
+    <textarea type="text" class="form-control" id="desc"></textarea>
+  </div>
+  <div class="form-group">
+    <label>Field type</label>
+    <p class="help-block">Field type</p>
+    <select class="form-control">
+      <option value="GOOGLECHART">Google chart</option>
+      <option value="TEXT" selected>Text</option>
+      <option value="NUMBER">Number</option>
+      <option value="DATETIME">Date/Time</option>
+      <option value="DATAGRID">Datagrid</option>
+      <option value="DOCLINK">Doclink</option>
+      <option value="GOOGLEVISUALIZATION">Google visualization</option>
+      <option value="SELECTION">Selection list</option>
+      <option value="NAME">Name</option>
+      <option value="RICHTEXT">Rich text</option>
+      <option value="BOOLEAN">Boolean</option>
+      <option value="ATTACHMENT">File attachment</option>
+    </select>
+  </div>
+  <div class="form-group">
+    <label>Field mode</label>
+    <p class="help-block">Field mode</p>
+    <select class="form-control">
+        <option value="EDITABLE" selected>Editable</option>
+        <option value="COMPUTED">Computed</option>
+        <option value="CREATION">Computed on creation</option>
+        <option value="DISPLAY">Computed for display</option>
+        <option value="COMPUTEDONSAVE">Computed on save</option>
+    </select>
+  </div>
+  <div class="form-group">
+    <label for="fieldReadTemplate">Field read template</label>
+    <p class="help-block">Custom rendering template in read mode</p>
+    <input type="text" class="form-control" id="fieldReadTemplate" required="true">
+  </div>
+  <div class="form-group">
+    <label for="fieldEditTemplate">Field edit template</label>
+    <p class="help-block">Custom rendering template in edit mode</p>
+    <input type="text" class="form-control" id="fieldEditTemplate" required="true">
+  </div>
+  <div class="checkbox">
+    <label>
+      <input type="checkbox"> Mandatory
+    </label>
+    <p class="help-block">Is this field mandatory? (empty value will not be allowed)</p>
+  </div>
+  <div class="checkbox">
+    <label>
+      <input type="checkbox"> Add to index
+    </label>
+    <p class="help-block">The field will be searchable</p>
+  </div>
+  <div class="form-group">
+    <label>Field mode</label>
+    <p class="help-block">Field mode</p>
+    <select class="form-control">
+        <option value="Default (FieldIndex)" selected>Default (FieldIndex)</option>
+        <option value="DateRecurringIndex">DateRecurringIndex</option>
+        <option value="ExtendedPathIndex">ExtendedPathIndex</option>
+        <option value="FieldIndex (match exact value)">FieldIndex (match exact value)</option>
+        <option value="KeywordIndex (match list elements)">KeywordIndex (match list elements)</option>
+        <option value="TopicIndex">TopicIndex</option>
+        <option value="DateIndex">DateIndex</option>
+        <option value="DateRangeIndex">DateRangeIndex</option>
+        <option value="PathIndex">PathIndex</option>
+        <option value="BooleanIndex">BooleanIndex</option>
+        <option value="ZCTextIndex (match any contained words)">ZCTextIndex (match any contained words)</option>
+    </select>
+  </div>
+  <button type="submit" class="btn btn-primary">Sauvegarder</button>
+  <button class="btn btn-default">Annuler</button>
+</form>

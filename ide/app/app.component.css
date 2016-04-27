@@ -4,11 +4,16 @@
 }
 .main-app {
     width: 100%;
-    text-align: center;
 
     display: flex;
     flex-direction: column;
 }
+
+tab {
+    height: 600px;
+    overflow: auto;
+}
+
 my-tree {
     min-width: 260px;
 }

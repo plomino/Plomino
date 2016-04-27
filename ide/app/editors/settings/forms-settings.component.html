@@ -1,0 +1,55 @@
+<form>
+  <div class="form-group">
+    <label for="title">Titre</label>
+    <input type="text" class="form-control" id="title" required="true">
+  </div>
+  <div class="form-group">
+    <label for="desc">Description</label>
+    <p class="help-block">Utilisé dans les pages listant des éléments et les pages de résultats de recherche.</p>
+    <textarea type="text" class="form-control" id="desc"></textarea>
+  </div>
+  <div class="form-group">
+    <label>Form method</label>
+    <p class="help-block">The form method: GET or POST or Auto (default).</p>
+    <select class="form-control">
+      <option value="get">GET</option>
+      <option value="post">POST</option>
+      <option value="auto" selected>Auto</option>
+    </select>
+  </div>
+  <div class="checkbox">
+    <label>
+      <input type="checkbox"> Hide default actions
+    </label>
+    <p class="help-block">Edit, Save, Delete, Close actions will not be displayed in the action bar</p>
+  </div>
+  <div class="checkbox">
+    <label>
+      <input type="checkbox"> Page
+    </label>
+    <p class="help-block">A page cannot be saved and does not provide any action bar. It can be useful to build a welcome page, explanations, reports, navigation, etc.</p>
+  </div>
+  <div class="checkbox">
+    <label>
+      <input type="checkbox"> Search form
+    </label>
+    <p class="help-block">A search form is only used to search documents, it cannot be saved.</p>
+  </div>
+  <div class="form-group">
+    <label for="formSearchView">Search view</label>
+    <p class="help-block">View used to display the search results</p>
+    <input type="text" class="form-control" id="formSearchView">
+  </div>
+  <div class="form-group">
+    <label for="formJS">JavaScripts</label>
+    <p class="help-block">JavaScript resources loaded by this form. Enter one path per line.</p>
+    <textarea type="text" class="form-control" id="formJS"></textarea>
+  </div>
+  <div class="form-group">
+    <label for="formCSS">CSS</label>
+    <p class="help-block">CSS resources loaded by this form. Enter one path per line.</p>
+    <textarea type="text" class="form-control" id="formCSS"></textarea>
+  </div>
+  <button type="submit" class="btn btn-primary">Sauvegarder</button>
+  <button class="btn btn-default">Annuler</button>
+</form>
