@@ -1,7 +1,7 @@
-<form>
+<form (ngSubmit)="onSubmit()" #form="ngForm">
   <div class="form-group">
     <label for="title">Titre</label>
-    <input type="text" class="form-control" id="title" required="true">
+    <input [(ngModel)]='title' type="text" class="form-control" id="title" required="true">
   </div>
   <div class="form-group">
     <label for="desc">Description</label>
@@ -40,12 +40,12 @@
   <div class="form-group">
     <label for="fieldReadTemplate">Field read template</label>
     <p class="help-block">Custom rendering template in read mode</p>
-    <input type="text" class="form-control" id="fieldReadTemplate" required="true">
+    <input type="text" class="form-control" id="fieldReadTemplate">
   </div>
   <div class="form-group">
     <label for="fieldEditTemplate">Field edit template</label>
     <p class="help-block">Custom rendering template in edit mode</p>
-    <input type="text" class="form-control" id="fieldEditTemplate" required="true">
+    <input type="text" class="form-control" id="fieldEditTemplate">
   </div>
   <div class="checkbox">
     <label>

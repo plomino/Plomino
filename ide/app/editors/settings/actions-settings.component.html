@@ -1,7 +1,7 @@
-<form>
+<form (ngSubmit)="onSubmit()" #form="ngForm">
   <div class="form-group">
     <label for="title">Titre</label>
-    <input type="text" class="form-control" id="title" required="true">
+    <input [(ngModel)]='title' type="text" class="form-control" id="title" required="true">
   </div>
   <div class="form-group">
     <label for="desc">Description</label>

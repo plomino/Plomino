@@ -1,4 +1,4 @@
-import { Component } from 'angular2/core';
+import { Component, Input, Output, EventEmitter } from 'angular2/core';
 
 @Component({
     selector: 'my-fields-settings',
@@ -6,5 +6,10 @@ import { Component } from 'angular2/core';
     styles: ['form {margin: 15px;} .help-block {font-style: italic;}']
 })
 export class FieldsSettingsComponent {
+    @Input() title: string;
+    @Output() titleChanged = new EventEmitter();
 
+    onSubmit() {
+        this.titleChanged.emit(this.title);
+    }
 }
