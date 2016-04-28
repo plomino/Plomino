@@ -14,7 +14,15 @@ export class TreeComponent {
     @Output() add = new EventEmitter();
     @ViewChildren('selectable') element: any;
 
-    ngAfterViewChecked() {
+    isItSelected(name: string) {
+        if (name === this.selected){
+            this.scroll();
+            return true;
+        }
+        else { return false; }
+    }
+
+    scroll() {
         if (this.element != undefined)
             for (let elt of this.element._results)
                 if (elt._appElement.nativeElement.className === 'selected')
