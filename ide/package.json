@@ -6,16 +6,16 @@
     "typings": "typings"
   },
   "dependencies": {
-    "angular2": "^2.0.0-beta.6",
+    "angular2": "2.0.0-beta.15",
     "bootstrap": "^3.3.6",
     "es6-promise": "^3.0.2",
-    "es6-shim": "^0.33.13",
-    "ng2-bootstrap": "^1.0.11",
+    "es6-shim": "^0.35.0",
+    "ng2-bootstrap": "1.0.13",
     "ng2-bs3-modal": "^0.5.1",
     "reflect-metadata": "^0.1.2",
     "rxjs": "^5.0.0-beta.0",
-    "systemjs": "0.19.20",
-    "zone.js": "0.5.14"
+    "systemjs": "0.19.26",
+    "zone.js": "0.6.12"
   },
   "devDependencies": {
     "browser-sync": "^2.10.0",
@@ -26,6 +26,6 @@
     "gulp-sourcemaps": "^1.6.0",
     "gulp-typescript": "^2.8.0",
     "typescript": "^1.7.5",
-    "typings": "^0.6.8"
+    "typings": "^0.8.1"
   }
 }
