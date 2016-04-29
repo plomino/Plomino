@@ -207,7 +207,6 @@ export class AppComponent {
         for (let elt of this.data[pindex].children) {
             this.data[pindex].collapsed = false;
             if (elt.label == path[0].name) {
-                this.selected = elt;
                 if (path.length > 1) {
                     let cindex = this.index(path[1].type, pindex);
                     elt.collapsed = false;
@@ -215,11 +214,33 @@ export class AppComponent {
                     for (let celt of elt.children[cindex].children) {
                         if (celt.label == path[1].name) {
                             this.selected = celt;
-                            break;
+                            return;
                         }
                     }
                 }
-                break;
+                this.selected = elt;
+                return;
+            }
+        }
+    }
+
+    onTabRename(path: any, title: string) {
+        let pindex = this.index(path[0].type);
+        for (let elt of this.data[pindex].children) {
+            if (elt.label == path[0].name) {
+                if (path.length > 1) {
+                    let cindex = this.index(path[1].type, pindex);
+                    for (let celt of elt.children[cindex].children) {
+                        if (celt.label == path[1].name) {
+                            celt.label = title;
+                            path[1].name = title;
+                            return;
+                        }
+                    }
+                }
+                elt.label = title;
+                path[0].name = title;
+                return;
             }
         }
     }
