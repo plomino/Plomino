@@ -2,30 +2,42 @@
   "name": "plomino-ide",
   "version": "0.0.1",
   "scripts": {
-    "postinstall": "npm run typings install",
+    "postinstall": "sudo npm run typings install",
     "typings": "typings"
   },
   "dependencies": {
+    "ace-editor-builds": "^1.2.0",
     "angular2": "2.0.0-beta.15",
     "bootstrap": "^3.3.6",
     "es6-promise": "^3.0.2",
     "es6-shim": "^0.35.0",
+    "jquery": "^2.2.3",
     "ng2-bootstrap": "1.0.13",
     "ng2-bs3-modal": "^0.5.1",
     "reflect-metadata": "^0.1.2",
     "rxjs": "^5.0.0-beta.0",
     "systemjs": "0.19.26",
+    "tinymce": "^4.3.11",
     "zone.js": "0.6.12"
   },
   "devDependencies": {
     "browser-sync": "^2.10.0",
     "del": "^2.1.0",
+    "exports-loader": "^0.6.3",
     "gulp": "^3.9.0",
     "gulp-autoprefixer": "^3.1.0",
+    "gulp-bundle-assets": "^2.24.0",
+    "gulp-html-replace": "^1.5.5",
+    "gulp-if": "^2.0.0",
     "gulp-plumber": "^1.1.0",
     "gulp-sourcemaps": "^1.6.0",
     "gulp-typescript": "^2.8.0",
+    "gulp-uglify": "^1.5.3",
+    "gulp-webpack": "^1.5.0",
+    "imports-loader": "^0.6.5",
     "typescript": "^1.7.5",
-    "typings": "^0.8.1"
+    "typings": "^0.8.1",
+    "webpack": "^1.13.0",
+    "webpack-stream": "^3.2.0"
   }
 }

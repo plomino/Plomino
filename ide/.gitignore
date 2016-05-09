@@ -4,3 +4,4 @@ app/**/*.map
 node_modules
 dist
 .publish
+public
