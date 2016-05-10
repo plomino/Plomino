@@ -1,7 +1,7 @@
 Changelog
 =========
 
-2.0b3 (unreleased)
+2.0b3 (2016-05-10)
 ------------------
 
 - Form formula
