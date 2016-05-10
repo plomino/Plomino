@@ -46,6 +46,7 @@ setup(
         'plone.app.dexterity',
         'jsonutil',
         'collective.instancebehavior',
+        'plone.restapi',
     ],
     extras_require={
         'test': [
