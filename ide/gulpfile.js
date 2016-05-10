@@ -13,6 +13,7 @@ const gulpIf = require('gulp-if');
 const webpack = require('gulp-webpack');
 const webpackConfig = require('./webpack.config.js');
 const htmlReplace = require('gulp-html-replace');
+const replace = require('gulp-replace');
 const reload = browserSync.reload;
 
 
@@ -61,9 +62,13 @@ gulp.task('clean:bundle', ['compile:bundle', 'copy:libs', 'copy:assets'], functi
 
 // TypeScript compile
 gulp.task('compile:bundle', ['clean'], function () {
+    // webpack needs commonJS to work
     tscConfig.compilerOptions.module = 'commonJS';
     return gulp
         .src('app/**/*.ts')
+        .pipe(replace(/templateUrl:\s*\'(?:.+\/)*(.*)',/gm,'template: require(\'./$1\'),'))
+        //doesn't work with multiple styles!
+        .pipe(replace(/styleUrls:\s*\[\'(?:.+\/)*(.*)'\],/gm,'styles: [require(\'./$1\')],'))
         .pipe(sourcemaps.init())
         .pipe(typescript(tscConfig.compilerOptions))
         .pipe(sourcemaps.write('.'))

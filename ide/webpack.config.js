@@ -33,6 +33,13 @@ module.exports = {
       loaders: [
         'imports-loader?this=>window'
       ]
+    }, {
+      test: /\.html$/,
+      loader: 'raw-loader',
+      exclude: 'index.html'
+    }, {
+      test: /\.css$/,
+      loader: 'raw-loader'
     }],
     noParse: [/angular2\/bundles\/.+/]
   },
