@@ -5,6 +5,7 @@ from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 class FormView(BrowserView):
 
     template = ViewPageTemplateFile("templates/openform.pt")
+    bare_template = ViewPageTemplateFile("templates/openbareform.pt")
 
     def __init__(self, context, request):
         self.context = context
@@ -14,3 +15,6 @@ class FormView(BrowserView):
 
     def openform(self):
         return self.template()
+
+    def openbareform(self):
+        return self.bare_template()

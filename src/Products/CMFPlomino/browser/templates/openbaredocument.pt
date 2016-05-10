@@ -1,0 +1,44 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en"
+    xmlns:tal="http://xml.zope.org/namespaces/tal"
+    xmlns:metal="http://xml.zope.org/namespaces/metal"
+    xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+    lang="en"
+    i18n:domain="Products.CMFPlomino">
+
+<head>
+    <link tal:replace="structure provider:plone.htmlhead.links" />
+    <tal:block_hascssresources
+        tal:define="form python:view.form;
+                    cssresources python:form.get_resources_css()"
+        tal:condition="cssresources"
+        tal:repeat="css cssresources">
+        <link rel="stylesheet"
+            type="text/css"
+            media="all"
+            tal:attributes="href css" />
+    </tal:block_hascssresources>
+    <div tal:replace="structure provider:plone.scripts" />
+    <tal:block_hasjsresources 
+        tal:define="form python:view.form;
+                    jsresources python:form.get_resources_js()"
+        tal:condition="jsresources"
+        tal:repeat="js jsresources">
+        <script
+            type="text/javascript"
+            charset="iso-8859-1"
+            tal:attributes="src js">
+        </script>
+    </tal:block_hasjsresources>
+</head>
+<body>
+<div id="content">
+    <form tal:define="form python:view.form;"
+        tal:attributes="name python:form.id">
+        <div id="renderedForm" tal:content="structure python:view.doc.openWithForm(form)" />
+        <span metal:use-macro="context/plomino_actions/macros/ReadDocumentActionBar" >
+            display form actions
+        </span>
+    </form>
+</div>
+</body>
+</html>

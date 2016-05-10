@@ -1,0 +1,67 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en"
+    xmlns:tal="http://xml.zope.org/namespaces/tal"
+    xmlns:metal="http://xml.zope.org/namespaces/metal"
+    xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+    lang="en"
+    i18n:domain="Products.CMFPlomino">
+
+<head>
+    <link tal:replace="structure provider:plone.htmlhead.links" />
+    <tal:block_hascssresources
+        tal:define="form python:view.form;
+                    cssresources python:form.get_resources_css()"
+        tal:condition="cssresources"
+        tal:repeat="css cssresources">
+        <link rel="stylesheet"
+            type="text/css"
+            media="all"
+            tal:attributes="href css" />
+    </tal:block_hascssresources>
+    <div tal:replace="structure provider:plone.scripts" />
+    <tal:block_hasjsresources 
+        tal:define="form python:view.form;
+                    jsresources python:form.get_resources_js()"
+        tal:condition="jsresources"
+        tal:repeat="js jsresources">
+        <script
+            type="text/javascript"
+            charset="iso-8859-1"
+            tal:attributes="src js">
+        </script>
+    </tal:block_hasjsresources>
+</head>
+<body>
+    <div id="content-core" tal:define="form python:view.form;">
+        <tal:has_form condition="form">
+            <form 
+                tal:define="
+                    form_method python:form.getFormMethod();
+                    enctype python:(form_method == 'POST') and 'multipart/form-data'
+                    "
+                tal:attributes="
+                    name form/id;
+                    action python:view.doc.doc_url()+'/saveDocument';
+                    method form_method;
+                    enctype enctype|nothing;
+                    data-pat-plominodynamic string:url:${form/absolute_url};;docid:${view/doc/id};
+                    "
+                id="plomino_form">
+                
+                <span tal:content="structure python:view.doc.editWithForm(form)" />
+
+                <tal:form_actions_bottom>
+                    <span metal:use-macro="context/plomino_actions/macros/EditDocumentActionBar" >
+                        display form actions below form fields
+                    </span>
+                </tal:form_actions_bottom>
+
+            </form>
+        </tal:has_form>
+
+        <tal:no_form condition="not:form">
+            <h3>No form defined to display this document.</h3>
+            <br/>A Plomino document always needs a Plomino form in order to be displayed or edited.
+        </tal:no_form>
+    </div>
+</body>
+</html>

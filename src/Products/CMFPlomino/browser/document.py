@@ -13,6 +13,8 @@ class DocumentView(BrowserView):
 
     view_template = ViewPageTemplateFile('templates/opendocument.pt')
     edit_template = ViewPageTemplateFile('templates/editdocument.pt')
+    bare_view_template = ViewPageTemplateFile('templates/openbaredocument.pt')
+    bare_edit_template = ViewPageTemplateFile('templates/editbaredocument.pt')
     properties_template = ViewPageTemplateFile(
         'templates/documentproperties.pt')
 
@@ -27,8 +29,14 @@ class DocumentView(BrowserView):
         if name == "OpenDocument" or name == "view":
             self.action = "view"
             return self
+        if name == "OpenBareDocument":
+            self.action = "bareview"
+            return self
         if name == "EditDocument":
             self.action = "edit"
+            return self
+        if name == "EditBareDocument":
+            self.action = "bareedit"
             return self
         if name == "saveDocument":
             self.action = "save"
@@ -65,6 +73,10 @@ class DocumentView(BrowserView):
     def render(self):
         if self.action == "edit":
             return self.edit_template()
+        if self.action == "bareedit":
+            return self.bare_edit_template()
+        if self.action == "bareview":
+            return self.bare_view_template()
         elif self.action == "save":
             return self.doc.saveDocument(self.request)
         elif self.action == "delete":

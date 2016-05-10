@@ -80,6 +80,14 @@
         />
 
     <browser:page
+        for="Products.CMFPlomino.contents.form.IPlominoForm"
+        name="OpenBareForm"
+        class=".form.FormView"
+        attribute="openbareform"
+        permission="zope.Public"
+        />
+
+    <browser:page
         for="Products.CMFPlomino.interfaces.IPlominoContext"
         name="document"
         permission="zope.Public"

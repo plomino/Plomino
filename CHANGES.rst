@@ -6,6 +6,7 @@ Changelog
 
 - Form formula
 - Fix computed columns in datagrid
+- Restore bare read/edit doc and bare form rendering
 
 
 2.0b2 (2016-04-14)

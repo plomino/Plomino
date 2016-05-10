@@ -41,20 +41,7 @@
     <div id="content-core">
         <form tal:define="form python:view.form;"
             tal:attributes="name python:form.id">
-            <span style="display: none" id="plomino_path"
-                tal:content="python:'/'.join(view.doc.getPhysicalPath())">path</span>
-            <span style="display: none" id="plomino_childof" 
-                tal:condition="python:view.doc.hasItem('Plomino_ChildOf')"
-                tal:content="python:view.doc.getItem('Plomino_ChildOf')">Plomino_ChildOf</span>
-            <span style="display: none" id="plomino_doclink_field" 
-                tal:condition="python:view.doc.hasItem('Plomino_Doclink_Field')"
-                tal:content="python:view.doc.getItem('Plomino_Doclink_Field')">Plomino_Doclink_Field</span>
-            <span style="display: none" id="plomino_parent_field" 
-                tal:condition="python:view.doc.hasItem('Plomino_Parent_Field')"
-                tal:content="python:view.doc.getItem('Plomino_Parent_Field')">Plomino_Parent_Field</span>
-        
             <div id="renderedForm" tal:content="structure python:view.doc.openWithForm(form)" />
-
             <span metal:use-macro="context/plomino_actions/macros/ReadDocumentActionBar" >
                 display form actions
             </span>
