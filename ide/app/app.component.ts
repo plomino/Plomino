@@ -53,7 +53,12 @@ export class AppComponent {
     }
 
     getTree() {
-        this._treeService.getTree().then(data => { this.data = data });
+        this._treeService.getTree()
+            .subscribe(
+                data => { this.data = data },
+                err => console.error(err),
+                () => console.log('done')
+            );
     }
 
     onAdd(event: any) {
