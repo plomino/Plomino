@@ -107,6 +107,7 @@ gulp.task('copy:libs', ['clean','copy:moment'], function() {
       'node_modules/rxjs/bundles/Rx.js',
       'node_modules/angular2/bundles/angular2.dev.js',
       'node_modules/angular2/bundles/router.dev.js',
+      'node_modules/angular2/bundles/http.dev.js',
       'lib/tinymce.min.js',
       'lib/**/*',
       'node_modules/ace-editor-builds/src-min-noconflict/ace.js',
