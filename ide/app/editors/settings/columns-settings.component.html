@@ -1,12 +1,16 @@
 <form (ngSubmit)="onSubmit()" #form="ngForm">
   <div class="form-group">
     <label for="title">Titre</label>
-    <input [(ngModel)]='title' type="text" class="form-control" id="title" required="true">
+    <input [ngModel]='data?.title' (ngModelChange)="data.title=$event" type="text" class="form-control" id="title" required="true">
+  </div>
+  <div class="form-group">
+    <label for="id">ID</label>
+    <input type="text" class="form-control" [value]="id" id="id" disabled="true">
   </div>
   <div class="form-group">
     <label for="desc">Description</label>
     <p class="help-block">Utilisé dans les pages listant des éléments et les pages de résultats de recherche.</p>
-    <textarea type="text" class="form-control" id="desc"></textarea>
+    <textarea type="text" class="form-control" id="desc">{{data?.description}}</textarea>
   </div>
   <div class="form-group">
     <label>Field type</label>
@@ -17,6 +21,6 @@
   </div>
   <div class="checkbox">
     <label>
-      <input type="checkbox"> Hidden column
+      <input type="checkbox" [checked]="data?.hidden_column"> Hidden column
     </label>
   </div>

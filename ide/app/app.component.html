@@ -5,11 +5,11 @@
       <tab *ngFor="#tabz of tabs" [heading]="tabz.title+' / '+tabz.editor" [removable]="true" (removed)="onTabClose(tabz)" (select)="onTabSelect(tabz.path)">
         <my-tiny-mce *ngIf="tabz.editor==='layout'" [content]="tabz.layout"></my-tiny-mce>
         <my-ace-editor *ngIf="tabz.editor==='code'" [content]="tabz.code" [aceNumber]="aceNumber"></my-ace-editor>
-        <my-forms-settings *ngIf="tabz.editor === 'settings' && tabz.path[0].type === 'Forms' && tabz.path.length < 2" [title]='tabz.title' (titleChanged)='tabz.title=$event; onTabRename(tabz.path,$event)'></my-forms-settings>
-        <my-fields-settings *ngIf="tabz.editor === 'settings' && tabz.path[0].type === 'Forms' && tabz.path[1]?.type === 'Fields'" [title]='tabz.title' (titleChanged)='tabz.title=$event; onTabRename(tabz.path,$event)'></my-fields-settings>
-        <my-actions-settings *ngIf="tabz.editor === 'settings' && tabz.path[1]?.type === 'Actions'" [title]='tabz.title' (titleChanged)='tabz.title=$event; onTabRename(tabz.path,$event)'></my-actions-settings>
-        <my-views-settings *ngIf="tabz.editor === 'settings' && tabz.path[0].type === 'Views' && tabz.path.length < 2" [title]='tabz.title' (titleChanged)='tabz.title=$event; onTabRename(tabz.path,$event)'></my-views-settings>
-        <my-columns-settings *ngIf="tabz.editor === 'settings' && tabz.path[1]?.type === 'Columns'" [title]='tabz.title' (titleChanged)='tabz.title=$event; onTabRename(tabz.path,$event)'></my-columns-settings>
+        <my-forms-settings *ngIf="tabz.editor === 'settings' && tabz.path[0].type === 'Forms' && tabz.path.length < 2" [id]='tabz.url' (titleChanged)='tabz.title=$event; onTabRename(tabz.path,$event)'></my-forms-settings>
+        <my-fields-settings *ngIf="tabz.editor === 'settings' && tabz.path[0].type === 'Forms' && tabz.path[1]?.type === 'Fields'" [id]='tabz.url' (titleChanged)='tabz.title=$event; onTabRename(tabz.path,$event)'></my-fields-settings>
+        <my-actions-settings *ngIf="tabz.editor === 'settings' && tabz.path[1]?.type === 'Actions'" [id]='tabz.url' (titleChanged)='tabz.title=$event; onTabRename(tabz.path,$event)'></my-actions-settings>
+        <my-views-settings *ngIf="tabz.editor === 'settings' && tabz.path[0].type === 'Views' && tabz.path.length < 2" [id]='tabz.url' (titleChanged)='tabz.title=$event; onTabRename(tabz.path,$event)'></my-views-settings>
+        <my-columns-settings *ngIf="tabz.editor === 'settings' && tabz.path[1]?.type === 'Columns'" [id]='tabz.url' (titleChanged)='tabz.title=$event; onTabRename(tabz.path,$event)'></my-columns-settings>
       </tab>
     </tabset>
   </div>

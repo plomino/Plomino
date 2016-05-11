@@ -1,18 +1,22 @@
 <form (ngSubmit)="onSubmit()" #form="ngForm">
   <div class="form-group">
     <label for="title">Titre</label>
-    <input [(ngModel)]='title' type="text" class="form-control" id="title" required="true">
+    <input [ngModel]='data?.title' (ngModelChange)="data.title=$event" type="text" class="form-control" id="title" required="true">
+  </div>
+  <div class="form-group">
+    <label for="id">ID</label>
+    <input type="text" class="form-control" [value]="id" id="id" disabled="true">
   </div>
   <div class="form-group">
     <label for="desc">Description</label>
     <p class="help-block">Utilisé dans les pages listant des éléments et les pages de résultats de recherche.</p>
-    <textarea type="text" class="form-control" id="desc"></textarea>
+    <textarea type="text" class="form-control" id="desc">{{data?.description}}</textarea>
   </div>
   <div class="form-group">
     <label>Action type</label>
     <p class="help-block">Select the type for this action</p>
-    <select class="form-control">
-      <option value="OPENFORM" selected>Open form</option>
+    <select class="form-control" [value]="data?.action_type">
+      <option value="OPENFORM">Open form</option>
       <option value="OPENVIEW">Open view</option>
       <option value="CLOSE">Close</option>
       <option value="SAVE">Save</option>
@@ -23,15 +27,15 @@
   <div class="form-group">
     <label>Action display</label>
     <p class="help-block">How the action is shown</p>
-    <select class="form-control">
+    <select class="form-control" [value]="data?.action_display">
       <option value="LINK">Link</option>
       <option value="SUBMIT">Submit button</option>
-      <option value="BUTTON" selected>Button</option>
+      <option value="BUTTON">Button</option>
     </select>
   </div>
   <div class="checkbox">
     <label>
-      <input type="checkbox"> Display action in action bar (yes/no)
+      <input type="checkbox" [checked]="data?.in_action_bar" value="in_action_bar"> Display action in action bar (yes/no)
     </label>
   </div>
 
