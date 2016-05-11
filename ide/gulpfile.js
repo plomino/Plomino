@@ -16,6 +16,10 @@ const htmlReplace = require('gulp-html-replace');
 const replace = require('gulp-replace');
 const reload = browserSync.reload;
 
+gulp.task('deploy', ['copy:bundle-html'], function() {
+    return gulp.src('public/**/*',{base: 'public/'})
+    .pipe(gulp.dest('../src/Products/CMFPlomino/browser/static/ide'));
+});
 
 // bundle
 gulp.task('webpack', ['clean:bundle'], function() {
