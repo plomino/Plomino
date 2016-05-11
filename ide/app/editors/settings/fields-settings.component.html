@@ -1,19 +1,23 @@
 <form (ngSubmit)="onSubmit()" #form="ngForm">
   <div class="form-group">
     <label for="title">Titre</label>
-    <input [(ngModel)]='title' type="text" class="form-control" id="title" required="true">
+    <input [ngModel]='data?.title' (ngModelChange)="data.title=$event" type="text" class="form-control" id="title" required="true">
+  </div>
+  <div class="form-group">
+    <label for="id">ID</label>
+    <input type="text" class="form-control" [value]="id" id="id" disabled="true">
   </div>
   <div class="form-group">
     <label for="desc">Description</label>
     <p class="help-block">Utilisé dans les pages listant des éléments et les pages de résultats de recherche.</p>
-    <textarea type="text" class="form-control" id="desc"></textarea>
+    <textarea type="text" class="form-control" id="desc">{{data?.description}}</textarea>
   </div>
   <div class="form-group">
     <label>Field type</label>
     <p class="help-block">Field type</p>
-    <select class="form-control">
+    <select class="form-control" [value]="data?.field_type">
       <option value="GOOGLECHART">Google chart</option>
-      <option value="TEXT" selected>Text</option>
+      <option value="TEXT">Text</option>
       <option value="NUMBER">Number</option>
       <option value="DATETIME">Date/Time</option>
       <option value="DATAGRID">Datagrid</option>
@@ -29,8 +33,8 @@
   <div class="form-group">
     <label>Field mode</label>
     <p class="help-block">Field mode</p>
-    <select class="form-control">
-        <option value="EDITABLE" selected>Editable</option>
+    <select class="form-control" [value]="data?.field_mode">
+        <option value="EDITABLE">Editable</option>
         <option value="COMPUTED">Computed</option>
         <option value="CREATION">Computed on creation</option>
         <option value="DISPLAY">Computed for display</option>
@@ -40,40 +44,40 @@
   <div class="form-group">
     <label for="fieldReadTemplate">Field read template</label>
     <p class="help-block">Custom rendering template in read mode</p>
-    <input type="text" class="form-control" id="fieldReadTemplate">
+    <input type="text" class="form-control" id="fieldReadTemplate" [value]="data?.read_template">
   </div>
   <div class="form-group">
     <label for="fieldEditTemplate">Field edit template</label>
     <p class="help-block">Custom rendering template in edit mode</p>
-    <input type="text" class="form-control" id="fieldEditTemplate">
+    <input type="text" class="form-control" id="fieldEditTemplate" [value]="data?.edit_template">
   </div>
   <div class="checkbox">
     <label>
-      <input type="checkbox"> Mandatory
+      <input type="checkbox" [checked]="data?.mandatory"> Mandatory
     </label>
     <p class="help-block">Is this field mandatory? (empty value will not be allowed)</p>
   </div>
   <div class="checkbox">
     <label>
-      <input type="checkbox"> Add to index
+      <input type="checkbox" [checked]="data?.to_be_indexed"> Add to index
     </label>
     <p class="help-block">The field will be searchable</p>
   </div>
   <div class="form-group">
-    <label>Field mode</label>
-    <p class="help-block">Field mode</p>
-    <select class="form-control">
-        <option value="Default (FieldIndex)" selected>Default (FieldIndex)</option>
-        <option value="DateRecurringIndex">DateRecurringIndex</option>
-        <option value="ExtendedPathIndex">ExtendedPathIndex</option>
-        <option value="FieldIndex (match exact value)">FieldIndex (match exact value)</option>
-        <option value="KeywordIndex (match list elements)">KeywordIndex (match list elements)</option>
-        <option value="TopicIndex">TopicIndex</option>
-        <option value="DateIndex">DateIndex</option>
-        <option value="DateRangeIndex">DateRangeIndex</option>
-        <option value="PathIndex">PathIndex</option>
-        <option value="BooleanIndex">BooleanIndex</option>
-        <option value="ZCTextIndex (match any contained words)">ZCTextIndex (match any contained words)</option>
+    <label>Index type</label>
+    <p class="help-block"> The way the field values will be indexed</p>
+    <select class="form-control" [value]="data?.index_type">
+        <option value="DEFAULT">Default (FieldIndex)</option>
+        <option value="DATERECURRINGINDEX">DateRecurringIndex</option>
+        <option value="EXTENDEDPATHINDEX">ExtendedPathIndex</option>
+        <option value="FIELDINDEX">FieldIndex (match exact value)</option>
+        <option value="KEYWORDINDEX">KeywordIndex (match list elements)</option>
+        <option value="TOPICINDEX">TopicIndex</option>
+        <option value="DATEINDEX">DateIndex</option>
+        <option value="DATERANGEINDEX">DateRangeIndex</option>
+        <option value="PATHINDEX">PathIndex</option>
+        <option value="BOOLEANINDEX">BooleanIndex</option>
+        <option value="ZCTEXTINDEX">ZCTextIndex (match any contained words)</option>
     </select>
   </div>
   <button type="submit" class="btn btn-primary">Sauvegarder</button>

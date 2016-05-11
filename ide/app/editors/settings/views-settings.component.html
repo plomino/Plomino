@@ -1,44 +1,48 @@
 <form (ngSubmit)="onSubmit()" #form="ngForm">
   <div class="form-group">
     <label for="title">Titre</label>
-    <input [(ngModel)]='title' type="text" class="form-control" id="title" required="true">
+    <input [ngModel]='data?.title' (ngModelChange)="data.title=$event" type="text" class="form-control" id="title" required="true">
+  </div>
+  <div class="form-group">
+    <label for="id">ID</label>
+    <input type="text" class="form-control" [value]="id" id="id" disabled="true">
   </div>
   <div class="form-group">
     <label for="desc">Description</label>
     <p class="help-block">Utilisé dans les pages listant des éléments et les pages de résultats de recherche.</p>
-    <textarea type="text" class="form-control" id="desc"></textarea>
+    <textarea type="text" class="form-control" id="desc">{{data?.description}}</textarea>
   </div>
   <div class="checkbox">
     <label>
-      <input type="checkbox"> Hide default actions
+      <input type="checkbox" [checked]="data?.hide_default_actions"> Hide default actions
     </label>
     <p class="help-block">Edit, Save, Delete, Close actions will not be displayed in the action bar</p>
   </div>
   <div class="form-group">
     <label for="viewsSortColumn">Sort column</label>
     <p class="help-block">Column used to sort the view, and for key lookup</p>
-    <input type="text" class="form-control" id="viewsSortColumn">
+    <input type="text" class="form-control" id="viewsSortColumn" [value]="data?.sort_column">
   </div>
   <div class="form-group">
     <label for="formSearchView">Key column</label>
     <p class="help-block">Column used for key lookup, if different from sort column</p>
-    <input type="text" class="form-control" id="formSearchView">
+    <input type="text" class="form-control" id="formSearchView" [value]="data?.key_column">
   </div>
   <div class="checkbox">
     <label>
-      <input type="checkbox"> Categorized
+      <input type="checkbox" [checked]="data?.categorized"> Categorized
     </label>
     <p class="help-block">Categorised on first column</p>
   </div>
   <div class="checkbox">
     <label>
-      <input type="checkbox"> Reverse sorting
+      <input type="checkbox" [checked]="data?.reverse_sorting"> Reverse sorting
     </label>
     <p class="help-block">Reverse the sort ordering</p>
   </div>
   <div class="checkbox">
     <label>
-      <input type="checkbox"> Static rendering
+      <input type="checkbox" [checked]="data?.static_rendering"> Static rendering
     </label>
     <p class="help-block">Use inline HTML, without AJAX.</p>
   </div>

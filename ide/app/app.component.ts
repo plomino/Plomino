@@ -234,7 +234,7 @@ export class AppComponent {
     }
 
     buildTab(tab: any) {
-        let newtab = { title: tab.label, editor: tab.editor, path: tab.path };
+        let newtab = { title: tab.label, editor: tab.editor, path: tab.path, url: tab.url };
         if (newtab.editor === 'code') {
             newtab["code"] = "def " + newtab.title + `(param):
     print \'test\'
