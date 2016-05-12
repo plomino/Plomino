@@ -29,6 +29,17 @@
         handler=".setuphandlers.post_install">
     </genericsetup:importStep>
 
+    <genericsetup:upgradeSteps
+        source="1002"
+        destination="1003"
+        profile="Products.CMFPlomino:default">
+      <genericsetup:upgradeStep
+          title="Update registry"
+          description="Update bundles to add table.less"
+          handler=".upgrades.run_registry_step"
+          />
+    </genericsetup:upgradeSteps>
+
     <subscriber
         for="Products.CMFPlomino.contents.database.IPlominoDatabase zope.lifecycleevent.interfaces.IObjectAddedEvent"
         handler=".events.afterDatabaseCreated"

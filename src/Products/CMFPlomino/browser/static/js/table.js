@@ -24,7 +24,7 @@ require([
                         var row = data.rows[i];
                         var html = '<tr><td><a href="'
                             + self.options.source
-                            + '../../document/' + row[0]
+                            + '/../../document/' + row[0]
                             + '">' + row[1]
                             + '</a></td>';
                         if(row.length > 2) {
@@ -68,12 +68,18 @@ require([
         init_sorting: function() {
             var self = this;
             self.$el.find('th').on('click', function() {
+                self.$el.find('th').removeClass('icon-down-dir icon-up-dir');
                 var sort_on = $(this).attr('data-column');
                 if(sort_on == self.params.sorton) {
                     self.params.reverse = (self.params.reverse==1) ? 0 : 1;
                 } else {
                     self.params.sorton = sort_on;
                     self.params.reverse = 0;
+                }
+                if (self.params.reverse === 0) {
+                    $(this).addClass('icon-down-dir');
+                } else {
+                    $(this).addClass('icon-up-dir');
                 }
                 self.refresh();
             });
