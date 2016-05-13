@@ -1,21 +1,21 @@
-<form (ngSubmit)="onSubmit()" #form="ngForm">
+<form (ngSubmit)='onSubmit(data["@id"],title.value,desc.value,hideDefaultActions.checked,isPage.checked,searchForm.checked,searchView.value,resourcesJS.value,resourcesCSS.value)' #form="ngForm">
   <div class="form-group">
     <label for="title">Titre</label>
-    <input [ngModel]='data?.title' (ngModelChange)="data.title=$event" type="text" class="form-control" id="title" required="true">
+    <input #title [ngModel]='data?.title' (ngModelChange)="data.title=$event" type="text" class="form-control" id="title" required="true">
   </div>
   <div class="form-group">
     <label for="id">ID</label>
-    <input type="text" class="form-control" [value]="id" id="id" disabled="true">
+    <input type="text" class="form-control" [value]="data ? data['@id'] : ''" id="id" disabled="true">
   </div>
   <div class="form-group">
     <label for="desc">Description</label>
     <p class="help-block">Utilisé dans les pages listant des éléments et les pages de résultats de recherche.</p>
-    <textarea type="text" class="form-control" id="desc">{{data?.description}}</textarea>
+    <textarea #desc type="text" class="form-control" id="desc">{{data?.description}}</textarea>
   </div>
   <div class="form-group">
     <label>Form method</label>
     <p class="help-block">The form method: GET or POST or Auto (default).</p>
-    <form>
+    <form #formMethod>
         <label><input type='radio' name='formMethod' value="GET"> GET</label>
         <label><input type='radio' name='formMethod' value="POST"> POST</label>
         <label><input type='radio' name='formMethod' value="Auto"> Auto</label>
@@ -23,36 +23,36 @@
   </div>
   <div class="checkbox">
     <label>
-      <input type="checkbox" [checked]="data?.hide_default_actions"> Hide default actions
+      <input #hideDefaultActions type="checkbox" [checked]="data?.hide_default_actions"> Hide default actions
     </label>
     <p class="help-block">Edit, Save, Delete, Close actions will not be displayed in the action bar</p>
   </div>
   <div class="checkbox">
     <label>
-      <input type="checkbox" [checked]="data?.isPage"> Page
+      <input #isPage type="checkbox" [checked]="data?.isPage"> Page
     </label>
     <p class="help-block">A page cannot be saved and does not provide any action bar. It can be useful to build a welcome page, explanations, reports, navigation, etc.</p>
   </div>
   <div class="checkbox">
     <label>
-      <input type="checkbox" [checked]="data?.isSearchForm"> Search form
+      <input #searchForm type="checkbox" [checked]="data?.isSearchForm"> Search form
     </label>
     <p class="help-block">A search form is only used to search documents, it cannot be saved.</p>
   </div>
   <div class="form-group">
     <label for="formSearchView">Search view</label>
     <p class="help-block">View used to display the search results</p>
-    <input type="text" class="form-control" id="formSearchView" [value]="data?.search_view">
+    <input #searchView type="text" class="form-control" id="formSearchView" [value]="data?.search_view">
   </div>
   <div class="form-group">
     <label for="formJS">JavaScripts</label>
     <p class="help-block">JavaScript resources loaded by this form. Enter one path per line.</p>
-    <textarea type="text" class="form-control" id="formJS">{{data?.resources_js}}</textarea>
+    <textarea #resourcesJS type="text" class="form-control" id="formJS">{{data?.resources_js}}</textarea>
   </div>
   <div class="form-group">
     <label for="formCSS">CSS</label>
     <p class="help-block">CSS resources loaded by this form. Enter one path per line.</p>
-    <textarea type="text" class="form-control" id="formCSS">{{data?.resources_css}}</textarea>
+    <textarea #resourcesCSS type="text" class="form-control" id="formCSS">{{data?.resources_css}}</textarea>
   </div>
   <button type="submit" class="btn btn-primary">Sauvegarder</button>
   <button class="btn btn-default">Annuler</button>

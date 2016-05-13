@@ -22,12 +22,17 @@ export class ActionsSettingsComponent {
         this._elementService.getElement(this.id)
             .subscribe(
                 data => { this.data = data },
-                err => console.error(err),
-                () => console.log('done')
+                err => console.error(err)
             );
     }
 
-    onSubmit() {
+    onSubmit(id: string, title: string, description: string, inActionBar: boolean) {
+        let element = {
+            "title": title,
+            "description": description,
+            "in_action_bar": inActionBar
+        };
+        this._elementService.patchElement(id, JSON.stringify(element));
         this.titleChanged.emit(this.data.title);
     }
 }
