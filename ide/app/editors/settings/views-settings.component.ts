@@ -22,12 +22,30 @@ export class ViewsSettingsComponent {
         this._elementService.getElement(this.id)
             .subscribe(
                 data => { this.data = data },
-                err => console.error(err),
-                () => console.log('done')
+                err => console.error(err)
             );
     }
 
-    onSubmit() {
+    onSubmit(id: string,
+        title: string,
+        description: string,
+        hideDefaultActions: boolean,
+        sortColumn: string,
+        keyColumn: string,
+        categorized: boolean,
+        reverseSorting: boolean,
+        staticRendering: boolean) {
+            let element = {
+                "title": title,
+                "description": description,
+                "hide_default_actions": hideDefaultActions,
+                "sort_column": sortColumn,
+                "key_column": keyColumn,
+                "categorized": categorized,
+                "reverse_sorting": reverseSorting,
+                "static_rendering": staticRendering
+        };
+        this._elementService.patchElement(id, JSON.stringify(element));
         this.titleChanged.emit(this.data.title);
     }
 }

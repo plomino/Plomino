@@ -1,16 +1,16 @@
-<form (ngSubmit)="onSubmit()" #form="ngForm">
+<form (ngSubmit)='onSubmit(data["@id"],title.value,desc.value,inActionBar.checked)' #form="ngForm">
   <div class="form-group">
     <label for="title">Titre</label>
-    <input [ngModel]='data?.title' (ngModelChange)="data.title=$event" type="text" class="form-control" id="title" required="true">
+    <input #title [ngModel]='data?.title' (ngModelChange)="data.title=$event" type="text" class="form-control" id="title" required="true">
   </div>
   <div class="form-group">
     <label for="id">ID</label>
-    <input type="text" class="form-control" [value]="id" id="id" disabled="true">
+    <input type="text" class="form-control" [value]="data ? data['@id'] : ''" id="id" disabled="true">
   </div>
   <div class="form-group">
     <label for="desc">Description</label>
     <p class="help-block">Utilisé dans les pages listant des éléments et les pages de résultats de recherche.</p>
-    <textarea type="text" class="form-control" id="desc">{{data?.description}}</textarea>
+    <textarea #desc type="text" class="form-control" id="desc">{{data?.description}}</textarea>
   </div>
   <div class="form-group">
     <label>Action type</label>
@@ -35,7 +35,7 @@
   </div>
   <div class="checkbox">
     <label>
-      <input type="checkbox" [checked]="data?.in_action_bar" value="in_action_bar"> Display action in action bar (yes/no)
+      <input #inActionBar type="checkbox" [checked]="data?.in_action_bar"> Display action in action bar (yes/no)
     </label>
   </div>
 

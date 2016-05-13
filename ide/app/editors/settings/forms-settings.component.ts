@@ -22,12 +22,30 @@ export class FormsSettingsComponent {
         this._elementService.getElement(this.id)
             .subscribe(
                 data => { this.data = data },
-                err => console.error(err),
-                () => console.log('done')
+                err => console.error(err)
             );
     }
 
-    onSubmit() {
-        this.titleChanged.emit(this.data.title);
+    onSubmit(id: string,
+        title: string,
+        description: string,
+        hideDefaultActions: boolean,
+        isPage: boolean,
+        searchForm: boolean,
+        searchView: string,
+        resourcesJS: string,
+        resourcesCSS: string) {
+            let element = {
+                "title": title,
+                "description": description,
+                "hide_default_actions": hideDefaultActions,
+                "isPage": isPage,
+                "isSearchForm": searchForm,
+                "search_view": searchView,
+                "resources_js": resourcesJS,
+                "resources_css": resourcesCSS
+            };
+            this._elementService.patchElement(id, JSON.stringify(element));
+            this.titleChanged.emit(this.data.title);
     }
 }

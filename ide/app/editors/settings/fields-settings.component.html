@@ -1,16 +1,16 @@
-<form (ngSubmit)="onSubmit()" #form="ngForm">
+<form (ngSubmit)='onSubmit(data["@id"],title.value,desc.value,readTemplate.value,editTemplate.value,mandatory.checked,toBeIndexed.checked)' #form="ngForm">
   <div class="form-group">
     <label for="title">Titre</label>
     <input [ngModel]='data?.title' (ngModelChange)="data.title=$event" type="text" class="form-control" id="title" required="true">
   </div>
   <div class="form-group">
     <label for="id">ID</label>
-    <input type="text" class="form-control" [value]="id" id="id" disabled="true">
+    <input #title type="text" class="form-control" [value]="data ? data['@id'] : ''" id="id" disabled="true">
   </div>
   <div class="form-group">
     <label for="desc">Description</label>
     <p class="help-block">Utilisé dans les pages listant des éléments et les pages de résultats de recherche.</p>
-    <textarea type="text" class="form-control" id="desc">{{data?.description}}</textarea>
+    <textarea #desc type="text" class="form-control" id="desc">{{data?.description}}</textarea>
   </div>
   <div class="form-group">
     <label>Field type</label>
@@ -44,22 +44,22 @@
   <div class="form-group">
     <label for="fieldReadTemplate">Field read template</label>
     <p class="help-block">Custom rendering template in read mode</p>
-    <input type="text" class="form-control" id="fieldReadTemplate" [value]="data?.read_template">
+    <input #readTemplate type="text" class="form-control" id="fieldReadTemplate" [value]="data?.read_template">
   </div>
   <div class="form-group">
     <label for="fieldEditTemplate">Field edit template</label>
     <p class="help-block">Custom rendering template in edit mode</p>
-    <input type="text" class="form-control" id="fieldEditTemplate" [value]="data?.edit_template">
+    <input #editTemplate type="text" class="form-control" id="fieldEditTemplate" [value]="data?.edit_template">
   </div>
   <div class="checkbox">
     <label>
-      <input type="checkbox" [checked]="data?.mandatory"> Mandatory
+      <input #mandatory type="checkbox" [checked]="data?.mandatory"> Mandatory
     </label>
     <p class="help-block">Is this field mandatory? (empty value will not be allowed)</p>
   </div>
   <div class="checkbox">
     <label>
-      <input type="checkbox" [checked]="data?.to_be_indexed"> Add to index
+      <input #toBeIndexed type="checkbox" [checked]="data?.to_be_indexed"> Add to index
     </label>
     <p class="help-block">The field will be searchable</p>
   </div>
