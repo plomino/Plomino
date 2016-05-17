@@ -138,15 +138,6 @@ class IPlominoField(model.Schema):
         required=False,
     )
 
-    mandatory = schema.Bool(
-        title=_('CMFPlomino_label_FieldMandatory', default="Mandatory"),
-        description=_('CMFPlomino_help_FieldMandatory',
-            default='Is this field mandatory? (empty value will not be '
-                'allowed)'),
-        default=False,
-        required=True,
-    )
-
     to_be_indexed = schema.Bool(
         title=_('CMFPlomino_label_FieldIndex', default="Add to index"),
         description=_('CMFPlomino_help_FieldIndex',
