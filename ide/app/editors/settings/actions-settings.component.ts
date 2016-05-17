@@ -26,10 +26,12 @@ export class ActionsSettingsComponent {
             );
     }
 
-    onSubmit(id: string, title: string, description: string, inActionBar: boolean) {
+    onSubmit(id: string, title: string, description: string, actionType:string, actionDisplay:string, inActionBar: boolean) {
         let element = {
             "title": title,
             "description": description,
+            "action_type": actionType,
+            "action_display": actionDisplay,
             "in_action_bar": inActionBar
         };
         this._elementService.patchElement(id, JSON.stringify(element));

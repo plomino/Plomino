@@ -1,4 +1,4 @@
-<form (ngSubmit)='onSubmit(data["@id"],title.value,desc.value,hideDefaultActions.checked,isPage.checked,searchForm.checked,searchView.value,resourcesJS.value,resourcesCSS.value)' #form="ngForm">
+<form (ngSubmit)='onSubmit(data["@id"],title.value,desc.value,formMethod.value,hideDefaultActions.checked,isPage.checked,searchForm.checked,searchView.value,resourcesJS.value,resourcesCSS.value)' #form="ngForm">
   <div class="form-group">
     <label for="title">Titre</label>
     <input #title [ngModel]='data?.title' (ngModelChange)="data.title=$event" type="text" class="form-control" id="title" required="true">
@@ -15,11 +15,11 @@
   <div class="form-group">
     <label>Form method</label>
     <p class="help-block">The form method: GET or POST or Auto (default).</p>
-    <form #formMethod>
-        <label><input type='radio' name='formMethod' value="GET"> GET</label>
-        <label><input type='radio' name='formMethod' value="POST"> POST</label>
-        <label><input type='radio' name='formMethod' value="Auto"> Auto</label>
-    </form>
+    <select #formMethod class="form-control" [value]="data?.form_method">
+      <option value="GET"> GET</option>
+      <option value="POST"> POST</option>
+      <option value="Auto"> Auto</option>
+    </select>
   </div>
   <div class="checkbox">
     <label>

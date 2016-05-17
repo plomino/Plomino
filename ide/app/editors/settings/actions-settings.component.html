@@ -1,4 +1,4 @@
-<form (ngSubmit)='onSubmit(data["@id"],title.value,desc.value,inActionBar.checked)' #form="ngForm">
+<form (ngSubmit)='onSubmit(data["@id"],title.value,desc.value,actionType.value,actionDisplay.value,inActionBar.checked)' #form="ngForm">
   <div class="form-group">
     <label for="title">Titre</label>
     <input #title [ngModel]='data?.title' (ngModelChange)="data.title=$event" type="text" class="form-control" id="title" required="true">
@@ -15,7 +15,7 @@
   <div class="form-group">
     <label>Action type</label>
     <p class="help-block">Select the type for this action</p>
-    <select class="form-control" [value]="data?.action_type">
+    <select #actionType class="form-control" [value]="data?.action_type">
       <option value="OPENFORM">Open form</option>
       <option value="OPENVIEW">Open view</option>
       <option value="CLOSE">Close</option>
@@ -27,7 +27,7 @@
   <div class="form-group">
     <label>Action display</label>
     <p class="help-block">How the action is shown</p>
-    <select class="form-control" [value]="data?.action_display">
+    <select #actionDisplay class="form-control" [value]="data?.action_display">
       <option value="LINK">Link</option>
       <option value="SUBMIT">Submit button</option>
       <option value="BUTTON">Button</option>
