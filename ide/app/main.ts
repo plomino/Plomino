@@ -1,7 +1,5 @@
-/// <reference path="../node_modules/angular2/typings/browser.d.ts" />
-
-import {bootstrap}    from 'angular2/platform/browser'
-import {HTTP_PROVIDERS} from 'angular2/http';
+import {bootstrap}    from '@angular/platform-browser-dynamic'
+import {HTTP_PROVIDERS} from '@angular/http';
 import {AppComponent} from './app.component'
 
 bootstrap(AppComponent,
