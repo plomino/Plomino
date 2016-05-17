@@ -30,8 +30,8 @@ export class TreeComponent {
     scroll() {
         if (this.element != undefined)
             for (let elt of this.element._results)
-                if (elt._appElement.nativeElement.className === 'selected')
-                    elt._appElement.nativeElement.scrollIntoView();
+                if (elt.nativeElement.className === 'selected')
+                    elt.nativeElement.scrollIntoView();
     }
 
     onEdit(event: any) {
