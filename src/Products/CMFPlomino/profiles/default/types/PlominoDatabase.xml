@@ -26,7 +26,7 @@
   <property name="behaviors">
     <element value="plone.app.content.interfaces.INameFromTitle"/>
     <element value="plone.app.dexterity.behaviors.exclfromnav.IExcludeFromNavigation"/>
-    <element value="plone.app.dexterity.behaviors.metadata.IDublinCore"/>
+    <element value="plone.app.dexterity.behaviors.metadata.IBasic"/>
   </property>
   <property name="schema">Products.CMFPlomino.contents.database.IPlominoDatabase</property>
   <property name="klass">Products.CMFPlomino.contents.database.PlominoDatabase</property>
