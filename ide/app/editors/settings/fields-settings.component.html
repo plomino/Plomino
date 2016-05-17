@@ -1,4 +1,4 @@
-<form (ngSubmit)='onSubmit(data["@id"],title.value,desc.value,readTemplate.value,editTemplate.value,mandatory.checked,toBeIndexed.checked)' #form="ngForm">
+<form (ngSubmit)='onSubmit(data["@id"],title.value,desc.value,fieldType.value,fieldMode.value,indexType.value,readTemplate.value,editTemplate.value,mandatory.checked,toBeIndexed.checked)' #form="ngForm">
   <div class="form-group">
     <label for="title">Titre</label>
     <input [ngModel]='data?.title' (ngModelChange)="data.title=$event" type="text" class="form-control" id="title" required="true">
@@ -15,7 +15,7 @@
   <div class="form-group">
     <label>Field type</label>
     <p class="help-block">Field type</p>
-    <select class="form-control" [value]="data?.field_type">
+    <select #fieldType class="form-control" [value]="data?.field_type">
       <option value="GOOGLECHART">Google chart</option>
       <option value="TEXT">Text</option>
       <option value="NUMBER">Number</option>
@@ -33,7 +33,7 @@
   <div class="form-group">
     <label>Field mode</label>
     <p class="help-block">Field mode</p>
-    <select class="form-control" [value]="data?.field_mode">
+    <select #fieldMode class="form-control" [value]="data?.field_mode">
         <option value="EDITABLE">Editable</option>
         <option value="COMPUTED">Computed</option>
         <option value="CREATION">Computed on creation</option>
@@ -66,7 +66,7 @@
   <div class="form-group">
     <label>Index type</label>
     <p class="help-block"> The way the field values will be indexed</p>
-    <select class="form-control" [value]="data?.index_type">
+    <select #indexType class="form-control" [value]="data?.index_type">
         <option value="DEFAULT">Default (FieldIndex)</option>
         <option value="DATERECURRINGINDEX">DateRecurringIndex</option>
         <option value="EXTENDEDPATHINDEX">ExtendedPathIndex</option>

@@ -26,16 +26,28 @@ export class FieldsSettingsComponent {
             );
     }
 
-    onSubmit(id: string, title: string, description: string, readTemplate: string, editTemplate: string, mandatory: boolean, toBeIndexed: boolean) {
-        let element = {
-            "title": title,
-            "description": description,
-            "read_template": readTemplate,
-            "edit_template": editTemplate,
-            "mandatory": mandatory,
-            "to_be_indexed": toBeIndexed
-        };
-        this._elementService.patchElement(id, JSON.stringify(element));
-        this.titleChanged.emit(this.data.title);
+    onSubmit(id: string,
+            title: string,
+            description: string,
+            fieldType:string,
+            fieldMode:string,
+            readTemplate: string,
+            editTemplate: string,
+            mandatory: boolean,
+            toBeIndexed: boolean,
+            indexType: string) {
+                let element = {
+                    "title": title,
+                    "description": description,
+                    "field_type": fieldType,
+                    "field_mode": fieldMode,
+                    "read_template": readTemplate,
+                    "edit_template": editTemplate,
+                    "mandatory": mandatory,
+                    "to_be_indexed": toBeIndexed,
+                    "index_type": indexType
+                };
+                this._elementService.patchElement(id, JSON.stringify(element));
+                this.titleChanged.emit(this.data.title);
     }
 }

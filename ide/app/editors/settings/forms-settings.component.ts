@@ -29,6 +29,7 @@ export class FormsSettingsComponent {
     onSubmit(id: string,
         title: string,
         description: string,
+        formMethod: string,
         hideDefaultActions: boolean,
         isPage: boolean,
         searchForm: boolean,
@@ -38,6 +39,7 @@ export class FormsSettingsComponent {
             let element = {
                 "title": title,
                 "description": description,
+                "form_method": formMethod,
                 "hide_default_actions": hideDefaultActions,
                 "isPage": isPage,
                 "isSearchForm": searchForm,
