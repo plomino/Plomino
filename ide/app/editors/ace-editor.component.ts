@@ -1,4 +1,4 @@
-import {Component, OnInit, AfterViewInit, Input} from 'angular2/core';
+import {Component, OnInit, AfterViewInit, Input} from '@angular/core';
 
 declare var ace: any;
 

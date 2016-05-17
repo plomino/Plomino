@@ -1,11 +1,11 @@
-import {Component, EventEmitter, Input, Output, ViewChild, AfterViewInit} from 'angular2/core';
+import {Component, EventEmitter, Input, Output, ViewChild, AfterViewInit} from '@angular/core';
 import {MODAL_DIRECTIVES, ModalComponent } from 'ng2-bs3-modal/ng2-bs3-modal';
-import {Alert} from 'ng2-bootstrap/ng2-bootstrap';
+import {AlertComponent} from 'ng2-bootstrap/ng2-bootstrap';
 
 @Component({
     selector: 'my-modal',
     templateUrl: 'app/my-modal.component.html',
-    directives: [MODAL_DIRECTIVES, Alert]
+    directives: [MODAL_DIRECTIVES, AlertComponent]
 })
 export class MyModalComponent {
     @Input() data: any;

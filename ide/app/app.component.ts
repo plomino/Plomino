@@ -1,5 +1,5 @@
 // Core
-import { Component, ViewChild, OnInit } from 'angular2/core';
+import { Component, ViewChild, OnInit } from '@angular/core';
 
 // External Components
 import { TAB_DIRECTIVES }               from 'ng2-bootstrap/ng2-bootstrap';
@@ -56,8 +56,7 @@ export class AppComponent {
         this._treeService.getTree()
             .subscribe(
                 data => { this.data = data },
-                err => console.error(err),
-                () => console.log('done')
+                err => console.error(err)
             );
     }
 

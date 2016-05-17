@@ -1,11 +1,11 @@
-import { Component, Input, Output, EventEmitter, ViewChildren, OnChanges, ContentChild } from 'angular2/core';
-import { Collapse }                                                                      from 'ng2-bootstrap/ng2-bootstrap';
+import { Component, Input, Output, EventEmitter, ViewChildren, OnChanges, ContentChild } from '@angular/core';
+import { CollapseDirective }                                                             from 'ng2-bootstrap/ng2-bootstrap';
 
 @Component({
     selector: 'my-tree',
     templateUrl: 'app/tree-view/tree.component.html',
     styleUrls: ['app/tree-view/tree.component.css'],
-    directives: [Collapse]
+    directives: [CollapseDirective]
 })
 export class TreeComponent {
     @Input() data: any;
@@ -14,9 +14,14 @@ export class TreeComponent {
     @Output() add = new EventEmitter();
     @ViewChildren('selectable') element: any;
 
-    isItSelected(name: string) {
+    previousSelected: any;
+
+    isItSelected(name: any) {
         if (name === this.selected){
-            this.scroll();
+            if (this.selected != this.previousSelected) {
+                this.previousSelected = this.selected;
+                this.scroll();
+            }
             return true;
         }
         else { return false; }

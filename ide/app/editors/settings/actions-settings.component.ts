@@ -1,4 +1,4 @@
-import { Component, Input, Output, EventEmitter } from 'angular2/core';
+import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { ElementService } from '../../services/element.service';
 
 @Component({

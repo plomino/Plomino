@@ -1,9 +1,9 @@
 import 'jquery/dist/jquery';
 import 'es6-shim/es6-shim';
-import 'angular2/bundles/angular2-polyfills';
-// import 'angular2/es6/dev/src/testing/shims_for_IE'; webpacks fails dunno why
-import 'angular2/platform/browser';
-import 'angular2/core';
+import 'reflect-metadata';
+import 'zone.js';
+import '@angular/platform-browser';
+import '@angular/core';
 
 // -- Boostrap modal --
 
