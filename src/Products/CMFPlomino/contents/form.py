@@ -566,7 +566,16 @@ class PlominoForm(Container):
         """ Display the document using the form's layout
         """
         # remove the hidden content
-        html_content = self.applyHideWhen(doc, silent_error=False)
+        if doc is None:
+            db = self.getParentDatabase()
+            hidewhen_target = getTemporaryDocument(
+                db,
+                self,
+                self.REQUEST
+            )
+        else:
+            hidewhen_target = doc
+        html_content = self.applyHideWhen(hidewhen_target, silent_error=False)
         if request:
             parent_form_ids = request.get('parent_form_ids', [])
             if parent_form_id:
