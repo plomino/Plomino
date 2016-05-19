@@ -240,9 +240,6 @@ export class AppComponent {
     return 4`;
             this.aceNumber++;
         }
-        else if (newtab.editor === 'layout') {
-            newtab["layout"] = "I am the content of " + newtab.title;
-        }
         else if (newtab.editor === 'settings') {
             newtab["settings"] = "Name : <input><br>Stuff : <input>";
         }

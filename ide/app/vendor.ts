@@ -16,5 +16,7 @@ import 'ace-editor-builds/src-min-noconflict/mode-python';
 
 // -- TinyMCE --
 import 'tinymce/tinymce';
-import 'tinymce/themes/modern/theme'
-import 'tinymce/plugins/code/plugin'
+import 'tinymce/themes/modern/theme';
+import 'tinymce/plugins/code/plugin';
+import 'tinymce/plugins/save/plugin';
+import 'tinymce/plugins/link/plugin';
