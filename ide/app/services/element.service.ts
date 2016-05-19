@@ -12,19 +12,17 @@ export class ElementService {
         this.headers.append('Content-Type', 'application/json');
     }
 
-    getElement(url: string) {
-        return this.http.get(url, { headers: this.headers }).map((res: Response) => res.json());
+    getElement(id: string) {
+        return this.http.get(id, { headers: this.headers }).map((res: Response) => res.json());
+    }
+
+    // Had some issues with TinyMCEComponent, had to do this instead of using getElement() method
+    getElementFormLayout(id: string) {
+        return this.http.get(id, { headers: this.headers }).map((res: Response) => res.json().form_layout)
     }
 
     patchElement(id: string, element: any) {
-        this.http
-        .patch(id,
-        element, {
-            headers: this.headers
-        })
-        .map(response => response === null ? null : response)
-        .subscribe(
-            //
-        );
+        this.http.patch(id,element, { headers: this.headers })
+        .map(response => response === null ? null : response).subscribe();
     }
 }
