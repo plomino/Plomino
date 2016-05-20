@@ -3,7 +3,7 @@ import { ElementService } from '../../services/element.service';
 
 @Component({
     selector: 'my-forms-settings',
-    templateUrl: 'app/editors/settings/forms-settings.component.html',
+    template: require('./forms-settings.component.html'),
     styles: ['form {margin: 15px;} .help-block {font-style: italic;}'],
     providers: [ElementService]
 })

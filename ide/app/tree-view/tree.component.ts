@@ -3,8 +3,8 @@ import { CollapseDirective }                                                    
 
 @Component({
     selector: 'my-tree',
-    templateUrl: 'app/tree-view/tree.component.html',
-    styleUrls: ['app/tree-view/tree.component.css'],
+    template: require('./tree.component.html'),
+    styles: [require('./tree.component.css')],
     directives: [CollapseDirective]
 })
 export class TreeComponent {

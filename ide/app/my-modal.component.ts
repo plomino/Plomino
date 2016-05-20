@@ -4,7 +4,7 @@ import {AlertComponent} from 'ng2-bootstrap/ng2-bootstrap';
 
 @Component({
     selector: 'my-modal',
-    templateUrl: 'app/my-modal.component.html',
+    template: require('./my-modal.component.html'),
     directives: [MODAL_DIRECTIVES, AlertComponent]
 })
 export class MyModalComponent {

@@ -3,7 +3,7 @@ import { ElementService } from '../../services/element.service';
 
 @Component({
     selector: 'my-columns-settings',
-    templateUrl: 'app/editors/settings/columns-settings.component.html',
+    template: require('./columns-settings.component.html'),
     styles: ['form {margin: 15px;} .help-block {font-style: italic;}'],
     providers: [ElementService]
 })

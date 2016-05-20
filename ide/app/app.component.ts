@@ -20,8 +20,8 @@ import { TreeService }                  from './services/tree.service';
 
 @Component({
     selector: 'my-app',
-    templateUrl: 'app/app.component.html',
-    styleUrls: ['app/app.component.css'],
+    template: require('./app.component.html'),
+    styles: [require('./app.component.css')],
     directives: [
         TreeComponent,
         TAB_DIRECTIVES,
