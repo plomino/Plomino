@@ -24,7 +24,7 @@ from zope import component
 from zope.pagetemplate.pagetemplatefile import PageTemplateFile
 from zope.schema import getFields
 from zope.schema.vocabulary import SimpleVocabulary
-from zope.schema import Text, TextLine, Choice
+from zope.schema import Text, TextLine, Choice, Int
 
 # Plomino
 from Products.CMFPlomino.browser import PlominoMessageFactory as _
@@ -38,30 +38,40 @@ from Products.CMFPlomino.PlominoUtils import DateToString, PlominoTranslate
 class IDatagridField(IBaseField):
     """ Text field schema
     """
-    widget = Choice(
-            vocabulary=SimpleVocabulary.fromItems(
-                [("Always dynamic", "REGULAR"),
-                    ("Static in read mode", "READ_STATIC"),
-                    ]),
-            title=u'Widget',
-            description=u'Field rendering',
-            default="REGULAR",
-            required=True)
 
     associated_form = Choice(
             vocabulary='Products.CMFPlomino.fields.vocabularies.get_forms',
-            title=u'Associated form',
+            title=u'Subform to repeat',
             description=u'Form to use to create/edit rows',
             required=False)
 
     associated_form_rendering = Choice(
             vocabulary=SimpleVocabulary.fromItems(
-                [("Modal", "MODAL"),
-                    ("Inline editing", "INLINE"),
+                [("Grid with popup", "MODAL"),
+                    ("Grid with editable cells", "INLINE"),
+                    ("Repeating subforms", "REPEATING")
                     ]),
-            title=u'Associate form rendering',
-            description=u'Associate form rendering',
+            title=u'Edit Layout',
+            description=u'Style of form for laying out repeated questions',
             default="MODAL",
+            required=True)
+
+    max_repeats = Int(
+            title=u'Edit Layout Max repeats',
+            description=u'Affects rendering of the form when javascript is turned off'
+        ' or not working',
+            default=20,
+            required=True)
+
+    widget = Choice(
+            vocabulary=SimpleVocabulary.fromItems(
+                [("Grid (dynamic loading)", "REGULAR"),
+                    ("Grid (static loading)", "READ_STATIC"),
+                    ("Repeating subforms", "REPEATING")
+                    ]),
+            title=u'View Layout',
+            description=u'Field rendering in read-only mode',
+            default="REGULAR",
             required=True)
 
     field_mapping = TextLine(
@@ -69,6 +79,7 @@ class IDatagridField(IBaseField):
             description=u'Field ids from the associated form, '
                     'ordered as the columns, separated by commas',
             required=False)
+
 
     jssettings = Text(
             title=u'Javascript settings',
@@ -98,7 +109,7 @@ class DatagridField(BaseField):
 
     plomino_field_parameters = {
             'interface': IDatagridField,
-            'label': "Datagrid",
+            'label': "Repeat",
             'index_type': "ZCTextIndex"}
 
     read_template = PageTemplateFile('datagrid_read.pt')
@@ -112,7 +123,37 @@ class DatagridField(BaseField):
     def processInput(self, submittedValue):
         """
         """
+        db = self.context.getParentDatabase()
+        child_form_id = self.associated_form
+        # get associated form object
+        child_form = db.getForm(child_form_id)
+
+        if submittedValue == []:
+            return []
+        elif isinstance(submittedValue, list):
+            # coming from :records
+            # need to covert [{field:value,...},...] to [[value,...],...]
+            mapped_fields = [ f.strip() for f in self.field_mapping.split(',')]
+            #TODO: need to let the subform process each row
+            #TODO: need to validate each row too somewhere
+            result = []
+            for i in range(0, len(submittedValue)):
+                row = submittedValue[i]
+                if not row.get('datagrid-include-%s'%i, 'yes'): # first row is not set
+                    continue
+
+                #row['Form'] = child_form_id
+                #row['Plomino_Parent_Document'] = doc.id
+                # We want a new TemporaryDocument for every row
+                tmp = TemporaryDocument(
+                        db, child_form, row, validation_mode=True)
+                tmp = tmp.__of__(db)
+
+                child_form.readInputs(doc=tmp, REQUEST=row)
+                result.append([tmp.getItem(field) for field in mapped_fields])
+            return result
         try:
+            #TODO shouldn't we be validating this result?
             return json.loads(submittedValue)
         except:
             return []
@@ -140,8 +181,10 @@ class DatagridField(BaseField):
         """
         """
         rows = self.rows(value, rendered)
-
-        return json.dumps(rows)
+        try:
+            return json.dumps(rows)
+        except:
+            return []
 
     def request_items_aoData(self, request):
         
@@ -299,13 +342,75 @@ class DatagridField(BaseField):
                         rendered_values.append(row)
                     fieldValue = rendered_values
 
-            if mapped_fields and child_form_id:
+
+
+            elif mapped_fields and child_form_id:
                 mapped = []
                 for row in fieldValue:
                     mapped.append([row[c] for c in mapped_fields])
                 fieldValue = mapped
 
+
         return {'rawdata': rawValue, 'rendered': fieldValue}
+
+
+    def toSubforms(self, fieldValue, doc, editmode=True):
+        if isinstance(fieldValue, dict):
+            fieldValue = fieldValue['rawdata']
+        child_form_id = self.associated_form
+        if not child_form_id:
+            return
+        db = self.context.getParentDatabase()
+        child_form = db.getForm(child_form_id)
+        parent_fieldname = self.context.id
+
+        # item names is set by `PlominoForm.createDocument`
+        item_names = doc.getItem(self.context.id+'_itemnames')
+
+        if not item_names:
+            if self.field_mapping:
+                mapped_fields = [
+                    f.strip() for f in self.field_mapping.split(',')]
+            item_names = mapped_fields
+
+        mapped = []
+        for row in fieldValue:
+            if len(row) < len(item_names):
+                row = (row + ['']*(len(item_names)-len(row)))
+            row = dict(zip(item_names, row))
+            mapped.append(row)
+        fieldValue = mapped
+
+        for row in fieldValue:
+            row['Form'] = child_form_id
+            row['Plomino_Parent_Document'] = doc.id
+            # We want a new TemporaryDocument for every row
+            tmp = TemporaryDocument(
+                    db, child_form, row, real_doc=doc)
+            tmp = tmp.__of__(db)
+
+            html = child_form.displayDocument(doc=tmp,
+                                              editmode=editmode,
+                  creation=False, #TODO should come from mode?
+                  parent_form_id=self.context.getForm().id,
+                  request=None,
+                  id_prefix="%s."%parent_fieldname,
+                  id_suffix=":records")
+            yield html
+        if not editmode:
+            return
+        # handle max_repeats
+        for i in range(len(fieldValue), self.max_repeats):
+            html = child_form.displayDocument(doc=None,
+                                              editmode=editmode,
+                  creation=True,
+                  parent_form_id=self.context.getForm().id,
+                  request=None,
+                  id_prefix="%s."%parent_fieldname,
+                  id_suffix=":records")
+            yield html
+
+
 
 component.provideUtility(DatagridField, IPlominoField, 'DATAGRID')
 

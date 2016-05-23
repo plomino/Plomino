@@ -233,17 +233,22 @@ class PlominoField(BaseContent, BrowserDefaultMixin):
                     # but it must not break getHideWhens, getFormFields, etc.
                     v = submittedValue
                 else:
-                    raise e
+                    raise
 
         return v
 
     security.declareProtected(READ_PERMISSION, 'getFieldRender')
     @plomino_profiler('fields')
-    def getFieldRender(self, form, doc, editmode, creation=False, request=None):
+    def getFieldRender(self, form, doc, editmode, creation=False, request=None,
+                       id_prefix=None, id_suffix=None):
         """ Rendering the field
         """
         mode = self.getFieldMode()
         fieldname = self.id
+        if id_prefix is not None:
+            fieldname = id_prefix+fieldname
+        if id_suffix is not None:
+            fieldname = fieldname+id_suffix
         if doc is None:
             target = form
         else:
@@ -311,6 +316,7 @@ class PlominoField(BaseContent, BrowserDefaultMixin):
 
         except Exception, e:
             self.traceRenderingErr(e, self)
+            raise
             return ""
 
     def _setupConfigAnnotation(self):

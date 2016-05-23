@@ -735,7 +735,7 @@ class PlominoForm(ATFolder):
     security.declareProtected(READ_PERMISSION, 'displayDocument')
     @plomino_profiler('form')
     def displayDocument(self, doc, editmode=False, creation=False,
-            parent_form_id=False, request=None):
+            parent_form_id=False, request=None, id_prefix=None, id_suffix=None):
         """ Display the document using the form's layout
         """
         # remove the hidden content
@@ -805,7 +805,9 @@ class PlominoForm(ATFolder):
                             doc,
                             editmode,
                             creation,
-                            request=request)
+                            request=request,
+                            id_prefix=id_prefix,
+                            id_suffix=id_suffix)
                         )
 
         # insert subforms
@@ -814,7 +816,8 @@ class PlominoForm(ATFolder):
             if subform:
                 subformrendering = subform.displayDocument(
                         doc, editmode, creation, parent_form_id=self.id,
-                        request=request)
+                        request=request,
+                        id_prefix=id_prefix, id_suffix=id_suffix)
                 html_content = html_content.replace(
                         '<span class="plominoSubformClass">%s</span>' %
                         subformname,
