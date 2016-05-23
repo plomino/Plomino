@@ -158,6 +158,43 @@ class DatagridField(BaseField):
         except:
             return []
 
+    def validate(self, submittedValue):
+        """
+        """
+        db = self.context.getParentDatabase()
+        child_form_id = self.associated_form
+        # get associated form object
+        child_form = db.getForm(child_form_id)
+        errors = []
+
+        if submittedValue == []:
+            return []
+        elif isinstance(submittedValue, list):
+            # coming from :records
+            # need to covert [{field:value,...},...] to [[value,...],...]
+            mapped_fields = [ f.strip() for f in self.field_mapping.split(',')]
+            result = []
+            for i in range(0, len(submittedValue)):
+                row = submittedValue[i]
+                if not row.get('datagrid-include-%s'%i, 'yes'): # first row is not set
+                    continue
+
+                #row['Form'] = child_form_id
+                #row['Plomino_Parent_Document'] = doc.id
+                # We want a new TemporaryDocument for every row
+                tmp = TemporaryDocument(
+                        db, child_form, row, validation_mode=True)
+                tmp = tmp.__of__(db)
+
+                sub_errors = child_form.validateInputs(REQUEST=row, doc=tmp)
+                #adjust the error field names
+                for error in sub_errors:
+                    #TODO: need a way to get the fieldid which should be more unique
+                    error['field'] = self.toRepeatingFieldId(error['field'])
+                errors = errors + sub_errors
+
+        return errors
+
     def rows(self, value, rendered=False):
         """
         """
@@ -353,6 +390,9 @@ class DatagridField(BaseField):
 
         return {'rawdata': rawValue, 'rendered': fieldValue}
 
+    def toRepeatingFieldId(self, fieldid):
+        parent_fieldname = self.context.id
+        return "%s.%s:records" % (parent_fieldname, fieldid)
 
     def toSubforms(self, fieldValue, doc, editmode=True):
         if isinstance(fieldValue, dict):
@@ -394,8 +434,7 @@ class DatagridField(BaseField):
                   creation=False, #TODO should come from mode?
                   parent_form_id=self.context.getForm().id,
                   request=None,
-                  id_prefix="%s."%parent_fieldname,
-                  id_suffix=":records")
+                  fieldname_transform=self.toRepeatingFieldId)
             yield html
         if not editmode:
             return
@@ -406,8 +445,7 @@ class DatagridField(BaseField):
                   creation=True,
                   parent_form_id=self.context.getForm().id,
                   request=None,
-                  id_prefix="%s."%parent_fieldname,
-                  id_suffix=":records")
+                  fieldname_transform=self.toRepeatingFieldId)
             yield html
 
 

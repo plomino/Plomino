@@ -158,7 +158,7 @@
         <tal:block tal:repeat="subform subforms">
 
             <div tal:define="index repeat/subform/index;
-                show python:index < row_count; show_next python: index < row_count-1"
+                show python:index == 0 or index < row_count; show_next python: index < row_count-1"
                  tal:attributes="id string:repeat-${fieldname}-${index};
                                  style python:'display:none' if not show else ''">
                 <fieldset aria-hidden="false"

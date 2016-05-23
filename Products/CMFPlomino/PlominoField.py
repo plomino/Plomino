@@ -237,18 +237,19 @@ class PlominoField(BaseContent, BrowserDefaultMixin):
 
         return v
 
+
+
     security.declareProtected(READ_PERMISSION, 'getFieldRender')
     @plomino_profiler('fields')
     def getFieldRender(self, form, doc, editmode, creation=False, request=None,
-                       id_prefix=None, id_suffix=None):
+                       fieldname_transform=None):
         """ Rendering the field
         """
         mode = self.getFieldMode()
         fieldname = self.id
-        if id_prefix is not None:
-            fieldname = id_prefix+fieldname
-        if id_suffix is not None:
-            fieldname = fieldname+id_suffix
+        if fieldname_transform is not None:
+            fieldname = fieldname_transform(fieldname)
+        #TODO: need to transform id as well. won't always be the same as the name
         if doc is None:
             target = form
         else:

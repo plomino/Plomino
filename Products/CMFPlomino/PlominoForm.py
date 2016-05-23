@@ -494,6 +494,7 @@ class PlominoForm(ATFolder):
                     f.id in layout]
         result.sort(key=lambda elt: elt.id.lower())
         if includesubforms:
+
             subformsseen = []
             for subformname in self.getSubforms(
                     doc, applyhidewhen, validation_mode=validation_mode):
@@ -735,7 +736,7 @@ class PlominoForm(ATFolder):
     security.declareProtected(READ_PERMISSION, 'displayDocument')
     @plomino_profiler('form')
     def displayDocument(self, doc, editmode=False, creation=False,
-            parent_form_id=False, request=None, id_prefix=None, id_suffix=None):
+            parent_form_id=False, request=None, fieldname_transform=None):
         """ Display the document using the form's layout
         """
         # remove the hidden content
@@ -806,8 +807,7 @@ class PlominoForm(ATFolder):
                             editmode,
                             creation,
                             request=request,
-                            id_prefix=id_prefix,
-                            id_suffix=id_suffix)
+                            fieldname_transform=fieldname_transform)
                         )
 
         # insert subforms
@@ -817,7 +817,7 @@ class PlominoForm(ATFolder):
                 subformrendering = subform.displayDocument(
                         doc, editmode, creation, parent_form_id=self.id,
                         request=request,
-                        id_prefix=id_prefix, id_suffix=id_suffix)
+                        fieldname_transform=fieldname_transform)
                 html_content = html_content.replace(
                         '<span class="plominoSubformClass">%s</span>' %
                         subformname,
@@ -1552,6 +1552,8 @@ class PlominoForm(ATFolder):
         for f in fields:
             fieldname = f.id
             fieldtype = f.getFieldType()
+
+
             submittedValue = REQUEST.get(fieldname)
 
             field_errors = []
@@ -1598,7 +1600,10 @@ class PlominoForm(ATFolder):
                 field_errors = field_errors + f.validateFormat(submittedValue)
 
             for field_error in field_errors:
-                errors.append({'field': fieldname, 'error': field_error})
+                if isinstance(field_error, basestring):
+                    errors.append({'field': fieldname, 'error': field_error})
+                else:
+                    errors.append(field_error)
 
         return errors
 
