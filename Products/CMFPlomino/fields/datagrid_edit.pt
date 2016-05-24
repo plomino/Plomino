@@ -158,7 +158,8 @@
         <tal:block tal:repeat="subform subforms">
 
             <div tal:define="index repeat/subform/index;
-                show python:index == 0 or index < row_count; show_next python: index < row_count-1"
+                            show python:index == 0 or index < row_count;
+                            show_next python: index < row_count-1"
                  tal:attributes="id string:repeat-${fieldname}-${index};
                                  style python:'display:none' if not show else ''">
                 <fieldset aria-hidden="false"
@@ -171,7 +172,7 @@
                        tal:attributes="name string:${fieldname}.datagrid-stupid-zope-reset:records;"
                        value="1"/>
                 <fieldset tal:condition="not:repeat/subform/end"
-                          tal:define="i repeat/subform/number; ">
+                          tal:define="i repeat/subform/number; next python:i+1">
                     <legend>Include another
                         <tal:replace replace="string: ${fieldname}"/>
                     </legend>
@@ -179,14 +180,16 @@
                                   name="address.datagrid-include-1:records"
                                   value="yes" data-target="repeat-address-2"
                                   tal:attributes="name string:${fieldname}.datagrid-include-${i}:records;
-                    data-target string:repeat-${fieldname}-${i};
-                    onclick string:jQuery('#repeat-${fieldname}-${i}').show();
-                    checked show_next"/>Yes</label>
+                          data-target string:repeat-${fieldname}-${i};
+                          onclick string:jQuery('#repeat-${fieldname}-${i}').show();
+                          checked show_next"
+                            />Yes</label>
                     <label><input type="radio"
                                   name="address.__include__:records"
-                                  tal:attributes="name string:${fieldname}.datagrid-include-${i}:records;
-                          onclick string:jQuery('#repeat-${fieldname}-${i}').hide();
+                                  tal:attributes="name string:${fieldname}.datagrid-include-${i}:records; id string:${fieldname}-datagridinclude-${i};
+                          onclick string:jQuery('input#${fieldname}-datagridinclude-${next}').click();; jQuery('#repeat-${fieldname}-${i}').hide();
                           checked not:show_next" value="" checked/>No</label>
+                          <!--onclick string:for(var n = ${i};; n < ${repeat/subform/length};; n++) jQuery('#repeat-${fieldname}-'+n).hide();-->
                 </fieldset>
             </div>
         </tal:block>

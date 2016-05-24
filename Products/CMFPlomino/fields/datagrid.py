@@ -134,12 +134,15 @@ class DatagridField(BaseField):
             # coming from :records
             # need to covert [{field:value,...},...] to [[value,...],...]
             mapped_fields = [ f.strip() for f in self.field_mapping.split(',')]
-            #TODO: need to let the subform process each row
-            #TODO: need to validate each row too somewhere
+            #need to let the subform process each row
             result = []
             for i in range(0, len(submittedValue)):
                 row = submittedValue[i]
                 if not row.get('datagrid-include-%s'%i, 'yes'): # first row is not set
+                    continue
+                del row['datagrid-stupid-zope-reset']
+                del row['datagrid-include-%s'%i]
+                if not row:
                     continue
 
                 #row['Form'] = child_form_id
