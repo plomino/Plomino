@@ -5,6 +5,7 @@ Changelog
 -------------------
 - Fix datetime support in search form
   [ebrehault]
+- Check for zero when getting field values [instification]
 
 1.19.6 (2016-01-04)
 -------------------
