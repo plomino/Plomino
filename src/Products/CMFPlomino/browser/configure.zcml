@@ -57,6 +57,14 @@
 
     <browser:page
         for="Products.CMFPlomino.contents.database.IPlominoDatabase"
+        name="code"
+        class=".database.DatabaseView"
+        attribute="code"
+        permission="plomino.DESIGN_PERMISSION"
+        />
+
+    <browser:page
+        for="Products.CMFPlomino.contents.database.IPlominoDatabase"
         name="DatabaseACL"
         class=".database.DatabaseView"
         attribute="acl"

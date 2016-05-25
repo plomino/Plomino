@@ -37,6 +37,121 @@ class DatabaseView(BrowserView):
     def profiling(self):
         return self.profiling_template()
 
+    def code(self):
+        if self.request.method == "GET":
+            code = ""
+            if self.request.get("Form") != None:
+                formID = self.request.get("Form")
+                form = self.context.getForm(formID)
+                if not form :
+                    return "##Unknown"
+
+                code+= "## START document_title {\n"
+                code+= form.document_title or ''
+                code+= "\n## END document_title }\n\r"
+
+                code+= "## START document_id {\n"
+                code+= form.document_id or ''
+                code+= "\n## END document_id }\n\r"
+
+                code+= "## START search_formula {\n"
+                code+= form.search_formula or ''
+                code+= "\n## END search_formula }\n\r"
+
+                code+= "## START onCreateDocument {\n"
+                code+= form.onCreateDocument or ''
+                code+= "\n## END onCreateDocument }\n\r"
+
+                code+= "## START onOpenDocument {\n"
+                code+= form.onOpenDocument or ''
+                code+= "\n## END onOpenDocument }\n\r"
+
+                code+= "## START beforeSaveDocument {\n"
+                code+= form.beforeSaveDocument or ''
+                code+= "\n## END beforeSaveDocument }\n\r"
+
+                code+= "## START onSaveDocument {\n"
+                code+= form.onSaveDocument or ''
+                code+= "\n## END onSaveDocument }\n\r"
+
+                code+= "## START onDeleteDocument {\n"
+                code+= form.onDeleteDocument or ''
+                code+= "\n## END onDeleteDocument }\n\r"
+
+                code+= "## START onSearch {\n"
+                code+= form.onSearch or ''
+                code+= "\n## END onSearch }\n\r"
+
+                code+= "## START beforeCreateDocument {\n"
+                code+= form.beforeCreateDocument or ''
+                code+= "\n## END beforeCreateDocument }\n\r"
+
+            if self.request.get("FormField") != None:
+                fieldID = self.request.get("FormField").split("/")
+                field = self.context.getForm(fieldID[0]).getFormField(fieldID[1])
+
+                if not field :
+                    return "##Unknown"
+
+                code+= "## START formula {\n"
+                code+= field.formula or ''
+                code+= "\n## END formula }\n\r"
+
+                code+= "## START validation_formula {\n"
+                code+= field.validation_formula or ''
+                code+= "\n## END validation_formula }\n\r"
+
+                code+= "## START html_attributes_formula {\n"
+                code+= field.html_attributes_formula or ''
+                code+= "\n## END html_attributes_formula }\n\r"
+
+            if self.request.get("FormAction") != None:
+                actionID = self.request.get("FormAction").split("/")
+                action = self.context.getForm(actionID[0]).getFormActions()
+
+                for act in action:
+                    if act.id == actionID[1]:
+                        code+= "## START content {\n"
+                        code+= act.content or ''
+                        code+= "\n## END content }\n\r"
+
+                        code+= "## START hidewhen {\n"
+                        code+= act.hidewhen or ''
+                        code+= "\n## END hidewhen }\n\r"
+
+                        break
+
+            if self.request.get("View") != None:
+                viewID = self.request.get("View")
+                view = self.context.getView(viewID)
+
+                if not view:
+                    return "##Unknown"
+
+                code+= "## START selection_formula {\n"
+                code+= view.selection_formula or ''
+                code+= "\n## END selection_formula }\n\r"
+
+                code+= "## START form_formula {\n"
+                code+= view.form_formula or ''
+                code+= "\n## END form_formula }\n\r"
+
+                code+= "## START onOpenView {\n"
+                code+= view.onOpenView or ''
+                code+= "\n## END onOpenView }\n\r"
+
+            if self.request.get("ViewAction") != None:
+                actionID = self.request.get("ViewAction").split("/")
+                action = self.context.getView(actionID[0]).getActions()
+
+            self.request.RESPONSE.setHeader(
+                'content-type', 'text/plain; charset=utf-8')
+            return code
+
+        if self.request.method == "POST":
+            return "post"
+        return formID
+
     def tree(self):
         database = self.context.getParentDatabase()
 
