@@ -140,8 +140,9 @@ class DatagridField(BaseField):
                 row = submittedValue[i]
                 if not row.get('datagrid-include-%s'%i, 'yes'): # first row is not set
                     continue
-                del row['datagrid-stupid-zope-reset']
-                del row['datagrid-include-%s'%i]
+                row = {k:v for k,v in row.items()
+                       if k not in ['datagrid-stupid-zope-reset',
+                                    'datagrid-include-%s'%i]}
                 if not row:
                     continue
 
@@ -149,8 +150,7 @@ class DatagridField(BaseField):
                 #row['Plomino_Parent_Document'] = doc.id
                 # We want a new TemporaryDocument for every row
                 tmp = TemporaryDocument(
-                        db, child_form, row, validation_mode=True)
-                tmp = tmp.__of__(db)
+                        db, child_form, row, validation_mode=True).__of__(db)
 
                 child_form.readInputs(doc=tmp, REQUEST=row)
                 result.append([tmp.getItem(field) for field in mapped_fields])
@@ -181,13 +181,17 @@ class DatagridField(BaseField):
                 row = submittedValue[i]
                 if not row.get('datagrid-include-%s'%i, 'yes'): # first row is not set
                     continue
+                row = {k:v for k,v in row.items()
+                       if k not in ['datagrid-stupid-zope-reset',
+                                    'datagrid-include-%s'%i]}
+                if not row:
+                    continue
 
                 #row['Form'] = child_form_id
                 #row['Plomino_Parent_Document'] = doc.id
                 # We want a new TemporaryDocument for every row
                 tmp = TemporaryDocument(
-                        db, child_form, row, validation_mode=True)
-                tmp = tmp.__of__(db)
+                        db, child_form, row, validation_mode=True).__of__(db)
 
                 sub_errors = child_form.validateInputs(REQUEST=row, doc=tmp)
                 #adjust the error field names
@@ -384,13 +388,14 @@ class DatagridField(BaseField):
 
 
 
-            elif mapped_fields and child_form_id:
+            if mapped_fields and child_form_id:
                 mapped = []
                 for row in fieldValue:
                     mapped.append([row[c] for c in mapped_fields])
                 fieldValue = mapped
 
-
+        # rows are lists of values in order of mapped_fields.
+        #TODO: should still return a value when mapped_fields is empty
         return {'rawdata': rawValue, 'rendered': fieldValue}
 
     def toRepeatingFieldId(self, fieldid):
