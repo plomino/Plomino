@@ -2,6 +2,7 @@
   "name": "plomino-ide",
   "version": "0.0.1",
   "scripts": {
+    "watch": "webpack --progress --watch",
     "build": "webpack --progress",
     "bundle": "webpack --config config/webpack.prod.js --progress",
     "reload": "browser-reload",
