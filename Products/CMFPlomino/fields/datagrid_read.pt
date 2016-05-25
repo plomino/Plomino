@@ -7,7 +7,7 @@
             form_method form/getFormMethod;
             widget python:field.getSettings('widget');">
 
-    <tal:read_dynamic condition="python:widget!='READ_STATIC'">
+    <tal:read_dynamic condition="python:widget=='REGULAR'">
         <script type="text/javascript" charset="utf-8"
             tal:define="param python:field.getSettings().getParameters();
                         request_items python:field.getSettings().request_items_aoData(request);"
@@ -46,4 +46,23 @@
             </tr>
         </table>
     </tal:read_static>
+
+
+    <tal:read_repeating condition="python:widget=='REPEATING'"
+               define="subforms python:list(field.getSettings().toSubforms(v, options['doc'], editmode=False));
+               row_count python:len(field.getSettings().rows(v))">
+        <tal:block tal:repeat="subform subforms">
+
+            <div tal:define="index repeat/subform/index;
+                show python:index < row_count"
+                 tal:condition="show"
+                 tal:attributes="id string:repeat-${fieldname}-${index};">
+                    <h2 tal:content="string:${fieldname} ${repeat/subform/number}"></h2>
+                    <tal:block tal:replace="structure subform"/>
+
+            </div>
+        </tal:block>
+
+    </tal:read_repeating>
+
 </tal:block>

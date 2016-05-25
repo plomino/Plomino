@@ -1,5 +1,5 @@
-<tal:block 
-    define="field python:options['field'];
+<tal:block
+        define="field python:options['field'];
             fieldname python:options['fieldname'];
             request field/REQUEST;
             v options/fieldvalue;
@@ -12,20 +12,24 @@
             associated_form_url python:associated_form and associated_form.absolute_url();
             associated_form_rendering python:field.getSettings().associated_form_rendering;
             new_fields python:field.getSettings().getRenderedFields(creation=True,request=request);
+            is_grid python:associated_form_rendering != 'REPEATING';
             ">
-<input type='hidden'
-    tal:attributes="
+
+    <tal:block tal:condition="is_grid">
+
+        <input type='hidden'
+               tal:attributes="
             id string:${fieldname}_gridvalue;
             name fieldname;
             value data"/>
-    <script 
-        type="text/javascript"
-        charset="utf-8"
-        tal:define="
+        <script
+                type="text/javascript"
+                charset="utf-8"
+                tal:define="
                 param python:field.getSettings().getParameters();
                 request_items python:field.getSettings().request_items_aoData(request);
                 "
-        tal:content="structure string:
+                tal:content="structure string:
                 var ${fieldname}_datatable;
                 jQuery(document).ready(function() {
                     ${fieldname}_datatable = jQuery('#${fieldname}_datagrid').dataTable( {
@@ -110,33 +114,86 @@
                     jQuery('#${fieldname}_deleterow').click(function() {
                         datagrid_delete_row(${fieldname}_datatable, '${fieldname}');
                     });
+
+                    /** Code for hiding repeating subforms **/
+
                     
                 } );">
-    </script>
+        </script>
 
-    <table class="display" tal:attributes="id string:${fieldname}_datagrid">
-    </table>
-    <div tal:attributes="id string:${fieldname}_editform"></div>
-    <p><a class="context add-row"
-          tal:condition="associated_form"
-          tal:attributes="id string:${fieldname}_addrow;
+        <table class="display" tal:attributes="id string:${fieldname}_datagrid">
+        </table>
+        <div tal:attributes="id string:${fieldname}_editform"></div>
+        <p><a class="context add-row"
+              tal:condition="associated_form"
+              tal:attributes="id string:${fieldname}_addrow;
                           href string:${associated_form_url}/OpenBareForm?Plomino_Parent_Field=${fieldname}&Plomino_Parent_Form=${form_name};
                           onclick string:event.preventDefault ? event.preventDefault() : event.returnValue = false;; return false"
-          tal:content="python:options['field'].getSettings().getActionLabel('add')"
-          >Add row</a>
-       <a class="context edit-row"
-          tal:condition="associated_form"
-          tal:attributes="id string:${fieldname}_editrow;
+              tal:content="python:options['field'].getSettings().getActionLabel('add')"
+                >Add row</a>
+            <a class="context edit-row"
+               tal:condition="associated_form"
+               tal:attributes="id string:${fieldname}_editrow;
                           href string:${associated_form_url}/OpenBareForm?Plomino_Parent_Field=${fieldname}&Plomino_Parent_Form=${form_name};
                           onclick string:event.preventDefault ? event.preventDefault() : event.returnValue = false;; return false;
                           style python:{0: 'display:none'}.get(len(v), '')"
-          tal:content="python:options['field'].getSettings().getActionLabel('edit')"
-          >Edit row</a>
-       <a href="javascript:void(0)" class="context delete-row"
-          tal:attributes="id string:${fieldname}_deleterow;
+               tal:content="python:options['field'].getSettings().getActionLabel('edit')"
+                    >Edit row</a>
+            <a href="javascript:void(0)" class="context delete-row"
+               tal:attributes="id string:${fieldname}_deleterow;
                           onclick string:event.preventDefault ? event.preventDefault() : event.returnValue = false;; return false;
-                          style python:{0: 'display:none'}.get(len(v), '')" 
-          tal:content="python:options['field'].getSettings().getActionLabel('delete')"
-          >Delete row</a>
-    </p>
+                          style python:{0: 'display:none'}.get(len(v), '')"
+               tal:content="python:options['field'].getSettings().getActionLabel('delete')"
+                    >Delete row</a>
+        </p>
+    </tal:block>
+
+
+    <tal:block tal:condition="not:is_grid"
+               define="subforms python:list(field.getSettings().toSubforms(v, options['doc'], editmode=True));
+               row_count python:len(field.getSettings().rows(v))">
+        <input type="hidden"
+               tal:attributes="name string:${fieldname}.datagrid-stupid-zope-reset:records;"
+               value="1"/>
+        <tal:block tal:repeat="subform subforms">
+
+            <div tal:define="index repeat/subform/index;
+                            show python:index == 0 or index < row_count;
+                            show_next python: index < row_count-1"
+                 tal:attributes="id string:repeat-${fieldname}-${index};
+                                 style python:'display:none' if not show else ''">
+                <fieldset aria-hidden="false"
+                        tal:attributes="aria-hidden not:show">
+                    <legend tal:content="string:${fieldname} ${repeat/subform/number}"></legend>
+                    <tal:block tal:replace="structure subform"/>
+
+                </fieldset>
+                <input type="hidden"
+                       tal:attributes="name string:${fieldname}.datagrid-stupid-zope-reset:records;"
+                       value="1"/>
+                <fieldset tal:condition="not:repeat/subform/end"
+                          tal:define="i repeat/subform/number; next python:i+1">
+                    <legend>Include another
+                        <tal:replace replace="string: ${fieldname}"/>
+                    </legend>
+                    <label><input type="radio"
+                                  name="address.datagrid-include-1:records"
+                                  value="yes" data-target="repeat-address-2"
+                                  tal:attributes="name string:${fieldname}.datagrid-include-${i}:records;
+                          data-target string:repeat-${fieldname}-${i};
+                          onclick string:jQuery('#repeat-${fieldname}-${i}').show();
+                          checked show_next"
+                            />Yes</label>
+                    <label><input type="radio"
+                                  name="address.__include__:records"
+                                  tal:attributes="name string:${fieldname}.datagrid-include-${i}:records; id string:${fieldname}-datagridinclude-${i};
+                          onclick string:jQuery('input#${fieldname}-datagridinclude-${next}').click();; jQuery('#repeat-${fieldname}-${i}').hide();
+                          checked not:show_next" value="" checked/>No</label>
+                          <!--onclick string:for(var n = ${i};; n < ${repeat/subform/length};; n++) jQuery('#repeat-${fieldname}-'+n).hide();-->
+                </fieldset>
+            </div>
+        </tal:block>
+
+    </tal:block>
+
 </tal:block>
