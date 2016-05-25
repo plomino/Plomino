@@ -8,11 +8,11 @@
         </template>
         <my-tiny-mce *ngIf="tabz.editor==='layout'" [id]="tabz.url" (isDirty)="tabz.isdirty=$event"></my-tiny-mce>
         <my-ace-editor *ngIf="tabz.editor==='code'" [url]="tabz.url" [path]="tabz.path" [aceNumber]="aceNumber"></my-ace-editor>
-        <my-forms-settings *ngIf="tabz.editor === 'settings' && tabz.path[0].type === 'Forms' && tabz.path.length < 2" [id]='tabz.url' (titleChanged)='tabz.title=$event; onTabRename(tabz.path,$event)'></my-forms-settings>
-        <my-fields-settings *ngIf="tabz.editor === 'settings' && tabz.path[0].type === 'Forms' && tabz.path[1]?.type === 'Fields'" [id]='tabz.url' (titleChanged)='tabz.title=$event; onTabRename(tabz.path,$event)'></my-fields-settings>
-        <my-actions-settings *ngIf="tabz.editor === 'settings' && tabz.path[1]?.type === 'Actions'" [id]='tabz.url' (titleChanged)='tabz.title=$event; onTabRename(tabz.path,$event)'></my-actions-settings>
-        <my-views-settings *ngIf="tabz.editor === 'settings' && tabz.path[0].type === 'Views' && tabz.path.length < 2" [id]='tabz.url' (titleChanged)='tabz.title=$event; onTabRename(tabz.path,$event)'></my-views-settings>
-        <my-columns-settings *ngIf="tabz.editor === 'settings' && tabz.path[1]?.type === 'Columns'" [id]='tabz.url' (titleChanged)='tabz.title=$event; onTabRename(tabz.path,$event)'></my-columns-settings>
+        <my-forms-settings *ngIf="tabz.editor === 'settings' && tabz.path[0].type === 'Forms' && tabz.path.length < 2" [id]='tabz.url' (titleChanged)='tabz.title=$event; onTabRename(tabz.path,$event)'(isDirty)="tabz.isdirty=$event"></my-forms-settings>
+        <my-fields-settings *ngIf="tabz.editor === 'settings' && tabz.path[0].type === 'Forms' && tabz.path[1]?.type === 'Fields'" [id]='tabz.url' (titleChanged)='tabz.title=$event; onTabRename(tabz.path,$event)'(isDirty)="tabz.isdirty=$event"></my-fields-settings>
+        <my-actions-settings *ngIf="tabz.editor === 'settings' && tabz.path[1]?.type === 'Actions'" [id]='tabz.url' (titleChanged)='tabz.title=$event; onTabRename(tabz.path,$event)' (isDirty)="tabz.isdirty=$event"></my-actions-settings>
+        <my-views-settings *ngIf="tabz.editor === 'settings' && tabz.path[0].type === 'Views' && tabz.path.length < 2" [id]='tabz.url' (titleChanged)='tabz.title=$event; onTabRename(tabz.path,$event)'(isDirty)="tabz.isdirty=$event"></my-views-settings>
+        <my-columns-settings *ngIf="tabz.editor === 'settings' && tabz.path[1]?.type === 'Columns'" [id]='tabz.url' (titleChanged)='tabz.title=$event; onTabRename(tabz.path,$event)'(isDirty)="tabz.isdirty=$event"></my-columns-settings>
       </tab>
     </tabset>
   </div>

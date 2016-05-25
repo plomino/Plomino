@@ -1,4 +1,4 @@
-import { Component, Input, Output, EventEmitter } from '@angular/core';
+import { Component, Input, Output, EventEmitter, ViewChild } from '@angular/core';
 import { ElementService } from '../../services/element.service';
 
 @Component({
@@ -10,7 +10,9 @@ import { ElementService } from '../../services/element.service';
 export class FieldsSettingsComponent {
     @Input() id: string;
     data: any;
+    @Output() isDirty = new EventEmitter();
     @Output() titleChanged = new EventEmitter();
+    @ViewChild('form') form: any;
 
     constructor(private _elementService: ElementService) { }
 
@@ -18,10 +20,18 @@ export class FieldsSettingsComponent {
         this.getElement();
     }
 
+    ngAfterViewInit() {
+        this.form.control.valueChanges
+            .subscribe(() => this.isDirty.emit(true));
+    }
+
     getElement() {
         this._elementService.getElement(this.id)
             .subscribe(
-                data => { this.data = data },
+                data => {
+                    this.data = data;
+                    this.isDirty.emit(false);
+                },
                 err => console.error(err)
             );
     }
@@ -49,5 +59,6 @@ export class FieldsSettingsComponent {
                 };
                 this._elementService.patchElement(id, JSON.stringify(element));
                 this.titleChanged.emit(this.data.title);
+                this.isDirty.emit(false);
     }
 }
