@@ -21,8 +21,18 @@ export class ElementService {
         return this.http.get(id, { headers: this.headers }).map((res: Response) => res.json().form_layout)
     }
 
+    getElementCode(url: string) {
+        // TODO : remove hardcoded url
+        return this.http.get(url).map((res: Response) => res.text());
+    }
+
     patchElement(id: string, element: any) {
         this.http.patch(id,element, { headers: this.headers })
         .map(response => response === null ? null : response).subscribe();
+    }
+
+    searchElement(query: string) {
+        // TODO : remove hardcoded url
+        return this.http.get('http://localhost:8080/Plone/plominodatabase/search?SearchableText='+query+'*', { headers: this.headers }).map((res: Response) => res.json());
     }
 }

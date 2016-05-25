@@ -1,11 +1,13 @@
 import { Component, Input, Output, EventEmitter, ViewChildren, OnChanges, ContentChild } from '@angular/core';
 import { CollapseDirective }                                                             from 'ng2-bootstrap/ng2-bootstrap';
+import { ElementService }                                                                from '../services/element.service';
 
 @Component({
     selector: 'my-tree',
     template: require('./tree.component.html'),
     styles: [require('./tree.component.css')],
-    directives: [CollapseDirective]
+    directives: [CollapseDirective],
+    providers: [ElementService]
 })
 export class TreeComponent {
     @Input() data: any;
@@ -14,7 +16,11 @@ export class TreeComponent {
     @Output() add = new EventEmitter();
     @ViewChildren('selectable') element: any;
 
+    searchResults: any;
+    filtered: boolean = false;
     previousSelected: any;
+
+    constructor(private _elementService: ElementService) { }
 
     isItSelected(name: any) {
         if (name === this.selected){
@@ -39,5 +45,17 @@ export class TreeComponent {
     }
     onAdd(event: any) {
         this.add.emit(event);
+    }
+
+    sendSearch(query: string) {
+        if (query === '') {
+            this.searchResults = null;
+            this.filtered = false;
+        }
+        else
+            this._elementService.searchElement(query).subscribe(
+                data => { this.searchResults = data; this.filtered = true; },
+                err => console.error(err)
+            );
     }
 }

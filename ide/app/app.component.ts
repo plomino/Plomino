@@ -235,13 +235,7 @@ export class AppComponent {
     buildTab(tab: any) {
         let newtab = { title: tab.label, editor: tab.editor, path: tab.path, url: tab.url };
         if (newtab.editor === 'code') {
-            newtab["code"] = "def " + newtab.title + `(param):
-    print \'test\'
-    return 4`;
             this.aceNumber++;
-        }
-        else if (newtab.editor === 'settings') {
-            newtab["settings"] = "Name : <input><br>Stuff : <input>";
         }
         return newtab;
     }

@@ -17,3 +17,6 @@ tab {
 my-tree {
     min-width: 300px;
 }
+.tabunsaved {
+    font-style: italic;
+}

@@ -11,6 +11,7 @@ declare var tinymce: any;
 export class TinyMCEComponent {
 
     @Input() id: string;
+    @Output() isDirty = new EventEmitter();
     data: string;
 
     constructor(private _elementService: ElementService) {}
@@ -21,6 +22,11 @@ export class TinyMCEComponent {
             plugins: ["code, save", "link"],
             toolbar: "save | undo redo | formatselect | bold italic underline | alignleft aligncenter alignright alignjustify | bullist numlist | outdent indent | unlink link | image",
             save_onsavecallback: () => { this.saveFormLayout() },
+            setup : (editor:any) => {
+                 editor.on('change', (e:any) => {
+                    this.isDirty.emit(true);
+                 });
+            },
 		    menubar: "file edit insert view format table tools",
             height : "398",
             resize: false
@@ -31,7 +37,7 @@ export class TinyMCEComponent {
     getFormLayout() {
         this._elementService.getElementFormLayout(this.id).subscribe(
             // check if it's a string, so it won't change its value to undefined
-            (data: string) => { tinymce.activeEditor.setContent(data); },
+            (data: string) => { tinymce.activeEditor.setContent(data ? data : ''); },
             err => console.error(err)
         );
     }
@@ -40,6 +46,7 @@ export class TinyMCEComponent {
         if(tinymce.activeEditor !== null){
             this._elementService.patchElement(this.id, JSON.stringify({"form_layout":tinymce.activeEditor.getContent()}));
         }
+        this.isDirty.emit(false);
     }
 
 }

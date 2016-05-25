@@ -2,9 +2,12 @@
   <my-tree class="well" [data]="data" [selected]="selected" (add)="onAdd($event)" (edit)="onEdit($event)"></my-tree>
   <div class="main-app panel">
     <tabset>
-      <tab *ngFor="let tabz of tabs" [heading]="tabz.title+' / '+tabz.editor" [removable]="true" (removed)="onTabClose(tabz)" (select)="onTabSelect(tabz.path)">
-        <my-tiny-mce *ngIf="tabz.editor==='layout'" [id]="tabz.url"></my-tiny-mce>
-        <my-ace-editor *ngIf="tabz.editor==='code'" [content]="tabz.code" [aceNumber]="aceNumber"></my-ace-editor>
+      <tab *ngFor="let tabz of tabs" [heading]="" [removable]="true" (removed)="onTabClose(tabz)" (select)="onTabSelect(tabz.path)">
+        <template tabHeading>
+            <span [class.tabunsaved]="tabz.isdirty"><span *ngIf="tabz.isdirty">* </span>{{tabz.title}} / {{tabz.editor}}</span>
+        </template>
+        <my-tiny-mce *ngIf="tabz.editor==='layout'" [id]="tabz.url" (isDirty)="tabz.isdirty=$event"></my-tiny-mce>
+        <my-ace-editor *ngIf="tabz.editor==='code'" [url]="tabz.url" [path]="tabz.path" [aceNumber]="aceNumber"></my-ace-editor>
         <my-forms-settings *ngIf="tabz.editor === 'settings' && tabz.path[0].type === 'Forms' && tabz.path.length < 2" [id]='tabz.url' (titleChanged)='tabz.title=$event; onTabRename(tabz.path,$event)'></my-forms-settings>
         <my-fields-settings *ngIf="tabz.editor === 'settings' && tabz.path[0].type === 'Forms' && tabz.path[1]?.type === 'Fields'" [id]='tabz.url' (titleChanged)='tabz.title=$event; onTabRename(tabz.path,$event)'></my-fields-settings>
         <my-actions-settings *ngIf="tabz.editor === 'settings' && tabz.path[1]?.type === 'Actions'" [id]='tabz.url' (titleChanged)='tabz.title=$event; onTabRename(tabz.path,$event)'></my-actions-settings>
