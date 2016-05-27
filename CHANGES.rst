@@ -1,7 +1,7 @@
 Changelog
 =========
 
-2.0b4 (unreleased)
+2.0b4 (2016-05-27)
 ------------------
 
 - Fix element portlet
