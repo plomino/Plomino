@@ -1,15 +1,14 @@
 from plone.app.portlets.portlets import base
+from plone.portlets.interfaces import IPortletDataProvider
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from zope import schema
-from zope.formlib import form
-from zope.interface import Interface
 from zope.interface import implements
 
 from .. import _
 from ..utils import PlominoTranslate
 
 
-class IPortlet(Interface):
+class IPortlet(IPortletDataProvider):
     """Design portlet."""
 
     display_tree = schema.Choice(
@@ -78,7 +77,7 @@ class AddForm(base.AddForm):
     description = _(u"This portlet provides access to Plomino design "
         "features.")
 
-    form_fields = form.Fields(IPortlet)
+    schema = IPortlet
 
     def create(self, data):
         return Assignment(**data)
@@ -90,10 +89,10 @@ class EditForm(base.EditForm):
     label = _(u"Edit the Plomino Design Portlet")
     description = _(u"This portlet provides access to Plomino design "
         "features.")
-    form_fields = form.Fields(IPortlet)
+    schema = IPortlet
 
 
-class IElementPortlet(Interface):
+class IElementPortlet(IPortletDataProvider):
     """Contains the template used to fill a template form."""
 
     header = schema.TextLine(
@@ -200,7 +199,7 @@ class ElementPortletAddForm(base.AddForm):
 
     label = _(u"Add a Plomino Element Portlet")
     description = _(u"This portlet displays an element of a Plomino database.")
-    form_fields = form.Fields(IElementPortlet)
+    schema = IElementPortlet
 
     def create(self, data):
         return ElementPortletAssignment(**data)
@@ -211,4 +210,4 @@ class ElementPortletEditForm(base.EditForm):
 
     label = _(u"Edit a Plomino Element Portlet")
     description = _(u"This portlet displays an element of a Plomino database.")
-    form_fields = form.Fields(IElementPortlet)
+    schema = IElementPortlet

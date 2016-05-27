@@ -4,7 +4,7 @@ Changelog
 2.0b4 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Fix element portlet
 
 
 2.0b3 (2016-05-10)
