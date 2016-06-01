@@ -40,51 +40,112 @@ class DatabaseView(BrowserView):
     def code(self):
         if self.request.method == "GET":
             code = ""
+            methods = []
             if self.request.get("Form") != None:
                 formID = self.request.get("Form")
                 form = self.context.getForm(formID)
                 if not form :
                     return "##Unknown"
 
-                code+= "## START document_title {\n"
-                code+= form.document_title or ''
-                code+= "\n## END document_title }\n\r"
+                methods.append({
+                    "id": "document_title",
+                    "name": "Document title formula",
+                    "desc": "Compute the document title"
+                })
+                if form.document_title:
+                    code+= "## START document_title {\n"
+                    code+= form.document_title
+                    code+= "\n## END document_title }\n\r"
 
-                code+= "## START document_id {\n"
-                code+= form.document_id or ''
-                code+= "\n## END document_id }\n\r"
+                methods.append({
+                    "id": "document_id",
+                    "name": "Document id formula",
+                    "desc": "Compute the document id at creation."
+                })
+                if form.document_id:
+                    code+= "## START document_id {\n"
+                    code+= form.document_id
+                    code+= "\n## END document_id }\n\r"
 
-                code+= "## START search_formula {\n"
-                code+= form.search_formula or ''
-                code+= "\n## END search_formula }\n\r"
+                methods.append({
+                    "id": "search_formula",
+                    "name": "Search formula",
+                    "desc": "Leave blank to use default ZCatalog search"
+                })
+                if form.search_formula:
+                    code+= "## START search_formula {\n"
+                    code+= form.search_formula
+                    code+= "\n## END search_formula }\n\r"
 
-                code+= "## START onCreateDocument {\n"
-                code+= form.onCreateDocument or ''
-                code+= "\n## END onCreateDocument }\n\r"
+                methods.append({
+                    "id": "onCreateDocument",
+                    "name": "On create document",
+                    "desc": "Action to take when the document is created"
+                })
+                if form.onCreateDocument:
+                    code+= "## START onCreateDocument {\n"
+                    code+= form.onCreateDocument
+                    code+= "\n## END onCreateDocument }\n\r"
 
-                code+= "## START onOpenDocument {\n"
-                code+= form.onOpenDocument or ''
-                code+= "\n## END onOpenDocument }\n\r"
+                methods.append({
+                    "id": "onOpenDocument",
+                    "name": "On open document",
+                    "desc": "Action to take when the document is opened"
+                })
+                if form.onOpenDocument:
+                    code+= "## START onOpenDocument {\n"
+                    code+= form.onOpenDocument
+                    code+= "\n## END onOpenDocument }\n\r"
 
-                code+= "## START beforeSaveDocument {\n"
-                code+= form.beforeSaveDocument or ''
-                code+= "\n## END beforeSaveDocument }\n\r"
+                methods.append({
+                    "id": "beforeSaveDocument",
+                    "name": "Before save document",
+                    "desc": "Action to take before submitted values are saved into the document (submitted values are in context.REQUEST)"
+                })
+                if form.beforeSaveDocument:
+                    code+= "## START beforeSaveDocument {\n"
+                    code+= form.beforeSaveDocument
+                    code+= "\n## END beforeSaveDocument }\n\r"
 
-                code+= "## START onSaveDocument {\n"
-                code+= form.onSaveDocument or ''
-                code+= "\n## END onSaveDocument }\n\r"
+                methods.append({
+                    "id": "onSaveDocument",
+                    "name": "On save document",
+                    "desc": "Action to take when saving the document"
+                })
+                if form.onSaveDocument:
+                    code+= "## START onSaveDocument {\n"
+                    code+= form.onSaveDocument
+                    code+= "\n## END onSaveDocument }\n\r"
 
-                code+= "## START onDeleteDocument {\n"
-                code+= form.onDeleteDocument or ''
-                code+= "\n## END onDeleteDocument }\n\r"
+                methods.append({
+                    "id": "onDeleteDocument",
+                    "name": "On delete document",
+                    "desc": "Action to take before deleting the document"
+                })
+                if form.onDeleteDocument:
+                    code+= "## START onDeleteDocument {\n"
+                    code+= form.onDeleteDocument
+                    code+= "\n## END onDeleteDocument }\n\r"
 
-                code+= "## START onSearch {\n"
-                code+= form.onSearch or ''
-                code+= "\n## END onSearch }\n\r"
+                methods.append({
+                    "id": "onSearch",
+                    "name": "On submission of search form",
+                    "desc": "Action to take when submitting a search"
+                })
+                if form.onSearch:
+                    code+= "## START onSearch {\n"
+                    code+= form.onSearch
+                    code+= "\n## END onSearch }\n\r"
 
-                code+= "## START beforeCreateDocument {\n"
-                code+= form.beforeCreateDocument or ''
-                code+= "\n## END beforeCreateDocument }\n\r"
+                methods.append({
+                    "id": "beforeCreateDocument",
+                    "name": "Before document creation",
+                    "desc": "Action to take when opening a blank form"
+                })
+                if form.beforeCreateDocument:
+                    code+= "## START beforeCreateDocument {\n"
+                    code+= form.beforeCreateDocument
+                    code+= "\n## END beforeCreateDocument }\n\r"
 
             if self.request.get("FormField") != None:
                 fieldID = self.request.get("FormField").split("/")
@@ -93,17 +154,20 @@ class DatabaseView(BrowserView):
                 if not field :
                     return "##Unknown"
 
-                code+= "## START formula {\n"
-                code+= field.formula or ''
-                code+= "\n## END formula }\n\r"
+                if field.formula:
+                    code+= "## START formula {\n"
+                    code+= field.formula
+                    code+= "\n## END formula }\n\r"
 
-                code+= "## START validation_formula {\n"
-                code+= field.validation_formula or ''
-                code+= "\n## END validation_formula }\n\r"
+                if field.validation_formula:
+                    code+= "## START validation_formula {\n"
+                    code+= field.validation_formula
+                    code+= "\n## END validation_formula }\n\r"
 
-                code+= "## START html_attributes_formula {\n"
-                code+= field.html_attributes_formula or ''
-                code+= "\n## END html_attributes_formula }\n\r"
+                if field.html_attributes_formula:
+                    code+= "## START html_attributes_formula {\n"
+                    code+= field.html_attributes_formula
+                    code+= "\n## END html_attributes_formula }\n\r"
 
             if self.request.get("FormAction") != None:
                 actionID = self.request.get("FormAction").split("/")
@@ -111,13 +175,15 @@ class DatabaseView(BrowserView):
 
                 for act in action:
                     if act.id == actionID[1]:
-                        code+= "## START content {\n"
-                        code+= act.content or ''
-                        code+= "\n## END content }\n\r"
+                        if act.content:
+                            code+= "## START content {\n"
+                            code+= act.content
+                            code+= "\n## END content }\n\r"
 
-                        code+= "## START hidewhen {\n"
-                        code+= act.hidewhen or ''
-                        code+= "\n## END hidewhen }\n\r"
+                        if act.hidewhen:
+                            code+= "## START hidewhen {\n"
+                            code+= act.hidewhen
+                            code+= "\n## END hidewhen }\n\r"
 
                         break
 
@@ -127,18 +193,18 @@ class DatabaseView(BrowserView):
 
                 if not view:
                     return "##Unknown"
-
-                code+= "## START selection_formula {\n"
-                code+= view.selection_formula or ''
-                code+= "\n## END selection_formula }\n\r"
-
-                code+= "## START form_formula {\n"
-                code+= view.form_formula or ''
-                code+= "\n## END form_formula }\n\r"
-
-                code+= "## START onOpenView {\n"
-                code+= view.onOpenView or ''
-                code+= "\n## END onOpenView }\n\r"
+                    if view.selection_formula:
+                        code+= "## START selection_formula {\n"
+                        code+= view.selection_formula or ''
+                        code+= "\n## END selection_formula }\n\r"
+                    if view.form_formula:
+                        code+= "## START form_formula {\n"
+                        code+= view.form_formula or ''
+                        code+= "\n## END form_formula }\n\r"
+                    if view.onOpenView:
+                        code+= "## START onOpenView {\n"
+                        code+= view.onOpenView or ''
+                        code+= "\n## END onOpenView }\n\r"
 
             if self.request.get("ViewAction") != None:
                 actionID = self.request.get("ViewAction").split("/")
@@ -146,7 +212,9 @@ class DatabaseView(BrowserView):
 
             self.request.RESPONSE.setHeader(
                 'content-type', 'text/plain; charset=utf-8')
-            return code
+
+            elements = {"code" : code, "methods" : methods}
+            return json.dumps(elements)
 
         if self.request.method == "POST":
             return "post"
