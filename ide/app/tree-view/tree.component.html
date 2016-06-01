@@ -1,4 +1,9 @@
-<input #filter placeholder="Filter"><button (click)="sendSearch(filter.value)">Filter</button>
+<div class="input-group">
+    <input #filter placeholder="Filter" class="form-control">
+    <span class="input-group-btn">
+        <button class="btn btn-default" (click)="sendSearch(filter.value)"><span class="glyphicon glyphicon-search"></span></button>
+    </span>
+</div>
 <ul *ngIf="filtered" class="tree-wrap">
     <li *ngFor="let result of searchResults.member">
         {{result.title}}
