@@ -8,7 +8,21 @@ declare var ace: any;
 @Component({
     selector: 'my-ace-editor',
     template: require("./ace-editor.component.html"),
-    styles: ['.ace-editor{display: block; height: 508px; text-align: left;} .popover{width: 500px;}'],
+    styles: [`
+        .ace-editor {
+            display: block;
+            height: 508px;
+            text-align: left;
+        }
+        .popover {
+            width: 500px;
+        }
+        .toolbar {
+            background-color: #F2F2F2;
+            width: 100%;
+            padding: 3px;
+        }
+    `],
     directives: [DROPDOWN_DIRECTIVES, PopoverComponent],
     providers: [ElementService]
 })
@@ -17,6 +31,7 @@ export class ACEEditorComponent {
     @Input() url: string;
     @Input() path: any;
 
+    methodInfo: any;
     methodList: any[];
     type: string;
     editor: any;
@@ -67,22 +82,46 @@ export class ACEEditorComponent {
         this.editor.completers.push(staticWordCompleter);
     }
 
+    addMethod(name: string) {
+        this.editor.getSession().insert({
+            row: this.editor.getSession().getLength(),
+            column: 0
+        }, "\n\n## START "+name+" {\n\n## END "+name+" }")
+    }
+
+    getMethodInfos() {
+        let id = this.getMethodId();
+        if (id != null) {
+            this.methodList.forEach((method) => {
+                if (method.id === id) {
+                    this.methodInfo = {
+                        shown: true,
+                        name: method.name,
+                        desc: method.desc
+                    }
+                }
+            });
+        }
+        else {
+            this.methodInfo = {
+                shown: false
+            }
+        }
+    }
+
+    getMethodId() {
+        for (let i = this.editor.getSelectionRange().start.row; i>=0; i--) {
+            if (this.editor.getSession().getLine(i).match(/^##.START.*{$/) != null) {
+                return this.editor.getSession().getLine(i).match(/^##.START(.*){$/).pop().trim();
+            }
+        }
+    }
+
     getMethodList(): any[] {
         let buildMethod = (name:string) => {return { caption:name, value:"## START "+name+" {\n\n## END "+name+" }", popup: false }};
         switch(this.type) {
             case "PlominoForm":
-                return [
-                    buildMethod("document_title"),
-                    buildMethod("document_id"),
-                    buildMethod("search_formula"),
-                    buildMethod("onCreateDocument"),
-                    buildMethod("onOpenDocument"),
-                    buildMethod("beforeSaveDocument"),
-                    buildMethod("onSaveDocument"),
-                    buildMethod("onDeleteDocument"),
-                    buildMethod("onSearch"),
-                    buildMethod("beforeCreateDocument")
-                ]
+                return this.methodList.map((method) => ({ caption:method.id, value:"## START "+method.id+" {\n\n## END "+method.id+" }", popup: false }));
             case "PlominoField":
                 return [
                     buildMethod("formula"),

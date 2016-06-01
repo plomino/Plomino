@@ -13,6 +13,7 @@ import 'bootstrap/js/dropdown';
 // -- Ace editor --
 import 'ace-editor-builds/src-min-noconflict/ace';
 import 'ace-editor-builds/src-min-noconflict/theme-xcode';
+import 'ace-editor-builds/src-min-noconflict/theme-merbivore_soft';
 import 'ace-editor-builds/src-min-noconflict/mode-python';
 import 'ace-editor-builds/src-min-noconflict/ext-language_tools'
 import 'ace-editor-builds/src-min-noconflict/snippets/snippets'
