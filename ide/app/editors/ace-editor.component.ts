@@ -59,13 +59,6 @@ export class ACEEditorComponent {
         this.editor.setTheme("ace/theme/xcode");
         this.editor.getSession().setMode("ace/mode/python");
         this.editor.setOptions({enableBasicAutocompletion: true, enableLiveAutocompletion: true});
-        this.editor.on("changeSelection", () => {
-            let isComment = false;
-            for(let line of this.editor.getSession().getLines(this.editor.getSelectionRange().start.row,this.editor.getSelectionRange().end.row)){
-                isComment = line.match(/^##.START.*{$|^##.END.*}$/) === null ? isComment : true;
-            }
-            this.editor.setReadOnly(isComment);
-        });
         let staticWordCompleter = {
             getCompletions: (editor: any, session: any, pos: any, prefix: any, callback: any) => {
                 var wordList = this.getMethodList();
