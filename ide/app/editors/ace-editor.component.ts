@@ -84,14 +84,7 @@ export class ACEEditorComponent {
             row: this.editor.getSession().getLength(),
             column: 0
         }, "\n\n## START "+id+" {\n\n## END "+id+" }");
-        let {name, desc} = this.getMethodInfos(id);
-        let newAnnotations = this.editor.getSession().getAnnotations();
-        newAnnotations.push({
-            row: this.editor.getSession().getLength()-3,
-            html: "<strong>"+name+"</strong> <br>"+desc,
-            type: "info"
-        });
-        this.editor.getSession().setAnnotations(newAnnotations);
+        this.addMethodInfos();
     }
 
     addMethodInfos() {
