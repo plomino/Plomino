@@ -1,4 +1,4 @@
-import {Component, OnInit, AfterViewInit, Input} from '@angular/core';
+import {Component, OnInit, AfterViewInit, Input, Output, EventEmitter} from '@angular/core';
 import {PopoverComponent} from './popover.component';
 import {ElementService} from '../services/element.service';
 import {DROPDOWN_DIRECTIVES} from 'ng2-bootstrap/ng2-bootstrap';
@@ -33,6 +33,7 @@ export class ACEEditorComponent {
     @Input() aceNumber: number;
     @Input() url: string;
     @Input() path: any;
+    @Output() isDirty = new EventEmitter();
 
     methodInfo: any;
     methodList: any[];
@@ -53,6 +54,9 @@ export class ACEEditorComponent {
                     let parsed = JSON.parse(code);
                     this.editor.setValue(parsed.code,-1);
                     this.methodList = parsed.methods;
+                    this.editor.getSession().on('change', () => {
+                        this.isDirty.emit(true);
+                    });
                     this.addMethodInfos();
                 });
         })

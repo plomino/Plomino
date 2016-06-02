@@ -7,7 +7,7 @@
             <span [class.tabunsaved]="tabz.isdirty"><span *ngIf="tabz.isdirty">* </span>{{tabz.title}} / {{tabz.editor}}</span>
         </template>
         <my-tiny-mce *ngIf="tabz.editor==='layout'" [id]="tabz.url" (isDirty)="tabz.isdirty=$event"></my-tiny-mce>
-        <my-ace-editor *ngIf="tabz.editor==='code'" [url]="tabz.url" [path]="tabz.path" [aceNumber]="aceNumber"></my-ace-editor>
+        <my-ace-editor *ngIf="tabz.editor==='code'" [url]="tabz.url" [path]="tabz.path" [aceNumber]="aceNumber" (isDirty)="tabz.isdirty=$event"></my-ace-editor>
         <my-forms-settings *ngIf="tabz.editor === 'settings' && tabz.path[0].type === 'Forms' && tabz.path.length < 2" [id]='tabz.url' (titleChanged)='tabz.title=$event; onTabRename(tabz.path,$event)'(isDirty)="tabz.isdirty=$event"></my-forms-settings>
         <my-fields-settings *ngIf="tabz.editor === 'settings' && tabz.path[0].type === 'Forms' && tabz.path[1]?.type === 'Fields'" [id]='tabz.url' (titleChanged)='tabz.title=$event; onTabRename(tabz.path,$event)'(isDirty)="tabz.isdirty=$event"></my-fields-settings>
         <my-actions-settings *ngIf="tabz.editor === 'settings' && tabz.path[1]?.type === 'Actions'" [id]='tabz.url' (titleChanged)='tabz.title=$event; onTabRename(tabz.path,$event)' (isDirty)="tabz.isdirty=$event"></my-actions-settings>
