@@ -18,6 +18,10 @@
   text-align: start;
 }
 
+.infos {
+    left: 165px;
+}
+
 .popover h3 {
   margin: 0;
   padding: 8px 14px;
