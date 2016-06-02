@@ -51,8 +51,9 @@ export class ACEEditorComponent {
             this._elementService.getElementCode("http://localhost:8080/Plone/plominodatabase/code?"+type+"="+name)
                 .subscribe((code: string) => {
                     let parsed = JSON.parse(code);
-                    this.editor.setValue(parsed.code,-1)
+                    this.editor.setValue(parsed.code,-1);
                     this.methodList = parsed.methods;
+                    this.addMethodInfos();
                 });
         })
     }
@@ -78,38 +79,51 @@ export class ACEEditorComponent {
         this.editor.completers.push(staticWordCompleter);
     }
 
-    addMethod(name: string) {
+    addMethod(id: string) {
         this.editor.getSession().insert({
             row: this.editor.getSession().getLength(),
             column: 0
-        }, "\n\n## START "+name+" {\n\n## END "+name+" }")
+        }, "\n\n## START "+id+" {\n\n## END "+id+" }");
+        let {name, desc} = this.getMethodInfos(id);
+        let newAnnotations = this.editor.getSession().getAnnotations();
+        newAnnotations.push({
+            row: this.editor.getSession().getLength()-3,
+            html: "<strong>"+name+"</strong> <br>"+desc,
+            type: "info"
+        });
+        this.editor.getSession().setAnnotations(newAnnotations);
     }
 
-    getMethodInfos() {
-        let id = this.getMethodId();
-        if (id != null) {
-            this.methodList.forEach((method) => {
-                if (method.id === id) {
-                    this.methodInfo = {
-                        shown: true,
-                        name: method.name,
-                        desc: method.desc
-                    }
-                }
-            });
-        }
-        else {
-            this.methodInfo = {
-                shown: false
-            }
-        }
-    }
-
-    getMethodId() {
-        for (let i = this.editor.getSelectionRange().start.row; i>=0; i--) {
+    addMethodInfos() {
+        let methods: any[] = [];
+        for(let i = this.editor.getSession().getLength(); i>=0; i--) {
             if (this.editor.getSession().getLine(i).match(/^##.START.*{$/) != null) {
-                return this.editor.getSession().getLine(i).match(/^##.START(.*){$/).pop().trim();
+                let id = this.editor.getSession().getLine(i).match(/^##.START(.*){$/).pop().trim();
+                let {name, desc, error} = this.getMethodInfos(id);
+                methods.push({
+                    row: i,
+                    html: "<strong>"+name+"</strong> <br>"+desc,
+                    type: error ? "error" : "info"
+                })
             }
+        }
+        this.editor.getSession().setAnnotations(methods);
+    }
+
+    getMethodInfos(id: string) {
+        for (let method of this.methodList) {
+            if (method.id === id) {
+                return {
+                    name: method.name,
+                    desc: method.desc,
+                    error: false
+                }
+            }
+        }
+        return {
+            name: 'Not found',
+            desc: 'Method doesn\'t exist',
+            error: true
         }
     }
 
