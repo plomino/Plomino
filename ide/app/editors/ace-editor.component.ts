@@ -25,6 +25,9 @@ declare var ace: any;
         .dropdown-item {
             cursor: pointer;
         }
+        .dropdown-menu {
+            width: 195px;
+        }
     `],
     directives: [DROPDOWN_DIRECTIVES, PopoverComponent],
     providers: [ElementService]
