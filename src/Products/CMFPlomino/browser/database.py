@@ -154,16 +154,31 @@ class DatabaseView(BrowserView):
                 if not field :
                     return "##Unknown"
 
+                methods.append({
+                    "id": "formula",
+                    "name": "Formula",
+                    "desc": "How to calculate field content"
+                })
                 if field.formula:
                     code+= "## START formula {\n"
                     code+= field.formula
                     code+= "\n## END formula }\n\r"
 
+                methods.append({
+                    "id": "validation_formula",
+                    "name": "Validation formula",
+                    "desc": "Evaluate the input validation"
+                })
                 if field.validation_formula:
                     code+= "## START validation_formula {\n"
                     code+= field.validation_formula
                     code+= "\n## END validation_formula }\n\r"
 
+                methods.append({
+                    "id": "html_attributes_formula",
+                    "name": "HTML attributes formula",
+                    "desc": "Inject DOM attributes in the field tag"
+                })
                 if field.html_attributes_formula:
                     code+= "## START html_attributes_formula {\n"
                     code+= field.html_attributes_formula
@@ -171,21 +186,27 @@ class DatabaseView(BrowserView):
 
             if self.request.get("FormAction") != None:
                 actionID = self.request.get("FormAction").split("/")
-                action = self.context.getForm(actionID[0]).getFormActions()
+                action = self.context.getForm(actionID[0]).getAction(actionID[1])
 
-                for act in action:
-                    if act.id == actionID[1]:
-                        if act.content:
-                            code+= "## START content {\n"
-                            code+= act.content
-                            code+= "\n## END content }\n\r"
+                methods.append({
+                    "id": "content",
+                    "name": "Parameter or code",
+                    "desc": "Code or parameter depending on the action type"
+                })
+                if action.content:
+                    code+= "## START content {\n"
+                    code+= action.content
+                    code+= "\n## END content }\n\r"
 
-                        if act.hidewhen:
-                            code+= "## START hidewhen {\n"
-                            code+= act.hidewhen
-                            code+= "\n## END hidewhen }\n\r"
-
-                        break
+                methods.append({
+                    "id": "hidewhen",
+                    "name": "Hide when",
+                    "desc": "Action is hidden if formula returns True"
+                })
+                if action.hidewhen:
+                    code+= "## START hidewhen {\n"
+                    code+= action.hidewhen
+                    code+= "\n## END hidewhen }\n\r"
 
             if self.request.get("View") != None:
                 viewID = self.request.get("View")
@@ -193,22 +214,80 @@ class DatabaseView(BrowserView):
 
                 if not view:
                     return "##Unknown"
-                    if view.selection_formula:
-                        code+= "## START selection_formula {\n"
-                        code+= view.selection_formula or ''
-                        code+= "\n## END selection_formula }\n\r"
-                    if view.form_formula:
-                        code+= "## START form_formula {\n"
-                        code+= view.form_formula or ''
-                        code+= "\n## END form_formula }\n\r"
-                    if view.onOpenView:
-                        code+= "## START onOpenView {\n"
-                        code+= view.onOpenView or ''
-                        code+= "\n## END onOpenView }\n\r"
+
+                methods.append({
+                    "id": "selection_formula",
+                    "name": "Selection formula",
+                    "desc": "The view selection formula is a line of Python code which should return True or False. The formula will be evaluated for each document in the database to decide if the document must be displayed in the view or not. 'plominoDocument' is a reserved name in formulae: it returns the current Plomino document."
+                })
+                if view.selection_formula:
+                    code+= "## START selection_formula {\n"
+                    code+= view.selection_formula or ''
+                    code+= "\n## END selection_formula }\n\r"
+
+                methods.append({
+                    "id": "form_formula",
+                    "name": "Form formula",
+                    "desc": "Documents open from the view will use the form defined by the following formula (they use their own form if empty)"
+                })
+                if view.form_formula:
+                    code+= "## START form_formula {\n"
+                    code+= view.form_formula or ''
+                    code+= "\n## END form_formula }\n\r"
+
+                methods.append({
+                    "id": "onOpenView",
+                    "name": "On open view",
+                    "desc": "Action to take when the view is opened. If a string is returned, it is considered an error message, and the opening is not allowed."
+                })
+                if view.onOpenView:
+                    code+= "## START onOpenView {\n"
+                    code+= view.onOpenView or ''
+                    code+= "\n## END onOpenView }\n\r"
 
             if self.request.get("ViewAction") != None:
                 actionID = self.request.get("ViewAction").split("/")
-                action = self.context.getView(actionID[0]).getActions()
+                action = self.context.getView(actionID[0]).getAction(actionID[1])
+
+                if not action:
+                    return "##Unknown"
+
+                methods.append({
+                    "id": "content",
+                    "name": "Parameter or code",
+                    "desc": "Code or parameter depending on the action type"
+                })
+                if action.content:
+                    code+= "## START content {\n"
+                    code+= action.content
+                    code+= "\n## END content }\n\r"
+
+                methods.append({
+                    "id": "hidewhen",
+                    "name": "Hide when",
+                    "desc": "Action is hidden if formula returns True"
+                })
+                if action.hidewhen:
+                    code+= "## START hidewhen {\n"
+                    code+= action.hidewhen
+                    code+= "\n## END hidewhen }\n\r"
+
+            if self.request.get("ViewColumn") != None:
+                actionID = self.request.get("ViewColumn").split("/")
+                column = self.context.getView(actionID[0]).getColumn(actionID[1])
+
+                if not column:
+                    return "##Unknown"
+
+                methods.append({
+                    "id": "formula",
+                    "name": "Formula",
+                    "desc": "Python code returning the column value."
+                })
+                if column.formula:
+                    code+= "## START formula {\n"
+                    code+= column.formula
+                    code+= "\n## END formula }\n\r"
 
             self.request.RESPONSE.setHeader(
                 'content-type', 'text/plain; charset=utf-8')

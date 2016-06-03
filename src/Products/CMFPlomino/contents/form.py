@@ -453,6 +453,13 @@ class PlominoForm(Container):
             if obj.__class__.__name__ == 'PlominoAction']
         return actions
 
+    security.declarePublic('getAction')
+
+    def getAction(self, action_name):
+        """ Get a single action
+        """
+        return getattr(self, action_name)
+
     security.declarePublic('getActions')
 
     def getActions(self, target=None, hide=True):

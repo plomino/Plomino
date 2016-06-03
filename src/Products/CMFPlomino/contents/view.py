@@ -219,6 +219,13 @@ class PlominoView(Container):
         """
         return getattr(self, column_name)
 
+    security.declarePublic('getAction')
+
+    def getAction(self, action_name):
+        """ Get a single action
+        """
+        return getattr(self, action_name)
+
     security.declarePublic('evaluateViewForm')
 
     def evaluateViewForm(self, doc):
