@@ -104,7 +104,10 @@ export class ACEEditorComponent {
             this.editor.getSession().getValue()
         ).subscribe((response: any) => {
             this.addMethodInfos();
-            if (response.type = "Error") {
+            if (response.type == "OK") {
+                this.isDirty.emit(false);
+            }
+            if (response.type == "Error") {
                 let annotations = this.editor.getSession().getAnnotations();
                 annotations.push({
                     row: response.line-1,
