@@ -316,6 +316,13 @@ class DatabaseView(BrowserView):
             type = response["Type"]
             id = response["Id"]
             code = response["Code"]
+
+            if type == "Agent":
+                self.context.getAgent(id).content = code
+                return json.dumps({
+                    "type": "OK"
+                })
+
             methodList = self.getMethodsId(type)
 
             content = ""
