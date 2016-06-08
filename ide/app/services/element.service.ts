@@ -22,8 +22,14 @@ export class ElementService {
     }
 
     getElementCode(url: string) {
-        // TODO : remove hardcoded url
         return this.http.get(url).map((res: Response) => res.text());
+    }
+
+    postElementCode(url: string, type: string, id: string, code: string) {
+        let headers = new Headers()
+        headers.append('Content-Type', 'application/json');
+        return this.http.post(url, JSON.stringify({"Type": type, "Id": id, "Code": code}), { headers: headers })
+            .map((res: Response) => res.json());
     }
 
     patchElement(id: string, element: any) {

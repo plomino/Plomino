@@ -1,7 +1,10 @@
-from AccessControl import Unauthorized
+ from AccessControl import Unauthorized
 from jsonutil import jsonutil as json
+import re
 from Products.Five import BrowserView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
+from zope.interface import alsoProvides
+import plone.protect.interfaces
 
 from ..config import READ_PERMISSION
 
@@ -289,6 +292,15 @@ class DatabaseView(BrowserView):
                     code+= column.formula
                     code+= "\n## END formula }\n\r"
 
+            if self.request.get("Agent") != None:
+                agent = self.context.getAgent(self.request.get("Agent"))
+
+                if not agent:
+                    return "##Unknown"
+
+                if agent.content:
+                    code+= agent.content
+
             self.request.RESPONSE.setHeader(
                 'content-type', 'text/plain; charset=utf-8')
 
@@ -296,8 +308,201 @@ class DatabaseView(BrowserView):
             return json.dumps(elements)
 
         if self.request.method == "POST":
-            return "post"
-        return formID
+            alsoProvides(self.request,plone.protect.interfaces.IDisableCSRFProtection)
+
+            self.request.RESPONSE.setHeader(
+                'content-type', 'application/json; charset=utf-8')
+            response = json.loads(self.request.BODY)
+            type = response["Type"]
+            id = response["Id"]
+            code = response["Code"]
+            methodList = self.getMethodsId(type)
+
+            content = ""
+            contents = []
+            inside = False
+
+            for lineNumber, line in enumerate(code.split('\n')):
+                start_reg = re.match(r'^##\s*START\s+(.*){$', line)
+                end_reg = re.match(r'^##\s*END\s+(.*)}$',line)
+
+                if start_reg and not inside:
+                    if start_reg.group(1).strip() in methodList:
+                        methodName = start_reg.group(1).strip()
+                        inside = True
+                    else:
+                        return json.dumps({
+                            "type": "Error",
+                            "error": "Method \""+start_reg.group(1).strip()+"\" doesn't exists",
+                            "line": lineNumber+1
+                        })
+
+                elif end_reg and inside:
+                    if end_reg.group(1).strip() != methodName:
+                        return json.dumps({
+                            "type": "Error",
+                            "error": "END tag doesn't match START tag",
+                            "line": lineNumber+1
+                        })
+                    contents.append({
+                        "name": methodName,
+                        "code": content
+                    })
+                    inside = False
+                    content = ''
+                elif not start_reg and not end_reg and inside:
+                    content+= line+"\n"
+
+                elif end_reg and not inside:
+                    return json.dumps({
+                        "type": "Error",
+                        "error": "Unexpected END tag",
+                        "line": lineNumber+1
+                    })
+
+                elif start_reg and inside:
+                    return json.dumps({
+                        "type": "Error",
+                        "error": "Unexpected START tag",
+                        "line": lineNumber+1
+                    })
+
+            element = self.getElementByType(type,id)
+            for formula in contents:
+                setattr(element,formula['name'],formula['code'].rstrip())
+
+            return json.dumps({
+                "type": "OK"
+            })
+
+    def getElementByType(self,type,name):
+        if type == "Form":
+            return self.context.getForm(name)
+
+        if type == "FormField":
+            id = name.split('/')
+            return self.context.getForm(id[0]).getFormField(id[1])
+
+        if type == "FormAction":
+            id = name.split('/')
+            return self.context.getForm(id[0]).getAction(id[1])
+
+        if type == "View":
+            return self.context.getView(name)
+
+        if type == "ViewAction":
+            id = name.split('/')
+            return self.context.getView(id[0]).getAction(id[1])
+
+        if type == "ViewColumn":
+            id = name.split('/')
+            return self.context.getView(id[0]).getColumn(id[1])
+
+        if type == "Agent":
+            return self.context.getAgent(name)
+
+        return
+
+
+    def getMethodsId(self,type):
+        methodList = []
+        for method in self.getMethods(type):
+            methodList.append(method['id'])
+        return methodList
+
+    def getMethods(self,type):
+        return {
+            'Form': [{
+                "id": "document_title",
+                "name": "Document title formula",
+                "desc": "Compute the document title"
+            },{
+                "id": "document_id",
+                "name": "Document id formula",
+                "desc": "Compute the document id at creation."
+            },{
+                "id": "search_formula",
+                "name": "Search formula",
+                "desc": "Leave blank to use default ZCatalog search"
+            },{
+                "id": "onCreateDocument",
+                "name": "On create document",
+                "desc": "Action to take when the document is created"
+            },{
+                "id": "onOpenDocument",
+                "name": "On open document",
+                "desc": "Action to take when the document is opened"
+            },{
+                "id": "beforeSaveDocument",
+                "name": "Before save document",
+                "desc": "Action to take before submitted values are saved into the document (submitted values are in context.REQUEST)"
+            },{
+                "id": "onSaveDocument",
+                "name": "On save document",
+                "desc": "Action to take when saving the document"
+            },{
+                "id": "onDeleteDocument",
+                "name": "On delete document",
+                "desc": "Action to take before deleting the document"
+            },{
+                "id": "onSearch",
+                "name": "On submission of search form",
+                "desc": "Action to take when submitting a search"
+            },{
+                "id": "beforeCreateDocument",
+                "name": "Before document creation",
+                "desc": "Action to take when opening a blank form"
+            }],
+            'FormField': [{
+                "id": "formula",
+                "name": "Formula",
+                "desc": "How to calculate field content"
+            },{
+                "id": "validation_formula",
+                "name": "Validation formula",
+                "desc": "Evaluate the input validation"
+            },{
+                "id": "html_attributes_formula",
+                "name": "HTML attributes formula",
+                "desc": "Inject DOM attributes in the field tag"
+            }],
+            'FormAction': [{
+                "id": "content",
+                "name": "Parameter or code",
+                "desc": "Code or parameter depending on the action type"
+            },{
+                "id": "hidewhen",
+                "name": "Hide when",
+                "desc": "Action is hidden if formula returns True"
+            }],
+            'View': [{
+                "id": "selection_formula",
+                "name": "Selection formula",
+                "desc": "The view selection formula is a line of Python code which should return True or False. The formula will be evaluated for each document in the database to decide if the document must be displayed in the view or not. 'plominoDocument' is a reserved name in formulae: it returns the current Plomino document."
+            },{
+                "id": "form_formula",
+                "name": "Form formula",
+                "desc": "Documents open from the view will use the form defined by the following formula (they use their own form if empty)"
+            },{
+                "id": "onOpenView",
+                "name": "On open view",
+                "desc": "Action to take when the view is opened. If a string is returned, it is considered an error message, and the opening is not allowed."
+            }],
+            'ViewAction': [{
+                "id": "content",
+                "name": "Parameter or code",
+                "desc": "Code or parameter depending on the action type"
+            },{
+                "id": "hidewhen",
+                "name": "Hide when",
+                "desc": "Action is hidden if formula returns True"
+            }],
+            'ViewColumn': [{
+                "id": "formula",
+                "name": "Formula",
+                "desc": "Python code returning the column value."
+            }]
+        }[type]
 
     def tree(self):
         database = self.context.getParentDatabase()
