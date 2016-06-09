@@ -11,7 +11,7 @@ declare var ace: any;
     styles: [`
         .ace-editor {
             display: block;
-            height: 508px;
+            height: 858px;
             text-align: left;
         }
         .popover {
@@ -63,6 +63,7 @@ export class ACEEditorComponent {
                         this.isDirty.emit(true);
                     });
                     this.addMethodInfos();
+                    this.editor.getSession().setUndoManager(new ace.UndoManager());
                 });
         })
     }
@@ -86,6 +87,17 @@ export class ACEEditorComponent {
         }
         this.editor.completers = [];
         this.editor.completers.push(staticWordCompleter);
+        this.editor.commands.addCommand({
+            name: 'saveFile',
+            bindKey: {
+                win: 'Ctrl-S',
+                mac: 'Command-S',
+                sender: 'editor|cli'
+            },
+            exec: (env: any, args: any, request: any) => {
+                this.save();
+            }
+        });
     }
 
     addMethod(id: string) {

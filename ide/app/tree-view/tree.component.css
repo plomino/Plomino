@@ -9,7 +9,7 @@ ul {
 }
 .tree-wrap {
     overflow: auto;
-    height: 500px;
+    height: 850px;
     width: 280px;
 }
 .hasChild:before {

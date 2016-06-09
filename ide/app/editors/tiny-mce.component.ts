@@ -28,7 +28,7 @@ export class TinyMCEComponent {
                  });
             },
 		    menubar: "file edit insert view format table tools",
-            height : "398",
+            height : "780",
             resize: false
         });
         this.getFormLayout();

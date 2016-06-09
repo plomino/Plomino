@@ -282,7 +282,7 @@ class DatabaseView(BrowserView):
             fields = []
             for field in form.getFormFields():
                 fields.append({
-                    "label": field.id,
+                    "label": field.title,
                     "url": field.absolute_url(),
                     "type" : 'field'
                 })
@@ -296,7 +296,7 @@ class DatabaseView(BrowserView):
             actions = []
             for action in form.getFormActions():
                 actions.append({
-                    "label": action.id,
+                    "label": action.title,
                     'type' : 'action',
                     "url" : action.absolute_url()
                 })
@@ -307,7 +307,7 @@ class DatabaseView(BrowserView):
                 "type" : "actions",
             })
             forms.append({
-                "label": form.id,
+                "label": form.title,
                 "folder": True,
                 "children": plomino_form,
                 "type" : "form",
@@ -322,7 +322,7 @@ class DatabaseView(BrowserView):
             for action in view.getActions():
                 # view.getActions() returns tuples
                 actions.append({
-                    "label": action[0].id,
+                    "label": action[0].title,
                     "type": 'action',
                     "url": action[0].absolute_url()
                 })
@@ -335,7 +335,7 @@ class DatabaseView(BrowserView):
             columns = []
             for column in view.getColumns():
                 columns.append({
-                    "label": column.id,
+                    "label": column.title,
                     "type": 'column',
                     "url": column.absolute_url()
                 })
@@ -346,7 +346,7 @@ class DatabaseView(BrowserView):
                 "type": "columns",
             })
             views.append({
-                "label": view.id,
+                "label": view.title,
                 "type": "view",
                 "children": plomino_view,
                 "url": view.absolute_url(),
@@ -358,7 +358,7 @@ class DatabaseView(BrowserView):
         for agent in database.getAgents():
 
             agents.append({
-                "label" : agent.id,
+                "label" : agent.title,
                 "type" : "agent",
                 "url" : agent.absolute_url()
             })
