@@ -6,7 +6,7 @@
     "build": "webpack --progress",
     "bundle": "webpack --config config/webpack.prod.js --progress",
     "reload": "browser-reload",
-    "postinstall": "sudo npm run typings install",
+    "postinstall": "npm run typings install",
     "typings": "typings"
   },
   "dependencies": {
