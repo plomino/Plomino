@@ -38,7 +38,6 @@ export class ElementService {
     }
 
     searchElement(query: string) {
-        // TODO : remove hardcoded url
-        return this.http.get('http://localhost:8080/Plone/plominodatabase/search?SearchableText='+query+'*', { headers: this.headers }).map((res: Response) => res.json());
+        return this.http.get('../../search?SearchableText='+query+'*', { headers: this.headers }).map((res: Response) => res.json());
     }
 }

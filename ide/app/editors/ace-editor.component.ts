@@ -53,8 +53,8 @@ export class ACEEditorComponent {
         this._elementService.getElement(this.url).subscribe((data) => {
             this.type = data['@type'];
             this.fullType = data.parent['@type'].replace('Plomino', '').replace('Database', '') + this.type.replace('Plomino', '');
-            this.name = this.url.replace("http://localhost:8080/Plone/plominodatabase/", "");
-            this._elementService.getElementCode("http://localhost:8080/Plone/plominodatabase/code?" + this.fullType + "=" + this.name)
+            this.name = this.url.replace(window.location.href.replace("++resource++Products.CMFPlomino/ide/index.html",""), "");
+            this._elementService.getElementCode("../../code?" + this.fullType + "=" + this.name)
                 .subscribe((code: string) => {
                     let parsed = JSON.parse(code);
                     this.editor.setValue(parsed.code, -1);
@@ -110,7 +110,7 @@ export class ACEEditorComponent {
 
     save() {
         this._elementService.postElementCode(
-            "http://localhost:8080/Plone/plominodatabase/@@code",
+            "../../@@code",
             this.fullType,
             this.name,
             this.editor.getSession().getValue()
