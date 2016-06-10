@@ -7,7 +7,6 @@ module.exports = webpackMerge(commonConfig, {
     devtool: 'cheap-module-eval-source-map',
     output: {
         path: helpers.root('../src/Products/CMFPlomino/browser/static/ide/'),
-        publicPath: 'http://localhost:8080/Plone/plominodatabase/++resource++Products.CMFPlomino/ide/',
         filename: '[name].js',
         chunkFilename: '[id].chunk.js'
     }

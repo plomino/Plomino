@@ -13,7 +13,6 @@ module.exports = webpackMerge(commonConfig, {
 
     output: {
         path: helpers.root('../src/Products/CMFPlomino/browser/static/ide/'),
-        publicPath: 'http://localhost:8080/Plone/plominodatabase/++resource++Products.CMFPlomino/ide/',
         filename: '[name].[hash].js',
         chunkFilename: '[id].[hash].chunk.js'
     },
