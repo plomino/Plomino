@@ -656,9 +656,15 @@ class PlominoForm(ATFolder):
                         to_find.remove(field)
                     elif field_node and togroup:
                         # found a field in our group thats not ours
-                        # disolve grouping
-                        togroup = found = []
-                        break
+                        # If it's a dynamic field we want this in our groping
+                        group_field_id = field_node.text().strip()
+                        group_field = self.getFormField(group_field_id)
+                        if group_field is not None and group_field.getIsDynamicField():
+                            found_in_sibling = True
+                        # otherwise disolve grouping
+                        else:
+                            togroup = found = []
+                            break
 
                     for label in set(to_find):
                         if sibling in pq(label).parents() or label == sibling:
