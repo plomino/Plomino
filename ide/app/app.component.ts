@@ -17,6 +17,7 @@ import { MyModalComponent }             from './my-modal.component';
 
 // Services
 import { TreeService }                  from './services/tree.service';
+import { ElementService }               from './services/element.service';
 
 @Component({
     selector: 'my-app',
@@ -34,7 +35,7 @@ import { TreeService }                  from './services/tree.service';
         ViewsSettingsComponent,
         ColumnsSettingsComponent
     ],
-    providers: [TreeService]
+    providers: [TreeService, ElementService]
 })
 export class AppComponent {
     data: any;
@@ -46,7 +47,7 @@ export class AppComponent {
 
     aceNumber: number = 0;
 
-    constructor(private _treeService: TreeService) { }
+    constructor(private _treeService: TreeService, private _elementService: ElementService) { }
 
     ngOnInit() {
         this.getTree();
@@ -130,40 +131,16 @@ export class AppComponent {
 
     onModalClose(event: any) {
         this.isModalOpen = false;
-        let index = this.indexOf(event);
-        let exists = false;
-
-        if (event.parent === undefined) {
-
-            for (let i = 0; i < this.data[index.parent].children.length; i++)
-                if (this.data[index.parent].children[i].label === event.name) exists = true;
-
-            if (!exists) {
-                let newObject: any;
-                if (this.data[index.parent].label === 'Forms')
-                    newObject = { label: event.name, children: [{ label: 'Fields', collapsed: 'true', children: [] }, { label: 'Actions', collapsed: 'true', children: [] }] };
-                else if (this.data[index.parent].label === 'Views')
-                    newObject = { label: event.name, children: [{ label: 'Actions', collapsed: 'true', children: [] }, { label: 'Columns', collapsed: 'true', children: [] }] };
-                else
-                    newObject = { label: event.name };
-
-                this.data[index.parent].children.push(newObject);
-                this.data[index.parent].collapsed = false;
-            }
-        }
-        else {
-            let elt = this.data[index.parent].children[index.index].children[index.child];
-            for (let i = 0; i < elt.children.length; i++)
-                if (elt.children[i].label === event.name) exists = true;
-            if (!exists) {
-                elt.children.push({ label: event.name });
-                elt.collapsed = false;
-            }
-        }
-
-        if (exists) {
-            console.log('Name already exists');
-        }
+        let newElement: any = {
+            "@type": event.type,
+            "title": event.name
+        };
+        if (event.type == "Agents")
+            newElement.content = "";
+        if (event.type == "Actions")
+            newElement.action_type = "OPENFORM";
+        this._elementService.postElement(event.url,newElement)
+            .subscribe(data => this.getTree());
     }
 
     onTabClose(tab: any) {

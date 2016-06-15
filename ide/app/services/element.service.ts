@@ -18,7 +18,7 @@ export class ElementService {
 
     // Had some issues with TinyMCEComponent, had to do this instead of using getElement() method
     getElementFormLayout(id: string) {
-        return this.http.get(id, { headers: this.headers }).map((res: Response) => res.json().form_layout)
+        return this.http.get(id, { headers: this.headers }).map((res: Response) => res.json().form_layout);
     }
 
     getElementCode(url: string) {
@@ -35,6 +35,14 @@ export class ElementService {
     patchElement(id: string, element: any) {
         this.http.patch(id,element, { headers: this.headers })
         .map(response => response === null ? null : response).subscribe();
+    }
+
+    postElement(url: string, newElement: any) {
+        let headers = new Headers();
+        headers.append('Content-Type', 'application/json');
+        headers.append('Accept', 'application/json');
+        return this.http.post(url, JSON.stringify(newElement), { headers: headers })
+            .map((res: Response) => res.json());
     }
 
     searchElement(query: string) {

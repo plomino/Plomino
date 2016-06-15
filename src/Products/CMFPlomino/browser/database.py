@@ -284,33 +284,35 @@ class DatabaseView(BrowserView):
                 fields.append({
                     "label": field.title,
                     "url": field.absolute_url(),
-                    "type" : 'field'
+                    "type" : 'PlominoField'
                 })
             plomino_form = []
             plomino_form.append({
                 "label" : "Fields",
                 "folder" : True,
                 "children" : fields,
-                "type" : "fields",
+                "type" : "PlominoField",
+                "url" : form.absolute_url()
             })
             actions = []
             for action in form.getFormActions():
                 actions.append({
                     "label": action.title,
-                    'type' : 'action',
+                    'type' : 'PlominoAction',
                     "url" : action.absolute_url()
                 })
             plomino_form.append({
                 "label": "Actions",
                 "folder": True,
                 "children": actions,
-                "type" : "actions",
+                "type" : "PlominoAction",
+                "url" : form.absolute_url()
             })
             forms.append({
                 "label": form.title,
                 "folder": True,
                 "children": plomino_form,
-                "type" : "form",
+                "type" : "PlominoForm",
                 "url" : form.absolute_url(),
             })
 
@@ -323,31 +325,33 @@ class DatabaseView(BrowserView):
                 # view.getActions() returns tuples
                 actions.append({
                     "label": action[0].title,
-                    "type": 'action',
+                    "type": 'PlominoAction',
                     "url": action[0].absolute_url()
                 })
             plomino_view.append({
                 "label": "Actions",
                 "folder": True,
                 "children": actions,
-                "type": "actions",
+                "type": "PlominoAction",
+                "url": view.absolute_url()
             })
             columns = []
             for column in view.getColumns():
                 columns.append({
                     "label": column.title,
-                    "type": 'column',
+                    "type": "PlominoColumn",
                     "url": column.absolute_url()
                 })
             plomino_view.append({
                 "label": "Columns",
                 "folder": True,
                 "children": columns,
-                "type": "columns",
+                "type": "PlominoColumn",
+                "url": view.absolute_url()
             })
             views.append({
                 "label": view.title,
-                "type": "view",
+                "type": "PlominoView",
                 "children": plomino_view,
                 "url": view.absolute_url(),
             })
@@ -359,7 +363,7 @@ class DatabaseView(BrowserView):
 
             agents.append({
                 "label" : agent.title,
-                "type" : "agent",
+                "type" : "PlominoAgent",
                 "url" : agent.absolute_url()
             })
 
@@ -369,19 +373,22 @@ class DatabaseView(BrowserView):
                 "label": "Forms",
                 "folder": True,
                 "children": forms,
-                "type" : 'database'
+                "type" : 'PlominoForm',
+                "url" : database.absolute_url()
             },
             {
                 "label": "Views",
                 "folder": True,
                 "children": views,
-                "type" : 'views'
+                "type" : 'PlominoView',
+                "url" : database.absolute_url()
             },
             {
                 "label": "Agents",
                 "folder": True,
                 "children": agents ,
-                "type" : 'agents'
+                "type" : 'PlominoAgent',
+                "url" : database.absolute_url()
             }
         ]
         self.request.RESPONSE.setHeader(

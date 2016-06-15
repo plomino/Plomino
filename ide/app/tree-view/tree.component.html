@@ -15,7 +15,7 @@
 <ul *ngIf="!filtered" class="tree-wrap">
   <li *ngFor="let type of data" class="hasChild" [class.displayed]="type.collapsed || type.children.length === 0">
     <span (click)="type.collapsed = !type.collapsed">{{type.label}}</span>
-    <span (click)="onAdd({type:type.label})" class="link glyphicon glyphicon-plus click-cursor"></span>
+    <span (click)="onAdd({url:type.url, type:type.type})" class="link glyphicon glyphicon-plus click-cursor"></span>
     <ul *ngIf="type.label != 'Agents'" [collapse]="type.collapsed">
       <li *ngFor="let typeName of type.children" class="hasChild" [class.displayed]="typeName.collapsed || typeName.children.length === 0">
         <span #selectable [class.selected]="typeName === selected" (click)="typeName.collapsed = !typeName.collapsed">{{typeName.label}}</span>
@@ -25,7 +25,7 @@
         <ul [collapse]="typeName.collapsed">
           <li *ngFor="let childType of typeName.children" class="hasChild" [class.displayed]="childType.collapsed || childType.children.length === 0">
             <span (click)="childType.collapsed = !childType.collapsed">{{childType.label}}</span>
-            <span (click)="onAdd({type:childType.label,parentType:type.label,parent:typeName.label})" class="link glyphicon glyphicon-plus click-cursor"></span>
+            <span (click)="onAdd({url:childType.url, type:childType.type})" class="link glyphicon glyphicon-plus click-cursor"></span>
             <ul [collapse]="childType.collapsed || childType.children.length === 0">
               <li *ngFor="let childName of childType.children">
                 <span #selectable [class.selected]="isItSelected(childName)">{{childName.label}}</span>

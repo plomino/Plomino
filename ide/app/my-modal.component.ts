@@ -17,6 +17,7 @@ export class MyModalComponent {
 
     ngAfterViewInit() {
         this.modal.open();
+        console.log(this.data);
     }
     onModalClose() {
         if (this.data.name === undefined || !/\S/.test(this.data.name)) {
