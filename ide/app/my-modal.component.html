@@ -4,9 +4,25 @@
   </modal-header>
   <modal-body>
     <alert *ngIf="nameError" [type]="'danger'">Please enter a name</alert>
-    <form class="form-inline">
+    <form class="form-horizontal">
       <div class="form-group" [class.has-error]="nameError">
-        <input autofocus (keyup.enter)="onModalClose()" [(ngModel)]="data.name" class="form-control input-sm">
+        <label class="col-sm-3 control-label">Name:</label>
+        <div class="col-sm-9">
+          <input autofocus (keyup.enter)="onModalClose()" [(ngModel)]="data.name" class="form-control input-sm">
+        </div>
+      </div>
+      <div class="form-group" *ngIf="data.isAction">
+        <label class="col-sm-3 control-label">Action Type:</label>
+        <div class="col-sm-9">
+          <select class="form-control input-sm" [(ngModel)]="data.action_type">
+            <option value="OPENFORM" default>Open form</option>
+            <option value="OPENVIEW">Open view</option>
+            <option value="CLOSE">Close</option>
+            <option value="SAVE">Save</option>
+            <option value="PYTHON">Python script</option>
+            <option value="REDIRECT">Redirect formula</option>
+          </select>
+        </div>
       </div>
     </form>
   </modal-body>

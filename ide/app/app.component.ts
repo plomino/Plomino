@@ -62,6 +62,7 @@ export class AppComponent {
     }
 
     onAdd(event: any) {
+        event.isAction = event.type == "PlominoAction";
         this.modalData = event;
         this.isModalOpen = true;
     }
@@ -135,10 +136,10 @@ export class AppComponent {
             "@type": event.type,
             "title": event.name
         };
-        if (event.type == "Agents")
+        if (event.type == "PlominoAgent")
             newElement.content = "";
-        if (event.type == "Actions")
-            newElement.action_type = "OPENFORM";
+        if (event.type == "PlominoAction")
+            newElement.action_type = event.action_type;
         this._elementService.postElement(event.url,newElement)
             .subscribe(data => this.getTree());
     }
