@@ -33,8 +33,7 @@ export class ElementService {
     }
 
     patchElement(id: string, element: any) {
-        this.http.patch(id,element, { headers: this.headers })
-        .map(response => response === null ? null : response).subscribe();
+        return this.http.patch(id, element, { headers: this.headers });
     }
 
     postElement(url: string, newElement: any) {

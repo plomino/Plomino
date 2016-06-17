@@ -52,8 +52,11 @@ export class ACEEditorComponent {
         this.id = 'editor' + this.aceNumber;
         this._elementService.getElement(this.url).subscribe((data) => {
             this.type = data['@type'];
-            this.fullType = data.parent['@type'].replace('Plomino', '').replace('Database', '') + this.type.replace('Plomino', '');
-            this.name = this.url.replace(window.location.href.replace("++resource++Products.CMFPlomino/ide/index.html",""), "");
+            this.fullType = data.parent['@type']
+                .replace('Plomino', '')
+                .replace('Database', '') + this.type.replace('Plomino', '');
+            this.name = this.url.replace(window.location.href
+                .replace("++resource++Products.CMFPlomino/ide/index.html",""), "");
             this._elementService.getElementCode("../../code?" + this.fullType + "=" + this.name)
                 .subscribe((code: string) => {
                     let parsed = JSON.parse(code);
@@ -72,7 +75,10 @@ export class ACEEditorComponent {
         this.editor = ace.edit(this.id);
         this.editor.setTheme("ace/theme/xcode");
         this.editor.getSession().setMode("ace/mode/python");
-        this.editor.setOptions({ enableBasicAutocompletion: true, enableLiveAutocompletion: true });
+        this.editor.setOptions({
+            enableBasicAutocompletion: true,
+            enableLiveAutocompletion: true
+        });
         let staticWordCompleter = {
             getCompletions: (editor: any, session: any, pos: any, prefix: any, callback: any) => {
                 var wordList = this.getMethodList();
@@ -135,7 +141,8 @@ export class ACEEditorComponent {
         let methods: any[] = [];
         for (let i = this.editor.getSession().getLength(); i >= 0; i--) {
             if (this.editor.getSession().getLine(i).match(/^##.START.*{$/) != null) {
-                let id = this.editor.getSession().getLine(i).match(/^##.START(.*){$/).pop().trim();
+                let id = this.editor.getSession().getLine(i)
+                    .match(/^##.START(.*){$/).pop().trim();
                 let {name, desc, error} = this.getMethodInfos(id);
                 methods.push({
                     row: i,
@@ -165,10 +172,20 @@ export class ACEEditorComponent {
     }
 
     getMethodList(): any[] {
-        let buildMethod = (name: string) => { return { caption: name, value: "## START " + name + " {\n\n## END " + name + " }", popup: false } };
+        let buildMethod = (name: string) => {
+            return {
+                caption: name,
+                value: "## START " + name + " {\n\n## END " + name + " }",
+                popup: false
+            }
+        };
         switch (this.type) {
             case "PlominoForm":
-                return this.methodList.map((method) => ({ caption: method.id, value: "## START " + method.id + " {\n\n## END " + method.id + " }", popup: false }));
+                return this.methodList.map((method) => ({
+                    caption: method.id,
+                    value: "## START " + method.id + " {\n\n## END " + method.id + " }",
+                    popup: false
+                }));
             case "PlominoField":
                 return [
                     buildMethod("formula"),

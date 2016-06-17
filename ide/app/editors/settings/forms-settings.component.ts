@@ -57,8 +57,12 @@ export class FormsSettingsComponent {
                 "resources_js": resourcesJS,
                 "resources_css": resourcesCSS
             };
-            this._elementService.patchElement(id, JSON.stringify(element));
-            this.titleChanged.emit(this.data.title);
-            this.isDirty.emit(false);
+            this._elementService.patchElement(id, JSON.stringify(element)).subscribe(
+                () => {
+                    this.titleChanged.emit(this.data.title);
+                    this.isDirty.emit(false);
+                },
+                err => console.error(err)
+            );
     }
 }

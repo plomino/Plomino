@@ -55,8 +55,12 @@ export class ViewsSettingsComponent {
                 "reverse_sorting": reverseSorting,
                 "static_rendering": staticRendering
         };
-        this._elementService.patchElement(id, JSON.stringify(element));
-        this.titleChanged.emit(this.data.title);
-        this.isDirty.emit(false);
+        this._elementService.patchElement(id, JSON.stringify(element)).subscribe(
+            () => {
+                this.titleChanged.emit(this.data.title);
+                this.isDirty.emit(false);
+            },
+            err => console.error(err)
+        );
     }
 }

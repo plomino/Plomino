@@ -44,8 +44,12 @@ export class ActionsSettingsComponent {
             "action_display": actionDisplay,
             "in_action_bar": inActionBar
         };
-        this._elementService.patchElement(id, JSON.stringify(element));
-        this.titleChanged.emit(this.data.title);
-        this.isDirty.emit(false);
+        this._elementService.patchElement(id, JSON.stringify(element)).subscribe(
+            () => {
+                this.titleChanged.emit(this.data.title);
+                this.isDirty.emit(false);
+            },
+            err => console.error(err)
+        );
     }
 }

@@ -13,6 +13,7 @@ import { FieldsSettingsComponent }      from './editors/settings/fields-settings
 import { ActionsSettingsComponent }     from './editors/settings/actions-settings.component';
 import { ViewsSettingsComponent }       from './editors/settings/views-settings.component';
 import { ColumnsSettingsComponent }     from './editors/settings/columns-settings.component';
+import { AgentsSettingsComponent }      from './editors/settings/agents-settings.component';
 import { MyModalComponent }             from './my-modal.component';
 
 // Services
@@ -33,7 +34,8 @@ import { ElementService }               from './services/element.service';
         FieldsSettingsComponent,
         ActionsSettingsComponent,
         ViewsSettingsComponent,
-        ColumnsSettingsComponent
+        ColumnsSettingsComponent,
+        AgentsSettingsComponent
     ],
     providers: [TreeService, ElementService]
 })
@@ -187,12 +189,7 @@ export class AppComponent {
     onTabSelect(path: any) {
         this.selected = this.retrieveTab(path);
     }
-
-    onTabRename(path: any, title: string) {
-        this.retrieveTab(path).label = title;
-        path.length > 1 ? path[1].name = title : path[0].name = title;
-    }
-
+    
     retrieveTab(path: any) {
         let pindex = this.index(path[0].type);
         for (let elt of this.data[pindex].children) {

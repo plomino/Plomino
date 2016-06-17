@@ -57,8 +57,12 @@ export class FieldsSettingsComponent {
                     "to_be_indexed": toBeIndexed,
                     "index_type": indexType
                 };
-                this._elementService.patchElement(id, JSON.stringify(element));
-                this.titleChanged.emit(this.data.title);
-                this.isDirty.emit(false);
+                this._elementService.patchElement(id, JSON.stringify(element)).subscribe(
+                    () => {
+                        this.titleChanged.emit(this.data.title);
+                        this.isDirty.emit(false);
+                    },
+                    err => console.error(err)
+                );
     }
 }
