@@ -54,6 +54,6 @@
     <p class="help-block">CSS resources loaded by this form. Enter one path per line.</p>
     <textarea #resourcesCSS ngControl="form.controls.resourcesCSS" type="text" class="form-control" id="formCSS">{{data?.resources_css}}</textarea>
   </div>
-  <button type="submit" class="btn btn-primary">Sauvegarder</button>
-  <button class="btn btn-default">Annuler</button>
+  <button type="submit" class="btn btn-primary">Save</button>
+  <button type="button" (click)="deleteElement()" class="btn btn-danger">Delete</button>
 </form>

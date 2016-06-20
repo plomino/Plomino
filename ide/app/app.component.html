@@ -8,12 +8,12 @@
         </template>
         <my-tiny-mce *ngIf="tabz.editor==='layout'" [id]="tabz.url" (isDirty)="tabz.isdirty=$event"></my-tiny-mce>
         <my-ace-editor *ngIf="tabz.editor==='code'" [url]="tabz.url" [path]="tabz.path" [aceNumber]="aceNumber" (isDirty)="tabz.isdirty=$event"></my-ace-editor>
-        <my-forms-settings *ngIf="tabz.editor === 'settings' && tabz.path[0].type === 'Forms' && tabz.path.length < 2" [id]='tabz.url' (titleChanged)='tabz.title=$event; getTree()'(isDirty)="tabz.isdirty=$event"></my-forms-settings>
-        <my-fields-settings *ngIf="tabz.editor === 'settings' && tabz.path[0].type === 'Forms' && tabz.path[1]?.type === 'Fields'" [id]='tabz.url' (titleChanged)='tabz.title=$event; getTree()'(isDirty)="tabz.isdirty=$event"></my-fields-settings>
-        <my-actions-settings *ngIf="tabz.editor === 'settings' && tabz.path[1]?.type === 'Actions'" [id]='tabz.url' (titleChanged)='tabz.title=$event; getTree()' (isDirty)="tabz.isdirty=$event"></my-actions-settings>
-        <my-views-settings *ngIf="tabz.editor === 'settings' && tabz.path[0].type === 'Views' && tabz.path.length < 2" [id]='tabz.url' (titleChanged)='tabz.title=$event; getTree()'(isDirty)="tabz.isdirty=$event"></my-views-settings>
-        <my-columns-settings *ngIf="tabz.editor === 'settings' && tabz.path[1]?.type === 'Columns'" [id]='tabz.url' (titleChanged)='tabz.title=$event; getTree()'(isDirty)="tabz.isdirty=$event"></my-columns-settings>
-        <my-agents-settings *ngIf="tabz.editor === 'settings' && tabz.path[0].type === 'Agents'" [id]='tabz.url' (titleChanged)='tabz.title=$event; getTree()'(isDirty)="tabz.isdirty=$event"></my-agents-settings>
+        <my-forms-settings *ngIf="tabz.editor === 'settings' && tabz.path[0].type === 'Forms' && tabz.path.length < 2" [id]='tabz.url' (elementDeleted)='tabs.splice(tabs.indexOf(tabz),1); getTree()' (titleChanged)='tabz.title=$event; getTree()'(isDirty)="tabz.isdirty=$event"></my-forms-settings>
+        <my-fields-settings *ngIf="tabz.editor === 'settings' && tabz.path[0].type === 'Forms' && tabz.path[1]?.type === 'Fields'" [id]='tabz.url' (elementDeleted)='tabs.splice(tabs.indexOf(tabz),1); getTree()' (titleChanged)='tabz.title=$event; getTree()'(isDirty)="tabz.isdirty=$event"></my-fields-settings>
+        <my-actions-settings *ngIf="tabz.editor === 'settings' && tabz.path[1]?.type === 'Actions'" [id]='tabz.url' (elementDeleted)='tabs.splice(tabs.indexOf(tabz),1); getTree()' (titleChanged)='tabz.title=$event; getTree()' (isDirty)="tabz.isdirty=$event"></my-actions-settings>
+        <my-views-settings *ngIf="tabz.editor === 'settings' && tabz.path[0].type === 'Views' && tabz.path.length < 2" [id]='tabz.url' (elementDeleted)='tabs.splice(tabs.indexOf(tabz),1); getTree()' (titleChanged)='tabz.title=$event; getTree()'(isDirty)="tabz.isdirty=$event"></my-views-settings>
+        <my-columns-settings *ngIf="tabz.editor === 'settings' && tabz.path[1]?.type === 'Columns'" [id]='tabz.url' (elementDeleted)='tabs.splice(tabs.indexOf(tabz),1); getTree()' (titleChanged)='tabz.title=$event; getTree()'(isDirty)="tabz.isdirty=$event"></my-columns-settings>
+        <my-agents-settings *ngIf="tabz.editor === 'settings' && tabz.path[0].type === 'Agents'" [id]='tabz.url' (elementDeleted)='tabs.splice(tabs.indexOf(tabz),1); getTree()' (titleChanged)='tabz.title=$event; getTree()'(isDirty)="tabz.isdirty=$event"></my-agents-settings>
       </tab>
     </tabset>
   </div>

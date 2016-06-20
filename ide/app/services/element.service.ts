@@ -44,6 +44,10 @@ export class ElementService {
             .map((res: Response) => res.json());
     }
 
+    deleteElement(url: string) {
+        return this.http.delete(url);
+    }
+
     searchElement(query: string) {
         return this.http.get('../../search?SearchableText='+query+'*', { headers: this.headers }).map((res: Response) => res.json());
     }

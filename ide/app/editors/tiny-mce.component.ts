@@ -44,7 +44,12 @@ export class TinyMCEComponent {
 
     saveFormLayout() {
         if(tinymce.activeEditor !== null){
-            this._elementService.patchElement(this.id, JSON.stringify({"form_layout":tinymce.activeEditor.getContent()}));
+            this._elementService.patchElement(this.id, JSON.stringify({
+                "form_layout": tinymce.activeEditor.getContent()
+            })).subscribe(
+                () => this.isDirty.emit(false),
+                err => console.error(err)
+            );
         }
         this.isDirty.emit(false);
     }

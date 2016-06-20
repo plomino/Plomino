@@ -12,6 +12,7 @@ export class ColumnsSettingsComponent {
     data: any;
     @Output() isDirty = new EventEmitter();
     @Output() titleChanged = new EventEmitter();
+    @Output() elementDeleted = new EventEmitter();
     @ViewChild('form') form: any;
 
     constructor(private _elementService: ElementService) { }
@@ -47,6 +48,13 @@ export class ColumnsSettingsComponent {
                 this.titleChanged.emit(this.data.title);
                 this.isDirty.emit(false);
             },
+            err => console.error(err)
+        );
+    }
+    
+    deleteElement() {
+        this._elementService.deleteElement(this.data["@id"]).subscribe(
+            () => this.elementDeleted.emit(this.data["@id"]),
             err => console.error(err)
         );
     }
