@@ -1,12 +1,13 @@
 import { Component, Input, Output, EventEmitter, ViewChildren, OnChanges, ContentChild } from '@angular/core';
 import { CollapseDirective }                                                             from 'ng2-bootstrap/ng2-bootstrap';
 import { ElementService }                                                                from '../services/element.service';
+import { DND_DIRECTIVES }                                                                from 'ng2-dnd/ng2-dnd';
 
 @Component({
     selector: 'my-tree',
     template: require('./tree.component.html'),
     styles: [require('./tree.component.css')],
-    directives: [CollapseDirective],
+    directives: [CollapseDirective, DND_DIRECTIVES],
     providers: [ElementService]
 })
 export class TreeComponent {
@@ -14,6 +15,7 @@ export class TreeComponent {
     @Input() selected: any;
     @Output() edit = new EventEmitter();
     @Output() add = new EventEmitter();
+    @Output() isDragged = new EventEmitter();
     @ViewChildren('selectable') element: any;
 
     searchResults: any;

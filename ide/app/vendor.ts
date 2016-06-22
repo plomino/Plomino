@@ -1,9 +1,10 @@
 import 'jquery/dist/jquery';
 import 'es6-shim/es6-shim';
 import 'reflect-metadata';
-import 'zone.js';
+import 'zone.js/dist/zone';
 import '@angular/platform-browser';
 import '@angular/core';
+import 'ng2-dnd/ng2-dnd';
 
 // -- Boostrap modal --
 
@@ -24,3 +25,4 @@ import 'tinymce/themes/modern/theme';
 import 'tinymce/plugins/code/plugin';
 import 'tinymce/plugins/save/plugin';
 import 'tinymce/plugins/link/plugin';
+import 'tinymce/plugins/paste/plugin';

@@ -1,12 +1,12 @@
 <div class="wrap-app">
-  <my-tree class="well" [data]="data" [selected]="selected" (add)="onAdd($event)" (edit)="onEdit($event)"></my-tree>
+  <my-tree class="well" [data]="data" [selected]="selected" (add)="onAdd($event)" (edit)="onEdit($event)" (isDragged)="isDragged = $event"></my-tree>
   <div class="main-app panel">
     <tabset>
       <tab *ngFor="let tabz of tabs" [heading]="" [removable]="true" (removed)="onTabClose(tabz)" (select)="onTabSelect(tabz.path)">
         <template tabHeading>
             <span [class.tabunsaved]="tabz.isdirty"><span *ngIf="tabz.isdirty">* </span>{{tabz.title}} / {{tabz.editor}}</span>
         </template>
-        <my-tiny-mce *ngIf="tabz.editor==='layout'" [id]="tabz.url" (isDirty)="tabz.isdirty=$event"></my-tiny-mce>
+        <my-tiny-mce *ngIf="tabz.editor==='layout'" [id]="tabz.url" (isDirty)="tabz.isdirty=$event" [isDragged]="isDragged"></my-tiny-mce>
         <my-ace-editor *ngIf="tabz.editor==='code'" [url]="tabz.url" [path]="tabz.path" [aceNumber]="aceNumber" (isDirty)="tabz.isdirty=$event"></my-ace-editor>
         <my-forms-settings *ngIf="tabz.editor === 'settings' && tabz.path[0].type === 'Forms' && tabz.path.length < 2" [id]='tabz.url' (elementDeleted)='tabs.splice(tabs.indexOf(tabz),1); getTree()' (titleChanged)='tabz.title=$event; getTree()'(isDirty)="tabz.isdirty=$event"></my-forms-settings>
         <my-fields-settings *ngIf="tabz.editor === 'settings' && tabz.path[0].type === 'Forms' && tabz.path[1]?.type === 'Fields'" [id]='tabz.url' (elementDeleted)='tabs.splice(tabs.indexOf(tabz),1); getTree()' (titleChanged)='tabz.title=$event; getTree()'(isDirty)="tabz.isdirty=$event"></my-fields-settings>
