@@ -1,7 +1,7 @@
 <form (ngSubmit)='onSubmit(data["@id"], title.value, desc.value, runAs.value)' #form="ngForm">
   <div class="form-group">
     <label for="title">Titre</label>
-    <input #title ngControl="form.controls.title" [ngModel]='data?.title' (ngModelChange)="data.title=$event" type="text" class="form-control" id="title" required="true">
+    <input #title ngControl="form.controls.title" [value]='data?.title' type="text" class="form-control" id="title" required="true">
   </div>
   <div class="form-group">
     <label for="id">ID</label>
@@ -10,7 +10,7 @@
   <div class="form-group">
     <label for="desc">Description</label>
     <p class="help-block">Utilisé dans les pages listant des éléments et les pages de résultats de recherche.</p>
-    <textarea #desc ngControl="form.controls.desc" type="text" class="form-control" id="desc">{{data?.description}}</textarea>
+    <textarea #desc ngControl="form.controls.desc" type="text" class="form-control" id="desc" [value]="data?.description"></textarea>
   </div>
   <div class="form-group">
     <label>Run as</label>

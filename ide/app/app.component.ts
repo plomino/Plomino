@@ -11,6 +11,7 @@ import { ACEEditorComponent }           from './editors/ace-editor.component';
 import { FormsSettingsComponent }       from './editors/settings/forms-settings.component';
 import { FieldsSettingsComponent }      from './editors/settings/fields-settings.component';
 import { ActionsSettingsComponent }     from './editors/settings/actions-settings.component';
+import { HideWhenSettingsComponent }    from './editors/settings/hide_when-settings.component';
 import { ViewsSettingsComponent }       from './editors/settings/views-settings.component';
 import { ColumnsSettingsComponent }     from './editors/settings/columns-settings.component';
 import { AgentsSettingsComponent }      from './editors/settings/agents-settings.component';
@@ -33,6 +34,7 @@ import { ElementService }               from './services/element.service';
         FormsSettingsComponent,
         FieldsSettingsComponent,
         ActionsSettingsComponent,
+        HideWhenSettingsComponent,
         ViewsSettingsComponent,
         ColumnsSettingsComponent,
         AgentsSettingsComponent
@@ -170,6 +172,8 @@ export class AppComponent {
                             return 0;
                         case 'Actions':
                             return 1;
+                        case 'Hide Whens':
+                            return 2;
                     }
                     break;
                 case 1:
@@ -189,7 +193,7 @@ export class AppComponent {
     onTabSelect(path: any) {
         this.selected = this.retrieveTab(path);
     }
-    
+
     retrieveTab(path: any) {
         let pindex = this.index(path[0].type);
         for (let elt of this.data[pindex].children) {

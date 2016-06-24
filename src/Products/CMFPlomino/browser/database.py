@@ -46,7 +46,7 @@ class DatabaseView(BrowserView):
                 'content-type', 'text/plain; charset=utf-8')
 
             type = self.request.form.keys()[0]
-            if type not in ["Form", "FormField", "FormAction", "View", "ViewAction", "ViewColumn", "Agent"]:
+            if type not in ["Form", "FormField", "FormAction", "FormHidewhen", "View", "ViewAction", "ViewColumn", "Agent"]:
                 return "Parameter error"
 
             element = self.getElementByType(type, self.request.form[type])
@@ -55,6 +55,9 @@ class DatabaseView(BrowserView):
 
             if type == "Agent":
                 return json.dumps({"code" : element.content, "methods" : []})
+
+            if type == "FormHidewhen":
+                return json.dumps({"code" : element.formula, "methods" : []})
 
             methods = self.getMethods(type)
             code = ""
@@ -81,6 +84,13 @@ class DatabaseView(BrowserView):
 
             if type == "Agent":
                 self.context.getAgent(id).content = code
+                return json.dumps({
+                    "type": "OK"
+                })
+
+            if type == "FormHidewhen":
+                id = id.split('/')
+                self.context.getForm(id[0]).getHidewhen(id[1]).formula = code
                 return json.dumps({
                     "type": "OK"
                 })
@@ -159,6 +169,10 @@ class DatabaseView(BrowserView):
         if type == "FormAction":
             id = name.split('/')
             return self.context.getForm(id[0]).getAction(id[1])
+
+        if type == "FormHidewhen":
+            id = name.split('/')
+            return self.context.getForm(id[0]).getHidewhen(id[1])
 
         if type == "View":
             return self.context.getView(name)
@@ -310,6 +324,20 @@ class DatabaseView(BrowserView):
                 "folder": True,
                 "children": actions,
                 "type" : "PlominoAction",
+                "url" : form.absolute_url()
+            })
+            hide_whens = []
+            for hide_when in form.getHidewhenFormulas():
+                hide_whens.append({
+                    "label": hide_when.title,
+                    'type' : 'PlominoHidewhen',
+                    "url" : hide_when.absolute_url()
+                })
+            plomino_form.append({
+                "label": "Hide Whens",
+                "folder": True,
+                "children": hide_whens,
+                "type" : "PlominoHidewhen",
                 "url" : form.absolute_url()
             })
             forms.append({
