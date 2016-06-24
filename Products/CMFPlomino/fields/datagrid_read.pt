@@ -3,30 +3,31 @@
             fieldname python:options['fieldname'];
             request field/REQUEST;
             v options/fieldvalue;
+            rendered_data python:field.getSettings().tojson(v, rendered=True);
+            need_ajax python:'false' if  'rendered' in v and len(v['rendered']) > 10 else 'true';
             form field/getParentNode;
             form_method form/getFormMethod;
             widget python:field.getSettings('widget');">
 
     <tal:read_dynamic condition="python:widget=='REGULAR'">
-        <script type="text/javascript" charset="utf-8"
-            tal:define="param python:field.getSettings().getParameters();
-                        request_items python:field.getSettings().request_items_aoData(request);"
-            tal:content="structure string:
-                        jQuery(document).ready(function() {
-                            jQuery('#${fieldname}_datagrid').dataTable( {
-                                'sAjaxSource': 'tojson?item=${fieldname}&rendered=true&datatables=true',
-                                'sServerMethod': '${form_method}',
-                                'fnServerParams': function ( aoData ) {
-                                    ${request_items}
-                                },
-                                'bJQueryUI': true,
-                                ${param},
-                                'oLanguage': {
-                                    'sUrl': '@@collective.js.datatables.translation'
-                                }
-                            } );
-                        } );">
-        </script>
+            <script type="text/javascript" charset="utf-8"
+                tal:define="param python:field.getSettings().getParameters();
+                            request_items python:field.getSettings().request_items_aoData(request);"
+                tal:content="structure string:
+                            jQuery(document).ready(function() {
+                                jQuery('#${fieldname}_datagrid').dataTable( {
+                                    'sAjaxSource': 'tojson?item=${fieldname}&rendered=true&datatables=true',
+                                    'bServerSide': ${need_ajax},
+                                    'sServerMethod': 'GET',
+                                    'aaData': ${rendered_data},
+                                    'bJQueryUI': true,
+                                    ${param},
+                                    'oLanguage': {
+                                        'sUrl': '@@collective.js.datatables.translation'
+                                    }
+                                } );
+                            } );">
+            </script>
         <table class="display" tal:attributes="id string:${fieldname}_datagrid"></table>
     </tal:read_dynamic>
 

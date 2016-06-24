@@ -234,6 +234,8 @@ class DatagridField(BaseField):
         
         """ Return a string representing REQUEST.items as aoData.push calls.
         """
+        #if self.context.id in request:
+        #    return
         aoData_templ = "aoData.push(%s); "
         aoDatas = []
         for k,v in request.form.items():
@@ -326,9 +328,6 @@ class DatagridField(BaseField):
         if not fieldValue:
             return fieldValue
 
-        # if doc is not a PlominoDocument, no processing needed
-        if not doc or doc.isNewDocument():
-            return fieldValue
 
         rawValue = fieldValue
 
@@ -337,7 +336,7 @@ class DatagridField(BaseField):
             mapped_fields = [
                 f.strip() for f in self.field_mapping.split(',')]
         # item names is set by `PlominoForm.createDocument`
-        item_names = doc.getItem(self.context.id+'_itemnames')
+        item_names = doc.getItem(self.context.id+'_itemnames') if doc else None
 
         if mapped_fields:
             if not item_names:
