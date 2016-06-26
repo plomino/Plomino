@@ -96,6 +96,14 @@
         />
 
     <browser:page
+        for="Products.CMFPlomino.contents.form.IPlominoForm"
+        name="add-field"
+        class=".form.FormView"
+        attribute="addField"
+        permission="plomino.DESIGN_PERMISSION"
+        />
+
+    <browser:page
         for="Products.CMFPlomino.interfaces.IPlominoContext"
         name="document"
         permission="zope.Public"
