@@ -11,6 +11,8 @@
         <ul>
         <li><a tal:attributes="href string:${db_url}/edit"
             i18n:translate="">Parameters</a></li>
+        <li><a tal:attributes="href string:${db_url}/++resource++Products.CMFPlomino/ide/index.html" target="_new"
+            i18n:translate="">IDE</a></li>
         <li><a tal:attributes="href string:${db_url}/DatabaseDesign"
             i18n:translate="">Design</a></li>
         <li><a tal:attributes="href string:${db_url}/DatabaseACL"
