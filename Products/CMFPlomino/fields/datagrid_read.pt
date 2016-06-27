@@ -3,8 +3,11 @@
             fieldname python:options['fieldname'];
             request field/REQUEST;
             v options/fieldvalue;
-            rendered_data python:field.getSettings().tojson(v, rendered=True);
-            need_ajax python:'false' if  'rendered' in v and len(v['rendered']) > 10 else 'true';
+            need_ajax python:field.id in request or 'rendered' in v and len(v['rendered']) > 10;
+            sAjaxSource string:'sAjaxSource': 'tojson?item=${fieldname}&rendered=true&datatables=true','sServerMethod': 'GET',;
+            sAjaxSource python:sAjaxSource if need_ajax else '';
+            bServerSide python:'true' if not need_ajax else 'false';
+            rendered_data python:field.getSettings().tojson(v, rendered=True) if not need_ajax else '[]';
             form field/getParentNode;
             form_method form/getFormMethod;
             widget python:field.getSettings('widget');">
@@ -16,9 +19,7 @@
                 tal:content="structure string:
                             jQuery(document).ready(function() {
                                 jQuery('#${fieldname}_datagrid').dataTable( {
-                                    'sAjaxSource': 'tojson?item=${fieldname}&rendered=true&datatables=true',
-                                    'bServerSide': ${need_ajax},
-                                    'sServerMethod': 'GET',
+                                    ${sAjaxSource}
                                     'aaData': ${rendered_data},
                                     'bJQueryUI': true,
                                     ${param},

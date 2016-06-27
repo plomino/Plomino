@@ -4,8 +4,11 @@
             request field/REQUEST;
             v options/fieldvalue;
             data python:field.getSettings().tojson(v);
-            rendered_data python:field.getSettings().tojson(v, rendered=True);
-            need_ajax python:'false' if field.id in request or 'rendered' in v and len(v['rendered']) > 10 else 'true';
+            need_ajax python:field.id in request or 'rendered' in v and len(v['rendered']) > 10;
+            sAjaxSource string:'sAjaxSource': 'tojson?item=${fieldname}&rendered=true&datatables=true','sServerMethod': 'GET',;
+            sAjaxSource python:sAjaxSource if need_ajax else '';
+            bServerSide python:'true' if not need_ajax else 'false';
+            rendered_data python:field.getSettings().tojson(v, rendered=True) if not need_ajax else '[]';
             form field/getParentNode;
             form_name form/id;
             form_url python:form.absolute_url();
@@ -35,9 +38,7 @@
                 var ${fieldname}_datatable;
                 jQuery(document).ready(function() {
                     ${fieldname}_datatable = jQuery('#${fieldname}_datagrid').dataTable( {
-                        'sAjaxSource': 'tojson?item=${fieldname}&rendered=true&datatables=true',
-                        'bServerSide': ${need_ajax}, //TODO: never call options/getValue if using serverside
-                        'sServerMethod': 'GET',
+                        ${sAjaxSource}
                         'aaData': ${rendered_data},
                         'bJQueryUI': true,
                         ${param},
