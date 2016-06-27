@@ -6,20 +6,44 @@
 
   <!-- Imports -->
   <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    .frontpage-spinner {
+        animation: spin 1.5s linear infinite;
+        position: relative;
+        width: 50px;
+        height: 50px;
+        margin: 100px auto 0;
+        border: 2px solid #1f94ed;
+        border-radius: 50%;
+    }
+    .frontpage-spinner:after {
+        content: "";
+        width: 85%;
+        height: 85%;
+        background: -webkit-linear-gradient(45deg, white 0%, white 40%, rgba(255, 255, 255, 0.7) 60%, rgba(255, 255, 255, 0) 100%);
+        position: absolute;
+        top: 0;
+        left: 0;
+        transform: translate(-5%, -5%);
+    }
 
+    @keyframes spin {
+        0% {
+          transform: rotate(0deg);
+        }
+        100% {
+          transform: rotate(360deg);
+        }
+    }
+  </style>
 </head>
 
 <!-- Display the application -->
 
 <body>
   <my-app>
-    <!-- thx to http://codepen.io/aurer/pen/jEGbA -->
-    <svg style="width: 100%;margin-top: 250px;" version="1.1" id="loader-1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="40px" height="40px" viewBox="0 0 50 50" style="enable-background:new 0 0 50 50;"
-        xml:space="preserve">
-      <path fill="#337AB7" d="M25.251,6.461c-10.318,0-18.683,8.365-18.683,18.683h4.068c0-8.071,6.543-14.615,14.615-14.615V6.461z">
-        <animateTransform attributeType="xml" attributeName="transform" type="rotate" from="0 25 25" to="360 25 25" dur="0.6s" repeatCount="indefinite" />
-      </path>
-    </svg>
+    <!-- thx to http://codepen.io/kittylion/npgAE -->
+    <div class="frontpage-spinner"></div>
   </my-app>
 </body>
 
