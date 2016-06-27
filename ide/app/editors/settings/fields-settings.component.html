@@ -1,7 +1,7 @@
 <form (ngSubmit)='onSubmit(data["@id"],title.value,desc.value,fieldType.value,fieldMode.value,indexType.value,readTemplate.value,editTemplate.value,mandatory.checked,toBeIndexed.checked)' #form="ngForm">
   <div class="form-group">
     <label for="title">Titre</label>
-    <input #title ngControl="form.controls.title" [value]='data?.title' type="text" class="form-control" id="title" required="true">
+    <input #title formControlName="form.controls.title" [value]='data?.title' type="text" class="form-control" id="title" required="true">
   </div>
   <div class="form-group">
     <label for="id">ID</label>
@@ -10,12 +10,12 @@
   <div class="form-group">
     <label for="desc">Description</label>
     <p class="help-block">Utilisé dans les pages listant des éléments et les pages de résultats de recherche.</p>
-    <textarea #desc ngControl="form.controls.desc" type="text" class="form-control" id="desc" [value]="data?.description"></textarea>
+    <textarea #desc formControlName="form.controls.desc" type="text" class="form-control" id="desc" [value]="data?.description"></textarea>
   </div>
   <div class="form-group">
     <label>Field type</label>
     <p class="help-block">Field type</p>
-    <select #fieldType ngControl="form.controls.fieldType" class="form-control" [value]="data?.field_type">
+    <select #fieldType formControlName="form.controls.fieldType" class="form-control" [value]="data?.field_type">
       <option value="GOOGLECHART">Google chart</option>
       <option value="TEXT">Text</option>
       <option value="NUMBER">Number</option>
@@ -33,7 +33,7 @@
   <div class="form-group">
     <label>Field mode</label>
     <p class="help-block">Field mode</p>
-    <select #fieldMode ngControl="form.controls.fieldMode" class="form-control" [value]="data?.field_mode">
+    <select #fieldMode formControlName="form.controls.fieldMode" class="form-control" [value]="data?.field_mode">
         <option value="EDITABLE">Editable</option>
         <option value="COMPUTED">Computed</option>
         <option value="CREATION">Computed on creation</option>
@@ -44,29 +44,29 @@
   <div class="form-group">
     <label for="fieldReadTemplate">Field read template</label>
     <p class="help-block">Custom rendering template in read mode</p>
-    <input #readTemplate ngControl="form.controls.readTemplate" type="text" class="form-control" id="fieldReadTemplate" [value]="data?.read_template">
+    <input #readTemplate formControlName="form.controls.readTemplate" type="text" class="form-control" id="fieldReadTemplate" [value]="data?.read_template">
   </div>
   <div class="form-group">
     <label for="fieldEditTemplate">Field edit template</label>
     <p class="help-block">Custom rendering template in edit mode</p>
-    <input #editTemplate ngControl="form.controls.readTemplate" type="text" class="form-control" id="fieldEditTemplate" [value]="data?.edit_template">
+    <input #editTemplate formControlName="form.controls.readTemplate" type="text" class="form-control" id="fieldEditTemplate" [value]="data?.edit_template">
   </div>
   <div class="checkbox">
     <label>
-      <input #mandatory ngControl="form.controls.mandatory" type="checkbox" [checked]="data?.mandatory"> Mandatory
+      <input #mandatory formControlName="form.controls.mandatory" type="checkbox" [checked]="data?.mandatory"> Mandatory
     </label>
     <p class="help-block">Is this field mandatory? (empty value will not be allowed)</p>
   </div>
   <div class="checkbox">
     <label>
-      <input #toBeIndexed ngControl="form.controls.toBeIndexed" type="checkbox" [checked]="data?.to_be_indexed"> Add to index
+      <input #toBeIndexed formControlName="form.controls.toBeIndexed" type="checkbox" [checked]="data?.to_be_indexed"> Add to index
     </label>
     <p class="help-block">The field will be searchable</p>
   </div>
   <div class="form-group">
     <label>Index type</label>
     <p class="help-block"> The way the field values will be indexed</p>
-    <select #indexType ngControl="form.controls.indexType" class="form-control" [value]="data?.index_type">
+    <select #indexType formControlName="form.controls.indexType" class="form-control" [value]="data?.index_type">
         <option value="DEFAULT">Default (FieldIndex)</option>
         <option value="DATERECURRINGINDEX">DateRecurringIndex</option>
         <option value="EXTENDEDPATHINDEX">ExtendedPathIndex</option>

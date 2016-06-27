@@ -1,11 +1,13 @@
 import { Component, Input, Output, EventEmitter, ViewChild } from '@angular/core';
+import { REACTIVE_FORM_DIRECTIVES } from '@angular/forms';
 import { ElementService } from '../../services/element.service';
 
 @Component({
     selector: 'my-columns-settings',
     template: require('./columns-settings.component.html'),
     styles: ['form {margin: 15px;} .help-block {font-style: italic;}'],
-    providers: [ElementService]
+    providers: [ElementService],
+    directives: [ REACTIVE_FORM_DIRECTIVES ]
 })
 export class ColumnsSettingsComponent {
     @Input() id: string;
@@ -51,7 +53,7 @@ export class ColumnsSettingsComponent {
             err => console.error(err)
         );
     }
-    
+
     deleteElement() {
         this._elementService.deleteElement(this.data["@id"]).subscribe(
             () => this.elementDeleted.emit(this.data["@id"]),

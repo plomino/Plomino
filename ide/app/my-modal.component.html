@@ -8,14 +8,14 @@
       <div class="form-group" [class.has-error]="nameError">
         <label class="col-sm-3 control-label">Name:</label>
         <div class="col-sm-9">
-          <input autofocus (keyup.enter)="onModalClose()" [(ngModel)]="data.name" class="form-control input-sm">
+          <input name="name" [(ngModel)]="name" autofocus (keyup.enter)="onModalClose()" class="form-control input-sm">
         </div>
       </div>
       <div class="form-group" *ngIf="data.isAction">
         <label class="col-sm-3 control-label">Action Type:</label>
         <div class="col-sm-9">
-          <select class="form-control input-sm" [(ngModel)]="data.action_type">
-            <option value="OPENFORM" default>Open form</option>
+          <select name="actionType" class="form-control input-sm" [(ngModel)]="action_type">
+            <option value="OPENFORM">Open form</option>
             <option value="OPENVIEW">Open view</option>
             <option value="CLOSE">Close</option>
             <option value="SAVE">Save</option>

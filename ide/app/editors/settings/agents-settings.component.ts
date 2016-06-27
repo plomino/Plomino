@@ -1,11 +1,13 @@
 import { Component, Input, Output, EventEmitter, ViewChild } from '@angular/core';
+import { REACTIVE_FORM_DIRECTIVES } from '@angular/forms';
 import { ElementService } from '../../services/element.service';
 
 @Component({
     selector: 'my-agents-settings',
     template: require('./agents-settings.component.html'),
     styles: ['form {margin: 15px;} .help-block {font-style: italix;}'],
-    providers: [ElementService]
+    providers: [ElementService],
+    directives: [ REACTIVE_FORM_DIRECTIVES ]
 })
 export class AgentsSettingsComponent {
     @Input() id: string;
@@ -47,7 +49,7 @@ export class AgentsSettingsComponent {
             err => console.error(err)
         );
     }
-    
+
     deleteElement() {
         this._elementService.deleteElement(this.data["@id"]).subscribe(
             () => this.elementDeleted.emit(this.data["@id"]),

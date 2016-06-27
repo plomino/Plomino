@@ -13,19 +13,25 @@ export class MyModalComponent {
     @Output() modalDismissed = new EventEmitter();
     @ViewChild('modal') modal: ModalComponent;
 
+    name: string;
+    action_type: string = "OPENFORM";
+
     nameError: boolean = false;
 
     ngAfterViewInit() {
         this.modal.open();
-        console.log(this.data);
     }
     onModalClose() {
-        if (this.data.name === undefined || !/\S/.test(this.data.name)) {
+        if (this.name === undefined || !/\S/.test(this.name)) {
             this.nameError = true;
             this.modal.open();
         }
         else {
-            this.modalClosed.emit(this.data);
+            let element = this.data;
+            element.name = this.name;
+            if(element.type === 'PlominoAction')
+                element.action_type = this.action_type;
+            this.modalClosed.emit(element);
         }
     }
     onModalDismiss() {

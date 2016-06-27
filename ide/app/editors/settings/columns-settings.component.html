@@ -1,7 +1,7 @@
 <form (ngSubmit)='onSubmit(data["@id"], title.value, desc.value, hiddenColumn.checked)' #form="ngForm">
   <div class="form-group">
     <label for="title">Titre</label>
-    <input #title ngControl="form.controls.title" [value]='data?.title' type="text" class="form-control" id="title" required="true">
+    <input #title formControlName="form.controls.title" [value]='data?.title' type="text" class="form-control" id="title" required="true">
   </div>
   <div class="form-group">
     <label for="id">ID</label>
@@ -10,18 +10,18 @@
   <div class="form-group">
     <label for="desc">Description</label>
     <p class="help-block">Utilisé dans les pages listant des éléments et les pages de résultats de recherche.</p>
-    <textarea #desc ngControl="form.controls.desc" type="text" class="form-control" id="desc" [value]="data?.description"></textarea>
+    <textarea #desc formControlName="form.controls.desc" type="text" class="form-control" id="desc" [value]="data?.description"></textarea>
   </div>
   <div class="form-group">
     <label>Field type</label>
     <p class="help-block">Field type</p>
-    <select ngControl="form.controls.fieldType" class="form-control">
+    <select formControlName="form.controls.fieldType" class="form-control">
       <option value="Aucune valeur">Aucune valeur</option>
     </select>
   </div>
   <div class="checkbox">
     <label>
-      <input #hiddenColumn ngControl="form.controls.hiddenColumn" type="checkbox" [checked]="data?.hidden_column"> Hidden column
+      <input #hiddenColumn formControlName="form.controls.hiddenColumn" type="checkbox" [checked]="data?.hidden_column"> Hidden column
     </label>
   </div>
 
