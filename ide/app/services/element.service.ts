@@ -39,7 +39,12 @@ export class ElementService {
     postElement(url: string, newElement: any) {
         let headers = new Headers();
         headers.append('Content-Type', 'application/json');
-        headers.append('Accept', 'application/json');
+        if(newElement['@type']=='PlominoField') {
+            url = url + '/@@add-field'
+            headers.append('Accept', '*/*');
+        } else {
+            headers.append('Accept', 'application/json');
+        }
         return this.http.post(url, JSON.stringify(newElement), { headers: headers })
             .map((res: Response) => res.json());
     }
