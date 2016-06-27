@@ -1,5 +1,6 @@
 var webpack = require('webpack');
 var htmlWebpackPlugin = require('html-webpack-plugin');
+var copyWebpackPlugin = require('copy-webpack-plugin');
 var path = require('path');
 
 module.exports = {
@@ -40,6 +41,9 @@ module.exports = {
     }]
   },
   plugins: [
+    new copyWebpackPlugin([
+        { from: 'node_modules/tinymce/skins', to: 'skins' }
+    ]),
     new webpack.optimize.CommonsChunkPlugin({
         name: ['main', 'vendor']
     }),

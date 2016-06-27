@@ -31,6 +31,7 @@
     "zone.js": "^0.6.12"
   },
   "devDependencies": {
+    "copy-webpack-plugin": "^3.0.1",
     "exports-loader": "^0.6.3",
     "extract-text-webpack-plugin": "^1.0.1",
     "html-webpack-plugin": "^2.17.0",
