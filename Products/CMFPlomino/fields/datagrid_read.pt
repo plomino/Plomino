@@ -3,7 +3,7 @@
             fieldname python:options['fieldname'];
             request field/REQUEST;
             v options/fieldvalue;
-            need_ajax python:field.id in request or 'rendered' in v and len(v['rendered']) > 10;
+            need_ajax python:field.id not in request and 'rendered' in v and len(v['rendered']) > 10;
             sAjaxSource string:'sAjaxSource': 'tojson?item=${fieldname}&rendered=true&datatables=true','sServerMethod': 'GET',;
             sAjaxSource python:sAjaxSource if need_ajax else '';
             bServerSide python:'true' if not need_ajax else 'false';

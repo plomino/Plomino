@@ -4,7 +4,7 @@
             request field/REQUEST;
             v options/fieldvalue;
             data python:field.getSettings().tojson(v);
-            need_ajax python:field.id in request or 'rendered' in v and len(v['rendered']) > 10;
+            need_ajax python:field.id not in request and 'rendered' in v and len(v['rendered']) > 10;
             sAjaxSource string:'sAjaxSource': 'tojson?item=${fieldname}&rendered=true&datatables=true','sServerMethod': 'GET',;
             sAjaxSource python:sAjaxSource if need_ajax else '';
             bServerSide python:'true' if not need_ajax else 'false';
@@ -39,7 +39,7 @@
                 jQuery(document).ready(function() {
                     ${fieldname}_datatable = jQuery('#${fieldname}_datagrid').dataTable( {
                         ${sAjaxSource}
-                        'aaData': ${rendered_data},
+                        'aaData': ${rendered_data}, //use this if field.id is in request (ie we there is an error on page)
                         'bJQueryUI': true,
                         ${param},
                         'fnDrawCallback': function() {
