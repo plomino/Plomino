@@ -18,7 +18,7 @@
         <select class="pat-select2" tal:attributes="id name; name name" multiple="true" lines="4"><tal:loop tal:repeat="v selection">
                 <tal:block tal:define="l python:v.split('|')">
                     <option 
-                        tal:attributes="value python:l[1]; selected python:((lcurrent and (l[1] in lcurrent or l[1] in lcurrent_ids) and 1) or 0"
+                        tal:attributes="value python:l[1]; selected python:(lcurrent and (l[1] in lcurrent or l[1] in lcurrent_ids) and 1) or 0"
                         tal:content="python:l[0]">value</option>
                 </tal:block>
         </tal:loop></select>
