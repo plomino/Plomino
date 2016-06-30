@@ -329,7 +329,6 @@ class PlominoView(Container):
             row = []
             for column in columns:
                 column_value = getattr(b, self.getIndexKey(column.id))
-                column_value = column.getColumnRender(column_value)
                 if column_value is None:
                     column_value = ''
                 elif isinstance(column_value, basestring):
