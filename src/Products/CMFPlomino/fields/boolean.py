@@ -43,6 +43,8 @@ class BooleanField(BaseField):
     def processInput(self, strValue):
         """
         """
+        if type(strValue) is bool:
+            return strValue
         if strValue == "1":
             return True
         else:
