@@ -56,8 +56,4 @@ export class HideWhenSettingsComponent {
             err => console.error(err)
         );
     }
-
-    test() {debugger;
-
-    }
 }

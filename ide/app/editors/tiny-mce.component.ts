@@ -1,4 +1,4 @@
-import {Component, Input, Output, EventEmitter} from '@angular/core';
+import {Component, Input, Output, EventEmitter, NgZone} from '@angular/core';
 import {ElementService} from '../services/element.service';
 import {DND_DIRECTIVES} from 'ng2-dnd/ng2-dnd';
 
@@ -31,18 +31,20 @@ export class TinyMCEComponent {
     @Output() isDirty = new EventEmitter();
     data: string;
 
-    constructor(private _elementService: ElementService) {}
+    constructor(private _elementService: ElementService, private zone: NgZone) {}
 
     ngOnInit() {
         tinymce.init({
             selector:'.tinymce-wrap',
-            plugins: ["code, save", "link"],
+            plugins: ["code", "save", "link"],
             toolbar: "save | undo redo | formatselect | bold italic underline | alignleft aligncenter alignright alignjustify | bullist numlist | outdent indent | unlink link | image",
             save_onsavecallback: () => { this.saveFormLayout() },
             setup : (editor:any) => {
-                 editor.on('change', (e:any) => {
-                    this.isDirty.emit(true);
-                 });
+                for (let event of ['change','keyup','cut','paste']) {
+                    editor.on(event, (e:any) => {
+                        this.emitDirty(true);
+                    });
+                }
             },
             content_style: require('./tiny-mce-content.css'),
 		    menubar: "file edit insert view format table tools",
@@ -54,8 +56,7 @@ export class TinyMCEComponent {
 
     getFormLayout() {
         this._elementService.getElementFormLayout(this.id).subscribe(
-            // check if it's a string, so it won't change its value to undefined
-            (data: string) => { tinymce.activeEditor.setContent(data ? data : ''); },
+            (data) => { tinymce.activeEditor.setContent(data ? data : ''); },
             err => console.error(err)
         );
     }
@@ -65,11 +66,15 @@ export class TinyMCEComponent {
             this._elementService.patchElement(this.id, JSON.stringify({
                 "form_layout": tinymce.activeEditor.getContent()
             })).subscribe(
-                () => this.isDirty.emit(false),
+                () => this.emitDirty(false),
                 err => console.error(err)
             );
         }
         this.isDirty.emit(false);
+    }
+
+    emitDirty(value: boolean) {
+        this.zone.run(() => this.isDirty.emit(value));
     }
 
     allowDrop() {
