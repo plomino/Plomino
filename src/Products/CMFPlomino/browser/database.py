@@ -252,6 +252,18 @@ class DatabaseView(BrowserView):
                 "id": "html_attributes_formula",
                 "name": "HTML attributes formula",
                 "desc": "Inject DOM attributes in the field tag"
+            },{
+                "id": "selectionlistformula",
+                "name": "Selection List Formula",
+                "desc": "Formula to compute the selection list elements"
+            },{
+                "id": "documentslistformula",
+                "name": "Documents list formula",
+                "desc": "Formula to compute the linkable documents list (must return a list of 'label|docid_or_path')"
+            },{
+                "id": "jssettings",
+                "name": "Javascript settings",
+                "desc": "Google Vizualization code"
             }],
             'FormAction': [{
                 "id": "content",

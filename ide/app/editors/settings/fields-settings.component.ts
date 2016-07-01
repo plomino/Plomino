@@ -73,6 +73,8 @@ export class FieldsSettingsComponent {
         this._elementService.getElement(this.id)
             .subscribe(
                 data => {
+                    if (data.field_type === 'SELECTION')
+                        data.selectionlist = data.selectionlist.join('\n');
                     this.data = data;
                     this.fieldTypeValue = data.field_type;
                     this.updateConditional();
@@ -163,7 +165,7 @@ export class FieldsSettingsComponent {
             case "SELECTION":
                 this.conditional.selection = {
                     "separator": this.data.separator,
-                    "selectionlist": this.data.selectionlist.join('\n'),
+                    "selectionlist": this.data.selectionlist,
                     "widget": this.data.widget
                 };
                 break;
@@ -194,11 +196,10 @@ export class FieldsSettingsComponent {
     }
 
     patchConditional() {
+        let element = JSON.parse(JSON.stringify(this.conditional[this.fieldTypeValue.toLowerCase()]));
         if (this.fieldTypeValue === "SELECTION") {
-            this.conditional.selection.selectionlist =
-                this.conditional.selection.selectionlist.split('\n');
+            element.selectionlist = this.conditional.selection.selectionlist.split('\n');
         }
-        let element = this.conditional[this.fieldTypeValue.toLowerCase()];
         this._elementService.patchElement(this.id, JSON.stringify(element)).subscribe(
             () => { this.isDirty.emit(false) }
         )
