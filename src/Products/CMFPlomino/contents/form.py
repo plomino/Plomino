@@ -264,7 +264,7 @@ class PlominoForm(Container):
             return
         value = value.splitlines()
         for url in value:
-            url = url.strip()
+            url = str(url.strip())
             if url:
                 if not url.lower().startswith(('http', '/')):
                     if url.startswith('./'):
