@@ -907,7 +907,11 @@ class DesignManager:
             if 'Dexterity' in element.meta_type:
                 design[element.id] = self.exportElementAsJSON(element)
             else:
-                design['resources'][element.id] = self.exportResourceAsJSON(
+                # resources
+                resource_id = element.id
+                if callable(resource_id):
+                    resource_id = resource_id()
+                design['resources'][resource_id] = self.exportResourceAsJSON(
                     element)
 
         data['design'] = design
