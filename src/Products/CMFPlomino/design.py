@@ -1109,19 +1109,19 @@ class DesignManager:
             if not total_elements:
                 total_elements = len(elements)
             for (name, element) in elements:
-                if name in ('resource', 'element', 'dbsettings'):
-                    if name == 'dbsettings':
-                        logger.info("Import db settings")
-                        self.importDbSettingsFromJSON(name, element)
-                    if name == 'element':
-                        logger.info("Import " + name)
-                        self.importElementFromJSON(self, name, element)
-                    if name == 'resource':
-                        logger.info("Import resource " + name)
+                if name == 'dbsettings':
+                    logger.info("Import db settings")
+                    self.importDbSettingsFromJSON(element)
+                elif name == 'resources':
+                    for (res_id, res) in design['resources'].items():
+                        logger.info("Import resource" + res_id)
                         self.importResourceFromJSON(
-                            self.resources, name, element)
-                    count = count + 1
-                    total = total + 1
+                            self.resources, res_id, res)
+                else:
+                    logger.info("Import " + name)
+                    self.importElementFromJSON(self, name, element)
+                count = count + 1
+                total = total + 1
                 if count == 10:
                     self.setStatus("Importing design (%d%%)" % int(
                         100 * total / total_elements))
