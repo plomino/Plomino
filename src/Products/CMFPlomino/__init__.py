@@ -7,6 +7,7 @@ import decimal
 from Globals import DevelopmentMode
 from json import JSONDecoder, JSONEncoder
 from jsonutil import jsonutil as json
+import Missing
 from time import time
 from plone.resource.interfaces import IResourceDirectory
 from Products.CMFCore import utils as cmfutils
@@ -33,11 +34,14 @@ _ = MessageFactory('Products.CMFPlomino')
 
 
 # Override default JSONEncoder/JSONDecoder classes in jsonutil to handle
-# dates:
+# dates and Missing Values.
+# Raise a TypeError if the object isn't serialisable.
 def _extended_json_encoding(obj):
     if isinstance(obj, DateTime):
         return {'<datetime>': True, 'datetime': obj.ISO()}
-    return json.dumps(obj)
+    if obj == Missing.Value:
+        return None
+    raise TypeError
 
 json._default_encoder = JSONEncoder(
     skipkeys=False,
