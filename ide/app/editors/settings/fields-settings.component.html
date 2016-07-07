@@ -30,6 +30,17 @@
       <option value="ATTACHMENT">File attachment</option>
     </select>
   </div>
+  <div class="form-group">
+    <label>Field mode</label>
+    <p class="help-block">Field mode</p>
+    <select #fieldMode formControlName="form.controls.fieldMode" class="form-control" [value]="data?.field_mode">
+      <option value="EDITABLE">Editable</option>
+      <option value="COMPUTED">Computed</option>
+      <option value="CREATION">Computed on creation</option>
+      <option value="DISPLAY">Computed for display</option>
+      <option value="COMPUTEDONSAVE">Computed on save</option>
+    </select>
+  </div>
   <fieldset class="specificOptions">
     <legend>{{fieldType.selectedOptions[0]?.text}} options</legend>
     <!-- **** Google Chart **** -->
@@ -250,17 +261,6 @@
       </div>
     </div>
 </fieldset>
-  <div class="form-group">
-    <label>Field mode</label>
-    <p class="help-block">Field mode</p>
-    <select #fieldMode formControlName="form.controls.fieldMode" class="form-control" [value]="data?.field_mode">
-      <option value="EDITABLE">Editable</option>
-      <option value="COMPUTED">Computed</option>
-      <option value="CREATION">Computed on creation</option>
-      <option value="DISPLAY">Computed for display</option>
-      <option value="COMPUTEDONSAVE">Computed on save</option>
-    </select>
-  </div>
   <div class="form-group">
     <label for="fieldReadTemplate">Field read template</label>
     <p class="help-block">Custom rendering template in read mode</p>
