@@ -42,7 +42,9 @@ module.exports = {
   },
   plugins: [
     new copyWebpackPlugin([
-        { from: 'node_modules/tinymce/skins', to: 'skins' }
+        { from: 'node_modules/tinymce/skins', to: 'skins' },
+        { from: 'node_modules/bootstrap/dist/css/bootstrap.min.css', to: 'bootstrap/css' },
+        { from: 'node_modules/bootstrap/dist/fonts', to: 'bootstrap/fonts' }
     ]),
     new webpack.optimize.CommonsChunkPlugin({
         name: ['main', 'vendor']
