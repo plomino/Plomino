@@ -83,9 +83,9 @@ export class TinyMCEComponent {
 
     dropped(element: any) {
         tinymce.activeEditor.execCommand('mceInsertContent', false,
-            '<h2><span class="'+element.dragData.type.charAt(0).toLowerCase()+
+            '<p><span class="'+element.dragData.type.charAt(0).toLowerCase()+
             element.dragData.type.slice(1)+'Class">'+
-            element.dragData.name.split('/').pop()+'</span></h2>'
+            element.dragData.name.split('/').pop()+'</span></p>'
         );
     }
 
