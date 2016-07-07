@@ -1,10 +1,16 @@
 Changelog
 =========
 
-2.0b4 (unreleased)
+2.0b5 (unreleased)
 ------------------
 
 - Nothing changed yet.
+
+
+2.0b4 (2016-05-27)
+------------------
+
+- Fix element portlet
 
 
 2.0b3 (2016-05-10)

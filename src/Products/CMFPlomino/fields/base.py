@@ -23,14 +23,14 @@ class BaseField(object):
         # if custom template, use it
         if self.context.read_template:
             pt = getattr(self.context.resources, self.context.read_template)
-            return pt.__of__(self)(*args, **kwargs)
+            return pt.__of__(self.context)(*args, **kwargs)
         return self.read_template(*args, **kwargs)
 
     def render_edit(self, *args, **kwargs):
         # if custom template, use it
         if self.context.edit_template:
             pt = getattr(self.context.resources, self.context.edit_template)
-            return pt.__of__(self)(*args, **kwargs)
+            return pt.__of__(self.context)(*args, **kwargs)
         return self.edit_template(*args, **kwargs)
 
     def validate(self, strValue):

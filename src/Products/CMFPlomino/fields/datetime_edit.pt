@@ -10,13 +10,11 @@
     mandatory python: 'mandatory' if field.mandatory else '';
     widget python:field.widget;">
     <tal:widget tal:condition="python: widget=='JQUERY'">
-        <input type="text"
+        <input type="text" class="pat-pickadate"
             tal:define="inputvalue python: '' if not v else v.strftime(format);"
             tal:attributes="name field/id;
                 id field/id;
-                class python: 'date' if not mandatory else 'date mandatory';
-                data-datepicker-dateformat python: format.replace('%Y', 'yy').replace('%m', 'mm').replace('%d', 'dd');
-                data-datepicker-mindate python: '' if (not starting_year) or (not starting_year.isdigit()) else DateTime(int(starting_year), 1, 1).strftime(format);
+                data-pat-pickadate python:(('%H' in format) and '') or 'time:false';
                 value inputvalue">
     </tal:widget>
     <tal:widget tal:condition="python:widget=='SERVER'">
