@@ -34,17 +34,16 @@ export class TinyMCEComponent {
     constructor(private _elementService: ElementService, private zone: NgZone) {}
 
     ngOnInit() {
+        let tiny = this;
         tinymce.init({
             selector:'.tinymce-wrap',
             plugins: ["code", "save", "link"],
             toolbar: "save | undo redo | formatselect | bold italic underline | alignleft aligncenter alignright alignjustify | bullist numlist | outdent indent | unlink link | image",
             save_onsavecallback: () => { this.saveFormLayout() },
             setup : (editor:any) => {
-                for (let event of ['change','keyup','cut','paste']) {
-                    editor.on(event, (e:any) => {
-                        this.emitDirty(true);
-                    });
-                }
+                editor.on('change', (e:any) => {
+                    tiny.isDirty.emit(true);
+                });
             },
             content_style: require('./tiny-mce-content.css'),
 		    menubar: "file edit insert view format table tools",
@@ -62,19 +61,17 @@ export class TinyMCEComponent {
     }
 
     saveFormLayout() {
+        let tiny = this;
         if(tinymce.activeEditor !== null){
             this._elementService.patchElement(this.id, JSON.stringify({
                 "form_layout": tinymce.activeEditor.getContent()
             })).subscribe(
-                () => this.emitDirty(false),
+                () => {
+                    tiny.isDirty.emit(false);
+                },
                 err => console.error(err)
             );
         }
-        this.isDirty.emit(false);
-    }
-
-    emitDirty(value: boolean) {
-        this.zone.run(() => this.isDirty.emit(value));
     }
 
     allowDrop() {
