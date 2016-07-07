@@ -44,7 +44,8 @@ module.exports = {
     new copyWebpackPlugin([
         { from: 'node_modules/tinymce/skins', to: 'skins' },
         { from: 'node_modules/bootstrap/dist/css/bootstrap.min.css', to: 'bootstrap/css' },
-        { from: 'node_modules/bootstrap/dist/fonts', to: 'bootstrap/fonts' }
+        { from: 'node_modules/bootstrap/dist/fonts', to: 'bootstrap/fonts' },
+        { from: 'app/favicon.ico', to: '' }
     ]),
     new webpack.optimize.CommonsChunkPlugin({
         name: ['main', 'vendor']
