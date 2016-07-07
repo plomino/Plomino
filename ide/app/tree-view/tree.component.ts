@@ -4,7 +4,7 @@ import { ElementService }                                                       
 import { DND_DIRECTIVES }                                                                from 'ng2-dnd/ng2-dnd';
 
 @Component({
-    selector: 'my-tree',
+    selector: 'plomino-tree',
     template: require('./tree.component.html'),
     styles: [require('./tree.component.css')],
     directives: [CollapseDirective, DND_DIRECTIVES],

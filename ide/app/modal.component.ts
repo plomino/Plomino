@@ -3,11 +3,11 @@ import {MODAL_DIRECTIVES, ModalComponent } from 'ng2-bs3-modal/ng2-bs3-modal';
 import {AlertComponent} from 'ng2-bootstrap/ng2-bootstrap';
 
 @Component({
-    selector: 'my-modal',
-    template: require('./my-modal.component.html'),
+    selector: 'modal',
+    template: require('./modal.component.html'),
     directives: [MODAL_DIRECTIVES, AlertComponent]
 })
-export class MyModalComponent {
+export class PlominoModalComponent {
     @Input() data: any;
     @Output() modalClosed = new EventEmitter();
     @Output() modalDismissed = new EventEmitter();

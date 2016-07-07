@@ -5,7 +5,7 @@ import {DND_DIRECTIVES} from 'ng2-dnd/ng2-dnd';
 declare var tinymce: any;
 
 @Component({
-    selector: 'my-tiny-mce',
+    selector: 'plomino-tiny-mce',
     template: `
     <form #theEditor><textarea class="tinymce-wrap"></textarea></form>
     <div *ngIf="isDragged" [style.height]="theEditor.offsetHeight+'px'" [style.margin-top]="'-'+theEditor.offsetHeight+'px'" class="drop-zone" dnd-droppable [allowDrop]="allowDrop()" (onDropSuccess)="dropped($event)"></div>

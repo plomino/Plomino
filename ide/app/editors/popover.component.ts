@@ -1,7 +1,7 @@
 import {Component, Input} from '@angular/core';
 
 @Component({
-    selector: 'my-popover',
+    selector: 'plomino-popover',
     template: require("./popover.component.html"),
     styles: [require("./popover.component.css")]
 })

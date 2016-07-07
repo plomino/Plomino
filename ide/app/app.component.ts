@@ -15,14 +15,14 @@ import { HideWhenSettingsComponent }    from './editors/settings/hide_when-setti
 import { ViewsSettingsComponent }       from './editors/settings/views-settings.component';
 import { ColumnsSettingsComponent }     from './editors/settings/columns-settings.component';
 import { AgentsSettingsComponent }      from './editors/settings/agents-settings.component';
-import { MyModalComponent }             from './my-modal.component';
+import { PlominoModalComponent }               from './modal.component';
 
 // Services
 import { TreeService }                  from './services/tree.service';
 import { ElementService }               from './services/element.service';
 
 @Component({
-    selector: 'my-app',
+    selector: 'plomino-app',
     template: require('./app.component.html'),
     styles: [require('./app.component.css')],
     directives: [
@@ -30,7 +30,7 @@ import { ElementService }               from './services/element.service';
         TAB_DIRECTIVES,
         TinyMCEComponent,
         ACEEditorComponent,
-        MyModalComponent,
+        PlominoModalComponent,
         FormsSettingsComponent,
         FieldsSettingsComponent,
         ActionsSettingsComponent,

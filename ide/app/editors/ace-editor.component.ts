@@ -6,7 +6,7 @@ import {DROPDOWN_DIRECTIVES} from 'ng2-bootstrap/ng2-bootstrap';
 declare var ace: any;
 
 @Component({
-    selector: 'my-ace-editor',
+    selector: 'plomino-ace-editor',
     template: require("./ace-editor.component.html"),
     styles: [`
         .ace-editor {

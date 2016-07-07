@@ -4,7 +4,7 @@ import { ElementService } from '../../services/element.service';
 import { ChangeDetectorRef } from '@angular/core';
 
 @Component({
-    selector: 'my-fields-settings',
+    selector: 'plomino-fields-settings',
     template: require('./fields-settings.component.html'),
     styles: [`
         form {

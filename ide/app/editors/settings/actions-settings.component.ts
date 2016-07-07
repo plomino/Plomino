@@ -3,7 +3,7 @@ import { REACTIVE_FORM_DIRECTIVES } from '@angular/forms';
 import { ElementService } from '../../services/element.service';
 
 @Component({
-    selector: 'my-actions-settings',
+    selector: 'plomino-actions-settings',
     template: require('./actions-settings.component.html'),
     styles: ['form {margin: 15px;} .help-block {font-style: italic;}'],
     providers: [ElementService],
