@@ -9,8 +9,18 @@
   </div>
   <div class="form-group">
     <label for="desc">Description</label>
-    <p class="help-block">Utilisé dans les pages listant des éléments et les pages de résultats de recherche.</p>
     <textarea #desc formControlName="form.controls.desc" type="text" class="form-control" id="desc" [value]="data?.description"></textarea>
+  </div>
+  <div class="form-group">
+    <label>Field mode</label>
+    <p class="help-block">Field mode</p>
+    <select #fieldMode formControlName="form.controls.fieldMode" class="form-control" [value]="data?.field_mode">
+      <option value="EDITABLE">Editable</option>
+      <option value="COMPUTED">Computed</option>
+      <option value="CREATION">Computed on creation</option>
+      <option value="DISPLAY">Computed for display</option>
+      <option value="COMPUTEDONSAVE">Computed on save</option>
+    </select>
   </div>
   <div class="form-group">
     <label>Field type</label>
@@ -28,17 +38,6 @@
       <option value="RICHTEXT">Rich text</option>
       <option value="BOOLEAN">Boolean</option>
       <option value="ATTACHMENT">File attachment</option>
-    </select>
-  </div>
-  <div class="form-group">
-    <label>Field mode</label>
-    <p class="help-block">Field mode</p>
-    <select #fieldMode formControlName="form.controls.fieldMode" class="form-control" [value]="data?.field_mode">
-      <option value="EDITABLE">Editable</option>
-      <option value="COMPUTED">Computed</option>
-      <option value="CREATION">Computed on creation</option>
-      <option value="DISPLAY">Computed for display</option>
-      <option value="COMPUTEDONSAVE">Computed on save</option>
     </select>
   </div>
   <fieldset class="specificOptions">
