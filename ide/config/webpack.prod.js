@@ -9,12 +9,10 @@ var helpers = require('./helpers');
 const ENV = process.env.NODE_ENV = process.env.ENV = 'production';
 
 module.exports = webpackMerge(commonConfig, {
-    devtool: 'source-map',
-
     output: {
         path: helpers.root('../src/Products/CMFPlomino/browser/static/ide/'),
-        filename: '[name].[hash].js',
-        chunkFilename: '[id].[hash].chunk.js'
+        filename: '[name].js',
+        chunkFilename: '[id].chunk.js'
     },
 
     htmlLoader: {
