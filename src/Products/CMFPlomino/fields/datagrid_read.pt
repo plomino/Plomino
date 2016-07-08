@@ -1,13 +1,14 @@
 <div tal:define="
     field python:options['field'];
-    fieldvalue python:options['fieldvalue']['rendered'];
-    columns python:field.getSettings().getColumnLabels();">
-    <table>
+    fieldvalue python:options['fieldvalue'];
+    columns python:field.getSettings().getColumnLabels();"
+    tal:condition="fieldvalue">
+    <table tal:define="rows python:fieldvalue['rendered']">
         <tr>
             <th tal:repeat="col columns"
                 tal:content="col">col</th>
         </tr>
-        <tr tal:repeat="row fieldvalue">
+        <tr tal:repeat="row rows">
             <td tal:repeat="cell row"
                 tal:content="structure cell">cell</td>
         </tr>
