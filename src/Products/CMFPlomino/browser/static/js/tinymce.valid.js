@@ -1,7 +1,7 @@
 // Functions called by the popup
 var PlominoDialog = {
 	// Called when the "submit" button is clicked
-	submit : function(type, value) {
+	submit : function(type, value, option) {
 
 		var ed = top.tinymce.activeEditor;
 
@@ -11,6 +11,12 @@ var PlominoDialog = {
 			var plominoClass = 'plominoFieldClass';
 		else if (type == 'subform')
 			var plominoClass = 'plominoSubformClass';
+		else if (type == 'label') {
+			var plominoClass = 'plominoLabelClass';
+			if (option != null && option.length > 0) {
+				value = value + ':' + option;
+			}
+		}
 
 		if (plominoClass !== undefined)
 		{
@@ -22,7 +28,7 @@ var PlominoDialog = {
             // TinyMCE 3, still needed ?
 			//tinyMCEPopup.restoreSelection();
 			var selection = ed.selection.getNode();
-			if (top.tinymce.DOM.hasClass(selection, 'plominoActionClass') || top.tinymce.DOM.hasClass(selection, 'plominoFieldClass') || top.tinymce.DOM.hasClass(selection, 'plominoSubformClass'))
+			if (top.tinymce.DOM.hasClass(selection, 'plominoActionClass') || top.tinymce.DOM.hasClass(selection, 'plominoFieldClass') || top.tinymce.DOM.hasClass(selection, 'plominoLabelClass') || top.tinymce.DOM.hasClass(selection, 'plominoSubformClass'))
 				ed.dom.setOuterHTML(selection, span);
 			else
 				ed.execCommand('mceInsertContent', false, span, {skip_undo : 1});

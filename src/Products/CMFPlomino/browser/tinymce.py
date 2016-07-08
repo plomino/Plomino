@@ -39,6 +39,12 @@ class TinyMCEPlominoFormView(BrowserView):
         """."""
         params = {}
         return self.field_template(**params)
+
+    label_template = ViewPageTemplateFile('templates/tinymce/label.pt')
+    def label_form(self, **params):
+        """."""
+        params = {}
+        return self.label_template(**params)
     
     #hidewhen_template = ViewPageTemplateFile('templates/tinymce/hidewhen.pt')
     def hidewhen_form(self, **params):
@@ -154,6 +160,19 @@ class PlominoForm(object):
         else:
             self.request.RESPONSE.redirect(self.context.absolute_url() + "/@@tinymceplominoform/error_page?error=no_field")
 
+    def getLabel(self):
+        pass
+
+    def addLabel(self):
+        """Add a label to the form.
+        """
+        labelid = self.request.get("labelid", None)
+        labeltext = self.request.get("labeltext", "")
+
+        if labelid:
+            self.request.RESPONSE.redirect(self.context.absolute_url() + "/@@tinymceplominoform/valid_page?type=label&value=" + labelid + "&option=" + labeltext)
+        else:
+            self.request.RESPONSE.redirect(self.context.absolute_url() + "/@@tinymceplominoform/error_page?error=no_label")
 
     def getActions(self):
         """Returns a sorted list of actions

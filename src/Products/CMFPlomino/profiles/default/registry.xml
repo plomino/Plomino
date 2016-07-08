@@ -24,6 +24,7 @@
       <element>Code|code|code</element>
       <element>Plomino action|plominoaction|plominoaction</element>
       <element>Plomino field|plominofield|plominofield</element>
+      <element>Plomino label|plominolabel|plominolabel</element>
       <element>Plomino hide-when|plominohidewhen|plominohidewhen</element>
       <element>Plomino subform|plominosubform|plominosubform</element>
     </value>
@@ -56,6 +57,10 @@
         "inline": "span",
         "classes": "plominoFieldClass"
     },
+    "plominolabel": {
+        "inline": "span",
+        "classes": "plominoLabelClass"
+    },
     "plominoaction": {
         "inline": "span",
         "classes": "plominoActionClass"
@@ -81,6 +86,7 @@
     </value>
     <value purge="false" key="custom_buttons">
       <element>plominofield</element>
+      <element>plominolabel</element>
       <element>plominoaction</element>
       <element>plominosubform</element>
       <element>plominohidewhen</element>
