@@ -59,7 +59,7 @@ require([
                         var row = data.rows[i];
                         var html = '<tr><td><a href="'
                             + self.options.source
-                            + '../../document/' + row[0]
+                            + '/../../document/' + row[0]
                             + '">' + row[1]
                             + '</a></td>';
                         if(row.length > 2) {
@@ -103,12 +103,18 @@ require([
         init_sorting: function() {
             var self = this;
             self.$el.find('th').on('click', function() {
+                self.$el.find('th').removeClass('icon-down-dir icon-up-dir');
                 var sort_on = $(this).attr('data-column');
                 if(sort_on == self.params.sorton) {
                     self.params.reverse = (self.params.reverse==1) ? 0 : 1;
                 } else {
                     self.params.sorton = sort_on;
                     self.params.reverse = 0;
+                }
+                if (self.params.reverse === 0) {
+                    $(this).addClass('icon-down-dir');
+                } else {
+                    $(this).addClass('icon-up-dir');
                 }
                 self.refresh();
             });
@@ -223,7 +229,8 @@ require([
                 html += '<a class="up-row" href="#"><i class="icon-up-dir"></i></a>';
                 html += '<a class="down-row" href="#"><i class="icon-down-dir"></i></a></td>';
                 for(var i=0;i<self.col_number;i++) {
-                    html += '<td>' + self.rows[j][i] + '</td>';
+                    var v = self.rows[j][i] ? self.rows[j][i] : '';
+                    html += '<td>' + v + '</td>';
                 }
                 html += '</tr>';
             }
