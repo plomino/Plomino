@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html id="region-content"
+    lang="en"
+    i18n:domain="plomino.tinymce">
+    <head>
+        <meta http-equiv="Content-type" content="text/html;charset=UTF-8" /> 
+        <title i18n:translate="plominofield_title">Add/edit a Plomino Hide-when</title>
+        <link tal:replace="structure provider:plone.htmlhead.links" />
+    </head>
+    <body id="plonebrowser" tal:define="form python:view.context;
+        hidewhenid view/request/hidewhenid|nothing;
+        adapted form/tinyform|nothing;
+        hidewhenproperties adapted/getHidewhenProperties;
+        hidewhen adapted/getHidewhen;
+        ">
+        <div class="plone-modal-dialog">
+            <div class="plone-modal-content">
+                <div class="plone-modal-header">
+                    <h2 class="plone-modal-title">Add/edit a Plomino Hide-when</h2>
+                </div>
+                <div class="plone-modal-body">
+                    <fieldset tal:condition="hidewhen">
+                        <legend i18n:translate="plominohidewhen_selection">Select a Plomino Hide-when</legend>
+                        
+                        <form id="hidewhenSelection" method="get">
+                            <p>
+                                <label for="hidewhenid" i18n:translate="plominohidewhen_id">Hide-when ID</label>
+                                <select id="hidewhenid" name="hidewhenid" onchange="this.form.submit();">
+                                    <option
+                                        tal:repeat="item adapted/getHidewhenFormulas"
+                                        tal:content="item/id"
+                                        tal:attributes="value item/id; selected python:item.id==hidewhenid"></option>
+                                </select>
+                            </p>
+                        </form>
+                    </fieldset>
+                        
+                    <!-- Form which edits the selected hide-when -->
+                    <form method="post"
+                        tal:attributes="action python:hidewhen and hidewhen.absolute_url() + '/tinyhidewhen/setHidewhenProperties' or form.absolute_url() + '/tinyform/addHidewhen'">
+                        <fieldset tal:condition="python:not hidewhen">
+                            <legend i18n:translate="plominohidewhen_creation">Create a Plomino Hide-when</legend>
+                            
+                            <label for="hidewhenid" i18n:translate="plominohidewhen_id">Hide-when ID</label>
+                            <input type="text" name="hidewhenid" id="hidewhenid" />
+                        </fieldset>
+                        
+                        <fieldset>
+                            <legend i18n:translate="plominohidewhen_editformula">Edit Hide-when Formula</legend>
+                            
+                            <p>
+                                <label for="hidewhenFormula" i18n:translate="plominohidewhen_formula">Hide-when Formula</label>
+                                <textarea id="hidewhenFormula" name="hidewhenformula" tal:content="python:hidewhenproperties['formula']"></textarea>
+                            </p>
+                            
+                            <p>
+                                <input type="checkbox" id="hidewhentype_dynamic" name="hidewhentype" value="dynamic"
+                                    tal:attributes="checked python:hidewhenproperties['isdynamichidewhen']" />
+                                <label for="hidewhentype_dynamic" i18n:translate="plominohidewhen_dynamic">Dynamic hide-when</label>
+                            </p>
+                        </fieldset>
+
+                        <div class="pattern-modal-buttons">
+                            <input type="submit" id="insert" class="context" name="insert" value="Insert" i18n:attributes="value;" />
+                            <input type="button" id="cancel" class="standalone" name="cancel" value="Cancel" i18n:attributes="value;" onclick="top.tinymce.activeEditor.windowManager.close();" />
+                        </div>
+                    </form>
+                    <div class="plone-modal-footer">
+                    </div>
+                </div>
+            </div>
+        </div>
+                    
+    </body>
+</html>
