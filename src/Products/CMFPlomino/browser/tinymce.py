@@ -5,7 +5,7 @@ from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from plone.dexterity.utils import createContentInContainer
 
 from Products.CMFPlomino.config import FIELD_MODES
-from Products.CMFPlomino.contents.field import get_field_types
+from Products.CMFPlomino.contents.field import get_field_types, IPlominoField
 from Products.CMFPlomino.contents.action import ACTION_TYPES, ACTION_DISPLAY
 from Products.CMFPlomino.contents.action import PlominoAction
 from Products.CMFPlomino.contents.field import PlominoField
@@ -64,8 +64,21 @@ class TinyMCEPlominoFormView(BrowserView):
         params = {}
         return self.valid_template(**params)
 
+    def example_widget(self):
+        widget_type = self.request.get('type')
+        id = self.request.get('value')
+        if not id:
+            return
+        if widget_type == "field":
+            field = getattr(self.context, id, None)
+            if isinstance(field.aq_base, PlominoField): #IPlominoField.implementedBy(field):
+                return field.getRenderedValue(fieldvalue=None,
+                                              editmode="EDITABLE",
+                                              target=self.context)
 
-class PlominoForm(object):
+
+
+class PlominoFormSettings(object):
     """
     """
     action_template = ViewPageTemplateFile('templates/tinymce/action.pt')
@@ -146,7 +159,13 @@ class PlominoForm(object):
                     formula=fieldformula,
                 )
 
-                self.request.RESPONSE.redirect(self.context.absolute_url() + "/@@tinymceplominoform/valid_page?type=field&value=" + fieldid + "&fieldurl=" + "/".join(field.getPhysicalPath()))
+                html = field.getRenderedValue("example", "EDITABLE", target=self.context)
+
+                self.request.RESPONSE.redirect("{base}/@@tinymceplominoform/valid_page?type=field&value={fieldid}&fieldurl={url}".format(
+                    base = self.context.absolute_url(),
+                    fieldid = fieldid,
+                    url = "/".join(field.getPhysicalPath()),
+                    html = html))
 
             else:
                 self.request.RESPONSE.redirect(self.context.absolute_url() + "/@@tinymceplominoform/error_page?error=object_exists")
@@ -375,7 +394,7 @@ class PlominoForm(object):
             self.request.RESPONSE.redirect(self.context.absolute_url() + "/@@tinymceplominoform/error_page?error=no_cache")
 
 
-class PlominoField(object):
+class PlominoFieldSettings(object):
     """
     """
 
@@ -405,7 +424,7 @@ class PlominoField(object):
         self.request.RESPONSE.redirect(self.context.absolute_url() + "/../@@tinymceplominoform/valid_page?type=field&value=" + self.context.id)
 
 
-class PlominoAction(object):
+class PlominoActionSettings(object):
     """
     """
 

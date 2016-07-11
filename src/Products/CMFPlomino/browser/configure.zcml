@@ -146,7 +146,7 @@
     <browser:page
         name="tinyform"
         for="Products.CMFPlomino.contents.form.IPlominoForm"
-        class=".tinymce.PlominoForm"
+        class=".tinymce.PlominoFormSettings"
         permission="zope.Public"
         allowed_attributes="getField addField addAction addHidewhen addCache action_template"
         />
@@ -154,7 +154,7 @@
    <browser:page
         name="tinyfield"
         for="Products.CMFPlomino.contents.field.IPlominoField"
-        class=".tinymce.PlominoField"
+        class=".tinymce.PlominoFieldSettings"
         permission="zope.Public"
         allowed_attributes="setFieldProperties"
         />
@@ -162,7 +162,7 @@
    <browser:page
         name="tinyaction"
         for="Products.CMFPlomino.contents.action.IPlominoAction"
-        class=".tinymce.PlominoAction"
+        class=".tinymce.PlominoActionSettings"
         permission="zope.Public"
         allowed_attributes="setActionProperties"
         />
