@@ -148,7 +148,7 @@
         for="Products.CMFPlomino.contents.form.IPlominoForm"
         class=".tinymce.PlominoForm"
         permission="zope.Public"
-        allowed_attributes="getField addField addLabel addAction addHidewhen addCache action_template"
+        allowed_attributes="getField addField addLabel addAction addHidewhen addCache addSubForm action_template"
         />
 
    <browser:page
@@ -157,6 +157,14 @@
         class=".tinymce.PlominoField"
         permission="zope.Public"
         allowed_attributes="setFieldProperties"
+        />
+
+   <browser:page
+        name="tinyhidewhen"
+        for="Products.CMFPlomino.contents.hidewhen.IPlominoHidewhen"
+        class=".tinymce.PlominoHidewhen"
+        permission="zope.Public"
+        allowed_attributes="setHidewhenProperties"
         />
 
    <browser:page

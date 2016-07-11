@@ -9,7 +9,7 @@ from Products.CMFPlomino.contents.field import get_field_types
 from Products.CMFPlomino.contents.action import ACTION_TYPES, ACTION_DISPLAY
 from Products.CMFPlomino.contents.action import PlominoAction
 from Products.CMFPlomino.contents.field import PlominoField
-#from Products.CMFPlomino.PlominoHidewhen import PlominoHidewhen
+from Products.CMFPlomino.contents.hidewhen import PlominoHidewhen
 #from Products.CMFPlomino.PlominoCache import PlominoCache
 
 
@@ -46,13 +46,13 @@ class TinyMCEPlominoFormView(BrowserView):
         params = {}
         return self.label_template(**params)
     
-    #hidewhen_template = ViewPageTemplateFile('templates/tinymce/hidewhen.pt')
+    hidewhen_template = ViewPageTemplateFile('templates/tinymce/hidewhen.pt')
     def hidewhen_form(self, **params):
         """."""
         params = {}
         return self.hidewhen_template(**params)
     
-    #subform_template = ViewPageTemplateFile('templates/tinymce/subform.pt')
+    subform_template = ViewPageTemplateFile('templates/tinymce/subform.pt')
     def subform_form(self, **params):
         """."""
         params = {}
@@ -265,6 +265,16 @@ class PlominoForm(object):
         else:
             self.request.RESPONSE.redirect(self.context.absolute_url() + "/@@tinymceplominoform/error_page?error=no_action")
 
+    def addSubForm(self):
+        """Add a sub-form to the form.
+        """
+        subformid = self.request.get("subformid", None)
+
+        if subformid:
+            self.request.RESPONSE.redirect(self.context.absolute_url() + "/@@tinymceplominoform/valid_page?type=subform&value=" + subformid)
+        else:
+            self.request.RESPONSE.redirect(self.context.absolute_url() + "/@@tinymceplominoform/error_page?error=no_label")
+
     def getSubForms(self):
         """Returns a list of forms from the parent database, without the current form
         """
@@ -307,7 +317,7 @@ class PlominoForm(object):
         """
         hidewhen = self.getHidewhen()
         if hidewhen:
-            return { 'formula': hidewhen.Formula, 'isdynamichidewhen': hidewhen.isDynamicHidewhen }
+            return { 'formula': hidewhen.formula, 'isdynamichidewhen': hidewhen.isDynamicHidewhen }
         else:
              return { 'formula': '', 'isdynamichidewhen': False }
 
@@ -317,14 +327,19 @@ class PlominoForm(object):
         hidewhenid = self.request.get("hidewhenid", None)
         hidewhenformula = self.request.get("hidewhenformula", '')
         hidewhentype = self.request.get("hidewhentype", 'static')
+        isdynamic = hidewhentype=='dynamic',
 
         # self.context is the current form
         if hidewhenid:
             if not hasattr(self.context, hidewhenid):
-                self.context.invokeFactory('PlominoHidewhen', Title=hidewhenid, id=hidewhenid, Formula=hidewhenformula, isDynamicHidewhen=hidewhentype=='dynamic')
-                hidewhen = getattr(self.context.aq_inner, hidewhenid)
-                hidewhen.setTitle(hidewhenid)
-#                hidewhen.at_post_edit_script()
+                createContentInContainer(
+                    self.context,
+                    'PlominoHidewhen',
+                    title=hidewhenid,
+                    id=hidewhenid,
+                    formula=hidewhenformula,
+                    isDynamicHidewhen=isdynamic,
+                )
 
                 self.request.RESPONSE.redirect(self.context.absolute_url() + "/@@tinymceplominoform/valid_page?type=hidewhen&value=" + hidewhenid)
 
@@ -422,6 +437,34 @@ class PlominoField(object):
         self.context.formula = fieldformula
 
         self.request.RESPONSE.redirect(self.context.absolute_url() + "/../@@tinymceplominoform/valid_page?type=field&value=" + self.context.id)
+
+
+class PlominoHidewhen(object):
+    """
+    """
+
+    def __init__(self, context, request):
+        """ Initialize adapter."""
+        self.context = context
+        self.request = request
+
+    def __call__(self):
+        """
+        """
+        return self
+
+    def setHidewhenProperties(self):
+        """Set hidewhen properties to their new values.
+        """
+        hidewhenformula = self.request.get("hidewhenformula", '')
+        hidewhentype = self.request.get("hidewhentype", 'static')
+        isdynamic = hidewhentype=='dynamic',
+
+        # self.context is the current hidewhen
+        self.context.formula = hidewhenformula
+        self.context.isdynamic = isdynamic
+
+        self.request.RESPONSE.redirect(self.context.absolute_url() + "/../@@tinymceplominoform/valid_page?type=hidewhen&value=" + self.context.id)
 
 
 class PlominoAction(object):
