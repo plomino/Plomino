@@ -11,6 +11,10 @@
             image: '++resource++Products.CMFPlomino/img/PlominoField.png',
             onclick: function () { editFormElement(editor, url, 'field'); }
         });
+        editor.addButton('plominolabel', {
+            image: '++resource++Products.CMFPlomino/img/PlominoLabel.png',
+            onclick: function () { editFormElement(editor, url, 'label'); }
+        });
         editor.addButton('plominoaction', {
             image: '++resource++Products.CMFPlomino/img/PlominoAction.png',
             onclick: function () { editFormElement(editor, url, 'action'); }
@@ -42,6 +46,11 @@
             var elementClass = 'plominoFieldClass';
             var elementEditionPage = '@@tinymceplominoform/field_form';
             var elementIdName = 'fieldid';
+        }
+        else if (elementType === "label") {
+            var elementClass = 'plominoLabelClass';
+            var elementEditionPage = '@@tinymceplominoform/label_form';
+            var elementIdName = 'labelid';
         }
         else if (elementType === "action") {
             var elementClass = 'plominoActionClass';

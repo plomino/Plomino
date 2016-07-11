@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html id="region-content"
+    lang="en"
+    i18n:domain="plomino.tinymce">
+    <head>
+        <meta http-equiv="Content-type" content="text/html;charset=UTF-8" /> 
+        <title i18n:translate="plominolabel_title">Insert/edit a Plomino Label</title>
+        <link tal:replace="structure provider:plone.htmlhead.links" />
+    </head>
+    <body id="plonebrowser" tal:define="form python:view.context;
+          labelr python: view.request.get('labelid', ':').split(':');
+          labelid python: labelr[0];
+          labeltext python: len(labelr) > 1 and labelr[1] or '';
+          fields python:form.getFormFields();
+        ">
+        <div class="plone-modal-dialog">
+            <div class="plone-modal-content">
+                <div class="plone-modal-header">
+                    <h2 class="plone-modal-title">Insert/edit a Plomino Label</h2>
+                </div>
+                <div class="plone-modal-body">
+                    <!-- Form which adds the label -->
+                    <form method="post" tal:attributes="action python: form.absolute_url() + '/tinyform/addLabel'">            
+                        <fieldset>
+                            <legend i18n:translate="plominolabel_subtitle">Select a Field</legend>
+                            
+                            <p>
+                                <input type="hidden" name="type" value="label" />
+                            
+                                <label for="plominoLabelId" i18n:translate="plominolabel_selection">Field</label>
+                                <select id="plominoLabelId" name="labelid">
+                                    <option
+                                        tal:repeat="item fields"
+                                        tal:content="string: ${item/id} : ${item/Title}"
+                                        tal:attributes="value item/id; selected python:item.id==labelid"></option>
+                                </select>
+                            </p>
+                            <p>
+                                <br />
+                                <label for="plominoLabelCustom">Custom Label Text</label>
+                                <input type="text" id="plominoLabelCustom" name="labeltext" tal:attributes="value labeltext"/>
+                            </p>
+                            <p>
+                                By default the Title of the field will be used as the label. If the Title of the field doesn't make sense as a label you may customise the label text above.
+                            </p>
+                        </fieldset>
+                        <div class="pattern-modal-buttons">
+                            <input type="submit" id="insert" class="context" name="insert" value="Insert" i18n:attributes="value;" />
+                            <input type="button" id="cancel" class="standalone" name="cancel" value="Cancel" i18n:attributes="value;" onclick="top.tinymce.activeEditor.windowManager.close();" />
+                        </div>
+                    </form>
+                    <div class="plone-modal-footer">
+                    </div>
+                </div>
+            </div>
+        </div>
+                    
+    </body>
+</html>

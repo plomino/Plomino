@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html id="region-content"
+    lang="en"
+    i18n:domain="plomino.tinymce">
+    <head>
+        <meta http-equiv="Content-type" content="text/html;charset=UTF-8" /> 
+        <title i18n:translate="plominosubform_title">Insert a Plomino Sub-form</title>
+        <link tal:replace="structure provider:plone.htmlhead.links" />
+    </head>
+    <body id="plonebrowser" tal:define="form python:view.context;
+            subformid view/context/subformid|nothing;
+            adapted form/tinyform|nothing;
+            subforms adapted/getSubForms;
+        ">
+        <div class="plone-modal-dialog">
+            <div class="plone-modal-content">
+                <div class="plone-modal-header">
+                    <h2 class="plone-modal-title">Insert a Sub-form</h2>
+                </div>
+                <div class="plone-modal-body">
+                    <!-- Form which adds the label -->
+                    <form method="post" tal:attributes="action python: form.absolute_url() + '/tinyform/addSubForm'">            
+                        <fieldset>
+                            <legend i18n:translate="plominosubform_subtitle">Select a Form</legend>
+                            
+                            <p>
+                                <input type="hidden" name="type" value="subform" />
+                            
+                                <label for="plominosubformId" i18n:translate="plominosubform_selection">Sub-form</label>
+                                <select id="plominosubformId" name="subformid">
+                                    <option
+                                        tal:repeat="item subforms"
+                                        tal:content="string: ${item/id} : ${item/Title}"
+                                        tal:attributes="value item/id; selected python:item.id==subformid"></option>
+                                </select>
+                            </p>
+                        </fieldset>
+                        <div class="pattern-modal-buttons">
+                            <input type="submit" id="insert" class="context" name="insert" value="Insert" i18n:attributes="value;" />
+                            <input type="button" id="cancel" class="standalone" name="cancel" value="Cancel" i18n:attributes="value;" onclick="top.tinymce.activeEditor.windowManager.close();" />
+                        </div>
+                    </form>
+                    <div class="plone-modal-footer">
+                    </div>
+                </div>
+            </div>
+        </div>
+                    
+    </body>
+</html>
