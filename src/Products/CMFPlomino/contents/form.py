@@ -877,7 +877,7 @@ class PlominoForm(Container):
                 if not form:
                     db.writeMessageOnPage(
                         "Form %s id missing" % formid, REQUEST, False)
-                    fields_results.append(["%s/%s" % (formid, hwid), True])
+                    fields_results.append(["%s/%s" % (formid, fieldid), True])
                     continue
             if formid not in temp:
                 temp[formid] = getTemporaryDocument(
@@ -891,7 +891,7 @@ class PlominoForm(Container):
                 value = form.computeFieldValue(fieldid, temp[formid])
             except PlominoScriptException, e:
                 e.reportError(
-                    '%s field formula failed' % hwid)
+                    '%s field formula failed' % fieldid)
                 # if error, return an empty value
                 value = ''
             fields_results.append(["%s/%s" % (formid, fieldid), value])
