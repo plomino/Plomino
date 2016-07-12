@@ -4,6 +4,11 @@
             request field/REQUEST;
             v options/fieldvalue;
             data python:field.getSettings().tojson(v);
+            need_ajax python:field.id not in request and 'rendered' in v and len(v['rendered']) > 10;
+            sAjaxSource string:'sAjaxSource': 'tojson?item=${fieldname}&rendered=true&datatables=true','sServerMethod': 'GET',;
+            sAjaxSource python:sAjaxSource if need_ajax else '';
+            bServerSide python:'true' if not need_ajax else 'false';
+            rendered_data python:field.getSettings().tojson(v, rendered=True) if not need_ajax else '[]';
             form field/getParentNode;
             form_name form/id;
             form_url python:form.absolute_url();
@@ -27,17 +32,13 @@
                 charset="utf-8"
                 tal:define="
                 param python:field.getSettings().getParameters();
-                request_items python:field.getSettings().request_items_aoData(request);
                 "
                 tal:content="structure string:
                 var ${fieldname}_datatable;
                 jQuery(document).ready(function() {
                     ${fieldname}_datatable = jQuery('#${fieldname}_datagrid').dataTable( {
-                        'sAjaxSource': 'tojson?item=${fieldname}&rendered=true&datatables=true',
-                        'sServerMethod': '${form_method}',
-                        'fnServerParams': function ( aoData ) {
-                            ${request_items}
-                        },
+                        ${sAjaxSource}
+                        'aaData': ${rendered_data}, //use this if field.id is in request (ie we there is an error on page)
                         'bJQueryUI': true,
                         ${param},
                         'fnDrawCallback': function() {
@@ -50,12 +51,12 @@
                             'sUrl': '@@collective.js.datatables.translation'
                         }
                     } );
-                    /** 
-                        INLINE EDITING MODE 
+                    /**
+                        INLINE EDITING MODE
                     **/
                     if('${associated_form_rendering}'==='INLINE') {
 
-                        var ${fieldname}_nEditing = null;                   
+                        var ${fieldname}_nEditing = null;
 
                         /** Add inline creation form **/
                         jQuery('#${fieldname}_addrow').click( function (e) {
@@ -66,11 +67,11 @@
                         /** Compute inline form **/
                         function ${fieldname}_computeEdit(event){
                             event.preventDefault();
-                            if ( ${fieldname}_nEditing!=null ) { 
-                                datagrid_restore_row(${fieldname}_datatable, ${fieldname}_nEditing); 
-                            } 
+                            if ( ${fieldname}_nEditing!=null ) {
+                                datagrid_restore_row(${fieldname}_datatable, ${fieldname}_nEditing);
+                            }
                             var url = '${form_url}/${fieldname}/editFields?';
-                            ${fieldname}_nEditing = datagrid_edit_inline_form(${fieldname}_datatable,'${fieldname}',url);                     
+                            ${fieldname}_nEditing = datagrid_edit_inline_form(${fieldname}_datatable,'${fieldname}',url);
                         }
 
                         jQuery('#${fieldname}_editrow').click(${fieldname}_computeEdit);
@@ -97,7 +98,7 @@
                             ${fieldname}_nEditing = null;
                         });
                     }
-                    /** 
+                    /**
                         MODAL MODE
                     **/
                     else{
@@ -117,7 +118,7 @@
 
                     /** Code for hiding repeating subforms **/
 
-                    
+
                 } );">
         </script>
 

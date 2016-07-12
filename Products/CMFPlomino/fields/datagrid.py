@@ -326,9 +326,6 @@ class DatagridField(BaseField):
         if not fieldValue:
             return fieldValue
 
-        # if doc is not a PlominoDocument, no processing needed
-        if not doc or doc.isNewDocument():
-            return fieldValue
 
         rawValue = fieldValue
 
@@ -337,7 +334,7 @@ class DatagridField(BaseField):
             mapped_fields = [
                 f.strip() for f in self.field_mapping.split(',')]
         # item names is set by `PlominoForm.createDocument`
-        item_names = doc.getItem(self.context.id+'_itemnames')
+        item_names = doc.getItem(self.context.id+'_itemnames') if doc else None
 
         if mapped_fields:
             if not item_names:
