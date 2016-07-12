@@ -13,22 +13,22 @@
             widget python:field.getSettings('widget');">
 
     <tal:read_dynamic condition="python:widget=='REGULAR'">
-            <script type="text/javascript" charset="utf-8"
-                tal:define="param python:field.getSettings().getParameters();
-                            request_items python:field.getSettings().request_items_aoData(request);"
-                tal:content="structure string:
-                            jQuery(document).ready(function() {
-                                jQuery('#${fieldname}_datagrid').dataTable( {
-                                    ${sAjaxSource}
-                                    'aaData': ${rendered_data},
-                                    'bJQueryUI': true,
-                                    ${param},
-                                    'oLanguage': {
-                                        'sUrl': '@@collective.js.datatables.translation'
-                                    }
-                                } );
-                            } );">
-            </script>
+        <script type="text/javascript" charset="utf-8"
+            tal:define="param python:field.getSettings().getParameters();
+                        request_items python:field.getSettings().request_items_aoData(request);"
+            tal:content="structure string:
+                        jQuery(document).ready(function() {
+                            jQuery('#${fieldname}_datagrid').dataTable( {
+                                ${sAjaxSource}
+                                'aaData': ${rendered_data},
+                                'bJQueryUI': true,
+                                ${param},
+                                'oLanguage': {
+                                    'sUrl': '@@collective.js.datatables.translation'
+                                }
+                            } );
+                        } );">
+        </script>
         <table class="display" tal:attributes="id string:${fieldname}_datagrid"></table>
     </tal:read_dynamic>
 

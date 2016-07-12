@@ -27,8 +27,7 @@
             id string:${fieldname}_gridvalue;
             name fieldname;
             value data"/>
-
-            <script
+        <script
                 type="text/javascript"
                 charset="utf-8"
                 tal:define="
@@ -121,7 +120,7 @@
 
 
                 } );">
-            </script>
+        </script>
 
         <table class="display" tal:attributes="id string:${fieldname}_datagrid">
         </table>
