@@ -234,8 +234,6 @@ class DatagridField(BaseField):
         
         """ Return a string representing REQUEST.items as aoData.push calls.
         """
-        #if self.context.id in request:
-        #    return
         aoData_templ = "aoData.push(%s); "
         aoDatas = []
         for k,v in request.form.items():
