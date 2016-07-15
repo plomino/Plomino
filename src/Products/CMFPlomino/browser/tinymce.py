@@ -9,8 +9,10 @@ from Products.CMFPlomino.contents.field import get_field_types, IPlominoField
 from Products.CMFPlomino.contents.action import ACTION_TYPES, ACTION_DISPLAY
 from Products.CMFPlomino.contents.action import PlominoAction
 from Products.CMFPlomino.contents.field import PlominoField
+from Products.CMFPlomino.contents.form import PlominoForm
 from Products.CMFPlomino.contents.hidewhen import PlominoHidewhen
 #from Products.CMFPlomino.PlominoCache import PlominoCache
+from Products.CMFPlomino.document import getTemporaryDocument
 
 
 class ITinyMCEPlominoFormView(interface.Interface):
@@ -69,18 +71,6 @@ class TinyMCEPlominoFormView(BrowserView):
         """."""
         params = {}
         return self.valid_template(**params)
-
-    def example_widget(self):
-        widget_type = self.request.get('type')
-        id = self.request.get('value')
-        if not id:
-            return
-        if widget_type == "field":
-            field = getattr(self.context, id, None)
-            if isinstance(field.aq_base, PlominoField): #IPlominoField.implementedBy(field):
-                return field.getRenderedValue(fieldvalue=None,
-                                              editmode="EDITABLE",
-                                              target=self.context)
 
 
 

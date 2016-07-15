@@ -23,9 +23,9 @@ var PlominoDialog = {
             var example = document.getElementById("example_widget").innerHTML;
             if (example) {
                 var span = '<span class="mceNonEditable ' + plominoClass
-                    + '" data-plominoid="'+value+'"><span class="plominoEditWidgetTab">'+
-                    value+'</span>' +
-                    example + '</span>';
+                    + '" data-plominoid="'+value+'">'
+//                    +'<span class="plominoEditWidgetTab">'+  value+'</span>'
+                    + example + '</span>';
             }
             else {
                 // String to add in the editor

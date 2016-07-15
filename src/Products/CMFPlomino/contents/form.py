@@ -7,6 +7,9 @@ from plone.app.z3cform.wysiwyg import WysiwygFieldWidget
 from plone.autoform import directives as form
 from plone.dexterity.content import Container
 from plone.supermodel import directives, model
+from z3c.form.datamanager import AttributeField, zope
+from Products.CMFPlomino.contents.action import PlominoAction
+from Products.CMFPlomino.contents.field import PlominoField
 import re
 from zope import schema
 from zope.interface import implements
@@ -30,6 +33,7 @@ from ..utils import (
     urlquote,
 )
 from ..document import getTemporaryDocument
+from pyquery import PyQuery as pq
 
 logger = logging.getLogger('Plomino')
 security = ClassSecurityInfo()
@@ -41,8 +45,8 @@ class IPlominoForm(model.Schema):
     """ Plomino form schema
     """
 
-    form.widget('form_layout', WysiwygFieldWidget)
-    form_layout = schema.Text(
+    form.widget('form_layout_visual', WysiwygFieldWidget)
+    form_layout_visual = schema.Text(
         title=_('CMFPlomino_label_FormLayout', default="Form layout"),
         description=_('CMFPlomino_help_FormLayout',
             default="Text with 'Plominofield' styles correspond to the"
@@ -728,11 +732,73 @@ class PlominoForm(Container):
             'fields': ''.join(field_items)
         }
 
+    #@property
+    # Using special datamanager because @property losses acquisition
+    def getForm_layout_visual(self):
+        #update all teh example widgets
+        # TODO: called twice during setter to check if changed
+        d = pq(self.form_layout)
+        s = ".plominoActionClass,.plominoSubformClass,.plominoFieldClass"
+        for element in d.find(s) + d.filter(s):
+            widget_type = element.attrib["class"][7:-5].lower()
+            id = element.text
+            example = self.example_widget(widget_type, id)
+            pq(element)\
+                .html(example)\
+                .add_class("mceNonEditable")\
+                .attr("data-plominoid", id)
+        return str(d)
+
+    #@form_layout_visual.setter
+    # Using special datamanager because @property losses acquisition
+    def setForm_layout_visual(self, layout):
+        #TODO strip out all the example widgets
+        d = pq(layout)
+        for element in d.find("*[data-plominoid]"):
+            pq(element)\
+                .html(element.attrib["data-plominoid"])\
+                .remove_class("mceNonEditable").\
+                remove_attr("data-plominoid")
+        self.form_layout = str(d)
+
     security.declarePrivate('_get_html_content')
 
     def _get_html_content(self):
+        # get the raw value for rendering the form
         html_content = self.form_layout or ''
         return html_content.replace('\n', '')
+
+    def example_widget(self, widget_type, id):
+        if not id:
+            return
+        db = self.getParentDatabase()
+        if widget_type == "field":
+            field = self.getFormField(id)
+            if field is not None:
+                return field.getRenderedValue(fieldvalue=None,
+                                              editmode="EDITABLE",
+                                              target=self)
+        elif widget_type == "subform":
+            subform = getattr(self, id, None)
+            if not isinstance(subform, PlominoForm):
+                return
+            doc = getTemporaryDocument(db, form=subform,
+                                       REQUEST={}).__of__(db)
+            return subform.displayDocument(
+                doc, editmode=True, creation=True, parent_form_id=self.id,
+            )
+        elif widget_type == 'action':
+            action = getattr(self, id, None)
+            if not isinstance(action, PlominoAction):
+                return
+            pt = self.unrestrictedTraverse(
+                        "@@plomino_actions").embedded_action
+            action_render = pt(display=action.action_display,
+                plominoaction=action,
+                plominotarget=self,
+                plomino_parent_id=self.id)
+            return action_render
+
 
     security.declareProtected(READ_PERMISSION, 'applyHideWhen')
 
@@ -1456,3 +1522,34 @@ class PlominoForm(Container):
                 'aaData': result}
 
         return json.dumps(result)
+
+
+
+class GetterSetterAttributeField(AttributeField):
+    """Special datamanager to get around loss on acqusition when using @property"""
+    zope.component.adapts(
+        IPlominoForm, zope.schema.interfaces.IField)
+
+    def get(self):
+        """See z3c.form.interfaces.IDataManager"""
+        getter = "get%s"%self.field.__name__.capitalize()
+        if hasattr(self.adapted_context, getter):
+            return getattr(self.adapted_context, getter)()
+        else:
+            return getattr(self.adapted_context, self.field.__name__)
+
+    def set(self, value):
+        """See z3c.form.interfaces.IDataManager"""
+        if self.field.readonly:
+            raise TypeError("Can't set values on read-only fields "
+                            "(name=%s, class=%s.%s)"
+                            % (self.field.__name__,
+                               self.context.__class__.__module__,
+                               self.context.__class__.__name__))
+        setter = "set%s"%self.field.__name__.capitalize()
+        if hasattr(self.adapted_context, setter):
+            getattr(self.adapted_context, setter)(value)
+        else:
+            # get the right adapter or context
+            setattr(self.adapted_context, self.field.__name__, value)
+

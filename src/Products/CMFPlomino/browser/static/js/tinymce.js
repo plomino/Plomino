@@ -82,7 +82,11 @@
         if (tinymce.DOM.hasClass(selection, elementClass))
         {
             ed.selection.select(selection);
-            var elementId = selection.firstChild.nodeValue;
+            var elementId = selection.getAttribute('data-plominoid');
+            if (elementId == null) {
+                elementId = selection.firstChild.nodeValue;
+            }
+
 
             // hide-when and cache zones start with start:id and finish with end:id
             if (elementType === "hidewhen" || elementType === "cache")
