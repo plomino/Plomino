@@ -2,6 +2,7 @@ from AccessControl import ClassSecurityInfo
 import decimal
 from jsonutil import jsonutil as json
 import logging
+from lxml.html import tostring
 from plone import api
 from plone.app.z3cform.wysiwyg import WysiwygFieldWidget
 from plone.autoform import directives as form
@@ -737,29 +738,29 @@ class PlominoForm(Container):
     def getForm_layout_visual(self):
         #update all teh example widgets
         # TODO: called twice during setter to check if changed
-        d = pq(self.form_layout)
+        d = pq(self.form_layout, parser='html_fragments')
         s = ".plominoActionClass,.plominoSubformClass,.plominoFieldClass"
         for element in d.find(s) + d.filter(s):
             widget_type = element.attrib["class"][7:-5].lower()
             id = element.text
             example = self.example_widget(widget_type, id)
             pq(element)\
-                .html(example)\
+                .html(example, parser='html_fragments')\
                 .add_class("mceNonEditable")\
                 .attr("data-plominoid", id)
-        return str(d)
+        return ''.join([tostring(e) for e in d])
 
     #@form_layout_visual.setter
     # Using special datamanager because @property losses acquisition
     def setForm_layout_visual(self, layout):
         #TODO strip out all the example widgets
-        d = pq(layout)
+        d = pq(layout, parser='html_fragments')
         for element in d.find("*[data-plominoid]"):
             pq(element)\
                 .html(element.attrib["data-plominoid"])\
                 .remove_class("mceNonEditable").\
                 remove_attr("data-plominoid")
-        self.form_layout = str(d)
+        self.form_layout = ''.join([tostring(e) for e in d])
 
     security.declarePrivate('_get_html_content')
 
