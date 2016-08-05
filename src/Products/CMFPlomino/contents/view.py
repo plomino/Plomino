@@ -1,4 +1,4 @@
-from AccessControl import ClassSecurityInfo, Unauthorized
+from AccessControl import ClassSecurityInfo
 import cStringIO
 import csv
 from plone.autoform import directives
@@ -252,18 +252,15 @@ class PlominoView(Container):
         if index is None:
             index = db.getIndex()
 
-        if column_obj.formula:
-            index.createIndex(
-                'PlominoViewColumn_%s_%s' % (
-                    self.id,
-                    column_name),
-                refresh=refresh)
-        else:
+        create_formula_index = True
+
+        if column_obj.displayed_field:
             fieldpath = column_obj.displayed_field.split('/')
             form = self.getParentDatabase().getForm(fieldpath[0])
             if form:
                 field = form.getFormField(fieldpath[1])
                 if field:
+                    create_formula_index = False
                     field.to_be_indexed = True
                     index.createFieldIndex(
                         field.id,
@@ -273,15 +270,14 @@ class PlominoView(Container):
                         fieldmode=field.field_mode)
                 else:
                     column_obj.formula = "'Non-existing field'"
-                    index.createIndex(
-                        'PlominoViewColumn_%s_%s' % (
-                            self.id, column_name),
-                        refresh=refresh)
-            else:
-                index.createIndex(
-                    'PlominoViewColumn_%s_%s' % (
-                        self.id, column_name),
-                    refresh=refresh)
+
+        if create_formula_index:
+            if not column_obj.formula:
+                formula = "'To be replaced'"
+            index.createIndex(
+                'PlominoViewColumn_%s_%s' % (
+                    self.id, column_name),
+                refresh=refresh)
 
     security.declarePublic('getCategorizedColumnValues')
 
