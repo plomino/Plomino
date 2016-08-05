@@ -38,7 +38,8 @@ require([
                 html += '<a class="up-row" href="#"><i class="icon-up-dir"></i></a>';
                 html += '<a class="down-row" href="#"><i class="icon-down-dir"></i></a></td>';
                 for(var i=0;i<self.col_number;i++) {
-                    html += '<td>' + self.rows[j][i] + '</td>';
+                    var v = self.rows[j][i] ? self.rows[j][i] : '';
+                    html += '<td>' + v + '</td>';
                 }
                 html += '</tr>';
             }

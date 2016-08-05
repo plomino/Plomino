@@ -56,6 +56,13 @@
                     </tr>
                 </tal:rows>
             </tal:static>
+            <tr class="header-row count">
+                <td>
+                    <tal:static tal:condition="context/static_rendering">
+                        <tal:block tal:content="count" /> documents
+                    </tal:static>
+                </td>
+            </tr>
         </table>
     </div>
 </metal:content>

@@ -160,6 +160,9 @@ class AccessControl:
         """
         try:
             userid = self.getCurrentUserId()
+            if userid == 'Anonymous User':
+                return [getattr(self, "AnomynousAccessRight", "NoAccess")]
+
             rights = self.get_local_roles_for_userid(userid)
 
             # we append group rights

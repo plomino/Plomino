@@ -18,11 +18,14 @@ require([
         refresh: function() {
             var self = this;
             if(self.options.source) {
+                self.$el.find('tr:not(.header-row)').remove();
+                var counter = self.$el.find('tr.header-row.count')
+                counter.find('td').text('Loading...');
                 $.get(self.options.source, self.params, function(data) {
-                    self.$el.find('tr:not(.header-row)').remove();
+                    var html = '';
                     for(var i=0; i<data.rows.length; i++) {
                         var row = data.rows[i];
-                        var html = '<tr><td><a href="'
+                        html += '<tr><td><a href="'
                             + self.options.source
                             + '/../../document/' + row[0]
                             + '">' + row[1]
@@ -33,8 +36,13 @@ require([
                             }
                         }
                         html += '</tr>';
-                        self.$el.append(html);
                     }
+                    if(data.rows.length > 1) {
+                        counter.find('td').text(data.rows.length + ' documents');
+                    } else {
+                        counter.find('td').text(data.rows.length + ' document');
+                    }
+                    counter.before(html);
                 });
             }
         },
