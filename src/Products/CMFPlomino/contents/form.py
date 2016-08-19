@@ -744,22 +744,61 @@ class PlominoForm(Container):
             widget_type = element.attrib["class"][7:-5].lower()
             id = element.text
             example = self.example_widget(widget_type, id)
+            # .html has a bug - https://github.com/gawel/pyquery/issues/102
+            # so can't use it. below will strip off initial text but that's ok
             pq(element)\
-                .html(example, parser='html_fragments')\
+                .empty()\
+                .append(pq(example, parser='html_fragments'))\
                 .add_class("mceNonEditable")\
                 .attr("data-plominoid", id)
+
+        s = ".plominoHidewhenClass,.plominoCacheClass,.plominoLabelClass"
+        for element in d.find(s) + d.filter(s):
+            widget_type = element.attrib["class"][7:-5].lower()
+            if ':' not in element.text:
+                continue
+            pos,id = element.text.split(':')
+
+            # .html has a bug - https://github.com/gawel/pyquery/issues/102
+            tail = element.tail
+            pq(element)\
+                .html("&nbsp;")\
+                .add_class("mceNonEditable")\
+                .attr("data-plomino-position", pos)\
+                .attr("data-plominoid", id)
+            element.tail = tail
+
+
         return ''.join([tostring(e) for e in d])
 
     #@form_layout_visual.setter
     # Using special datamanager because @property losses acquisition
     def setForm_layout_visual(self, layout):
-        #TODO strip out all the example widgets
         d = pq(layout, parser='html_fragments')
-        for element in d.find("*[data-plominoid]"):
-            pq(element)\
-                .html(element.attrib["data-plominoid"])\
-                .remove_class("mceNonEditable").\
-                remove_attr("data-plominoid")
+
+        # restore start: end: type elements
+        s = ".plominoHidewhenClass,.plominoCacheClass,.plominoLabelClass"
+        (d.find(s) + d.filter(s)).each(
+            lambda i, e: pq(e)\
+                # .html has a bug - https://github.com/gawel/pyquery/issues/102
+                .text("{pos}:{id}".format(pos=pq(e).attr("data-plomino-position"),
+                                          id=pq(e).attr("data-plominoid")))\
+                .remove_class("mceNonEditable")\
+                .remove_attr("data-plominoid")\
+                .remove_attr("data-plomino-position")
+        )
+
+        # strip out all the example widgets
+        d.find("*[data-plominoid]").each(
+            lambda i, e: pq(e)\
+                .text(pq(e).attr("data-plominoid"))\
+                .remove_class("mceNonEditable")\
+                .remove_attr("data-plominoid")
+        )
+
+
+
+
         self.form_layout = ''.join([tostring(e) for e in d])
 
     security.declarePrivate('_get_html_content')

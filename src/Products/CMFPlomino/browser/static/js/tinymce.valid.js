@@ -42,26 +42,26 @@ var PlominoDialog = {
 			else
 				ed.execCommand('mceInsertContent', false, span, {skip_undo : 1});
 		}
-		else if (type == "hidewhen")
+		else if (type == "hidewhen" || type == "label" || type == 'cache')
 		{
 			// Insert or replace the selection
 
             // TinyMCE 3, still needed ?
 			//tinyMCEPopup.restoreSelection();
 
+            var cssclass = 'plomino' + type.charAt(0).toUpperCase() + type.slice(1) + 'Class';
+
 			// Select the parent node of the selection
 			var selection = ed.selection.getNode();
 			// If the node is a <span class="plominoFieldClass"/>, select all its content
-			if (top.tinymce.DOM.hasClass(selection, 'plominoHidewhenClass'))
+			if (top.tinymce.DOM.hasClass(selection, cssclass))
 			{
 				// get the old hide-when id
-				var oldId = selection.firstChild.nodeValue;
-				var splittedId = oldId.split(':');
-				if (splittedId.length > 1)
-					oldId = splittedId[1];
+                var oldId = selection.firstChild.attr('data-plominoid');
+                var pos = selection.firstChild.attr('data-plomino-position')
 
 				// get a list of hide-when opening and closing spans
-				var hidewhens = ed.dom.select('span.plominoHidewhenClass');
+				var hidewhens = ed.dom.select('span.'+cssclass);
 				// find the selected span
 				var i;
 				for (i = 0; i < hidewhens.length; i++) {
@@ -69,24 +69,26 @@ var PlominoDialog = {
 						break;
 				}
 
-				// change the corresponding end
-				if (splittedId[0] == 'start') {
-					selection.firstChild.nodeValue = 'start:' + value;
+				// change the corresponding start/end
+				if (pos == 'start') {
+					selection.firstChild.attr('data-plominoid', value);
 
 					for (; i < hidewhens.length; i++) {
-						if (hidewhens[i].firstChild && hidewhens[i].firstChild.nodeValue == 'end:' + oldId) {
-							hidewhens[i].firstChild.nodeValue = 'end:' + value;
+						if (hidewhens[i].firstChild && hidewhens[i].firstChild.attr('data-plominoid') == oldId &&
+                            hidewhens[i].firstChild.attr('data-plominoid') == 'end') {
+							hidewhens[i].firstChild.attr('data-plominoid', value);
 							break;
 						}
 					}
 				}
-				// change the corresponding start
+				// change the corresponding start by going backwards
 				else {
-					selection.firstChild.nodeValue = 'end:' + value;
+					selection.firstChild.attr('data-plominoid', value);
 
 					for (; i >= 0; i--) {
-						if (hidewhens[i].firstChild && hidewhens[i].firstChild.nodeValue == 'start:' + oldId) {
-							hidewhens[i].firstChild.nodeValue = 'start:' + value;
+						if (hidewhens[i].firstChild && hidewhens[i].firstChild.attr('data-plominoid') == oldId &&
+                            hidewhens[i].firstChild.attr('data-plominoid') == 'start') {
+							hidewhens[i].firstChild.attr('data-plominoid', value);
 							break;
 						}
 					}
@@ -95,64 +97,9 @@ var PlominoDialog = {
 
 			else {
 				// String to add in the editor
-				var zone = '<span class="plominoHidewhenClass">start:' + value + '</span>' + ed.selection.getContent() + '<span class="plominoHidewhenClass">end:' + value + '</span>';
-				ed.execCommand('mceInsertContent', false, zone, {skip_undo : 1});
-			}
-		}
-		else if (type == "cache")
-		{
-			// Insert or replace the selection
-
-            // TinyMCE 3, still needed ?
-			//tinyMCEPopup.restoreSelection();
-
-			// Select the parent node of the selection
-			var selection = ed.selection.getNode();
-			// If the node is a <span class="plominoFieldClass"/>, select all its content
-			if (top.tinymce.DOM.hasClass(selection, 'plominoCacheClass'))
-			{
-				// get the old cache id
-				var oldId = selection.firstChild.nodeValue;
-				var splittedId = oldId.split(':');
-				if (splittedId.length > 1)
-					oldId = splittedId[1];
-
-				// get a list of cache opening and closing spans
-				var caches = ed.dom.select('span.plominoCacheClass');
-				// find the selected span
-				var i;
-				for (i = 0; i < caches.length; i++) {
-					if (caches[i] == selection)
-						break;
-				}
-
-				// change the corresponding end
-				if (splittedId[0] == 'start') {
-					selection.firstChild.nodeValue = 'start:' + value;
-
-					for (; i < caches.length; i++) {
-						if (caches[i].firstChild && caches[i].firstChild.nodeValue == 'end:' + oldId) {
-							caches[i].firstChild.nodeValue = 'end:' + value;
-							break;
-						}
-					}
-				}
-				// change the corresponding start
-				else {
-					selection.firstChild.nodeValue = 'end:' + value;
-
-					for (; i >= 0; i--) {
-						if (caches[i].firstChild && caches[i].firstChild.nodeValue == 'start:' + oldId) {
-							caches[i].firstChild.nodeValue = 'start:' + value;
-							break;
-						}
-					}
-				}
-			}
-
-			else {
-				// String to add in the editor
-				var zone = '<span class="plominoCacheClass">start:' + value + '</span>' + ed.selection.getContent() + '<span class="plominoCacheClass">end:' + value + '</span>';
+				var zone = '<span class="'+cssclass+' mceNonEditable" data-plominoid="'+value+'" data-plomino-position="start"></span>' +
+                    ed.selection.getContent() +
+                    '<span class="'+cssclass+' mceNonEditable" data-plominoid="'+value+'" data-plomino-position="end"></span>';
 				ed.execCommand('mceInsertContent', false, zone, {skip_undo : 1});
 			}
 		}

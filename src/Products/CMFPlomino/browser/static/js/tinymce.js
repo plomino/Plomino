@@ -85,15 +85,13 @@
             var elementId = selection.getAttribute('data-plominoid');
             if (elementId == null) {
                 elementId = selection.firstChild.nodeValue;
-            }
-
-
-            // hide-when and cache zones start with start:id and finish with end:id
-            if (elementType === "hidewhen" || elementType === "cache")
-            {
-                var splittedId = elementId.split(':');
-                if (splittedId.length > 1)
-                    elementId = splittedId[1];
+                // hide-when and cache zones start with start:id and finish with end:id
+                if (elementType === "hidewhen" || elementType === "cache")
+                {
+                    var splittedId = elementId.split(':');
+                    if (splittedId.length > 1)
+                        elementId = splittedId[1];
+                }
             }
         }
         else if (elementType !== "hidewhen" && elementType !== "cache")
