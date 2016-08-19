@@ -148,7 +148,7 @@
     </value>
     <value key="jscompilation">++resource++Products.CMFPlomino/js/plomino-compiled.js</value>
     <value key="csscompilation">++resource++Products.CMFPlomino/css/plomino-compiled.css</value>
-    <value key="last_compilation">2015-12-08 00:00:00</value>
+    <value key="last_compilation">2016-07-08 00:00:00</value>
   </records>
 
   <record name="plone.displayed_types" interface="Products.CMFPlone.interfaces.controlpanel.INavigationSchema" field="displayed_types">

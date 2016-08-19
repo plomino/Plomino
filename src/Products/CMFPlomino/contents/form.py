@@ -1402,31 +1402,31 @@ class PlominoForm(Container):
                         errors.append("%s %s" % (
                             f.Title(),
                             PlominoTranslate("is mandatory", self)))
-            else:
-                #
-                # STEP 2: check validation formula
-                #
-                # This may massage the submitted value e.g. to make it pass
-                # STEP 3
-                formula = f.validation_formula
-                if formula:
-                    error_msg = ''
-                    try:
-                        error_msg = self.runFormulaScript(
-                            SCRIPT_ID_DELIMITER.join([
-                                'field', self.id, f.id,
-                                'ValidationFormula']),
-                            tmp,
-                            f.validation_formula)
-                    except PlominoScriptException, e:
-                        e.reportError('%s validation formula failed' % f.id)
-                    if error_msg:
-                        errors.append(error_msg)
-                    # May have been changed by formula
-                    submittedValue = REQUEST.get(fieldname)
-                #
-                # STEP 3: check data types
-                #
+            #
+            # STEP 2: check validation formula
+            #
+            # This may massage the submitted value e.g. to make it pass
+            # STEP 3
+            formula = f.validation_formula
+            if formula:
+                error_msg = ''
+                try:
+                    error_msg = self.runFormulaScript(
+                        SCRIPT_ID_DELIMITER.join([
+                            'field', self.id, f.id,
+                            'ValidationFormula']),
+                        tmp,
+                        f.validation_formula)
+                except PlominoScriptException, e:
+                    e.reportError('%s validation formula failed' % f.id)
+                if error_msg:
+                    errors.append(error_msg)
+                # May have been changed by formula
+                submittedValue = REQUEST.get(fieldname)
+            #
+            # STEP 3: check data types
+            #
+            if submittedValue:
                 errors = errors + f.validateFormat(submittedValue)
 
         return errors
