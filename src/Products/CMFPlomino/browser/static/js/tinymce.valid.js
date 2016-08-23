@@ -22,8 +22,8 @@ var PlominoDialog = {
 		{
             var example = document.getElementById("example_widget").innerHTML;
             if (example) {
-                var span = '<span class="mceNonEditable ' + plominoClass
-                    + '" data-plominoid="'+value+'">'
+                var span = '<span class="'+plominoClass
+                    + ' mceNonEditable" data-plominoid="'+value+'">'
 //                    +'<span class="plominoEditWidgetTab">'+  value+'</span>'
                     + example + '</span>';
             }
@@ -38,7 +38,7 @@ var PlominoDialog = {
 			//tinyMCEPopup.restoreSelection();
 			var selection = ed.selection.getNode();
 			if (top.tinymce.DOM.hasClass(selection, 'plominoActionClass') || top.tinymce.DOM.hasClass(selection, 'plominoFieldClass') || top.tinymce.DOM.hasClass(selection, 'plominoLabelClass') || top.tinymce.DOM.hasClass(selection, 'plominoSubformClass'))
-				ed.dom.setOuterHTML(selection, span);
+				ed.execCommand('mceInsertContent', false, span, {skip_undo : 1});
 			else
 				ed.execCommand('mceInsertContent', false, span, {skip_undo : 1});
 		}

@@ -112,12 +112,12 @@ class PlominoFormSettings(object):
                 return field
             else:
                 return None
-
-        fieldsList = self.context.getFormFields()
-        if len(fieldsList) > 0:
-            return fieldsList[0]
-        else:
-            return None
+        #
+        # fieldsList = self.context.getFormFields()
+        # if len(fieldsList) > 0:
+        #     return fieldsList[0]
+        # else:
+        #     return None
 
     def getFieldProperties(self):
         """Return properties of an action, or , if no action is given, properties filled with default values.
