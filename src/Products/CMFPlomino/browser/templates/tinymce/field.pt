@@ -23,7 +23,6 @@
         adapted form/tinyform|nothing;
         fieldproperties adapted/getFieldProperties;
         field adapted/getField;
-        insert view/request/insert|nothing;
         ">
         <div class="plone-modal-dialog">
             <div class="plone-modal-content">

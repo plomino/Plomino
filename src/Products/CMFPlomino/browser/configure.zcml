@@ -162,7 +162,7 @@
    <browser:page
         name="tinyhidewhen"
         for="Products.CMFPlomino.contents.hidewhen.IPlominoHidewhen"
-        class=".tinymce.PlominoHidewhen"
+        class=".tinymce.PlominoHidewhenSettings"
         permission="zope.Public"
         allowed_attributes="setHidewhenProperties"
         />
@@ -176,13 +176,6 @@
         />
 
     <!--
-   <browser:page
-        name="tinyhidewhen"
-        for="Products.CMFPlomino.contents..IPlominoHidewhen"
-        class=".hidewhen.PlominoHidewhen"
-        permission="zope.Public"
-        allowed_attributes="setHidewhenProperties"
-        />
 
    <browser:page
         name="tinycache"

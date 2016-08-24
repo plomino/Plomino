@@ -112,12 +112,6 @@ class PlominoFormSettings(object):
                 return field
             else:
                 return None
-        #
-        # fieldsList = self.context.getFormFields()
-        # if len(fieldsList) > 0:
-        #     return fieldsList[0]
-        # else:
-        #     return None
 
     def getFieldProperties(self):
         """Return properties of an action, or , if no action is given, properties filled with default values.
@@ -212,12 +206,7 @@ class PlominoFormSettings(object):
                 return action
             else:
                 return None
-
-        actionsList = self.context.getActions(None, False)
-        if len(actionsList) > 0:
-            return actionsList[0][0]
-        else:
-            return None
+        return None
 
     def getActionProperties(self):
         """Return properties of an action, or , if no action is given, properties filled with default values.
@@ -305,8 +294,8 @@ class PlominoFormSettings(object):
         """
         hidewhenid = self.request.get("hidewhenid", None)
 
-        if self.request.get("create", False):
-            return None
+        #if self.request.get("create", False):
+        #    return None
 
         if hidewhenid:
             hidewhen = getattr(self.context, hidewhenid, None)
@@ -314,12 +303,7 @@ class PlominoFormSettings(object):
                 return hidewhen
             else:
                 return None
-
-        hidewhenList = self.context.getHidewhenFormulas()
-        if len(hidewhenList) > 0:
-            return hidewhenList[0]
-        else:
-            return None
+        return None
 
     def getHidewhenProperties(self):
         """Returns properties of a hide-when formula, or, if no hide-when formula is given, properties filled with default values.
@@ -448,7 +432,7 @@ class PlominoFieldSettings(object):
         self.request.RESPONSE.redirect(self.context.absolute_url() + "/../@@tinymceplominoform/valid_page?type=field&value=" + self.context.id)
 
 
-class PlominoHidewhen(object):
+class PlominoHidewhenSettings(object):
     """
     """
 
@@ -502,13 +486,13 @@ class PlominoActionSettings(object):
         inActionBar = self.request.get("actioninactionbar", None) == 'on'
 
         # self.context is the current field
-        self.context.setTitle(title)
-        self.context.setActionType(actionType)
-        self.context.setActionDisplay(actionDisplay)
-        self.context.setContent(content)
-        self.context.setHidewhen(hideWhen)
-        self.context.setInActionBar(inActionBar)
+        self.context.title = title
+        self.context.action_type = actionType
+        self.context.action_display = actionDisplay
+        self.context.content = content
+        self.context.hidewhen = hideWhen
+        self.context.in_action_bar = inActionBar
 
-        self.context.aq_inner.at_post_edit_script()
+        #self.context.aq_inner.at_post_edit_script()
 
         self.request.RESPONSE.redirect(self.context.absolute_url() + "/../@@tinymceplominoform/valid_page?type=action&value=" + self.context.id)

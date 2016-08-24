@@ -7,6 +7,16 @@
 		<title i18n:translate="plominoaction_title">Add/edit a Plomino Action</title>
 		<link tal:replace="structure provider:plone.htmlhead.links" />
 		<link rel="stylesheet" type="text/css" href="++resource++Products.CMFPlomino/css/plomino.tinymce.css" />
+       <script tal:replace="structure provider:plone.scripts" />
+        <script>
+            // get select two working
+           require(['jquery', 'pat-registry','mockup-patterns-select2'],
+             function($, registry) {
+               $(document).ready(function (){
+                 registry.scan($('body'));
+               });
+           });
+        </script>
 	</head>
 	<body id="plonebrowser" tal:define="form python:view.context;
 		actionid view/request/actionid|nothing;
@@ -22,18 +32,16 @@
 				</div>
 				<div class="plone-modal-body">
 					<!-- Form which selects an existing action -->
-					<fieldset tal:condition="action">
+					<fieldset>
 						<legend i18n:translate="plominoaction_selection">Select a Plomino Action</legend>
 
 						<form id="actionSelection" method="get">
 							<p>
 								<label for="actionid" i18n:translate="plominoaction_id">Action ID</label>
-								<select id="actionid" name="actionid" onchange="this.form.submit();">
-									<option
-										tal:repeat="item adapted/getActions"
-										tal:content="item/id"
-										tal:attributes="value item/id; selected python:item.id==actionid"></option>
-								</select>
+                                <input id="actionid" name="actionid" onchange="this.form.submit();"
+                                       class="pat-select2" data-pat-select2="allowNewItems:true;; tags:true"
+                                       tal:define="tags python:','.join(f.id for f in adapted.getActions())"
+                                        tal:attributes="value actionid; data-pat-select2 string:allowNewItems:true;; tags: ${tags};; maximumSelectionSize:1;;}"/>
 							</p>
 						</form>
 					</fieldset>
@@ -41,12 +49,7 @@
 					<!-- Form which edits the selected action -->
 					<form method="post"
 						tal:attributes="action python:action and action.absolute_url() + '/tinyaction/setActionProperties' or form.absolute_url() + '/tinyform/addAction'">
-						<fieldset tal:condition="python:not action">
-							<legend i18n:translate="plominoaction_createaction">Create a Plomino Action</legend>
-
-							<label for="actionid" i18n:translate="plominoaction_id">Action ID</label>
-							<input type="text" name="actionid" id="actionid" tal:attributes="value actionid" />
-						</fieldset>
+							<input type="hidden" name="actionid"  tal:attributes="value actionid" />
 
 						<fieldset>
 							<legend i18n:translate="plominoaction_edit">Edit Action Properties</legend>

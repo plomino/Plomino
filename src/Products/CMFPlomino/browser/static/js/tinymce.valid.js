@@ -57,8 +57,8 @@ var PlominoDialog = {
 			if (top.tinymce.DOM.hasClass(selection, cssclass))
 			{
 				// get the old hide-when id
-                var oldId = selection.firstChild.attr('data-plominoid');
-                var pos = selection.firstChild.attr('data-plomino-position')
+                var oldId = selection.getAttribute('data-plominoid');
+                var pos = selection.getAttribute('data-plomino-position')
 
 				// get a list of hide-when opening and closing spans
 				var hidewhens = ed.dom.select('span.'+cssclass);
@@ -71,24 +71,24 @@ var PlominoDialog = {
 
 				// change the corresponding start/end
 				if (pos == 'start') {
-					selection.firstChild.attr('data-plominoid', value);
+					selection.setAttribute('data-plominoid', value);
 
 					for (; i < hidewhens.length; i++) {
-						if (hidewhens[i].firstChild && hidewhens[i].firstChild.attr('data-plominoid') == oldId &&
-                            hidewhens[i].firstChild.attr('data-plominoid') == 'end') {
-							hidewhens[i].firstChild.attr('data-plominoid', value);
+						if (hidewhens[i] && hidewhens[i].getAttribute('data-plominoid') == oldId &&
+                            hidewhens[i].getAttribute('data-plomino-position') == 'end') {
+							hidewhens[i].setAttribute('data-plominoid', value);
 							break;
 						}
 					}
 				}
 				// change the corresponding start by going backwards
 				else {
-					selection.firstChild.attr('data-plominoid', value);
+					selection.setAttribute('data-plominoid', value);
 
 					for (; i >= 0; i--) {
-						if (hidewhens[i].firstChild && hidewhens[i].firstChild.attr('data-plominoid') == oldId &&
-                            hidewhens[i].firstChild.attr('data-plominoid') == 'start') {
-							hidewhens[i].firstChild.attr('data-plominoid', value);
+						if (hidewhens[i] && hidewhens[i].getAttribute('data-plominoid') == oldId &&
+                            hidewhens[i].getAttribute('data-plomino-position') == 'start') {
+							hidewhens[i].setAttribute('data-plominoid', value);
 							break;
 						}
 					}
