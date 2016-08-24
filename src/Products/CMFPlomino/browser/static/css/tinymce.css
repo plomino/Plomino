@@ -1,15 +1,28 @@
-.plominoFieldClass,.plominoHidewhenClass {
+.plominoFieldClass,
+.plominoHidewhenClass,
+.plominoActionClass,
+.plominoSubformClass{
     position:relative;
-    display: inline-block
+    display: inline-block;
+    /*color: #1b6899;*/
+    /*background-color: #ffffff;*/
+    /*border: 1px solid #1b6899;*/
+    /*border-radius: 4px;*/
+    /*box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);*/
+
 }
 
-.plominoFieldClass::before, .plominoHidewhenClass::before   {
-    background: #333;
+
+
+.plominoFieldClass:hover:before,
+.plominoHidewhenClass:hover:before,
+.plominoActionClass:hover:before,
+.plominoSubformClass:hover:before{
     background: rgba(0,0,0,.8);
     border-radius: 5px 5px 0px 0px;
     color: #fff;
     bottom:100%;
-    right: 0%;
+    left: 0%;
     content: attr(data-plominoid);
     padding: 2px 5px;
     position: absolute;
@@ -17,6 +30,21 @@
     font-size: 10px;
 }
 
+.plominoFieldClass {
+    outline: 1px dashed #1b6899;
+}
+.plominoFieldClass:hover:before {
+    color: #ffffff;
+    background-color: #1b6899;
+}
+
+.plominoActionClass {
+    outline: 1px dashed #124465;
+}
+.plominoActionClass:hover:before {
+    color:  #ffffff;
+    background-color:#124465;
+}
 
 .plominoEditWidgetTab{
     background: #333;
@@ -33,9 +61,14 @@
 
 .mce-content-body *[contentEditable=false][data-mce-selected] select,
 .mce-content-body *[contentEditable=false][data-mce-selected] input,
+.mce-content-body *[contentEditable=false][data-mce-selected] button,
+.mce-content-body *[contentEditable=false][data-mce-selected] a,
+.mce-content-body *[contentEditable=false][data-mce-selected] textarea
 {
     outline: 2px solid #2d8ac7;
-    padding: 3px;
+    /*padding: 3px;*/
+    pointer-events: none;
+    cursor: default;
 }
 
 /*.plominoLabelClass {*/
@@ -112,14 +145,14 @@
 
 
 
-.plominoActionClass {
-    padding: 2px 10px;
-    color: #ffffff;
-    background-color: #1b6899;
-    border: 1px solid #124465;
-    border-radius: 4px;
-    box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
-}
+/*.plominoActionClass {*/
+    /*padding: 2px 10px;*/
+    /*color: #ffffff;*/
+    /*background-color: #1b6899;*/
+    /*border: 1px solid #124465;*/
+    /*border-radius: 4px;*/
+    /*box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);*/
+/*}*/
 
 /*.plominoFieldClass {*/
     /*padding: 2px 10px;*/
