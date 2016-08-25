@@ -40,7 +40,7 @@
 								<label for="actionid" i18n:translate="plominoaction_id">Action ID</label>
                                 <input id="actionid" name="actionid" onchange="this.form.submit();"
                                        class="pat-select2" data-pat-select2="allowNewItems:true;; tags:true"
-                                       tal:define="tags python:','.join(f.id for f in adapted.getActions())"
+                                       tal:define="tags python:list(f.id for f in adapted.getActions())"
                                         tal:attributes="value actionid; data-pat-select2 string:allowNewItems:true;; tags: ${tags};; maximumSelectionSize:1;;}"/>
 							</p>
 						</form>

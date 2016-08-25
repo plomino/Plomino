@@ -37,7 +37,7 @@
                                 <label for="hidewhenid" i18n:translate="plominohidewhen_id">Hide-when ID</label>
                                 <input id="hidewhenid" name="hidewhenid" onchange="this.form.submit();"
                                        class="pat-select2" data-pat-select2="allowNewItems:true;; tags:true"
-                                       tal:define="tags python:','.join(f.id for f in adapted.getHidewhenFormulas())"
+                                       tal:define="tags python:list(f.id for f in adapted.getHidewhenFormulas())"
                                         tal:attributes="value hidewhenid; data-pat-select2 string:allowNewItems:true;; tags: ${tags};; maximumSelectionSize:1;;}"/>
                             </p>
                         </form>

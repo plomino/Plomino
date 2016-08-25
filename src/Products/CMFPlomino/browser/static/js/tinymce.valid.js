@@ -4,13 +4,18 @@ var PlominoDialog = {
 	submit : function(type, value, option) {
 
 		var ed = top.tinymce.activeEditor;
+        var container = "span";
 
-		if (type == 'action')
+		if (type == 'action') {
 			var plominoClass = 'plominoActionClass';
-		else if (type == 'field')
+        }
+        else if (type == 'field') {
 			var plominoClass = 'plominoFieldClass';
-		else if (type == 'subform')
+        }
+        else if (type == 'subform') {
 			var plominoClass = 'plominoSubformClass';
+            container = "div";
+        }
 		else if (type == 'label') {
 			var plominoClass = 'plominoLabelClass';
 			if (option != null && option.length > 0) {
@@ -22,10 +27,10 @@ var PlominoDialog = {
 		{
             var example = document.getElementById("example_widget").innerHTML;
             if (example) {
-                var span = '<span class="'+plominoClass
+                var span = '<'+container+' class="'+plominoClass
                     + ' mceNonEditable" data-plominoid="'+value+'">'
 //                    +'<span class="plominoEditWidgetTab">'+  value+'</span>'
-                    + example + '</span>';
+                    + example + '</'+container+'>';
             }
             else {
                 // String to add in the editor

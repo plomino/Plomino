@@ -739,6 +739,7 @@ class PlominoForm(Container):
         #update all teh example widgets
         # TODO: called twice during setter to check if changed
         d = pq(self.form_layout, parser='html_fragments')
+        root = d[0].getparent()
         s = ".plominoActionClass,.plominoSubformClass,.plominoFieldClass"
         for element in d.find(s) + d.filter(s):
             widget_type = element.attrib["class"][7:-5].lower()
@@ -746,11 +747,18 @@ class PlominoForm(Container):
             example = self.example_widget(widget_type, id)
             # .html has a bug - https://github.com/gawel/pyquery/issues/102
             # so can't use it. below will strip off initial text but that's ok
-            pq(element)\
-                .empty()\
-                .append(pq(example, parser='html_fragments'))\
-                .add_class("mceNonEditable")\
-                .attr("data-plominoid", id)
+            # pq(element)\
+            #     .empty()\
+            #     .append(pq(example, parser='html_fragments'))\
+            #     .add_class("mceNonEditable")\
+            #     .attr("data-plominoid", id)
+            html = '<{tag} class="{pclass} mceNonEditable" data-plominoid="{id}">{example}</{tag}>'.format(
+                id=id,
+                example=example,
+                tag='div' if pq(element).has_class('plominoSubformClass') else 'span',
+                pclass=pq(element).attr('class')
+            )
+            pq(element).replace_with(html)
 
         s = ".plominoHidewhenClass,.plominoCacheClass,.plominoLabelClass"
         for element in d.find(s) + d.filter(s):
@@ -769,37 +777,38 @@ class PlominoForm(Container):
             element.tail = tail
 
 
-        return ''.join([tostring(e) for e in d])
+        return tostring_innerhtml(root)
 
     #@form_layout_visual.setter
     # Using special datamanager because @property losses acquisition
     def setForm_layout_visual(self, layout):
         d = pq(layout, parser='html_fragments')
+        root = d[0].getparent()
 
         # restore start: end: type elements
         s = ".plominoHidewhenClass,.plominoCacheClass,.plominoLabelClass"
-        (d.find(s) + d.filter(s)).each(
-            lambda i, e: pq(e)\
-                # .html has a bug - https://github.com/gawel/pyquery/issues/102
+        for e in d.find(s) + d.filter(s):
+            # .html has a bug - https://github.com/gawel/pyquery/issues/102
+            pq(e)\
                 .text("{pos}:{id}".format(pos=pq(e).attr("data-plomino-position"),
                                           id=pq(e).attr("data-plominoid")))\
                 .remove_class("mceNonEditable")\
                 .remove_attr("data-plominoid")\
                 .remove_attr("data-plomino-position")
-        )
 
         # strip out all the example widgets
-        d.find("*[data-plominoid]").each(
-            lambda i, e: pq(e)\
-                .text(pq(e).attr("data-plominoid"))\
-                .remove_class("mceNonEditable")\
-                .remove_attr("data-plominoid")
-        )
-
-
-
-
-        self.form_layout = ''.join([tostring(e) for e in d])
+        s="*[data-plominoid]"
+        for e in d.find(s) + d.filter(s):
+            # lambda i, e: pq(e)\
+            #     .text(pq(e).attr("data-plominoid"))\
+            #     .remove_class("mceNonEditable")\
+            #     .remove_attr("data-plominoid")
+            span = '<span class="{pclass}">{id}</span>'.format(
+                    id=pq(e).attr("data-plominoid"),
+                    pclass=pq(e).remove_class("mceNonEditable").attr('class')
+                )
+            pq(e).replace_with(span)
+        self.form_layout = tostring_innerhtml(root)
 
     security.declarePrivate('_get_html_content')
 
@@ -824,9 +833,11 @@ class PlominoForm(Container):
                 return
             doc = getTemporaryDocument(db, form=subform,
                                        REQUEST={}).__of__(db)
-            return subform.displayDocument(
+            rendering = subform.displayDocument(
                 doc, editmode=True, creation=True, parent_form_id=self.id,
             )
+            return rendering
+
         elif widget_type == 'action':
             action = getattr(self, id, None)
             if not isinstance(action, PlominoAction):
@@ -1593,3 +1604,11 @@ class GetterSetterAttributeField(AttributeField):
             # get the right adapter or context
             setattr(self.adapted_context, self.field.__name__, value)
 
+
+def tostring_innerhtml(root):
+    """ pyquery doesn't handle remove or replace_with well when you are dealing
+    with fragments
+    """
+    if not root:
+        return ''
+    return (root.text or '') + ''.join([tostring(child) for child in root.iterchildren()])
