@@ -11,6 +11,7 @@ var PlominoDialog = {
         }
         else if (type == 'field') {
 			var plominoClass = 'plominoFieldClass';
+            container = "div";
         }
         else if (type == 'subform') {
 			var plominoClass = 'plominoSubformClass';
@@ -25,10 +26,14 @@ var PlominoDialog = {
 
 		if (plominoClass !== undefined)
 		{
-            var example = document.getElementById("example_widget").innerHTML;
+            var eblock = document.getElementById("example_widget");
+            var example = eblock.innerHTML;
+            if (eblock.getElementsByTagName("div") || e.block.getElementsByTagName("table")) {
+                container = "div";
+            }
             if (example) {
                 var span = '<'+container+' class="'+plominoClass
-                    + ' mceNonEditable" data-plominoid="'+value+'">'
+                    + ' mceNonEditable" data-mce-resize="false" data-plominoid="'+value+'">'
 //                    +'<span class="plominoEditWidgetTab">'+  value+'</span>'
                     + example + '</'+container+'>';
             }
@@ -43,9 +48,9 @@ var PlominoDialog = {
 			//tinyMCEPopup.restoreSelection();
 			var selection = ed.selection.getNode();
 			if (top.tinymce.DOM.hasClass(selection, 'plominoActionClass') || top.tinymce.DOM.hasClass(selection, 'plominoFieldClass') || top.tinymce.DOM.hasClass(selection, 'plominoLabelClass') || top.tinymce.DOM.hasClass(selection, 'plominoSubformClass'))
-				ed.execCommand('mceInsertContent', false, span, {skip_undo : 1});
+				ed.execCommand('mceInsertRawHTML', false, span, {skip_undo : 1});
 			else
-				ed.execCommand('mceInsertContent', false, span, {skip_undo : 1});
+				ed.execCommand('mceInsertRawHTML', false, span, {skip_undo : 1});
 		}
 		else if (type == "hidewhen" || type == "label" || type == 'cache')
 		{

@@ -22,6 +22,7 @@
         adapted form/tinyform|nothing;
         hidewhenproperties adapted/getHidewhenProperties;
         hidewhen adapted/getHidewhen;
+        hidewhens adapted/getHidewhenFormulas;
         ">
         <div class="plone-modal-dialog">
             <div class="plone-modal-content">
@@ -37,7 +38,7 @@
                                 <label for="hidewhenid" i18n:translate="plominohidewhen_id">Hide-when ID</label>
                                 <input id="hidewhenid" name="hidewhenid" onchange="this.form.submit();"
                                        class="pat-select2" data-pat-select2="allowNewItems:true;; tags:true"
-                                       tal:define="tags python:list(f.id for f in adapted.getHidewhenFormulas())"
+                                       tal:define="tags python:','.join(f.id for f in hidewhens) if hidewhens else '[]'"
                                         tal:attributes="value hidewhenid; data-pat-select2 string:allowNewItems:true;; tags: ${tags};; maximumSelectionSize:1;;}"/>
                             </p>
                         </form>
