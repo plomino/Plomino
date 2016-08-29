@@ -312,6 +312,7 @@ class PlominoForm(Container):
         errors = self.validateInputs(REQUEST)
         if errors:
             if is_childform:
+                REQUEST.RESPONSE.setStatus(400)
                 REQUEST.RESPONSE.setHeader(
                     'content-type', 'application/json; charset=utf-8')
                 return json.dumps({'errors': errors})
