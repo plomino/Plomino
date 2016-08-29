@@ -747,7 +747,7 @@ class PlominoForm(Container):
         #update all teh example widgets
         # TODO: called twice during setter to check if changed
         d = pq(self.form_layout, parser='html_fragments')
-        root = d[0].getparent()
+        root = d[0].getparent() if d else d
         s = ".plominoActionClass,.plominoSubformClass,.plominoFieldClass"
         for element in d.find(s) + d.filter(s):
             widget_type = element.attrib["class"][7:-5].lower()
@@ -807,10 +807,6 @@ class PlominoForm(Container):
         # strip out all the example widgets
         s="*[data-plominoid]"
         for e in d.find(s) + d.filter(s):
-            # lambda i, e: pq(e)\
-            #     .text(pq(e).attr("data-plominoid"))\
-            #     .remove_class("mceNonEditable")\
-            #     .remove_attr("data-plominoid")
             span = '<span class="{pclass}">{id}</span>'.format(
                     id=pq(e).attr("data-plominoid"),
                     pclass=pq(e).remove_class("mceNonEditable").attr('class')
@@ -832,9 +828,19 @@ class PlominoForm(Container):
         if widget_type == "field":
             field = self.getFormField(id)
             if field is not None:
-                return field.getRenderedValue(fieldvalue=None,
+                html = field.getRenderedValue(fieldvalue=None,
                                               editmode="EDITABLE",
                                               target=self)
+                # need to determine if the html will get wiped
+                field_pq = pq(html)
+                blocks = 'input,select,table,textarea,button,img,video'
+                if not field_pq.text() and not field_pq.filter(blocks) and not field_pq.find(blocks):
+                    #TODO: bit of a hack. perhaps need somethign better
+                    return id
+                else:
+                    return html
+
+
         elif widget_type == "subform":
             subform = getattr(self, id, None)
             if not isinstance(subform, PlominoForm):
