@@ -41,10 +41,18 @@ security = ClassSecurityInfo()
 
 label_re = re.compile('<span class="plominoLabelClass">((?P<optional_fieldname>\S+):){0,1}\s*(?P<fieldname_or_label>.+?)</span>')
 
+class IHelper(model.Schema):
+    schema.Choice(values=[])
 
 class IPlominoForm(model.Schema):
     """ Plomino form schema
     """
+
+    # helpers = schema.List(value_type=schema.Object(IHelper),
+    #                       title=u"Helpers",
+    #                       description=u"Helpers applied",
+    #                       required=False
+    # )
 
     form.widget('form_layout_visual', WysiwygFieldWidget)
     form_layout_visual = schema.Text(
@@ -783,7 +791,7 @@ class PlominoForm(Container):
     # Using special datamanager because @property losses acquisition
     def setForm_layout_visual(self, layout):
         d = pq(layout, parser='html_fragments')
-        root = d[0].getparent()
+        root = d[0].getparent() if d else d
 
         # restore start: end: type elements
         s = ".plominoHidewhenClass,.plominoCacheClass,.plominoLabelClass"

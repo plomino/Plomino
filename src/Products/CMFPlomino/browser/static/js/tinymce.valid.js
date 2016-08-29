@@ -28,10 +28,13 @@ var PlominoDialog = {
 		{
             var eblock = document.getElementById("example_widget");
             var example = eblock.innerHTML;
-            if (eblock.getElementsByTagName("div") || e.block.getElementsByTagName("table")) {
+            // tinymce will remove a span around a block element since its invalid
+            if (eblock.getElementsByTagName("div") ||
+                eblock.getElementsByTagName("table") ||
+                eblock.getElementsByTagName("p")) {
                 container = "div";
             }
-            if (example) {
+            if (example != undefined) {
                 var span = '<'+container+' class="'+plominoClass
                     + ' mceNonEditable" data-mce-resize="false" data-plominoid="'+value+'">'
 //                    +'<span class="plominoEditWidgetTab">'+  value+'</span>'
