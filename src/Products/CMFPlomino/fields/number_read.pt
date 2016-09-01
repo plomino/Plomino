@@ -1,3 +1,10 @@
-<tal:block tal:define="v python:options['fieldvalue'];
-    formatted_value python:options['field'].getSettings().format_value(v)"
-    tal:content="formatted_value">number</tal:block>
+<span tal:define="v python:options['fieldvalue'];
+    field python:options['field'];
+    formatted_value python:field.getSettings().format_value(v);
+    dynamic python:getattr(field, 'isDynamicField', False);
+    field_id python:field.id;
+    form_id python:field.aq_parent.id;
+    klass python:dynamic and 'dynamicfield' or '';"
+    tal:content="formatted_value"
+    tal:attributes="class klass;
+                    data-dynamicfield python:dynamic and '%s/%s' % (form_id, field_id) or None;">number</span>
