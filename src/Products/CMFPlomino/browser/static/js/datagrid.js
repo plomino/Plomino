@@ -1,3 +1,9 @@
+//TODO: extend so it can accept a list of associated forms
+// - add becomes autocomplete
+// - accept dict instead of list of values
+// - columns is what to display
+// - need to store formid for each row so can reedit
+
 require([
     'jquery',
     'pat-base',
@@ -30,9 +36,10 @@ require([
             html += '</tr>';
             for(var j=0;j<self.rows.length;j++) {
                 var edit_url = self.form_url;
-                for(var k=0;k<self.col_number;k++) {
-                    edit_url += '&' + self.fields[k] + '=' + self.values[j][k];
-                }
+                edit_url += $.param(self.values[j]);
+                //for(var k=0;k<self.values.length;k++) {
+                //    edit_url += '&' + self.values.lenght[k] + '=' + self.values[j][k];
+                //}
                 html += '<tr><td class="actions"><a class="edit-row" href="' + edit_url + '"><i class="icon-pencil"></i></a>';
                 html += '<a class="remove-row" href="#"><i class="icon-cancel"></i></a>';
                 html += '<a class="up-row" href="#"><i class="icon-up-dir"></i></a>';
@@ -85,11 +92,18 @@ require([
             var self = this;
             if(!response.errors) {
                 modal.hide();
-                var raw = [];
+                var raw = {};
                 var rendered = [];
+                var formdata = form.serializeArray();
                 for(var i=0;i<self.col_number;i++) {
-                    raw.push(response[self.fields[i]].raw);
-                    rendered.push(response[self.fields[i]].rendered);
+                    if (self.fields[i] != undefined && self.fields[i] in response) {
+                        //raw.push(response[self.fields[i]].raw);
+                        rendered.push(response[self.fields[i]].rendered);
+                    }
+
+                }
+                for (var key in response) {
+                    raw[key] = response[key].raw
                 }
                 self.values.push(raw);
                 self.input.val(JSON.stringify(self.values));
@@ -106,8 +120,10 @@ require([
                 var raw = [];
                 var rendered = [];
                 for(var i=0;i<self.col_number;i++) {
-                    raw.push(response[self.fields[i]].raw);
-                    rendered.push(response[self.fields[i]].rendered);
+                    if (self.fields[i] != undefined && self.fields[i] in response) {
+                        raw.push(response[self.fields[i]].raw);
+                        rendered.push(response[self.fields[i]].rendered);
+                    }
                 }
                 self.values[row_index] = raw;
                 self.input.val(JSON.stringify(self.values));

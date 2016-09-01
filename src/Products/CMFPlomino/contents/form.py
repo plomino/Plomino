@@ -1,5 +1,6 @@
 from AccessControl import ClassSecurityInfo
 import decimal
+from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from jsonutil import jsonutil as json
 import logging
 from lxml.html import tostring
@@ -9,6 +10,7 @@ from plone.autoform import directives as form
 from plone.dexterity.content import Container
 from plone.supermodel import directives, model
 from z3c.form.datamanager import AttributeField, zope
+from Products.CMFPlomino.browser.helpers import SubformWidget
 from Products.CMFPlomino.contents.action import PlominoAction
 from Products.CMFPlomino.contents.field import PlominoField
 import re
@@ -42,17 +44,22 @@ security = ClassSecurityInfo()
 label_re = re.compile('<span class="plominoLabelClass">((?P<optional_fieldname>\S+):){0,1}\s*(?P<fieldname_or_label>.+?)</span>')
 
 class IHelper(model.Schema):
-    schema.Choice(values=[])
+    form = schema.Choice(title=u"Helper form (and db) used to edit data",
+                         values=['send-as-email'])
+    id = schema.TextLine(title=u"unique id for helper")
+    json = schema.TextLine(title=u"Data saved from the form")
 
 class IPlominoForm(model.Schema):
     """ Plomino form schema
     """
 
-    # helpers = schema.List(value_type=schema.Object(IHelper),
-    #                       title=u"Helpers",
-    #                       description=u"Helpers applied",
-    #                       required=False
-    # )
+    #form.widget('helpers', template=ViewPageTemplateFile("../browser/templates/multi_helpers.pt"))
+    form.widget('helpers', SubformWidget)
+    helpers = schema.List(value_type=schema.Dict(),
+                          title=u"Helpers",
+                          description=u"Helpers applied",
+                          required=False
+    )
 
     form.widget('form_layout_visual', WysiwygFieldWidget)
     form_layout_visual = schema.Text(

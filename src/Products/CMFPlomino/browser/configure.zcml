@@ -2,6 +2,7 @@
     xmlns="http://namespaces.zope.org/zope"
     xmlns:browser="http://namespaces.zope.org/browser"
     xmlns:plone="http://namespaces.plone.org/plone"
+    xmlns:z3c="http://namespaces.zope.org/z3c"
     i18n_domain="Products.CMFPlomino">
 
     <!-- permissions -->
@@ -185,6 +186,38 @@
         allowed_attributes="setCacheProperties"
         />
     -->
+
+    <browser:page
+        for="Products.CMFPlomino.contents.form.IPlominoForm"
+        name="HelperForm"
+        class=".helpers.HelperView"
+        attribute="openform"
+        permission="zope.Public"
+        />
+
+  <adapter
+      factory="Products.CMFPlomino.browser.helpers.SubformWidget"
+      provides="z3c.form.interfaces.IFieldWidget"
+      for="zope.schema.interfaces.IAbstractSet
+           zope.schema.interfaces.IObject
+           plone.app.z3cform.interfaces.IPloneFormLayer"
+      />
+  <adapter factory=".helpers.SubformWidgetConverter" />
+    <subscriber
+      for="Products.CMFPlomino.contents.form.IPlominoForm
+           zope.lifecycleevent.interfaces.IObjectModifiedEvent"
+      handler=".helpers.update_helpers"
+      />
+
+
+  <z3c:widgetTemplate
+      mode="input"
+      widget=".helpers.ISubformWidget"
+      layer="plone.app.z3cform.interfaces.IPloneFormLayer"
+      template="templates/multi_helpers.pt"
+      />
+
+
 
   <plone:portlet
       name="plomino.designportlet"
