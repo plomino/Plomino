@@ -1,16 +1,15 @@
 
 <div class="plomino-datagrid" tal:define="
     fieldname view/name;
-    add_url string:send-as-email;
     value view/value| string: [];
     columns view/columns"
     tal:attributes="
         data-associated-form string:send-as-email;
-        data-fields string:emailsubject,recipients;
-        data-columns python:','.join(columns);
-        data-form-url string:${add_url}/OpenForm?ajax_load=1&Plomino_Parent_Field=${fieldname}&Plomino_Parent_Form=blah">
+        data-fields python:','.join(view.fields);
+        data-columns python:','.join(view.columns);
+        data-form-urls view/form_urls">
     <table tal:attributes='data-rows view/rendered'
-           tal:define="rows fieldvalue/rendered|nothing">
+           tal:define="rows view/rendered|nothing">
         <tr>
             <th tal:repeat="col columns"
                 tal:content="col">col</th>

@@ -7,6 +7,7 @@
 require([
     'jquery',
     'pat-base',
+//    'mockup-patterns-select2',
     'mockup-patterns-modal'
 ], function($, Base, Modal) {
     'use strict';
@@ -23,7 +24,12 @@ require([
             self.values = JSON.parse(self.input.val());
             self.rows = JSON.parse(self.$el.find('table').attr('data-rows'));
             self.col_number = self.fields.length;
-            self.form_url = self.$el.attr('data-form-url');
+            if (self.$el.attr('data-form-urls')) {
+                self.form_urls = JSON.parse(self.$el.attr('data-form-urls'));
+            } else {
+                self.form_urls = [{'url':self.$el.attr('data-form-url')}];
+            }
+
             self.render();
         },
         render: function() {
@@ -50,8 +56,22 @@ require([
                 }
                 html += '</tr>';
             }
-            html += '<tr><td class="actions"><a class="add-row" href="'+self.form_url+'"><i class="icon-plus"></i></a></td></tr>';
+            var form_select="";
+            if (self.form_urls.length > 1) {
+                form_select = '<select class="form_select" data-pat="width:10em">'
+                for (i=0; i<self.form_urls.length; i++) {
+                    var form = self.form_urls[i];
+                    form_select += '<option value="'+form['url']+'">'+form['title']+'</option>'
+                }
+                form_select += '</select>'
+            }
+            html += '<tr><td class="actions" colspan="5">'+form_select+'<a class="add-row" href="'+self.form_urls[0]['url']+'"><i class="icon-plus"></i></a></td></tr>';
             table.html(html);
+            self.$el.find('.form_select').each(function(index, el) {
+                $(el).change(function() {
+                    self.$el.find('.add-row').attr('href', $(el).val())
+                });
+            });
             var add_modal = new Modal(self.$el.find('.add-row'), {
                 actions: {
                     'input.plominoSave': {

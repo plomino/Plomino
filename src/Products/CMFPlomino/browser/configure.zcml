@@ -187,13 +187,13 @@
         />
     -->
 
-    <browser:page
-        for="Products.CMFPlomino.contents.form.IPlominoForm"
-        name="HelperForm"
-        class=".helpers.HelperView"
-        attribute="openform"
-        permission="zope.Public"
-        />
+    <!--<browser:page-->
+        <!--for="Products.CMFPlomino.contents.form.IPlominoForm"-->
+        <!--name="HelperForm"-->
+        <!--class=".helpers.HelperView"-->
+        <!--attribute="openform"-->
+        <!--permission="zope.Public"-->
+        <!--/>-->
 
   <adapter
       factory="Products.CMFPlomino.browser.helpers.SubformWidget"
@@ -209,6 +209,36 @@
       handler=".helpers.update_helpers"
       />
 
+    <plone:behavior
+        title="Helpers"
+        description="Lets an object use external forms to generate its formulas"
+        provides=".helpers.IHelpers"
+        />
+        <!--for="Products.CMFPlomino.contents.form.IPlominoForm"-->
+    <!--<plone:behavior-->
+        <!--title="Helpers"-->
+        <!--description="Lets an object use external forms to generate its formulas"-->
+        <!--provides=".helpers.IHelpers"-->
+        <!--for="Products.CMFPlomino.contents.field.IPlominoField"-->
+        <!--/>-->
+    <!--<plone:behavior-->
+        <!--title="Helpers"-->
+        <!--description="Lets an object use external forms to generate its formulas"-->
+        <!--provides=".helpers.IHelpers"-->
+        <!--for="Products.CMFPlomino.contents.action.IPlominoAction"-->
+        <!--/>-->
+    <!--<plone:behavior-->
+        <!--title="Helpers"-->
+        <!--description="Lets an object use external forms to generate its formulas"-->
+        <!--provides=".helpers.IHelpers"-->
+        <!--for="Products.CMFPlomino.contents.hidewhen.IPlominoHidewhen"-->
+        <!--/>-->
+    <!--<plone:behavior-->
+        <!--title="Helpers"-->
+        <!--description="Lets an object use external forms to generate its formulas"-->
+        <!--provides=".helpers.IHelpers"-->
+        <!--for="Products.CMFPlomino.contents.view.IPlominoView"-->
+        <!--/>-->
 
   <z3c:widgetTemplate
       mode="input"

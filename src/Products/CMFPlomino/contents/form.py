@@ -10,7 +10,6 @@ from plone.autoform import directives as form
 from plone.dexterity.content import Container
 from plone.supermodel import directives, model
 from z3c.form.datamanager import AttributeField, zope
-from Products.CMFPlomino.browser.helpers import SubformWidget
 from Products.CMFPlomino.contents.action import PlominoAction
 from Products.CMFPlomino.contents.field import PlominoField
 import re
@@ -43,23 +42,11 @@ security = ClassSecurityInfo()
 
 label_re = re.compile('<span class="plominoLabelClass">((?P<optional_fieldname>\S+):){0,1}\s*(?P<fieldname_or_label>.+?)</span>')
 
-class IHelper(model.Schema):
-    form = schema.Choice(title=u"Helper form (and db) used to edit data",
-                         values=['send-as-email'])
-    id = schema.TextLine(title=u"unique id for helper")
-    json = schema.TextLine(title=u"Data saved from the form")
+
 
 class IPlominoForm(model.Schema):
     """ Plomino form schema
     """
-
-    #form.widget('helpers', template=ViewPageTemplateFile("../browser/templates/multi_helpers.pt"))
-    form.widget('helpers', SubformWidget)
-    helpers = schema.List(value_type=schema.Dict(),
-                          title=u"Helpers",
-                          description=u"Helpers applied",
-                          required=False
-    )
 
     form.widget('form_layout_visual', WysiwygFieldWidget)
     form_layout_visual = schema.Text(
@@ -325,6 +312,7 @@ class PlominoForm(Container):
 
         # Check for None: the request might yield an empty string.
         # TODO: try not to put misleading Plomino_* fields on the request.
+        #TODO: this is hacky way to indicate you want to return the data as json.
         if parent_field is not None:
             is_childform = True
 
@@ -338,22 +326,11 @@ class PlominoForm(Container):
             return self.notifyErrors(errors)
 
         ################################################################
-        # If child form, return a values as JSON
-        if is_childform:
-            tmp = getTemporaryDocument(db, self, REQUEST).__of__(db)
-            rowdata = {}
-            for field in self.getFormFields(request=REQUEST):
-                rowdata[field.id] = {
-                    'raw': tmp.getItem(field.id, None),
-                    'rendered': tmp.getRenderedItem(field.id),
-                }
-            REQUEST.RESPONSE.setHeader(
-                'content-type', 'application/json; charset=utf-8')
-            return json.dumps(rowdata)
-
-        ################################################################
         # Add a document to the database
-        doc = db.createDocument()
+        if is_childform:
+            doc = getTemporaryDocument(db, self, REQUEST).__of__(db)
+        else:
+            doc = db.createDocument()
         doc.setItem('Form', self.id)
 
         # execute the onCreateDocument code of the form
@@ -366,7 +343,23 @@ class PlominoForm(Container):
         except PlominoScriptException, e:
             e.reportError('Document is created, but onCreate formula failed')
 
-        if valid is None or valid == '':
+        ################################################################
+        # If child form, return a values as JSON
+        if is_childform:
+            #TODO: What if its not valid?
+            # Inlcude calculated fields and title etc
+            doc.save(form=self, creation=True, refresh_index=False,
+                asAuthor=True, onSaveEvent=True)
+            rowdata = dict(title=dict(raw=doc.Title()))
+            for field in self.getFormFields(request=REQUEST):
+                rowdata[field.id] = {
+                    'raw': doc.getItem(field.id, None),
+                    'rendered': doc.getRenderedItem(field.id),
+                }
+            REQUEST.RESPONSE.setHeader(
+                'content-type', 'application/json; charset=utf-8')
+            return json.dumps(rowdata)
+        elif valid is None or valid == '':
             doc.saveDocument(REQUEST, creation=True)
         else:
             db.documents._delOb(doc.id)
