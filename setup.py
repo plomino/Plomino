@@ -46,6 +46,7 @@ setup(
         'plone.app.dexterity',
         'jsonutil',
         'collective.instancebehavior',
+        'pyquery',
     ],
     extras_require={
         'test': [
