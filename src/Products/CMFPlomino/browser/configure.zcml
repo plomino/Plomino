@@ -88,6 +88,13 @@
         />
 
     <browser:page
+        for="Products.CMFPlomino.contents.form.IPlominoForm"
+        name="page"
+        class=".form.PageView"
+        permission="zope.Public"
+        />
+
+    <browser:page
         for="Products.CMFPlomino.interfaces.IPlominoContext"
         name="document"
         permission="zope.Public"

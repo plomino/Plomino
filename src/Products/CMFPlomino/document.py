@@ -98,6 +98,15 @@ class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
         else:
             return "/".join(path)
 
+    def getFormAction(self):
+        """ For a multi page form, submit to a custom action """
+        form = self.getForm()
+        if form.getIsMulti():
+            action = 'page/%s' % form._get_current_page()
+        else:
+            action = 'saveDocument'
+        return '%s/%s' % (self.doc_url(), action)
+
     security.declarePublic('setItem')
 
     def setItem(self, name, value):
@@ -632,6 +641,12 @@ class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
                     request,
                     True)
         return form
+
+    security.declarePublic('getIsMulti')
+
+    def getIsMulti(self):
+        form = self.getForm()
+        return form.getIsMulti()
 
     def _getCatalogTool(self):
         return self.getParentDatabase().getIndex()
