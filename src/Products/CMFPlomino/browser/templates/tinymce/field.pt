@@ -7,12 +7,23 @@
         <title i18n:translate="plominofield_title">Add/edit a Plomino Field</title>
         <script type="text/javascript" src="++resource++Products.CMFPlomino/js/tinymce.plominofield.js"></script>
         <link tal:replace="structure provider:plone.htmlhead.links" />
+        <script tal:replace="structure provider:plone.scripts" />
+        <script>
+            // get select two working
+           require(['jquery', 'pat-registry','mockup-patterns-select2'],
+             function($, registry) {
+               $(document).ready(function (){
+                 registry.scan($('body'));
+               });
+           });
+        </script>
     </head>
     <body id="plonebrowser" tal:define="form python:view.context;
         fieldid view/request/fieldid|nothing;
         adapted form/tinyform|nothing;
         fieldproperties adapted/getFieldProperties;
         field adapted/getField;
+        fields form/getFormFields;
         ">
         <div class="plone-modal-dialog">
             <div class="plone-modal-content">
@@ -20,22 +31,20 @@
                     <h2 class="plone-modal-title">Add/edit a Plomino Field</h2>
                 </div>
                 <div class="plone-modal-body">
-                    <fieldset tal:condition="field">
+                    <fieldset>
                         <legend i18n:translate="plominofield_selection">Select a Plomino Field</legend>
-                        
+
                         <form id="fieldSelection" method="get">
                             <p>
-                                <label i18n:translate="plominofield_id" for="plominoFieldId">Field ID</label>
-                                <select id="plominoFieldId" name="fieldid" onchange="this.form.submit();">
-                                    <option
-                                        tal:repeat="item python:form.getFormFields()"
-                                        tal:content="item/id"
-                                        tal:attributes="value item/id; selected python:item.id==fieldid"></option>
-                                </select>
+                               <label for="plominoFieldId" i18n:translate="plominofield_id">Field ID</label>
+                                <input id="plominoFieldId" name="fieldid" onchange="this.form.submit();"
+                                       class="pat-select2" data-pat-select2="allowNewItems:true;; tags:true"
+                                       tal:define="tags python:','.join(f.id for f in fields) if fields else '[]'"
+                                        tal:attributes="value fieldid; data-pat-select2 string:allowNewItems:true;; tags:${tags};; maximumSelectionSize:1;;}"/>
                             </p>
                         </form>
                     </fieldset>
-                        
+
                     <fieldset tal:condition="field">
                         <legend i18n:translate="plominofield_advanced">Advanced edition</legend>
                         <p>
@@ -44,18 +53,13 @@
                                 target="_blank" id="fieldSettingsLink" i18n:translate="plominofield_specificsettings">Specific settings</a>
                         </p>
                     </fieldset>
-                            
-                    <!-- Form which edits the selected field -->
+
+                     Form which edits the selected field
                     <form method="post"
-                        tal:attributes="action python:field and field.absolute_url() + '/tinyfield/setFieldProperties' or form.absolute_url() + '/tinyform/addField'">
-                        
-                        <fieldset tal:condition="python:not field">
-                            <legend i18n:translate="plominofield_createfield">Create a Plomino Field</legend>
-                            
-                            <label for="plominoFieldId" i18n:translate="plominofield_id">Field ID</label>
-                            <input type="text" name="fieldid" id="plominoFieldId" tal:attributes="value fieldid" />
-                        </fieldset>
-                        
+                        tal:attributes="action python:field and field.absolute_url() + '/tinyfield/setFieldProperties' or fieldid and form.absolute_url() + '/tinyform/addField'">
+
+                        <input type="hidden" name="fieldid" tal:attributes="value fieldid;"/>
+
                         <fieldset>
                             <legend i18n:translate="plominofield_edit">Edit Field Properties</legend>
                             
