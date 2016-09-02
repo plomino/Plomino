@@ -65,7 +65,9 @@ require([
                 }
                 form_select += '</select>'
             }
-            html += '<tr><td class="actions" colspan="5">'+form_select+'<a class="add-row" href="'+self.form_urls[0]['url']+'"><i class="icon-plus"></i></a></td></tr>';
+            if (self.form_urls[0] != undefined) {
+                html += '<tr><td class="actions" colspan="5">'+form_select+'<a class="add-row" href="'+self.form_urls[0]['url']+'"><i class="icon-plus"></i></a></td></tr>';
+            }
             table.html(html);
             self.$el.find('.form_select').each(function(index, el) {
                 $(el).change(function() {

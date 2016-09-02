@@ -203,16 +203,17 @@
            plone.app.z3cform.interfaces.IPloneFormLayer"
       />
   <adapter factory=".helpers.SubformWidgetConverter" />
-    <subscriber
-      for="Products.CMFPlomino.contents.form.IPlominoForm
-           zope.lifecycleevent.interfaces.IObjectModifiedEvent"
-      handler=".helpers.update_helpers"
-      />
+    <!--<subscriber-->
+      <!--for="Products.CMFPlomino.contents.form.IPlominoForm-->
+           <!--zope.lifecycleevent.interfaces.IObjectModifiedEvent"-->
+      <!--handler=".helpers.update_helpers"-->
+      <!--/>-->
 
     <plone:behavior
         title="Helpers"
         description="Lets an object use external forms to generate its formulas"
         provides=".helpers.IHelpers"
+        factory=".helpers.Helpers"
         />
         <!--for="Products.CMFPlomino.contents.form.IPlominoForm"-->
     <!--<plone:behavior-->

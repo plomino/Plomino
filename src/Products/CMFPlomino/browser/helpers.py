@@ -81,7 +81,8 @@ class SubformWidget(Widget):
         self.fields = ['title']
 
         OPEN_URL = "{formid}/OpenForm?ajax_load=1&Plomino_Parent_Field=_dummy_&Plomino_Parent_Form=_dummy_"
-        helpers = [('send-as-email', "Send to email on save"),('helper_form_pdfdownload', "Download as PDF"), ]
+        #helpers = [('send-as-email', "Send to email on save"),('helper_form_pdfdownload', "Download as PDF"), ]
+        helpers = self.helper_forms()
         self.form_urls = [dict(url=OPEN_URL.format(formid=id),id=id,title=title) for id,title in helpers]
         self.form_urls = json.dumps(self.form_urls)
 
@@ -98,20 +99,18 @@ class SubformWidget(Widget):
         raw = json.loads(value) if value and value != default else default
         return raw
 
+    def helper_forms(self):
+        db = self.context.getParentDatabase()
+        for form in db.getForms():
+            typename = self.context.getPortalTypeName().lstrip("Plomino").lower()
+            if form.id.startswith("helper_"+typename):
+                yield (form.id, form.Title())
 
 
 @provider(IFormFieldProvider)
 class IHelpers(model.Schema):
-    """Add tags to content
+    """Add a helpers widget to plomino objects with formulas
     """
-
-    #
-    # directives.fieldset(
-    #         'categorization',
-    #         label=_(u'Categorization'),
-    #         fields=('tags',),
-    #     )
-
 
     directives.widget('helpers', SubformWidget)
     directives.order_after(helpers = 'IBasic.description')
@@ -121,30 +120,30 @@ class IHelpers(model.Schema):
                           required=False
     )
 
-# @implementer(IHelpers)
-# @adapter(IPlominoForm)
-# # @adapter(IPlominoField)
-# # @adapter(IPlominoHidewhen)
-# # @adapter(IPlominoAction)
-# # @adapter(IPlominoView)
-# class Helpers(object):
-#     """Add a field for storing helpers on
-#     """
-#
-#     def __init__(self, context):
-#         self.context = context
-#
-#     @property
-#     def helpers(self):
-#         res = set(self.context.helpers)
-#         update_helpers(self.context, None)
-#         return res
-#
-#     @helpers.setter
-#     def helpers(self, value):
-#         if value is None:
-#             value = ()
-#         self.context.helpers=value
+@implementer(IHelpers)
+#@adapter(IPlominoForm)
+# @adapter(IPlominoField)
+# @adapter(IPlominoHidewhen)
+# @adapter(IPlominoAction)
+# @adapter(IPlominoView)
+class Helpers(object):
+    """Add a field for storing helpers on
+    """
+
+    def __init__(self, context):
+        self.context = context
+
+    @property
+    def helpers(self):
+        return self.context.helpers
+
+    @helpers.setter
+    def helpers(self, value):
+        if value is None:
+            value = []
+        self.context.helpers=value
+        update_helpers(self.context, None)
+
 
 
 # Event handler
@@ -154,6 +153,8 @@ def update_helpers(obj, event):
 
     helpers = obj.helpers
     fields = getFieldsInOrder(obj.getTypeInfo().lookupSchema())
+    if helpers is None:
+        return
 
     for helper in helpers:
         formid = 'send-as-email' #TODO: get form from store
