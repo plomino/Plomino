@@ -121,6 +121,8 @@ require([
                     if (self.fields[i] != undefined && self.fields[i] in response) {
                         //raw.push(response[self.fields[i]].raw);
                         rendered.push(response[self.fields[i]].rendered);
+                    } else {
+                        rendered.push('');
                     }
 
                 }
@@ -143,8 +145,10 @@ require([
                 var rendered = [];
                 for(var i=0;i<self.col_number;i++) {
                     if (self.fields[i] != undefined && self.fields[i] in response) {
-                        raw.push(response[self.fields[i]].raw);
+                        //raw.push(response[self.fields[i]].raw);
                         rendered.push(response[self.fields[i]].rendered);
+                    } else {
+                        rendered.push('');
                     }
                 }
                 self.values[row_index] = raw;

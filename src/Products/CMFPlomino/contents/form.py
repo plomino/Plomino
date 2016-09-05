@@ -350,7 +350,10 @@ class PlominoForm(Container):
             # Inlcude calculated fields and title etc
             doc.save(form=self, creation=True, refresh_index=False,
                 asAuthor=True, onSaveEvent=True)
-            rowdata = dict(title=dict(raw=doc.Title()))
+            # TODO: more generic way to include extra data
+            # TODO: What happens if there is a field called title?
+            # include title needed so it can optionally be displayed. needed for helpers widget
+            rowdata = dict(title=dict(raw=doc.Title(), rendered=doc.Title()))
             for field in self.getFormFields(request=REQUEST):
                 rowdata[field.id] = {
                     'raw': doc.getItem(field.id, None),

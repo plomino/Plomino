@@ -1165,7 +1165,9 @@ class DesignManager:
             for (id, attr) in fields:
                 #params[id] = getattr(obj, id, None)
                 dm = getMultiAdapter((obj, attr), IDataManager)
-                dm.set(params[id])
+                #dm.set(params[id])
+                #TODO: should be using the dm but getting adapt error
+                setattr(obj, id, params[id])
 
         set_data(obj, schema)
         #HACK to enable the instance behaviour
