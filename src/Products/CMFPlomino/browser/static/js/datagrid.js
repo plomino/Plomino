@@ -42,11 +42,18 @@ require([
             html += '</tr>';
             for(var j=0;j<self.rows.length;j++) {
                 var edit_url = self.form_url;
+                var formid = self.values[j]['_datagrid_formid_'];
+                for (var f=0; f<self.form_urls.length; f++) {
+                    if (self.form_urls[f].id == formid) {
+                        edit_url = self.form_urls[f].url;
+                        break;
+                    }
+                }
                 edit_url += $.param(self.values[j]);
                 //for(var k=0;k<self.values.length;k++) {
                 //    edit_url += '&' + self.values.lenght[k] + '=' + self.values[j][k];
                 //}
-                html += '<tr><td class="actions"><a class="edit-row" href="' + edit_url + '"><i class="icon-pencil"></i></a>';
+                html += '<tr><td class="actions"><a class="edit-row" href="' + edit_url + '" data-formid="'+formid+'"><i class="icon-pencil"></i></a>';
                 html += '<a class="remove-row" href="#"><i class="icon-cancel"></i></a>';
                 html += '<a class="up-row" href="#"><i class="icon-up-dir"></i></a>';
                 html += '<a class="down-row" href="#"><i class="icon-down-dir"></i></a></td>';
@@ -66,18 +73,33 @@ require([
                 form_select += '</select>'
             }
             if (self.form_urls[0] != undefined) {
-                html += '<tr><td class="actions" colspan="5">'+form_select+'<a class="add-row" href="'+self.form_urls[0]['url']+'"><i class="icon-plus"></i></a></td></tr>';
+                html += '<tr><td class="actions" colspan="5">'+form_select+
+                    '<a class="add-row" href="'+self.form_urls[0]['url']+
+                    '" data-formid="'+self.form_urls[0]['id']+
+                    '"><i class="icon-plus"></i></a></td></tr>';
             }
             table.html(html);
+            var add_row = self.$el.find('.add-row');
             self.$el.find('.form_select').each(function(index, el) {
+                var formid;
                 $(el).change(function() {
-                    self.$el.find('.add-row').attr('href', $(el).val())
+                    var url =  $(el).val()
+                    for (var f=0; f<self.form_urls.length; f++) {
+                        if (self.form_urls[f].url == url) {
+                            formid = self.form_urls[f].id;
+                            break;
+                        }
+                    }
+                    add_row.attr('href', url).attr('data-formid', formid);
                 });
             });
-            var add_modal = new Modal(self.$el.find('.add-row'), {
+            var add_modal = new Modal(add_row, {
                 actions: {
                     'input.plominoSave': {
-                        onSuccess: self.add.bind(self),
+                        onSuccess: self.add.bind(
+                            {grid: self,
+                             formid:add_row.attr('data-formid')
+                            }),
                         onError: function() {
                             // TODO: render errors in the form
                             window.alert(response.errors);
@@ -90,7 +112,9 @@ require([
                 var edit_modal = new Modal($(el), {
                     actions: {
                         'input.plominoSave': {
-                            onSuccess: self.edit.bind({grid: self, row: i}),
+                            onSuccess: self.edit.bind({grid: self,
+                                row: i,
+                                formid: $(el).attr('data-formid')}),
                             onError: function() {
                                 // TODO: render errors in the form
                                 window.alert(response.errors);
@@ -111,7 +135,8 @@ require([
             });
         },
         add: function(modal, response, state, xhr, form) {
-            var self = this;
+            var self = this.grid;
+            var formid = this.formid;
             if(!response.errors) {
                 modal.hide();
                 var raw = {};
@@ -119,7 +144,6 @@ require([
                 var formdata = form.serializeArray();
                 for(var i=0;i<self.col_number;i++) {
                     if (self.fields[i] != undefined && self.fields[i] in response) {
-                        //raw.push(response[self.fields[i]].raw);
                         rendered.push(response[self.fields[i]].rendered);
                     } else {
                         rendered.push('');
@@ -129,6 +153,7 @@ require([
                 for (var key in response) {
                     raw[key] = response[key].raw
                 }
+                raw['_datagrid_formid_'] = formid;
                 self.values.push(raw);
                 self.input.val(JSON.stringify(self.values));
                 self.rows.push(rendered);
@@ -139,18 +164,22 @@ require([
         edit: function(modal, response, state, xhr, form) {
             var self = this.grid;
             var row_index = this.row;
+            var formid = this.formid;
             if(!response.errors) {
                 modal.hide();
                 var raw = [];
                 var rendered = [];
-                for(var i=0;i<self.col_number;i++) {
+                for(var i=0; i<self.col_number; i++) {
                     if (self.fields[i] != undefined && self.fields[i] in response) {
-                        //raw.push(response[self.fields[i]].raw);
                         rendered.push(response[self.fields[i]].rendered);
                     } else {
                         rendered.push('');
                     }
                 }
+                for (var key in response) {
+                    raw[key] = response[key].raw
+                }
+                raw['_datagrid_formid_'] = formid;
                 self.values[row_index] = raw;
                 self.input.val(JSON.stringify(self.values));
                 self.rows[row_index] = rendered;
