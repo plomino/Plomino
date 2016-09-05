@@ -1022,7 +1022,7 @@ class PlominoForm(Container):
             widget_type = element.attrib["class"][7:-5].lower()
             if ':' not in element.text:
                 continue
-            pos,id = element.text.split(':')
+            pos,id = element.text.split(':', 1)
 
             # .html has a bug - https://github.com/gawel/pyquery/issues/102
             tail = element.tail
