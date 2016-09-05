@@ -48,8 +48,8 @@ class IPlominoForm(model.Schema):
     """ Plomino form schema
     """
 
-    form.widget('form_layout_visual', WysiwygFieldWidget)
-    form_layout_visual = schema.Text(
+    form.widget('form_layout', WysiwygFieldWidget)
+    form_layout = schema.Text(
         title=_('CMFPlomino_label_FormLayout', default="Form layout"),
         description=_('CMFPlomino_help_FormLayout',
             default="Text with 'Plominofield' styles correspond to the"
@@ -743,7 +743,7 @@ class PlominoForm(Container):
 
     #@property
     # Using special datamanager because @property losses acquisition
-    def getForm_layout_visual(self):
+    def getForm_layout(self):
         #update all teh example widgets
         # TODO: called twice during setter to check if changed
         d = pq(self.form_layout, parser='html_fragments')
@@ -789,7 +789,7 @@ class PlominoForm(Container):
 
     #@form_layout_visual.setter
     # Using special datamanager because @property losses acquisition
-    def setForm_layout_visual(self, layout):
+    def setForm_layout(self, layout):
         d = pq(layout, parser='html_fragments')
         root = d[0].getparent() if d else d
 
