@@ -3,10 +3,10 @@ from plone.app.widgets.base import InputWidget
 from plone.app.z3cform.widget import BaseWidget
 from z3c.form.browser.widget import HTMLInputWidget
 from z3c.form.converter import BaseDataConverter
-from z3c.form.interfaces import IWidget, NO_VALUE
+from z3c.form.interfaces import IWidget, NO_VALUE, IDataManager
 from z3c.form.widget import Widget
 from zope import schema
-from zope.component import adapts
+from zope.component import adapts, getMultiAdapter
 from zope.interface import implementsOnly
 from zope.schema.interfaces import IList
 from Products.CMFPlomino.contents.action import IPlominoAction
@@ -116,7 +116,7 @@ class IHelpers(model.Schema):
     directives.order_after(helpers = 'IBasic.description')
     helpers = schema.List(value_type=schema.Dict(),
                           title=u"Helpers",
-                          description=u"Helpers applied",
+                          description=u"Macros which create formulas for you. Helpers are forms starting with 'helper_' and computed fields for each formula you want to generate",
                           required=False
     )
 
@@ -142,7 +142,8 @@ class Helpers(object):
         if value is None:
             value = []
         self.context.helpers=value
-        update_helpers(self.context, None)
+        #TODO: only called if the value has changed. So won't regenerate on every save
+        # update_helpers(self.context, None)
 
 
 
@@ -151,20 +152,28 @@ def update_helpers(obj, event):
     """Update all the formula fields based on our helpers
     """
 
+    if not hasattr(obj, 'helpers'):
+        return
     helpers = obj.helpers
     fields = getFieldsInOrder(obj.getTypeInfo().lookupSchema())
     if helpers is None:
         return
 
     for helper in helpers:
-        formid = 'send-as-email' #TODO: get form from store
+        formid = helper.get('_datagrid_formid_', None)
+        if formid is None:
+            continue
         db = obj.getParentDatabase()
+        # TODO: search other dbs for this form
         form = db.getForm(formid)
+        if form is None:
+            continue
         helperid = 'blah'
 
         doc = getTemporaryDocument(db, form, helper).__of__(db)
         # has to be computed on save so it appears in the doc
-        doc.save()
+        #TODO this can generate errors as fields calculated. Need to show this
+        doc.save(form=form, creation=False, refresh_index=False, asAuthor=True, onSaveEvent=False)
 
         for id, field in fields:
             #value = getattr(getattr(self., key), 'output', getattr(obj, key)):
@@ -173,15 +182,19 @@ def update_helpers(obj, event):
             #TODO: can work out whats a formula from the widget?
 
             value = None
-            if doc.hasItem('generate_%s'%id.lower()):
-                value = doc.getItem('generate_%s'%id.lower())
-            elif doc.hasItem('generate_%s'%id):
-                value = doc.getItem('generate_%s'%id)
-            else:
-                continue
+            names = ['generate_%s'%id.lower(),
+                     'generate_%s'%id,
+                     '%s'%id,
+                     '%s'%id.lower()]
+            for name in names:
+                if doc.hasItem(name):
+                    value = doc.getItem(name)
+                    break
             if value is None:
                 continue
-            code = getattr(obj, id)
+            dm = getMultiAdapter((obj, field), IDataManager)
+            #code = getattr(obj, id)
+            code = dm.get()
             #TODO: what if the id has changed. Should redo all gen code?
             fmt = '### START {id} ###{code}### END {id} ###'
             reg_code = re.compile(fmt.format(id=helperid, code='((.|\n|\r)+)'))
@@ -191,4 +204,5 @@ def update_helpers(obj, event):
             else:
                 repl = fmt.format(id=helperid, code="\n"+value+"\n")
                 code = reg_code.sub(repl, code)
-            setattr(obj, id, code)
+            #setattr(obj, id, code)
+            dm.set(code)

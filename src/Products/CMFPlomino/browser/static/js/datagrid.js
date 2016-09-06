@@ -49,7 +49,7 @@ require([
                         break;
                     }
                 }
-                edit_url += $.param(self.values[j]);
+                edit_url += '&'+ $.param(self.values[j]);
                 //for(var k=0;k<self.values.length;k++) {
                 //    edit_url += '&' + self.values.lenght[k] + '=' + self.values[j][k];
                 //}
@@ -167,7 +167,7 @@ require([
             var formid = this.formid;
             if(!response.errors) {
                 modal.hide();
-                var raw = [];
+                var raw = {};
                 var rendered = [];
                 for(var i=0; i<self.col_number; i++) {
                     if (self.fields[i] != undefined && self.fields[i] in response) {

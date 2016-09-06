@@ -203,11 +203,31 @@
            plone.app.z3cform.interfaces.IPloneFormLayer"
       />
   <adapter factory=".helpers.SubformWidgetConverter" />
-    <!--<subscriber-->
-      <!--for="Products.CMFPlomino.contents.form.IPlominoForm-->
-           <!--zope.lifecycleevent.interfaces.IObjectModifiedEvent"-->
-      <!--handler=".helpers.update_helpers"-->
-      <!--/>-->
+    <subscriber
+      for="Products.CMFPlomino.contents.form.IPlominoForm
+           zope.lifecycleevent.interfaces.IObjectModifiedEvent"
+      handler=".helpers.update_helpers"
+      />
+    <subscriber
+      for="Products.CMFPlomino.contents.field.IPlominoField
+           zope.lifecycleevent.interfaces.IObjectModifiedEvent"
+      handler=".helpers.update_helpers"
+      />
+    <subscriber
+      for="Products.CMFPlomino.contents.action.IPlominoAction
+           zope.lifecycleevent.interfaces.IObjectModifiedEvent"
+      handler=".helpers.update_helpers"
+      />
+    <subscriber
+      for="Products.CMFPlomino.contents.hidewhen.IPlominoHidewhen
+           zope.lifecycleevent.interfaces.IObjectModifiedEvent"
+      handler=".helpers.update_helpers"
+      />
+    <subscriber
+      for="Products.CMFPlomino.contents.view.IPlominoView
+           zope.lifecycleevent.interfaces.IObjectModifiedEvent"
+      handler=".helpers.update_helpers"
+      />
 
     <plone:behavior
         title="Helpers"
