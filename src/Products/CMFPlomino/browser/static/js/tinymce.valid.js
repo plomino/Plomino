@@ -55,12 +55,13 @@ var PlominoDialog = {
 			else
 				ed.execCommand('mceInsertRawHTML', false, span, {skip_undo : 1});
 		}
-		else if (type == "hidewhen" || type == "label" || type == 'cache')
+		else if (type == "hidewhen" || type == 'cache')
 		{
 			// Insert or replace the selection
 
             // TinyMCE 3, still needed ?
 			//tinyMCEPopup.restoreSelection();
+
 
             var cssclass = 'plomino' + type.charAt(0).toUpperCase() + type.slice(1) + 'Class';
 
