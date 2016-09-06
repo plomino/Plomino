@@ -7,9 +7,9 @@
 require([
     'jquery',
     'pat-base',
-//    'mockup-patterns-select2',
-    'mockup-patterns-modal'
-], function($, Base, Modal) {
+    'mockup-patterns-modal',
+    'mockup-patterns-select2'
+], function($, Base, Modal, Select2) {
     'use strict';
     var DataGrid = Base.extend({
         name: 'plominodatagrid',
@@ -93,21 +93,33 @@ require([
                     add_row.attr('href', url).attr('data-formid', formid);
                 });
             });
-            var add_modal = new Modal(add_row, {
-                actions: {
-                    'input.plominoSave': {
-                        onSuccess: self.add.bind(
-                            {grid: self,
-                             formid:add_row.attr('data-formid')
-                            }),
-                        onError: function() {
-                            // TODO: render errors in the form
-                            window.alert(response.errors);
-                            return false;
+            add_row.click(function(evt){
+                evt.stopPropagation();
+                evt.preventDefault();
+                //HACK: modal is broken so we can't dynamically set the ajaxURL
+                // bind to a dummy element instead.
+                var add_modal = new Modal(self.$el.find('.add-row i'), {
+                    ajaxUrl: add_row.attr('href'),
+                    actions: {
+                        'input.plominoSave': {
+                            onSuccess: self.add.bind(
+                                {grid: self,
+                                 formid:add_row.attr('data-formid')
+                                }),
+                            onError: function() {
+                                // TODO: render errors in the form
+                                window.alert(response.errors);
+                                return false;
+                            }
                         }
+    //                    'input.plominoCancel': {
+    //                        onClick: add_row.hide()
+    //                    }
                     }
-                }
-            });
+                }).show();
+
+            })
+
             self.$el.find('.edit-row').each(function(i, el) {
                 var edit_modal = new Modal($(el), {
                     actions: {
@@ -121,8 +133,11 @@ require([
                                 return false;
                             }
                         }
+//                        'input.plominoCancel': {
+//                            onClick: add_row.hide()
+//                        }
                     }
-                });
+              });
             });
             self.$el.find('.remove-row').each(function(index, el) {
                 $(el).click(function() {self.remove(self, index);});

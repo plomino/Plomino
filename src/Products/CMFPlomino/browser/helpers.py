@@ -1,6 +1,7 @@
 import json
 from plone.app.widgets.base import InputWidget
 from plone.app.z3cform.widget import BaseWidget
+from plone.behavior.interfaces import IBehaviorAssignable
 from z3c.form.browser.widget import HTMLInputWidget
 from z3c.form.converter import BaseDataConverter
 from z3c.form.interfaces import IWidget, NO_VALUE, IDataManager
@@ -156,6 +157,9 @@ def update_helpers(obj, event):
         return
     helpers = obj.helpers
     fields = getFieldsInOrder(obj.getTypeInfo().lookupSchema())
+    fields += [field for behaviour in IBehaviorAssignable(obj).enumerateBehaviors()
+               for field in getFieldsInOrder(behaviour.interface)]
+
     if helpers is None:
         return
 

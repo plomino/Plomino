@@ -1,5 +1,7 @@
 from AccessControl import ClassSecurityInfo, Unauthorized
 from OFS.ObjectManager import ObjectManager
+from plone.app.z3cform.widget import SelectFieldWidget
+from plone.autoform import directives
 from plone.dexterity.content import Container
 from plone.memoize.interfaces import ICacheChooser
 from plone.supermodel import model
@@ -117,7 +119,9 @@ class IPlominoDatabase(model.Schema):
 
     #TODO: proper vocabulary of all other db's in site. perhaps with UUID in
     # case they are renamed
-    include_helpers_from = schema.List(
+    directives.widget('import_macros', SelectFieldWidget)
+                      #pattern_options={'myoption': 'myvalue'})
+    import_macros = schema.List(
         title=_("CMFPlomino_label_include_helpers_from",
             default="Include helpers from Databases"),
         description=_("CMFPlomino_help_include_helpers_from",
