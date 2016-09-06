@@ -48,7 +48,7 @@
         </tal:block>
     </tal:widget>
     <tal:widget tal:condition="python:widget=='COMBO'">
-        <div class="combo-date">
+        <div class="combo-date" tal:attributes="id field/id">
         <tal:block tal:condition="python:v">
             <tal:define tal:define="id field/id;
                 year python:v.year;
