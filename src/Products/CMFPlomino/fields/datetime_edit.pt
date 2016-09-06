@@ -47,4 +47,54 @@
             </tal:define>
         </tal:block>
     </tal:widget>
+    <tal:widget tal:condition="python:widget=='COMBO'">
+        <div class="combo-date">
+        <tal:block tal:condition="python:v">
+            <tal:define tal:define="id field/id;
+                year python:v.year;
+                month python:v.month;
+                day python:v.day">
+                <input type="number" min="0" max="31"
+                    tal:attributes="
+                    name string:${field/id}.day:record;
+                    id string:${field/id}.day:record;
+                    value day;
+                    ">
+                <input type="number" min="0" max="12"
+                    tal:attributes="
+                    name string:${field/id}.month:record;
+                    id string:${field/id}.month:record;
+                    value month;
+                    ">
+                <input type="number" min="1975" max="2050"
+                    tal:attributes="
+                    min python: starting_year or '';
+                    name string:${field/id}.year:record;
+                    id string:${field/id}.year:record;
+                    value year;
+                    ">
+            </tal:define>
+        </tal:block>
+        <tal:block tal:condition="python:not(v)">
+            <tal:define tal:define="id field/id;">
+                <input type="number" min="0" max="31"
+                    tal:attributes="
+                    name string:${field/id}.day:record;
+                    id string:${field/id}.day:record;
+                    ">
+                <input type="number" min="0" max="12"
+                    tal:attributes="
+                    name string:${field/id}.month:record;
+                    id string:${field/id}.month:record;
+                    ">
+                <input type="number" min="1975" max="2050"
+                    tal:attributes="
+                    min python: starting_year or '';
+                    name string:${field/id}.year:record;
+                    id string:${field/id}.year:record;
+                    ">
+            </tal:define>
+        </tal:block>
+        </div>
+    </tal:widget>
 </tal:block>

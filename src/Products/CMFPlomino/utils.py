@@ -74,7 +74,7 @@ def DateToString(d, format=None, db=None):
     return d.toZone(TIMEZONE).strftime(format)
 
 
-def StringToDate(str_d, format='%Y-%m-%d', db=None):
+def StringToDate(str_d, format='%Y-%m-%d', db=None, guess=True):
     """ Parse the string using the given format and return the date.
 
     With StringToDate, it's best to have a fixed default format,
@@ -91,13 +91,16 @@ def StringToDate(str_d, format='%Y-%m-%d', db=None):
         else:
             dt = parse(str_d)
     except ValueError, e:
-        # XXX: Just let DateTime guess.
-        dt = parse(DateTime(str_d).ISO())
-        logger.info('StringToDate> %s, %s, %s, guessed: %s' % (
-            str(str_d),
-            format,
-            repr(e),
-            repr(dt)))
+        if guess:
+            # XXX: Just let DateTime guess.
+            dt = parse(DateTime(str_d).ISO())
+            logger.info('StringToDate> %s, %s, %s, guessed: %s' % (
+                str(str_d),
+                format,
+                repr(e),
+                repr(dt)))
+        else:
+            raise e
     return DateTime(dt).toZone(TIMEZONE)
 
 
