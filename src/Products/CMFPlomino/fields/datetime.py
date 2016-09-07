@@ -71,7 +71,7 @@ class DatetimeField(BaseField):
                 submittedValue = '%s-%s-%s' % (year, month, day)
                 if year and month and day:
                     # Don't allow StringToDate to guess the format
-                    StringToDate(submittedValue, '%Y-%m-%d', guess=False)
+                    StringToDate(submittedValue, '%Y-%m-%d', guess=False, tozone=False)
                 else:
                     # The record instance isn't valid
                     raise
@@ -107,7 +107,7 @@ class DatetimeField(BaseField):
                 submittedValue = '%s-%s-%s' % (year, month, day)
                 if year and month and day:
                     # Don't allow StringToDate to guess the format
-                    d = StringToDate(submittedValue, '%Y-%m-%d', guess=False)
+                    d = StringToDate(submittedValue, '%Y-%m-%d', guess=False, tozone=False)
                 else:
                     # The record instance isn't valid
                     raise
@@ -150,4 +150,5 @@ class DatetimeField(BaseField):
             if not fmt:
                 fmt = form.getParentDatabase().datetime_format
             fieldValue = StringToDate(fieldValue, fmt)
+
         return fieldValue
