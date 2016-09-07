@@ -1173,8 +1173,8 @@ class DesignManager:
 
         set_data(obj, schema)
         #HACK to enable the instance behaviour
-        # if element_type == "PlominoField":
-        #     afterFieldModified(obj, None)
+        if element_type == "PlominoField":
+            afterFieldModified(obj, None)
         for behaviour in IBehaviorAssignable(obj).enumerateBehaviors():
             set_data(obj,behaviour.interface)
 
