@@ -1082,23 +1082,33 @@ class PlominoForm(Container):
         html = pq(html_content)
 
         if self.getIsMulti():
-            # Remove any accordion headers
-            html.remove('h3.plomino-accordion-header')
-
             # Hide anything not on the current page
             current_page = self._get_current_page()
 
             # Inject a hidden input with the current_page
             html.append('<input type="hidden" name="plomino_current_page" value="%s" />' % current_page)
 
-            # Replace the accordions with hidewhens based on the page
-            for i, element in enumerate(html('.plomino-accordion-content'), start=1):
-                page = pq(element)
-                page.addClass('multipage')
-                page.removeClass('plomino-accordion-content')
+            pages = []
+            page = []
+            for elem in html.children():
+                if elem.tag != 'hr':
+                    page.append(elem)
+                else:
+                    # Add whatever we already have
+                    pages.append(page)
+                    page = []
+            pages.append(page)
+
+            new_html = []
+            for i, page in enumerate(pages, start=1):
+                new_page = pq(page)
+                new_page.wrapAll('<div class="multipage">')
                 # 0-indexed pages are ugly
-                page.before('<span class="plominoHidewhenClass">start:hidewhen-multipage-%s</span>' % i)
-                page.after('<span class="plominoHidewhenClass">end:hidewhen-multipage-%s</span>' % i)
+                new_html.append(pq('<span class="plominoHidewhenClass">start:hidewhen-multipage-%s</span>' % i)[0])
+                new_html.append(new_page[0])
+                new_html.append(pq('<span class="plominoHidewhenClass">end:hidewhen-multipage-%s</span>' % i)[0])
+
+            html = pq(new_html).wrapAll('<div>')
 
         # This needs to work outside of multipage for now, in case they're on
         # a subform.
