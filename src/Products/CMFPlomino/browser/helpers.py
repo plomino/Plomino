@@ -85,23 +85,22 @@ class SubformWidget(Widget):
         # TODO: means helper has no access to local db. We probably needs to fix
         # this so it can introspect it
         OPEN_URL = "{path}/{formid}/OpenForm?ajax_load=1"+\
-            "&Plomino_Parent_Field={curfield}"+\
-            "&Plomino_Parent_Form={curform}"+\
-            "&Plomino_Parent_DB={curpath}"
+            "&Plomino_Parent_Field=__dummy__"+\
+            "&Plomino_Parent_Form={formid}"+\
+            "&Plomino_Macro_Context={curpath}"
         helpers = self.helper_forms()
         obj = self.context
-        if IPlominoForm.providedBy(obj):
-            curform = obj
-            curfieldid = ''
-        else:
-            curfieldid = obj.id
-            curform = obj.getParentNode()
-        curpath = '/'.join(curform.getParentNode().getPhysicalPath())
+        # if IPlominoForm.providedBy(obj):
+        #     curform = obj
+        #     curfieldid = ''
+        # else:
+        #     curfieldid = obj.id
+        #     curform = obj.getParentNode()
+        # curpath = '/'.join(curform.getParentNode().getPhysicalPath())
+        curpath = '/'.join(obj.getPhysicalPath())
         self.form_urls = [dict(url=OPEN_URL.format(formid=id,
                                                    path=path,
-                                                   curform=curform.id,
-                                                   curpath=curpath,
-                                                   curfield=curfieldid),
+                                                   curpath=curpath),
                                id=id,
                                title=title)
                           for title,id,path in helpers]
@@ -214,16 +213,16 @@ def update_helpers(obj, event):
         helperid = 'blah'
 
 
-        if IPlominoForm.providedBy(obj):
-            curform = obj
-            curfieldid = ''
-        else:
-            curfieldid = obj.id
-            curform = obj.getParentNode()
-        curpath = '/'.join(curform.getParentNode().getPhysicalPath())
-        form.REQUEST['Plomino_Parent_Field'] = curfieldid
-        form.REQUEST['Plomino_Parent_Form'] = curform.id
-        form.REQUEST['Plomino_Parent_DB'] = curpath
+        # if IPlominoForm.providedBy(obj):
+        #     curform = obj
+        #     curfieldid = ''
+        # else:
+        #     curfieldid = obj.id
+        #     curform = obj.getParentNode()
+        curpath = '/'.join(obj.getPhysicalPath())
+        form.REQUEST['Plomino_Parent_Field'] = '__dummy__'
+        form.REQUEST['Plomino_Parent_Form'] = formid
+        form.REQUEST['Plomino_Macro_Context'] = curpath
 
         doc = getTemporaryDocument(db_import, form, helper).__of__(db_import)
         # has to be computed on save so it appears in the doc
