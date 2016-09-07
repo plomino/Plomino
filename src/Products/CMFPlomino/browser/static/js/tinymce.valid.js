@@ -110,9 +110,9 @@ var PlominoDialog = {
 
 			else {
 				// String to add in the editor
-				var zone = '<span class="'+cssclass+' mceNonEditable" data-plominoid="'+value+'" data-plomino-position="start"></span>' +
+				var zone = '<span class="'+cssclass+' mceNonEditable" data-plominoid="'+value+'" data-plomino-position="start">&nbsp;</span>' +
                     ed.selection.getContent() +
-                    '<span class="'+cssclass+' mceNonEditable" data-plominoid="'+value+'" data-plomino-position="end"></span>';
+                    '<span class="'+cssclass+' mceNonEditable" data-plominoid="'+value+'" data-plomino-position="end">&nbsp;</span>';
 				ed.execCommand('mceInsertContent', false, zone, {skip_undo : 1});
 			}
 		}

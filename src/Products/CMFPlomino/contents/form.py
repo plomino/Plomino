@@ -351,7 +351,10 @@ class PlominoForm(Container):
             # Inlcude calculated fields and title etc
             doc.save(form=self, creation=True, refresh_index=False,
                 asAuthor=True, onSaveEvent=True)
-            rowdata = dict(title=dict(raw=doc.Title()))
+            # TODO: more generic way to include extra data
+            # TODO: What happens if there is a field called title?
+            # include title needed so it can optionally be displayed. needed for helpers widget
+            rowdata = dict(title=dict(raw=doc.Title(), rendered=doc.Title()))
             for field in self.getFormFields(request=REQUEST):
                 rowdata[field.id] = {
                     'raw': doc.getItem(field.id, None),
@@ -758,7 +761,7 @@ class PlominoForm(Container):
         root = d[0].getparent() if d else d
         s = ".plominoActionClass,.plominoSubformClass,.plominoFieldClass"
         for element in d.find(s) + d.filter(s):
-            widget_type = element.attrib["class"][7:-5].lower()
+            widget_type = element.attrib["class"].split()[0][7:-5].lower()
             id = element.text
             example = self.example_widget(widget_type, id)
             # .html has a bug - https://github.com/gawel/pyquery/issues/102

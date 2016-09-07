@@ -944,7 +944,9 @@ class DesignManager:
             for (id, attr) in fields:
                 #params[id] = getattr(obj, id, None)
                 dm = getMultiAdapter((obj, attr), IDataManager)
-                params[id] = dm.get()
+                #TODO: needs to be the same as import due to form_layout
+                #params[id] = dm.get()
+                params[id] = getattr(obj, id)
         get_data(obj, schema)
         for behaviour in IBehaviorAssignable(obj).enumerateBehaviors():
             get_data(obj,behaviour.interface)
@@ -1165,7 +1167,9 @@ class DesignManager:
             for (id, attr) in fields:
                 #params[id] = getattr(obj, id, None)
                 dm = getMultiAdapter((obj, attr), IDataManager)
-                dm.set(params[id])
+                #dm.set(params[id])
+                #TODO: should be using the dm but getting adapt error
+                setattr(obj, id, params[id])
 
         set_data(obj, schema)
         #HACK to enable the instance behaviour

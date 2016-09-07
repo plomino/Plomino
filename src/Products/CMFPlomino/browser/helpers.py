@@ -1,12 +1,14 @@
 import json
 from plone.app.widgets.base import InputWidget
 from plone.app.z3cform.widget import BaseWidget
+from plone.behavior.interfaces import IBehaviorAssignable
 from z3c.form.browser.widget import HTMLInputWidget
 from z3c.form.converter import BaseDataConverter
-from z3c.form.interfaces import IWidget, NO_VALUE
+from z3c.form.interfaces import IWidget, NO_VALUE, IDataManager
 from z3c.form.widget import Widget
 from zope import schema
-from zope.component import adapts
+from zope.component import adapts, getMultiAdapter
+from zope.configuration.config import provides
 from zope.interface import implementsOnly
 from zope.schema.interfaces import IList
 from Products.CMFPlomino.contents.action import IPlominoAction
@@ -80,10 +82,29 @@ class SubformWidget(Widget):
         self.columns = ["Title"]
         self.fields = ['title']
 
-        OPEN_URL = "{formid}/OpenForm?ajax_load=1&Plomino_Parent_Field=_dummy_&Plomino_Parent_Form=_dummy_"
-        #helpers = [('send-as-email', "Send to email on save"),('helper_form_pdfdownload', "Download as PDF"), ]
+        # TODO: means helper has no access to local db. We probably needs to fix
+        # this so it can introspect it
+        OPEN_URL = "{path}/{formid}/OpenForm?ajax_load=1"+\
+            "&Plomino_Parent_Field={curfield}"+\
+            "&Plomino_Parent_Form={curform}"+\
+            "&Plomino_Parent_DB={curpath}"
         helpers = self.helper_forms()
-        self.form_urls = [dict(url=OPEN_URL.format(formid=id),id=id,title=title) for id,title in helpers]
+        obj = self.context
+        if IPlominoForm.providedBy(obj):
+            curform = obj
+            curfieldid = ''
+        else:
+            curfieldid = obj.id
+            curform = obj.getParentNode()
+        curpath = '/'.join(curform.getParentNode().getPhysicalPath())
+        self.form_urls = [dict(url=OPEN_URL.format(formid=id,
+                                                   path=path,
+                                                   curform=curform.id,
+                                                   curpath=curpath,
+                                                   curfield=curfieldid),
+                               id=id,
+                               title=title)
+                          for title,id,path in helpers]
         self.form_urls = json.dumps(self.form_urls)
 
         self.rendered = []
@@ -101,10 +122,19 @@ class SubformWidget(Widget):
 
     def helper_forms(self):
         db = self.context.getParentDatabase()
-        for form in db.getForms():
-            typename = self.context.getPortalTypeName().lstrip("Plomino").lower()
-            if form.id.startswith("helper_"+typename):
-                yield (form.id, form.Title())
+        found = set()
+        for path in db.import_macros:
+            if path == ".":
+                db_import = db
+            else:
+                db_import = db.restrictedTraverse(path)
+            for form in db_import.getForms():
+                typename = self.context.getPortalTypeName().lstrip("Plomino").lower()
+                if form.id.startswith("helper_"+typename) or form.id.startswith("macro_"+typename):
+                    if form.id in found:
+                        continue
+                    found.add(form.id)
+                    yield (form.Title(), form.id, path)
 
 
 @provider(IFormFieldProvider)
@@ -115,8 +145,8 @@ class IHelpers(model.Schema):
     directives.widget('helpers', SubformWidget)
     directives.order_after(helpers = 'IBasic.description')
     helpers = schema.List(value_type=schema.Dict(),
-                          title=u"Helpers",
-                          description=u"Helpers applied",
+                          title=u"Active Macros",
+                          description=u"Select a macro, edit settings, save your item.",
                           required=False
     )
 
@@ -142,7 +172,8 @@ class Helpers(object):
         if value is None:
             value = []
         self.context.helpers=value
-        update_helpers(self.context, None)
+        #TODO: only called if the value has changed. So won't regenerate on every save
+        # update_helpers(self.context, None)
 
 
 
@@ -151,20 +182,53 @@ def update_helpers(obj, event):
     """Update all the formula fields based on our helpers
     """
 
+    if not hasattr(obj, 'helpers'):
+        return
     helpers = obj.helpers
     fields = getFieldsInOrder(obj.getTypeInfo().lookupSchema())
+    fields += [field for behaviour in IBehaviorAssignable(obj).enumerateBehaviors()
+               for field in getFieldsInOrder(behaviour.interface)]
+
     if helpers is None:
         return
 
     for helper in helpers:
-        formid = 'send-as-email' #TODO: get form from store
+        formid = helper.get('_datagrid_formid_', None)
+        if formid is None:
+            continue
         db = obj.getParentDatabase()
-        form = db.getForm(formid)
+        # search other dbs for this form
+        form = None
+        db_import = None
+        for db_path in db.import_macros:
+            if db_path == '.':
+                db_import = db
+            else:
+                db_import = db.restrictedTraverse(db_path)
+            form = db_import.getForm(formid)
+            if form is not None:
+                break
+        if form is None:
+            # TODO: shouldn't silently fail
+            continue
         helperid = 'blah'
 
-        doc = getTemporaryDocument(db, form, helper).__of__(db)
+
+        if IPlominoForm.providedBy(obj):
+            curform = obj
+            curfieldid = ''
+        else:
+            curfieldid = obj.id
+            curform = obj.getParentNode()
+        curpath = '/'.join(curform.getParentNode().getPhysicalPath())
+        form.REQUEST['Plomino_Parent_Field'] = curfieldid
+        form.REQUEST['Plomino_Parent_Form'] = curform.id
+        form.REQUEST['Plomino_Parent_DB'] = curpath
+
+        doc = getTemporaryDocument(db_import, form, helper).__of__(db_import)
         # has to be computed on save so it appears in the doc
-        doc.save()
+        #TODO this can generate errors as fields calculated. Need to show this
+        doc.save(form=form, creation=False, refresh_index=False, asAuthor=True, onSaveEvent=False)
 
         for id, field in fields:
             #value = getattr(getattr(self., key), 'output', getattr(obj, key)):
@@ -173,15 +237,19 @@ def update_helpers(obj, event):
             #TODO: can work out whats a formula from the widget?
 
             value = None
-            if doc.hasItem('generate_%s'%id.lower()):
-                value = doc.getItem('generate_%s'%id.lower())
-            elif doc.hasItem('generate_%s'%id):
-                value = doc.getItem('generate_%s'%id)
-            else:
-                continue
+            names = ['generate_%s'%id.lower(),
+                     'generate_%s'%id,
+                     '%s'%id,
+                     '%s'%id.lower()]
+            for name in names:
+                if doc.hasItem(name):
+                    value = doc.getItem(name)
+                    break
             if value is None:
                 continue
-            code = getattr(obj, id)
+            dm = getMultiAdapter((obj, field), IDataManager)
+            #code = getattr(obj, id)
+            code = dm.get()
             #TODO: what if the id has changed. Should redo all gen code?
             fmt = '### START {id} ###{code}### END {id} ###'
             reg_code = re.compile(fmt.format(id=helperid, code='((.|\n|\r)+)'))
@@ -191,4 +259,5 @@ def update_helpers(obj, event):
             else:
                 repl = fmt.format(id=helperid, code="\n"+value+"\n")
                 code = reg_code.sub(repl, code)
-            setattr(obj, id, code)
+            #setattr(obj, id, code)
+            dm.set(code)
