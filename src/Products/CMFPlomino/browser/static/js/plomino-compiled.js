@@ -269,9 +269,8 @@ require([
                 actions: {
                     'input.plominoSave': {
                         onSuccess: self.add.bind(self),
-                        onError: function() {
-                            // TODO: render errors in the form
-                            window.alert(response.errors);
+                        onError: function(response) {
+                            window.alert(response.responseJSON.errors.join('\n'));
                             return false;
                         }
                     }
@@ -282,9 +281,8 @@ require([
                     actions: {
                         'input.plominoSave': {
                             onSuccess: self.edit.bind({grid: self, row: i}),
-                            onError: function() {
-                                // TODO: render errors in the form
-                                window.alert(response.errors);
+                            onError: function(response) {
+                                window.alert(response.responseJSON.errors.join('\n'));
                                 return false;
                             }
                         }

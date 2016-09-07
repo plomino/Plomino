@@ -1,0 +1,46 @@
+{
+  "name": "plomino-ide",
+  "version": "0.0.1",
+  "scripts": {
+    "watch": "webpack --progress --watch",
+    "build": "webpack --progress",
+    "bundle": "webpack --config config/webpack.prod.js --progress",
+    "reload": "browser-reload",
+    "postinstall": "npm run typings install",
+    "typings": "typings"
+  },
+  "dependencies": {
+    "@angular/common": "^2.0.0-rc.3",
+    "@angular/compiler": "^2.0.0-rc.3",
+    "@angular/core": "^2.0.0-rc.3",
+    "@angular/forms": "0.1.1",
+    "@angular/http": "^2.0.0-rc.3",
+    "@angular/platform-browser": "^2.0.0-rc.2",
+    "@angular/platform-browser-dynamic": "^2.0.0-rc.3",
+    "ace-editor-builds": "^1.2.0",
+    "bootstrap": "^3.3.6",
+    "es6-promise": "^3.0.2",
+    "es6-shim": "^0.35.0",
+    "jquery": "^2.2.3",
+    "ng2-bootstrap": "^1.0.13",
+    "ng2-bs3-modal": "^0.6.0",
+    "ng2-dnd": "^1.8.2",
+    "reflect-metadata": "^0.1.2",
+    "rxjs": "5.0.0-beta.6",
+    "tinymce": "^4.3.11",
+    "zone.js": "^0.6.12"
+  },
+  "devDependencies": {
+    "copy-webpack-plugin": "^3.0.1",
+    "exports-loader": "^0.6.3",
+    "extract-text-webpack-plugin": "^1.0.1",
+    "html-webpack-plugin": "^2.17.0",
+    "imports-loader": "^0.6.5",
+    "raw-loader": "^0.5.1",
+    "ts-loader": "^0.8.2",
+    "typescript": "^1.7.5",
+    "typings": "^0.8.1",
+    "webpack": "^1.13.0",
+    "webpack-merge": "^0.12.0"
+  }
+}

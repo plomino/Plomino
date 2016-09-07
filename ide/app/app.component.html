@@ -1,0 +1,22 @@
+<div class="wrap-app">
+  <plomino-tree class="well" [data]="data" [selected]="selected" (add)="onAdd($event)" (edit)="onEdit($event)" (isDragged)="isDragged = $event"></plomino-tree>
+  <div class="main-app panel">
+    <tabset>
+      <tab *ngFor="let tabz of tabs" [heading]="" [removable]="true" (removed)="onTabClose(tabz)" (select)="onTabSelect(tabz.path)">
+        <template tabHeading>
+            <span [class.tabunsaved]="tabz.isdirty"><span *ngIf="tabz.isdirty">* </span>{{tabz.title}} / {{tabz.editor}}</span>
+        </template>
+        <plomino-tiny-mce *ngIf="tabz.editor==='layout'" [id]="tabz.url" (isDirty)="tabz.isdirty=$event" [isDragged]="isDragged"></plomino-tiny-mce>
+        <plomino-ace-editor *ngIf="tabz.editor==='code'" [url]="tabz.url" [path]="tabz.path" [aceNumber]="aceNumber" (isDirty)="tabz.isdirty=$event"></plomino-ace-editor>
+        <plomino-forms-settings *ngIf="tabz.editor === 'settings' && tabz.path[0].type === 'Forms' && tabz.path.length < 2" [id]='tabz.url' (elementDeleted)='tabs.splice(tabs.indexOf(tabz),1); getTree()' (titleChanged)='tabz.title=$event; getTree()'(isDirty)="tabz.isdirty=$event"></plomino-forms-settings>
+        <plomino-fields-settings *ngIf="tabz.editor === 'settings' && tabz.path[0].type === 'Forms' && tabz.path[1]?.type === 'Fields'" [id]='tabz.url' [tree]="data" (elementDeleted)='tabs.splice(tabs.indexOf(tabz),1); getTree()' (titleChanged)='tabz.title=$event; getTree()'(isDirty)="tabz.isdirty=$event"></plomino-fields-settings>
+        <plomino-actions-settings *ngIf="tabz.editor === 'settings' && tabz.path[1]?.type === 'Actions'" [id]='tabz.url' (elementDeleted)='tabs.splice(tabs.indexOf(tabz),1); getTree()' (titleChanged)='tabz.title=$event; getTree()' (isDirty)="tabz.isdirty=$event"></plomino-actions-settings>
+        <plomino-hide-when-settings *ngIf="tabz.editor === 'settings' && tabz.path[1]?.type === 'Hide Whens'" [id]='tabz.url' (elementDeleted)='tabs.splice(tabs.indexOf(tabz),1); getTree()' (titleChanged)='tabz.title=$event; getTree()' (isDirty)="tabz.isdirty=$event"></plomino-hide-when-settings>
+        <plomino-views-settings *ngIf="tabz.editor === 'settings' && tabz.path[0].type === 'Views' && tabz.path.length < 2" [id]='tabz.url' (elementDeleted)='tabs.splice(tabs.indexOf(tabz),1); getTree()' (titleChanged)='tabz.title=$event; getTree()'(isDirty)="tabz.isdirty=$event"></plomino-views-settings>
+        <plomino-columns-settings *ngIf="tabz.editor === 'settings' && tabz.path[1]?.type === 'Columns'" [id]='tabz.url' (elementDeleted)='tabs.splice(tabs.indexOf(tabz),1); getTree()' (titleChanged)='tabz.title=$event; getTree()'(isDirty)="tabz.isdirty=$event"></plomino-columns-settings>
+        <plomino-agents-settings *ngIf="tabz.editor === 'settings' && tabz.path[0].type === 'Agents'" [id]='tabz.url' (elementDeleted)='tabs.splice(tabs.indexOf(tabz),1); getTree()' (titleChanged)='tabz.title=$event; getTree()'(isDirty)="tabz.isdirty=$event"></plomino-agents-settings>
+      </tab>
+    </tabset>
+  </div>
+  <modal *ngIf="isModalOpen" [data]="modalData" (modalClosed)="onModalClose($event)" (modalDismissed)="isModalOpen = false"></modal>
+</div>

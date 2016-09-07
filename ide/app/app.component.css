@@ -1,0 +1,22 @@
+.wrap-app {
+    display: flex;
+    flex-direction: row;
+}
+.main-app {
+    width: 100%;
+
+    display: flex;
+    flex-direction: column;
+}
+
+tab {
+    height: 900px;
+    overflow: auto;
+}
+
+plomino-tree {
+    width: 300px;
+}
+.tabunsaved {
+    font-style: italic;
+}

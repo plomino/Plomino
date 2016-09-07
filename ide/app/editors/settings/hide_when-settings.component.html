@@ -1,0 +1,23 @@
+<form (ngSubmit)='onSubmit(data["@id"],title.value,desc.value,isDynamicHidewhen.checked)' #form="ngForm">
+    <div class="form-group">
+      <label for="title">Titre</label>
+      <input #title formControlName="form.controls.title" [value]='data?.title' type="text" class="form-control" id="title" required="true">
+    </div>
+    <div class="form-group">
+      <label for="id">ID</label>
+      <input type="text" class="form-control" [value]="data ? data['@id'] : ''" id="id" disabled="true">
+    </div>
+    <div class="form-group">
+      <label for="desc">Description</label>
+      <p class="help-block">Utilisé dans les pages listant des éléments et les pages de résultats de recherche.</p>
+      <textarea #desc type="text" formControlName="form.controls.desc" class="form-control" id="desc" [value]="data?.description"></textarea>
+    </div>
+    <div class="checkbox">
+      <label>
+        <input formControlName="form.controls.isDynamicHidewhen" #isDynamicHidewhen type="checkbox" [checked]="data?.isDynamicHidewhen"> Dynamic Hide-when
+      </label>
+      <p class="help-block">Hide-when are evaluated dynamically when the user enters information</p>
+    </div>
+    <button type="submit" class="btn btn-primary">Save</button>
+    <button type="button" (click)="deleteElement()" class="btn btn-danger">Delete</button>
+</form>
