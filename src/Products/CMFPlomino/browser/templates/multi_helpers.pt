@@ -1,0 +1,29 @@
+
+<div class="plomino-datagrid" tal:define="
+    fieldname view/name;
+    value view/value| string: [];
+    columns view/columns"
+    tal:attributes="
+        data-associated-form string:send-as-email;
+        data-fields python:','.join(view.fields);
+        data-columns python:','.join(view.columns);
+        data-form-urls view/form_urls">
+    <table tal:attributes='data-rows view/rendered'
+           tal:define="rows view/rendered|nothing">
+        <tr>
+            <th tal:repeat="col columns"
+                tal:content="col">col</th>
+        </tr>
+        <tr tal:repeat="row rows">
+            <td tal:repeat="cell row"
+                tal:content="structure cell">cell</td>
+        </tr>
+        <tr>
+            <td class="actions"><a class="add-row" href=""><i class="icon-plus"></i></a></td>
+        </tr>
+    </table>
+
+    <input type="hidden"
+        tal:attributes='name fieldname; value view/raw' />
+</div>
+

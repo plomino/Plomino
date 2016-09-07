@@ -1,5 +1,6 @@
 from AccessControl import ClassSecurityInfo
 import decimal
+from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from jsonutil import jsonutil as json
 import logging
 from lxml.html import tostring
@@ -42,21 +43,14 @@ security = ClassSecurityInfo()
 
 label_re = re.compile('<span class="plominoLabelClass">((?P<optional_fieldname>\S+):){0,1}\s*(?P<fieldname_or_label>.+?)</span>')
 
-class IHelper(model.Schema):
-    schema.Choice(values=[])
+
 
 class IPlominoForm(model.Schema):
     """ Plomino form schema
     """
 
-    # helpers = schema.List(value_type=schema.Object(IHelper),
-    #                       title=u"Helpers",
-    #                       description=u"Helpers applied",
-    #                       required=False
-    # )
-
-    form.widget('form_layout_visual', WysiwygFieldWidget)
-    form_layout_visual = schema.Text(
+    form.widget('form_layout', WysiwygFieldWidget)
+    form_layout = schema.Text(
         title=_('CMFPlomino_label_FormLayout', default="Form layout"),
         description=_('CMFPlomino_help_FormLayout',
             default="Text with 'Plominofield' styles correspond to the"
@@ -404,6 +398,7 @@ class PlominoForm(Container):
 
         # Check for None: the request might yield an empty string.
         # TODO: try not to put misleading Plomino_* fields on the request.
+        #TODO: this is hacky way to indicate you want to return the data as json.
         if parent_field is not None:
             is_childform = True
 
@@ -417,22 +412,11 @@ class PlominoForm(Container):
             return self.notifyErrors(errors)
 
         ################################################################
-        # If child form, return a values as JSON
-        if is_childform:
-            tmp = getTemporaryDocument(db, self, REQUEST).__of__(db)
-            rowdata = {}
-            for field in self.getFormFields(request=REQUEST):
-                rowdata[field.id] = {
-                    'raw': tmp.getItem(field.id, None),
-                    'rendered': tmp.getRenderedItem(field.id),
-                }
-            REQUEST.RESPONSE.setHeader(
-                'content-type', 'application/json; charset=utf-8')
-            return json.dumps(rowdata)
-
-        ################################################################
         # Add a document to the database
-        doc = db.createDocument()
+        if is_childform:
+            doc = getTemporaryDocument(db, self, REQUEST).__of__(db)
+        else:
+            doc = db.createDocument()
         doc.setItem('Form', self.id)
 
         # execute the onCreateDocument code of the form
@@ -445,7 +429,26 @@ class PlominoForm(Container):
         except PlominoScriptException, e:
             e.reportError('Document is created, but onCreate formula failed')
 
-        if valid is None or valid == '':
+        ################################################################
+        # If child form, return a values as JSON
+        if is_childform:
+            #TODO: What if its not valid?
+            # Inlcude calculated fields and title etc
+            doc.save(form=self, creation=True, refresh_index=False,
+                asAuthor=True, onSaveEvent=True)
+            # TODO: more generic way to include extra data
+            # TODO: What happens if there is a field called title?
+            # include title needed so it can optionally be displayed. needed for helpers widget
+            rowdata = dict(title=dict(raw=doc.Title(), rendered=doc.Title()))
+            for field in self.getFormFields(request=REQUEST):
+                rowdata[field.id] = {
+                    'raw': doc.getItem(field.id, None),
+                    'rendered': doc.getRenderedItem(field.id),
+                }
+            REQUEST.RESPONSE.setHeader(
+                'content-type', 'application/json; charset=utf-8')
+            return json.dumps(rowdata)
+        elif valid is None or valid == '':
             doc.saveDocument(REQUEST, creation=True)
         else:
             db.documents._delOb(doc.id)
@@ -991,14 +994,14 @@ class PlominoForm(Container):
 
     #@property
     # Using special datamanager because @property losses acquisition
-    def getForm_layout_visual(self):
+    def getForm_layout(self):
         #update all teh example widgets
         # TODO: called twice during setter to check if changed
         d = pq(self.form_layout, parser='html_fragments')
         root = d[0].getparent() if d else d
         s = ".plominoActionClass,.plominoSubformClass,.plominoFieldClass"
         for element in d.find(s) + d.filter(s):
-            widget_type = element.attrib["class"][7:-5].lower()
+            widget_type = element.attrib["class"].split()[0][7:-5].lower()
             id = element.text
             example = self.example_widget(widget_type, id)
             # .html has a bug - https://github.com/gawel/pyquery/issues/102
@@ -1037,7 +1040,7 @@ class PlominoForm(Container):
 
     #@form_layout_visual.setter
     # Using special datamanager because @property losses acquisition
-    def setForm_layout_visual(self, layout):
+    def setForm_layout(self, layout):
         d = pq(layout, parser='html_fragments')
         root = d[0].getparent() if d else d
 

@@ -1,5 +1,7 @@
 from AccessControl import ClassSecurityInfo, Unauthorized
 from OFS.ObjectManager import ObjectManager
+from plone.app.z3cform.widget import SelectFieldWidget
+from plone.autoform import directives
 from plone.dexterity.content import Container
 from plone.memoize.interfaces import ICacheChooser
 from plone.supermodel import model
@@ -13,6 +15,7 @@ from zope import event
 from zope.interface import implements
 
 from .. import _, config
+from zope.schema.vocabulary import SimpleVocabulary
 from ..accesscontrol import AccessControl
 from ..exceptions import PlominoCacheException, PlominoScriptException
 from ..interfaces import IPlominoContext
@@ -114,6 +117,20 @@ class IPlominoDatabase(model.Schema):
         default=False,
     )
 
+    #TODO: proper vocabulary of all other db's in site. perhaps with UUID in
+    # case they are renamed
+    directives.widget('import_macros', SelectFieldWidget)
+                      #pattern_options={'myoption': 'myvalue'})
+    import_macros = schema.List(
+        title=_("CMFPlomino_label_include_helpers_from",
+            default="Include helpers from Databases"),
+        description=_("CMFPlomino_help_include_helpers_from",
+            default="Any forms from these databases starting with 'helper_' "
+            "will be used as helpers to generate code from forms in this database."),
+        unique=True,
+        value_type=schema.Choice(vocabulary=SimpleVocabulary.fromItems([('this','.')])),
+        default=['.']
+    )
 
 class PlominoDatabase(
         Container, AccessControl, DesignManager, ReplicationManager):

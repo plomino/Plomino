@@ -9,7 +9,7 @@
 
 <metal:javascript_head fill-slot="javascript_head_slot">
     <tal:block_hasjsresources 
-        tal:define="jsresources python:context.get_resources_js()"
+        tal:define="jsresources python:view.form.get_resources_js()"
         tal:condition="jsresources"
         tal:repeat="js jsresources">
         <script
@@ -22,7 +22,7 @@
 
 <metal:css fill-slot="style_slot">
     <tal:block_hascssresources
-        tal:define="cssresources python:context.get_resources_css()"
+        tal:define="cssresources python:view.form.get_resources_css()"
         tal:condition="cssresources"
         tal:repeat="css cssresources">
         <link rel="stylesheet"
@@ -34,24 +34,24 @@
 
 <metal:content fill-slot="main">
 
-    <h1 class="documentFirstHeading" tal:content="context/Title">Title</h1>
+    <h1 class="documentFirstHeading" tal:content="view/form/Title">Title</h1>
 
     <div id="content-core"
         tal:define="
-            ispage context/isPage;
-            form_method python:context.getFormMethod();">
+            ispage view/form/isPage;
+            form_method python:view.form.getFormMethod();">
         <form tal:condition="not:ispage"
             id="plomino_form"
-            tal:define="hasCreatePermissionOnDatabase python:context.hasCreatePermission(context.getParentDatabase());
-                hasCreatePermissionOnForm python:context.hasCreatePermission(context);
+            tal:define="hasCreatePermissionOnDatabase python:view.form.hasCreatePermission(view.form.getParentDatabase());
+                hasCreatePermissionOnForm python:view.form.hasCreatePermission(context);
                 enctype python:(form_method == 'POST') and 'multipart/form-data'"
             tal:attributes="
-                name context/id;
-                action python:context.getFormAction();
-                method python:context.getFormMethod();
-                data-pat-plominodynamic string:url:${context/absolute_url};
+                name view/form/id;
+                action python:view.form.getFormAction();
+                method python:view.form.getFormMethod();
+                data-pat-plominodynamic string:url:${view/form/absolute_url};
                 enctype enctype|nothing">
-            <span tal:replace="structure context/@@authenticator/authenticator"/>
+            <span tal:replace="structure view/form/@@authenticator/authenticator"/>
 
             <tal:block_no_createpermission
                 condition="python:not(hasCreatePermissionOnDatabase and hasCreatePermissionOnForm)">
@@ -74,7 +74,7 @@
                 </tal:block>
 
                 <tal:layout
-                    tal:content="structure python:context.openBlankForm(request)">layout</tal:layout>
+                    tal:content="structure python:view.form.openBlankForm(request)">layout</tal:layout>
                 <input tal:condition="view/request/Plomino_Parent_Field | nothing"
                     type="hidden"
                     name="Plomino_Parent_Field"
@@ -84,27 +84,27 @@
                     name="Plomino_Parent_Form | nothing"
                     tal:attributes="value view/request/Plomino_Parent_Form;" />
 
-                <span metal:use-macro="context/plomino_actions/macros/OpenFormActionBar">display form actions</span><br/>
+                <span metal:use-macro="view/form/plomino_actions/macros/OpenFormActionBar">display form actions</span><br/>
             </tal:block_has_createpermission>
         </form>
 
         <form tal:condition="ispage"
             enctype="multipart/form-data"
             id="plomino_form"
-            tal:define="hasCreatePermissionOnDatabase python:context.hasCreatePermission(context.getParentDatabase());
-                hasCreatePermissionOnForm python:context.hasCreatePermission(context);
+            tal:define="hasCreatePermissionOnDatabase python:view.form.hasCreatePermission(view.form.getParentDatabase());
+                hasCreatePermissionOnForm python:view.form.hasCreatePermission(context);
                 enctype python:(form_method == 'POST') and 'multipart/form-data'"
             tal:attributes="
-                name context/id;
-                method python:context.getFormMethod();
-                data-pat-plominodynamic string:url:${context/absolute_url};
+                name view/form/id;
+                method python:view.form.getFormMethod();
+                data-pat-plominodynamic string:url:${view/form/absolute_url};
                 enctype enctype|nothing;">
-            <span tal:replace="structure context/@@authenticator/authenticator"/>
+            <span tal:replace="structure view/form/@@authenticator/authenticator"/>
 
             <tal:layout
-                tal:content="structure python:context.openBlankForm(request)">layout</tal:layout>
+                tal:content="structure python:view.form.openBlankForm(request)">layout</tal:layout>
 
-            <span metal:use-macro="context/plomino_actions/macros/OpenFormActionBar">display form actions</span><br/>
+            <span metal:use-macro="view/form/plomino_actions/macros/OpenFormActionBar">display form actions</span><br/>
         </form>
     </div>
 </metal:content>
