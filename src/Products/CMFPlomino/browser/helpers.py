@@ -8,6 +8,7 @@ from z3c.form.interfaces import IWidget, NO_VALUE, IDataManager
 from z3c.form.widget import Widget
 from zope import schema
 from zope.component import adapts, getMultiAdapter
+from zope.configuration.config import provides
 from zope.interface import implementsOnly
 from zope.schema.interfaces import IList
 from Products.CMFPlomino.contents.action import IPlominoAction
@@ -83,10 +84,26 @@ class SubformWidget(Widget):
 
         # TODO: means helper has no access to local db. We probably needs to fix
         # this so it can introspect it
-        OPEN_URL = "{path}/{formid}/OpenForm?ajax_load=1&Plomino_Parent_Field=_dummy_&Plomino_Parent_Form=_dummy_"
-        #helpers = [('send-as-email', "Send to email on save"),('helper_form_pdfdownload', "Download as PDF"), ]
+        OPEN_URL = "{path}/{formid}/OpenForm?ajax_load=1"+\
+            "&Plomino_Parent_Field={curfield}"+\
+            "&Plomino_Parent_Form={curform}"+\
+            "&Plomino_Parent_DB={curpath}"
         helpers = self.helper_forms()
-        self.form_urls = [dict(url=OPEN_URL.format(formid=id,path=path),id=id,title=title)
+        obj = self.context
+        if IPlominoForm.providedBy(obj):
+            curform = obj
+            curfieldid = ''
+        else:
+            curfieldid = obj.id
+            curform = obj.getParentNode()
+        curpath = '/'.join(curform.getParentNode().getPhysicalPath())
+        self.form_urls = [dict(url=OPEN_URL.format(formid=id,
+                                                   path=path,
+                                                   curform=curform.id,
+                                                   curpath=curpath,
+                                                   curfield=curfieldid),
+                               id=id,
+                               title=title)
                           for title,id,path in helpers]
         self.form_urls = json.dumps(self.form_urls)
 
@@ -195,6 +212,18 @@ def update_helpers(obj, event):
             # TODO: shouldn't silently fail
             continue
         helperid = 'blah'
+
+
+        if IPlominoForm.providedBy(obj):
+            curform = obj
+            curfieldid = ''
+        else:
+            curfieldid = obj.id
+            curform = obj.getParentNode()
+        curpath = '/'.join(curform.getParentNode().getPhysicalPath())
+        form.REQUEST['Plomino_Parent_Field'] = curfieldid
+        form.REQUEST['Plomino_Parent_Form'] = curform.id
+        form.REQUEST['Plomino_Parent_DB'] = curpath
 
         doc = getTemporaryDocument(db_import, form, helper).__of__(db_import)
         # has to be computed on save so it appears in the doc
