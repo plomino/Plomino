@@ -97,6 +97,16 @@ class IPlominoField(model.Schema):
         vocabulary=field_modes,
     )
 
+    isDynamicField = schema.Bool(
+        title=_('CMFPlomino_label_isDynamicField',
+            default="Dynamic rendering"),
+        description=_('CMFPlomino_help_isDynamicField',
+            default="The field will be rendered dynamically "
+                    "when the user enters information"),
+        required=False,
+        default=False,
+    )
+
     directives.widget('formula', klass='plomino-formula')
     formula = schema.Text(
         title=_('CMFPlomino_label_FieldFormula', default="Formula"),
@@ -247,7 +257,7 @@ class PlominoField(Item):
         else:
             renderer = adapt.render_read
 
-        selection = self.getSettings().getSelectionList(target)
+        selection = self.getSelectionList(target)
 
         try:
             html = renderer(
@@ -287,6 +297,12 @@ class PlominoField(Item):
             "%sField" % self.field_type.capitalize())
 
         return fieldfactory(self)
+
+    def getSelectionList(self, doc):
+        """
+        """
+        settings = self.getSettings()
+        return settings.getSelectionList(doc)
 
     def getSchema(self):
         """
