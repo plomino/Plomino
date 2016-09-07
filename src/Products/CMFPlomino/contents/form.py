@@ -17,6 +17,7 @@ import re
 from zope import schema
 from zope.interface import implements
 from zope.schema.vocabulary import SimpleVocabulary
+from ZPublisher.HTTPRequest import record
 
 from .. import _, plomino_profiler
 from ..config import (
@@ -1731,6 +1732,10 @@ class PlominoForm(Container):
             fieldName = f.id
             if mode == "EDITABLE":
                 submittedValue = REQUEST.get(fieldName)
+                # Check for empty records
+                if isinstance(submittedValue, record):
+                    if not filter(None, submittedValue.values()):
+                        submittedValue = None
                 if submittedValue is not None:
                     if submittedValue == '':
                         doc.removeItem(fieldName)
@@ -1901,6 +1906,11 @@ class PlominoForm(Container):
             fieldname = f.id
             fieldtype = f.field_type
             submittedValue = REQUEST.get(fieldname)
+
+            # Check for empty records
+            if isinstance(submittedValue, record):
+                if not filter(None, submittedValue.values()):
+                    submittedValue = None
 
             # STEP 1: check mandatory fields
             if not submittedValue:
