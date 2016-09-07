@@ -122,13 +122,12 @@ class IPlominoDatabase(model.Schema):
     directives.widget('import_macros', SelectFieldWidget)
                       #pattern_options={'myoption': 'myvalue'})
     import_macros = schema.List(
-        title=_("CMFPlomino_label_include_helpers_from",
-            default="Include helpers from Databases"),
-        description=_("CMFPlomino_help_include_helpers_from",
-            default="Any forms from these databases starting with 'helper_' "
-            "will be used as helpers to generate code from forms in this database."),
+        title=_("CMFPlomino_label_include_macros_from",
+            default="Import Macros"),
+        description=_("CMFPlomino_help_include_macros_from",
+            default="Databases to search for macros. Reorder to change search order."),
         unique=True,
-        value_type=schema.Choice(vocabulary=SimpleVocabulary.fromItems([('this','.')])),
+        value_type=schema.Choice(vocabulary="Products.CMFPlomino.fields.vocabularies.get_databases"),
         default=['.']
     )
 
@@ -405,3 +404,20 @@ class PlominoDatabase(
             del cache[key]
         else:
             del annotations[config.PLOMINO_REQUEST_CACHE_KEY]
+
+def get_databases(obj):
+    db = obj
+    if not db:
+        return []
+    from Products.CMFCore.utils import getToolByName
+    catalog = getToolByName(db, 'portal_catalog')
+    results = catalog.searchResults({'portal_type': 'PlominoDatabase'})
+    title = "{title} ({path})".format(title=db.Title(),path=".")
+    vocab = [(title, ".")]
+    path = '/'.join(db.getPhysicalPath() )
+    for brain in results:
+        if brain.getPath() == path:
+            continue
+        title = "{title} ({path})".format(title=brain['Title'],path=brain.getPath())
+        vocab.append( (title, brain.getPath()) )
+    return SimpleVocabulary.fromItems(vocab)

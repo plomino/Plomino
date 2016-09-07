@@ -81,10 +81,13 @@ class SubformWidget(Widget):
         self.columns = ["Title"]
         self.fields = ['title']
 
-        OPEN_URL = "{formid}/OpenForm?ajax_load=1&Plomino_Parent_Field=_dummy_&Plomino_Parent_Form=_dummy_"
+        # TODO: means helper has no access to local db. We probably needs to fix
+        # this so it can introspect it
+        OPEN_URL = "{path}/{formid}/OpenForm?ajax_load=1&Plomino_Parent_Field=_dummy_&Plomino_Parent_Form=_dummy_"
         #helpers = [('send-as-email', "Send to email on save"),('helper_form_pdfdownload', "Download as PDF"), ]
         helpers = self.helper_forms()
-        self.form_urls = [dict(url=OPEN_URL.format(formid=id),id=id,title=title) for id,title in helpers]
+        self.form_urls = [dict(url=OPEN_URL.format(formid=id,path=path),id=id,title=title)
+                          for title,id,path in helpers]
         self.form_urls = json.dumps(self.form_urls)
 
         self.rendered = []
@@ -102,10 +105,19 @@ class SubformWidget(Widget):
 
     def helper_forms(self):
         db = self.context.getParentDatabase()
-        for form in db.getForms():
-            typename = self.context.getPortalTypeName().lstrip("Plomino").lower()
-            if form.id.startswith("helper_"+typename):
-                yield (form.id, form.Title())
+        found = set()
+        for path in db.import_macros:
+            if path == ".":
+                db_import = db
+            else:
+                db_import = db.restrictedTraverse(path)
+            for form in db_import.getForms():
+                typename = self.context.getPortalTypeName().lstrip("Plomino").lower()
+                if form.id.startswith("helper_"+typename) or form.id.startswith("macro_"+typename):
+                    if form.id in found:
+                        continue
+                    found.add(form.id)
+                    yield (form.Title(), form.id, path)
 
 
 @provider(IFormFieldProvider)
@@ -116,8 +128,8 @@ class IHelpers(model.Schema):
     directives.widget('helpers', SubformWidget)
     directives.order_after(helpers = 'IBasic.description')
     helpers = schema.List(value_type=schema.Dict(),
-                          title=u"Helpers",
-                          description=u"Macros which create formulas for you. Helpers are forms starting with 'helper_' and computed fields for each formula you want to generate",
+                          title=u"Active Macros",
+                          description=u"Select a macro, edit settings, save your item.",
                           required=False
     )
 
@@ -168,13 +180,23 @@ def update_helpers(obj, event):
         if formid is None:
             continue
         db = obj.getParentDatabase()
-        # TODO: search other dbs for this form
-        form = db.getForm(formid)
+        # search other dbs for this form
+        form = None
+        db_import = None
+        for db_path in db.import_macros:
+            if db_path == '.':
+                db_import = db
+            else:
+                db_import = db.restrictedTraverse(db_path)
+            form = db_import.getForm(formid)
+            if form is not None:
+                break
         if form is None:
+            # TODO: shouldn't silently fail
             continue
         helperid = 'blah'
 
-        doc = getTemporaryDocument(db, form, helper).__of__(db)
+        doc = getTemporaryDocument(db_import, form, helper).__of__(db_import)
         # has to be computed on save so it appears in the doc
         #TODO this can generate errors as fields calculated. Need to show this
         doc.save(form=form, creation=False, refresh_index=False, asAuthor=True, onSaveEvent=False)
