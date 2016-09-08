@@ -144,8 +144,8 @@ class IHelpers(model.Schema):
     directives.widget('helpers', SubformWidget)
     directives.order_after(helpers = 'IBasic.description')
     helpers = schema.List(value_type=schema.Dict(),
-                          title=u"Active Macros",
-                          description=u"Select a macro, edit settings, save your item.",
+                          title=u"Formula Macros",
+                          description=u"Macros can be applied from your macro library and will automate formulas for you.",
                           required=False
     )
 
