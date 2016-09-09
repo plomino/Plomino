@@ -157,7 +157,7 @@ class DatagridField(BaseField):
             return fieldValue
 
         # if doc is not a PlominoDocument, no processing needed
-        if not doc or doc.isNewDocument():
+        if not doc:
             return fieldValue
 
         rawValue = fieldValue or []
