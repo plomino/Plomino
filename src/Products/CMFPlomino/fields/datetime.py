@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+from DateTime import DateTime
 from plone.autoform.interfaces import IFormFieldProvider
 from plone.supermodel import directives, model
 from zope.interface import implementer, provider
@@ -56,6 +57,8 @@ class DatetimeField(BaseField):
     def validate(self, submittedValue):
         """
         """
+        if type(submittedValue) is DateTime:
+            return []
         errors = []
         submittedValue = submittedValue.strip()
         try:
@@ -80,6 +83,8 @@ class DatetimeField(BaseField):
     def processInput(self, submittedValue):
         """
         """
+        if type(submittedValue) is DateTime:
+            return submittedValue
         submittedValue = submittedValue.strip()
         try:
             # check if date only:
