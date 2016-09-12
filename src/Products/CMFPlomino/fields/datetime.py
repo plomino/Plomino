@@ -101,10 +101,7 @@ class DatetimeField(BaseField):
         except:
             # with datagrid, we might get dates formatted differently than
             # using calendar widget default format
-            fmt = self.format
-            if not fmt:
-                fmt = self.context.getParentDatabase().datetime_format
-            return StringToDate(submittedValue, fmt)
+            return StringToDate(submittedValue[:16], '%Y-%m-%dT%H:%M')
 
     def getFieldValue(self, form, doc=None, editmode_obsolete=False,
             creation=False, request=None):
