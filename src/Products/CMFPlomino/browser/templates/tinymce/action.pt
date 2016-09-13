@@ -41,7 +41,7 @@
 								<label for="actionid" i18n:translate="plominoaction_id">Action ID</label>
                                 <input id="actionid" name="actionid" onchange="this.form.submit();"
                                        class="pat-select2" data-pat-select2="allowNewItems:true;; tags:true"
-                                       tal:define="tags python:','join(f.id for f in actions) if actions else '[]'"
+                                       tal:define="tags python:','.join(f.id for f in actions) if actions else '[]'"
                                         tal:attributes="value actionid; data-pat-select2 string:allowNewItems:true;; tags: ${tags};; maximumSelectionSize:1;;}"/>
 							</p>
 						</form>
