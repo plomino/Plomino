@@ -28,10 +28,10 @@ class ViewView(BrowserView):
         permission.
         """
         if self.context.checkUserPermission(READ_PERMISSION):
-            valid = ''
+            invalid = ''
             try:
                 if self.context.onOpenView:
-                    valid = self.context.runFormulaScript(
+                    invalid = self.context.runFormulaScript(
                         SCRIPT_ID_DELIMITER.join(
                             ['view', self.context.id, 'onopen']),
                         self.context,
@@ -39,9 +39,13 @@ class ViewView(BrowserView):
             except PlominoScriptException, e:
                 e.reportError('onOpenView event failed')
 
-            if valid:
+            if invalid:
                 return self.context.unrestrictedTraverse('@@plomino_errors')(
-                    errors=[valid])
+                    errors=[invalid])
+            if self.context.custom_template:
+                pt = getattr(
+                    self.context.resources, self.context.custom_template)
+                return pt.__of__(self.context)()
 
             return self.template()
         else:

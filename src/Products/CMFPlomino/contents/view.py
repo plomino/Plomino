@@ -130,6 +130,15 @@ class IPlominoView(model.Schema):
         default=False,
     )
 
+    custom_template = schema.TextLine(
+        title=_('CMFPlomino_label_ViewTemplate',
+            default="Custom view template"),
+        description=_('CMFPlomino_help_ViewTemplate',
+            default="Id of a .pt template located in the /resources forlder. "
+                "Leave blank to use default"),
+        required=False,
+    )
+
 
 class PlominoView(Container):
     implements(IPlominoView, IPlominoContext)
