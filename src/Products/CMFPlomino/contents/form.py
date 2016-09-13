@@ -776,7 +776,7 @@ class PlominoForm(Container):
             )
             pq(element).replace_with(html)
 
-        s = ".plominoHidewhenClass,.plominoCacheClass,.plominoLabelClass"
+        s = ".plominoHidewhenClass,.plominoCacheClass"
         for element in d.find(s) + d.filter(s):
             widget_type = element.attrib["class"][7:-5].lower()
             if ':' not in element.text:
@@ -802,12 +802,14 @@ class PlominoForm(Container):
         root = d[0].getparent() if d else d
 
         # restore start: end: type elements
-        s = ".plominoHidewhenClass,.plominoCacheClass,.plominoLabelClass"
+        s = ".plominoHidewhenClass,.plominoCacheClass"
         for e in d.find(s) + d.filter(s):
             # .html has a bug - https://github.com/gawel/pyquery/issues/102
+            position = pq(e).attr("data-plomino-position")
+            hwid = pq(e).attr("data-plominoid")
+            if position and hwid:
+                pq(e).text("{pos}:{id}".format(pos=position, id=hwid))
             pq(e)\
-                .text("{pos}:{id}".format(pos=pq(e).attr("data-plomino-position"),
-                                          id=pq(e).attr("data-plominoid")))\
                 .remove_class("mceNonEditable")\
                 .remove_attr("data-plominoid")\
                 .remove_attr("data-plomino-position")
@@ -848,6 +850,21 @@ class PlominoForm(Container):
                 else:
                     return html
 
+            elif widget_type == 'label':
+                if ':' in id:
+                    fieldid, labeltext = id.split(':', 1)
+                else:
+                    fieldid = id
+                    labeltext = None
+                field = self.getFormField(fieldid)
+
+                if labeltext:
+                    html = '<label>%s</label>' % labeltext
+                elif field is not None:
+                    html = '<label>%s</label>' % field.Title()
+                else:
+                    html = '<label>%s</label>' % id
+                return html
 
         elif widget_type == "subform":
             subform = getattr(self, id, None)
