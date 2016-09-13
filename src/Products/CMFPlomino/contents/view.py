@@ -134,7 +134,7 @@ class IPlominoView(model.Schema):
         title=_('CMFPlomino_label_ViewTemplate',
             default="Custom view template"),
         description=_('CMFPlomino_help_ViewTemplate',
-            default="Id of a .pt template located in the /resources forlder. "
+            default="Id of a .pt template located in the /resources folder. "
                 "Leave blank to use default"),
         required=False,
     )
