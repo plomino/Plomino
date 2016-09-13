@@ -161,8 +161,8 @@
         <vocabulary>plone.app.vocabularies.ReallyUserFriendlyTypes</vocabulary>
       </value_type>
     </field>
-    <value purge="false">>
-      <element>PlominoDatabase</element>>
+    <value purge="false">
+      <element>PlominoDatabase</element>
     </value>
   </record>
 </registry>
