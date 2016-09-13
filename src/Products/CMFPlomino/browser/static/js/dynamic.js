@@ -21,11 +21,13 @@ require([
                 data._docid = self.options.docid;
             }
             data._hidewhens = self.getHidewhens();
+            data._fields = self.getDynamicFields();
             data._validation = field.id;
             $.post(self.options.url + '/dynamic_evaluation',
                 data,
                 function(response) {
                     self.applyHidewhens(response.hidewhens);
+                    self.applyDynamicFields(response.fields);
                 },
                 'json');
         },
@@ -45,6 +47,15 @@ require([
             });
             return hidewhens;
         },
+        getDynamicFields: function() {
+            var self = this;
+            var fields = [];
+            self.$el.find('.dynamicfield').each(function(i, el) {
+                fields.push($(el).attr('data-dynamicfield'));
+            });
+            return fields;
+
+        },
         applyHidewhens: function(hidewhens) {
             var self = this;
             for(var i=0; i<hidewhens.length; i++) {
@@ -56,6 +67,16 @@ require([
                 } else {
                     area.show();
                 }
+            }
+        },
+        applyDynamicFields: function(fields) {
+            var self = this;
+            for(var i=0; i<fields.length; i++) {
+                console.log(fields[i]);
+                var fieldid = fields[i][0];
+                var value = fields[i][1];
+                var field = self.$el.find('.dynamicfield[data-dynamicfield="'+fieldid+'"]');
+                field.text(value);
             }
         }
     });

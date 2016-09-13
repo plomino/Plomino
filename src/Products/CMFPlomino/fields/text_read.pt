@@ -2,8 +2,14 @@
         widget python:field.widget;
         preserve_carriage_returns python:field.preserve_carriage_returns;
         fieldvalue python:(preserve_carriage_returns and options['fieldvalue'].replace('\r', '<br/>')) or options['fieldvalue'];
-        size python:field.size"
-    tal:attributes="class string:TEXTFieldRead-${widget}">
+        size python:field.size;
+        dynamic python:getattr(field, 'isDynamicField', False);
+        field_id python:field.id;
+        form_id python:field.aq_parent.id;
+        default_klass string:TEXTFieldRead-${widget};
+        klass python:dynamic and '%s dynamicfield' % default_klass or default_klass;"
+    tal:attributes="class klass;
+                    data-dynamicfield python:dynamic and '%s/%s' % (form_id, field_id) or None;">
     <tal:widget condition="python:widget=='HIDDEN'">
         <input type="hidden" tal:attributes="id field/id; name field/id; value fieldvalue" />
     </tal:widget>
