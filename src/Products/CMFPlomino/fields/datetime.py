@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+from DateTime import DateTime
 from plone.autoform.interfaces import IFormFieldProvider
 from plone.supermodel import directives, model
 from zope.interface import implementer, provider
@@ -57,6 +58,8 @@ class DatetimeField(BaseField):
     def validate(self, submittedValue):
         """
         """
+        if type(submittedValue) is DateTime:
+            return []
         errors = []
         submittedValue = submittedValue.strip()
         try:
@@ -81,6 +84,8 @@ class DatetimeField(BaseField):
     def processInput(self, submittedValue):
         """
         """
+        if type(submittedValue) is DateTime:
+            return submittedValue
         submittedValue = submittedValue.strip()
         try:
             # check if date only:
@@ -97,10 +102,7 @@ class DatetimeField(BaseField):
         except:
             # with datagrid, we might get dates formatted differently than
             # using calendar widget default format
-            fmt = self.format
-            if not fmt:
-                fmt = self.context.getParentDatabase().datetime_format
-            return StringToDate(submittedValue, fmt)
+            return StringToDate(submittedValue[:16], '%Y-%m-%dT%H:%M')
 
     def getFieldValue(self, form, doc=None, editmode_obsolete=False,
             creation=False, request=None):

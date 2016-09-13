@@ -325,6 +325,7 @@ class PlominoForm(Container):
         errors = self.validateInputs(REQUEST)
         if errors:
             if is_childform:
+                REQUEST.RESPONSE.setStatus(400)
                 REQUEST.RESPONSE.setHeader(
                     'content-type', 'application/json; charset=utf-8')
                 return json.dumps({'errors': errors})
@@ -465,6 +466,13 @@ class PlominoForm(Container):
         actions = [obj for obj in self.objectValues()
             if obj.__class__.__name__ == 'PlominoAction']
         return actions
+
+    security.declarePublic('getAction')
+
+    def getAction(self, action_name):
+        """ Get a single action
+        """
+        return getattr(self, action_name)
 
     security.declarePublic('getActions')
 

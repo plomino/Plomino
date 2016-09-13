@@ -93,6 +93,7 @@ class IPlominoField(model.Schema):
         title=_('CMFPlomino_label_FieldMode', default="Field mode"),
         description=_('CMFPlomino_label_FieldMode', default="Field mode"),
         required=True,
+        default='EDITABLE',
         vocabulary=field_modes,
     )
 

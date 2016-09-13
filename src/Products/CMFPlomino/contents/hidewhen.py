@@ -17,6 +17,7 @@ class IPlominoHidewhen(model.Schema):
         description=_('CMFPlomino_help_HidewhenFormula',
             default='If returning True, the block will be hidden.'),
         required=True,
+        default=u"False",
     )
 
     isDynamicHidewhen = schema.Bool(

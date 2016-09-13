@@ -230,7 +230,9 @@ require([
             for(var j=0;j<self.rows.length;j++) {
                 var edit_url = self.form_url;
                 for(var k=0;k<self.col_number;k++) {
-                    edit_url += '&' + self.fields[k] + '=' + self.values[j][k];
+                    var value = self.values[j][k] || '';
+                    value = value.datetime ? value.datetime : value;
+                    edit_url += '&' + self.fields[k] + '=' + value;
                 }
                 html += '<tr><td class="actions"><a class="edit-row" href="' + edit_url + '"><i class="icon-pencil"></i></a>';
                 html += '<a class="remove-row" href="#"><i class="icon-cancel"></i></a>';
@@ -248,9 +250,8 @@ require([
                 actions: {
                     'input.plominoSave': {
                         onSuccess: self.add.bind(self),
-                        onError: function() {
-                            // TODO: render errors in the form
-                            window.alert(response.errors);
+                        onError: function(response) {
+                            window.alert(response.responseJSON.errors.join('\n'));
                             return false;
                         }
                     }
@@ -261,9 +262,8 @@ require([
                     actions: {
                         'input.plominoSave': {
                             onSuccess: self.edit.bind({grid: self, row: i}),
-                            onError: function() {
-                                // TODO: render errors in the form
-                                window.alert(response.errors);
+                            onError: function(response) {
+                                window.alert(response.responseJSON.errors.join('\n'));
                                 return false;
                             }
                         }

@@ -1,0 +1,50 @@
+<html>
+
+<head>
+  <title>Plomino IDE</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="shortcut icon" type="image/x-icon" href="favicon.ico" />
+  <!-- Imports -->
+  <link href="bootstrap/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    .frontpage-spinner {
+        animation: spin 1.5s linear infinite;
+        position: relative;
+        width: 50px;
+        height: 50px;
+        margin: 100px auto 0;
+        border: 2px solid #1f94ed;
+        border-radius: 50%;
+    }
+    .frontpage-spinner:after {
+        content: "";
+        width: 85%;
+        height: 85%;
+        background: -webkit-linear-gradient(45deg, white 0%, white 40%, rgba(255, 255, 255, 0.7) 60%, rgba(255, 255, 255, 0) 100%);
+        position: absolute;
+        top: 0;
+        left: 0;
+        transform: translate(-5%, -5%);
+    }
+
+    @keyframes spin {
+        0% {
+          transform: rotate(0deg);
+        }
+        100% {
+          transform: rotate(360deg);
+        }
+    }
+  </style>
+</head>
+
+<!-- Display the application -->
+
+<body>
+  <plomino-app>
+    <!-- thx to http://codepen.io/kittylion/npgAE -->
+    <div class="frontpage-spinner"></div>
+  </plomino-app>
+<script type="text/javascript" src="vendor.js"></script><script type="text/javascript" src="main.js"></script></body>
+
+</html>
