@@ -466,6 +466,8 @@ Number field::
     >>> db.cleanRequestCache()
     >>> db.frm2.validateInputs(REQUEST)
     ['price must be a float (submitted value was: zero)']
+    >>> db.frm2.displayDocument(None, True, True).replace('\n', '').replace('\t', '')
+    u'<input type=\'hidden\' name=\'Form\' value=\'frm2\' />6 <p>Price:<span>    <input type="number" id="price" name="price" value="" /></span></p>'
 
 Rich-text field::
 
