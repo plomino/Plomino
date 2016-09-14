@@ -848,7 +848,12 @@ class PlominoForm(Container):
                     #TODO: bit of a hack. perhaps need somethign better
                     return id
                 else:
-                    return html
+                    # Handle hidden fields
+                    hidden = field_pq.find('input[type="hidden"]')
+                    if hidden:
+                        pq('<span>Hidden: %s</span>' % id).insertBefore(hidden)
+
+                    return field_pq.outer_html()
 
             elif widget_type == 'label':
                 if ':' in id:
