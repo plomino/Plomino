@@ -4,7 +4,7 @@ Changelog
 2.0b5 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Restore View custom template
 
 
 2.0b4 (2016-05-27)

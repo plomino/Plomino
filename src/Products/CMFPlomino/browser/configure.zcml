@@ -120,7 +120,7 @@
 
     <browser:page
         for="Products.CMFPlomino.contents.view.IPlominoView"
-        name="json"
+        name="tojson"
         class=".view.ViewView"
         attribute="json"
         permission="zope.Public"

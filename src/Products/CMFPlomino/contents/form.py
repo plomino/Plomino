@@ -966,7 +966,7 @@ class PlominoForm(Container):
 
     def dynamic_evaluation(self, REQUEST):
         """ Return a JSON object to dynamically refresh the form
-        (hidewhens, field validation)
+        (hidewhens, field validation, dynamic fields)
         """
         db = self.getParentDatabase()
         docid = REQUEST.get('_docid')
@@ -1021,6 +1021,38 @@ class PlominoForm(Container):
                 isHidden = True
             hidewhens_results.append(["%s/%s" % (formid, hwid), isHidden])
         results['hidewhens'] = hidewhens_results
+
+        fields = asList(REQUEST.get('_fields[]', []))
+        fields_results = []
+        for token in fields:
+            (formid, fieldid) = token.split('/')
+            if formid == self.id:
+                form = self
+            else:
+                form = db.getForm(formid)
+                if not form:
+                    db.writeMessageOnPage(
+                        "Form %s id missing" % formid, REQUEST, False)
+                    fields_results.append(["%s/%s" % (formid, fieldid), True])
+                    continue
+            if formid not in temp:
+                temp[formid] = getTemporaryDocument(
+                    db,
+                    db.getForm(formid),
+                    REQUEST,
+                    doc,
+                    validation_mode=False)
+            try:
+                # We already have the right form for the field
+                value = form.computeFieldValue(fieldid, temp[formid])
+            except PlominoScriptException, e:
+                e.reportError(
+                    '%s field formula failed' % fieldid)
+                # if error, return an empty value
+                value = ''
+            fields_results.append(["%s/%s" % (formid, fieldid), value])
+
+        results['fields'] = fields_results
 
         REQUEST.RESPONSE.setHeader(
             'content-type', 'application/json; charset=utf-8')
