@@ -261,7 +261,6 @@ def update_helpers(obj, event):
             if value is None:
                 continue
             new_code[macro_id] = value
-        #import pdb; pdb.set_trace()
 
         for macro_id, form, doc in macros:
             if macro_id not in new_code:
@@ -274,12 +273,12 @@ def update_helpers(obj, event):
                     # macro has gone missing. Leave the code alone
                     continue
 
-                code = re.sub(MACRO_FMT.format(id=macro_id, code=CODE_REGEX),
+                code = re.sub("(%s)"%MACRO_FMT.format(id=macro_id, code=CODE_REGEX),
                               MACRO_FMT.format(id=macro_id, code="\n"+new_code[macro_id]+"\n"),
                               code, 1)
             # 2. it's not in the list. remove it
             elif code_id and code_id not in new_code:
-                code = re.sub(MACRO_FMT.format(id=code_id, code=CODE_REGEX),
+                code = re.sub("(%s)"%MACRO_FMT.format(id=code_id, code=CODE_REGEX),
                               "",
                               code)
                 old_codes.pop()
@@ -292,16 +291,17 @@ def update_helpers(obj, event):
 
             else:
                 # 3. it's further down the list. remove it
-                code = re.sub(MACRO_FMT.format(id=macro_id, code='((.|\n|\r)+)'),
+                code = re.sub("(%s)"%MACRO_FMT.format(id=macro_id, code=CODE_REGEX),
                               "",
                               code)
-                old_codes = [(id, code) for id,code in old_codes if macro_id == id]
+                old_codes = [(oid, ocode) for oid,ocode in old_codes if macro_id != oid]
                 # 4. The list one is new. insert it. or we are moving it
                 # insert before the current one
-                code = re.sub(MACRO_FMT.format(id=code_id, code=CODE_REGEX),
-                              MACRO_FMT.format(id=macro_id, code="\n"+new_code[macro_id]+"\n") + \
-                                '\n' + \
-                                MACRO_FMT.format(id=code_id, code=old_code),
+                switched = MACRO_FMT.format(id=macro_id, code="\n"+new_code[macro_id]+"\n") + \
+                    '\n' + \
+                    MACRO_FMT.format(id=code_id, code=old_code)
+                code = re.sub("(%s)"%MACRO_FMT.format(id=code_id, code=CODE_REGEX),
+                              switched,
                               code, 1)
 
         for code_id, old_code in old_codes:
