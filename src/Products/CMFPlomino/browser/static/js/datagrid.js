@@ -42,7 +42,7 @@ require([
             html += '</tr>';
             for(var j=0;j<self.rows.length;j++) {
                 var edit_url = self.form_url;
-                var formid = self.values[j]['_datagrid_formid_'];
+                var formid = self.values[j]['Form'];
                 for (var f=0; f<self.form_urls.length; f++) {
                     if (self.form_urls[f].id == formid) {
                         edit_url = self.form_urls[f].url;
@@ -168,7 +168,7 @@ require([
                 for (var key in response) {
                     raw[key] = response[key].raw
                 }
-                raw['_datagrid_formid_'] = formid;
+                raw['Form'] = formid;
                 self.values.push(raw);
                 self.input.val(JSON.stringify(self.values));
                 self.rows.push(rendered);
@@ -182,7 +182,6 @@ require([
             var formid = this.formid;
             if(!response.errors) {
                 modal.hide();
-                var raw = {};
                 var rendered = [];
                 for(var i=0; i<self.col_number; i++) {
                     if (self.fields[i] != undefined && self.fields[i] in response) {
@@ -191,11 +190,11 @@ require([
                         rendered.push('');
                     }
                 }
+                self.values[row_index]['Form'] = formid;
+                // keep any internal data (e.g. ids from server). Same as normal doc would
                 for (var key in response) {
-                    raw[key] = response[key].raw
+                    self.values[row_index][key] = response[key].raw;
                 }
-                raw['_datagrid_formid_'] = formid;
-                self.values[row_index] = raw;
                 self.input.val(JSON.stringify(self.values));
                 self.rows[row_index] = rendered;
                 self.render();

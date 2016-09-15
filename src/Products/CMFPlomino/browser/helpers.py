@@ -183,7 +183,7 @@ def update_helpers(obj, event):
     # TODO: Need to remove any code the user removed
 
     for helper in obj.helpers:
-        formid = helper.get('_datagrid_formid_', None)
+        formid = helper.get('Form', None)
         if formid is None:
             continue
         db = obj.getParentDatabase()
@@ -312,3 +312,4 @@ def update_helpers(obj, event):
 
 
         dm.set(code)
+        obj.helpers = helpers
