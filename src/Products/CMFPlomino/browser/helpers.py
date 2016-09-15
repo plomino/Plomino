@@ -90,13 +90,6 @@ class SubformWidget(Widget):
             "&Plomino_Macro_Context={curpath}"
         helpers = self.helper_forms()
         obj = self.context
-        # if IPlominoForm.providedBy(obj):
-        #     curform = obj
-        #     curfieldid = ''
-        # else:
-        #     curfieldid = obj.id
-        #     curform = obj.getParentNode()
-        # curpath = '/'.join(curform.getParentNode().getPhysicalPath())
         curpath = '/'.join(obj.getPhysicalPath())
         self.form_urls = [dict(url=OPEN_URL.format(formid=id,
                                                    path=path,
@@ -150,11 +143,6 @@ class IHelpers(model.Schema):
     )
 
 @implementer(IHelpers)
-#@adapter(IPlominoForm)
-# @adapter(IPlominoField)
-# @adapter(IPlominoHidewhen)
-# @adapter(IPlominoAction)
-# @adapter(IPlominoView)
 class Helpers(object):
     """Add a field for storing helpers on
     """
@@ -171,10 +159,9 @@ class Helpers(object):
         if value is None:
             value = []
         self.context.helpers=value
-        #TODO: only called if the value has changed. So won't regenerate on every save
-        # update_helpers(self.context, None)
 
-
+MACRO_FMT = '### START {id} ###{code}### END {id} ###'
+CODE_REGEX = '(((?!###)(.|\n|\r))+)'
 
 # Event handler
 def update_helpers(obj, event):
@@ -184,14 +171,18 @@ def update_helpers(obj, event):
     if not hasattr(obj, 'helpers'):
         return
     helpers = obj.helpers
-    fields = getFieldsInOrder(obj.getTypeInfo().lookupSchema())
-    fields += [field for behaviour in IBehaviorAssignable(obj).enumerateBehaviors()
-               for field in getFieldsInOrder(behaviour.interface)]
+
 
     if helpers is None:
         return
 
-    for helper in helpers:
+    ids = {m['_macro_id_'] for m in helpers if '_macro_id_' in m}
+
+    macros = []
+
+    # TODO: Need to remove any code the user removed
+
+    for helper in obj.helpers:
         formid = helper.get('_datagrid_formid_', None)
         if formid is None:
             continue
@@ -207,18 +198,25 @@ def update_helpers(obj, event):
             form = db_import.getForm(formid)
             if form is not None:
                 break
+
+        # ensure the macros have unique ids so
+        helperid = helper.get('_macro_id_')
+        if not helperid:
+            i = 1
+            while not helperid or helperid in ids:
+                helperid = "{formid}_{i}".format(formid=formid, i=i)
+                i+=1
+            helper['_macro_id_'] = helperid
+            ids.add(helperid)
+
         if form is None:
-            # TODO: shouldn't silently fail
+            # means the macro used to create the code is no longer available
+            # we will retain the code but it will no longer get updated
+            macros.append( (helperid, None, None) )
+            #obj.helpers = helpers
             continue
-        helperid = 'blah'
 
 
-        # if IPlominoForm.providedBy(obj):
-        #     curform = obj
-        #     curfieldid = ''
-        # else:
-        #     curfieldid = obj.id
-        #     curform = obj.getParentNode()
         curpath = '/'.join(obj.getPhysicalPath())
         form.REQUEST['Plomino_Parent_Field'] = '__dummy__'
         form.REQUEST['Plomino_Parent_Form'] = formid
@@ -228,35 +226,89 @@ def update_helpers(obj, event):
         # has to be computed on save so it appears in the doc
         #TODO this can generate errors as fields calculated. Need to show this
         doc.save(form=form, creation=False, refresh_index=False, asAuthor=True, onSaveEvent=False)
+        macros.append( (helperid, form, doc) )
 
-        for id, field in fields:
-            #value = getattr(getattr(self., key), 'output', getattr(obj, key)):
+    fields = []
+    behaviours = [b.interface for b in IBehaviorAssignable(obj).enumerateBehaviors()]
+    for schema in [obj.getTypeInfo().lookupSchema()] + behaviours:
+        hints = schema.queryTaggedValue(u'plone.autoform.widgets',{}).items()
+        formulas = {id for id, hint in hints if hint.params.get('klass') == 'plomino-formula'}
+        fields += [(id,field) for id, field in getFieldsInOrder(schema) if id in formulas]
 
-            #TODO: if its a formula then wipe any previous generated code
-            #TODO: can work out whats a formula from the widget?
+    for id, field in fields:
 
+        dm = getMultiAdapter((obj, field), IDataManager)
+        code = dm.get()
+        code = code if code else u''
+
+        all_code = re.compile(MACRO_FMT.format(id='([^ #]+)',code=CODE_REGEX))
+        old_codes = [(m[0],m[1]) for m in re.findall(all_code, code)]
+        old_codes.reverse()
+
+
+        names = ['generate_%s'%id.lower(),
+                 'generate_%s'%id,
+                 '%s'%id,
+                 '%s'%id.lower()]
+        new_code = {}
+        for macro_id, form, doc in macros:
+            if form is None:
+                new_code[macro_id] = None
+                continue
             value = None
-            names = ['generate_%s'%id.lower(),
-                     'generate_%s'%id,
-                     '%s'%id,
-                     '%s'%id.lower()]
-            for name in names:
-                if doc.hasItem(name):
-                    value = doc.getItem(name)
-                    break
+            for value in (doc.getItem(name) for name in names if doc.hasItem(name)):
+                break
             if value is None:
                 continue
-            dm = getMultiAdapter((obj, field), IDataManager)
-            #code = getattr(obj, id)
-            code = dm.get()
-            #TODO: what if the id has changed. Should redo all gen code?
-            fmt = '### START {id} ###{code}### END {id} ###'
-            reg_code = re.compile(fmt.format(id=helperid, code='((.|\n|\r)+)'))
-            if not code or not reg_code.search(code):
-                code = (code + u'\n') if code else u''
-                code += fmt.format(id=helperid, code="\n"+value+"\n")
+            new_code[macro_id] = value
+        #import pdb; pdb.set_trace()
+
+        for macro_id, form, doc in macros:
+            if macro_id not in new_code:
+                continue
+            code_id, old_code = old_codes[-1] if old_codes else (None,None)
+            # 1. it's in right position. replace it
+            if macro_id == code_id:
+                old_codes.pop()
+                if new_code[macro_id] is None:
+                    # macro has gone missing. Leave the code alone
+                    continue
+
+                code = re.sub(MACRO_FMT.format(id=macro_id, code=CODE_REGEX),
+                              MACRO_FMT.format(id=macro_id, code="\n"+new_code[macro_id]+"\n"),
+                              code, 1)
+            # 2. it's not in the list. remove it
+            elif code_id and code_id not in new_code:
+                code = re.sub(MACRO_FMT.format(id=code_id, code=CODE_REGEX),
+                              "",
+                              code)
+                old_codes.pop()
+            elif new_code[macro_id] is None:
+                # macro has gone missing. leave it alone
+                continue
+            elif code_id is None:
+                # reached end. insert code at the end
+                code += '\n'+MACRO_FMT.format(id=macro_id, code="\n"+new_code[macro_id]+"\n")
+
             else:
-                repl = fmt.format(id=helperid, code="\n"+value+"\n")
-                code = reg_code.sub(repl, code)
-            #setattr(obj, id, code)
-            dm.set(code)
+                # 3. it's further down the list. remove it
+                code = re.sub(MACRO_FMT.format(id=macro_id, code='((.|\n|\r)+)'),
+                              "",
+                              code)
+                old_codes = [(id, code) for id,code in old_codes if macro_id == id]
+                # 4. The list one is new. insert it. or we are moving it
+                # insert before the current one
+                code = re.sub(MACRO_FMT.format(id=code_id, code=CODE_REGEX),
+                              MACRO_FMT.format(id=macro_id, code="\n"+new_code[macro_id]+"\n") + \
+                                '\n' + \
+                                MACRO_FMT.format(id=code_id, code=old_code),
+                              code, 1)
+
+        for code_id, old_code in old_codes:
+            # remove any code that's left
+            code = re.sub(MACRO_FMT.format(id=code_id, code=CODE_REGEX),
+                          "",
+                          code)
+
+
+        dm.set(code)
