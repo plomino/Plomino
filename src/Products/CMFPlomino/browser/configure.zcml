@@ -58,6 +58,14 @@
 
     <browser:page
         for="Products.CMFPlomino.contents.database.IPlominoDatabase"
+        name="code"
+        class=".database.DatabaseView"
+        attribute="code"
+        permission="plomino.DESIGN_PERMISSION"
+        />
+
+    <browser:page
+        for="Products.CMFPlomino.contents.database.IPlominoDatabase"
         name="DatabaseACL"
         class=".database.DatabaseView"
         attribute="acl"
@@ -86,6 +94,21 @@
         class=".form.FormView"
         attribute="openbareform"
         permission="zope.Public"
+        />
+
+    <browser:page
+        for="Products.CMFPlomino.contents.form.IPlominoForm"
+        name="page"
+        class=".form.PageView"
+        permission="zope.Public"
+        />
+
+    <browser:page
+        for="Products.CMFPlomino.contents.form.IPlominoForm"
+        name="add-field"
+        class=".form.FormView"
+        attribute="addField"
+        permission="plomino.DESIGN_PERMISSION"
         />
 
     <browser:page

@@ -136,7 +136,7 @@ require([
     'jquery',
     'pat-base'
 ], function($, Base) {
-    
+    'use strict';
     var Dynamic = Base.extend({
         name: 'plominodynamic',
         parser: 'mockup',
@@ -155,11 +155,13 @@ require([
                 data._docid = self.options.docid;
             }
             data._hidewhens = self.getHidewhens();
+            data._fields = self.getDynamicFields();
             data._validation = field.id;
             $.post(self.options.url + '/dynamic_evaluation',
                 data,
                 function(response) {
                     self.applyHidewhens(response.hidewhens);
+                    self.applyDynamicFields(response.fields);
                 },
                 'json');
         },
@@ -179,6 +181,15 @@ require([
             });
             return hidewhens;
         },
+        getDynamicFields: function() {
+            var self = this;
+            var fields = [];
+            self.$el.find('.dynamicfield').each(function(i, el) {
+                fields.push($(el).attr('data-dynamicfield'));
+            });
+            return fields;
+
+        },
         applyHidewhens: function(hidewhens) {
             var self = this;
             for(var i=0; i<hidewhens.length; i++) {
@@ -190,6 +201,16 @@ require([
                 } else {
                     area.show();
                 }
+            }
+        },
+        applyDynamicFields: function(fields) {
+            var self = this;
+            for(var i=0; i<fields.length; i++) {
+                console.log(fields[i]);
+                var fieldid = fields[i][0];
+                var value = fields[i][1];
+                var field = self.$el.find('.dynamicfield[data-dynamicfield="'+fieldid+'"]');
+                field.text(value);
             }
         }
     });
@@ -248,9 +269,8 @@ require([
                 actions: {
                     'input.plominoSave': {
                         onSuccess: self.add.bind(self),
-                        onError: function() {
-                            // TODO: render errors in the form
-                            window.alert(response.errors);
+                        onError: function(response) {
+                            window.alert(response.responseJSON.errors.join('\n'));
                             return false;
                         }
                     }
@@ -261,9 +281,8 @@ require([
                     actions: {
                         'input.plominoSave': {
                             onSuccess: self.edit.bind({grid: self, row: i}),
-                            onError: function() {
-                                // TODO: render errors in the form
-                                window.alert(response.errors);
+                            onError: function(response) {
+                                window.alert(response.responseJSON.errors.join('\n'));
                                 return false;
                             }
                         }
@@ -342,3 +361,25 @@ require([
     return DataGrid;
 });
 define("plominodatagrid", function(){});
+
+require([
+    'jquery',
+    'pat-base'
+], function($, Base) {
+    'use strict';
+    var Multipage = Base.extend({
+        name: 'plominomultipage',
+        parser: 'mockup',
+        trigger: 'body.template-page.portaltype-plominoform #plomino_form input[name="plomino_current_page"]',
+        defaults: {},
+        init: function() {
+            // Push the current page into the URL
+            // The action is the current page
+            var page = this.$el.parents('#plomino_form').attr('action');
+            var stateObj = {multipage: 'multipage' };
+            history.pushState(stateObj, '', page);
+        }
+    });
+    return Multipage;
+});
+define("plominomultipage", function(){});

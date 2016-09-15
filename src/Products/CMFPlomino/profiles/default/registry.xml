@@ -120,6 +120,11 @@
     <value key="js">++resource++Products.CMFPlomino/js/dynamic.js</value>
   </records>
 
+  <records prefix="plone.resources/plominomultipage"
+           interface='Products.CMFPlone.interfaces.IResourceRegistry'>
+    <value key="js">++resource++Products.CMFPlomino/js/multipage.js</value>
+  </records>
+
   <records prefix="plone.resources/plominodatagrid"
            interface='Products.CMFPlone.interfaces.IResourceRegistry'>
     <value key="js">++resource++Products.CMFPlomino/js/datagrid.js</value>

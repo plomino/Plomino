@@ -1,0 +1,16 @@
+<div class="btn-group dropdown toolbar">
+  <button type="button" class="btn btn-default" title="Save" (click)="save()">
+    <span class="glyphicon glyphicon-floppy-disk"></span>
+  </button>
+  <button class="btn btn-default dropdown-toggle" data-toggle="dropdown" type="button" id="dropdownMenu1">
+    Insert formula
+    <span class="caret"></span>
+  </button>
+  <ul class="dropdown-menu">
+    <li *ngFor="let method of methodList" role="menuitem">
+      <a data-toggle="popover" data-trigger="hover" data-content="Some content" class="dropdown-item" (click)="addMethod(method.id)" (mousemove)="method.popup = true" (mouseout)="method.popup = false">{{method.id}}</a>
+      <plomino-popover *ngIf="method.popup" [name]="method.name" [desc]="method.desc"></plomino-popover>
+    </li>
+  </ul>
+</div>
+<div [id]="id" class="ace-editor"></div>

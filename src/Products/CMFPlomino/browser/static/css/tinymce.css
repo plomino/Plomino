@@ -39,6 +39,12 @@ div.plominoSubformClass{
     background-color: #1b6899;
 }
 
+.plominoLabelClass {
+    color: #aaaaFF;
+    border-style:dashed;
+    border-width:thin;
+}
+
 .plominoActionClass {
     outline: 1px dashed #124465;
 }

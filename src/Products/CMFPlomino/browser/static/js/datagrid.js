@@ -108,7 +108,7 @@ require([
                                 }),
                             onError: function() {
                                 // TODO: render errors in the form
-                                window.alert(response.errors);
+                                window.alert(response.responseJSON.errors.join('\n'));
                                 return false;
                             }
                         }
@@ -129,7 +129,7 @@ require([
                                 formid: $(el).attr('data-formid')}),
                             onError: function() {
                                 // TODO: render errors in the form
-                                window.alert(response.errors);
+                                window.alert(response.responseJSON.errors.join('\n'));
                                 return false;
                             }
                         }

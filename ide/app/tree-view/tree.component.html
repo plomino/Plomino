@@ -1,0 +1,49 @@
+<div class="input-group">
+    <input #filter placeholder="Filter" class="form-control">
+    <span class="input-group-btn">
+        <button class="btn btn-default" (click)="sendSearch(filter.value)"><span class="glyphicon glyphicon-search"></span></button>
+    </span>
+</div>
+<ul *ngIf="filtered" class="tree-wrap">
+    <li *ngFor="let result of searchResults.member">
+        {{result.title}}
+        <span *ngIf="result['@type'] === 'PlominoForm'" (click)='onEdit({label:result.title, url:result["@id"], editor:"layout",path:null}); filter.value = ""; filtered = false' class="link glyphicon glyphicon-file click-cursor"></span>
+        <span (click)='onEdit({label:result.title, url:result["@id"], editor:"code",path:null}); filter.value = ""; filtered = false' class="link glyphicon glyphicon-align-left click-cursor"></span>
+        <span (click)='onEdit({label:result.title, url:result["@id"], editor:"settings",path:null}); filter.value = ""; filtered = false' class="link glyphicon glyphicon-cog click-cursor"></span>
+    </li>
+</ul>
+<ul *ngIf="!filtered" class="tree-wrap">
+  <li *ngFor="let type of data" class="hasChild" [class.displayed]="type.collapsed || type.children.length === 0">
+    <span (click)="type.collapsed = !type.collapsed">{{type.label}}</span>
+    <span (click)="onAdd({url:type.url, type:type.type})" class="link glyphicon glyphicon-plus click-cursor"></span>
+    <ul *ngIf="type.label != 'Agents'" [collapse]="type.collapsed">
+      <li *ngFor="let typeName of type.children" class="hasChild" [class.displayed]="typeName.collapsed || typeName.children.length === 0">
+        <span #selectable [class.selected]="typeName === selected" (click)="typeName.collapsed = !typeName.collapsed">{{typeName.label}}</span>
+        <span *ngIf="type.label === 'Forms'" (click)='onEdit({label:typeName.label, url:typeName.url, editor:"layout",path:[{name:typeName.label,type:type.label}]})' class="link glyphicon glyphicon-file click-cursor"></span>
+        <span (click)='onEdit({label:typeName.label, url:typeName.url, editor:"code",path:[{name:typeName.label,type:type.label}]})' class="link glyphicon glyphicon-align-left click-cursor"></span>
+        <span (click)='onEdit({label:typeName.label, url:typeName.url, editor:"settings",path:[{name:typeName.label,type:type.label}]})' class="link glyphicon glyphicon-cog click-cursor"></span>
+        <ul [collapse]="typeName.collapsed">
+          <li *ngFor="let childType of typeName.children" class="hasChild" [class.displayed]="childType.collapsed || childType.children.length === 0">
+            <span (click)="childType.collapsed = !childType.collapsed">{{childType.label}}</span>
+            <span (click)="onAdd({url:childType.url, type:childType.type})" class="link glyphicon glyphicon-plus click-cursor"></span>
+            <ul [collapse]="childType.collapsed || childType.children.length === 0">
+              <li *ngFor="let childName of childType.children">
+                <span #selectable [class.selected]="isItSelected(childName)" dnd-draggable [dragEnabled]="true" [dragData]="{name:childName.url,type:childName.type,parent:typeName.url}" (onDragEnd)="isDragged.emit(false)" (onDragStart)="isDragged.emit(true)">{{childName.label}}</span>
+                <span (click)='onEdit({label:childName.label, url:childName.url, editor:"code",path:[{name:typeName.label ,type:type.label},{name:childName.label,type:childType.label}]})' class="link glyphicon glyphicon-align-left click-cursor"></span>
+                <span (click)='onEdit({label:childName.label, url:childName.url, editor:"settings",path:[{name:typeName.label ,type:type.label},{name:childName.label,type:childType.label}]})' class="link glyphicon glyphicon-cog click-cursor"></span>
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </li>
+    </ul>
+    <ul *ngIf="type.label == 'Agents'" [collapse]="type.collapsed">
+        <li *ngFor="let typeName of type.children">
+          <span #selectable [class.selected]="typeName === selected" (click)="typeName.collapsed = !typeName.collapsed">{{typeName.label}}</span>
+          <span *ngIf="type.label === 'Forms'" (click)='onEdit({label:typeName.label, url:typeName.url, editor:"layout",path:[{name:typeName.label,type:type.label}]})' class="link glyphicon glyphicon-file click-cursor"></span>
+          <span (click)='onEdit({label:typeName.label, url:typeName.url, editor:"code",path:[{name:typeName.label,type:type.label}]})' class="link glyphicon glyphicon-align-left click-cursor"></span>
+          <span (click)='onEdit({label:typeName.label, url:typeName.url, editor:"settings",path:[{name:typeName.label,type:type.label}]})' class="link glyphicon glyphicon-cog click-cursor"></span>
+        </li>
+    </ul>
+  </li>
+</ul>

@@ -6,6 +6,7 @@ from zope.interface import implementer, provider
 from zope.pagetemplate.pagetemplatefile import PageTemplateFile
 from zope import schema
 from zope.schema.vocabulary import SimpleVocabulary
+from ZPublisher.HTTPRequest import record
 
 from .. import _
 from ..utils import StringToDate
@@ -26,6 +27,7 @@ class IDatetimeField(model.Schema):
     widget = schema.Choice(
         vocabulary=SimpleVocabulary.fromItems([
             ("Default", "SERVER"),
+            ("Combination", "COMBO"),
             ("JQuery datetime widget", "JQUERY")
         ]),
         title=u'Widget',
@@ -58,10 +60,23 @@ class DatetimeField(BaseField):
         """
         """
         errors = []
-        submittedValue = submittedValue.strip()
+        if not isinstance(submittedValue, record):
+            submittedValue = submittedValue.strip()
         try:
+            # Check for a record
+            if isinstance(submittedValue, record):
+                year = submittedValue.get('year', '')
+                month = submittedValue.get('month', '')
+                day = submittedValue.get('day', '')
+                submittedValue = '%s-%s-%s' % (year, month, day)
+                if year and month and day:
+                    # Don't allow StringToDate to guess the format
+                    StringToDate(submittedValue, '%Y-%m-%d', guess=False, tozone=False)
+                else:
+                    # The record instance isn't valid
+                    raise
             # check if date only:
-            if len(submittedValue) == 10:
+            elif len(submittedValue) == 10:
                 StringToDate(submittedValue, '%Y-%m-%d')
             else:
                 # calendar widget default format is '%Y-%m-%d %H:%M' and
@@ -81,10 +96,23 @@ class DatetimeField(BaseField):
     def processInput(self, submittedValue):
         """
         """
-        submittedValue = submittedValue.strip()
+        if not isinstance(submittedValue, record):
+            submittedValue = submittedValue.strip()
         try:
+            # Check for a record
+            if isinstance(submittedValue, record):
+                year = submittedValue.get('year', '')
+                month = submittedValue.get('month', '')
+                day = submittedValue.get('day', '')
+                submittedValue = '%s-%s-%s' % (year, month, day)
+                if year and month and day:
+                    # Don't allow StringToDate to guess the format
+                    d = StringToDate(submittedValue, '%Y-%m-%d', guess=False, tozone=False)
+                else:
+                    # The record instance isn't valid
+                    raise
             # check if date only:
-            if len(submittedValue) == 10:
+            elif len(submittedValue) == 10:
                 d = StringToDate(submittedValue, '%Y-%m-%d')
             else:
                 # calendar widget default format is '%Y-%m-%d %H:%M' and
@@ -122,4 +150,5 @@ class DatetimeField(BaseField):
             if not fmt:
                 fmt = form.getParentDatabase().datetime_format
             fieldValue = StringToDate(fieldValue, fmt)
+
         return fieldValue
