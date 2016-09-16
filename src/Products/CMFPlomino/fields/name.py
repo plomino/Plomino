@@ -2,7 +2,7 @@
 
 from jsonutil import jsonutil as json
 from plone import api
-from plone.autoform.interfaces import IFormFieldProvider
+from plone.autoform.interfaces import IFormFieldProvider, ORDER_KEY
 from plone.supermodel import directives, model
 from zope.interface import implementer, provider
 from zope.pagetemplate.pagetemplatefile import PageTemplateFile
@@ -17,12 +17,6 @@ from base import BaseField
 class INameField(model.Schema):
     """ Name field schema
     """
-
-    directives.fieldset(
-        'settings',
-        label=_(u'Settings'),
-        fields=('type', 'selector', 'restricttogroup', 'separator', ),
-    )
 
     type = schema.Choice(
         vocabulary=SimpleVocabulary.fromItems([
@@ -54,6 +48,15 @@ class INameField(model.Schema):
         title=u'Separator',
         description=u'Only apply if multiple values will be displayed',
         required=False)
+
+# bug in plone.autoform means order_after doesn't moves correctly
+INameField.setTaggedValue(ORDER_KEY,
+                               [('type', 'after', 'field_type'),
+                                ('selector', 'after', ".type"),
+                                ('restricttogroup', 'after', ".selector"),
+                                ('separator', 'after', ".restricttogroup"),
+                               ]
+)
 
 
 @implementer(INameField)

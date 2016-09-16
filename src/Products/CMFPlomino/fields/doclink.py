@@ -2,7 +2,7 @@
 
 from jsonutil import jsonutil as json
 from plone.autoform import directives as form
-from plone.autoform.interfaces import IFormFieldProvider
+from plone.autoform.interfaces import IFormFieldProvider, ORDER_KEY
 from plone.supermodel import directives, model
 from zope.interface import implementer, provider
 from zope.pagetemplate.pagetemplatefile import PageTemplateFile
@@ -20,18 +20,6 @@ from base import BaseField
 class IDoclinkField(model.Schema):
     """ Selection field schema
     """
-
-    directives.fieldset(
-        'settings',
-        label=_(u'Settings'),
-        fields=(
-            'widget',
-            'sourceview',
-            'labelcolumn',
-            'documentslistformula',
-            'separator',
-        ),
-    )
 
     widget = schema.Choice(
         vocabulary=SimpleVocabulary.fromItems([
@@ -67,6 +55,15 @@ class IDoclinkField(model.Schema):
         description=u'Only apply if multiple values will be displayed',
         required=False)
 
+# bug in plone.autoform means order_after doesn't moves correctly
+IDoclinkField.setTaggedValue(ORDER_KEY,
+                               [('widget', 'after', 'field_type'),
+                                ('sourceview', 'after', ".widget"),
+                                ('labelcolumn', 'after', ".sourceview"),
+                                ('documentslistformula', 'after', ".labelcolumn"),
+                                ('separator', 'after', ".documentslistformula"),
+                               ]
+)
 
 @implementer(IDoclinkField)
 class DoclinkField(BaseField):
