@@ -29,7 +29,7 @@ from plone.supermodel import model
 from zope.component import adapter
 from zope.interface import implementer
 from zope.interface import provider
-
+from ..config import SCRIPT_ID_DELIMITER, FIELD_MODES, FIELD_TYPES
 
 __author__ = 'dylanjay'
 
@@ -115,18 +115,20 @@ class SubformWidget(Widget):
     def helper_forms(self):
         db = self.context.getParentDatabase()
         found = set()
-        for path in db.import_macros:
-            if path == ".":
-                db_import = db
-            else:
-                db_import = db.restrictedTraverse(path)
-            for form in db_import.getForms():
-                typename = self.context.getPortalTypeName().lstrip("Plomino").lower()
-                if form.id.startswith("helper_"+typename) or form.id.startswith("macro_"+typename):
-                    if form.id in found:
-                        continue
-                    found.add(form.id)
-                    yield (form.Title(), form.id, path)
+        typename = self.context.getPortalTypeName().lstrip("Plomino").lower()
+        thistype = self.context.field_type if typename == 'field' else None
+        prefixes = ["macro_%s_%s_"%(typename,f.lower()) for f in FIELD_TYPES.keys() if f != thistype]
+        dbs = [(db if path== '.' else db.restrictedTraverse(path)) for path in db.import_macros]
+        for form in [form for db in dbs for form in db.getForms()]:
+            if form.id in found:
+                continue
+            if not form.id.startswith("macro_%s_"%typename):
+                continue
+            if any([p for p in prefixes if form.id.startswith(p)]):
+                # it's got a prefix for another field type
+                continue
+            found.add(form.id)
+            yield (form.Title(), form.id, path)
 
 
 @provider(IFormFieldProvider)
