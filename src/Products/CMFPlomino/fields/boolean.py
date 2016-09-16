@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from plone.autoform.interfaces import IFormFieldProvider
+from plone.autoform.interfaces import IFormFieldProvider, ORDER_KEY
 from plone.supermodel import directives, model
 from zope.interface import implementer, provider
 from zope.pagetemplate.pagetemplatefile import PageTemplateFile
@@ -16,12 +16,6 @@ class IBooleanField(model.Schema):
     """
     """
 
-    directives.fieldset(
-        'settings',
-        label=_(u'Settings'),
-        fields=('widget', ),
-    )
-
     widget = schema.Choice(
         vocabulary=SimpleVocabulary.fromItems([
             ("Single checkbox", "CHECKBOX")
@@ -31,6 +25,11 @@ class IBooleanField(model.Schema):
         default="CHECKBOX",
         required=True)
 
+# bug in plone.autoform means order_after doesn't moves correctly
+IBooleanField.setTaggedValue(ORDER_KEY,
+                               [('widget', 'after', 'field_type'),
+                               ]
+)
 
 @implementer(IBooleanField)
 class BooleanField(BaseField):

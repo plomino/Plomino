@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from plone.autoform.interfaces import IFormFieldProvider
+from plone.autoform.interfaces import IFormFieldProvider, ORDER_KEY
 from plone.autoform import directives as form
 from plone.supermodel import directives, model
 from zope.interface import implementer, provider
@@ -28,12 +28,6 @@ js_row_template = """\
 class IGooglevisualizationField(model.Schema):
     """ Google viz field schema
     """
-
-    directives.fieldset(
-        'settings',
-        label=_(u'Settings'),
-        fields=('jssettings', 'chartid', ),
-    )
 
     form.widget('jssettings', klass='plomino-formula')
     jssettings = schema.Text(
@@ -75,6 +69,13 @@ function gvisudata_drawChart() {
         "and the DIV element",
         required=True,
         default=u'gvisudata')
+
+# bug in plone.autoform means order_after doesn't moves correctly
+IGooglevisualizationField.setTaggedValue(ORDER_KEY,
+                               [('jssettings', 'after', 'field_type'),
+                                ('chartid', 'after', ".jssettings"),
+                               ]
+)
 
 
 @implementer(IGooglevisualizationField)

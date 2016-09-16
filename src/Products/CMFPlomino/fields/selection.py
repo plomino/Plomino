@@ -2,7 +2,7 @@
 
 from jsonutil import jsonutil as json
 from plone.autoform import directives as form
-from plone.autoform.interfaces import IFormFieldProvider
+from plone.autoform.interfaces import IFormFieldProvider, ORDER_KEY
 from plone.supermodel import directives, model
 from zope.interface import implementer, provider
 from zope.pagetemplate.pagetemplatefile import PageTemplateFile
@@ -21,16 +21,16 @@ class ISelectionField(model.Schema):
     """ Selection field schema
     """
 
-    directives.fieldset(
-        'settings',
-        label=_(u'Settings'),
-        fields=(
-            'widget',
-            'selectionlist',
-            'selectionlistformula',
-            'separator',
-        ),
-    )
+    # directives.fieldset(
+    #     'settings',
+    #     label=_(u'Settings'),
+    #     fields=(
+    #         'widget',
+    #         'selectionlist',
+    #         'selectionlistformula',
+    #         'separator',
+    #     ),
+    # )
 
     widget = schema.Choice(
         vocabulary=SimpleVocabulary.fromItems([
@@ -62,6 +62,14 @@ class ISelectionField(model.Schema):
         title=u'Separator',
         description=u'Only apply if multiple values will be displayed',
         required=False)
+
+# bug in plone.autoform means order_after doesn't moves correctly
+ISelectionField.setTaggedValue(ORDER_KEY,
+                               [('widget', 'after', 'field_type'),
+                                ('selectionlist', 'after', ".widget"),
+                                ('selectionlistformula', 'after', ".selectionlist"),
+                                ('separator', 'after', ".selectionlistformula")]
+)
 
 
 @implementer(ISelectionField)
