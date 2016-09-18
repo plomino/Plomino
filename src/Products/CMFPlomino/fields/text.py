@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from plone.autoform.interfaces import IFormFieldProvider
+from plone.autoform.interfaces import IFormFieldProvider, ORDER_KEY
 from plone.supermodel import directives, model
 from zope.interface import implementer, provider
 from zope.pagetemplate.pagetemplatefile import PageTemplateFile
@@ -15,12 +15,12 @@ from base import BaseField
 class ITextField(model.Schema):
     """
     """
-
-    directives.fieldset(
-        'settings',
-        label=_(u'Settings'),
-        fields=('widget', 'size', 'preserve_carriage_returns'),
-    )
+    #
+    # directives.fieldset(
+    #     'settings',
+    #     label=_(u'Settings'),
+    #     fields=('widget', 'size', 'preserve_carriage_returns'),
+    # )
 
     widget = schema.Choice(
         vocabulary=SimpleVocabulary.fromItems([
@@ -47,6 +47,12 @@ class ITextField(model.Schema):
         required=False,
     )
 
+# bug in plone.autoform means order_after doesn't moves correctly
+ITextField.setTaggedValue(ORDER_KEY,
+                               [('widget', 'after', 'field_type'),
+                                ('size', 'after', ".widget"),
+                                ('preserve_carriage_returns', 'after', ".size")]
+)
 
 @implementer(ITextField)
 class TextField(BaseField):

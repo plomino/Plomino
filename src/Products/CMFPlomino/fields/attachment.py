@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from plone.autoform.interfaces import IFormFieldProvider
+from plone.autoform.interfaces import IFormFieldProvider, ORDER_KEY
 from plone.supermodel import directives, model
 from Products.CMFPlone.utils import normalizeString
 from zope.interface import implementer, provider
@@ -17,12 +17,6 @@ class IAttachmentField(model.Schema):
     """ Attachment field schema
     """
 
-    directives.fieldset(
-        'settings',
-        label=_(u'Settings'),
-        fields=('single_or_multiple', ),
-    )
-
     single_or_multiple = schema.Choice(
         vocabulary=SimpleVocabulary.fromItems(
             [("Single file", "SINGLE"), ("Multiple files", "MULTI")]),
@@ -30,6 +24,12 @@ class IAttachmentField(model.Schema):
         description=u'Single or multiple file(s)',
         default="MULTI",
         required=True)
+
+# bug in plone.autoform means order_after doesn't moves correctly
+IAttachmentField.setTaggedValue(ORDER_KEY,
+                               [('single_or_multiple', 'after', 'field_type'),
+                               ]
+)
 
 
 @implementer(IAttachmentField)
