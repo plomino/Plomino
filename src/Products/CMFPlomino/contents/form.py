@@ -857,12 +857,30 @@ class PlominoForm(Container):
             #     .append(pq(example, parser='html_fragments'))\
             #     .add_class("mceNonEditable")\
             #     .attr("data-plominoid", id)
-            html = '<{tag} class="{pclass} mceNonEditable" data-plominoid="{id}">{example}</{tag}>'.format(
+            html = u'<{tag} class="{pclass} mceNonEditable" data-plominoid="{id}">{example}</{tag}>'.format(
                 id=id,
                 example=example,
-                tag='div' if pq(element).has_class('plominoSubformClass') else 'span',
+                tag=u'div' if pq(element).has_class('plominoSubformClass') else u'span',
                 pclass=pq(element).attr('class')
             )
+            pq(element).replace_with(html)
+
+        s = ".plominoLabelClass"
+        for element in d.find(s) + d.filter(s):
+            # The label may either contain the id or some text/html
+            #   <span class="plominoLabelClass">id</span>
+            #   <span class="plominoLabelClass">id:Custom label</span>
+            # If it contains text/html, wrap it inside a div
+            if ':' not in element.text:
+                id = element.text
+                html = u'<span class="plominoLabelClass mceNonEditable" data-plominoid="{id}">&nbsp;</span>'.format(id=id)
+            else:
+                id, html = pq(element).html().split(':', 1)
+                html = u'''<div class="plominoLabelClass mceNonEditable" data-plominoid="{id}">
+<div class="plominoLabelContent mceEditable">
+{html}
+</div>
+</div>'''.format(id=id, html=html)
             pq(element).replace_with(html)
 
         s = ".plominoHidewhenClass,.plominoCacheClass"
@@ -881,12 +899,16 @@ class PlominoForm(Container):
                 .attr("data-plominoid", id)
             element.tail = tail
 
-
         return tostring_innerhtml(root)
 
     #@form_layout_visual.setter
     # Using special datamanager because @property losses acquisition
     def setForm_layout_visual(self, layout):
+        # Handle an empty layout
+        if not layout:
+            layout = u''
+        layout = layout.replace(u'\r' , u'')
+        layout = layout.replace(u'\xa0', u' ')
         d = pq(layout, parser='html_fragments')
         root = d[0].getparent() if d else d
 
@@ -902,6 +924,30 @@ class PlominoForm(Container):
                 .remove_class("mceNonEditable")\
                 .remove_attr("data-plominoid")\
                 .remove_attr("data-plomino-position")
+
+        s = ".plominoLabelClass"
+        for e in d.find(s) + d.filter(s):
+            element = pq(e)
+            tag = e.tag
+            id = element.attr("data-plominoid")
+
+            if tag == 'span':
+                # Tidy up the label
+                element.remove_class("mceNonEditable")
+                element.remove_attr("data-plominoid")
+                element.empty()
+                # Set the id as the text
+                element.text(id)
+            elif tag == 'div':
+                html = element.find('.plominoLabelContent').html()
+                # XXX: Improve the unwrapping of block elements
+                for elem in ['p']:
+                    html = html.replace('<%s>' % elem, ' ')
+                    html = html.replace('</%s>' % elem, ' ')
+                    # Possible empty tag
+                    html = html.replace('<%s/>' % elem , ' ')
+                span = u'<span class="plominoLabelClass">{id}:{html}</span>'.format(id=id, html=html)
+                element.replace_with(span)
 
         # strip out all the example widgets
         s="*[data-plominoid]"
@@ -940,25 +986,9 @@ class PlominoForm(Container):
                     # Handle hidden fields
                     hidden = field_pq.find('input[type="hidden"]')
                     if hidden:
-                        pq('<span>Hidden: %s</span>' % id).insertBefore(hidden)
+                        pq('<span>[hidden field]</span>').insertBefore(hidden)
 
                     return field_pq.outer_html()
-
-            elif widget_type == 'label':
-                if ':' in id:
-                    fieldid, labeltext = id.split(':', 1)
-                else:
-                    fieldid = id
-                    labeltext = None
-                field = self.getFormField(fieldid)
-
-                if labeltext:
-                    html = '<label>%s</label>' % labeltext
-                elif field is not None:
-                    html = '<label>%s</label>' % field.Title()
-                else:
-                    html = '<label>%s</label>' % id
-                return html
 
         elif widget_type == "subform":
             subform = getattr(self, id, None)

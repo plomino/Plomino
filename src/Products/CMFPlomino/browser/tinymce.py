@@ -170,10 +170,10 @@ class PlominoFormSettings(object):
         """Add a label to the form.
         """
         labelid = self.request.get("labelid", None)
-        labeltext = self.request.get("labeltext", "")
+        enablecustom = self.request.get("enablecustomlabel") and '1' or '0'
 
         if labelid:
-            self.request.RESPONSE.redirect(self.context.absolute_url() + "/@@tinymceplominoform/valid_page?type=label&value=" + labelid + "&option=" + labeltext)
+            self.request.RESPONSE.redirect(self.context.absolute_url() + "/@@tinymceplominoform/valid_page?type=label&value=" + labelid + "&option=" + enablecustom)
         else:
             self.request.RESPONSE.redirect(self.context.absolute_url() + "/@@tinymceplominoform/error_page?error=no_label")
 

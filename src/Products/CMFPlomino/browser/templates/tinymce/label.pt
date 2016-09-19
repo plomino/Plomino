@@ -6,11 +6,13 @@
         <meta http-equiv="Content-type" content="text/html;charset=UTF-8" /> 
         <title i18n:translate="plominolabel_title">Insert/edit a Plomino Label</title>
         <link tal:replace="structure provider:plone.htmlhead.links" />
+        <script tal:replace="structure provider:plone.scripts" />
     </head>
     <body id="plonebrowser" tal:define="form python:view.context;
-          labelr python: view.request.get('labelid', ':').split(':');
+          labelr python: view.request.get('labelid', ':').split(':', 1);
           labelid python: labelr[0];
-          labeltext python: len(labelr) > 1 and labelr[1] or '';
+          labeltext python: len(labelr) > 1 and labelr[1].strip() or '';
+          enablecustomlabel python: labeltext and True or False;
           fields python:form.getFormFields();
         ">
         <div class="plone-modal-dialog">
@@ -36,12 +38,11 @@
                                 </select>
                             </p>
                             <p>
-                                <br />
-                                <label for="plominoLabelCustom">Custom Label Text</label>
-                                <input type="text" id="plominoLabelCustom" name="labeltext" tal:attributes="value labeltext"/>
+                                By default the Title of the field will be used as the label. If the Title of the field doesn't make sense as a label you may choose to add custom label text.
                             </p>
                             <p>
-                                By default the Title of the field will be used as the label. If the Title of the field doesn't make sense as a label you may customise the label text above.
+                                <input type="checkbox" id="plominoLabelEnableCustom" name="enablecustomlabel" tal:attributes="checked enablecustomlabel" />
+                                <label for="plominoLabelEnableCustom">Enable Custom Label</label>
                             </p>
                         </fieldset>
                         <div class="pattern-modal-buttons">

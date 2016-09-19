@@ -1,4 +1,5 @@
 span.plominoFieldClass,
+span.plominoLabelClass,
 span.plominoHidewhenClass,
 span.plominoActionClass,
 span.plominoSubformClass{
@@ -6,6 +7,7 @@ span.plominoSubformClass{
     display: inline-block;
 }
 div.plominoFieldClass,
+div.plominoLabelClass,
 div.plominoHidewhenClass,
 div.plominoActionClass,
 div.plominoSubformClass{
@@ -16,6 +18,7 @@ div.plominoSubformClass{
 
 
 .plominoFieldClass:hover:before,
+.plominoLabelClass:hover:before,
 .plominoHidewhenClass:hover:before,
 .plominoActionClass:hover:before,
 .plominoSubformClass:hover:before{
@@ -31,12 +34,36 @@ div.plominoSubformClass{
     font-size: 10px;
 }
 
+div.plominoLabelClass:hover:before {
+    position: absolute;
+    top: -16px;
+}
+div.plominoLabelClass {
+    width: 80%;
+    margin-bottom: 10px;
+}
+
+
 .plominoFieldClass {
     outline: 1px dashed #1b6899;
 }
 .plominoFieldClass:hover:before {
     color: #ffffff;
     background-color: #1b6899;
+}
+
+.plominoLabelClass {
+    outline: 1px dashed #03632C;
+    padding-left: 25px;
+    min-width: 100px;
+    background-image: url('++resource++Products.CMFPlomino/img/PlominoLabel.png');
+    background-position: 0 0;
+    background-repeat: no-repeat;
+
+}
+.plominoLabelClass:hover:before {
+    color: #ffffff;
+    background-color: #03632C;
 }
 
 .plominoActionClass {
@@ -103,6 +130,12 @@ div.plominoSubformClass{
     background-repeat: no-repeat;
     margin-left:0.7em;
     display:inline-block;
+}
+
+.plominoLabelClass[data-plomino-position] {
+    min-width: 10px !important;
+    outline: none;
+
 }
 
 

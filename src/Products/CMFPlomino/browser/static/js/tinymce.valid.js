@@ -19,12 +19,30 @@ var PlominoDialog = {
         }
 		else if (type == 'label') {
 			var plominoClass = 'plominoLabelClass';
-			if (option != null && option.length > 0) {
-				value = value + ':' + option;
-			}
+			if (option == '0') {
+				container = "span";
+			} else {
+                container = "div";
+            }
 		}
-
-		if (plominoClass !== undefined)
+        if (type == 'label') {
+            // Handle labels
+            var selection = ed.selection.getNode();
+            if (container == "span") {
+                content = '<span class="plominoLabelClass mceNonEditable" data-plominoid="'+value+'">&nbsp;</span>';
+            } else {
+                if (top.tinymce.DOM.hasClass(selection, "plominoLabelClass") && selection.tagName === "SPAN") {
+                    content = '<div class="plominoLabelClass mceNonEditable" data-plominoid="'+value+'"><div class="plominoLabelContent mceEditable">&nbsp;</div></div>';
+                }
+                else if (top.tinymce.DOM.hasClass(selection.firstChild, "plominoLabelContent")) {
+                    content = '<div class="plominoLabelClass mceNonEditable" data-plominoid="'+value+'">'+selection.innerHTML+'</div>';
+                } else {
+                    content = '<div class="plominoLabelClass mceNonEditable" data-plominoid="'+value+'"><div class="plominoLabelContent mceEditable">'+selection.outerHTML+'</div></div>';
+                }
+            }
+            ed.execCommand('mceInsertRawHTML', false, content, {skip_undo : 1});
+        }
+		else if (plominoClass !== undefined)
 		{
             var eblock = document.getElementById("example_widget");
             var example = eblock.innerHTML;
@@ -42,7 +60,7 @@ var PlominoDialog = {
             }
             else {
                 // String to add in the editor
-                var span = '<span class="' + plominoClass + '">' + value + '</span>';
+                var span = '<span class="' + plominoClass + '">' + value + '</span>'; 
             }
 
 			// Insert or replace the selection
@@ -111,9 +129,9 @@ var PlominoDialog = {
 
 			else {
 				// String to add in the editor
-				var zone = '<span class="'+cssclass+' mceNonEditable" data-plominoid="'+value+'" data-plomino-position="start"></span>' +
+				var zone = '<span class="'+cssclass+' mceNonEditable" data-plominoid="'+value+'" data-plomino-position="start">&nbsp;</span>' +
                     ed.selection.getContent() +
-                    '<span class="'+cssclass+' mceNonEditable" data-plominoid="'+value+'" data-plomino-position="end"></span>';
+                    '<span class="'+cssclass+' mceNonEditable" data-plominoid="'+value+'" data-plomino-position="end">&nbsp;</span>';
 				ed.execCommand('mceInsertContent', false, zone, {skip_undo : 1});
 			}
 		}
