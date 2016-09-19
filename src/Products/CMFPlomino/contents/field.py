@@ -81,12 +81,31 @@ class IPlominoField(model.Schema):
     """ Plomino field schema
     """
 
+    #directives.widget('field_type', onchange=u'this.form.submit()')
     field_type = schema.Choice(
         title=_('CMFPlomino_label_FieldType', default="Field type"),
         description=_('CMFPlomino_label_FieldType', default="Field type"),
         required=True,
         default='TEXT',
         vocabulary=field_types,
+    )
+
+    mandatory = schema.Bool(
+        title=_('CMFPlomino_label_FieldMandatory', default="Mandatory"),
+        description=_('CMFPlomino_help_FieldMandatory',
+            default='Is this field mandatory? (empty value will not be '
+                'allowed)'),
+        default=False,
+        required=True,
+    )
+
+    directives.widget('validation_formula', klass='plomino-formula')
+    validation_formula = schema.Text(
+        title=_('CMFPlomino_label_FieldValidation',
+            default="Validation formula"),
+        description=_('CMFPlomino_help_FieldValidation',
+            default='Evaluate the input validation'),
+        required=False,
     )
 
     field_mode = schema.Choice(
@@ -115,40 +134,6 @@ class IPlominoField(model.Schema):
         required=False,
     )
 
-    read_template = schema.TextLine(
-        title=_('CMFPlomino_label_FieldReadTemplate',
-            default="Field read template"),
-        description=_('CMFPlomino_help_FieldReadTemplate',
-            default='Custom rendering template in read mode'),
-        required=False,
-    )
-
-    edit_template = schema.TextLine(
-        title=_('CMFPlomino_label_FieldEditTemplate',
-            default="Field edit template"),
-        description=_('CMFPlomino_help_FieldEditTemplate',
-            default='Custom rendering template in edit mode'),
-        required=False,
-    )
-
-    mandatory = schema.Bool(
-        title=_('CMFPlomino_label_FieldMandatory', default="Mandatory"),
-        description=_('CMFPlomino_help_FieldMandatory',
-            default='Is this field mandatory? (empty value will not be '
-                'allowed)'),
-        default=False,
-        required=True,
-    )
-
-    directives.widget('validation_formula', klass='plomino-formula')
-    validation_formula = schema.Text(
-        title=_('CMFPlomino_label_FieldValidation',
-            default="Validation formula"),
-        description=_('CMFPlomino_help_FieldValidation',
-            default='Evaluate the input validation'),
-        required=False,
-    )
-
     to_be_indexed = schema.Bool(
         title=_('CMFPlomino_label_FieldIndex', default="Add to index"),
         description=_('CMFPlomino_help_FieldIndex',
@@ -172,6 +157,22 @@ class IPlominoField(model.Schema):
             default="HTML attributes formula"),
         description=_('CMFPlomino_help_HTMLAttributesFormula',
             default='Inject DOM attributes in the field tag'),
+        required=False,
+    )
+
+    read_template = schema.TextLine(
+        title=_('CMFPlomino_label_FieldReadTemplate',
+            default="Field read template"),
+        description=_('CMFPlomino_help_FieldReadTemplate',
+            default='Custom rendering template in read mode'),
+        required=False,
+    )
+
+    edit_template = schema.TextLine(
+        title=_('CMFPlomino_label_FieldEditTemplate',
+            default="Field edit template"),
+        description=_('CMFPlomino_help_FieldEditTemplate',
+            default='Custom rendering template in edit mode'),
         required=False,
     )
 

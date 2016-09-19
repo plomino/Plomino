@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from decimal import Decimal
-from plone.autoform.interfaces import IFormFieldProvider
+from plone.autoform.interfaces import IFormFieldProvider, ORDER_KEY
 from plone.supermodel import directives, model
 from zope.interface import implementer, provider
 from zope.pagetemplate.pagetemplatefile import PageTemplateFile
@@ -18,11 +18,11 @@ class INumberField(model.Schema):
     """ Number field schema
     """
 
-    directives.fieldset(
-        'settings',
-        label=_(u'Settings'),
-        fields=('number_type', 'size', 'format', ),
-    )
+    # directives.fieldset(
+    #     'settings',
+    #     label=_(u'Settings'),
+    #     fields=('number_type', 'size', 'format', ),
+    # )
 
     number_type = schema.Choice(
         vocabulary=SimpleVocabulary.fromItems([
@@ -44,6 +44,12 @@ class INumberField(model.Schema):
         title=u'Format',
         description=u'Number formatting (example: %1.2f)',
         required=False)
+# bug in plone.autoform means order_after doesn't moves correctly
+INumberField.setTaggedValue(ORDER_KEY,
+                               [('number_type', 'after', 'field_type'),
+                                ('size', 'after', ".number_type"),
+                                ('format', 'after', ".size")]
+)
 
 
 @implementer(INumberField)

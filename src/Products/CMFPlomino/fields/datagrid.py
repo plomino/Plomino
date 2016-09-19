@@ -2,7 +2,7 @@
 
 from jsonutil import jsonutil as json
 from DateTime import DateTime
-from plone.autoform.interfaces import IFormFieldProvider
+from plone.autoform.interfaces import IFormFieldProvider, ORDER_KEY
 from plone.supermodel import directives, model
 from zope.interface import implementer, provider
 from zope.pagetemplate.pagetemplatefile import PageTemplateFile
@@ -19,16 +19,6 @@ from ..utils import DateToString, PlominoTranslate
 class IDatagridField(model.Schema):
     """ Datagrid field schema
     """
-
-    directives.fieldset(
-        'settings',
-        label=_(u'Settings'),
-        fields=(
-            'widget',
-            'associated_form',
-            'field_mapping',
-        ),
-    )
 
     widget = schema.Choice(
         vocabulary=SimpleVocabulary.fromItems([
@@ -50,6 +40,14 @@ class IDatagridField(model.Schema):
         title=u'Fields/columns mapping',
         description=u'Field ids from the associated form, separated by commas.',
         required=False)
+
+# bug in plone.autoform means order_after doesn't moves correctly
+IDatagridField.setTaggedValue(ORDER_KEY,
+                               [('widget', 'after', 'field_type'),
+                                ('associated_form', 'after', ".widget"),
+                                ('field_mapping', 'after', ".associated_form"),
+                               ]
+)
 
 
 @implementer(IDatagridField)
@@ -157,7 +155,7 @@ class DatagridField(BaseField):
             return fieldValue
 
         # if doc is not a PlominoDocument, no processing needed
-        if not doc or doc.isNewDocument():
+        if not doc:
             return fieldValue
 
         rawValue = fieldValue or []

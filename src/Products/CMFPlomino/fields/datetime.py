@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
-from plone.autoform.interfaces import IFormFieldProvider
+from DateTime import DateTime
+from plone.autoform.interfaces import IFormFieldProvider, ORDER_KEY
 from plone.supermodel import directives, model
 from zope.interface import implementer, provider
 from zope.pagetemplate.pagetemplatefile import PageTemplateFile
@@ -17,12 +18,6 @@ from base import BaseField
 class IDatetimeField(model.Schema):
     """ DateTime field schema
     """
-
-    directives.fieldset(
-        'settings',
-        label=_(u'Settings'),
-        fields=('widget', 'format', 'startingyear'),
-    )
 
     widget = schema.Choice(
         vocabulary=SimpleVocabulary.fromItems([
@@ -47,6 +42,14 @@ class IDatetimeField(model.Schema):
         default=u"1975",
         required=False)
 
+# bug in plone.autoform means order_after doesn't moves correctly
+IDatetimeField.setTaggedValue(ORDER_KEY,
+                               [('widget', 'after', 'field_type'),
+                                ('format', 'after', ".widget"),
+                                ('startingyear', 'after', ".format"),
+                               ]
+)
+
 
 @implementer(IDatetimeField)
 class DatetimeField(BaseField):
@@ -59,6 +62,8 @@ class DatetimeField(BaseField):
     def validate(self, submittedValue):
         """
         """
+        if type(submittedValue) is DateTime:
+            return []
         errors = []
         if not isinstance(submittedValue, record):
             submittedValue = submittedValue.strip()
@@ -96,6 +101,8 @@ class DatetimeField(BaseField):
     def processInput(self, submittedValue):
         """
         """
+        if type(submittedValue) is DateTime:
+            return submittedValue
         if not isinstance(submittedValue, record):
             submittedValue = submittedValue.strip()
         try:
@@ -125,10 +132,7 @@ class DatetimeField(BaseField):
         except:
             # with datagrid, we might get dates formatted differently than
             # using calendar widget default format
-            fmt = self.format
-            if not fmt:
-                fmt = self.context.getParentDatabase().datetime_format
-            return StringToDate(submittedValue, fmt)
+            return StringToDate(submittedValue[:16], '%Y-%m-%dT%H:%M')
 
     def getFieldValue(self, form, doc=None, editmode_obsolete=False,
             creation=False, request=None):

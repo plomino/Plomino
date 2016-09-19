@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from plone.autoform.interfaces import IFormFieldProvider
+from plone.autoform.interfaces import IFormFieldProvider, ORDER_KEY
 from plone.supermodel import directives, model
 from zope.interface import implementer, provider
 from zope.pagetemplate.pagetemplatefile import PageTemplateFile
@@ -16,11 +16,6 @@ class IGooglechartField(model.Schema):
     """ Google chart field schema
     """
 
-    directives.fieldset(
-        'settings',
-        label=_(u'Settings'),
-        fields=('editrows', ),
-    )
 
     editrows = schema.TextLine(
         title=u'Rows',
@@ -28,6 +23,11 @@ class IGooglechartField(model.Schema):
         default=u"6",
         required=False)
 
+# bug in plone.autoform means order_after doesn't moves correctly
+IGooglechartField.setTaggedValue(ORDER_KEY,
+                               [('editrows', 'after', 'field_type'),
+                               ]
+)
 
 @implementer(IGooglechartField)
 class GooglechartField(BaseField):

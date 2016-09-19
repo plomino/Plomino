@@ -2,6 +2,7 @@
 
 from AccessControl import ClassSecurityInfo
 from AccessControl import getSecurityManager
+from AccessControl import Permissions
 from plone import api
 from Products.CMFCore import permissions
 from Products.DCWorkflow.DCWorkflow import DCWorkflowDefinition
@@ -67,7 +68,19 @@ class AccessControl:
             permissions.AccessContentsInformation,
             'Copy or Move',
             permissions.AddPortalContent,
-            permissions.ModifyPortalContent, ]
+            permissions.ModifyPortalContent,
+            Permissions.add_documents_images_and_files,
+            Permissions.add_folders,
+            Permissions.add_page_templates,
+            Permissions.add_python_scripts,
+            Permissions.change_images_and_files,
+            Permissions.change_python_scripts,
+            Permissions.change_page_templates,
+            Permissions.manage_zcatalog_entries,
+            Permissions.manage_zcatalog_indexes,
+            Permissions.manage_properties,
+            Permissions.view_management_screens,
+        ]
     }
 
     PLOMINO_RIGHTS_PRIORITY = [
