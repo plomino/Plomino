@@ -20,7 +20,7 @@
         <table
             tal:define="columns python:context.getColumns()"
             tal:attributes="class python:(context.static_rendering and 'listing') or 'listing plomino-table';
-            data-pat-plominotable string:source:${context/absolute_url}/json;">
+            data-pat-plominotable string:source:${context/absolute_url}/tojson;">
             <tr class="header-row">
                 <tal:headers tal:repeat="column columns">
                     <th tal:condition="not: column/hidden_column|nothing"
