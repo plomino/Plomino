@@ -949,6 +949,11 @@ class PlominoForm(Container):
                 span = u'<span class="plominoLabelClass">{id}:{html}</span>'.format(id=id, html=html)
                 element.replace_with(span)
 
+        # Re-parse the html as we can't replace elements multiple times
+        html = tostring_innerhtml(root)
+        d = pq(html, parser='html_fragments')
+        root = d[0].getparent() if d else d
+
         # strip out all the example widgets
         s="*[data-plominoid]"
         for e in d.find(s) + d.filter(s):
