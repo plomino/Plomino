@@ -32,6 +32,7 @@ Let's start testing::
     >>> id = db.invokeFactory('PlominoForm', id='frm1', title='Form 1')
     >>> id = db.invokeFactory('PlominoForm', id='frm2', title='Form 2')
     >>> id = db.invokeFactory('PlominoForm', id='frm3', title='Search Form')
+    >>> id = db.invokeFactory('PlominoForm', id='frm4', title='Form Visual')
     >>> id = db.invokeFactory('PlominoView', id='view1',
     ...         title='View 1', selection_formula='True')
     >>> id = db.view1.invokeFactory('PlominoColumn', id='col1',
@@ -543,6 +544,40 @@ A field can be computed::
     >>> db.cleanRequestCache()
     >>> db.frm2.displayDocument(doc4)
     u'<p>11 </p><p><span class="TEXTFieldRead-TEXT">\n    \n    \n        Welcome test_user_1_\n    \n</span></p>'
+
+Visual form layouts:
+Convert visual TinyMCE layout back to Plomino::
+
+    >>> id = db.frm4.invokeFactory('PlominoField', id='field1',
+    ...         title='Title for field1',
+    ...         mandatory=False,
+    ...         field_type="TEXT",
+    ...         field_mode="EDITABLE")
+    >>> db.frm1.setForm_layout_visual("""<p>Empty form</p>""")
+    >>> db.frm1.form_layout
+    '<p>Empty form</p>'
+
+Convert action, field and subform back to the right elements::
+
+    >>> db.frm1.setForm_layout_visual("""<span class="plominoFieldClass mceNonEditable" data-plominoid="field1"><span class="example">This should be removed</span></span><span class="plominoActionClass mceNonEditable" data-plominoid="action1"><span class="example">This should be removed</span></span><span class="plominoSubformClass mceNonEditable" data-plominoid="subform1"><span class="example">This should be removed</span></span>""")
+    >>> db.frm1.form_layout
+    '<span class="plominoFieldClass">field1</span><span class="plominoActionClass">action1</span><span class="plominoSubformClass">subform1</span>'
+
+Labels may or may not have custom text::
+
+    >>> db.frm1.setForm_layout_visual("""<p>Sample form</p><span class="plominoLabelClass mceNonEditable" data-plominoid="field1">&nbsp;</span>""")
+    >>> db.frm1.form_layout
+    '<p>Sample form</p><span class="plominoLabelClass">field1</span>'
+    >>> db.frm1.setForm_layout_visual("""<p>Sample form</p><div class="plominoLabelClass mceNonEditable" data-plominoid="field1"><div class="plominoLabelContent mceEditable">Custom label text</div></div>""")
+    >>> db.frm1.form_layout
+    '<p>Sample form</p><span class="plominoLabelClass">field1:Custom label text</span>'
+
+Labels may have a field inside of them::
+
+    >>> db.frm1.setForm_layout_visual("""<p>Sample form</p><div class="plominoLabelClass mceNonEditable" data-plominoid="field1"><div class="plominoLabelContent mceEditable"><span class="plominoFieldClass mceNonEditable" data-plominoid="field1"><span class="example">This should be removed</span></span></div></div>""")
+    >>> db.frm1.form_layout
+    '<p>Sample form</p><span class="plominoLabelClass">field1:<span class="plominoFieldClass">field1</span></span>'
+
 
 Events
 -------
