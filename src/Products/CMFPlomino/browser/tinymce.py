@@ -5,12 +5,14 @@ from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from plone.dexterity.utils import createContentInContainer
 
 from Products.CMFPlomino.config import FIELD_MODES
-from Products.CMFPlomino.contents.field import get_field_types
+from Products.CMFPlomino.contents.field import get_field_types, IPlominoField
 from Products.CMFPlomino.contents.action import ACTION_TYPES, ACTION_DISPLAY
 from Products.CMFPlomino.contents.action import PlominoAction
 from Products.CMFPlomino.contents.field import PlominoField
+from Products.CMFPlomino.contents.form import PlominoForm
 from Products.CMFPlomino.contents.hidewhen import PlominoHidewhen
 #from Products.CMFPlomino.PlominoCache import PlominoCache
+from Products.CMFPlomino.document import getTemporaryDocument
 
 
 class ITinyMCEPlominoFormView(interface.Interface):
@@ -71,7 +73,8 @@ class TinyMCEPlominoFormView(BrowserView):
         return self.valid_template(**params)
 
 
-class PlominoForm(object):
+
+class PlominoFormSettings(object):
     """
     """
     action_template = ViewPageTemplateFile('templates/tinymce/action.pt')
@@ -110,12 +113,6 @@ class PlominoForm(object):
             else:
                 return None
 
-        fieldsList = self.context.getFormFields()
-        if len(fieldsList) > 0:
-            return fieldsList[0]
-        else:
-            return None
-
     def getFieldProperties(self):
         """Return properties of an action, or , if no action is given, properties filled with default values.
         """
@@ -152,7 +149,13 @@ class PlominoForm(object):
                     formula=fieldformula,
                 )
 
-                self.request.RESPONSE.redirect(self.context.absolute_url() + "/@@tinymceplominoform/valid_page?type=field&value=" + fieldid + "&fieldurl=" + "/".join(field.getPhysicalPath()))
+                html = field.getRenderedValue("example", "EDITABLE", target=self.context)
+
+                self.request.RESPONSE.redirect("{base}/@@tinymceplominoform/valid_page?type=field&value={fieldid}&fieldurl={url}".format(
+                    base = self.context.absolute_url(),
+                    fieldid = fieldid,
+                    url = "/".join(field.getPhysicalPath()),
+                    html = html))
 
             else:
                 self.request.RESPONSE.redirect(self.context.absolute_url() + "/@@tinymceplominoform/error_page?error=object_exists")
@@ -167,10 +170,10 @@ class PlominoForm(object):
         """Add a label to the form.
         """
         labelid = self.request.get("labelid", None)
-        labeltext = self.request.get("labeltext", "")
+        enablecustom = self.request.get("enablecustomlabel") and '1' or '0'
 
         if labelid:
-            self.request.RESPONSE.redirect(self.context.absolute_url() + "/@@tinymceplominoform/valid_page?type=label&value=" + labelid + "&option=" + labeltext)
+            self.request.RESPONSE.redirect(self.context.absolute_url() + "/@@tinymceplominoform/valid_page?type=label&value=" + labelid + "&option=" + enablecustom)
         else:
             self.request.RESPONSE.redirect(self.context.absolute_url() + "/@@tinymceplominoform/error_page?error=no_label")
 
@@ -203,12 +206,7 @@ class PlominoForm(object):
                 return action
             else:
                 return None
-
-        actionsList = self.context.getActions(None, False)
-        if len(actionsList) > 0:
-            return actionsList[0][0]
-        else:
-            return None
+        return None
 
     def getActionProperties(self):
         """Return properties of an action, or , if no action is given, properties filled with default values.
@@ -296,8 +294,8 @@ class PlominoForm(object):
         """
         hidewhenid = self.request.get("hidewhenid", None)
 
-        if self.request.get("create", False):
-            return None
+        #if self.request.get("create", False):
+        #    return None
 
         if hidewhenid:
             hidewhen = getattr(self.context, hidewhenid, None)
@@ -305,12 +303,7 @@ class PlominoForm(object):
                 return hidewhen
             else:
                 return None
-
-        hidewhenList = self.context.getHidewhenFormulas()
-        if len(hidewhenList) > 0:
-            return hidewhenList[0]
-        else:
-            return None
+        return None
 
     def getHidewhenProperties(self):
         """Returns properties of a hide-when formula, or, if no hide-when formula is given, properties filled with default values.
@@ -409,7 +402,7 @@ class PlominoForm(object):
             self.request.RESPONSE.redirect(self.context.absolute_url() + "/@@tinymceplominoform/error_page?error=no_cache")
 
 
-class PlominoField(object):
+class PlominoFieldSettings(object):
     """
     """
 
@@ -439,7 +432,7 @@ class PlominoField(object):
         self.request.RESPONSE.redirect(self.context.absolute_url() + "/../@@tinymceplominoform/valid_page?type=field&value=" + self.context.id)
 
 
-class PlominoHidewhen(object):
+class PlominoHidewhenSettings(object):
     """
     """
 
@@ -467,7 +460,7 @@ class PlominoHidewhen(object):
         self.request.RESPONSE.redirect(self.context.absolute_url() + "/../@@tinymceplominoform/valid_page?type=hidewhen&value=" + self.context.id)
 
 
-class PlominoAction(object):
+class PlominoActionSettings(object):
     """
     """
 
@@ -493,13 +486,13 @@ class PlominoAction(object):
         inActionBar = self.request.get("actioninactionbar", None) == 'on'
 
         # self.context is the current field
-        self.context.setTitle(title)
-        self.context.setActionType(actionType)
-        self.context.setActionDisplay(actionDisplay)
-        self.context.setContent(content)
-        self.context.setHidewhen(hideWhen)
-        self.context.setInActionBar(inActionBar)
+        self.context.title = title
+        self.context.action_type = actionType
+        self.context.action_display = actionDisplay
+        self.context.content = content
+        self.context.hidewhen = hideWhen
+        self.context.in_action_bar = inActionBar
 
-        self.context.aq_inner.at_post_edit_script()
+        #self.context.aq_inner.at_post_edit_script()
 
         self.request.RESPONSE.redirect(self.context.absolute_url() + "/../@@tinymceplominoform/valid_page?type=action&value=" + self.context.id)

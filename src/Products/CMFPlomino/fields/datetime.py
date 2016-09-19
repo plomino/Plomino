@@ -37,6 +37,7 @@ class IDatetimeField(model.Schema):
     startingyear = schema.TextLine(
         title=u"Starting year",
         description=u"Oldest year selectable in the calendar widget",
+        default=u"1975",
         required=False)
 
 # bug in plone.autoform means order_after doesn't moves correctly

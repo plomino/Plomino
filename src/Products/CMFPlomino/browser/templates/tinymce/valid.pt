@@ -1,17 +1,21 @@
 <!DOCTYPE html>
 <html id="region-content"
-	lang="en" i18n:domain="plomino.tinymce">
-<head tal:define="type here/REQUEST/type|nothing;
+	lang="en" i18n:domain="plomino.tinymce"
+        tal:define="fieldtype here/REQUEST/type|nothing;
 				  value here/REQUEST/value|nothing;
 				  option here/REQUEST/option|nothing;
 				  ">
+<head >
 	<meta http-equiv="Content-type" content="text/html;charset=UTF-8" />
 	<title i18n:translate="plominofield_title">Add/edit a Plomino Field</title>
 	<link tal:replace="structure provider:plone.htmlhead.links" />
 	<script type="text/javascript" src="++resource++Products.CMFPlomino/js/tinymce.valid.js"></script>
-	<script type="text/javascript" tal:content="structure string: PlominoDialog.submit('$type', '$value', '$option');"></script>
 </head>
 <body id="plonebrowser" tal:define="fieldurl here/REQUEST/fieldurl|nothing;">
+
+    <div id="example_widget" style="display:none" tal:content="structure python:here.example_widget(fieldtype, value)"></div>
+    <script type="text/javascript" tal:content="structure string: PlominoDialog.submit('$fieldtype', '$value', '$option');"></script>
+
     <div class="plone-modal-dialog">
         <div class="plone-modal-content">
             <div class="plone-modal-header">
@@ -37,5 +41,6 @@
 			</div>
 		</div>
 	</div>
+
 </body>
 </html>

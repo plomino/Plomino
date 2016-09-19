@@ -78,18 +78,29 @@
         // Find the element id
         // Select the parent node of the selection
         var selection = ed.selection.getNode();
+        var customText = false;
+        if (elementType === "label") {
+            if (tinymce.DOM.hasClass(selection, 'plominoLabelContent')) {
+                selection = selection.parentNode;
+                var customText = true;
+            } else if (selection.tagName === "DIV" && tinymce.DOM.hasClass(selection, "plominoLabelClass")) {
+                var customText = true;
+            }
+        }
         // If the node is a <span class="plominoFieldClass"/>, select all its content
         if (tinymce.DOM.hasClass(selection, elementClass))
         {
             ed.selection.select(selection);
-            var elementId = selection.firstChild.nodeValue;
-
-            // hide-when and cache zones start with start:id and finish with end:id
-            if (elementType === "hidewhen" || elementType === "cache")
-            {
-                var splittedId = elementId.split(':');
-                if (splittedId.length > 1)
-                    elementId = splittedId[1];
+            var elementId = selection.getAttribute('data-plominoid');
+            if (elementId == null) {
+                elementId = selection.firstChild.nodeValue;
+                // hide-when and cache zones start with start:id and finish with end:id
+                if (elementType === "hidewhen" || elementType === "cache")
+                {
+                    var splittedId = elementId.split(':');
+                    if (splittedId.length > 1)
+                        elementId = splittedId[1];
+                }
             }
         }
         else if (elementType !== "hidewhen" && elementType !== "cache")
@@ -128,6 +139,9 @@
             var elementId = '';
         }
 
+        if (customText) {
+            elementId = elementId + ':1'
+        }
         var base_url = $('body').attr('data-base-url');
 
         ed.windowManager.open({

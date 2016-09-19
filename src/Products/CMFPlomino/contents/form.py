@@ -2,11 +2,15 @@ from AccessControl import ClassSecurityInfo
 import decimal
 from jsonutil import jsonutil as json
 import logging
+from lxml.html import tostring
 from plone import api
 from plone.app.z3cform.wysiwyg import WysiwygFieldWidget
 from plone.autoform import directives as form
 from plone.dexterity.content import Container
 from plone.supermodel import directives, model
+from z3c.form.datamanager import AttributeField, zope
+from Products.CMFPlomino.contents.action import PlominoAction
+from Products.CMFPlomino.contents.field import PlominoField
 import re
 from zope import schema
 from zope.interface import implements
@@ -30,19 +34,28 @@ from ..utils import (
     urlquote,
 )
 from ..document import getTemporaryDocument
+from pyquery import PyQuery as pq
 
 logger = logging.getLogger('Plomino')
 security = ClassSecurityInfo()
 
 label_re = re.compile('<span class="plominoLabelClass">((?P<optional_fieldname>\S+):){0,1}\s*(?P<fieldname_or_label>.+?)</span>')
 
+class IHelper(model.Schema):
+    schema.Choice(values=[])
 
 class IPlominoForm(model.Schema):
     """ Plomino form schema
     """
 
-    form.widget('form_layout', WysiwygFieldWidget)
-    form_layout = schema.Text(
+    # helpers = schema.List(value_type=schema.Object(IHelper),
+    #                       title=u"Helpers",
+    #                       description=u"Helpers applied",
+    #                       required=False
+    # )
+
+    form.widget('form_layout_visual', WysiwygFieldWidget)
+    form_layout_visual = schema.Text(
         title=_('CMFPlomino_label_FormLayout', default="Form layout"),
         description=_('CMFPlomino_help_FormLayout',
             default="Text with 'Plominofield' styles correspond to the"
@@ -492,79 +505,168 @@ class PlominoForm(Container):
         - if the referenced field does not exist, leave the layout markup as
           is (as for missing field markup).
         """
-        html_content_processed = html_content_orig
-        match_iter = label_re.finditer(html_content_orig)
-        for match_label in match_iter:
-            d = match_label.groupdict()
-            if d['optional_fieldname']:
-                fn = d['optional_fieldname']
-                field = self.getFormField(fn)
-                if field:
-                    label = d['fieldname_or_label']
-                else:
+        # Don't try to process an empty HTML doc
+        if not html_content_orig:
+            return html_content_orig
+
+        html_content_processed = html_content_orig # We edit the copy
+        # from lxml import etree
+
+        # dom = etree.HTML(html_content_processed)
+        # d = pq(html_content_processed, parser='html_fragments')
+        d = pq(html_content_processed)
+
+        # interate over all the labels
+        # if there is stuff inbetween its field then grab it too
+        # create fieldset around teh field and put in the label and inbetween stuff
+        # we will build up a map of field_id -> (field, nodes_to_group)
+        # so we can check we group all labels for a given field
+        field2group = {}
+
+        for label_node in d("span.plominoLabelClass"):
+
+            # work out the fieldid the label is for, and its text
+            # we could have hide whens or other nodes in our label. filter them out
+            #TODO: we really want to remove "fieldid:" and leave rest unchanged
+            #label_text = pq(label_node).clone().children().remove().end().text()
+            #label_text = pq(label_node).children().html()
+            #label_re =  re.compile('<span class="plominoLabelClass">((?P<optional_fieldname>\S+):){0,1}\s*(?P<fieldname_or_label>.+?)</span>')
+            # see if we have a label with fieldid buried in it somewhere.
+            # we want to keep any html inside it intact.
+            field = None
+            for child in [label_node] + pq(label_node).find("*"):
+                for text_attribute in ['text', 'tail']:
+                    label_text = getattr(child, text_attribute)
+                    if label_text and ':' in label_text:
+                        field_id, label_text = label_text.split(':',1)
+                        field_id = field_id.strip()
+                        field = self.getFormField(field_id)
+                        if field is not None:
+                            # do we replace if we don't know if the field exists in teh layout? yes for ow
+                            setattr(child, text_attribute, label_text)
+                            break
+                if field is not None:
+                    break
+            if field is None:
+                # we aren't using custom label text. In that case we can blow any internal html away
+                field_id = pq(label_node).clone().children().remove().end().text()
+                field_id = field_id.strip()
+                if not field_id:
+                    # label is empty? #TODO: get rid of label?
                     continue
-            else:
-                fn = d['fieldname_or_label']
-                field = self.getFormField(fn)
-                if field:
-                    label = asUnicode(field.Title())
+                field = self.getFormField(field_id)
+                if field is not None:
+                    pq(label_node).text(asUnicode(field.Title()))
                 else:
+                    #TODO? should we produce a label anyway?
+                    # We could also look and see if the next field doesn't have a label and use that.
                     continue
 
-            field_re = re.compile(
-                '<span class="plominoFieldClass">%s</span>' % fn)
-            match_field = field_re.search(html_content_processed)
+            if field_id in field2group:
+                # we have more than one label. We will try to form a group around both the other labels
+                # and the field.
+                (field, togroup, labels) = field2group[field_id]
+                labels = labels + [label_node]
+            else:
+                labels = [label_node]
+
+
+            #field_node.first(":parent")
+            # do a breadth first search but starting at the label and going up
+            togroup = []
+            for parent in [label_node] + [n for n in reversed(pq(label_node).parents())]:
+                #parent.next("span.plominoFieldClass")
+                togroup = []
+                to_find = set(labels+[field])
+                # go through siblings until to find first and last target
+                for sibling in pq(parent).parent().children():
+                    found_in_sibling = False
+                    field_node = pq(sibling)("span.plominoFieldClass").eq(0)
+                    if field_node and field_node.text().strip() == field_id:
+                        # found our field
+                        found_in_sibling = True
+                        to_find.remove(field)
+                    elif field_node and togroup:
+                        # found a field in our group thats not ours
+                        # If it's a dynamic field we want this in our groping
+                        group_field_id = field_node.text().strip()
+                        group_field = self.getFormField(group_field_id)
+                        if group_field is not None and group_field.isDynamicField:
+                            found_in_sibling = True
+                        # otherwise disolve grouping
+                        else:
+                            togroup = found = []
+                            break
+
+                    for label in set(to_find):
+                        if sibling in pq(label).parents() or label == sibling:
+                            to_find.remove(label)
+                            found_in_sibling = True
+                    if found_in_sibling or togroup:
+                        togroup.append(sibling)
+                    if not to_find:
+                        # we found everything already
+                        break
+
+                if not to_find:
+                    # we found everything already
+                    break
+
+            if togroup:
+                field2group[field_id] = (field, togroup, labels)
+
+        for field_id, (field, togroup, labels) in field2group.items():
+
             field_type = field.field_type
             if hasattr(field, 'widget'):
                 widget_name = field.widget
 
-            # Handle input groups:
-            if field_type in ('DATETIME', 'SELECTION', ) and widget_name in (
-                'CHECKBOX', 'RADIO', 'SERVER',
-            ):
-                # Delete processed label
-                html_content_processed = label_re.sub(
-                    '', html_content_processed, count=1)
-                # Is the field in the layout?
-                if match_field:
-                    # Markup the field
-                    if editmode:
-                        mandatory = (
-                            field.mandatory
-                            and " class='required'"
-                            or '')
-                        html_content_processed = field_re.sub(
-                            "<fieldset><legend%s>%s</legend>%s</fieldset>" % (
-                                mandatory, label, match_field.group()
-                            ),
-                            html_content_processed
-                        )
-                    else:
-                        html_content_processed = field_re.sub(
-                            "<div class='fieldset'><span class='legend' "
-                            "title='Legend for %s'>%s</span>%s</div>" % (
-                                fn, label, match_field.group()
-                            ), html_content_processed)
+            compound_widget = (field_type == 'DATETIME' or
+                    field_type == 'SELECTION' and
+                    widget_name in ['CHECKBOX', 'RADIO', 'PICKLIST'])
 
-            # Handle single inputs:
+            # groupit: take label, inbetween, field and wrap it in a container
+            # if its a compound widget like datetime or selection then use a fieldset and legend
+            # if a simple widget then just a div
+            if editmode:
+                legend = "<label for='%s'></span>" % field_id
             else:
-                # Replace the processed label with final markup
-                if editmode and (field_type not in ['COMPUTED', 'DISPLAY']):
-                    mandatory = (
-                        field.mandatory
-                        and " class='required'"
-                        or '')
-                    html_content_processed = label_re.sub(
-                        "<label for='%s'%s>%s</label>" % (
-                            fn, mandatory, label),
-                        html_content_processed, count=1)
+                legend = "<span class='legend'></span>"
+            grouping = ""
+            #TODO: is testing the first element enough?
+            if togroup and pq(togroup).eq(0).is_("span"):
+                # we want to wrap in a div
+                grouping = '<span class="plominoFieldGroup"></span>'
+            elif togroup and pq(togroup).eq(0).is_("div,p"):
+                if compound_widget and editmode:
+                    grouping = "<fieldset></fieldset>"
+                    legend = "<legend></legend>"
                 else:
-                    html_content_processed = label_re.sub(
-                        "<span class='label' "
-                        "title='Label for %s'>%s</span>" % (fn, label),
-                        html_content_processed, count=1)
+                    grouping = '<div class="plominoFieldGroup"></div>'
+            else:
+                # we don't want to group a table row or list elements
+                togroup = []
+            #wrapped = pq(togroup).wrap_all(grouping)
 
-        return html_content_processed
+            # my own wrap method
+            if grouping:
+                try:
+                    ng = pq(grouping).insert_before(pq(togroup).eq(0))
+                    pq(ng).append(pq(togroup))
+                except:
+                    raise
+                if field.mandatory:
+                    pq(ng).add_class("required")
+
+            for label_node in labels:
+
+                #switch the label last so insert_before works properly
+                #legend_node = pq(legend).append(pq(label_node).children())
+                #pq(label_node).replace_with(pq(legend))
+                pq(legend).html(pq(label_node).html()).insert_before(pq(label_node))
+                pq(label_node).remove()
+
+        return d.html()
 
     security.declareProtected(READ_PERMISSION, 'displayDocument')
 
@@ -736,11 +838,186 @@ class PlominoForm(Container):
             'fields': ''.join(field_items)
         }
 
+    #@property
+    # Using special datamanager because @property losses acquisition
+    def getForm_layout_visual(self):
+        #update all teh example widgets
+        # TODO: called twice during setter to check if changed
+        d = pq(self.form_layout, parser='html_fragments')
+        root = d[0].getparent() if d else d
+        s = ".plominoActionClass,.plominoSubformClass,.plominoFieldClass"
+        for element in d.find(s) + d.filter(s):
+            widget_type = element.attrib["class"][7:-5].lower()
+            id = element.text
+            example = self.example_widget(widget_type, id)
+            # .html has a bug - https://github.com/gawel/pyquery/issues/102
+            # so can't use it. below will strip off initial text but that's ok
+            # pq(element)\
+            #     .empty()\
+            #     .append(pq(example, parser='html_fragments'))\
+            #     .add_class("mceNonEditable")\
+            #     .attr("data-plominoid", id)
+            html = u'<{tag} class="{pclass} mceNonEditable" data-plominoid="{id}">{example}</{tag}>'.format(
+                id=id,
+                example=example,
+                tag=u'div' if pq(element).has_class('plominoSubformClass') else u'span',
+                pclass=pq(element).attr('class')
+            )
+            pq(element).replace_with(html)
+
+        s = ".plominoLabelClass"
+        for element in d.find(s) + d.filter(s):
+            # The label may either contain the id or some text/html
+            #   <span class="plominoLabelClass">id</span>
+            #   <span class="plominoLabelClass">id:Custom label</span>
+            # If it contains text/html, wrap it inside a div
+            if ':' not in element.text:
+                id = element.text
+                html = u'<span class="plominoLabelClass mceNonEditable" data-plominoid="{id}">&nbsp;</span>'.format(id=id)
+            else:
+                id, html = pq(element).html().split(':', 1)
+                html = u'''<div class="plominoLabelClass mceNonEditable" data-plominoid="{id}">
+<div class="plominoLabelContent mceEditable">
+{html}
+</div>
+</div>'''.format(id=id, html=html)
+            pq(element).replace_with(html)
+
+        s = ".plominoHidewhenClass,.plominoCacheClass"
+        for element in d.find(s) + d.filter(s):
+            widget_type = element.attrib["class"][7:-5].lower()
+            if ':' not in element.text:
+                continue
+            pos, id = element.text.split(':', 1)
+
+            # .html has a bug - https://github.com/gawel/pyquery/issues/102
+            tail = element.tail
+            pq(element)\
+                .html("&nbsp;")\
+                .add_class("mceNonEditable")\
+                .attr("data-plomino-position", pos)\
+                .attr("data-plominoid", id)
+            element.tail = tail
+
+        return tostring_innerhtml(root)
+
+    #@form_layout_visual.setter
+    # Using special datamanager because @property losses acquisition
+    def setForm_layout_visual(self, layout):
+        # Handle an empty layout
+        if not layout:
+            layout = u''
+        layout = layout.replace(u'\r' , u'')
+        layout = layout.replace(u'\xa0', u' ')
+        d = pq(layout, parser='html_fragments')
+        root = d[0].getparent() if d else d
+
+        # restore start: end: type elements
+        s = ".plominoHidewhenClass,.plominoCacheClass"
+        for e in d.find(s) + d.filter(s):
+            # .html has a bug - https://github.com/gawel/pyquery/issues/102
+            position = pq(e).attr("data-plomino-position")
+            hwid = pq(e).attr("data-plominoid")
+            if position and hwid:
+                pq(e).text("{pos}:{id}".format(pos=position, id=hwid))
+            pq(e)\
+                .remove_class("mceNonEditable")\
+                .remove_attr("data-plominoid")\
+                .remove_attr("data-plomino-position")
+
+        s = ".plominoLabelClass"
+        for e in d.find(s) + d.filter(s):
+            element = pq(e)
+            tag = e.tag
+            id = element.attr("data-plominoid")
+
+            if tag == 'span':
+                # Tidy up the label
+                element.remove_class("mceNonEditable")
+                element.remove_attr("data-plominoid")
+                element.empty()
+                # Set the id as the text
+                element.text(id)
+            elif tag == 'div':
+                html = element.find('.plominoLabelContent').html()
+                # XXX: Improve the unwrapping of block elements
+                for elem in ['p']:
+                    html = html.replace('<%s>' % elem, ' ')
+                    html = html.replace('</%s>' % elem, ' ')
+                    # Possible empty tag
+                    html = html.replace('<%s/>' % elem , ' ')
+                span = u'<span class="plominoLabelClass">{id}:{html}</span>'.format(id=id, html=html)
+                element.replace_with(span)
+
+        # Re-parse the html as we can't replace elements multiple times
+        html = tostring_innerhtml(root)
+        d = pq(html, parser='html_fragments')
+        root = d[0].getparent() if d else d
+
+        # strip out all the example widgets
+        s="*[data-plominoid]"
+        for e in d.find(s) + d.filter(s):
+            span = '<span class="{pclass}">{id}</span>'.format(
+                    id=pq(e).attr("data-plominoid"),
+                    pclass=pq(e).remove_class("mceNonEditable").attr('class')
+                )
+            pq(e).replace_with(span)
+        self.form_layout = tostring_innerhtml(root)
+
     security.declarePrivate('_get_html_content')
 
     def _get_html_content(self):
+        # get the raw value for rendering the form
         html_content = self.form_layout or ''
         return html_content.replace('\n', '')
+
+    def example_widget(self, widget_type, id):
+        if not id:
+            return
+        db = self.getParentDatabase()
+        if widget_type == "field":
+            field = self.getFormField(id)
+            if field is not None:
+                html = field.getRenderedValue(fieldvalue=None,
+                                              editmode="EDITABLE",
+                                              target=self)
+                # need to determine if the html will get wiped
+                field_pq = pq(html)
+                blocks = 'input,select,table,textarea,button,img,video'
+                if not field_pq.text() and not field_pq.filter(blocks) and not field_pq.find(blocks):
+                    #TODO: bit of a hack. perhaps need somethign better
+                    return id
+                else:
+                    # Handle hidden fields
+                    hidden = field_pq.find('input[type="hidden"]')
+                    if hidden:
+                        pq('<span>[hidden field]</span>').insertBefore(hidden)
+
+                    return field_pq.outer_html()
+
+        elif widget_type == "subform":
+            subform = getattr(self, id, None)
+            if not isinstance(subform, PlominoForm):
+                return
+            doc = getTemporaryDocument(db, form=subform,
+                                       REQUEST={}).__of__(db)
+            rendering = subform.displayDocument(
+                doc, editmode=True, creation=True, parent_form_id=self.id,
+            )
+            return rendering
+
+        elif widget_type == 'action':
+            action = getattr(self, id, None)
+            if not isinstance(action, PlominoAction):
+                return
+            pt = self.unrestrictedTraverse(
+                        "@@plomino_actions").embedded_action
+            action_render = pt(display=action.action_display,
+                plominoaction=action,
+                plominotarget=self,
+                plomino_parent_id=self.id)
+            return action_render
+
 
     security.declareProtected(READ_PERMISSION, 'applyHideWhen')
 
@@ -1496,3 +1773,42 @@ class PlominoForm(Container):
                 'aaData': result}
 
         return json.dumps(result)
+
+
+
+class GetterSetterAttributeField(AttributeField):
+    """Special datamanager to get around loss on acqusition when using @property"""
+    zope.component.adapts(
+        IPlominoForm, zope.schema.interfaces.IField)
+
+    def get(self):
+        """See z3c.form.interfaces.IDataManager"""
+        getter = "get%s"%self.field.__name__.capitalize()
+        if hasattr(self.adapted_context, getter):
+            return getattr(self.adapted_context, getter)()
+        else:
+            return getattr(self.adapted_context, self.field.__name__)
+
+    def set(self, value):
+        """See z3c.form.interfaces.IDataManager"""
+        if self.field.readonly:
+            raise TypeError("Can't set values on read-only fields "
+                            "(name=%s, class=%s.%s)"
+                            % (self.field.__name__,
+                               self.context.__class__.__module__,
+                               self.context.__class__.__name__))
+        setter = "set%s"%self.field.__name__.capitalize()
+        if hasattr(self.adapted_context, setter):
+            getattr(self.adapted_context, setter)(value)
+        else:
+            # get the right adapter or context
+            setattr(self.adapted_context, self.field.__name__, value)
+
+
+def tostring_innerhtml(root):
+    """ pyquery doesn't handle remove or replace_with well when you are dealing
+    with fragments
+    """
+    if not root:
+        return ''
+    return (root.text or '') + ''.join([tostring(child) for child in root.iterchildren()])
