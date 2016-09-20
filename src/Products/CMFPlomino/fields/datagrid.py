@@ -61,10 +61,13 @@ class DatagridField(BaseField):
     def processInput(self, submittedValue):
         """
         """
-        try:
-            return json.loads(submittedValue)
-        except:
-            return []
+        value = json.loads(submittedValue)
+        mapping = self.getFieldMapping().split(',')
+        if len(value) and isinstance(value[0], dict):
+            # Need to convert to tuple for storage
+            value = [value[k] for line in value for k in mapping if k in value]
+        return value
+
 
     def tojson(self, value, rendered=False):
         """
@@ -81,10 +84,10 @@ class DatagridField(BaseField):
     def getColumnLabels(self):
         """
         """
-        if not self.context.field_mapping:
+        if not self.getFieldMapping():
             return []
 
-        mapped_fields = [f.strip() for f in self.context.field_mapping.split(',')]
+        mapped_fields = [f.strip() for f in self.getFieldMapping().split(',')]
 
         child_form_id = self.context.associated_form
         if not child_form_id:
@@ -105,12 +108,12 @@ class DatagridField(BaseField):
     def getRenderedFields(self, editmode=True, creation=False, request={}):
         """ Return an array of rows rendered using the associated form fields
         """
-        if not self.context.field_mapping:
+        if not self.getFieldMapping():
             return []
 
         db = self.context.getParentDatabase()
 
-        mapped_fields = [f.strip() for f in self.context.field_mapping.split(',')]
+        mapped_fields = [f.strip() for f in self.getFieldMapping().split(',')]
 
         # get associated form id
         child_form_id = self.context.associated_form
@@ -161,9 +164,9 @@ class DatagridField(BaseField):
         rawValue = fieldValue or []
 
         mapped_fields = []
-        if self.context.field_mapping:
+        if self.getFieldMapping():
             mapped_fields = [
-                f.strip() for f in self.context.field_mapping.split(',')]
+                f.strip() for f in self.getFieldMapping().split(',')]
         # item names is set by `PlominoForm.createDocument`
         item_names = doc.getItem(self.context.id + '_itemnames')
 
@@ -220,6 +223,24 @@ class DatagridField(BaseField):
 
         return {'rawdata': rawValue, 'rendered': fieldValue}
 
+
+    def getFieldMapping(self):
+        """ work out default mapping, if one is not set.
+         """
+        #TODO: problem with this is that if they subform changes then the data
+        # that's saved will be read wrong.
+        # Alternative is to set it by default, but then if you add more fields
+        # you need to go update it manually.
+        # TODO: shows all fields, even ones not on the subforms layout
+        if self.context.field_mapping:
+            return self.context.field_mapping
+        child_form_id = self.context.associated_form
+        if not child_form_id:
+            return ""
+
+        db = self.context.getParentDatabase()
+        child_form = db.getForm(child_form_id)
+        return ','.join([f.id for f in child_form.getFormFields(includesubforms=True)])
 
 class EditFieldsAsJson(object):
     """

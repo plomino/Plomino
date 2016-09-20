@@ -482,7 +482,7 @@ def getDatagridRowdata(context, REQUEST):
         if form is not None:
             field = form.getFormField(field_id)
             if field is not None:
-                mapped_field_ids = [f.strip() for f in field.field_mapping.split(',')]
+                mapped_field_ids = [f.strip() for f in field.getSettings().getFieldMapping().split(',')]
     rowdata_json = getattr(REQUEST, 'Plomino_datagrid_rowdata', None)
     if rowdata_json:
         rowdata = json.loads(

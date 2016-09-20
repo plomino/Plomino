@@ -85,7 +85,7 @@ class SelectionField(BaseField):
         Format: label|value, use label as value if no label.
         """
         # if formula available, use formula, else use manual entries
-        f = self.context.selectionlistformula
+        f = getattr(self.context,'selectionlistformula', None)
         if f:
             # if no doc provided (if OpenForm action), we use the PlominoForm
             if doc:
@@ -107,7 +107,7 @@ class SelectionField(BaseField):
                     path=p + '/getSettings?key=selectionlistformula')
                 s = []
         else:
-            s = self.context.selectionlist
+            s = getattr(self.context, 'selectionlist', None)
             if not s:
                 return []
 

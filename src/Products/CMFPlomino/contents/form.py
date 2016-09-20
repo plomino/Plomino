@@ -932,7 +932,7 @@ class PlominoForm(Container):
         db = self.getParentDatabase()
         parent_form = db.getForm(doc.Plomino_Parent_Form)
         parent_field = parent_form.getFormField(doc.Plomino_Parent_Field)
-        field_ids = parent_field.field_mapping.split(',')
+        field_ids = parent_field.getSettings().getFieldMapping().split(',')
 
         raw_values = []
         for f in field_ids:
