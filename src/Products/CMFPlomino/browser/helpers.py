@@ -21,6 +21,7 @@ from Products.Five import BrowserView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from zope.schema import getFieldsInOrder
 from Products.CMFPlomino.document import getTemporaryDocument
+from Products.CMFPlomino.utils import asAscii
 
 from Products.CMFCore.interfaces import IDublinCore
 from plone.autoform import directives
@@ -118,7 +119,16 @@ class SubformWidget(Widget):
         typename = self.context.getPortalTypeName().lstrip("Plomino").lower()
         thistype = self.context.field_type if typename == 'field' else None
         prefixes = ["macro_%s_%s_"%(typename,f.lower()) for f in FIELD_TYPES.keys() if f != thistype]
-        dbs = [(db if path== '.' else db.restrictedTraverse(path)) for path in db.import_macros]
+
+        dbs = []
+        for path in db.import_macros:
+            ## restrictedTraverse only ascii path, can't be unicode
+            path = asAscii(path)
+            if path == '.':
+                dbs.append(db)
+            else:
+                dbs.append(db.restrictedTraverse(path))
+
         for form in [form for db in dbs for form in db.getForms()]:
             if form.id in found:
                 continue
@@ -193,6 +203,8 @@ def update_helpers(obj, event):
         form = None
         db_import = None
         for db_path in db.import_macros:
+            ## restrictedTraverse only ascii path, can't be unicode
+            db_path = asAscii(db_path)
             if db_path == '.':
                 db_import = db
             else:
