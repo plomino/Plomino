@@ -252,6 +252,8 @@ def update_helpers(obj, event):
 
         doc = getTemporaryDocument(db_import, form, helper).__of__(db_import)
         # has to be computed on save so it appears in the doc
+        # make sure all the fields must be in the form layout
+        # including hidden fields that contains macro code
         # TODO: this can generate errors as fields calculated. Need to show this
         doc.save(form=form, creation=False, refresh_index=False, asAuthor=True, onSaveEvent=False)
         logger.info(
