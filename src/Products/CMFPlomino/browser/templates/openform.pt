@@ -39,7 +39,8 @@
     <div id="content-core"
         tal:define="
             ispage view/form/isPage;
-            form_method python:view.form.getFormMethod();">
+            form_method python:view.form.getFormMethod();
+            macro_context python:request.get('Plomino_Macro_Context', None);">
         <form tal:condition="not:ispage"
             id="plomino_form"
             tal:define="hasCreatePermissionOnDatabase python:view.form.hasCreatePermission(view.form.getParentDatabase());
@@ -50,6 +51,7 @@
                 action python:view.form.getFormAction();
                 method python:view.form.getFormMethod();
                 data-pat-plominodynamic string:url:${view/form/absolute_url};
+                class python: macro_context and 'plomino-macro' or '';
                 enctype enctype|nothing">
             <span tal:replace="structure view/form/@@authenticator/authenticator"/>
 
