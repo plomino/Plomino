@@ -1,4 +1,7 @@
 import json
+import logging
+import re
+
 from plone.app.widgets.base import InputWidget
 from plone.app.z3cform.widget import BaseWidget
 from plone.behavior.interfaces import IBehaviorAssignable
@@ -16,7 +19,7 @@ from Products.CMFPlomino.contents.field import IPlominoField
 from Products.CMFPlomino.contents.form import IPlominoForm
 from Products.CMFPlomino.contents.hidewhen import IPlominoHidewhen
 from Products.CMFPlomino.contents.view import IPlominoView
-import re
+
 from Products.Five import BrowserView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from zope.schema import getFieldsInOrder
@@ -32,7 +35,10 @@ from zope.interface import implementer
 from zope.interface import provider
 from ..config import SCRIPT_ID_DELIMITER, FIELD_MODES, FIELD_TYPES
 
+logger = logging.getLogger('Plomino')
+
 __author__ = 'dylanjay'
+
 
 class ISubformWidget(IWidget):
     """ Widget for collecting data from a list of possible subforms
@@ -77,6 +83,7 @@ class SubformWidget(Widget):
     implementsOnly(ISubformWidget)
 
     def update(self):
+        logger.debug('Method: Widget update')
         super(SubformWidget, self).update()
         self.subform = 'send-to-mail'
         self.raw = json.dumps(self.value if self.value else [])
@@ -109,11 +116,13 @@ class SubformWidget(Widget):
 
 
     def extract(self, default=NO_VALUE):
+        logger.debug('Method: Widget extract')
         value = super(SubformWidget, self).extract(default)
         raw = json.loads(value) if value and value != default else default
         return raw
 
     def helper_forms(self):
+        logger.debug('Method: Widget helper_forms')
         db = self.context.getParentDatabase()
         found = set()
         typename = self.context.getPortalTypeName().lstrip("Plomino").lower()
@@ -151,8 +160,7 @@ class IHelpers(model.Schema):
     helpers = schema.List(value_type=schema.Dict(),
                           title=u"Formula Macros",
                           description=u"Macros can be applied from your macro library and will automate formulas for you.",
-                          required=False
-    )
+                          required=False)
 
 @implementer(IHelpers)
 class Helpers(object):
@@ -160,14 +168,17 @@ class Helpers(object):
     """
 
     def __init__(self, context):
+        logger.debug('Method: init helpers')
         self.context = context
 
     @property
     def helpers(self):
+        logger.debug('Method: get helpers')
         return self.context.helpers
 
     @helpers.setter
     def helpers(self, value):
+        logger.debug('Method: set helpers')
         if value is None:
             value = []
         self.context.helpers=value
@@ -175,25 +186,30 @@ class Helpers(object):
 MACRO_FMT = '### START {id} ###{code}### END {id} ###'
 CODE_REGEX = '(((?!###)(.|\n|\r))+)'
 
+
 # Event handler
 def update_helpers(obj, event):
     """Update all the formula fields based on our helpers
     """
+    logger.debug('Method: update_helpers')
 
     if not hasattr(obj, 'helpers'):
         return
-    helpers = obj.helpers
 
+    # helpers is a list of helper dict that contains 'Form', 'title',
+    # '_macro_id_' and all the field ids in that macro form.
+    helpers = obj.helpers
 
     if helpers is None:
         return
 
     ids = {m['_macro_id_'] for m in helpers if '_macro_id_' in m}
 
-    macros = []
-
     # TODO: Need to remove any code the user removed
 
+    # This loop is mainly generate list of macros with
+    # helper id, form obj and temp macro doc
+    macros = []
     for helper in obj.helpers:
         formid = helper.get('Form', None)
         if formid is None:
@@ -203,7 +219,7 @@ def update_helpers(obj, event):
         form = None
         db_import = None
         for db_path in db.import_macros:
-            ## restrictedTraverse only ascii path, can't be unicode
+            # restrictedTraverse only ascii path, can't be unicode
             db_path = asAscii(db_path)
             if db_path == '.':
                 db_import = db
@@ -213,23 +229,21 @@ def update_helpers(obj, event):
             if form is not None:
                 break
 
-        # ensure the macros have unique ids so
+        # ensure the macros have '_macro_id_' is unique ids so
         helperid = helper.get('_macro_id_')
         if not helperid:
             i = 1
             while not helperid or helperid in ids:
                 helperid = "{formid}_{i}".format(formid=formid, i=i)
-                i+=1
+                i += 1
             helper['_macro_id_'] = helperid
             ids.add(helperid)
 
         if form is None:
             # means the macro used to create the code is no longer available
             # we will retain the code but it will no longer get updated
-            macros.append( (helperid, None, None) )
-            #obj.helpers = helpers
+            macros.append((helperid, None, None))
             continue
-
 
         curpath = '/'.join(obj.getPhysicalPath())
         form.REQUEST['Plomino_Parent_Field'] = '__dummy__'
@@ -238,32 +252,43 @@ def update_helpers(obj, event):
 
         doc = getTemporaryDocument(db_import, form, helper).__of__(db_import)
         # has to be computed on save so it appears in the doc
-        #TODO this can generate errors as fields calculated. Need to show this
+        # TODO: this can generate errors as fields calculated. Need to show this
         doc.save(form=form, creation=False, refresh_index=False, asAuthor=True, onSaveEvent=False)
-        macros.append( (helperid, form, doc) )
+        logger.info(
+            'helper id: %s generate temp doc with form: %s has items: %s' %
+            (helperid, formid, doc.items))
+        macros.append((helperid, form, doc))
 
+    # list all the fields from this obj that can be inserted
     fields = []
     behaviours = [b.interface for b in IBehaviorAssignable(obj).enumerateBehaviors()]
     for schema in [obj.getTypeInfo().lookupSchema()] + behaviours:
-        hints = schema.queryTaggedValue(u'plone.autoform.widgets',{}).items()
+        hints = schema.queryTaggedValue(u'plone.autoform.widgets', {}).items()
         formulas = {id for id, hint in hints if hint.params.get('klass') == 'plomino-formula'}
-        fields += [(id,field) for id, field in getFieldsInOrder(schema) if id in formulas]
+        fields += [(id, field) for id, field in getFieldsInOrder(schema) if
+                   id in formulas]
 
     for id, field in fields:
 
         dm = getMultiAdapter((obj, field), IDataManager)
+        # code is the current code from the field in that obj
         code = dm.get()
         code = code if code else u''
 
-        all_code = re.compile(MACRO_FMT.format(id='([^ #]+)',code=CODE_REGEX))
-        old_codes = [(m[0],m[1]) for m in re.findall(all_code, code)]
+        # old_codes contains old macro code in the current code from the
+        # field in that obj
+        all_code = re.compile(MACRO_FMT.format(id='([^ #]+)', code=CODE_REGEX))
+        old_codes = [(m[0], m[1]) for m in re.findall(all_code, code)]
         old_codes.reverse()
 
+        names = ['generate_%s' % id.lower(),
+                 'generate_%s' % id,
+                 '%s' % id,
+                 '%s' % id.lower()]
 
-        names = ['generate_%s'%id.lower(),
-                 'generate_%s'%id,
-                 '%s'%id,
-                 '%s'%id.lower()]
+        # find all ids in 'names' list in temp doc and
+        # pull new macro code from that temp doc and
+        # put into new_code dict
         new_code = {}
         for macro_id, form, doc in macros:
             if form is None:
@@ -276,10 +301,11 @@ def update_helpers(obj, event):
                 continue
             new_code[macro_id] = value
 
+        # replace old macro code with new macro code
         for macro_id, form, doc in macros:
             if macro_id not in new_code:
                 continue
-            code_id, old_code = old_codes[-1] if old_codes else (None,None)
+            code_id, old_code = old_codes[-1] if old_codes else (None, None)
             # 1. it's in right position. replace it
             if macro_id == code_id:
                 old_codes.pop()
@@ -287,14 +313,17 @@ def update_helpers(obj, event):
                     # macro has gone missing. Leave the code alone
                     continue
 
-                code = re.sub("(%s)"%MACRO_FMT.format(id=macro_id, code=CODE_REGEX),
-                              MACRO_FMT.format(id=macro_id, code="\n"+new_code[macro_id]+"\n"),
-                              code, 1)
+                code = re.sub(
+                    "(%s)" % MACRO_FMT.format(id=macro_id, code=CODE_REGEX),
+                    MACRO_FMT.format(id=macro_id, code="\n" + new_code[macro_id] + "\n"),
+                    code,
+                    1)
             # 2. it's not in the list. remove it
             elif code_id and code_id not in new_code:
-                code = re.sub("(%s)"%MACRO_FMT.format(id=code_id, code=CODE_REGEX),
-                              "",
-                              code)
+                code = re.sub(
+                    "(%s)" % MACRO_FMT.format(id=code_id, code=CODE_REGEX),
+                    "",
+                    code)
                 old_codes.pop()
             elif new_code[macro_id] is None:
                 # macro has gone missing. leave it alone
@@ -305,25 +334,33 @@ def update_helpers(obj, event):
 
             else:
                 # 3. it's further down the list. remove it
-                code = re.sub("(%s)"%MACRO_FMT.format(id=macro_id, code=CODE_REGEX),
-                              "",
-                              code)
-                old_codes = [(oid, ocode) for oid,ocode in old_codes if macro_id != oid]
+                code = re.sub(
+                    "(%s)" % MACRO_FMT.format(id=macro_id, code=CODE_REGEX),
+                    "",
+                    code)
+                old_codes = [(oid, ocode) for oid, ocode in old_codes if
+                             macro_id != oid]
                 # 4. The list one is new. insert it. or we are moving it
                 # insert before the current one
                 switched = MACRO_FMT.format(id=macro_id, code="\n"+new_code[macro_id]+"\n") + \
                     '\n' + \
                     MACRO_FMT.format(id=code_id, code=old_code)
-                code = re.sub("(%s)"%MACRO_FMT.format(id=code_id, code=CODE_REGEX),
-                              switched,
-                              code, 1)
+                code = re.sub(
+                    "(%s)" % MACRO_FMT.format(id=code_id, code=CODE_REGEX),
+                    switched,
+                    code,
+                    1)
 
         for code_id, old_code in old_codes:
             # remove any code that's left
-            code = re.sub(MACRO_FMT.format(id=code_id, code=CODE_REGEX),
-                          "",
-                          code)
+            code = re.sub(
+                MACRO_FMT.format(id=code_id, code=CODE_REGEX),
+                "",
+                code)
 
-
+        logger.info(
+            'Macro code with id: %s is inserted in %s obj. Code: %s...' %
+            (id, obj.id, code[:50]))
+        # TODO: should not insert code that not changed or don't use macro
         dm.set(code)
         obj.helpers = helpers
