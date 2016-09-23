@@ -1020,10 +1020,17 @@ class PlominoForm(Container):
             #     .append(pq(example, parser='html_fragments'))\
             #     .add_class("mceNonEditable")\
             #     .attr("data-plominoid", id)
+            BLOCKS = "p,div,table,ul,ol"
+            pqexample = pq(example)
+            if pq(element).has_class('plominoSubformClass') or \
+                pqexample.find(BLOCKS) or pqexample.filter(BLOCKS):
+                tag = u"div"
+            else:
+                tag = u'span'
             html = u'<{tag} class="{pclass} mceNonEditable" data-plominoid="{id}">{example}</{tag}>'.format(
                 id=unicode(id),
                 example=example,
-                tag=u'div' if pq(element).has_class('plominoSubformClass') else u'span',
+                tag=tag,
                 pclass=unicode(pq(element).attr('class'))
             )
             pq(element).replace_with(html)

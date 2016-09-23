@@ -65,7 +65,7 @@ class DatagridField(BaseField):
         mapping = self.getFieldMapping().split(',')
         if len(value) and isinstance(value[0], dict):
             # Need to convert to tuple for storage
-            value = [value[k] for line in value for k in mapping if k in value]
+            value = [[line[k] for k in mapping if k in line] for line in value]
         return value
 
 
@@ -220,6 +220,9 @@ class DatagridField(BaseField):
                 for row in fieldValue:
                     mapped.append([row[c] for c in mapped_fields])
                 fieldValue = mapped
+
+                # raw value should be dict now
+                rawValue = [dict(zip(item_names, row)) for row in rawValue]
 
         return {'rawdata': rawValue, 'rendered': fieldValue}
 
