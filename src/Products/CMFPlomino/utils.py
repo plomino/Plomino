@@ -288,6 +288,14 @@ def asUnicode(s):
     # return translation_service.asunicodetype(s)
 
 
+def asAscii(s, errors="ignore"):
+    """ Make sure ``s`` is ascii.
+    """
+    if not isinstance(s, basestring):
+        return str(s)
+    return s.encode("ascii", errors)
+
+
 def csv_to_array(csvcontent, delimiter='\t', quotechar='"'):
     """ ``csvcontent`` may be a string or a file.
     """

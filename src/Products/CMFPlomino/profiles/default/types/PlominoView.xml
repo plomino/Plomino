@@ -25,7 +25,7 @@
   <property name="behaviors">
     <element value="plone.app.dexterity.behaviors.metadata.IBasic"/>
     <element value="plone.app.content.interfaces.INameFromTitle"/>
-    <element value="Products.Plomino.browser.helpers.IHelpers"/>
+    <element value="Products.CMFPlomino.browser.helpers.IHelpers"/>
 
   </property>
   <property name="schema">Products.CMFPlomino.contents.view.IPlominoView</property>
