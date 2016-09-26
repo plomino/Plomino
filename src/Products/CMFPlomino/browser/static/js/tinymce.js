@@ -78,6 +78,15 @@
         // Find the element id
         // Select the parent node of the selection
         var selection = ed.selection.getNode();
+        var customText = false;
+        if (elementType === "label") {
+            if (tinymce.DOM.hasClass(selection, 'plominoLabelContent')) {
+                selection = selection.parentNode;
+                var customText = true;
+            } else if (selection.tagName === "DIV" && tinymce.DOM.hasClass(selection, "plominoLabelClass")) {
+                var customText = true;
+            }
+        }
         // If the node is a <span class="plominoFieldClass"/>, select all its content
         if (tinymce.DOM.hasClass(selection, elementClass))
         {
@@ -130,6 +139,9 @@
             var elementId = '';
         }
 
+        if (customText) {
+            elementId = elementId + ':1'
+        }
         var base_url = $('body').attr('data-base-url');
 
         ed.windowManager.open({
