@@ -1037,6 +1037,10 @@ class PlominoForm(Container):
 
         s = ".plominoLabelClass"
         for element in d.find(s) + d.filter(s):
+            # Don't break if there is no text in the label
+            if not element.text:
+                continue
+
             # The label may either contain the id or some text/html
             #   <span class="plominoLabelClass">id</span>
             #   <span class="plominoLabelClass">id:Custom label</span>
@@ -1100,6 +1104,9 @@ class PlominoForm(Container):
             element = pq(e)
             tag = e.tag
             id = element.attr("data-plominoid")
+            # If we don't have a plominid, don't do anything
+            if not id:
+                continue
 
             if tag == 'span':
                 # Tidy up the label
