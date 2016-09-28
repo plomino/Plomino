@@ -65,7 +65,8 @@ class DatetimeField(BaseField):
         if type(submittedValue) is DateTime:
             return []
         errors = []
-        if not isinstance(submittedValue, record):
+        # instead of checking not record, should check string type
+        if isinstance(submittedValue, basestring):
             submittedValue = submittedValue.strip()
         try:
             # Check for a record
@@ -80,6 +81,10 @@ class DatetimeField(BaseField):
                 else:
                     # The record instance isn't valid
                     raise
+            # submittedValue could be dict from tojson
+            # {u'<datetime>': True, u'datetime': u'2016-12-12T00:00:00'}
+            elif isinstance(submittedValue, dict) and '<datetime>' in submittedValue:
+                StringToDate(submittedValue['datetime'], format=None)
             # check if date only:
             elif len(submittedValue) == 10:
                 StringToDate(submittedValue, '%Y-%m-%d')
@@ -103,7 +108,8 @@ class DatetimeField(BaseField):
         """
         if type(submittedValue) is DateTime:
             return submittedValue
-        if not isinstance(submittedValue, record):
+        # instead of checking not record, should check string type
+        if isinstance(submittedValue, basestring):
             submittedValue = submittedValue.strip()
         try:
             # Check for a record
@@ -118,6 +124,10 @@ class DatetimeField(BaseField):
                 else:
                     # The record instance isn't valid
                     raise
+            # submittedValue could be dict from tojson
+            # {u'<datetime>': True, u'datetime': u'2016-12-12T00:00:00'}
+            elif isinstance(submittedValue, dict) and '<datetime>' in submittedValue:
+                d = StringToDate(submittedValue['datetime'], format=None)
             # check if date only:
             elif len(submittedValue) == 10:
                 d = StringToDate(submittedValue, '%Y-%m-%d')
