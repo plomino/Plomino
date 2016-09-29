@@ -138,6 +138,8 @@ class NameField(BaseField):
             {'results': names_ids, 'total': len(names_ids)})
 
     def getCurrent(self, values):
-        if isinstance(values, basestring):
+        if not values:
+            values = []
+        elif isinstance(values, basestring):
             values = [values]
         return ["%s:%s" % (id, self.getFullname(id)) for id in values]
