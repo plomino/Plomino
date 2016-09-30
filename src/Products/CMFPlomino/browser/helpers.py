@@ -138,7 +138,11 @@ class SubformWidget(Widget):
             else:
                 dbs.append(db.restrictedTraverse(path))
 
-        for form in [form for db in dbs for form in db.getForms()]:
+        forms = []
+        for _db in dbs:
+            forms.extend(_db.getForms())
+
+        for form in forms:
             if form.id in found:
                 continue
             if not form.id.startswith("macro_%s_"%typename):
