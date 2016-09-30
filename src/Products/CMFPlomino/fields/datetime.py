@@ -160,7 +160,7 @@ class DatetimeField(BaseField):
             fieldValue = request.get(fieldname, fieldValue)
 
         if fieldValue and isinstance(fieldValue, basestring):
-            fmt = self.format
+            fmt = self.context.format
             if not fmt:
                 fmt = form.getParentDatabase().datetime_format
             fieldValue = StringToDate(fieldValue, fmt)
