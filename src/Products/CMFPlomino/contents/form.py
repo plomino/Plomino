@@ -1211,7 +1211,12 @@ class PlominoForm(Container):
         if widget_type == "field":
             field = self.getFormField(id)
             if field is not None:
-                html = field.getRenderedValue(fieldvalue=None,
+                # Some widgets/types prefer a fieldvalue
+                fieldvalue = None
+                if field.field_type == 'DATETIME':
+                    # Use the created date of the form
+                    fieldvalue = self.created()
+                html = field.getRenderedValue(fieldvalue=fieldvalue,
                                               editmode="EDITABLE",
                                               target=self)
                 # need to determine if the html will get wiped
