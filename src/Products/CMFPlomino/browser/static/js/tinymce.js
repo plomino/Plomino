@@ -138,6 +138,8 @@
         {
             var elementId = '';
         }
+        // Trim whitespace from the start/end
+        elementId = elementId.trim();
 
         if (customText) {
             elementId = elementId + ':1'
