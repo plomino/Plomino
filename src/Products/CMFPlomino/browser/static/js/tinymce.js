@@ -8,26 +8,32 @@
 
         // Add a button that opens a window
         editor.addButton('plominofield', {
+            tooltip: 'Field',
             image: '++resource++Products.CMFPlomino/img/PlominoField.png',
             onclick: function () { editFormElement(editor, url, 'field'); }
         });
         editor.addButton('plominolabel', {
+            tooltip: 'Label',
             image: '++resource++Products.CMFPlomino/img/PlominoLabel.png',
             onclick: function () { editFormElement(editor, url, 'label'); }
         });
         editor.addButton('plominoaction', {
+            tooltip: 'Action',
             image: '++resource++Products.CMFPlomino/img/PlominoAction.png',
             onclick: function () { editFormElement(editor, url, 'action'); }
         });
         editor.addButton('plominosubform', {
+            tooltip: 'Sub-form',
             image: '++resource++Products.CMFPlomino/img/PlominoForm.png',
             onclick: function () { editFormElement(editor, url, 'subform'); }
         });
         editor.addButton('plominohidewhen', {
+            tooltip: 'Hidewhen',
             image: '++resource++Products.CMFPlomino/img/PlominoHideWhen.png',
             onclick: function () { editFormElement(editor, url, 'hidewhen'); }
         });
         editor.addButton('plominocache', {
+            tooltip: 'Cache',
             image: '++resource++Products.CMFPlomino/img/PlominoCache.png',
             onclick: function () { editFormElement(editor, url, 'cache'); }
         });
