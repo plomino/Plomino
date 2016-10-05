@@ -1813,6 +1813,17 @@ class PlominoForm(Container):
                 if isinstance(submittedValue, record):
                     if not filter(None, submittedValue.values()):
                         submittedValue = None
+                if f.field_type == "DATETIME":
+                    # need to special handle datetime in macro pop up dialog
+                    # the REQUEST value is from json format
+                    # fieldName[<datetime>]:"true"
+                    # fieldName[datetime]:"1999-12-30T23:00:00+10:00"
+                    is_fieldNameDatetime = "{}[<datetime>]".format(fieldName)
+                    if REQUEST.get(is_fieldNameDatetime, "").lower() == "true":
+                        fieldNameDatetime = "{}[datetime]".format(fieldName)
+                        fieldNameValue = REQUEST.get(fieldNameDatetime)
+                        submittedValue = {u'<datetime>': True, u'datetime':
+                            fieldNameValue}
                 if submittedValue is not None:
                     if submittedValue == '':
                         doc.removeItem(fieldName)
@@ -1827,6 +1838,8 @@ class PlominoForm(Container):
                                 'MULTISELECT', 'CHECKBOX', 'PICKLIST'
                             ]:
                                 v = asList(v)
+                        logger.info('Method: readInputs {} value {}'.format(
+                            fieldName, v))
                         doc.setItem(fieldName, v)
                 else:
                     # The field was not submitted, probably because it is
