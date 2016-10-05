@@ -1164,12 +1164,13 @@ class PlominoForm(Container):
             pages = []
             page = []
             for elem in html.children():
-                if elem.tag != 'hr':
-                    page.append(elem)
-                else:
+                if elem.tag == 'hr' and elem.attrib.get('class') == 'plominoPagebreakClass':
                     # Add whatever we already have
                     pages.append(page)
                     page = []
+                else:
+                    page.append(elem)
+
             pages.append(page)
 
             new_html = []

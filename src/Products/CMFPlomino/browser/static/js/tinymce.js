@@ -37,7 +37,11 @@
             image: '++resource++Products.CMFPlomino/img/PlominoCache.png',
             onclick: function () { editFormElement(editor, url, 'cache'); }
         });
-
+        editor.addButton('plominopagebreak', {
+            tooltip: 'Page break',
+            image: '++resource++Products.CMFPlomino/img/PlominoPagebreak.png',
+            onclick: function () { editFormElement(editor, url, 'pagebreak'); }
+        });
     });
 
     var editFormElement = function(ed, url, elementType) {
@@ -77,6 +81,11 @@
             var elementClass = 'plominoCacheClass';
             var elementEditionPage = '@@tinymceplominoform/cache_form';
             var elementIdName = 'cacheid';
+        }
+        else if (elementType === "pagebreak") {
+            // Insert the page break straight away
+            ed.execCommand('mceInsertContent', false, '<hr class="plominoPagebreakClass">');
+            return;
         }
         else
             return;

@@ -91,6 +91,7 @@
       <element>plominosubform</element>
       <element>plominohidewhen</element>
       <element>plominocache</element>
+      <element>plominopagebreak</element>
     </value>
   </records>
 
