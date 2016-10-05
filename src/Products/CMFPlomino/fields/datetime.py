@@ -153,7 +153,7 @@ class DatetimeField(BaseField):
         """
         fieldValue = BaseField.getFieldValue(
             self, form, doc, editmode_obsolete, creation, request)
-        logger.info('Method: getFieldValue value {}'.format(
+        logger.debug('Method: datetime getFieldValue value {}'.format(
             fieldValue))
 
         mode = self.context.field_mode
