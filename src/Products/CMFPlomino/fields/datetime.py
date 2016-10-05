@@ -13,6 +13,9 @@ from .. import _
 from ..utils import StringToDate
 from base import BaseField
 
+import logging
+
+logger = logging.getLogger('Plomino')
 
 @provider(IFormFieldProvider)
 class IDatetimeField(model.Schema):
@@ -158,6 +161,23 @@ class DatetimeField(BaseField):
                 'Plomino_datagrid_rowdata' in request)):
             fieldname = self.context.id
             fieldValue = request.get(fieldname, fieldValue)
+
+        if not fieldValue and doc.id == "TEMPDOC":
+            # need to special handle datetime in macro pop up dialog
+            # the request value is from json format
+            # fieldName[<datetime>]:"true"
+            # fieldName[datetime]:"1999-12-30T23:00:00+10:00"
+            fieldName = self.context.id
+            is_fieldNameDatetime = "{}[<datetime>]".format(fieldName)
+            logger.info('Method: getFieldValue guess')
+            if request.get(is_fieldNameDatetime, "").lower() == "true":
+                fieldNameDatetime = "{}[datetime]".format(fieldName)
+                logger.info('Method: getFieldValue guess {}'.format(
+                    fieldName))
+                fieldValue = StringToDate(
+                    request.get(fieldNameDatetime), format=None)
+                logger.info('Method: getFieldValue value {}'.format(
+                    fieldValue))
 
         if fieldValue and isinstance(fieldValue, basestring):
             fmt = self.context.format
