@@ -29,18 +29,18 @@ var PlominoDialog = {
             // Handle labels
             var selection = ed.selection.getNode();
             if (container == "span") {
-                content = '<span class="plominoLabelClass mceNonEditable" data-plominoid="'+value+'">&nbsp;</span>';
+                content = '<span class="plominoLabelClass mceNonEditable" data-plominoid="'+value+'">&nbsp;</span><br />';
             } else {
                 if (top.tinymce.DOM.hasClass(selection, "plominoLabelClass") && selection.tagName === "SPAN") {
-                    content = '<div class="plominoLabelClass mceNonEditable" data-plominoid="'+value+'"><div class="plominoLabelContent mceEditable">&nbsp;</div></div>';
+                    content = '<div class="plominoLabelClass mceNonEditable" data-plominoid="'+value+'"><div class="plominoLabelContent mceEditable">&nbsp;</div></div><br />';
                 }
                 else if (top.tinymce.DOM.hasClass(selection.firstChild, "plominoLabelContent")) {
-                    content = '<div class="plominoLabelClass mceNonEditable" data-plominoid="'+value+'">'+selection.innerHTML+'</div>';
+                    content = '<div class="plominoLabelClass mceNonEditable" data-plominoid="'+value+'">'+selection.innerHTML+'</div><br />';
                 } else {
-                    content = '<div class="plominoLabelClass mceNonEditable" data-plominoid="'+value+'"><div class="plominoLabelContent mceEditable">'+selection.outerHTML+'</div></div>';
+                    content = '<div class="plominoLabelClass mceNonEditable" data-plominoid="'+value+'"><div class="plominoLabelContent mceEditable">'+selection.outerHTML+'</div></div><br />';
                 }
             }
-            ed.execCommand('mceInsertRawHTML', false, content, {skip_undo : 1});
+            ed.execCommand('mceInsertContent', false, content, {skip_undo : 1});
         }
 		else if (plominoClass !== undefined)
 		{
@@ -56,11 +56,11 @@ var PlominoDialog = {
                 var span = '<'+container+' class="'+plominoClass
                     + ' mceNonEditable" data-mce-resize="false" data-plominoid="'+value+'">'
 //                    +'<span class="plominoEditWidgetTab">'+  value+'</span>'
-                    + example + '</'+container+'>';
+                    + example + '</'+container+'><br />';
             }
             else {
                 // String to add in the editor
-                var span = '<span class="' + plominoClass + '">' + value + '</span>'; 
+                var span = '<span class="' + plominoClass + '">' + value + '</span><br />'; 
             }
 
 			// Insert or replace the selection
@@ -69,9 +69,9 @@ var PlominoDialog = {
 			//tinyMCEPopup.restoreSelection();
 			var selection = ed.selection.getNode();
 			if (top.tinymce.DOM.hasClass(selection, 'plominoActionClass') || top.tinymce.DOM.hasClass(selection, 'plominoFieldClass') || top.tinymce.DOM.hasClass(selection, 'plominoLabelClass') || top.tinymce.DOM.hasClass(selection, 'plominoSubformClass'))
-				ed.execCommand('mceInsertRawHTML', false, span, {skip_undo : 1});
+				ed.execCommand('mceInsertContent', false, span, {skip_undo : 1});
 			else
-				ed.execCommand('mceInsertRawHTML', false, span, {skip_undo : 1});
+				ed.execCommand('mceInsertContent', false, span, {skip_undo : 1});
 		}
 		else if (type == "hidewhen" || type == 'cache')
 		{
@@ -131,7 +131,7 @@ var PlominoDialog = {
 				// String to add in the editor
 				var zone = '<span class="'+cssclass+' mceNonEditable" data-plominoid="'+value+'" data-plomino-position="start">&nbsp;</span>' +
                     ed.selection.getContent() +
-                    '<span class="'+cssclass+' mceNonEditable" data-plominoid="'+value+'" data-plomino-position="end">&nbsp;</span>';
+                    '<span class="'+cssclass+' mceNonEditable" data-plominoid="'+value+'" data-plomino-position="end">&nbsp;</span><br />';
 				ed.execCommand('mceInsertContent', false, zone, {skip_undo : 1});
 			}
 		}
