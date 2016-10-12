@@ -771,7 +771,8 @@ class PlominoForm(Container):
                 pq(legend).html(pq(label_node).html()).insert_before(pq(label_node))
                 pq(label_node).remove()
 
-        return d.html()
+        # Need to return outer_html in case the html only has one element
+        return d.outer_html()
 
     security.declareProtected(READ_PERMISSION, 'displayDocument')
 
