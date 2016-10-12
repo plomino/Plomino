@@ -167,6 +167,25 @@ class IPlominoForm(model.Schema):
         required=False,
     )
 
+    # ADVANCED
+    directives.fieldset(
+        'advanced',
+        label=_(u'Advanced'),
+        fields=(
+            'form_method',
+            'document_title',
+            'dynamic_document_title',
+            'store_dynamic_document_title',
+            'document_id',
+            'hide_default_actions',
+            'isSearchForm',
+            'search_view',
+            'search_formula',
+            'resources_js',
+            'resources_css',
+        ),
+    )
+
     # EVENTS
     directives.fieldset(
         'events',
