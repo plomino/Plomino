@@ -1840,8 +1840,8 @@ class PlominoForm(Container):
                                 'MULTISELECT', 'CHECKBOX', 'PICKLIST'
                             ]:
                                 v = asList(v)
-                        logger.debug('Method: form readInputs {} value {'
-                                     '}'.format(fieldName, v))
+                        #logger.debug(u'Method: form readInputs {} value {'
+                        #             '}'.format(fieldName, v))
                         doc.setItem(fieldName, v)
                 else:
                     # The field was not submitted, probably because it is
