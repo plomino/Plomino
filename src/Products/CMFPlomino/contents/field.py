@@ -1,6 +1,7 @@
 from collective.instancebehavior import IInstanceBehaviorAssignableContent
 from plone.autoform import directives
 from plone.dexterity.content import Item
+from plone.supermodel import directives as supermodel_directives
 from plone.supermodel import model
 from zope import component
 from zope import schema
@@ -174,6 +175,19 @@ class IPlominoField(model.Schema):
         description=_('CMFPlomino_help_FieldEditTemplate',
             default='Custom rendering template in edit mode'),
         required=False,
+    )
+
+    # ADVANCED
+    supermodel_directives.fieldset(
+        'advanced',
+        label=_(u'Advanced'),
+        fields=(
+            'to_be_indexed',
+            'index_type',
+            'html_attributes_formula',
+            'read_template',
+            'edit_template',
+        ),
     )
 
 

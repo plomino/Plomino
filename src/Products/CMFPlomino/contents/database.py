@@ -4,6 +4,7 @@ from plone.app.z3cform.widget import SelectFieldWidget
 from plone.autoform import directives
 from plone.dexterity.content import Container
 from plone.memoize.interfaces import ICacheChooser
+from plone.supermodel import directives as supermodel_directives
 from plone.supermodel import model
 from Products.CMFCore.PortalFolder import PortalFolderBase as PortalFolder
 import uuid
@@ -129,6 +130,22 @@ class IPlominoDatabase(model.Schema):
         unique=True,
         value_type=schema.Choice(vocabulary="Products.CMFPlomino.fields.vocabularies.get_databases"),
         default=['.']
+    )
+
+    # ADVANCED - the defaults should be fine most of the time
+    supermodel_directives.fieldset(
+        'advanced',
+        label=_(u'Advanced'),
+        fields=(
+            'indexAttachments',
+            'fulltextIndex',
+            'indexInPortal',
+            'debugMode',
+            'i18n',
+            'do_not_list_users',
+            'do_not_reindex',
+            'isDatabaseTemplate',
+        ),
     )
 
 class PlominoDatabase(
