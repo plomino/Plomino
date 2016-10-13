@@ -20,7 +20,9 @@ require([
             // wait until ace is ok
             setTimeout(function() {
                 self.ace.editor.getSession().setMode('ace/mode/python');
-                ed.css('width', width);
+                // the width variable return 100px most of the time.
+                // yet to find out why
+                ed.css('width', '100%');
                 self.ace.editor.resize();
                 self.ace.setText(self.$el.val());
                 self.ace.editor.on('change', function(){
@@ -221,9 +223,10 @@ define("plominodynamic", function(){});
 require([
     'jquery',
     'pat-base',
-    'mockup-patterns-modal'
-], function($, Base, Modal) {
-    
+    'mockup-patterns-modal',
+    'mockup-patterns-select2'
+], function($, Base, Modal, Select2) {
+
     var DataGrid = Base.extend({
         name: 'plominodatagrid',
         parser: 'mockup',
@@ -237,7 +240,12 @@ require([
             self.values = JSON.parse(self.input.val());
             self.rows = JSON.parse(self.$el.find('table').attr('data-rows'));
             self.col_number = self.fields.length;
-            self.form_url = self.$el.attr('data-form-url');
+            if (self.$el.attr('data-form-urls')) {
+                self.form_urls = JSON.parse(self.$el.attr('data-form-urls'));
+            } else {
+                self.form_urls = [{'url':self.$el.attr('data-form-url')}];
+            }
+
             self.render();
         },
         render: function() {
@@ -250,12 +258,18 @@ require([
             html += '</tr>';
             for(var j=0;j<self.rows.length;j++) {
                 var edit_url = self.form_url;
-                for(var k=0;k<self.col_number;k++) {
-                    var value = self.values[j][k] || '';
-                    value = value.datetime ? value.datetime : value;
-                    edit_url += '&' + self.fields[k] + '=' + value;
+                var formid = self.values[j]['Form'];
+                for (var f=0; f<self.form_urls.length; f++) {
+                    if (self.form_urls[f].id == formid) {
+                        edit_url = self.form_urls[f].url;
+                        break;
+                    }
                 }
-                html += '<tr><td class="actions"><a class="edit-row" href="' + edit_url + '"><i class="icon-pencil"></i></a>';
+                edit_url += '&'+ $.param(self.values[j]);
+                //for(var k=0;k<self.values.length;k++) {
+                //    edit_url += '&' + self.values.lenght[k] + '=' + self.values[j][k];
+                //}
+                html += '<tr><td class="actions"><a class="edit-row" href="' + edit_url + '" data-formid="'+formid+'"><i class="icon-pencil"></i></a>';
                 html += '<a class="remove-row" href="#"><i class="icon-cancel"></i></a>';
                 html += '<a class="up-row" href="#"><i class="icon-up-dir"></i></a>';
                 html += '<a class="down-row" href="#"><i class="icon-down-dir"></i></a></td>';
@@ -265,31 +279,81 @@ require([
                 }
                 html += '</tr>';
             }
-            html += '<tr><td class="actions"><a class="add-row" href="'+self.form_url+'"><i class="icon-plus"></i></a></td></tr>';
+            var form_select="";
+            if (self.form_urls.length > 1) {
+                form_select = '<select class="form_select" data-pat="width:10em">'
+                for (i=0; i<self.form_urls.length; i++) {
+                    var form = self.form_urls[i];
+                    form_select += '<option value="'+form['url']+'">'+form['title']+'</option>'
+                }
+                form_select += '</select>'
+            }
+            if (self.form_urls[0] != undefined) {
+                html += '<tr><td class="actions" colspan="5">'+form_select+
+                    '<a class="add-row" href="'+self.form_urls[0]['url']+
+                    '" data-formid="'+self.form_urls[0]['id']+
+                    '"><i class="icon-plus"></i></a></td></tr>';
+            }
             table.html(html);
-            var add_modal = new Modal(self.$el.find('.add-row'), {
-                actions: {
-                    'input.plominoSave': {
-                        onSuccess: self.add.bind(self),
-                        onError: function(response) {
-                            window.alert(response.responseJSON.errors.join('\n'));
-                            return false;
+            var add_row = self.$el.find('.add-row');
+            self.$el.find('.form_select').each(function(index, el) {
+                var formid;
+                $(el).change(function() {
+                    var url =  $(el).val()
+                    for (var f=0; f<self.form_urls.length; f++) {
+                        if (self.form_urls[f].url == url) {
+                            formid = self.form_urls[f].id;
+                            break;
                         }
                     }
-                }
+                    add_row.attr('href', url).attr('data-formid', formid);
+                });
             });
-            self.$el.find('.edit-row').each(function(i, el) {
-                var edit_modal = new Modal($(el), {
+            add_row.click(function(evt){
+                evt.stopPropagation();
+                evt.preventDefault();
+                //HACK: modal is broken so we can't dynamically set the ajaxURL
+                // bind to a dummy element instead.
+                var add_modal = new Modal(self.$el.find('.add-row i'), {
+                    ajaxUrl: add_row.attr('href'),
                     actions: {
                         'input.plominoSave': {
-                            onSuccess: self.edit.bind({grid: self, row: i}),
-                            onError: function(response) {
+                            onSuccess: self.add.bind(
+                                {grid: self,
+                                 formid:add_row.attr('data-formid')
+                                }),
+                            onError: function() {
+                                // TODO: render errors in the form
                                 window.alert(response.responseJSON.errors.join('\n'));
                                 return false;
                             }
                         }
+    //                    'input.plominoCancel': {
+    //                        onClick: add_row.hide()
+    //                    }
                     }
-                });
+                }).show();
+
+            })
+
+            self.$el.find('.edit-row').each(function(i, el) {
+                var edit_modal = new Modal($(el), {
+                    actions: {
+                        'input.plominoSave': {
+                            onSuccess: self.edit.bind({grid: self,
+                                row: i,
+                                formid: $(el).attr('data-formid')}),
+                            onError: function() {
+                                // TODO: render errors in the form
+                                window.alert(response.responseJSON.errors.join('\n'));
+                                return false;
+                            }
+                        }
+//                        'input.plominoCancel': {
+//                            onClick: add_row.hide()
+//                        }
+                    }
+              });
             });
             self.$el.find('.remove-row').each(function(index, el) {
                 $(el).click(function() {self.remove(self, index);});
@@ -302,15 +366,25 @@ require([
             });
         },
         add: function(modal, response, state, xhr, form) {
-            var self = this;
+            var self = this.grid;
+            var formid = this.formid;
             if(!response.errors) {
                 modal.hide();
-                var raw = [];
+                var raw = {};
                 var rendered = [];
+                var formdata = form.serializeArray();
                 for(var i=0;i<self.col_number;i++) {
-                    raw.push(response[self.fields[i]].raw);
-                    rendered.push(response[self.fields[i]].rendered);
+                    if (self.fields[i] != undefined && self.fields[i] in response) {
+                        rendered.push(response[self.fields[i]].rendered);
+                    } else {
+                        rendered.push('');
+                    }
+
                 }
+                for (var key in response) {
+                    raw[key] = response[key].raw
+                }
+                raw['Form'] = formid;
                 self.values.push(raw);
                 self.input.val(JSON.stringify(self.values));
                 self.rows.push(rendered);
@@ -321,15 +395,22 @@ require([
         edit: function(modal, response, state, xhr, form) {
             var self = this.grid;
             var row_index = this.row;
+            var formid = this.formid;
             if(!response.errors) {
                 modal.hide();
-                var raw = [];
                 var rendered = [];
-                for(var i=0;i<self.col_number;i++) {
-                    raw.push(response[self.fields[i]].raw);
-                    rendered.push(response[self.fields[i]].rendered);
+                for(var i=0; i<self.col_number; i++) {
+                    if (self.fields[i] != undefined && self.fields[i] in response) {
+                        rendered.push(response[self.fields[i]].rendered);
+                    } else {
+                        rendered.push('');
+                    }
                 }
-                self.values[row_index] = raw;
+                self.values[row_index]['Form'] = formid;
+                // keep any internal data (e.g. ids from server). Same as normal doc would
+                for (var key in response) {
+                    self.values[row_index][key] = response[key].raw;
+                }
                 self.input.val(JSON.stringify(self.values));
                 self.rows[row_index] = rendered;
                 self.render();
@@ -363,3 +444,60 @@ require([
     return DataGrid;
 });
 define("plominodatagrid", function(){});
+
+require([
+    'jquery',
+    'pat-base'
+], function($, Base) {
+    'use strict';
+    var Multipage = Base.extend({
+        name: 'plominomultipage',
+        parser: 'mockup',
+        trigger: 'body.template-page.portaltype-plominoform #plomino_form input[name="plomino_current_page"]',
+        defaults: {},
+        init: function() {
+            // Push the current page into the URL
+            // The action is the current page
+            var page = this.$el.parents('#plomino_form').attr('action');
+            var stateObj = {multipage: 'multipage' };
+            history.pushState(stateObj, '', page);
+        }
+    });
+    return Multipage;
+});
+define("plominomultipage", function(){});
+
+require([
+    'jquery',
+    'pat-base',
+    'mockup-patterns-modal',
+], function($, Base, Modal) {
+    'use strict';
+    var PlominoMacros = Base.extend({
+        name: 'plominomacros',
+        parser: 'mockup',
+        trigger: '.plomino-macro',
+        defaults: {},
+        init: function() {
+            var self = this;
+            // Remove any onclick values
+            $('.plominoClose', self.$modal).each(function() {
+                this.removeAttribute('onclick');
+            });
+            self.render();
+        },
+        render: function() {
+            var self = this;
+            // Close the modal when the close button is clicked
+            $('.plominoClose', self.$modal)
+              .off('click')
+              .on('click', function(e) {
+                e.stopPropagation();
+                e.preventDefault();
+                $(e.target).trigger('destroy.plone-modal.patterns');
+            });
+        }
+ });
+    return PlominoMacros;
+});
+define("plominomacros", function(){});

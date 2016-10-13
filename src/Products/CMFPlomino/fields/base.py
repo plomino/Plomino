@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from zope.interface import Interface, implements
+from ZPublisher.HTTPRequest import record
 
 from ..utils import asUnicode
 
@@ -106,7 +107,10 @@ class BaseField(object):
                 request_value = request.get(fieldName, '')
                 if not request_value:
                     request_value = request.get(fieldName + '_querystring', '')
-                fieldValue = asUnicode(request_value)
+                if isinstance(request_value, record):
+                    fieldValue = request_value
+                else:
+                    fieldValue = asUnicode(request_value)
             if not fieldValue:
                 fieldValue = ""
 

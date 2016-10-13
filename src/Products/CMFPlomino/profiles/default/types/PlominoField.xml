@@ -23,6 +23,8 @@
   <property name="behaviors">
     <element value="plone.app.dexterity.behaviors.metadata.IBasic"/>
     <element value="plone.app.content.interfaces.INameFromTitle"/>
+    <element value="Products.CMFPlomino.browser.helpers.IHelpers"/>
+
   </property>
   <property name="schema">Products.CMFPlomino.contents.field.IPlominoField</property>
   <property name="klass">Products.CMFPlomino.contents.field.PlominoField</property>

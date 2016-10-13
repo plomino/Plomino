@@ -20,7 +20,9 @@ require([
             // wait until ace is ok
             setTimeout(function() {
                 self.ace.editor.getSession().setMode('ace/mode/python');
-                ed.css('width', width);
+                // the width variable return 100px most of the time.
+                // yet to find out why
+                ed.css('width', '100%');
                 self.ace.editor.resize();
                 self.ace.setText(self.$el.val());
                 self.ace.editor.on('change', function(){

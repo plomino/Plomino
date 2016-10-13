@@ -117,4 +117,19 @@
         component=".fields.vocabularies.get_forms"
     />
 
+    <utility
+        name="Products.CMFPlomino.fields.vocabularies.get_databases"
+        provides="zope.schema.interfaces.IVocabularyFactory"
+        component=".contents.database.get_databases"
+    />
+
+    <adapter
+       provides="z3c.form.interfaces.IDataManager"
+       for=".contents.form.IPlominoForm
+            zope.schema.interfaces.IField"
+       factory=".contents.form.GetterSetterAttributeField"
+       />
+
+
+
 </configure>

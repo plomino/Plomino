@@ -8,30 +8,40 @@
 
         // Add a button that opens a window
         editor.addButton('plominofield', {
+            tooltip: 'Field',
             image: '++resource++Products.CMFPlomino/img/PlominoField.png',
             onclick: function () { editFormElement(editor, url, 'field'); }
         });
         editor.addButton('plominolabel', {
+            tooltip: 'Label',
             image: '++resource++Products.CMFPlomino/img/PlominoLabel.png',
             onclick: function () { editFormElement(editor, url, 'label'); }
         });
         editor.addButton('plominoaction', {
+            tooltip: 'Action',
             image: '++resource++Products.CMFPlomino/img/PlominoAction.png',
             onclick: function () { editFormElement(editor, url, 'action'); }
         });
         editor.addButton('plominosubform', {
+            tooltip: 'Sub-form',
             image: '++resource++Products.CMFPlomino/img/PlominoForm.png',
             onclick: function () { editFormElement(editor, url, 'subform'); }
         });
         editor.addButton('plominohidewhen', {
+            tooltip: 'Hidewhen',
             image: '++resource++Products.CMFPlomino/img/PlominoHideWhen.png',
             onclick: function () { editFormElement(editor, url, 'hidewhen'); }
         });
         editor.addButton('plominocache', {
+            tooltip: 'Cache',
             image: '++resource++Products.CMFPlomino/img/PlominoCache.png',
             onclick: function () { editFormElement(editor, url, 'cache'); }
         });
-
+        editor.addButton('plominopagebreak', {
+            tooltip: 'Page break',
+            image: '++resource++Products.CMFPlomino/img/PlominoPagebreak.png',
+            onclick: function () { editFormElement(editor, url, 'pagebreak'); }
+        });
     });
 
     var editFormElement = function(ed, url, elementType) {
@@ -72,24 +82,40 @@
             var elementEditionPage = '@@tinymceplominoform/cache_form';
             var elementIdName = 'cacheid';
         }
+        else if (elementType === "pagebreak") {
+            // Insert the page break straight away
+            ed.execCommand('mceInsertContent', false, '<hr class="plominoPagebreakClass"><br />');
+            return;
+        }
         else
             return;
 
         // Find the element id
         // Select the parent node of the selection
         var selection = ed.selection.getNode();
+        var customText = false;
+        if (elementType === "label") {
+            if (tinymce.DOM.hasClass(selection, 'plominoLabelContent')) {
+                selection = selection.parentNode;
+                var customText = true;
+            } else if (selection.tagName === "DIV" && tinymce.DOM.hasClass(selection, "plominoLabelClass")) {
+                var customText = true;
+            }
+        }
         // If the node is a <span class="plominoFieldClass"/>, select all its content
         if (tinymce.DOM.hasClass(selection, elementClass))
         {
             ed.selection.select(selection);
-            var elementId = selection.firstChild.nodeValue;
-
-            // hide-when and cache zones start with start:id and finish with end:id
-            if (elementType === "hidewhen" || elementType === "cache")
-            {
-                var splittedId = elementId.split(':');
-                if (splittedId.length > 1)
-                    elementId = splittedId[1];
+            var elementId = selection.getAttribute('data-plominoid');
+            if (elementId == null) {
+                elementId = selection.firstChild.nodeValue;
+                // hide-when and cache zones start with start:id and finish with end:id
+                if (elementType === "hidewhen" || elementType === "cache")
+                {
+                    var splittedId = elementId.split(':');
+                    if (splittedId.length > 1)
+                        elementId = splittedId[1];
+                }
             }
         }
         else if (elementType !== "hidewhen" && elementType !== "cache")
@@ -127,7 +153,12 @@
         {
             var elementId = '';
         }
+        // Trim whitespace from the start/end
+        elementId = elementId.trim();
 
+        if (customText) {
+            elementId = elementId + ':1'
+        }
         var base_url = $('body').attr('data-base-url');
 
         ed.windowManager.open({

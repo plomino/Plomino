@@ -6,6 +6,7 @@
     <meta http-equiv="Content-type" content="text/html;charset=UTF-8" />
     <title i18n:translate="plominoerror_title">Error message</title>
     <link tal:replace="structure provider:plone.htmlhead.links" />
+    <script tal:replace="structure provider:plone.scripts" />
 </head>
 <body id="plonebrowser" tal:define="error here/REQUEST/error|nothing;">
     <div class="plone-modal-dialog">
@@ -21,6 +22,7 @@
                         <p tal:condition="python:error=='no_action'" i18n:translate="plominoerror_noaction">The action name is incorrect.</p>
                         <p tal:condition="python:error=='no_hidewhen'" i18n:translate="plominoerror_nohidewhen">The hide-when name is incorrect.</p>
                         <p tal:condition="python:error=='no_cache'" i18n:translate="plominoerror_nocache">The cache name is incorrect.</p>
+                        <p tal:condition="python:error=='no_label'" i18n:translate="plominoerror_nocache">No field was selected.</p>
                         <p tal:condition="python:error=='object_exists'" i18n:translate="plominoerror_objectexists">An object with the same name already exists.</p>
                     </fieldset>
                     <p i18n:domain="tinymce">

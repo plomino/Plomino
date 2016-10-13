@@ -1,6 +1,7 @@
 from collective.instancebehavior import IInstanceBehaviorAssignableContent
 from plone.autoform import directives
 from plone.dexterity.content import Item
+from plone.supermodel import directives as supermodel_directives
 from plone.supermodel import model
 from zope import component
 from zope import schema
@@ -176,6 +177,19 @@ class IPlominoField(model.Schema):
         required=False,
     )
 
+    # ADVANCED
+    supermodel_directives.fieldset(
+        'advanced',
+        label=_(u'Advanced'),
+        fields=(
+            'to_be_indexed',
+            'index_type',
+            'html_attributes_formula',
+            'read_template',
+            'edit_template',
+        ),
+    )
+
 
 class PlominoField(Item):
     implements(IPlominoField, IInstanceBehaviorAssignableContent)
@@ -258,7 +272,7 @@ class PlominoField(Item):
         else:
             renderer = adapt.render_read
 
-        selection = self.getSettings().getSelectionList(target)
+        selection = self.getSelectionList(target)
 
         try:
             html = renderer(
@@ -298,6 +312,12 @@ class PlominoField(Item):
             "%sField" % self.field_type.capitalize())
 
         return fieldfactory(self)
+
+    def getSelectionList(self, doc):
+        """
+        """
+        settings = self.getSettings()
+        return settings.getSelectionList(doc)
 
     def getSchema(self):
         """

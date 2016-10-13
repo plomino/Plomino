@@ -2,6 +2,7 @@
     xmlns="http://namespaces.zope.org/zope"
     xmlns:browser="http://namespaces.zope.org/browser"
     xmlns:plone="http://namespaces.plone.org/plone"
+    xmlns:z3c="http://namespaces.zope.org/z3c"
     i18n_domain="Products.CMFPlomino">
 
     <!-- permissions -->
@@ -97,6 +98,13 @@
 
     <browser:page
         for="Products.CMFPlomino.contents.form.IPlominoForm"
+        name="page"
+        class=".form.PageView"
+        permission="zope.Public"
+        />
+
+    <browser:page
+        for="Products.CMFPlomino.contents.form.IPlominoForm"
         name="add-field"
         class=".form.FormView"
         attribute="addField"
@@ -162,7 +170,7 @@
     <browser:page
         name="tinyform"
         for="Products.CMFPlomino.contents.form.IPlominoForm"
-        class=".tinymce.PlominoForm"
+        class=".tinymce.PlominoFormSettings"
         permission="zope.Public"
         allowed_attributes="getField addField addLabel addAction addHidewhen addCache addSubForm action_template"
         />
@@ -170,7 +178,7 @@
    <browser:page
         name="tinyfield"
         for="Products.CMFPlomino.contents.field.IPlominoField"
-        class=".tinymce.PlominoField"
+        class=".tinymce.PlominoFieldSettings"
         permission="zope.Public"
         allowed_attributes="setFieldProperties"
         />
@@ -178,7 +186,7 @@
    <browser:page
         name="tinyhidewhen"
         for="Products.CMFPlomino.contents.hidewhen.IPlominoHidewhen"
-        class=".tinymce.PlominoHidewhen"
+        class=".tinymce.PlominoHidewhenSettings"
         permission="zope.Public"
         allowed_attributes="setHidewhenProperties"
         />
@@ -186,19 +194,12 @@
    <browser:page
         name="tinyaction"
         for="Products.CMFPlomino.contents.action.IPlominoAction"
-        class=".tinymce.PlominoAction"
+        class=".tinymce.PlominoActionSettings"
         permission="zope.Public"
         allowed_attributes="setActionProperties"
         />
 
     <!--
-   <browser:page
-        name="tinyhidewhen"
-        for="Products.CMFPlomino.contents..IPlominoHidewhen"
-        class=".hidewhen.PlominoHidewhen"
-        permission="zope.Public"
-        allowed_attributes="setHidewhenProperties"
-        />
 
    <browser:page
         name="tinycache"
@@ -208,6 +209,89 @@
         allowed_attributes="setCacheProperties"
         />
     -->
+
+    <!--<browser:page-->
+        <!--for="Products.CMFPlomino.contents.form.IPlominoForm"-->
+        <!--name="HelperForm"-->
+        <!--class=".helpers.HelperView"-->
+        <!--attribute="openform"-->
+        <!--permission="zope.Public"-->
+        <!--/>-->
+
+  <adapter
+      factory="Products.CMFPlomino.browser.helpers.SubformWidget"
+      provides="z3c.form.interfaces.IFieldWidget"
+      for="zope.schema.interfaces.IAbstractSet
+           zope.schema.interfaces.IObject
+           plone.app.z3cform.interfaces.IPloneFormLayer"
+      />
+  <adapter factory=".helpers.SubformWidgetConverter" />
+    <subscriber
+      for="Products.CMFPlomino.contents.form.IPlominoForm
+           zope.lifecycleevent.interfaces.IObjectModifiedEvent"
+      handler=".helpers.update_helpers"
+      />
+    <subscriber
+      for="Products.CMFPlomino.contents.field.IPlominoField
+           zope.lifecycleevent.interfaces.IObjectModifiedEvent"
+      handler=".helpers.update_helpers"
+      />
+    <subscriber
+      for="Products.CMFPlomino.contents.action.IPlominoAction
+           zope.lifecycleevent.interfaces.IObjectModifiedEvent"
+      handler=".helpers.update_helpers"
+      />
+    <subscriber
+      for="Products.CMFPlomino.contents.hidewhen.IPlominoHidewhen
+           zope.lifecycleevent.interfaces.IObjectModifiedEvent"
+      handler=".helpers.update_helpers"
+      />
+    <subscriber
+      for="Products.CMFPlomino.contents.view.IPlominoView
+           zope.lifecycleevent.interfaces.IObjectModifiedEvent"
+      handler=".helpers.update_helpers"
+      />
+
+    <plone:behavior
+        title="Helpers"
+        description="Lets an object use external forms to generate its formulas"
+        provides=".helpers.IHelpers"
+        factory=".helpers.Helpers"
+        />
+        <!--for="Products.CMFPlomino.contents.form.IPlominoForm"-->
+    <!--<plone:behavior-->
+        <!--title="Helpers"-->
+        <!--description="Lets an object use external forms to generate its formulas"-->
+        <!--provides=".helpers.IHelpers"-->
+        <!--for="Products.CMFPlomino.contents.field.IPlominoField"-->
+        <!--/>-->
+    <!--<plone:behavior-->
+        <!--title="Helpers"-->
+        <!--description="Lets an object use external forms to generate its formulas"-->
+        <!--provides=".helpers.IHelpers"-->
+        <!--for="Products.CMFPlomino.contents.action.IPlominoAction"-->
+        <!--/>-->
+    <!--<plone:behavior-->
+        <!--title="Helpers"-->
+        <!--description="Lets an object use external forms to generate its formulas"-->
+        <!--provides=".helpers.IHelpers"-->
+        <!--for="Products.CMFPlomino.contents.hidewhen.IPlominoHidewhen"-->
+        <!--/>-->
+    <!--<plone:behavior-->
+        <!--title="Helpers"-->
+        <!--description="Lets an object use external forms to generate its formulas"-->
+        <!--provides=".helpers.IHelpers"-->
+        <!--for="Products.CMFPlomino.contents.view.IPlominoView"-->
+        <!--/>-->
+
+  <z3c:widgetTemplate
+      mode="input"
+      widget=".helpers.ISubformWidget"
+      layer="plone.app.z3cform.interfaces.IPloneFormLayer"
+      template="templates/multi_helpers.pt"
+      />
+
+
 
   <plone:portlet
       name="plomino.designportlet"

@@ -2,13 +2,13 @@
     fieldvalue python:options['fieldvalue'];
     selection python:options['selection'];
     fieldname field/id;
-    type python:field.type;
+    fieldtype python:field.type;
     selector python:field.selector;">
     
     <tal:listusers tal:condition="python:selection">
         <tal:block tal:condition="python:selector=='LIST'">
             <input type="text" class="pat-select2"
-                tal:define="multiple python:(type=='MULTI' and 'true') or 'false';
+                tal:define="multiple python:fieldtype == 'MULTI' and 'true' or '';
                     initialValues python:field.getSettings().getCurrent(fieldvalue);"
                 tal:attributes="id fieldname;
                     name fieldname;

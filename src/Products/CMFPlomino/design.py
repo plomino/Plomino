@@ -2,6 +2,10 @@ from AccessControl import ClassSecurityInfo
 from AccessControl.requestmethod import postonly
 from AccessControl.SecurityManagement import newSecurityManager
 import base64
+from plone.behavior.interfaces import IBehaviorAssignable
+from z3c.form.interfaces import IDataManager
+from zope.component import getMultiAdapter
+from Products.CMFPlomino.events import afterFieldModified
 import codecs
 from cStringIO import StringIO
 from DateTime import DateTime
@@ -934,15 +938,19 @@ class DesignManager:
         schema = component.getUtility(
             IDexterityFTI, name=obj.portal_type).lookupSchema()
 
-        attributes = getFieldsInOrder(schema)
-        if obj.Type() == "PlominoField":
-            specific_schema = obj.getSchema()
-            for param in specific_schema.names():
-                attributes.append((param, specific_schema.get(param)))
-
         params = {}
-        for (id, attr) in attributes:
-            params[id] = getattr(obj, id, None)
+        def get_data(obj, schema):
+            fields = getFieldsInOrder(schema)
+            for (id, attr) in fields:
+                #params[id] = getattr(obj, id, None)
+                dm = getMultiAdapter((obj, attr), IDataManager)
+                #TODO: needs to be the same as import due to form_layout
+                #params[id] = dm.get()
+                params[id] = getattr(obj, id)
+        get_data(obj, schema)
+        for behaviour in IBehaviorAssignable(obj).enumerateBehaviors():
+            get_data(obj,behaviour.interface)
+
         data['params'] = params
 
         if not isDatabase:
@@ -1147,16 +1155,36 @@ class DesignManager:
                 ob.wl_clearLocks()
             container.manage_delObjects([id])
         params = element['params']
-        container.invokeFactory(element_type, id=id, **params)
+        container.invokeFactory(element_type, id=id)
         obj = getattr(container, id)
         obj.title = element['title']
+
+        schema = component.getUtility(
+            IDexterityFTI, name=obj.portal_type).lookupSchema()
+
+        def set_data(obj, schema):
+            fields = getFieldsInOrder(schema)
+            for (id, attr) in fields:
+                #params[id] = getattr(obj, id, None)
+                dm = getMultiAdapter((obj, attr), IDataManager)
+                #dm.set(params[id])
+                #TODO: should be using the dm but getting adapt error
+                setattr(obj, id, params[id])
+
+        set_data(obj, schema)
+        #HACK to enable the instance behaviour
+        if element_type == "PlominoField":
+            afterFieldModified(obj, None)
+        for behaviour in IBehaviorAssignable(obj).enumerateBehaviors():
+            set_data(obj,behaviour.interface)
+
         obj.reindexObject()
 
-        if element_type == "PlominoField":
-            # some params comes from the type-specific schema
-            # they must be re-set
-            for param in params:
-                setattr(obj, param, params[param])
+        # if element_type == "PlominoField":
+        #     # some params comes from the type-specific schema
+        #     # they must be re-set
+        #     for param in params:
+        #         setattr(obj, param, params[param])
         if 'elements' in element:
             for (child_id, child) in element['elements'].items():
                 self.importElementFromJSON(obj, child_id, child)

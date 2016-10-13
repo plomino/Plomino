@@ -1,7 +1,10 @@
 from AccessControl import ClassSecurityInfo, Unauthorized
 from OFS.ObjectManager import ObjectManager
+from plone.app.z3cform.widget import SelectFieldWidget
+from plone.autoform import directives
 from plone.dexterity.content import Container
 from plone.memoize.interfaces import ICacheChooser
+from plone.supermodel import directives as supermodel_directives
 from plone.supermodel import model
 from Products.CMFCore.PortalFolder import PortalFolderBase as PortalFolder
 import uuid
@@ -13,6 +16,7 @@ from zope import event
 from zope.interface import implements
 
 from .. import _, config
+from zope.schema.vocabulary import SimpleVocabulary
 from ..accesscontrol import AccessControl
 from ..exceptions import PlominoCacheException, PlominoScriptException
 from ..interfaces import IPlominoContext
@@ -114,6 +118,35 @@ class IPlominoDatabase(model.Schema):
         default=False,
     )
 
+    #TODO: proper vocabulary of all other db's in site. perhaps with UUID in
+    # case they are renamed
+    directives.widget('import_macros', SelectFieldWidget)
+                      #pattern_options={'myoption': 'myvalue'})
+    import_macros = schema.List(
+        title=_("CMFPlomino_label_include_macros_from",
+            default="Import Macros"),
+        description=_("CMFPlomino_help_include_macros_from",
+            default="Databases to search for macros. Reorder to change search order."),
+        unique=True,
+        value_type=schema.Choice(vocabulary="Products.CMFPlomino.fields.vocabularies.get_databases"),
+        default=['.']
+    )
+
+    # ADVANCED - the defaults should be fine most of the time
+    supermodel_directives.fieldset(
+        'advanced',
+        label=_(u'Advanced'),
+        fields=(
+            'indexAttachments',
+            'fulltextIndex',
+            'indexInPortal',
+            'debugMode',
+            'i18n',
+            'do_not_list_users',
+            'do_not_reindex',
+            'isDatabaseTemplate',
+        ),
+    )
 
 class PlominoDatabase(
         Container, AccessControl, DesignManager, ReplicationManager):
@@ -388,3 +421,20 @@ class PlominoDatabase(
             del cache[key]
         else:
             del annotations[config.PLOMINO_REQUEST_CACHE_KEY]
+
+def get_databases(obj):
+    db = obj
+    if not db:
+        return []
+    from Products.CMFCore.utils import getToolByName
+    catalog = getToolByName(db, 'portal_catalog')
+    results = catalog.searchResults({'portal_type': 'PlominoDatabase'})
+    title = "{title} ({path})".format(title=db.Title(),path=".")
+    vocab = [(title, ".")]
+    path = '/'.join(db.getPhysicalPath() )
+    for brain in results:
+        if brain.getPath() == path:
+            continue
+        title = "{title} ({path})".format(title=brain['Title'],path=brain.getPath())
+        vocab.append( (title, brain.getPath()) )
+    return SimpleVocabulary.fromItems(vocab)

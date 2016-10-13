@@ -1,18 +1,33 @@
 <div class="plomino-datagrid" tal:define="
     field python:options['field'];
     fieldname python:field.id;
-    associated_form python:field.getSettings().getAssociatedForm();
+    settings field/getSettings;
+    associated_form python:settings.getAssociatedForm();
+    add_url associated_form/absolute_url|string:.;
     parent_form field/getParentNode;
-    fieldvalue python:options['fieldvalue'];"
+    fieldvalue python:options['fieldvalue'];
+    columns settings/getColumnLabels|python:['A','B','C']"
     tal:attributes="
-        data-associated-form python:associated_form.id;
-        data-fields python:field.field_mapping;
-        data-columns python:','.join(field.getSettings().getColumnLabels());
-        data-form-url string:${associated_form/absolute_url}/OpenForm?ajax_load=1&Plomino_Parent_Field=${fieldname}&Plomino_Parent_Form=${parent_form/id};
+        data-associated-form associated_form/id|nothing;
+        data-fields python:field.getSettings().getFieldMapping();
+        data-columns python:','.join(columns);
+        data-form-url string:${add_url}/OpenForm?ajax_load=1&Plomino_Parent_Field=${fieldname}&Plomino_Parent_Form=${parent_form/id};
     ">
-    <table tal:attributes="
-        data-rows python:field.getSettings().tojson(fieldvalue, True);
-        "></table>
+    <table tal:attributes="data-rows python:field.getSettings().tojson(fieldvalue, True);"
+           tal:define="rows fieldvalue/rendered|nothing">
+        <tr>
+            <th tal:repeat="col columns"
+                tal:content="col">col</th>
+        </tr>
+        <tr tal:repeat="row rows">
+            <td tal:repeat="cell row"
+                tal:content="structure cell">cell</td>
+        </tr>
+        <tr>
+            <td class="actions"><a class="add-row" href=""><i class="icon-plus"></i></a></td>
+        </tr>
+    </table>
+
     <input type="hidden"
         tal:attributes="name fieldname; value python:field.getSettings().tojson(fieldvalue);" />
 </div>

@@ -91,6 +91,7 @@
       <element>plominosubform</element>
       <element>plominohidewhen</element>
       <element>plominocache</element>
+      <element>plominopagebreak</element>
     </value>
   </records>
 
@@ -120,10 +121,21 @@
     <value key="js">++resource++Products.CMFPlomino/js/dynamic.js</value>
   </records>
 
+  <records prefix="plone.resources/plominomultipage"
+           interface='Products.CMFPlone.interfaces.IResourceRegistry'>
+    <value key="js">++resource++Products.CMFPlomino/js/multipage.js</value>
+  </records>
+
   <records prefix="plone.resources/plominodatagrid"
            interface='Products.CMFPlone.interfaces.IResourceRegistry'>
     <value key="js">++resource++Products.CMFPlomino/js/datagrid.js</value>
   </records>
+
+  <records prefix="plone.resources/plominomacros"
+           interface='Products.CMFPlone.interfaces.IResourceRegistry'>
+    <value key="js">++resource++Products.CMFPlomino/js/macros.js</value>
+  </records>
+
 
   <records prefix="plone.bundles/plomino"
            interface='Products.CMFPlone.interfaces.IBundleRegistry'>
@@ -133,6 +145,8 @@
       <element>plominodesign</element>
       <element>plominodynamic</element>
       <element>plominodatagrid</element>
+      <element>plominomultipage</element>
+      <element>plominomacros</element>
     </value>
     <value key="merge_with">default</value>
     <value key="enabled">True</value>
@@ -148,7 +162,7 @@
     </value>
     <value key="jscompilation">++resource++Products.CMFPlomino/js/plomino-compiled.js</value>
     <value key="csscompilation">++resource++Products.CMFPlomino/css/plomino-compiled.css</value>
-    <value key="last_compilation">2016-09-13 00:00:00</value>
+    <value key="last_compilation">2016-09-28 00:00:00</value>
   </records>
 
   <record name="plone.displayed_types" interface="Products.CMFPlone.interfaces.controlpanel.INavigationSchema" field="displayed_types">
@@ -161,8 +175,8 @@
         <vocabulary>plone.app.vocabularies.ReallyUserFriendlyTypes</vocabulary>
       </value_type>
     </field>
-    <value purge="false">>
-      <element>PlominoDatabase</element>>
+    <value purge="false">
+      <element>PlominoDatabase</element>
     </value>
   </record>
 </registry>
