@@ -11,8 +11,10 @@ from ZPublisher.HTTPRequest import record
 
 from .. import _
 from ..utils import StringToDate
+from ..utils import DatetimeToJS
 from base import BaseField
 
+import json
 import logging
 
 logger = logging.getLogger('Plomino')
@@ -171,3 +173,29 @@ class DatetimeField(BaseField):
             fieldValue = StringToDate(fieldValue, fmt)
 
         return fieldValue
+
+    def getJSFormat(self):
+        """
+        Get the current python datetime format and convert to js format.
+
+        Need to split to two data and time formats.
+        Example js format is {"time": false, "date": {"format": "dd mmmm yyyy" }}
+
+        :return: js format string that used in data-pat-pickadate
+        """
+        fmt = self.context.format
+        if not fmt:
+            fmt = self.context.getParentDatabase().datetime_format
+        if not fmt:
+            return ''
+
+        date_format, time_format = DatetimeToJS(fmt, split=True)
+        datetime_pattern = dict([('time', False), ('date', False)])
+        if date_format:
+            js_pattern = dict([('format', date_format)])
+            datetime_pattern['date'] = js_pattern
+        if time_format:
+            js_pattern = dict([('format', time_format)])
+            datetime_pattern['time'] = js_pattern
+
+        return json.dumps(datetime_pattern)

@@ -50,6 +50,29 @@ class PlominoUtilsTest(unittest.TestCase):
         now = DateTime()
         self.assertAlmostEqual(utils.Now() - now, 0)
 
+    def test_DatetimeToJS(self):
+        self.assertEqual(
+            utils.DatetimeToJS('%d/%m/%Y'), 'dd/mm/yyyy')
+        self.assertEqual(
+            utils.DatetimeToJS('%H:%M'),'HH:i')
+        self.assertEqual(
+            utils.DatetimeToJS('%I:%M %p'), 'hh:i A')
+        self.assertEqual(
+            utils.DatetimeToJS('%d-%b-%y'), 'dd-mmm-yy')
+        self.assertEqual(
+            utils.DatetimeToJS('%d %B %Y'), 'dd mmmm yyyy')
+        self.assertEqual(
+            utils.DatetimeToJS('%d/%m/%Y', True), ('dd/mm/yyyy', ''))
+        self.assertEqual(
+            utils.DatetimeToJS('%H:%M', True), ('', 'HH:i'))
+        self.assertEqual(
+            utils.DatetimeToJS('%I:%M %p', True), ('', 'hh:i A'))
+        self.assertEqual(
+            utils.DatetimeToJS('%d-%b-%y %I:%M %p', True), ('dd-mmm-yy',
+                                                            'hh:i A'))
+        self.assertEqual(
+            utils.DatetimeToJS('%d/%m/%Y%H:%M', True), ('dd/mm/yyyy', 'HH:i'))
+
     def test_userFullname(self):
         self.assertEqual(utils.userFullname(self.db, "user1"), "User 1")
         self.assertEqual(utils.userFullname(self.db, "johncleese"), "Unknown")
