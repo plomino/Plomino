@@ -3,7 +3,7 @@
     lang="en"
     i18n:domain="plomino.tinymce">
     <head>
-        <meta http-equiv="Content-type" content="text/html;charset=UTF-8" /> 
+        <meta http-equiv="Content-type" content="text/html;charset=UTF-8" />
         <title i18n:translate="plominofield_title">Add/edit a Plomino Field</title>
         <script type="text/javascript" src="++resource++Products.CMFPlomino/js/tinymce.plominofield.js"></script>
         <link tal:replace="structure provider:plone.htmlhead.links" />
@@ -24,7 +24,7 @@
         fieldproperties adapted/getFieldProperties;
         field adapted/getField;
         fields form/getFormFields;
-        dummy python: fields is not None and view.request.RESPONSE.redirect(field.absolute_url() + '/edit?ajax_load=1&ajax_include_head=1');
+        dummy python: field is not None and view.request.RESPONSE.redirect(field.absolute_url() + '/edit?ajax_load=1&ajax_include_head=1');
         ">
         <div class="plone-modal-dialog">
             <div class="plone-modal-content">
@@ -63,7 +63,7 @@
 
                         <fieldset>
                             <legend i18n:translate="plominofield_edit">Edit Field Properties</legend>
-                            
+
                             <p>
                                 <label for="fieldTypesList" i18n:translate="plominofield_type">Field type</label>
                                 <select id="fieldTypesList" name="fieldtype" onchange="updateFieldSettingsLink(this.options[this.selectedIndex].value);">
@@ -72,7 +72,7 @@
                                         tal:attributes="value python:type[0]; selected python:fieldproperties['fieldType']==type[0]"></option>
                                 </select>
                             </p>
-                                
+
                             <p>
                                 <label for="fieldModesList" i18n:translate="plominofield_mode">Field mode</label>
                                 <select id="fieldModesList" name="fieldmode">
@@ -81,7 +81,7 @@
                                         tal:attributes="value python:mode[0]; selected python:fieldproperties['fieldMode']==mode[0]"></option>
                                 </select>
                             </p>
-                                    
+
                             <p>
                                 <label for="fieldFormula" i18n:translate="plominofield_formula">Formula</label><br />
                                 <textarea id="fieldFormula" name="fieldformula" tal:content="python:fieldproperties['formula']"></textarea>
@@ -97,6 +97,6 @@
                 </div>
             </div>
         </div>
-                    
+
     </body>
 </html>
