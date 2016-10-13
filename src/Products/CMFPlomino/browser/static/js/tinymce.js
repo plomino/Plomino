@@ -169,5 +169,6 @@
         }, {
             plugin_url : url,
         });
+        ed.activeEditor.windowManager.css("a", "blue");
     };
 })();

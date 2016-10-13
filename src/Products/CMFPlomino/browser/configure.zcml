@@ -315,4 +315,15 @@
       editview=".portlet.ElementPortletEditForm"
     />
 
+
+
+        <!--Override the edit and add views so we can control the nexturl when we are in the tinymce popup-->
+    <browser:page
+        for="Products.CMFPlomino.contents.field.IPlominoField"
+        name="edit"
+        class=".tinymce.EmbeddedEditView"
+        permission="cmf.ModifyPortalContent"
+        />
+
+
 </configure>

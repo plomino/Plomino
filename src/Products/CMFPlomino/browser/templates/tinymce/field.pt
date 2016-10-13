@@ -24,6 +24,7 @@
         fieldproperties adapted/getFieldProperties;
         field adapted/getField;
         fields form/getFormFields;
+        dummy python: fields is not None and view.request.RESPONSE.redirect(field.absolute_url() + '/edit?ajax_load=1&ajax_include_head=1');
         ">
         <div class="plone-modal-dialog">
             <div class="plone-modal-content">
