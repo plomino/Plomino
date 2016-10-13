@@ -1,10 +1,11 @@
+import Missing
 import unittest
+
 from AccessControl.unauthorized import Unauthorized
 from DateTime import DateTime
-import Missing
 from decimal import Decimal
-from Products.CMFPlomino.testing import PRODUCTS_CMFPLOMINO_FUNCTIONAL_TESTING
 from Products.CMFPlomino.config import TIMEZONE
+from Products.CMFPlomino.testing import PRODUCTS_CMFPLOMINO_FUNCTIONAL_TESTING
 from Products.CMFPlomino import utils
 
 
@@ -35,7 +36,8 @@ class PlominoUtilsTest(unittest.TestCase):
     def test_StringToDate(self):
         date = DateTime(2013, 10, 7)
         self.assertEqual(utils.StringToDate('2013-10-07') - date, 0)
-        self.assertEqual(utils.StringToDate('07/10/2013', "%d/%m/%Y") - date, 0)
+        self.assertEqual(
+            utils.StringToDate('07/10/2013', "%d/%m/%Y") - date, 0)
         self.assertEqual(
             utils.StringToDate('2013-10-07', db=self.db) - date,
             0
@@ -54,7 +56,7 @@ class PlominoUtilsTest(unittest.TestCase):
         self.assertEqual(
             utils.DatetimeToJS('%d/%m/%Y'), 'dd/mm/yyyy')
         self.assertEqual(
-            utils.DatetimeToJS('%H:%M'),'HH:i')
+            utils.DatetimeToJS('%H:%M'), 'HH:i')
         self.assertEqual(
             utils.DatetimeToJS('%I:%M %p'), 'hh:i A')
         self.assertEqual(
@@ -121,20 +123,20 @@ class PlominoUtilsTest(unittest.TestCase):
 
     def test_asList(self):
         self.assertEqual(
-                utils.asList("cheese"),
-                ["cheese"])
+            utils.asList("cheese"),
+            ["cheese"])
         self.assertEqual(
-                utils.asList(["cheese", "bacon", 10]),
-                ["cheese", "bacon", 10])
+            utils.asList(["cheese", "bacon", 10]),
+            ["cheese", "bacon", 10])
         self.assertEqual(
-                utils.asList([]),
-                [])
+            utils.asList([]),
+            [])
         self.assertEqual(
-                utils.asList(""),
-                [""])
+            utils.asList(""),
+            [""])
         self.assertEqual(
-                utils.asList(None),
-                [None])
+            utils.asList(None),
+            [None])
 
     def test_asUnicode(self):
         self.assertEqual(
@@ -175,7 +177,7 @@ class PlominoUtilsTest(unittest.TestCase):
         self.assertRaises(
             Unauthorized,
             utils.open_url,
-            "http://www.google.com",   
+            "http://www.google.com",
         )
 
     def test_MissingValue(self):
@@ -211,7 +213,9 @@ class PlominoUtilsTest(unittest.TestCase):
             {"a": [20, 3]}
         )
         self.assertEqual(
-            utils.json_loads('{"<datetime>": true, "datetime": "2013-10-21T19:26:48+07:00"}'),
+            utils.json_loads(
+                '{"<datetime>": true, "datetime": "2013-10-21T19:26:48+07:00"}'
+            ),
             DateTime('2013-10-21T19:26:48+07:00').toZone(TIMEZONE)
         )
 
