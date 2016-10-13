@@ -76,7 +76,7 @@ def DateToString(d, format=None, db=None):
 
 
 def StringToDate(str_d, format='%Y-%m-%d', db=None, guess=True, tozone=True):
-    """ Parse the string using the given format and return the date.
+    """Parse the string using the given format and return the date.
 
     With StringToDate, it's best to have a fixed default format,
     as it is easier for formulas to control the input date string than the
@@ -91,7 +91,7 @@ def StringToDate(str_d, format='%Y-%m-%d', db=None, guess=True, tozone=True):
             dt = datetime.strptime(str_d, format)
         else:
             dt = parse(str_d)
-    except ValueError, e:
+    except ValueError as e:
         if guess:
             # XXX: Just let DateTime guess.
             dt = parse(DateTime(str_d).ISO())
@@ -261,7 +261,7 @@ def sendMail(
     host = getToolByName(db, 'MailHost')
 
     message = '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"' \
-        '"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">\n'
+        ' "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">\n'
     message = message + "<html>"
     message = message + html_message
     message = message + "</html>"
@@ -409,8 +409,7 @@ def asUnicode(s):
 
 
 def asAscii(s, errors="ignore"):
-    """ Make sure ``s`` is ascii.
-    """
+    """Make sure ``s`` is ascii."""
     if not isinstance(s, basestring):
         return str(s)
     return s.encode("ascii", errors)
@@ -611,7 +610,9 @@ def getDatagridRowdata(context, REQUEST):
         if form is not None:
             field = form.getFormField(field_id)
             if field is not None:
-                mapped_field_ids = [f.strip() for f in field.getSettings().getFieldMapping().split(',')]
+                mapped_field_ids = [
+                    f.strip() for f in
+                    field.getSettings().getFieldMapping().split(',')]
     rowdata_json = getattr(REQUEST, 'Plomino_datagrid_rowdata', None)
     if rowdata_json:
         rowdata = json.loads(
