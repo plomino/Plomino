@@ -1,28 +1,25 @@
 # -*- coding: utf-8 -*-
+import json
 
+from base import BaseField
 from DateTime import DateTime
-from plone.autoform.interfaces import IFormFieldProvider, ORDER_KEY
-from plone.supermodel import directives, model
-from zope.interface import implementer, provider
+from plone.autoform.interfaces import IFormFieldProvider
+from plone.autoform.interfaces import ORDER_KEY
+from plone.supermodel import model
+from zope.interface import implementer
+from zope.interface import provider
 from zope.pagetemplate.pagetemplatefile import PageTemplateFile
 from zope import schema
 from zope.schema.vocabulary import SimpleVocabulary
 from ZPublisher.HTTPRequest import record
 
-from .. import _
-from ..utils import StringToDate
-from ..utils import DatetimeToJS
-from base import BaseField
+from Products.CMFPlomino.utils import DatetimeToJS
+from Products.CMFPlomino.utils import StringToDate
 
-import json
-import logging
-
-logger = logging.getLogger('Plomino')
 
 @provider(IFormFieldProvider)
 class IDatetimeField(model.Schema):
-    """ DateTime field schema
-    """
+    """DateTime field schema"""
 
     widget = schema.Choice(
         vocabulary=SimpleVocabulary.fromItems([
@@ -49,24 +46,20 @@ class IDatetimeField(model.Schema):
 
 # bug in plone.autoform means order_after doesn't moves correctly
 IDatetimeField.setTaggedValue(ORDER_KEY,
-                               [('widget', 'after', 'field_type'),
-                                ('format', 'after', ".widget"),
-                                ('startingyear', 'after', ".format"),
-                               ]
-)
+                              [('widget', 'after', 'field_type'),
+                               ('format', 'after', ".widget"),
+                               ('startingyear', 'after', ".format")])
 
 
 @implementer(IDatetimeField)
 class DatetimeField(BaseField):
-    """
-    """
+    """Date time field"""
 
     read_template = PageTemplateFile('datetime_read.pt')
     edit_template = PageTemplateFile('datetime_edit.pt')
 
     def validate(self, submittedValue):
-        """
-        """
+        """Validate date time value"""
         if type(submittedValue) is DateTime:
             return []
         errors = []
@@ -100,7 +93,7 @@ class DatetimeField(BaseField):
                     StringToDate(submittedValue, '%Y-%m-%d %I:%M %p')
                 else:
                     StringToDate(submittedValue, '%Y-%m-%d %H:%M')
-        except:
+        except Exception:
             fieldname = self.context.id
             errors.append(
                 "%s must be a date/time (submitted value was: %s)" % (
@@ -109,8 +102,7 @@ class DatetimeField(BaseField):
         return errors
 
     def processInput(self, submittedValue):
-        """
-        """
+        """Process date time value input"""
         if type(submittedValue) is DateTime:
             return submittedValue
         # instead of checking not record, should check string type
@@ -144,15 +136,14 @@ class DatetimeField(BaseField):
                 else:
                     d = StringToDate(submittedValue, '%Y-%m-%d %H:%M')
             return d
-        except:
+        except Exception:
             # with datagrid, we might get dates formatted differently than
             # using calendar widget default format
             return StringToDate(submittedValue[:16], '%Y-%m-%dT%H:%M')
 
     def getFieldValue(self, form, doc=None, editmode_obsolete=False,
-            creation=False, request=None):
-        """
-        """
+                      creation=False, request=None):
+        """Get date time field value"""
         fieldValue = BaseField.getFieldValue(
             self, form, doc, editmode_obsolete, creation, request)
         logger.debug('Method: datetime getFieldValue value {}'.format(
