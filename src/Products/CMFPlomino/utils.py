@@ -120,6 +120,126 @@ def Now():
     return DateTime()
 
 
+def DatetimeToJS(python_format, split=False):
+    """
+    Convert python datetime format to js format
+
+    :param python_format: python datetime format
+
+    Python  JS Time format
+    -       d	    Date of the month	1 – 31
+    %d      dd	    Date of the month with a leading zero	01 – 31
+    %a      ddd	    Day of the week in short form	Sun – Sat
+    %A      dddd	Day of the week in full form	Sunday – Saturday
+    -       m	    Month of the year	1 – 12
+    %m      mm	    Month of the year with a leading zero	01 – 12
+    %b      mmm     Month name in short form	Jan – Dec
+    %B      mmmm    Month name in full form	January – December
+    %y      yy	    Year in short form *	00 – 99
+    %Y      yyyy	Year in full form	2000 – 2999
+
+    Python  JS Time format
+    -       h	    Hour in 12-hour format	1 – 12
+    %I      hh	    Hour in 12-hour format with a leading zero	01 – 12
+    -       H	    Hour in 24-hour format	0 – 23
+    %H      HH	    Hour in 24-hour format with a leading zero	00 – 23
+    %M      i	    Minutes	00 – 59
+    -       a	    Day time period	a.m. / p.m.
+    %p      A	    Day time period in uppercase	AM / PM
+
+    :param split: split the string into data and time strings
+
+    :return: js datetime format in one string or two strings
+    """
+    replacements = {
+        r'%d': 'dd',
+        r'%a': 'ddd',
+        r'%A': 'dddd',
+        r'%m': 'mm',
+        r'%b': 'mmm',
+        r'%B': 'mmmm',
+        r'%y': 'yy',
+        r'%Y': 'yyyy',
+        r'%I': 'hh',
+        r'%H': 'HH',
+        r'%M': 'i',
+        r'%p': 'A',
+    }
+
+    def conversion(input):
+        output = input
+        for key, value in replacements.items():
+            while key in output:
+                output = output.replace(key, value)
+        return output
+
+    if not python_format:
+        return ''
+
+    datetime_format = python_format
+
+    if split:
+        got_date = False
+        date_header = ''
+        got_time = False
+        time_header = ''
+
+        if '%d' in datetime_format:
+            got_date = True
+            date_header = '%d'
+        elif '%m' in datetime_format:
+            got_date = True
+            date_header = '%m'
+        elif '%b' in datetime_format:
+            got_date = True
+            date_header = '%b'
+        elif '%B' in datetime_format:
+            got_date = True
+            date_header = '%B'
+        elif '%y' in datetime_format:
+            got_date = True
+            date_header = '%y'
+        elif '%Y' in datetime_format:
+            got_date = True
+            date_header = '%Y'
+        date_header_index = datetime_format.find(date_header)
+
+        if '%I' in datetime_format:
+            got_time = True
+            time_header = '%I'
+        elif '%H' in datetime_format:
+            got_time = True
+            time_header = '%H'
+        time_header_index = datetime_format.find(time_header)
+
+        if got_date and got_time:
+            if date_header_index < time_header_index:
+                date_split = datetime_format[:time_header_index]
+                time_split = datetime_format[time_header_index:]
+            else:
+                if '%p' in datetime_format:
+                    time_header_index = datetime_format.find('%p')
+                elif '%M' in datetime_format:
+                    time_header_index = datetime_format.find('%M')
+                time_split = datetime_format[:time_header_index + 2]
+                date_split = datetime_format[time_header_index + 2:]
+            date_format = conversion(date_split.strip())
+            time_format = conversion(time_split.strip())
+            datetime_format = (date_format, time_format)
+        elif got_date:
+            date_format = conversion(datetime_format)
+            datetime_format = (date_format, '')
+        elif got_time:
+            time_format = conversion(datetime_format)
+            datetime_format = ('', time_format)
+        else:
+            datetime_format = ('', '')
+    else:
+        datetime_format = conversion(datetime_format)
+
+    return datetime_format
+
+
 def sendMail(
     db,
     recipients,
