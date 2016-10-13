@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import json
+import logging
 
 from base import BaseField
 from DateTime import DateTime
@@ -15,6 +16,8 @@ from ZPublisher.HTTPRequest import record
 
 from Products.CMFPlomino.utils import DatetimeToJS
 from Products.CMFPlomino.utils import StringToDate
+
+logger = logging.getLogger('Plomino')
 
 
 @provider(IFormFieldProvider)
