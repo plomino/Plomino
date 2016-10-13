@@ -78,13 +78,15 @@ class DatetimeField(BaseField):
                 submittedValue = '%s-%s-%s' % (year, month, day)
                 if year and month and day:
                     # Don't allow StringToDate to guess the format
-                    StringToDate(submittedValue, '%Y-%m-%d', guess=False, tozone=False)
+                    StringToDate(
+                        submittedValue, '%Y-%m-%d', guess=False, tozone=False)
                 else:
                     # The record instance isn't valid
                     raise
             # submittedValue could be dict from tojson
             # {u'<datetime>': True, u'datetime': u'2016-12-12T00:00:00'}
-            elif isinstance(submittedValue, dict) and '<datetime>' in submittedValue:
+            elif isinstance(
+                    submittedValue, dict) and '<datetime>' in submittedValue:
                 StringToDate(submittedValue['datetime'], format=None)
             # check if date only:
             elif len(submittedValue) == 10:
@@ -120,13 +122,15 @@ class DatetimeField(BaseField):
                 submittedValue = '%s-%s-%s' % (year, month, day)
                 if year and month and day:
                     # Don't allow StringToDate to guess the format
-                    d = StringToDate(submittedValue, '%Y-%m-%d', guess=False, tozone=False)
+                    d = StringToDate(
+                        submittedValue, '%Y-%m-%d', guess=False, tozone=False)
                 else:
                     # The record instance isn't valid
                     raise
             # submittedValue could be dict from tojson
             # {u'<datetime>': True, u'datetime': u'2016-12-12T00:00:00'}
-            elif isinstance(submittedValue, dict) and '<datetime>' in submittedValue:
+            elif isinstance(
+                    submittedValue, dict) and '<datetime>' in submittedValue:
                 d = StringToDate(submittedValue['datetime'], format=None)
             # check if date only:
             elif len(submittedValue) == 10:
@@ -169,11 +173,11 @@ class DatetimeField(BaseField):
         return fieldValue
 
     def getJSFormat(self):
-        """
-        Get the current python datetime format and convert to js format.
+        """Get the current python datetime format and convert to js format.
 
         Need to split to two data and time formats.
-        Example js format is {"time": false, "date": {"format": "dd mmmm yyyy" }}
+        Example js format is
+        {"time": false, "date": {"format": "dd mmmm yyyy" }}
 
         :return: js format string that used in data-pat-pickadate
         """
