@@ -11,10 +11,10 @@
     widget python:field.widget;">
     <tal:widget tal:condition="python: widget=='JQUERY'">
         <input type="text" class="pat-pickadate"
-            tal:define="inputvalue python: '' if not v else v.strftime(format);"
+            tal:define="inputvalue python: '' if not v else v.strftime('%Y-%m-%d %H:%M');"
             tal:attributes="name field/id;
                 id field/id;
-                data-pat-pickadate python:(('%H' in format) and '') or 'time:false';
+                data-pat-pickadate python:field.getSettings().getJSFormat();
                 value inputvalue">
     </tal:widget>
     <tal:widget tal:condition="python:widget=='SERVER'">

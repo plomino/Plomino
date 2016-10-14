@@ -167,6 +167,25 @@ class IPlominoForm(model.Schema):
         required=False,
     )
 
+    # ADVANCED
+    directives.fieldset(
+        'advanced',
+        label=_(u'Advanced'),
+        fields=(
+            'form_method',
+            'document_title',
+            'dynamic_document_title',
+            'store_dynamic_document_title',
+            'document_id',
+            'hide_default_actions',
+            'isSearchForm',
+            'search_view',
+            'search_formula',
+            'resources_js',
+            'resources_css',
+        ),
+    )
+
     # EVENTS
     directives.fieldset(
         'events',
@@ -771,7 +790,9 @@ class PlominoForm(Container):
                 pq(legend).html(pq(label_node).html()).insert_before(pq(label_node))
                 pq(label_node).remove()
 
-        return d.html()
+        # If the normal html is none, return the outer_html. This handles the case where
+        # the form may be a single element.
+        return d.html() or d.outer_html()
 
     security.declareProtected(READ_PERMISSION, 'displayDocument')
 
@@ -1838,8 +1859,8 @@ class PlominoForm(Container):
                                 'MULTISELECT', 'CHECKBOX', 'PICKLIST'
                             ]:
                                 v = asList(v)
-                        logger.debug('Method: form readInputs {} value {'
-                                     '}'.format(fieldName, v))
+                        #logger.debug(u'Method: form readInputs {} value {'
+                        #             '}'.format(fieldName, v))
                         doc.setItem(fieldName, v)
                 else:
                     # The field was not submitted, probably because it is

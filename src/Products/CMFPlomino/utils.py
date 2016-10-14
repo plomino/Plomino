@@ -1,21 +1,23 @@
 # -*- coding: utf-8 -*-
+import cgi
+import csv
+import decimal as std_decimal
+import htmlentitydefs
+import logging
+import Missing
+import re
+import transaction
+import urllib
 
 from cStringIO import StringIO
 from datetime import datetime
 from dateutil.parser import parse
 from email.Header import Header
 from email import message_from_string
-from types import StringTypes
-import cgi
-import csv
-import decimal as std_decimal
-import Globals
-import htmlentitydefs
-import Missing
-import re
-import urllib
-import transaction
 from jsonutil import jsonutil as json
+from types import StringTypes
+from zope import component
+
 from AccessControl import ClassSecurityInfo
 from AccessControl.unauthorized import Unauthorized
 try:
@@ -23,20 +25,21 @@ try:
 except ImportError:
     from App.class_init import InitializeClass
 from DateTime import DateTime
-from zope import component
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import normalizeString as utils_normalizeString
 
 try:
-    from plone.app.upgrade import v40
+    from plone.app.upgrade import v40  # noqa: ignore=F401
     HAS_PLONE40 = True
 except ImportError:
     HAS_PLONE40 = False
 
-from .interfaces import IPlominoSafeDomains
-from .config import TIMEZONE, SCRIPT_ID_DELIMITER
+# SCRIPT_ID_DELIMITER is need for python script import
+# refer to __init.py line 104
+from Products.CMFPlomino.config import SCRIPT_ID_DELIMITER  # noqa: ignore=F401
+from Products.CMFPlomino.config import TIMEZONE
+from Products.CMFPlomino.interfaces import IPlominoSafeDomains
 
-import logging
 logger = logging.getLogger('Plomino')
 
 severity_map = {
@@ -47,7 +50,8 @@ severity_map = {
 
 
 def Log(message, summary='', severity='info', exc_info=False):
-    """ Write a message to the event log. Useful from formulas.
+    """Write a message to the event log. Useful from formulas.
+
     Optionally include a traceback.
     """
     # Pass in severity as a string, because we don't want to import
@@ -62,7 +66,7 @@ def Log(message, summary='', severity='info', exc_info=False):
 
 
 def DateToString(d, format=None, db=None):
-    """ Return the date as string using the given format.
+    """Return the date as string using the given format.
 
     Pass in database object to use default format.
     """
@@ -75,7 +79,7 @@ def DateToString(d, format=None, db=None):
 
 
 def StringToDate(str_d, format='%Y-%m-%d', db=None, guess=True, tozone=True):
-    """ Parse the string using the given format and return the date.
+    """Parse the string using the given format and return the date.
 
     With StringToDate, it's best to have a fixed default format,
     as it is easier for formulas to control the input date string than the
@@ -90,7 +94,7 @@ def StringToDate(str_d, format='%Y-%m-%d', db=None, guess=True, tozone=True):
             dt = datetime.strptime(str_d, format)
         else:
             dt = parse(str_d)
-    except ValueError, e:
+    except ValueError as e:
         if guess:
             # XXX: Just let DateTime guess.
             dt = parse(DateTime(str_d).ISO())
@@ -109,7 +113,8 @@ def StringToDate(str_d, format='%Y-%m-%d', db=None, guess=True, tozone=True):
 
 
 def DateRange(d1, d2):
-    """ Return all the dates from ``d1`` to ``d2`` (inclusive).
+    """Return all the dates from ``d1`` to ``d2`` (inclusive).
+
     Dates are ``DateTime`` instances.
     """
     duration = int(d2 - d1)
@@ -122,9 +127,127 @@ def DateRange(d1, d2):
 
 
 def Now():
-    """ current date and tile
-    """
+    """Current date and time"""
     return DateTime()
+
+
+def DatetimeToJS(python_format, split=False):
+    """Convert python datetime format to js format
+
+    :param python_format: python datetime format
+
+    Python  JS Time format
+    -       d	    Date of the month	1 – 31
+    %d      dd	    Date of the month with a leading zero	01 – 31
+    %a      ddd	    Day of the week in short form	Sun – Sat
+    %A      dddd	Day of the week in full form	Sunday – Saturday
+    -       m	    Month of the year	1 – 12
+    %m      mm	    Month of the year with a leading zero	01 – 12
+    %b      mmm     Month name in short form	Jan – Dec
+    %B      mmmm    Month name in full form	January – December
+    %y      yy	    Year in short form *	00 – 99
+    %Y      yyyy	Year in full form	2000 – 2999
+
+    Python  JS Time format
+    -       h	    Hour in 12-hour format	1 – 12
+    %I      hh	    Hour in 12-hour format with a leading zero	01 – 12
+    -       H	    Hour in 24-hour format	0 – 23
+    %H      HH	    Hour in 24-hour format with a leading zero	00 – 23
+    %M      i	    Minutes	00 – 59
+    -       a	    Day time period	a.m. / p.m.
+    %p      A	    Day time period in uppercase	AM / PM
+
+    :param split: split the string into data and time strings
+
+    :return: js datetime format in one string or two strings
+    """
+    replacements = {
+        r'%d': 'dd',
+        r'%a': 'ddd',
+        r'%A': 'dddd',
+        r'%m': 'mm',
+        r'%b': 'mmm',
+        r'%B': 'mmmm',
+        r'%y': 'yy',
+        r'%Y': 'yyyy',
+        r'%I': 'hh',
+        r'%H': 'HH',
+        r'%M': 'i',
+        r'%p': 'A',
+    }
+
+    def conversion(input):
+        output = input
+        for key, value in replacements.items():
+            while key in output:
+                output = output.replace(key, value)
+        return output
+
+    if not python_format:
+        return ''
+
+    datetime_format = python_format
+
+    if split:
+        got_date = False
+        date_header = ''
+        got_time = False
+        time_header = ''
+
+        if '%d' in datetime_format:
+            got_date = True
+            date_header = '%d'
+        elif '%m' in datetime_format:
+            got_date = True
+            date_header = '%m'
+        elif '%b' in datetime_format:
+            got_date = True
+            date_header = '%b'
+        elif '%B' in datetime_format:
+            got_date = True
+            date_header = '%B'
+        elif '%y' in datetime_format:
+            got_date = True
+            date_header = '%y'
+        elif '%Y' in datetime_format:
+            got_date = True
+            date_header = '%Y'
+        date_header_index = datetime_format.find(date_header)
+
+        if '%I' in datetime_format:
+            got_time = True
+            time_header = '%I'
+        elif '%H' in datetime_format:
+            got_time = True
+            time_header = '%H'
+        time_header_index = datetime_format.find(time_header)
+
+        if got_date and got_time:
+            if date_header_index < time_header_index:
+                date_split = datetime_format[:time_header_index]
+                time_split = datetime_format[time_header_index:]
+            else:
+                if '%p' in datetime_format:
+                    time_header_index = datetime_format.find('%p')
+                elif '%M' in datetime_format:
+                    time_header_index = datetime_format.find('%M')
+                time_split = datetime_format[:time_header_index + 2]
+                date_split = datetime_format[time_header_index + 2:]
+            date_format = conversion(date_split.strip())
+            time_format = conversion(time_split.strip())
+            datetime_format = (date_format, time_format)
+        elif got_date:
+            date_format = conversion(datetime_format)
+            datetime_format = (date_format, '')
+        elif got_time:
+            time_format = conversion(datetime_format)
+            datetime_format = ('', time_format)
+        else:
+            datetime_format = ('', '')
+    else:
+        datetime_format = conversion(datetime_format)
+
+    return datetime_format
 
 
 def sendMail(
@@ -137,11 +260,11 @@ def sendMail(
     bcc=None,
     immediate=False
 ):
-    """Send an email
-    """
+    """Send an email"""
     host = getToolByName(db, 'MailHost')
 
-    message = '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">\n'
+    message = '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"' \
+        ' "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">\n'
     message = message + "<html>"
     message = message + html_message
     message = message + "</html>"
@@ -176,7 +299,8 @@ def sendMail(
 
 
 def userFullname(db, userid):
-    """ Try to return user fullname, else return userid.
+    """Try to return user fullname, else return userid.
+
     Return "Unknown" if user not found.
     """
     user = getToolByName(db, 'portal_membership').getMemberById(userid)
@@ -192,14 +316,12 @@ def userFullname(db, userid):
 
 
 def userInfo(db, userid):
-    """ Return user object.
-    """
+    """Return user object."""
     return getToolByName(db, 'portal_membership').getMemberById(userid)
 
 
 def PlominoTranslate(msgid, context, domain='CMFPlomino'):
-    """ Look up the translation for ``msgid`` in the current language.
-    """
+    """Look up the translation for ``msgid`` in the current language."""
     translation_service = getToolByName(context, 'translation_service')
     # When will message be an exception?
     if isinstance(msgid, Exception):
@@ -207,7 +329,8 @@ def PlominoTranslate(msgid, context, domain='CMFPlomino'):
         try:
             msgid = msgid[0]
         except (TypeError, IndexError):
-            logging.exception("Couldn't subscript msgid: %s" % msgid, exc_info=True)
+            logging.exception(
+                "Couldn't subscript msgid: %s" % msgid, exc_info=True)
             pass
 
     msg = translation_service.utranslate(
@@ -220,8 +343,7 @@ def PlominoTranslate(msgid, context, domain='CMFPlomino'):
 
 
 def htmlencode(s):
-    """ Replace characters with their corresponding HTML entities.
-    """
+    """Replace characters with their corresponding HTML entities."""
     t = ""
     if type(s) != unicode:
         from Products.CMFPlone.utils import safe_unicode
@@ -239,17 +361,17 @@ def htmlencode(s):
 
 
 def urlencode(h):
-    """ Call urllib.urlencode
+    """Call urllib.urlencode
 
     (Encode a sequence of two-element tuples or dictionary into a URL query
     string, does quoting.)
     """
-    # TODO: consider doseq parameter
+    # TODO(ivanteoh): consider doseq parameter
     return urllib.urlencode(h)
 
 
 def urlquote(s):
-    """ Call urllib.quote
+    """Call urllib.quote
 
     (quote('abc def') -> 'abc%20def')
     """
@@ -265,7 +387,7 @@ def normalizeString(text, context=None, encoding=None):
 
 
 def asList(x):
-    """ If not list, return x in a single-element list.
+    """If not list, return x in a single-element list.
 
     .. note:: This will wrap falsy values like ``None`` or ``''`` in a list,
               making them truthy.
@@ -276,8 +398,9 @@ def asList(x):
 
 
 def asUnicode(s):
-    """ Make sure ``s`` is unicode; decode according to site encoding if
-    needed.
+    """Make sure ``s`` is unicode;
+
+    Decode according to site encoding if needed.
     """
     if not isinstance(s, basestring):
         return unicode(s)
@@ -289,16 +412,14 @@ def asUnicode(s):
 
 
 def asAscii(s, errors="ignore"):
-    """ Make sure ``s`` is ascii.
-    """
+    """Make sure ``s`` is ascii."""
     if not isinstance(s, basestring):
         return str(s)
     return s.encode("ascii", errors)
 
 
 def csv_to_array(csvcontent, delimiter='\t', quotechar='"'):
-    """ ``csvcontent`` may be a string or a file.
-    """
+    """``csvcontent`` may be a string or a file."""
     if not csvcontent:
         return []
     if isinstance(csvcontent, basestring):
@@ -313,8 +434,7 @@ def csv_to_array(csvcontent, delimiter='\t', quotechar='"'):
 
 
 def array_to_csv(array, delimiter='\t', quotechar='"'):
-    """ Convert ``array`` (a list of lists) to a CSV string.
-    """
+    """Convert ``array`` (a list of lists) to a CSV string."""
     s = StringIO()
     writer = csv.writer(
         s,
@@ -327,21 +447,20 @@ def array_to_csv(array, delimiter='\t', quotechar='"'):
 
 
 def open_url(url, asFile=False, data=None):
-    """ retrieve content from url
-    """
+    """Retrieve content from url"""
     safe_domains = []
     for safedomains_utils in component.getUtilitiesFor(IPlominoSafeDomains):
         safe_domains += safedomains_utils[1].domains
     is_safe = False
     for domain in safe_domains:
         if (url.startswith(domain)
-            or url.split("//")[1].split("/")[0].split('@')[-1] == domain):
+                or url.split("//")[1].split("/")[0].split('@')[-1] == domain):
             is_safe = True
             break
     if is_safe:
         if data and not isinstance(data, basestring):
             data = urllib.urlencode(data)
-        f=urllib.urlopen(url, data)
+        f = urllib.urlopen(url, data)
         if asFile:
             return f.fp
         else:
@@ -351,7 +470,8 @@ def open_url(url, asFile=False, data=None):
 
 
 def MissingValue():
-    """ Useful to test search results value
+    """Useful to test search results value
+
     (as ``Missing.Value`` cannot be imported in scripts).
     """
     return Missing.Value
@@ -372,11 +492,14 @@ def json_loads(json_string):
     return json.loads(json_string)
 
 
-# From http://lsimons.wordpress.com/2011/03/17/stripping-illegal-characters-out-of-xml-in-python/
+# From http://lsimons.wordpress.com/2011/03/17/stripping-illegal-characters-out-of-xml-in-python/  # noqa: ignore=E501
 _illegal_xml_chars_RE = re.compile(
     u'[\x00-\x08\x0b\x0c\x0e-\x1F\uD800-\uDFFF\uFFFE\uFFFF]')
+
+
 def escape_xml_illegal_chars(val, replacement='?'):
     """Filter out characters that are illegal in XML.
+
     Looks for any character in val that is not allowed in XML
     and replaces it with replacement ('?' by default).
     """
@@ -393,8 +516,7 @@ InitializeClass(plomino_decimal)
 
 
 def decimal(v='0'):
-    """ Expose the standard library's Decimal class. Useful for finances.
-    """
+    """Expose the standard library's Decimal class. Useful for finances."""
     if not v:
         v = '0'
     if type(v) not in StringTypes:
@@ -407,7 +529,8 @@ def decimal(v='0'):
 
 
 def actual_path(context):
-    """ return the actual path from the request
+    """Return the actual path from the request
+
     Useful in portlet context
     """
     if not hasattr(context, "REQUEST"):
@@ -417,7 +540,8 @@ def actual_path(context):
 
 
 def actual_context(context, search="PlominoDocument"):
-    """ return the actual context from the request
+    """Return the actual context from the request
+
     Useful in portlet context
     """
     path = actual_path(context)
@@ -443,37 +567,36 @@ def is_email(email):
 
 
 def translate(context, content, i18n_domain=None):
-    """ Translate content, if possible. 
-    """
-    # TODO: translate non-string content? Like dates?
+    """Translate content, if possible."""
+    # TODO(ivanteoh): translate non-string content? Like dates?
     if not isinstance(content, basestring):
         return content
 
     request = getattr(context, 'REQUEST', None)
-    if request and request.get("translation")=="off":
+    if request and request.get("translation") == "off":
         return content
 
     def translate_token(match):
         translation = PlominoTranslate(
-                match.group(1),
-                context,
-                domain=i18n_domain
-                )
+            match.group(1),
+            context,
+            domain=i18n_domain
+        )
         translation = asUnicode(translation)
         return translation
 
     content = re.sub(
-            "__(?P<token>.+?)__",
-            translate_token,
-            content
-            )
+        "__(?P<token>.+?)__",
+        translate_token,
+        content
+    )
     return content
 
 
 def getDatagridRowdata(context, REQUEST):
-    """ Return rowdata for a datagrid on a modal popup
+    """Return rowdata for a datagrid on a modal popup
 
-    In the context of a modal datagrid popup, return the rowdata 
+    In the context of a modal datagrid popup, return the rowdata
     on the REQUEST.
     """
     # This is currently just used during creation of TemporaryDocument,
@@ -490,12 +613,15 @@ def getDatagridRowdata(context, REQUEST):
         if form is not None:
             field = form.getFormField(field_id)
             if field is not None:
-                mapped_field_ids = [f.strip() for f in field.getSettings().getFieldMapping().split(',')]
+                mapped_field_ids = [
+                    f.strip() for f in
+                    field.getSettings().getFieldMapping().split(',')]
     rowdata_json = getattr(REQUEST, 'Plomino_datagrid_rowdata', None)
     if rowdata_json:
         rowdata = json.loads(
-                urllib.unquote(rowdata_json).decode('raw_unicode_escape'))
+            urllib.unquote(rowdata_json).decode('raw_unicode_escape'))
     return mapped_field_ids, rowdata
+
 
 def save_point():
     txn = transaction.get()
@@ -503,8 +629,7 @@ def save_point():
 
 
 def _expandIncludes(context, formula):
-    """ Recursively expand include statements
-    """
+    """Recursively expand include statements"""
     # First, we match any includes
     r = re.compile('^#Plomino (import|include) (.+)$', re.MULTILINE)
 
@@ -517,8 +642,8 @@ def _expandIncludes(context, formula):
             # Now, we match only *this* include; don't match script names
             # that are prefixes of other script names
             exact_r = re.compile(
-                    '^#Plomino %s %s\\b' % (include, scriptname),
-                    re.MULTILINE)
+                '^#Plomino %s %s\\b' % (include, scriptname),
+                re.MULTILINE)
 
             if scriptname in seen:
                 # Included already, blank the include statement
@@ -529,10 +654,11 @@ def _expandIncludes(context, formula):
             try:
                 db = context.getParentDatabase()
                 script_code = db.resources._getOb(scriptname).read()
-            except:
-                logger.warning("expandIncludes> %s not found in resources" % scriptname)
+            except Exception:
+                logger.warning(
+                    "expandIncludes> %s not found in resources" % scriptname)
                 script_code = (
-                        "#ALERT: %s not found in resources" % scriptname)
+                    "#ALERT: %s not found in resources" % scriptname)
 
             formula = exact_r.sub(script_code, formula)
 

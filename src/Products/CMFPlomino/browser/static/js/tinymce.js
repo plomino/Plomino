@@ -84,7 +84,7 @@
         }
         else if (elementType === "pagebreak") {
             // Insert the page break straight away
-            ed.execCommand('mceInsertContent', false, '<hr class="plominoPagebreakClass">');
+            ed.execCommand('mceInsertContent', false, '<hr class="plominoPagebreakClass"><br />');
             return;
         }
         else
