@@ -421,6 +421,12 @@ class PlominoFormSettings(object):
             self.request.RESPONSE.redirect(self.context.absolute_url() + "/@@tinymceplominoform/error_page?error=no_cache")
 
 
+    def example_widget(self):
+        """ Return html of a field, hidewhen etc for inserting into the layout"""
+        widget_type = self.request.get('widget_type','field')
+        id = self.request.get('id')
+        return self.context.example_widget(widget_type, id)
+
 class PlominoFieldSettings(object):
     """
     """

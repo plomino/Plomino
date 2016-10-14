@@ -18,7 +18,7 @@
 
     <tal tal:condition="fieldurl">
         <tal tal:define="url python:here.restrictedTraverse(fieldurl).absolute_url() + '/edit?ajax_load=1&amp;ajax_include_header=1';
-                        dummy python:REQUEST.RESPONSE.redirect(url" />
+                        dummy python:here.REQUEST.RESPONSE.redirect(url)" />
 
 
     <!--<div class="plone-modal-dialog">-->

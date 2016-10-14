@@ -44,6 +44,156 @@
         });
     });
 
+    var insert_element = function(type, value, option) {
+
+		var ed = top.tinymce.activeEditor;
+        var iframe = ed.windowManager.getWindows()[0].$el.find('iframe');
+        var doc = iframe.contentDocument || iframe.contentWindow.document;
+        var issaved = $(doc).contents().find(".portalMessage.info");
+        // should contain "Changes saved"
+        if (issaved.length == 0) {
+            return
+        }
+
+
+        var container = "span";
+
+		if (type == 'action') {
+			var plominoClass = 'plominoActionClass';
+        }
+        else if (type == 'field') {
+			var plominoClass = 'plominoFieldClass';
+            container = "div";
+        }
+        else if (type == 'subform') {
+			var plominoClass = 'plominoSubformClass';
+            container = "div";
+        }
+		else if (type == 'label') {
+			var plominoClass = 'plominoLabelClass';
+			if (option == '0') {
+				container = "span";
+			} else {
+                container = "div";
+            }
+		}
+        if (type == 'label') {
+            // Handle labels
+            var selection = ed.selection.getNode();
+            if (container == "span") {
+                content = '<span class="plominoLabelClass mceNonEditable" data-plominoid="'+value+'">&nbsp;</span><br />';
+            } else {
+                if (top.tinymce.DOM.hasClass(selection, "plominoLabelClass") && selection.tagName === "SPAN") {
+                    content = '<div class="plominoLabelClass mceNonEditable" data-plominoid="'+value+'"><div class="plominoLabelContent mceEditable">&nbsp;</div></div><br />';
+                }
+                else if (top.tinymce.DOM.hasClass(selection.firstChild, "plominoLabelContent")) {
+                    content = '<div class="plominoLabelClass mceNonEditable" data-plominoid="'+value+'">'+selection.innerHTML+'</div><br />';
+                } else {
+                    content = '<div class="plominoLabelClass mceNonEditable" data-plominoid="'+value+'"><div class="plominoLabelContent mceEditable">'+selection.outerHTML+'</div></div><br />';
+                }
+            }
+            ed.execCommand('mceInsertContent', false, content, {skip_undo : 1});
+        }
+		else if (plominoClass !== undefined)
+		{
+            $.ajax({
+                url: '@@tinyform/example_widget?widget_type='+type+'&id='+value,
+                success: function(example) {
+                    example = $(example).last().html();
+                // tinymce will remove a span around a block element since its invalid
+                if ($(example).find("div,table,p").length) {
+                    container = "div";
+                }
+                if (example != undefined) {
+                    var span = '<'+container+' class="'+plominoClass
+                        + ' mceNonEditable" data-mce-resize="false" data-plominoid="'+value+'">'
+    //                    +'<span class="plominoEditWidgetTab">'+  value+'</span>'
+                        + example + '</'+container+'><br />';
+                }
+                else {
+                    // String to add in the editor
+                    var span = '<span class="' + plominoClass + '">' + value + '</span><br />';
+                }
+
+                // Insert or replace the selection
+
+                // TinyMCE 3, still needed ?
+                //tinyMCEPopup.restoreSelection();
+                var selection = ed.selection.getNode();
+                if (top.tinymce.DOM.hasClass(selection, 'plominoActionClass') || top.tinymce.DOM.hasClass(selection, 'plominoFieldClass') || top.tinymce.DOM.hasClass(selection, 'plominoLabelClass') || top.tinymce.DOM.hasClass(selection, 'plominoSubformClass'))
+                    ed.execCommand('mceInsertContent', false, span, {skip_undo : 1});
+                else
+                    ed.execCommand('mceInsertContent', false, span, {skip_undo : 1});
+            }});
+		}
+		else if (type == "hidewhen" || type == 'cache')
+		{
+			// Insert or replace the selection
+
+            // TinyMCE 3, still needed ?
+			//tinyMCEPopup.restoreSelection();
+
+
+            var cssclass = 'plomino' + type.charAt(0).toUpperCase() + type.slice(1) + 'Class';
+
+			// Select the parent node of the selection
+			var selection = ed.selection.getNode();
+			// If the node is a <span class="plominoFieldClass"/>, select all its content
+			if (top.tinymce.DOM.hasClass(selection, cssclass))
+			{
+				// get the old hide-when id
+                var oldId = selection.getAttribute('data-plominoid');
+                var pos = selection.getAttribute('data-plomino-position')
+
+				// get a list of hide-when opening and closing spans
+				var hidewhens = ed.dom.select('span.'+cssclass);
+				// find the selected span
+				var i;
+				for (i = 0; i < hidewhens.length; i++) {
+					if (hidewhens[i] == selection)
+						break;
+				}
+
+				// change the corresponding start/end
+				if (pos == 'start') {
+					selection.setAttribute('data-plominoid', value);
+
+					for (; i < hidewhens.length; i++) {
+						if (hidewhens[i] && hidewhens[i].getAttribute('data-plominoid') == oldId &&
+                            hidewhens[i].getAttribute('data-plomino-position') == 'end') {
+							hidewhens[i].setAttribute('data-plominoid', value);
+							break;
+						}
+					}
+				}
+				// change the corresponding start by going backwards
+				else {
+					selection.setAttribute('data-plominoid', value);
+
+					for (; i >= 0; i--) {
+						if (hidewhens[i] && hidewhens[i].getAttribute('data-plominoid') == oldId &&
+                            hidewhens[i].getAttribute('data-plomino-position') == 'start') {
+							hidewhens[i].setAttribute('data-plominoid', value);
+							break;
+						}
+					}
+				}
+			}
+
+			else {
+				// String to add in the editor
+				var zone = '<span class="'+cssclass+' mceNonEditable" data-plominoid="'+value+'" data-plomino-position="start">&nbsp;</span>' +
+                    ed.selection.getContent() +
+                    '<span class="'+cssclass+' mceNonEditable" data-plominoid="'+value+'" data-plomino-position="end">&nbsp;</span><br />';
+				ed.execCommand('mceInsertContent', false, zone, {skip_undo : 1});
+			}
+		}
+		top.tinymce.activeEditor.windowManager.close();
+
+	};
+
+
+
     var editFormElement = function(ed, url, elementType) {
         // If the form is being created, don't create the same command
         if (location.pathname.indexOf("++add++PlominoForm") != -1)
@@ -161,18 +311,30 @@
         }
         var base_url = $('body').attr('data-base-url');
 
-        ed.windowManager.open({
+        var win = ed.windowManager.open({
             url : base_url + '/' + elementEditionPage + '?' + elementIdName + '=' + elementId,
             width : 600 + parseInt(ed.getLang('plomino_tinymce.delta_width', 0)),
             height : 400 + parseInt(ed.getLang('plomino_tinymce.delta_height', 0)),
-            inline : 1,
-            scrollbars: 0,
-            resizable: 1
+            inline : "yes",
+            scrollbars: "no",
+            resizable: "yes"
         }, {
             plugin_url : url,
         });
-        ed.windowManager.onClose.add(function() {
-            //TODO: insert updated widget, get it via ajax
-        })
+
+        // Whenever the settings are saved update the field in the layout
+        win.$el.find('iframe').on("load", function() {
+            insert_element(elementType, elementId);
+        });
+
+        ed.on('OpenWindow', function() {
+            //alert("need to hook into url change")
+
+        });
+        win.on('close', function() {
+            //alert("close")
+
+        });
+
     };
 })();

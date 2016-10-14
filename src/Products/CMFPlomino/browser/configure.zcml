@@ -172,7 +172,7 @@
         for="Products.CMFPlomino.contents.form.IPlominoForm"
         class=".tinymce.PlominoFormSettings"
         permission="zope.Public"
-        allowed_attributes="getField addField addLabel addAction addHidewhen addCache addSubForm action_template"
+        allowed_attributes="getField addField addLabel addAction addHidewhen addCache addSubForm action_template example_widget"
         />
 
    <browser:page
