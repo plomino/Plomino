@@ -16,31 +16,36 @@
     <div id="example_widget" style="display:none" tal:content="structure python:here.example_widget(fieldtype, value)"></div>
     <script type="text/javascript" tal:content="structure string: PlominoDialog.submit('$fieldtype', '$value', '$option');"></script>
 
-    <div class="plone-modal-dialog">
-        <div class="plone-modal-content">
-            <div class="plone-modal-header">
-                <h2 class="plone-modal-title"  i18n:translate="plominofield_advanced">Advanced edition</h2>
-            </div>
-            <div class="plone-modal-body">
+    <tal tal:condition="fieldurl">
+        <tal tal:define="url python:here.restrictedTraverse(fieldurl).absolute_url() + '/edit?ajax_load=1&amp;ajax_include_header=1';
+                        dummy python:REQUEST.RESPONSE.redirect(url" />
 
-				<form tal:condition="fieldurl">
-					<fieldset tal:define="field python:here.restrictedTraverse(fieldurl);">
-						<p>
-							<a tal:attributes="href python:field.absolute_url() + '/edit'" target="_blank"
-								i18n:translate="plominofield_mainsettings">Edit the field</a><br />
-							<a tal:attributes="href python:field.absolute_url() + '#autotoc-item-autotoc-4'"
-								target="_blank" i18n:translate="plominofield_specificsettings">Edit field settings</a>
-						</p>
-					</fieldset>
 
-					<p i18n:domain="tinymce">
-						<input type="button" id="close" class="context" name="close" value="Close" i18n:attributes="value;" onclick="top.tinymce.activeEditor.windowManager.close();" />
-					</p>
-				</form>
-				<script type="text/javascript" tal:condition="python:not fieldurl">top.tinymce.activeEditor.windowManager.close();</script>
-			</div>
-		</div>
-	</div>
+    <!--<div class="plone-modal-dialog">-->
+        <!--<div class="plone-modal-content">-->
+            <!--<div class="plone-modal-header">-->
+                <!--<h2 class="plone-modal-title"  i18n:translate="plominofield_advanced">Advanced edition</h2>-->
+            <!--</div>-->
+            <!--<div class="plone-modal-body">-->
+
+				<!--<form tal:condition="fieldurl">-->
+					<!--<fieldset tal:define="field python:here.restrictedTraverse(fieldurl);">-->
+						<!--<p>-->
+							<!--<a tal:attributes="href python:field.absolute_url() + '/edit'" target="_blank"-->
+								<!--i18n:translate="plominofield_mainsettings">Edit the field</a><br />-->
+							<!--<a tal:attributes="href python:field.absolute_url() + '#autotoc-item-autotoc-4'"-->
+								<!--target="_blank" i18n:translate="plominofield_specificsettings">Edit field settings</a>-->
+						<!--</p>-->
+					<!--</fieldset>-->
+
+					<!--<p i18n:domain="tinymce">-->
+						<!--<input type="button" id="close" class="context" name="close" value="Close" i18n:attributes="value;" onclick="top.tinymce.activeEditor.windowManager.close();" />-->
+					<!--</p>-->
+				<!--</form>-->
+				<!--<script type="text/javascript" tal:condition="python:not fieldurl">top.tinymce.activeEditor.windowManager.close();</script>-->
+			<!--</div>-->
+		<!--</div>-->
+	<!--</div>-->
 
 </body>
 </html>

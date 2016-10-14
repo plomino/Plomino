@@ -165,9 +165,14 @@
             url : base_url + '/' + elementEditionPage + '?' + elementIdName + '=' + elementId,
             width : 600 + parseInt(ed.getLang('plomino_tinymce.delta_width', 0)),
             height : 400 + parseInt(ed.getLang('plomino_tinymce.delta_height', 0)),
-            inline : 1
+            inline : 1,
+            scrollbars: 0,
+            resizable: 1
         }, {
             plugin_url : url,
         });
+        ed.windowManager.onClose.add(function() {
+            //TODO: insert updated widget, get it via ajax
+        })
     };
 })();
