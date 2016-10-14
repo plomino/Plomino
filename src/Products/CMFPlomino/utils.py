@@ -34,6 +34,9 @@ try:
 except ImportError:
     HAS_PLONE40 = False
 
+# SCRIPT_ID_DELIMITER is need for python script import
+# refer to __init.py line 104
+from Products.CMFPlomino.config import SCRIPT_ID_DELIMITER  # noqa: ignore=F401
 from Products.CMFPlomino.config import TIMEZONE
 from Products.CMFPlomino.interfaces import IPlominoSafeDomains
 
