@@ -1,5 +1,9 @@
+from plone.autoform import directives
+from plone.autoform.interfaces import IFormFieldProvider
+from plone.dexterity.browser.add import DefaultAddForm
 from plone.dexterity.browser.edit import DefaultEditForm
-from zope import component, interface
+from plone.supermodel import model
+from zope import component, interface, schema
 
 from Products.Five import BrowserView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
@@ -12,26 +16,10 @@ from Products.CMFPlomino.contents.action import PlominoAction
 from Products.CMFPlomino.contents.field import PlominoField
 from Products.CMFPlomino.contents.form import PlominoForm
 from Products.CMFPlomino.contents.hidewhen import PlominoHidewhen
-#from Products.CMFPlomino.PlominoCache import PlominoCache
-from Products.CMFPlomino.document import getTemporaryDocument
+
 
 # -*- coding: utf-8 -*-
-from Products.CMFCore.utils import getToolByName
-from Products.statusmessages.interfaces import IStatusMessage
-from plone.dexterity.browser.base import DexterityExtensibleForm
-from plone.dexterity.events import EditBegunEvent
-from plone.dexterity.events import EditCancelledEvent
-from plone.dexterity.events import EditFinishedEvent
-from plone.dexterity.i18n import MessageFactory as _
-from plone.dexterity.interfaces import IDexterityEditForm
-from plone.dexterity.interfaces import IDexterityFTI
-from plone.registry.interfaces import IRegistry
-from plone.z3cform import layout
-from z3c.form import button
-from z3c.form import form
-from zope.component import getUtility
-from zope.event import notify
-from zope.interface import classImplements
+from zope.interface import classImplements, provider
 
 
 class ITinyMCEPlominoFormView(interface.Interface):
@@ -523,27 +511,29 @@ class PlominoActionSettings(object):
         self.request.RESPONSE.redirect(self.context.absolute_url() + "/../@@tinymceplominoform/valid_page?type=action&value=" + self.context.id)
 
 
-
-class EmbeddedEditForm(DefaultEditForm):
-
-
-    def nextURL(self):
-        view_url = self.context.absolute_url()
-        portal_type = getattr(self, 'portal_type', None)
-        if portal_type is not None:
-            registry = getUtility(IRegistry)
-            use_view_action = registry.get(
-                'plone.types_use_view_action_in_listings', [])
-            if portal_type in use_view_action:
-                view_url = view_url + '/view'
-        if 'ajax_load' not in self.request.get('HTTP_REFERER'):
-            return view_url
-        elif 'ajax_include_head' not in self.request.get('HTTP_REFERER'):
-            return view_url+'?ajax_load=1'
-        else:
-            return view_url+'?ajax_load=1&ajax_include_head=1'
+def ajax_iframe_redirect(obj, event):
+    """ensure if we redirect we keep ajax_ arugments"""
+    import pdb; pdb.set_trace()
+    request = event.object.REQUEST
+    view_url = request.response.getHeader('location')
+    if not view_url:
+        return
+    if 'ajax_load' not in request.get('HTTP_REFERER'):
+        pass
+    elif 'ajax_include_head' not in request.get('HTTP_REFERER'):
+        view_url = view_url+'?ajax_load=1'
+    else:
+        view_url = view_url+'?ajax_load=1&ajax_include_head=1'
+    request.response.redirect(view_url)
 
 
+@provider(IFormFieldProvider)
+class IAJAXHiddenFields(model.Schema):
+    """Add hidden fields to carry the ajax made through form validation errors
+    """
 
-EmbeddedEditView = layout.wrap_form(EmbeddedEditForm)
-classImplements(EmbeddedEditView, IDexterityEditForm)
+    directives.widget('ajax_load',name="ajax_load")
+    ajax_load = schema.Text()
+    directives.widget('ajax_include_header',name="ajax_include_header")
+    ajax_include_header = schema.Text()
+    directives.mode(ajax_load='hidden', ajax_include_header='hidden')

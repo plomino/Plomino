@@ -38,7 +38,7 @@
                         <form id="fieldSelection" method="get">
                             <p>
                                <label for="plominoFieldId" i18n:translate="plominofield_id">Field ID</label>
-                                <input id="plominoFieldId" name="fieldid" onchange="this.form.submit();"
+                                <input id="plominoFieldId" name="fieldid"
                                        class="pat-select2" data-pat-select2="allowNewItems:true;; tags:true"
                                        tal:define="tags python:','.join(f.id for f in fields) if fields else '[]'"
                                         tal:attributes="value fieldid; data-pat-select2 string:allowNewItems:true;; tags:${tags};; maximumSelectionSize:1;;}"/>

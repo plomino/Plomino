@@ -47,14 +47,6 @@
     var insert_element = function(type, value, option) {
 
 		var ed = top.tinymce.activeEditor;
-        var iframe = ed.windowManager.getWindows()[0].$el.find('iframe');
-        var doc = iframe.contentDocument || iframe.contentWindow.document;
-        var issaved = $(doc).contents().find(".portalMessage.info");
-        // should contain "Changes saved"
-        if (issaved.length == 0) {
-            return
-        }
-
 
         var container = "span";
 
@@ -204,8 +196,9 @@
 
         if (elementType === "field") {
             var elementClass = 'plominoFieldClass';
-            var elementEditionPage = '@@tinymceplominoform/field_form';
-            var elementIdName = 'fieldid';
+            //var elementEditionPage = '@@tinymceplominoform/field_form';
+            var elementEditionPage = '++add++PlominoField';
+            var elementIdName = 'id';
         }
         else if (elementType === "label") {
             var elementClass = 'plominoLabelClass';
@@ -310,21 +303,32 @@
             elementId = elementId + ':1'
         }
         var base_url = $('body').attr('data-base-url');
+        var edurl = base_url + '/' + elementEditionPage + '?' + elementIdName + '=' + elementId + '&ajax_load=1&ajax_include_head=1';
+        if (elementEditionPage.indexOf('++add++')>=0 && elementId) {
+            edurl = base_url + '/' + elementId + '/edit?ajax_load=1&ajax_include_head=1';
+        }
 
         var win = ed.windowManager.open({
-            url : base_url + '/' + elementEditionPage + '?' + elementIdName + '=' + elementId,
+            url: edurl,
             width : 600 + parseInt(ed.getLang('plomino_tinymce.delta_width', 0)),
             height : 400 + parseInt(ed.getLang('plomino_tinymce.delta_height', 0)),
             inline : "yes",
             scrollbars: "no",
             resizable: "yes"
         }, {
-            plugin_url : url,
+            plugin_url : url
         });
 
         // Whenever the settings are saved update the field in the layout
         win.$el.find('iframe').on("load", function() {
-            insert_element(elementType, elementId);
+
+            var iframe = win.$el.find('iframe')[0];
+            var doc = iframe.contentDocument || iframe.contentWindow.document;
+            var issaved = $(doc).contents().find(".portalMessage.info");
+            // should contain "Changes saved" or "Changes cancelled"
+            if (issaved.length > 0) {
+                insert_element(elementType, elementId);
+            }
         });
 
         ed.on('OpenWindow', function() {

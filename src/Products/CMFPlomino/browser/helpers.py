@@ -2,35 +2,22 @@ import json
 import logging
 import re
 
-from plone.app.widgets.base import InputWidget
-from plone.app.z3cform.widget import BaseWidget
 from plone.behavior.interfaces import IBehaviorAssignable
-from z3c.form.browser.widget import HTMLInputWidget
 from z3c.form.converter import BaseDataConverter
 from z3c.form.interfaces import IWidget, NO_VALUE, IDataManager
 from z3c.form.widget import Widget
 from zope import schema
 from zope.component import adapts, getMultiAdapter
-from zope.configuration.config import provides
 from zope.interface import implementsOnly
 from zope.schema.interfaces import IList
-from Products.CMFPlomino.contents.action import IPlominoAction
-from Products.CMFPlomino.contents.field import IPlominoField
-from Products.CMFPlomino.contents.form import IPlominoForm
-from Products.CMFPlomino.contents.hidewhen import IPlominoHidewhen
-from Products.CMFPlomino.contents.view import IPlominoView
 
-from Products.Five import BrowserView
-from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from zope.schema import getFieldsInOrder
 from Products.CMFPlomino.document import getTemporaryDocument
 from Products.CMFPlomino.utils import asAscii
 
-from Products.CMFCore.interfaces import IDublinCore
 from plone.autoform import directives
 from plone.autoform.interfaces import IFormFieldProvider
 from plone.supermodel import model
-from zope.component import adapter
 from zope.interface import implementer
 from zope.interface import provider
 from ..config import SCRIPT_ID_DELIMITER, FIELD_MODES, FIELD_TYPES

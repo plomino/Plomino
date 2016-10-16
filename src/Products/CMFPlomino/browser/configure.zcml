@@ -258,31 +258,12 @@
         provides=".helpers.IHelpers"
         factory=".helpers.Helpers"
         />
-        <!--for="Products.CMFPlomino.contents.form.IPlominoForm"-->
-    <!--<plone:behavior-->
-        <!--title="Helpers"-->
-        <!--description="Lets an object use external forms to generate its formulas"-->
-        <!--provides=".helpers.IHelpers"-->
-        <!--for="Products.CMFPlomino.contents.field.IPlominoField"-->
-        <!--/>-->
-    <!--<plone:behavior-->
-        <!--title="Helpers"-->
-        <!--description="Lets an object use external forms to generate its formulas"-->
-        <!--provides=".helpers.IHelpers"-->
-        <!--for="Products.CMFPlomino.contents.action.IPlominoAction"-->
-        <!--/>-->
-    <!--<plone:behavior-->
-        <!--title="Helpers"-->
-        <!--description="Lets an object use external forms to generate its formulas"-->
-        <!--provides=".helpers.IHelpers"-->
-        <!--for="Products.CMFPlomino.contents.hidewhen.IPlominoHidewhen"-->
-        <!--/>-->
-    <!--<plone:behavior-->
-        <!--title="Helpers"-->
-        <!--description="Lets an object use external forms to generate its formulas"-->
-        <!--provides=".helpers.IHelpers"-->
-        <!--for="Products.CMFPlomino.contents.view.IPlominoView"-->
-        <!--/>-->
+
+    <plone:behavior
+        title="ajax_hidden_fields"
+        description="retain ajax mode in hidden fields"
+        provides=".tinymce.IAJAXHiddenFields"
+        />
 
   <z3c:widgetTemplate
       mode="input"
@@ -318,12 +299,31 @@
 
 
         <!--Override the edit and add views so we can control the nexturl when we are in the tinymce popup-->
-    <browser:page
-        for="Products.CMFPlomino.contents.field.IPlominoField"
-        name="edit"
-        class=".tinymce.EmbeddedEditView"
-        permission="cmf.ModifyPortalContent"
-        />
+
+    <subscriber
+      for="Products.CMFPlomino.contents.field.IPlominoField
+           plone.dexterity.interfaces.IEditFinishedEvent"
+      handler=".tinymce.ajax_iframe_redirect"
+      />
+
+    <subscriber
+      for="Products.CMFPlomino.contents.field.IPlominoField
+           plone.dexterity.interfaces.IEditCancelledEvent"
+      handler=".tinymce.ajax_iframe_redirect"
+      />
+
+    <subscriber
+      for="Products.CMFCore.interfaces.IFolderish
+           plone.dexterity.interfaces.IAddCancelledEvent"
+      handler=".tinymce.ajax_iframe_redirect"
+      />
+
+    <subscriber
+      for="Products.CMFPlomino.contents.field.IPlominoField
+           zope.lifecycleevent.interfaces.IObjectAddedEvent"
+      handler=".tinymce.ajax_iframe_redirect"
+      />
+
 
 
 </configure>
