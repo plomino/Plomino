@@ -340,6 +340,16 @@
            plone.dexterity.interfaces.IEditCancelledEvent"
       handler=".tinymce.ajax_iframe_cancel"
       />
+    <subscriber
+      for="Products.CMFPlomino.contents.hidewhen.IPlominoHidewhen
+           plone.dexterity.interfaces.IEditCancelledEvent"
+      handler=".tinymce.ajax_iframe_cancel"
+      />
+    <subscriber
+      for="Products.CMFPlomino.contents.action.IPlominoAction
+           plone.dexterity.interfaces.IEditCancelledEvent"
+      handler=".tinymce.ajax_iframe_cancel"
+      />
 
     <subscriber
       for="Products.CMFCore.interfaces.IFolderish
@@ -349,6 +359,16 @@
 
     <subscriber
       for="Products.CMFPlomino.contents.field.IPlominoField
+           zope.lifecycleevent.interfaces.IObjectAddedEvent"
+      handler=".tinymce.ajax_iframe_success"
+      />
+    <subscriber
+      for="Products.CMFPlomino.contents.hidewhen.IPlominoHidewhen
+           zope.lifecycleevent.interfaces.IObjectAddedEvent"
+      handler=".tinymce.ajax_iframe_success"
+      />
+    <subscriber
+      for="Products.CMFPlomino.contents.action.IPlominoAction
            zope.lifecycleevent.interfaces.IObjectAddedEvent"
       handler=".tinymce.ajax_iframe_success"
       />
