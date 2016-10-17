@@ -348,6 +348,9 @@
                 win.close();
             }
             else if (jqdoc.find('*:contains("ajax_success")').length) {
+                if (elementId == "") {
+                    elementId = getParameterByName('id', doc.location.href);
+                }
                 insert_element(elementType, elementId);
                 win.close();
             }

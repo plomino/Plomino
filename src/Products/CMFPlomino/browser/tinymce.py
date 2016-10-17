@@ -506,14 +506,18 @@ def ajax_iframe_success(obj, event):
     """ensure if we redirect we keep ajax_ arugments"""
     request = event.object.REQUEST
     view_url = request.response.getHeader('location')
-    if not view_url:
-        if '++add++' not in request.URL:
-            return
-        # special case for ObjectAddedEvent which doesn't redirect until after
-        view_url = request.URL1
+    # if not view_url:
+    #     if '++add++' not in request.URL:
+    #         return
+    #     # special case for ObjectAddedEvent which doesn't redirect until after
+    #     view_url = request.URL1
     if 'ajax_load' not in request.get('HTTP_REFERER'):
         return
-    request.response.redirect(view_url+'/@@tinyajax/ajax_success')
+    if hasattr(event, 'newName'):
+        # object added event
+        request.response.redirect(event.newParent.absolute_url()+'/@@tinyajax/ajax_success?id='+event.newName)
+    else:
+        request.response.redirect(view_url+'/@@tinyajax/ajax_success')
 
 @zope.interface.implementer_only(z3c.form.interfaces.ITextWidget)
 class RequestWidget(TextWidget):
