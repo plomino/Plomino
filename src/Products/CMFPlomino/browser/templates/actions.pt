@@ -130,7 +130,7 @@
 </div>
 
 <tal:block metal:define-macro="LinkAction"> <a
-    tal:attributes="href python:plominoaction.executeAction(plominotarget, plomino_parent_id)"
+    tal:attributes="href python:plominoaction.executeAction(plominotarget, plomino_parent_id) or ''"
     tal:content="python: plominoaction.Title()" /></tal:block>
 
 <tal:block metal:define-macro="SubmitAction"> <input type="submit"
@@ -146,7 +146,7 @@
   <input class="context"
 
     type="button"
-    tal:attributes="onclick python:'location.href=\''+plominoaction.executeAction(plominotarget, plomino_parent_id)+'\'';
+    tal:attributes="onclick python:'location.href=\'%s\''% (plominoaction.executeAction(plominotarget, plomino_parent_id) or '');
                     id python:plominoaction.id;
                     name python:plominoaction.id;
                     value python: plominoaction.Title();
@@ -155,7 +155,8 @@
 </tal:block>
 
 <tal:block metal:define-macro="CloseAction"> <tal:block
-    tal:define="is_search_form_or_view python:(hasattr(view.target.aq_parent,'getIsSearchForm') or hasattr(view.target.aq_parent,'getSelectionFormula'));">
+    tal:define="is_search_form_or_vie
+    w python:(hasattr(view.target.aq_parent,'getIsSearchForm') or hasattr(view.target.aq_parent,'getSelectionFormula'));">
     <tal:backtoDB tal:condition="python:not(is_search_form_or_view)">
         <input type="button" class="standalone plominoClose" value="Close" name="plomino_close"
             i18n:domain="Products.CMFPlomino" i18n:attributes="value"

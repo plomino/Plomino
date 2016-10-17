@@ -110,9 +110,13 @@ class PlominoAction(Item):
         db = self.getParentDatabase()
         if self.action_type == "OPENFORM":
             formid = self.content
+            if not formid:
+                return ""
             return db.absolute_url() + '/' + formid + '/OpenForm'
         elif self.action_type == "OPENVIEW":
             viewid = self.content
+            if not viewid:
+                return ""
             return db.absolute_url() + '/' + viewid + '/OpenView'
         elif self.action_type == "CLOSE":
             return db.absolute_url() + '/checkBeforeOpenDatabase'
