@@ -141,34 +141,10 @@ class PlominoFormSettings(object):
         """Add a field to the form.
         """
         fieldid = self.request.get("fieldid", None)
-        fieldtype = self.request.get("fieldtype", "TEXT")
-        fieldmode = self.request.get("fieldmode", "EDITABLE")
-        fieldformula = self.request.get("fieldformula", "")
 
         # self.context is the current form
         if fieldid:
-            if not hasattr(self.context, fieldid):
-                field = createContentInContainer(
-                    self.context,
-                    'PlominoField',
-                    title=fieldid,
-                    id=fieldid,
-                    field_type=fieldtype,
-                    field_mode=fieldmode,
-                    formula=fieldformula,
-                )
-
-                html = field.getRenderedValue("example", "EDITABLE", target=self.context)
-
-                self.request.RESPONSE.redirect("{base}/@@tinymceplominoform/valid_page?type=field&value={fieldid}&fieldurl={url}".format(
-                    base = self.context.absolute_url(),
-                    fieldid = fieldid,
-                    url = "/".join(field.getPhysicalPath()),
-                    html = html))
-
-            else:
-                self.request.RESPONSE.redirect(self.context.absolute_url() + "/@@tinymceplominoform/error_page?error=object_exists")
-
+            self.request.RESPONSE.redirect(self.context.absolute_url() + "/@@tinymceplominoform/valid_page?type=field&value=" + fieldid)
         else:
             self.request.RESPONSE.redirect(self.context.absolute_url() + "/@@tinymceplominoform/error_page?error=no_field")
 

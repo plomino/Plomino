@@ -24,13 +24,8 @@
         fieldproperties adapted/getFieldProperties;
         field adapted/getField;
         fields form/getFormFields;
-        insert view/request/insert|nothing;
-        dummy python: insert is None and field is not None and view.request.RESPONSE.redirect(field.absolute_url() + '/edit?ajax_load=1&ajax_include_head=1');
+        dummy python: field is not None and view.request.RESPONSE.redirect(field.absolute_url() + '/edit?ajax_load=1&ajax_include_head=1');
         ">
-        <tal:block condition="insert">
-            <span>insert_success_field</span>
-            <span id="insert_fieldid" tal:content="fieldid" />
-        </tal:block>
         <div class="plone-modal-dialog">
             <div class="plone-modal-content">
                 <div class="plone-modal-header">
@@ -43,7 +38,7 @@
                     <fieldset>
                         <legend i18n:translate="plominofield_selection">Select a Plomino Field</legend>
 
-                        <form id="fieldSelection" method="get">
+                        <form id="fieldSelection" method="get" tal:attributes="action python: form.absolute_url() + '/tinyform/addField'">
                             <p>
                                <label for="plominoFieldId" i18n:translate="plominofield_id">Field ID</label>
                                 <select id="plominoFieldId" name="fieldid">
