@@ -155,8 +155,7 @@
 </tal:block>
 
 <tal:block metal:define-macro="CloseAction"> <tal:block
-    tal:define="is_search_form_or_vie
-    w python:(hasattr(view.target.aq_parent,'getIsSearchForm') or hasattr(view.target.aq_parent,'getSelectionFormula'));">
+    tal:define="is_search_form_or_view python:(hasattr(view.target.aq_parent,'getIsSearchForm') or hasattr(view.target.aq_parent,'getSelectionFormula'));">
     <tal:backtoDB tal:condition="python:not(is_search_form_or_view)">
         <input type="button" class="standalone plominoClose" value="Close" name="plomino_close"
             i18n:domain="Products.CMFPlomino" i18n:attributes="value"
