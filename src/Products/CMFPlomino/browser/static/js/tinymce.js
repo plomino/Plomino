@@ -336,6 +336,7 @@
             var jqdoc = $(doc).contents();
             //var issaved = $(doc).contents().find(".portalMessage.info");
             // should contain "Changes saved" or "Changes cancelled"
+            //TODO: get rid of valid_page and use ajax_success instead
             if (doc.location.pathname.endsWith('/valid_page')) {
                 var type = getParameterByName('type', doc.location.href);
                 var value = getParameterByName('value', doc.location.href);
