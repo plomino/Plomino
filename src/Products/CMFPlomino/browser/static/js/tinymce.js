@@ -195,9 +195,9 @@
 
         if (elementType === "field") {
             var elementClass = 'plominoFieldClass';
-            //var elementEditionPage = '@@tinymceplominoform/field_form';
-            var elementEditionPage = '++add++PlominoField';
-            var elementIdName = 'id';
+            var elementEditionPage = '@@tinymceplominoform/field_form';
+            // var elementEditionPage = '++add++PlominoField';
+            var elementIdName = 'fieldid';
         }
         else if (elementType === "label") {
             var elementClass = 'plominoLabelClass';
@@ -329,6 +329,11 @@
                 win.close();
             }
             else if (doc.find('*:contains("ajax_success")').length) {
+                insert_element(elementType, elementId);
+                win.close();
+            }
+            else if (doc.find('*:contains("insert_success_field")').length) {
+                elementId = doc.find('#insert_fieldid').text();
                 insert_element(elementType, elementId);
                 win.close();
             }
