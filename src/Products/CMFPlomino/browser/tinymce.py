@@ -279,27 +279,10 @@ class PlominoFormSettings(object):
         """ Add a hide-when to the form.
         """
         hidewhenid = self.request.get("hidewhenid", None)
-        hidewhenformula = self.request.get("hidewhenformula", '')
-        hidewhentype = self.request.get("hidewhentype", 'static')
-        isdynamic = hidewhentype=='dynamic',
 
         # self.context is the current form
         if hidewhenid:
-            if not hasattr(self.context, hidewhenid):
-                createContentInContainer(
-                    self.context,
-                    'PlominoHidewhen',
-                    title=hidewhenid,
-                    id=hidewhenid,
-                    formula=hidewhenformula,
-                    isDynamicHidewhen=isdynamic,
-                )
-
-                self.request.RESPONSE.redirect(self.context.absolute_url() + "/@@tinymceplominoform/valid_page?type=hidewhen&value=" + hidewhenid)
-
-            else:
-                self.request.RESPONSE.redirect(self.context.absolute_url() + "/@@tinymceplominoform/error_page?error=object_exists")
-
+            self.request.RESPONSE.redirect(self.context.absolute_url() + "/@@tinymceplominoform/valid_page?type=hidewhen&value=" + hidewhenid)
         else:
             self.request.RESPONSE.redirect(self.context.absolute_url() + "/@@tinymceplominoform/error_page?error=no_hidewhen")
 
