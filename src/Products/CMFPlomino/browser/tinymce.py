@@ -417,6 +417,19 @@ class PlominoFormSettings(object):
         id = self.request.get('id')
         return self.context.example_widget(widget_type, id)
 
+
+class TinyAjax(object):
+    """
+    """
+
+    def ajax_success(self):
+        """ indicator to tinymcepopup that DX is was saved ok"""
+        return "<div id='ajax_success'/>"
+
+    def ajax_cancel(self):
+        """ indicator to tinymcepopup that DX is cancelled"""
+        return "<div id='ajax_cancelled'/>"
+
 class PlominoFieldSettings(object):
     """
     """
@@ -515,7 +528,6 @@ class PlominoActionSettings(object):
 
 def ajax_iframe_redirect(obj, event):
     """ensure if we redirect we keep ajax_ arugments"""
-    import pdb; pdb.set_trace()
     request = event.object.REQUEST
     view_url = request.response.getHeader('location')
     if not view_url:
@@ -528,6 +540,25 @@ def ajax_iframe_redirect(obj, event):
         view_url = view_url+'?ajax_load=1&ajax_include_head=1'
     request.response.redirect(view_url)
 
+def ajax_iframe_cancel(obj, event):
+    """ensure if we redirect we keep ajax_ arugments"""
+    request = event.object.REQUEST
+    view_url = request.response.getHeader('location')
+    if not view_url:
+        return
+    if 'ajax_load' not in request.get('HTTP_REFERER'):
+        pass
+    request.response.redirect(view_url+'/@@tinyajax/ajax_cancel')
+
+def ajax_iframe_success(obj, event):
+    """ensure if we redirect we keep ajax_ arugments"""
+    request = event.object.REQUEST
+    view_url = request.response.getHeader('location')
+    if not view_url:
+        return
+    if 'ajax_load' not in request.get('HTTP_REFERER'):
+        pass
+    request.response.redirect(view_url+'/@@tinyajax/ajax_success')
 
 @zope.interface.implementer_only(z3c.form.interfaces.ITextWidget)
 class RequestWidget(TextWidget):

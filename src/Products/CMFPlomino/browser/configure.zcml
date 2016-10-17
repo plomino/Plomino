@@ -172,7 +172,36 @@
         for="Products.CMFPlomino.contents.form.IPlominoForm"
         class=".tinymce.PlominoFormSettings"
         permission="zope.Public"
-        allowed_attributes="getField addField addLabel addAction addHidewhen addCache addSubForm action_template example_widget"
+        allowed_attributes="getField addField addLabel addAction addHidewhen addCache addSubForm action_template example_widget ajax_success ajax_cancel"
+        />
+
+    <browser:page
+        name="tinyajax"
+        for="Products.CMFPlomino.contents.form.IPlominoForm"
+        class=".tinymce.TinyAjax"
+        permission="zope.Public"
+        allowed_attributes="ajax_success ajax_cancel"
+        />
+    <browser:page
+        name="tinyajax"
+        for="Products.CMFPlomino.contents.field.IPlominoField"
+        class=".tinymce.TinyAjax"
+        permission="zope.Public"
+        allowed_attributes="ajax_success ajax_cancel"
+        />
+    <browser:page
+        name="tinyajax"
+        for="Products.CMFPlomino.contents.hidewhen.IPlominoHidewhen"
+        class=".tinymce.TinyAjax"
+        permission="zope.Public"
+        allowed_attributes="ajax_success ajax_cancel"
+        />
+    <browser:page
+        name="tinyajax"
+        for="Products.CMFPlomino.contents.action.IPlominoAction"
+        class=".tinymce.TinyAjax"
+        permission="zope.Public"
+        allowed_attributes="ajax_success ajax_cancel"
         />
 
    <browser:page
@@ -303,25 +332,25 @@
     <subscriber
       for="Products.CMFPlomino.contents.field.IPlominoField
            plone.dexterity.interfaces.IEditFinishedEvent"
-      handler=".tinymce.ajax_iframe_redirect"
+      handler=".tinymce.ajax_iframe_success"
       />
 
     <subscriber
       for="Products.CMFPlomino.contents.field.IPlominoField
            plone.dexterity.interfaces.IEditCancelledEvent"
-      handler=".tinymce.ajax_iframe_redirect"
+      handler=".tinymce.ajax_iframe_cancel"
       />
 
     <subscriber
       for="Products.CMFCore.interfaces.IFolderish
            plone.dexterity.interfaces.IAddCancelledEvent"
-      handler=".tinymce.ajax_iframe_redirect"
+      handler=".tinymce.ajax_iframe_cancel"
       />
 
     <subscriber
       for="Products.CMFPlomino.contents.field.IPlominoField
            zope.lifecycleevent.interfaces.IObjectAddedEvent"
-      handler=".tinymce.ajax_iframe_redirect"
+      handler=".tinymce.ajax_iframe_success"
       />
 
 

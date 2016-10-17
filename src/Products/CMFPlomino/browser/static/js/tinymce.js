@@ -180,7 +180,6 @@
 				ed.execCommand('mceInsertContent', false, zone, {skip_undo : 1});
 			}
 		}
-		top.tinymce.activeEditor.windowManager.close();
 
 	};
 
@@ -323,11 +322,15 @@
         win.$el.find('iframe').on("load", function() {
 
             var iframe = win.$el.find('iframe')[0];
-            var doc = iframe.contentDocument || iframe.contentWindow.document;
-            var issaved = $(doc).contents().find(".portalMessage.info");
+            var doc = $(iframe.contentDocument || iframe.contentWindow.document).contents();
+            //var issaved = $(doc).contents().find(".portalMessage.info");
             // should contain "Changes saved" or "Changes cancelled"
-            if (issaved.length > 0) {
+            if (doc.find('*:contains("ajax_cancelled")').length) {
+                win.close();
+            }
+            else if (doc.find('*:contains("ajax_success")').length) {
                 insert_element(elementType, elementId);
+                win.close();
             }
         });
 
