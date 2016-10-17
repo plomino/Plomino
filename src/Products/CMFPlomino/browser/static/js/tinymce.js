@@ -318,17 +318,34 @@
             plugin_url : url
         });
 
+        function getParameterByName(name, url) {
+            if (!url) url = window.location.href;
+            name = name.replace(/[\[\]]/g, "\\$&");
+            var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
+                results = regex.exec(url);
+            if (!results) return null;
+            if (!results[2]) return '';
+            return decodeURIComponent(results[2].replace(/\+/g, " "));
+        }
+
         // Whenever the settings are saved update the field in the layout
         win.$el.find('iframe').on("load", function() {
 
             var iframe = win.$el.find('iframe')[0];
-            var doc = $(iframe.contentDocument || iframe.contentWindow.document).contents();
+            var doc = iframe.contentDocument || iframe.contentWindow.document;
+            var jqdoc = $(doc).contents();
             //var issaved = $(doc).contents().find(".portalMessage.info");
             // should contain "Changes saved" or "Changes cancelled"
-            if (doc.find('*:contains("ajax_cancelled")').length) {
+            if (doc.location.pathname.endsWith('/valid_page')) {
+                var type = getParameterByName('type', doc.location.href);
+                var value = getParameterByName('value', doc.location.href);
+                insert_element(type, value);
                 win.close();
             }
-            else if (doc.find('*:contains("ajax_success")').length) {
+            else if (jqdoc.find('*:contains("ajax_cancelled")').length) {
+                win.close();
+            }
+            else if (jqdoc.find('*:contains("ajax_success")').length) {
                 insert_element(elementType, elementId);
                 win.close();
             }
