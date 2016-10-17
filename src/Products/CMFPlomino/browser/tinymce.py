@@ -218,33 +218,9 @@ class PlominoFormSettings(object):
         """ Add an action to the form.
         """
         actionid = self.request.get("actionid", None)
-        title = self.request.get("actiontitle", actionid)
-        actionType = self.request.get("actiontype", 'OPENFORM')
-        actionDisplay = self.request.get("actiondisplay", 'LINK')
-        content = self.request.get("actioncontent", '')
-        hideWhen = self.request.get("actionhidewhen", '')
-        inActionBar = self.request.get("actioninactionbar", None) == 'on'
 
-        # self.context is the current form
         if actionid:
-            if not hasattr(self.context, actionid):
-                action = createContentInContainer(
-                    self.context,
-                    'PlominoAction',
-                    title=title,
-                    id=actionid,
-                    action_type=actionType,
-                    action_display=actionDisplay,
-                    contnet=content,
-                    hidewhen=hideWhen,
-                    in_action_bar=inActionBar,
-                )
-
-                self.request.RESPONSE.redirect(self.context.absolute_url() + "/@@tinymceplominoform/valid_page?type=action&value=" + actionid)
-
-            else:
-                self.request.RESPONSE.redirect(self.context.absolute_url() + "/@@tinymceplominoform/error_page?error=object_exists")
-
+            self.request.RESPONSE.redirect(self.context.absolute_url() + "/@@tinymceplominoform/valid_page?type=action&value=" + actionid)
         else:
             self.request.RESPONSE.redirect(self.context.absolute_url() + "/@@tinymceplominoform/error_page?error=no_action")
 

@@ -24,82 +24,39 @@
 		actionProperties adapted/getActionProperties;
 		action adapted/getAction;
 		actions adapted/getActions;
+		dummy python: action is not None and view.request.RESPONSE.redirect(action.absolute_url() + '/edit?ajax_load=1&ajax_include_head=1');
 		">
 		<div class="plone-modal-dialog">
 			<div class="plone-modal-content">
 				<div class="plone-modal-header">
 					<a class="plone-modal-close">×</a>
-					<h2 class="plone-modal-title">Add/edit a Plomino Action</h2>
+					<h2 class="plone-modal-title">Insert a Plomino Action</h2>
 				</div>
 				<div class="plone-modal-body">
-					<!-- Form which selects an existing action -->
 					<fieldset>
-						<legend i18n:translate="plominoaction_selection">Select a Plomino Action</legend>
+                        <legend>Add a new action</legend>
+                        <a tal:attributes="href string: ../++add++PlominoAction?ajax_load=1&ajax_include_head=1&form.widgets.IBasic.title=${actionid}">New action</a>
+                    </fieldset>
+                    <br />
+                    <fieldset>
+                        <legend i18n:translate="plominoaction_selection">Select an existing Plomino Action</legend>
 
-						<form id="actionSelection" method="get">
-							<p>
-								<label for="actionid" i18n:translate="plominoaction_id">Action ID</label>
-                                <input id="actionid" name="actionid" onchange="this.form.submit();"
-                                       class="pat-select2" data-pat-select2="allowNewItems:true;; tags:true"
-                                       tal:define="tags python:','.join(f.id for f in actions) if actions else '[]'"
-                                        tal:attributes="value actionid; data-pat-select2 string:allowNewItems:true;; tags: ${tags};; maximumSelectionSize:1;;}"/>
-							</p>
-						</form>
-					</fieldset>
-
-					<!-- Form which edits the selected action -->
-					<form method="post"
-						tal:attributes="action python:action and action.absolute_url() + '/tinyaction/setActionProperties' or form.absolute_url() + '/tinyform/addAction'">
-							<input type="hidden" name="actionid"  tal:attributes="value actionid" />
-
-						<fieldset>
-							<legend i18n:translate="plominoaction_edit">Edit Action Properties</legend>
-
-							<p>
-								<label for="actionTitle" i18n:translate="plominoaction_actiontitle">Action title</label>
-								<input id="actionTitle" name="actiontitle" tal:attributes="value python:actionProperties['title']" />
-							</p>
-
-							<p>
-								<label for="actionTypesList" i18n:translate="plominoaction_type">Action type</label>
-								<select id="actionTypesList" name="actiontype">
-									<option tal:repeat="type adapted/getActionTypes"
-										tal:content="python:type[1]"
-										tal:attributes="value python:type[0]; selected python:type[0]==actionProperties['actionType']"></option>
-								</select>
-							</p>
-
-							<p>
-								<label for="actionDisplayList" i18n:translate="plominoaction_display">Action display</label>
-								<select id="actionDisplayList" name="actiondisplay">
-									<option tal:repeat="display adapted/getActionDisplay"
-										tal:content="python:display[1]"
-										tal:attributes="value python:display[0]; selected python:display[0]==actionProperties['actionDisplay']"></option>
-								</select>
-							</p>
-
-							<p>
-								<label for="actionContent" i18n:translate="plominoaction_code">Action code</label>
-								<textarea id="actionContent" name="actioncontent" tal:content="python:actionProperties['content']"></textarea>
-							</p>
-
-							<p>
-								<label for="actionHideWhen" i18n:translate="plominoaction_hidewhen">Hide-when formula</label>
-								<textarea id="actionHideWhen" name="actionhidewhen" tal:content="python:actionProperties['hideWhen']"></textarea>
-							</p>
-
-							<p>
-								<input type="checkbox" id="actionInActionBar" name="actioninactionbar"
-									tal:attributes="checked python:actionProperties['inActionBar']" />
-									<label for="actionInActionBar" i18n:translate="plominoaction_inactionbar">Display action in action bar</label>
-							</p>
-						</fieldset>
-
-						<div class="pattern-modal-buttons">
-							<input type="submit" id="insert" class="context" name="insert" value="Insert" i18n:attributes="value;" />
-							<input type="button" id="cancel" class="standalone" name="cancel" value="Cancel" i18n:attributes="value;" onclick="top.tinymce.activeEditor.windowManager.close();" />
-						</div>
-					</form>
+                        <form id="actionSelection" method="get" tal:attributes="action python: form.absolute_url() + '/tinyform/addAction'">
+                            <p>
+                               <label for="plominoActionId" i18n:translate="plominoaction_id">Action ID</label>
+                                <select id="plominoActionId" name="actionid">
+                                    <option
+                                        tal:repeat="item actions"
+                                        tal:content="string: ${item/id} : ${item/Title}"
+                                        tal:attributes="value item/id; selected python:item.id==actionid"></option>
+                                </select>
+                            </p>
+                            <div class="pattern-modal-buttons">
+                                <input type="submit" id="insert" class="context" name="insert" value="Insert" i18n:attributes="value;" />
+                                <input type="button" id="cancel" class="standalone" name="cancel" value="Cancel" i18n:attributes="value;" onclick="top.tinymce.activeEditor.windowManager.close();" />
+                            </div>
+                        </form>
+                    </fieldset>
 				</div>
 				<div class="plone-modal-footer">
 				</div>
