@@ -340,18 +340,14 @@
             if (doc.location.pathname.endsWith('/valid_page')) {
                 var type = getParameterByName('type', doc.location.href);
                 var value = getParameterByName('value', doc.location.href);
-                insert_element(type, value);
+                var option = getParameterByName('option', doc.location.href);
+                insert_element(type, value, option);
                 win.close();
             }
             else if (jqdoc.find('*:contains("ajax_cancelled")').length) {
                 win.close();
             }
             else if (jqdoc.find('*:contains("ajax_success")').length) {
-                insert_element(elementType, elementId);
-                win.close();
-            }
-            else if (jqdoc.find('*:contains("insert_success_field")').length) {
-                elementId = jqdoc.find('#insert_fieldid').text();
                 insert_element(elementType, elementId);
                 win.close();
             }

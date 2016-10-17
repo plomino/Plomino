@@ -24,7 +24,7 @@
     <element value="plone.app.dexterity.behaviors.metadata.IBasic"/>
     <element value="plone.app.content.interfaces.INameFromTitle"/>
     <element value="Products.CMFPlomino.browser.helpers.IHelpers"/>
-    <element value="Products.CMFPlomino.browser.tinymce.IAJAXFormFields"/>
+    <element value="Products.CMFPlomino.browser.tinymce.IAJAXHiddenFields"/>
 
   </property>
   <property name="schema">Products.CMFPlomino.contents.hidewhen.IPlominoHidewhen</property>
