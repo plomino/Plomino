@@ -29,14 +29,16 @@
         <div class="plone-modal-dialog">
             <div class="plone-modal-content">
                 <div class="plone-modal-header">
-                    <h2 class="plone-modal-title">Add/edit a Plomino Field</h2>
+                    <h2 class="plone-modal-title">Insert a Plomino Field</h2>
                 </div>
                 <div class="plone-modal-body">
-                    <p>
-                        <a tal:attributes="href string: ../++add++PlominoField?ajax_load=1&ajax_include_head=1&form.widgets.IBasic.title=${fieldid}">Add a new field</a>
-                    </p>
                     <fieldset>
-                        <legend i18n:translate="plominofield_selection">Select a Plomino Field</legend>
+                        <legend>Add a new field</legend>
+                        <a tal:attributes="href string: ../++add++PlominoField?ajax_load=1&ajax_include_head=1&form.widgets.IBasic.title=${fieldid}">New field</a>
+                    </fieldset>
+                    <br />
+                    <fieldset>
+                        <legend i18n:translate="plominofield_selection">Select an existing Plomino Field</legend>
 
                         <form id="fieldSelection" method="get" tal:attributes="action python: form.absolute_url() + '/tinyform/addField'">
                             <p>
