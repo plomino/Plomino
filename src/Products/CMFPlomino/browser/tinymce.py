@@ -523,7 +523,7 @@ def ajax_iframe_cancel(obj, event):
     if not view_url:
         return
     if 'ajax_load' not in request.get('HTTP_REFERER'):
-        pass
+        return
     request.response.redirect(view_url+'/@@tinyajax/ajax_cancel')
 
 def ajax_iframe_success(obj, event):
@@ -531,9 +531,12 @@ def ajax_iframe_success(obj, event):
     request = event.object.REQUEST
     view_url = request.response.getHeader('location')
     if not view_url:
-        return
+        if '++add++' not in request.URL:
+            return
+        # special case for ObjectAddedEvent which doesn't redirect until after
+        view_url = request.URL1
     if 'ajax_load' not in request.get('HTTP_REFERER'):
-        pass
+        return
     request.response.redirect(view_url+'/@@tinyajax/ajax_success')
 
 @zope.interface.implementer_only(z3c.form.interfaces.ITextWidget)
