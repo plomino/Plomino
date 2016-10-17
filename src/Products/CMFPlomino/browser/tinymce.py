@@ -562,7 +562,7 @@ class IAJAXHiddenFields(model.Schema):
     """
 
     directives.widget('ajax_load', RequestWidget, fixed_name="ajax_load")
-    ajax_load = schema.TextLine()
+    ajax_load = schema.TextLine(required=False)
     directives.widget('ajax_include_head', RequestWidget, fixed_name="ajax_include_head")
-    ajax_include_head = schema.TextLine()
+    ajax_include_head = schema.TextLine(required=False)
     directives.mode(ajax_load='hidden', ajax_include_head='hidden')
