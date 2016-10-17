@@ -349,8 +349,8 @@
                 insert_element(elementType, elementId);
                 win.close();
             }
-            else if (doc.find('*:contains("insert_success_field")').length) {
-                elementId = doc.find('#insert_fieldid').text();
+            else if (jqdoc.find('*:contains("insert_success_field")').length) {
+                elementId = jqdoc.find('#insert_fieldid').text();
                 insert_element(elementType, elementId);
                 win.close();
             }
