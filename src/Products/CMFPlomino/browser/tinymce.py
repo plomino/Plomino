@@ -560,6 +560,7 @@ class RequestWidget(TextWidget):
 class IAJAXHiddenFields(model.Schema):
     """Add hidden fields to carry the ajax made through form validation errors
     """
+    # TODO: need to make these so they don't add anything to the object
 
     directives.widget('ajax_load', RequestWidget, fixed_name="ajax_load")
     ajax_load = schema.TextLine(required=False)
