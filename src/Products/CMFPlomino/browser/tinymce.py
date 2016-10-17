@@ -1,8 +1,10 @@
 from plone.autoform import directives
-from plone.autoform.interfaces import IFormFieldProvider
+from plone.autoform.interfaces import IFormFieldProvider, zope
 from plone.dexterity.browser.add import DefaultAddForm
 from plone.dexterity.browser.edit import DefaultEditForm
 from plone.supermodel import model
+import z3c
+from z3c.form.browser.text import TextWidget
 from zope import component, interface, schema
 
 from Products.Five import BrowserView
@@ -527,13 +529,30 @@ def ajax_iframe_redirect(obj, event):
     request.response.redirect(view_url)
 
 
+@zope.interface.implementer_only(z3c.form.interfaces.ITextWidget)
+class RequestWidget(TextWidget):
+    """Special widget to ignore z3cform renaming it."""
+
+    fixed_name = 'text'
+    ignoreContext = True
+
+    @property
+    def name(self):
+        return self.fixed_name
+
+    @name.setter
+    def name(self, value):
+        pass
+
+
+
 @provider(IFormFieldProvider)
 class IAJAXHiddenFields(model.Schema):
     """Add hidden fields to carry the ajax made through form validation errors
     """
 
-    directives.widget('ajax_load',name="ajax_load")
-    ajax_load = schema.Text()
-    directives.widget('ajax_include_header',name="ajax_include_header")
-    ajax_include_header = schema.Text()
-    directives.mode(ajax_load='hidden', ajax_include_header='hidden')
+    directives.widget('ajax_load', RequestWidget, fixed_name="ajax_load")
+    ajax_load = schema.TextLine()
+    directives.widget('ajax_include_head', RequestWidget, fixed_name="ajax_include_head")
+    ajax_include_head = schema.TextLine()
+    directives.mode(ajax_load='hidden', ajax_include_head='hidden')
