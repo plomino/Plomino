@@ -71,17 +71,22 @@
 		}
         if (type == 'label') {
             // Handle labels
+            title = (value[0].toUpperCase() + value.slice(1, value.length)).split('-').join(" ");
             var selection = ed.selection.getNode();
             if (container == "span") {
-                content = '<span class="plominoLabelClass mceNonEditable" data-plominoid="'+value+'">&nbsp;</span><br />';
+                content = '<span class="plominoLabelClass mceNonEditable" data-plominoid="'+value+'">'+title+'</span><br />';
             } else {
                 if (top.tinymce.DOM.hasClass(selection, "plominoLabelClass") && selection.tagName === "SPAN") {
-                    content = '<div class="plominoLabelClass mceNonEditable" data-plominoid="'+value+'"><div class="plominoLabelContent mceEditable">&nbsp;</div></div><br />';
+                    content = '<div class="plominoLabelClass mceNonEditable" data-plominoid="'+value+'"><div class="plominoLabelContent mceEditable">'+title+'</div></div><br />';
                 }
                 else if (top.tinymce.DOM.hasClass(selection.firstChild, "plominoLabelContent")) {
                     content = '<div class="plominoLabelClass mceNonEditable" data-plominoid="'+value+'">'+selection.innerHTML+'</div><br />';
                 } else {
-                    content = '<div class="plominoLabelClass mceNonEditable" data-plominoid="'+value+'"><div class="plominoLabelContent mceEditable">'+selection.outerHTML+'</div></div><br />';
+                    if (selection.textContent == "") {
+                        content = '<div class="plominoLabelClass mceNonEditable" data-plominoid="'+value+'"><div class="plominoLabelContent mceEditable">'+title+'</div></div><br />';
+                    } else {
+                        content = '<div class="plominoLabelClass mceNonEditable" data-plominoid="'+value+'"><div class="plominoLabelContent mceEditable">'+ed.selection.getContent()+'</div></div><br />';
+                    }
                 }
             }
             ed.execCommand('mceInsertContent', false, content, {skip_undo : 1});
