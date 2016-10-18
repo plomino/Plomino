@@ -118,8 +118,6 @@ class PlominoAction(Item):
             if not viewid:
                 return ""
             return db.absolute_url() + '/' + viewid + '/OpenView'
-        elif self.action_type == "CLOSE":
-            return db.absolute_url() + '/checkBeforeOpenDatabase'
         elif self.action_type == "PYTHON":
             if target is None:
                 targetid = "None"
