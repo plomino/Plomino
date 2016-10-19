@@ -19,6 +19,7 @@ from Products.CMFPlomino.contents.field import PlominoField
 from Products.CMFPlomino.contents.form import PlominoForm
 from Products.CMFPlomino.contents.hidewhen import PlominoHidewhen
 
+import json
 
 # -*- coding: utf-8 -*-
 from zope.interface import classImplements, provider
@@ -350,7 +351,9 @@ class PlominoFormSettings(object):
         """ Return html of a field, hidewhen etc for inserting into the layout"""
         widget_type = self.request.get('widget_type','field')
         id = self.request.get('id')
-        return self.context.example_widget(widget_type, id)
+        widget = self.context.example_widget(widget_type, id)
+        self.request.RESPONSE.setHeader('content-type', 'application/json')
+        return json.dumps(widget)
 
 
 class TinyAjax(object):

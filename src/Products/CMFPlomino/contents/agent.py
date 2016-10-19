@@ -4,6 +4,7 @@ from jsonutil import jsonutil as json
 from plone.autoform import directives
 from plone.dexterity.content import Item
 from plone.protect.interfaces import IDisableCSRFProtection
+from plone.supermodel import directives as supermodel_directives
 from plone.supermodel import model
 from zope import schema
 from zope.interface import implements, alsoProvides
@@ -37,6 +38,15 @@ class IPlominoAgent(model.Schema):
             ("Current user", "CURRENT"),
             ("Agent owner", "OWNER"),
         ]),
+    )
+
+    # ADVANCED
+    supermodel_directives.fieldset(
+        'advanced',
+        label=_(u'Advanced'),
+        fields=(
+            'content',
+        ),
     )
 
 

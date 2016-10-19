@@ -1169,7 +1169,9 @@ class DesignManager:
                 dm = getMultiAdapter((obj, attr), IDataManager)
                 #dm.set(params[id])
                 #TODO: should be using the dm but getting adapt error
-                setattr(obj, id, params[id])
+                # Can only import if the ID is in the params
+                if id in params:
+                    setattr(obj, id, params[id])
 
         set_data(obj, schema)
         #HACK to enable the instance behaviour

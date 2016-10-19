@@ -1,6 +1,7 @@
 from AccessControl import ClassSecurityInfo
 from plone.autoform import directives
 from plone.dexterity.content import Item
+from plone.supermodel import directives as supermodel_directives
 from plone.supermodel import model
 from zope import schema
 from zope.interface import implements
@@ -71,6 +72,18 @@ class IPlominoAction(model.Schema):
         required=True,
     )
 
+    # ADVANCED
+    supermodel_directives.fieldset(
+        'advanced',
+        label=_(u'Advanced'),
+        fields=(
+            'content',
+            'hidewhen',
+            'in_action_bar',
+        ),
+    )
+
+
 
 class PlominoAction(Item):
     implements(IPlominoAction)
@@ -118,8 +131,6 @@ class PlominoAction(Item):
             if not viewid:
                 return ""
             return db.absolute_url() + '/' + viewid + '/OpenView'
-        elif self.action_type == "CLOSE":
-            return db.absolute_url() + '/checkBeforeOpenDatabase'
         elif self.action_type == "PYTHON":
             if target is None:
                 targetid = "None"

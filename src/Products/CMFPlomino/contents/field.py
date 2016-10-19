@@ -182,7 +182,11 @@ class IPlominoField(model.Schema):
         'advanced',
         label=_(u'Advanced'),
         fields=(
+            'validation_formula',
+            'field_mode',
+            'isDynamicField',
             'to_be_indexed',
+            'formula',
             'index_type',
             'html_attributes_formula',
             'read_template',
