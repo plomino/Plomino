@@ -31,14 +31,14 @@ class IPlominoHidewhen(model.Schema):
         default=False,
     )
 
-    # ADVANCED
-    supermodel_directives.fieldset(
-        'advanced',
-        label=_(u'Advanced'),
-        fields=(
-            'formula',
-        ),
-    )
+    # # ADVANCED
+    # supermodel_directives.fieldset(
+    #     'advanced',
+    #     label=_(u'Advanced'),
+    #     fields=(
+    #         'formula',
+    #     ),
+    # )
 
 
 
