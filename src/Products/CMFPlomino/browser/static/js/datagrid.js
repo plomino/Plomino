@@ -98,8 +98,12 @@ require([
                 evt.preventDefault();
                 //HACK: modal is broken so we can't dynamically set the ajaxURL
                 // bind to a dummy element instead.
-                var add_modal = new Modal(self.$el.find('.add-row i'), {
+                //var modal_bind = $(window.top.document).contents().find('body');
+                var modal_bind = self.$el.find('.add-row i')
+                var scope = function(window) {
+                var add_modal = new Modal(modal_bind, {
                     ajaxUrl: add_row.attr('href'),
+                    position: 'middle top', // import to be at the top so it doesn't reposition inside the iframe
                     actions: {
                         'input.plominoSave': {
                             onSuccess: self.add.bind(
@@ -117,6 +121,7 @@ require([
     //                    }
                     }
                 }).show();
+                }(window.top);
 
             })
 

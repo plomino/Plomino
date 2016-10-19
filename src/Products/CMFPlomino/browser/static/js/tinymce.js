@@ -310,10 +310,11 @@
         var win = ed.windowManager.open({
             url: edurl,
             width : 600 + parseInt(ed.getLang('plomino_tinymce.delta_width', 0)),
-            height : 400 + parseInt(ed.getLang('plomino_tinymce.delta_height', 0)),
-            inline : "yes",
+            //height : 700 + parseInt(ed.getLang('plomino_tinymce.delta_height', 0)),
+            height: $(window.top).height() -50, // important so modals allow scrolling properly
+            inline : "no",
             scrollbars: "no",
-            resizable: "yes"
+            resizable: "no"
         }, {
             plugin_url : url
         });
@@ -332,8 +333,17 @@
         win.$el.find('iframe').on("load", function() {
 
             var iframe = win.$el.find('iframe')[0];
+
+
             var doc = iframe.contentDocument || iframe.contentWindow.document;
             var jqdoc = $(doc).contents();
+            // resize the popop so it fits the content
+            //'height',jqdoc.find('body').height()+'px');
+            //'height',jqdoc.find('body').height()+'px');
+            //win.$el.find('.mce-window-body').resizeToContent();
+            //win.resizeTo(600,jqdoc.find('body').height()-50);
+            //win.$el.find('.mce-window-body').css('height', jqdoc.find('body').height()+'px');
+
             //var issaved = $(doc).contents().find(".portalMessage.info");
             // should contain "Changes saved" or "Changes cancelled"
             //TODO: get rid of valid_page and use ajax_success instead
