@@ -1,6 +1,7 @@
 from AccessControl import ClassSecurityInfo
 from plone.autoform import directives
 from plone.dexterity.content import Item
+from plone.supermodel import directives as supermodel_directives
 from plone.supermodel import model
 from zope import schema
 from zope.interface import implements
@@ -70,6 +71,18 @@ class IPlominoAction(model.Schema):
         default=True,
         required=True,
     )
+
+    # ADVANCED
+    supermodel_directives.fieldset(
+        'advanced',
+        label=_(u'Advanced'),
+        fields=(
+            'content',
+            'hidewhen',
+            'in_action_bar',
+        ),
+    )
+
 
 
 class PlominoAction(Item):
