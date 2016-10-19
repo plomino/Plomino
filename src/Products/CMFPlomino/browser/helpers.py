@@ -112,8 +112,13 @@ class SubformWidget(Widget):
         logger.debug('Method: Widget helper_forms')
         db = self.context.getParentDatabase()
         found = set()
-        typename = self.context.getPortalTypeName().lstrip("Plomino").lower()
-        thistype = self.context.field_type if typename == 'field' else None
+        view = self.request.URL.rsplit('/',1)[-1]
+        if view.startswith('++add++'):
+            typename = view.lstrip('++add++Plomino').lower()
+            thistype = None #TODO: we need to change it based on the currently selected type
+        else:
+            typename = self.context.getPortalTypeName().lstrip("Plomino").lower()
+            thistype = self.context.field_type if typename == 'field' else None
         prefixes = ["macro_%s_%s_"%(typename,f.lower()) for f in FIELD_TYPES.keys() if f != thistype]
 
         dbs = []
