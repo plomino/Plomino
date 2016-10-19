@@ -96,32 +96,34 @@
             $.ajax({
                 url: '@@tinyform/example_widget?widget_type='+type+'&id='+value,
                 success: function(example) {
-                    example = $(example).last().html();
-                // tinymce will remove a span around a block element since its invalid
-                if ($(example).find("div,table,p").length) {
-                    container = "div";
-                }
-                if (example != undefined) {
-                    var span = '<'+container+' class="'+plominoClass
-                        + ' mceNonEditable" data-mce-resize="false" data-plominoid="'+value+'">'
-    //                    +'<span class="plominoEditWidgetTab">'+  value+'</span>'
-                        + example + '</'+container+'><br />';
-                }
-                else {
-                    // String to add in the editor
-                    var span = '<span class="' + plominoClass + '">' + value + '</span><br />';
-                }
+                    // example is now a JSON string
+                    // example = $(example).last().html();
+                    // tinymce will remove a span around a block element since its invalid
+                    if ($(example).find("div,table,p").length) {
+                        container = "div";
+                    }
+                    if (example != undefined) {
+                        var span = '<'+container+' class="'+plominoClass
+                            + ' mceNonEditable" data-mce-resize="false" data-plominoid="'+value+'">'
+        //                    +'<span class="plominoEditWidgetTab">'+  value+'</span>'
+                            + example + '</'+container+'><br />';
+                    }
+                    else {
+                        // String to add in the editor
+                        var span = '<span class="' + plominoClass + '">' + value + '</span><br />';
+                    }
 
-                // Insert or replace the selection
+                    // Insert or replace the selection
 
-                // TinyMCE 3, still needed ?
-                //tinyMCEPopup.restoreSelection();
-                var selection = ed.selection.getNode();
-                if (top.tinymce.DOM.hasClass(selection, 'plominoActionClass') || top.tinymce.DOM.hasClass(selection, 'plominoFieldClass') || top.tinymce.DOM.hasClass(selection, 'plominoLabelClass') || top.tinymce.DOM.hasClass(selection, 'plominoSubformClass'))
-                    ed.execCommand('mceInsertContent', false, span, {skip_undo : 1});
-                else
-                    ed.execCommand('mceInsertContent', false, span, {skip_undo : 1});
-            }});
+                    // TinyMCE 3, still needed ?
+                    //tinyMCEPopup.restoreSelection();
+                    var selection = ed.selection.getNode();
+                    if (top.tinymce.DOM.hasClass(selection, 'plominoActionClass') || top.tinymce.DOM.hasClass(selection, 'plominoFieldClass') || top.tinymce.DOM.hasClass(selection, 'plominoLabelClass') || top.tinymce.DOM.hasClass(selection, 'plominoSubformClass'))
+                        ed.execCommand('mceInsertContent', false, span, {skip_undo : 1});
+                    else
+                        ed.execCommand('mceInsertContent', false, span, {skip_undo : 1});
+                }
+            });
 		}
 		else if (type == "hidewhen" || type == 'cache')
 		{
