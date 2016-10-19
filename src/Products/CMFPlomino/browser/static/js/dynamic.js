@@ -10,6 +10,7 @@ require([
         defaults: {},
         init: function() {
             var self = this;
+            self.refresh(this.$el);
             this.$el.find(':input').change(function(e) {
                 self.refresh(e.target);
             });
