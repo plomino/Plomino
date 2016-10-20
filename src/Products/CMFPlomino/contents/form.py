@@ -30,6 +30,7 @@ from ..utils import (
     urlquote,
 )
 from ..document import getTemporaryDocument
+import urllib
 
 logger = logging.getLogger('Plomino')
 security = ClassSecurityInfo()
@@ -1172,6 +1173,7 @@ class PlominoForm(Container):
                     if submittedValue == '':
                         doc.removeItem(fieldName)
                     else:
+                        submittedValue = urllib.unquote_plus(submittedValue)
                         v = f.processInput(
                             submittedValue,
                             doc,
