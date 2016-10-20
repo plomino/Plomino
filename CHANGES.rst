@@ -5,6 +5,7 @@ Changelog
 ------------------
 
 - Restore View custom template
+- Unquote plus signs when reading input [instification]
 
 
 2.0b4 (2016-05-27)
