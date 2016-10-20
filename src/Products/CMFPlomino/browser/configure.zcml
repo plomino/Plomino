@@ -334,6 +334,16 @@
            plone.dexterity.interfaces.IEditFinishedEvent"
       handler=".tinymce.ajax_iframe_success"
       />
+    <subscriber
+      for="Products.CMFPlomino.contents.hidewhen.IPlominoHidewhen
+           plone.dexterity.interfaces.IEditFinishedEvent"
+      handler=".tinymce.ajax_iframe_success"
+      />
+    <subscriber
+      for="Products.CMFPlomino.contents.action.IPlominoAction
+           plone.dexterity.interfaces.IEditFinishedEvent"
+      handler=".tinymce.ajax_iframe_success"
+      />
 
     <subscriber
       for="Products.CMFPlomino.contents.field.IPlominoField
