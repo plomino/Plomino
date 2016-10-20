@@ -128,7 +128,11 @@ class SubformWidget(Widget):
             if path == '.':
                 dbs.append(db)
             else:
-                dbs.append(db.restrictedTraverse(path))
+                try:
+                    dbs.append(db.restrictedTraverse(path))
+                except KeyError:
+                    #TODO: maybe improve import so bad macro imports aren't stored?
+                    continue
 
         forms = []
         for _db in dbs:
