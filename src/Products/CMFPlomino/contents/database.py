@@ -129,7 +129,8 @@ class IPlominoDatabase(model.Schema):
             default="Databases to search for macros. Reorder to change search order."),
         unique=True,
         value_type=schema.Choice(vocabulary="Products.CMFPlomino.fields.vocabularies.get_databases"),
-        default=['.']
+        default=['.'],
+        required=False,
     )
 
     # ADVANCED - the defaults should be fine most of the time
