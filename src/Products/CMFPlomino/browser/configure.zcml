@@ -383,6 +383,12 @@
       handler=".tinymce.ajax_iframe_success"
       />
 
-
+    <!-- Custom Add/Edit for PlominoField -->
+    <browser:page
+        for="Products.CMFPlomino.contents.field.IPlominoField"
+        name="edit"
+        class=".field.EditForm"
+        permission="cmf.ModifyPortalContent"
+        />
 
 </configure>

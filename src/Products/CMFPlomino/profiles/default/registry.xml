@@ -136,6 +136,11 @@
     <value key="js">++resource++Products.CMFPlomino/js/macros.js</value>
   </records>
 
+    <records prefix="plone.resources/plominorefresh"
+           interface='Products.CMFPlone.interfaces.IResourceRegistry'>
+    <value key="js">++resource++Products.CMFPlomino/js/refresh.js</value>
+  </records>
+
 
   <records prefix="plone.bundles/plomino"
            interface='Products.CMFPlone.interfaces.IBundleRegistry'>
@@ -147,6 +152,7 @@
       <element>plominodatagrid</element>
       <element>plominomultipage</element>
       <element>plominomacros</element>
+      <element>plominorefresh</element>
     </value>
     <value key="merge_with">default</value>
     <value key="enabled">True</value>
