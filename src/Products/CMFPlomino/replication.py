@@ -268,9 +268,7 @@ class ReplicationManager:
     def getReport(self):
         """ Returns last importation report
         """
-        if not (hasattr(self, 'importReport')):
-            self.importReport = None
-        return self.importReport
+        return getattr(self, 'importReport', None)
 
     security.declareProtected(EDIT_PERMISSION, 'resetReport')
 
