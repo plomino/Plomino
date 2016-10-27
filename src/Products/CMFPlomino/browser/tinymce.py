@@ -6,6 +6,7 @@ from plone.supermodel import model
 import z3c
 from z3c.form.browser.text import TextWidget
 from zope import component, interface, schema
+from zope.interface import implementer
 
 from Products.Five import BrowserView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
@@ -526,10 +527,33 @@ class RequestWidget(TextWidget):
 class IAJAXHiddenFields(model.Schema):
     """Add hidden fields to carry the ajax made through form validation errors
     """
-    # TODO: need to make these so they don't add anything to the object
 
     directives.widget('ajax_load', RequestWidget, fixed_name="ajax_load")
     ajax_load = schema.TextLine(required=False)
     directives.widget('ajax_include_head', RequestWidget, fixed_name="ajax_include_head")
     ajax_include_head = schema.TextLine(required=False)
     directives.mode(ajax_load='hidden', ajax_include_head='hidden')
+
+
+@implementer(IAJAXHiddenFields)
+class AJAXHiddenFields(object):
+    """Don't get or set any ajax values on the context"""
+
+    def __init__(self, context):
+        self.context = context
+
+    @property
+    def ajax_load(self):
+        pass
+
+    @ajax_load.setter
+    def ajax_load(self, value):
+        pass
+
+    @property
+    def ajax_include_head(self):
+        pass
+
+    @ajax_include_head.setter
+    def ajax_include_head(self, value):
+        pass

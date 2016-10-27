@@ -292,6 +292,7 @@
         title="ajax_hidden_fields"
         description="retain ajax mode in hidden fields"
         provides=".tinymce.IAJAXHiddenFields"
+        factory=".tinymce.AJAXHiddenFields"
         />
 
   <z3c:widgetTemplate
