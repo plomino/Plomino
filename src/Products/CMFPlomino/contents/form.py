@@ -38,6 +38,7 @@ from ..utils import (
 )
 from ..document import getTemporaryDocument
 from pyquery import PyQuery as pq
+import urllib
 
 logger = logging.getLogger('Plomino')
 security = ClassSecurityInfo()
@@ -1849,6 +1850,7 @@ class PlominoForm(Container):
                     if submittedValue == '':
                         doc.removeItem(fieldName)
                     else:
+                        submittedValue = urllib.unquote_plus(submittedValue)
                         v = f.processInput(
                             submittedValue,
                             doc,
