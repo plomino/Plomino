@@ -485,7 +485,7 @@ def ajax_iframe_cancel(obj, event):
     view_url = request.response.getHeader('location')
     if not view_url:
         return
-    if 'ajax_load' not in request.get('HTTP_REFERER'):
+    if not request.get('ajax_load'):
         return
     request.response.redirect(view_url+'/@@tinyajax/ajax_cancel')
 
@@ -498,7 +498,7 @@ def ajax_iframe_success(obj, event):
     #         return
     #     # special case for ObjectAddedEvent which doesn't redirect until after
     #     view_url = request.URL1
-    if 'ajax_load' not in request.get('HTTP_REFERER'):
+    if not request.get('ajax_load'):
         return
     if hasattr(event, 'newName'):
         # object added event
