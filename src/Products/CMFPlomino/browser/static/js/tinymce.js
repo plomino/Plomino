@@ -42,6 +42,21 @@
             image: '++resource++Products.CMFPlomino/img/PlominoPagebreak.png',
             onclick: function () { editFormElement(editor, url, 'pagebreak'); }
         });
+
+        editor.onDblClick.add(function(ed, e) {
+            console.debug('Double click event: ' + e.target.nodeName);
+            if (top.tinyMCE.DOM.hasClass(e.target, 'plominoLabelClass')) {
+                editFormElement(editor, url, 'label');
+            } else if (top.tinyMCE.DOM.hasClass(e.target, 'plominoFieldClass')) {
+                editFormElement(editor, url, 'field');
+            } else if (top.tinyMCE.DOM.hasClass(e.target, 'plominoActionClass')) {
+                editFormElement(editor, url, 'action');
+            } else if (top.tinyMCE.DOM.hasClass(e.target, 'plominoHidewhenClass')) {
+                editFormElement(editor, url, 'hidewhen');
+            };
+
+        });
+
     });
 
     var insert_element = function(type, value, option) {
