@@ -53,8 +53,9 @@
                 editFormElement(editor, url, 'action');
             } else if (top.tinyMCE.DOM.hasClass(e.target, 'plominoHidewhenClass')) {
                 editFormElement(editor, url, 'hidewhen');
+            } else if (top.tinyMCE.DOM.hasClass(e.target, 'plominoSubformClass')) {
+                editFormElement(editor, url, 'subform');
             };
-
         });
 
     });
