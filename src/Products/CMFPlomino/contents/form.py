@@ -1239,6 +1239,8 @@ class PlominoForm(Container):
                 if field.field_type == 'DATETIME':
                     # Use the created date of the form
                     fieldvalue = self.created()
+                elif field.field_type == "RICHTEXT":
+                    return '<img class="plominoFieldClass" src="++resource++Products.CMFPlomino/img/RichTextEditor.png" />'
                 html = field.getRenderedValue(fieldvalue=fieldvalue,
                                               editmode="EDITABLE",
                                               target=self)
