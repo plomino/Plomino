@@ -34,7 +34,7 @@ try:
 except ImportError:
     HAS_PLONE40 = False
 
-from Products.CMFPlomino.config import TIMEZONE
+from Products.CMFPlomino.config import TIMEZONE, SCRIPT_ID_DELIMITER
 from Products.CMFPlomino.interfaces import IPlominoSafeDomains
 
 logger = logging.getLogger('Plomino')
