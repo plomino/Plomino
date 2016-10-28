@@ -1,9 +1,11 @@
 (function() {
     tinymce.PluginManager.add('plomino', function(editor, url) {
-        var isNotFormEditor = !$('body').hasClass('portaltype-plominoform');
 
-        if (isNotFormEditor) {
-            return ;
+        // This plugin should only be active on a plomino form on the edit template
+        var isFormEditor = $('body').hasClass('portaltype-plominoform') && $('body').hasClass('template-edit')
+
+        if (!isFormEditor) {
+            return;
         }
 
         // Add a button that opens a window
