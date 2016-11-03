@@ -192,6 +192,7 @@ class IPlominoForm(model.Schema):
         'events',
         label=_(u'Events'),
         fields=(
+            'onDisplay',
             'onCreateDocument',
             'onOpenDocument',
             'beforeSaveDocument',
@@ -200,6 +201,15 @@ class IPlominoForm(model.Schema):
             'onSearch',
             'beforeCreateDocument',
         ),
+    )
+
+    form.widget('onDisplay', klass='plomino-formula')
+    onDisplay = schema.Text(
+        title=_('CMFPlomino_label_onDisplay',
+            default="On display"),
+        description=_('CMFPlomino_help_onDisplay',
+            default="Action to take when the form is displayed"),
+        required=False,
     )
 
     form.widget('onCreateDocument', klass='plomino-formula')

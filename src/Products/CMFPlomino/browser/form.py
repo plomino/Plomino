@@ -7,6 +7,9 @@ from Products.Five import BrowserView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from zope.interface import alsoProvides
 
+from ..config import SCRIPT_ID_DELIMITER
+from ..exceptions import PlominoScriptException
+
 
 class FormView(BrowserView):
 
@@ -20,6 +23,21 @@ class FormView(BrowserView):
         self.target = self.context
 
     def openform(self):
+        if (hasattr(self.context, 'onDisplay') and
+                self.context.onDisplay):
+            try:
+                response = self.context.runFormulaScript(
+                    SCRIPT_ID_DELIMITER.join([
+                        'form', self.context.id, 'ondisplay']),
+                    self.context,
+                    self.context.onDisplay)
+            except PlominoScriptException, e:
+                response = None
+                e.reportError('onDisplay formula failed')
+            # If the onDisplay event returned something, return it
+            # We could do extra handling of the response here if needed
+            if response is not None:
+                return response
         return self.template()
 
     def openbareform(self):
