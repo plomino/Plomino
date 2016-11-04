@@ -1862,7 +1862,7 @@ class PlominoForm(Container):
                     if submittedValue == '':
                         doc.removeItem(fieldName)
                     else:
-                        if isinstance(submittedValue, basestring):
+                        if type(submittedValue) is str:
                             submittedValue = urllib.unquote_plus(
                                 submittedValue)
                         v = f.processInput(
