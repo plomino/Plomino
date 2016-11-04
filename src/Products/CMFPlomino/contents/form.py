@@ -1254,6 +1254,9 @@ class PlominoForm(Container):
                 html = field.getRenderedValue(fieldvalue=fieldvalue,
                                               editmode="EDITABLE",
                                               target=self)
+                # it is possible html is empty string
+                if not html:
+                    return id
                 # need to determine if the html will get wiped
                 field_pq = pq(html)
                 blocks = 'input,select,table,textarea,button,img,video'
