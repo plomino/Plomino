@@ -332,8 +332,9 @@ def update_helpers(obj, event):
                 continue
             elif code_id is None:
                 # reached end. insert code at the end
-                code += '\n'+MACRO_FMT.format(id=macro_id, code="\n"+new_code[macro_id]+"\n")
-
+                code += '\n'+MACRO_FMT.format(
+                    id=macro_id,
+                    code="\n"+str(new_code[macro_id])+"\n")
             else:
                 # 3. it's further down the list. remove it
                 code = re.sub(
@@ -344,7 +345,9 @@ def update_helpers(obj, event):
                              macro_id != oid]
                 # 4. The list one is new. insert it. or we are moving it
                 # insert before the current one
-                switched = MACRO_FMT.format(id=macro_id, code="\n"+new_code[macro_id]+"\n") + \
+                switched = MACRO_FMT.format(
+                    id=macro_id,
+                    code="\n"+str(new_code[macro_id])+"\n") + \
                     '\n' + \
                     MACRO_FMT.format(id=code_id, code=old_code)
                 code = re.sub(
