@@ -156,6 +156,7 @@ class IPlominoForm(model.Schema):
         'events',
         label=_(u'Events'),
         fields=(
+            'onDisplay',
             'onCreateDocument',
             'onOpenDocument',
             'beforeSaveDocument',
@@ -164,6 +165,15 @@ class IPlominoForm(model.Schema):
             'onSearch',
             'beforeCreateDocument',
         ),
+    )
+
+    form.widget('onDisplay', klass='plomino-formula')
+    onDisplay = schema.Text(
+        title=_('CMFPlomino_label_onDisplay',
+            default="On display"),
+        description=_('CMFPlomino_help_onDisplay',
+            default="Action to take when the form is displayed"),
+        required=False,
     )
 
     form.widget('onCreateDocument', klass='plomino-formula')
@@ -1500,3 +1510,15 @@ class PlominoForm(Container):
                 'aaData': result}
 
         return json.dumps(result)
+
+    def getTemporaryDocument(self, doc=None, validation_mode=False):
+        """Return a temporary document based on the current request and form"""
+        db = self.getParentDatabase()
+        request = self.REQUEST
+        return getTemporaryDocument(
+            db,
+            self,
+            request,
+            doc=doc,
+            validation_mode=validation_mode
+            ).__of__(db)
