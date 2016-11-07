@@ -1510,3 +1510,15 @@ class PlominoForm(Container):
                 'aaData': result}
 
         return json.dumps(result)
+
+    def getTemporaryDocument(self, doc=None, validation_mode=False):
+        """Return a temporary document based on the current request and form"""
+        db = self.getParentDatabase()
+        request = self.REQUEST
+        return getTemporaryDocument(
+            db,
+            self,
+            request,
+            doc=doc,
+            validation_mode=validation_mode
+            ).__of__(db)

@@ -988,6 +988,21 @@ class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
         # (as BTreeFolder2 1.0 does not define __nonzero__)
         return True
 
+    def getTemporaryDocument(self, doc=None, validation_mode=False):
+        """Return a temporary document based on the current request and form"""
+        db = self.getParentDatabase()
+        request = self.REQUEST
+        form = self.getForm()
+        if doc is None:
+            doc = self
+        return getTemporaryDocument(
+            db,
+            form,
+            request,
+            doc=doc,
+            validation_mode=validation_mode
+            ).__of__(db)
+
 
 InitializeClass(PlominoDocument)
 addPlominoDocument = Factory(PlominoDocument)
