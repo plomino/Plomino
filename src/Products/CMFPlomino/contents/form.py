@@ -323,10 +323,12 @@ class PlominoForm(Container):
     def getFormAction(self):
         """ For a multi page form, submit to a custom action """
         if self.getIsMulti():
-            action = 'page/%s' % self._get_current_page()
+            action = '/page/%s' % self._get_current_page()
+        elif self.isPage:
+            action = ''
         else:
-            action = 'createDocument'
-        return '%s/%s' % (self.absolute_url(), action)
+            action = '/createDocument'
+        return '%s%s' % (self.absolute_url(), action)
 
     def _get_resource_urls(self, field_name):
         """ Return canonicalized URLs if local.
