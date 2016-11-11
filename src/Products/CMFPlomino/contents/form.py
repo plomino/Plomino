@@ -1258,6 +1258,8 @@ class PlominoForm(Container):
                     fieldvalue = self.created()
                 elif field.field_type == "RICHTEXT":
                     return '<img class="plominoFieldClass" src="++resource++Products.CMFPlomino/img/RichTextEditor.png" />'
+                elif field.field_type == "TEXT" and field.widget == "TEXTAREA":
+                    return '<img class="plominoFieldClass" src="++resource++Products.CMFPlomino/img/LongText.png" />'
                 html = field.getRenderedValue(fieldvalue=fieldvalue,
                                               editmode="EDITABLE",
                                               target=self)
