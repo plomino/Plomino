@@ -154,6 +154,4 @@ class PageView(BrowserView):
             # We could do extra handling of the response here if needed
             if response is not None:
                 return response
-        print "About to return the template with errors: "
-        print self.page_errors
         return self.template()
