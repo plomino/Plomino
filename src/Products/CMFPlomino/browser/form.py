@@ -91,6 +91,21 @@ class PageView(BrowserView):
                 self.page = 1
 
     def __call__(self):
+        if (hasattr(self.context, 'onDisplay') and
+                self.context.onDisplay):
+            try:
+                response = self.context.runFormulaScript(
+                    SCRIPT_ID_DELIMITER.join([
+                        'form', self.context.id, 'ondisplay']),
+                    self.context,
+                    self.context.onDisplay)
+            except PlominoScriptException, e:
+                response = None
+                e.reportError('onDisplay formula failed')
+            # If the onDisplay event returned something, return it
+            # We could do extra handling of the response here if needed
+            if response is not None:
+                return response
         return self.render()
 
     def render(self):
@@ -133,25 +148,11 @@ class PageView(BrowserView):
                     self.request['plomino_current_page'] = form._get_next_page(self.request, action='continue')
                     return self.openform()
 
-            # Otherwise create the document
-            return form.createDocument(self.request)
+            # Create the document if it's not a page
+            if not form.isPage:
+                return form.createDocument(self.request)
 
         return self.openform()
 
     def openform(self):
-        if (hasattr(self.context, 'onDisplay') and
-                self.context.onDisplay):
-            try:
-                response = self.context.runFormulaScript(
-                    SCRIPT_ID_DELIMITER.join([
-                        'form', self.context.id, 'ondisplay']),
-                    self.context,
-                    self.context.onDisplay)
-            except PlominoScriptException, e:
-                response = None
-                e.reportError('onDisplay formula failed')
-            # If the onDisplay event returned something, return it
-            # We could do extra handling of the response here if needed
-            if response is not None:
-                return response
         return self.template()
