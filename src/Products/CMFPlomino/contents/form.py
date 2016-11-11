@@ -818,11 +818,12 @@ class PlominoForm(Container):
         tempdoc_form = self
 
         # Allow the ability to override the form mode
-        form_mode = request.get('plomino_form_mode')
-        if form_mode and form_mode == 'READ':
-            editmode = False
-        if form_mode and form_mode == 'WRITE':
-            editmode = True
+        if request:
+            form_mode = request.get('plomino_form_mode')
+            if form_mode and form_mode == 'READ':
+                editmode = False
+            if form_mode and form_mode == 'WRITE':
+                editmode = True
 
         if parent_form_id:
             parent_form = db.getForm(parent_form_id)
