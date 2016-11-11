@@ -311,7 +311,10 @@ class PlominoForm(Container):
         """
         value = self.form_method
         if value == 'Auto':
-            if self.isPage or self.isSearchForm:
+            # Multipage form should be POST by default
+            if self.getIsMulti():
+                return 'POST'
+            elif self.isPage or self.isSearchForm:
                 return 'GET'
             else:
                 return 'POST'
