@@ -98,13 +98,35 @@
                 enctype python:(form_method == 'POST') and 'multipart/form-data'"
             tal:attributes="
                 name view/form/id;
+                action python:view.form.getFormAction();
                 method python:view.form.getFormMethod();
                 data-pat-plominodynamic string:url:${view/form/absolute_url};
-                enctype enctype|nothing;">
+                enctype enctype|nothing;
+                class python: macro_context and 'plomino-macro' or '';">
             <span tal:replace="structure view/form/@@authenticator/authenticator"/>
+
+            <tal:block condition="view/page_errors|nothing">
+                <div id="validation_failed">
+                    <h1>Validation failed</h1>
+                    <ul id="error_list">
+                        <tal:errors repeat="e view/page_errors">
+                            <li tal:content="structure e/error"
+                                tal:attributes="id string:error_${e/field}" />
+                        </tal:errors>
+                    </ul>
+                </div>
+            </tal:block>
 
             <tal:layout
                 tal:content="structure python:view.form.openBlankForm(request)">layout</tal:layout>
+             <input tal:condition="view/request/Plomino_Parent_Field | nothing"
+                    type="hidden"
+                    name="Plomino_Parent_Field"
+                    tal:attributes="value view/request/Plomino_Parent_Field;" />
+                <input tal:condition="view/request/Plomino_Parent_Form | nothing"
+                    type="hidden"
+                    name="Plomino_Parent_Form | nothing"
+                    tal:attributes="value view/request/Plomino_Parent_Form;" />
 
             <span metal:use-macro="view/form/plomino_actions/macros/OpenFormActionBar">display form actions</span><br/>
         </form>
