@@ -30,7 +30,7 @@
         </script>
     </tal:block_hasjsresources>
 </head>
-<body>
+<body class="OpenBareForm">
     <div id="content"
         tal:define="
             ispage context/isPage;
