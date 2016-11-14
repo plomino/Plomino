@@ -2237,6 +2237,8 @@ class PlominoForm(Container):
 
         return json.dumps(result)
 
+    security.declarePublic('getTemporaryDocument')
+
     def getTemporaryDocument(self, doc=None, validation_mode=False):
         """Return a temporary document based on the current request and form"""
         db = self.getParentDatabase()
