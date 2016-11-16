@@ -1090,16 +1090,8 @@ class PlominoForm(Container):
             #   <span class="plominoLabelClass">id</span>
             #   <span class="plominoLabelClass">id:Custom label</span>
             # If it contains text/html, wrap it inside a div
-            if ':' not in element.text:
-                id = element.text
-                html = u'<span class="plominoLabelClass mceNonEditable" data-plominoid="{id}">&nbsp;</span>'.format(id=id)
-            else:
-                id, html = pq(element).html().split(':', 1)
-                html = u'''<div class="plominoLabelClass mceNonEditable" data-plominoid="{id}">
-<div class="plominoLabelContent mceEditable">
-{html}
-</div>
-</div>'''.format(id=id, html=html)
+            id = element.text
+            html = self.example_widget('label', id)
             pq(element).replace_with(html)
 
         s = ".plominoHidewhenClass,.plominoCacheClass"
@@ -1307,6 +1299,23 @@ class PlominoForm(Container):
                 plominotarget=self,
                 plomino_parent_id=self.id)
             return action_render
+
+        elif widget_type == 'label':
+            if ':' not in id:
+                field = self.getFormField(id)
+                if field is not None:
+                    title = field.Title()
+                else:
+                    title = id
+                html = u'<span class="plominoLabelClass mceNonEditable" data-plominoid="{id}">{title}</span>'.format(id=id, title=title)
+            else:
+                id, html = pq(id).html().split(':', 1)
+                html = u'''<div class="plominoLabelClass mceNonEditable" data-plominoid="{id}">
+<div class="plominoLabelContent mceEditable">
+{html}
+</div>
+</div>'''.format(id=id, html=html)
+            return html
 
 
     security.declareProtected(READ_PERMISSION, 'applyHideWhen')

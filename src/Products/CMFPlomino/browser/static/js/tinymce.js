@@ -88,7 +88,7 @@
             }
 		}
         if (type == 'label') {
-            // Handle labels
+            // Handle labels - TODO: replace this with example_wiget
             title = (value[0].toUpperCase() + value.slice(1, value.length)).split('-').join(" ");
             var selection = ed.selection.getNode();
             if (container == "span") {

@@ -57,12 +57,38 @@ div.plominoLabelClass {
     background-image: url('++resource++Products.CMFPlomino/img/PlominoLabel.png');
     background-position: 0 0;
     background-repeat: no-repeat;
-
 }
 .plominoLabelClass:hover:before {
     color: #ffffff;
     background-color: #03632C;
 }
+div.plominoLabelClass {
+    background-color: #ccc;
+}
+div.plominoLabelClass div.plominoLabelContent {
+    background-color: #fafafa;
+    padding: 0;
+}
+
+div.plominoLabelContent {
+    padding-left: 0;
+    padding-right: 0;
+}
+div.plominoLabelContent:after {
+    content: " ";
+    float: right;
+    background-image: url('++resource++Products.CMFPlomino/img/PlominoLabel.png');
+    background-position: 4px;
+    background-repeat: no-repeat;
+    width: 28px;
+    height: 20px;
+    background-color: #ccc;
+}
+
+div.plominoLabelContent:before {
+    content: " ";
+}
+
 
 .plominoActionClass {
     outline: 1px dashed #124465;

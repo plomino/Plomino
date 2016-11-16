@@ -24,8 +24,7 @@
                     <!-- Form which adds the label -->
                     <form method="post" tal:attributes="action python: form.absolute_url() + '/tinyform/addLabel'">            
                         <fieldset>
-                            <legend i18n:translate="plominolabel_subtitle">Select a Field</legend>
-                            
+                            <p>By default a label will use the <em>Title</em> of the associated field when inserted into the form. Select the field that this label should be associated with:</p>
                             <p>
                                 <input type="hidden" name="type" value="label" />
                             
@@ -33,12 +32,12 @@
                                 <select id="plominoLabelId" name="labelid">
                                     <option
                                         tal:repeat="item fields"
-                                        tal:content="string: ${item/id} : ${item/Title}"
+                                        tal:content="string: ${item/Title} (${item/id})"
                                         tal:attributes="value item/id; selected python:item.id==labelid"></option>
                                 </select>
                             </p>
                             <p>
-                                By default the Title of the field will be used as the label. If the Title of the field doesn't make sense as a label you may choose to add custom label text.
+                                If you would like to use something other than the Title of the field, you may choose to enable custom label text. This will allow you to enter anything as the value of the label.
                             </p>
                             <p>
                                 <input type="checkbox" id="plominoLabelEnableCustom" name="enablecustomlabel" tal:attributes="checked enablecustomlabel" />
