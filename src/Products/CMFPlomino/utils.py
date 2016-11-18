@@ -250,6 +250,49 @@ def DatetimeToJS(python_format, split=False):
     return datetime_format
 
 
+def sendTextMail(
+    db,
+    recipients,
+    title,
+    message,
+    sender=None,
+    cc=None,
+    bcc=None,
+    immediate=False
+):
+    """Send an email as text"""
+    host = getToolByName(db, 'MailHost')
+
+    if not sender:
+        sender = db.getCurrentMember().getProperty("email")
+
+    mail_message = message_from_string(asUnicode(message).encode('utf-8'))
+    mail_message.set_charset('utf-8')
+    mail_message.set_type("text/plain")
+    if cc:
+        mail_message['CC'] = Header(cc)
+    if bcc:
+        mail_message['BCC'] = Header(bcc)
+    if HAS_PLONE40:
+        host.send(
+            mail_message,
+            recipients,
+            sender,
+            asUnicode(title).encode('utf-8'),
+            msg_type='text/plain',
+            immediate=immediate
+        )
+    else:
+        host.secureSend(
+            message,
+            recipients,
+            sender,
+            subject=title,
+            subtype='plain',
+            charset='utf-8'
+        )
+
+
 def sendMail(
     db,
     recipients,

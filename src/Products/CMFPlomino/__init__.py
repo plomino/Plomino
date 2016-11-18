@@ -79,6 +79,7 @@ class PlominoCoreUtils:
         'StringToDate',
         'DateRange',
         'sendMail',
+        'sendTextMail',
         'userFullname',
         'userInfo',
         'htmlencode',
