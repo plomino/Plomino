@@ -808,7 +808,9 @@ class PlominoForm(Container):
 
         # If the normal html is none, return the outer_html. This handles the case where
         # the form may be a single element.
-        return d.html() or d.outer_html()
+        # return d.html() or d.outer_html()
+        # XXX: Can we just return outerHtml all the time?
+        return d.outerHtml()
 
     security.declareProtected(READ_PERMISSION, 'displayDocument')
 
