@@ -1238,7 +1238,9 @@ class PlominoForm(Container):
             # Remove the old node
             pq(linkto_node).remove()
 
-        html_content = html.html()
+        # If this is html() and there is only one element, it will only return
+        # what's inside it.
+        html_content = html.outerHtml()
 
         return html_content
 
