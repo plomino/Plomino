@@ -103,6 +103,7 @@ require([
                 var scope = function(window) {
                 var add_modal = new Modal(modal_bind, {
                     ajaxUrl: add_row.attr('href'),
+                    ajaxType: "POST",
                     position: 'middle top', // import to be at the top so it doesn't reposition inside the iframe
                     actions: {
                         'input.plominoSave': {
@@ -127,6 +128,7 @@ require([
 
             self.$el.find('.edit-row').each(function(i, el) {
                 var edit_modal = new Modal($(el), {
+                    ajaxType: "POST",
                     actions: {
                         'input.plominoSave': {
                             onSuccess: self.edit.bind({grid: self,
