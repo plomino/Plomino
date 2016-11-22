@@ -167,7 +167,11 @@ class PlominoFormSettings(object):
     def getActions(self):
         """Returns a sorted list of actions
         """
-        actions = self.context.aq_inner.getActions(None, False)
+        actions = self.context.aq_inner.getActions(
+            None,
+            False,
+            ignore_dummy=True
+        )
         actions = [a[0] for a in actions]
         actions.sort(key=lambda elt: elt.id.lower())
         return actions

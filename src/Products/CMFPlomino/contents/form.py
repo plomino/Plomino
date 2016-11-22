@@ -602,7 +602,7 @@ class PlominoForm(Container):
 
     security.declarePublic('getActions')
 
-    def getActions(self, target=None, hide=True):
+    def getActions(self, target=None, hide=True, ignore_dummy=False):
         """ Get filtered form actions for the target (page or document).
         """
         actions = self.getFormActions()
@@ -616,7 +616,7 @@ class PlominoForm(Container):
                 filtered.append((action, self.id))
 
         # Insert some actions for Previous/Next buttons
-        if self.getIsMulti():
+        if self.getIsMulti() and not ignore_dummy:
             current_page = self._get_current_page()
             num_pages = self._get_num_pages()
 
