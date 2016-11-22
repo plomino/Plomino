@@ -114,15 +114,18 @@ div.plominoLabelContent:before {
 }
 
 hr.plominoPagebreakClass {
-    border: 4px solid #8c8b8b;
+    height:10px;
+    border: 0;
+    background-color: #8c8b8b;
+    width: 100%;
 }
-hr.plominoPagebreakClass:before {
+hr.plominoPagebreakClass:hover:before {
     content: 'Page break';
     display: inline-block;
     position: relative;
     background-color: #8c8b8b;
     color: #fff;
-    top:-20px;
+    top:-16px;
     left: 0;
     padding: 2px 5px;
     font-size: 10px;
