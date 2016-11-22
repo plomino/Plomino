@@ -1622,7 +1622,7 @@ class PlominoForm(Container):
                 hidden_fields += re.findall(
                     '<span class="plominoFieldClass">([^<]+)</span>',
                     hiddensection)
-        for subformname in self.getSubforms(doc):
+        for subformname in self.getSubforms(doc, validation_mode=validation_mode):
             subform = db.getForm(subformname)
             if not subform:
                 msg = 'Missing subform: %s. Referenced on: %s' % (subformname, self.id)
