@@ -858,7 +858,8 @@ class PlominoForm(Container):
             hidewhen_target = getTemporaryDocument(
                 db,
                 tempdoc_form,
-                self.REQUEST
+                self.REQUEST,
+                validation_mode=True
             )
         else:
             hidewhen_target = doc
