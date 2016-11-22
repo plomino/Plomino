@@ -500,6 +500,7 @@ class PlominoForm(Container):
         """ Get fields
         """
         db = self.getParentDatabase()
+        # XXX: Can this be re-enabled?
         # cache_key = "getFormFields_%d_%d_%d_%d_%d_%d" % (
         #     hash(self),
         #     hash(doc),
@@ -862,7 +863,7 @@ class PlominoForm(Container):
         else:
             hidewhen_target = doc
 
-        html_content = self.applyHideWhen(hidewhen_target, silent_error=False)
+        html_content = self.applyHideWhen(hidewhen_target, silent_error=False, cache_key='displayDocument')
         if request:
             parent_form_ids = request.get('parent_form_ids', [])
             if parent_form_id:
@@ -1324,9 +1325,23 @@ class PlominoForm(Container):
 
     security.declareProtected(READ_PERMISSION, 'applyHideWhen')
 
-    def applyHideWhen(self, doc=None, silent_error=True, split_multipage=True):
+    def applyHideWhen(self, doc=None, silent_error=True, split_multipage=True,
+                      cache_key=''):
         """ Evaluate hide-when formula and return resulting layout
         """
+        # Some methods might pass in their own cache_key. Add the rest
+        # of the key values to the key.
+        db = self.getParentDatabase()
+        cache_key = "applyHideWhen_%d_%d_%d_%s" % (
+            hash(self),
+            hash(doc),
+            hash(split_multipage),
+            cache_key
+        )
+        cache = db.getRequestCache(cache_key)
+        if cache is not None:
+            return cache
+
         html_content = self._get_html_content()
 
         # remove the hidden content
@@ -1434,6 +1449,9 @@ class PlominoForm(Container):
                     if page != current_page:
                         html.remove('.hidewhen-hidewhen-multipage-%s' % page)
                 html_content = html.html()
+
+        # Cache the html
+        db.setRequestCache(cache_key, html_content)
 
         return html_content
 
@@ -1793,8 +1811,18 @@ class PlominoForm(Container):
         """ ``types`` is a list of strings.
         Check if any of those types are present.
         """
-        tmp = None
         db = self.getParentDatabase()
+        cache_key = 'hasFieldTypes_%d_%d_%d' % (
+            hash(self),
+            hash(types),
+            hash(applyhidewhen)
+        )
+        cache = db.getRequestCache(cache_key)
+        if cache is not None:
+            return cache
+
+        tmp = None
+        result = False
         if hasattr(self, 'REQUEST'):
             # hideWhens need a TemporaryDocument
             tmp = getTemporaryDocument(
@@ -1807,8 +1835,10 @@ class PlominoForm(Container):
             applyhidewhen=applyhidewhen)
         for f in fields:
             if f.field_type in types:
-                return True
-        return False
+                result = True
+
+        db.setRequestCache(cache_key, result)
+        return result
 
     security.declarePublic('hasGoogleVisualizationField')
 
