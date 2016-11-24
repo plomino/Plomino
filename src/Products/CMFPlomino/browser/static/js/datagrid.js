@@ -127,24 +127,38 @@ require([
             })
 
             self.$el.find('.edit-row').each(function(i, el) {
-                var edit_modal = new Modal($(el), {
-                    ajaxType: "POST",
-                    actions: {
-                        'input.plominoSave': {
-                            onSuccess: self.edit.bind({grid: self,
-                                row: i,
-                                formid: $(el).attr('data-formid')}),
-                            onError: function() {
-                                // TODO: render errors in the form
-                                window.alert(response.responseJSON.errors.join('\n'));
-                                return false;
+                // first use AJAX to get the form so we can do a post
+                var url = $(el).attr('href').split('?',2);
+                $(el).on("click", function(evt) {
+                    evt.preventDefault();
+
+                    jQuery.ajax({
+                        url: url[0],
+                        type: "POST",
+                        data: url[1]
+                    }).done(function(html) {
+                        var edit_modal = new Modal(self.$el, {
+                            html: html,
+                            position: 'middle top', // import to be at the top so it doesn't reposition inside the iframe
+                            actions: {
+                                'input.plominoSave': {
+                                    onSuccess: self.edit.bind({grid: self,
+                                        row: i,
+                                        formid: $(el).attr('data-formid')}),
+                                    onError: function() {
+                                        // TODO: render errors in the form
+                                        window.alert(response.responseJSON.errors.join('\n'));
+                                        return false;
+                                    }
+                                }
+        //                        'input.plominoCancel': {
+        //                            onClick: add_row.hide()
+        //                        }
                             }
-                        }
-//                        'input.plominoCancel': {
-//                            onClick: add_row.hide()
-//                        }
-                    }
-              });
+                        }).show();
+                    });
+
+                });
             });
             self.$el.find('.remove-row').each(function(index, el) {
                 $(el).click(function() {self.remove(self, index);});
