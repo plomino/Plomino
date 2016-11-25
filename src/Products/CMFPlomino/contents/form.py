@@ -1480,7 +1480,7 @@ class PlominoForm(Container):
             'errors': self.validateInputs(REQUEST, doc=doc, tmp=temp[self.id])
         }
 
-        results['hidewhens'] = self._get_hidewhens(REQUEST, doc, temp=temp)
+        results['hidewhens'] = self._get_hidewhens(REQUEST, doc, temp=temp, dynamic=True)
 
         fields = asList(REQUEST.get('_fields[]', []))
         fields_results = []
@@ -1520,44 +1520,65 @@ class PlominoForm(Container):
 
     security.declarePrivate('_get_hidewhens')
 
-    def _get_hidewhens(self, REQUEST, doc, temp=None, include_multipage=False):
+    def _get_hidewhens(self, REQUEST, doc, temp=None, include_multipage=False, dynamic=False):
         db = self.getParentDatabase()
         if temp is None:
             temp = {}
-        hidewhens = asList(REQUEST.get('_hidewhens[]', []))
         hidewhens_results = []
-        for token in hidewhens:
-            (formid, hwid) = token.split('/')
-            if formid == self.id:
-                form = self
-            else:
-                form = db.getForm(formid)
-                if not form:
-                    db.writeMessageOnPage(
-                        "Form %s id missing" % formid, REQUEST, False)
-                    hidewhens_results.append(["%s/%s" % (formid, hwid), True])
-                    continue
-            if formid not in temp:
-                temp[formid] = getTemporaryDocument(
-                    db,
-                    db.getForm(formid),
-                    REQUEST,
-                    doc,
-                    validation_mode=False)
-            try:
-                hidewhen = form.getHidewhen(hwid)
-                isHidden = form.runFormulaScript(
-                    SCRIPT_ID_DELIMITER.join([
-                        'hidewhen', formid, hwid, 'formula'
-                    ]),
-                    temp[formid],
-                    hidewhen.formula)
-            except PlominoScriptException, e:
-                e.reportError(
-                    '%s hide-when formula failed' % hwid)
-                # if error, we hide anyway
-                isHidden = True
-            hidewhens_results.append(["%s/%s" % (formid, hwid), isHidden])
+
+        if dynamic:
+            hidewhens = asList(REQUEST.get('_hidewhens[]', []))
+            for token in hidewhens:
+                (formid, hwid) = token.split('/')
+                if formid == self.id:
+                    form = self
+                else:
+                    form = db.getForm(formid)
+                    if not form:
+                        db.writeMessageOnPage(
+                            "Form %s id missing" % formid, REQUEST, False)
+                        hidewhens_results.append(["%s/%s" % (formid, hwid), True])
+                        continue
+                if formid not in temp:
+                    temp[formid] = getTemporaryDocument(
+                        db,
+                        db.getForm(formid),
+                        REQUEST,
+                        doc,
+                        validation_mode=False)
+                try:
+                    hidewhen = form.getHidewhen(hwid)
+                    isHidden = form.runFormulaScript(
+                        SCRIPT_ID_DELIMITER.join([
+                            'hidewhen', formid, hwid, 'formula'
+                        ]),
+                        temp[formid],
+                        hidewhen.formula)
+                except PlominoScriptException, e:
+                    e.reportError(
+                        '%s hide-when formula failed' % hwid)
+                    # if error, we hide anyway
+                    isHidden = True
+                hidewhens_results.append(["%s/%s" % (formid, hwid), isHidden])
+        else:
+            hidewhens = self.getHidewhenFormulas()
+            if doc is None:
+                doc = getTemporaryDocument(db, self, REQUEST, validation_mode=False)
+            for hidewhen in hidewhens:
+                try:
+                    isHidden = self.runFormulaScript(
+                        SCRIPT_ID_DELIMITER.join(
+                            ['hidewhen', self.id, hidewhen.id, 'formula']
+                        ),
+                        doc,
+                        hidewhen.formula
+                    )
+                except PlominoScriptException, e:
+                    e.reportError(
+                        '%s hide-when formula failed' % hwid)
+                    # if error, we hide anyway
+                    isHidden = True
+                hidewhens_results.append([hidewhen.id, isHidden])
 
         # Set hidewhen values for multipage based on current page
         if self.getIsMulti() and include_multipage:
