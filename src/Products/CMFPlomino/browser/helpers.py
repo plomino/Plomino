@@ -102,11 +102,12 @@ class SubformWidget(Widget):
         if value == default:
             return default
         res = []
-        import pdb; pdb.set_trace()
         for rule in value:
             # rule is a json encoded list of dicts or single dict
-            print rule
-            rule = json.loads(u"[%s]"%rule)
+            if not rule.strip():
+                continue
+            rule = [json.loads(r) for r in rule.split('\t')]
+            #rule = json.loads(u"[%s]"%rule)
             #TODO: strip out _authenticator and other gumf
             res.append(rule)
         return res

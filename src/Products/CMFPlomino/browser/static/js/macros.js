@@ -20,7 +20,6 @@ require([
         defaults: {},
         init: function() {
             var self = this;
-            self.input = self.$el.find('input[type="hidden"]');
             self.rules = JSON.parse(self.$el.attr('data-rules'));
             self.form_urls = JSON.parse(self.$el.attr('data-form-urls'));
 
@@ -38,6 +37,7 @@ require([
 
             self.select2_args = {
                 data:selectdata,
+                separator:"\t",
                 orderable:true,
                 multiple:true,
                 placeholder: 'add a new rule',
@@ -73,11 +73,17 @@ require([
                 if (evt.added != undefined) {
                     var url = evt.added.id;
                     var text = evt.added.text;
-                    self.add_macro.bind({widget:self})(macro_select, url, text);
+
+                    // first pop the value that just got added out until after the popup
+                    var values = macro_select.select2('data')
+                    values.pop();
+                    macro_select.select2('data',values);
+
+                    self.edit_macro.bind({widget:self})(macro_select, url, text, {}, values.length);
                 } else if (evt.removed != undefined) {
                     var id = evt.removed.id;
+                    self.cleanup_inputs.bind({widget:self})();
                 }
-                self.cleanup_inputs.bind({widget:self})();
                 //evt.stopPropagation();
                 //evt.preventDefault();
                 return false;
@@ -93,13 +99,41 @@ require([
                 if (values.length == 0 && index < count-1) {
                     $(el).closest('li').remove();
                 }
+                else {
+                    // find the exisitng tags and make them editable
+                    //TODO: should only do once
+                    $(el).find('.plomino_edit_macro').each(function(i, el) {
+                        $(el).on("click", function(evt) {
+                            evt.preventDefault();
+                            //TODO: how to get the value for this rendered one?
+                            var value = values[i];
+                            var macro = JSON.parse(value.id);
+                            var edit_url = null;
+                            var formid = macro['Form'];
+                            // find the url for formid
+                            for (var type_ in self.form_urls) {
+                                self.form_urls[type_].map(function (url) {
+                                    if (url.id == formid) {
+                                        edit_url = url.url;
+
+                                    }
+                                });
+                            }
+
+                            self.edit_macro.bind({widget:self})(select, edit_url, macro.title, macro, i);
+                        });
+                    });
+                }
                 // if last one is not empty add a new one
                 if (index == count-1 && values.length > 0) {
                     // add a new input at the bottom
-                    var input = $(self.item).appendTo(self.$el);
-                    self.initInput.bind({widget:self})(input, []);
+                    var item = $(self.item).appendTo(self.$el);
+                    item.find('input').each(function(index, el) {
+                        self.initInput.bind({widget:self})($(el), []);
+                    });
                 }
             });
+
 
         },
         formatMacro: function (macro) {
@@ -112,22 +146,24 @@ require([
             if (formid.startsWith('macro_condition_')) {
                 type = 'if';
             }
-            return '<span><i>' + type + '</i>&nbsp;' +
+            return '<span class="plomino_edit_macro"><i>' + type + '</i>&nbsp;' +
                 macro.title +
                 '<i class="icon-pencil"></i></span>';
         },
-        add_macro: function(macro_select, url, text) {
+        edit_macro: function(macro_select, url, text, data, index) {
             var self = this.widget;
+            // decode the json, work out the form to call
+            // do ajax POST request
+            // popup modal
+            // on success find and remove old json, replace it will new json
 
-            // first pop the value that just got added out until after the popup
-            var values = macro_select.select2('data')
-            values.pop();
-            macro_select.select2('data',values);
-
-            var modal_bind = self.$el.find('ul')
-            var scope = function(window) {
-                var add_modal = new Modal(modal_bind, {
-                    ajaxUrl: url,
+            jQuery.ajax({
+                url: url,
+                type: "POST",
+                data: data
+            }).done(function(html) {
+                var edit_modal = new Modal(self.$el, {
+                    html: html,
                     position: 'middle top', // import to be at the top so it doesn't reposition inside the iframe
                     actions: {
                         'input.plominoSave': {
@@ -137,14 +173,18 @@ require([
                                 }
                                 modal.hide();
 
+                                // find the old value (if there) and replace it
+                                var values = macro_select.select2('data');
                                 // replace the item added with json
                                 var formdata = {};
                                 form.serializeArray().map(function(x){formdata[x.name] = x.value;});
                                 if (formdata.title == undefined) {
                                     formdata['title'] = text;
                                 }
-                                values.push({id:JSON.stringify(formdata),text:''});
+                                values[index] = {id:JSON.stringify(formdata),text:''}
                                 macro_select.select2('data',values);
+
+                                self.cleanup_inputs.bind({widget:self})();
 
                                 return false;
 
@@ -160,8 +200,20 @@ require([
     //                    }
                     }
                 }).show();
-            }(window.top);
-        }
+            });
+
+
+//            self.$el.find('.edit-row').each(function(i, el) {
+//                // first use AJAX to get the form so we can do a post
+//                var url = $(el).attr('href').split('?',2);
+//                $(el).on("click", function(evt) {
+//                    evt.preventDefault();
+//
+//
+//                });
+//            });
+
+        },
     });
     return DataGrid;
 });
