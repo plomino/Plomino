@@ -199,6 +199,62 @@ MACRO_FMT = '### START {id} ###{code}### END {id} ###'
 CODE_REGEX = '(((?!###)(.|\n|\r))+)'
 
 
+def load_macro(formid, helper, db, ids, curpath):
+    # search other dbs for this form
+    form = None
+    db_import = None
+    for db_path in db.import_macros:
+        # restrictedTraverse only ascii path, can't be unicode
+        db_path = asAscii(db_path)
+        if db_path == '.':
+            db_import = db
+        else:
+            db_import = db.restrictedTraverse(db_path)
+        form = db_import.getForm(formid)
+        if form is not None:
+            break
+
+    # ensure the macros have '_macro_id_' is unique ids so
+    helperid = helper.get('_macro_id_')
+    if not helperid:
+        i = 1
+        while not helperid or helperid in ids:
+            helperid = "{formid}_{i}".format(formid=formid, i=i)
+            i += 1
+        helper['_macro_id_'] = helperid
+        ids.add(helperid)
+
+    if not form:
+        return (helperid, None, None)
+
+    form.REQUEST['Plomino_Parent_Field'] = '__dummy__'
+    form.REQUEST['Plomino_Parent_Form'] = formid
+    form.REQUEST['Plomino_Macro_Context'] = curpath
+
+    doc = getTemporaryDocument(db_import, form, helper).__of__(db_import)
+    # has to be computed on save so it appears in the doc
+    # make sure all the fields must be in the form layout
+    # including hidden fields that contains macro code
+    # TODO: this can generate errors as fields calculated. Need to show this
+    doc.save(form=form, creation=False, refresh_index=False, asAuthor=True, onSaveEvent=False)
+    logger.info(
+        'helper id: %s generate temp doc with form: %s has items: %s' %
+        (helperid, formid, doc.items))
+
+
+    return (helperid, form, doc)
+
+def get_formulas(obj):
+    # list all the fields from this obj that can be inserted
+    fields = []
+    behaviours = [b.interface for b in IBehaviorAssignable(obj).enumerateBehaviors()]
+    for schema in [obj.getTypeInfo().lookupSchema()] + behaviours:
+        hints = schema.queryTaggedValue(u'plone.autoform.widgets', {}).items()
+        formulas = {id for id, hint in hints if hint.params.get('klass') == 'plomino-formula'}
+        fields += [(id, field) for id, field in getFieldsInOrder(schema) if
+                   id in formulas]
+    return fields
+
 # Event handler
 def update_helpers(obj, event):
     """Update all the formula fields based on our helpers
@@ -214,6 +270,9 @@ def update_helpers(obj, event):
 
     if helpers is None:
         return
+
+    db = obj.getParentDatabase()
+    curpath = '/'.join(obj.getPhysicalPath())
 
     ids = {m['_macro_id_'] for rule in helpers for m in rule if '_macro_id_' in m}
 
@@ -234,30 +293,8 @@ def update_helpers(obj, event):
             formid = helper.get('Form', None)
             if formid is None:
                 continue
-            db = obj.getParentDatabase()
-            # search other dbs for this form
-            form = None
-            db_import = None
-            for db_path in db.import_macros:
-                # restrictedTraverse only ascii path, can't be unicode
-                db_path = asAscii(db_path)
-                if db_path == '.':
-                    db_import = db
-                else:
-                    db_import = db.restrictedTraverse(db_path)
-                form = db_import.getForm(formid)
-                if form is not None:
-                    break
 
-            # ensure the macros have '_macro_id_' is unique ids so
-            helperid = helper.get('_macro_id_')
-            if not helperid:
-                i = 1
-                while not helperid or helperid in ids:
-                    helperid = "{formid}_{i}".format(formid=formid, i=i)
-                    i += 1
-                helper['_macro_id_'] = helperid
-                ids.add(helperid)
+            helperid, form, doc = load_macro(formid, helper, db, ids, curpath)
 
             if form is None:
                 # means the macro used to create the code is no longer available
@@ -265,47 +302,14 @@ def update_helpers(obj, event):
                 macros.append((helperid, None, None))
                 continue
 
-            curpath = '/'.join(obj.getPhysicalPath())
-            form.REQUEST['Plomino_Parent_Field'] = '__dummy__'
-            form.REQUEST['Plomino_Parent_Form'] = formid
-            form.REQUEST['Plomino_Macro_Context'] = curpath
-
-            doc = getTemporaryDocument(db_import, form, helper).__of__(db_import)
-            # has to be computed on save so it appears in the doc
-            # make sure all the fields must be in the form layout
-            # including hidden fields that contains macro code
-            # TODO: this can generate errors as fields calculated. Need to show this
-            doc.save(form=form, creation=False, refresh_index=False, asAuthor=True, onSaveEvent=False)
-            logger.info(
-                'helper id: %s generate temp doc with form: %s has items: %s' %
-                (helperid, formid, doc.items))
             # TODO: should conditions be able to target form vs field?
             if formid.lower().startswith('macro_condition'):
                 conditions.append((helperid, form, doc))
             else:
                 macros.append((helperid, form, doc))
 
-    # list all the fields from this obj that can be inserted
-    fields = []
-    behaviours = [b.interface for b in IBehaviorAssignable(obj).enumerateBehaviors()]
-    for schema in [obj.getTypeInfo().lookupSchema()] + behaviours:
-        hints = schema.queryTaggedValue(u'plone.autoform.widgets', {}).items()
-        formulas = {id for id, hint in hints if hint.params.get('klass') == 'plomino-formula'}
-        fields += [(id, field) for id, field in getFieldsInOrder(schema) if
-                   id in formulas]
 
-    for id, field in fields:
-
-        dm = getMultiAdapter((obj, field), IDataManager)
-        # code is the current code from the field in that obj
-        code = dm.get()
-        code = code if code else u''
-
-        # old_codes contains old macro code in the current code from the
-        # field in that obj
-        all_code = re.compile(MACRO_FMT.format(id='([^ #]+)', code=CODE_REGEX))
-        old_codes = [(m[0], m[1]) for m in re.findall(all_code, code)]
-        old_codes.reverse()
+    for id, field in get_formulas(obj):
 
         names = ['generate_%s' % id.lower(),
                  'generate_%s' % id,
@@ -333,19 +337,30 @@ def update_helpers(obj, event):
             if not (matched and conditions):
                 continue
             for macro_id, form, doc in conditions:
-                code = "def {macro_id}():" #TODO: should use title or form.name to make it more readable?
-                code += 't'+'\t\n'.join(doc.getItem('formula').split('\n'))
-                new_code[macro_id] = code
+                code = "def {macro_id}():\n".format(macro_id=macro_id) #TODO: should use title or form.name to make it more readable?
+                code += (''*4)+('\n'+(' '*4)).join(doc.getItem('formula').split('\n')) #indent
+                new_code[macro_id] = code + '\n'
             # adjust macros to use conditions
             for macro_id, form, doc in macros:
                 if macro_id not in new_code:
                     continue
-                code = new_code[macro_id]
-                code += 't'+'\t\n'.join(code.split('\n'))
-                code = "if %s:\n%s"% ('and'.join([id+'()' for id,_,_ in conditions]), code)
+                new_code[macro_id] = "if {cond}:\n{code}\n".format(
+                    cond = (' and '.join([id+'()' for id,_,_ in conditions])),
+                    code = (''*4)+('\n'+(' '*4)).join(new_code[macro_id].split('\n')) #indent
+                )
                 #TODO: we should add the condition line just once at the first condition
 
         # replace old macro code with new macro code
+        dm = getMultiAdapter((obj, field), IDataManager)
+        # code is the current code from the field in that obj
+        code = dm.get()
+        code = code if code else u''
+
+        # old_codes contains old macro code in the current code from the
+        # field in that obj
+        all_code = re.compile(MACRO_FMT.format(id='([^ #]+)', code=CODE_REGEX))
+        old_codes = [(m[0], m[1]) for m in re.findall(all_code, code)]
+        old_codes.reverse()
         for macro_id, form, doc in [m for conditions,macros in rules for m in conditions+macros]:
             if macro_id not in new_code: # doesn't gen code for this formula
                 continue
