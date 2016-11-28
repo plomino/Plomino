@@ -338,7 +338,7 @@ def update_helpers(obj, event):
                 continue
             for macro_id, form, doc in conditions:
                 code = "def {macro_id}():\n".format(macro_id=macro_id) #TODO: should use title or form.name to make it more readable?
-                code += (''*4)+('\n'+(' '*4)).join(doc.getItem('formula').split('\n')) #indent
+                code += (' '*4)+('\n'+(' '*4)).join(doc.getItem('formula').split('\n')) #indent
                 new_code[macro_id] = code + '\n'
             # adjust macros to use conditions
             for macro_id, form, doc in macros:
@@ -346,7 +346,7 @@ def update_helpers(obj, event):
                     continue
                 new_code[macro_id] = "if {cond}:\n{code}\n".format(
                     cond = (' and '.join([id+'()' for id,_,_ in conditions])),
-                    code = (''*4)+('\n'+(' '*4)).join(new_code[macro_id].split('\n')) #indent
+                    code = (' '*4)+('\n'+(' '*4)).join(new_code[macro_id].split('\n')) #indent
                 )
                 #TODO: we should add the condition line just once at the first condition
 
