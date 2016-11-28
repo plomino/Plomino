@@ -37,7 +37,7 @@ require([
 
             self.select2_args = {
                 data:selectdata,
-                separator:"\t",
+                separator:"\t", //important, needs to match with python code
                 orderable:true,
                 multiple:true,
                 placeholder: 'add a new rule',
@@ -55,9 +55,15 @@ require([
             self.rules.push([]);
             var i=0;
             self.$el.find('input').each(function(index, el) {
-                var rule = self.rules[i].map(function(macro) {
-                    return {id:JSON.stringify(macro),text:''}
-                });
+                var rule = self.rules[i];
+                if (rule.map != undefined) {
+                    rule = self.rules[i].map(function(macro) {
+                        return {id:JSON.stringify(macro),text:''}
+                    });
+                } else {
+                    // else rule is old style and not a list of macros yet
+                    rule = {id:JSON.stringify(rule),text:''};
+                }
                 self.initInput.bind({widget:self})(el, rule);
                 i++;
             });
