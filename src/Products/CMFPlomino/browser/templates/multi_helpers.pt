@@ -3,7 +3,7 @@
     tal:attributes="
         data-rules view/rules;
         data-form-urls view/form_urls">
-    <li style="width:100%">
+    <li style="width:100%" class="plomino-macros-rule">
     <input class="form_select" name="fieldname" tal:attributes="name string:${view/name}:list" style="width:100%"/></li>
 
 </ul>

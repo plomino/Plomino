@@ -139,7 +139,7 @@ require([
                     });
                 }
             });
-
+            new sortable(self.$el, {selector:'.plomino-macros-rule'});
 
         },
         formatMacro: function (macro) {
