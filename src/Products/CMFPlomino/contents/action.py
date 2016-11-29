@@ -108,6 +108,15 @@ class PlominoAction(Item):
 
         Target may be view/page/document.
         """
+        # Handle Previous/Next buttons
+        form = context.getForm()
+        if self.action_type in ['PREVIOUS', 'NEXT'] and form.getIsMulti():
+            paging_info = form.paging_info()
+            if self.action_type == 'PREVIOUS' and paging_info['is_first']:
+                return True
+            if self.action_type == 'NEXT' and paging_info['is_last']:
+                return True
+
         if self.hidewhen:
             try:
                 result = self.runFormulaScript(
