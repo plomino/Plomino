@@ -61,7 +61,9 @@ ACTION_TYPES = [
     ["CLOSE", "Close"],
     ["SAVE", "Save"],
     ["PYTHON", "Python script"],
-    ["REDIRECT", "Redirect formula"]
+    ["REDIRECT", "Redirect formula"],
+    ["NEXT", "Next page"],
+    ["PREVIOUS", "Previous page"],
 ]
 ACTION_DISPLAY = [
     ["LINK", "Link"],

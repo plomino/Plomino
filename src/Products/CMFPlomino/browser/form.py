@@ -122,7 +122,7 @@ class PageView(BrowserView):
 
         if self.request['REQUEST_METHOD'] == 'POST':
             # If back or previous is in the form, page backwards
-            if 'back' in self.request.form or 'previous' in self.request.form:
+            if 'plomino_previous' in self.request.form or 'back' in self.request.form or 'previous' in self.request.form:
                 self.request['plomino_current_page'] = form._get_next_page(self.request, action='back')
                 # return form.OpenForm(request=self.request)
                 return self.openform()
@@ -143,7 +143,7 @@ class PageView(BrowserView):
                 return self.openform()
 
             # If next or continue is the form, page forwards if the form is valid
-            if 'next' in self.request.form or 'continue' in self.request.form:
+            if 'plomino_next' in self.request.form or 'next' in self.request.form or 'continue' in self.request.form:
                 if current_page < (num_pages):
                     self.request['plomino_current_page'] = form._get_next_page(self.request, action='continue')
                     return self.openform()

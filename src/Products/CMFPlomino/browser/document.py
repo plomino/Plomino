@@ -142,7 +142,7 @@ class DocumentView(BrowserView):
             # Look up the form. This might be the context, or the parent form
             # or a value from the request
 
-            if 'back' in self.request.form or 'previous' in self.request.form:
+            if 'plomino_previous' in self.request.form or 'back' in self.request.form or 'previous' in self.request.form:
                 next_page = form._get_next_page(self.request, doc=self.target, action='back')
                 return self.redirect('page', next_page)
 

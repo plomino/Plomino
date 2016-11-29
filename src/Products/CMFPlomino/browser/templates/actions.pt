@@ -154,21 +154,21 @@
     tal:content="python: plominoaction.Title()" /></tal:block>
 
 <tal:block metal:define-macro="SubmitAction"> <input type="submit"
-    class="context" tal:attributes="value python: plominoaction.Title(); name python:plominoaction.id; id python:plominoaction.id;" />
+    class="context" tal:attributes="value python: plominoaction.Title(); name python:plominoaction.action_id(); id python:plominoaction.id;" />
 </tal:block>
 
 <tal:block metal:define-macro="ButtonAction">
-  <tal:submit tal:condition="python:plominoaction.action_type=='SAVE'">
+  <tal:submit tal:condition="python:plominoaction.action_type in ['SAVE', 'NEXT', 'PREVIOUS']">
   <input type="submit"
-    class="context" tal:attributes="value python: plominoaction.Title(); name python:plominoaction.id" />
+    class="context" tal:attributes="value python: plominoaction.Title(); name python:plominoaction.action_id()" />
   </tal:submit>
-  <tal:button tal:condition="python:not(plominoaction.action_type=='SAVE')">
+  <tal:button tal:condition="python:not(plominoaction.action_type in ['SAVE', 'NEXT', 'PREVIOUS'])">
   <input class="context"
 
     type="button"
     tal:attributes="onclick python:'location.href=\'%s\''% (plominoaction.executeAction(plominotarget, plomino_parent_id) or '');
                     id python:plominoaction.id;
-                    name python:plominoaction.id;
+                    name python:plominoaction.action_id();
                     value python: plominoaction.Title();
                     "/>
   </tal:button>

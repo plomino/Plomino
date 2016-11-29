@@ -84,11 +84,22 @@ class IPlominoAction(model.Schema):
     )
 
 
-
 class PlominoAction(Item):
     implements(IPlominoAction)
 
     security = ClassSecurityInfo()
+
+    security.declarePublic('isHidden')
+
+    def action_id(self):
+        """
+        Return the value of the action.
+        This will normally be the id of the action
+        """
+        if self.action_type in ['PREVIOUS', 'NEXT']:
+            return 'plomino_%s' % self.action_type.lower()
+        else:
+            self.id
 
     security.declarePublic('isHidden')
 
@@ -156,7 +167,7 @@ class PlominoAction(Item):
                 return ('javascript:alert('
                         '"Error: formula error in redirect action %s")' %
                         self.Title())
-        else:  # "CLOSE", "SAVE"
+        else:  # "CLOSE", "SAVE", "NEXT", "PREVIOUS"
             return '.'
 
     security.declareProtected(READ_PERMISSION, 'runScript')
