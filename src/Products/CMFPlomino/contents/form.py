@@ -275,23 +275,6 @@ class IPlominoForm(model.Schema):
     )
 
 
-class DummyAction(object):
-    """
-    A Dummy action for injectint extra actions like Continue/Back
-    into a multipage form.
-    """
-
-    def __init__(self, name, in_action_bar=True, action_type='SAVE'):
-        self.name = name
-        # Use the name as the id
-        self.id = name
-        self.in_action_bar = in_action_bar
-        self.action_type = action_type
-
-    def Title(self):
-        return self.name.title()
-
-
 class PlominoForm(Container):
     implements(IPlominoForm, IPlominoContext)
 
@@ -602,7 +585,7 @@ class PlominoForm(Container):
 
     security.declarePublic('getActions')
 
-    def getActions(self, target=None, hide=True, ignore_dummy=False):
+    def getActions(self, target=None, hide=True):
         """ Get filtered form actions for the target (page or document).
         """
         actions = self.getFormActions()
@@ -614,19 +597,6 @@ class PlominoForm(Container):
                     filtered.append((action, self.id))
             else:
                 filtered.append((action, self.id))
-
-        # Insert some actions for Previous/Next buttons
-        if self.getIsMulti() and not ignore_dummy:
-            current_page = self._get_current_page()
-            num_pages = self._get_num_pages()
-
-            # Add a previous button if the user has moved through the form
-            if current_page > 1:
-                filtered.append((DummyAction(name='previous'), self.id))
-
-            # Add a next button unless they're at the end of the form
-            if current_page < num_pages:
-                filtered.append((DummyAction(name='next'), self.id))
 
         return filtered
 
@@ -1049,6 +1019,13 @@ class PlominoForm(Container):
         db.setRequestCache(cache_key, pages)
 
         return pages
+
+    def paging_info(self):
+        """ Return the current paging info """
+        return {
+            'current_page': self._get_current_page(),
+            'num_pages': self._get_num_pages(),
+        }
 
     #@property
     # Using special datamanager because @property losses acquisition

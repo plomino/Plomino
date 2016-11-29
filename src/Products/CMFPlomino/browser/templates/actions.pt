@@ -23,6 +23,8 @@
         <tal:block metal:use-macro="context/plomino_actions/macros/CloseAction">display
         close action</tal:block>
 
+        <tal:block metal:use-macro="context/plomino_actions/macros/PagingActions">display paging actions</tal:block>
+
     </tal:defaultactions>
 
     <tal:block
@@ -49,6 +51,7 @@
             tal:condition="python:not(view.target.getCurrentMember().getUserName()=='Anonymous User')"><tal:block
             metal:use-macro="context/plomino_actions/macros/DeleteAction">display
         delete action</tal:block></tal:block>
+        <tal:block metal:use-macro="context/plomino_actions/macros/PagingActions">display paging actions</tal:block>
     </tal:defaultactions>
         <tal:block
             tal:repeat="action_tuple python:[(a, parent_id) for a, parent_id in view.form.getActions(view.target, True) if a.in_action_bar==True]">
@@ -70,6 +73,7 @@
         close action</tal:block>
         <input type="submit" class="context plominoSave" name="plomino_save"
             value="Save" i18n:domain="Products.CMFPlomino" i18n:attributes="value" />
+        <tal:block metal:use-macro="context/plomino_actions/macros/PagingActions">display paging actions</tal:block>
     </tal:defaultactions>
         <tal:block
             tal:repeat="action_tuple python:[(a, parent_id) for a, parent_id in view.form.getActions(view.target, True) if a.in_action_bar==True]">
@@ -128,6 +132,24 @@
     </tal:block>
 </span>
 </div>
+
+<tal:block metal:define-macro="PreviousAction"> <input type="submit" class="context Previous" name="previous" value="Previous" />
+</tal:block>
+<tal:block metal:define-macro="NextAction"> <input type="submit" class="context plominoNext" name="next" value="Next" />
+</tal:block>
+
+<tal:block metal:define-macro="PagingActions"
+    define="form python: view.form">
+    <tal:multi condition="form/getIsMulti|nothing">
+    <tal:paging define="paging python: form.paging_info();
+        current_page paging/current_page;
+        num_pages paging/num_pages;">
+        <tal:block condition="python: current_page > 1" metal:use-macro="context/plomino_actions/macros/PreviousAction">display previous action</tal:block>
+        <tal:block condition="python: current_page < num_pages" metal:use-macro="context/plomino_actions/macros/NextAction">display next action</tal:block>
+    </tal:paging>
+    </tal:multi>
+</tal:block>
+
 
 <tal:block metal:define-macro="LinkAction"> <a
     tal:attributes="href python:plominoaction.executeAction(plominotarget, plomino_parent_id) or ''"

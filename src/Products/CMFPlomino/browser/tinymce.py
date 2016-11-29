@@ -169,8 +169,7 @@ class PlominoFormSettings(object):
         """
         actions = self.context.aq_inner.getActions(
             None,
-            False,
-            ignore_dummy=True
+            False
         )
         actions = [a[0] for a in actions]
         actions.sort(key=lambda elt: elt.id.lower())
