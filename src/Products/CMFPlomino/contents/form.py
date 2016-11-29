@@ -1022,9 +1022,13 @@ class PlominoForm(Container):
 
     def paging_info(self):
         """ Return the current paging info """
+        current_page = self._get_current_page()
+        num_pages = self._get_num_pages()
         return {
-            'current_page': self._get_current_page(),
-            'num_pages': self._get_num_pages(),
+            'current_page': current_page,
+            'num_pages': num_pages,
+            'is_first': current_page == 1,
+            'is_last': current_page == num_pages
         }
 
     #@property

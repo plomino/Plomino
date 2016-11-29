@@ -141,11 +141,9 @@
 <tal:block metal:define-macro="PagingActions"
     define="form python: view.form">
     <tal:multi condition="form/getIsMulti|nothing">
-    <tal:paging define="paging python: form.paging_info();
-        current_page paging/current_page;
-        num_pages paging/num_pages;">
-        <tal:block condition="python: current_page > 1" metal:use-macro="context/plomino_actions/macros/PreviousAction">display previous action</tal:block>
-        <tal:block condition="python: current_page < num_pages" metal:use-macro="context/plomino_actions/macros/NextAction">display next action</tal:block>
+    <tal:paging define="paging form/paging_info;">
+        <tal:block condition="python: not(paging['is_first'])" metal:use-macro="context/plomino_actions/macros/PreviousAction">display previous action</tal:block>
+        <tal:block condition="python: not(paging['is_last'])" metal:use-macro="context/plomino_actions/macros/NextAction">display next action</tal:block>
     </tal:paging>
     </tal:multi>
 </tal:block>
