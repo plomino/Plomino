@@ -54,6 +54,10 @@ IDatetimeField.setTaggedValue(ORDER_KEY,
                                ('startingyear', 'after', ".format")])
 
 
+class RecordException(Exception):
+    """ Raise if there's a problem with the :record values """
+
+
 @implementer(IDatetimeField)
 class DatetimeField(BaseField):
     """Date time field"""
@@ -75,14 +79,37 @@ class DatetimeField(BaseField):
                 year = submittedValue.get('year', '')
                 month = submittedValue.get('month', '')
                 day = submittedValue.get('day', '')
-                submittedValue = '%s-%s-%s' % (year, month, day)
-                if year and month and day:
+                hour = submittedValue.get('hour', '')
+                minute = submittedValue.get('minute', '')
+
+                format = self.context.format
+                if not format:
+                    format = self.context.getParentDatabase().datetime_format
+                show_ymd = False
+                show_hm = False
+                convertedValue = []
+                if '%Y' in format or '%y' in format:
+                    convertedValue.append('%s-%s-%s' % (year, month, day))
+                    show_ymd = True
+                if '%H' in format:
+                    convertedValue.append('%s:%s' % (hour, minute))
+                    show_hm = True
+
+                submittedValue = ' '.join(convertedValue)
+
+                if (show_ymd and show_hm) and (year and month and day and hour and minute):
                     # Don't allow StringToDate to guess the format
                     StringToDate(
+                        submittedValue, '%Y-%m-%d %H:%M', guess=False, tozone=False)
+                elif (show_ymd and not show_hm) and (year and month and day):
+                    StringToDate(
                         submittedValue, '%Y-%m-%d', guess=False, tozone=False)
+                elif (show_hm and not show_ymd) and (hour and minute):
+                    StringToDate(
+                        submittedValue, '%H:%M', guess=False, tozone=False)
                 else:
                     # The record instance isn't valid
-                    raise
+                    raise Exception
             # submittedValue could be dict from tojson
             # {u'<datetime>': True, u'datetime': u'2016-12-12T00:00:00'}
             elif isinstance(
@@ -119,14 +146,39 @@ class DatetimeField(BaseField):
                 year = submittedValue.get('year', '')
                 month = submittedValue.get('month', '')
                 day = submittedValue.get('day', '')
-                submittedValue = '%s-%s-%s' % (year, month, day)
-                if year and month and day:
+                hour = submittedValue.get('hour', '')
+                minute = submittedValue.get('minute', '')
+
+                format = self.context.format
+                if not format:
+                    format = self.context.getParentDatabase().datetime_format
+                show_ymd = False
+                show_hm = False
+                convertedValue = []
+
+                if '%Y' in format or '%y' in format:
+                    convertedValue.append('%s-%s-%s' % (year, month, day))
+                    show_ymd = True
+                if '%H' in format:
+                    convertedValue.append('%s:%s' % (hour, minute))
+                    show_hm = True
+
+                submittedValue = ' '.join(convertedValue)
+
+                if (show_ymd and show_hm) and (year and month and day and hour and minute):
                     # Don't allow StringToDate to guess the format
                     d = StringToDate(
+                        submittedValue, '%Y-%m-%d %H:%M', guess=False, tozone=False)
+                elif (show_ymd and not show_hm) and (year and month and day):
+                    d = StringToDate(
                         submittedValue, '%Y-%m-%d', guess=False, tozone=False)
+                elif (show_hm and not show_ymd) and (hour and minute):
+                    d = StringToDate(
+                        submittedValue, '%H:%M', guess=False, tozone=False)
                 else:
                     # The record instance isn't valid
-                    raise
+                    raise RecordException
+
             # submittedValue could be dict from tojson
             # {u'<datetime>': True, u'datetime': u'2016-12-12T00:00:00'}
             elif isinstance(
@@ -143,6 +195,9 @@ class DatetimeField(BaseField):
                 else:
                     d = StringToDate(submittedValue, '%Y-%m-%d %H:%M')
             return d
+        except RecordException:
+            # We don't have a valid record, so we can't process anything
+            return None
         except Exception:
             # with datagrid, we might get dates formatted differently than
             # using calendar widget default format

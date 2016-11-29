@@ -9,6 +9,8 @@
     ymd python:('%Y' in format or '%y' in format);
     mandatory python: 'mandatory' if field.mandatory else '';
     widget python:field.widget;">
+    <h1 tal:content="defaultformat" />
+    <h1 tal:content="fieldformat" />
     <tal:widget tal:condition="python: widget=='JQUERY'">
         <input type="text" class="pat-pickadate"
             tal:define="inputvalue python: '' if not v else v.strftime('%Y-%m-%d %H:%M');"
@@ -47,52 +49,87 @@
             </tal:define>
         </tal:block>
     </tal:widget>
-    <tal:widget tal:condition="python:widget=='COMBO'">
+    <tal:widget 
+        tal:condition="python:widget=='COMBO'"
+        tal:define="show_hm hm|nothing;
+                    show_ymd ymd|nothing;">
         <span class="combo-date" tal:attributes="id field/id">
         <tal:block tal:condition="python:v">
             <tal:define tal:define="id field/id;
-                year python:v.year;
-                month python:v.month;
-                day python:v.day">
-                <input type="number" min="0" max="31"
-                    tal:attributes="
-                    name string:${field/id}.day:record;
-                    id string:${field/id}.day:record;
-                    value day;
-                    ">
-                <input type="number" min="0" max="12"
-                    tal:attributes="
-                    name string:${field/id}.month:record;
-                    id string:${field/id}.month:record;
-                    value month;
-                    ">
-                <input type="number" min="1975" max="2050"
-                    tal:attributes="
-                    min python: starting_year or '';
-                    name string:${field/id}.year:record;
-                    id string:${field/id}.year:record;
-                    value year;
-                    ">
+                year v/year|nothing;
+                month v/month|nothing;
+                day v/day|nothing;
+                hour v/hour|nothing;
+                minute v/minute|nothing">
+                <tal:ymd condition="show_ymd">
+                    <input type="number" min="0" max="31"
+                        tal:attributes="
+                        name string:${field/id}.day:record;
+                        id string:${field/id}.day:record;
+                        value day;
+                        ">
+                    <input type="number" min="0" max="12"
+                        tal:attributes="
+                        name string:${field/id}.month:record;
+                        id string:${field/id}.month:record;
+                        value month;
+                        ">
+                    <input type="number" min="1975" max="2050"
+                        tal:attributes="
+                        min python: starting_year or '';
+                        name string:${field/id}.year:record;
+                        id string:${field/id}.year:record;
+                        value year;
+                        ">
+                </tal:ymd>
+                <tal:hm condition="show_hm">
+                    <input type="number" min="0" max="24"
+                        tal:attributes="
+                        name string:${field/id}.hour:record;
+                        id string:${field/id}.hour:record;
+                        value hour;
+                        ">
+                    <input type="number" min="0" max="59"
+                        tal:attributes="
+                        name string:${field/id}.minute:record;
+                        id string:${field/id}.minute:record;
+                        value minute;
+                        ">
+                </tal:hm>
             </tal:define>
         </tal:block>
         <tal:block tal:condition="python:not(v)">
             <tal:define tal:define="id field/id;">
-                <input type="number" min="0" max="31"
-                    tal:attributes="
-                    name string:${field/id}.day:record;
-                    id string:${field/id}.day:record;
-                    ">
-                <input type="number" min="0" max="12"
-                    tal:attributes="
-                    name string:${field/id}.month:record;
-                    id string:${field/id}.month:record;
-                    ">
-                <input type="number" min="1975" max="2050"
-                    tal:attributes="
-                    min python: starting_year or '';
-                    name string:${field/id}.year:record;
-                    id string:${field/id}.year:record;
-                    ">
+                <tal:ymd condition="show_ymd">
+                    <input type="number" min="0" max="31"
+                        tal:attributes="
+                        name string:${field/id}.day:record;
+                        id string:${field/id}.day:record;
+                        ">
+                    <input type="number" min="0" max="12"
+                        tal:attributes="
+                        name string:${field/id}.month:record;
+                        id string:${field/id}.month:record;
+                        ">
+                    <input type="number" min="1975" max="2050"
+                        tal:attributes="
+                        min python: starting_year or '';
+                        name string:${field/id}.year:record;
+                        id string:${field/id}.year:record;
+                        ">
+                </tal:ymd>
+                <tal:hm condition="show_hm">
+                    <input type="number" min="0" max="24"
+                        tal:attributes="
+                        name string:${field/id}.hour:record;
+                        id string:${field/id}.hour:record;
+                        ">
+                    <input type="number" min="0" max="59"
+                        tal:attributes="
+                        name string:${field/id}.minute:record;
+                        id string:${field/id}.minute:record;
+                        ">
+                </tal:hm>
             </tal:define>
         </tal:block>
         </span>
