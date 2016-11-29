@@ -222,7 +222,7 @@ class DocumentView(BrowserView):
             if current_page > num_pages:
                 return self.redirect('pageview', num_pages)
 
-            if 'back' in self.request.form or 'previous' in self.request.form:
+            if 'plomino_previous' in self.request.form or 'back' in self.request.form or 'previous' in self.request.form:
                 next_page = form._get_next_page(
                     self.request,
                     doc=self.target,
