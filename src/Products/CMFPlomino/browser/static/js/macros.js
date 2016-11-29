@@ -29,7 +29,7 @@ require([
                     text:group,
                     children:self.form_urls[group].map(function(macro) {
                         if (macro.title != undefined) {
-                            return {id:macro['url'], text:macro['title']};
+                            return {id:macro.id, text:macro['title']};
                         }
                     })
                 })
@@ -38,8 +38,9 @@ require([
             self.select2_args = {
                 data:selectdata,
                 separator:"\t", //important, needs to match with python code
-                orderable:true,
+                //orderable:true,
                 multiple:true,
+                allowNewItems: false,
                 placeholder: 'add a new rule',
                 formatSelection: self.formatMacro
             };
@@ -72,7 +73,8 @@ require([
         },
         initInput: function(el, rule) {
             var self = this.widget;
-            var select = $(el).select2(self.select2_args);
+            new Select2($(el), self.select2_args);
+            var select = $(el);
             select.select2('data', rule);
             select.change(function(evt) {
                 var macro_select = $(evt.target);
@@ -116,17 +118,8 @@ require([
                             var macro = JSON.parse(value.id);
                             var edit_url = null;
                             var formid = macro['Form'];
-                            // find the url for formid
-                            for (var type_ in self.form_urls) {
-                                self.form_urls[type_].map(function (url) {
-                                    if (url.id == formid) {
-                                        edit_url = url.url;
 
-                                    }
-                                });
-                            }
-
-                            self.edit_macro.bind({widget:self})(select, edit_url, macro.title, macro, i);
+                            self.edit_macro.bind({widget:self})(select, formid, macro.title, macro, i);
                         });
                     });
                 }
@@ -139,6 +132,7 @@ require([
                     });
                 }
             });
+            //TODO: doesn't work with the select2 pattern being orderable
             new sortable(self.$el, {selector:'.plomino-macros-rule'});
 
         },
@@ -156,15 +150,27 @@ require([
                 macro.title +
                 '<i class="icon-pencil"></i></span>';
         },
-        edit_macro: function(macro_select, url, text, data, index) {
+        edit_macro: function(macro_select, formid, text, data, index) {
             var self = this.widget;
+
+            // find the url for formid
+            var edit_url = null;
+            for (var type_ in self.form_urls) {
+                self.form_urls[type_].map(function (url) {
+                    if (url.id == formid) {
+                        edit_url = url.url;
+
+                    }
+                });
+            }
+
             // decode the json, work out the form to call
             // do ajax POST request
             // popup modal
             // on success find and remove old json, replace it will new json
 
             jQuery.ajax({
-                url: url,
+                url: edit_url,
                 type: "POST",
                 data: data
             }).done(function(html) {
@@ -183,7 +189,10 @@ require([
                                 var values = macro_select.select2('data');
                                 // replace the item added with json
                                 var formdata = {};
-                                form.serializeArray().map(function(x){formdata[x.name] = x.value;});
+                                $.map(response, function(value, key) {formdata[key] = value.raw});
+                                //form.serializeArray().map(function(x){formdata[x.name] = x.value;});
+                                formdata['Form'] = formid;
+
                                 if (formdata.title == undefined) {
                                     formdata['title'] = text;
                                 }
