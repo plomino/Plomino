@@ -164,6 +164,15 @@ require([
                 });
             }
 
+            //Special case. Urls that start with # have no popup
+            if (edit_url.startsWith('#')) {
+                var values = macro_select.select2('data');
+                values.push({id:JSON.stringify({title:text, Form:formid}),text:text});
+                macro_select.select2('data',values);
+                self.cleanup_inputs.bind({widget:self})();
+                return
+            }
+
             // decode the json, work out the form to call
             // do ajax POST request
             // popup modal

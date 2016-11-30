@@ -85,8 +85,8 @@ class SubformWidget(Widget):
         curpath = '/'.join(obj.getPhysicalPath())
         groups = {}
         macros = [dict(url=OPEN_URL.format(formid=id,
-                                                   path=path,
-                                                   curpath=curpath),
+                                           path=path,
+                                           curpath=curpath) if path[0]!= '#' else path,
                                id=id,
                                title=title,
                                group=group)
@@ -145,14 +145,17 @@ class SubformWidget(Widget):
         for form in forms:
             if form.id in found:
                 continue
-            if not (form.id.startswith("macro_%s_"%typename) or form.id.startswith("macro_condition_")):
+            if not any([form.id.startswith(p) for p in ["macro_condition_", "macro_if_", "macro_%s_"%typename]]):
                 continue
-            if any([p for p in prefixes if form.id.startswith(p)]):
+            if any([form.id.startswith(p) for p in prefixes]):
                 # it's got a prefix for another field type
                 continue
             found.add(form.id)
-            group = 'if' if form.id.startswith("macro_condition_") else 'do'
+            group = 'if' if any([form.id.startswith(p) for p in ["macro_condition_", "macro_if_"]]) else 'do'
             yield (form.Title(), form.id, path, group)
+        yield ('And', 'and', '#and', 'logic')
+        yield ('Or', 'or', '#or', 'logic')
+        yield ('Not', 'not', '#not', 'logic')
 
 
 @provider(IFormFieldProvider)
@@ -277,7 +280,6 @@ def update_helpers(obj, event):
     ids = {m['_macro_id_'] for rule in helpers for m in rule if '_macro_id_' in m}
 
     # TODO: Need to remove any code the user removed
-    #import pdb; pdb.set_trace()
 
     # This loop is mainly generate list of macros with
     # helper id, form obj and temp macro doc
@@ -293,6 +295,9 @@ def update_helpers(obj, event):
             formid = helper.get('Form', None)
             if formid is None:
                 continue
+            if any([formid.lower() == p for p in ['or','and','not']]):
+                conditions.append((formid, None, None))
+                continue
 
             helperid, form, doc = load_macro(formid, helper, db, ids, curpath)
 
@@ -303,7 +308,7 @@ def update_helpers(obj, event):
                 continue
 
             # TODO: should conditions be able to target form vs field?
-            if formid.lower().startswith('macro_condition'):
+            if any([formid.lower().startswith(p) for p in ['macro_condition_','macro_if_']]):
                 conditions.append((helperid, form, doc))
             else:
                 macros.append((helperid, form, doc))
@@ -336,7 +341,15 @@ def update_helpers(obj, event):
             # if any macros then matched then we need to add the conditions
             if not (matched and conditions):
                 continue
+
             for macro_id, form, doc in conditions:
+                if doc is None:
+                    # it's and.or,not
+                    continue
+                formula = doc.getItem('formula').strip()
+                if not formula:
+                    logger.warning('Macro condition id: %s has no value for "formula"' % macro_id)
+                    continue
                 code = "def {macro_id}():\n".format(macro_id=macro_id) #TODO: should use title or form.name to make it more readable?
                 code += (' '*4)+('\n'+(' '*4)).join(doc.getItem('formula').split('\n')) #indent
                 new_code[macro_id] = code + '\n'
@@ -344,8 +357,27 @@ def update_helpers(obj, event):
             for macro_id, form, doc in macros:
                 if macro_id not in new_code:
                     continue
-                new_code[macro_id] = "if {cond}:\n{code}\n".format(
-                    cond = (' and '.join([id+'()' for id,_,_ in conditions])),
+                last_cond = 'and'
+                expression = []
+                is_op = lambda id: id in ['and', 'or', 'not']
+                for cond_id, _, _ in conditions:
+                    if not is_op(cond_id) and is_op(last_cond):
+                        expression.append('{id}()'.format(id=cond_id))
+                    elif cond_id in ['and','or'] and not is_op(last_cond):
+                        expression.append('{op}'.format(op=cond_id))
+                    elif cond_id == 'not' and (not is_op(last_cond) or last_cond=='not') :
+                        expression.append('not')
+                    else:
+                        # invalid statement
+                        logger.warning('Macro expression invalid %s"' % ' '.join(expression+[cond_id]))
+                    last_cond = cond_id
+
+                if expression and is_op(expression[-1]):
+                    logger.warning('Macro expression invalid %s"' % ' '.join(expression))
+                    expression = expression[:-1]
+
+                new_code[macro_id] = "if {expression}:\n{code}\n".format(
+                    expression = (' '.join(expression)),
                     code = (' '*4)+('\n'+(' '*4)).join(new_code[macro_id].split('\n')) #indent
                 )
                 #TODO: we should add the condition line just once at the first condition
