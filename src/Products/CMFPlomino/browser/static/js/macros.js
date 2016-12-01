@@ -13,7 +13,7 @@ require([
     "pat-registry"
 ], function($, Base, Modal, Select2, sortable, registry) {
     'use strict';
-    var DataGrid = Base.extend({
+    var MacroWidget = Base.extend({
         name: 'plominomacros',
         parser: 'mockup',
         trigger: '.plomino-macros',
@@ -255,7 +255,7 @@ require([
 //                });
 //            });
 
-        },
+        }
     });
-    return DataGrid;
+    return MacroWidget;
 });
