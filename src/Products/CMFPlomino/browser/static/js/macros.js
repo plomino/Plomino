@@ -58,20 +58,16 @@ require([
             var i=0;
             self.$el.find('input').each(function(index, el) {
                 var rule = self.rules[i];
-                if (rule.map != undefined) {
-                    rule = self.rules[i].map(function(macro) {
-                        if (macro['_macro_id_']) {
-                            self.ids[macro['_macro_id_']]=true;
-                        }
-                        return {id:JSON.stringify(macro),text:''}
-                    });
-                } else {
-                    // else rule is old style and not a list of macros yet
-                    if (rule['_macro_id_']) {
+                if (rule.map == undefined) {
+                    //else rule is old style and not a list of macros yet
+                    rule = [rule];
+                }
+                rule = self.rules[i].map(function(macro) {
+                    if (macro['_macro_id_']) {
                         self.ids[macro['_macro_id_']]=true;
                     }
-                    rule = {id:JSON.stringify(rule),text:''};
-                }
+                    return {id:JSON.stringify(macro),text:''}
+                });
                 self.initInput.bind({widget:self})(el, rule);
                 i++;
             });
@@ -149,6 +145,9 @@ require([
             }
             var macro = JSON.parse(macro.id);
             var formid = macro.Form;
+            if (formid == 'or' || formid == 'and' || formid == 'nor') {
+                return macro.title;
+            }
             var type = 'do';
             if (formid.startsWith('macro_condition_')) {
                 type = 'if';

@@ -381,6 +381,8 @@ def update_helpers(obj, event):
                 if expression and is_op(expression[-1]):
                     logger.warning('Macro expression invalid %s"' % ' '.join(expression))
                     expression = expression[:-1]
+                if len(expression) == 0:
+                    continue
 
                 new_code[macro_id] = "if {expression}:\n{code}\n".format(
                     expression = (' '.join(expression)),
