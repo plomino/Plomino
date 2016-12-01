@@ -277,6 +277,12 @@ def update_helpers(obj, event):
     db = obj.getParentDatabase()
     curpath = '/'.join(obj.getPhysicalPath())
 
+    # need to upgrade the data from the old structure if needed
+    #TODO: only do set at the end if this has changed (or an id has been added)
+    helpers = [[rule] if type(rule) == dict else rule for rule in helpers]
+
+
+    # find all our ids so we can add unique ones later
     ids = {m['_macro_id_'] for rule in helpers for m in rule if '_macro_id_' in m}
 
     # TODO: Need to remove any code the user removed
@@ -287,7 +293,7 @@ def update_helpers(obj, event):
     # rules = [([condition_macro,...),(action_macro,...),...]
     # and a macro is (helperid, form, doc)
     rules = []
-    for rule in obj.helpers:
+    for rule in helpers:
         macros = []
         conditions = []
         rules.append( (conditions, macros) )
