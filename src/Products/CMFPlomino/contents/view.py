@@ -149,8 +149,6 @@ class IPlominoView(model.Schema):
             'form_formula',
             'hide_default_actions',
             'onOpenView',
-            'sort_column',
-            'key_column',
             'static_rendering',
             'custom_template',
         ),
