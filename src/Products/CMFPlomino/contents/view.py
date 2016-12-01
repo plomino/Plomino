@@ -5,6 +5,7 @@ from plone.autoform import directives
 from plone.batching.batch import Batch
 from plone.dexterity.content import Container
 from plone.supermodel import model
+from plone.supermodel import directives as supermodel_directives
 from Products.PluginIndexes.DateIndex.DateIndex import DateIndex
 from zipfile import ZipFile, ZIP_DEFLATED
 from zope import schema
@@ -137,6 +138,22 @@ class IPlominoView(model.Schema):
             default="Id of a .pt template located in the /resources folder. "
                 "Leave blank to use default"),
         required=False,
+    )
+
+    # ADVANCED
+    supermodel_directives.fieldset(
+        'advanced',
+        label=_(u'Advanced'),
+        fields=(
+            'selection_formula',
+            'form_formula',
+            'hide_default_actions',
+            'onOpenView',
+            'sort_column',
+            'key_column',
+            'static_rendering',
+            'custom_template',
+        ),
     )
 
 
