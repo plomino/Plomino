@@ -53,16 +53,23 @@ require([
                 html += self.item;
             });
             self.$el.prepend(html);
+            self.ids = {};
             self.rules.push([]);
             var i=0;
             self.$el.find('input').each(function(index, el) {
                 var rule = self.rules[i];
                 if (rule.map != undefined) {
                     rule = self.rules[i].map(function(macro) {
+                        if (macro['_macro_id_']) {
+                            self.ids[macro['_macro_id_']]=true;
+                        }
                         return {id:JSON.stringify(macro),text:''}
                     });
                 } else {
                     // else rule is old style and not a list of macros yet
+                    if (rule['_macro_id_']) {
+                        self.ids[macro['_macro_id_']]=true;
+                    }
                     rule = {id:JSON.stringify(rule),text:''};
                 }
                 self.initInput.bind({widget:self})(el, rule);
@@ -164,10 +171,22 @@ require([
                 });
             }
 
+            //ensure we have an unique id since select2 doesn't allow two items the same
+            var macroid = data['_macro_id_'];
+            var i = 1;
+            while (macroid==undefined || self.ids[macroid]) {
+                macroid = formid + '_' + i;
+                i++;
+            }
+            data['_macro_id_'] = macroid;
+            self.ids[macroid] = true;
+
             //Special case. Urls that start with # have no popup
             if (edit_url.startsWith('#')) {
                 var values = macro_select.select2('data');
-                values.push({id:JSON.stringify({title:text, Form:formid}),text:text});
+                data['title'] = text;
+                data['Form'] = formid;
+                values.push({id:JSON.stringify(data),text:text});
                 macro_select.select2('data',values);
                 self.cleanup_inputs.bind({widget:self})();
                 return
