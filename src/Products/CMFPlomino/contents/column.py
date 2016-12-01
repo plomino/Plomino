@@ -3,6 +3,7 @@ import Missing
 from plone.autoform import directives
 from plone.dexterity.content import Item
 from plone.supermodel import model
+from plone.supermodel import directives as supermodel_directives
 from zope import schema
 from zope.interface import implements, invariant, Invalid
 
@@ -35,6 +36,15 @@ class IPlominoColumn(model.Schema):
     hidden_column = schema.Bool(
         title=_('CMFPlomino_label_HiddenColumn', default="Hidden column"),
         default=False,
+    )
+
+    # ADVANCED
+    supermodel_directives.fieldset(
+        'advanced',
+        label=_(u'Advanced'),
+        fields=(
+            'formula',
+        ),
     )
 
     @invariant
