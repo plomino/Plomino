@@ -62,7 +62,7 @@ require([
                     //else rule is old style and not a list of macros yet
                     rule = [rule];
                 }
-                rule = self.rules[i].map(function(macro) {
+                rule = rule.map(function(macro) {
                     if (macro['_macro_id_']) {
                         self.ids[macro['_macro_id_']]=true;
                     }
