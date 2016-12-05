@@ -34,13 +34,19 @@ Let's start testing::
     >>> id = db.invokeFactory('PlominoForm', id='frm3', title='Search Form')
     >>> id = db.invokeFactory('PlominoForm', id='frm4', title='Form Visual')
     >>> id = db.invokeFactory('PlominoView', id='view1',
-    ...         title='View 1', selection_formula='True')
+    ...         title='View 1')
     >>> id = db.view1.invokeFactory('PlominoColumn', id='col1',
     ...         title='Col 1', formula='plominoDocument.field1')
     >>> db.view1.sort_column = 'col1'
     >>> id = db.invokeFactory('PlominoView', id='view2',
     ...         title='View 2',
     ...         selection_formula="plominoDocument.field1=='bonjour'")
+    >>> id = db.invokeFactory('PlominoView', id='view3',
+    ...         title='View 3',
+    ...         selection_formula="False")
+    >>> id = db.invokeFactory('PlominoView', id='view4',
+    ...         title='View 4',
+    ...         selection_formula="True")
     >>> db.frm1 == db.getForm('frm1')
     True
     >>> db.view1 == db.getView('view1')
@@ -307,7 +313,8 @@ A view allows to display a list of documents.
 A view contains columns which content is computed using data stored in the
 documents.
 A view has a selection formula which filters the documents the application
-designer wants to be display in the view::
+designer wants to be display in the view.
+The default selection_formula is 'True', which means all documents::
 
     >>> doc2.setItem('field1', 'hello')
     >>> doc2.setItem('Form', 'frm1')
@@ -319,6 +326,10 @@ designer wants to be display in the view::
     5
     >>> len(db.view2.getAllDocuments())
     1
+    >>> len(db.view3.getAllDocuments())
+    0
+    >>> len(db.view4.getAllDocuments())
+    5
     >>> len(db.view1.getDocumentsByKey('hello'))
     1
 
