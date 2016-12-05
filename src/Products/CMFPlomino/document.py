@@ -679,6 +679,10 @@ class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
         if not v:
             return False
         try:
+            # selection_formula may be empty
+            formula = v.selection_formula
+            if not formula:
+                formula = 'True'
             result = self.runFormulaScript(
                 SCRIPT_ID_DELIMITER.join(['view', v.id, 'selection']),
                 self,

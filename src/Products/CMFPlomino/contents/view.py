@@ -61,8 +61,7 @@ class IPlominoView(model.Schema):
             """document must be displayed in the view or not. """
             """'plominoDocument' is a reserved name in formulae: it returns """
             """the current Plomino document."""),
-        default=u"True",
-        required=True,
+        required=False,
     )
 
     directives.widget('form_formula', klass='plomino-formula')
