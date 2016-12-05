@@ -78,7 +78,7 @@ A form can also contain some action buttons to trigger specific processing::
     >>> db.frm1.form_layout = """1 <p>please enter a value for field1:
     ... <span class="plominoFieldClass">field1</span></p>"""
     >>> db.frm1.displayDocument(None, True, True)
-    u'<input type="hidden" name="Form" value="frm1"/>1 <p>please enter a value for field1:<span>\n    \n    \n        <input type="text" id="field1" name="field1" value="" />\n    \n    \n</span></p>'
+    u'<div><input type="hidden" name="Form" value="frm1"/><div><p>1 </p><p>please enter a value for field1:<span>\n    \n    \n        <input type="text" id="field1" name="field1" value="" />\n    \n    \n</span></p></div></div>'
 
 A form can contain editable fields and also computed fields::
 
@@ -223,9 +223,9 @@ Only items which match a form field will be considered::
 
     >>> doc1.setItem('field1', 'where is my mind?')
     >>> db.frm1.displayDocument(doc1, editmode=False)
-    u'<p>2 </p><p>please enter a value for field1:<span class="plominoFieldGroup required"><span class="legend">Title for field1</span><span class="TEXTFieldRead-TEXT">\n    \n    \n        where is my mind?\n    \n</span></span></p><p>Comment:<span class="plominoFieldGroup"><span class="legend">Title for field2</span><span class="TEXTFieldRead-TEXT">\n    \n    \n        My favorite song is where is my mind?\n    \n</span></span></p><p><span class="TEXTFieldRead-TEXT">\n    \n    \n        WHERE IS MY MIND?\n    \n</span></p><p><span class="TEXTFieldRead-TEXT">\n    \n    \n        side-effect\n    \n</span></p>'
+    u'<div><p>2 </p><p>please enter a value for field1:<span class="plominoFieldGroup required"><span class="legend">Title for field1</span><span class="TEXTFieldRead-TEXT">\n    \n    \n        where is my mind?\n    \n</span></span></p><p>Comment:<span class="plominoFieldGroup"><span class="legend">Title for field2</span><span class="TEXTFieldRead-TEXT">\n    \n    \n        My favorite song is where is my mind?\n    \n</span></span></p><p><span class="TEXTFieldRead-TEXT">\n    \n    \n        WHERE IS MY MIND?\n    \n</span></p><p><span class="TEXTFieldRead-TEXT">\n    \n    \n        side-effect\n    \n</span></p></div>'
     >>> db.frm1.displayDocument(doc1, editmode=True)
-    u'<input type="hidden" name="Form" value="frm1"/>2 <p>please enter a value for field1:<span class="plominoFieldGroup required"><label for="field1">Title for field1</label><span>\n    \n    \n        <input type="text" id="field1" name="field1" value="where is my mind?" />\n    \n    \n</span></span></p><p>Comment:<span class="plominoFieldGroup"><label for="field2">Title for field2</label><span class="TEXTFieldRead-TEXT">\n    \n    \n        My favorite song is where is my mind?\n    \n</span></span></p><p><span class="TEXTFieldRead-TEXT">\n    \n    \n        WHERE IS MY MIND?\n    \n</span></p><p><span>\n    \n    \n        <input type="text" id="field4" name="field4" value="side-effect" />\n    \n    \n</span></p>'
+    u'<div><input type="hidden" name="Form" value="frm1"/><div><p>2 </p><p>please enter a value for field1:<span class="plominoFieldGroup required"><label for="field1">Title for field1</label><span>\n    \n    \n        <input type="text" id="field1" name="field1" value="where is my mind?" />\n    \n    \n</span></span></p><p>Comment:<span class="plominoFieldGroup"><label for="field2">Title for field2</label><span class="TEXTFieldRead-TEXT">\n    \n    \n        My favorite song is where is my mind?\n    \n</span></span></p><p><span class="TEXTFieldRead-TEXT">\n    \n    \n        WHERE IS MY MIND?\n    \n</span></p><p><span>\n    \n    \n        <input type="text" id="field4" name="field4" value="side-effect" />\n    \n    \n</span></p></div></div>'
 
 ``Form`` is a reserved item which allows to indicate the document default
 form::
@@ -390,10 +390,10 @@ The default text widget is a basic HTML text input::
     >>> db.frm2.drummer.widget = "RADIO"
     >>> db.frm2.drummer.selectionlist = [u"John Bonham", u"Princess Leonie"]
     >>> db.frm2.displayDocument(None, True, True).replace('\n', '').replace('\t', '')
-    u'<input type="hidden" name="Form" value="frm2"/>3 <div class="plominoFieldGroup"><p>Who is the guitarist:<label for="guitarist">Title for guitarist</label></p><span>                <input type="text" id="guitarist" name="guitarist" value="" />        </span></div><span class="plominoFieldGroup required"><label for="bassist"> Label for bassist</label><span class="bassist-selectionfield">                                                <span>                    <input type="checkbox" name="bassist" value="John Paul Jones" id="bassist-John Paul Jones">                    <label for="bassist-John Paul Jones">John Paul Jones</label>                </span>                                                                <span>                    <input type="checkbox" name="bassist" value="Chris Chameleon" id="bassist-Chris Chameleon">                    <label for="bassist-Chris Chameleon">Chris Chameleon</label>                </span>                                            </span></span><span class="plominoFieldGroup"><label for="drummer">Title for drummer</label><span class="drummer-selectionfield">                                                    <span>                    <input type="radio" name="drummer" value="John Bonham" id="drummer-John Bonham">                    <label for="drummer-John Bonham">John Bonham</label>                </span>                                                                <span>                    <input type="radio" name="drummer" value="Princess Leonie" id="drummer-Princess Leonie">                    <label for="drummer-Princess Leonie">Princess Leonie</label>                </span>                                        </span></span>'
+    u'<div><input type="hidden" name="Form" value="frm2"/><div><p>3 </p><div class="plominoFieldGroup"><p>Who is the guitarist:<label for="guitarist">Title for guitarist</label></p><span>                <input type="text" id="guitarist" name="guitarist" value="" />        </span></div><span class="plominoFieldGroup required"><label for="bassist"> Label for bassist</label><span class="bassist-selectionfield">                                                <span>                    <input type="checkbox" name="bassist" value="John Paul Jones" id="bassist-John Paul Jones">                    <label for="bassist-John Paul Jones">John Paul Jones</label>                </span>                                                                <span>                    <input type="checkbox" name="bassist" value="Chris Chameleon" id="bassist-Chris Chameleon">                    <label for="bassist-Chris Chameleon">Chris Chameleon</label>                </span>                                            </span></span><span class="plominoFieldGroup"><label for="drummer">Title for drummer</label><span class="drummer-selectionfield">                                                    <span>                    <input type="radio" name="drummer" value="John Bonham" id="drummer-John Bonham">                    <label for="drummer-John Bonham">John Bonham</label>                </span>                                                                <span>                    <input type="radio" name="drummer" value="Princess Leonie" id="drummer-Princess Leonie">                    <label for="drummer-Princess Leonie">Princess Leonie</label>                </span>                                        </span></span></div></div>'
     >>> db.frm2.guitarist.widget="TEXTAREA"
     >>> db.frm2.displayDocument(None, True, True).replace('\n', '').replace('\t', '')
-    u'<input type="hidden" name="Form" value="frm2"/>3 <div class="plominoFieldGroup"><p>Who is the guitarist:<label for="guitarist">Title for guitarist</label></p><span>                    <textarea id="guitarist" name="guitarist"></textarea>    </span></div><span class="plominoFieldGroup required"><label for="bassist"> Label for bassist</label><span class="bassist-selectionfield">                                                <span>                    <input type="checkbox" name="bassist" value="John Paul Jones" id="bassist-John Paul Jones">                    <label for="bassist-John Paul Jones">John Paul Jones</label>                </span>                                                                <span>                    <input type="checkbox" name="bassist" value="Chris Chameleon" id="bassist-Chris Chameleon">                    <label for="bassist-Chris Chameleon">Chris Chameleon</label>                </span>                                            </span></span><span class="plominoFieldGroup"><label for="drummer">Title for drummer</label><span class="drummer-selectionfield">                                                    <span>                    <input type="radio" name="drummer" value="John Bonham" id="drummer-John Bonham">                    <label for="drummer-John Bonham">John Bonham</label>                </span>                                                                <span>                    <input type="radio" name="drummer" value="Princess Leonie" id="drummer-Princess Leonie">                    <label for="drummer-Princess Leonie">Princess Leonie</label>                </span>                                        </span></span>'
+    u'<div><input type="hidden" name="Form" value="frm2"/><div><p>3 </p><div class="plominoFieldGroup"><p>Who is the guitarist:<label for="guitarist">Title for guitarist</label></p><span>                    <textarea id="guitarist" name="guitarist"></textarea>    </span></div><span class="plominoFieldGroup required"><label for="bassist"> Label for bassist</label><span class="bassist-selectionfield">                                                <span>                    <input type="checkbox" name="bassist" value="John Paul Jones" id="bassist-John Paul Jones">                    <label for="bassist-John Paul Jones">John Paul Jones</label>                </span>                                                                <span>                    <input type="checkbox" name="bassist" value="Chris Chameleon" id="bassist-Chris Chameleon">                    <label for="bassist-Chris Chameleon">Chris Chameleon</label>                </span>                                            </span></span><span class="plominoFieldGroup"><label for="drummer">Title for drummer</label><span class="drummer-selectionfield">                                                    <span>                    <input type="radio" name="drummer" value="John Bonham" id="drummer-John Bonham">                    <label for="drummer-John Bonham">John Bonham</label>                </span>                                                                <span>                    <input type="radio" name="drummer" value="Princess Leonie" id="drummer-Princess Leonie">                    <label for="drummer-Princess Leonie">Princess Leonie</label>                </span>                                        </span></span></div></div>'
 
 .. todo:: We need a test for a selection list with no value in edit mode. It should not render a label.
 
@@ -416,11 +416,11 @@ Selection field::
     >>> db.cleanRequestCache()
     >>> db.frm2.displayDocument(None, True, True
     ...         ).replace('\n', '').replace('\t', '')
-    u'<input type="hidden" name="Form" value="frm2"/>4 <p>choose:<span class="artistsfield-selectionfield">            <select class="pat-select2" id="artistsfield" name="artistsfield">            <option value="The Beatles">The Beatles</option>                    <option value="The Doors">The Doors</option>                    <option value="The Pixies">The Pixies</option>        </select>                </span></p>'
+    u'<div><input type="hidden" name="Form" value="frm2"/><div><p>4 </p><p>choose:<span class="artistsfield-selectionfield">            <select class="pat-select2" id="artistsfield" name="artistsfield">            <option value="The Beatles">The Beatles</option>                    <option value="The Doors">The Doors</option>                    <option value="The Pixies">The Pixies</option>        </select>                </span></p></div></div>'
     >>> db.frm2.artistsfield.widget = "CHECKBOX"
     >>> db.frm2.displayDocument(None, True, True
     ...         ).replace('\n', '').replace('\t', '')
-    u'<input type="hidden" name="Form" value="frm2"/>4 <p>choose:<span class="artistsfield-selectionfield">                                                <span>                    <input type="checkbox" name="artistsfield" value="The Beatles" id="artistsfield-The Beatles">                    <label for="artistsfield-The Beatles">The Beatles</label>                </span>                                                                <span>                    <input type="checkbox" name="artistsfield" value="The Doors" id="artistsfield-The Doors">                    <label for="artistsfield-The Doors">The Doors</label>                </span>                                                                <span>                    <input type="checkbox" name="artistsfield" value="The Pixies" id="artistsfield-The Pixies">                    <label for="artistsfield-The Pixies">The Pixies</label>                </span>                                            </span></p>'
+    u'<div><input type="hidden" name="Form" value="frm2"/><div><p>4 </p><p>choose:<span class="artistsfield-selectionfield">                                                <span>                    <input type="checkbox" name="artistsfield" value="The Beatles" id="artistsfield-The Beatles">                    <label for="artistsfield-The Beatles">The Beatles</label>                </span>                                                                <span>                    <input type="checkbox" name="artistsfield" value="The Doors" id="artistsfield-The Doors">                    <label for="artistsfield-The Doors">The Doors</label>                </span>                                                                <span>                    <input type="checkbox" name="artistsfield" value="The Pixies" id="artistsfield-The Pixies">                    <label for="artistsfield-The Pixies">The Pixies</label>                </span>                                            </span></p></div></div>'
 
 Date/Time field::
 
@@ -438,10 +438,10 @@ Date/Time field::
     >>> doc4.setItem('Form', 'frm2')
     >>> doc4.save()
     >>> db.frm2.displayDocument(doc4)
-    u'<p>5 </p><p>last album release date:\n2009-01-17\n\n</p>'
+    u'<div><p>5 </p><p>last album release date:\n2009-01-17\n\n</p></div>'
     >>> db.frm2.lastalbum.format=u'%d/%m/%Y %H:%M'
     >>> db.frm2.displayDocument(doc4)
-    u'<p>5 </p><p>last album release date:\n17/01/2009 18:49\n\n</p>'
+    u'<div><p>5 </p><p>last album release date:\n17/01/2009 18:49\n\n</p></div>'
     >>> doc4.getRenderedItem('lastalbum')
     u'\n17/01/2009 18:49\n\n'
 
@@ -466,9 +466,9 @@ Number field::
     >>> REQUEST = {'price': "zero"}
     >>> db.cleanRequestCache()
     >>> db.frm2.validateInputs(REQUEST)
-    ['price must be a float (submitted value was: zero)']
+    [{'field': 'price', 'error': 'price must be a float (submitted value was: zero)'}]
     >>> db.frm2.displayDocument(None, True, True).replace('\n', '').replace('\t', '')
-    u'<input type="hidden" name="Form" value="frm2"/>6 <p>Price:<span>    <input type="number" id="price" name="price" value="" /></span></p>'
+    u'<div><input type="hidden" name="Form" value="frm2"/><div><p>6 </p><p>Price:<span>    <input type="number" id="price" name="price" value="" /></span></p></div></div>'
 
 Rich-text field::
 
@@ -485,7 +485,7 @@ Rich-text field::
     >>> doc4.save()
     >>> db.cleanRequestCache()
     >>> db.frm2.displayDocument(doc4).replace('\n', '')
-    u"<p>7 </p><p>My comments: I am not sure it is <b>correct</b><br/>.So please, check <a href='http://www.google.com'>here</a></p>"
+    u"<div><p>7 </p><p>My comments: I am not sure it is <b>correct</b><br/>.So please, check <a href='http://www.google.com'>here</a></p></div>"
     >>> REQUEST = {'comments': """I am not sure it is <b>correct</b><br/>.\n
     ... So please, check <a href='http://www.google.com'>here</a>"""}
     >>> db.frm2.validateInputs(REQUEST)
@@ -503,7 +503,7 @@ A name field allow to select a user in the Plone portal members list::
     >>> db.frm2.form_layout = """9 <p>Who: <span class="plominoFieldClass">buyer</span></p>"""
     >>> db.cleanRequestCache()
     >>> db.frm2.displayDocument(None, True, True).replace('\n', '').replace('\t', '')
-    u'<input type="hidden" name="Form" value="frm2"/>9 <p>Who: <span>                            <input type="text" class="pat-select2" id="buyer" name="buyer" data-pat-select2="vocabularyUrl:http://nohost/plone/mydb/frm2/buyer/filterusers;multiple:true;initialValues:[\':\']">            </input>                                </span></p>'
+    u'<div><input type="hidden" name="Form" value="frm2"/><div><p>9 </p><p>Who: <span>                            <input type="text" class="pat-select2" id="buyer" name="buyer" data-pat-select2="vocabularyUrl:http://nohost/plone/mydb/frm2/buyer/filterusers;multiple:true;initialValues:[]">            </input>                                </span></p></div></div>'
 
 # TO BE FIXED
 # Doclink field:
@@ -543,7 +543,7 @@ A field can be computed::
     >>> doc4.save()
     >>> db.cleanRequestCache()
     >>> db.frm2.displayDocument(doc4)
-    u'<p>11 </p><p><span class="TEXTFieldRead-TEXT">\n    \n    \n        Welcome test_user_1_\n    \n</span></p>'
+    u'<div><p>11 </p><p><span class="TEXTFieldRead-TEXT">\n    \n    \n        Welcome test_user_1_\n    \n</span></p></div>'
 
 Visual form layouts:
 Convert visual TinyMCE layout back to Plomino::
