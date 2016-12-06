@@ -1544,7 +1544,7 @@ class PlominoForm(Container):
         else:
             hidewhens = self.getHidewhenFormulas()
             if doc is None:
-                doc = getTemporaryDocument(db, self, REQUEST, validation_mode=False)
+                doc = getTemporaryDocument(db, self, REQUEST, validation_mode=True)
             for hidewhen in hidewhens:
                 try:
                     isHidden = self.runFormulaScript(

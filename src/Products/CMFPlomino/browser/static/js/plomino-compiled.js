@@ -546,7 +546,7 @@ require([
                     //else rule is old style and not a list of macros yet
                     rule = [rule];
                 }
-                rule = self.rules[i].map(function(macro) {
+                rule = rule.map(function(macro) {
                     if (macro['_macro_id_']) {
                         self.ids[macro['_macro_id_']]=true;
                     }
@@ -744,6 +744,41 @@ require([
     return MacroWidget;
 });
 define("plominomacros", function(){});
+
+require([
+    'jquery',
+    'pat-base',
+    'mockup-patterns-modal',
+], function($, Base, Modal) {
+    'use strict';
+    var PlominoMacros = Base.extend({
+        name: 'plominomacropopup',
+        parser: 'mockup',
+        trigger: '.plomino-macro',
+        defaults: {},
+        init: function() {
+            var self = this;
+            // Remove any onclick values
+            $('.plominoClose', self.$modal).each(function() {
+                this.removeAttribute('onclick');
+            });
+            self.render();
+        },
+        render: function() {
+            var self = this;
+            // Close the modal when the close button is clicked
+            $('.plominoClose', self.$modal)
+              .off('click')
+              .on('click', function(e) {
+                e.stopPropagation();
+                e.preventDefault();
+                $(e.target).trigger('destroy.plone-modal.patterns');
+            });
+        }
+ });
+    return PlominoMacros;
+});
+define("plominomacropopup", function(){});
 
 // Dynamically refresh Field edit forms
 require([
