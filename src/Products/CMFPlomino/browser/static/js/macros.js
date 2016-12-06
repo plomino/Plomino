@@ -10,8 +10,10 @@ require([
     'mockup-patterns-modal',
     'mockup-patterns-select2',
     'mockup-patterns-sortable',
+    'mockup-patterns-backdrop',
+    'mockup-utils',
     "pat-registry"
-], function($, Base, Modal, Select2, sortable, registry) {
+], function($, Base, Modal, Select2, Sortable, Backdrop, utils, registry) {
     'use strict';
     var MacroWidget = Base.extend({
         name: 'plominomacros',
@@ -72,6 +74,10 @@ require([
                 i++;
             });
             self.cleanup_inputs.bind({widget:self})();
+
+            var backdrop = new Backdrop(self.$el, {closeOnEsc:true, closeOnClick:false});
+            self.loading = utils.Loading({backdrop:backdrop});
+
 
         },
         initInput: function(el, rule) {
@@ -136,7 +142,7 @@ require([
                 }
             });
             //TODO: doesn't work with the select2 pattern being orderable
-            new sortable(self.$el, {selector:'.plomino-macros-rule'});
+            new Sortable(self.$el, {selector:'.plomino-macros-rule'});
 
         },
         formatMacro: function (macro) {
@@ -196,11 +202,14 @@ require([
             // popup modal
             // on success find and remove old json, replace it will new json
 
+            self.loading.show();
+
             jQuery.ajax({
                 url: edit_url,
                 type: "POST",
                 data: data
             }).done(function(html) {
+                self.loading.hide();
                 var edit_modal = new Modal(self.$el, {
                     html: html,
                     position: 'middle top', // import to be at the top so it doesn't reposition inside the iframe
@@ -217,7 +226,6 @@ require([
                                 // replace the item added with json
                                 var formdata = {};
                                 $.map(response, function(value, key) {formdata[key] = value.raw});
-                                //form.serializeArray().map(function(x){formdata[x.name] = x.value;});
                                 formdata['Form'] = formid;
 
                                 if (formdata.title == undefined) {
@@ -244,16 +252,6 @@ require([
                 }).show();
             });
 
-
-//            self.$el.find('.edit-row').each(function(i, el) {
-//                // first use AJAX to get the form so we can do a post
-//                var url = $(el).attr('href').split('?',2);
-//                $(el).on("click", function(evt) {
-//                    evt.preventDefault();
-//
-//
-//                });
-//            });
 
         }
     });

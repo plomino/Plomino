@@ -248,13 +248,13 @@
         <!--/>-->
 
   <adapter
-      factory="Products.CMFPlomino.browser.helpers.SubformWidget"
+      factory="Products.CMFPlomino.browser.helpers.MacroWidget"
       provides="z3c.form.interfaces.IFieldWidget"
       for="zope.schema.interfaces.IAbstractSet
            zope.schema.interfaces.IObject
            plone.app.z3cform.interfaces.IPloneFormLayer"
       />
-  <adapter factory=".helpers.SubformWidgetConverter" />
+  <adapter factory=".helpers.MacroWidgetConverter" />
     <subscriber
       for="Products.CMFPlomino.contents.form.IPlominoForm
            zope.lifecycleevent.interfaces.IObjectModifiedEvent"
@@ -297,7 +297,7 @@
 
   <z3c:widgetTemplate
       mode="input"
-      widget=".helpers.ISubformWidget"
+      widget=".helpers.IMacroWidget"
       layer="plone.app.z3cform.interfaces.IPloneFormLayer"
       template="templates/multi_helpers.pt"
       />

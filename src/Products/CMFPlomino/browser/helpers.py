@@ -27,15 +27,15 @@ logger = logging.getLogger('Plomino')
 __author__ = 'dylanjay'
 
 
-class ISubformWidget(IWidget):
+class IMacroWidget(IWidget):
     """ Widget for collecting data from a list of possible subforms
     """
 
 
-class SubformWidgetConverter(BaseDataConverter):
+class MacroWidgetConverter(BaseDataConverter):
     """Convert single json input into list"""
 
-    adapts(IList, ISubformWidget)
+    adapts(IList, IMacroWidget)
 
     def toWidgetValue(self, value):
         """Converts from field value to widget.
@@ -60,18 +60,18 @@ class SubformWidgetConverter(BaseDataConverter):
         return value
 
 
-class SubformWidget(Widget):
+class MacroWidget(Widget):
     """ datatable z3cform widget for multple kinds of subforms.
     uses a list of (id,formid,json) objects
     """
 
-    _converter = SubformWidgetConverter
+    _converter = MacroWidgetConverter
 
-    implementsOnly(ISubformWidget)
+    implementsOnly(IMacroWidget)
 
     def update(self):
         logger.debug('Method: Widget update')
-        super(SubformWidget, self).update()
+        super(MacroWidget, self).update()
         self.rules = json.dumps(self.value if self.value else [])
 
         # TODO: means helper has no access to local db. We probably needs to fix
@@ -98,7 +98,7 @@ class SubformWidget(Widget):
 
     def extract(self, default=NO_VALUE):
         logger.debug('Method: Widget extract')
-        value = super(SubformWidget, self).extract(default)
+        value = super(MacroWidget, self).extract(default)
         if value == default:
             return default
         res = []
@@ -163,7 +163,7 @@ class IHelpers(model.Schema):
     """Add a helpers widget to plomino objects with formulas
     """
 
-    directives.widget('helpers', SubformWidget)
+    directives.widget('helpers', MacroWidget)
     directives.order_after(helpers = 'IBasic.description')
     helpers = schema.List(
         value_type=schema.List(
