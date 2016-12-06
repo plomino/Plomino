@@ -83,8 +83,10 @@ require([
         initInput: function(el, rule) {
             var self = this.widget;
             new Select2($(el), self.select2_args);
+            // Select2 pattern orderable is broken. need to do it ourselves
             var select = $(el);
             select.select2('data', rule);
+
             select.change(function(evt) {
                 var macro_select = $(evt.target);
                 if (evt.added != undefined) {
@@ -131,6 +133,13 @@ require([
                             self.edit_macro.bind({widget:self})(select, formid, macro.title, macro, i);
                         });
                     });
+                    new Sortable($(el).find(".select2-choices"), {
+                        selector:'.select2-search-choice',
+                        drop: function() {
+                            $(el).select2('onSortEnd');
+                        }});
+
+
                 }
                 // if last one is not empty add a new one
                 if (index == count-1 && values.length > 0) {
@@ -141,7 +150,6 @@ require([
                     });
                 }
             });
-            //TODO: doesn't work with the select2 pattern being orderable
             new Sortable(self.$el, {selector:'.plomino-macros-rule'});
 
         },
