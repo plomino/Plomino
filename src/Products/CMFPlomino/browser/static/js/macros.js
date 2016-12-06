@@ -75,8 +75,8 @@ require([
             });
             self.cleanup_inputs.bind({widget:self})();
 
-            var backdrop = new Backdrop(self.$el, {closeOnEsc:true, closeOnClick:false});
-            self.loading = utils.Loading({backdrop:backdrop});
+            self.backdrop = new Backdrop(self.$el, {closeOnEsc:true, closeOnClick:false});
+            self.loading = utils.Loading({backdrop:self.backdrop});
 
 
         },
@@ -210,7 +210,8 @@ require([
             // popup modal
             // on success find and remove old json, replace it will new json
 
-            self.loading.show();
+            self.backdrop.show();
+            self.loading.show(true);
 
             jQuery.ajax({
                 url: edit_url,
@@ -218,6 +219,7 @@ require([
                 data: data
             }).done(function(html) {
                 self.loading.hide();
+                self.backdrop.hide();
                 var edit_modal = new Modal(self.$el, {
                     html: html,
                     position: 'middle top', // import to be at the top so it doesn't reposition inside the iframe
