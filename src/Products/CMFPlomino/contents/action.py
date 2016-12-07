@@ -89,7 +89,7 @@ class PlominoAction(Item):
 
     security = ClassSecurityInfo()
 
-    security.declarePublic('isHidden')
+    security.declarePublic('action_id')
 
     def action_id(self):
         """
@@ -99,7 +99,7 @@ class PlominoAction(Item):
         if self.action_type in ['PREVIOUS', 'NEXT']:
             return 'plomino_%s' % self.action_type.lower()
         else:
-            self.id
+            return self.id
 
     security.declarePublic('isHidden')
 
