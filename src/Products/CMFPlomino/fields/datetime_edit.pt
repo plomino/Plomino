@@ -10,7 +10,6 @@
     ymd python:('%Y' in format or '%y' in format);
     mandatory python: 'mandatory' if field.mandatory else '';
     widget python:field.widget;">
-    <p tal:content="format" />
     <tal:widget tal:condition="python: widget=='JQUERY'">
         <input type="text" class="pat-pickadate"
             tal:define="inputvalue python: '' if not v else v.strftime('%Y-%m-%d %H:%M');"
