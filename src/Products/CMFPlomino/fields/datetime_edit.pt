@@ -64,18 +64,21 @@
                 second python: v.strftime('%S');">
                 <tal:ymd condition="show_ymd">
                     <input type="number" min="0" max="31"
+                        title="Day"
                         tal:attributes="
                         name string:${field/id}.day:record;
                         id string:${field/id}.day:record;
                         value day;
                         ">
                     <input type="number" min="0" max="12"
+                        title="Month"
                         tal:attributes="
                         name string:${field/id}.month:record;
                         id string:${field/id}.month:record;
                         value month;
                         ">
                     <input type="number" min="1975" max="2050"
+                        title="Year"
                         tal:attributes="
                         min python: starting_year or '';
                         name string:${field/id}.year:record;
@@ -85,12 +88,14 @@
                 </tal:ymd>
                 <tal:hm condition="show_hm">
                     <input type="number" min="0" max="24"
+                        title="Hour"
                         tal:attributes="
                         name string:${field/id}.hour:record;
                         id string:${field/id}.hour:record;
                         value hour;
                         ">
                     <input type="number" min="0" max="59"
+                        title="Minute"
                         tal:attributes="
                         name string:${field/id}.minute:record;
                         id string:${field/id}.minute:record;
@@ -99,6 +104,7 @@
                 </tal:hm>
                 <tal:sec condition="show_sec">
                     <input type="number" min="0" max="60"
+                        title="Second"
                         tal:attributes="
                         name string:${field/id}.second:record;
                         id string:${field/id}.second:record;
@@ -111,16 +117,19 @@
             <tal:define tal:define="id field/id;">
                 <tal:ymd condition="show_ymd">
                     <input type="number" min="0" max="31"
+                        title="Day"
                         tal:attributes="
                         name string:${field/id}.day:record;
                         id string:${field/id}.day:record;
                         ">
                     <input type="number" min="0" max="12"
+                        title="Month"
                         tal:attributes="
                         name string:${field/id}.month:record;
                         id string:${field/id}.month:record;
                         ">
                     <input type="number" min="1975" max="2050"
+                        title="Year"
                         tal:attributes="
                         min python: starting_year or '';
                         name string:${field/id}.year:record;
@@ -129,11 +138,13 @@
                 </tal:ymd>
                 <tal:hm condition="show_hm">
                     <input type="number" min="0" max="24"
+                        title="Hour"
                         tal:attributes="
                         name string:${field/id}.hour:record;
                         id string:${field/id}.hour:record;
                         ">
                     <input type="number" min="0" max="59"
+                        title="Minute"
                         tal:attributes="
                         name string:${field/id}.minute:record;
                         id string:${field/id}.minute:record;
@@ -141,6 +152,7 @@
                 </tal:hm>
                 <tal:sec condition="show_sec">
                     <input type="number" min="0" max="59"
+                        title="Second"
                         tal:attributes="
                         name string:${field/id}.second:record;
                         id string:${field/id}.second:record;
