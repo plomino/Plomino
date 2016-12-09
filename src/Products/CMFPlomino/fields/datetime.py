@@ -81,30 +81,56 @@ class DatetimeField(BaseField):
                 day = submittedValue.get('day', '')
                 hour = submittedValue.get('hour', '')
                 minute = submittedValue.get('minute', '')
+                second = submittedValue.get('second', '')
 
                 format = self.context.format
                 if not format:
                     format = self.context.getParentDatabase().datetime_format
                 show_ymd = False
                 show_hm = False
+                show_sec = False
                 convertedValue = []
+
+                # Check for year, hour and second. Raise an exception
+                # if the required values haven't been submitted
                 if '%Y' in format or '%y' in format:
-                    convertedValue.append('%s-%s-%s' % (year, month, day))
-                    show_ymd = True
+                    if year and month and day:
+                        convertedValue.append('%s-%s-%s' % (year, month, day))
+                        show_ymd = True
+                    else:
+                        raise Exception
+
                 if '%H' in format:
-                    convertedValue.append('%s:%s' % (hour, minute))
-                    show_hm = True
+                    if hour and minute:
+                        if '%S' in format:
+                            if second:
+                                convertedValue.append('%s:%s:%s' % (hour, minute, second))
+                                show_hm = True
+                                show_sec = True
+                            else:
+                                raise Exception
+                        else:
+                            convertedValue.append('%s:%s' % (hour, minute))
+                            show_hm = True
+                    else:
+                        raise Exception
 
                 submittedValue = ' '.join(convertedValue)
 
-                if (show_ymd and show_hm) and (year and month and day and hour and minute):
+                if (show_ymd and show_hm and show_sec):
                     # Don't allow StringToDate to guess the format
                     StringToDate(
+                        submittedValue, '%Y-%m-%d %H:%M:%S', guess=False, tozone=False)
+                elif (show_ymd and show_hm):
+                    StringToDate(
                         submittedValue, '%Y-%m-%d %H:%M', guess=False, tozone=False)
-                elif (show_ymd and not show_hm) and (year and month and day):
+                elif (show_ymd):
                     StringToDate(
                         submittedValue, '%Y-%m-%d', guess=False, tozone=False)
-                elif (show_hm and not show_ymd) and (hour and minute):
+                elif (show_hm and show_sec):
+                    StringToDate(
+                        submittedValue, '%H:%M:%S', guess=False, tozone=False)
+                elif (show_hm):
                     StringToDate(
                         submittedValue, '%H:%M', guess=False, tozone=False)
                 else:
@@ -148,31 +174,56 @@ class DatetimeField(BaseField):
                 day = submittedValue.get('day', '')
                 hour = submittedValue.get('hour', '')
                 minute = submittedValue.get('minute', '')
+                second = submittedValue.get('second', '')
 
                 format = self.context.format
                 if not format:
                     format = self.context.getParentDatabase().datetime_format
                 show_ymd = False
                 show_hm = False
+                show_sec = False
                 convertedValue = []
 
+                # Check for year, hour and second. Raise an exception
+                # if the required values haven't been submitted
                 if '%Y' in format or '%y' in format:
-                    convertedValue.append('%s-%s-%s' % (year, month, day))
-                    show_ymd = True
+                    if year and month and day:
+                        convertedValue.append('%s-%s-%s' % (year, month, day))
+                        show_ymd = True
+                    else:
+                        raise RecordException
+
                 if '%H' in format:
-                    convertedValue.append('%s:%s' % (hour, minute))
-                    show_hm = True
+                    if hour and minute:
+                        if '%S' in format:
+                            if second:
+                                convertedValue.append('%s:%s:%s' % (hour, minute, second))
+                                show_hm = True
+                                show_sec = True
+                            else:
+                                raise RecordException
+                        else:
+                            convertedValue.append('%s:%s' % (hour, minute))
+                            show_hm = True
+                    else:
+                        raise RecordException
 
                 submittedValue = ' '.join(convertedValue)
 
-                if (show_ymd and show_hm) and (year and month and day and hour and minute):
+                if (show_ymd and show_hm and show_sec):
                     # Don't allow StringToDate to guess the format
                     d = StringToDate(
+                        submittedValue, '%Y-%m-%d %H:%M:%S', guess=False, tozone=False)
+                elif (show_ymd and show_hm):
+                    d = StringToDate(
                         submittedValue, '%Y-%m-%d %H:%M', guess=False, tozone=False)
-                elif (show_ymd and not show_hm) and (year and month and day):
+                elif (show_ymd):
                     d = StringToDate(
                         submittedValue, '%Y-%m-%d', guess=False, tozone=False)
-                elif (show_hm and not show_ymd) and (hour and minute):
+                elif (show_hm and show_sec):
+                    d = StringToDate(
+                        submittedValue, '%H:%M:%S', guess=False, tozone=False)
+                elif (show_hm):
                     d = StringToDate(
                         submittedValue, '%H:%M', guess=False, tozone=False)
                 else:

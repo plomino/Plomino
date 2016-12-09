@@ -5,10 +5,12 @@
     fieldformat python:field.format;
     starting_year python:field.startingyear;
     format python:(not(fieldformat) and defaultformat) or fieldformat;
+    sec python: ('%S' in format);
     hm python:('%H' in format or '%I' in format);
     ymd python:('%Y' in format or '%y' in format);
     mandatory python: 'mandatory' if field.mandatory else '';
     widget python:field.widget;">
+    <p tal:content="format" />
     <tal:widget tal:condition="python: widget=='JQUERY'">
         <input type="text" class="pat-pickadate"
             tal:define="inputvalue python: '' if not v else v.strftime('%Y-%m-%d %H:%M');"
@@ -50,7 +52,8 @@
     <tal:widget 
         tal:condition="python:widget=='COMBO'"
         tal:define="show_hm hm|nothing;
-                    show_ymd ymd|nothing;">
+                    show_ymd ymd|nothing;
+                    show_sec sec|nothing;">
         <span class="combo-date" tal:attributes="id field/id">
         <tal:block tal:condition="python:v">
             <tal:define tal:define="id field/id;
@@ -58,7 +61,8 @@
                 month v/month|nothing;
                 day v/day|nothing;
                 hour v/hour|nothing;
-                minute v/minute|nothing">
+                minute v/minute|nothing;
+                second python: v.strftime('%S');">
                 <tal:ymd condition="show_ymd">
                     <input type="number" min="0" max="31"
                         tal:attributes="
@@ -94,6 +98,14 @@
                         value minute;
                         ">
                 </tal:hm>
+                <tal:sec condition="show_sec">
+                    <input type="number" min="0" max="60"
+                        tal:attributes="
+                        name string:${field/id}.second:record;
+                        id string:${field/id}.second:record;
+                        value second;
+                        ">
+                </tal:sec>
             </tal:define>
         </tal:block>
         <tal:block tal:condition="python:not(v)">
@@ -128,6 +140,13 @@
                         id string:${field/id}.minute:record;
                         ">
                 </tal:hm>
+                <tal:sec condition="show_sec">
+                    <input type="number" min="0" max="59"
+                        tal:attributes="
+                        name string:${field/id}.second:record;
+                        id string:${field/id}.second:record;
+                        ">
+                </tal:sec>
             </tal:define>
         </tal:block>
         </span>
