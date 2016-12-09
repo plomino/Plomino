@@ -6,7 +6,7 @@
 .project
 .pydevproject
 .settings/
-bin/
+bin/*
 buildout-cache/
 develop-eggs/
 parts/
@@ -23,5 +23,5 @@ develop.cfg
 .Python
 local.cfg
 pip-selfcheck.json
-lib/
-include/python*
+lib/*
+include/*

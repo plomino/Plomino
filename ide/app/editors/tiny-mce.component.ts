@@ -79,10 +79,29 @@ export class TinyMCEComponent {
     }
 
     dropped(element: any) {
-        tinymce.activeEditor.execCommand('mceInsertContent', false,
+        /*  tinymce.activeEditor.execCommand('mceInsertContent', false,
             '<p><span class="'+element.dragData.type.charAt(0).toLowerCase()+
             element.dragData.type.slice(1)+'Class">'+
             element.dragData.name.split('/').pop()+'</span></p>'
+        );*/
+        
+        let elementType = element.dragData.type; /*ex: PlominoField */
+        let elementName = element.dragData.name.split('/').pop(); /*ex: myField1, name:http://localhost:8080/MyPlone/mydatabase/myform/myfield1  */
+        let elementParent = element.dragData.parent;
+
+        //we should get element info from database 
+        this._elementService.getElementFormLayout(elementName)
+            .subscribe(
+                (data) => { console.log(data)}, //404?
+                err => console.error(err)
+            );
+
+        //according to element info, we should get example_widget. ref: line354 in tinymce.py
+        // let widget_html = example_widget();
+
+         //insert element into tinymce editor   
+         tinymce.activeEditor.execCommand('mceInsertContent', false,
+            '<p><span>'+'<input type="text" value="'+ elementName +'"></span></p>' //inject widget_html into span/div
         );
     }
 
