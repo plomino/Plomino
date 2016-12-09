@@ -61,7 +61,8 @@
                 day v/day|nothing;
                 hour v/hour|nothing;
                 minute v/minute|nothing;
-                second python: v.strftime('%S');">
+                v_second v/second|nothing;
+                second python: v_second and int(v_second) or ''">
                 <tal:ymd condition="show_ymd">
                     <input type="number" min="0" max="31"
                         title="Day"
