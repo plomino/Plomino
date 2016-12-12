@@ -19,7 +19,6 @@
   <property name="allow_discussion">False</property>
   <property name="default_view">OpenForm</property>
   <property name="view_methods">
-    <element value="view"/>
   </property>
   <property name="default_view_fallback">False</property>
   <property name="add_permission">cmf.AddPortalContent</property>
