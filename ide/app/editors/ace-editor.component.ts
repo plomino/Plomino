@@ -1,7 +1,7 @@
 import {Component, OnInit, AfterViewInit, Input, Output, EventEmitter} from '@angular/core';
 import {PopoverComponent} from './popover.component';
 import {ElementService} from '../services/element.service';
-import {DROPDOWN_DIRECTIVES} from 'ng2-bootstrap/ng2-bootstrap';
+import {DropdownDirective} from 'ng2-bootstrap/ng2-bootstrap';
 
 declare var ace: any;
 
@@ -29,7 +29,7 @@ declare var ace: any;
             width: 195px;
         }
     `],
-    directives: [DROPDOWN_DIRECTIVES, PopoverComponent],
+    directives: [DropdownDirective, PopoverComponent],
     providers: [ElementService]
 })
 export class ACEEditorComponent {

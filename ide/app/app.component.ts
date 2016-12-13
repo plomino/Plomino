@@ -2,7 +2,7 @@
 import { Component, ViewChild, OnInit } from '@angular/core';
 
 // External Components
-import { TAB_DIRECTIVES }               from 'ng2-bootstrap/ng2-bootstrap';
+import { TabDirective }               from 'ng2-bootstrap/ng2-bootstrap';
 
 // Components
 import { TreeComponent }                from './tree-view/tree.component';
@@ -27,7 +27,7 @@ import { ElementService }               from './services/element.service';
     styles: [require('./app.component.css')],
     directives: [
         TreeComponent,
-        TAB_DIRECTIVES,
+        TabDirective,
         TinyMCEComponent,
         ACEEditorComponent,
         PlominoModalComponent,

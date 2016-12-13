@@ -1,6 +1,6 @@
 import {Component, Input, Output, EventEmitter, NgZone} from '@angular/core';
 import {ElementService} from '../services/element.service';
-import {DND_DIRECTIVES} from 'ng2-dnd/ng2-dnd';
+import {DND_DIRECTIVES} from 'ng2-dnd';
 
 declare var tinymce: any;
 

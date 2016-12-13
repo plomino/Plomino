@@ -4,7 +4,7 @@ import 'reflect-metadata';
 import 'zone.js/dist/zone';
 import '@angular/platform-browser';
 import '@angular/core';
-import 'ng2-dnd/ng2-dnd';
+import 'ng2-dnd';
 
 // -- Boostrap modal --
 

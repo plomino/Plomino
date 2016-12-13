@@ -2,6 +2,7 @@
   "name": "plomino-ide",
   "version": "0.0.1",
   "scripts": {
+    "start": "tsc && concurrently \"tsc -w\" \"lite-server\" ",
     "watch": "webpack --progress --watch",
     "build": "webpack --progress",
     "bundle": "webpack --config config/webpack.prod.js --progress",
@@ -22,7 +23,7 @@
     "es6-promise": "^3.0.2",
     "es6-shim": "^0.35.0",
     "jquery": "^2.2.3",
-    "ng2-bootstrap": "^1.0.13",
+    "ng2-bootstrap": "1.1.0",
     "ng2-bs3-modal": "^0.6.0",
     "ng2-dnd": "^1.8.2",
     "reflect-metadata": "^0.1.2",
