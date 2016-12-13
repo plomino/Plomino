@@ -1,7 +1,7 @@
 import { Component, Input, Output, EventEmitter, ViewChildren, OnChanges, ContentChild } from '@angular/core';
 import { CollapseDirective }                                                             from 'ng2-bootstrap/ng2-bootstrap';
 import { ElementService }                                                                from '../services/element.service';
-import { DND_DIRECTIVES }                                                                from 'ng2-dnd/ng2-dnd';
+import { DND_DIRECTIVES }                                                                from 'ng2-dnd';
 
 @Component({
     selector: 'plomino-tree',
