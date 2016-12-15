@@ -27,7 +27,7 @@
                 ymd_fmt python:show_ymd and '%Y-%m-%d' or '';
                 hm_fmt python:show_hm and 'T%H:%M' or '';
                 sec_fmt python:show_sec and ':%S' or '';
-                inputvalue python:isinstance(v, basestring) and v or v.strftime(''.join([ymd_fmt, hm_fmt, sec_fmt]).strip());">
+                inputvalue python:isinstance(v, basestring) and v or v.strftime(format.strip() if format else ''.join([ymd_fmt, hm_fmt, sec_fmt]).strip());">
                 <input tal:attributes="
                     type python:(show_hm and show_ymd and 'datetime-local') or (show_hm and 'time') or (show_ymd and 'date');
                     min python: (starting_year and str(starting_year)+'-01-01') or '';
