@@ -328,8 +328,8 @@
 
 
 
-        <!--Override the edit and add views so we can control the nexturl when we are in the tinymce popup-->
-
+    <!--Override the edit and add views so we can control the nexturl when we are in the tinymce popup-->
+    <!-- save edit handlers -->
     <subscriber
       for="Products.CMFPlomino.contents.field.IPlominoField
            plone.dexterity.interfaces.IEditFinishedEvent"
@@ -345,7 +345,23 @@
            plone.dexterity.interfaces.IEditFinishedEvent"
       handler=".tinymce.ajax_iframe_success"
       />
+    <subscriber
+      for="Products.CMFPlomino.contents.form.IPlominoForm
+           plone.dexterity.interfaces.IEditFinishedEvent"
+      handler=".tinymce.ajax_iframe_success"
+      />
+    <subscriber
+      for="Products.CMFPlomino.contents.view.IPlominoView
+           plone.dexterity.interfaces.IEditFinishedEvent"
+      handler=".tinymce.ajax_iframe_success"
+      />
+    <subscriber
+      for="Products.CMFPlomino.contents.database.IPlominoDatabase
+           plone.dexterity.interfaces.IEditFinishedEvent"
+      handler=".tinymce.ajax_iframe_success"
+      />
 
+    <!-- cancel edit handlers -->
     <subscriber
       for="Products.CMFPlomino.contents.field.IPlominoField
            plone.dexterity.interfaces.IEditCancelledEvent"
@@ -361,13 +377,40 @@
            plone.dexterity.interfaces.IEditCancelledEvent"
       handler=".tinymce.ajax_iframe_cancel"
       />
-
     <subscriber
-      for="Products.CMFCore.interfaces.IFolderish
+      for="Products.CMFPlomino.contents.form.IPlominoForm
+           plone.dexterity.interfaces.IEditCancelledEvent"
+      handler=".tinymce.ajax_iframe_cancel"
+      />
+    <subscriber
+      for="Products.CMFPlomino.contents.view.IPlominoView
+           plone.dexterity.interfaces.IEditCancelledEvent"
+      handler=".tinymce.ajax_iframe_cancel"
+      />
+    <subscriber
+      for="Products.CMFPlomino.contents.database.IPlominoDatabase
+           plone.dexterity.interfaces.IEditCancelledEvent"
+      handler=".tinymce.ajax_iframe_cancel"
+      />
+
+    <!-- cancel add handlers: on the containers -->
+    <subscriber
+      for="Products.CMFPlomino.contents.form.IPlominoForm
+           plone.dexterity.interfaces.IAddCancelledEvent"
+      handler=".tinymce.ajax_iframe_cancel"
+      />
+    <subscriber
+      for="Products.CMFPlomino.contents.view.IPlominoView
+           plone.dexterity.interfaces.IAddCancelledEvent"
+      handler=".tinymce.ajax_iframe_cancel"
+      />
+    <subscriber
+      for="Products.CMFPlomino.contents.database.IPlominoDatabase
            plone.dexterity.interfaces.IAddCancelledEvent"
       handler=".tinymce.ajax_iframe_cancel"
       />
 
+    <!-- save add handlers -->
     <subscriber
       for="Products.CMFPlomino.contents.field.IPlominoField
            zope.lifecycleevent.interfaces.IObjectAddedEvent"
@@ -380,6 +423,21 @@
       />
     <subscriber
       for="Products.CMFPlomino.contents.action.IPlominoAction
+           zope.lifecycleevent.interfaces.IObjectAddedEvent"
+      handler=".tinymce.ajax_iframe_success"
+      />
+    <subscriber
+      for="Products.CMFPlomino.contents.form.IPlominoForm
+           zope.lifecycleevent.interfaces.IObjectAddedEvent"
+      handler=".tinymce.ajax_iframe_success"
+      />
+    <subscriber
+      for="Products.CMFPlomino.contents.view.IPlominoView
+           zope.lifecycleevent.interfaces.IObjectAddedEvent"
+      handler=".tinymce.ajax_iframe_success"
+      />
+    <subscriber
+      for="Products.CMFPlomino.contents.database.IPlominoDatabase
            zope.lifecycleevent.interfaces.IObjectAddedEvent"
       handler=".tinymce.ajax_iframe_success"
       />

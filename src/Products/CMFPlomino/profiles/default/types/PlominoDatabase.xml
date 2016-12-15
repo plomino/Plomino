@@ -27,6 +27,7 @@
     <element value="plone.app.content.interfaces.INameFromTitle"/>
     <element value="plone.app.dexterity.behaviors.exclfromnav.IExcludeFromNavigation"/>
     <element value="plone.app.dexterity.behaviors.metadata.IBasic"/>
+    <element value="Products.CMFPlomino.browser.tinymce.IAJAXHiddenFields"/>
   </property>
   <property name="schema">Products.CMFPlomino.contents.database.IPlominoDatabase</property>
   <property name="klass">Products.CMFPlomino.contents.database.PlominoDatabase</property>
