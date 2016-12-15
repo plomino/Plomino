@@ -25,7 +25,7 @@
                 show_ymd ymd|nothing;
                 show_sec sec|nothing;
                 ymd_fmt python:show_ymd and '%Y-%m-%d' or '';
-                hm_fmt python:show_hm and 'T%I:%M' or '';
+                hm_fmt python:show_hm and 'T%H:%M' or '';
                 sec_fmt python:show_sec and ':%S' or '';
                 inputvalue python:isinstance(v, basestring) and v or v.strftime(''.join([ymd_fmt, hm_fmt, sec_fmt]).strip());">
                 <input tal:attributes="
