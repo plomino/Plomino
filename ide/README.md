@@ -12,8 +12,8 @@ $ npm run build
 
 ```
 $ cd ..
-$ virtualenv-2.7 .
-$ bin/python bootstrap-python.py --setuptools-version=8.3
+$ virtualenv .
+$ bin/python bootstrap-buildout.py --setuptools-version=8.3
 $ bin/buildout -N
 ```
 

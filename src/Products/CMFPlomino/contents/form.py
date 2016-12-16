@@ -1556,7 +1556,7 @@ class PlominoForm(Container):
                     )
                 except PlominoScriptException, e:
                     e.reportError(
-                        '%s hide-when formula failed' % hwid)
+                        '%s hide-when formula failed' % hidewhen.id)
                     # if error, we hide anyway
                     isHidden = True
                 hidewhens_results.append([hidewhen.id, isHidden])
