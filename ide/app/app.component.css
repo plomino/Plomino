@@ -14,9 +14,12 @@ tab {
     overflow: auto;
 }
 
+.well,
+plomino-palette,
 plomino-tree {
-    width: 300px;
+    width: 400px;
 }
+
 .tabunsaved {
     font-style: italic;
 }

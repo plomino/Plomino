@@ -6,6 +6,7 @@ import { TAB_DIRECTIVES }               from 'ng2-bootstrap/ng2-bootstrap';
 
 // Components
 import { TreeComponent }                from './tree-view/tree.component';
+import { PaletteComponent }             from './palette-view/palette.component';
 import { TinyMCEComponent }             from './editors/tiny-mce.component';
 import { ACEEditorComponent }           from './editors/ace-editor.component';
 import { FormsSettingsComponent }       from './editors/settings/forms-settings.component';
@@ -27,6 +28,7 @@ import { ElementService }               from './services/element.service';
     styles: [require('./app.component.css')],
     directives: [
         TreeComponent,
+        PaletteComponent,
         TAB_DIRECTIVES,
         TinyMCEComponent,
         ACEEditorComponent,
@@ -37,7 +39,8 @@ import { ElementService }               from './services/element.service';
         HideWhenSettingsComponent,
         ViewsSettingsComponent,
         ColumnsSettingsComponent,
-        AgentsSettingsComponent
+        AgentsSettingsComponent,
+        
     ],
     providers: [TreeService, ElementService]
 })

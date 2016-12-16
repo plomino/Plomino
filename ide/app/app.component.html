@@ -1,5 +1,9 @@
 <div class="wrap-app">
-  <plomino-tree class="well" [data]="data" [selected]="selected" (add)="onAdd($event)" (edit)="onEdit($event)" (isDragged)="isDragged = $event"></plomino-tree>
+  <div class="well">
+    <plomino-palette></plomino-palette>
+    <hr />
+    <plomino-tree [data]="data" [selected]="selected" (add)="onAdd($event)" (edit)="onEdit($event)" (isDragged)="isDragged = $event"></plomino-tree>
+  </div>
   <div class="main-app panel">
     <tabset>
       <tab *ngFor="let tabz of tabs" [heading]="" [removable]="true" (removed)="onTabClose(tabz)" (select)="onTabSelect(tabz.path)">
