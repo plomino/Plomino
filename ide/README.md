@@ -27,8 +27,8 @@ $ bin/instance fg
 
 1. Go to http://localhost:8080
 2. Add a plone site (default user is admin:admin)
-3. Go to site setup
-4. Activate Products.CMFPlomino
+3. Go to ```site setup > addons```
+4. find  ```Products.CMFPlomino``` and click ```activate```
 5. Go to home
 6. ```Add new > PlominoDatabase```. Give it a name
 7. Click IDE. (also can go to: /path/to/plomino/database/++resource++Products.CMFPlomino/ide/index.html)
