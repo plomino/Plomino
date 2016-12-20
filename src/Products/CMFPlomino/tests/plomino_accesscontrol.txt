@@ -165,6 +165,33 @@ Add form with a computed-on-display field that calls an agent::
     >>> db.form2.editingdisplayfield.widget="TEXT"
     >>> db.form2.form_layout = """<p>editingdisplayfield : <span class="plominoFieldClass">editingdisplayfield</span></p>"""
 
+Alternatively try and nicer way to gain extra permissions without using an agent
+
+    >>> docagentless = db.createDocument()
+    >>> docagentless.setItem('Form', 'formagentless')
+    >>> docagentlessid = docagentless.id
+    >>> docagentlessUrl = docagentless.doc_url()
+    >>> id = db.invokeFactory('PlominoForm', id='formagentless', title='Form agentless')
+    >>> id = db.formagentless.invokeFactory('PlominoField',
+    ...         id='editingdisplayfield',
+    ...         title='editingdisplayfield',
+    ...         field_type="TEXT",
+    ...         field_mode="DISPLAY",
+    ...         formula="""
+    ... db = plominoContext.getParentDatabase()
+    ... doc = db.getDocument('%(docid)s')
+    ...
+    ... # This successfully edits doc2, because the we run as the owner.
+    ... with db.runAsOwner():
+    ...    doc.setTitle('%(doctitle)s')
+    ...    doc.save()
+    ...
+    ... return 'I made a change in %(docid)s'
+    ... """ % {'docid': docid2, 'doctitle': "Set by formula run as owner"})
+    >>> db.formagentless.editingdisplayfield.widget="TEXT"
+    >>> db.formagentless.form_layout = """<p>editingdisplayfield : <span class="plominoFieldClass">editingdisplayfield</span></p>"""
+
+
 Create the browser object we'll be using::
 
     >>> browser = Browser(layer['app'])
@@ -238,6 +265,18 @@ to restricted rights::
     >>> browser.open(docUrl2)
     >>> "I made a change in doc2" in browser.contents
     False
+
+However a formula using runAsOwner can make changes to another doc
+    >>> browser.open(docagentlessUrl)
+    >>> 'Please log in' not in browser.contents
+    True
+
+    >>> browser.open(docUrl2)
+    >>> 'Set by formula run as owner' in browser.contents
+    True
+
+
+
 
 Reader cannot open a form::
 
