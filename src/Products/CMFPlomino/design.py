@@ -712,7 +712,7 @@ class DesignManager:
 
         # set a context manager in the request so formula can raise
         # it's security level if it wants
-        request = args.get('plominoRequest')
+        request = getRequest()
         request['_plomino_run_as_owner_'] = run_as_owner(context)
 
 
@@ -748,7 +748,7 @@ class DesignManager:
                 script_id,
                 compilation_errors)
         finally:
-            del request['_plomino_run_as_owner_']
+            request['_plomino_run_as_owner_'] = None
         return result
 
     security.declarePublic('runAsOwner')
@@ -757,7 +757,7 @@ class DesignManager:
         raise the security context to run apis which require greater
         permission.
         """
-        request = getRequest(self)
+        request = getRequest()
         if request is None or '_plomino_run_as_owner_' not in request:
             raise Exception("You can only run as owner from inside a plomino Formula")
         return request['_plomino_run_as_owner_']

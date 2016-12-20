@@ -167,6 +167,10 @@ Add form with a computed-on-display field that calls an agent::
 
 Alternatively try and nicer way to gain extra permissions without using an agent
 
+    >>> docagentless = db.createDocument()
+    >>> docagentless.setItem('Form', 'formagentless')
+    >>> docagentlessid = docagentless.id
+    >>> docagentlessUrl = docagentless.doc_url()
     >>> id = db.invokeFactory('PlominoForm', id='formagentless', title='Form agentless')
     >>> id = db.formagentless.invokeFactory('PlominoField',
     ...         id='editingdisplayfield',
@@ -175,21 +179,15 @@ Alternatively try and nicer way to gain extra permissions without using an agent
     ...         field_mode="DISPLAY",
     ...         formula="""
     ... db = plominoContext.getParentDatabase()
-    ... req = getattr(plominoContext, 'REQUEST')
-    ... req.set('docid', '%(docid)s')
-    ... req.set('doctitle', '%(doctitle)s')
-    ... doc = db.getDocument(docid)
+    ... doc = db.getDocument('%(docid)s')
     ...
     ... # This successfully edits doc2, because the we run as the owner.
     ... with db.runAsOwner():
-    ...    doc.setTitle(doctitle)
+    ...    doc.setTitle('%(doctitle)s')
     ...    doc.save()
     ...
-    ... # This should fail, because we've dropped back to Reader rights.
-    ... doc = db.getDocument('%(docid)s')
-    ... doc.save()
     ... return 'I made a change in %(docid)s'
-    ... """ % {'docid': docid2, 'doctitle': "Set by Agent"})
+    ... """ % {'docid': docid2, 'doctitle': "Set by formula run as owner"})
     >>> db.formagentless.editingdisplayfield.widget="TEXT"
     >>> db.formagentless.form_layout = """<p>editingdisplayfield : <span class="plominoFieldClass">editingdisplayfield</span></p>"""
 
@@ -267,6 +265,18 @@ to restricted rights::
     >>> browser.open(docUrl2)
     >>> "I made a change in doc2" in browser.contents
     False
+
+However a formula using runAsOwner can make changes to another doc
+    >>> browser.open(docagentlessUrl)
+    >>> 'Please log in' not in browser.contents
+    True
+
+    >>> browser.open(docUrl2)
+    >>> 'Set by formula run as owner' in browser.contents
+    True
+
+
+
 
 Reader cannot open a form::
 
