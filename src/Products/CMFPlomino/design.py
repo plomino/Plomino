@@ -1366,7 +1366,7 @@ class run_as_owner():
 
     def __init__(self, context):
         self.context = context
-        member = self.context.getCurrentMember()
+        member = self.context.getParentDatabase().getCurrentMember()
         if member.__class__.__name__ == "SpecialUser":
             self.user = member
         else:
