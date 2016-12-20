@@ -2,6 +2,7 @@ from AccessControl import ClassSecurityInfo
 from AccessControl.requestmethod import postonly
 from AccessControl.SecurityManagement import newSecurityManager
 import base64
+from zope.globalrequest import getRequest
 import codecs
 from cStringIO import StringIO
 from DateTime import DateTime
@@ -708,9 +709,16 @@ class DesignManager:
                 script_id,
                 formula_str,
                 with_args)
+
+        # set a context manager in the request so formula can raise
+        # it's security level if it wants
+        request = args.get('plominoRequest')
+        request['_plomino_run_as_owner_'] = run_as_owner(context)
+
+
+        result = None
         try:
             contextual_ps = ps.__of__(context)
-            result = None
             if with_args:
                 result = contextual_ps(*args)
             else:
@@ -722,7 +730,7 @@ class DesignManager:
                     str(context),
                     script_id,
                     str(contextual_ps.errors)))
-            return result
+
         except Exception, e:
             if ps and getattr(ps, 'errors', None):
                 compilation_errors = ps.errors
@@ -739,6 +747,23 @@ class DesignManager:
                 formula_str,
                 script_id,
                 compilation_errors)
+        finally:
+            del request['_plomino_run_as_owner_']
+        return result
+
+    security.declarePublic('runAsOwner')
+    def runAsOwner(self):
+        """ return a context manager for use in formulas which will
+        raise the security context to run apis which require greater
+        permission.
+        """
+        request = getRequest(self)
+        if request is None or '_plomino_run_as_owner_' not in request:
+            raise Exception("You can only run as owner from inside a plomino Formula")
+        return request['_plomino_run_as_owner_']
+
+
+
 
     security.declarePrivate('traceRenderingErr')
 
@@ -1299,3 +1324,27 @@ class DesignManager:
             else:
                 json = source.readFile(name)
                 self.importDesignFromJSON(jsonstring=json)
+
+from AccessControl import allow_class, allow_module
+from AccessControl.SecurityManagement import newSecurityManager
+
+
+## Context manager which is used inside formulas to raise the security level
+## to the that of the owner of the formula
+
+class run_as_owner():
+
+    def __init__(self, context):
+        self.context = context
+        member = self.context.getCurrentMember()
+        if member.__class__.__name__ == "SpecialUser":
+            self.user = member
+        else:
+            self.user = member.getUser()
+
+    def __enter__(self):
+        owner = self.context.getOwner()
+        newSecurityManager(None, owner)
+
+    def __exit__(self, exc_type, exc_value, traceback):
+        newSecurityManager(None, self.user)

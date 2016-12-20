@@ -165,6 +165,35 @@ Add form with a computed-on-display field that calls an agent::
     >>> db.form2.editingdisplayfield.widget="TEXT"
     >>> db.form2.form_layout = """<p>editingdisplayfield : <span class="plominoFieldClass">editingdisplayfield</span></p>"""
 
+Alternatively try and nicer way to gain extra permissions without using an agent
+
+    >>> id = db.invokeFactory('PlominoForm', id='formagentless', title='Form agentless')
+    >>> id = db.formagentless.invokeFactory('PlominoField',
+    ...         id='editingdisplayfield',
+    ...         title='editingdisplayfield',
+    ...         field_type="TEXT",
+    ...         field_mode="DISPLAY",
+    ...         formula="""
+    ... db = plominoContext.getParentDatabase()
+    ... req = getattr(plominoContext, 'REQUEST')
+    ... req.set('docid', '%(docid)s')
+    ... req.set('doctitle', '%(doctitle)s')
+    ... doc = db.getDocument(docid)
+    ...
+    ... # This successfully edits doc2, because the we run as the owner.
+    ... with db.runAsOwner():
+    ...    doc.setTitle(doctitle)
+    ...    doc.save()
+    ...
+    ... # This should fail, because we've dropped back to Reader rights.
+    ... doc = db.getDocument('%(docid)s')
+    ... doc.save()
+    ... return 'I made a change in %(docid)s'
+    ... """ % {'docid': docid2, 'doctitle': "Set by Agent"})
+    >>> db.formagentless.editingdisplayfield.widget="TEXT"
+    >>> db.formagentless.form_layout = """<p>editingdisplayfield : <span class="plominoFieldClass">editingdisplayfield</span></p>"""
+
+
 Create the browser object we'll be using::
 
     >>> browser = Browser(layer['app'])
