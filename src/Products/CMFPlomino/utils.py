@@ -254,26 +254,34 @@ def sendMail(
     db,
     recipients,
     title,
-    html_message,
+    message_in,
     sender=None,
     cc=None,
     bcc=None,
-    immediate=False
+    immediate=False,
+    msg_format='html'
 ):
     """Send an email"""
     host = getToolByName(db, 'MailHost')
+    mtype = 'html'
+    if msg_format == 'html':
+        message = '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"' \
+            ' "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">\n'
+        message = message + "<html>"
+        message = message + message_in
+        message = message + "</html>"
+    elif msg_format == 'text':
+        mtype = 'plain'
+        message = message_in
+    else:
+        raise Exception('Invalid message format')
 
-    message = '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"' \
-        ' "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">\n'
-    message = message + "<html>"
-    message = message + html_message
-    message = message + "</html>"
     if not sender:
         sender = db.getCurrentMember().getProperty("email")
 
     mail_message = message_from_string(asUnicode(message).encode('utf-8'))
     mail_message.set_charset('utf-8')
-    mail_message.set_type("text/html")
+    mail_message.set_type("text/%s" % mtype)
     if cc:
         mail_message['CC'] = Header(cc)
     if bcc:
@@ -284,7 +292,7 @@ def sendMail(
             recipients,
             sender,
             asUnicode(title).encode('utf-8'),
-            msg_type='text/html',
+            msg_type='text/%s' % mtype,
             immediate=immediate
         )
     else:
@@ -293,7 +301,7 @@ def sendMail(
             recipients,
             sender,
             subject=title,
-            subtype='html',
+            subtype=mtype,
             charset='utf-8'
         )
 
