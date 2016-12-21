@@ -1556,7 +1556,7 @@ class PlominoForm(Container):
                     )
                 except PlominoScriptException, e:
                     e.reportError(
-                        '%s hide-when formula failed' % hwid)
+                        '%s hide-when formula failed' % hidewhen.id)
                     # if error, we hide anyway
                     isHidden = True
                 hidewhens_results.append([hidewhen.id, isHidden])
@@ -2284,7 +2284,6 @@ class PlominoForm(Container):
         return json.dumps(result)
 
     security.declarePublic('getTemporaryDocument')
-
     def getTemporaryDocument(self, doc=None, validation_mode=False):
         """Return a temporary document based on the current request and form"""
         db = self.getParentDatabase()
