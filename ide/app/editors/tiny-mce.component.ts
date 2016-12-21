@@ -1,7 +1,14 @@
 import {Component, Input, Output, EventEmitter, NgZone} from '@angular/core';
+import { 
+    Http,
+    Response
+} from '@angular/http';
 import {ElementService} from '../services/element.service';
 import {DND_DIRECTIVES} from 'ng2-dnd/ng2-dnd';
 
+import 'jquery';
+
+declare let $: any;
 declare var tinymce: any;
 
 @Component({
@@ -31,7 +38,9 @@ export class TinyMCEComponent {
     @Output() isDirty = new EventEmitter();
     data: string;
 
-    constructor(private _elementService: ElementService, private zone: NgZone) {}
+    constructor(private _elementService: ElementService, 
+                private zone: NgZone,
+                private http: Http) {}
 
     ngOnInit() {
         let tiny = this;
@@ -79,11 +88,221 @@ export class TinyMCEComponent {
     }
 
     dropped(element: any) {
-        tinymce.activeEditor.execCommand('mceInsertContent', false,
-            '<p><span class="'+element.dragData.type.charAt(0).toLowerCase()+
-            element.dragData.type.slice(1)+'Class">'+
-            element.dragData.name.split('/').pop()+'</span></p>'
-        );
+        this.addElement(element.dragData)
     }
+
+
+    private addElement(element: { name: string, parent: string, type: string}) {
+        let type: string;
+        
+        let elementClass: string;
+        let elementEditionPage: string;
+        let elementIdName: string;
+
+        let elementId: string = element.name.split('/').pop();
+        let baseUrl: string = element.name.slice(0, element.name.lastIndexOf('/'));
+        let editor: any = tinymce.activeEditor;
+        
+        switch(element.type) {
+            case 'PlominoField':
+                elementClass = 'plominoFieldClass';
+                elementEditionPage = '@@tinymceplominoform/field_form';
+                elementIdName = 'fieldid';
+                type = 'field';
+                break;
+            case 'PlominoLabel':
+                elementClass = 'plominoLabelClass';
+                elementEditionPage = '@@tinymceplominoform/label_form';
+                elementIdName = 'labelid';
+                type = 'label';
+                break;
+            case 'PlominoAction':
+                elementClass = 'plominoActionClass';
+                elementEditionPage = '@@tinymceplominoform/action_form';
+                elementIdName = 'actionid';
+                type = 'action';
+                break;
+            case 'PlominoSubform':
+                elementClass = 'plominoSubformClass';
+                elementEditionPage = '@@tinymceplominoform/subform_form';
+                elementIdName = 'subformid';
+                type = 'subform';
+                break;
+            case 'PlominoHidewhen':
+                elementClass = 'plominoHidewhenClass';
+                elementEditionPage = '@@tinymceplominoform/hidewhen_form';
+                elementIdName = 'hidewhenid';
+                type = 'hidewhen';
+                break;
+            case 'PlominoCache':
+                elementClass = 'plominoCacheClass';
+                elementEditionPage = '@@tinymceplominoform/cache_form';
+                elementIdName = 'cacheid';
+                type = 'cache';
+                break;
+            case 'PlominoPagebreak':
+                editor.execCommand('mceInsertContent', false, '<hr class="plominoPagebreakClass"><br />');
+                return;
+            default: 
+                return;
+        }
+
+        this.insertElement(baseUrl, type, elementId);
+    }
+
+
+    private insertElement(baseUrl: string, type: string, value: string, option?: string) {
+
+		let ed: any = tinymce.activeEditor;
+        let selection: any = ed.selection.getNode();
+        let title: string;
+        let plominoClass: string;
+        let content: string;
+
+        var container = 'span';
+
+		if (type === 'action') {
+			plominoClass = 'plominoActionClass';
+        } else if (type === 'field') {
+			plominoClass = 'plominoFieldClass';
+            container = "div";
+        } else if (type === 'subform') {
+			plominoClass = 'plominoSubformClass';
+            container = "div";
+        } else if (type === 'label') {
+			plominoClass = 'plominoLabelClass';
+			if (option == '0') {
+				container = "span";
+			} else {
+                container = "div";
+            }
+		}
+        
+        if (type == 'label') {
+
+            // Handle labels - TODO: replace this with example_wiget
+            title = (value[0].toUpperCase() + value.slice(1, value.length)).split('-').join(" ");
+            if (container == "span") {
+                content = '<span class="plominoLabelClass mceNonEditable" data-plominoid="' + 
+                            value + '">' + title + '</span><br />';
+            } else {
+                if (tinymce.DOM.hasClass(selection, "plominoLabelClass") && 
+                    selection.tagName === "SPAN") {
+
+                    content = '<div class="plominoLabelClass mceNonEditable" data-plominoid="' +
+                                value + '"><div class="plominoLabelContent mceEditable">' + 
+                                title + '</div></div><br />';
+                }
+                else if (tinymce.DOM.hasClass(selection.firstChild, "plominoLabelContent")) {
+                    content = '<div class="plominoLabelClass mceNonEditable" data-plominoid="' + 
+                                value + '">' + selection.innerHTML + '</div><br />';
+                } else {
+                    if (selection.textContent == "") {
+                        content = '<div class="plominoLabelClass mceNonEditable" data-plominoid="' + 
+                                    value + '"><div class="plominoLabelContent mceEditable">' + 
+                                    title + '</div></div><br />';
+                    } else {
+                        content = '<div class="plominoLabelClass mceNonEditable" data-plominoid="' + 
+                                    value + '"><div class="plominoLabelContent mceEditable">' + 
+                                    ed.selection.getContent() + '</div></div><br />';
+                    }
+                }
+            }
+
+            ed.execCommand('mceInsertContent', false, content, {skip_undo : 1});
+
+        } else if (plominoClass !== undefined) {
+
+            this.http.get(`${baseUrl}/@@tinyform/example_widget?widget_type=${type}&id=${value}`)
+                .map((response: Response) => response.json())
+                .subscribe((response) => {
+                    let responseAsElement = $(response);
+                    selection = ed.selection.getNode();
+
+                    if (responseAsElement.find("div,table,p").length) {
+                        container = "div";
+                    }
+
+                    if (response != undefined) {
+                        content = '<'+container+' class="'+plominoClass + 
+                            ' mceNonEditable" data-mce-resize="false" data-plominoid="' +
+                            value + '">' + response + '</'+container+'><br />';
+                    }
+                    
+                    else {
+                        content = '<span class="' + plominoClass + '">' + value + '</span><br />';
+                    }
+
+                    if (tinymce.DOM.hasClass(selection, 'plominoActionClass') || 
+                        tinymce.DOM.hasClass(selection, 'plominoFieldClass') || 
+                        tinymce.DOM.hasClass(selection, 'plominoLabelClass') || 
+                        tinymce.DOM.hasClass(selection, 'plominoSubformClass')) {
+
+                        ed.execCommand('mceInsertContent', false, content, {skip_undo : 1});
+                    } else {
+
+                        ed.execCommand('mceInsertContent', false, content, {skip_undo : 1});
+                    }
+                });
+
+		} else if (type == "hidewhen" || type == 'cache') {
+			
+            // Insert or replace the selection
+
+            let cssclass = 'plomino' + type.charAt(0).toUpperCase() + type.slice(1) + 'Class';
+
+			// If the node is a <span class="plominoFieldClass"/>, select all its content
+			if (tinymce.DOM.hasClass(selection, cssclass)) {
+				
+                // get the old hide-when id
+                let oldId = selection.getAttribute('data-plominoid');
+                let pos = selection.getAttribute('data-plomino-position')
+
+				// get a list of hide-when opening and closing spans
+				let hidewhens = ed.dom.select('span.'+cssclass);
+
+				// find the selected span
+				var i: number;
+				for (i = 0; i < hidewhens.length; i++) {
+					if (hidewhens[i] == selection)
+						break;
+				}
+
+				// change the corresponding start/end
+				if (pos == 'start') {
+					selection.setAttribute('data-plominoid', value);
+
+					for (; i < hidewhens.length; i++) {
+						if (hidewhens[i] && hidewhens[i].getAttribute('data-plominoid') == oldId &&
+                            hidewhens[i].getAttribute('data-plomino-position') == 'end') {
+							hidewhens[i].setAttribute('data-plominoid', value);
+							break;
+						}
+					}
+				} else {
+				    // change the corresponding start by going backwards
+					selection.setAttribute('data-plominoid', value);
+
+					for (; i >= 0; i--) {
+						if (hidewhens[i] && hidewhens[i].getAttribute('data-plominoid') == oldId &&
+                            hidewhens[i].getAttribute('data-plomino-position') == 'start') {
+							hidewhens[i].setAttribute('data-plominoid', value);
+							break;
+						}
+					}
+				}
+			} else {
+				// String to add in the editor
+				let zone = '<br /> <span class="' + cssclass + ' mceNonEditable" data-plominoid="' + 
+                            value + '" data-plomino-position="start">&nbsp;</span>' +
+                            ed.selection.getContent() +
+                            '<span class="' + cssclass + ' mceNonEditable" data-plominoid="' + 
+                            value + '" data-plomino-position="end">&nbsp;</span><br />';
+				
+                ed.execCommand('mceInsertContent', false, zone, {skip_undo : 1});
+			}
+		}
+
+	};
 
 }
