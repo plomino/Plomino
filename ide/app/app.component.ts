@@ -21,6 +21,7 @@ import { PlominoModalComponent }               from './modal.component';
 // Services
 import { TreeService }                  from './services/tree.service';
 import { ElementService }               from './services/element.service';
+import { ObjService }                   from './services/obj.service';
 
 @Component({
     selector: 'plomino-app',
@@ -42,7 +43,7 @@ import { ElementService }               from './services/element.service';
         AgentsSettingsComponent,
         
     ],
-    providers: [TreeService, ElementService]
+    providers: [TreeService, ElementService, ObjService]
 })
 export class AppComponent {
     data: any;
@@ -54,7 +55,7 @@ export class AppComponent {
 
     aceNumber: number = 0;
 
-    constructor(private _treeService: TreeService, private _elementService: ElementService) { }
+    constructor(private _treeService: TreeService, private _elementService: ElementService, private _objService: ObjService) { }
 
     ngOnInit() {
         this.getTree();
