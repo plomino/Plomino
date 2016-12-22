@@ -1,3 +1,12 @@
-<p>Add palette is here</p>
-<p>Drag and drop fields</p>
-<p>Layout macros</p>
+<group *ngFor="let group of addableComponents">
+    <div>
+        <!-- XXX: Replace this heading with something nicer? -->
+        <h4>{{group.title}}</h4>
+        <comp *ngFor="let comp of group.components">
+        <button type="button" [ngClass]="{disabled : !comp.addable}" class="btn btn-default" title="Add {{comp.title}}" id="{{comp.type}}" (click)="comp.addable && add(comp.type)">
+            <!-- <span class="glyphicon glyphicon-{{comp.icon}}"></span> -->
+                {{comp.title}}
+        </button>
+        </comp>
+    </div>
+</group>
