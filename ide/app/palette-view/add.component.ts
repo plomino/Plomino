@@ -3,6 +3,7 @@ import { Component, Input, Output, OnInit, EventEmitter } from '@angular/core';
 @Component({
     selector: 'plomino-palette-add',
     template: require('./add.component.html'),
+    styles: [require('./add.component.css')],
     directives: [],
     providers: []
 })
