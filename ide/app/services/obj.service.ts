@@ -1,5 +1,12 @@
-import {Injectable} from '@angular/core';
-import {Http, Headers, Response, RequestOptions} from '@angular/http';
+import { Injectable } from '@angular/core';
+import { 
+    Http, 
+    Headers, 
+    Response, 
+    RequestOptions
+} from '@angular/http';
+
+import { Observable } from 'rxjs/Observable';
 
 @Injectable()
 export class ObjService {
@@ -10,16 +17,30 @@ export class ObjService {
         let options = new RequestOptions({ headers: headers });
     }
 
+    getFormSettings(formUrl: any): Observable<any> {
+        return this.http.get(formUrl).map(this.extractText);
+    }
+
+    updateFormSettings(formUrl: any, formData: any): Observable<any> {
+        return this.http.post(formUrl, formData).map(this.extractText);
+    }
+
     // Change this to use Promises/Observable pattern
-    getDB() {
-        return this.http.get("../../edit?ajax_load=1&ajax_include_head=1").map((res: Response) => res.text() );
+    getDB(): Observable<any> {
+        return this.http.get("../../edit?ajax_load=1&ajax_include_head=1")
+            .map(this.extractText);
     }
 
     // Form should be a jquery form object
-    submitDB(form: any) {
+    submitDB(form: any): Observable<any> {
         var inputs = form.serialize();
         // Action will always be @@edit
         // var action = form.attr('action')
-        return this.http.post("../../@@edit", inputs).map((res: Response) => res.text() );
+        return this.http.post("../../@@edit", inputs)
+            .map(this.extractText);
+    }
+
+    private extractText(response: Response): any {
+        return response.text();
     }
 }
