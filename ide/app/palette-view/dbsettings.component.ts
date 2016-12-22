@@ -21,13 +21,20 @@ export class DBSettingsComponent {
 
     constructor(private _objService: ObjService) { }
 
-    saved() {
+    submit() {
         // this.el is the div that contains the Edit Form
         // We want to seralize the data in the form, submit it to the form
         // action. If the response is <div class="ajax_success">, we re-fetch
         // the form. Otherwise we update the displayed form with the response
         // (which may have validation failures etc.) 
-        console.log(this.el.nativeElement);
+        var form = $($(this.el.nativeElement).find('form'));
+        var response: any;
+        this._objService.submitDB(form)
+            .subscribe(
+                html => {response = html},
+                err => console.error(err)
+            );
+        console.log(response);
     }
 
     ngOnInit() {
