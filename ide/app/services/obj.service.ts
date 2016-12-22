@@ -27,16 +27,13 @@ export class ObjService {
 
     // Change this to use Promises/Observable pattern
     getDB(): Observable<any> {
-        return this.http.get("../../edit?ajax_load=1&ajax_include_head=1")
+        return this.http.get("../../@@edit?ajax_load=1&ajax_include_head=1")
             .map(this.extractText);
     }
 
     // Form should be a jquery form object
-    submitDB(form: any): Observable<any> {
-        var inputs = form.serialize();
-        // Action will always be @@edit
-        // var action = form.attr('action')
-        return this.http.post("../../@@edit", inputs)
+    submitDB(formData: FormData): Observable<any> {
+        return this.http.post("../../@@edit?ajax_load=1", formData)
             .map(this.extractText);
     }
 

@@ -1,7 +1,23 @@
-import { Component, Input, Output, EventEmitter, ViewChild, ElementRef } from '@angular/core';
-import { Http, Headers, Response, RequestOptions } from '@angular/http';
-import { ObjService }                   from '../services/obj.service';
+import { 
+    Component, 
+    Input, 
+    Output,
+    EventEmitter, 
+    ViewChild, 
+    ElementRef,
+    ChangeDetectorRef
+} from '@angular/core';
+
+import { 
+    Http, 
+    Headers, 
+    Response, 
+    RequestOptions 
+} from '@angular/http';
+
+import { ObjService } from '../services/obj.service';
 import { PloneHtml } from '../custom.pipes';
+import { Observable } from 'rxjs/Rx';
 
 declare var $: any;
 
@@ -19,7 +35,8 @@ export class DBSettingsComponent {
 
     dbForm: any;
 
-    constructor(private _objService: ObjService) { }
+    constructor(private _objService: ObjService,
+                private changeDetector: ChangeDetectorRef) { }
 
     submit() {
         // this.el is the div that contains the Edit Form
@@ -27,27 +44,34 @@ export class DBSettingsComponent {
         // action. If the response is <div class="ajax_success">, we re-fetch
         // the form. Otherwise we update the displayed form with the response
         // (which may have validation failures etc.) 
-        var form = $($(this.el.nativeElement).find('form'));
-        var response: any;
-        this._objService.submitDB(form)
-            .subscribe(
-                html => {response = html},
-                err => console.error(err)
-            );
-        console.log(response);
+        let form: HTMLFormElement = $(this.el.nativeElement).find('form').get(0);
+        let formData: FormData = new FormData(form);
+        
+        formData.append('form.buttons.save', 'Save');
+        
+        this._objService.submitDB(formData)
+            .flatMap((responseHtml) => {
+                let $responseHtml = $(responseHtml);
+                if ($responseHtml.find('dl.error')) {
+                    return Observable.of(responseHtml);
+                } else {
+                    return this._objService.getDB();
+                }
+            })
+            .subscribe(responseHtml => {
+                    this.dbForm = responseHtml;
+                    this.changeDetector.detectChanges();
+                }, err => { 
+                    console.error(err) 
+                });
     }
 
     ngOnInit() {
-        // Fetch the DB form from the object service
-        this.getDBForm();
-    }
-
-    getDBForm() {
-        this._objService.getDB()
-            .subscribe(
-                html => { this.dbForm = html },
-                err => console.error(err)
-            );
+        this._objService.getDB().subscribe(html => { 
+            this.dbForm = html 
+        }, err => { 
+            console.error(err);
+        });
     }
 
 }
