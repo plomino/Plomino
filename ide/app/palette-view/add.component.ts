@@ -35,28 +35,28 @@ export class AddComponent {
         ];
     }
 
+    // XXX: temp. For toggling state of Form/View buttons until hooked up to
+    // event that handles currently selected item in main view
+    toggle(type: string) {
+        if (type == 'form') {
+            for (let component of this.addableComponents[0]['components']) {
+                component.addable = !component.addable;
+            }
+        } else if (type == 'view') {
+            for (let component of this.addableComponents[1]['components']) {
+                component.addable = !component.addable;
+            }
+        }
+    }
+
     add(type: any) {
         // console.log(event.target.id);
         // XXX: Handle the adding of components
 
-        // XXX: Remove this later
-        // This isn't real. Controlling the state of the buttons needs to be done
-        // By listening to the event that handles the currently selected item 
         if (type == 'form') {
-            for (let component of this.addableComponents[0]['components']) {
-                component.addable = true;
-            }
-            for (let component of this.addableComponents[1]['components']) {
-                component.addable = false;
-            }
-        } else if (type == 'view') {
-            for (let component of this.addableComponents[1]['components']) {
-                component.addable = true;
-            }
-            for (let component of this.addableComponents[0]['components']) {
-                component.addable = false;
-            }
+
         }
+
     }
 
     // When a Form or View is selected, adjust the addable state of the
