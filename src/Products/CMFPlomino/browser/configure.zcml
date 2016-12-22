@@ -203,6 +203,20 @@
         permission="zope.Public"
         allowed_attributes="ajax_success ajax_cancel"
         />
+    <browser:page
+        name="tinyajax"
+        for="Products.CMFPlomino.contents.database.IPlominoDatabase"
+        class=".tinymce.TinyAjax"
+        permission="zope.Public"
+        allowed_attributes="ajax_success ajax_cancel"
+        />
+    <browser:page
+        name="tinyajax"
+        for="Products.CMFPlomino.contents.view.IPlominoView"
+        class=".tinymce.TinyAjax"
+        permission="zope.Public"
+        allowed_attributes="ajax_success ajax_cancel"
+        />
 
    <browser:page
         name="tinyfield"
