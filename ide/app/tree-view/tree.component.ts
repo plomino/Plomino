@@ -3,11 +3,14 @@ import { CollapseDirective }                                                    
 import { ElementService }                                                                from '../services/element.service';
 import { DND_DIRECTIVES }                                                                from 'ng2-dnd/ng2-dnd';
 
+import { ExtractNamePipe } from '../pipes';
+
 @Component({
     selector: 'plomino-tree',
     template: require('./tree.component.html'),
     styles: [require('./tree.component.css')],
     directives: [CollapseDirective, DND_DIRECTIVES],
+    pipes: [ExtractNamePipe],
     providers: [ElementService]
 })
 export class TreeComponent {

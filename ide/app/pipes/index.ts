@@ -1,0 +1,1 @@
+export { ExtractNamePipe } from './extract-name.pipe';

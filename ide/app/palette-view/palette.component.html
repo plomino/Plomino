@@ -1,8 +1,17 @@
 <tabset [justified]="true">
-    <tab *ngFor="let tabz of tabs" [heading]="tabz.title" (select)="onTabSelect(tabz.id)">
+    <tab *ngFor="let tabz of tabs" 
+        [heading]="tabz.title"
+        [disabled]="!selectedTab && (tabz.id === 'field' || tabz.id === 'form')"
+        (select)="onTabSelect(tabz.id)">
+
         <plomino-palette-add *ngIf="tabz.id==='add'"></plomino-palette-add>
+        
         <plomino-palette-fieldsettings *ngIf="tabz.id==='field'"></plomino-palette-fieldsettings>
-        <plomino-palette-formsettings *ngIf="tabz.id==='form'"></plomino-palette-formsettings>
+        
+        <plomino-palette-formsettings *ngIf="tabz.id==='form'"
+            [item]="selectedTab">
+        </plomino-palette-formsettings>
+        
         <plomino-palette-dbsettings *ngIf="tabz.id==='db'"></plomino-palette-dbsettings>
     </tab>
 </tabset>

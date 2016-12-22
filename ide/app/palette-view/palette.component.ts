@@ -1,12 +1,26 @@
-import { Component, Input, Output, EventEmitter, ViewChildren, OnChanges, ContentChild, ChangeDetectionStrategy } from '@angular/core';
-import { CollapseDirective, TAB_DIRECTIVES }                                             from 'ng2-bootstrap/ng2-bootstrap';
-import { ElementService }                                                                from '../services/element.service';
-import { DND_DIRECTIVES }                                                                from 'ng2-dnd/ng2-dnd';
+import { 
+    Component, 
+    Input, 
+    Output, 
+    EventEmitter, 
+    ViewChildren, 
+    OnChanges, 
+    ContentChild, 
+    ChangeDetectionStrategy 
+} from '@angular/core';
+
+import { 
+    CollapseDirective, 
+    TAB_DIRECTIVES 
+} from 'ng2-bootstrap/ng2-bootstrap';
+
+import { ElementService } from '../services/element.service';
+import { DND_DIRECTIVES } from 'ng2-dnd/ng2-dnd';
 
 import { AddComponent } from './add.component';
-import { FieldSettingsComponent }    from './fieldsettings.component';
-import { FormSettingsComponent }    from './formsettings.component';
-import { DBSettingsComponent }    from './dbsettings.component';
+import { FieldSettingsComponent } from './fieldsettings.component';
+import { FormSettingsComponent } from './formsettings.component';
+import { DBSettingsComponent } from './dbsettings.component';
 
 
 @Component({
@@ -25,16 +39,26 @@ import { DBSettingsComponent }    from './dbsettings.component';
     changeDetection: ChangeDetectionStrategy.OnPush,
     providers: [ElementService]
 })
-// replace it with code to:
-//      Set appropriate tab headings
-//      Listen/emit events to display a particular tab
 export class PaletteComponent {
+    private _selectedTab: any;    
 
+    @Input() set selectedTab(tab: any) {
+        if (tab) {
+            this._selectedTab = tab;
+        } else {
+            this._selectedTab = null;
+        }
+    }
+
+    get selectedTab() {
+        return this._selectedTab;
+    }
+    
     selected: any;
     
     public tabs:Array<any> = [
         {title: 'Add', id: 'add'},
-        {title: 'Settings', id: 'field'},
+        {title: 'Field', id: 'field'},
         {title: 'Form', id: 'form'},
         {title: 'DB', id: 'db'}
       ];

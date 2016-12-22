@@ -1,5 +1,10 @@
 // Core
-import { Component, ViewChild, OnInit } from '@angular/core';
+import { 
+    Component, 
+    ViewChild, 
+    OnInit,
+    ChangeDetectorRef
+} from '@angular/core';
 
 // External Components
 import { TAB_DIRECTIVES }               from 'ng2-bootstrap/ng2-bootstrap';
@@ -16,12 +21,19 @@ import { HideWhenSettingsComponent }    from './editors/settings/hide_when-setti
 import { ViewsSettingsComponent }       from './editors/settings/views-settings.component';
 import { ColumnsSettingsComponent }     from './editors/settings/columns-settings.component';
 import { AgentsSettingsComponent }      from './editors/settings/agents-settings.component';
-import { PlominoModalComponent }               from './modal.component';
+import { PlominoModalComponent }        from './modal.component';
 
 // Services
 import { TreeService }                  from './services/tree.service';
 import { ElementService }               from './services/element.service';
 import { ObjService }                   from './services/obj.service';
+
+// Pipes 
+import { ExtractNamePipe }              from './pipes';
+
+import 'lodash';
+
+declare let _: any;
 
 @Component({
     selector: 'plomino-app',
@@ -43,7 +55,8 @@ import { ObjService }                   from './services/obj.service';
         AgentsSettingsComponent,
         
     ],
-    providers: [TreeService, ElementService, ObjService]
+    providers: [TreeService, ElementService, ObjService],
+    pipes: [ExtractNamePipe]
 })
 export class AppComponent {
     data: any;
@@ -55,7 +68,10 @@ export class AppComponent {
 
     aceNumber: number = 0;
 
-    constructor(private _treeService: TreeService, private _elementService: ElementService, private _objService: ObjService) { }
+    constructor(private _treeService: TreeService,     
+                private _elementService: ElementService, 
+                private _objService: ObjService,
+                private changeDetector: ChangeDetectorRef) { }
 
     ngOnInit() {
         this.getTree();
@@ -135,7 +151,13 @@ export class AppComponent {
 
 
     onEdit(event: any) {
-        this.tabs.push(this.buildTab(event));
+        console.log(`Data from tree`, event);
+        this.onTabSelect(event.path, event.url);
+        if (_.find(this.tabs, { url: event.url })) {
+            return;
+        } else {
+            this.tabs.push(this.buildTab(event));
+        }
     }
 
     onModalClose(event: any) {
@@ -194,14 +216,15 @@ export class AppComponent {
         }
     }
 
-    onTabSelect(path: any) {
-        this.selected = this.retrieveTab(path);
+    onTabSelect(path: any, url: string) {
+        this.selected = this.retrieveTab(path, url);
+        console.log(`Selected tab`, this.selected);
     }
 
-    retrieveTab(path: any) {
+    retrieveTab(path: any, url: string) {
         let pindex = this.index(path[0].type);
         for (let elt of this.data[pindex].children) {
-            if (elt.label == path[0].name) {
+            if (elt.url.split('/').pop() == url.split('/').pop()) {
                 if (path.length > 1) {
                     let cindex = this.index(path[1].type, pindex);
                     for (let celt of elt.children[cindex].children) {

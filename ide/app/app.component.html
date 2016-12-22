@@ -1,14 +1,14 @@
 <div class="wrap-app">
   <div class="well">
-    <plomino-palette></plomino-palette>
+    <plomino-palette [selectedTab]="selected"></plomino-palette>
     <hr />
     <plomino-tree [data]="data" [selected]="selected" (add)="onAdd($event)" (edit)="onEdit($event)" (isDragged)="isDragged = $event"></plomino-tree>
   </div>
   <div class="main-app panel">
     <tabset>
-      <tab *ngFor="let tabz of tabs" [heading]="" [removable]="true" (removed)="onTabClose(tabz)" (select)="onTabSelect(tabz.path)">
+      <tab *ngFor="let tabz of tabs" [heading]="" [removable]="true" (removed)="onTabClose(tabz)" (select)="onTabSelect(tabz.path, tabz.url)">
         <template tabHeading>
-            <span [class.tabunsaved]="tabz.isdirty"><span *ngIf="tabz.isdirty">* </span>{{tabz.title}} / {{tabz.editor}}</span>
+            <span [class.tabunsaved]="tabz.isdirty"><span *ngIf="tabz.isdirty">* </span>{{tabz.url | extractName}} / {{tabz.editor}}</span>
         </template>
         <plomino-tiny-mce *ngIf="tabz.editor==='layout'" [id]="tabz.url" (isDirty)="tabz.isdirty=$event" [isDragged]="isDragged"></plomino-tiny-mce>
         <plomino-ace-editor *ngIf="tabz.editor==='code'" [url]="tabz.url" [path]="tabz.path" [aceNumber]="aceNumber" (isDirty)="tabz.isdirty=$event"></plomino-ace-editor>
