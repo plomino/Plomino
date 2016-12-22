@@ -14,11 +14,6 @@ export class AddComponent {
     ngOnInit() {
         // Set up the addable components
         this.addableComponents = [
-            {title: 'DB', components: [
-                {title: 'Form', icon: 'th-list', type: 'form', addable: true},
-                {title: 'View', icon: 'list-alt', type: 'view', addable: true},
-                ]
-            },
             {title: 'Form', components: [
                 {title: 'Field', icon: 'tasks', type: 'field', addable: false},
                 {title: 'Hide When', icon: 'sunglasses', type: 'hidewhen', addable: false},
@@ -29,7 +24,13 @@ export class AddComponent {
                 {title: 'Column', icon: 'stats', type: 'column', addable: false},
                 {title: 'Action', icon: 'cog', type: 'action', addable: false},
                 ]
+            },
+            {title: 'DB', components: [
+                {title: 'Form', icon: 'th-list', type: 'form', addable: true},
+                {title: 'View', icon: 'list-alt', type: 'view', addable: true},
+                ]
             }
+
         ];
     }
 
@@ -41,17 +42,17 @@ export class AddComponent {
         // This isn't real. Controlling the state of the buttons needs to be done
         // By listening to the event that handles the currently selected item 
         if (type == 'form') {
-            for (let component of this.addableComponents[1]['components']) {
+            for (let component of this.addableComponents[0]['components']) {
                 component.addable = true;
             }
-            for (let component of this.addableComponents[2]['components']) {
+            for (let component of this.addableComponents[1]['components']) {
                 component.addable = false;
             }
         } else if (type == 'view') {
-            for (let component of this.addableComponents[2]['components']) {
+            for (let component of this.addableComponents[1]['components']) {
                 component.addable = true;
             }
-            for (let component of this.addableComponents[1]['components']) {
+            for (let component of this.addableComponents[0]['components']) {
                 component.addable = false;
             }
         }
