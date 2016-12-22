@@ -17,6 +17,7 @@ export class ElementService {
     }
 
     // Had some issues with TinyMCEComponent, had to do this instead of using getElement() method
+    // XXX: This should really call the getForm_layout method on the Form object?
     getElementFormLayout(id: string) {
         return this.http.get(id, { headers: this.headers }).map((res: Response) => res.json().form_layout);
     }
