@@ -1,5 +1,15 @@
-import { Component, Input, Output, OnInit, EventEmitter } from '@angular/core';
-import { ElementService }               from '../services/element.service';
+import { 
+    Component, 
+    Input, 
+    Output, 
+    OnInit, 
+    EventEmitter 
+} from '@angular/core';
+
+import { 
+    ElementService,
+    TreeService 
+} from '../services';
 
 @Component({
     selector: 'plomino-palette-add',
@@ -12,25 +22,34 @@ import { ElementService }               from '../services/element.service';
 export class AddComponent {
     addableComponents: Array<any> = [];
 
-    constructor(private _elementService: ElementService) { }
+    constructor(private elementService: ElementService,
+                private treeService: TreeService) { 
+
+    }
 
     ngOnInit() {
         // Set up the addable components
         this.addableComponents = [
-            {title: 'Form', components: [
-                {title: 'Field', icon: 'tasks', type: 'field', addable: false},
-                {title: 'Hide When', icon: 'sunglasses', type: 'hidewhen', addable: false},
-                {title: 'Action', icon: 'cog', type: 'action', addable: false},
+            {
+                title: 'Form', 
+                components: [
+                    {title: 'Field', icon: 'tasks', type: 'field', addable: true},
+                    {title: 'Hide When', icon: 'sunglasses', type: 'hidewhen', addable: true},
+                    {title: 'Action', icon: 'cog', type: 'action', addable: true},
                 ]
             },
-            {title: 'View', components: [
-                {title: 'Column', icon: 'stats', type: 'column', addable: false},
-                {title: 'Action', icon: 'cog', type: 'action', addable: false},
+            {
+                title: 'View', 
+                components: [
+                    {title: 'Column', icon: 'stats', type: 'column', addable: true},
+                    {title: 'Action', icon: 'cog', type: 'action', addable: true},
                 ]
             },
-            {title: 'DB', components: [
-                {title: 'Form', icon: 'th-list', type: 'form', addable: true},
-                {title: 'View', icon: 'list-alt', type: 'view', addable: true},
+            {
+                title: 'DB', 
+                components: [
+                    {title: 'Form', icon: 'th-list', type: 'form', addable: true},
+                    {title: 'View', icon: 'list-alt', type: 'view', addable: true},
                 ]
             }
 
@@ -43,17 +62,17 @@ export class AddComponent {
 
     // XXX: temp. For toggling state of Form/View buttons until hooked up to
     // event that handles currently selected item in main view
-    toggle(type: string) {
-        if (type == 'form') {
-            for (let component of this.addableComponents[0]['components']) {
-                component.addable = !component.addable;
-            }
-        } else if (type == 'view') {
-            for (let component of this.addableComponents[1]['components']) {
-                component.addable = !component.addable;
-            }
-        }
-    }
+    // toggle(type: string) {
+    //     if (type == 'form') {
+    //         for (let component of this.addableComponents[0]['components']) {
+    //             component.addable = !component.addable;
+    //         }
+    //     } else if (type == 'view') {
+    //         for (let component of this.addableComponents[1]['components']) {
+    //             component.addable = !component.addable;
+    //         }
+    //     }
+    // }
 
     add(type: any) {
         // XXX: Handle the adding of components. This needs to take into account
@@ -78,8 +97,10 @@ export class AddComponent {
                     "@type": "PlominoForm",
                     "title": "New Form"
                 };
-                this._elementService.postElement('../../', formElement).subscribe();
-                console.log('Added new form');
+                this.elementService.postElement('../../', formElement).subscribe((respose) => {
+                    this.treeService.updateTree();
+                    console.log('Added new form');
+                });
                 // Get the ID of the new element back in the response.
                 // Update the Tree
                 // Open the form layout in the editor
@@ -89,8 +110,10 @@ export class AddComponent {
                     "@type": "PlominoView",
                     "title": "New View"
                 };
-                this._elementService.postElement('../../', viewElement).subscribe();
-                console.log('Added new view')
+                this.elementService.postElement('../../', viewElement).subscribe(() => {
+                    this.treeService.updateTree();
+                    console.log('Added new view')
+                });
                 // Get the ID of the new element back in the response.
                 // Update the Tree
                 // Open the View in the editor

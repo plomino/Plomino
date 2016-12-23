@@ -80,15 +80,10 @@ export class AppComponent {
                 private changeDetector: ChangeDetectorRef) { }
 
     ngOnInit() {
-        this.getTree();
-    }
-
-    getTree() {
         this._treeService.getTree()
-            .subscribe(
-                data => { this.data = data },
-                err => console.error(err)
-            );
+            .subscribe((tree) => {
+                this.data = tree;
+            });
     }
 
     onAdd(event: any) {
@@ -176,7 +171,7 @@ export class AppComponent {
         if (event.type == "PlominoAction")
             newElement.action_type = event.action_type;
         this._elementService.postElement(event.url,newElement)
-            .subscribe(data => this.getTree());
+            .subscribe(data => this._treeService.updateTree());
     }
 
     onTabClose(tab: any) {

@@ -1,21 +1,14 @@
 <group *ngFor="let group of addableComponents">
     <div>
         <comp *ngFor="let comp of group.components">
-        <button type="button" [ngClass]="{disabled : !comp.addable}" class="btn btn-default" title="Add {{comp.title}}" id="{{comp.type}}" (click)="comp.addable && add(comp.type)">
-            <!-- <span class="glyphicon glyphicon-{{comp.icon}}"></span> -->
-                {{comp.title}}
+        <button type="button" 
+                class="btn btn-default" 
+                title="Add {{comp.title}}" 
+                id="{{comp.type}}" 
+                (click)="add(comp.type)">
+            {{comp.title}}
         </button>
         </comp>
     </div>
 </group>
 
-<!-- XXX: Remove these - just for testing -->
-<p>Temp buttons - Remove these</p>
-<button type="button" class="btn btn-default" (click)="toggle('form')">
-    Toggle Form buttons
-</button>
-
-<button type="button" class="btn btn-default" (click)="toggle('view')">
-    Toggle View buttons
-</button>
-<!-- XXX: END REMOVE -->
