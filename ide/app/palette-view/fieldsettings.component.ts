@@ -1,5 +1,6 @@
 import { 
     Component,
+    OnInit,
     OnChanges, 
     Input, 
     Output,
@@ -12,7 +13,10 @@ import {
 
 import { Observable } from 'rxjs/Observable';
 
-import { ObjService } from '../services';
+import { 
+    ObjService,
+    TabsService 
+} from '../services';
 
 import { PloneHtmlPipe } from '../pipes';
 
@@ -30,27 +34,35 @@ declare let $: any;
     pipes: [PloneHtmlPipe]
 })
 
-export class FieldSettingsComponent implements OnChanges {
-    
-    @Input() field: IField;
+export class FieldSettingsComponent implements OnInit {
     @ViewChild('fieldForm') fieldForm: ElementRef;
-
-    formTemplate: string;
+    
+    field: any;
+    formTemplate: string = '';
 
     
     constructor(private objService: ObjService,
-                private zone: NgZone,
+                private tabsService: TabsService,
                 private changeDetector: ChangeDetectorRef) { }
 
-    ngOnChanges(changes: any) {
-        console.log(`Changes arrived: `, changes.field);
-        if (this.field) {
-            this.objService.getFieldSettings(changes.field.currentValue.url) 
-                .subscribe((template) => {
-                    this.formTemplate = template;
-                    this.changeDetector.detectChanges();
-                });
-        }
+    ngOnInit() {
+        this.tabsService.getActiveField()
+            .do((field) => {
+                this.field = field;
+            })
+            .flatMap((field: any) => {
+                if (field) {
+                    return this.objService.getFieldSettings(field.url)
+                } else {
+                    return Observable.of('');
+                }
+            })
+            .subscribe((template) => {
+                this.formTemplate = template;
+
+                // This is a hack, need to find out, how to get rid of it
+                this.changeDetector.detectChanges();
+            }) 
     }
 
     submitForm() {

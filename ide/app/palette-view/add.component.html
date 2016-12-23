@@ -3,7 +3,8 @@
         <comp *ngFor="let comp of group.components">
         <button type="button" 
                 class="btn btn-default" 
-                title="Add {{comp.title}}" 
+                title="Add {{comp.title}}"
+                [disabled]="!activeTab" 
                 id="{{comp.type}}" 
                 (click)="add(comp.type)">
             {{comp.title}}

@@ -3,9 +3,11 @@ import {
     Input, 
     Output, 
     EventEmitter, 
-    ViewChildren, 
+    ViewChildren,
+    OnInit, 
     OnChanges, 
     ContentChild,
+    ChangeDetectorRef,
     NgZone,
     ChangeDetectionStrategy 
 } from '@angular/core';
@@ -15,7 +17,6 @@ import {
     TAB_DIRECTIVES 
 } from 'ng2-bootstrap/ng2-bootstrap';
 
-import { ElementService } from '../services/element.service';
 import { DND_DIRECTIVES } from 'ng2-dnd/ng2-dnd';
 
 import { AddComponent } from './add.component';
@@ -23,8 +24,10 @@ import { FieldSettingsComponent } from './fieldsettings.component';
 import { FormSettingsComponent } from './formsettings.component';
 import { DBSettingsComponent } from './dbsettings.component';
 
-import { IField } from '../interfaces';
-
+import { 
+    ElementService,
+    TabsService 
+} from '../services';
 
 @Component({
     selector: 'plomino-palette',
@@ -42,37 +45,9 @@ import { IField } from '../interfaces';
     changeDetection: ChangeDetectionStrategy.OnPush,
     providers: [ElementService]
 })
-export class PaletteComponent {
-    private _selectedTab: any;    
-    private _selectedField: IField;
-    selected: any;
-
-    @Input() set selectedTab(tab: any) {
-        if (tab) {
-            this._selectedTab = tab;
-        } else {
-            this._selectedTab = null;
-        }
-    }
-
-    get selectedTab() {
-        return this._selectedTab;
-    }
-
-    @Input() set selectedField(field: IField) {
-        console.log(`Selected field!`, field);
-        if (field && field.id) {
-            this._selectedField = field;
-        } else {
-            this._selectedField = null;
-        }
-    }
-
-    get selectedField() {
-        return this._selectedField;
-    }
-
-    constructor(private zone: NgZone) { }
+export class PaletteComponent implements OnInit {
+    selectedTab: any;    
+    selectedField: any;
 
     public tabs:Array<any> = [
         {title: 'Add', id: 'add'},
@@ -80,6 +55,23 @@ export class PaletteComponent {
         {title: 'Form', id: 'form'},
         {title: 'DB', id: 'db'}
     ];
+
+    constructor(private changeDetector: ChangeDetectorRef,
+                private tabsService: TabsService) { }
+
+
+    
+    ngOnInit() {
+        this.tabsService.getActiveTab()
+            .subscribe((activeTab) => {
+                this.selectedTab = activeTab;
+            });
+        
+        this.tabsService.getActiveField()
+            .subscribe((activeField) => {
+                this.selectedField = activeField;
+            });
+    }
 
     public setActiveTab(index:number):void {
         this.tabs[index].active = true;

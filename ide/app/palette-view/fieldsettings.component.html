@@ -1,5 +1,13 @@
+<br>
 <button class="btn btn-primary btn-block"
+      *ngIf="formTemplate"
       (click)="submitForm()">
   Save
 </button>
 <div #fieldForm [innerHTML]="formTemplate | safePloneHtml"></div>
+
+<br>
+<div class="alert alert-info"
+    *ngIf="!formTemplate">
+  <strong>Select field</strong>
+</div>

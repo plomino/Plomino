@@ -1,29 +1,43 @@
-import { Injectable } from '@angular/core';
+import { 
+  Injectable,
+  NgZone 
+} from '@angular/core';
 
 import { Observable } from 'rxjs/Observable';
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
+
+import { TreeService } from './tree.service';
 
 import 'lodash';
 declare let _:any;
 
 @Injectable()
 export class TabsService {
-  activeTab$: BehaviorSubject<any> = new BehaviorSubject(null);
-  activeField$: BehaviorSubject<any> = new BehaviorSubject(null);
-  tabs$: BehaviorSubject<any[]> = new BehaviorSubject([]);
+  private activeTab$: BehaviorSubject<any> = new BehaviorSubject(null);
+  private activeField$: BehaviorSubject<any> = new BehaviorSubject(null);
+  private tabs$: BehaviorSubject<any[]> = new BehaviorSubject([]);
+  private tree: any;
 
-  constructor() {}
+  constructor(private treeService: TreeService,
+              private zone: NgZone) {
+    this.treeService.getTree()
+      .subscribe((tree) => {
+        this.tree = tree;
+      });
+  }
 
   setActiveTab(tab: any): void {
     let tabs = this.tabs$.getValue();
-    let normalizedTab: any = this.retrieveTab(tabs, tab);
-    let selectedTab: any = _.find(tabs, { url: tab.url });
-    
-    selectedTab.active = true;
+    let normalizedTab: any = this.retrieveTab(this.tree, tab);
+    let selectedTab: any = _.find(tabs, { url: tab.url, editor: tab.editor });
 
+    this.zone.run(() => {
+      selectedTab.active = true;
+    });
+  
     tabs.forEach(tab => { tab.active = (tab.url === selectedTab.url) });
 
-    this.activeTab$.next(selectedTab);
+    this.activeTab$.next(normalizedTab);
     this.tabs$.next(tabs);
   }
 
@@ -50,12 +64,16 @@ export class TabsService {
     
     if (tabs.length === 0) {
       this.activeTab$.next(null);
+      this.activeField$.next(null);
     }
 
     this.tabs$.next(tabs);
   }
 
-  selectField(field: any): void {
+  selectField(fieldId: string): void {
+    console.log(fieldId);
+    let field = Object.assign({}, { id: fieldId, url: this.activeTab$.getValue().url + '/' + fieldId });
+    console.log(field);
     this.activeField$.next(field);
   }
 
@@ -63,14 +81,17 @@ export class TabsService {
     return this.activeTab$.asObservable();
   }
 
+  getActiveField(): Observable<any> {
+    return this.activeField$.asObservable();
+  }
+
   getTabs(): Observable<any[]> {
     return this.tabs$.asObservable();
   }
 
-  private retrieveTab(tabs: any[], tab: any): any {
+  private retrieveTab(tree: any[], tab: any): any {
     let pindex = this.index(tab.path[0].type);
-    console.log(tabs[pindex]);
-    for (let elt of tabs[pindex].children) {
+    for (let elt of tree[pindex].children) {
       if (elt.url.split('/').pop() == tab.url.split('/').pop()) {
         if (tab.path.length > 1) {
           let cindex = this.index(tab.path[1].type, pindex);

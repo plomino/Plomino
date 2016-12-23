@@ -3,12 +3,15 @@ import {
     Input, 
     Output, 
     OnInit, 
-    EventEmitter 
+    EventEmitter,
+    ChangeDetectorRef 
 } from '@angular/core';
 
 import { 
     ElementService,
-    TreeService 
+    TreeService,
+    TabsService,
+    FieldsService
 } from '../services';
 
 @Component({
@@ -20,10 +23,14 @@ import {
 })
 
 export class AddComponent {
+    activeTab: any;
     addableComponents: Array<any> = [];
 
     constructor(private elementService: ElementService,
-                private treeService: TreeService) { 
+                private treeService: TreeService,
+                private tabsService: TabsService,
+                private fieldsService: FieldsService,
+                private changeDetector: ChangeDetectorRef) { 
 
     }
 
@@ -54,6 +61,12 @@ export class AddComponent {
             }
 
         ];
+
+        this.tabsService.getActiveTab()
+            .subscribe((tab) => {
+                this.activeTab = tab; 
+                this.changeDetector.detectChanges();
+            });
     }
 
     // When a Form or View is selected, adjust the addable state of the
@@ -91,6 +104,8 @@ export class AddComponent {
         // XXX: For updating the tree, can that be handled via the ElementService?
         // If the POST that creates the new object happens over there, can there be
         // something that the main app/tree subscribes to so it refreshes automatically?
+        let randomId: number = Math.round((Math.random() * 999 - 0));
+        let field: any;
         switch (type) {
             case 'form':
                 let formElement: any = {
@@ -121,15 +136,49 @@ export class AddComponent {
             case 'field':
                 // Add the field, then insert it into the form layout. Update the tree etc.
                 console.log('Adding a field');
+                field = {
+                    title: 'defaultField',
+                    name: 'defaultField',
+                    '@type': 'PlominoField',
+                    url: `${this.activeTab.url}/default-field-${randomId}`
+                }
+                this.elementService.postElement(this.activeTab.url, field)
+                    .subscribe(() => {
+                        this.fieldsService.insertField(field);
+                        this.treeService.updateTree();
+                    })
                 break;
             case 'hidewhen':
                 // Add the hidewhen, then insert it into the form layout. Update the tree etc.
-                console.log('Adding a hidewhen');
+                console.log(`Adding a hidewhen`);
+                field = {
+                    title: 'defaultHidewhen',
+                    name: 'defaultHidewhen',
+                    '@type': 'PlominoHidewhen',
+                    url: `${this.activeTab.url}/default-hidewhen-${randomId}`
+                }
+                this.elementService.postElement(this.activeTab.url, field)
+                    .subscribe(() => {
+                        this.fieldsService.insertField(field);
+                        this.treeService.updateTree();
+                    })
                 break;
             case 'action':
                 // Add the action, then insert it into the form. Update the tree etc.
                 // If it's a view it doesn't have to be insetred into a layout
                 console.log('Adding an action');
+                field = {
+                    title: 'defaultAction',
+                    name: 'defaultAction',
+                    action_type: 'OPENFORM',
+                    '@type': 'PlominoAction',
+                    url: `${this.activeTab.url}/default-action-${randomId}`
+                }
+                this.elementService.postElement(this.activeTab.url, field)
+                    .subscribe(() => {
+                        this.fieldsService.insertField(field);
+                        this.treeService.updateTree();
+                    })
                 break;
             case 'column':
                 // Add the action to the view. Update the tree etc.

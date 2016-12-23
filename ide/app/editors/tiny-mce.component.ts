@@ -14,7 +14,10 @@ import {
     Response
 } from '@angular/http';
 
-import {ElementService} from '../services/element.service';
+import {
+    ElementService,
+    FieldsService
+} from '../services';
 
 import {DND_DIRECTIVES} from 'ng2-dnd/ng2-dnd';
 
@@ -54,9 +57,14 @@ export class TinyMCEComponent implements AfterViewInit {
 
     data: string;
 
-    constructor(private _elementService: ElementService, 
+    constructor(private _elementService: ElementService,
+                private fieldsService: FieldsService, 
                 private zone: NgZone,
-                private http: Http) {}
+                private http: Http) {
+        this.fieldsService.getInsertion().subscribe((insertion) => {
+            this.addElement(insertion);
+        });
+    }
 
     ngOnInit() {
         let tiny = this;
@@ -135,11 +143,12 @@ export class TinyMCEComponent implements AfterViewInit {
     }
 
     dropped(element: any) {
+        console.log(element.dragData);
         this.addElement(element.dragData)
     }
 
 
-    private addElement(element: { name: string, parent: string, type: string}) {
+    private addElement(element: { name: string, type: string}) {
         let type: string;
         
         let elementClass: string;

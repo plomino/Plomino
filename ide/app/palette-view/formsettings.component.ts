@@ -3,6 +3,7 @@ import {
     Input, 
     Output, 
     EventEmitter,
+    OnInit,
     OnChanges,
     ChangeDetectorRef,
     NgZone,
@@ -12,7 +13,10 @@ import {
 
 import { Observable } from 'rxjs/Observable';
 
-import { ObjService } from '../services/obj.service';
+import { 
+    ObjService,
+    TabsService 
+} from '../services';
 import { PloneHtmlPipe } from '../pipes';
 
 declare let $: any;
@@ -25,9 +29,10 @@ declare let $: any;
     pipes: [PloneHtmlPipe]
 })
 
-export class FormSettingsComponent implements OnChanges {
-    @Input() item: any = null;
+export class FormSettingsComponent implements OnInit {
     @ViewChild('formElem') formElem: ElementRef; 
+    
+    tab: any;
 
     // This needs to handle both views and forms
     heading: string;
@@ -35,16 +40,25 @@ export class FormSettingsComponent implements OnChanges {
     
     constructor(private objService: ObjService,
                 private changeDetector: ChangeDetectorRef,
-                private zone: NgZone) {}
+                private tabsService: TabsService) {}
 
-    ngOnChanges() {
-        if (this.item) {
-            this.objService.getFormSettings(this.item.url)
-                .subscribe((template) => {
-                    this.formSettings = template;
-                    this.changeDetector.detectChanges();
-                });
-        }
+    ngOnInit() {
+        this.tabsService.getActiveTab()
+            .do((tab) => {
+                this.tab = tab;
+            })
+            .flatMap((tab: any) => {
+                if (tab) {
+                    return this.objService.getFormSettings(tab.url)
+                } else {
+                    return Observable.of('');
+                }
+            })
+            .subscribe((template) => {
+                this.formSettings = template;
+                // This is a hack, need to find out, how to get rid of it
+                this.changeDetector.detectChanges();
+            });
     }
 
     saveSettings() {
@@ -53,13 +67,13 @@ export class FormSettingsComponent implements OnChanges {
         
         formData.append('form.buttons.save', 'Save');        
         
-        this.objService.updateFormSettings(this.item.url, formData)
+        this.objService.updateFormSettings(this.tab.url, formData)
             .flatMap((responseHtml) => {
                 let $responseHtml = $(responseHtml);
                 if ($responseHtml.find('dl.error')) {
                     return Observable.of(responseHtml);
                 } else {
-                    return this.objService.getFormSettings(this.item.url);
+                    return this.objService.getFormSettings(this.tab.url);
                 }
             })
             .subscribe(responseHtml => {

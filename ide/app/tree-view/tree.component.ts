@@ -1,7 +1,21 @@
-import { Component, Input, Output, EventEmitter, ViewChildren, OnChanges, ContentChild } from '@angular/core';
-import { CollapseDirective }                                                             from 'ng2-bootstrap/ng2-bootstrap';
-import { ElementService }                                                                from '../services/element.service';
-import { DND_DIRECTIVES }                                                                from 'ng2-dnd/ng2-dnd';
+import { 
+    Component, 
+    Input, 
+    Output, 
+    EventEmitter, 
+    ViewChildren,
+    OnInit,
+    OnChanges, 
+    ContentChild 
+} from '@angular/core';
+
+import { CollapseDirective } from 'ng2-bootstrap/ng2-bootstrap';
+import { DND_DIRECTIVES } from 'ng2-dnd/ng2-dnd';
+
+import { 
+    ElementService,
+    TabsService 
+} from '../services';
 
 import { ExtractNamePipe } from '../pipes';
 
@@ -13,19 +27,27 @@ import { ExtractNamePipe } from '../pipes';
     pipes: [ExtractNamePipe],
     providers: [ElementService]
 })
-export class TreeComponent {
+export class TreeComponent implements OnInit {
     @Input() data: any;
-    @Input() selected: any;
     @Output() openTab = new EventEmitter();
     @Output() add = new EventEmitter();
     @Output() isDragged = new EventEmitter();
     @ViewChildren('selectable') element: any;
-
+    
+    selected: any;
     searchResults: any;
     filtered: boolean = false;
     previousSelected: any;
 
-    constructor(private _elementService: ElementService) { }
+    constructor(private _elementService: ElementService,
+                private tabsService: TabsService) { }
+    
+    ngOnInit() {
+        this.tabsService.getActiveTab()
+            .subscribe((activeTab) => {
+                this.selected = activeTab;
+            });
+    }
 
     isItSelected(name: any) {
         if (name === this.selected){
