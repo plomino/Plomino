@@ -17,13 +17,17 @@ export class ObjService {
         let options = new RequestOptions({ headers: headers });
     }
 
+    
     getFormSettings(formUrl: any): Observable<any> {
-        return this.http.get(formUrl).map(this.extractText);
+        return this.http.get(`${formUrl}/@@edit?ajax_load=1&ajax_include_head=1`).map(this.extractText);
     }
 
-    updateFormSettings(formUrl: any, formData: any): Observable<any> {
-        return this.http.post(formUrl, formData).map(this.extractText);
+    
+    updateFormSettings(formUrl: string, formData: any): Observable<any> {
+        return this.http.post(`${formUrl}/@@edit?ajax_load=1`, formData).map(this.extractText);
     }
+
+
 
     // Change this to use Promises/Observable pattern
     getDB(): Observable<any> {

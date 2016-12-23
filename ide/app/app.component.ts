@@ -151,7 +151,6 @@ export class AppComponent {
 
 
     onEdit(event: any) {
-        console.log(`Data from tree`, event);
         this.onTabSelect(event.path, event.url);
         if (_.find(this.tabs, { url: event.url })) {
             return;
@@ -218,7 +217,7 @@ export class AppComponent {
 
     onTabSelect(path: any, url: string) {
         this.selected = this.retrieveTab(path, url);
-        console.log(`Selected tab`, this.selected);
+        this.changeDetector.detectChanges();
     }
 
     retrieveTab(path: any, url: string) {
