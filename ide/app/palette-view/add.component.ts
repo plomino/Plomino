@@ -9,7 +9,6 @@ import { Component, Input, Output, OnInit, EventEmitter } from '@angular/core';
 })
 
 export class AddComponent {
-
     addableComponents: Array<any> = [];
 
     ngOnInit() {
@@ -35,6 +34,10 @@ export class AddComponent {
         ];
     }
 
+    // When a Form or View is selected, adjust the addable state of the
+    // relevant buttons. How do we do this? Do we need a service that stores
+    // the currently selected object?
+
     // XXX: temp. For toggling state of Form/View buttons until hooked up to
     // event that handles currently selected item in main view
     toggle(type: string) {
@@ -50,16 +53,25 @@ export class AddComponent {
     }
 
     add(type: any) {
-        // console.log(event.target.id);
-        // XXX: Handle the adding of components
-
-        if (type == 'form') {
-
+        // XXX: Handle the adding of components. This needs to take into account
+        // the currently selected object. i.e. if we're on a Form, the
+        // field/action/hidewhen should be created then added to the form.
+        // If we're on a view, the action/column should be added to the view.
+        // The tree should be updated and, if it's a Form, the object should
+        // be added to the layout. If it's a Drag and Drop (not implemented) yet,
+        // The new field etc. should be added at the cursor. Otherwise to the
+        // end of the form layout.
+        switch (type) {
+            case 'form':
+                // Do stuff for the form
+                console.log('Add form');
+                break;
+            case 'view':
+                // Do
+                console.log('Add view');
+                break;
+            default:
+                console.log(type + ' not handled yet')
         }
-
     }
-
-    // When a Form or View is selected, adjust the addable state of the
-    // relevant buttons
-
 }
