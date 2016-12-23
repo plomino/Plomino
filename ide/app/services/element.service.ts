@@ -37,6 +37,9 @@ export class ElementService {
         return this.http.patch(id, element, { headers: this.headers });
     }
 
+    // XXX: Docs for debugging:
+    // http://plonerestapi.readthedocs.io/en/latest/crud.html#creating-a-resource-with-post
+
     postElement(url: string, newElement: any) {
         let headers = new Headers();
         headers.append('Content-Type', 'application/json');
@@ -46,6 +49,12 @@ export class ElementService {
         } else {
             headers.append('Accept', 'application/json');
         }
+
+        // A form must have an empty layout
+        if (newElement['@type'] == 'PlominoForm') {
+            newElement.form_layout = '';
+        }
+
         return this.http.post(url, JSON.stringify(newElement), { headers: headers })
             .map((res: Response) => res.json());
     }
