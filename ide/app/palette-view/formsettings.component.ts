@@ -10,9 +10,10 @@ import {
     ElementRef 
 } from '@angular/core';
 
-import { ObjService } from '../services/obj.service';
 import { Observable } from 'rxjs/Observable';
-import { PloneHtml } from '../custom.pipes';
+
+import { ObjService } from '../services/obj.service';
+import { PloneHtmlPipe } from '../pipes';
 
 declare let $: any;
 
@@ -21,7 +22,7 @@ declare let $: any;
     template: require('./formsettings.component.html'),
     directives: [],
     providers: [],
-    pipes: [PloneHtml]
+    pipes: [PloneHtmlPipe]
 })
 
 export class FormSettingsComponent implements OnChanges {
@@ -59,7 +60,7 @@ export class FormSettingsComponent implements OnChanges {
                 if ($responseHtml.find('dl.error')) {
                     return Observable.of(responseHtml);
                 } else {
-                    return this.objService.getDB();
+                    return this.objService.getFormSettings(this.item.url);
                 }
             })
             .subscribe(responseHtml => {

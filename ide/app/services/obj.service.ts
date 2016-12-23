@@ -16,15 +16,26 @@ export class ObjService {
         let headers = new Headers({ 'Content-Type': 'text/html' });
         let options = new RequestOptions({ headers: headers });
     }
-
     
-    getFormSettings(formUrl: any): Observable<any> {
-        return this.http.get(`${formUrl}/@@edit?ajax_load=1&ajax_include_head=1`).map(this.extractText);
+    getFieldSettings(fieldUrl: string): Observable<any> {
+        return this.http.get(`${fieldUrl}/@@edit?ajax_load=1&ajax_include_head=1`)
+                    .map(this.extractText);
+    }
+
+    updateFieldSettings(fieldUrl: string, formData: FormData): Observable<any> {
+        return this.http.post(`${fieldUrl}/@@edit?ajax_load=1`, formData)
+                    .map(this.extractText);
+    }
+    
+    getFormSettings(formUrl: string): Observable<any> {
+        return this.http.get(`${formUrl}/@@edit?ajax_load=1&ajax_include_head=1`)
+                    .map(this.extractText);
     }
 
     
-    updateFormSettings(formUrl: string, formData: any): Observable<any> {
-        return this.http.post(`${formUrl}/@@edit?ajax_load=1`, formData).map(this.extractText);
+    updateFormSettings(formUrl: string, formData: FormData): Observable<any> {
+        return this.http.post(`${formUrl}/@@edit?ajax_load=1`, formData)
+                    .map(this.extractText);
     }
 
 

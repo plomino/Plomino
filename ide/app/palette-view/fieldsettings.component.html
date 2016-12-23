@@ -1,1 +1,5 @@
-<p>Field settings  HTML is here</p>
+<button class="btn btn-primary btn-block"
+      (click)="submitForm()">
+  Save
+</button>
+<div #fieldForm [innerHTML]="formTemplate | safePloneHtml"></div>

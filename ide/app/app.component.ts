@@ -31,6 +31,9 @@ import { ObjService }                   from './services/obj.service';
 // Pipes 
 import { ExtractNamePipe }              from './pipes';
 
+// Interfaces
+import { IField } from './interfaces';
+
 import 'lodash';
 
 declare let _: any;
@@ -61,6 +64,7 @@ declare let _: any;
 export class AppComponent {
     data: any;
     selected: any;
+    selectedField: IField;
     tabs: Array<any> = [];
 
     isModalOpen: boolean = false;
@@ -217,6 +221,12 @@ export class AppComponent {
 
     onTabSelect(path: any, url: string) {
         this.selected = this.retrieveTab(path, url);
+        this.changeDetector.detectChanges();
+    }
+
+    fieldSelected(fieldId: string): void {
+        console.log(`Selected field in app cmp, `, this.selectedField);
+        this.selectedField = Object.assign({}, { id: fieldId, url: this.selected.url + '/' + fieldId });
         this.changeDetector.detectChanges();
     }
 

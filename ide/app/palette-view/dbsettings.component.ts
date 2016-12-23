@@ -15,9 +15,9 @@ import {
     RequestOptions 
 } from '@angular/http';
 
-import { ObjService } from '../services/obj.service';
-import { PloneHtml } from '../custom.pipes';
 import { Observable } from 'rxjs/Rx';
+import { ObjService } from '../services/obj.service';
+import { PloneHtmlPipe } from '../pipes';
 
 declare var $: any;
 
@@ -26,7 +26,7 @@ declare var $: any;
     template: require('./dbsettings.component.html'),
     directives: [],
     providers: [ObjService],
-    pipes: [PloneHtml],
+    pipes: [PloneHtmlPipe],
 })
 
 export class DBSettingsComponent {

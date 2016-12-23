@@ -1,9 +1,21 @@
-import {Component, Input, Output, EventEmitter, NgZone} from '@angular/core';
+import {
+    Component, 
+    Input, 
+    Output, 
+    EventEmitter,
+    ViewChild,
+    ElementRef,
+    AfterViewInit, 
+    NgZone
+} from '@angular/core';
+
 import { 
     Http,
     Response
 } from '@angular/http';
+
 import {ElementService} from '../services/element.service';
+
 import {DND_DIRECTIVES} from 'ng2-dnd/ng2-dnd';
 
 import 'jquery';
@@ -31,11 +43,15 @@ declare var tinymce: any;
     directives: [DND_DIRECTIVES],
     providers: [ElementService]
 })
-export class TinyMCEComponent {
+export class TinyMCEComponent implements AfterViewInit {
 
     @Input() id: string;
     @Input() isDragged: boolean = false;
-    @Output() isDirty = new EventEmitter();
+    @Output() isDirty: EventEmitter<any> = new EventEmitter();
+    @Output() fieldSelected: EventEmitter<any> = new EventEmitter();
+
+    @ViewChild('theEditor') editorElement: ElementRef;
+
     data: string;
 
     constructor(private _elementService: ElementService, 
@@ -49,9 +65,21 @@ export class TinyMCEComponent {
             plugins: ["code", "save", "link"],
             toolbar: "save | undo redo | formatselect | bold italic underline | alignleft aligncenter alignright alignjustify | bullist numlist | outdent indent | unlink link | image",
             save_onsavecallback: () => { this.saveFormLayout() },
-            setup : (editor:any) => {
-                editor.on('change', (e:any) => {
+            setup : (editor: any) => {
+                editor.on('change', (e: any) => {
                     tiny.isDirty.emit(true);
+                });
+                
+                editor.on('click', (ev: Event) => {
+                    let $element = $(ev.target);
+                    let $elementId = $element.data('plominoid');
+                    let $parentId = $element.parent().data('plominoid');
+                    if ($elementId || $parentId) {
+                        let id = $elementId || $parentId;
+                        this.fieldSelected.emit(id);
+                    } else {
+                        this.fieldSelected.emit(null);
+                    }
                 });
             },
             content_style: require('./tiny-mce-content.css'),
@@ -60,6 +88,25 @@ export class TinyMCEComponent {
             resize: false
         });
         this.getFormLayout();
+    }
+
+    ngAfterViewInit(): void {
+        // let $editor: any = $(this.editorElement.nativeElement).find('iframe');
+        // let $editorWorkspace = $editor.contentWindow ? $editor.contentWindow : $editor.contentDocument.defaultView;
+        // console.log($editorWorkspace);
+        // $editorWorkspace.on('click', (ev: Event) => {
+        //     console.log(ev);
+        // });
+        // editor.on('click', (ev: Event) => {
+        //     console.log(`clicked `, ev);
+        //     let $target = $(ev.target);
+        //     let $targetId = $target.data('plominoid');
+        //     let $targetParentId = $target.parent().data('plominoid');
+        //     if ($targetId || $targetParentId) {
+        //         let id = $target.data('plominoid') || $targetParentId;
+        //         this.fieldSelected.emit(id);
+        //     }
+        // });
     }
 
     getFormLayout() {
