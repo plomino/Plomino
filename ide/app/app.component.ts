@@ -25,9 +25,12 @@ import { AgentsSettingsComponent }      from './editors/settings/agents-settings
 import { PlominoModalComponent }        from './modal.component';
 
 // Services
-import { TreeService }                  from './services/tree.service';
-import { ElementService }               from './services/element.service';
-import { ObjService }                   from './services/obj.service';
+import { 
+    TreeService,
+    ElementService,
+    ObjService,
+    TabsService 
+}                                       from './services';
 
 // Pipes 
 import { ExtractNamePipe }              from './pipes';
@@ -59,7 +62,7 @@ declare let _: any;
         AgentsSettingsComponent,
         
     ],
-    providers: [TreeService, ElementService, ObjService],
+    providers: [TreeService, ElementService, ObjService, TabsService],
     pipes: [ExtractNamePipe]
 })
 export class AppComponent {
@@ -73,17 +76,24 @@ export class AppComponent {
 
     aceNumber: number = 0;
 
-    constructor(private _treeService: TreeService,     
-                private _elementService: ElementService, 
-                private _objService: ObjService,
+    constructor(private treeService: TreeService,     
+                private elementService: ElementService, 
+                private objService: ObjService,
+                private tabsService: TabsService,
                 private zone: NgZone,
                 private changeDetector: ChangeDetectorRef) { }
 
     ngOnInit() {
-        this._treeService.getTree()
+        this.treeService.getTree()
             .subscribe((tree) => {
                 this.data = tree;
             });
+        
+        this.tabsService.getTabs()
+            .subscribe((tabs) => {
+                console.log(`Tabs arrived! `, tabs);
+                this.tabs = tabs;
+            })
     }
 
     onAdd(event: any) {
@@ -151,13 +161,20 @@ export class AppComponent {
     }
 
 
-    onEdit(event: any) {
-        this.onTabSelect(event.path, event.url);
-        if (_.find(this.tabs, { url: event.url })) {
-            return;
-        } else {
-            this.tabs.push(this.buildTab(event));
-        }
+    openTab(tab: any) {
+        this.tabsService.openTab(tab);
+        // if (_.find(this.tabs, { url: event.url })) {
+        //     return;
+        // } else {
+        //     this.tabs.push(this.buildTab(event));
+        // }
+    }
+
+    closeTab(tab: any) {
+        this.tabsService.closeTab(tab);
+        // this.tabs.splice(this.tabs.indexOf(tab), 1);
+        if (tab.editor === 'code') this.aceNumber++; // What is this code for?
+        // if (this.tabs.length === 0) this.selected = null;
     }
 
     onModalClose(event: any) {
@@ -170,15 +187,10 @@ export class AppComponent {
             newElement.content = "";
         if (event.type == "PlominoAction")
             newElement.action_type = event.action_type;
-        this._elementService.postElement(event.url,newElement)
-            .subscribe(data => this._treeService.updateTree());
+        this.elementService.postElement(event.url,newElement)
+            .subscribe(data => this.treeService.updateTree());
     }
 
-    onTabClose(tab: any) {
-        this.tabs.splice(this.tabs.indexOf(tab), 1);
-        if (tab.editor === 'code') this.aceNumber++;
-        if (this.tabs.length === 0) this.selected = null;
-    }
 
     index(type: string, parentIndex?: number) {
         if (parentIndex === undefined)
@@ -216,9 +228,10 @@ export class AppComponent {
         }
     }
 
-    onTabSelect(path: any, url: string) {
-        this.selected = this.retrieveTab(path, url);
-        this.changeDetector.detectChanges();
+    onTabSelect(tab: any) {
+        // this.selected = this.retrieveTab(path, url);
+        // this.changeDetector.detectChanges();
+        // this.tabsService.setActiveTab(tab);
     }
 
     fieldSelected(fieldId: string): void {

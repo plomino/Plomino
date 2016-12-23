@@ -16,7 +16,7 @@ import { ExtractNamePipe } from '../pipes';
 export class TreeComponent {
     @Input() data: any;
     @Input() selected: any;
-    @Output() edit = new EventEmitter();
+    @Output() openTab = new EventEmitter();
     @Output() add = new EventEmitter();
     @Output() isDragged = new EventEmitter();
     @ViewChildren('selectable') element: any;
@@ -46,7 +46,7 @@ export class TreeComponent {
     }
 
     onEdit(event: any) {
-        this.edit.emit(event);
+        this.openTab.emit(event);
     }
     onAdd(event: any) {
         this.add.emit(event);

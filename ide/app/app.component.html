@@ -1,6 +1,8 @@
 <div class="wrap-app">
   
   <div class="well">
+
+    <!-- TODO: Will get all this props from service -->
     <plomino-palette [(selectedTab)]="selected"
       [(selectedField)]="selectedField">
     </plomino-palette>
@@ -10,7 +12,7 @@
     <plomino-tree [data]="data" 
                   [selected]="selected" 
                   (add)="onAdd($event)" 
-                  (edit)="onEdit($event)" 
+                  (openTab)="openTab($event)" 
                   (isDragged)="isDragged = $event">
     </plomino-tree>
   </div>
@@ -20,8 +22,9 @@
       <tab *ngFor="let tabz of tabs" 
           [heading]="" 
           [removable]="true" 
-          (removed)="onTabClose(tabz)" 
-          (select)="onTabSelect(tabz.path, tabz.url)">
+          [active]="tabz.active"
+          (removed)="closeTab(tabz)" 
+          (select)="onTabSelect(tabz)">
         
         <template tabHeading>
             <span [class.tabunsaved]="tabz.isdirty">
