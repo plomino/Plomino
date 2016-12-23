@@ -26,5 +26,8 @@
       </div>
     </form>
   </modal-body>
-  <modal-footer [show-default-buttons]="true"></modal-footer>
+  <modal-footer>
+        <button type="button" class="btn btn-default" data-dismiss="modal" (click)="modal.dismiss()">Cancel</button>
+        <button type="button" class="btn btn-primary" (click)="modal.close()">Add</button>
+  </modal-footer>
 </modal>
