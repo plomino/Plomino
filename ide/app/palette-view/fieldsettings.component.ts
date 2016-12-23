@@ -47,9 +47,8 @@ export class FieldSettingsComponent implements OnChanges {
         if (this.field) {
             this.objService.getFieldSettings(changes.field.currentValue.url) 
                 .subscribe((template) => {
-                    this.zone.run(() => {
-                        this.formTemplate = template;
-                    });
+                    this.formTemplate = template;
+                    this.changeDetector.detectChanges();
                 });
         }
     }

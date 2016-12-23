@@ -1,7 +1,8 @@
 // Core
 import { 
     Component, 
-    ViewChild, 
+    ViewChild,
+    NgZone, 
     OnInit,
     ChangeDetectorRef
 } from '@angular/core';
@@ -75,6 +76,7 @@ export class AppComponent {
     constructor(private _treeService: TreeService,     
                 private _elementService: ElementService, 
                 private _objService: ObjService,
+                private zone: NgZone,
                 private changeDetector: ChangeDetectorRef) { }
 
     ngOnInit() {
@@ -225,9 +227,9 @@ export class AppComponent {
     }
 
     fieldSelected(fieldId: string): void {
-        console.log(`Selected field in app cmp, `, this.selectedField);
-        this.selectedField = Object.assign({}, { id: fieldId, url: this.selected.url + '/' + fieldId });
-        this.changeDetector.detectChanges();
+        this.zone.run(() => {
+            this.selectedField = Object.assign({}, { id: fieldId, url: this.selected.url + '/' + fieldId });
+        });
     }
 
     retrieveTab(path: any, url: string) {

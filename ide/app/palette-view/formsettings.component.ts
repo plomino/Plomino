@@ -41,9 +41,8 @@ export class FormSettingsComponent implements OnChanges {
         if (this.item) {
             this.objService.getFormSettings(this.item.url)
                 .subscribe((template) => {
-                    this.zone.run(() => {
-                        this.formSettings = template;
-                    });
+                    this.formSettings = template;
+                    this.changeDetector.detectChanges();
                 });
         }
     }
