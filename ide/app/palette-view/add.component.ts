@@ -61,8 +61,8 @@ export class AddComponent {
             {
                 title: 'DB', 
                 components: [
-                    {title: 'Form', icon: 'th-list', type: 'form', addable: true},
-                    {title: 'View', icon: 'list-alt', type: 'view', addable: true},
+                    {title: 'Form', icon: 'th-list', type: 'PlominoForm', addable: true},
+                    {title: 'View', icon: 'list-alt', type: 'PlominoView', addable: true},
                 ]
             }
 
@@ -113,26 +113,42 @@ export class AddComponent {
         let randomId: number = Math.round((Math.random() * 999 - 0));
         let field: any;
         switch (type) {
-            case 'form':
+            case 'PlominoForm':
                 let formElement: any = {
                     "@type": "PlominoForm",
                     "title": "New Form"
                 };
-                this.elementService.postElement('../../', formElement).subscribe((respose) => {
-                    this.treeService.updateTree();
-                    console.log('Added new form');
+                this.elementService.postElement('../../', formElement).subscribe((response) => {
+                    this.treeService.updateTree().then(() => {
+                        this.tabsService.openTab({
+                            editor: 'layout',
+                            label: response.title,
+                            url: response['@id'] + response.id,
+                            path: [{
+                                name: response.title,
+                                type: 'Forms'
+                            }]
+                        });
+                    });
                 });
-                // Get the ID of the new element back in the response.
-                // Update the Tree
-                // Open the form layout in the editor
                 break;
-            case 'view':
+            case 'PlominoView':
                 let viewElement: any = {
                     "@type": "PlominoView",
                     "title": "New View"
                 };
-                this.elementService.postElement('../../', viewElement).subscribe(() => {
-                    this.treeService.updateTree();
+                this.elementService.postElement('../../', viewElement).subscribe((response) => {
+                    this.treeService.updateTree().then(() => {
+                        this.tabsService.openTab({
+                            editor: 'code',
+                            label: response.title,
+                            url: response['@id'] + response.id,
+                            path: [{
+                                name: response.title,
+                                type: 'Views'
+                            }]
+                        });
+                    });
                     console.log('Added new view')
                 });
                 // Get the ID of the new element back in the response.
@@ -201,21 +217,31 @@ export class AddComponent {
 
     // Refactor this code, put switch into separated fn
     startDrag(type: any): void {
-        let field: any;
+        let data: any;
         let draggingData: any = {};
         switch(type) {
+            case 'PlominoForm':
+                data = {
+                    '@type': 'PlominoForm'
+                };
+                break;
+            case 'PlominoView':
+                data = {
+                    '@type': 'PlominoView'
+                };
+                break;
             case 'PlominoField':
-                field = {
+                data = {
                     '@type': 'PlominoField'
                 };
                 break;
             case 'PlominoHidewhen':
-                field = {
+                data = {
                     '@type': 'PlominoHidewhen',
                 }
                 break;
             case 'PlominoAction':
-                field = {
+                data = {
                     '@type': 'PlominoAction'
                 };
                 break;
@@ -230,10 +256,19 @@ export class AddComponent {
          * palette, which needs to be populated!
          * @Resolver will be called on drop event in tinymce.component
          */
-        Object.assign(draggingData, field, {
-            parent: this.activeTab.url,
-            resolved: false
-        });
+        console.log(`Type to drag `, type);
+        if (type === 'PlominoForm' || type === 'PlominoView') {
+            console.log(`This is not form | view type`);
+            Object.assign(draggingData, data, {
+                resolve: false
+            });
+        } else {
+            console.log(`This is form | view type`);
+            Object.assign(draggingData, data, {
+                parent: this.activeTab.url,
+                resolved: false
+            });
+        }
 
         draggingData.resolver = (data: any) => {
             this.add(data['@type']);
