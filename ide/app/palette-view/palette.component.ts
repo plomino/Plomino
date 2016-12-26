@@ -19,10 +19,10 @@ import {
 
 import { DND_DIRECTIVES } from 'ng2-dnd/ng2-dnd';
 
-import { AddComponent } from './add.component';
-import { FieldSettingsComponent } from './fieldsettings.component';
-import { FormSettingsComponent } from './formsettings.component';
-import { DBSettingsComponent } from './dbsettings.component';
+import { AddComponent } from './add';
+import { FieldSettingsComponent } from './fieldsettings';
+import { FormSettingsComponent } from './formsettings';
+import { DBSettingsComponent } from './dbsettings';
 
 import { 
     ElementService,

@@ -16,11 +16,11 @@ import { Observable } from 'rxjs/Observable';
 import { 
     ObjService,
     TabsService 
-} from '../services';
+} from '../../services';
 
-import { PloneHtmlPipe } from '../pipes';
+import { PloneHtmlPipe } from '../../pipes';
 
-import { IField } from '../interfaces';
+import { IField } from '../../interfaces';
 
 import 'jquery';
 

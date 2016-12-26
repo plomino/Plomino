@@ -1,6 +1,6 @@
 import { Component, Input, Output, EventEmitter, ViewChild } from '@angular/core';
 import { REACTIVE_FORM_DIRECTIVES } from '@angular/forms';
-import { ElementService } from '../../services/element.service';
+import { ElementService } from '../../../services';
 
 @Component({
     selector: 'plomino-forms-settings',

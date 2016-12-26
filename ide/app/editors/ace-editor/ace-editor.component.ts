@@ -1,6 +1,6 @@
 import {Component, OnInit, AfterViewInit, Input, Output, EventEmitter} from '@angular/core';
-import {PopoverComponent} from './popover.component';
-import {ElementService} from '../services/element.service';
+import {PopoverComponent} from '../popover';
+import {ElementService} from '../../services';
 import {DROPDOWN_DIRECTIVES} from 'ng2-bootstrap/ng2-bootstrap';
 
 declare var ace: any;

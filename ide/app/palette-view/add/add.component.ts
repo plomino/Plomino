@@ -16,7 +16,7 @@ import {
     TabsService,
     FieldsService,
     DraggingService
-} from '../services';
+} from '../../services';
 
 @Component({
     selector: 'plomino-palette-add',

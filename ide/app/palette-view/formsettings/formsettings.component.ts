@@ -16,8 +16,8 @@ import { Observable } from 'rxjs/Observable';
 import { 
     ObjService,
     TabsService 
-} from '../services';
-import { PloneHtmlPipe } from '../pipes';
+} from '../../services';
+import { PloneHtmlPipe } from '../../pipes';
 
 declare let $: any;
 

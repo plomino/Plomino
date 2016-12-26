@@ -16,8 +16,8 @@ import {
 } from '@angular/http';
 
 import { Observable } from 'rxjs/Rx';
-import { ObjService } from '../services/obj.service';
-import { PloneHtmlPipe } from '../pipes';
+import { ObjService } from '../../services/obj.service';
+import { PloneHtmlPipe } from '../../pipes';
 
 declare var $: any;
 

@@ -1,15 +1,15 @@
 import { Component, Input, Output, EventEmitter, ViewChild } from '@angular/core';
 import { REACTIVE_FORM_DIRECTIVES } from '@angular/forms';
-import { ElementService } from '../../services/element.service';
+import { ElementService } from '../../../services';
 
 @Component({
-    selector: 'plomino-agents-settings',
-    template: require('./agents-settings.component.html'),
+    selector: 'plomino-hide-when-settings',
+    template: require('./hide_when-settings.component.html'),
     styles: ['form {margin: 15px;} .help-block {font-style: italix;}'],
     providers: [ElementService],
     directives: [ REACTIVE_FORM_DIRECTIVES ]
 })
-export class AgentsSettingsComponent {
+export class HideWhenSettingsComponent {
     @Input() id: string;
     data: any;
     @Output() isDirty = new EventEmitter();
@@ -39,8 +39,8 @@ export class AgentsSettingsComponent {
             );
     }
 
-    onSubmit(id: string, title: string, description: string, run_as: string) {
-        let element = { title, description, run_as };
+    onSubmit(id: string, title: string, description: string, isDynamicHidewhen: boolean) {
+        let element = { title, description, isDynamicHidewhen };
         this._elementService.patchElement(id, JSON.stringify(element)).subscribe(
             () => {
                 this.titleChanged.emit(this.data.title);

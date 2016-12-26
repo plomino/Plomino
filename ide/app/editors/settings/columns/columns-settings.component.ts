@@ -1,15 +1,15 @@
 import { Component, Input, Output, EventEmitter, ViewChild } from '@angular/core';
 import { REACTIVE_FORM_DIRECTIVES } from '@angular/forms';
-import { ElementService } from '../../services/element.service';
+import { ElementService } from '../../../services';
 
 @Component({
-    selector: 'plomino-hide-when-settings',
-    template: require('./hide_when-settings.component.html'),
-    styles: ['form {margin: 15px;} .help-block {font-style: italix;}'],
+    selector: 'plomino-columns-settings',
+    template: require('./columns-settings.component.html'),
+    styles: ['form {margin: 15px;} .help-block {font-style: italic;}'],
     providers: [ElementService],
     directives: [ REACTIVE_FORM_DIRECTIVES ]
 })
-export class HideWhenSettingsComponent {
+export class ColumnsSettingsComponent {
     @Input() id: string;
     data: any;
     @Output() isDirty = new EventEmitter();
@@ -17,7 +17,7 @@ export class HideWhenSettingsComponent {
     @Output() elementDeleted = new EventEmitter();
     @ViewChild('form') form: any;
 
-    constructor(private _elementService: ElementService) {}
+    constructor(private _elementService: ElementService) { }
 
     ngOnInit() {
         this.getElement();
@@ -32,15 +32,19 @@ export class HideWhenSettingsComponent {
         this._elementService.getElement(this.id)
             .subscribe(
                 data => {
-                    this.data = data;
+                    this.data = data
                     this.isDirty.emit(false);
                 },
-                err => console.log(err)
+                err => console.error(err)
             );
     }
 
-    onSubmit(id: string, title: string, description: string, isDynamicHidewhen: boolean) {
-        let element = { title, description, isDynamicHidewhen };
+    onSubmit(id: string, title: string, description: string, hiddenColumn: boolean) {
+        let element = {
+            "title": title,
+            "description": description,
+            "hidden_column": hiddenColumn
+        };
         this._elementService.patchElement(id, JSON.stringify(element)).subscribe(
             () => {
                 this.titleChanged.emit(this.data.title);

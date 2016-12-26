@@ -19,7 +19,7 @@ import {
     ElementService,
     FieldsService,
     DraggingService
-} from '../services';
+} from '../../services';
 
 import {DND_DIRECTIVES} from 'ng2-dnd/ng2-dnd';
 

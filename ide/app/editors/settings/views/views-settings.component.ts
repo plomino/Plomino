@@ -1,15 +1,15 @@
 import { Component, Input, Output, EventEmitter, ViewChild } from '@angular/core';
 import { REACTIVE_FORM_DIRECTIVES } from '@angular/forms';
-import { ElementService } from '../../services/element.service';
+import { ElementService } from '../../../services';
 
 @Component({
-    selector: 'plomino-columns-settings',
-    template: require('./columns-settings.component.html'),
+    selector: 'plomino-views-settings',
+    template: require('./views-settings.component.html'),
     styles: ['form {margin: 15px;} .help-block {font-style: italic;}'],
     providers: [ElementService],
     directives: [ REACTIVE_FORM_DIRECTIVES ]
 })
-export class ColumnsSettingsComponent {
+export class ViewsSettingsComponent {
     @Input() id: string;
     data: any;
     @Output() isDirty = new EventEmitter();
@@ -32,18 +32,31 @@ export class ColumnsSettingsComponent {
         this._elementService.getElement(this.id)
             .subscribe(
                 data => {
-                    this.data = data
+                    this.data = data;
                     this.isDirty.emit(false);
                 },
                 err => console.error(err)
             );
     }
 
-    onSubmit(id: string, title: string, description: string, hiddenColumn: boolean) {
-        let element = {
-            "title": title,
-            "description": description,
-            "hidden_column": hiddenColumn
+    onSubmit(id: string,
+        title: string,
+        description: string,
+        hideDefaultActions: boolean,
+        sortColumn: string,
+        keyColumn: string,
+        categorized: boolean,
+        reverseSorting: boolean,
+        staticRendering: boolean) {
+            let element = {
+                "title": title,
+                "description": description,
+                "hide_default_actions": hideDefaultActions,
+                "sort_column": sortColumn,
+                "key_column": keyColumn,
+                "categorized": categorized,
+                "reverse_sorting": reverseSorting,
+                "static_rendering": staticRendering
         };
         this._elementService.patchElement(id, JSON.stringify(element)).subscribe(
             () => {

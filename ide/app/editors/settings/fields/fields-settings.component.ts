@@ -1,6 +1,6 @@
 import { Component, Input, Output, EventEmitter, ViewChild } from '@angular/core';
 import { REACTIVE_FORM_DIRECTIVES } from '@angular/forms';
-import { ElementService } from '../../services/element.service';
+import { ElementService } from '../../../services';
 import { ChangeDetectorRef } from '@angular/core';
 
 @Component({
@@ -27,7 +27,7 @@ import { ChangeDetectorRef } from '@angular/core';
             border-bottom: 0;
             margin-bottom: 0;
         }
-    `, require('./settings-styles.css')],
+    `, require('../settings-styles.css')],
     providers: [ElementService],
     directives: [ REACTIVE_FORM_DIRECTIVES ]
 })

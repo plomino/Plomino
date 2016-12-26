@@ -3,6 +3,11 @@
     overflow-y: auto;
 }
 
+.tree-node {
+    padding: 0;
+    margin-left: 0;
+}
+
 .collapse.in {
     height: auto !important;
 }
