@@ -4,22 +4,27 @@ import {
     Output, 
     OnInit, 
     EventEmitter,
-    ChangeDetectorRef 
+    ChangeDetectorRef,
+    ChangeDetectionStrategy
 } from '@angular/core';
+
+import { DND_DIRECTIVES } from 'ng2-dnd/ng2-dnd';
 
 import { 
     ElementService,
     TreeService,
     TabsService,
-    FieldsService
+    FieldsService,
+    DraggingService
 } from '../services';
 
 @Component({
     selector: 'plomino-palette-add',
     template: require('./add.component.html'),
     styles: [require('./add.component.css')],
-    directives: [],
-    providers: [ElementService]
+    directives: [DND_DIRECTIVES],
+    providers: [ElementService],
+    changeDetection: ChangeDetectionStrategy.OnPush
 })
 
 export class AddComponent {
@@ -30,6 +35,7 @@ export class AddComponent {
                 private treeService: TreeService,
                 private tabsService: TabsService,
                 private fieldsService: FieldsService,
+                private draggingService: DraggingService,
                 private changeDetector: ChangeDetectorRef) { 
 
     }
@@ -40,9 +46,9 @@ export class AddComponent {
             {
                 title: 'Form', 
                 components: [
-                    {title: 'Field', icon: 'tasks', type: 'field', addable: true},
-                    {title: 'Hide When', icon: 'sunglasses', type: 'hidewhen', addable: true},
-                    {title: 'Action', icon: 'cog', type: 'action', addable: true},
+                    {title: 'Field', icon: 'tasks', type: 'PlominoField', addable: true},
+                    {title: 'Hide When', icon: 'sunglasses', type: 'PlominoHidewhen', addable: true},
+                    {title: 'Action', icon: 'cog', type: 'PlominoAction', addable: true},
                 ]
             },
             {
@@ -65,7 +71,7 @@ export class AddComponent {
         this.tabsService.getActiveTab()
             .subscribe((tab) => {
                 this.activeTab = tab; 
-                this.changeDetector.detectChanges();
+                this.changeDetector.markForCheck();
             });
     }
 
@@ -133,51 +139,55 @@ export class AddComponent {
                 // Update the Tree
                 // Open the View in the editor
                 break;
-            case 'field':
-                // Add the field, then insert it into the form layout. Update the tree etc.
-                console.log('Adding a field');
+            case 'PlominoField':
                 field = {
                     title: 'defaultField',
-                    name: 'defaultField',
-                    '@type': 'PlominoField',
-                    url: `${this.activeTab.url}/default-field-${randomId}`
+                    '@type': 'PlominoField'
                 }
                 this.elementService.postElement(this.activeTab.url, field)
-                    .subscribe(() => {
-                        this.fieldsService.insertField(field);
-                        this.treeService.updateTree();
+                    .subscribe((response) => {
+                        let extendedField = Object.assign({}, field, {
+                            name: `${this.activeTab.url}/${response.created}`
+                        });
+
+                        this.treeService.updateTree()
+                            .then(() => {
+                                this.fieldsService.insertField(extendedField);
+                            });
                     })
                 break;
-            case 'hidewhen':
-                // Add the hidewhen, then insert it into the form layout. Update the tree etc.
-                console.log(`Adding a hidewhen`);
+            case 'PlominoHidewhen':
                 field = {
                     title: 'defaultHidewhen',
-                    name: 'defaultHidewhen',
                     '@type': 'PlominoHidewhen',
-                    url: `${this.activeTab.url}/default-hidewhen-${randomId}`
                 }
                 this.elementService.postElement(this.activeTab.url, field)
-                    .subscribe(() => {
-                        this.fieldsService.insertField(field);
-                        this.treeService.updateTree();
+                    .subscribe((response) => {
+                        let extendedField = Object.assign({}, field, {
+                            name: response['@id']
+                        });
+
+                        this.treeService.updateTree()
+                            .then(() => {
+                                this.fieldsService.insertField(extendedField);
+                            });
                     })
                 break;
-            case 'action':
-                // Add the action, then insert it into the form. Update the tree etc.
-                // If it's a view it doesn't have to be insetred into a layout
-                console.log('Adding an action');
+            case 'PlominoAction':
                 field = {
                     title: 'defaultAction',
-                    name: 'defaultAction',
                     action_type: 'OPENFORM',
-                    '@type': 'PlominoAction',
-                    url: `${this.activeTab.url}/default-action-${randomId}`
+                    '@type': 'PlominoAction'
                 }
                 this.elementService.postElement(this.activeTab.url, field)
-                    .subscribe(() => {
-                        this.fieldsService.insertField(field);
-                        this.treeService.updateTree();
+                    .subscribe((response) => {
+                        let extendedField = Object.assign({}, field, {
+                            name: response['@id']
+                        });
+                        this.treeService.updateTree()
+                            .then(() => {
+                                this.fieldsService.insertField(extendedField);
+                            });
                     })
                 break;
             case 'column':
@@ -187,5 +197,52 @@ export class AddComponent {
             default:
                 console.log(type + ' not handled yet')
         }
+    }
+
+    // Refactor this code, put switch into separated fn
+    startDrag(type: any): void {
+        let field: any;
+        let draggingData: any = {};
+        switch(type) {
+            case 'PlominoField':
+                field = {
+                    '@type': 'PlominoField'
+                };
+                break;
+            case 'PlominoHidewhen':
+                field = {
+                    '@type': 'PlominoHidewhen',
+                }
+                break;
+            case 'PlominoAction':
+                field = {
+                    '@type': 'PlominoAction'
+                };
+                break;
+            default: return;
+        }
+        
+
+        /* @Resolved & @Resolver are needed,
+         * because we have 2 types of drag data for now
+         * 1 type is drag data from tree, which is already
+         * populated with server data, and drag data from 
+         * palette, which needs to be populated!
+         * @Resolver will be called on drop event in tinymce.component
+         */
+        Object.assign(draggingData, field, {
+            parent: this.activeTab.url,
+            resolved: false
+        });
+
+        draggingData.resolver = (data: any) => {
+            this.add(data['@type']);
+        }
+
+        this.draggingService.setDragging(draggingData);
+    }
+
+    endDrag(): void {
+        this.draggingService.setDragging(false);
     }
 }

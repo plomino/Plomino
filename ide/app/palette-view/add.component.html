@@ -5,11 +5,14 @@
                 class="btn btn-default" 
                 title="Add {{comp.title}}"
                 [disabled]="!activeTab" 
-                id="{{comp.type}}" 
+                id="{{comp.type}}"
+                dnd-draggable 
+                [dragEnabled]="true"
+                (onDragStart)="startDrag(comp.type)"
+                (onDragEnd)="endDrag()"  
                 (click)="add(comp.type)">
             {{comp.title}}
         </button>
         </comp>
     </div>
 </group>
-

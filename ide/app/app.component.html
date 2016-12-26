@@ -10,8 +10,7 @@
     <plomino-tree [data]="data" 
                   [selected]="selected" 
                   (add)="onAdd($event)" 
-                  (openTab)="openTab($event)" 
-                  (isDragged)="isDragged = $event">
+                  (openTab)="openTab($event)">
     </plomino-tree>
   </div>
   
@@ -32,8 +31,7 @@
         </template>
         
         <plomino-tiny-mce *ngIf="tabz.editor==='layout'" 
-            [id]="tabz.url" 
-            [isDragged]="isDragged"
+            [id]="tabz.url"
             (isDirty)="tabz.isdirty=$event"
             (fieldSelected)="fieldSelected($event)"> 
         </plomino-tiny-mce>

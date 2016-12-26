@@ -23,9 +23,9 @@ export class TreeService {
     }
 
     updateTree() {
-        this.http.get("../../@@designtree").map((res: Response) => res.json() )
-            .forEach((response) => {
-                this.tree$.next(response); 
-            });
+        return this.http.get("../../@@designtree").map((res: Response) => res.json() )
+                        .forEach((response) => {
+                            this.tree$.next(response); 
+                        });
     }
 }

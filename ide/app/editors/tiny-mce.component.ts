@@ -6,7 +6,8 @@ import {
     ViewChild,
     ElementRef,
     AfterViewInit, 
-    NgZone
+    ChangeDetectorRef,
+    ChangeDetectionStrategy
 } from '@angular/core';
 
 import { 
@@ -16,7 +17,8 @@ import {
 
 import {
     ElementService,
-    FieldsService
+    FieldsService,
+    DraggingService
 } from '../services';
 
 import {DND_DIRECTIVES} from 'ng2-dnd/ng2-dnd';
@@ -30,7 +32,14 @@ declare var tinymce: any;
     selector: 'plomino-tiny-mce',
     template: `
     <form #theEditor><textarea class="tinymce-wrap"></textarea></form>
-    <div *ngIf="isDragged" [style.height]="theEditor.offsetHeight+'px'" [style.margin-top]="'-'+theEditor.offsetHeight+'px'" class="drop-zone" dnd-droppable [allowDrop]="allowDrop()" (onDropSuccess)="dropped($event)"></div>
+    <div *ngIf="isDragged" 
+        [style.height]="theEditor.offsetHeight+'px'" 
+        [style.margin-top]="'-'+theEditor.offsetHeight+'px'" 
+        class="drop-zone" 
+        dnd-droppable 
+        [allowDrop]="allowDrop()" 
+        (onDropSuccess)="dropped()">
+    </div>
     `,
     styles: [`
         .drop-zone {
@@ -44,26 +53,43 @@ declare var tinymce: any;
         }
         `],
     directives: [DND_DIRECTIVES],
-    providers: [ElementService]
+    providers: [ElementService],
+    changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class TinyMCEComponent implements AfterViewInit {
 
     @Input() id: string;
-    @Input() isDragged: boolean = false;
     @Output() isDirty: EventEmitter<any> = new EventEmitter();
     @Output() fieldSelected: EventEmitter<any> = new EventEmitter();
 
     @ViewChild('theEditor') editorElement: ElementRef;
 
     data: string;
+    isDragged: boolean = false;
+    dragData: any;
 
     constructor(private _elementService: ElementService,
-                private fieldsService: FieldsService, 
-                private zone: NgZone,
+                private fieldsService: FieldsService,
+                private draggingService: DraggingService,
+                private changeDetector: ChangeDetectorRef,
                 private http: Http) {
-        this.fieldsService.getInsertion().subscribe((insertion) => {
-            this.addElement(insertion);
-        });
+        this.fieldsService.getInsertion()
+            .subscribe((insertion) => {
+                let dataToInsert = Object.assign({}, insertion, { 
+                    type: insertion['@type']
+                });
+                console.log(dataToInsert);
+                this.addElement(dataToInsert);
+                this.changeDetector.markForCheck();
+            });
+        
+        this.draggingService.getDragging()
+            .subscribe((dragData: any) => {
+                console.log(`Drag status `, dragData);
+                this.dragData = dragData;
+                this.isDragged = !!dragData;
+                this.changeDetector.markForCheck();
+            });
     }
 
     ngOnInit() {
@@ -139,12 +165,15 @@ export class TinyMCEComponent implements AfterViewInit {
     }
 
     allowDrop() {
-        return (dragData:any) => dragData.parent === this.id;
+        return () => this.dragData.parent === this.id;
     }
 
-    dropped(element: any) {
-        console.log(element.dragData);
-        this.addElement(element.dragData)
+    dropped() {
+        if (this.dragData.resolved) {
+            this.addElement(this.dragData);
+        } else {
+            this.resolveDragData(this.dragData, this.dragData.resolver);
+        }
     }
 
 
@@ -360,5 +389,8 @@ export class TinyMCEComponent implements AfterViewInit {
 		}
 
 	};
-
+    
+    private resolveDragData(data: any, resolver: any): void {
+        resolver(data);
+    }
 }

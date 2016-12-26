@@ -30,7 +30,8 @@ import {
     ElementService,
     ObjService,
     TabsService,
-    FieldsService
+    FieldsService,
+    DraggingService
 }                                       from './services';
 
 // Pipes 
@@ -68,7 +69,8 @@ declare let _: any;
         ElementService, 
         ObjService, 
         TabsService, 
-        FieldsService
+        FieldsService,
+        DraggingService
     ],
     pipes: [ExtractNamePipe]
 })

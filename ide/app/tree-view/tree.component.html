@@ -90,9 +90,13 @@
                   [class.selected]="isItSelected(childName)" 
                   dnd-draggable 
                   [dragEnabled]="true" 
-                  [dragData]="{name:childName.url,type:childName.type,parent:typeName.url}" 
-                  (onDragEnd)="isDragged.emit(false)" 
-                  (onDragStart)="isDragged.emit(true)">
+                  (onDragEnd)="endDrag()" 
+                  (onDragStart)="startDrag({ 
+                        name: childName.url, 
+                        type: childName.type, 
+                        parent: typeName.url,
+                        resolved: true 
+                    })">
                   
                   {{childName.label}}
                 </span>
