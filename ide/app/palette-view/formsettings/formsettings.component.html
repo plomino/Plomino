@@ -1,15 +1,17 @@
-<br>
-<button class="btn btn-primary btn-block"
-      *ngIf="formSettings"
-      (click)="saveSettings()">
-  Save
-</button>
-<div #formElem 
-    [innerHTML]="formSettings | safePloneHtml">
-</div>
+<div class="form-settings-wrapper">
+    <br>
+    <button class="btn btn-primary btn-block"
+        *ngIf="formSettings"
+        (click)="saveSettings()">
+    Save
+    </button>
+    <div #formElem 
+        [innerHTML]="formSettings | safePloneHtml">
+    </div>
 
-<br>
-<div class="alert alert-info"
-    *ngIf="!formSettings">
-    <strong>Select form</strong>
+    <br>
+    <div class="alert alert-info"
+        *ngIf="!formSettings">
+        <strong>Select form</strong>
+    </div>
 </div>

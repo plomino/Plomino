@@ -1,7 +1,10 @@
 import {
     Component, 
     Input, 
-    Output, 
+    Output,
+    OnInit,
+    OnChanges,
+    OnDestroy, 
     EventEmitter,
     ViewChild,
     ElementRef,
@@ -23,6 +26,8 @@ import {
 
 import {DND_DIRECTIVES} from 'ng2-dnd/ng2-dnd';
 
+import { Subscription } from 'rxjs/Subscription';
+
 import 'jquery';
 
 declare let $: any;
@@ -31,7 +36,7 @@ declare var tinymce: any;
 @Component({
     selector: 'plomino-tiny-mce',
     template: `
-    <form #theEditor><textarea class="tinymce-wrap"></textarea></form>
+    <form #theEditor><textarea class="tinymce-wrap" [id]="id"></textarea></form>
     <div *ngIf="isDragged" 
         [style.height]="theEditor.offsetHeight+'px'" 
         [style.margin-top]="'-'+theEditor.offsetHeight+'px'" 
@@ -56,7 +61,7 @@ declare var tinymce: any;
     providers: [ElementService],
     changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class TinyMCEComponent implements AfterViewInit {
+export class TinyMCEComponent implements AfterViewInit, OnInit, OnDestroy {
 
     @Input() id: string;
     @Output() isDirty: EventEmitter<any> = new EventEmitter();
@@ -67,25 +72,30 @@ export class TinyMCEComponent implements AfterViewInit {
     data: string;
     isDragged: boolean = false;
     dragData: any;
+    editorInstance: any;
+
+    draggingSubscription: Subscription;
+    insertionSubscription: Subscription;
 
     constructor(private _elementService: ElementService,
                 private fieldsService: FieldsService,
                 private draggingService: DraggingService,
                 private changeDetector: ChangeDetectorRef,
                 private http: Http) {
-        this.fieldsService.getInsertion()
+        this.insertionSubscription = this.fieldsService.getInsertion()
             .subscribe((insertion) => {
+                let insertionParent = insertion.name.slice(0, insertion.name.lastIndexOf('/'));
                 let dataToInsert = Object.assign({}, insertion, { 
                     type: insertion['@type']
                 });
-                console.log(dataToInsert);
-                this.addElement(dataToInsert);
-                this.changeDetector.markForCheck();
+                if (insertionParent === this.id) {
+                    this.addElement(dataToInsert);
+                    this.changeDetector.markForCheck();
+                }
             });
         
-        this.draggingService.getDragging()
+        this.draggingSubscription = this.draggingService.getDragging()
             .subscribe((dragData: any) => {
-                console.log(`Drag status `, dragData);
                 this.dragData = dragData;
                 this.isDragged = !!dragData;
                 this.changeDetector.markForCheck();
@@ -121,7 +131,13 @@ export class TinyMCEComponent implements AfterViewInit {
             height : "780",
             resize: false
         });
+        this.editorInstance = tinymce.activeEditor;
         this.getFormLayout();
+    }
+    
+    ngOnDestroy() {
+        this.draggingSubscription.unsubscribe();
+        this.insertionSubscription.unsubscribe();
     }
 
     ngAfterViewInit(): void {
@@ -179,7 +195,6 @@ export class TinyMCEComponent implements AfterViewInit {
 
     private addElement(element: { name: string, type: string}) {
         let type: string;
-        
         let elementClass: string;
         let elementEditionPage: string;
         let elementIdName: string;

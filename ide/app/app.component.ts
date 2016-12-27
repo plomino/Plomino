@@ -4,6 +4,7 @@ import {
     ViewChild,
     NgZone, 
     OnInit,
+    AfterViewInit,
     ChangeDetectorRef,
     trigger,
     animate,
@@ -55,6 +56,8 @@ import 'lodash';
 
 declare let _: any;
 
+declare let tinymce: any;
+
 @Component({
     selector: 'plomino-app',
     template: require('./app.component.html'),
@@ -102,9 +105,9 @@ declare let _: any;
         ])
     ]
 })
-export class AppComponent {
+export class AppComponent implements OnInit, AfterViewInit {
+
     data: any;
-    selected: any;
     selectedField: IField;
     tabs: Array<any> = [];
 
@@ -137,10 +140,16 @@ export class AppComponent {
 
         this.draggingService.getDragging()
             .subscribe((dragData: any) => {
-                console.log(dragData);
                 this.isDragging = !!dragData;
                 this.dragData = dragData;
             })
+    }
+
+    ngAfterViewInit() {
+        this.tabsService.getActiveTab()
+            .subscribe((activeTab: any) => {
+                
+            });
     }
 
     onAdd(event: any) {
@@ -207,7 +216,6 @@ export class AppComponent {
         return -1;
     }
 
-
     allowDrop() {
         let dataType = this.dragData['@type'];
         return () => dataType === 'PlominoForm' || dataType === 'PlominoView';
@@ -218,7 +226,6 @@ export class AppComponent {
     }
 
     openTab(tab: any) {
-        console.log(`Open this tab`, tab);
         this.tabsService.openTab(tab);
     }
 

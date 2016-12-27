@@ -13,7 +13,7 @@
                     [dragEnabled]="true"
                     (onDragStart)="startDrag(comp.type)"
                     (onDragEnd)="endDrag()"  
-                    (click)="add(comp.type)">
+                    (click)="add(comp.type, true)">
                 {{comp.title}}
             </button>
             </comp>

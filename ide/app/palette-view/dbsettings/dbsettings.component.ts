@@ -5,7 +5,8 @@ import {
     EventEmitter, 
     ViewChild, 
     ElementRef,
-    ChangeDetectorRef
+    ChangeDetectorRef,
+    ChangeDetectionStrategy
 } from '@angular/core';
 
 import { 
@@ -24,16 +25,18 @@ declare var $: any;
 @Component({
     selector: 'plomino-palette-dbsettings',
     template: require('./dbsettings.component.html'),
+    styles: [require('./dbsettings.component.css')],
     directives: [],
     providers: [ObjService],
     pipes: [PloneHtmlPipe],
+    changeDetection: ChangeDetectionStrategy.OnPush
 })
 
 export class DBSettingsComponent {
 
     @ViewChild('dbform') el:ElementRef;
 
-    dbForm: any;
+    dbForm: string = '';
 
     constructor(private _objService: ObjService,
                 private changeDetector: ChangeDetectorRef) { }
@@ -59,16 +62,17 @@ export class DBSettingsComponent {
                 }
             })
             .subscribe(responseHtml => {
-                    this.dbForm = responseHtml;
-                    this.changeDetector.detectChanges();
-                }, err => { 
-                    console.error(err) 
-                });
+                this.dbForm = responseHtml;
+                this.changeDetector.markForCheck();
+            }, err => { 
+                console.error(err) 
+            });
     }
 
     ngOnInit() {
         this._objService.getDB().subscribe(html => { 
-            this.dbForm = html 
+            this.dbForm = html;
+            this.changeDetector.markForCheck();
         }, err => { 
             console.error(err);
         });

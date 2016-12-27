@@ -94,6 +94,7 @@ export class AddComponent {
     // }
 
     add(type: any) {
+        console.log(`Add fired`);
         // XXX: Handle the adding of components. This needs to take into account
         // the currently selected object. i.e. if we're on a Form, the
         // field/action/hidewhen should be created then added to the form.

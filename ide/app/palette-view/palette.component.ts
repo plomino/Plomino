@@ -29,6 +29,9 @@ import {
     TabsService 
 } from '../services';
 
+import 'lodash';
+declare let _: any;
+
 @Component({
     selector: 'plomino-palette',
     template: require('./palette.component.html'),
@@ -46,40 +49,53 @@ import {
     providers: [ElementService]
 })
 export class PaletteComponent implements OnInit {
-    selectedTab: any;    
-    selectedField: any;
+    selectedTab: any = null;    
+    selectedField: any = null;
 
-    public tabs:Array<any> = [
-        {title: 'Add', id: 'add'},
-        {title: 'Field', id: 'field'},
-        {title: 'Form', id: 'form'},
-        {title: 'DB', id: 'db'}
+    tabs: Array<any> = [
+        { title: 'Add', id: 'add' },
+        { title: 'Field', id: 'item' },
+        { title: 'Form', id: 'group' },
+        { title: 'DB', id: 'db' }
     ];
 
     constructor(private changeDetector: ChangeDetectorRef,
                 private tabsService: TabsService) { }
 
-
-    
     ngOnInit() {
         this.tabsService.getActiveTab()
             .subscribe((activeTab) => {
                 this.selectedTab = activeTab;
+                if (activeTab) {
+                    this.tabs = this.updateTabs(this.tabs, activeTab.type);
+                }
+                this.changeDetector.markForCheck();
             });
         
         this.tabsService.getActiveField()
             .subscribe((activeField) => {
                 this.selectedField = activeField;
+                if (activeField) {
+                    this.tabs = this.updateTabs(this.tabs, this.selectedTab.type, activeField.type);
+                }
+                this.changeDetector.markForCheck();
             });
     }
 
-    public setActiveTab(index:number):void {
+    setActiveTab(index:number):void {
         this.tabs[index].active = true;
     };
 
-    onTabSelect(id: any) {
-    //     setTimeout(function ():void {
-    //         alert(id);
-    //     });
+    private updateTabs(tabs: any[], activeTabType: string, activeFieldType?: string): any[] {
+        let clonnedTabs = tabs.slice(0);
+        let group = _.find(clonnedTabs, { id: 'group' });
+        let field = _.find(clonnedTabs, { id: 'item' });
+
+        group.title = activeTabType === 'PlominoForm' ? 'Form' : 'View';
+
+        if (activeFieldType) {
+            field.title = activeFieldType.slice(0, 7);
+        } 
+        return clonnedTabs;
     }
 }

@@ -8,7 +8,8 @@ import {
     ChangeDetectorRef,
     NgZone,
     ViewChild,
-    ElementRef 
+    ElementRef,
+    ChangeDetectionStrategy 
 } from '@angular/core';
 
 import { Observable } from 'rxjs/Observable';
@@ -24,9 +25,11 @@ declare let $: any;
 @Component({
     selector: 'plomino-palette-formsettings',
     template: require('./formsettings.component.html'),
+    styles: [require('./formsettings.component.css')],
     directives: [],
     providers: [],
-    pipes: [PloneHtmlPipe]
+    pipes: [PloneHtmlPipe],
+    changeDetection: ChangeDetectionStrategy.OnPush
 })
 
 export class FormSettingsComponent implements OnInit {
@@ -56,8 +59,7 @@ export class FormSettingsComponent implements OnInit {
             })
             .subscribe((template) => {
                 this.formSettings = template;
-                // This is a hack, need to find out, how to get rid of it
-                this.changeDetector.detectChanges();
+                this.changeDetector.markForCheck();
             });
     }
 
@@ -77,10 +79,10 @@ export class FormSettingsComponent implements OnInit {
                 }
             })
             .subscribe(responseHtml => {
-                    this.formSettings = responseHtml;
-                    this.changeDetector.detectChanges();
-                }, err => { 
-                    console.error(err) 
-                });
+                this.formSettings = responseHtml;
+                this.changeDetector.markForCheck();
+            }, err => { 
+                console.error(err) 
+            });
     }
 }

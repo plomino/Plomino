@@ -7,7 +7,7 @@ import {
     ViewChild,
     ElementRef,
     ChangeDetectorRef,
-    NgZone, 
+    ChangeDetectionStrategy,
     EventEmitter 
 } from '@angular/core';
 
@@ -29,9 +29,11 @@ declare let $: any;
 @Component({
     selector: 'plomino-palette-fieldsettings',
     template: require('./fieldsettings.component.html'),
+    styles: [require('./fieldsettings.component.css')],
     directives: [],
     providers: [],
-    pipes: [PloneHtmlPipe]
+    pipes: [PloneHtmlPipe],
+    changeDetection: ChangeDetectionStrategy.OnPush
 })
 
 export class FieldSettingsComponent implements OnInit {
@@ -48,6 +50,7 @@ export class FieldSettingsComponent implements OnInit {
     ngOnInit() {
         this.tabsService.getActiveField()
             .do((field) => {
+                console.log(`Field received in fieldssettings `, field);
                 this.field = field;
             })
             .flatMap((field: any) => {
@@ -59,9 +62,7 @@ export class FieldSettingsComponent implements OnInit {
             })
             .subscribe((template) => {
                 this.formTemplate = template;
-
-                // This is a hack, need to find out, how to get rid of it
-                this.changeDetector.detectChanges();
+                this.changeDetector.markForCheck();
             }) 
     }
 
@@ -81,10 +82,10 @@ export class FieldSettingsComponent implements OnInit {
                 }
             })
             .subscribe(responseHtml => {
-                    this.formTemplate = responseHtml;
-                    this.changeDetector.detectChanges();
-                }, err => { 
-                    console.error(err) 
-                });
+                this.formTemplate = responseHtml;
+                this.changeDetector.markForCheck();
+            }, err => { 
+                console.error(err) 
+            });
     }
 }
