@@ -71,8 +71,17 @@ export class TabsService {
     this.tabs$.next(tabs);
   }
 
-  selectField(fieldId: string): void {
-    let field = Object.assign({}, { id: fieldId, url: this.activeTab$.getValue().url + '/' + fieldId });
+  selectField(fieldData: { id: string, type: string }): void {
+    let field: any = null;
+
+    if (fieldData && fieldData.id) {
+      field = Object.assign({}, { 
+        id: fieldData.id, 
+        url: this.activeTab$.getValue().url + '/' + fieldData.id, 
+        type: fieldData.type 
+      });
+    }
+
     this.activeField$.next(field);
   }
 

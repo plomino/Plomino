@@ -9,7 +9,7 @@ import {
     ContentChild,
     ChangeDetectorRef,
     NgZone,
-    ChangeDetectionStrategy 
+    ChangeDetectionStrategy
 } from '@angular/core';
 
 import { 
@@ -94,8 +94,10 @@ export class PaletteComponent implements OnInit {
         group.title = activeTabType === 'PlominoForm' ? 'Form' : 'View';
 
         if (activeFieldType) {
-            field.title = activeFieldType.slice(0, 7);
-        } 
+            let tempTitle = activeFieldType.slice(7).toLowerCase();
+            let title = tempTitle.slice(0, 1).toUpperCase() + tempTitle.slice(1);
+            field.title = title;
+        }
         return clonnedTabs;
     }
 }

@@ -10,7 +10,8 @@ import {
     ElementRef,
     AfterViewInit, 
     ChangeDetectorRef,
-    ChangeDetectionStrategy
+    ChangeDetectionStrategy,
+    NgZone
 } from '@angular/core';
 
 import { 
@@ -36,7 +37,7 @@ declare var tinymce: any;
 @Component({
     selector: 'plomino-tiny-mce',
     template: `
-    <form #theEditor><textarea class="tinymce-wrap" [id]="id"></textarea></form>
+    <form #theEditor class="tiny-editor"><textarea class="tinymce-wrap" [id]="id"></textarea></form>
     <div *ngIf="isDragged" 
         [style.height]="theEditor.offsetHeight+'px'" 
         [style.margin-top]="'-'+theEditor.offsetHeight+'px'" 
@@ -81,7 +82,8 @@ export class TinyMCEComponent implements AfterViewInit, OnInit, OnDestroy {
                 private fieldsService: FieldsService,
                 private draggingService: DraggingService,
                 private changeDetector: ChangeDetectorRef,
-                private http: Http) {
+                private http: Http,
+                private zone: NgZone) {
         this.insertionSubscription = this.fieldsService.getInsertion()
             .subscribe((insertion) => {
                 let insertionParent = insertion.name.slice(0, insertion.name.lastIndexOf('/'));
@@ -113,17 +115,38 @@ export class TinyMCEComponent implements AfterViewInit, OnInit, OnDestroy {
                 editor.on('change', (e: any) => {
                     tiny.isDirty.emit(true);
                 });
+
+                editor.on('activate', (e: any) => {
+                    let $editorFrame = $(this.editorElement.nativeElement).find('iframe[id*=mce_]');
+                    console.log($editorFrame);
+                });
                 
                 editor.on('click', (ev: Event) => {
-                    let $element = $(ev.target);
-                    let $elementId = $element.data('plominoid');
-                    let $parentId = $element.parent().data('plominoid');
-                    if ($elementId || $parentId) {
-                        let id = $elementId || $parentId;
-                        this.fieldSelected.emit(id);
-                    } else {
-                        this.fieldSelected.emit(null);
-                    }
+                    this.zone.run(() => {
+                        let $element = $(ev.target);
+                        let $parent = $element.parent();
+    
+                        let $elementId = $element.data('plominoid');
+                        let $parentId = $parent.data('plominoid');
+                        
+                        if ($elementId || $parentId) {
+                            let id = $elementId || $parentId;
+                                
+                            let $elementType = $element.hasClass('mceNonEditable') ? 
+                                                this.extractClass($element.attr('class')) : 
+                                                null;
+    
+                            let $parentType = $parent.hasClass('mceNonEditable') ? 
+                                                this.extractClass($parent.attr('class')) : 
+                                                null;
+    
+                            let type = $elementType || $parentType;
+    
+                            this.fieldSelected.emit({ id: id, type: type });
+                        } else {
+                            this.fieldSelected.emit(null);
+                        }
+                    });
                 });
             },
             content_style: require('./tiny-mce-content.css'),
@@ -192,7 +215,6 @@ export class TinyMCEComponent implements AfterViewInit, OnInit, OnDestroy {
         }
     }
 
-
     private addElement(element: { name: string, type: string}) {
         let type: string;
         let elementClass: string;
@@ -249,7 +271,6 @@ export class TinyMCEComponent implements AfterViewInit, OnInit, OnDestroy {
 
         this.insertElement(baseUrl, type, elementId);
     }
-
 
     private insertElement(baseUrl: string, type: string, value: string, option?: string) {
 
@@ -407,5 +428,10 @@ export class TinyMCEComponent implements AfterViewInit, OnInit, OnDestroy {
     
     private resolveDragData(data: any, resolver: any): void {
         resolver(data);
+    }
+
+    private extractClass(classString: string): string {
+        let type = classString.split(' ')[0].slice(0, -5);
+        return type.indexOf('plomino') > -1 ? type : null;
     }
 }

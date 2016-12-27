@@ -33,7 +33,7 @@ declare let $: any;
     directives: [],
     providers: [],
     pipes: [PloneHtmlPipe],
-    changeDetection: ChangeDetectionStrategy.OnPush
+    // changeDetection: ChangeDetectionStrategy.OnPush
 })
 
 export class FieldSettingsComponent implements OnInit {
@@ -62,7 +62,7 @@ export class FieldSettingsComponent implements OnInit {
             })
             .subscribe((template) => {
                 this.formTemplate = template;
-                this.changeDetector.markForCheck();
+                this.changeDetector.detectChanges();
             }) 
     }
 
