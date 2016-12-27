@@ -1,21 +1,41 @@
 <div class="wrap-app">
   
-  <div class="well">
+  <div class="well sidebar">
 
     <plomino-palette>
     </plomino-palette>
     
-    <hr />
-    
     <plomino-tree [data]="data" 
                   [selected]="selected" 
                   (add)="onAdd($event)" 
-                  (openTab)="openTab($event)" 
-                  (isDragged)="isDragged = $event">
+                  (openTab)="openTab($event)">
     </plomino-tree>
   </div>
   
   <div class="main-app panel">
+    <div class="drop-zone-container"
+      @dropZoneState="isDragging && 
+             dragData !== null &&
+             (dragData['@type'] === 'PlominoForm' || 
+              dragData['@type'] === 'PlominoView')"
+              
+      *ngIf="isDragging && 
+             dragData !== null &&
+             (dragData['@type'] === 'PlominoForm' || 
+              dragData['@type'] === 'PlominoView')"
+      dnd-droppable
+      [allowDrop]="allowDrop()"
+      (onDropSuccess)="dropped()">
+      <div class="drop-zone-label">
+        <p class="glyphicon glyphicon-download" 
+            aria-hidden="true">
+        </p>
+        <p class="heading">
+          Drop Selected Item here
+        </p>
+      </div>
+    </div>
+    
     <tabset>
       <tab *ngFor="let tabz of tabs" 
           [heading]="" 
@@ -32,8 +52,7 @@
         </template>
         
         <plomino-tiny-mce *ngIf="tabz.editor==='layout'" 
-            [id]="tabz.url" 
-            [isDragged]="isDragged"
+            [id]="tabz.url"
             (isDirty)="tabz.isdirty=$event"
             (fieldSelected)="fieldSelected($event)"> 
         </plomino-tiny-mce>

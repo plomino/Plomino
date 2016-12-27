@@ -4,11 +4,17 @@ import {
     ViewChild,
     NgZone, 
     OnInit,
-    ChangeDetectorRef
+    ChangeDetectorRef,
+    trigger,
+    animate,
+    state,
+    style,
+    transition
 } from '@angular/core';
 
 // External Components
 import { TAB_DIRECTIVES }               from 'ng2-bootstrap/ng2-bootstrap';
+import { DND_DIRECTIVES }               from 'ng2-dnd/ng2-dnd';
 
 // Components
 import { TreeComponent }                from './tree-view/tree.component';
@@ -30,7 +36,8 @@ import {
     ElementService,
     ObjService,
     TabsService,
-    FieldsService
+    FieldsService,
+    DraggingService
 }                                       from './services';
 
 // Pipes 
@@ -51,6 +58,7 @@ declare let _: any;
         TreeComponent,
         PaletteComponent,
         TAB_DIRECTIVES,
+        DND_DIRECTIVES,
         TinyMCEComponent,
         ACEEditorComponent,
         PlominoModalComponent,
@@ -68,9 +76,26 @@ declare let _: any;
         ElementService, 
         ObjService, 
         TabsService, 
-        FieldsService
+        FieldsService,
+        DraggingService
     ],
-    pipes: [ExtractNamePipe]
+    pipes: [ExtractNamePipe],
+    animations: [
+        trigger('dropZoneState', [
+            state('*', style({
+                opacity: 1
+            })),
+            transition('void => *', [
+                style({
+                    opacity: 0
+                }),
+                animate(300)
+            ]),
+            transition('* => void', animate(300, style({
+                opacity: 0
+            })))
+        ])
+    ]
 })
 export class AppComponent {
     data: any;
@@ -81,12 +106,16 @@ export class AppComponent {
     isModalOpen: boolean = false;
     modalData: any;
 
+    isDragging: boolean = false;
+    dragData: any = null;
+
     aceNumber: number = 0;
 
     constructor(private treeService: TreeService,     
                 private elementService: ElementService, 
                 private objService: ObjService,
                 private tabsService: TabsService,
+                private draggingService: DraggingService,
                 private zone: NgZone,
                 private changeDetector: ChangeDetectorRef) { }
 
@@ -99,6 +128,13 @@ export class AppComponent {
         this.tabsService.getTabs()
             .subscribe((tabs) => {
                 this.tabs = tabs;
+            })
+
+        this.draggingService.getDragging()
+            .subscribe((dragData: any) => {
+                console.log(dragData);
+                this.isDragging = !!dragData;
+                this.dragData = dragData;
             })
     }
 
@@ -167,7 +203,17 @@ export class AppComponent {
     }
 
 
+    allowDrop() {
+        let dataType = this.dragData['@type'];
+        return () => dataType === 'PlominoForm' || dataType === 'PlominoView';
+    }
+
+    dropped() {
+        this.resolveData(this.dragData, this.dragData.resolver);
+    }
+
     openTab(tab: any) {
+        console.log(`Open this tab`, tab);
         this.tabsService.openTab(tab);
     }
 
@@ -196,5 +242,9 @@ export class AppComponent {
 
     fieldSelected(fieldId: string): void {
         this.tabsService.selectField(fieldId);
+    }
+
+    private resolveData(data: any, resolver: Function): void {
+        resolver(data);
     }
 }

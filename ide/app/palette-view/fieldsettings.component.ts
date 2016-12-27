@@ -51,7 +51,7 @@ export class FieldSettingsComponent implements OnInit {
                 this.field = field;
             })
             .flatMap((field: any) => {
-                if (field) {
+                if (field && field.id) {
                     return this.objService.getFieldSettings(field.url)
                 } else {
                     return Observable.of('');

@@ -14,7 +14,8 @@ import { DND_DIRECTIVES } from 'ng2-dnd/ng2-dnd';
 
 import { 
     ElementService,
-    TabsService 
+    TabsService,
+    DraggingService 
 } from '../services';
 
 import { ExtractNamePipe } from '../pipes';
@@ -31,7 +32,6 @@ export class TreeComponent implements OnInit {
     @Input() data: any;
     @Output() openTab = new EventEmitter();
     @Output() add = new EventEmitter();
-    @Output() isDragged = new EventEmitter();
     @ViewChildren('selectable') element: any;
     
     selected: any;
@@ -40,7 +40,8 @@ export class TreeComponent implements OnInit {
     previousSelected: any;
 
     constructor(private _elementService: ElementService,
-                private tabsService: TabsService) { }
+                private tabsService: TabsService,
+                public draggingService: DraggingService) { }
     
     ngOnInit() {
         this.tabsService.getActiveTab()
@@ -72,6 +73,14 @@ export class TreeComponent implements OnInit {
     }
     onAdd(event: any) {
         this.add.emit(event);
+    }
+
+    startDrag(data: any): void {
+        this.draggingService.setDragging(data);
+    }
+
+    endDrag(): void {
+        this.draggingService.setDragging(null);
     }
 
     sendSearch(query: string) {
