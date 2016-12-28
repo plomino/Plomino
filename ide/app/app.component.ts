@@ -4,6 +4,7 @@ import {
     ViewChild,
     NgZone, 
     OnInit,
+    AfterViewInit,
     ChangeDetectorRef,
     trigger,
     animate,
@@ -13,22 +14,24 @@ import {
 } from '@angular/core';
 
 // External Components
-import { TAB_DIRECTIVES }               from 'ng2-bootstrap/ng2-bootstrap';
-import { DND_DIRECTIVES }               from 'ng2-dnd/ng2-dnd';
+import { TAB_DIRECTIVES } from 'ng2-bootstrap/ng2-bootstrap';
+import { DND_DIRECTIVES } from 'ng2-dnd/ng2-dnd';
 
 // Components
-import { TreeComponent }                from './tree-view/tree.component';
-import { PaletteComponent }             from './palette-view/palette.component';
-import { TinyMCEComponent }             from './editors/tiny-mce.component';
-import { ACEEditorComponent }           from './editors/ace-editor.component';
-import { FormsSettingsComponent }       from './editors/settings/forms-settings.component';
-import { FieldsSettingsComponent }      from './editors/settings/fields-settings.component';
-import { ActionsSettingsComponent }     from './editors/settings/actions-settings.component';
-import { HideWhenSettingsComponent }    from './editors/settings/hide_when-settings.component';
-import { ViewsSettingsComponent }       from './editors/settings/views-settings.component';
-import { ColumnsSettingsComponent }     from './editors/settings/columns-settings.component';
-import { AgentsSettingsComponent }      from './editors/settings/agents-settings.component';
-import { PlominoModalComponent }        from './modal.component';
+import { TreeComponent } from './tree-view';
+import { PaletteComponent } from './palette-view';
+import {
+    TinyMCEComponent,
+    ACEEditorComponent,
+    FormsSettingsComponent,
+    FieldsSettingsComponent,
+    ActionsSettingsComponent,
+    HideWhenSettingsComponent,
+    ViewsSettingsComponent,
+    ColumnsSettingsComponent,
+    AgentsSettingsComponent 
+} from './editors';
+
 
 // Services
 import { 
@@ -38,17 +41,22 @@ import {
     TabsService,
     FieldsService,
     DraggingService
-}                                       from './services';
+} from './services';
 
 // Pipes 
-import { ExtractNamePipe }              from './pipes';
+import { ExtractNamePipe } from './pipes';
 
 // Interfaces
 import { IField } from './interfaces';
 
+// Utility Components
+import { PlominoModalComponent } from './utility';
+
 import 'lodash';
 
 declare let _: any;
+
+declare let tinymce: any;
 
 @Component({
     selector: 'plomino-app',
@@ -97,9 +105,9 @@ declare let _: any;
         ])
     ]
 })
-export class AppComponent {
+export class AppComponent implements OnInit, AfterViewInit {
+
     data: any;
-    selected: any;
     selectedField: IField;
     tabs: Array<any> = [];
 
@@ -132,10 +140,16 @@ export class AppComponent {
 
         this.draggingService.getDragging()
             .subscribe((dragData: any) => {
-                console.log(dragData);
                 this.isDragging = !!dragData;
                 this.dragData = dragData;
             })
+    }
+
+    ngAfterViewInit() {
+        this.tabsService.getActiveTab()
+            .subscribe((activeTab: any) => {
+                
+            });
     }
 
     onAdd(event: any) {
@@ -202,7 +216,6 @@ export class AppComponent {
         return -1;
     }
 
-
     allowDrop() {
         let dataType = this.dragData['@type'];
         return () => dataType === 'PlominoForm' || dataType === 'PlominoView';
@@ -213,7 +226,6 @@ export class AppComponent {
     }
 
     openTab(tab: any) {
-        console.log(`Open this tab`, tab);
         this.tabsService.openTab(tab);
     }
 
@@ -240,8 +252,8 @@ export class AppComponent {
         this.tabsService.setActiveTab(tab);
     }
 
-    fieldSelected(fieldId: string): void {
-        this.tabsService.selectField(fieldId);
+    fieldSelected(fieldData: any): void {
+        this.tabsService.selectField(fieldData);
     }
 
     private resolveData(data: any, resolver: Function): void {

@@ -27,13 +27,14 @@ export class TabsService {
   }
 
   setActiveTab(tab: any): void {
-    let tabs = this.tabs$.getValue();
+    
+    // if (tab.active) {
+    //   return;
+    // }
+
+    let tabs = this.tabs$.getValue().slice(0);
     let normalizedTab: any = this.retrieveTab(this.tree, tab);
     let selectedTab: any = _.find(tabs, { url: tab.url, editor: tab.editor });
-
-    this.zone.run(() => {
-      selectedTab.active = true;
-    });
   
     tabs.forEach(tab => { tab.active = (tab.url === selectedTab.url) });
 
@@ -70,10 +71,17 @@ export class TabsService {
     this.tabs$.next(tabs);
   }
 
-  selectField(fieldId: string): void {
-    console.log(fieldId);
-    let field = Object.assign({}, { id: fieldId, url: this.activeTab$.getValue().url + '/' + fieldId });
-    console.log(field);
+  selectField(fieldData: { id: string, type: string }): void {
+    let field: any = null;
+
+    if (fieldData && fieldData.id) {
+      field = Object.assign({}, { 
+        id: fieldData.id, 
+        url: this.activeTab$.getValue().url + '/' + fieldData.id, 
+        type: fieldData.type 
+      });
+    }
+
     this.activeField$.next(field);
   }
 
@@ -82,7 +90,7 @@ export class TabsService {
   }
 
   getActiveField(): Observable<any> {
-    return this.activeField$.asObservable();
+    return this.activeField$.asObservable().share();
   }
 
   getTabs(): Observable<any[]> {
