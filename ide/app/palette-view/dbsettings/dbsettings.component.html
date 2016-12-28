@@ -1,4 +1,18 @@
 <div class="db-settings-wrapper">
-  <button (click)="submit()">Save</button>
+  <br>
+  <div class="btn-group btn-group-justified">
+    <div class="btn-group">
+      <button class="btn btn-primary" 
+            (click)="submitForm()">
+        Save
+      </button>
+    </div>
+    <div class="btn-group">
+      <button class="btn btn-link"
+            (click)="cancelForm()">
+        Cancel
+      </button>
+    </div>
+  </div>
   <div #dbform [innerHTML]="dbForm | safePloneHtml"></div>
 </div>

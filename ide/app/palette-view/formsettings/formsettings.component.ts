@@ -46,24 +46,10 @@ export class FormSettingsComponent implements OnInit {
                 private tabsService: TabsService) {}
 
     ngOnInit() {
-        this.tabsService.getActiveTab()
-            .do((tab) => {
-                this.tab = tab;
-            })
-            .flatMap((tab: any) => {
-                if (tab) {
-                    return this.objService.getFormSettings(tab.url)
-                } else {
-                    return Observable.of('');
-                }
-            })
-            .subscribe((template) => {
-                this.formSettings = template;
-                this.changeDetector.markForCheck();
-            });
+        this.getSettings();
     }
 
-    saveSettings() {
+    submitForm() {
         let form: HTMLFormElement = $(this.formElem.nativeElement).find('form').get(0);
         let formData: FormData = new FormData(form);
         
@@ -83,6 +69,28 @@ export class FormSettingsComponent implements OnInit {
                 this.changeDetector.markForCheck();
             }, err => { 
                 console.error(err) 
+            });
+    }
+
+    cancelForm() {
+        this.getSettings();
+    }
+
+    private getSettings() {
+        this.tabsService.getActiveTab()
+            .do((tab) => {
+                this.tab = tab;
+            })
+            .flatMap((tab: any) => {
+                if (tab) {
+                    return this.objService.getFormSettings(tab.url)
+                } else {
+                    return Observable.of('');
+                }
+            })
+            .subscribe((template) => {
+                this.formSettings = template;
+                this.changeDetector.markForCheck();
             });
     }
 }

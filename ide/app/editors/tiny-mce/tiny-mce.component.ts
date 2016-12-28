@@ -104,7 +104,15 @@ export class TinyMCEComponent implements AfterViewInit, OnInit, OnDestroy {
             });
     }
 
-    ngOnInit() {
+    ngOnInit() { }
+    
+    ngOnDestroy() {
+        this.draggingSubscription.unsubscribe();
+        this.insertionSubscription.unsubscribe();
+        tinymce.EditorManager.execCommand('mceRemoveEditor',true, this.id);
+    }
+
+    ngAfterViewInit(): void {
         let tiny = this;
         tinymce.init({
             selector:'.tinymce-wrap',
@@ -154,32 +162,7 @@ export class TinyMCEComponent implements AfterViewInit, OnInit, OnDestroy {
             height : "780",
             resize: false
         });
-        this.editorInstance = tinymce.activeEditor;
         this.getFormLayout();
-    }
-    
-    ngOnDestroy() {
-        this.draggingSubscription.unsubscribe();
-        this.insertionSubscription.unsubscribe();
-    }
-
-    ngAfterViewInit(): void {
-        // let $editor: any = $(this.editorElement.nativeElement).find('iframe');
-        // let $editorWorkspace = $editor.contentWindow ? $editor.contentWindow : $editor.contentDocument.defaultView;
-        // console.log($editorWorkspace);
-        // $editorWorkspace.on('click', (ev: Event) => {
-        //     console.log(ev);
-        // });
-        // editor.on('click', (ev: Event) => {
-        //     console.log(`clicked `, ev);
-        //     let $target = $(ev.target);
-        //     let $targetId = $target.data('plominoid');
-        //     let $targetParentId = $target.parent().data('plominoid');
-        //     if ($targetId || $targetParentId) {
-        //         let id = $target.data('plominoid') || $targetParentId;
-        //         this.fieldSelected.emit(id);
-        //     }
-        // });
     }
 
     getFormLayout() {
@@ -223,7 +206,7 @@ export class TinyMCEComponent implements AfterViewInit, OnInit, OnDestroy {
 
         let elementId: string = element.name.split('/').pop();
         let baseUrl: string = element.name.slice(0, element.name.lastIndexOf('/'));
-        let editor: any = tinymce.activeEditor;
+        let editor: any = tinymce.get(this.id);
         
         switch(element.type) {
             case 'PlominoField':
@@ -274,11 +257,15 @@ export class TinyMCEComponent implements AfterViewInit, OnInit, OnDestroy {
 
     private insertElement(baseUrl: string, type: string, value: string, option?: string) {
 
-		let ed: any = tinymce.activeEditor;
+		let ed: any = tinymce.get(this.id);
         let selection: any = ed.selection.getNode();
         let title: string;
         let plominoClass: string;
         let content: string;
+
+        for (let e = 0; e < tinymce.editors.length; e += 1) {
+            console.log(tinymce.editors[e]);
+        }
 
         var container = 'span';
 

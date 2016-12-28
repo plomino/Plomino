@@ -48,22 +48,7 @@ export class FieldSettingsComponent implements OnInit {
                 private changeDetector: ChangeDetectorRef) { }
 
     ngOnInit() {
-        this.tabsService.getActiveField()
-            .do((field) => {
-                console.log(`Field received in fieldssettings `, field);
-                this.field = field;
-            })
-            .flatMap((field: any) => {
-                if (field && field.id) {
-                    return this.objService.getFieldSettings(field.url)
-                } else {
-                    return Observable.of('');
-                }
-            })
-            .subscribe((template) => {
-                this.formTemplate = template;
-                this.changeDetector.detectChanges();
-            }) 
+        this.loadSettings();
     }
 
     submitForm() {
@@ -87,5 +72,28 @@ export class FieldSettingsComponent implements OnInit {
             }, err => { 
                 console.error(err) 
             });
+    }
+
+    cancelForm() {
+        this.loadSettings();
+    }
+
+    private loadSettings() {
+        this.tabsService.getActiveField()
+            .do((field) => {
+                console.log(`Field received in fieldssettings `, field);
+                this.field = field;
+            })
+            .flatMap((field: any) => {
+                if (field && field.id) {
+                    return this.objService.getFieldSettings(field.url)
+                } else {
+                    return Observable.of('');
+                }
+            })
+            .subscribe((template) => {
+                this.formTemplate = template;
+                this.changeDetector.detectChanges();
+            }); 
     }
 }

@@ -46,24 +46,35 @@ export class AddComponent {
             {
                 title: 'Form', 
                 components: [
-                    {title: 'Field', icon: 'tasks', type: 'PlominoField', addable: true},
-                    {title: 'Hide When', icon: 'sunglasses', type: 'PlominoHidewhen', addable: true},
-                    {title: 'Action', icon: 'cog', type: 'PlominoAction', addable: true},
-                ]
+                    { title: 'Label', icon: '', type: 'PlominoLabel', addable: true },
+                    { title: 'Field', icon: 'tasks', type: 'PlominoField', addable: true },
+                    { title: 'Hide When', icon: 'sunglasses', type: 'PlominoHidewhen', addable: true },
+                    { title: 'Action', icon: 'cog', type: 'PlominoAction', addable: true },
+                ],
+                hidden: () => {
+                    return false;
+                }
             },
             {
                 title: 'View', 
                 components: [
-                    {title: 'Column', icon: 'stats', type: 'column', addable: true},
-                    {title: 'Action', icon: 'cog', type: 'action', addable: true},
-                ]
+                    { title: 'Column', icon: 'stats', type: 'column', addable: true },
+                    { title: 'Action', icon: 'cog', type: 'action', addable: true },
+                ],
+                hidden: (tab: any) => {
+                    if (!tab) return;
+                    return tab.type === 'PlominoForm';
+                }
             },
             {
                 title: 'DB', 
                 components: [
-                    {title: 'Form', icon: 'th-list', type: 'PlominoForm', addable: true},
-                    {title: 'View', icon: 'list-alt', type: 'PlominoView', addable: true},
-                ]
+                    { title: 'Form', icon: 'th-list', type: 'PlominoForm', addable: true },
+                    { title: 'View', icon: 'list-alt', type: 'PlominoView', addable: true },
+                ],
+                hidden: () => {
+                    return false;
+                }
             }
 
         ];
@@ -94,7 +105,6 @@ export class AddComponent {
     // }
 
     add(type: any) {
-        console.log(`Add fired`);
         // XXX: Handle the adding of components. This needs to take into account
         // the currently selected object. i.e. if we're on a Form, the
         // field/action/hidewhen should be created then added to the form.
@@ -116,8 +126,8 @@ export class AddComponent {
         switch (type) {
             case 'PlominoForm':
                 let formElement: any = {
-                    "@type": "PlominoForm",
-                    "title": "New Form"
+                    '@type': 'PlominoForm',
+                    'title': 'New Form'
                 };
                 this.elementService.postElement('../../', formElement).subscribe((response) => {
                     this.treeService.updateTree().then(() => {
@@ -135,8 +145,8 @@ export class AddComponent {
                 break;
             case 'PlominoView':
                 let viewElement: any = {
-                    "@type": "PlominoView",
-                    "title": "New View"
+                    '@type': 'PlominoView',
+                    'title': 'New View'
                 };
                 this.elementService.postElement('../../', viewElement).subscribe((response) => {
                     this.treeService.updateTree().then(() => {
@@ -155,6 +165,23 @@ export class AddComponent {
                 // Get the ID of the new element back in the response.
                 // Update the Tree
                 // Open the View in the editor
+                break;
+            case 'PlominoLabel':
+                let field: any = {
+                    '@type': 'PlominoLabel',
+                    title: 'defaultLabel'
+                };
+                this.elementService.postElement(this.activeTab.url, field)
+                .subscribe((response) => {
+                    let extendedField = Object.assign({}, field, {
+                        name: `${this.activeTab.url}/${response.created}`
+                    });
+
+                    this.treeService.updateTree()
+                    .then(() => {
+                        this.fieldsService.insertField(extendedField);
+                    });
+                });
                 break;
             case 'PlominoField':
                 field = {
@@ -231,6 +258,11 @@ export class AddComponent {
                     '@type': 'PlominoView'
                 };
                 break;
+            case 'PlominoLabel':
+                data = {
+                  '@type': 'PlominoLabel'  
+                };
+                break;
             case 'PlominoField':
                 data = {
                     '@type': 'PlominoField'
@@ -238,7 +270,7 @@ export class AddComponent {
                 break;
             case 'PlominoHidewhen':
                 data = {
-                    '@type': 'PlominoHidewhen',
+                    '@type': 'PlominoHidewhen'
                 }
                 break;
             case 'PlominoAction':
@@ -257,14 +289,11 @@ export class AddComponent {
          * palette, which needs to be populated!
          * @Resolver will be called on drop event in tinymce.component
          */
-        console.log(`Type to drag `, type);
         if (type === 'PlominoForm' || type === 'PlominoView') {
-            console.log(`This is not form | view type`);
             Object.assign(draggingData, data, {
-                resolve: false
+                resolved: false
             });
         } else {
-            console.log(`This is form | view type`);
             Object.assign(draggingData, data, {
                 parent: this.activeTab.url,
                 resolved: false

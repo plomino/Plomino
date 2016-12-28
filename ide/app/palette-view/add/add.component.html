@@ -1,5 +1,6 @@
 <div class="add-wrapper">
-    <group *ngFor="let group of addableComponents">
+    <group *ngFor="let group of addableComponents"
+        [hidden]="group.hidden(activeTab)">
         <div class="item">
             <comp *ngFor="let comp of group.components">
             <button type="button" 

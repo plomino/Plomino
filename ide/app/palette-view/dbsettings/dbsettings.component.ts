@@ -38,10 +38,10 @@ export class DBSettingsComponent {
 
     dbForm: string = '';
 
-    constructor(private _objService: ObjService,
+    constructor(private objService: ObjService,
                 private changeDetector: ChangeDetectorRef) { }
 
-    submit() {
+    submitForm() {
         // this.el is the div that contains the Edit Form
         // We want to seralize the data in the form, submit it to the form
         // action. If the response is <div class="ajax_success">, we re-fetch
@@ -52,13 +52,13 @@ export class DBSettingsComponent {
         
         formData.append('form.buttons.save', 'Save');
         
-        this._objService.submitDB(formData)
+        this.objService.submitDB(formData)
             .flatMap((responseHtml) => {
                 let $responseHtml = $(responseHtml);
                 if ($responseHtml.find('dl.error')) {
                     return Observable.of(responseHtml);
                 } else {
-                    return this._objService.getDB();
+                    return this.objService.getDB();
                 }
             })
             .subscribe(responseHtml => {
@@ -69,8 +69,16 @@ export class DBSettingsComponent {
             });
     }
 
+    cancelForm() {
+        this.getDbSettings();
+    }
+
     ngOnInit() {
-        this._objService.getDB().subscribe(html => { 
+        this.getDbSettings();
+    }
+
+    private getDbSettings() {
+        this.objService.getDB().subscribe(html => { 
             this.dbForm = html;
             this.changeDetector.markForCheck();
         }, err => { 
