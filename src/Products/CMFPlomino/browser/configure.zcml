@@ -112,6 +112,30 @@
         />
 
     <browser:page
+        for="Products.CMFPlomino.contents.form.IPlominoForm"
+        name="add-template"
+        class=".helpers.MacroTemplateView"
+        attribute="addTemplate"
+        permission="plomino.DESIGN_PERMISSION"
+        />
+
+    <browser:page
+        for="Products.CMFPlomino.contents.form.IPlominoForm"
+        name="list-templates"
+        class=".helpers.MacroTemplateView"
+        attribute="listTemplates"
+        permission="plomino.DESIGN_PERMISSION"
+        />
+
+    <browser:page
+        for="Products.CMFPlomino.contents.form.IPlominoForm"
+        name="rename-group"
+        class=".helpers.MacroTemplateView"
+        attribute="renameGroup"
+        permission="plomino.DESIGN_PERMISSION"
+        />
+
+    <browser:page
         for="Products.CMFPlomino.interfaces.IPlominoContext"
         name="document"
         permission="zope.Public"

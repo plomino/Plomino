@@ -1,5 +1,6 @@
 import json
 import logging
+from Products.Five import BrowserView
 import re
 
 from plone.behavior.interfaces import IBehaviorAssignable
@@ -8,7 +9,7 @@ from z3c.form.interfaces import IWidget, NO_VALUE, IDataManager
 from z3c.form.widget import Widget
 from zope import schema
 from zope.component import adapts, getMultiAdapter
-from zope.interface import implementsOnly
+from zope.interface import implementsOnly, alsoProvides
 from zope.schema.interfaces import IList
 
 from zope.schema import getFieldsInOrder
@@ -21,11 +22,16 @@ from plone.supermodel import model
 from zope.interface import implementer
 from zope.interface import provider
 from ..config import SCRIPT_ID_DELIMITER, FIELD_MODES, FIELD_TYPES
+import plone.api
 
 logger = logging.getLogger('Plomino')
 
 __author__ = 'dylanjay'
 
+
+###########################################
+# A multi line rule widget based on select2
+###########################################
 
 class IMacroWidget(IWidget):
     """ Widget for collecting data from a list of possible subforms
@@ -197,6 +203,12 @@ class Helpers(object):
         if value is None:
             value = []
         self.context.helpers=value
+
+
+
+#######################################################
+# subscriber for updating formulas based on macro rules
+#######################################################
 
 MACRO_FMT = '### START {id} ###{code}### END {id} ###'
 CODE_REGEX = '(((?!###)(.|\n|\r))+)'
@@ -466,3 +478,99 @@ def update_helpers(obj, event):
         # TODO: should not insert code that not changed or don't use macro
         dm.set(code)
         obj.helpers = helpers
+
+######################################
+# View for template handling REST api
+######################################
+
+
+class MacroTemplateView(BrowserView):
+
+    def __init__(self, context, request):
+        self.context = context
+        self.request = request
+        self.form = self.context
+
+    def listTemplates(self):
+        db = self.context.getParentDatabase()
+        found = set()
+
+        dbs = []
+        for path in db.import_macros:
+            ## restrictedTraverse only ascii path, can't be unicode
+            path = asAscii(path)
+            if path == '.':
+                dbs.append(db)
+            else:
+                try:
+                    dbs.append(db.restrictedTraverse(path))
+                except KeyError:
+                    #TODO: maybe improve import so bad macro imports aren't stored?
+                    continue
+
+        forms = []
+        for _db in dbs:
+            forms.extend(_db.getForms())
+
+        for form in forms:
+            if form.id in found:
+                continue
+            if not any([form.id.startswith(p) for p in ["template_"]]):
+                continue
+            found.add(form.id)
+            group = '' # not sure if we will use groups in the palette
+            yield (form.Title(), form.id, path, group)
+        yield ('And', 'and', '#and', 'logic')
+        yield ('Or', 'or', '#or', 'logic')
+        yield ('Not', 'not', '#not', 'logic')
+
+    def addTemplate(self, templateid):
+        """ api to insert a template into the form.
+        """
+        self.request.RESPONSE.setHeader(
+            'content-type', 'text/plain; charset=utf-8')
+        if self.request.method != "POST":
+            return '' # some error?
+
+        alsoProvides(
+            self.request, plone.protect.interfaces.IDisableCSRFProtection)
+        data = json.loads(self.request.BODY)
+
+        db = self.context.getParentDatabase()
+        curpath = '/'.join(self.context.getPhysicalPath())
+
+        # take the id of the template. prefix it to every contained object.
+        # see if any fields already exist
+        # if exists, add a number
+        # make a copy of each object
+        # return the html (replacing with the new ids).
+        ids = set([])
+        helperid, form, doc = load_macro(templateid, {}, db, ids, curpath)
+        html = form.form_layout
+
+        return self.renameGroup(form, helperid or templateid, None, html)
+
+
+    def renameGroup(self, form, groupid, newgroupid, html):
+        # if form is None it's a rename
+
+
+        context_ids = set(self.form.object_ids())
+
+        # find a prefix for all the subitems that is unique
+        i = 1
+        while any(newgroupid+'_'+item.id in context_ids for item in form.context ):
+            newgroupid = "%s_%i" % (groupid, i)
+            i += 1
+
+        # now we have a unique prefix. Copy or move all the items
+        if form == self.form:
+            action = plone.api.content.move
+        else:
+            action = plone.api.content.copy
+        for item in form.contents:
+            action(item, self.form, id=newgroupid+'_'+item.id)
+
+        # TODO now adjust the html of the layout with the new ids and return it
+
+        return json.dumps({'groupid': groupid, 'layout': html})
