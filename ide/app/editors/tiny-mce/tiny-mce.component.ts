@@ -37,14 +37,19 @@ declare var tinymce: any;
 @Component({
     selector: 'plomino-tiny-mce',
     template: `
-    <form #theEditor class="tiny-editor"><textarea class="tinymce-wrap" [id]="id"></textarea></form>
+    <form #theEditor 
+        class="tiny-editor">
+        <textarea class="tinymce-wrap" 
+                [id]="id">
+        </textarea>
+    </form>
     <div *ngIf="isDragged" 
+        dnd-droppable 
+        class="drop-zone"
         [style.height]="theEditor.offsetHeight+'px'" 
         [style.margin-top]="'-'+theEditor.offsetHeight+'px'" 
-        class="drop-zone" 
-        dnd-droppable 
-        [allowDrop]="allowDrop()" 
-        (onDropSuccess)="dropped()">
+        [allowDrop]="allowDrop()"  
+        (onDropSuccess)="dropped($event)">
     </div>
     `,
     styles: [`
@@ -190,7 +195,27 @@ export class TinyMCEComponent implements AfterViewInit, OnInit, OnDestroy {
         return () => this.dragData.parent === this.id;
     }
 
-    dropped() {
+    dropped({ mouseEvent }: any) {
+        let offset = $(this.editorElement.nativeElement)
+                        .find(`iframe[id*='${this.id}']`)
+                        .offset();
+        let editor = tinymce.get(this.id);
+        let x = Math.round(mouseEvent.clientX - offset.left);
+        let y = Math.round(mouseEvent.clientY - offset.top);
+        let rng = this.getCaretFromEvent(x, y, editor);
+
+        // if (startContainer.nodeName !== 'body') {
+        //     let newRng = tinymce.DOM.createRng();
+        //     let newStartOffset = startOffset !== endOffset ? endOffset : startOffset;
+        //     let newEndOffset = endOffset;
+        //     newRng.setStart(startContainer.parentNode, newStartOffset);
+        //     newRng.setEnd(startContainer.parentNode, newEndOffset);
+        //     editor.selection.setRng(newRng);
+        // } else {
+        //     editor.selection.setRng(rng);
+        // }
+        
+        editor.selection.setRng(rng);
         if (this.dragData.resolved) {
             this.addElement(this.dragData);
         } else {
@@ -420,5 +445,9 @@ export class TinyMCEComponent implements AfterViewInit, OnInit, OnDestroy {
     private extractClass(classString: string): string {
         let type = classString.split(' ')[0].slice(0, -5);
         return type.indexOf('plomino') > -1 ? type : null;
+    }
+
+    private getCaretFromEvent(clientX: any, clientY: any, editor: any) {
+        return tinymce.dom.RangeUtils.getCaretRangeFromPoint(clientX, clientY, editor.getDoc());
     }
 }
