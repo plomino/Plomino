@@ -121,8 +121,8 @@ export class TinyMCEComponent implements AfterViewInit, OnInit, OnDestroy {
         let tiny = this;
         tinymce.init({
             selector:'.tinymce-wrap',
-            plugins: ["code", "save", "link"],
-            toolbar: "save | undo redo | formatselect | bold italic underline | alignleft aligncenter alignright alignjustify | bullist numlist | outdent indent | unlink link | image",
+            plugins: ['code', 'save', 'link', 'noneditable'],
+            toolbar: 'save | undo redo | formatselect | bold italic underline | alignleft aligncenter alignright alignjustify | bullist numlist | outdent indent | unlink link | image',
             save_onsavecallback: () => { this.saveFormLayout() },
             setup : (editor: any) => {
                 editor.on('change', (e: any) => {
@@ -162,7 +162,7 @@ export class TinyMCEComponent implements AfterViewInit, OnInit, OnDestroy {
                     });
                 });
             },
-            content_style: require('./tiny-mce-content.css'),
+            content_style: require('./tinymce.css'),
 		    menubar: "file edit insert view format table tools",
             height : "780",
             resize: false
