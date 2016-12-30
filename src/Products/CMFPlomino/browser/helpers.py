@@ -78,7 +78,8 @@ class MacroWidget(Widget):
     def update(self):
         logger.debug('Method: Widget update')
         super(MacroWidget, self).update()
-        self.rules = ['\t'.join([json.dumps(macro) for macro in rule]) for rule in self.value]
+        rules = self.value if self.value is not None else []
+        self.rules = ['\t'.join([json.dumps(macro) for macro in rule]) for rule in rules]
         # We always need an empty rule at the end
         self.rules.append("")
 
