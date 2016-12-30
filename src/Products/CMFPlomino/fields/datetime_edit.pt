@@ -10,7 +10,7 @@
     ymd python:('%Y' in format or '%y' in format);
     mandatory python: 'mandatory' if field.mandatory else '';
     widget python:field.widget;">
-    <tal:widget tal:condition="python:widget=='SINGLE_INPUT'">
+    <tal:widget tal:condition="python:widget=='SERVER'">
         <tal:block tal:condition="python:v">
             <tal:define tal:define="id field/id;
                 show_hm hm|nothing;
@@ -44,7 +44,7 @@
                 data-pat-pickadate python:field.getSettings().getJSFormat();
                 value inputvalue">
     </tal:widget>
-    <tal:widget tal:condition="python:widget=='SERVER'">
+    <tal:widget tal:condition="python:widget=='HTML5'">
         <tal:block tal:condition="python:v">
             <tal:define tal:define="id field/id;
                 show_hm hm|nothing;
