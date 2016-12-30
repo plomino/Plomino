@@ -26,13 +26,14 @@ class IDatetimeField(model.Schema):
 
     widget = schema.Choice(
         vocabulary=SimpleVocabulary.fromItems([
-            ("Default", "SERVER"),
+            ("Default", "SINGLE_INPUT"),
             ("Combination", "COMBO"),
-            ("JQuery datetime widget", "JQUERY")
+            ("JQuery datetime widget", "JQUERY"),
+            ("Native", "SERVER")
         ]),
         title=u'Widget',
         description=u'Field rendering',
-        default="SERVER",
+        default="SINGLE_INPUT",
         required=True)
 
     format = schema.TextLine(

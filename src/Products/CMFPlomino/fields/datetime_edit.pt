@@ -10,6 +10,38 @@
     ymd python:('%Y' in format or '%y' in format);
     mandatory python: 'mandatory' if field.mandatory else '';
     widget python:field.widget;">
+    <tal:widget tal:condition="python:widget=='SINGLE_INPUT'">
+        <tal:block tal:condition="python:v">
+            <tal:define tal:define="id field/id;
+                show_hm hm|nothing;
+                show_ymd ymd|nothing;
+                show_sec sec|nothing;
+                ymd_fmt python:show_ymd and '%Y-%m-%d' or '';
+                hm_fmt python:show_hm and 'T%H:%M' or '';
+                sec_fmt python:show_sec and ':%S' or '';
+                inputvalue python:isinstance(v, basestring) and v or v.strftime(format.strip() if format else ''.join([ymd_fmt, hm_fmt, sec_fmt]).strip());">
+                <input tal:attributes="
+                    type python:(show_hm and show_ymd and 'datetime-local') or (show_hm and 'time') or (show_ymd and 'date');
+                    min python: (starting_year and str(starting_year)+'-01-01') or '';
+                    name field/id;
+                    id field/id;
+                    value inputvalue;
+                    ">
+            </tal:define>
+        </tal:block>
+        <tal:block tal:condition="python:not(v)">
+            <tal:define tal:define="id field/id;
+                show_hm hm|nothing;
+                show_ymd ymd|nothing;">
+                <input tal:attributes="
+                    type python:(show_hm and show_ymd and 'datetime-local') or (show_hm and 'time') or (show_ymd and 'date');
+                    min python: (starting_year and str(starting_year)+'-01-01') or '';
+                    name field/id;
+                    id field/id;
+                    ">
+            </tal:define>
+        </tal:block>
+    </tal:widget>
     <tal:widget tal:condition="python: widget=='JQUERY'">
         <input type="text" class="pat-pickadate"
             tal:define="inputvalue python: '' if not v else v.strftime('%Y-%m-%d %H:%M');"
