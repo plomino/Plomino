@@ -68,6 +68,11 @@ class DatetimeField(BaseField):
 
     def validate(self, submittedValue):
         """Validate date time value"""
+        if self.context.field_mode == 'EDITABLE' and \
+                self.context.widget == 'SERVER':
+            logger.info('Method: datetime validate id {} value {}'.format(
+                self.context.id, submittedValue))
+            #import pdb; pdb.set_trace()
         if type(submittedValue) is DateTime:
             return []
         errors = []
