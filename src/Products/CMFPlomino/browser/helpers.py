@@ -78,7 +78,9 @@ class MacroWidget(Widget):
     def update(self):
         logger.debug('Method: Widget update')
         super(MacroWidget, self).update()
-        self.rules = json.dumps(self.value if self.value else [])
+        self.rules = ['\t'.join([json.dumps(macro) for macro in rule]) for rule in self.value]
+        # We always need an empty rule at the end
+        self.rules.append("")
 
         # TODO: means helper has no access to local db. We probably needs to fix
         # this so it can introspect it
@@ -112,7 +114,7 @@ class MacroWidget(Widget):
             # rule is a json encoded list of dicts or single dict
             if not rule.strip():
                 continue
-            rule = [json.loads(r) for r in rule.split('\t')]
+            rule = [json.loads(r) for r in rule.split('\t') if r.strip() != ""]
             #rule = json.loads(u"[%s]"%rule)
             #TODO: strip out _authenticator and other gumf
             res.append(rule)
