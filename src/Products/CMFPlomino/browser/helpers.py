@@ -601,9 +601,9 @@ class MacroTemplateView(BrowserView):
         new_ids = []
         for id in ids:
             item = form[id]
-            new_id = new_id(newgroupid,item.id)
-            action(item, self.form, id=new_id)
-            new_ids.append(new_id)
+            newid = new_id(newgroupid,item.id)
+            action(item, self.form, id=newid)
+            new_ids.append(newid)
 
 
         # TODO now adjust the html of the layout with the new ids and return it
