@@ -608,7 +608,7 @@ class MacroTemplateView(BrowserView):
 
         # TODO now adjust the html of the layout with the new ids and return it
 
-        return {'groupid': newgroupid, 'group_contents':new_ids}
+        return {'groupid': newgroupid, 'group_contents':new_ids, 'old_contents':ids}
 
 
 def remove_prefix(s, prefix):
