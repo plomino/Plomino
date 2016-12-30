@@ -8,7 +8,7 @@ var helpers = require('./helpers');
 
 const ENV = process.env.NODE_ENV = process.env.ENV = 'production';
 
-module.exports = webpackMerge(commonConfig, {
+module.exports = webpackMerge(commonConfig.PLONE.production, commonConfig, {
     output: {
         path: helpers.root('../src/Products/CMFPlomino/browser/static/ide/'),
         filename: '[name].js',
@@ -29,3 +29,5 @@ module.exports = webpackMerge(commonConfig, {
         })
     ]
 });
+
+

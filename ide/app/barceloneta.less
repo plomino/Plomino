@@ -1,0 +1,171 @@
+//*// PLONE 5 BARCELONETA LESS //*//
+
+//*// Font families
+@import "@{barcelonetaPath}/less/fonts.plone.less";
+
+//*// Core variables and mixins
+@import "@{barcelonetaPath}/less/variables.plone.less";
+@import "@{barcelonetaPath}/less/mixin.prefixes.plone.less";
+@import "@{barcelonetaPath}/less/mixin.tabfocus.plone.less";
+@import "@{barcelonetaPath}/less/mixin.images.plone.less";
+@import "@{barcelonetaPath}/less/mixin.forms.plone.less";
+@import "@{barcelonetaPath}/less/mixin.borderradius.plone.less";
+@import "@{barcelonetaPath}/less/mixin.buttons.plone.less";
+@import "@{barcelonetaPath}/less/mixin.clearfix.plone.less";
+@import "@{barcelonetaPath}/less/mixin.gridframework.plone.less"; //grid Bootstrap
+@import "@{barcelonetaPath}/less/mixin.grid.plone.less"; //grid Bootstrap
+// @import "@{barcelonetaPath}/less/mixin.font.plone.less";  //see below
+
+//*// mixin.font.plone.less must re-implemented for Webpack
+//*// @local is broken with textract-text-webpack-plugin ^1.0.1
+.font-face(@font-path; @file-name; @font-family; @font-weight; @font-style; @svg-id; @local, ~'';) {
+  @font-face {
+    font-family: @font-family;
+    src: url('@{barcelonetaPath}/less/@{font-path}@{file-name}.eot');
+    src: url('@{barcelonetaPath}/less/@{font-path}@{file-name}.eot?#iefix') format('embedded-opentype'),
+         url('@{barcelonetaPath}/less/@{font-path}@{file-name}.woff') format('woff'),
+         url('@{barcelonetaPath}/less/@{font-path}@{file-name}.ttf') format('truetype'),
+         url('@{barcelonetaPath}/less/@{font-path}@{file-name}.svg#@{svg-id}') format('svg');
+    font-weight: @font-weight;
+    font-style: @font-style;
+  }
+}
+
+//*// Reset and dependencies
+@import "@{barcelonetaPath}/less/normalize.plone.less";
+@import "@{barcelonetaPath}/less/print.plone.less";
+
+//*// Core CSS
+@import "@{barcelonetaPath}/less/scaffolding.plone.less";
+@import "@{barcelonetaPath}/less/type.plone.less";
+@import "@{barcelonetaPath}/less/code.plone.less";
+//@import "@{barcelonetaPath}/less/deco.plone.less"; //uncomment for deco variant
+@import "@{barcelonetaPath}/less/grid.plone.less"; //grid Bootstrap
+@import "@{barcelonetaPath}/less/tables.plone.less";
+@import "@{barcelonetaPath}/less/forms.plone.less";
+@import "@{barcelonetaPath}/less/buttons.plone.less";
+@import "@{barcelonetaPath}/less/states.plone.less";
+
+//*// Components
+@import "@{barcelonetaPath}/less/breadcrumbs.plone.less";
+@import "@{barcelonetaPath}/less/pagination.plone.less";
+@import "@{barcelonetaPath}/less/formtabbing.plone.less"; //pattern
+@import "@{barcelonetaPath}/less/views.plone.less";
+@import "@{barcelonetaPath}/less/thumbs.plone.less";
+@import "@{barcelonetaPath}/less/alerts.plone.less";
+@import "@{barcelonetaPath}/less/portlets.plone.less";
+@import "@{barcelonetaPath}/less/controlpanels.plone.less";
+@import "@{barcelonetaPath}/less/tags.plone.less";
+//@import "@{barcelonetaPath}/less/contents.plone.less"; //fontello
+
+//*// Patterns
+@import "@{barcelonetaPath}/less/accessibility.plone.less";
+@import "@{barcelonetaPath}/less/toc.plone.less";
+@import "@{barcelonetaPath}/less/dropzone.plone.less";
+@import "@{barcelonetaPath}/less/modal.plone.less";
+@import "@{barcelonetaPath}/less/pickadate.plone.less";
+@import "@{barcelonetaPath}/less/sortable.plone.less";
+@import "@{barcelonetaPath}/less/tablesorter.plone.less";
+@import "@{barcelonetaPath}/less/tooltip.plone.less";
+@import "@{barcelonetaPath}/less/tree.plone.less";
+
+//*// Structure
+@import "@{barcelonetaPath}/less/header.plone.less";
+@import "@{barcelonetaPath}/less/sitenav.plone.less";
+@import "@{barcelonetaPath}/less/main.plone.less";
+@import "@{barcelonetaPath}/less/footer.plone.less";
+@import "@{barcelonetaPath}/less/loginform.plone.less";
+@import "@{barcelonetaPath}/less/sitemap.plone.less";
+
+//*// Products
+@import "@{barcelonetaPath}/less/event.plone.less";
+@import "@{barcelonetaPath}/less/image.plone.less";
+@import "@{barcelonetaPath}/less/behaviors.plone.less";
+@import "@{barcelonetaPath}/less/discussion.plone.less";
+@import "@{barcelonetaPath}/less/search.plone.less";
+
+.image-icon, .image-tile { float: right; }
+
+#visual-portal-wrapper [class*="contenttype-"]:before {
+  display: inline-block;
+  position: relative;
+  margin: 0 0 -@plone-padding-base-vertical * 0.75 0;
+  padding: 0;
+  left: inherit;
+  width: 18px;
+  height: 20px;
+  background-repeat: no-repeat;
+  background-position: center left;
+  background-size: 15px 15px;
+  content: "";
+}
+
+#edit-zone #plone-contentmenu-factories [class*="contenttype-"] {
+  padding: 5px 15px 5px 50px;
+  &:before {
+    background-image: none;
+    margin-bottom: 0;
+  }
+  &:after {
+    display: inline-block;
+    position: absolute;
+    left: 25px;
+    padding: 0;
+    width: 20px;
+    height: 20px;
+    background-repeat: no-repeat;
+    background-position: center center;
+    background-size: 15px 15px;
+    content: "";
+  }
+}
+
+/* Plone content types */
+.contenttype-folder:before {
+  background-image: url(icons/entypo-folder-black.svg);
+}
+.contenttype-folder:after{
+  background-image: url(icons/entypo-folder-white.svg);
+}
+.contenttype-collection:before {
+  background-image: url(icons/entypo-archive-black.svg);
+}
+.contenttype-collection:after{
+  background-image: url(icons/entypo-archive-white.svg);
+}
+.contenttype-image:before {
+  background-image: url(icons/fontawesome-picture-black.svg);
+}
+.contenttype-image:after{
+  background-image: url(icons/fontawesome-picture-white.svg);
+}
+.contenttype-link:before {
+  background-image: url(icons/mfglabs-link-black.svg);
+}
+.contenttype-link:after{
+  background-image: url(icons/mfglabs-link-white.svg);
+}
+.contenttype-document:before {
+  background-image: url(icons/fontawesome-doc-inv-black.svg);
+}
+.contenttype-document:after{
+  background-image: url(icons/fontawesome-doc-inv-white.svg);
+}
+.contenttype-event:before {
+  background-image: url(icons/fontawesome-calendar-empty-black.svg);
+}
+.contenttype-event:after{
+  background-image: url(icons/fontawesome-calendar-empty-white.svg);
+}
+.contenttype-file:before {
+  background-image: url(icons/fontawesome-attach-black.svg);
+}
+.contenttype-file:after{
+  background-image: url(icons/fontawesome-attach-white.svg);
+}
+.contenttype-news-item:before {
+  background-image: url(icons/modernpics-signal-black.svg);
+}
+.contenttype-news-item:after{
+  background-image: url(icons/modernpics-signal-white.svg);
+}

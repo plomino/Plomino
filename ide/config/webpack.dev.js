@@ -3,7 +3,7 @@ var ExtractTextPlugin = require('extract-text-webpack-plugin');
 var commonConfig = require('./webpack.common.js');
 var helpers = require('./helpers.js');
 
-module.exports = webpackMerge(commonConfig, {
+module.exports = webpackMerge(commonConfig.PLONE.development, commonConfig, {
     devtool: 'cheap-module-eval-source-map',
     output: {
         path: helpers.root('../src/Products/CMFPlomino/browser/static/ide/'),

@@ -30,7 +30,10 @@
     "reflect-metadata": "0.1.2",
     "rxjs": "5.0.0-beta.6",
     "tinymce": "^4.5.1",
-    "zone.js": "0.6.12"
+    "zone.js": "0.6.12",
+    "fontello-svg": "^0.5.0",
+    "mockup": "https://github.com/plone/mockup.git#8c697a2892826b801e543080240f603a62c4aabb",
+    "plonetheme-webpack-plugin": "^0.0.4"
   },
   "devDependencies": {
     "copy-webpack-plugin": "^3.0.1",
