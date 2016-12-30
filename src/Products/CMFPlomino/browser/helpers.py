@@ -1,6 +1,7 @@
 import json
 import logging
 from Products.Five import BrowserView
+from ZPublisher.Client import NotFound
 import re
 
 from plone.behavior.interfaces import IBehaviorAssignable
@@ -27,6 +28,8 @@ import plone.api
 logger = logging.getLogger('Plomino')
 
 __author__ = 'dylanjay'
+
+
 
 
 ###########################################
@@ -127,10 +130,10 @@ class MacroWidget(Widget):
         found = set()
         view = self.request.URL.rsplit('/',1)[-1]
         if view.startswith('++add++'):
-            typename = view.lstrip('++add++Plomino').lower()
+            typename = remove_prefix(view,'++add++Plomino').lower()
             thistype = None #TODO: we need to change it based on the currently selected type
         else:
-            typename = self.context.getPortalTypeName().lstrip("Plomino").lower()
+            typename = remove_prefix(self.context.getPortalTypeName(),"Plomino").lower()
             thistype = self.context.field_type if typename == 'field' else None
         prefixes = ["macro_%s_%s_"%(typename,f.lower()) for f in FIELD_TYPES.keys() if f != thistype]
 
@@ -486,7 +489,6 @@ def update_helpers(obj, event):
 # View for template handling REST api
 ######################################
 
-
 class MacroTemplateView(BrowserView):
 
     def __init__(self, context, request):
@@ -523,22 +525,27 @@ class MacroTemplateView(BrowserView):
                 continue
             found.add(form.id)
             group = '' # not sure if we will use groups in the palette
-            res.append( (form.Title(), form.id, path, group) )
+            res.append( {'title':form.Title(),
+                         'id':form.id,
+#                         'path':path,
+                         'group':group,
+                         'description':form.description} )
         self.request.RESPONSE.setHeader(
             'content-type', 'text/plain; charset=utf-8')
         return json.dumps(res)
 
-    def addTemplate(self, templateid):
+    def addTemplate(self):
         """ api to insert a template into the form.
         """
         self.request.RESPONSE.setHeader(
             'content-type', 'text/plain; charset=utf-8')
-        if self.request.method != "POST":
-            return '' # some error?
+        #if self.request.method != "POST":
+        #    raise BadRequest("Must be a POST")
 
         alsoProvides(
             self.request, plone.protect.interfaces.IDisableCSRFProtection)
-        data = json.loads(self.request.BODY)
+        templateid = self.request.id
+        #data = json.loads(self.request.BODY)
 
         db = self.context.getParentDatabase()
         curpath = '/'.join(self.context.getPhysicalPath())
@@ -550,20 +557,39 @@ class MacroTemplateView(BrowserView):
         # return the html (replacing with the new ids).
         ids = set([])
         helperid, form, doc = load_macro(templateid, {}, db, ids, curpath)
-        html = form.form_layout
+        if form is None:
+            raise NotFound #("No template found for %s"%templateid)
+        res = self._renameGroup(form,
+                                groupid=templateid,
+                                newgroupid=remove_prefix(templateid,'template_'),
+                                ids=form.objectIds())
+        res['layout'] = form.form_layout
+        return json.dumps(res)
 
-        return self.renameGroup(form, helperid or templateid, None, html)
+    def renameGroup(self):
+        self.request.RESPONSE.setHeader(
+            'content-type', 'text/plain; charset=utf-8')
+        #if self.request.method != "POST":
+        #    raise BadRequest("Must be a POST")
 
+        alsoProvides(
+            self.request, plone.protect.interfaces.IDisableCSRFProtection)
+        id = self.request.id
+        newid = self.request.newid
+        group_contents = self.request.group_contents
+        return json.dumps(self._renameGroup(self.form, id, newid, group_contents))
 
-    def renameGroup(self, form, groupid, newgroupid, html):
+    def _renameGroup(self, form, groupid, newgroupid, ids):
         # if form is None it's a rename
 
-
-        context_ids = set(self.form.object_ids())
+        context_ids = set(self.form.objectIds())
+        def new_id(gid, id):
+            id = remove_prefix(id, groupid+'_') if id.startswith(groupid+'_') else remove_prefix(id, groupid)
+            return (newgroupid+'_'+id).rstrip('_')
 
         # find a prefix for all the subitems that is unique
         i = 1
-        while any(newgroupid+'_'+item.id in context_ids for item in form.context ):
+        while any(new_id(newgroupid,id) in context_ids for id in ids ):
             newgroupid = "%s_%i" % (groupid, i)
             i += 1
 
@@ -572,9 +598,18 @@ class MacroTemplateView(BrowserView):
             action = plone.api.content.move
         else:
             action = plone.api.content.copy
-        for item in form.contents:
-            action(item, self.form, id=newgroupid+'_'+item.id)
+        new_ids = []
+        for id in ids:
+            item = form[id]
+            new_id = new_id(newgroupid,item.id)
+            action(item, self.form, id=new_id)
+            new_ids.append(new_id)
+
 
         # TODO now adjust the html of the layout with the new ids and return it
 
-        return json.dumps({'groupid': groupid, 'layout': html})
+        return {'groupid': newgroupid, 'group_contents':new_ids}
+
+
+def remove_prefix(s, prefix):
+    return s[len(prefix):] if s.startswith(prefix) else s
