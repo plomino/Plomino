@@ -53,7 +53,7 @@ export class AddComponent {
                 ],
                 hidden: (tab: any) => {
                     if (!tab) return true;
-                    return tab.type === 'PlominoForm';
+                    return tab.type !== 'PlominoForm';
                 }
             },
             {

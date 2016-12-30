@@ -55,8 +55,7 @@ export class DBSettingsComponent {
         this.objService.submitDB(formData)
             .flatMap((responseHtml) => {
                 let $responseHtml = $(responseHtml);
-                if ($responseHtml.find('dl.error')) {
-                    console.log($responseHtml.find('dl.error'));
+                if (!!$responseHtml.find('dl.error')) {
                     return Observable.of(responseHtml);
                 } else {
                     return this.objService.getDB();
