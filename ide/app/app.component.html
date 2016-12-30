@@ -2,14 +2,23 @@
   
   <div class="well sidebar">
 
-    <plomino-palette>
-    </plomino-palette>
+    <div class="palette-wrapper">
+      <plomino-palette>
+      </plomino-palette>
+    </div>
     
-    <plomino-tree [data]="data" 
-                  [selected]="selected" 
-                  (add)="onAdd($event)" 
-                  (openTab)="openTab($event)">
-    </plomino-tree>
+    <div class="tree-wrapper">
+      <div class="title">
+        Tree
+      </div>
+      <div class="content">
+        <plomino-tree [data]="data" 
+                      [selected]="selected" 
+                      (add)="onAdd($event)" 
+                      (openTab)="openTab($event)">
+        </plomino-tree>
+      </div>
+    </div>
   </div>
   
   <div class="main-app panel">
