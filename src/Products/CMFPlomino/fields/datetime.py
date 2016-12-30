@@ -68,14 +68,10 @@ class DatetimeField(BaseField):
 
     def validate(self, submittedValue):
         """Validate date time value"""
-        if self.context.field_mode == 'EDITABLE' and \
-                self.context.widget == 'SERVER':
-            logger.info('Method: datetime validate id {} value {}'.format(
-                self.context.id, submittedValue))
-            #import pdb; pdb.set_trace()
         if type(submittedValue) is DateTime:
             return []
         errors = []
+        fieldname = self.context.id
         # instead of checking not record, should check string type
         if isinstance(submittedValue, basestring):
             submittedValue = submittedValue.strip()
@@ -147,6 +143,24 @@ class DatetimeField(BaseField):
             elif isinstance(
                     submittedValue, dict) and '<datetime>' in submittedValue:
                 StringToDate(submittedValue['datetime'], format=None)
+            # on 'SERVER' widget, the datetime format must match
+            # the field or db format
+            elif self.context.field_mode == 'EDITABLE' and \
+                            self.context.widget == 'SERVER':
+                logger.debug('Method: datetime validate id {} value {}'.format(
+                    self.context.id, submittedValue))
+                field_format = self.context.format
+                if not field_format:
+                    db = self.context.getParentDatabase()
+                    field_format = db.datetime_format
+                if not field_format:
+                    errors.append(
+                        "{} does not have date/time format".format(
+                            self.context.id))
+                    return errors
+                # it will raise ValueError, when guess is False
+                # it won't guess the format
+                StringToDate(submittedValue, field_format, guess=False)
             # check if date only:
             elif len(submittedValue) == 10:
                 StringToDate(submittedValue, '%Y-%m-%d')
@@ -157,8 +171,9 @@ class DatetimeField(BaseField):
                     StringToDate(submittedValue, '%Y-%m-%d %I:%M %p')
                 else:
                     StringToDate(submittedValue, '%Y-%m-%d %H:%M')
+        except ValueError as e:
+            errors.append("Field '{}': {}".format(fieldname, e.message))
         except Exception:
-            fieldname = self.context.id
             errors.append(
                 "%s must be a date/time (submitted value was: %s)" % (
                     fieldname,

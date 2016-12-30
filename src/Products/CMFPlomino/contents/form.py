@@ -1450,7 +1450,6 @@ class PlominoForm(Container):
         else:
             doc = db.getDocument(docid)
         temp = {}
-        #import pdb; pdb.set_trace()
         temp[self.id] = getTemporaryDocument(
             db,
             self,
