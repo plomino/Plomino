@@ -43,6 +43,8 @@ module.exports = {
   plugins: [
     new copyWebpackPlugin([
         { from: 'node_modules/tinymce/skins', to: 'skins' },
+        { from: 'app/assets/roboto', to: 'theme/roboto' },
+        { from: 'app/assets/css/barceloneta-compiled.css', to: 'theme' },
         { from: 'node_modules/tinymce/plugins/noneditable/plugin.js', to: 'plugins/noneditable' },
         { from: 'node_modules/bootstrap/dist/css/bootstrap.min.css', to: 'bootstrap/css' },
         { from: 'node_modules/bootstrap/dist/fonts', to: 'bootstrap/fonts' },

@@ -23,7 +23,7 @@ export class ObjService {
     }
 
     updateFieldSettings(fieldUrl: string, formData: FormData): Observable<any> {
-        return this.http.post(`${fieldUrl}/@@edit?ajax_load=1`, formData)
+        return this.http.post(`${fieldUrl}/@@edit`, formData)
                     .map(this.extractText);
     }
     
@@ -34,7 +34,7 @@ export class ObjService {
 
     
     updateFormSettings(formUrl: string, formData: FormData): Observable<any> {
-        return this.http.post(`${formUrl}/@@edit?ajax_load=1`, formData)
+        return this.http.post(`${formUrl}/@@edit`, formData)
                     .map(this.extractText);
     }
 
@@ -48,7 +48,7 @@ export class ObjService {
 
     // Form should be a jquery form object
     submitDB(formData: FormData): Observable<any> {
-        return this.http.post("../../@@edit?ajax_load=1", formData)
+        return this.http.post("../../@@edit", formData)
             .map(this.extractText);
     }
 
