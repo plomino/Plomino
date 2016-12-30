@@ -51,8 +51,9 @@ export class AddComponent {
                     { title: 'Hide When', icon: 'sunglasses', type: 'PlominoHidewhen', addable: true },
                     { title: 'Action', icon: 'cog', type: 'PlominoAction', addable: true },
                 ],
-                hidden: () => {
-                    return false;
+                hidden: (tab: any) => {
+                    if (!tab) return true;
+                    return tab.type !== 'PlominoForm';
                 }
             },
             {
@@ -62,7 +63,7 @@ export class AddComponent {
                     { title: 'Action', icon: 'cog', type: 'action', addable: true },
                 ],
                 hidden: (tab: any) => {
-                    if (!tab) return;
+                    if (!tab) return true;
                     return tab.type === 'PlominoForm';
                 }
             },
