@@ -1,10 +1,9 @@
 
 <ul class="plomino-macros" style="width:100%"
     tal:attributes="
-        data-rules view/rules;
         data-form-urls view/form_urls">
-    <li style="width:100%" class="plomino-macros-rule">
-    <input class="form_select" name="fieldname" tal:attributes="name string:${view/name}:list" style="width:100%"/></li>
+    <li style="width:100%" class="plomino-macros-rule" tal:repeat="rule view/rules">
+    <input class="form_select" name="fieldname" tal:attributes="name string:${view/name}:list; value rule" style="width:100%"/></li>
 
 </ul>
 

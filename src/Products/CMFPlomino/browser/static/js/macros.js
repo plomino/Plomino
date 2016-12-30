@@ -22,7 +22,7 @@ require([
         defaults: {},
         init: function() {
             var self = this;
-            self.rules = JSON.parse(self.$el.attr('data-rules'));
+            //self.rules = JSON.parse(self.$el.attr('data-rules'));
             self.form_urls = JSON.parse(self.$el.attr('data-form-urls'));
 
             var selectdata = []
@@ -48,27 +48,34 @@ require([
             };
 
             var html = '';
-            self.item = self.$el.find('li')[0].outerHTML;
-            self.rules.map(function(rule) {
-//                var new_item = $(item.html())
-//                new_item.find('input').class('form_select pat-select2');
-                html += self.item;
-            });
+            self.item = self.$el.find('li').last()[0].outerHTML;
+//            self.rules.map(function(rule) {
+//                html += self.item;
+//            });
             self.$el.prepend(html);
             self.ids = {};
-            self.rules.push([]);
+//            self.rules.push([]);
             var i=0;
             self.$el.find('input').each(function(index, el) {
-                var rule = self.rules[i];
+                //var rule = self.rules[i];
+                var rule = [];
+                if ($(el).val() != "") {
+                    rule = $(el).val().split('/t')
+                }
+
                 if (rule.map == undefined) {
                     //else rule is old style and not a list of macros yet
                     rule = [rule];
                 }
-                rule = rule.map(function(macro) {
+                rule = rule.map(function(macro_json) {
+                    if (macro_json == "") {
+                        return;
+                    }
+                    var macro = JSON.parse(macro_json);
                     if (macro['_macro_id_']) {
                         self.ids[macro['_macro_id_']]=true;
                     }
-                    return {id:JSON.stringify(macro),text:''}
+                    return {id:macro_json,text:''}
                 });
                 self.initInput.bind({widget:self})(el, rule);
                 i++;
