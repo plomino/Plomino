@@ -515,6 +515,7 @@ class MacroTemplateView(BrowserView):
         for _db in dbs:
             forms.extend(_db.getForms())
 
+        res = []
         for form in forms:
             if form.id in found:
                 continue
@@ -522,10 +523,10 @@ class MacroTemplateView(BrowserView):
                 continue
             found.add(form.id)
             group = '' # not sure if we will use groups in the palette
-            yield (form.Title(), form.id, path, group)
-        yield ('And', 'and', '#and', 'logic')
-        yield ('Or', 'or', '#or', 'logic')
-        yield ('Not', 'not', '#not', 'logic')
+            res.append( (form.Title(), form.id, path, group) )
+        self.request.RESPONSE.setHeader(
+            'content-type', 'text/plain; charset=utf-8')
+        return json.dumps(res)
 
     def addTemplate(self, templateid):
         """ api to insert a template into the form.
