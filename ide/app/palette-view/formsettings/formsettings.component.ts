@@ -56,9 +56,8 @@ export class FormSettingsComponent implements OnInit {
         formData.append('form.buttons.save', 'Save');        
         
         this.objService.updateFormSettings(this.tab.url, formData)
-            .flatMap((responseHtml) => {
-                let $responseHtml = $(responseHtml);
-                if (!!$responseHtml.find('dl.error')) {
+            .flatMap((responseHtml: string) => {
+                if (responseHtml.indexOf('dl.error') > -1) {
                     return Observable.of(responseHtml);
                 } else {
                     return this.objService.getFormSettings(this.tab.url);

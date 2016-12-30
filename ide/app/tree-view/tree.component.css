@@ -1,7 +1,4 @@
-.treeview-wrapper {
-    height: calc(100vh - 208px);
-    overflow-y: auto;
-}
+.treeview-wrapper { }
 
 .tree-node {
     padding: 0;

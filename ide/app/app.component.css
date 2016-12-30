@@ -1,66 +1,111 @@
 .wrap-app {
-    display: flex;
-    flex-direction: row;
-    height: 100vh;
+  display: flex;
+  flex-direction: row;
+  height: 100vh;
 }
 
 .sidebar {
-    height: 100vh;
-    overflow: hidden;
-    margin-bottom: 0;
+  position: relative;
+  height: 100vh;
+  overflow: hidden;
+  margin-bottom: 0;
+  padding: 0;
+  border-radius: 0;
+  display: -webkit-flex;
+  display: -moz-flex;
+  display: -ms-flex;
+  display: -o-flex;
+  display: flex;
+  flex-flow: column;
+}
+
+.palette-wrapper {
+  position: relative;
+  top: 43px;
+  min-height: 150px;
+  max-height: 80%;
+  overflow-y: auto;
+} 
+
+.palette-wrapper /deep/ .nav-tabs {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 350px;
+}
+
+.tree-wrapper {
+  position: relative;
+  top: 43px;
+  flex: 1;
+  overflow-y: hidden;
+}
+
+.tree-wrapper .title {
+  font-size: 14px;
+  text-transform: uppercase;
+  padding: 5px 15px;
+  color: black;
+  background-color: white;
+  font-weight: 500;
+}
+
+.tree-wrapper .content {
+  height: calc(100% - 72px);
+  overflow-y: auto;
 }
 
 .main-app {
-    width: 100%;
-    height: 100vh;
-    position: relative;
-    display: flex;
-    flex-direction: column;
-    margin-bottom: 0;
+  width: 100%;
+  height: 100vh;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 0;
 }
 
 tab {
-    height: 900px;
-    overflow: auto;
+  height: 900px;
+  overflow: auto;
 }
 
 .well,
 plomino-palette,
 plomino-tree {
-    width: 400px;
+  width: 430px;
 }
 
 .tabunsaved {
-    font-style: italic;
+  font-style: italic;
 }
 
 
 .drop-zone-container {
-    position: absolute;
-    background-color: rgba(255, 255, 255, 0.8);
-    z-index: 999;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    display: -webkit-flex;
-    display: -moz-flex;
-    display: -ms-flex;
-    display: -o-flex;
-    display: flex;
-    justify-content: center;
+  position: absolute;
+  background-color: rgba(255, 255, 255, 0.8);
+  z-index: 999;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: -webkit-flex;
+  display: -moz-flex;
+  display: -ms-flex;
+  display: -o-flex;
+  display: flex;
+  justify-content: center;
 }
 
 .drop-zone-label {
-    -ms-align-self: center;
-    align-self: center;
-    text-align: center;
+  -ms-align-self: center;
+  align-self: center;
+  text-align: center;
 }
 
 .drop-zone-label .glyphicon {
-    font-size: 40px;
+  font-size: 40px;
 }
 
 .drop-zone-label .heading {
-    font-size: 25px;
+  font-size: 25px;
 }
