@@ -15,7 +15,9 @@ import {
     TreeService,
     TabsService,
     FieldsService,
-    DraggingService
+    DraggingService,
+    TemplatesService,
+    WidgetService
 } from '../../services';
 
 @Component({
@@ -29,6 +31,7 @@ import {
 
 export class AddComponent {
     activeTab: any;
+    templates: any[] = [];
     addableComponents: Array<any> = [];
 
     constructor(private elementService: ElementService,
@@ -36,7 +39,9 @@ export class AddComponent {
                 private tabsService: TabsService,
                 private fieldsService: FieldsService,
                 private draggingService: DraggingService,
-                private changeDetector: ChangeDetectorRef) { 
+                private changeDetector: ChangeDetectorRef,
+                private templatesService: TemplatesService,
+                private widgetService: WidgetService) { 
 
     }
 
@@ -82,8 +87,15 @@ export class AddComponent {
 
         this.tabsService.getActiveTab()
             .subscribe((tab) => {
-                this.activeTab = tab; 
-                this.changeDetector.markForCheck();
+                this.activeTab = tab;
+                if (tab) {
+                    this.templatesService.getTemplates(tab.url).subscribe((templates: any[]) => {
+                        this.templates = templates;
+                        this.changeDetector.markForCheck();
+                    });
+                } else {
+                    this.changeDetector.markForCheck();
+                }
             });
     }
 
@@ -242,6 +254,14 @@ export class AddComponent {
             default:
                 console.log(type + ' not handled yet')
         }
+    }
+
+
+    addTemplate(templateId: string) {
+        this.templatesService.addTemplate(this.activeTab.url, templateId)
+            .subscribe((response: any) => {
+                console.log(this.widgetService.getLayout(response));
+            });
     }
 
     // Refactor this code, put switch into separated fn

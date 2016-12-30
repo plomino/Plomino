@@ -26,7 +26,8 @@ import { DBSettingsComponent } from './dbsettings';
 
 import { 
     ElementService,
-    TabsService 
+    TabsService,
+    TemplatesService
 } from '../services';
 
 import 'lodash';
@@ -60,26 +61,26 @@ export class PaletteComponent implements OnInit {
     ];
 
     constructor(private changeDetector: ChangeDetectorRef,
-                private tabsService: TabsService) { }
+                private tabsService: TabsService,
+                private templatesService: TemplatesService) { }
 
     ngOnInit() {
-        this.tabsService.getActiveTab()
-            .subscribe((activeTab) => {
-                this.selectedTab = activeTab;
-                if (activeTab) {
-                    this.tabs = this.updateTabs(this.tabs, activeTab.type);
-                }
-                this.changeDetector.markForCheck();
-            });
+        this.tabsService.getActiveTab().subscribe((activeTab) => {
+            this.selectedTab = activeTab;
+            if (activeTab) {
+                this.tabs = this.updateTabs(this.tabs, activeTab.type);
+            }
+            this.changeDetector.markForCheck();
+        });
         
-        this.tabsService.getActiveField()
-            .subscribe((activeField) => {
-                this.selectedField = activeField;
-                if (activeField) {
-                    this.tabs = this.updateTabs(this.tabs, this.selectedTab.type, activeField.type);
-                }
-                this.changeDetector.markForCheck();
-            });
+        this.tabsService.getActiveField().subscribe((activeField) => {
+            this.selectedField = activeField;
+            if (activeField) {
+                this.tabs = this.updateTabs(this.tabs, this.selectedTab.type, activeField.type);
+            }
+            this.changeDetector.markForCheck();
+        });
+        
     }
 
     setActiveTab(index:number):void {

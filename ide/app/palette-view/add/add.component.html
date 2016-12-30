@@ -20,4 +20,12 @@
             </comp>
         </div>
     </group>
+
+    <div class="template"
+        *ngFor="let template of templates, let i = index">
+        <button class="btn btn-default"
+            (click)="addTemplate(template.id)">
+            {{template.title}}
+        </button>
+    </div>
 </div>
