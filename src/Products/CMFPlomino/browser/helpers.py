@@ -598,17 +598,17 @@ class MacroTemplateView(BrowserView):
             action = plone.api.content.move
         else:
             action = plone.api.content.copy
-        new_ids = []
+        new_contents = []
         for id in ids:
             item = form[id]
             newid = new_id(newgroupid,item.id)
             action(item, self.form, id=newid)
-            new_ids.append(newid)
+            new_contents.append({'id':newid, 'old_id':id, 'title':item.title})
 
 
         # TODO now adjust the html of the layout with the new ids and return it
 
-        return {'groupid': newgroupid, 'group_contents':new_ids, 'old_contents':ids}
+        return {'groupid': newgroupid, 'group_contents':new_contents}
 
 
 def remove_prefix(s, prefix):
