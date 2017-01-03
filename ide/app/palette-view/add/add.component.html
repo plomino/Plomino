@@ -22,7 +22,8 @@
     </group>
 
     <div class="template"
-        *ngFor="let template of templates, let i = index">
+        *ngFor="let template of templates, let i = index"
+        [hidden]="template.hidewhen(activeTab)">
         <button class="btn btn-default"
             (click)="addTemplate(template.id)">
             {{template.title}}

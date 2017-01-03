@@ -8,11 +8,15 @@ declare let _: any;
 @Injectable()
 export class WidgetService {
 
-  getLayout(input: any): any {
-    return this.parseInput(input.layout, input.groupid, input.group_contents);
+  isTemplate: boolean = true;
+
+  getLayout(input: any, isTemplate?: boolean): any {
+    let contents = (input.group_contents || []);
+    let id = (input.groupid || null);    
+    return this.parseInput(input.layout, id, contents, isTemplate);
   }
 
-  private parseInput(layout: any, id: any, contents: any[]) {
+  private parseInput(layout: any, id: any, contents: any[], wrapIntoGroup:boolean = true) {
     let $elements = $('<div />').html(layout)
                       .find('.plominoGroupClass, .plominoFieldClass:not(.plominoGroupClass .plominoFieldClass), .plominoHidewhenClass:not(.plominoGroupClass .plominoHideWhenClass), .plominoActionClass:not(.plominoGroupClass .plominoActionClass)');
     let resultingElementsString = '';
@@ -35,15 +39,21 @@ export class WidgetService {
         default: 
       };
     });
-    
-    return this.wrapIntoGroup(resultingElementsString, id);
+
+    if (wrapIntoGroup) {
+      return this.wrapIntoGroup(resultingElementsString, id);
+    } else {
+      return resultingElementsString;
+    }
   }
 
-  private convertGroup(group: any, groupId: any, contents: any[]) {
+  // This is a recursive method for extracting groups
+  private convertGroup(group: any, id: any, contents: any[]) {
     let $elements = $('<div />').html(group.html())
                         .find('.plominoGroupClass, .plominoFieldClass:not(.plominoGroupClass .plominoFieldClass), .plominoHidewhenClass:not(.plominoGroupClass .plominoHideWhenClass), .plominoActionClass:not(.plominoGroupClass .plominoActionClass)');
     
     let resultingElementsString = '';
+    let groupId = id || group.text();
 
     $elements.each((index: number, element: any) => {
       let $element = $(element);
@@ -72,7 +82,13 @@ export class WidgetService {
     let $content = this.getContent(element);
     let $id = $content.split(':')[1]; 
     let $position = $content.split(':')[0];
-    let id = this.findId(contents, $id);
+    let id: any;
+
+    if (contents.length) {
+      id = this.findId(contents, $id);
+    } else {
+      id = $id;
+    }
     
     let result = `<${container} class="plominoHidewhenClass" 
                                 data-plominoid="${id}"
@@ -86,7 +102,13 @@ export class WidgetService {
   private convertField(element: any, contents: any[]): string { 
     let container = 'span';
     let $content = this.getContent(element);
-    let id = this.findId(contents, $content);
+    let id: any;
+
+    if (contents.length) {
+      id = this.findId(contents, $content);
+    } else {
+      id = $content;
+    }
     
     let result = `<${container} class="plominoFieldClass" data-plominoid="${id}">
         <input value="${id}" />
@@ -98,7 +120,13 @@ export class WidgetService {
   private convertAction(element: any, contents: any[]): string {
     let container = 'span';
     let $content = this.getContent(element);
-    let id = this.findId(contents, $content);
+    let id: any;
+
+    if (contents.length) {
+      id = this.findId(contents, $content);
+    } else {
+      id = $content;
+    }
     
     let result = `<${container} class="plominoActionClass" data-plominoid="${id}">
         <input id="${id}" class="context" name="${id}" value="${id}" type="button">

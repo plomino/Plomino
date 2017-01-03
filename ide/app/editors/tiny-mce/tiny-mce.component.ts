@@ -23,7 +23,8 @@ import {
     ElementService,
     FieldsService,
     DraggingService,
-    TemplatesService
+    TemplatesService,
+    WidgetService
 } from '../../services';
 
 import {DND_DIRECTIVES} from 'ng2-dnd/ng2-dnd';
@@ -89,6 +90,7 @@ export class TinyMCEComponent implements AfterViewInit, OnInit, OnDestroy {
                 private fieldsService: FieldsService,
                 private draggingService: DraggingService,
                 private templatesService: TemplatesService,
+                private widgetService: WidgetService,
                 private changeDetector: ChangeDetectorRef,
                 private http: Http,
                 private zone: NgZone) {
@@ -184,10 +186,13 @@ export class TinyMCEComponent implements AfterViewInit, OnInit, OnDestroy {
     }
 
     getFormLayout() {
-        this._elementService.getElementFormLayout(this.id).subscribe(
-            (data) => { tinymce.activeEditor.setContent(data ? data : ''); },
-            err => console.error(err)
-        );
+        this._elementService.getElementFormLayout(this.id)
+            .subscribe((data) => {
+                let newData = (data && data.length) ? this.widgetService.getLayout({layout: data }, false) : '';  
+                tinymce.activeEditor.setContent(newData); 
+            }, (err) => { 
+                console.error(err);
+            });
     }
 
     saveFormLayout() {
@@ -198,6 +203,7 @@ export class TinyMCEComponent implements AfterViewInit, OnInit, OnDestroy {
             })).subscribe(
                 () => {
                     tiny.isDirty.emit(false);
+                    this.changeDetector.markForCheck();
                 },
                 err => console.error(err)
             );
