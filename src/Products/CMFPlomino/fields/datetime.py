@@ -71,7 +71,7 @@ class DatetimeField(BaseField):
         if type(submittedValue) is DateTime:
             return []
         errors = []
-        fieldname = self.context.id
+        field_title = self.context.title
         # instead of checking not record, should check string type
         if isinstance(submittedValue, basestring):
             submittedValue = submittedValue.strip()
@@ -171,12 +171,18 @@ class DatetimeField(BaseField):
                     StringToDate(submittedValue, '%Y-%m-%d %I:%M %p')
                 else:
                     StringToDate(submittedValue, '%Y-%m-%d %H:%M')
-        except ValueError as e:
-            errors.append("Field '{}': {}".format(fieldname, e.message))
+        except ValueError:
+            field_format = self.context.format
+            if not field_format:
+                db = self.context.getParentDatabase()
+                field_format = db.datetime_format
+            errors.append(
+                "Field '{}': '{}' does not match the format '{}'".format(
+                field_title, submittedValue, field_format))
         except Exception:
             errors.append(
-                "%s must be a date/time (submitted value was: %s)" % (
-                    fieldname,
+                "Field '%s' must be a date/time (submitted value was: %s)" % (
+                    field_title,
                     submittedValue))
         return errors
 
