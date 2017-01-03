@@ -26,9 +26,10 @@ class IDatetimeField(model.Schema):
 
     widget = schema.Choice(
         vocabulary=SimpleVocabulary.fromItems([
-            ("Default", "SERVER"),
-            ("Combination", "COMBO"),
-            ("JQuery datetime widget", "JQUERY")
+            ("Single input", "SERVER"),
+            ("Split input", "COMBO"),
+            ("Calendar", "JQUERY"),
+            ("Native", "HTML5")
         ]),
         title=u'Widget',
         description=u'Field rendering',
@@ -70,6 +71,7 @@ class DatetimeField(BaseField):
         if type(submittedValue) is DateTime:
             return []
         errors = []
+        field_title = self.context.title
         # instead of checking not record, should check string type
         if isinstance(submittedValue, basestring):
             submittedValue = submittedValue.strip()
@@ -141,6 +143,24 @@ class DatetimeField(BaseField):
             elif isinstance(
                     submittedValue, dict) and '<datetime>' in submittedValue:
                 StringToDate(submittedValue['datetime'], format=None)
+            # on 'SERVER' widget, the datetime format must match
+            # the field or db format
+            elif self.context.field_mode == 'EDITABLE' and \
+                            self.context.widget == 'SERVER':
+                logger.debug('Method: datetime validate id {} value {}'.format(
+                    self.context.id, submittedValue))
+                field_format = self.context.format
+                if not field_format:
+                    db = self.context.getParentDatabase()
+                    field_format = db.datetime_format
+                if not field_format:
+                    errors.append(
+                        "{} does not have date/time format".format(
+                            self.context.id))
+                    return errors
+                # it will raise ValueError, when guess is False
+                # it won't guess the format
+                StringToDate(submittedValue, field_format, guess=False)
             # check if date only:
             elif len(submittedValue) == 10:
                 StringToDate(submittedValue, '%Y-%m-%d')
@@ -151,11 +171,18 @@ class DatetimeField(BaseField):
                     StringToDate(submittedValue, '%Y-%m-%d %I:%M %p')
                 else:
                     StringToDate(submittedValue, '%Y-%m-%d %H:%M')
-        except Exception:
-            fieldname = self.context.id
+        except ValueError:
+            field_format = self.context.format
+            if not field_format:
+                db = self.context.getParentDatabase()
+                field_format = db.datetime_format
             errors.append(
-                "%s must be a date/time (submitted value was: %s)" % (
-                    fieldname,
+                "Field '{}': '{}' does not match the format '{}'".format(
+                field_title, submittedValue, field_format))
+        except Exception:
+            errors.append(
+                "Field '%s' must be a date/time (submitted value was: %s)" % (
+                    field_title,
                     submittedValue))
         return errors
 

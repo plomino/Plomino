@@ -172,7 +172,10 @@ require([
             var data = {};
             var inputs = $("form").serialize().split("&");
             for(var key in inputs) {
-                data[inputs[key].split("=")[0]] = inputs[key].split("=")[1];
+                var input = inputs[key].split("=");
+                var input_value = decodeURIComponent(
+                    input[1].replace(/\+/g, '%20'));
+                data[input[0]] = input_value;
             }
             return data;
         },
