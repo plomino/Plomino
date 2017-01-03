@@ -5,10 +5,12 @@ import {
   Response 
 } from '@angular/http';
 
-import { Observable } from 'rxjs/Rx';
+import { Observable, Subject } from 'rxjs/Rx';
 
 @Injectable()
 export class TemplatesService {
+  $insertion: Subject<any> = new Subject();
+
   constructor(private http: Http) {}
   
   addTemplate(formUrl: string, templateId: string): Observable<any> {
@@ -17,6 +19,14 @@ export class TemplatesService {
 
   getTemplates(formUrl: string): Observable<any> {
     return this.http.get(`${formUrl}/@@list-templates`).map(this.extractData);
+  }
+
+  insertTemplate(templateData: any): void {
+    this.$insertion.next(templateData);
+  }
+
+  getInsertion(): Observable<any> {
+    return this.$insertion.asObservable();
   }
 
   private extractData(response: Response): Response {
