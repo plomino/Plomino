@@ -2,114 +2,167 @@ import { Injectable } from '@angular/core';
 
 import 'jquery';
 declare let $: any;
+import 'lodash';
+declare let _: any;
 
 @Injectable()
 export class WidgetService {
-  groupId: string = null;
 
-  getLayout(input: any): any {
-    console.info(`Input data in widget service`, input, input.groupid);
-    this.parseInput(input.layout, input.groupid);
-    console.info(this.wrappIntoGroup(input.layout, input.groupid));
+  isTemplate: boolean = true;
+
+  getLayout(input: any, isTemplate?: boolean): any {
+    let contents = (input.group_contents || []);
+    let id = (input.groupid || null);    
+    return this.parseInput(input.layout, id, contents, isTemplate);
   }
 
-  private getExampleWidget(type: string, id: string): any {
-    let field: any;
-    let action: any;
-    let hidewhen: any;
+  private parseInput(layout: any, id: any, contents: any[], wrapIntoGroup:boolean = true) {
+    let $elements = $('<div />').html(layout)
+                      .find('.plominoGroupClass, .plominoFieldClass:not(.plominoGroupClass .plominoFieldClass), .plominoHidewhenClass:not(.plominoGroupClass .plominoHideWhenClass), .plominoActionClass:not(.plominoGroupClass .plominoActionClass)');
+    let resultingElementsString = '';
     
-    if (!id) {
-      return;
-    }
-    
-    switch(type) {
-      case 'field':
-        break;
-      case 'subform':
-        break;
-      case 'action':
-        break;
-      case 'label':
-        break;
-      default:
+    $elements.each((index: number, element: any) => {
+      let $element = $(element);
+      switch($element.attr('class').split(' ')[0]) {
+        case 'plominoGroupClass':
+          resultingElementsString += this.convertGroup($element, id, contents);
+          break;
+        case 'plominoFieldClass':
+          resultingElementsString += this.convertField($element, contents);
+          break;
+        case 'plominoHidewhenClass':
+          resultingElementsString += this.convertHidewhen($element, contents);
+          break;
+        case 'plominoActionClass':
+          resultingElementsString += this.convertAction($element, contents);
+          break;
+        default: 
+      };
+    });
+
+    if (wrapIntoGroup) {
+      return this.wrapIntoGroup(resultingElementsString, id);
+    } else {
+      return resultingElementsString;
     }
   }
 
-  private wrappIntoGroup(content: string, groupId: string) {
-    let group = $('<div></div>');
+  // This is a recursive method for extracting groups
+  private convertGroup(group: any, id: any, contents: any[]) {
+    let $elements = $('<div />').html(group.html())
+                        .find('.plominoGroupClass, .plominoFieldClass:not(.plominoGroupClass .plominoFieldClass), .plominoHidewhenClass:not(.plominoGroupClass .plominoHideWhenClass), .plominoActionClass:not(.plominoGroupClass .plominoActionClass)');
+    
+    let resultingElementsString = '';
+    let groupId = id || group.text();
+
+    $elements.each((index: number, element: any) => {
+      let $element = $(element);
+      switch($element.attr('class').split(' ')[0]) {
+        case 'plominoGroupClass':
+          resultingElementsString += this.convertGroup($element, groupId, contents);
+          break;
+        case 'plominoFieldClass':
+          resultingElementsString += this.convertField($element, contents);
+          break;
+        case 'plominoHidewhenClass':
+          resultingElementsString += this.convertHidewhen($element, contents);
+          break;
+        case 'plominoActionClass':
+          resultingElementsString += this.convertAction($element, contents);
+          break;
+        default: 
+      };
+    });
+
+    return this.wrapIntoGroup(resultingElementsString, groupId);
+  }
+
+  private convertHidewhen(element: any, contents: any[]): string { 
+    let container = 'span';
+    let $content = this.getContent(element);
+    let $id = $content.split(':')[1]; 
+    let $position = $content.split(':')[0];
+    let id: any;
+
+    if (contents.length) {
+      id = this.findId(contents, $id);
+    } else {
+      id = $id;
+    }
+    
+    let result = `<${container} class="plominoHidewhenClass" 
+                                data-plominoid="${id}"
+                                data-plomino-position="${$position}">
+      &nbsp;
+    </${container}>`;
+    
+    return this.wrapIntoEditable(result, '<span />');
+  }
+
+  private convertField(element: any, contents: any[]): string { 
+    let container = 'span';
+    let $content = this.getContent(element);
+    let id: any;
+
+    if (contents.length) {
+      id = this.findId(contents, $content);
+    } else {
+      id = $content;
+    }
+    
+    let result = `<${container} class="plominoFieldClass" data-plominoid="${id}">
+        <input value="${id}" />
+    </${container}><br />`;
+  
+    return this.wrapIntoEditable(result);
+  }
+
+  private convertAction(element: any, contents: any[]): string {
+    let container = 'span';
+    let $content = this.getContent(element);
+    let id: any;
+
+    if (contents.length) {
+      id = this.findId(contents, $content);
+    } else {
+      id = $content;
+    }
+    
+    let result = `<${container} class="plominoActionClass" data-plominoid="${id}">
+        <input id="${id}" class="context" name="${id}" value="${id}" type="button">
+    </${container}><br />`;
+  
+    return this.wrapIntoEditable(result);
+  }
+
+  // Utils 
+  private wrapIntoEditable(content: string, container: string = '<span />') {
+    let $container = $(container);
+    return $container.addClass('mceEditable')
+              .html(content)
+              .wrap('<div />')
+              .parent()
+              .html();
+  }
+
+  private wrapIntoGroup(content: any, groupId: string) {
+    let group = $('<div />');
     return group.addClass('plominoGroupClass mceNonEditable')
               .attr('data-groupid', groupId)
               .html(content)
               .wrap('<div />')
               .parent()
-              .unwrap()
+              .append('<br />')
               .html();
   }
 
-  // Utils
-  private parseInput(inputString: string, groupId: string) {
-    let query = '.plominoActionClass,.plominoSubformClass,.plominoFieldClass';
-    let foundElements = $(inputString).find(query)
-    foundElements.each((index: number, element: any) => {
-      let $elem = $(element);
-      let type = $elem.attr('class').split(' ')[0].slice(7, -5).toLowerCase();
-      let id = $elem.text();
-      let sample = this.getExampleWidget(type, id);
-      let $sample = $(sample);
-      let elemClass = $sample.attr('class');
-      let blocks = 'p,div,table,ul,li';
-      let tag: string;
-      let html: string;
-
-      if ($sample.hasClass('plominoSubformClass') || 
-          $sample.find(blocks) ||
-          $sample.filter(blocks)) {
-        tag = 'div';  
-      } else {
-        tag = 'span';
-      }
-      html = `<${tag} class="${elemClass} mceNonEditable"
-                      data-plominoid="${groupId + '_' + id}">
-                ${sample}
-              </${tag}>`;
-      $elem.replaceWith(html)
-          .wrap('<span />')
-          .parent()
-          .addClass('mceEditable');
-    });
-
-    query = '.plominoLabelClass';
-    foundElements = $(inputString).find(query);
-    foundElements.each((index: number, element: any) => {
-      let $elem = $(element);
-      if ($elem.text()) {
-        let id = $elem.text;
-        let html = this.getExampleWidget('label', id);
-        $elem.replaceWith(html)
-          .wrap('<span />')
-          .parent()
-          .addClass('mceEditable');
-      } 
-    });
-
-    query = '.plominoHidewhenClass,.plominoCacheClass';
-    foundElements = $(inputString).find(query);
-    foundElements.each((index: number, element: any) => {
-      let $elem = $(element);
-      let type = $elem.attr('class').slice(7, -5).toLowerCase();
-      if ($elem.text().indexOf(':') > -1) {
-        let pos = $elem.text().split(':')[1];
-        let id = $elem.text().split(':')[1];
-        $($elem).html('&nbsp;')
-          .addClass('mceNonEditable')
-          .attr('data-plomino-position', pos)
-          .attr('data-plominoid', id)
-          .wrap('<span />')
-          .parent()
-          .addClass('mceEditable');
-      }
-    });
-
-    console.log(inputString);
+  private getContent(element: any) {
+    return element.text().trim();
   }
+    
+  private findId(options: string[], target: string) {
+    return _.find(options, (option: string) => {
+      return option.indexOf(target) > -1;
+    });
+  }  
 }

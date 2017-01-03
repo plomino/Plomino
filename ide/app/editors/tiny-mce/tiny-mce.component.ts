@@ -22,7 +22,9 @@ import {
 import {
     ElementService,
     FieldsService,
-    DraggingService
+    DraggingService,
+    TemplatesService,
+    WidgetService
 } from '../../services';
 
 import {DND_DIRECTIVES} from 'ng2-dnd/ng2-dnd';
@@ -82,10 +84,13 @@ export class TinyMCEComponent implements AfterViewInit, OnInit, OnDestroy {
 
     draggingSubscription: Subscription;
     insertionSubscription: Subscription;
+    templatesSubscription: Subscription;
 
     constructor(private _elementService: ElementService,
                 private fieldsService: FieldsService,
                 private draggingService: DraggingService,
+                private templatesService: TemplatesService,
+                private widgetService: WidgetService,
                 private changeDetector: ChangeDetectorRef,
                 private http: Http,
                 private zone: NgZone) {
@@ -97,6 +102,15 @@ export class TinyMCEComponent implements AfterViewInit, OnInit, OnDestroy {
                 });
                 if (insertionParent === this.id) {
                     this.addElement(dataToInsert);
+                    this.changeDetector.markForCheck();
+                }
+            });
+
+        this.templatesSubscription = this.templatesService.getInsertion()
+            .subscribe((insertion) => {
+                let parent = insertion.parent;
+                if (insertion.parent === this.id) {
+                    this.insertGroup(insertion.group);
                     this.changeDetector.markForCheck();
                 }
             });
@@ -114,6 +128,7 @@ export class TinyMCEComponent implements AfterViewInit, OnInit, OnDestroy {
     ngOnDestroy() {
         this.draggingSubscription.unsubscribe();
         this.insertionSubscription.unsubscribe();
+        this.templatesSubscription.unsubscribe();
         tinymce.EditorManager.execCommand('mceRemoveEditor',true, this.id);
     }
 
@@ -141,15 +156,15 @@ export class TinyMCEComponent implements AfterViewInit, OnInit, OnDestroy {
     
                         let $elementId = $element.data('plominoid');
                         let $parentId = $parent.data('plominoid');
-                        
+
                         if ($elementId || $parentId) {
                             let id = $elementId || $parentId;
                                 
-                            let $elementType = $element.hasClass('mceNonEditable') ? 
+                            let $elementType = $element.data('plominoid') ? 
                                                 this.extractClass($element.attr('class')) : 
                                                 null;
     
-                            let $parentType = $parent.hasClass('mceNonEditable') ? 
+                            let $parentType = $parent.data('plominoid') ? 
                                                 this.extractClass($parent.attr('class')) : 
                                                 null;
     
@@ -171,10 +186,13 @@ export class TinyMCEComponent implements AfterViewInit, OnInit, OnDestroy {
     }
 
     getFormLayout() {
-        this._elementService.getElementFormLayout(this.id).subscribe(
-            (data) => { tinymce.activeEditor.setContent(data ? data : ''); },
-            err => console.error(err)
-        );
+        this._elementService.getElementFormLayout(this.id)
+            .subscribe((data) => {
+                let newData = (data && data.length) ? this.widgetService.getLayout({layout: data }, false) : '';  
+                tinymce.activeEditor.setContent(newData); 
+            }, (err) => { 
+                console.error(err);
+            });
     }
 
     saveFormLayout() {
@@ -185,6 +203,7 @@ export class TinyMCEComponent implements AfterViewInit, OnInit, OnDestroy {
             })).subscribe(
                 () => {
                     tiny.isDirty.emit(false);
+                    this.changeDetector.markForCheck();
                 },
                 err => console.error(err)
             );
@@ -436,7 +455,12 @@ export class TinyMCEComponent implements AfterViewInit, OnInit, OnDestroy {
 			}
 		}
 
-	};
+	}
+
+    private insertGroup(group: string) {
+        let editor = tinymce.get(this.id);
+        editor.execCommand('mceInsertContent', false, group, { skip_undo : 1 });
+    }
     
     private resolveDragData(data: any, resolver: any): void {
         resolver(data);

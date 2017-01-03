@@ -90,7 +90,14 @@ export class AddComponent {
                 this.activeTab = tab;
                 if (tab) {
                     this.templatesService.getTemplates(tab.url).subscribe((templates: any[]) => {
-                        this.templates = templates;
+                        this.templates = templates.map((template) => {
+                            return Object.assign({}, template, {
+                                hidewhen: (tab: any) => {
+                                    if (!tab) return true;
+                                    return tab.type !== 'PlominoForm';        
+                                }
+                            })
+                        });
                         this.changeDetector.markForCheck();
                     });
                 } else {
@@ -260,7 +267,10 @@ export class AddComponent {
     addTemplate(templateId: string) {
         this.templatesService.addTemplate(this.activeTab.url, templateId)
             .subscribe((response: any) => {
-                console.log(this.widgetService.getLayout(response));
+                this.templatesService.insertTemplate(Object.assign({}, response, { 
+                    parent: this.activeTab.url,
+                    group: this.widgetService.getLayout(response, true) 
+                }));
             });
     }
 
