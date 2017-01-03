@@ -8,14 +8,12 @@ declare let _: any;
 @Injectable()
 export class WidgetService {
 
-  exractedGroups: string = '';
-
   getLayout(input: any): any {
-    return this.parseInput(input);
+    return this.parseInput(input.layout, input.groupid, input.group_contents);
   }
 
-  private parseInput(input: any) {
-    let $elements = $('<div />').html(input.layout)
+  private parseInput(layout: any, id: any, contents: any[]) {
+    let $elements = $('<div />').html(layout)
                       .find('.plominoGroupClass, .plominoFieldClass:not(.plominoGroupClass .plominoFieldClass), .plominoHidewhenClass:not(.plominoGroupClass .plominoHideWhenClass), .plominoActionClass:not(.plominoGroupClass .plominoActionClass)');
     let resultingElementsString = '';
     
@@ -23,38 +21,50 @@ export class WidgetService {
       let $element = $(element);
       switch($element.attr('class').split(' ')[0]) {
         case 'plominoGroupClass':
-          this.extractGroup($element, input.group_contents).then((result: string) => {
-            resultingElementsString += result;
-          });
+          resultingElementsString += this.convertGroup($element, id, contents);
           break;
         case 'plominoFieldClass':
-          resultingElementsString += this.convertField($element, input.group_contents);
+          resultingElementsString += this.convertField($element, contents);
           break;
         case 'plominoHidewhenClass':
-          resultingElementsString += this.convertHidewhen($element, input.group_contents);
+          resultingElementsString += this.convertHidewhen($element, contents);
           break;
         case 'plominoActionClass':
-          resultingElementsString += this.convertAction($element, input.group_contents);
+          resultingElementsString += this.convertAction($element, contents);
           break;
         default: 
       };
     });
     
-    return this.wrapIntoGroup(resultingElementsString, input.groupId);
+    return this.wrapIntoGroup(resultingElementsString, id);
   }
 
-  private extractGroup(element: any, contents: any[]) {
-    return new Promise((resolve) => {
-      this.convertGroup(element, contents);
-      resolve(this.exractedGroups);
-    })
-  }
+  private convertGroup(group: any, groupId: any, contents: any[]) {
+    let $elements = $('<div />').html(group.html())
+                        .find('.plominoGroupClass, .plominoFieldClass:not(.plominoGroupClass .plominoFieldClass), .plominoHidewhenClass:not(.plominoGroupClass .plominoHideWhenClass), .plominoActionClass:not(.plominoGroupClass .plominoActionClass)');
+    
+    let resultingElementsString = '';
 
-  private convertGroup(element: any, contents: any[]) {
-    let $group = element.find('.plominoGroupClass');
-    if ($group.length) {
-      this.convertGroup($group, contents);
-    }
+    $elements.each((index: number, element: any) => {
+      let $element = $(element);
+      switch($element.attr('class').split(' ')[0]) {
+        case 'plominoGroupClass':
+          resultingElementsString += this.convertGroup($element, groupId, contents);
+          break;
+        case 'plominoFieldClass':
+          resultingElementsString += this.convertField($element, contents);
+          break;
+        case 'plominoHidewhenClass':
+          resultingElementsString += this.convertHidewhen($element, contents);
+          break;
+        case 'plominoActionClass':
+          resultingElementsString += this.convertAction($element, contents);
+          break;
+        default: 
+      };
+    });
+
+    return this.wrapIntoGroup(resultingElementsString, groupId);
   }
 
   private convertHidewhen(element: any, contents: any[]): string { 
