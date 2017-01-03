@@ -65,8 +65,8 @@
 }
 
 tab {
-  height: 900px;
-  overflow: auto;
+  height: calc(100vh - 43px);
+  overflow-y: auto;
 }
 
 .well,

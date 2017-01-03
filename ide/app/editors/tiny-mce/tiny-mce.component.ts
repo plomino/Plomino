@@ -156,15 +156,15 @@ export class TinyMCEComponent implements AfterViewInit, OnInit, OnDestroy {
     
                         let $elementId = $element.data('plominoid');
                         let $parentId = $parent.data('plominoid');
-                        
+
                         if ($elementId || $parentId) {
                             let id = $elementId || $parentId;
                                 
-                            let $elementType = $element.hasClass('mceEditable') ? 
+                            let $elementType = $element.data('plominoid') ? 
                                                 this.extractClass($element.attr('class')) : 
                                                 null;
     
-                            let $parentType = $parent.hasClass('mceEditable') ? 
+                            let $parentType = $parent.data('plominoid') ? 
                                                 this.extractClass($parent.attr('class')) : 
                                                 null;
     
