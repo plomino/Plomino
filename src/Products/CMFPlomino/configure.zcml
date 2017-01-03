@@ -22,6 +22,15 @@
         provides="Products.GenericSetup.interfaces.EXTENSION"
         />
 
+    <genericsetup:registerProfile
+        name="macros"
+        title="Products.CMFPlomino-macros"
+        directory="profiles/macros"
+        description="Install default database with basic macros."
+        provides="Products.GenericSetup.interfaces.EXTENSION"
+        post_handler=".setuphandlers.macros_install"
+      />
+
     <genericsetup:importStep
         name="Products.CMFPlomino-postInstall"
         title="Products.CMFPlomino post_install import step"
