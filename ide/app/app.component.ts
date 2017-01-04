@@ -260,6 +260,10 @@ export class AppComponent implements OnInit, AfterViewInit {
         this.tabsService.selectField(fieldData);
     }
 
+    openFormPreview(formUrl: string): void {
+        window.open(`${formUrl}/OpenForm`);
+    }
+
     private resolveData(data: any, resolver: Function): void {
         resolver(data);
     }

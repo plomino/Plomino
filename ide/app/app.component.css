@@ -69,6 +69,13 @@ tab {
   overflow-y: auto;
 }
 
+.preview-form {
+  color: #35B26F;
+  vertical-align: text-top;
+  font-size: 15px;
+  cursor: pointer; 
+}
+
 .well,
 plomino-palette,
 plomino-tree {
