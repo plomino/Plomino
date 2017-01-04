@@ -261,10 +261,12 @@ export class AddComponent {
             .subscribe((response: any) => {
                 this.widgetService.getGroupLayout(this.activeTab.url, response)
                     .subscribe((layout: any) => {
-                        this.templatesService.insertTemplate(Object.assign({}, response, {
-                            parent: this.activeTab.url,
-                            group: layout
-                        }));
+                        this.treeService.updateTree().then(() => {
+                            this.templatesService.insertTemplate(Object.assign({}, response, {
+                                parent: this.activeTab.url,
+                                group: layout
+                            }));
+                        })
                     });    
             });
     }

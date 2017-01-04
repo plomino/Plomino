@@ -309,7 +309,7 @@ export class WidgetService {
     let content = `
       <${container} class="${$class} mceNonEditable"
                     data-plominoid="${$id}">
-        <${container} class="plominoLabelContent mceEditable">
+        <${container} class="plominoLabelContent">
           ${$title}
         </${container}>
       </${container}>`;
