@@ -190,19 +190,10 @@ export class AddComponent {
             case 'PlominoLabel':
                 let field: any = {
                     '@type': 'PlominoLabel',
-                    title: 'defaultLabel'
+                    title: 'defaultLabel',
+                    name: `${this.activeTab.url}/defaultLabel`
                 };
-                this.elementService.postElement(this.activeTab.url, field)
-                .subscribe((response) => {
-                    let extendedField = Object.assign({}, field, {
-                        name: `${this.activeTab.url}/${response.created}`
-                    });
-
-                    this.treeService.updateTree()
-                    .then(() => {
-                        this.fieldsService.insertField(extendedField);
-                    });
-                });
+                this.fieldsService.insertField(field);
                 break;
             case 'PlominoField':
                 field = {

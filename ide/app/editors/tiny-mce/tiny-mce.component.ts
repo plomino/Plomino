@@ -154,27 +154,34 @@ export class TinyMCEComponent implements AfterViewInit, OnInit, OnDestroy {
                     this.zone.run(() => {
                         let $element = $(ev.target);
                         let $parent = $element.parent();
-    
+                        let elementIsLabel = $element.hasClass('plominoLabelClass');
+                        let parentIsLabel = $parent.hasClass('plominoLabelClass');
+   
                         let $elementId = $element.data('plominoid');
                         let $parentId = $parent.data('plominoid');
-
-                        if ($elementId || $parentId) {
-                            let id = $elementId || $parentId;
-                                
-                            let $elementType = $element.data('plominoid') ? 
-                                                this.extractClass($element.attr('class')) : 
-                                                null;
-    
-                            let $parentType = $parent.data('plominoid') ? 
-                                                this.extractClass($parent.attr('class')) : 
-                                                null;
-    
-                            let type = $elementType || $parentType;
-    
-                            this.fieldSelected.emit({ id: id, type: type });
-                        } else {
+                        
+                        if (elementIsLabel || parentIsLabel) {
                             this.fieldSelected.emit(null);
+                        } else {
+                            if ($elementId || $parentId) {
+                                let id = $elementId || $parentId;
+                                    
+                                let $elementType = $element.data('plominoid') ? 
+                                                    this.extractClass($element.attr('class')) : 
+                                                    null;
+        
+                                let $parentType = $parent.data('plominoid') ? 
+                                                    this.extractClass($parent.attr('class')) : 
+                                                    null;
+        
+                                let type = $elementType || $parentType;
+        
+                                this.fieldSelected.emit({ id: id, type: type });
+                            } else {
+                                this.fieldSelected.emit(null);
+                            }
                         }
+
                     });
                 });
             },
