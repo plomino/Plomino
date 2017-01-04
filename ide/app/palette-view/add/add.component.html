@@ -25,7 +25,7 @@
         *ngFor="let template of templates, let i = index"
         [hidden]="template.hidewhen(activeTab)">
         <button class="btn btn-default"
-            (click)="addTemplate(template.id)">
+            (click)="addTemplate(template.id, template.url)">
             {{template.title}}
         </button>
     </div>

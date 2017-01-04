@@ -92,6 +92,7 @@ export class AddComponent {
                     this.templatesService.getTemplates(tab.url).subscribe((templates: any[]) => {
                         this.templates = templates.map((template) => {
                             return Object.assign({}, template, {
+                                url: `${tab.url.slice(0, tab.url.lastIndexOf('/'))}/${template.id}`,
                                 hidewhen: (tab: any) => {
                                     if (!tab) return true;
                                     return tab.type !== 'PlominoForm';        
@@ -264,13 +265,16 @@ export class AddComponent {
     }
 
 
-    addTemplate(templateId: string) {
+    addTemplate(templateId: string, templateUrl: string) {
         this.templatesService.addTemplate(this.activeTab.url, templateId)
             .subscribe((response: any) => {
-                this.templatesService.insertTemplate(Object.assign({}, response, { 
-                    parent: this.activeTab.url,
-                    group: this.widgetService.getLayout(response, true) 
-                }));
+                this.widgetService.getGroupLayout(this.activeTab.url, response)
+                    .subscribe((layout: any) => {
+                        this.templatesService.insertTemplate(Object.assign({}, response, {
+                            parent: this.activeTab.url,
+                            group: layout
+                        }));
+                    });    
             });
     }
 

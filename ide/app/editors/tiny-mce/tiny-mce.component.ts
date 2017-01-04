@@ -188,8 +188,15 @@ export class TinyMCEComponent implements AfterViewInit, OnInit, OnDestroy {
     getFormLayout() {
         this._elementService.getElementFormLayout(this.id)
             .subscribe((data) => {
-                let newData = (data && data.length) ? this.widgetService.getLayout({layout: data }, false) : '';  
-                tinymce.activeEditor.setContent(newData); 
+                let newData = '';
+                if (data && data.length) {
+                    this.widgetService.getFormLayout(this.id, data)
+                        .subscribe((formLayout: string) => {
+                            tinymce.get(this.id).setContent(formLayout); 
+                        });
+                } else {
+                    tinymce.get(this.id).setContent(newData);
+                }
             }, (err) => { 
                 console.error(err);
             });
