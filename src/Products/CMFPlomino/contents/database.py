@@ -7,6 +7,7 @@ from plone.memoize.interfaces import ICacheChooser
 from plone.supermodel import directives as supermodel_directives
 from plone.supermodel import model
 from Products.CMFCore.PortalFolder import PortalFolderBase as PortalFolder
+from Products.CMFCore.utils import getToolByName
 import uuid
 from zope import schema
 from zope.annotation.interfaces import IAnnotations
@@ -129,7 +130,7 @@ class IPlominoDatabase(model.Schema):
             default="Databases to search for macros. Reorder to change search order."),
         unique=True,
         value_type=schema.Choice(vocabulary="Products.CMFPlomino.fields.vocabularies.get_databases"),
-        default=['.'],
+        default=['.', 'macros'],
         required=False,
     )
 
@@ -423,19 +424,28 @@ class PlominoDatabase(
         else:
             del annotations[config.PLOMINO_REQUEST_CACHE_KEY]
 
+
 def get_databases(obj):
+    """Return all plomino databases
+
+    Using id as value and 'title (path)' as label,
+    except current database as '.'
+    """
     db = obj
     if not db:
         return []
-    from Products.CMFCore.utils import getToolByName
+
     catalog = getToolByName(db, 'portal_catalog')
     results = catalog.searchResults({'portal_type': 'PlominoDatabase'})
-    title = "{title} ({path})".format(title=db.Title(),path=".")
+    title = "{title} ({path})".format(title=db.Title(), path=".")
     vocab = [(title, ".")]
-    path = '/'.join(db.getPhysicalPath() )
+    path = '/'.join(db.getPhysicalPath())
+
     for brain in results:
         if brain.getPath() == path:
             continue
-        title = "{title} ({path})".format(title=brain['Title'],path=brain.getPath())
-        vocab.append( (title, brain.getPath()) )
+        title = "{title} ({path})".format(
+            title=brain['Title'], path=brain.getPath())
+        vocab.append((title, brain.id))
+
     return SimpleVocabulary.fromItems(vocab)
