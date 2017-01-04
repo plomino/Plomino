@@ -25,7 +25,7 @@
     <element value="plone.app.content.interfaces.INameFromTitle"/>
     <element value="Products.CMFPlomino.browser.helpers.IHelpers"/>
     <element value="Products.CMFPlomino.browser.tinymce.IAJAXHiddenFields"/>
-    <element value="Products.CMFPlomino.contents.behaviour.IShortName"/>
+    <element value="Products.CMFPlomino.contents.behaviours.IShortName"/>
   </property>
   <property name="schema">Products.CMFPlomino.contents.hidewhen.IPlominoHidewhen</property>
   <property name="klass">Products.CMFPlomino.contents.hidewhen.PlominoHidewhen</property>

@@ -24,7 +24,7 @@
     <element value="plone.app.dexterity.behaviors.metadata.IBasic"/>
     <element value="plone.app.content.interfaces.INameFromTitle"/>
     <element value="Products.CMFPlomino.browser.tinymce.IAJAXHiddenFields"/>
-    <element value="Products.CMFPlomino.contents.behaviour.IShortName"/>
+    <element value="Products.CMFPlomino.contents.behaviours.IShortName"/>
     <element value="Products.CMFPlomino.browser.helpers.IHelpers"/>
   </property>
   <property name="schema">Products.CMFPlomino.contents.column.IPlominoColumn</property>
