@@ -83,6 +83,25 @@ export class TreeComponent implements OnInit {
         this.draggingService.setDragging(null);
     }
 
+    openFieldSettings(fieldData: any): void {
+        let id = fieldData.name.slice(fieldData.name.lastIndexOf('/') + 1);
+        if ((this.selected && this.selected.url) !== fieldData.parent) {
+            let tabLabel = fieldData.parent.slice(fieldData.parent.lastIndexOf('/') + 1);
+            this.tabsService.openTab({
+                editor: 'layout',
+                label: tabLabel,
+                url: fieldData.parent,
+                path: [
+                    {    
+                        name: tabLabel,
+                        type: 'Forms'
+                    }
+                ],
+            }, false);
+        }  
+        this.tabsService.selectField({ id: id, type: fieldData.type, parent: fieldData.parent });
+    }
+
     sendSearch(query: string) {
         if (query === '') {
             this.searchResults = null;

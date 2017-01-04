@@ -26,32 +26,33 @@ export class TabsService {
       });
   }
 
-  setActiveTab(tab: any): void {
+  setActiveTab(tab: any, showAdd = false): void {
     
-    // if (tab.active) {
-    //   return;
-    // }
+    if (tab.active) {
+      return;
+    }
 
     let tabs = this.tabs$.getValue().slice(0);
-    let normalizedTab: any = this.retrieveTab(this.tree, tab);
+    let normalizedTab: any = Object.assign({}, this.retrieveTab(this.tree, tab), { showAdd: showAdd });
     let selectedTab: any = _.find(tabs, { url: tab.url, editor: tab.editor });
-  
+    
     tabs.forEach(tab => { tab.active = (tab.url === selectedTab.url) });
 
     this.activeTab$.next(normalizedTab);
     this.tabs$.next(tabs);
   }
 
-  openTab(tab: any): void {
+  openTab(tab: any, showAdd = true): void {
+    console.log(`open this tab `, tab);
     let tabs: any[] = this.tabs$.getValue();
     let tabIsOpen: boolean = _.find(tabs, { url: tab.url, editor: tab.editor });
     
     if (tabIsOpen) {
       
-      this.setActiveTab(tab);
+      this.setActiveTab(tab, false);
 
     } else {
-      let builtedTab: any = this.buildTab(tab);
+      let builtedTab: any = this.buildTab(tab, showAdd);
       tabs.forEach((tab) => tab.active = false);
       tabs.push(builtedTab);
       this.tabs$.next(tabs);
@@ -71,13 +72,14 @@ export class TabsService {
     this.tabs$.next(tabs);
   }
 
-  selectField(fieldData: { id: string, type: string }): void {
+  selectField(fieldData: { id: string, type: string, parent: string }): void {
+    console.log(`field data`, fieldData);
     let field: any = null;
 
     if (fieldData && fieldData.id) {
       field = Object.assign({}, { 
         id: fieldData.id, 
-        url: this.activeTab$.getValue().url + '/' + fieldData.id, 
+        url: `${fieldData.parent}/${fieldData.id}`, 
         type: fieldData.type 
       });
     }
@@ -160,13 +162,14 @@ export class TabsService {
     }
   }
 
-  private buildTab(tab: any): any {
+  private buildTab(tab: any, showAdd: boolean): any {
     let newtab = { 
       title: tab.label, 
       editor: tab.editor, 
       path: tab.path, 
       url: tab.url,
-      active: true 
+      active: true,
+      showAdd: showAdd 
     };
     /* if (newtab.editor === 'code') {
      *     this.aceNumber++;

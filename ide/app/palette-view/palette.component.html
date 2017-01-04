@@ -1,8 +1,11 @@
 <tabset [justified]="true">
-    <tab *ngFor="let tabz of tabs" 
-        [heading]="tabz.title">
+    <tab *ngFor="let tabz of tabs, let i = index"
+        [active]="tabz.active" 
+        [heading]="tabz.title"
+        (select)="setActiveTab(i)">
 
         <div class="tab-wrapper">
+
             <plomino-palette-add *ngIf="tabz.id==='add'"></plomino-palette-add>
             
             <plomino-palette-fieldsettings *ngIf="tabz.id==='item'">

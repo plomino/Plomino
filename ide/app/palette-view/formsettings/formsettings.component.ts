@@ -86,12 +86,15 @@ export class FormSettingsComponent implements OnInit {
             })
             .flatMap((tab: any) => {
                 if (tab) {
-                    return this.objService.getFormSettings(tab.url)
+                    return this.objService.getFormSettings(tab.url);
                 } else {
                     return Observable.of('');
                 }
             })
             .subscribe((template) => {
+                // $template.find('#formfield-form-widgets-form_layout').css('display', 'none');
+                // console.log(this.formSettings = $template.innerHTML);
+                // this.formSettings = $template.wrap('<div />').parent().html();
                 this.formSettings = template;
                 this.changeDetector.markForCheck();
             });

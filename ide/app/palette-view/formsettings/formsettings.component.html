@@ -17,11 +17,13 @@
         </div>
         <div class="btn-group">
             <button class="btn btn-success"
+                *ngIf="formSettings"
                 (click)="openFormPreview(tab.url)">
                 Preview
             </button>
         </div>
     </div>
+    
     <div #formElem 
         [innerHTML]="formSettings | safePloneHtml">
     </div>
