@@ -1,0 +1,19 @@
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:five="http://namespaces.zope.org/five"
+    xmlns:genericsetup="http://namespaces.zope.org/genericsetup"
+    i18n_domain="dexterity.membrane">
+
+  <!-- make this show up in the quickinstaller separately -->
+  <five:registerPackage package="."/>
+
+    <genericsetup:registerProfile
+        name="macros"
+        title="Products.CMFPlomino: default macros"
+        directory="../profiles/macros"
+        description="Install the default macros for Plomino in '/macros'"
+        provides="Products.GenericSetup.interfaces.EXTENSION"
+        post_handler=".setuphandlers.macros_install"
+      />
+
+</configure>
