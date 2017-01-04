@@ -357,7 +357,7 @@ export class TinyMCEComponent implements AfterViewInit, OnInit, OnDestroy {
                     selection.tagName === "SPAN") {
 
                     content = '<div class="plominoLabelClass mceNonEditable" data-plominoid="' +
-                                value + '"><div class="plominoLabelContent mceEditable">' + 
+                                value + '"><div class="plominoLabelContent">' + 
                                 title + '</div></div><br />';
                 }
                 else if (tinymce.DOM.hasClass(selection.firstChild, "plominoLabelContent")) {
@@ -366,11 +366,11 @@ export class TinyMCEComponent implements AfterViewInit, OnInit, OnDestroy {
                 } else {
                     if (selection.textContent == "") {
                         content = '<div class="plominoLabelClass mceNonEditable" data-plominoid="' + 
-                                    value + '"><div class="plominoLabelContent mceEditable">' + 
+                                    value + '"><div class="plominoLabelContent">' + 
                                     title + '</div></div><br />';
                     } else {
                         content = '<div class="plominoLabelClass mceNonEditable" data-plominoid="' + 
-                                    value + '"><div class="plominoLabelContent mceEditable">' + 
+                                    value + '"><div class="plominoLabelContent">' + 
                                     ed.selection.getContent() + '</div></div><br />';
                     }
                 }

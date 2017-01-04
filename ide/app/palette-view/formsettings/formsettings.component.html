@@ -9,10 +9,16 @@
             </button>
         </div>
         <div class="btn-group">
-            <button class="btn btn-link"
+            <button class="btn btn-danger"
                 *ngIf="formSettings"
                 (click)="cancelForm()">
                 Cancel
+            </button>
+        </div>
+        <div class="btn-group">
+            <button class="btn btn-success"
+                (click)="openFormPreview(tab.url)">
+                Preview
             </button>
         </div>
     </div>

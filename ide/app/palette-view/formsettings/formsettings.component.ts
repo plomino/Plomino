@@ -75,6 +75,10 @@ export class FormSettingsComponent implements OnInit {
         this.getSettings();
     }
 
+    openFormPreview(formUrl: string): void {
+        window.open(`${formUrl}/OpenForm`);
+    }
+
     private getSettings() {
         this.tabsService.getActiveTab()
             .do((tab) => {
