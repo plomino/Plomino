@@ -560,7 +560,6 @@ class MacroTemplateView(BrowserView):
         if form is None:
             raise NotFound #("No template found for %s"%templateid)
         res = self._renameGroup(form,
-                                groupid=templateid,
                                 newgroupid=remove_prefix(templateid,'template_'),
                                 ids=form.objectIds())
         res['layout'] = form.form_layout
@@ -577,20 +576,22 @@ class MacroTemplateView(BrowserView):
         id = self.request.id
         newid = self.request.newid
         group_contents = self.request.group_contents
-        return json.dumps(self._renameGroup(self.form, id, newid, group_contents))
+        return json.dumps(self._renameGroup(self.form, newid, group_contents))
 
-    def _renameGroup(self, form, groupid, newgroupid, ids):
+    def _renameGroup(self, form, newgroupid, ids):
         # if form is None it's a rename
 
         context_ids = set(self.form.objectIds())
-        def new_id(gid, id):
-            id = remove_prefix(id, groupid+'_') if id.startswith(groupid+'_') else remove_prefix(id, groupid)
-            return (newgroupid+'_'+id).rstrip('_')
+        def new_id(gid, id, newgroupid=newgroupid):
+            # if the id is 'text' and the newgroupid is 'text' and then the new id should be
+            # 'text_1' etc, not 'text_1_text'
+            id = remove_prefix(id, newgroupid+'_') if id.startswith(newgroupid+'_') else remove_prefix(id, newgroupid)
+            return (gid+'_'+id).rstrip('_')
 
         # find a prefix for all the subitems that is unique
         i = 1
         while any(new_id(newgroupid,id) in context_ids for id in ids ):
-            newgroupid = "%s_%i" % (groupid, i)
+            newgroupid = "%s_%i" % (newgroupid, i)
             i += 1
 
         # now we have a unique prefix. Copy or move all the items
@@ -602,7 +603,7 @@ class MacroTemplateView(BrowserView):
         for id in ids:
             item = form[id]
             newid = new_id(newgroupid,item.id)
-            action(item, self.form, id=newid)
+            action(item, self.form, id=newid if newid != id else None)
             new_contents.append({'id':newid, 'old_id':id, 'title':item.title})
 
 
