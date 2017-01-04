@@ -14,6 +14,7 @@ from zope.interface import implementsOnly, alsoProvides
 from zope.schema.interfaces import IList
 
 from zope.schema import getFieldsInOrder
+from Products.CMFCore.utils import getToolByName
 from Products.CMFPlomino.document import getTemporaryDocument
 from Products.CMFPlomino.utils import asAscii
 
@@ -127,6 +128,7 @@ class MacroWidget(Widget):
     def helper_forms(self):
         logger.debug('Method: Widget helper_forms')
         db = self.context.getParentDatabase()
+        catalog = getToolByName(db, 'portal_catalog')
         found = set()
         view = self.request.URL.rsplit('/',1)[-1]
         if view.startswith('++add++'):
@@ -143,12 +145,25 @@ class MacroWidget(Widget):
             path = asAscii(path)
             if path == '.':
                 dbs.append(db)
-            else:
+            elif '/' in path:
+                # backward compatible to support path
                 try:
                     dbs.append(db.restrictedTraverse(path))
                 except KeyError:
                     #TODO: maybe improve import so bad macro imports aren't stored?
                     continue
+            else:
+                # only current db using '.', the rest is db id
+                brains = catalog(getId=path)
+                for brain in brains:
+                    if brain.portal_type != 'PlominoDatabase':
+                        continue
+                    try:
+                        db_brain = brain.getObject()
+                        dbs.append(db_brain)
+                    except KeyError:
+                        # TODO: maybe improve import so bad macro imports aren't stored?
+                        continue
 
         forms = []
         for _db in dbs:
@@ -220,18 +235,31 @@ MACRO_FMT = '### START {id} ###{code}### END {id} ###'
 CODE_REGEX = '(((?!###)(.|\n|\r))+)'
 
 
-def load_macro(formid, helper, db, ids, curpath):
+def load_macro(formid, helper, db, ids, curpath, catalog):
     # search other dbs for this form
     form = None
     db_import = None
+
     for db_path in db.import_macros:
         # restrictedTraverse only ascii path, can't be unicode
         db_path = asAscii(db_path)
         if db_path == '.':
             db_import = db
-        else:
+            form = db_import.getForm(formid)
+        elif '/' in db_path:
+            # backward compatible to support path
             db_import = db.restrictedTraverse(db_path)
-        form = db_import.getForm(formid)
+            form = db_import.getForm(formid)
+        else:
+            # only current db using '.', the rest is db id
+            brains = catalog(getId=db_path)
+            for brain in brains:
+                if brain.portal_type != 'PlominoDatabase':
+                    continue
+                db_import = brain.getObject()
+                form = db_import.getForm(formid)
+                if form is not None:
+                    break
         if form is not None:
             break
 
@@ -294,6 +322,7 @@ def update_helpers(obj, event):
 
     db = obj.getParentDatabase()
     curpath = '/'.join(obj.getPhysicalPath())
+    catalog = getToolByName(db, 'portal_catalog')
 
     # need to upgrade the data from the old structure if needed
     #TODO: only do set at the end if this has changed (or an id has been added)
@@ -323,7 +352,8 @@ def update_helpers(obj, event):
                 conditions.append((formid, None, None))
                 continue
 
-            helperid, form, doc = load_macro(formid, helper, db, ids, curpath)
+            helperid, form, doc = load_macro(formid, helper, db, ids,
+                                             curpath, catalog)
 
             if form is None:
                 # means the macro used to create the code is no longer available
@@ -560,7 +590,6 @@ class MacroTemplateView(BrowserView):
         if form is None:
             raise NotFound #("No template found for %s"%templateid)
         res = self._renameGroup(form,
-                                groupid=templateid,
                                 newgroupid=remove_prefix(templateid,'template_'),
                                 ids=form.objectIds())
         res['layout'] = form.form_layout
@@ -577,20 +606,22 @@ class MacroTemplateView(BrowserView):
         id = self.request.id
         newid = self.request.newid
         group_contents = self.request.group_contents
-        return json.dumps(self._renameGroup(self.form, id, newid, group_contents))
+        return json.dumps(self._renameGroup(self.form, newid, group_contents))
 
-    def _renameGroup(self, form, groupid, newgroupid, ids):
+    def _renameGroup(self, form, newgroupid, ids):
         # if form is None it's a rename
 
         context_ids = set(self.form.objectIds())
-        def new_id(gid, id):
-            id = remove_prefix(id, groupid+'_') if id.startswith(groupid+'_') else remove_prefix(id, groupid)
-            return (newgroupid+'_'+id).rstrip('_')
+        def new_id(gid, id, newgroupid=newgroupid):
+            # if the id is 'text' and the newgroupid is 'text' and then the new id should be
+            # 'text_1' etc, not 'text_1_text'
+            id = remove_prefix(id, newgroupid+'_') if id.startswith(newgroupid+'_') else remove_prefix(id, newgroupid)
+            return (gid+'_'+id).rstrip('_')
 
         # find a prefix for all the subitems that is unique
         i = 1
         while any(new_id(newgroupid,id) in context_ids for id in ids ):
-            newgroupid = "%s_%i" % (groupid, i)
+            newgroupid = "%s_%i" % (newgroupid, i)
             i += 1
 
         # now we have a unique prefix. Copy or move all the items
@@ -602,7 +633,7 @@ class MacroTemplateView(BrowserView):
         for id in ids:
             item = form[id]
             newid = new_id(newgroupid,item.id)
-            action(item, self.form, id=newid)
+            action(item, self.form, id=newid if newid != id else None)
             new_contents.append({'id':newid, 'old_id':id, 'title':item.title})
 
 

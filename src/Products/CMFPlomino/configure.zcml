@@ -23,6 +23,10 @@
         provides="Products.GenericSetup.interfaces.EXTENSION"
         />
 
+    <!-- note defaultmacros defines a seperate profile which will appear
+     in teh control panel -->
+    <include package=".defaultmacros" />
+
     <genericsetup:importStep
         name="Products.CMFPlomino-postInstall"
         title="Products.CMFPlomino post_install import step"
