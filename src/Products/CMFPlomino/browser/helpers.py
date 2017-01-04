@@ -235,7 +235,8 @@ MACRO_FMT = '### START {id} ###{code}### END {id} ###'
 CODE_REGEX = '(((?!###)(.|\n|\r))+)'
 
 
-def load_macro(formid, helper, db, ids, curpath, catalog):
+def load_macro(formid, helper, db, ids, curpath):
+    catalog = getToolByName(db, 'portal_catalog')
     # search other dbs for this form
     form = None
     db_import = None
@@ -322,7 +323,6 @@ def update_helpers(obj, event):
 
     db = obj.getParentDatabase()
     curpath = '/'.join(obj.getPhysicalPath())
-    catalog = getToolByName(db, 'portal_catalog')
 
     # need to upgrade the data from the old structure if needed
     #TODO: only do set at the end if this has changed (or an id has been added)
@@ -353,7 +353,7 @@ def update_helpers(obj, event):
                 continue
 
             helperid, form, doc = load_macro(formid, helper, db, ids,
-                                             curpath, catalog)
+                                             curpath)
 
             if form is None:
                 # means the macro used to create the code is no longer available
