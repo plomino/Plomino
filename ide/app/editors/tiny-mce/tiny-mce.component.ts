@@ -117,6 +117,7 @@ export class TinyMCEComponent implements AfterViewInit, OnInit, OnDestroy {
         
         this.draggingSubscription = this.draggingService.getDragging()
             .subscribe((dragData: any) => {
+                console.log(`Dragging data `, dragData);
                 this.dragData = dragData;
                 this.isDragged = !!dragData;
                 this.changeDetector.markForCheck();

@@ -265,7 +265,7 @@ export class AddComponent {
     }
 
 
-    addTemplate(templateId: string, templateUrl: string) {
+    addTemplate(templateId: string) {
         this.templatesService.addTemplate(this.activeTab.url, templateId)
             .subscribe((response: any) => {
                 this.widgetService.getGroupLayout(this.activeTab.url, response)
@@ -279,7 +279,7 @@ export class AddComponent {
     }
 
     // Refactor this code, put switch into separated fn
-    startDrag(type: any): void {
+    startDrag(type: any, templateId?: any): void {
         let data: any;
         let draggingData: any = {};
         switch(type) {
@@ -313,6 +313,11 @@ export class AddComponent {
                     '@type': 'PlominoAction'
                 };
                 break;
+            case 'template':
+                data = { 
+                    '@type': 'PlominoTemplate'
+                };
+                break;
             default: return;
         }
         
@@ -335,8 +340,14 @@ export class AddComponent {
             });
         }
 
-        draggingData.resolver = (data: any) => {
-            this.add(data['@type']);
+        if (type !== 'template') {
+            draggingData.resolver = (data: any) => {
+                this.add(data['@type']);
+            }
+        } else {
+            draggingData.resolver = () => {
+                this.addTemplate(templateId);
+            }
         }
 
         this.draggingService.setDragging(draggingData);
