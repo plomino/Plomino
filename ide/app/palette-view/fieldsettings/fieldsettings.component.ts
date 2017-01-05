@@ -59,16 +59,16 @@ export class FieldSettingsComponent implements OnInit {
         let $form: any = $(this.fieldForm.nativeElement);
         let form: HTMLFormElement = $form.find('form').get(0);
         let formData: FormData = new FormData(form);
-        let $fieldId = $form.find('#form-widgets-IShortName-id').val().toLowerCase();
-        let newUrl = this.field.url.slice(0, this.field.url.lastIndexOf('/') + 1) + $fieldId; 
 
         formData.append('form.buttons.save', 'Save');        
         
         this.objService.updateFormSettings(this.field.url, formData)
-            .flatMap((responseHtml: string) => {
-                if (responseHtml.indexOf('dl.error') > -1) {
-                    return Observable.of(responseHtml);
+            .flatMap((responseData: any) => {
+                if (responseData.html.indexOf('dl.error') > -1) {
+                    return Observable.of(responseData.html);
                 } else {
+                    let $fieldId = responseData.url.slice(responseData.url.lastIndexOf('/') + 1);
+                    let newUrl = this.field.url.slice(0, this.field.url.lastIndexOf('/') + 1) + $fieldId; 
                     this.field.url = newUrl;
                     this.fieldsService.updateField(this.field, this.formAsObject($form), $fieldId);
                     this.field.id = $fieldId;

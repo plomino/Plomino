@@ -24,7 +24,7 @@ export class ObjService {
 
     updateFieldSettings(fieldUrl: string, formData: FormData): Observable<any> {
         return this.http.post(`${fieldUrl}/@@edit`, formData)
-                    .map(this.extractText);
+                    .map(this.extractTextAndUrl);
     }
     
     getFormSettings(formUrl: string): Observable<any> {
@@ -35,7 +35,7 @@ export class ObjService {
     
     updateFormSettings(formUrl: string, formData: FormData): Observable<any> {
         return this.http.post(`${formUrl}/@@edit`, formData)
-                    .map(this.extractText);
+                    .map(this.extractTextAndUrl);
     }
 
 
@@ -54,5 +54,12 @@ export class ObjService {
 
     private extractText(response: Response): any {
         return response.text();
+    }
+
+    private extractTextAndUrl(response: Response): any {
+        return {
+            html: response.text(),
+            url: response.url.slice(0, response.url.indexOf('@') - 1)
+        }
     }
 }
