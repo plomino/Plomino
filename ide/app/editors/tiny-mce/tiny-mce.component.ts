@@ -24,7 +24,8 @@ import {
     FieldsService,
     DraggingService,
     TemplatesService,
-    WidgetService
+    WidgetService,
+    TabsService
 } from '../../services';
 
 import {DND_DIRECTIVES} from 'ng2-dnd/ng2-dnd';
@@ -92,6 +93,7 @@ export class TinyMCEComponent implements AfterViewInit, OnInit, OnDestroy {
                 private templatesService: TemplatesService,
                 private widgetService: WidgetService,
                 private changeDetector: ChangeDetectorRef,
+                private tabsService: TabsService,
                 private http: Http,
                 private zone: NgZone) {
         this.insertionSubscription = this.fieldsService.getInsertion()
@@ -416,6 +418,13 @@ export class TinyMCEComponent implements AfterViewInit, OnInit, OnDestroy {
 
                         ed.execCommand('mceInsertContent', false, content, {skip_undo : 1});
                     }
+
+                    this.tabsService.selectField({
+                        id: value,
+                        type: `Plomino${type}`,
+                        parent: this.id
+                    });
+                    
                 });
 
 		} else if (type == "hidewhen" || type == 'cache') {
@@ -474,6 +483,12 @@ export class TinyMCEComponent implements AfterViewInit, OnInit, OnDestroy {
 				
                 ed.execCommand('mceInsertContent', false, zone, {skip_undo : 1});
 			}
+
+            this.tabsService.selectField({
+                id: value,
+                type: `Plomino${type}`,
+                parent: this.id
+            });
 		}
 
 	}
