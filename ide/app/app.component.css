@@ -21,7 +21,7 @@
 
 .palette-wrapper {
   position: relative;
-  top: 43px;
+  top: 60px;
   min-height: 150px;
   max-height: 80%;
   overflow-y: auto;
@@ -33,6 +33,19 @@
   left: 0;
   width: 350px;
 }
+
+.palette-wrapper /deep/ .nav-tabs .nav-item:first-child a {
+  height: 62px;
+  display: flex;
+  justify-content: center;
+  line-height: 0;
+}
+
+.palette-wrapper /deep/ .nav-tabs .nav-item:first-child a span {
+  -ms-align-self: center;
+  height: 17px;
+  align-self: center;
+} 
 
 .tree-wrapper {
   position: relative;

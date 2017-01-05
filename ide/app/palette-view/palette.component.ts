@@ -55,9 +55,9 @@ export class PaletteComponent implements OnInit {
 
     tabs: Array<any> = [
         { title: 'Add', id: 'add', active: true },
-        { title: 'Field', id: 'item' },
-        { title: 'Form', id: 'group' },
-        { title: 'DB', id: 'db' }
+        { title: 'Field Settings', id: 'item' },
+        { title: 'Form Settings', id: 'group' },
+        { title: 'DB Settings', id: 'db' }
     ];
 
     constructor(private changeDetector: ChangeDetectorRef,
@@ -92,12 +92,12 @@ export class PaletteComponent implements OnInit {
         let group = _.find(clonnedTabs, { id: 'group' });
         let field = _.find(clonnedTabs, { id: 'item' });
 
-        group.title = activeTabType === 'PlominoForm' ? 'Form' : 'View';
+        group.title = activeTabType === 'PlominoForm' ? 'Form Settings' : 'View Settings';
 
         if (activeFieldType) {
             let tempTitle = activeFieldType.slice(7).toLowerCase();
             let title = tempTitle.slice(0, 1).toUpperCase() + tempTitle.slice(1);
-            field.title = title;
+            field.title = `${title} Settings` 
             clonnedTabs.forEach((tab) => {
                 tab.active = false;
             });

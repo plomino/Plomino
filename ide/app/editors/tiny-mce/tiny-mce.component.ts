@@ -151,8 +151,9 @@ export class TinyMCEComponent implements AfterViewInit, OnInit, OnDestroy {
                     let $editorFrame = $(this.editorElement.nativeElement).find('iframe[id*=mce_]');
                     console.log($editorFrame);
                 });
-                
-                editor.on('click', (ev: Event) => {
+
+                editor.on('mousedown', (ev: MouseEvent) => {
+                    let $element = $(ev.target);
                     this.zone.run(() => {
                         let $element = $(ev.target);
                         let $parent = $element.parent();
@@ -206,6 +207,10 @@ export class TinyMCEComponent implements AfterViewInit, OnInit, OnDestroy {
 
                     });
                 });
+                
+                // editor.on('click', (ev: Event) => {
+                //     console.log(`Clicked on element `); 
+                // });
             },
             content_style: require('./tinymce.css'),
 		    menubar: "file edit insert view format table tools",
