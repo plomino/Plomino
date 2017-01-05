@@ -1,5 +1,12 @@
-import {Injectable} from '@angular/core';
-import {Http, Headers, Response} from '@angular/http';
+import { Injectable } from '@angular/core';
+
+import {
+    Http, 
+    Headers, 
+    Response
+} from '@angular/http';
+
+import { Observable } from 'rxjs/Rx';
 
 @Injectable()
 export class ElementService {
@@ -65,5 +72,10 @@ export class ElementService {
 
     searchElement(query: string) {
         return this.http.get('../../search?SearchableText='+query+'*', { headers: this.headers }).map((res: Response) => res.json());
+    }
+
+    getWidget(base: string, type: string, id: string): Observable<Response> {
+        return this.http.get(`${base}/@@tinyform/example_widget?widget_type=${type}&id=${id}`)
+                .map((response) => response.json());
     }
 }

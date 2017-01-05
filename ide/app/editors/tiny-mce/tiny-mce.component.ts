@@ -86,7 +86,7 @@ export class TinyMCEComponent implements AfterViewInit, OnInit, OnDestroy {
     insertionSubscription: Subscription;
     templatesSubscription: Subscription;
 
-    constructor(private _elementService: ElementService,
+    constructor(private elementService: ElementService,
                 private fieldsService: FieldsService,
                 private draggingService: DraggingService,
                 private templatesService: TemplatesService,
@@ -194,7 +194,7 @@ export class TinyMCEComponent implements AfterViewInit, OnInit, OnDestroy {
     }
 
     getFormLayout() {
-        this._elementService.getElementFormLayout(this.id)
+        this.elementService.getElementFormLayout(this.id)
             .subscribe((data) => {
                 let newData = '';
                 if (data && data.length) {
@@ -213,7 +213,7 @@ export class TinyMCEComponent implements AfterViewInit, OnInit, OnDestroy {
     saveFormLayout() {
         let tiny = this;
         if(tinymce.activeEditor !== null){
-            this._elementService.patchElement(this.id, JSON.stringify({
+            this.elementService.patchElement(this.id, JSON.stringify({
                 "form_layout": tinymce.activeEditor.getContent()
             })).subscribe(
                 () => {
@@ -346,48 +346,54 @@ export class TinyMCEComponent implements AfterViewInit, OnInit, OnDestroy {
 		}
         
         if (type == 'label') {
-
+            this.elementService.getWidget(baseUrl, type, value)
+                .subscribe((widgetTemplate: any) => {
+                    ed.execCommand('mceInsertContent', false, `${widgetTemplate}<br />`, {skip_undo : 1});
+                });
             // Handle labels - TODO: replace this with example_wiget
-            title = (value[0].toUpperCase() + value.slice(1, value.length)).split('-').join(" ");
-            if (container == "span") {
-                content = '<span class="plominoLabelClass mceNonEditable" data-plominoid="' + 
-                            value + '">' + title + '</span><br />';
-            } else {
-                if (tinymce.DOM.hasClass(selection, "plominoLabelClass") && 
-                    selection.tagName === "SPAN") {
+            // title = (value[0].toUpperCase() + value.slice(1, value.length)).split('-').join(" ");
+            // if (container == "span") {
+            //     content = '<span class="plominoLabelClass mceNonEditable" data-plominoid="' + 
+            //                 value + '">' + title + '</span><br />';
+            // } else {
+            //     if (tinymce.DOM.hasClass(selection, "plominoLabelClass") && 
+            //         selection.tagName === "SPAN") {
 
-                    content = '<div class="plominoLabelClass mceNonEditable" data-plominoid="' +
-                                value + '"><div class="plominoLabelContent">' + 
-                                title + '</div></div><br />';
-                }
-                else if (tinymce.DOM.hasClass(selection.firstChild, "plominoLabelContent")) {
-                    content = '<div class="plominoLabelClass mceNonEditable" data-plominoid="' + 
-                                value + '">' + selection.innerHTML + '</div><br />';
-                } else {
-                    if (selection.textContent == "") {
-                        content = '<div class="plominoLabelClass mceNonEditable" data-plominoid="' + 
-                                    value + '"><div class="plominoLabelContent">' + 
-                                    title + '</div></div><br />';
-                    } else {
-                        content = '<div class="plominoLabelClass mceNonEditable" data-plominoid="' + 
-                                    value + '"><div class="plominoLabelContent">' + 
-                                    ed.selection.getContent() + '</div></div><br />';
-                    }
-                }
-            }
+            //         content = '<div class="plominoLabelClass mceNonEditable" data-plominoid="' +
+            //                     value + '"><div class="plominoLabelContent">' + 
+            //                     title + '</div></div><br />';
+            //     }
+            //     else if (tinymce.DOM.hasClass(selection.firstChild, "plominoLabelContent")) {
+            //         content = '<div class="plominoLabelClass mceNonEditable" data-plominoid="' + 
+            //                     value + '">' + selection.innerHTML + '</div><br />';
+            //     } else {
+            //         if (selection.textContent == "") {
+            //             content = '<div class="plominoLabelClass mceNonEditable" data-plominoid="' + 
+            //                         value + '"><div class="plominoLabelContent">' + 
+            //                         title + '</div></div><br />';
+            //         } else {
+            //             content = '<div class="plominoLabelClass mceNonEditable" data-plominoid="' + 
+            //                         value + '"><div class="plominoLabelContent">' + 
+            //                         ed.selection.getContent() + '</div></div><br />';
+            //         }
+            //     }
+            // }
 
-            ed.execCommand('mceInsertContent', false, content, {skip_undo : 1});
+            // console.log(`You want to insert label! `, baseUrl, type, value);
+
+            // ed.execCommand('mceInsertContent', false, content, {skip_undo : 1});
 
         } else if (plominoClass !== undefined) {
 
-            this.http.get(`${baseUrl}/@@tinyform/example_widget?widget_type=${type}&id=${value}`)
-                .map((response: Response) => response.json())
+            this.elementService.getWidget(baseUrl, type, value)
                 .subscribe((response) => {
                     let responseAsElement = $(response);
+                    let container = 'span';
+
                     selection = ed.selection.getNode();
 
-                    if (responseAsElement.find("div,table,p").length) {
-                        container = "div";
+                    if (responseAsElement.find('div,table,p').length) {
+                        container = 'div';
                     }
 
                     if (response != undefined) {

@@ -49,6 +49,7 @@ export class WidgetService {
           case 'plominoLabelClass':
             items$.push({
               type: 'label',
+              baseUrl: baseUrl,
               el: $element
             });
             break;
@@ -63,7 +64,7 @@ export class WidgetService {
                   }
                   
                   if (item.type === 'label') {
-                    return this.convertLabel(item.el, 'group');
+                    return this.convertLabel(item.baseUrl, item.el, 'group');
                   }
 
                   return this.convertGroupFields(item.contents, item.baseUrl, item.el);
@@ -118,6 +119,7 @@ export class WidgetService {
         case 'plominoLabelClass':
           fields$.push({
             type: 'label',
+            url: baseUrl,
             el: $element
           });
           break;
@@ -136,7 +138,7 @@ export class WidgetService {
                 }
 
                 if (fieldData.type === 'label') {
-                  return this.convertLabel(fieldData.el, 'form');
+                  return this.convertLabel(fieldData.url, fieldData.el, 'form');
                 }
 
                 return this.convertFormFields(fieldData.url, fieldData.el);
@@ -144,45 +146,6 @@ export class WidgetService {
               .reduce((formString: any, formItem: any) => {
                 return formString += formItem;
               }, '');
-  }
-
-  private convertGroupFields(ids: any[], base: string, element: any): Observable<any> {
-    let $class = element.attr('class');
-    let $type = $class.slice(7, -5).toLowerCase();
-    let $id =  this.findId(ids, element.text()).id;
-  
-    return this.getWidget(base, $type, $id).map((response) => {
-      let $response = $(response);
-      let container = 'span';
-      let content = '';
-      
-      if (response !== undefined) {
-        content = `<${container} class="${$class} mceNonEditable" data-mce-resize="false" data-plominoid="${$id}">
-                      ${response}
-                   </${container}><br />`;
-      } else {
-        content = `<span class="${$class}">${$id}</span><br />`;
-      }
-
-      return this.wrapIntoEditable(content);
-    });
-  }
-  
-  private convertGroupHidewhens(ids: any[], base: string, element: any): Observable<any> {
-    let $class = element.attr('class');
-    let $type = $class.slice(7, -5).toLowerCase();
-    let $position = element.text().split(':')[0];
-    let $id = element.text().split(':')[1];
-    let $newId = this.findId(ids, $id).id;
-
-    let container = 'span';
-    let content = `<${container} class="${$class} mceNonEditable" 
-                              data-mce-resize="false"
-                              data-plomino-position="${$position}" 
-                              data-plominoid="${$newId}">
-                    &nbsp;
-                  </${container}>${ $position === 'start' ? '' : '<br />' }`;
-    return Observable.of(this.wrapIntoEditable(content));
   }
 
   private convertFormGroups(base: string, element: any, groupId: any): Observable<any> {
@@ -227,6 +190,7 @@ export class WidgetService {
           break;
         case 'plominoLabelClass':
           fields$.push({
+            url: base,
             type: 'label',
             el: $element
           });
@@ -246,7 +210,7 @@ export class WidgetService {
                 }
 
                 if (fieldData.type === 'label') {
-                  return this.convertLabel(fieldData.el, 'group');
+                  return this.convertLabel(fieldData.url, fieldData.el, 'group');
                 }
 
                 return this.convertFormFields(fieldData.url, fieldData.el);
@@ -260,6 +224,49 @@ export class WidgetService {
     
   }
 
+  private convertGroupFields(ids: any[], base: string, element: any): Observable<any> {
+    let $class = element.attr('class');
+    let $type = $class.slice(7, -5).toLowerCase();
+    let $id =  this.findId(ids, element.text()).id;
+  
+    return this.getWidget(base, $type, $id).map((response) => {
+      let $response = $(response);
+      let container = 'span';
+      let content = '';
+
+      if ($response.find("div,table,p").length) {
+        container = "div";
+      }
+      
+      if (response !== undefined) {
+        content = `<${container} class="${$class} mceNonEditable" data-mce-resize="false" data-plominoid="${$id}">
+                      ${response}
+                   </${container}><br />`;
+      } else {
+        content = `<span class="${$class}">${$id}</span><br />`;
+      }
+
+      return this.wrapIntoEditable(content);
+    });
+  }
+
+  private convertGroupHidewhens(ids: any[], base: string, element: any): Observable<any> {
+    let $class = element.attr('class');
+    let $type = $class.slice(7, -5).toLowerCase();
+    let $position = element.text().split(':')[0];
+    let $id = element.text().split(':')[1];
+    let $newId = this.findId(ids, $id).id;
+
+    let container = 'span';
+    let content = `<${container} class="${$class} mceNonEditable" 
+                              data-mce-resize="false"
+                              data-plomino-position="${$position}" 
+                              data-plominoid="${$newId}">
+                    &nbsp;
+                  </${container}>${ $position === 'start' ? '' : '<br />' }`;
+    return Observable.of(this.wrapIntoEditable(content));
+  }
+
   private convertFormFields(base: string, element: any): Observable<any> {
     let $class = element.attr('class');
     let $type = $class.slice(7, -5).toLowerCase();
@@ -267,10 +274,13 @@ export class WidgetService {
 
     return this.getWidget(base, $type, $id).map((response) => {
       let $response = $(response);
+      let container = 'span';
+      let content = '';
       let $newId: any;
 
-      let container = 'div';
-      let content = '';
+      if ($response.find("div,table,p").length) {
+        container = "div";
+      }
       
       if (response != undefined) {
         content = `<${container} class="${$class} mceNonEditable" data-mce-resize="false" data-plominoid="${$id}">
@@ -300,24 +310,21 @@ export class WidgetService {
     return Observable.of(content);
   }
 
-  private convertLabel(element: any, type: 'form' | 'group'): Observable<any> {
-    let $class = element.attr('class');
-    let $id = element.text().split(':')[0];
-    let $title = element.text().split(':')[1];
-
-    let container = 'div';
-    let content = `
-      <${container} class="${$class} mceNonEditable"
-                    data-plominoid="${$id}">
-        <${container} class="plominoLabelContent">
-          ${$title}
-        </${container}>
-      </${container}>`;
+  private convertLabel(base: string, element: any, type: 'form' | 'group'): Observable<any> {
+    let $class = element.attr('class').split(' ')[0];
+    let $type = $class.slice(7, -5).toLowerCase();
+    let $id = element.text();
 
     if (type === 'group') {
-      return Observable.of(this.wrapIntoEditable(content));
+      return this.getWidget(base, $type, $id)
+                .map((response) => {
+                  return this.wrapIntoEditable(`${response}<br />`);
+                });
     } else {
-      return Observable.of(content);
+      return this.getWidget(base, $type, $id)
+                .map((response) => {
+                  return `${response}<br />`;
+                });
     }
   }
 
@@ -340,7 +347,6 @@ export class WidgetService {
               .append('<br />')
               .html();
   }
-
 
   private findId(newIds: any[], id: any) {
     return _.find(newIds, (newId: any) => {
