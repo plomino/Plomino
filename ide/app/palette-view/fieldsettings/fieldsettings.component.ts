@@ -15,7 +15,8 @@ import { Observable } from 'rxjs/Observable';
 
 import { 
     ObjService,
-    TabsService 
+    TabsService,
+    TreeService 
 } from '../../services';
 
 import { PloneHtmlPipe } from '../../pipes';
@@ -45,15 +46,21 @@ export class FieldSettingsComponent implements OnInit {
     
     constructor(private objService: ObjService,
                 private tabsService: TabsService,
-                private changeDetector: ChangeDetectorRef) { }
+                private changeDetector: ChangeDetectorRef,
+                private treeService: TreeService) { }
 
     ngOnInit() {
         this.loadSettings();
     }
 
     submitForm() {
-        let form: HTMLFormElement = $(this.fieldForm.nativeElement).find('form').get(0);
+        let $form: any = $(this.fieldForm.nativeElement);
+        let form: HTMLFormElement = $form.find('form').get(0);
         let formData: FormData = new FormData(form);
+        let $fieldId = $form.find('#form-widgets-IShortName-id').val();
+
+        console.log($fieldId);
+        let newUrl = this.field.url.slice(0, this.field.url.lastIndexOf('/') + 1) + $fieldId; 
         
         formData.append('form.buttons.save', 'Save');        
         
@@ -62,7 +69,8 @@ export class FieldSettingsComponent implements OnInit {
                 if (responseHtml.indexOf('dl.error') > -1) {
                     return Observable.of(responseHtml);
                 } else {
-                    return this.objService.getFieldSettings(this.field.url);
+                    this.treeService.updateTree();
+                    return this.objService.getFieldSettings(newUrl);
                 }
             })
             .subscribe(responseHtml => {

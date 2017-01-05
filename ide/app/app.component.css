@@ -35,7 +35,7 @@
 }
 
 .palette-wrapper /deep/ .nav-tabs .nav-item:first-child a {
-  height: 62px;
+  height: 64px;
   display: flex;
   justify-content: center;
   line-height: 0;
