@@ -230,7 +230,7 @@ export class AppComponent implements OnInit, AfterViewInit {
     }
 
     openTab(tab: any) {
-        this.tabsService.openTab(tab);
+        this.tabsService.openTab(tab, true);
     }
 
     closeTab(tab: any) {

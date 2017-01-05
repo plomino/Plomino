@@ -55,7 +55,7 @@ export class TabsService {
       tabs.forEach((tab) => tab.active = false);
       tabs.push(builtedTab);
       this.tabs$.next(tabs);
-      this.setActiveTab(tab);
+      this.setActiveTab(tab, showAdd);
     }
     
   }
