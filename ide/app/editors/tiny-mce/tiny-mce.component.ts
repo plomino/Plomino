@@ -97,33 +97,39 @@ export class TinyMCEComponent implements AfterViewInit, OnInit, OnDestroy {
                 private http: Http,
                 private zone: NgZone) {
         this.insertionSubscription = this.fieldsService.getInsertion()
-            .subscribe((insertion) => {
-                let insertionParent = insertion.name.slice(0, insertion.name.lastIndexOf('/'));
-                let dataToInsert = Object.assign({}, insertion, { 
-                    type: insertion['@type']
-                });
-                if (insertionParent === this.id) {
-                    this.addElement(dataToInsert);
-                    this.changeDetector.markForCheck();
-                }
+        .subscribe((insertion) => {
+            let insertionParent = insertion.name.slice(0, insertion.name.lastIndexOf('/'));
+            let dataToInsert = Object.assign({}, insertion, { 
+                type: insertion['@type']
             });
+            if (insertionParent === this.id) {
+                this.addElement(dataToInsert);
+                this.changeDetector.markForCheck();
+            }
+        });
 
         this.templatesSubscription = this.templatesService.getInsertion()
-            .subscribe((insertion) => {
-                let parent = insertion.parent;
-                if (insertion.parent === this.id) {
-                    this.insertGroup(insertion.group);
-                    this.changeDetector.markForCheck();
-                }
-            });
+        .subscribe((insertion) => {
+            let parent = insertion.parent;
+            if (insertion.parent === this.id) {
+                this.insertGroup(insertion.group);
+                this.changeDetector.markForCheck();
+            }
+        });
         
         this.draggingSubscription = this.draggingService.getDragging()
-            .subscribe((dragData: any) => {
-                console.log(`Dragging data `, dragData);
-                this.dragData = dragData;
-                this.isDragged = !!dragData;
-                this.changeDetector.markForCheck();
-            });
+        .subscribe((dragData: any) => {
+            console.log(`Dragging data `, dragData);
+            this.dragData = dragData;
+            this.isDragged = !!dragData;
+            this.changeDetector.markForCheck();
+        });
+
+        this.fieldsService.listenToUpdates()
+        .subscribe((updateData) => {
+            this.updateField(updateData);
+        });
+        
     }
 
     ngOnInit() { }
@@ -281,6 +287,22 @@ export class TinyMCEComponent implements AfterViewInit, OnInit, OnDestroy {
             this.addElement(this.dragData);
         } else {
             this.resolveDragData(this.dragData, this.dragData.resolver);
+        }
+    }
+
+    private updateField(updateData: any) {
+        let ed = tinymce.get(this.id);
+        let selection = ed.selection.select(ed.dom.select(`*[data-plominoid=${updateData.fieldData.id}]`)[0]);
+        
+        if (selection) {
+            let normalizedFieldType = updateData.fieldData.type.slice(7).toLowerCase();
+            let typeCapitalized = normalizedFieldType[0].toUpperCase() + normalizedFieldType.slice(1);
+
+            this.elementService.getWidget(this.id, normalizedFieldType, updateData.newId)
+            .subscribe((response: any) => {
+                let resultingElement = this.wrapElement(`plomino${typeCapitalized}`, updateData.newId, response);
+                ed.execCommand('mceReplaceContent', false, resultingElement);
+            });
         }
     }
 
@@ -534,5 +556,58 @@ export class TinyMCEComponent implements AfterViewInit, OnInit, OnDestroy {
 
     private getCaretFromEvent(clientX: any, clientY: any, editor: any) {
         return tinymce.dom.RangeUtils.getCaretRangeFromPoint(clientX, clientY, editor.getDoc());
+    }
+
+    private wrapElement(elType: string, id: string, content: string) {
+        switch(elType) {
+            case 'plominoField':
+            case 'plominoAction':
+                return this.wrapFieldOrAction(elType, id, content);
+            case 'plominoHidewhen':
+                return this.wrapHidewhen(elType, id, content);
+            default:
+        }
+    }
+
+    private wrapFieldOrAction(elType: string, id: string, contentString: string) {  
+        let $response = $(contentString);
+        let $class = `${elType}Class`;
+
+        let container = 'span';
+        let content = '';
+        let $newId: any;
+
+        if ($response.find("div,table,p").length) {
+            container = "div";
+        }
+        
+        if (contentString != undefined) {
+            content = `<${container} class="${$class} mceNonEditable" 
+                                    data-mce-resize="false" 
+                                    data-plominoid="${id}">
+                ${contentString}    
+            </${container}><br />`;
+        } else {
+            content = `<span class="${$class}">${id}</span><br />`;
+        }
+
+        return content;
+    }
+
+    private wrapHidewhen(elType: string, id: string, contentString: string) {
+        let $element = $(contentString); 
+        let $class = $element.attr('class');
+        let $position = $element.text().split(':')[0];
+        let $id = $element.text().split(':')[1];
+      
+        let container = 'div';
+        let content = `<${container} class="${$class} mceNonEditable" 
+                                  data-mce-resize="false"
+                                  data-plomino-position="${$position}" 
+                                  data-plominoid="${$id}">
+                        &nbsp;
+                      </${container}>${ $position === 'start' ? '' : '<br />' }`;
+    
+        return content;
     }
 }

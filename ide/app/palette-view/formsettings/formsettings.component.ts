@@ -55,7 +55,7 @@ export class FormSettingsComponent implements OnInit {
         let $form: any = $(this.formElem.nativeElement);
         let form: HTMLFormElement = $form.find('form').get(0);
         let formData: FormData = new FormData(form);
-        let $formId = $form.find('#form-widgets-IShortName-id').val();
+        let $formId = $form.find('#form-widgets-IShortName-id').val().toLowerCase();
         let newUrl = this.tab.url.slice(0, this.tab.url.lastIndexOf('/') + 1) + $formId; 
         
         formData.append('form.buttons.save', 'Save');        
@@ -65,6 +65,7 @@ export class FormSettingsComponent implements OnInit {
                 if (responseHtml.indexOf('dl.error') > -1) {
                     return Observable.of(responseHtml);
                 } else {
+                    this.tab.url = newUrl;
                     this.tabsService.updateTab(this.tab, $formId);
                     this.treeService.updateTree();
                     return this.objService.getFormSettings(newUrl);
