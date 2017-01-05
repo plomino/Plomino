@@ -65,6 +65,7 @@ export class FormSettingsComponent implements OnInit {
                 if (responseHtml.indexOf('dl.error') > -1) {
                     return Observable.of(responseHtml);
                 } else {
+                    this.tabsService.updateTab(this.tab, $formId);
                     this.treeService.updateTree();
                     return this.objService.getFormSettings(newUrl);
                 }
