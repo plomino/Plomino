@@ -15,7 +15,9 @@ import { Observable } from 'rxjs/Observable';
 
 import { 
     ObjService,
-    TabsService 
+    TabsService,
+    TreeService,
+    FieldsService 
 } from '../../services';
 
 import { PloneHtmlPipe } from '../../pipes';
@@ -45,16 +47,21 @@ export class FieldSettingsComponent implements OnInit {
     
     constructor(private objService: ObjService,
                 private tabsService: TabsService,
-                private changeDetector: ChangeDetectorRef) { }
+                private fieldsService: FieldsService,
+                private changeDetector: ChangeDetectorRef,
+                private treeService: TreeService) { }
 
     ngOnInit() {
         this.loadSettings();
     }
 
     submitForm() {
-        let form: HTMLFormElement = $(this.fieldForm.nativeElement).find('form').get(0);
+        let $form: any = $(this.fieldForm.nativeElement);
+        let form: HTMLFormElement = $form.find('form').get(0);
         let formData: FormData = new FormData(form);
-        
+        let $fieldId = $form.find('#form-widgets-IShortName-id').val().toLowerCase();
+        let newUrl = this.field.url.slice(0, this.field.url.lastIndexOf('/') + 1) + $fieldId; 
+
         formData.append('form.buttons.save', 'Save');        
         
         this.objService.updateFormSettings(this.field.url, formData)
@@ -62,7 +69,10 @@ export class FieldSettingsComponent implements OnInit {
                 if (responseHtml.indexOf('dl.error') > -1) {
                     return Observable.of(responseHtml);
                 } else {
-                    return this.objService.getFieldSettings(this.field.url);
+                    this.field.url = newUrl;
+                    this.fieldsService.updateField(this.field, this.formAsObject($form), $fieldId);
+                    this.treeService.updateTree();
+                    return this.objService.getFieldSettings(newUrl);
                 }
             })
             .subscribe(responseHtml => {
@@ -94,5 +104,33 @@ export class FieldSettingsComponent implements OnInit {
                 this.formTemplate = template;
                 this.changeDetector.detectChanges();
             }); 
+    }
+
+    private formAsObject(form: any): any {
+        let result = {};
+        let serialized = form.find('form').serializeArray();
+        serialized.forEach((formItem: any) => {
+            let isId = formItem.name.indexOf('IShortName.id') > -1;
+            let isTitle = formItem.name.indexOf('IBasic.title') > -1;
+            let isType = formItem.name.indexOf('field_type:list') > -1;
+            let isWidget = formItem.name.indexOf('ITextField.widget:list') > -1;
+        
+            if (isId) {
+                result['id'] = formItem.value;
+            }
+
+            if (isTitle) {
+                result['title'] = formItem.value;
+            }
+
+            if (isType) {
+                result['type'] = formItem.value.toLowerCase();
+            }
+
+            if (isWidget) {
+                result['widget'] = formItem.value.toLowerCase();
+            }
+        });
+        return result;
     }
 }

@@ -26,6 +26,24 @@ export class TabsService {
       });
   }
 
+  selectField(fieldData: { id: string, type: string, parent: string }): void {
+    let field: any = null;
+
+    if (fieldData && fieldData.id) {
+      field = Object.assign({}, { 
+        id: fieldData.id, 
+        url: `${fieldData.parent}/${fieldData.id}`, 
+        type: fieldData.type 
+      });
+    }
+
+    this.activeField$.next(field);
+  }
+
+  getActiveField(): Observable<any> {
+    return this.activeField$.asObservable().share();
+  }
+
   setActiveTab(tab: any, showAdd = false): void {
     
     if (tab.active) {
@@ -72,26 +90,23 @@ export class TabsService {
     this.tabs$.next(tabs);
   }
 
-  selectField(fieldData: { id: string, type: string, parent: string }): void {
-    let field: any = null;
+  updateTab(tabData: any, id: any): void {
+    let tabs = this.tabs$.getValue().slice(0);
+    let activeTab = Object.assign({}, this.activeTab$.getValue());
 
-    if (fieldData && fieldData.id) {
-      field = Object.assign({}, { 
-        id: fieldData.id, 
-        url: `${fieldData.parent}/${fieldData.id}`, 
-        type: fieldData.type 
-      });
-    }
+    let tabToUpdate = _.find(tabs, (tab: any) => {
+      return tab.url === tabData.url;
+    });
 
-    this.activeField$.next(field);
+    tabToUpdate.url = `${this.getParent(tabToUpdate.url)}/${id}`;
+    activeTab.url = `${this.getParent(activeTab.url)}/${id}`;
+
+    this.tabs$.next(tabs);
+    this.activeTab$.next(activeTab);
   }
 
   getActiveTab(): Observable<any> {
     return this.activeTab$.asObservable();
-  }
-
-  getActiveField(): Observable<any> {
-    return this.activeField$.asObservable().share();
   }
 
   getTabs(): Observable<any[]> {
@@ -176,5 +191,13 @@ export class TabsService {
      * What is this code for ?!
      */ 
     return newtab;
+  }
+
+  private getParent(url: string): string { 
+    return url.slice(0, url.lastIndexOf('/'));
+  }
+
+  private getId(url: string): string {
+    return url.slice(url.lastIndexOf('/') + 1);
   }
 }
