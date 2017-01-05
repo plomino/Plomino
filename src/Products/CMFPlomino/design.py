@@ -967,6 +967,11 @@ class DesignManager:
         def get_data(obj, schema):
             fields = getFieldsInOrder(schema)
             for (id, attr) in fields:
+                if id == 'id':
+                    # 'id' is not needed as it is the same as obj.id
+                    # it will cause 'CatalogError: The object unique id must
+                    #  be a string. ' error when import this exported file.
+                    continue
                 #params[id] = getattr(obj, id, None)
                 dm = getMultiAdapter((obj, attr), IDataManager)
                 #TODO: needs to be the same as import due to form_layout
