@@ -17,7 +17,7 @@ def macros_install(context):
         logger.debug('The site already have "macros" database')
         # return
     else:
-        portal.invokeFactory('PlominoDatabase', id='macros')
+        portal.invokeFactory('PlominoDatabase', id='macros', title='Macros')
 
     context_profile = context._getImportContext(macros_profile_id)
     profile_path = context_profile._profile_path
