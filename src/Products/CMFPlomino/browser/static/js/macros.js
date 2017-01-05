@@ -1,8 +1,3 @@
-//TODO: extend so it can accept a list of associated forms
-// - add becomes autocomplete
-// - accept dict instead of list of values
-// - columns is what to display
-// - need to store formid for each row so can reedit
 
 require([
     'jquery',
