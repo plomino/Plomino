@@ -292,8 +292,9 @@ export class TinyMCEComponent implements AfterViewInit, OnInit, OnDestroy {
 
     private updateField(updateData: any) {
         let ed = tinymce.get(this.id);
+        console.log(updateData.fieldData.id);
         let selection = ed.selection.select(ed.dom.select(`*[data-plominoid=${updateData.fieldData.id}]`)[0]);
-        
+
         if (selection) {
             let normalizedFieldType = updateData.fieldData.type.slice(7).toLowerCase();
             let typeCapitalized = normalizedFieldType[0].toUpperCase() + normalizedFieldType.slice(1);

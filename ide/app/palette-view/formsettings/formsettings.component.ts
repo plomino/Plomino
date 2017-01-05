@@ -67,6 +67,7 @@ export class FormSettingsComponent implements OnInit {
                 } else {
                     this.tab.url = newUrl;
                     this.tabsService.updateTab(this.tab, $formId);
+                    this.tab.id = $formId;
                     this.treeService.updateTree();
                     return this.objService.getFormSettings(newUrl);
                 }

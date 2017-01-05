@@ -71,6 +71,7 @@ export class FieldSettingsComponent implements OnInit {
                 } else {
                     this.field.url = newUrl;
                     this.fieldsService.updateField(this.field, this.formAsObject($form), $fieldId);
+                    this.field.id = $fieldId;
                     this.treeService.updateTree();
                     return this.objService.getFieldSettings(newUrl);
                 }
