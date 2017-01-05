@@ -35,7 +35,7 @@ setup(
     author_email='ebrehault@gmail.com',
     url='http://pypi.python.org/pypi/Products.CMFPlomino',
     license='GPL',
-    packages=find_packages('src', exclude=['ez_setup']),
+    packages=find_packages('src', exclude=['ez_setup','ide']),
     namespace_packages=['Products'],
     package_dir={'': 'src'},
     include_package_data=True,
