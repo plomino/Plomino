@@ -43,7 +43,6 @@ export class TabsService {
   }
 
   openTab(tab: any, showAdd = true): void {
-    console.log(`open this tab `, tab);
     let tabs: any[] = this.tabs$.getValue();
     let tabIsOpen: boolean = _.find(tabs, { url: tab.url, editor: tab.editor });
     
@@ -56,6 +55,7 @@ export class TabsService {
       tabs.forEach((tab) => tab.active = false);
       tabs.push(builtedTab);
       this.tabs$.next(tabs);
+      this.setActiveTab(tab);
     }
     
   }
@@ -73,7 +73,6 @@ export class TabsService {
   }
 
   selectField(fieldData: { id: string, type: string, parent: string }): void {
-    console.log(`field data`, fieldData);
     let field: any = null;
 
     if (fieldData && fieldData.id) {

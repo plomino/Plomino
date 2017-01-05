@@ -1,4 +1,19 @@
 <div class="add-wrapper">
+     <div class="templates">
+
+        <button class="btn btn-default"
+            *ngFor="let template of templates, let i = index"
+            [hidden]="template.hidewhen(activeTab)"
+            dnd-draggable
+            [dragEnabled]="true"
+            (onDragStart)="startDrag('template', template.id)"
+            (onDragEnd)="endDrag()"
+            (click)="addTemplate(template.id)">
+            {{template.title}}
+        
+        </button>
+    </div>
+    
     <group *ngFor="let group of addableComponents"
         [hidden]="group.hidden(activeTab)">
         <div class="item">
@@ -20,19 +35,4 @@
             </comp>
         </div>
     </group>
-
-    <div class="templates">
-
-        <button class="btn btn-default"
-            *ngFor="let template of templates, let i = index"
-            [hidden]="template.hidewhen(activeTab)"
-            dnd-draggable
-            [dragEnabled]="true"
-            (onDragStart)="startDrag('template', template.id)"
-            (onDragEnd)="endDrag()"
-            (click)="addTemplate(template.id)">
-            {{template.title}}
-        
-        </button>
-    </div>
 </div>

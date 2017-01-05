@@ -176,7 +176,7 @@ export class TinyMCEComponent implements AfterViewInit, OnInit, OnDestroy {
         
                                 let type = $elementType || $parentType;
         
-                                this.fieldSelected.emit({ id: id, type: type });
+                                this.fieldSelected.emit({ id: id, type: type, parent: this.id });
                             } else {
                                 this.fieldSelected.emit(null);
                             }

@@ -253,7 +253,7 @@ export class AppComponent implements OnInit, AfterViewInit {
     }
 
     onTabSelect(tab: any) {
-        this.tabsService.setActiveTab(tab);
+        this.tabsService.setActiveTab(tab, true);
     }
 
     fieldSelected(fieldData: any): void {
