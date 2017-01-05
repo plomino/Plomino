@@ -156,11 +156,31 @@ export class TinyMCEComponent implements AfterViewInit, OnInit, OnDestroy {
                     this.zone.run(() => {
                         let $element = $(ev.target);
                         let $parent = $element.parent();
+                        let $elementIsGroup = $element.hasClass('plominoGroupClass');
                         let elementIsLabel = $element.hasClass('plominoLabelClass');
                         let parentIsLabel = $parent.hasClass('plominoLabelClass');
    
                         let $elementId = $element.data('plominoid');
                         let $parentId = $parent.data('plominoid');
+
+                        if ($elementIsGroup) {
+                            let groupChildrenQuery = '.plominoFieldClass, .plominoHidewhenClass, .plominoActionClass';
+                            let $groupChildren = $element.find(groupChildrenQuery);
+                            if ($groupChildren.length > 1) {
+                                this.fieldSelected.emit(null);
+                                return;
+                            } else {
+                                let $child = $groupChildren;
+                                let $childId = $child.data('plominoid');
+                                let $childType = this.extractClass($child.attr('class'));
+                                this.fieldSelected.emit({
+                                    id: $childId,
+                                    type: $childType,
+                                    parent: this.id
+                                });
+                                return;
+                            }
+                        }
                         
                         if (elementIsLabel || parentIsLabel) {
                             this.fieldSelected.emit(null);
