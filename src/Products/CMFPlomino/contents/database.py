@@ -440,12 +440,28 @@ def get_databases(obj):
     title = "{title} ({path})".format(title=db.Title(), path=".")
     vocab = [(title, ".")]
     path = '/'.join(db.getPhysicalPath())
+    site_path = '/'.join(db.portal_url.getPortalObject().getPhysicalPath())
+    ids = []
 
     for brain in results:
-        if brain.getPath() == path:
+        brain_id = brain.id
+        brain_path = brain.getPath()
+
+        if brain_path == path:
             continue
+
+        # brain_id has to be unique
+        # drop any duplicate
+        # user need to refer to the path to double check the db is the
+        # right one
+        if brain_id in ids:
+            continue
+
+        if brain_path.startswith(site_path):
+            brain_path = brain_path[len(site_path):]
         title = "{title} ({path})".format(
-            title=brain['Title'], path=brain.getPath())
-        vocab.append((title, brain.id))
+            title=brain['Title'], path=brain_path)
+        ids.append(brain_id)
+        vocab.append((title, brain_id))
 
     return SimpleVocabulary.fromItems(vocab)
