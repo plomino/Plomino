@@ -545,7 +545,7 @@ class MacroTemplateView(BrowserView):
 
         forms = []
         for _db in dbs:
-            forms.extend(_db.getForms())
+            forms.extend(_db.getForms(sortbyid=False))
 
         res = []
         for form in forms:
