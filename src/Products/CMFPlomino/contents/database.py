@@ -196,8 +196,6 @@ class PlominoDatabase(
             if obj.__class__.__name__ == 'PlominoForm']
         if sortbyid:
             form_list.sort(key=lambda elt: elt.id.lower())
-        else:
-            form_list.sort(key=lambda elt: elt.getPosition())
         return form_list
 
     security.declarePublic('getView')
@@ -216,8 +214,6 @@ class PlominoDatabase(
             if obj.__class__.__name__ == 'PlominoView']
         if sortbyid:
             view_list.sort(key=lambda elt: elt.id.lower())
-        else:
-            view_list.sort(key=lambda elt: elt.getPosition())
         return view_list
 
     security.declarePublic('getAgent')
@@ -231,12 +227,13 @@ class PlominoDatabase(
 
     security.declarePublic('getAgents')
 
-    def getAgents(self):
+    def getAgents(self, sortbyid=True):
         """ Returns all the PlominoAgent objects stored in the database.
         """
         agent_list = [obj for obj in self.objectValues()
             if obj.__class__.__name__ == 'PlominoAgent']
-        agent_list.sort(key=lambda agent: agent.id.lower())
+        if sortbyid:
+            agent_list.sort(key=lambda agent: agent.id.lower())
         return agent_list
 
     security.declareProtected(config.CREATE_PERMISSION, 'createDocument')
