@@ -19,6 +19,14 @@ import {
     Response
 } from '@angular/http';
 
+import {DND_DIRECTIVES} from 'ng2-dnd/ng2-dnd';
+
+import { 
+    Subscription,
+    Observable,
+    Scheduler
+} from 'rxjs/Rx';
+
 import {
     ElementService,
     FieldsService,
@@ -28,9 +36,7 @@ import {
     TabsService
 } from '../../services';
 
-import {DND_DIRECTIVES} from 'ng2-dnd/ng2-dnd';
-
-import { Subscription } from 'rxjs/Subscription';
+import { UpdateFieldService } from './services';
 
 import 'jquery';
 
@@ -67,7 +73,7 @@ declare var tinymce: any;
         }
         `],
     directives: [DND_DIRECTIVES],
-    providers: [ElementService],
+    providers: [ElementService, UpdateFieldService],
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class TinyMCEComponent implements AfterViewInit, OnInit, OnDestroy {
@@ -94,6 +100,7 @@ export class TinyMCEComponent implements AfterViewInit, OnInit, OnDestroy {
                 private widgetService: WidgetService,
                 private changeDetector: ChangeDetectorRef,
                 private tabsService: TabsService,
+                private updateFieldService: UpdateFieldService,
                 private http: Http,
                 private zone: NgZone) {
         this.insertionSubscription = this.fieldsService.getInsertion()
@@ -119,7 +126,6 @@ export class TinyMCEComponent implements AfterViewInit, OnInit, OnDestroy {
         
         this.draggingSubscription = this.draggingService.getDragging()
         .subscribe((dragData: any) => {
-            console.log(`Dragging data `, dragData);
             this.dragData = dragData;
             this.isDragged = !!dragData;
             this.changeDetector.markForCheck();
@@ -155,7 +161,6 @@ export class TinyMCEComponent implements AfterViewInit, OnInit, OnDestroy {
 
                 editor.on('activate', (e: any) => {
                     let $editorFrame = $(this.editorElement.nativeElement).find('iframe[id*=mce_]');
-                    console.log($editorFrame);
                 });
 
                 editor.on('mousedown', (ev: MouseEvent) => {
@@ -213,10 +218,6 @@ export class TinyMCEComponent implements AfterViewInit, OnInit, OnDestroy {
 
                     });
                 });
-                
-                // editor.on('click', (ev: Event) => {
-                //     console.log(`Clicked on element `); 
-                // });
             },
             content_style: require('./tinymce.css'),
 		    menubar: "file edit insert view format table tools",
@@ -292,22 +293,37 @@ export class TinyMCEComponent implements AfterViewInit, OnInit, OnDestroy {
 
     private updateField(updateData: any) {
         let ed = tinymce.get(this.id);
-        console.log(updateData.fieldData.id);
-        let selection = ed.selection.select(ed.dom.select(`*[data-plominoid=${updateData.fieldData.id}]`)[0]);
+        let dataToUpdate: any[] = ed.dom.select(`*[data-plominoid=${updateData.fieldData.id}]`);
+        
+        if (dataToUpdate.length) {
+            
+            Observable.from(dataToUpdate)
+                .map((element) => {
+                    let normalizedType = $(element).attr('class').split(' ')[0].slice(7, -5);
+                    let typeCapitalized = normalizedType[0].toUpperCase() + normalizedType.slice(1);
+                    
+                    return {
+                        base: this.id,
+                        type: normalizedType,
+                        newId: updateData.newId,
+                        oldTemplate: element
+                    };
+                })
+                .flatMap((itemToReplace: any) => {
+                    return this.updateFieldService.updateField(itemToReplace);
+                })
+                .subscribe((data: any) => {
+                    let selection = ed.selection.select(data.oldTemplate);
+                    ed.execCommand('mceReplaceContent', false, data.newTemplate);
+                });
 
-        if (selection) {
-            let normalizedFieldType = updateData.fieldData.type.slice(7).toLowerCase();
-            let typeCapitalized = normalizedFieldType[0].toUpperCase() + normalizedFieldType.slice(1);
-
-            this.elementService.getWidget(this.id, normalizedFieldType, updateData.newId)
-            .subscribe((response: any) => {
-                let resultingElement = this.wrapElement(`plomino${typeCapitalized}`, updateData.newId, response);
-                ed.execCommand('mceReplaceContent', false, resultingElement);
-            });
         }
     }
 
     private addElement(element: { name: string, type: string}) {
+
+        // TODO: Move this method to service
+
         let type: string;
         let elementClass: string;
         let elementEditionPage: string;
@@ -365,16 +381,14 @@ export class TinyMCEComponent implements AfterViewInit, OnInit, OnDestroy {
     }
 
     private insertElement(baseUrl: string, type: string, value: string, option?: string) {
+        
+        // TODO: Move this method to service
 
 		let ed: any = tinymce.get(this.id);
         let selection: any = ed.selection.getNode();
         let title: string;
         let plominoClass: string;
         let content: string;
-
-        for (let e = 0; e < tinymce.editors.length; e += 1) {
-            console.log(tinymce.editors[e]);
-        }
 
         var container = 'span';
 
@@ -400,39 +414,6 @@ export class TinyMCEComponent implements AfterViewInit, OnInit, OnDestroy {
                 .subscribe((widgetTemplate: any) => {
                     ed.execCommand('mceInsertContent', false, `${widgetTemplate}<br />`, {skip_undo : 1});
                 });
-            // Handle labels - TODO: replace this with example_wiget
-            // title = (value[0].toUpperCase() + value.slice(1, value.length)).split('-').join(" ");
-            // if (container == "span") {
-            //     content = '<span class="plominoLabelClass mceNonEditable" data-plominoid="' + 
-            //                 value + '">' + title + '</span><br />';
-            // } else {
-            //     if (tinymce.DOM.hasClass(selection, "plominoLabelClass") && 
-            //         selection.tagName === "SPAN") {
-
-            //         content = '<div class="plominoLabelClass mceNonEditable" data-plominoid="' +
-            //                     value + '"><div class="plominoLabelContent">' + 
-            //                     title + '</div></div><br />';
-            //     }
-            //     else if (tinymce.DOM.hasClass(selection.firstChild, "plominoLabelContent")) {
-            //         content = '<div class="plominoLabelClass mceNonEditable" data-plominoid="' + 
-            //                     value + '">' + selection.innerHTML + '</div><br />';
-            //     } else {
-            //         if (selection.textContent == "") {
-            //             content = '<div class="plominoLabelClass mceNonEditable" data-plominoid="' + 
-            //                         value + '"><div class="plominoLabelContent">' + 
-            //                         title + '</div></div><br />';
-            //         } else {
-            //             content = '<div class="plominoLabelClass mceNonEditable" data-plominoid="' + 
-            //                         value + '"><div class="plominoLabelContent">' + 
-            //                         ed.selection.getContent() + '</div></div><br />';
-            //         }
-            //     }
-            // }
-
-            // console.log(`You want to insert label! `, baseUrl, type, value);
-
-            // ed.execCommand('mceInsertContent', false, content, {skip_undo : 1});
-
         } else if (plominoClass !== undefined) {
 
             this.elementService.getWidget(baseUrl, type, value)
@@ -557,58 +538,5 @@ export class TinyMCEComponent implements AfterViewInit, OnInit, OnDestroy {
 
     private getCaretFromEvent(clientX: any, clientY: any, editor: any) {
         return tinymce.dom.RangeUtils.getCaretRangeFromPoint(clientX, clientY, editor.getDoc());
-    }
-
-    private wrapElement(elType: string, id: string, content: string) {
-        switch(elType) {
-            case 'plominoField':
-            case 'plominoAction':
-                return this.wrapFieldOrAction(elType, id, content);
-            case 'plominoHidewhen':
-                return this.wrapHidewhen(elType, id, content);
-            default:
-        }
-    }
-
-    private wrapFieldOrAction(elType: string, id: string, contentString: string) {  
-        let $response = $(contentString);
-        let $class = `${elType}Class`;
-
-        let container = 'span';
-        let content = '';
-        let $newId: any;
-
-        if ($response.find("div,table,p").length) {
-            container = "div";
-        }
-        
-        if (contentString != undefined) {
-            content = `<${container} class="${$class} mceNonEditable" 
-                                    data-mce-resize="false" 
-                                    data-plominoid="${id}">
-                ${contentString}    
-            </${container}><br />`;
-        } else {
-            content = `<span class="${$class}">${id}</span><br />`;
-        }
-
-        return content;
-    }
-
-    private wrapHidewhen(elType: string, id: string, contentString: string) {
-        let $element = $(contentString); 
-        let $class = $element.attr('class');
-        let $position = $element.text().split(':')[0];
-        let $id = $element.text().split(':')[1];
-      
-        let container = 'div';
-        let content = `<${container} class="${$class} mceNonEditable" 
-                                  data-mce-resize="false"
-                                  data-plomino-position="${$position}" 
-                                  data-plominoid="${$id}">
-                        &nbsp;
-                      </${container}>${ $position === 'start' ? '' : '<br />' }`;
-    
-        return content;
     }
 }
