@@ -17,7 +17,7 @@ from zope import event
 from zope.interface import implements
 
 from .. import _, config
-from zope.schema.vocabulary import SimpleVocabulary
+from zope.schema.vocabulary import SimpleVocabulary, SimpleTerm
 from ..accesscontrol import AccessControl
 from ..exceptions import PlominoCacheException, PlominoScriptException
 from ..interfaces import IPlominoContext
@@ -196,8 +196,6 @@ class PlominoDatabase(
             if obj.__class__.__name__ == 'PlominoForm']
         if sortbyid:
             form_list.sort(key=lambda elt: elt.id.lower())
-        else:
-            form_list.sort(key=lambda elt: elt.getPosition())
         return form_list
 
     security.declarePublic('getView')
@@ -216,8 +214,6 @@ class PlominoDatabase(
             if obj.__class__.__name__ == 'PlominoView']
         if sortbyid:
             view_list.sort(key=lambda elt: elt.id.lower())
-        else:
-            view_list.sort(key=lambda elt: elt.getPosition())
         return view_list
 
     security.declarePublic('getAgent')
@@ -231,12 +227,13 @@ class PlominoDatabase(
 
     security.declarePublic('getAgents')
 
-    def getAgents(self):
+    def getAgents(self, sortbyid=True):
         """ Returns all the PlominoAgent objects stored in the database.
         """
         agent_list = [obj for obj in self.objectValues()
             if obj.__class__.__name__ == 'PlominoAgent']
-        agent_list.sort(key=lambda agent: agent.id.lower())
+        if sortbyid:
+            agent_list.sort(key=lambda agent: agent.id.lower())
         return agent_list
 
     security.declareProtected(config.CREATE_PERMISSION, 'createDocument')
@@ -438,7 +435,7 @@ def get_databases(obj):
     catalog = getToolByName(db, 'portal_catalog')
     results = catalog.searchResults({'portal_type': 'PlominoDatabase'})
     title = "{title} ({path})".format(title=db.Title(), path=".")
-    vocab = [(title, ".")]
+    vocab = [SimpleTerm(title=title, token=".", value=".")]
     path = '/'.join(db.getPhysicalPath())
     site_path = '/'.join(db.portal_url.getPortalObject().getPhysicalPath())
     ids = []
@@ -462,6 +459,6 @@ def get_databases(obj):
         title = "{title} ({path})".format(
             title=brain['Title'], path=brain_path)
         ids.append(brain_id)
-        vocab.append((title, brain_id))
+        vocab.append(SimpleTerm(title=title, token=brain_id, value=brain_id))
 
-    return SimpleVocabulary.fromItems(vocab)
+    return SimpleVocabulary(vocab)
