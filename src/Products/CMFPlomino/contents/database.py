@@ -17,7 +17,7 @@ from zope import event
 from zope.interface import implements
 
 from .. import _, config
-from zope.schema.vocabulary import SimpleVocabulary
+from zope.schema.vocabulary import SimpleVocabulary, SimpleTerm
 from ..accesscontrol import AccessControl
 from ..exceptions import PlominoCacheException, PlominoScriptException
 from ..interfaces import IPlominoContext
@@ -435,7 +435,7 @@ def get_databases(obj):
     catalog = getToolByName(db, 'portal_catalog')
     results = catalog.searchResults({'portal_type': 'PlominoDatabase'})
     title = "{title} ({path})".format(title=db.Title(), path=".")
-    vocab = [(title, ".")]
+    vocab = [SimpleTerm(title=title, token=".", value=".")]
     path = '/'.join(db.getPhysicalPath())
     site_path = '/'.join(db.portal_url.getPortalObject().getPhysicalPath())
     ids = []
@@ -459,6 +459,6 @@ def get_databases(obj):
         title = "{title} ({path})".format(
             title=brain['Title'], path=brain_path)
         ids.append(brain_id)
-        vocab.append((title, brain_id))
+        vocab.append(SimpleTerm(title=title, token=brain_id, value=brain_id))
 
-    return SimpleVocabulary.fromItems(vocab)
+    return SimpleVocabulary(vocab)
