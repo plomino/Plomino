@@ -131,8 +131,12 @@ export class AppComponent implements OnInit, AfterViewInit {
                 private zone: NgZone,
                 private changeDetector: ChangeDetectorRef) { }
 
-    collapseFirstLevelTreeElements(data:any) {
-        if(!Array.isArray(data))
+    collapseFirstLevelTreeElements(data:any, oldData:any) {
+        /*
+        * Don't collapse if data already exist
+        * to prevent collapsing on each tree update
+        */
+        if(!Array.isArray(data) || Array.isArray(oldData))
             return data;
 
         data.forEach((item:any) => {
@@ -145,7 +149,7 @@ export class AppComponent implements OnInit, AfterViewInit {
     ngOnInit() {
         this.treeService.getTree()
             .subscribe((tree) => {
-                this.data = this.collapseFirstLevelTreeElements(tree);
+                this.data = this.collapseFirstLevelTreeElements(tree, this.data);
             });
         
         this.tabsService.getTabs()
