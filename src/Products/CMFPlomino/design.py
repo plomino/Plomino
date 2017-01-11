@@ -1,3 +1,4 @@
+from collections import OrderedDict
 from AccessControl import ClassSecurityInfo
 from AccessControl.requestmethod import postonly
 from AccessControl.SecurityManagement import newSecurityManager
@@ -856,9 +857,9 @@ class DesignManager:
         db_id = self.id
         if not designelements:
             designelements = (
-                [o.id for o in self.getForms()] +
-                [o.id for o in self.getViews()] +
-                [o.id for o in self.getAgents()] +
+                [o.id for o in self.getForms(sortbyid=False)] +
+                [o.id for o in self.getViews(sortbyid=False)] +
+                [o.id for o in self.getAgents(sortbyid=False)] +
                 ["resources/" + id for id in self.resources.objectIds()]
             )
         file_string = StringIO()
@@ -895,7 +896,7 @@ class DesignManager:
     ):
         """
         """
-        data = {'id': self.id, }
+        data = OrderedDict()
 
         if REQUEST:
             str_elementids = REQUEST.get("elementids")
@@ -903,9 +904,9 @@ class DesignManager:
                 elementids = str_elementids.split("@")
 
         if elementids is None:
-            elements = (self.getForms()
-                + self.getViews()
-                + self.getAgents()
+            elements = (self.getForms(sortbyid=False)
+                + self.getViews(sortbyid=False)
+                + self.getAgents(sortbyid=False)
                 + [o for o in self.resources.getChildNodes()]
             )
         else:
@@ -918,14 +919,15 @@ class DesignManager:
                 elements.append(e)
 
         # Sort elements by type (to store forms before views), then by id
-        elements.sort(key=lambda elt: elt.getId())
-        elements.sort(key=lambda elt: elt.Type())
+        #elements.sort(key=lambda elt: elt.getId())
+        #elements.sort(key=lambda elt: elt.Type())
 
-        design = {'resources': {}, }
+        design = OrderedDict()
         # export database settings
         if dbsettings:
             design['dbsettings'] = self.exportElementAsJSON(
                 self, isDatabase=True)
+        design['resources'] = OrderedDict()
 
         # export database design elements
         for element in elements:
@@ -940,11 +942,12 @@ class DesignManager:
                     element)
 
         data['design'] = design
+        data['id'] = self.id
 
         if REQUEST:
             REQUEST.RESPONSE.setHeader(
                 'content-type', "application/json;charset=utf-8")
-        return json.dumps(data, sort_keys=True, indent=4).encode('utf-8')
+        return json.dumps(data, sort_keys=False, indent=4).encode('utf-8')
 
     security.declareProtected(DESIGN_PERMISSION, 'exportElementAsJSON')
 
@@ -973,7 +976,7 @@ class DesignManager:
         if not isDatabase:
             elementslist = obj.objectIds()
             if elementslist:
-                elements = {}
+                elements = OrderedDict({})
                 for id in elementslist:
                     elements[id] = self.exportElementAsJSON(getattr(obj, id))
                 data['elements'] = elements
@@ -997,11 +1000,11 @@ class DesignManager:
         id = obj.id
         if callable(id):
             id = id()
-        data = {
+        data = OrderedDict({
             'id': id,
             'type': obj.meta_type,
             'title': obj.title,
-        }
+        })
         if hasattr(obj, 'read'):
             data['data'] = obj.read()
         elif isinstance(obj, Folder):
@@ -1066,7 +1069,7 @@ class DesignManager:
             logger.info("Current design removed")
 
         for jsonstring in json_strings:
-            design = json.loads(jsonstring.encode('utf-8'))["design"]
+            design = json.loads(jsonstring.encode('utf-8'), object_pairs_hook=OrderedDict)["design"]
             elements = design.items()
 
             if not total_elements:
@@ -1129,7 +1132,7 @@ class DesignManager:
             if not json_string:
                 # E.g. if the zipfile contains entries for directories
                 continue
-            design = json.loads(json_string)["design"]
+            design = json.loads(json_string, object_pairs_hook=OrderedDict)["design"]
             elements = design.items()
             if not total_elements:
                 total_elements = len(elements)

@@ -676,23 +676,63 @@ Results from views are sorted on the sort column::
 # e.g. between two Zope instances over HTTP, using a specific XML format::
 
 # .. TODO:: Fix this
-# ..  >>> db.exportDesignAsXML(elementids=['frm2'])
-# ..  ''
-# ..  >>> db.frm2.welcome.formula
-# ..  'message="Welcome "+plominoDocument.buyer\nreturn message'
+     >>> print db.exportDesignAsJSON(elementids=['frm2'])
+     {
+        "design": {
+                "dbsettings": {
+     ...
+     >>> db.frm2.welcome.formula
+     'message="Welcome "+plominoDocument.buyer\nreturn message'
 
 # Here we change the 'welcome' formula in the XML string::
 
 # .. TODO:: Fix this
-# ..  >>> s = ''
-# ..  >>> db.importDesignFromXML(xmlstring=s)
-# ..  >>> db.frm2.welcome.getFormula()
-# ..  'message="Be welcome "+plominoDocument.buyer\nreturn message'
+    >>> s = db.exportDesignAsJSON(elementids=['frm2'])
+    >>> s = s.replace("Welcome", "No XML welcome here!")
+    >>> db.importDesignFromJSON(s)
+    >>> db.frm2.welcome.formula
+    u'message="No XML welcome here! "+plominoDocument.buyer\nreturn message'
 
-# ::
+#TODO: should import be turning formulas into unicode above?
 
-#     >>> id = portal.invokeFactory('PlominoDatabase', id='test')
-#     >>> db = portal.test
+# Ensure the imported order is correct
+
+    >>> db.objectIds()
+    ['plomino_documents', 'plomino_index', 'resources', 'scripts', 'frm_test', 'frm1', 'frm3', 'view1', 'view2', 'frm2']
+    >>> s = db.exportDesignAsJSON()
+
+    >>> print s
+    {
+    ...
+            "frm_test": {
+    ...
+            "frm1": {
+    ...
+            "frm3": {
+    ...
+            "frm2": {
+    ...
+            "view1": {
+    ...
+            "view2": {
+    ...
+    }
+
+
+    >>> id = portal.invokeFactory('PlominoDatabase', id='test')
+    >>> newdb = portal.test
+    >>> newdb.importDesignFromJSON(s)
+    >>> newdb.objectIds()
+    ['plomino_documents', 'plomino_index', 'resources', 'scripts', 'frm_test', 'frm1', 'frm3', 'frm2', 'view1', 'view2']
+
+Also check the order of view and form elements
+    >>> newdb.frm1.objectIds() == db.frm1.objectIds()
+    True
+    >>> newdb.frm2.objectIds() == db.frm2.objectIds()
+    True
+    >>> newdb.view1.objectIds() == db.view1.objectIds()
+    True
+
 
 # Import design from XML::
 
