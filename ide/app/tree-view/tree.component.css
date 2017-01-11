@@ -19,12 +19,16 @@ ul {
     height: 850px;
     width: 280px;
 }
-.hasChild:before {
+.tree-node--collapsible > .tree-node--name:before{
     display: inline-block;
     content: "▼";
     transition: transform 0.2s;
+    opacity: 0;
 }
-.displayed:before {
+.tree-node--collapsible.hasChild > .tree-node--name:before {
+    opacity: 1;
+}
+.tree-node--collapsible.hasChild.closed > .tree-node--name:before {
     transform: rotate(-90deg);
 }
 .link {

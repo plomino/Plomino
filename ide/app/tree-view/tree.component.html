@@ -35,10 +35,11 @@
         class="tree-node">
     
         <li *ngFor="let type of data" 
-            class="hasChild" 
-            [class.displayed]="type.collapsed || type.children.length === 0">
+            class="tree-node--collapsible"
+            [class.closed]="type.collapsed"
+            [class.hasChild]="type.children.length !== 0">
             
-            <span (click)="type.collapsed = !type.collapsed">
+            <span (click)="type.collapsed = !type.collapsed" class="tree-node--name">
             {{type.label}}
             </span>
             
@@ -48,11 +49,13 @@
             
             <ul *ngIf="type.label != 'Agents'" [collapse]="type.collapsed">
             
-            <li *ngFor="let typeName of type.children" 
-                class="hasChild" 
-                [class.displayed]="typeName.collapsed || typeName.children.length === 0">
+            <li *ngFor="let typeName of type.children"
+                class="tree-node--collapsible"
+                [class.closed]="typeName.collapsed"
+                [class.hasChild]="typeName.children.length !== 0">
 
-                <span #selectable 
+                <span class="tree-node--name"
+                    #selectable
                     [class.selected]="selected && (typeName.url === selected.url)" 
                     (click)="typeName.collapsed = !typeName.collapsed">
                     
@@ -74,11 +77,12 @@
                 
                 <ul [collapse]="typeName.collapsed">
                 
-                <li *ngFor="let childType of typeName.children" 
-                    class="hasChild" 
-                    [class.displayed]="childType.collapsed || childType.children.length === 0">
+                <li *ngFor="let childType of typeName.children"
+                    class="tree-node--collapsible"
+                    [class.closed]="childType.collapsed"
+                    [class.hasChild]="childType.children.length !== 0">
                     
-                    <span (click)="childType.collapsed = !childType.collapsed">
+                    <span (click)="childType.collapsed = !childType.collapsed" class="tree-node--name">
                         {{childType.label}}
                     </span>
 

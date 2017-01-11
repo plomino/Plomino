@@ -20,17 +20,11 @@
 }
 
 .palette-wrapper {
-  position: relative;
-  top: 60px;
-  min-height: 150px;
   max-height: 80%;
   overflow-y: auto;
 } 
 
 .palette-wrapper /deep/ .nav-tabs {
-  position: fixed;
-  top: 0;
-  left: 0;
   width: 350px;
 }
 
@@ -49,7 +43,6 @@
 
 .tree-wrapper {
   position: relative;
-  top: 43px;
   flex: 1;
   overflow-y: hidden;
 }
@@ -64,7 +57,7 @@
 }
 
 .tree-wrapper .content {
-  height: calc(100% - 72px);
+  height: calc(100% - 29px);
   overflow-y: auto;
 }
 
