@@ -178,7 +178,6 @@ class IPlominoForm(model.Schema):
             'dynamic_document_title',
             'store_dynamic_document_title',
             'document_id',
-            'hide_default_actions',
             'isSearchForm',
             'search_view',
             'search_formula',

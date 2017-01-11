@@ -144,4 +144,12 @@
       factory="plone.app.dexterity.behaviors.id.ShortName"
       />
 
+   <plone:behavior
+      name="Products.CMFPlomino.contents.behaviour.IBasic"
+      title="Plomino title and summary"
+      description="Hides summary in advanced"
+      provides=".contents.behaviours.IBasic"
+      factory="plone.app.dexterity.behaviors.metadata.Basic"
+      />
+
 </configure>

@@ -191,7 +191,7 @@ class IHelpers(model.Schema):
     """
 
     directives.widget('helpers', MacroWidget)
-    directives.order_after(helpers = 'IBasic.description')
+    directives.order_after(helpers = '*')
     helpers = schema.List(
         value_type=schema.List(
             value_type=schema.Dict(
