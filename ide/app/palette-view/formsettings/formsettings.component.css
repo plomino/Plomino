@@ -1,3 +1,6 @@
+.settings-alert-no-object {
+    margin: 10px;
+}
 
 /deep/ #formfield-form-widgets-form_layout {
     display: none !important;

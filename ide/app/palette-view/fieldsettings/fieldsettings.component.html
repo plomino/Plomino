@@ -1,5 +1,4 @@
 <div class="field-settings-wrapper">
-  <br>
   <div class="btn-group btn-group-justified">
     <div class="btn-group">
       <button class="btn btn-primary"
@@ -19,8 +18,7 @@
   </div>
   <div #fieldForm [innerHTML]="formTemplate | safePloneHtml"></div>
 
-  <br>
-  <div class="alert alert-info"
+  <div class="alert alert-info settings-alert-no-object"
       *ngIf="!formTemplate">
     <strong>Select field</strong>
   </div>
