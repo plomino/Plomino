@@ -131,10 +131,21 @@ export class AppComponent implements OnInit, AfterViewInit {
                 private zone: NgZone,
                 private changeDetector: ChangeDetectorRef) { }
 
+    collapseFirstLevelTreeElements(data:any) {
+        if(!Array.isArray(data))
+            return data;
+
+        data.forEach((item:any) => {
+            item.collapsed = true;
+        });
+
+        return data.slice();
+    }
+
     ngOnInit() {
         this.treeService.getTree()
             .subscribe((tree) => {
-                this.data = tree;
+                this.data = this.collapseFirstLevelTreeElements(tree);
             });
         
         this.tabsService.getTabs()
