@@ -73,6 +73,7 @@ class DatetimeField(BaseField):
         errors = []
         field_title = self.context.title
         # instead of checking not record, should check string type
+        #import pdb; pdb.set_trace()
         if isinstance(submittedValue, basestring):
             submittedValue = submittedValue.strip()
         try:
@@ -301,7 +302,15 @@ class DatetimeField(BaseField):
             fmt = self.context.format
             if not fmt:
                 fmt = form.getParentDatabase().datetime_format
-            fieldValue = StringToDate(fieldValue, fmt)
+            try:
+                if self.context.widget == 'SERVER':
+                    # widget == 'SERVER' have a fix format, can't guess it
+                    fieldValue = StringToDate(fieldValue, fmt, guess=False)
+                else:
+                    fieldValue = StringToDate(fieldValue, fmt)
+            except ValueError:
+                # fieldValue could be not valid datetime string
+                return fieldValue
 
         return fieldValue
 
