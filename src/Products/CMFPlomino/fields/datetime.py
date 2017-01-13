@@ -97,24 +97,27 @@ def _datetime_record(submitted_value, value_format):
 
     submitted_value = ' '.join(converted_value)
 
-    if show_ymd and show_hm and show_sec:
-        # Don't allow StringToDate to guess the format
-        result = StringToDate(
-            submitted_value, '%Y-%m-%d %H:%M:%S', guess=False, tozone=False)
-    elif show_ymd and show_hm:
-        result = StringToDate(
-            submitted_value, '%Y-%m-%d %H:%M', guess=False, tozone=False)
-    elif show_ymd:
-        result = StringToDate(
-            submitted_value, '%Y-%m-%d', guess=False, tozone=False)
-    elif show_hm and show_sec:
-        result = StringToDate(
-            submitted_value, '%H:%M:%S', guess=False, tozone=False)
-    elif show_hm:
-        result = StringToDate(
-            submitted_value, '%H:%M', guess=False, tozone=False)
-    else:
-        # The record instance isn't valid
+    try:
+        if show_ymd and show_hm and show_sec:
+            # Don't allow StringToDate to guess the format
+            result = StringToDate(submitted_value,
+                '%Y-%m-%d %H:%M:%S', guess=False, tozone=False)
+        elif show_ymd and show_hm:
+            result = StringToDate(submitted_value,
+                '%Y-%m-%d %H:%M', guess=False, tozone=False)
+        elif show_ymd:
+            result = StringToDate(submitted_value,
+                '%Y-%m-%d', guess=False, tozone=False)
+        elif show_hm and show_sec:
+            result = StringToDate(submitted_value,
+                '%H:%M:%S', guess=False, tozone=False)
+        elif show_hm:
+            result = StringToDate(submitted_value,
+                '%H:%M', guess=False, tozone=False)
+        else:
+            # The record instance isn't valid
+            raise RecordException
+    except ValueError:
         raise RecordException
     return result
 
@@ -132,6 +135,7 @@ class DatetimeField(BaseField):
             return []
         errors = []
         field_title = self.context.title
+
         # instead of checking not record, should check string type
         if isinstance(submittedValue, basestring):
             submittedValue = submittedValue.strip()
@@ -187,7 +191,8 @@ class DatetimeField(BaseField):
                 field_title, submittedValue, field_format))
         except (RecordException, Exception):
             errors.append(
-                "Field '%s' must be a date/time (submitted value was: %s)" % (
+                "Field '%s' must be a valid date/time (submitted value was: "
+                "%s)" % (
                     field_title,
                     submittedValue))
         return errors
