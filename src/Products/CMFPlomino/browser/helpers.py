@@ -83,7 +83,9 @@ class MacroWidget(Widget):
         logger.debug('Method: Widget update')
         super(MacroWidget, self).update()
         rules = self.value if self.value is not None else []
-        self.rules = ['\t'.join([json.dumps(macro) for macro in rule]) for rule in rules]
+        # have to deal with old style macors which and list of dicts, not list of list of dicts
+        rule_as_input = lambda rule: '\t'.join([json.dumps(macro) for macro in rule])
+        self.rules = [rule_as_input(rule if type(rule)==list else [rule]) for rule in rules]
         # We always need an empty rule at the end
         self.rules.append("")
 
