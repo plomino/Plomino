@@ -92,14 +92,14 @@
                 v_second v/second|nothing;
                 second python: v_second and int(v_second) or ''">
                 <tal:ymd condition="show_ymd">
-                    <input type="number" min="0" max="31"
+                    <input type="number" min="1" max="31"
                         title="Day"
                         tal:attributes="
                         name string:${field/id}.day:record;
                         id string:${field/id}.day:record;
                         value day;
                         ">
-                    <input type="number" min="0" max="12"
+                    <input type="number" min="1" max="12"
                         title="Month"
                         tal:attributes="
                         name string:${field/id}.month:record;
@@ -132,7 +132,7 @@
                         ">
                 </tal:hm>
                 <tal:sec condition="show_sec">
-                    <input type="number" min="0" max="60"
+                    <input type="number" min="0" max="59"
                         title="Second"
                         tal:attributes="
                         name string:${field/id}.second:record;
@@ -145,13 +145,13 @@
         <tal:block tal:condition="python:not(v)">
             <tal:define tal:define="id field/id;">
                 <tal:ymd condition="show_ymd">
-                    <input type="number" min="0" max="31"
+                    <input type="number" min="1" max="31"
                         title="Day"
                         tal:attributes="
                         name string:${field/id}.day:record;
                         id string:${field/id}.day:record;
                         ">
-                    <input type="number" min="0" max="12"
+                    <input type="number" min="1" max="12"
                         title="Month"
                         tal:attributes="
                         name string:${field/id}.month:record;
