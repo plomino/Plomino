@@ -59,6 +59,66 @@ class RecordException(Exception):
     """ Raise if there's a problem with the :record values """
 
 
+def _datetime_record(submitted_value, value_format):
+    year = submitted_value.get('year', '')
+    month = submitted_value.get('month', '')
+    day = submitted_value.get('day', '')
+    hour = submitted_value.get('hour', '')
+    minute = submitted_value.get('minute', '')
+    second = submitted_value.get('second', '')
+    show_ymd = False
+    show_hm = False
+    show_sec = False
+    converted_value = []
+
+    # Check for year, hour and second. Raise an exception
+    # if the required values haven't been submitted
+    if '%Y' in value_format or '%y' in value_format:
+        if year and month and day:
+            converted_value.append('%s-%s-%s' % (year, month, day))
+            show_ymd = True
+        else:
+            raise RecordException
+
+    if '%H' in value_format or '%I' in value_format:
+        if hour and minute:
+            if '%S' in value_format:
+                if second:
+                    converted_value.append('%s:%s:%s' % (hour, minute, second))
+                    show_hm = True
+                    show_sec = True
+                else:
+                    raise RecordException
+            else:
+                converted_value.append('%s:%s' % (hour, minute))
+                show_hm = True
+        else:
+            raise RecordException
+
+    submitted_value = ' '.join(converted_value)
+
+    if show_ymd and show_hm and show_sec:
+        # Don't allow StringToDate to guess the format
+        result = StringToDate(
+            submitted_value, '%Y-%m-%d %H:%M:%S', guess=False, tozone=False)
+    elif show_ymd and show_hm:
+        result = StringToDate(
+            submitted_value, '%Y-%m-%d %H:%M', guess=False, tozone=False)
+    elif show_ymd:
+        result = StringToDate(
+            submitted_value, '%Y-%m-%d', guess=False, tozone=False)
+    elif show_hm and show_sec:
+        result = StringToDate(
+            submitted_value, '%H:%M:%S', guess=False, tozone=False)
+    elif show_hm:
+        result = StringToDate(
+            submitted_value, '%H:%M', guess=False, tozone=False)
+    else:
+        # The record instance isn't valid
+        raise RecordException
+    return result
+
+
 @implementer(IDatetimeField)
 class DatetimeField(BaseField):
     """Date time field"""
@@ -73,72 +133,17 @@ class DatetimeField(BaseField):
         errors = []
         field_title = self.context.title
         # instead of checking not record, should check string type
-        #import pdb; pdb.set_trace()
         if isinstance(submittedValue, basestring):
             submittedValue = submittedValue.strip()
         try:
             # Check for a record
+            # Only widget == 'COMBO', submittedValue is record
             if isinstance(submittedValue, record):
-                year = submittedValue.get('year', '')
-                month = submittedValue.get('month', '')
-                day = submittedValue.get('day', '')
-                hour = submittedValue.get('hour', '')
-                minute = submittedValue.get('minute', '')
-                second = submittedValue.get('second', '')
+                input_format = self.context.format
+                if not input_format:
+                    input_format = self.context.getParentDatabase().datetime_format
+                _datetime_record(submittedValue, input_format)
 
-                format = self.context.format
-                if not format:
-                    format = self.context.getParentDatabase().datetime_format
-                show_ymd = False
-                show_hm = False
-                show_sec = False
-                convertedValue = []
-
-                # Check for year, hour and second. Raise an exception
-                # if the required values haven't been submitted
-                if '%Y' in format or '%y' in format:
-                    if year and month and day:
-                        convertedValue.append('%s-%s-%s' % (year, month, day))
-                        show_ymd = True
-                    else:
-                        raise Exception
-
-                if '%H' in format:
-                    if hour and minute:
-                        if '%S' in format:
-                            if second:
-                                convertedValue.append('%s:%s:%s' % (hour, minute, second))
-                                show_hm = True
-                                show_sec = True
-                            else:
-                                raise Exception
-                        else:
-                            convertedValue.append('%s:%s' % (hour, minute))
-                            show_hm = True
-                    else:
-                        raise Exception
-
-                submittedValue = ' '.join(convertedValue)
-
-                if (show_ymd and show_hm and show_sec):
-                    # Don't allow StringToDate to guess the format
-                    StringToDate(
-                        submittedValue, '%Y-%m-%d %H:%M:%S', guess=False, tozone=False)
-                elif (show_ymd and show_hm):
-                    StringToDate(
-                        submittedValue, '%Y-%m-%d %H:%M', guess=False, tozone=False)
-                elif (show_ymd):
-                    StringToDate(
-                        submittedValue, '%Y-%m-%d', guess=False, tozone=False)
-                elif (show_hm and show_sec):
-                    StringToDate(
-                        submittedValue, '%H:%M:%S', guess=False, tozone=False)
-                elif (show_hm):
-                    StringToDate(
-                        submittedValue, '%H:%M', guess=False, tozone=False)
-                else:
-                    # The record instance isn't valid
-                    raise Exception
             # submittedValue could be dict from tojson
             # {u'<datetime>': True, u'datetime': u'2016-12-12T00:00:00'}
             elif isinstance(
@@ -180,7 +185,7 @@ class DatetimeField(BaseField):
             errors.append(
                 "Field '{}': '{}' does not match the format '{}'".format(
                 field_title, submittedValue, field_format))
-        except Exception:
+        except (RecordException, Exception):
             errors.append(
                 "Field '%s' must be a date/time (submitted value was: %s)" % (
                     field_title,
@@ -196,84 +201,29 @@ class DatetimeField(BaseField):
             submittedValue = submittedValue.strip()
         try:
             # Check for a record
+            # Only widget == 'COMBO', submittedValue is record
             if isinstance(submittedValue, record):
-                year = submittedValue.get('year', '')
-                month = submittedValue.get('month', '')
-                day = submittedValue.get('day', '')
-                hour = submittedValue.get('hour', '')
-                minute = submittedValue.get('minute', '')
-                second = submittedValue.get('second', '')
-
-                format = self.context.format
-                if not format:
-                    format = self.context.getParentDatabase().datetime_format
-                show_ymd = False
-                show_hm = False
-                show_sec = False
-                convertedValue = []
-
-                # Check for year, hour and second. Raise an exception
-                # if the required values haven't been submitted
-                if '%Y' in format or '%y' in format:
-                    if year and month and day:
-                        convertedValue.append('%s-%s-%s' % (year, month, day))
-                        show_ymd = True
-                    else:
-                        raise RecordException
-
-                if '%H' in format:
-                    if hour and minute:
-                        if '%S' in format:
-                            if second:
-                                convertedValue.append('%s:%s:%s' % (hour, minute, second))
-                                show_hm = True
-                                show_sec = True
-                            else:
-                                raise RecordException
-                        else:
-                            convertedValue.append('%s:%s' % (hour, minute))
-                            show_hm = True
-                    else:
-                        raise RecordException
-
-                submittedValue = ' '.join(convertedValue)
-
-                if (show_ymd and show_hm and show_sec):
-                    # Don't allow StringToDate to guess the format
-                    d = StringToDate(
-                        submittedValue, '%Y-%m-%d %H:%M:%S', guess=False, tozone=False)
-                elif (show_ymd and show_hm):
-                    d = StringToDate(
-                        submittedValue, '%Y-%m-%d %H:%M', guess=False, tozone=False)
-                elif (show_ymd):
-                    d = StringToDate(
-                        submittedValue, '%Y-%m-%d', guess=False, tozone=False)
-                elif (show_hm and show_sec):
-                    d = StringToDate(
-                        submittedValue, '%H:%M:%S', guess=False, tozone=False)
-                elif (show_hm):
-                    d = StringToDate(
-                        submittedValue, '%H:%M', guess=False, tozone=False)
-                else:
-                    # The record instance isn't valid
-                    raise RecordException
+                input_format = self.context.format
+                if not input_format:
+                    input_format = self.context.getParentDatabase().datetime_format
+                input_value = _datetime_record(submittedValue, input_format)
 
             # submittedValue could be dict from tojson
             # {u'<datetime>': True, u'datetime': u'2016-12-12T00:00:00'}
             elif isinstance(
                     submittedValue, dict) and '<datetime>' in submittedValue:
-                d = StringToDate(submittedValue['datetime'], format=None)
+                input_value = StringToDate(submittedValue['datetime'], format=None)
             # check if date only:
             elif len(submittedValue) == 10:
-                d = StringToDate(submittedValue, '%Y-%m-%d')
+                input_value = StringToDate(submittedValue, '%Y-%m-%d')
             else:
                 # calendar widget default format is '%Y-%m-%d %H:%M' and
                 # might use the AM/PM format
                 if submittedValue[-2:] in ['AM', 'PM']:
-                    d = StringToDate(submittedValue, '%Y-%m-%d %I:%M %p')
+                    input_value = StringToDate(submittedValue, '%Y-%m-%d %I:%M %p')
                 else:
-                    d = StringToDate(submittedValue, '%Y-%m-%d %H:%M')
-            return d
+                    input_value = StringToDate(submittedValue, '%Y-%m-%d %H:%M')
+            return input_value
         except RecordException:
             # We don't have a valid record, so we can't process anything
             return None
