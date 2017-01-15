@@ -42,7 +42,8 @@ import {
     FieldsService,
     DraggingService,
     TemplatesService,
-    WidgetService
+    WidgetService,
+    FormsService
 } from './services';
 
 // Pipes 
@@ -89,7 +90,8 @@ declare let tinymce: any;
         FieldsService,
         DraggingService,
         TemplatesService,
-        WidgetService
+        WidgetService,
+        FormsService
     ],
     pipes: [ExtractNamePipe],
     animations: [

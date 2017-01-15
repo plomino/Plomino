@@ -25,7 +25,8 @@ import {
     DraggingService,
     TemplatesService,
     WidgetService,
-    TabsService
+    TabsService,
+    FormsService
 } from '../../services';
 
 import {DND_DIRECTIVES} from 'ng2-dnd/ng2-dnd';
@@ -92,6 +93,7 @@ export class TinyMCEComponent implements AfterViewInit, OnInit, OnDestroy {
                 private draggingService: DraggingService,
                 private templatesService: TemplatesService,
                 private widgetService: WidgetService,
+                private formsService: FormsService,
                 private changeDetector: ChangeDetectorRef,
                 private tabsService: TabsService,
                 private http: Http,
@@ -129,6 +131,11 @@ export class TinyMCEComponent implements AfterViewInit, OnInit, OnDestroy {
         .subscribe((updateData) => {
             this.updateField(updateData);
         });
+
+        this.formsService.formContentSave$.subscribe((cb) => {
+            tinymce.activeEditor.buttons.save.onclick();
+            this.saveFormLayout(cb);
+        } );
         
     }
 
@@ -147,7 +154,7 @@ export class TinyMCEComponent implements AfterViewInit, OnInit, OnDestroy {
             selector:'.tinymce-wrap',
             plugins: ['code', 'save', 'link', 'noneditable'],
             toolbar: 'save | undo redo | formatselect | bold italic underline | alignleft aligncenter alignright alignjustify | bullist numlist | outdent indent | unlink link | image',
-            save_onsavecallback: () => { this.saveFormLayout() },
+            save_onsavecallback: () => { this.formsService.saveForm();  },
             setup : (editor: any) => {
                 editor.on('change', (e: any) => {
                     tiny.isDirty.emit(true);
@@ -243,14 +250,17 @@ export class TinyMCEComponent implements AfterViewInit, OnInit, OnDestroy {
             });
     }
 
-    saveFormLayout() {
+    saveFormLayout(cb:any) {
         let tiny = this;
         if(tinymce.activeEditor !== null){
             this.elementService.patchElement(this.id, JSON.stringify({
                 "form_layout": tinymce.activeEditor.getContent()
             })).subscribe(
                 () => {
+                    // let the app know that saving finished
+                    if(cb) cb();
                     tiny.isDirty.emit(false);
+                    tinymce.activeEditor.setDirty(false);
                     this.changeDetector.markForCheck();
                 },
                 err => console.error(err)

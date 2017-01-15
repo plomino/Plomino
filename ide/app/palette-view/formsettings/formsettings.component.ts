@@ -17,7 +17,8 @@ import { Observable } from 'rxjs/Observable';
 import { 
     ObjService,
     TabsService,
-    TreeService 
+    TreeService,
+    FormsService
 } from '../../services';
 import { PloneHtmlPipe } from '../../pipes';
 import {ElementService} from "../../services/element.service";
@@ -43,36 +44,25 @@ export class FormSettingsComponent implements OnInit {
     // This needs to handle both views and forms
     heading: string;
     formSettings: string = '';
+    private formLayout: string = '';
     
     constructor(private objService: ObjService,
                 private changeDetector: ChangeDetectorRef,
                 private tabsService: TabsService,
                 private treeService: TreeService,
                 private elementService: ElementService,
-                private widgetService: WidgetService) {}
+                private widgetService: WidgetService,
+                private formsService: FormsService) {}
 
     ngOnInit() {
         this.getSettings();
+
+        this.formsService.formSettingsSave$.subscribe((cb:any) => {
+            this.saveForm(cb )
+        });
     }
 
-    getElementFormLayout(id:any, formData:FormData, callback:any) {
-        this.elementService.getElementFormLayout(id)
-            .subscribe((data) => {
-                if (data && data.length) {
-                    this.widgetService.getFormLayout(this.tab.url, data)
-                        .subscribe((formLayout: string) => {
-                            callback(formData, formLayout)
-                        });
-                } else {
-                    callback(formData, null);
-                }
-            }, (err) => {
-                console.error(err);
-            });
-    }
-
-    updateFormSettings(formData:any, formLayout:any) {
-        formData.set('form.widgets.form_layout', formLayout);
+    saveFormSettings(formData:any, formLayout:any, cb:any) {
 
         this.objService.updateFormSettings(this.tab.url, formData)
             .flatMap((responseData: any) => {
@@ -81,13 +71,12 @@ export class FormSettingsComponent implements OnInit {
                 } else {
                     let $formId = responseData.url.slice(responseData.url.lastIndexOf('/') + 1);
                     let newUrl = this.tab.url.slice(0, this.tab.url.lastIndexOf('/') + 1) + $formId;
-                    // this.tab.url = newUrl;
-                    this.tabsService.updateTab(this.tab, $formId);
                     this.treeService.updateTree();
                     return this.objService.getFormSettings(newUrl);
                 }
             })
             .subscribe(responseHtml => {
+                if(cb) cb();
                 this.formSettings = responseHtml;
                 this.changeDetector.markForCheck();
             }, err => {
@@ -96,14 +85,17 @@ export class FormSettingsComponent implements OnInit {
     }
 
     submitForm() {
+        this.formsService.saveForm();
+    }
 
+    saveForm(cb:any) {
         let $form: any = $(this.formElem.nativeElement);
         let form: HTMLFormElement = $form.find('form').get(0);
         let formData: any = new FormData(form);
-        
+
         formData.append('form.buttons.save', 'Save');
 
-        this.getElementFormLayout(this.tab.url, formData, this.updateFormSettings.bind(this));
+        this.saveFormSettings(formData, this.formLayout, cb);
     }
 
     cancelForm() {
