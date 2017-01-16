@@ -58,27 +58,39 @@ export class FormSettingsComponent implements OnInit {
         this.getSettings();
 
         this.formsService.formSettingsSave$.subscribe((cb:any) => {
-            this.saveForm(cb )
+            this.saveForm(cb)
         });
     }
 
-    saveFormSettings(formData:any, formLayout:any, cb:any) {
+    saveFormSettings(formData:any, cb:any) {
+
+        let $formId:any = '';
 
         this.objService.updateFormSettings(this.tab.url, formData)
             .flatMap((responseData: any) => {
                 if (responseData.html.indexOf('dl.error') > -1) {
                     return Observable.of(responseData.html);
                 } else {
-                    let $formId = responseData.url.slice(responseData.url.lastIndexOf('/') + 1);
+                    $formId = responseData.url.slice(responseData.url.lastIndexOf('/') + 1);
                     let newUrl = this.tab.url.slice(0, this.tab.url.lastIndexOf('/') + 1) + $formId;
-                    this.treeService.updateTree();
+                    this.changeDetector.markForCheck();
+
                     return this.objService.getFormSettings(newUrl);
                 }
             })
             .subscribe(responseHtml => {
-                if(cb) cb();
-                this.formSettings = responseHtml;
-                this.changeDetector.markForCheck();
+                let oldUrl = this.formsService.getIdFromUrl(this.tab.url);
+
+                if($formId && oldUrl && $formId !== oldUrl) {
+                    this.tabsService.updateTabId(this.tab, $formId);
+                    this.changeDetector.markForCheck();
+                }
+
+                this.treeService.updateTree().then(() => {
+                    if (cb) cb();
+                    this.formSettings = responseHtml;
+                    this.changeDetector.markForCheck();
+                });
             }, err => {
                 console.error(err)
             });
@@ -86,6 +98,7 @@ export class FormSettingsComponent implements OnInit {
 
     submitForm() {
         this.formsService.saveForm();
+        this.changeDetector.markForCheck();
     }
 
     saveForm(cb:any) {
@@ -93,9 +106,11 @@ export class FormSettingsComponent implements OnInit {
         let form: HTMLFormElement = $form.find('form').get(0);
         let formData: any = new FormData(form);
 
+        this.treeService.updateTree();
+
         formData.append('form.buttons.save', 'Save');
 
-        this.saveFormSettings(formData, this.formLayout, cb);
+        this.saveFormSettings(formData, cb);
     }
 
     cancelForm() {

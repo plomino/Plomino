@@ -255,7 +255,6 @@ export class TinyMCEComponent implements AfterViewInit, OnInit, OnDestroy {
 
     saveFormLayout(cb:any) {
         let tiny = this;
-        this.changeDetector.markForCheck();
         if(tinymce.activeEditor !== null){
             this.elementService.patchElement(this.id, JSON.stringify({
                 "form_layout": tinymce.activeEditor.getContent()

@@ -69,9 +69,11 @@ export class PaletteComponent implements OnInit {
     ngOnInit() {
         this.tabsService.getActiveTab().subscribe((activeTab) => {
             this.selectedTab = activeTab;
-            if (activeTab) {
-                this.tabs = this.updateTabs(activeTab.showAdd, this.tabs, activeTab.type);
-            }
+            // don't track tiny-mce tab change event
+            // remove when be sure
+            // if (activeTab) {
+            //     this.tabs = this.updateTabs(activeTab.showAdd, this.tabs, activeTab.type);
+            // }
             this.changeDetector.markForCheck();
         });
 
