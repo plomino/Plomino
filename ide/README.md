@@ -34,3 +34,7 @@ $ bin/instance fg
 7. Click IDE. (also can go to: /path/to/plomino/database/++resource++Products.CMFPlomino/ide/index.html)
 
 Further npm rebuilds don't require a plone restart so you can use ```npm run watch``` during development
+
+# Release
+
+To build a production release of the IDE, run ```npm run build``` and commit any changes in the ```../src/Products/CMFPlomino/browser/static/ide``` directory.
