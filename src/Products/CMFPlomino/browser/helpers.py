@@ -181,7 +181,8 @@ class MacroWidget(Widget):
                 continue
             found.add(form.id)
             group = 'if' if any([form.id.startswith(p) for p in ["macro_condition_", "macro_if_"]]) else 'do'
-            yield (form.Title(), form.id, path, group)
+            form_path = form.absolute_url()[:-1-len(form.id)]
+            yield (form.Title(), form.id, form_path, group)
         yield ('And', 'and', '#and', 'logic')
         yield ('Or', 'or', '#or', 'logic')
         yield ('Not', 'not', '#not', 'logic')
