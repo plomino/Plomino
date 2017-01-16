@@ -4,9 +4,11 @@ import {Subject, Observable} from 'rxjs/Rx'
 
 @Injectable()
 export class FormsService {
+    private paletteTabChangeEventSource: Subject<any> = new Subject();
     private formSettingsSaveEventSource: Subject<any> = new Subject();
     private formContentSaveEventSource: Subject<any> = new Subject();
 
+    paletteTabChange$: Observable<any> = this.paletteTabChangeEventSource.asObservable();
     formSettingsSave$: Observable<any> = this.formSettingsSaveEventSource.asObservable();
     formContentSave$: Observable<any> = this.formContentSaveEventSource.asObservable();
 
@@ -17,16 +19,23 @@ export class FormsService {
 
     }
 
-    saveForm() {
-        this.saveFormSettings();
-        this.saveFormContent();
+    changePaletteTab(tabIndex:number) {
+        this.paletteTabChangeEventSource.next(tabIndex);
     }
 
-    saveFormSettings() {
+    saveForm() {
+        this.changePaletteTab(2);
+        this.saveFormSettings(() => {
+            this.saveFormContent();
+        });
+    }
+
+    saveFormSettings(cb:any) {
         if (!this.formSettingsSaving) {
             this.formSettingsSaving = true;
             this.formSettingsSaveEventSource.next(() => {
                 this.formSettingsSaving = false;
+                cb();
             });
         }
     }
