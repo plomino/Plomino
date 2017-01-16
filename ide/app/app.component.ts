@@ -29,7 +29,7 @@ import {
     HideWhenSettingsComponent,
     ViewsSettingsComponent,
     ColumnsSettingsComponent,
-    AgentsSettingsComponent 
+    AgentsSettingsComponent
 } from './editors';
 
 
@@ -56,6 +56,7 @@ import { IField } from './interfaces';
 import { PlominoModalComponent } from './utility';
 
 import 'lodash';
+import {LoadingComponent} from "./editors/loading/loading.component";
 
 declare let _: any;
 
@@ -80,7 +81,7 @@ declare let tinymce: any;
         ViewsSettingsComponent,
         ColumnsSettingsComponent,
         AgentsSettingsComponent,
-        
+        LoadingComponent
     ],
     providers: [
         TreeService, 

@@ -75,6 +75,7 @@ export class TinyMCEComponent implements AfterViewInit, OnInit, OnDestroy {
 
     @Input() id: string;
     @Output() isDirty: EventEmitter<any> = new EventEmitter();
+    @Output() isLoading: EventEmitter<any> = new EventEmitter();
     @Output() fieldSelected: EventEmitter<any> = new EventEmitter();
 
     @ViewChild('theEditor') editorElement: ElementRef;
@@ -133,6 +134,8 @@ export class TinyMCEComponent implements AfterViewInit, OnInit, OnDestroy {
         });
 
         this.formsService.formContentSave$.subscribe((cb) => {
+            this.isLoading.emit(true);
+            this.changeDetector.detectChanges();
             tinymce.activeEditor.buttons.save.onclick();
             this.saveFormLayout(cb);
         } );
@@ -154,7 +157,7 @@ export class TinyMCEComponent implements AfterViewInit, OnInit, OnDestroy {
             selector:'.tinymce-wrap',
             plugins: ['code', 'save', 'link', 'noneditable'],
             toolbar: 'save | undo redo | formatselect | bold italic underline | alignleft aligncenter alignright alignjustify | bullist numlist | outdent indent | unlink link | image',
-            save_onsavecallback: () => { this.formsService.saveForm();  },
+            save_onsavecallback: () => { this.formsService.saveForm(); this.isLoading.emit(true);  },
             setup : (editor: any) => {
                 editor.on('change', (e: any) => {
                     tiny.isDirty.emit(true);
@@ -252,11 +255,13 @@ export class TinyMCEComponent implements AfterViewInit, OnInit, OnDestroy {
 
     saveFormLayout(cb:any) {
         let tiny = this;
+        this.changeDetector.markForCheck();
         if(tinymce.activeEditor !== null){
             this.elementService.patchElement(this.id, JSON.stringify({
                 "form_layout": tinymce.activeEditor.getContent()
             })).subscribe(
                 () => {
+                    tiny.isLoading.emit(false);
                     // let the app know that saving finished
                     if(cb) cb();
                     tiny.isDirty.emit(false);
