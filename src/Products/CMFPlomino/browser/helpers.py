@@ -329,7 +329,7 @@ def update_helpers(obj, event):
 
     # need to upgrade the data from the old structure if needed
     #TODO: only do set at the end if this has changed (or an id has been added)
-    helpers = [[rule] if type(rule) == dict else rule for rule in helpers]
+    helpers = [[rule] if type(rule) != list else rule for rule in helpers]
 
 
     # find all our ids so we can add unique ones later
