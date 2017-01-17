@@ -24,13 +24,16 @@ require([
             data._hidewhens = self.getHidewhens();
             data._fields = self.getDynamicFields();
             data._validation = field.id;
-            $.post(self.options.url + '/dynamic_evaluation',
-                data,
-                function(response) {
-                    self.applyHidewhens(response.hidewhens);
-                    self.applyDynamicFields(response.fields);
-                },
-                'json');
+            // Only evaluate if we have a hidewhen or dynamic field
+            if (data._hidewhens.length > 0 || data._fields.length > 0) {
+                $.post(self.options.url + '/dynamic_evaluation',
+                    data,
+                    function(response) {
+                        self.applyHidewhens(response.hidewhens);
+                        self.applyDynamicFields(response.fields);
+                    },
+                    'json');
+            };
         },
         getCurrentInputs: function() {
             var data = {};
