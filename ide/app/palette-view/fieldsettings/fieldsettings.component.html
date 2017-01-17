@@ -3,7 +3,12 @@
     <a class="btn btn-primary"
        *ngIf="formTemplate"
        (click)="submitForm()">
-      Save
+      <span *ngIf="formSaving">
+          <loading class="white"></loading>
+        </span>
+      <span *ngIf="!formSaving">
+          Save
+        </span>
     </a>
     <a class="btn btn-danger"
        *ngIf="formTemplate"

@@ -29,11 +29,15 @@ import 'jquery';
 
 declare let $: any;
 
+import { LoadingComponent } from '../../editors';
+
 @Component({
     selector: 'plomino-palette-fieldsettings',
     template: require('./fieldsettings.component.html'),
     styles: [require('./fieldsettings.component.css')],
-    directives: [],
+    directives: [
+        LoadingComponent
+    ],
     providers: [],
     pipes: [PloneHtmlPipe],
     // changeDetection: ChangeDetectionStrategy.OnPush
@@ -45,6 +49,7 @@ export class FieldSettingsComponent implements OnInit {
     field: any;
     formTemplate: string = '';
 
+    formSaving:boolean = false;
     
     constructor(private objService: ObjService,
                 private tabsService: TabsService,
@@ -69,6 +74,8 @@ export class FieldSettingsComponent implements OnInit {
         let formData: FormData = new FormData(form);
 
         formData.append('form.buttons.save', 'Save');
+
+        this.formSaving = true;
         
         this.objService.updateFormSettings(this.field.url, formData)
             .flatMap((responseData: any) => {
@@ -86,6 +93,7 @@ export class FieldSettingsComponent implements OnInit {
             })
             .subscribe(responseHtml => {
                 this.formTemplate = responseHtml;
+                this.formSaving = false;
                 this.changeDetector.markForCheck();
             }, err => { 
                 console.error(err) 
