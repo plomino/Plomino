@@ -79,7 +79,6 @@ class IPlominoAction(model.Schema):
         fields=(
             'content',
             'hidewhen',
-            'in_action_bar',
         ),
     )
 

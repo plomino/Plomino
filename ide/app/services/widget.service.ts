@@ -49,6 +49,7 @@ export class WidgetService {
           case 'plominoLabelClass':
             items$.push({
               type: 'label',
+              contents: contents,
               baseUrl: baseUrl,
               el: $element
             });
@@ -64,7 +65,7 @@ export class WidgetService {
                   }
                   
                   if (item.type === 'label') {
-                    return this.convertLabel(item.baseUrl, item.el, 'group');
+                    return this.convertLabel(item.baseUrl, item.el, 'group', item.contents);
                   }
 
                   return this.convertGroupFields(item.contents, item.baseUrl, item.el);
@@ -310,22 +311,25 @@ export class WidgetService {
     return Observable.of(content);
   }
 
-  private convertLabel(base: string, element: any, type: 'form' | 'group'): Observable<any> {
+  private convertLabel(base: string, element: any, type: 'form' | 'group', ids: any[] = []): Observable<any> {
     let $class = element.attr('class').split(' ')[0];
     let $type = $class.slice(7, -5).toLowerCase();
-    let $id = element.text();
+    let $id: any;
 
-    if (type === 'group') {
-      return this.getWidget(base, $type, $id)
-                .map((response) => {
-                  return this.wrapIntoEditable(`${response}<br />`);
-                });
+    if (ids.length) {
+      $id = this.findId(ids, element.text()).id;
     } else {
-      return this.getWidget(base, $type, $id)
-                .map((response) => {
-                  return `${response}<br />`;
-                });
+      $id = element.text();
     }
+
+    return this.getWidget(base, $type, $id)
+              .map((response) => {
+                if (type === 'group') {
+                  return this.wrapIntoEditable(`${response}<br />`);
+                } else {
+                  return `${response}<br />`;
+                } 
+              });
   }
 
   private wrapIntoEditable(content: string): string {

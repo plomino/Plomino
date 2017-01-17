@@ -54,8 +54,8 @@ require([
             self.$el.find('input').each(function(index, el) {
                 //var rule = self.rules[i];
                 var rule = [];
-                if ($(el).val() != "") {
-                    rule = $(el).val().split('/t')
+                if (el.value != "") {
+                    rule = el.value.split('\t')
                 }
 
                 if (rule.map == undefined) {

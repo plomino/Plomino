@@ -83,7 +83,9 @@ class MacroWidget(Widget):
         logger.debug('Method: Widget update')
         super(MacroWidget, self).update()
         rules = self.value if self.value is not None else []
-        self.rules = ['\t'.join([json.dumps(macro) for macro in rule]) for rule in rules]
+        # have to deal with old style macors which and list of dicts, not list of list of dicts
+        rule_as_input = lambda rule: '\t'.join([json.dumps(macro) for macro in rule])
+        self.rules = [rule_as_input(rule if type(rule)==list else [rule]) for rule in rules]
         # We always need an empty rule at the end
         self.rules.append("")
 
@@ -179,7 +181,8 @@ class MacroWidget(Widget):
                 continue
             found.add(form.id)
             group = 'if' if any([form.id.startswith(p) for p in ["macro_condition_", "macro_if_"]]) else 'do'
-            yield (form.Title(), form.id, path, group)
+            form_path = form.getParentDatabase().absolute_url()
+            yield (form.Title(), form.id, form_path, group)
         yield ('And', 'and', '#and', 'logic')
         yield ('Or', 'or', '#or', 'logic')
         yield ('Not', 'not', '#not', 'logic')
@@ -191,7 +194,7 @@ class IHelpers(model.Schema):
     """
 
     directives.widget('helpers', MacroWidget)
-    directives.order_after(helpers = 'IBasic.description')
+    directives.order_after(helpers = '*')
     helpers = schema.List(
         value_type=schema.List(
             value_type=schema.Dict(
@@ -326,7 +329,7 @@ def update_helpers(obj, event):
 
     # need to upgrade the data from the old structure if needed
     #TODO: only do set at the end if this has changed (or an id has been added)
-    helpers = [[rule] if type(rule) == dict else rule for rule in helpers]
+    helpers = [[rule] if type(rule) != list else rule for rule in helpers]
 
 
     # find all our ids so we can add unique ones later
