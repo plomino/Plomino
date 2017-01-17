@@ -1460,7 +1460,12 @@ class PlominoForm(Container):
             'errors': self.validateInputs(REQUEST, doc=doc, tmp=temp[self.id])
         }
 
-        results['hidewhens'] = self._get_hidewhens(REQUEST, doc, temp=temp, dynamic=True)
+        # Only evaluate hidewhens if there is something to evaluate
+        hidewhens = asList(REQUEST.get('_hidewhens[]', []))
+        if hidewhens:
+            results['hidewhens'] = self._get_hidewhens(REQUEST, doc, temp=temp, dynamic=True)
+        else:
+            results['hidewhens'] = []
 
         fields = asList(REQUEST.get('_fields[]', []))
         fields_results = []
