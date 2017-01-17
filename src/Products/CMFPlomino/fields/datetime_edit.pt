@@ -20,7 +20,7 @@
                 hm_fmt python:show_hm and 'T%H:%M' or '';
                 sec_fmt python:show_sec and ':%S' or '';
                 inputvalue python:isinstance(v, basestring) and v or v.strftime(format.strip() if format else ''.join([ymd_fmt, hm_fmt, sec_fmt]).strip());">
-                <input tal:attributes="
+                <input class="datetime-single field-datetime" tal:attributes="
                     name field/id;
                     id field/id;
                     value inputvalue;
@@ -29,7 +29,7 @@
         </tal:block>
         <tal:block tal:condition="python:not(v)">
             <tal:define tal:define="id field/id;">
-                <input tal:attributes="
+                <input class="datetime-single field-datetime" tal:attributes="
                     name field/id;
                     id field/id;
                     ">
@@ -37,7 +37,7 @@
         </tal:block>
     </tal:widget>
     <tal:widget tal:condition="python: widget=='JQUERY'">
-        <input type="text" class="pat-pickadate"
+        <input type="text" class="pat-pickadate field-datetime"
             tal:define="inputvalue python: '' if not v else v.strftime('%Y-%m-%d %H:%M');"
             tal:attributes="name field/id;
                 id field/id;
@@ -54,7 +54,7 @@
                 hm_fmt python:show_hm and 'T%H:%M' or '';
                 sec_fmt python:show_sec and ':%S' or '';
                 inputvalue python:isinstance(v, basestring) and v or v.strftime(''.join([ymd_fmt, hm_fmt, sec_fmt]).strip());">
-                <input tal:attributes="
+                <input class="datetime-native field-datetime" tal:attributes="
                     type python:(show_hm and show_ymd and 'datetime-local') or (show_hm and 'time') or (show_ymd and 'date');
                     min python: (starting_year and str(starting_year)+'-01-01') or '';
                     name field/id;
@@ -67,7 +67,7 @@
             <tal:define tal:define="id field/id;
                 show_hm hm|nothing;
                 show_ymd ymd|nothing;">
-                <input tal:attributes="
+                <input class="datetime-native field-datetime" tal:attributes="
                     type python:(show_hm and show_ymd and 'datetime-local') or (show_hm and 'time') or (show_ymd and 'date');
                     min python: (starting_year and str(starting_year)+'-01-01') or '';
                     name field/id;
@@ -92,21 +92,21 @@
                 v_second v/second|nothing;
                 second python: v_second and int(v_second) or ''">
                 <tal:ymd condition="show_ymd">
-                    <input type="number" min="1" max="31"
+                    <input class="datetime-split field-datetime" type="number" min="1" max="31"
                         title="Day"
                         tal:attributes="
                         name string:${field/id}.day:record;
                         id string:${field/id}.day:record;
                         value day;
                         ">
-                    <input type="number" min="1" max="12"
+                    <input class="datetime-split field-datetime" type="number" min="1" max="12"
                         title="Month"
                         tal:attributes="
                         name string:${field/id}.month:record;
                         id string:${field/id}.month:record;
                         value month;
                         ">
-                    <input type="number" min="1975" max="2050"
+                    <input class="datetime-split field-datetime" type="number" min="1975" max="2050"
                         title="Year"
                         tal:attributes="
                         min python: starting_year or '';
@@ -116,14 +116,14 @@
                         ">
                 </tal:ymd>
                 <tal:hm condition="show_hm">
-                    <input type="number" min="0" max="24"
+                    <input class="datetime-split field-datetime" type="number" min="0" max="24"
                         title="Hour"
                         tal:attributes="
                         name string:${field/id}.hour:record;
                         id string:${field/id}.hour:record;
                         value hour;
                         ">
-                    <input type="number" min="0" max="59"
+                    <input class="datetime-split field-datetime" type="number" min="0" max="59"
                         title="Minute"
                         tal:attributes="
                         name string:${field/id}.minute:record;
@@ -132,7 +132,7 @@
                         ">
                 </tal:hm>
                 <tal:sec condition="show_sec">
-                    <input type="number" min="0" max="59"
+                    <input class="datetime-split field-datetime" type="number" min="0" max="59"
                         title="Second"
                         tal:attributes="
                         name string:${field/id}.second:record;
@@ -145,19 +145,19 @@
         <tal:block tal:condition="python:not(v)">
             <tal:define tal:define="id field/id;">
                 <tal:ymd condition="show_ymd">
-                    <input type="number" min="1" max="31"
+                    <input class="datetime-split field-datetime" type="number" min="1" max="31"
                         title="Day"
                         tal:attributes="
                         name string:${field/id}.day:record;
                         id string:${field/id}.day:record;
                         ">
-                    <input type="number" min="1" max="12"
+                    <input class="datetime-split field-datetime" type="number" min="1" max="12"
                         title="Month"
                         tal:attributes="
                         name string:${field/id}.month:record;
                         id string:${field/id}.month:record;
                         ">
-                    <input type="number" min="1975" max="2050"
+                    <input class="datetime-split field-datetime" type="number" min="1975" max="2050"
                         title="Year"
                         tal:attributes="
                         min python: starting_year or '';
@@ -166,13 +166,13 @@
                         ">
                 </tal:ymd>
                 <tal:hm condition="show_hm">
-                    <input type="number" min="0" max="24"
+                    <input class="datetime-split field-datetime" type="number" min="0" max="24"
                         title="Hour"
                         tal:attributes="
                         name string:${field/id}.hour:record;
                         id string:${field/id}.hour:record;
                         ">
-                    <input type="number" min="0" max="59"
+                    <input class="datetime-split field-datetime" type="number" min="0" max="59"
                         title="Minute"
                         tal:attributes="
                         name string:${field/id}.minute:record;
@@ -180,7 +180,7 @@
                         ">
                 </tal:hm>
                 <tal:sec condition="show_sec">
-                    <input type="number" min="0" max="59"
+                    <input class="datetime-split field-datetime" type="number" min="0" max="59"
                         title="Second"
                         tal:attributes="
                         name string:${field/id}.second:record;
