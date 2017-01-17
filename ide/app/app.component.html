@@ -63,6 +63,7 @@
         
         <plomino-tiny-mce *ngIf="tabz.editor==='layout'" 
             [id]="tabz.url"
+            [item]="tabz"
             (isLoading)="tabz.isloading=$event"
             (isDirty)="tabz.isdirty=$event"
             (fieldSelected)="fieldSelected($event)">

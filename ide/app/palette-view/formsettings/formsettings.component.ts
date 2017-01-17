@@ -26,11 +26,15 @@ import {WidgetService} from "../../services/widget.service";
 
 declare let $: any;
 
+import { LoadingComponent } from '../../editors';
+
 @Component({
     selector: 'plomino-palette-formsettings',
     template: require('./formsettings.component.html'),
     styles: [require('./formsettings.component.css')],
-    directives: [],
+    directives: [
+        LoadingComponent
+    ],
     providers: [],
     pipes: [PloneHtmlPipe],
     changeDetection: ChangeDetectionStrategy.OnPush
@@ -40,6 +44,8 @@ export class FormSettingsComponent implements OnInit {
     @ViewChild('formElem') formElem: ElementRef; 
     
     tab: any;
+
+    formSaving:boolean = false;
 
     // This needs to handle both views and forms
     heading: string;
@@ -57,13 +63,17 @@ export class FormSettingsComponent implements OnInit {
     ngOnInit() {
         this.getSettings();
 
-        this.formsService.formSettingsSave$.subscribe((cb:any) => {
-            this.saveForm(cb)
+        this.formsService.formSettingsSave$.subscribe((data) => {
+            if(this.tab.formUniqueId !== data.formUniqueId)
+                return;
+
+            this.saveForm(data.cb)
         });
     }
 
     saveFormSettings(formData:any, cb:any) {
 
+        this.formSaving = true;
         let $formId:any = '';
 
         this.objService.updateFormSettings(this.tab.url, formData)
@@ -73,23 +83,33 @@ export class FormSettingsComponent implements OnInit {
                 } else {
                     $formId = responseData.url.slice(responseData.url.lastIndexOf('/') + 1);
                     let newUrl = this.tab.url.slice(0, this.tab.url.lastIndexOf('/') + 1) + $formId;
+                    let oldUrl = this.tab.url;
+
+                    if (newUrl && oldUrl && newUrl !== oldUrl) {
+                        this.formsService.changeFormId({
+                            newId: newUrl,
+                            oldId: oldUrl
+                        });
+
+                        this.tabsService.updateTabId(this.tab, $formId);
+
+                        this.changeDetector.markForCheck();
+                    }
+
                     this.changeDetector.markForCheck();
 
                     return this.objService.getFormSettings(newUrl);
                 }
             })
             .subscribe(responseHtml => {
-                let oldUrl = this.formsService.getIdFromUrl(this.tab.url);
-
-                if($formId && oldUrl && $formId !== oldUrl) {
-                    this.tabsService.updateTabId(this.tab, $formId);
-                    this.changeDetector.markForCheck();
-                }
 
                 this.treeService.updateTree().then(() => {
-                    if (cb) cb();
+                    this.formSaving = false;
                     this.formSettings = responseHtml;
                     this.changeDetector.markForCheck();
+                    if (cb) {
+                        cb();
+                    }
                 });
             }, err => {
                 console.error(err)
@@ -97,7 +117,7 @@ export class FormSettingsComponent implements OnInit {
     }
 
     submitForm() {
-        this.formsService.saveForm();
+        this.formsService.saveForm(this.tab.formUniqueId);
         this.changeDetector.markForCheck();
     }
 

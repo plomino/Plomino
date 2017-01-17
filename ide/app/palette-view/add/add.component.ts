@@ -153,6 +153,7 @@ export class AddComponent {
                 this.elementService.postElement('../../', formElement).subscribe((response) => {
                     this.treeService.updateTree().then(() => {
                         this.tabsService.openTab({
+                            formUniqueId: response.formUniqueId,
                             editor: 'layout',
                             label: response.title,
                             url: response['@id'] + response.id,

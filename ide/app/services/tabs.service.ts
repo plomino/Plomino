@@ -193,6 +193,7 @@ export class TabsService {
       editor: tab.editor, 
       path: tab.path, 
       url: tab.url,
+      formUniqueId: tab.formUniqueId,
       active: true,
       showAdd: showAdd 
     };

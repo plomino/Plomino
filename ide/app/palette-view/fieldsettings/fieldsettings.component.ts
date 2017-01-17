@@ -17,7 +17,8 @@ import {
     ObjService,
     TabsService,
     TreeService,
-    FieldsService 
+    FieldsService,
+    FormsService
 } from '../../services';
 
 import { PloneHtmlPipe } from '../../pipes';
@@ -47,12 +48,19 @@ export class FieldSettingsComponent implements OnInit {
     
     constructor(private objService: ObjService,
                 private tabsService: TabsService,
+                private formsService: FormsService,
                 private fieldsService: FieldsService,
                 private changeDetector: ChangeDetectorRef,
                 private treeService: TreeService) { }
 
     ngOnInit() {
         this.loadSettings();
+
+        this.formsService.formIdChanged$.subscribe((data) => {
+            if(this.field.url.indexOf(data.oldId) !== -1) {
+                this.field.url = `${data.newId}/${this.formsService.getIdFromUrl(this.field.url)}`;
+            }
+        });
     }
 
     submitForm() {
@@ -60,7 +68,7 @@ export class FieldSettingsComponent implements OnInit {
         let form: HTMLFormElement = $form.find('form').get(0);
         let formData: FormData = new FormData(form);
 
-        formData.append('form.buttons.save', 'Save');        
+        formData.append('form.buttons.save', 'Save');
         
         this.objService.updateFormSettings(this.field.url, formData)
             .flatMap((responseData: any) => {

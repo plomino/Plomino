@@ -88,6 +88,7 @@ export class TreeComponent implements OnInit {
         if ((this.selected && this.selected.url) !== fieldData.parent) {
             let tabLabel = fieldData.parent.slice(fieldData.parent.lastIndexOf('/') + 1);
             this.tabsService.openTab({
+                formUniqueId: this.selected.formUniqueId,
                 editor: 'layout',
                 label: tabLabel,
                 url: fieldData.parent,
