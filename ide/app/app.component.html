@@ -55,6 +55,7 @@
         
         <template tabHeading>
             <span [class.tabunsaved]="tabz.isdirty">
+              <loading *ngIf="tabz.isloading"></loading>
               <span *ngIf="tabz.isdirty">* </span>
               {{tabz.url | extractName}} / {{tabz.editor}}
             </span>
@@ -62,8 +63,10 @@
         
         <plomino-tiny-mce *ngIf="tabz.editor==='layout'" 
             [id]="tabz.url"
+            [item]="tabz"
+            (isLoading)="tabz.isloading=$event"
             (isDirty)="tabz.isdirty=$event"
-            (fieldSelected)="fieldSelected($event)"> 
+            (fieldSelected)="fieldSelected($event)">
         </plomino-tiny-mce>
         
         <plomino-ace-editor *ngIf="tabz.editor==='code'" 

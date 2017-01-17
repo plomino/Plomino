@@ -90,6 +90,17 @@ export class TabsService {
     this.tabs$.next(tabs);
   }
 
+  updateTabId(tab:any, newID:number):void {
+
+    let tabs = this.tabs$.getValue();
+
+    let updateTab = _.find(tabs, (item:any) => item.url === tab.url);
+
+    updateTab.url = `${this.getParent(updateTab.url)}/${newID}`;
+
+    tab.url = `${this.getParent(updateTab.url)}/${newID}`;
+  }
+
   updateTab(tabData: any, id: any): void {
     let tabs = this.tabs$.getValue().slice(0);
     let activeTab = Object.assign({}, this.activeTab$.getValue());
@@ -182,6 +193,7 @@ export class TabsService {
       editor: tab.editor, 
       path: tab.path, 
       url: tab.url,
+      formUniqueId: tab.formUniqueId,
       active: true,
       showAdd: showAdd 
     };

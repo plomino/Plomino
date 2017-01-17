@@ -21,7 +21,7 @@ import {
 
 import {DND_DIRECTIVES} from 'ng2-dnd/ng2-dnd';
 
-import { 
+import {
     Subscription,
     Observable,
     Scheduler
@@ -33,7 +33,8 @@ import {
     DraggingService,
     TemplatesService,
     WidgetService,
-    TabsService
+    TabsService,
+    FormsService
 } from '../../services';
 
 import { UpdateFieldService } from './services';
@@ -79,7 +80,9 @@ declare var tinymce: any;
 export class TinyMCEComponent implements AfterViewInit, OnInit, OnDestroy {
 
     @Input() id: string;
+    @Input() item: any;
     @Output() isDirty: EventEmitter<any> = new EventEmitter();
+    @Output() isLoading: EventEmitter<any> = new EventEmitter();
     @Output() fieldSelected: EventEmitter<any> = new EventEmitter();
 
     @ViewChild('theEditor') editorElement: ElementRef;
@@ -87,6 +90,7 @@ export class TinyMCEComponent implements AfterViewInit, OnInit, OnDestroy {
     data: string;
     isDragged: boolean = false;
     dragData: any;
+    idChanges: any;
     editorInstance: any;
 
     draggingSubscription: Subscription;
@@ -98,6 +102,7 @@ export class TinyMCEComponent implements AfterViewInit, OnInit, OnDestroy {
                 private draggingService: DraggingService,
                 private templatesService: TemplatesService,
                 private widgetService: WidgetService,
+                private formsService: FormsService,
                 private changeDetector: ChangeDetectorRef,
                 private tabsService: TabsService,
                 private updateFieldService: UpdateFieldService,
@@ -135,11 +140,31 @@ export class TinyMCEComponent implements AfterViewInit, OnInit, OnDestroy {
         .subscribe((updateData) => {
             this.updateField(updateData);
         });
-        
+
+        this.formsService.formIdChanged$.subscribe((data) => {
+            this.idChanges = Object.assign({}, data);
+        });
+
+        this.formsService.formContentSave$.subscribe((data) => {
+
+            this.changeDetector.detectChanges();
+
+            if(data.formUniqueId !== this.item.formUniqueId)
+                return;
+
+            this.isLoading.emit(true);
+
+            let editor = tinymce.get(this.id) || tinymce.get(this.idChanges && this.idChanges.oldId);
+
+            editor.buttons.save.onclick();
+
+            this.saveFormLayout(data.cb);
+        } );
+
     }
 
     ngOnInit() { }
-    
+
     ngOnDestroy() {
         this.draggingSubscription.unsubscribe();
         this.insertionSubscription.unsubscribe();
@@ -150,11 +175,27 @@ export class TinyMCEComponent implements AfterViewInit, OnInit, OnDestroy {
     ngAfterViewInit(): void {
         let tiny = this;
         tinymce.init({
+            cleanup : false,
             selector:'.tinymce-wrap',
+            mode : 'textareas',
+            force_br_newlines : true,
+            force_p_newlines : false,
+            forced_root_block: '',
             plugins: ['code', 'save', 'link', 'noneditable'],
             toolbar: 'save | undo redo | formatselect | bold italic underline | alignleft aligncenter alignright alignjustify | bullist numlist | outdent indent | unlink link | image',
-            save_onsavecallback: () => { this.saveFormLayout() },
+            save_onsavecallback: () => { this.formsService.saveForm(this.item.formUniqueId); this.changeDetector.markForCheck(); },
             setup : (editor: any) => {
+
+                if(this.editorInstance) {
+                    this.editorInstance.remove();
+                } else {
+                    this.getFormLayout();
+                }
+
+                this.editorInstance = editor;
+
+                setTimeout(() => this.editorInstance.show()); // use timeout to push in new queue
+
                 editor.on('change', (e: any) => {
                     tiny.isDirty.emit(true);
                 });
@@ -171,7 +212,7 @@ export class TinyMCEComponent implements AfterViewInit, OnInit, OnDestroy {
                         let $elementIsGroup = $element.hasClass('plominoGroupClass');
                         let elementIsLabel = $element.hasClass('plominoLabelClass');
                         let parentIsLabel = $parent.hasClass('plominoLabelClass');
-   
+
                         let $elementId = $element.data('plominoid');
                         let $parentId = $parent.data('plominoid');
 
@@ -234,25 +275,31 @@ export class TinyMCEComponent implements AfterViewInit, OnInit, OnDestroy {
                 if (data && data.length) {
                     this.widgetService.getFormLayout(this.id, data)
                         .subscribe((formLayout: string) => {
-                            tinymce.get(this.id).setContent(formLayout); 
+                            tinymce.get(this.id).setContent(formLayout);
                         });
                 } else {
                     tinymce.get(this.id).setContent(newData);
                 }
-            }, (err) => { 
+            }, (err) => {
                 console.error(err);
             });
     }
 
-    saveFormLayout() {
+    saveFormLayout(cb:any) {
         let tiny = this;
-        if(tinymce.activeEditor !== null){
+        let editor = tinymce.get(this.id) || tinymce.get(this.idChanges.oldId);
+        if(editor !== null){
             this.elementService.patchElement(this.id, JSON.stringify({
-                "form_layout": tinymce.activeEditor.getContent()
+                "form_layout": editor.getContent()
             })).subscribe(
                 () => {
+                    tiny.isLoading.emit(false);
+                    // let the app know that saving finished
+                    if(cb) cb();
                     tiny.isDirty.emit(false);
+                    editor.setDirty(false);
                     this.changeDetector.markForCheck();
+                    this.ngAfterViewInit();
                 },
                 err => console.error(err)
             );
@@ -294,14 +341,14 @@ export class TinyMCEComponent implements AfterViewInit, OnInit, OnDestroy {
     private updateField(updateData: any) {
         let ed = tinymce.get(this.id);
         let dataToUpdate: any[] = ed.dom.select(`*[data-plominoid=${updateData.fieldData.id}]`);
-        
+
         if (dataToUpdate.length) {
-            
+
             Observable.from(dataToUpdate)
                 .map((element) => {
                     let normalizedType = $(element).attr('class').split(' ')[0].slice(7, -5);
                     let typeCapitalized = normalizedType[0].toUpperCase() + normalizedType.slice(1);
-                    
+
                     return {
                         base: this.id,
                         type: normalizedType,
@@ -381,7 +428,7 @@ export class TinyMCEComponent implements AfterViewInit, OnInit, OnDestroy {
     }
 
     private insertElement(baseUrl: string, type: string, value: string, option?: string) {
-        
+
         // TODO: Move this method to service
 
 		let ed: any = tinymce.get(this.id);
@@ -532,6 +579,7 @@ export class TinyMCEComponent implements AfterViewInit, OnInit, OnDestroy {
     }
 
     private extractClass(classString: string): string {
+        if(!classString) return null;
         let type = classString.split(' ')[0].slice(0, -5);
         return type.indexOf('plomino') > -1 ? type : null;
     }
