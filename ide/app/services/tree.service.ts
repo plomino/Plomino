@@ -22,10 +22,23 @@ export class TreeService {
         return this.tree$.asObservable();
     }
 
+    addUniqueIdsForForms(data:any) {
+        if(!Array.isArray(data) || !data[0])
+            return data;
+
+        let id = 1;
+
+        data[0].children.forEach((item:any) => {
+            item.formUniqueId = id++;
+        });
+
+        return data;
+    }
+
     updateTree() {
         return this.http.get("../../@@designtree").map((res: Response) => res.json() )
                         .forEach((response) => {
-                            this.tree$.next(response); 
+                            this.tree$.next(this.addUniqueIdsForForms(response));
                         });
     }
 }

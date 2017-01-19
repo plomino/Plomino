@@ -17,7 +17,8 @@ import {
     ObjService,
     TabsService,
     TreeService,
-    FieldsService 
+    FieldsService,
+    FormsService
 } from '../../services';
 
 import { PloneHtmlPipe } from '../../pipes';
@@ -28,11 +29,15 @@ import 'jquery';
 
 declare let $: any;
 
+import { LoadingComponent } from '../../editors';
+
 @Component({
     selector: 'plomino-palette-fieldsettings',
     template: require('./fieldsettings.component.html'),
     styles: [require('./fieldsettings.component.css')],
-    directives: [],
+    directives: [
+        LoadingComponent
+    ],
     providers: [],
     pipes: [PloneHtmlPipe],
     // changeDetection: ChangeDetectionStrategy.OnPush
@@ -44,15 +49,23 @@ export class FieldSettingsComponent implements OnInit {
     field: any;
     formTemplate: string = '';
 
+    formSaving:boolean = false;
     
     constructor(private objService: ObjService,
                 private tabsService: TabsService,
+                private formsService: FormsService,
                 private fieldsService: FieldsService,
                 private changeDetector: ChangeDetectorRef,
                 private treeService: TreeService) { }
 
     ngOnInit() {
         this.loadSettings();
+
+        this.formsService.formIdChanged$.subscribe((data) => {
+            if(this.field.url.indexOf(data.oldId) !== -1) {
+                this.field.url = `${data.newId}/${this.formsService.getIdFromUrl(this.field.url)}`;
+            }
+        });
     }
 
     submitForm() {
@@ -60,7 +73,9 @@ export class FieldSettingsComponent implements OnInit {
         let form: HTMLFormElement = $form.find('form').get(0);
         let formData: FormData = new FormData(form);
 
-        formData.append('form.buttons.save', 'Save');        
+        formData.append('form.buttons.save', 'Save');
+
+        this.formSaving = true;
         
         this.objService.updateFormSettings(this.field.url, formData)
             .flatMap((responseData: any) => {
@@ -78,6 +93,7 @@ export class FieldSettingsComponent implements OnInit {
             })
             .subscribe(responseHtml => {
                 this.formTemplate = responseHtml;
+                this.formSaving = false;
                 this.changeDetector.markForCheck();
             }, err => { 
                 console.error(err) 

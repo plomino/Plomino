@@ -27,10 +27,11 @@ import { DBSettingsComponent } from './dbsettings';
 import { 
     ElementService,
     TabsService,
-    TemplatesService
+    TemplatesService,
 } from '../services';
 
 import 'lodash';
+import {FormsService} from "../services/forms.service";
 declare let _: any;
 
 @Component({
@@ -62,22 +63,30 @@ export class PaletteComponent implements OnInit {
 
     constructor(private changeDetector: ChangeDetectorRef,
                 private tabsService: TabsService,
+                private formsService: FormsService,
                 private templatesService: TemplatesService) { }
 
     ngOnInit() {
         this.tabsService.getActiveTab().subscribe((activeTab) => {
             this.selectedTab = activeTab;
-            if (activeTab) {
-                this.tabs = this.updateTabs(activeTab.showAdd, this.tabs, activeTab.type);
-            }
+            // don't track tiny-mce tab change event
+            // remove when be sure
+            // if (activeTab) {
+            //     this.tabs = this.updateTabs(activeTab.showAdd, this.tabs, activeTab.type);
+            // }
             this.changeDetector.markForCheck();
         });
-        
+
         this.tabsService.getActiveField().subscribe((activeField) => {
             this.selectedField = activeField;
             if (activeField) {
-                this.tabs = this.updateTabs(false, this.tabs, this.selectedTab && this.selectedTab.type, activeField.type);
+                this.updateTabs(false, this.tabs, this.selectedTab && this.selectedTab.type, activeField.type);
             }
+            this.changeDetector.markForCheck();
+        });
+
+        this.formsService.paletteTabChange$.subscribe((tabIndex:number) => {
+            this.setActiveTab(tabIndex);
             this.changeDetector.markForCheck();
         });
         
@@ -97,11 +106,11 @@ export class PaletteComponent implements OnInit {
         if (activeFieldType) {
             let tempTitle = activeFieldType.slice(7).toLowerCase();
             let title = tempTitle.slice(0, 1).toUpperCase() + tempTitle.slice(1);
-            field.title = `${title} Settings` 
+            field.title = `${title} Settings`
             clonnedTabs.forEach((tab) => {
                 tab.active = false;
             });
-    
+
             clonnedTabs[1].active = true;
         } else {
             if (showAddTab) {

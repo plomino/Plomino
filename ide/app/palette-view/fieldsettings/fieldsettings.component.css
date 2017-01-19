@@ -1,3 +1,8 @@
 .settings-alert-no-object {
-    margin: 10px;
+    margin: 15px;
+}
+
+.fieldsettings--control-buttons {
+    padding: 0 30px;
+    margin: 15px 0;
 }
