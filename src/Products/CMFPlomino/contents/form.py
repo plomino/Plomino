@@ -1050,9 +1050,16 @@ class PlominoForm(Container):
             #     .add_class("mceNonEditable")\
             #     .attr("data-plominoid", id)
             BLOCKS = "p,div,table,ul,ol"
-            pqexample = pq(example)
+
+            # There may be no HTML in the example widget
+            if example:
+                pqexample = pq(example)
+            else:
+                pqexample = None
+
             if pq(element).has_class('plominoSubformClass') or \
-                pqexample.find(BLOCKS) or pqexample.filter(BLOCKS):
+                    (pqexample and pqexample.find(BLOCKS)) or \
+                    (pqexample and pqexample.filter(BLOCKS)):
                 tag = u"div"
             else:
                 tag = u'span'
