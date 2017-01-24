@@ -6,6 +6,7 @@
         <meta http-equiv="Content-type" content="text/html;charset=UTF-8" /> 
         <title i18n:translate="plominosubform_title">Insert a Plomino Sub-form</title>
         <link tal:replace="structure provider:plone.htmlhead.links" />
+        <script tal:replace="structure provider:plone.scripts" />
     </head>
     <body id="plonebrowser" tal:define="form python:view.context;
             subformid view/context/subformid|nothing;
