@@ -746,7 +746,7 @@ Results from views are sorted on the sort column::
 # Ensure the imported order is correct
 
     >>> db.objectIds()
-    ['plomino_documents', 'plomino_index', 'resources', 'scripts', 'frm_test', 'frm1', 'frm3', 'view1', 'view2', 'frm2']
+    ['plomino_documents', 'plomino_index', 'resources', 'scripts', 'frm_test', 'frm1', 'frm3', 'frm4', 'view1', 'view2', 'view3', 'view4', 'frm2']
     >>> s = db.exportDesignAsJSON()
 
     >>> print s
@@ -771,7 +771,7 @@ Results from views are sorted on the sort column::
     >>> newdb = portal.test
     >>> newdb.importDesignFromJSON(s)
     >>> newdb.objectIds()
-    ['plomino_documents', 'plomino_index', 'resources', 'scripts', 'frm_test', 'frm1', 'frm3', 'frm2', 'view1', 'view2']
+    ['plomino_documents', 'plomino_index', 'resources', 'scripts', 'frm_test', 'frm1', 'frm3', 'frm4', 'frm2', 'view1', 'view2', 'view3', 'view4']
 
 Also check the order of view and form elements
     >>> newdb.frm1.objectIds() == db.frm1.objectIds()
