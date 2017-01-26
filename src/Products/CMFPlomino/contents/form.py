@@ -2094,8 +2094,9 @@ class PlominoForm(Container):
         hidden_forms = self._get_hidden_subforms(REQUEST, doc)
         for form_id in hidden_forms:
             form = db.getForm(form_id)
-            for field in form.getFormFields():
-                hidden_fields.append(field.getId())
+            if form:
+                for field in form.getFormFields():
+                    hidden_fields.append(field.getId())
 
         fields = [field for field in fields
                   if field.getId() not in hidden_fields]

@@ -589,6 +589,30 @@ Labels may have a field inside of them::
     >>> db.frm1.form_layout
     '<p>Sample form</p><span class="plominoLabelClass">field1:<span class="plominoFieldClass">field1</span></span>'
 
+A subform should appear inside the parent form:
+    >>> sub1 = db.invokeFactory('PlominoForm', id='sub1', title='Sub 1')
+    >>> db.sub1.setForm_layout("""<p>This is the sub-form</p>""")
+    >>> db.frm1.setForm_layout("""<p>Form with empty sub-form</p><span class="plominoSubformClass">sub1</span>""")
+    >>> db.frm1.getForm_layout()
+    '<p>Form with empty sub-form</p><div class="plominoSubformClass mceNonEditable" data-plominoid="sub1"><p>This is the sub-form</p></div>'
+
+But the parent form shouldn't break with an empty sub-form:
+    >>> sub2 = db.invokeFactory('PlominoForm', id='sub2', title='Sub 2')
+    >>> db.sub1.setForm_layout("")
+    >>> db.frm1.setForm_layout("""<p>Form with empty sub-form</p><span class="plominoSubformClass">sub2</span>""")
+    >>> db.frm1.getForm_layout()
+    '<p>Form with empty sub-form</p><div class="plominoSubformClass mceNonEditable" data-plominoid="sub2"></div>'
+
+Or if there is no sub-form:
+    >>> db.frm1.setForm_layout("""<p>Form with empty sub-form</p><span class="plominoSubformClass">subDoesNotExist</span>""")
+    >>> db.frm1.getForm_layout()
+    '<p>Form with empty sub-form</p><div class="plominoSubformClass mceNonEditable" data-plominoid="subDoesNotExist">None</div>'
+
+Clean up:
+    >>> del db['sub1']
+    >>> del db['sub2']
+
+
 
 Events
 -------
@@ -746,7 +770,7 @@ Results from views are sorted on the sort column::
 # Ensure the imported order is correct
 
     >>> db.objectIds()
-    ['plomino_documents', 'plomino_index', 'resources', 'scripts', 'frm_test', 'frm1', 'frm3', 'view1', 'view2', 'frm2']
+    ['plomino_documents', 'plomino_index', 'resources', 'scripts', 'frm_test', 'frm1', 'frm3', 'frm4', 'view1', 'view2', 'view3', 'view4', 'frm2']
     >>> s = db.exportDesignAsJSON()
 
     >>> print s
@@ -771,7 +795,7 @@ Results from views are sorted on the sort column::
     >>> newdb = portal.test
     >>> newdb.importDesignFromJSON(s)
     >>> newdb.objectIds()
-    ['plomino_documents', 'plomino_index', 'resources', 'scripts', 'frm_test', 'frm1', 'frm3', 'frm2', 'view1', 'view2']
+    ['plomino_documents', 'plomino_index', 'resources', 'scripts', 'frm_test', 'frm1', 'frm3', 'frm4', 'frm2', 'view1', 'view2', 'view3', 'view4']
 
 Also check the order of view and form elements
     >>> newdb.frm1.objectIds() == db.frm1.objectIds()
