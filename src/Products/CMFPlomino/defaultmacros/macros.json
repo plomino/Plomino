@@ -96,17 +96,34 @@
                         "ajax_include_head": null, 
                         "isDynamicHidewhen": true, 
                         "helpers": [
-                            {
-                                "Form": "macro_hidewhen_selection", 
-                                "_macro_id_": "macro_hidewhen_selection_1", 
-                                "field_compare": "!=", 
-                                "field_name": "redirect_type", 
-                                "field_value": "form", 
-                                "formula": "\nfield_name = \"\"\"redirect_type\"\"\"\nfield_value = \"\"\"form\"\"\"\nfield_result = plominoContext.getItem(field_name)\nreturn str(field_result) != field_value\n", 
-                                "title": "Hidewhen based on picking from a selection"
-                            }
+                            [
+                                {
+                                    "formula": "\nreturn False\n", 
+                                    "_macro_id_": "macro_hidewhen_show_1", 
+                                    "Form": "macro_hidewhen_show", 
+                                    "title": "Show"
+                                }, 
+                                {
+                                    "field_compare": "in", 
+                                    "Form": "macro_condition_field_got_substring", 
+                                    "title": "\"redirect_type\" in form ", 
+                                    "value_type": "text", 
+                                    "field_value": "form", 
+                                    "formula": "\nfield_name = \"\"\"redirect_type\"\"\"\nfield_value = \"\"\"form\"\"\"\nif not plominoContext.hasItem(field_name):\n    return False\nfield_result = plominoContext.getItem(field_name)\nif field_name != 'Form':\n    form = plominoContext.getForm()\n    field = getattr(form, field_name)\n    if field.field_mode in [\"COMPUTED\",\"COMPUTEDONSAVE\"]:\n        field_result = form.computeFieldValue(field_name, plominoContext)\nresult = field_value in str(field_result)\nreturn result\n    ", 
+                                    "field_name": "redirect_type", 
+                                    "_macro_id_": "macro_condition_field_got_substring_1"
+                                }
+                            ], 
+                            [
+                                {
+                                    "formula": "\nreturn True\n", 
+                                    "_macro_id_": "macro_hidewhen_hide_1", 
+                                    "Form": "macro_hidewhen_hide", 
+                                    "title": "Hide"
+                                }
+                            ]
                         ], 
-                        "formula": "False\r\n### START macro_hidewhen_selection_1 ###\n\nfield_name = \"\"\"redirect_type\"\"\"\nfield_value = \"\"\"form\"\"\"\nfield_result = plominoContext.getItem(field_name)\nreturn str(field_result) != field_value\n\n### END macro_hidewhen_selection_1 ###", 
+                        "formula": "### START macro_condition_field_got_substring_1 ###\ndef macro_condition_field_got_substring_1():\n    \n    field_name = \"\"\"redirect_type\"\"\"\n    field_value = \"\"\"form\"\"\"\n    if not plominoContext.hasItem(field_name):\n        return False\n    field_result = plominoContext.getItem(field_name)\n    if field_name != 'Form':\n        form = plominoContext.getForm()\n        field = getattr(form, field_name)\n        if field.field_mode in [\"COMPUTED\",\"COMPUTEDONSAVE\"]:\n            field_result = form.computeFieldValue(field_name, plominoContext)\n    result = field_value in str(field_result)\n    return result\n        \n\n### END macro_condition_field_got_substring_1 ###\r\n### START macro_hidewhen_show_1 ###\nif macro_condition_field_got_substring_1():\n    \n    return False\n    \n\n### END macro_hidewhen_show_1 ###\r\n### START macro_hidewhen_hide_1 ###\n\nreturn True\n\n### END macro_hidewhen_hide_1 ###", 
                         "ajax_load": null
                     }, 
                     "type": "PlominoHidewhen", 
@@ -186,17 +203,34 @@
                         "ajax_include_head": null, 
                         "isDynamicHidewhen": true, 
                         "helpers": [
-                            {
-                                "Form": "macro_hidewhen_selection", 
-                                "_macro_id_": "macro_hidewhen_selection_1", 
-                                "field_compare": "!=", 
-                                "field_name": "redirect_type", 
-                                "field_value": "url", 
-                                "formula": "\nfield_name = \"\"\"redirect_type\"\"\"\nfield_value = \"\"\"url\"\"\"\nfield_result = plominoContext.getItem(field_name)\nreturn str(field_result) != field_value\n", 
-                                "title": "Hidewhen based on picking from a selection"
-                            }
+                            [
+                                {
+                                    "formula": "\nreturn False\n", 
+                                    "_macro_id_": "macro_hidewhen_show_1", 
+                                    "Form": "macro_hidewhen_show", 
+                                    "title": "Show"
+                                }, 
+                                {
+                                    "field_compare": "in", 
+                                    "Form": "macro_condition_field_got_substring", 
+                                    "title": "\"redirect_type\" in url ", 
+                                    "value_type": "text", 
+                                    "field_value": "url", 
+                                    "formula": "\nfield_name = \"\"\"redirect_type\"\"\"\nfield_value = \"\"\"url\"\"\"\nif not plominoContext.hasItem(field_name):\n    return False\nfield_result = plominoContext.getItem(field_name)\nif field_name != 'Form':\n    form = plominoContext.getForm()\n    field = getattr(form, field_name)\n    if field.field_mode in [\"COMPUTED\",\"COMPUTEDONSAVE\"]:\n        field_result = form.computeFieldValue(field_name, plominoContext)\nresult = field_value in str(field_result)\nreturn result\n    ", 
+                                    "field_name": "redirect_type", 
+                                    "_macro_id_": "macro_condition_field_got_substring_1"
+                                }
+                            ], 
+                            [
+                                {
+                                    "formula": "\nreturn True\n", 
+                                    "_macro_id_": "macro_hidewhen_hide_1", 
+                                    "Form": "macro_hidewhen_hide", 
+                                    "title": "Hide"
+                                }
+                            ]
                         ], 
-                        "formula": "False\n### START macro_hidewhen_selection_1 ###\n\nfield_name = \"\"\"redirect_type\"\"\"\nfield_value = \"\"\"url\"\"\"\nfield_result = plominoContext.getItem(field_name)\nreturn str(field_result) != field_value\n\n### END macro_hidewhen_selection_1 ###", 
+                        "formula": "### START macro_condition_field_got_substring_1 ###\ndef macro_condition_field_got_substring_1():\n    \n    field_name = \"\"\"redirect_type\"\"\"\n    field_value = \"\"\"url\"\"\"\n    if not plominoContext.hasItem(field_name):\n        return False\n    field_result = plominoContext.getItem(field_name)\n    if field_name != 'Form':\n        form = plominoContext.getForm()\n        field = getattr(form, field_name)\n        if field.field_mode in [\"COMPUTED\",\"COMPUTEDONSAVE\"]:\n            field_result = form.computeFieldValue(field_name, plominoContext)\n    result = field_value in str(field_result)\n    return result\n        \n\n### END macro_condition_field_got_substring_1 ###\r\n### START macro_hidewhen_show_1 ###\nif macro_condition_field_got_substring_1():\n    \n    return False\n    \n\n### END macro_hidewhen_show_1 ###\r\n### START macro_hidewhen_hide_1 ###\n\nreturn True\n\n### END macro_hidewhen_hide_1 ###", 
                         "ajax_load": null
                     }, 
                     "type": "PlominoHidewhen", 
@@ -236,17 +270,34 @@
                         "ajax_include_head": null, 
                         "isDynamicHidewhen": true, 
                         "helpers": [
-                            {
-                                "Form": "macro_hidewhen_selection", 
-                                "_macro_id_": "macro_hidewhen_selection_1", 
-                                "field_compare": "!=", 
-                                "field_name": "redirect_type", 
-                                "field_value": "view", 
-                                "formula": "\nfield_name = \"\"\"redirect_type\"\"\"\nfield_value = \"\"\"view\"\"\"\nfield_result = plominoContext.getItem(field_name)\nreturn str(field_result) != field_value\n", 
-                                "title": "Hidewhen based on picking from a selection"
-                            }
+                            [
+                                {
+                                    "formula": "\nreturn False\n", 
+                                    "_macro_id_": "macro_hidewhen_show_1", 
+                                    "Form": "macro_hidewhen_show", 
+                                    "title": "Show"
+                                }, 
+                                {
+                                    "field_compare": "in", 
+                                    "Form": "macro_condition_field_got_substring", 
+                                    "title": "\"redirect_type\" in view ", 
+                                    "value_type": "text", 
+                                    "field_value": "view", 
+                                    "formula": "\nfield_name = \"\"\"redirect_type\"\"\"\nfield_value = \"\"\"view\"\"\"\nif not plominoContext.hasItem(field_name):\n    return False\nfield_result = plominoContext.getItem(field_name)\nif field_name != 'Form':\n    form = plominoContext.getForm()\n    field = getattr(form, field_name)\n    if field.field_mode in [\"COMPUTED\",\"COMPUTEDONSAVE\"]:\n        field_result = form.computeFieldValue(field_name, plominoContext)\nresult = field_value in str(field_result)\nreturn result\n    ", 
+                                    "field_name": "redirect_type", 
+                                    "_macro_id_": "macro_condition_field_got_substring_1"
+                                }
+                            ], 
+                            [
+                                {
+                                    "formula": "\nreturn True\n", 
+                                    "_macro_id_": "macro_hidewhen_hide_1", 
+                                    "Form": "macro_hidewhen_hide", 
+                                    "title": "Hide"
+                                }
+                            ]
                         ], 
-                        "formula": "False\n### START macro_hidewhen_selection_1 ###\n\nfield_name = \"\"\"redirect_type\"\"\"\nfield_value = \"\"\"view\"\"\"\nfield_result = plominoContext.getItem(field_name)\nreturn str(field_result) != field_value\n\n### END macro_hidewhen_selection_1 ###", 
+                        "formula": "### START macro_condition_field_got_substring_1 ###\ndef macro_condition_field_got_substring_1():\n    \n    field_name = \"\"\"redirect_type\"\"\"\n    field_value = \"\"\"view\"\"\"\n    if not plominoContext.hasItem(field_name):\n        return False\n    field_result = plominoContext.getItem(field_name)\n    if field_name != 'Form':\n        form = plominoContext.getForm()\n        field = getattr(form, field_name)\n        if field.field_mode in [\"COMPUTED\",\"COMPUTEDONSAVE\"]:\n            field_result = form.computeFieldValue(field_name, plominoContext)\n    result = field_value in str(field_result)\n    return result\n        \n\n### END macro_condition_field_got_substring_1 ###\r\n### START macro_hidewhen_show_1 ###\nif macro_condition_field_got_substring_1():\n    \n    return False\n    \n\n### END macro_hidewhen_show_1 ###\r\n### START macro_hidewhen_hide_1 ###\n\nreturn True\n\n### END macro_hidewhen_hide_1 ###", 
                         "ajax_load": null
                     }, 
                     "type": "PlominoHidewhen", 
@@ -1098,18 +1149,34 @@
                         "ajax_include_head": null, 
                         "isDynamicHidewhen": true, 
                         "helpers": [
-                            {
-                                "Form": "macro_hidewhen_selection", 
-                                "_macro_id_": "macro_hidewhen_selection_1", 
-                                "field_compare": "!=", 
-                                "field_name": "char_type", 
-                                "field_value": "regex", 
-                                "formula": "\nfield_name = \"\"\"char_type\"\"\"\nfield_value = \"\"\"regex\"\"\"\nfield_result = plominoContext.getItem(field_name)\nreturn str(field_result) != field_value\n    ", 
-                                "title": "Hidewhen based on picking from a selection", 
-                                "value_type": "text"
-                            }
+                            [
+                                {
+                                    "formula": "\nreturn False\n", 
+                                    "_macro_id_": "macro_hidewhen_show_1", 
+                                    "Form": "macro_hidewhen_show", 
+                                    "title": "Show"
+                                }, 
+                                {
+                                    "field_compare": "in", 
+                                    "Form": "macro_condition_field_got_substring", 
+                                    "title": "\"char_type\" in regex ", 
+                                    "value_type": "text", 
+                                    "field_value": "regex", 
+                                    "formula": "\nfield_name = \"\"\"char_type\"\"\"\nfield_value = \"\"\"regex\"\"\"\nif not plominoContext.hasItem(field_name):\n    return False\nfield_result = plominoContext.getItem(field_name)\nif field_name != 'Form':\n    form = plominoContext.getForm()\n    field = getattr(form, field_name)\n    if field.field_mode in [\"COMPUTED\",\"COMPUTEDONSAVE\"]:\n        field_result = form.computeFieldValue(field_name, plominoContext)\nresult = field_value in str(field_result)\nreturn result\n    ", 
+                                    "field_name": "char_type", 
+                                    "_macro_id_": "macro_condition_field_got_substring_1"
+                                }
+                            ], 
+                            [
+                                {
+                                    "formula": "\nreturn True\n", 
+                                    "_macro_id_": "macro_hidewhen_hide_1", 
+                                    "Form": "macro_hidewhen_hide", 
+                                    "title": "Hide"
+                                }
+                            ]
                         ], 
-                        "formula": "False\r\n### START macro_hidewhen_selection_1 ###\n\nfield_name = \"\"\"char_type\"\"\"\nfield_value = \"\"\"regex\"\"\"\nfield_result = plominoContext.getItem(field_name)\nreturn str(field_result) != field_value\n    \n### END macro_hidewhen_selection_1 ###", 
+                        "formula": "### START macro_condition_field_got_substring_1 ###\ndef macro_condition_field_got_substring_1():\n    \n    field_name = \"\"\"char_type\"\"\"\n    field_value = \"\"\"regex\"\"\"\n    if not plominoContext.hasItem(field_name):\n        return False\n    field_result = plominoContext.getItem(field_name)\n    if field_name != 'Form':\n        form = plominoContext.getForm()\n        field = getattr(form, field_name)\n        if field.field_mode in [\"COMPUTED\",\"COMPUTEDONSAVE\"]:\n            field_result = form.computeFieldValue(field_name, plominoContext)\n    result = field_value in str(field_result)\n    return result\n        \n\n### END macro_condition_field_got_substring_1 ###\r\n### START macro_hidewhen_show_1 ###\nif macro_condition_field_got_substring_1():\n    \n    return False\n    \n\n### END macro_hidewhen_show_1 ###\r\n### START macro_hidewhen_hide_1 ###\n\nreturn True\n\n### END macro_hidewhen_hide_1 ###", 
                         "ajax_load": null
                     }, 
                     "type": "PlominoHidewhen", 
@@ -2691,18 +2758,34 @@
                         "ajax_include_head": null, 
                         "isDynamicHidewhen": true, 
                         "helpers": [
-                            {
-                                "Form": "macro_hidewhen_selection", 
-                                "_macro_id_": "macro_hidewhen_selection_1", 
-                                "field_compare": "==", 
-                                "field_name": "element_type", 
-                                "field_value": "Fields", 
-                                "formula": "\nfield_name = \"\"\"element_type\"\"\"\nfield_value = \"\"\"Fields\"\"\"\nfield_result = plominoContext.getItem(field_name)\nresult = str(field_result) == field_value\nif result:\n    return False\nreturn True\n    ", 
-                                "title": "Show when selection matches", 
-                                "value_type": "text"
-                            }
+                            [
+                                {
+                                    "formula": "\nreturn False\n", 
+                                    "_macro_id_": "macro_hidewhen_show_1", 
+                                    "Form": "macro_hidewhen_show", 
+                                    "title": "Show"
+                                }, 
+                                {
+                                    "field_compare": "in", 
+                                    "Form": "macro_condition_field_got_substring", 
+                                    "title": "\"element_type\" in Fields ", 
+                                    "value_type": "text", 
+                                    "field_value": "Fields", 
+                                    "formula": "\nfield_name = \"\"\"element_type\"\"\"\nfield_value = \"\"\"Fields\"\"\"\nif not plominoContext.hasItem(field_name):\n    return False\nfield_result = plominoContext.getItem(field_name)\nif field_name != 'Form':\n    form = plominoContext.getForm()\n    field = getattr(form, field_name)\n    if field.field_mode in [\"COMPUTED\",\"COMPUTEDONSAVE\"]:\n        field_result = form.computeFieldValue(field_name, plominoContext)\nresult = field_value in str(field_result)\nreturn result\n    ", 
+                                    "field_name": "element_type", 
+                                    "_macro_id_": "macro_condition_field_got_substring_1"
+                                }
+                            ], 
+                            [
+                                {
+                                    "formula": "\nreturn True\n", 
+                                    "_macro_id_": "macro_hidewhen_hide_1", 
+                                    "Form": "macro_hidewhen_hide", 
+                                    "title": "Hide"
+                                }
+                            ]
                         ], 
-                        "formula": "### START macro_hidewhen_selection_1 ###\n\nfield_name = \"\"\"element_type\"\"\"\nfield_value = \"\"\"Fields\"\"\"\nfield_result = plominoContext.getItem(field_name)\nresult = str(field_result) == field_value\nif result:\n    return False\nreturn True\n    \n### END macro_hidewhen_selection_1 ###", 
+                        "formula": "### START macro_condition_field_got_substring_1 ###\ndef macro_condition_field_got_substring_1():\n    \n    field_name = \"\"\"element_type\"\"\"\n    field_value = \"\"\"Fields\"\"\"\n    if not plominoContext.hasItem(field_name):\n        return False\n    field_result = plominoContext.getItem(field_name)\n    if field_name != 'Form':\n        form = plominoContext.getForm()\n        field = getattr(form, field_name)\n        if field.field_mode in [\"COMPUTED\",\"COMPUTEDONSAVE\"]:\n            field_result = form.computeFieldValue(field_name, plominoContext)\n    result = field_value in str(field_result)\n    return result\n        \n\n### END macro_condition_field_got_substring_1 ###\r\n### START macro_hidewhen_show_1 ###\nif macro_condition_field_got_substring_1():\n    \n    return False\n    \n\n### END macro_hidewhen_show_1 ###\r\n### START macro_hidewhen_hide_1 ###\n\nreturn True\n\n### END macro_hidewhen_hide_1 ###", 
                         "ajax_load": null
                     }, 
                     "type": "PlominoHidewhen", 
@@ -3833,17 +3916,34 @@
                         "ajax_include_head": null, 
                         "isDynamicHidewhen": true, 
                         "helpers": [
-                            {
-                                "Form": "macro_hidewhen_selection", 
-                                "_macro_id_": "macro_hidewhen_selection_1", 
-                                "field_compare": "!=", 
-                                "field_name": "redirect_type", 
-                                "field_value": "form", 
-                                "formula": "\nfield_name = \"\"\"redirect_type\"\"\"\nfield_value = \"\"\"form\"\"\"\nfield_result = plominoContext.getItem(field_name)\nreturn str(field_result) != field_value\n", 
-                                "title": "Hidewhen based on picking from a selection"
-                            }
+                            [
+                                {
+                                    "formula": "\nreturn False\n", 
+                                    "_macro_id_": "macro_hidewhen_show_1", 
+                                    "Form": "macro_hidewhen_show", 
+                                    "title": "Show"
+                                }, 
+                                {
+                                    "field_compare": "in", 
+                                    "Form": "macro_condition_field_got_substring", 
+                                    "title": "\"redirect_type\" in form ", 
+                                    "value_type": "text", 
+                                    "field_value": "form", 
+                                    "formula": "\nfield_name = \"\"\"redirect_type\"\"\"\nfield_value = \"\"\"form\"\"\"\nif not plominoContext.hasItem(field_name):\n    return False\nfield_result = plominoContext.getItem(field_name)\nif field_name != 'Form':\n    form = plominoContext.getForm()\n    field = getattr(form, field_name)\n    if field.field_mode in [\"COMPUTED\",\"COMPUTEDONSAVE\"]:\n        field_result = form.computeFieldValue(field_name, plominoContext)\nresult = field_value in str(field_result)\nreturn result\n    ", 
+                                    "field_name": "redirect_type", 
+                                    "_macro_id_": "macro_condition_field_got_substring_1"
+                                }
+                            ], 
+                            [
+                                {
+                                    "formula": "\nreturn True\n", 
+                                    "_macro_id_": "macro_hidewhen_hide_1", 
+                                    "Form": "macro_hidewhen_hide", 
+                                    "title": "Hide"
+                                }
+                            ]
                         ], 
-                        "formula": "False\r\n### START macro_hidewhen_selection_1 ###\n\nfield_name = \"\"\"redirect_type\"\"\"\nfield_value = \"\"\"form\"\"\"\nfield_result = plominoContext.getItem(field_name)\nreturn str(field_result) != field_value\n\n### END macro_hidewhen_selection_1 ###", 
+                        "formula": "### START macro_condition_field_got_substring_1 ###\ndef macro_condition_field_got_substring_1():\n    \n    field_name = \"\"\"redirect_type\"\"\"\n    field_value = \"\"\"form\"\"\"\n    if not plominoContext.hasItem(field_name):\n        return False\n    field_result = plominoContext.getItem(field_name)\n    if field_name != 'Form':\n        form = plominoContext.getForm()\n        field = getattr(form, field_name)\n        if field.field_mode in [\"COMPUTED\",\"COMPUTEDONSAVE\"]:\n            field_result = form.computeFieldValue(field_name, plominoContext)\n    result = field_value in str(field_result)\n    return result\n        \n\n### END macro_condition_field_got_substring_1 ###\r\n### START macro_hidewhen_show_1 ###\nif macro_condition_field_got_substring_1():\n    \n    return False\n    \n\n### END macro_hidewhen_show_1 ###\r\n### START macro_hidewhen_hide_1 ###\n\nreturn True\n\n### END macro_hidewhen_hide_1 ###", 
                         "ajax_load": null
                     }, 
                     "type": "PlominoHidewhen", 
@@ -3958,17 +4058,34 @@
                         "ajax_include_head": null, 
                         "isDynamicHidewhen": true, 
                         "helpers": [
-                            {
-                                "Form": "macro_hidewhen_selection", 
-                                "_macro_id_": "macro_hidewhen_selection_1", 
-                                "field_compare": "!=", 
-                                "field_name": "redirect_type", 
-                                "field_value": "url", 
-                                "formula": "\nfield_name = \"\"\"redirect_type\"\"\"\nfield_value = \"\"\"url\"\"\"\nfield_result = plominoContext.getItem(field_name)\nreturn str(field_result) != field_value\n", 
-                                "title": "Hidewhen based on picking from a selection"
-                            }
+                            [
+                                {
+                                    "formula": "\nreturn False\n", 
+                                    "_macro_id_": "macro_hidewhen_show_1", 
+                                    "Form": "macro_hidewhen_show", 
+                                    "title": "Show"
+                                }, 
+                                {
+                                    "field_compare": "in", 
+                                    "Form": "macro_condition_field_got_substring", 
+                                    "title": "\"redirect_type\" in url ", 
+                                    "value_type": "text", 
+                                    "field_value": "url", 
+                                    "formula": "\nfield_name = \"\"\"redirect_type\"\"\"\nfield_value = \"\"\"url\"\"\"\nif not plominoContext.hasItem(field_name):\n    return False\nfield_result = plominoContext.getItem(field_name)\nif field_name != 'Form':\n    form = plominoContext.getForm()\n    field = getattr(form, field_name)\n    if field.field_mode in [\"COMPUTED\",\"COMPUTEDONSAVE\"]:\n        field_result = form.computeFieldValue(field_name, plominoContext)\nresult = field_value in str(field_result)\nreturn result\n    ", 
+                                    "field_name": "redirect_type", 
+                                    "_macro_id_": "macro_condition_field_got_substring_1"
+                                }
+                            ], 
+                            [
+                                {
+                                    "formula": "\nreturn True\n", 
+                                    "_macro_id_": "macro_hidewhen_hide_1", 
+                                    "Form": "macro_hidewhen_hide", 
+                                    "title": "Hide"
+                                }
+                            ]
                         ], 
-                        "formula": "False\n### START macro_hidewhen_selection_1 ###\n\nfield_name = \"\"\"redirect_type\"\"\"\nfield_value = \"\"\"url\"\"\"\nfield_result = plominoContext.getItem(field_name)\nreturn str(field_result) != field_value\n\n### END macro_hidewhen_selection_1 ###", 
+                        "formula": "### START macro_condition_field_got_substring_1 ###\ndef macro_condition_field_got_substring_1():\n    \n    field_name = \"\"\"redirect_type\"\"\"\n    field_value = \"\"\"url\"\"\"\n    if not plominoContext.hasItem(field_name):\n        return False\n    field_result = plominoContext.getItem(field_name)\n    if field_name != 'Form':\n        form = plominoContext.getForm()\n        field = getattr(form, field_name)\n        if field.field_mode in [\"COMPUTED\",\"COMPUTEDONSAVE\"]:\n            field_result = form.computeFieldValue(field_name, plominoContext)\n    result = field_value in str(field_result)\n    return result\n        \n\n### END macro_condition_field_got_substring_1 ###\r\n### START macro_hidewhen_show_1 ###\nif macro_condition_field_got_substring_1():\n    \n    return False\n    \n\n### END macro_hidewhen_show_1 ###\r\n### START macro_hidewhen_hide_1 ###\n\nreturn True\n\n### END macro_hidewhen_hide_1 ###", 
                         "ajax_load": null
                     }, 
                     "type": "PlominoHidewhen", 
@@ -4008,17 +4125,34 @@
                         "ajax_include_head": null, 
                         "isDynamicHidewhen": true, 
                         "helpers": [
-                            {
-                                "Form": "macro_hidewhen_selection", 
-                                "_macro_id_": "macro_hidewhen_selection_1", 
-                                "field_compare": "!=", 
-                                "field_name": "redirect_type", 
-                                "field_value": "view", 
-                                "formula": "\nfield_name = \"\"\"redirect_type\"\"\"\nfield_value = \"\"\"view\"\"\"\nfield_result = plominoContext.getItem(field_name)\nreturn str(field_result) != field_value\n", 
-                                "title": "Hidewhen based on picking from a selection"
-                            }
+                            [
+                                {
+                                    "formula": "\nreturn False\n", 
+                                    "_macro_id_": "macro_hidewhen_show_1", 
+                                    "Form": "macro_hidewhen_show", 
+                                    "title": "Show"
+                                }, 
+                                {
+                                    "field_compare": "in", 
+                                    "Form": "macro_condition_field_got_substring", 
+                                    "title": "\"redirect_type\" in view ", 
+                                    "value_type": "text", 
+                                    "field_value": "view", 
+                                    "formula": "\nfield_name = \"\"\"redirect_type\"\"\"\nfield_value = \"\"\"view\"\"\"\nif not plominoContext.hasItem(field_name):\n    return False\nfield_result = plominoContext.getItem(field_name)\nif field_name != 'Form':\n    form = plominoContext.getForm()\n    field = getattr(form, field_name)\n    if field.field_mode in [\"COMPUTED\",\"COMPUTEDONSAVE\"]:\n        field_result = form.computeFieldValue(field_name, plominoContext)\nresult = field_value in str(field_result)\nreturn result\n    ", 
+                                    "field_name": "redirect_type", 
+                                    "_macro_id_": "macro_condition_field_got_substring_1"
+                                }
+                            ], 
+                            [
+                                {
+                                    "formula": "\nreturn True\n", 
+                                    "_macro_id_": "macro_hidewhen_hide_1", 
+                                    "Form": "macro_hidewhen_hide", 
+                                    "title": "Hide"
+                                }
+                            ]
                         ], 
-                        "formula": "False\n### START macro_hidewhen_selection_1 ###\n\nfield_name = \"\"\"redirect_type\"\"\"\nfield_value = \"\"\"view\"\"\"\nfield_result = plominoContext.getItem(field_name)\nreturn str(field_result) != field_value\n\n### END macro_hidewhen_selection_1 ###", 
+                        "formula": "### START macro_condition_field_got_substring_1 ###\ndef macro_condition_field_got_substring_1():\n    \n    field_name = \"\"\"redirect_type\"\"\"\n    field_value = \"\"\"view\"\"\"\n    if not plominoContext.hasItem(field_name):\n        return False\n    field_result = plominoContext.getItem(field_name)\n    if field_name != 'Form':\n        form = plominoContext.getForm()\n        field = getattr(form, field_name)\n        if field.field_mode in [\"COMPUTED\",\"COMPUTEDONSAVE\"]:\n            field_result = form.computeFieldValue(field_name, plominoContext)\n    result = field_value in str(field_result)\n    return result\n        \n\n### END macro_condition_field_got_substring_1 ###\r\n### START macro_hidewhen_show_1 ###\nif macro_condition_field_got_substring_1():\n    \n    return False\n    \n\n### END macro_hidewhen_show_1 ###\r\n### START macro_hidewhen_hide_1 ###\n\nreturn True\n\n### END macro_hidewhen_hide_1 ###", 
                         "ajax_load": null
                     }, 
                     "type": "PlominoHidewhen", 
@@ -4103,17 +4237,34 @@
                         "ajax_include_head": null, 
                         "isDynamicHidewhen": true, 
                         "helpers": [
-                            {
-                                "Form": "macro_hidewhen_selection", 
-                                "_macro_id_": "macro_hidewhen_selection_1", 
-                                "field_compare": "!=", 
-                                "field_name": "redirect_type", 
-                                "field_value": "form", 
-                                "formula": "\nfield_name = \"\"\"redirect_type\"\"\"\nfield_value = \"\"\"form\"\"\"\nfield_result = plominoContext.getItem(field_name)\nreturn str(field_result) != field_value\n", 
-                                "title": "Hidewhen based on picking from a selection"
-                            }
+                            [
+                                {
+                                    "formula": "\nreturn False\n", 
+                                    "_macro_id_": "macro_hidewhen_show_1", 
+                                    "Form": "macro_hidewhen_show", 
+                                    "title": "Show"
+                                }, 
+                                {
+                                    "field_compare": "in", 
+                                    "Form": "macro_condition_field_got_substring", 
+                                    "title": "\"redirect_type\" in form ", 
+                                    "value_type": "text", 
+                                    "field_value": "form", 
+                                    "formula": "\nfield_name = \"\"\"redirect_type\"\"\"\nfield_value = \"\"\"form\"\"\"\nif not plominoContext.hasItem(field_name):\n    return False\nfield_result = plominoContext.getItem(field_name)\nif field_name != 'Form':\n    form = plominoContext.getForm()\n    field = getattr(form, field_name)\n    if field.field_mode in [\"COMPUTED\",\"COMPUTEDONSAVE\"]:\n        field_result = form.computeFieldValue(field_name, plominoContext)\nresult = field_value in str(field_result)\nreturn result\n    ", 
+                                    "field_name": "redirect_type", 
+                                    "_macro_id_": "macro_condition_field_got_substring_1"
+                                }
+                            ], 
+                            [
+                                {
+                                    "formula": "\nreturn True\n", 
+                                    "_macro_id_": "macro_hidewhen_hide_1", 
+                                    "Form": "macro_hidewhen_hide", 
+                                    "title": "Hide"
+                                }
+                            ]
                         ], 
-                        "formula": "False\r\n### START macro_hidewhen_selection_1 ###\n\nfield_name = \"\"\"redirect_type\"\"\"\nfield_value = \"\"\"form\"\"\"\nfield_result = plominoContext.getItem(field_name)\nreturn str(field_result) != field_value\n\n### END macro_hidewhen_selection_1 ###", 
+                        "formula": "### START macro_condition_field_got_substring_1 ###\ndef macro_condition_field_got_substring_1():\n    \n    field_name = \"\"\"redirect_type\"\"\"\n    field_value = \"\"\"form\"\"\"\n    if not plominoContext.hasItem(field_name):\n        return False\n    field_result = plominoContext.getItem(field_name)\n    if field_name != 'Form':\n        form = plominoContext.getForm()\n        field = getattr(form, field_name)\n        if field.field_mode in [\"COMPUTED\",\"COMPUTEDONSAVE\"]:\n            field_result = form.computeFieldValue(field_name, plominoContext)\n    result = field_value in str(field_result)\n    return result\n        \n\n### END macro_condition_field_got_substring_1 ###\r\n### START macro_hidewhen_show_1 ###\nif macro_condition_field_got_substring_1():\n    \n    return False\n    \n\n### END macro_hidewhen_show_1 ###\r\n### START macro_hidewhen_hide_1 ###\n\nreturn True\n\n### END macro_hidewhen_hide_1 ###", 
                         "ajax_load": null
                     }, 
                     "type": "PlominoHidewhen", 
@@ -4219,17 +4370,34 @@
                         "ajax_include_head": null, 
                         "isDynamicHidewhen": true, 
                         "helpers": [
-                            {
-                                "Form": "macro_hidewhen_selection", 
-                                "_macro_id_": "macro_hidewhen_selection_1", 
-                                "field_compare": "!=", 
-                                "field_name": "redirect_type", 
-                                "field_value": "url", 
-                                "formula": "\nfield_name = \"\"\"redirect_type\"\"\"\nfield_value = \"\"\"url\"\"\"\nfield_result = plominoContext.getItem(field_name)\nreturn str(field_result) != field_value\n", 
-                                "title": "Hidewhen based on picking from a selection"
-                            }
+                            [
+                                {
+                                    "formula": "\nreturn False\n", 
+                                    "_macro_id_": "macro_hidewhen_show_1", 
+                                    "Form": "macro_hidewhen_show", 
+                                    "title": "Show"
+                                }, 
+                                {
+                                    "field_compare": "in", 
+                                    "Form": "macro_condition_field_got_substring", 
+                                    "title": "\"redirect_type\" in url ", 
+                                    "value_type": "text", 
+                                    "field_value": "url", 
+                                    "formula": "\nfield_name = \"\"\"redirect_type\"\"\"\nfield_value = \"\"\"url\"\"\"\nif not plominoContext.hasItem(field_name):\n    return False\nfield_result = plominoContext.getItem(field_name)\nif field_name != 'Form':\n    form = plominoContext.getForm()\n    field = getattr(form, field_name)\n    if field.field_mode in [\"COMPUTED\",\"COMPUTEDONSAVE\"]:\n        field_result = form.computeFieldValue(field_name, plominoContext)\nresult = field_value in str(field_result)\nreturn result\n    ", 
+                                    "field_name": "redirect_type", 
+                                    "_macro_id_": "macro_condition_field_got_substring_1"
+                                }
+                            ], 
+                            [
+                                {
+                                    "formula": "\nreturn True\n", 
+                                    "_macro_id_": "macro_hidewhen_hide_1", 
+                                    "Form": "macro_hidewhen_hide", 
+                                    "title": "Hide"
+                                }
+                            ]
                         ], 
-                        "formula": "False\n### START macro_hidewhen_selection_1 ###\n\nfield_name = \"\"\"redirect_type\"\"\"\nfield_value = \"\"\"url\"\"\"\nfield_result = plominoContext.getItem(field_name)\nreturn str(field_result) != field_value\n\n### END macro_hidewhen_selection_1 ###", 
+                        "formula": "### START macro_condition_field_got_substring_1 ###\ndef macro_condition_field_got_substring_1():\n    \n    field_name = \"\"\"redirect_type\"\"\"\n    field_value = \"\"\"url\"\"\"\n    if not plominoContext.hasItem(field_name):\n        return False\n    field_result = plominoContext.getItem(field_name)\n    if field_name != 'Form':\n        form = plominoContext.getForm()\n        field = getattr(form, field_name)\n        if field.field_mode in [\"COMPUTED\",\"COMPUTEDONSAVE\"]:\n            field_result = form.computeFieldValue(field_name, plominoContext)\n    result = field_value in str(field_result)\n    return result\n        \n\n### END macro_condition_field_got_substring_1 ###\r\n### START macro_hidewhen_show_1 ###\nif macro_condition_field_got_substring_1():\n    \n    return False\n    \n\n### END macro_hidewhen_show_1 ###\r\n### START macro_hidewhen_hide_1 ###\n\nreturn True\n\n### END macro_hidewhen_hide_1 ###", 
                         "ajax_load": null
                     }, 
                     "type": "PlominoHidewhen", 
@@ -4269,17 +4437,34 @@
                         "ajax_include_head": null, 
                         "isDynamicHidewhen": true, 
                         "helpers": [
-                            {
-                                "Form": "macro_hidewhen_selection", 
-                                "_macro_id_": "macro_hidewhen_selection_1", 
-                                "field_compare": "!=", 
-                                "field_name": "redirect_type", 
-                                "field_value": "view", 
-                                "formula": "\nfield_name = \"\"\"redirect_type\"\"\"\nfield_value = \"\"\"view\"\"\"\nfield_result = plominoContext.getItem(field_name)\nreturn str(field_result) != field_value\n", 
-                                "title": "Hidewhen based on picking from a selection"
-                            }
+                            [
+                                {
+                                    "formula": "\nreturn False\n", 
+                                    "_macro_id_": "macro_hidewhen_show_1", 
+                                    "Form": "macro_hidewhen_show", 
+                                    "title": "Show"
+                                }, 
+                                {
+                                    "field_compare": "in", 
+                                    "Form": "macro_condition_field_got_substring", 
+                                    "title": "\"redirect_type\" in view ", 
+                                    "value_type": "text", 
+                                    "field_value": "view", 
+                                    "formula": "\nfield_name = \"\"\"redirect_type\"\"\"\nfield_value = \"\"\"view\"\"\"\nif not plominoContext.hasItem(field_name):\n    return False\nfield_result = plominoContext.getItem(field_name)\nif field_name != 'Form':\n    form = plominoContext.getForm()\n    field = getattr(form, field_name)\n    if field.field_mode in [\"COMPUTED\",\"COMPUTEDONSAVE\"]:\n        field_result = form.computeFieldValue(field_name, plominoContext)\nresult = field_value in str(field_result)\nreturn result\n    ", 
+                                    "field_name": "redirect_type", 
+                                    "_macro_id_": "macro_condition_field_got_substring_1"
+                                }
+                            ], 
+                            [
+                                {
+                                    "formula": "\nreturn True\n", 
+                                    "_macro_id_": "macro_hidewhen_hide_1", 
+                                    "Form": "macro_hidewhen_hide", 
+                                    "title": "Hide"
+                                }
+                            ]
                         ], 
-                        "formula": "False\n### START macro_hidewhen_selection_1 ###\n\nfield_name = \"\"\"redirect_type\"\"\"\nfield_value = \"\"\"view\"\"\"\nfield_result = plominoContext.getItem(field_name)\nreturn str(field_result) != field_value\n\n### END macro_hidewhen_selection_1 ###", 
+                        "formula": "### START macro_condition_field_got_substring_1 ###\ndef macro_condition_field_got_substring_1():\n    \n    field_name = \"\"\"redirect_type\"\"\"\n    field_value = \"\"\"view\"\"\"\n    if not plominoContext.hasItem(field_name):\n        return False\n    field_result = plominoContext.getItem(field_name)\n    if field_name != 'Form':\n        form = plominoContext.getForm()\n        field = getattr(form, field_name)\n        if field.field_mode in [\"COMPUTED\",\"COMPUTEDONSAVE\"]:\n            field_result = form.computeFieldValue(field_name, plominoContext)\n    result = field_value in str(field_result)\n    return result\n        \n\n### END macro_condition_field_got_substring_1 ###\r\n### START macro_hidewhen_show_1 ###\nif macro_condition_field_got_substring_1():\n    \n    return False\n    \n\n### END macro_hidewhen_show_1 ###\r\n### START macro_hidewhen_hide_1 ###\n\nreturn True\n\n### END macro_hidewhen_hide_1 ###", 
                         "ajax_load": null
                     }, 
                     "type": "PlominoHidewhen", 
