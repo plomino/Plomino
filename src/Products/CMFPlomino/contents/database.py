@@ -15,6 +15,8 @@ from zope.component import queryUtility
 from zope.container.contained import ObjectRemovedEvent
 from zope import event
 from zope.interface import implements
+from zope.interface import provider
+from zope.schema.interfaces import IContextAwareDefaultFactory
 
 from .. import _, config
 from zope.schema.vocabulary import SimpleVocabulary, SimpleTerm
@@ -25,7 +27,41 @@ from ..design import DesignManager
 from ..replication import ReplicationManager
 from ..document import addPlominoDocument
 
+
 security = ClassSecurityInfo()
+
+
+@provider(IContextAwareDefaultFactory)
+def default_macros(obj):
+    """Return all plomino databases that begins with 'macros' and '.'.
+
+    Order in alphabetical order
+    """
+    db = obj
+    values = ['.']
+    if not db:
+        return values
+
+    current_values = get_databases(db)
+    db_ids = current_values.by_token.keys()
+
+    new_values = []
+    got_macros = False
+    for db_id in db_ids:
+        if db_id in values:
+            continue
+        if db_id == 'macros':
+            got_macros = True
+            continue
+        elif db_id.startswith('macros'):
+            new_values.append(db_id)
+
+    new_values.sort()
+
+    if got_macros:
+        new_values.append('macros')
+
+    return values + new_values
 
 
 class IPlominoDatabase(model.Schema):
@@ -130,7 +166,7 @@ class IPlominoDatabase(model.Schema):
             default="Databases to search for macros. Reorder to change search order."),
         unique=True,
         value_type=schema.Choice(vocabulary="Products.CMFPlomino.fields.vocabularies.get_databases"),
-        default=['.', 'macros'],
+        defaultFactory=default_macros,
         required=False,
     )
 
@@ -149,6 +185,7 @@ class IPlominoDatabase(model.Schema):
             'isDatabaseTemplate',
         ),
     )
+
 
 class PlominoDatabase(
         Container, AccessControl, DesignManager, ReplicationManager):
@@ -462,3 +499,6 @@ def get_databases(obj):
         vocab.append(SimpleTerm(title=title, token=brain_id, value=brain_id))
 
     return SimpleVocabulary(vocab)
+
+
+
