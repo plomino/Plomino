@@ -8,11 +8,11 @@ $ npm install
 $ npm run build
 ```
 
-# you will also need a built plone to properly test the ide
+# you will also need a built plone to properly test the ide. ensure you have python 2.7 and prerequsites for http://pillow.readthedocs.io/en/3.1.x/installation.html
 
 ```
 $ cd ..
-$ virtualenv .
+$ virtualenv-2.7 .
 $ bin/python bootstrap-buildout.py --setuptools-version=8.3
 $ bin/buildout -N
 ```
