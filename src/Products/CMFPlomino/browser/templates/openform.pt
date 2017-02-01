@@ -63,7 +63,7 @@
             <tal:block_has_createpermission
                 condition="python:hasCreatePermissionOnDatabase and hasCreatePermissionOnForm">
 
-                <tal:block condition="view/page_errors|nothing">
+                <div tal:condition="view/page_errors|nothing" id="validation_errors">
                     <div id="validation_failed">
                         <h1>Validation failed</h1>
                         <ul id="error_list">
@@ -73,7 +73,7 @@
                             </tal:errors>
                         </ul>
                     </div>
-                </tal:block>
+                </div>
 
                 <tal:layout
                     tal:content="structure python:view.form.openBlankForm(request)">layout</tal:layout>
@@ -105,7 +105,7 @@
                 class python: macro_context and 'plomino-macro' or '';">
             <span tal:replace="structure view/form/@@authenticator/authenticator"/>
 
-            <tal:block condition="view/page_errors|nothing">
+            <div tal:condition="view/page_errors|nothing" id="validation_errors">
                 <div id="validation_failed">
                     <h1>Validation failed</h1>
                     <ul id="error_list">
@@ -115,7 +115,7 @@
                         </tal:errors>
                     </ul>
                 </div>
-            </tal:block>
+            </div>
 
             <tal:layout
                 tal:content="structure python:view.form.openBlankForm(request)">layout</tal:layout>

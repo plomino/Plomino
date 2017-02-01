@@ -55,7 +55,7 @@
                     "
                 id="plomino_form">
 
-                <tal:block condition="view/page_errors|nothing">
+                <div tal:condition="view/page_errors|nothing" id="validation_errors">
                     <div id="validation_failed">
                         <h1>Validation failed</h1>
                         <ul id="error_list">
@@ -65,7 +65,7 @@
                             </tal:errors>
                         </ul>
                     </div>
-                </tal:block>
+                </div>
                 
                 <span tal:content="structure python:view.doc.editWithForm(form)" />
 

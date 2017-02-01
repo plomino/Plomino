@@ -228,7 +228,11 @@ require([
                     actions: {
                         'input.plominoSave': {
                             onSuccess: function(modal, response, state, xhr, form) {
-                                if(response.errors) {
+                                // If validation_errors is in the form, the form submit failed
+                                if ($(response).find('#validation_errors').length > 0) {
+                                    return false;
+                                }
+                                else if (response.errors) {
                                     return false;
                                 }
                                 modal.hide();
