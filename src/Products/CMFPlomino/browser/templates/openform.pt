@@ -54,6 +54,7 @@
                 class python: macro_context and 'plomino-macro' or '';
                 enctype enctype|nothing">
             <span tal:replace="structure view/form/@@authenticator/authenticator"/>
+            <input type="hidden" name="Plomino_Macro_Context" value="1" tal:condition="macro_context" />
 
             <tal:block_no_createpermission
                 condition="python:not(hasCreatePermissionOnDatabase and hasCreatePermissionOnForm)">
@@ -104,6 +105,8 @@
                 enctype enctype|nothing;
                 class python: macro_context and 'plomino-macro' or '';">
             <span tal:replace="structure view/form/@@authenticator/authenticator"/>
+
+            <input type="hidden" name="Plomino_Macro_Context" value="1" tal:condition="macro_context" />
 
             <div tal:condition="view/page_errors|nothing" id="validation_errors">
                 <div id="validation_failed">
