@@ -292,6 +292,12 @@ require([
             $('.plominoClose', self.$modal).each(function() {
                 this.removeAttribute('onclick');
             });
+            // Remove validation error links
+            $('#validation_errors a').each(function() {
+                $(this).replaceWith(function(){
+                    return $("<span>" + $(this).html() + "</span>");
+                });
+            });
             self.render();
         },
         render: function() {
