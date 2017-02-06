@@ -1586,24 +1586,29 @@ class PlominoForm(Container):
 
     security.declarePrivate('_get_hidden_subforms')
     
-    def _get_hidden_subforms(self, REQUEST, doc, validation_mode=False):
+    def _get_hidden_subforms(self, REQUEST, doc, already_hidden=False, validation_mode=False):
+        # print "in _get_hidden_subforms for %s" % self.id
         db = self.getParentDatabase()
         hidden_forms = []
         hidewhens = self._get_hidewhens(REQUEST, doc, include_multipage=True)
         html_content = self._get_html_content()
-        for hidewhenName, doit in hidewhens:
-            if not doit: # Only consider True hidewhens
-                continue
-            start = ('<span class="plominoHidewhenClass">start:%s</span>' %
-                    hidewhenName)
-            end = ('<span class="plominoHidewhenClass">end:%s</span>' %
-                    hidewhenName)
-            for hiddensection in re.findall(
-                    start + '(.*?)' + end,
-                    html_content):
-                hidden_forms += re.findall(
-                    '<span class="plominoSubformClass">([^<]+)</span>',
-                    hiddensection)
+        # If we're already hidden, any subforms are also hidden
+        if already_hidden:
+            hidden_forms = re.findall('<span class="plominoSubformClass">([^<]+)</span>', html_content)
+        else:
+            for hidewhenName, doit in hidewhens:
+                if not doit: # Only consider True hidewhens
+                    continue
+                start = ('<span class="plominoHidewhenClass">start:%s</span>' %
+                        hidewhenName)
+                end = ('<span class="plominoHidewhenClass">end:%s</span>' %
+                        hidewhenName)
+                for hiddensection in re.findall(
+                        start + '(.*?)' + end,
+                        html_content):
+                    hidden_forms += re.findall(
+                        '<span class="plominoSubformClass">([^<]+)</span>',
+                        hiddensection)
         for subformname in self.getSubforms(doc):
             subform = db.getForm(subformname)
             if not subform:
@@ -1611,7 +1616,10 @@ class PlominoForm(Container):
                 db.writeMessageOnPage(msg, self.REQUEST)
                 logger.info(msg)
                 continue
-            hidden_forms += subform._get_hidden_subforms(REQUEST, doc)
+            if already_hidden or subformname in hidden_forms:
+                hidden_forms += subform._get_hidden_subforms(REQUEST, doc, already_hidden=True)
+            else:
+                hidden_forms += subform._get_hidden_subforms(REQUEST, doc)
         return hidden_forms
 
     security.declarePrivate('_get_hidden_fields')
@@ -2097,6 +2105,11 @@ class PlominoForm(Container):
             if form:
                 for field in form.getFormFields():
                     hidden_fields.append(field.getId())
+
+        # print self.getId()
+        # print fields
+        # print hidden_fields
+        # print hidden_forms
 
         fields = [field for field in fields
                   if field.getId() not in hidden_fields]

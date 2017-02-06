@@ -1,0 +1,62 @@
+Plomino advanced tests
+=========================
+
+Sub forms
+-------------
+
+A form may consist of multiple subforms. Set up some simple forms::
+
+    >>> portal = layer['portal']
+    >>> id = portal.invokeFactory('PlominoDatabase', id='advdb')
+    >>> db = portal.advdb
+    >>> id = db.invokeFactory('PlominoForm', id='frm1', title='Form 1')
+    >>> id = db.invokeFactory('PlominoForm', id='frm2', title='Form 2')
+    >>> id = db.invokeFactory('PlominoForm', id='frm3', title='Form 3')
+
+Add a mandatory field to the first form::
+
+    >>> id = db.frm1.invokeFactory('PlominoField', id='field1',
+    ...         title='Field 1',
+    ...         mandatory=True,
+    ...         field_type="TEXT",
+    ...         field_mode="EDITABLE")
+    >>> db.frm1.form_layout = '<span class="plominoFieldClass">field1</span>'
+
+Attempt to validate the form with an empty request::
+
+    >>> REQUEST = {}
+    >>> db.frm1.validateInputs(REQUEST)
+    [{'field': 'field1', 'error': 'Field 1 is mandatory'}]
+
+Now add frm1 as a subform of frm2. Validating frm2 should also fail::
+
+    >>> db.frm2.form_layout = '<span class="plominoSubformClass">frm1</span>'
+    >>> db.frm2.validateInputs(REQUEST)
+    [{'field': 'field1', 'error': 'Field 1 is mandatory'}]
+
+And it should also work for multiple levels down::
+
+    >>> db.frm3.form_layout = '<span class="plominoSubformClass">frm2</span>'
+    >>> db.frm3.validateInputs(REQUEST)
+    [{'field': 'field1', 'error': 'Field 1 is mandatory'}]
+
+Sub forms with multipage
+----------------------------
+
+Like the above, fields on a subform may be on a different page If that's the 
+case then they shouldn't trigger validation failures.
+
+    >>> id = db.invokeFactory('PlominoForm', id='frm4', title='Form 4', isMulti=True)
+    >>> id = db.invokeFactory('PlominoForm', id='frm5', title='Form 5', isMulti=True)
+
+Add a subform with the mandatory field on a later page. It should validate::
+    
+    >>> db.frm4.form_layout = '<p>Hfrm4:</p><hr class="plominoPagebreakClass" /><span class="plominoSubformClass">frm1</span>'
+    >>> db.frm4.validateInputs(REQUEST)
+    []
+
+Go one extra level deep. It should still validate:
+
+    >>> db.frm5.form_layout = '<p>Hfrm5:</p><hr class="plominoPagebreakClass" /><span class="plominoSubformClass">frm2</span>'
+    >>> db.frm5.validateInputs(REQUEST)
+    []
