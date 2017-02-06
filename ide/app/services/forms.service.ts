@@ -1,6 +1,6 @@
 import {Injectable} from '@angular/core';
 
-import {Subject, Observable} from 'rxjs/Rx'
+import {Subject, Observable, } from 'rxjs/Rx'
 
 @Injectable()
 export class FormsService {
@@ -8,6 +8,8 @@ export class FormsService {
     private formSettingsSaveEventSource: Subject<any> = new Subject();
     private formContentSaveEventSource: Subject<any> = new Subject();
     private formIdChangedEventSource: Subject<any> = new Subject();
+    private getFormContentBeforeSaveSource: Subject<any> = new Subject();
+    private onFormContentBeforeSaveSource: Subject<any> = new Subject();
 
     private FORM_SETTINGS_TAB_INDEX:number = 2;
 
@@ -15,6 +17,8 @@ export class FormsService {
     formSettingsSave$: Observable<any> = this.formSettingsSaveEventSource.asObservable();
     formContentSave$: Observable<any> = this.formContentSaveEventSource.asObservable();
     formIdChanged$: Observable<any> = this.formIdChangedEventSource.asObservable();
+    getFormContentBeforeSave$: Observable<any> = this.getFormContentBeforeSaveSource.asObservable();
+    onFormContentBeforeSave$: Observable<any> = this.onFormContentBeforeSaveSource.asObservable();
 
     formSettingsSaving: boolean = false;
     formContentSaving: boolean = false;
@@ -22,6 +26,19 @@ export class FormsService {
 
     constructor() {
 
+    }
+
+    getFormContentBeforeSave(id:any) {
+        this.getFormContentBeforeSaveSource.next({
+            id: id
+        })
+    }
+
+    onFormContentBeforeSave(data:{id:any, content:any}) {
+        this.onFormContentBeforeSaveSource.next({
+            id: data.id,
+            content: data.content
+        })
     }
 
     changePaletteTab(tabIndex: number) {
