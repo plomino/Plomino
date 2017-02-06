@@ -61,11 +61,11 @@ export class FieldSettingsComponent implements OnInit {
     ngOnInit() {
         this.loadSettings();
 
-        this.formsService.formIdChanged$.subscribe((data) => {
-            if(this.field.url.indexOf(data.oldId) !== -1) {
+        this.formsService.formIdChanged$.subscribe(((data: any) => {
+            if (this.field && this.field.url.indexOf(data.oldId) !== -1) {
                 this.field.url = `${data.newId}/${this.formsService.getIdFromUrl(this.field.url)}`;
             }
-        });
+        }).bind(this));
     }
 
     submitForm() {

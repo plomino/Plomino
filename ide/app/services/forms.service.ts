@@ -57,10 +57,7 @@ export class FormsService {
     }
 
     changeFormId(data:{oldId: any, newId: any}) {
-        this.formIdChangedEventSource.next({
-            oldId: data.oldId,
-            newId: data.newId
-        })
+        this.formIdChangedEventSource.next(data)
     }
 
     getIdFromUrl(url: any) {
