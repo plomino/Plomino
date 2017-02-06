@@ -5,3 +5,8 @@ node_modules
 dist
 .publish
 public
+.idea
+.idea/*
+.vscode
+.vscode/*
+.DS_Store
