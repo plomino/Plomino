@@ -52,6 +52,8 @@
             <li *ngFor="let typeName of type.children"
                 class="tree-node--collapsible"
                 [class.closed]="typeName.collapsed"
+                [class.click-cursor]="type.label === 'Forms'"
+                (click)="type.label !== 'Forms' || onEdit({formUniqueId: typeName.formUniqueId, label:typeName.label, url:typeName.url, editor:'layout',path:[{name:typeName.label,type:type.label}]})"
                 [class.hasChild]="typeName.children.length !== 0">
 
                 <span class="tree-node--name"
@@ -60,11 +62,6 @@
                     (click)="typeName.collapsed = !typeName.collapsed">
                     
                     {{typeName.url | extractName}}
-                </span>
-
-                <span *ngIf="type.label === 'Forms'" 
-                    (click)='onEdit({formUniqueId: typeName.formUniqueId, label:typeName.label, url:typeName.url, editor:"layout",path:[{name:typeName.label,type:type.label}]})'
-                    class="link glyphicon glyphicon-file click-cursor">
                 </span>
                 
                 <span (click)='onEdit({formUniqueId: typeName.formUniqueId, label:typeName.label, url:typeName.url, editor:"code",path:[{name:typeName.label,type:type.label}]})'

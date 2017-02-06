@@ -31,6 +31,9 @@ ul {
 .tree-node--collapsible.hasChild.closed > .tree-node--name:before {
     transform: rotate(-90deg);
 }
+.tree-node--collapsible.click-cursor {
+    cursor: pointer;
+}
 .link {
     color: #337ab7;
     cursor: pointer;
