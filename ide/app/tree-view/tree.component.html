@@ -64,11 +64,11 @@
                     {{typeName.url | extractName}}
                 </span>
                 
-                <span 
+                <!--<span 
                     *ngIf="type.label !== 'Forms'"
                     (click)='onEdit({formUniqueId: typeName.formUniqueId, label:typeName.label, url:typeName.url, editor:"code",path:[{name:typeName.label,type:type.label}]})'
                     class="link glyphicon glyphicon-align-left click-cursor">
-                </span>
+                </span>-->
                 
                 <ul [collapse]="typeName.collapsed">
                 
