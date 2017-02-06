@@ -18,6 +18,7 @@ def test_suite():
     suite = doctest.DocFileSuite(
         'plomino.txt',
         'plomino_accesscontrol.txt',
+        'plomino_advanced.txt',
         # 'samples.txt',
         # 'plomino_usage.txt',
         # 'form-resources.txt',

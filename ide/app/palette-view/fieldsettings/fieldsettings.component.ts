@@ -91,7 +91,7 @@ export class FieldSettingsComponent implements OnInit {
                     return this.objService.getFieldSettings(newUrl);
                 }
             })
-            .subscribe(responseHtml => {
+            .subscribe((responseHtml: string) => {
                 this.formTemplate = responseHtml;
                 this.formSaving = false;
                 this.changeDetector.markForCheck();

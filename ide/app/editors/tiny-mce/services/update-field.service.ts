@@ -68,9 +68,9 @@ export class UpdateFieldService {
                               data-mce-resize="false" 
                               data-plominoid="${id}">
           ${contentString}    
-      </${container}><br />`;
+      </${container}>`;
     } else {
-      content = `<span class="${$class}">${id}</span><br />`;
+      content = `<span class="${$class}">${id}</span>`;
     }
 
     return content;
