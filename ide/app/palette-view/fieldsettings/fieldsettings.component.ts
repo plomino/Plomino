@@ -107,7 +107,11 @@ export class FieldSettingsComponent implements OnInit {
     private loadSettings() {
         this.tabsService.getActiveField()
             .do((field) => {
-                console.log(`Field received in fieldssettings `, field);
+                const $addLink = $('plomino-palette > tabset > ul > li > a > span:contains("Add")');
+                if (field === null && $addLink.length !== 0) {
+                    $addLink.click();
+                }
+                // console.log(`Field received in fieldssettings `, field);
                 this.field = field;
             })
             .flatMap((field: any) => {
