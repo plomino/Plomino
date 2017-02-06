@@ -61,11 +61,11 @@ export class FieldSettingsComponent implements OnInit {
     ngOnInit() {
         this.loadSettings();
 
-        this.formsService.formIdChanged$.subscribe((data) => {
-            if(this.field.url.indexOf(data.oldId) !== -1) {
+        this.formsService.formIdChanged$.subscribe(((data: any) => {
+            if (this.field && this.field.url.indexOf(data.oldId) !== -1) {
                 this.field.url = `${data.newId}/${this.formsService.getIdFromUrl(this.field.url)}`;
             }
-        });
+        }).bind(this));
     }
 
     submitForm() {
@@ -107,7 +107,11 @@ export class FieldSettingsComponent implements OnInit {
     private loadSettings() {
         this.tabsService.getActiveField()
             .do((field) => {
-                console.log(`Field received in fieldssettings `, field);
+                const $addLink = $('plomino-palette > tabset > ul > li > a > span:contains("Add")');
+                if (field === null && $addLink.length !== 0) {
+                    $addLink.click();
+                }
+                // console.log(`Field received in fieldssettings `, field);
                 this.field = field;
             })
             .flatMap((field: any) => {

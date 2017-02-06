@@ -85,39 +85,39 @@ export class FormSettingsComponent implements OnInit {
         });
     }
 
-    saveFormSettings(formData:any, formLayout:any, cb:any) {
+    saveFormSettings(formData: any, formLayout: any, cb: any) {
 
         this.formSaving = true;
         let $formId:any = '';
-
+      
         formData.set('form.widgets.form_layout', formLayout);
+      
+        const flatMapCallback = ((responseData: any) => {
+            if (responseData.html.indexOf('dl.error') > -1) {
+                return Observable.of(responseData.html);
+            } else {
+                $formId = responseData.url.slice(responseData.url.lastIndexOf('/') + 1);
+                let newUrl = this.tab.url.slice(0, this.tab.url.lastIndexOf('/') + 1) + $formId;
+                let oldUrl = this.tab.url;
+
+                if (newUrl && oldUrl && newUrl !== oldUrl) {
+                    this.formsService.changeFormId({
+                        newId: newUrl,
+                        oldId: oldUrl
+                    });
+                    
+                    this.tabsService.updateTabId(this.tab, $formId);
+                    this.changeDetector.markForCheck();
+                }
+
+                this.changeDetector.markForCheck();
+                return this.objService.getFormSettings(newUrl);
+            }
+        }).bind(this);
 
         this.objService.updateFormSettings(this.tab.url, formData)
-            .flatMap((responseData: any) => {
-                if (responseData.html.indexOf('dl.error') > -1) {
-                    return Observable.of(responseData.html);
-                } else {
-                    $formId = responseData.url.slice(responseData.url.lastIndexOf('/') + 1);
-                    let newUrl = this.tab.url.slice(0, this.tab.url.lastIndexOf('/') + 1) + $formId;
-                    let oldUrl = this.tab.url;
-
-                    if (newUrl && oldUrl && newUrl !== oldUrl) {
-                        this.formsService.changeFormId({
-                            newId: newUrl,
-                            oldId: oldUrl
-                        });
-
-                        this.tabsService.updateTabId(this.tab, $formId);
-
-                        this.changeDetector.markForCheck();
-                    }
-
-                    this.changeDetector.markForCheck();
-
-                    return this.objService.getFormSettings(newUrl);
-                }
-            })
-            .subscribe(responseHtml => {
+            .flatMap((responseData: any) => flatMapCallback(responseData))
+            .subscribe((responseHtml: string) => {
 
                 this.treeService.updateTree().then(() => {
                     this.formSaving = false;
