@@ -601,12 +601,12 @@ But the parent form shouldn't break with an empty sub-form:
     >>> db.sub1.setForm_layout("")
     >>> db.frm1.setForm_layout("""<p>Form with empty sub-form</p><span class="plominoSubformClass">sub2</span>""")
     >>> db.frm1.getForm_layout()
-    '<p>Form with empty sub-form</p><div class="plominoSubformClass mceNonEditable" data-plominoid="sub2"></div>'
+    '<p>Form with empty sub-form</p><span class="plominoSubformClass mceNonEditable" data-plominoid="sub2"></span>'
 
 Or if there is no sub-form:
     >>> db.frm1.setForm_layout("""<p>Form with empty sub-form</p><span class="plominoSubformClass">subDoesNotExist</span>""")
     >>> db.frm1.getForm_layout()
-    '<p>Form with empty sub-form</p><div class="plominoSubformClass mceNonEditable" data-plominoid="subDoesNotExist">None</div>'
+    '<p>Form with empty sub-form</p><span class="plominoSubformClass mceNonEditable" data-plominoid="subDoesNotExist">None</span>'
 
 Clean up:
     >>> del db['sub1']

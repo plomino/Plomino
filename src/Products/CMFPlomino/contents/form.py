@@ -1051,7 +1051,7 @@ class PlominoForm(Container):
             #     .attr("data-plominoid", id)
             BLOCKS = "p,div,table,ul,ol"
 
-            if example.strip() == '':
+            if not example or example.strip() == '':
                 tag = u"span"
             else:
                 pqexample = pq(example)
