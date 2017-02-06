@@ -29,6 +29,7 @@ Let's start testing::
 
     >>> portal = layer['portal']
     >>> db = portal.mydb
+    >>> db.import_macros = ['.']
     >>> id = db.invokeFactory('PlominoForm', id='frm1', title='Form 1')
     >>> id = db.invokeFactory('PlominoForm', id='frm2', title='Form 2')
     >>> id = db.invokeFactory('PlominoForm', id='frm3', title='Search Form')

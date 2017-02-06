@@ -7,7 +7,7 @@ Sub forms
 A form may consist of multiple subforms. Set up some simple forms::
 
     >>> portal = layer['portal']
-    >>> id = portal.invokeFactory('PlominoDatabase', id='advdb')
+    >>> id = portal.invokeFactory('PlominoDatabase', id='advdb', import_macros=['.'])
     >>> db = portal.advdb
     >>> id = db.invokeFactory('PlominoForm', id='frm1', title='Form 1')
     >>> id = db.invokeFactory('PlominoForm', id='frm2', title='Form 2')
