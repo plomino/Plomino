@@ -20,6 +20,11 @@
          (click)="openFormPreview(tab.url)">
         Preview
       </a>
+      <a class="btn btn-info"
+         *ngIf="formSettings"
+         (click)="openFormCode(tab)">
+        Code
+      </a>
     </div>
     
     <div #formElem 

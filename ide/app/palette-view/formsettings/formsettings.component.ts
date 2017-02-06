@@ -153,6 +153,17 @@ export class FormSettingsComponent implements OnInit {
         this.getSettings();
     }
 
+    openFormCode(tab: any): void {
+        const eventData = {
+            formUniqueId: tab.formUniqueId,
+            editor: 'code',
+            label: tab.label,
+            path: [{ name: tab.label, type: 'Forms' }],
+            url: tab.url
+        };
+        this.tabsService.openTab(eventData, true);
+    }
+
     openFormPreview(formUrl: string): void {
         window.open(`${formUrl}/OpenForm`);
     }
