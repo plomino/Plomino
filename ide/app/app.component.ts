@@ -139,7 +139,7 @@ export class AppComponent implements OnInit, AfterViewInit {
             return data;
 
         data.forEach((item:any) => {
-            item.collapsed = true;
+            item.collapsed = !(item.label === 'Forms' && item.type === 'PlominoForm');
             item.children = this.collapseTreeElements(item.children, null);
         });
 
