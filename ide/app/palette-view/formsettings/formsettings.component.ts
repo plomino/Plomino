@@ -1,7 +1,7 @@
-import { 
-    Component, 
-    Input, 
-    Output, 
+import {
+    Component,
+    Input,
+    Output,
     EventEmitter,
     OnInit,
     OnChanges,
@@ -9,12 +9,12 @@ import {
     NgZone,
     ViewChild,
     ElementRef,
-    ChangeDetectionStrategy 
+    ChangeDetectionStrategy
 } from '@angular/core';
 
 import { Observable } from 'rxjs/Observable';
 
-import { 
+import {
     ObjService,
     TabsService,
     TreeService,
@@ -41,8 +41,8 @@ import { LoadingComponent } from '../../editors';
 })
 
 export class FormSettingsComponent implements OnInit {
-    @ViewChild('formElem') formElem: ElementRef; 
-    
+    @ViewChild('formElem') formElem: ElementRef;
+
     tab: any;
 
     formSaving:boolean = false;
@@ -51,7 +51,7 @@ export class FormSettingsComponent implements OnInit {
     heading: string;
     formSettings: string = '';
     private formLayout: string = '';
-    
+
     constructor(private objService: ObjService,
                 private changeDetector: ChangeDetectorRef,
                 private tabsService: TabsService,
@@ -63,19 +63,35 @@ export class FormSettingsComponent implements OnInit {
     ngOnInit() {
         this.getSettings();
 
+        let onSaveFinishCb:any = null;
+
         this.formsService.formSettingsSave$.subscribe((data) => {
             if(this.tab.formUniqueId !== data.formUniqueId)
                 return;
 
-            this.saveForm(data.cb)
+            onSaveFinishCb = data.cb;
+
+            this.formsService.getFormContentBeforeSave(data.formUniqueId);
+        });
+
+        this.formsService.onFormContentBeforeSave$.subscribe((data:{id:any, content:any}) => {
+            if (this.tab.formUniqueId !== data.id)
+                return;
+
+            this.saveForm({
+                cb: onSaveFinishCb,
+                content: data.content
+            });
         });
     }
 
-    saveFormSettings(formData:any, cb:any) {
+    saveFormSettings(formData: any, formLayout: any, cb: any) {
 
         this.formSaving = true;
         let $formId:any = '';
-
+      
+        formData.set('form.widgets.form_layout', formLayout);
+      
         const flatMapCallback = ((responseData: any) => {
             if (responseData.html.indexOf('dl.error') > -1) {
                 return Observable.of(responseData.html);
@@ -121,7 +137,7 @@ export class FormSettingsComponent implements OnInit {
         this.changeDetector.markForCheck();
     }
 
-    saveForm(cb:any) {
+    saveForm(data:{content:any,cb:any}) {
         let $form: any = $(this.formElem.nativeElement);
         let form: HTMLFormElement = $form.find('form').get(0);
         let formData: any = new FormData(form);
@@ -130,7 +146,7 @@ export class FormSettingsComponent implements OnInit {
 
         formData.append('form.buttons.save', 'Save');
 
-        this.saveFormSettings(formData, cb);
+        this.saveFormSettings(formData, data.content, data.cb);
     }
 
     cancelForm() {

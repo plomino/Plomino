@@ -161,6 +161,16 @@ export class TinyMCEComponent implements AfterViewInit, OnInit, OnDestroy {
             this.saveFormLayout(data.cb);
         } );
 
+        this.formsService.getFormContentBeforeSave$.subscribe((data:{id:any}) => {
+            if(data.id !== this.item.formUniqueId)
+                return;
+
+            this.formsService.onFormContentBeforeSave({
+                id: data.id,
+                content: tinymce.get(this.id).getContent()
+            });
+        });
+
     }
 
     ngOnInit() { }
@@ -293,20 +303,20 @@ export class TinyMCEComponent implements AfterViewInit, OnInit, OnDestroy {
         let tiny = this;
         let editor = tinymce.get(this.id) || tinymce.get(this.idChanges.oldId);
         if(editor !== null){
-            this.elementService.patchElement(this.id, JSON.stringify({
-                "form_layout": editor.getContent()
-            })).subscribe(
-                () => {
-                    tiny.isLoading.emit(false);
-                    // let the app know that saving finished
-                    if(cb) cb();
-                    tiny.isDirty.emit(false);
-                    editor.setDirty(false);
-                    this.changeDetector.markForCheck();
-                    this.ngAfterViewInit();
-                },
-                err => console.error(err)
-            );
+            // this.elementService.patchElement(this.id, JSON.stringify({
+            //     "form_layout": editor.getContent()
+            // })).subscribe(
+            //     () => {
+            tiny.isLoading.emit(false);
+            // let the app know that saving finished
+            if (cb) cb();
+            tiny.isDirty.emit(false);
+            editor.setDirty(false);
+            this.changeDetector.markForCheck();
+            this.ngAfterViewInit();
+            // },
+            // err => console.error(err)
+            // );
         }
     }
 
