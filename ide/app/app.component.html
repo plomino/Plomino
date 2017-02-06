@@ -57,7 +57,7 @@
             <span [class.tabunsaved]="tabz.isdirty">
               <loading *ngIf="tabz.isloading"></loading>
               <span *ngIf="tabz.isdirty">* </span>
-              {{tabz.url | extractName}} / {{tabz.editor}}
+              {{tabz.url | extractName}} {{ tabz.editor === 'layout' ? '' : '/ ' + tabz.editor }}
             </span>
         </template>
         
