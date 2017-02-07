@@ -51,6 +51,11 @@ div.plominoLabelClass {
     background-color: #1b6899;
 }
 
+.mce-content-body .plominoGroupClass[contentEditable=false][data-mce-selected] {
+    outline-style: dotted;
+    outline-width: 1px;
+}
+
 .plominoLabelClass {
     outline: 1px dashed #03632C;
     padding-left: 25px;
