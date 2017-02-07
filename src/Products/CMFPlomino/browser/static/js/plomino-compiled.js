@@ -210,7 +210,7 @@ require([
                 var fieldid = fields[i][0];
                 var value = fields[i][1];
                 var field = self.$el.find('.dynamicfield[data-dynamicfield="'+fieldid+'"]');
-                field.text(value);
+                field.html(value);
             }
         }
     });
