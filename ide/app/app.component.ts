@@ -59,7 +59,7 @@ import 'lodash';
 import {LoadingComponent} from "./editors/loading/loading.component";
 
 declare let _: any;
-
+declare let $: any;
 declare let tinymce: any;
 
 @Component({
@@ -273,6 +273,18 @@ export class AppComponent implements OnInit, AfterViewInit {
 
     fieldSelected(fieldData: any): void {
         this.tabsService.selectField(fieldData);
+    }
+
+    setTabzAsDirty(tabz: any, dirty: boolean) {
+        tabz.isdirty = dirty;
+
+        $(window)
+        .unbind('beforeunload')
+        .bind('beforeunload', (eventObject: any) => {
+            if (tabz.isdirty) {
+                return confirm('Do you want to close window. The form is unsaved.');
+            }
+        });
     }
 
     private resolveData(data: any, resolver: Function): void {

@@ -49,7 +49,7 @@ export class FieldSettingsComponent implements OnInit {
     field: any;
     formTemplate: string = '';
 
-    formSaving:boolean = false;
+    formSaving: boolean = false;
     
     constructor(private objService: ObjService,
                 private tabsService: TabsService,
@@ -95,7 +95,7 @@ export class FieldSettingsComponent implements OnInit {
                 this.formTemplate = responseHtml;
                 this.formSaving = false;
                 this.changeDetector.markForCheck();
-            }, err => { 
+            }, (err: any) => { 
                 console.error(err) 
             });
     }

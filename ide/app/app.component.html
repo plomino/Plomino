@@ -65,7 +65,7 @@
             [id]="tabz.url"
             [item]="tabz"
             (isLoading)="tabz.isloading=$event"
-            (isDirty)="tabz.isdirty=$event"
+            (isDirty)="setTabzAsDirty(tabz, $event)"
             (fieldSelected)="fieldSelected($event)">
         </plomino-tiny-mce>
         

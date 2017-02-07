@@ -25,6 +25,7 @@ import {ElementService} from "../../services/element.service";
 import {WidgetService} from "../../services/widget.service";
 
 declare let $: any;
+declare var tinymce: any;
 
 import { LoadingComponent } from '../../editors';
 
@@ -123,6 +124,16 @@ export class FormSettingsComponent implements OnInit {
                     this.formSaving = false;
                     this.formSettings = responseHtml;
                     this.changeDetector.markForCheck();
+
+                    /* reinitialize tinymce */
+                    Object.keys(tinymce.EditorManager.editors)
+                    .forEach((key: string) => {
+                      if (isNaN(parseInt(key, 10))) {
+                        tinymce.EditorManager.execCommand('mceRemoveEditor', true, key);
+                        tinymce.EditorManager.execCommand('mceAddEditor', true, key);
+                      }
+                    });
+
                     if (cb) {
                         cb();
                     }
