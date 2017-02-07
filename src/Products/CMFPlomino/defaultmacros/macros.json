@@ -955,7 +955,7 @@
                 "form_method": "Auto", 
                 "document_id": "", 
                 "isMulti": false, 
-                "form_layout": "<p><span class=\"plominoLabelClass\">single_file_attachment</span></p>\n<span class=\"plominoFieldClass\">single_file_attachment</span>\n<p> </p>", 
+                "form_layout": "<p><span class=\"plominoLabelClass\">file_attachment</span></p>\n<span class=\"plominoFieldClass\">file_attachment</span>\n<p> </p>", 
                 "description": "", 
                 "isPage": false, 
                 "store_dynamic_document_title": false, 
@@ -971,7 +971,7 @@
                 "onSearch": ""
             }, 
             "elements": {
-                "single_file_attachment": {
+                "file_attachment": {
                     "params": {
                         "read_template": null, 
                         "field_type": "ATTACHMENT", 
@@ -992,7 +992,7 @@
                         "description": ""
                     }, 
                     "type": "PlominoField", 
-                    "id": "single_file_attachment", 
+                    "id": "file_attachment", 
                     "title": "Untitled"
                 }
             }, 
@@ -1015,7 +1015,7 @@
                 "form_method": "Auto", 
                 "document_id": "", 
                 "isMulti": false, 
-                "form_layout": "<p> </p>\n<p> </p>\n<p><span class=\"plominoLabelClass\">datagrid</span></p>\n<span class=\"plominoFieldClass\">datagrid</span>\n<p><br><br> </p>", 
+                "form_layout": "<p><span class=\"plominoLabelClass\">datagrid</span></p>\n<span class=\"plominoFieldClass\">datagrid</span>\n<p> </p>", 
                 "description": "", 
                 "isPage": false, 
                 "store_dynamic_document_title": false, 
