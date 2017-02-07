@@ -1,5 +1,10 @@
-.item {
+group:not([hidden]) .item {
   margin: 5px 10px;
+  margin-top: 13px;
+}
+
+group:first-child .item {
+  margin-top: 5px;
 }
 
 .templates {
