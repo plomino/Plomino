@@ -66,6 +66,8 @@ export class TreeComponent implements OnInit {
             'PlominoField': 'images/ic_input_black_18px.svg',
             'PlominoHidewhen': 'images/ic_remove_red_eye_black_18px.svg',
             'PlominoAction': 'images/ic_gavel_black_18px.svg',
+            'PlominoForm': 'images/ic_featured_play_list_black_18px.svg',
+            'PlominoView': 'images/ic_picture_in_picture_black_18px.svg',
         }[childName.type] || 'images/ic_input_black_18px.svg';
     }
 

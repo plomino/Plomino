@@ -144,7 +144,7 @@ export class AppComponent implements OnInit, AfterViewInit {
         if(!Array.isArray(data) || Array.isArray(oldData))
             return data;
 
-        data.forEach((item:any) => {
+        data.forEach((item: any) => {
             item.collapsed = !(item.label === 'Forms' && item.type === 'PlominoForm');
             item.children = this.collapseTreeElements(item.children, null);
         });
@@ -155,7 +155,30 @@ export class AppComponent implements OnInit, AfterViewInit {
     ngOnInit() {
         this.treeService.getTree()
             .subscribe((tree) => {
-                this.data = this.collapseTreeElements(tree, this.data);
+                // const data2: any[] = [];
+                const data = this.collapseTreeElements(tree, this.data);
+                if (!data) { return; }
+
+                data.forEach((z: any, topIndex: number) => {
+                    z.children.forEach((firstLevelChildrenItem: any, index: number) => {
+                        
+                        let tmp = firstLevelChildrenItem.children;
+                        firstLevelChildrenItem.children.forEach((subChild: any) => {
+                            tmp = tmp.concat(subChild.children);
+                        });
+
+                        tmp = tmp.filter((item: any) => {
+                            return !item.folder;
+                        });
+
+                        data[topIndex].children[index].children = tmp;
+                    })
+                });
+
+                console.log(data);
+                
+                /* extracting children of children */
+                this.data = data;
             });
         
         this.tabsService.getTabs()

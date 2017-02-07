@@ -37,6 +37,7 @@
         <li *ngFor="let type of data" 
             class="tree-node--collapsible"
             [class.closed]="type.collapsed"
+            [class.click-cursor]="type.children.length"
             [class.hasChild]="type.children.length !== 0">
             
             <span (click)="type.collapsed = !type.collapsed" class="tree-node--name">
@@ -52,7 +53,7 @@
             <li *ngFor="let typeName of type.children"
                 class="tree-node--collapsible"
                 [class.closed]="typeName.collapsed"
-                [class.click-cursor]="type.label === 'Forms'"
+                [class.click-cursor]="typeName.children.length"
                 (click)="type.label !== 'Forms' || onEdit({formUniqueId: typeName.formUniqueId, label:typeName.label, url:typeName.url, editor:'layout',path:[{name:typeName.label,type:type.label}]})"
                 [class.hasChild]="typeName.children.length !== 0">
 
@@ -60,6 +61,10 @@
                     #selectable
                     [class.selected]="selected && (typeName.url === selected.url)" 
                     (click)="typeName.collapsed = !typeName.collapsed">
+                    
+                    <span class="tree-node__child-type-image">
+                      <img [src]="getTypeImage(typeName)">
+                    </span>
                     
                     {{typeName.url | extractName}}
                 </span>
@@ -70,24 +75,24 @@
                     class="link glyphicon glyphicon-align-left click-cursor">
                 </span>-->
                 
-                <ul [collapse]="typeName.collapsed">
+                <ul [collapse]="typeName.collapsed" *ngIf="typeName.children.length">
                 
-                <li *ngFor="let childType of typeName.children"
+                <!--<li *ngFor="let childType of typeName.children"
                     class="tree-node--collapsible"
                     [class.closed]="childType.collapsed"
                     [class.hasChild]="childType.children.length !== 0">
                     
                     <span (click)="childType.collapsed = !childType.collapsed" class="tree-node--name">
                         {{childType.label}}
-                    </span>
+                    </span>-->
 
                     <!--<span (click)="onAdd({url:childType.url, type:childType.type})" 
                         class="link glyphicon glyphicon-plus click-cursor">
                     </span>-->
                     
-                    <ul [collapse]="childType.collapsed || childType.children.length === 0">
+                    <!--<ul [collapse]="childType.collapsed || childType.children.length === 0">-->
                     
-                    <li *ngFor="let childName of childType.children">
+                    <li *ngFor="let childName of typeName.children">
 
                         <span #selectable 
                         [class.selected]="isItSelected(childName)" 
@@ -122,8 +127,8 @@
                             class="link glyphicon glyphicon-cog click-cursor">
                         </span>-->
                     </li>
-                    </ul>
-                </li>
+                    <!--</ul>-->
+                <!--</li>-->
                 </ul>
             </li>
             </ul>
