@@ -20,12 +20,23 @@
 }
 
 .palette-wrapper {
-  max-height: 80%;
+  /*max-height: 80%;*/
   overflow-y: auto;
+  height: 300px;
+  transition: none;
+  overflow-x: hidden;
+  /*min-height: 150px;*/
+  padding-top: 64px;
 } 
 
 .palette-wrapper /deep/ .nav-tabs {
-  width: 350px;
+  width: 336px;
+  position: fixed;
+  top: 0;
+  left: 4px;
+  background: white;
+  z-index: 1;
+  overflow-x: scroll;
 }
 
 .palette-wrapper /deep/ .nav-tabs .nav-item:first-child a {
@@ -44,16 +55,16 @@
 .tree-wrapper {
   position: relative;
   flex: 1;
-  overflow-y: hidden;
+  overflow-y: scroll;
 }
 
 .tree-wrapper .title {
   font-size: 14px;
   text-transform: uppercase;
-  padding: 5px 15px;
+  padding: 5px 0px;
   color: black;
   background-color: white;
-  font-weight: 500;
+  font-weight: 500; 
 }
 
 .tree-wrapper .content {
@@ -78,7 +89,9 @@ tab {
 .well,
 plomino-palette,
 plomino-tree {
-    width: 464px;
+   /*-ms-flex-preferred-size: 464px;*/
+   flex-basis: 464px;
+   transition: none;
 }
 
 .tabunsaved {

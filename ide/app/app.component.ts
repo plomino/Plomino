@@ -53,7 +53,7 @@ import { ExtractNamePipe } from './pipes';
 import { IField } from './interfaces';
 
 // Utility Components
-import { PlominoModalComponent } from './utility';
+import { PlominoModalComponent, ResizeDividerComponent } from './utility';
 
 import 'lodash';
 import {LoadingComponent} from "./editors/loading/loading.component";
@@ -81,7 +81,8 @@ declare let tinymce: any;
         ViewsSettingsComponent,
         ColumnsSettingsComponent,
         AgentsSettingsComponent,
-        LoadingComponent
+        LoadingComponent,
+        ResizeDividerComponent
     ],
     providers: [
         TreeService, 
@@ -126,6 +127,11 @@ export class AppComponent implements OnInit, AfterViewInit {
 
     aceNumber: number = 0;
 
+    DIRECTION_DOWN = 'down';
+    DIRECTION_UP = 'up';
+    DIRECTION_LEFT = 'left';
+    DIRECTION_RIGHT = 'right';
+
     constructor(private treeService: TreeService,     
                 private elementService: ElementService, 
                 private objService: ObjService,
@@ -162,6 +168,16 @@ export class AppComponent implements OnInit, AfterViewInit {
                 this.isDragging = !!dragData;
                 this.dragData = dragData;
             })
+
+        $(() => {
+            $('.palette-wrapper')
+            .css('height', `${ window.innerHeight / 2 }px`);
+    
+            setTimeout(() => {
+                $('plomino-palette ul.nav-tabs')
+                .css('width', `${ $('.palette-wrapper').width() - 2 }px`);
+            }, 100);
+        });
     }
 
     ngAfterViewInit() {
@@ -175,6 +191,61 @@ export class AppComponent implements OnInit, AfterViewInit {
         event.isAction = event.type == "PlominoAction";
         this.modalData = event;
         this.isModalOpen = true;
+    }
+
+    resizeColumns(event: { directions: string[], difference: {x: number, y: number} }) {
+        const directions = event.directions;
+        const difference = event.difference;
+
+        const contains = (direction: string) => {
+            return directions.indexOf(direction) !== -1;
+        };
+
+        if (!directions.length) { return; }
+
+        const $wrapper = $('.well.sidebar');
+        let width = parseInt($wrapper.css('flex-basis').replace('px', ''), 10);
+
+        if (contains(this.DIRECTION_LEFT)) {
+            width = width - difference.x - 1;
+        }
+        else if (contains(this.DIRECTION_RIGHT)) {
+            width = width + difference.x + 1;
+        }
+
+        // if (width <= 454) {
+        //     return;
+        // }
+
+        $wrapper
+        .css('-ms-flex-preferred-size', `${ width }px`)
+        .css('flex-basis', `${ width }px`);
+
+        $('plomino-palette ul.nav-tabs')
+        .css('width', `${ $('.palette-wrapper').width() - 2 }px`);
+    }
+
+    resizeTree(event: { directions: string[], difference: {x: number, y: number} }) {
+        const directions = event.directions;
+        const difference = event.difference;
+
+        const contains = (direction: string) => {
+            return directions.indexOf(direction) !== -1;
+        };
+
+        if (!directions.length) { return; }
+
+        const $wrapper = $('.palette-wrapper');
+        let height = parseInt($wrapper.css('height').replace('px', ''), 10);
+
+        if (contains(this.DIRECTION_UP)) {
+            height = height - difference.y - 0.5;
+        }
+        else if (contains(this.DIRECTION_DOWN)) {
+            height = height + difference.y;
+        }
+
+        $wrapper.css('height', `${ height }px`);
     }
 
     indexOf(type: any) {

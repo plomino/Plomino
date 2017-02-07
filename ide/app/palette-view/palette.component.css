@@ -3,3 +3,6 @@
 }
 */
 
+plomino-palette .tab-container .tab-content {
+    overflow-y: scroll;
+}

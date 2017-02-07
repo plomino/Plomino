@@ -8,9 +8,8 @@
     </div>
     
     <div class="tree-wrapper">
-      <div class="title">
-        Tree
-      </div>
+      <plomino-resize-divider [listen]="[DIRECTION_DOWN, DIRECTION_UP]"
+        (move)="resizeTree($event)"></plomino-resize-divider>
       <div class="content">
         <plomino-tree [data]="data" 
                       [selected]="selected" 
@@ -20,6 +19,11 @@
       </div>
     </div>
   </div>
+
+  <plomino-resize-divider
+    [listen]="[DIRECTION_LEFT, DIRECTION_RIGHT]"
+    [columnResize]="true"
+    (move)="resizeColumns($event)"></plomino-resize-divider>
   
   <div class="main-app panel">
     <div class="drop-zone-container"
