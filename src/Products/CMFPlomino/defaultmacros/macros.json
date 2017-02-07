@@ -940,7 +940,7 @@
             "id": "template_rich_text", 
             "title": "Rich Text"
         }, 
-        "template_single_file_attachment": {
+        "template_file_attachment": {
             "params": {
                 "onCreateDocument": "", 
                 "resources_css": null, 
@@ -948,7 +948,7 @@
                 "onOpenDocument": "", 
                 "ajax_load": null, 
                 "onDeleteDocument": "", 
-                "title": "Single file attachment", 
+                "title": "File attachment", 
                 "onSaveDocument": "", 
                 "onDisplay": "", 
                 "resources_js": null, 
@@ -997,68 +997,8 @@
                 }
             }, 
             "type": "PlominoForm", 
-            "id": "template_single_file_attachment", 
-            "title": "Single file attachment"
-        }, 
-        "template_multi_file_attachment": {
-            "params": {
-                "onCreateDocument": "", 
-                "resources_css": null, 
-                "ajax_include_head": null, 
-                "onOpenDocument": "", 
-                "ajax_load": null, 
-                "onDeleteDocument": "", 
-                "title": "Multi file attachment", 
-                "onSaveDocument": "", 
-                "onDisplay": "", 
-                "resources_js": null, 
-                "form_method": "Auto", 
-                "document_id": "", 
-                "isMulti": false, 
-                "form_layout": "<p><span class=\"plominoLabelClass\">multi_file_attachment</span></p>\n<span class=\"plominoFieldClass\">multi_file_attachment</span>\n<p> </p>", 
-                "description": "", 
-                "isPage": false, 
-                "store_dynamic_document_title": false, 
-                "isSearchForm": false, 
-                "beforeCreateDocument": "", 
-                "hide_default_actions": false, 
-                "document_title": "", 
-                "search_formula": "", 
-                "search_view": null, 
-                "beforeSaveDocument": "", 
-                "dynamic_document_title": false, 
-                "helpers": [], 
-                "onSearch": ""
-            }, 
-            "elements": {
-                "multi_file_attachment": {
-                    "params": {
-                        "read_template": null, 
-                        "field_type": "ATTACHMENT", 
-                        "single_or_multiple": "MULTI", 
-                        "mandatory": false, 
-                        "html_attributes_formula": null, 
-                        "index_type": "DEFAULT", 
-                        "validation_formula": null, 
-                        "ajax_include_head": null, 
-                        "title": "Untitled", 
-                        "edit_template": null, 
-                        "isDynamicField": false, 
-                        "field_mode": "EDITABLE", 
-                        "to_be_indexed": false, 
-                        "helpers": [], 
-                        "formula": null, 
-                        "ajax_load": null, 
-                        "description": ""
-                    }, 
-                    "type": "PlominoField", 
-                    "id": "multi_file_attachment", 
-                    "title": "Untitled"
-                }
-            }, 
-            "type": "PlominoForm", 
-            "id": "template_multi_file_attachment", 
-            "title": "Multi file attachment"
+            "id": "template_file_attachment", 
+            "title": "File attachment"
         }, 
         "macro_action_redirect": {
             "params": {
