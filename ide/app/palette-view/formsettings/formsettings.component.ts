@@ -125,17 +125,18 @@ export class FormSettingsComponent implements OnInit {
                     this.formSettings = responseHtml;
                     this.changeDetector.markForCheck();
 
-                    /* reinitialize tinymce */
-                    Object.keys(tinymce.EditorManager.editors)
-                    .forEach((key: string) => {
-                      if (isNaN(parseInt(key, 10))) {
-                        tinymce.EditorManager.execCommand('mceRemoveEditor', true, key);
-                        tinymce.EditorManager.execCommand('mceAddEditor', true, key);
-                      }
-                    });
-
                     if (cb) {
                         cb();
+                    }
+                    else {
+                        /* reinitialize tinymce */
+                        Object.keys(tinymce.EditorManager.editors)
+                        .forEach((key: string) => {
+                          if (isNaN(parseInt(key, 10))) {
+                            tinymce.EditorManager.execCommand('mceRemoveEditor', true, key);
+                            tinymce.EditorManager.execCommand('mceAddEditor', true, key);
+                          }
+                        });
                     }
                 });
             }, err => {
