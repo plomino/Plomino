@@ -131,6 +131,7 @@ export class AppComponent implements OnInit, AfterViewInit {
     DIRECTION_UP = 'up';
     DIRECTION_LEFT = 'left';
     DIRECTION_RIGHT = 'right';
+    wrapperWidth: number = 464;
 
     constructor(private treeService: TreeService,     
                 private elementService: ElementService, 
@@ -194,10 +195,11 @@ export class AppComponent implements OnInit, AfterViewInit {
             $('.palette-wrapper')
             .css('height', `${ window.innerHeight / 2 }px`);
     
-            setTimeout(() => {
-                $('plomino-palette ul.nav-tabs')
-                .css('width', `${ $('.palette-wrapper').width() - 2 }px`);
-            }, 100);
+            /* for fixed tabs */
+            // setTimeout(() => {
+            //     $('plomino-palette ul.nav-tabs')
+            //     .css('width', `${ $('.palette-wrapper').width() - 2 }px`);
+            // }, 100);
         });
     }
 
@@ -232,7 +234,8 @@ export class AppComponent implements OnInit, AfterViewInit {
         if (!directions.length) { return; }
 
         const $wrapper = $('.well.sidebar');
-        let width = parseInt($wrapper.css('flex-basis').replace('px', ''), 10);
+        const attribute = 'width';
+        let width = this.wrapperWidth;
 
         if (contains(this.DIRECTION_LEFT)) {
             width = width - difference.x - 1;
@@ -241,16 +244,15 @@ export class AppComponent implements OnInit, AfterViewInit {
             width = width + difference.x + 1;
         }
 
-        // if (width <= 454) {
-        //     return;
-        // }
+        this.wrapperWidth = width;
 
         $wrapper
-        .css('-ms-flex-preferred-size', `${ width }px`)
-        .css('flex-basis', `${ width }px`);
+        // .css('-ms-flex-preferred-size', `${ width }px`)
+        .css(attribute, `${ width }px`);
 
-        $('plomino-palette ul.nav-tabs')
-        .css('width', `${ $('.palette-wrapper').width() - 2 }px`);
+        /* for fixed tabs */
+        // $('plomino-palette ul.nav-tabs')
+        // .css('width', `${ $('.palette-wrapper').width() - 2 }px`);
     }
 
     resizeTree(event: { directions: string[], difference: {x: number, y: number} }) {

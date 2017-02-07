@@ -1,28 +1,32 @@
 <div class="form-settings-wrapper">
-    <div class="btn-group btn-group-justified formsettings--control-buttons" *ngIf="formSettings">
-      <a class="btn btn-primary"
+    <div class="formsettings--control-buttons" *ngIf="formSettings">
+      <a class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent mdl-color--teal-700"
          *ngIf="formSettings"
          (click)="submitForm()">
         <span *ngIf="formSaving">
           <loading class="white"></loading>
         </span>
         <span *ngIf="!formSaving">
+          <span class="icon material-icons">save</span>
           Save
         </span>
       </a>
-      <a class="btn btn-danger"
+      <a class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--colored mdl-color--grey-300"
          *ngIf="formSettings"
          (click)="cancelForm()">
+         <span class="icon material-icons">cancel</span>
         Cancel
       </a>
-      <a class="btn btn-success"
+      <a class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--colored"
          *ngIf="formSettings"
          (click)="openFormPreview(tab.url)">
+         <span class="icon material-icons">slideshow</span>
         Preview
       </a>
-      <a class="btn btn-info"
+      <a class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--colored"
          *ngIf="formSettings"
          (click)="openFormCode(tab)">
+         <span class="icon material-icons">code</span>
         Code
       </a>
     </div>
@@ -31,8 +35,8 @@
         [innerHTML]="formSettings | safePloneHtml">
     </div>
 
-    <div class="settings-alert-no-object alert alert-info"
-        *ngIf="!formSettings">
-        <strong>Select form</strong>
-    </div>
+    <div class="mdl-card mdl-shadow--2dp settings-alert-no-object"
+      *ngIf="!formSettings">
+    <div class="mdl-card__supporting-text">Please select form</div>
+  </div>
 </div>

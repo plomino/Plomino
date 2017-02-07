@@ -1,7 +1,7 @@
 <div class="add-wrapper">
      <div class="templates">
 
-        <button class="btn btn-default"
+        <button class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored"
             *ngFor="let template of templates, let i = index"
             [hidden]="template.hidewhen(activeTab)"
             dnd-draggable
@@ -19,7 +19,7 @@
         <div class="item">
             <comp *ngFor="let comp of group.components">
             <button type="button" 
-                    class="btn btn-default" 
+                    class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored" 
                     title="Add {{comp.title}}"
                     [disabled]="(comp.type !== 'PlominoForm' && 
                                 comp.type !== 'PlominoView') && 

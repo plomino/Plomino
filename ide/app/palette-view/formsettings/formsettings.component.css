@@ -1,10 +1,37 @@
 .settings-alert-no-object {
     margin: 15px;
+    width: auto;
+    min-height: auto;
 }
 
 .formsettings--control-buttons {
-    padding: 0 30px;
+    padding: 0 10px;
     margin: 15px 0;
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -ms-flex-pack: distribute;
+    justify-content: space-around;
+}
+
+.groupX {
+    font-size: 16px;
+    margin: 20px 0;
+    padding: 3px 15px 3px 15px;
+    color: rgb(49, 46, 46);
+    background-color: rgba(224, 224, 224, 0.96);
+    text-transform: none;
+    font-weight: 400;
+    min-width:100px;
+}
+
+.mdl-button:hover, .mdl-button:active, .mdl-button:visited {
+    text-decoration: none;
+}
+
+.mdl-button {
+  text-shadow: none;
+  margin: 5px;
 }
 
 /deep/ #formfield-form-widgets-form_layout {

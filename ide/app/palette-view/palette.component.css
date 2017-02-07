@@ -6,3 +6,7 @@
 plomino-palette .tab-container .tab-content {
     overflow-y: scroll;
 }
+
+.mdl-tabs__tab:hover, .mdl-tabs__tab:active, .mdl-tabs__tab:visited {
+    text-decoration: none;
+}

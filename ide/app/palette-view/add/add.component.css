@@ -10,3 +10,13 @@ group:first-child .item {
 .templates {
   margin: 5px 10px;
 }
+
+.mdl-button {
+  text-shadow: none;
+  margin: 5px;
+}
+
+.mdl-button:hover, .mdl-button:active, .mdl-button:visited {
+  text-decoration: none;
+  color: white;
+}

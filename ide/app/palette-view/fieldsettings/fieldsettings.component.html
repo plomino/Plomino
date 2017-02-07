@@ -1,6 +1,6 @@
 <div class="field-settings-wrapper">
-  <div class="btn-group btn-group-justified fieldsettings--control-buttons" *ngIf="formTemplate">
-    <a class="btn btn-primary"
+  <div class="fieldsettings--control-buttons" *ngIf="formTemplate">
+    <a class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent"
        *ngIf="formTemplate"
        (click)="submitForm()">
       <span *ngIf="formSaving">
@@ -10,7 +10,7 @@
           Save
         </span>
     </a>
-    <a class="btn btn-danger"
+    <a class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect"
        *ngIf="formTemplate"
        (click)="cancelForm()">
       Cancel
@@ -18,8 +18,8 @@
   </div>
   <div #fieldForm [innerHTML]="formTemplate | safePloneHtml"></div>
 
-  <div class="alert alert-info settings-alert-no-object"
+  <div class="mdl-card mdl-shadow--2dp settings-alert-no-object"
       *ngIf="!formTemplate">
-    <strong>Select field</strong>
+    <div class="mdl-card__supporting-text">Please select field</div>
   </div>
 </div>
