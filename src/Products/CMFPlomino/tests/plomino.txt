@@ -482,7 +482,7 @@ Rich-text field::
     >>> doc4.save()
     >>> db.cleanRequestCache()
     >>> db.frm2.displayDocument(doc4).replace('\n', '')
-    u"7 <p>My comments: I am not sure it is <b>correct</b><br/>.So please, check <a href='http://www.google.com'>here</a></p>"
+    u"7 <p>My comments:     I am not sure it is <b>correct</b><br/>.So please, check <a href='http://www.google.com'>here</a>    </p>"
     >>> REQUEST = {'comments': """I am not sure it is <b>correct</b><br/>.\n
     ... So please, check <a href='http://www.google.com'>here</a>"""}
     >>> db.frm2.validateInputs(REQUEST)
