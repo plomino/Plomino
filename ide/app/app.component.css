@@ -52,6 +52,11 @@
   align-self: center;
 } 
 
+.tab-name {
+  margin-left: 5px;
+  margin-right: 5px;
+}
+
 .tree-wrapper {
   position: relative;
   flex: 1;

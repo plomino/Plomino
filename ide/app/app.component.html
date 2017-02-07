@@ -61,7 +61,11 @@
             <span [class.tabunsaved]="tabz.isdirty">
               <loading *ngIf="tabz.isloading"></loading>
               <span *ngIf="tabz.isdirty">* </span>
-              {{tabz.url | extractName}} {{ tabz.editor === 'layout' ? '' : '/ ' + tabz.editor }}
+              <span class="tab-type-image">
+                <img [src]="getTabTypeImage(tabz.editor)">
+              </span>
+              <span class="tab-name">{{tabz.url | extractName}}
+                {{ tabz.editor === 'layout' ? '' : '/ ' + tabz.editor }}</span>
             </span>
         </template>
         

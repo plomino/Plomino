@@ -155,10 +155,10 @@ export class AppComponent implements OnInit, AfterViewInit {
     ngOnInit() {
         this.treeService.getTree()
             .subscribe((tree) => {
-                // const data2: any[] = [];
                 const data = this.collapseTreeElements(tree, this.data);
                 if (!data) { return; }
 
+                /* little callback hell */
                 data.forEach((z: any, topIndex: number) => {
                     z.children.forEach((firstLevelChildrenItem: any, index: number) => {
                         
@@ -174,8 +174,6 @@ export class AppComponent implements OnInit, AfterViewInit {
                         data[topIndex].children[index].children = tmp;
                     })
                 });
-
-                console.log(data);
                 
                 /* extracting children of children */
                 this.data = data;
@@ -208,6 +206,13 @@ export class AppComponent implements OnInit, AfterViewInit {
             .subscribe((activeTab: any) => {
                 
             });
+    }
+
+    getTabTypeImage(editor: any) {
+        return {
+            'layout': 'images/ic_featured_play_list_black_18px.svg',
+            'code': 'images/ic_code_black_18px.svg',
+        }[editor] || 'images/ic_code_black_18px.svg';
     }
 
     onAdd(event: any) {
