@@ -88,7 +88,7 @@
                     <ul [collapse]="childType.collapsed || childType.children.length === 0">
                     
                     <li *ngFor="let childName of childType.children">
-                        
+
                         <span #selectable 
                         [class.selected]="isItSelected(childName)" 
                         dnd-draggable 
@@ -107,7 +107,11 @@
                                 resolved: true 
                             })">
                         
-                        {{childName.url | extractName}}
+                            <span class="tree-node__child-type-image">
+                              <img [src]="getTypeImage(childName)">
+                            </span>
+
+                            {{childName.url | extractName}}
                         </span>
                         
                         <!--<span (click)='onEdit({label:childName.label, url:childName.url, editor:"code",path:[{name:typeName.label ,type:type.label},{name:childName.label,type:childType.label}]})' 

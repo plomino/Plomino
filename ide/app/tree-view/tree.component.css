@@ -34,6 +34,10 @@ ul {
 .tree-node--collapsible.click-cursor {
     cursor: pointer;
 }
+.tree-node__child-type-image {
+    display: inline-block;
+    margin-left: 4px;
+}
 .link {
     color: #337ab7;
     cursor: pointer;

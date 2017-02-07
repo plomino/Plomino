@@ -61,6 +61,14 @@ export class TreeComponent implements OnInit {
         else { return false; }
     }
 
+    getTypeImage(childName: any) {
+        return {
+            'PlominoField': 'images/ic_input_black_18px.svg',
+            'PlominoHidewhen': 'images/ic_remove_red_eye_black_18px.svg',
+            'PlominoAction': 'images/ic_gavel_black_18px.svg',
+        }[childName.type] || 'images/ic_input_black_18px.svg';
+    }
+
     scroll() {
         if (this.element != undefined)
             for (let elt of this.element._results)
