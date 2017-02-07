@@ -1,1 +1,11 @@
-<tal:block tal:content="structure python:options['fieldvalue']">Rich text read template</tal:block>
+<tal:field tal:define="
+    field python:options['field'];
+    dynamic python:getattr(field, 'isDynamicField', False);
+    field_id python:field.id;
+    form_id python:field.aq_parent.id;">
+    <tal:block tal:condition="not:dynamic"
+        tal:content="structure python:options['fieldvalue']">Rich text</tal:block>
+    <span tal:condition="dynamic" class="dynamicfield"
+        tal:attributes="data-dynamicfield python:dynamic and '%s/%s' % (form_id, field_id) or None;"
+        tal:content="structure python:options['fieldvalue']">Rich text</span>
+</tal:field>
