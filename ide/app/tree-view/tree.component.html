@@ -43,9 +43,9 @@
             {{type.label}}
             </span>
             
-            <span (click)="onAdd({url:type.url, type:type.type})" 
+            <!--<span (click)="onAdd({url:type.url, type:type.type})" 
                 class="link glyphicon glyphicon-plus click-cursor">
-            </span>
+            </span>-->
             
             <ul *ngIf="type.label != 'Agents'" [collapse]="type.collapsed">
             
@@ -81,9 +81,9 @@
                         {{childType.label}}
                     </span>
 
-                    <span (click)="onAdd({url:childType.url, type:childType.type})" 
+                    <!--<span (click)="onAdd({url:childType.url, type:childType.type})" 
                         class="link glyphicon glyphicon-plus click-cursor">
-                    </span>
+                    </span>-->
                     
                     <ul [collapse]="childType.collapsed || childType.children.length === 0">
                     
