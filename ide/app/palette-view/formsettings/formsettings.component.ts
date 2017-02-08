@@ -57,6 +57,7 @@ export class FormSettingsComponent implements OnInit {
                 private changeDetector: ChangeDetectorRef,
                 private tabsService: TabsService,
                 private treeService: TreeService,
+                private zone: NgZone,
                 private elementService: ElementService,
                 private widgetService: WidgetService,
                 private formsService: FormsService) {}
@@ -123,6 +124,19 @@ export class FormSettingsComponent implements OnInit {
                 this.treeService.updateTree().then(() => {
                     this.formSaving = false;
                     this.formSettings = responseHtml;
+                    if (this.formSettings) {
+                        window['MacroWidgetPromise'].then((MacroWidget: any) => {
+                            setTimeout(() => {
+                                let $el = $('#formfield-form-widgets-IHelpers-helpers > ul.plomino-macros');
+                            
+                                if ($el.length) {
+                                    this.zone.runOutsideAngular(() => {
+                                        new MacroWidget($el);
+                                    });
+                                }
+                            }, 100);
+                        });
+                    }
                     this.changeDetector.markForCheck();
 
                     if (cb) {
@@ -197,6 +211,21 @@ export class FormSettingsComponent implements OnInit {
                 // console.log(this.formSettings = $template.innerHTML);
                 // this.formSettings = $template.wrap('<div />').parent().html();
                 this.formSettings = template;
+
+                if (this.formSettings) {
+                    window['MacroWidgetPromise'].then((MacroWidget: any) => {
+                        setTimeout(() => {
+                            let $el = $('#formfield-form-widgets-IHelpers-helpers > ul.plomino-macros');
+                        
+                            if ($el.length) {
+                                this.zone.runOutsideAngular(() => {
+                                    new MacroWidget($el);
+                                });
+                            }
+                        }, 100);
+                    });
+                }
+
                 this.changeDetector.markForCheck();
             });
     }

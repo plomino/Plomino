@@ -86,14 +86,14 @@ export class PaletteComponent implements OnInit {
         });
 
         this.formsService.paletteTabChange$.subscribe((tabIndex:number) => {
-            this.setActiveTab(tabIndex);
+            this.tabs.forEach((tab, index) => tab.active = (index === tabIndex));
             this.changeDetector.markForCheck();
         });
         
     }
 
     setActiveTab(tabIndex: number):void {
-        this.tabs.forEach((tab, index) => tab.active = (index === tabIndex));
+        this.formsService.changePaletteTab(tabIndex);
     };
 
     private updateTabs(showAddTab: boolean, tabs: any[], activeTabType: string, activeFieldType?: string): any[] {

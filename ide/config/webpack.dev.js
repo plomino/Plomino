@@ -4,7 +4,8 @@ var commonConfig = require('./webpack.common.js');
 var helpers = require('./helpers.js');
 
 module.exports = webpackMerge(commonConfig, {
-    devtool: 'cheap-module-eval-source-map',
+    // devtool: 'cheap-module-eval-source-map',
+    devtool: 'eval',
     output: {
         path: helpers.root('../src/Products/CMFPlomino/browser/static/ide/'),
         filename: '[name].js',

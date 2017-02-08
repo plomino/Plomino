@@ -3,73 +3,30 @@
       <a [href]="'#palette-tab-' + i + '-panel'"
         *ngFor="let tabz of tabs, let i = index"
         [class.is-active]="tabz.active"
+        (click)="setActiveTab(i)"
         class="mdl-tabs__tab">
         {{ tabz.title }}
       </a>
   </div>
 
   <div class="mdl-tabs__panel"
-    (click)="setActiveTab(0)"
     [class.is-active]="tabs[0].active"
     id="palette-tab-0-panel">
     <plomino-palette-add></plomino-palette-add>
   </div>
   <div class="mdl-tabs__panel"
-    (click)="setActiveTab(1)"
     [class.is-active]="tabs[1].active"
     id="palette-tab-1-panel">
     <plomino-palette-fieldsettings></plomino-palette-fieldsettings>
   </div>
   <div class="mdl-tabs__panel"
-    (click)="setActiveTab(2)"
     [class.is-active]="tabs[2].active"
     id="palette-tab-2-panel">
     <plomino-palette-formsettings></plomino-palette-formsettings>
   </div>
   <div class="mdl-tabs__panel"
-    (click)="setActiveTab(3)"
     [class.is-active]="tabs[3].active"
     id="palette-tab-3-panel">
     <plomino-palette-dbsettings></plomino-palette-dbsettings>
   </div>
 </div>
-    <!--<tab *ngFor="let tabz of tabs, let i = index"
-        [active]="tabz.active" 
-        [heading]="tabz.title"
-        (select)="setActiveTab(i)">
-
-        <div class="tab-wrapper">
-
-            <plomino-palette-add *ngIf="tabz.id==='add'"></plomino-palette-add>
-            
-            <plomino-palette-fieldsettings *ngIf="tabz.id==='item'">
-            </plomino-palette-fieldsettings>
-            
-            <plomino-palette-formsettings *ngIf="tabz.id==='group'">
-            </plomino-palette-formsettings>
-            
-            <plomino-palette-dbsettings *ngIf="tabz.id==='db'"></plomino-palette-dbsettings>
-        </div>
-
-    </tab>-->
-<!--<tabset [justified]="true">
-    <tab *ngFor="let tabz of tabs, let i = index"
-        [active]="tabz.active" 
-        [heading]="tabz.title"
-        (select)="setActiveTab(i)">
-
-        <div class="tab-wrapper">
-
-            <plomino-palette-add *ngIf="tabz.id==='add'"></plomino-palette-add>
-            
-            <plomino-palette-fieldsettings *ngIf="tabz.id==='item'">
-            </plomino-palette-fieldsettings>
-            
-            <plomino-palette-formsettings *ngIf="tabz.id==='group'">
-            </plomino-palette-formsettings>
-            
-            <plomino-palette-dbsettings *ngIf="tabz.id==='db'"></plomino-palette-dbsettings>
-        </div>
-
-    </tab>
-</tabset>-->

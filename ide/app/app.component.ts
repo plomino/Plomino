@@ -1,3 +1,11 @@
+// import { TinyMCE } from 'mockup-patterns-tinymce';
+// import { Modal } from 'mockup-patterns-modal';
+
+// window.TinyMCE = TinyMCE();
+// window.Modal = Modal;
+
+// new window.TinyMCE();
+
 // Core
 import { 
     Component, 
@@ -178,6 +186,7 @@ export class AppComponent implements OnInit, AfterViewInit {
                 
                 /* extracting children of children */
                 this.data = data;
+                
             });
         
         this.tabsService.getTabs()
@@ -194,12 +203,20 @@ export class AppComponent implements OnInit, AfterViewInit {
         $(() => {
             $('.palette-wrapper')
             .css('height', `${ window.innerHeight / 2 }px`);
-    
-            /* for fixed tabs */
-            // setTimeout(() => {
-            //     $('plomino-palette ul.nav-tabs')
-            //     .css('width', `${ $('.palette-wrapper').width() - 2 }px`);
-            // }, 100);
+
+            window['Modal'] = require('mockup-patterns-modal');
+            window['TineMCE'] = require('mockup-patterns-tinymce');
+
+            require('./assets/scripts/macros.js');
+
+            // Promise.all([
+            //     window['MacroWidgetPromise'],
+            //     window['PlominoMacrosPromise'],
+            //     window['registryPromise']
+            // ])
+            // .then((result) => {
+            //     console.log(result);
+            // });
         });
     }
 

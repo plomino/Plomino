@@ -34,6 +34,13 @@
   margin: 5px;
 }
 
+ /deep/ .plomino-macros {
+    list-style: none;
+    -webkit-padding-start: 0;
+    -webkit-margin-start: 0;
+    -webkit-margin-before: 0;
+}
+
 /deep/ #formfield-form-widgets-form_layout {
     display: none !important;
 }
