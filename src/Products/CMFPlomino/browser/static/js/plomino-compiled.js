@@ -223,7 +223,7 @@ require([
     'pat-base',
     'mockup-patterns-modal'
 ], function($, Base, Modal) {
-    
+    'use strict';
     var DataGrid = Base.extend({
         name: 'plominodatagrid',
         parser: 'mockup',
@@ -239,6 +239,11 @@ require([
             self.col_number = self.fields.length;
             self.form_url = self.$el.attr('data-form-url');
             self.render();
+        },
+        setValue(value) {
+            var self = this;
+            self.input.val(value);
+            self.input.change();
         },
         render: function() {
             var self = this;
@@ -312,7 +317,7 @@ require([
                     rendered.push(response[self.fields[i]].rendered);
                 }
                 self.values.push(raw);
-                self.input.val(JSON.stringify(self.values));
+                self.setValue(JSON.stringify(self.values));
                 self.rows.push(rendered);
                 self.render();
             }
@@ -330,7 +335,7 @@ require([
                     rendered.push(response[self.fields[i]].rendered);
                 }
                 self.values[row_index] = raw;
-                self.input.val(JSON.stringify(self.values));
+                self.setValue(JSON.stringify(self.values));
                 self.rows[row_index] = rendered;
                 self.render();
             }
@@ -338,7 +343,7 @@ require([
         },
         remove: function(self, index) {
             self.values.splice(index, 1);
-            self.input.val(JSON.stringify(self.values));
+            self.setValue(JSON.stringify(self.values));
             self.rows.splice(index, 1);
             self.render();
             return false;
@@ -346,7 +351,7 @@ require([
         up: function(self, index) {
             if(index==0) return;
             self.values.splice(index-1, 0, self.values.splice(index, 1)[0]);
-            self.input.val(JSON.stringify(self.values));
+            self.setValue(JSON.stringify(self.values));
             self.rows.splice(index-1, 0, self.rows.splice(index, 1)[0]);
             self.render();
             return false;
@@ -354,7 +359,7 @@ require([
         down: function(self, index) {
             if(index==self.values.length-1) return;
             self.values.splice(index, 0, self.values.splice(index+1, 1)[0]);
-            self.input.val(JSON.stringify(self.values));
+            self.setValue(JSON.stringify(self.values));
             self.rows.splice(index, 0, self.rows.splice(index+1, 1)[0]);
             self.render();
             return false;
