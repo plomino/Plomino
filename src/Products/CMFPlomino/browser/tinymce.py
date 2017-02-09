@@ -3,6 +3,7 @@ from zope import component, interface
 from Products.Five import BrowserView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from plone.dexterity.utils import createContentInContainer
+from zope.lifecycleevent import modified
 
 from Products.CMFPlomino.config import FIELD_MODES
 from Products.CMFPlomino.contents.field import get_field_types
@@ -252,7 +253,7 @@ class PlominoForm(object):
                     id=actionid,
                     action_type=actionType,
                     action_display=actionDisplay,
-                    contnet=content,
+                    content=content,
                     hidewhen=hideWhen,
                     in_action_bar=inActionBar,
                 )
@@ -436,6 +437,8 @@ class PlominoField(object):
         self.context.field_mode = fieldmode
         self.context.formula = fieldformula
 
+        modified(self.context)
+
         self.request.RESPONSE.redirect(self.context.absolute_url() + "/../@@tinymceplominoform/valid_page?type=field&value=" + self.context.id)
 
 
@@ -464,6 +467,8 @@ class PlominoHidewhen(object):
         self.context.formula = hidewhenformula
         self.context.isdynamic = isdynamic
 
+        modified(self.context)
+
         self.request.RESPONSE.redirect(self.context.absolute_url() + "/../@@tinymceplominoform/valid_page?type=hidewhen&value=" + self.context.id)
 
 
@@ -482,24 +487,15 @@ class PlominoAction(object):
         return self
 
     def setActionProperties(self):
-        """Set field properties to their new values.
+        """Set action properties to their new values.
         """
+        self.context.title = self.request.get("actiontitle", self.context.id)
+        self.context.action_type = self.request.get("actiontype", 'OPENFORM')
+        self.context.action_display = self.request.get("actiondisplay", 'LINK')
+        self.context.content = self.request.get("actioncontent", '')
+        self.context.hidewhen = self.request.get("actionhidewhen", '')
+        self.context.in_action_bar = (self.request.get("actioninactionbar", None) == 'on')
 
-        title = self.request.get("actiontitle", self.context.id)
-        actionType = self.request.get("actiontype", 'OPENFORM')
-        actionDisplay = self.request.get("actiondisplay", 'LINK')
-        content = self.request.get("actioncontent", '')
-        hideWhen = self.request.get("actionhidewhen", '')
-        inActionBar = self.request.get("actioninactionbar", None) == 'on'
-
-        # self.context is the current field
-        self.context.setTitle(title)
-        self.context.setActionType(actionType)
-        self.context.setActionDisplay(actionDisplay)
-        self.context.setContent(content)
-        self.context.setHidewhen(hideWhen)
-        self.context.setInActionBar(inActionBar)
-
-        self.context.aq_inner.at_post_edit_script()
+        modified(self.context)
 
         self.request.RESPONSE.redirect(self.context.absolute_url() + "/../@@tinymceplominoform/valid_page?type=action&value=" + self.context.id)
