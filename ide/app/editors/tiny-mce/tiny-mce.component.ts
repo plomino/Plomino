@@ -234,10 +234,15 @@ export class TinyMCEComponent implements AfterViewInit, OnInit, OnDestroy {
                         let $element =  $(ev.target);
                         let eventTarget = <any> ev.target;
                         console.info('mousedown $element', $element);
-                        if (eventTarget.control || 
-                            ['radio', 'select-one'].indexOf(eventTarget.type) !== -1) {
+                        if (eventTarget.control ||
+                            (['radio', 'select-one'].indexOf(eventTarget.type) !== -1)) {
                             $element = $element.parent();
                         }
+                        else if (eventTarget.tagName === 'OPTION' ||
+                            eventTarget.nodeName === 'OPTION') {
+                            $element = $element.parent().parent();
+                        }
+                        console.log($element);
                         let $parent = $element.parent();
                         let $elementIsGroup = $element.hasClass('plominoGroupClass');
                         let elementIsLabel = $element.hasClass('plominoLabelClass');
