@@ -301,7 +301,7 @@ export class WidgetService {
     let $position = element.text().split(':')[0];
     let $id = element.text().split(':')[1];
   
-    let container = 'div';
+    let container = 'span';
     let content = `<${container} class="${$class} mceNonEditable" 
                               data-mce-resize="false"
                               data-plomino-position="${$position}" 
