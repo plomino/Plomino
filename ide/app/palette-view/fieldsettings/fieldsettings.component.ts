@@ -96,19 +96,7 @@ export class FieldSettingsComponent implements OnInit {
             .subscribe((responseHtml: string) => {
                 this.formTemplate = responseHtml;
                 this.formSaving = false;
-                if (this.field) {
-                    window['MacroWidgetPromise'].then((MacroWidget: any) => {
-                        setTimeout(() => {
-                            let $el = $('.field-settings-wrapper #formfield-form-widgets-IHelpers-helpers > ul.plomino-macros');
-                        
-                            if ($el.length) {
-                                this.zone.runOutsideAngular(() => {
-                                    new MacroWidget($el);
-                                });
-                            }
-                        }, 200);
-                    });
-                }
+                this.updateMacroses();
                 this.changeDetector.markForCheck();
             }, (err: any) => { 
                 console.error(err) 
@@ -119,14 +107,34 @@ export class FieldSettingsComponent implements OnInit {
         this.loadSettings();
     }
 
+    private updateMacroses() {
+        if (this.field) {
+            window['MacroWidgetPromise'].then((MacroWidget: any) => {
+                setTimeout(() => { // for exclude bugs
+                    let $el = $('.field-settings-wrapper ' + 
+                    '#formfield-form-widgets-IHelpers-helpers > ul.plomino-macros');
+                    if ($el.length) {
+                        this.zone.runOutsideAngular(() => { new MacroWidget($el); });
+                    }
+                }, 200);
+            });
+        }
+    }
+
+    private clickAddLink() {
+        const $addLink = $('plomino-palette > tabset > ul > li > a > span:contains("Add")');
+        if ($addLink.length !== 0) {
+            $addLink.click();
+        }
+    }
+
     private loadSettings() {
         this.tabsService.getActiveField()
             .do((field) => {
-                const $addLink = $('plomino-palette > tabset > ul > li > a > span:contains("Add")');
-                if (field === null && $addLink.length !== 0) {
-                    $addLink.click();
+                if (field === null) {
+                    this.clickAddLink();
                 }
-                // console.log(`Field received in fieldssettings `, field);
+
                 this.field = field;
             })
             .flatMap((field: any) => {
@@ -138,19 +146,7 @@ export class FieldSettingsComponent implements OnInit {
             })
             .subscribe((template) => {
                 this.formTemplate = template;
-                if (this.field) {
-                    window['MacroWidgetPromise'].then((MacroWidget: any) => {
-                        setTimeout(() => {
-                            let $el = $('.field-settings-wrapper #formfield-form-widgets-IHelpers-helpers > ul.plomino-macros');
-                        
-                            if ($el.length) {
-                                this.zone.runOutsideAngular(() => {
-                                    new MacroWidget($el);
-                                });
-                            }
-                        }, 200);
-                    });
-                }
+                this.updateMacroses();
                 this.changeDetector.detectChanges();
             }); 
     }

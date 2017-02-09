@@ -124,19 +124,7 @@ export class FormSettingsComponent implements OnInit {
                 this.treeService.updateTree().then(() => {
                     this.formSaving = false;
                     this.formSettings = responseHtml;
-                    if (this.formSettings) {
-                        window['MacroWidgetPromise'].then((MacroWidget: any) => {
-                            setTimeout(() => {
-                                let $el = $('.form-settings-wrapper #formfield-form-widgets-IHelpers-helpers > ul.plomino-macros');
-                            
-                                if ($el.length) {
-                                    this.zone.runOutsideAngular(() => {
-                                        new MacroWidget($el);
-                                    });
-                                }
-                            }, 100);
-                        });
-                    }
+                    this.updateMacroses();
                     this.changeDetector.markForCheck();
 
                     if (cb) {
@@ -194,6 +182,20 @@ export class FormSettingsComponent implements OnInit {
         window.open(`${formUrl}/OpenForm`);
     }
 
+    private updateMacroses() {
+        if (this.formSettings) {
+            window['MacroWidgetPromise'].then((MacroWidget: any) => {
+                setTimeout(() => { // for exclude bugs
+                    let $el = $('.form-settings-wrapper ' + 
+                    '#formfield-form-widgets-IHelpers-helpers > ul.plomino-macros');
+                    if ($el.length) {
+                        this.zone.runOutsideAngular(() => { new MacroWidget($el); });
+                    }
+                }, 200);
+            });
+        }
+    }
+
     private getSettings() {
         this.tabsService.getActiveTab()
             .do((tab) => {
@@ -207,25 +209,8 @@ export class FormSettingsComponent implements OnInit {
                 }
             })
             .subscribe((template) => {
-                // $template.find('#formfield-form-widgets-form_layout').css('display', 'none');
-                // console.log(this.formSettings = $template.innerHTML);
-                // this.formSettings = $template.wrap('<div />').parent().html();
                 this.formSettings = template;
-
-                if (this.formSettings) {
-                    window['MacroWidgetPromise'].then((MacroWidget: any) => {
-                        setTimeout(() => {
-                            let $el = $('.form-settings-wrapper #formfield-form-widgets-IHelpers-helpers > ul.plomino-macros');
-                        
-                            if ($el.length) {
-                                this.zone.runOutsideAngular(() => {
-                                    new MacroWidget($el);
-                                });
-                            }
-                        }, 100);
-                    });
-                }
-
+                this.updateMacroses();
                 this.changeDetector.markForCheck();
             });
     }
