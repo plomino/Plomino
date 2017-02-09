@@ -375,7 +375,10 @@ export class TinyMCEComponent implements AfterViewInit, OnInit, OnDestroy {
                 })
                 .subscribe((data: any) => {
                     let selection = ed.selection.select(data.oldTemplate);
-                    ed.execCommand('mceReplaceContent', false, data.newTemplate);
+                    try {
+                        ed.execCommand('mceReplaceContent', false, data.newTemplate);
+                    }
+                    catch (e) {}
                 });
 
         }
