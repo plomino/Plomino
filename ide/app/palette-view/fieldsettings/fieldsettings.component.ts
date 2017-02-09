@@ -6,6 +6,7 @@ import {
     Output,
     ViewChild,
     ElementRef,
+    NgZone,
     ChangeDetectorRef,
     ChangeDetectionStrategy,
     EventEmitter 
@@ -53,6 +54,7 @@ export class FieldSettingsComponent implements OnInit {
     
     constructor(private objService: ObjService,
                 private tabsService: TabsService,
+                private zone: NgZone,
                 private formsService: FormsService,
                 private fieldsService: FieldsService,
                 private changeDetector: ChangeDetectorRef,
@@ -94,6 +96,19 @@ export class FieldSettingsComponent implements OnInit {
             .subscribe((responseHtml: string) => {
                 this.formTemplate = responseHtml;
                 this.formSaving = false;
+                if (this.field) {
+                    window['MacroWidgetPromise'].then((MacroWidget: any) => {
+                        setTimeout(() => {
+                            let $el = $('.field-settings-wrapper #formfield-form-widgets-IHelpers-helpers > ul.plomino-macros');
+                        
+                            if ($el.length) {
+                                this.zone.runOutsideAngular(() => {
+                                    new MacroWidget($el);
+                                });
+                            }
+                        }, 200);
+                    });
+                }
                 this.changeDetector.markForCheck();
             }, (err: any) => { 
                 console.error(err) 
@@ -123,6 +138,19 @@ export class FieldSettingsComponent implements OnInit {
             })
             .subscribe((template) => {
                 this.formTemplate = template;
+                if (this.field) {
+                    window['MacroWidgetPromise'].then((MacroWidget: any) => {
+                        setTimeout(() => {
+                            let $el = $('.field-settings-wrapper #formfield-form-widgets-IHelpers-helpers > ul.plomino-macros');
+                        
+                            if ($el.length) {
+                                this.zone.runOutsideAngular(() => {
+                                    new MacroWidget($el);
+                                });
+                            }
+                        }, 200);
+                    });
+                }
                 this.changeDetector.detectChanges();
             }); 
     }

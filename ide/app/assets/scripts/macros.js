@@ -69,11 +69,15 @@ require([
                     if (macro_json == "") {
                         return;
                     }
-                    var macro = JSON.parse(macro_json);
-                    if (macro['_macro_id_']) {
-                        self.ids[macro['_macro_id_']]=true;
+                    try {
+                      var macro = JSON.parse(macro_json);
+                      if (macro['_macro_id_']) {
+                          self.ids[macro['_macro_id_']]=true;
+                      }
+                      return {id:macro_json,text:''}
+                    } catch (e) {
+                      return;
                     }
-                    return {id:macro_json,text:''}
                 });
                 self.initInput.bind({widget:self})(el, rule);
                 i++;

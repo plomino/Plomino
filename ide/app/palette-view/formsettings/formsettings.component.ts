@@ -127,7 +127,7 @@ export class FormSettingsComponent implements OnInit {
                     if (this.formSettings) {
                         window['MacroWidgetPromise'].then((MacroWidget: any) => {
                             setTimeout(() => {
-                                let $el = $('#formfield-form-widgets-IHelpers-helpers > ul.plomino-macros');
+                                let $el = $('.form-settings-wrapper #formfield-form-widgets-IHelpers-helpers > ul.plomino-macros');
                             
                                 if ($el.length) {
                                     this.zone.runOutsideAngular(() => {
@@ -215,7 +215,7 @@ export class FormSettingsComponent implements OnInit {
                 if (this.formSettings) {
                     window['MacroWidgetPromise'].then((MacroWidget: any) => {
                         setTimeout(() => {
-                            let $el = $('#formfield-form-widgets-IHelpers-helpers > ul.plomino-macros');
+                            let $el = $('.form-settings-wrapper #formfield-form-widgets-IHelpers-helpers > ul.plomino-macros');
                         
                             if ($el.length) {
                                 this.zone.runOutsideAngular(() => {
