@@ -29,12 +29,14 @@ export class FormsService {
     }
 
     getFormContentBeforeSave(id:any) {
+        console.info('getFormContentBeforeSave id', id);
         this.getFormContentBeforeSaveSource.next({
             id: id
         })
     }
 
     onFormContentBeforeSave(data:{id:any, content:any}) {
+        console.info('onFormContentBeforeSave id', data.id);
         this.onFormContentBeforeSaveSource.next({
             id: data.id,
             content: data.content
@@ -45,12 +47,14 @@ export class FormsService {
         this.paletteTabChangeEventSource.next(tabIndex);
     }
 
-    saveForm(id:any) {
-
+    saveForm(id: any, changeTab = true) {
+        console.info('saveForm called, this.formSaving', this.formSaving);
         if (this.formSaving) return;
         this.formSaving = true;
 
-        this.changePaletteTab(this.FORM_SETTINGS_TAB_INDEX);
+        if (changeTab) {
+            this.changePaletteTab(this.FORM_SETTINGS_TAB_INDEX);
+        }
 
         this.saveFormSettings(id, () => {
             this.saveFormContent(id, () => {

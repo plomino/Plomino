@@ -28,8 +28,6 @@ import { IField } from '../../interfaces';
 
 import 'jquery';
 
-declare let $: any;
-
 import { LoadingComponent } from '../../editors';
 
 @Component({
@@ -51,6 +49,7 @@ export class FieldSettingsComponent implements OnInit {
     formTemplate: string = '';
 
     formSaving: boolean = false;
+    macrosWidgetTimer: any = null;
     
     constructor(private objService: ObjService,
                 private tabsService: TabsService,
@@ -64,6 +63,7 @@ export class FieldSettingsComponent implements OnInit {
         this.loadSettings();
 
         this.formsService.formIdChanged$.subscribe(((data: any) => {
+            console.info('seems that formIdChanged', data);
             if (this.field && this.field.url.indexOf(data.oldId) !== -1) {
                 this.field.url = `${data.newId}/${this.formsService.getIdFromUrl(this.field.url)}`;
             }
@@ -71,29 +71,40 @@ export class FieldSettingsComponent implements OnInit {
     }
 
     submitForm() {
-        let $form: any = $(this.fieldForm.nativeElement);
-        let form: HTMLFormElement = $form.find('form').get(0);
+        console.info('submit form called');
+        let $form: JQuery = $(this.fieldForm.nativeElement);
+        let form: HTMLFormElement = <HTMLFormElement> $form.find('form').get(0);
         let formData: FormData = new FormData(form);
 
         formData.append('form.buttons.save', 'Save');
 
         this.formSaving = true;
         
+        console.info('this.objService.updateFormSettings', this.field.url, formData);
         this.objService.updateFormSettings(this.field.url, formData)
             .flatMap((responseData: any) => {
+                console.info('responseData', responseData);
                 if (responseData.html.indexOf('dl.error') > -1) {
+                    console.info('responseData.html.indexOf(dl.error) > -1', responseData.html.indexOf('dl.error'));
                     return Observable.of(responseData.html);
                 } else {
                     let $fieldId = responseData.url.slice(responseData.url.lastIndexOf('/') + 1);
                     let newUrl = this.field.url.slice(0, this.field.url.lastIndexOf('/') + 1) + $fieldId; 
                     this.field.url = newUrl;
+                    console.info('its ok $fieldId', $fieldId);
+                    console.info('newUrl', newUrl);
+                    console.info('this.fieldsService.updateField', this.field, this.formAsObject($form), $fieldId);
                     this.fieldsService.updateField(this.field, this.formAsObject($form), $fieldId);
                     this.field.id = $fieldId;
+                    console.info('this.field.id = $fieldId', this.field.id);
                     this.treeService.updateTree();
+                    console.info('this.treeService.updateTree();');
+                    console.info('return this.objService.getFieldSettings(newUrl);', newUrl);
                     return this.objService.getFieldSettings(newUrl);
                 }
             })
             .subscribe((responseHtml: string) => {
+                console.info('submitForm responseHtml received');
                 this.formTemplate = responseHtml;
                 this.formSaving = false;
                 this.updateMacroses();
@@ -104,13 +115,17 @@ export class FieldSettingsComponent implements OnInit {
     }
 
     cancelForm() {
+        console.info('form cancelled');
         this.loadSettings();
     }
 
     private updateMacroses() {
         if (this.field) {
             window['MacroWidgetPromise'].then((MacroWidget: any) => {
-                setTimeout(() => { // for exclude bugs
+                if (this.macrosWidgetTimer !== null) {
+                    clearTimeout(this.macrosWidgetTimer);
+                }
+                this.macrosWidgetTimer = setTimeout(() => { // for exclude bugs
                     let $el = $('.field-settings-wrapper ' + 
                     '#formfield-form-widgets-IHelpers-helpers > ul.plomino-macros');
                     if ($el.length) {
@@ -129,6 +144,7 @@ export class FieldSettingsComponent implements OnInit {
     }
 
     private loadSettings() {
+        console.info('load settings called');
         this.tabsService.getActiveField()
             .do((field) => {
                 if (field === null) {
@@ -136,15 +152,18 @@ export class FieldSettingsComponent implements OnInit {
                 }
 
                 this.field = field;
+                console.info('this.field', this.field);
             })
             .flatMap((field: any) => {
                 if (field && field.id) {
+                    console.info('this.objService.getFieldSettings(field.url)', field.url);
                     return this.objService.getFieldSettings(field.url)
                 } else {
                     return Observable.of('');
                 }
             })
             .subscribe((template) => {
+                console.info('formTemplate changed');
                 this.formTemplate = template;
                 this.updateMacroses();
                 this.changeDetector.detectChanges();

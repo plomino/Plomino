@@ -47,6 +47,7 @@ module.exports = merge(require('./webpack.patterns'), {
         { from: 'app/assets/roboto', to: 'theme/roboto' },
         { from: 'app/assets/images', to: 'images' },
         { from: 'app/assets/css/barceloneta-compiled.css', to: 'theme' },
+        { from: 'app/assets/css/plone-compiled.css', to: 'theme/++plone++static' },
         { from: 'node_modules/tinymce/plugins/noneditable/plugin.js', to: 'plugins/noneditable' },
         { from: 'node_modules/select2/select2.css', to: 'theme' },
         { from: 'node_modules/select2/select2-bootstrap.css', to: 'theme' },

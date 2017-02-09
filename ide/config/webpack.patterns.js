@@ -17,12 +17,15 @@ function resolver(base) {
 }
 
 var JQUERY_TMPL = resolver('../node-modules/jquery-tmpl');
+var JQUERY_BASE = resolver('../node-modules/jquery');
 var LOGGING = resolver('../node_modules/logging');
 var MOCKUP = resolver('../node_modules/mockup/mockup');
 var MOCKUP_CORE = resolver('../node_modules/mockup-core');
 var PATTERNSLIB = resolver('../node_modules/patternslib');
 var TINYMCE = resolver('../node_modules/tinymce');
+var ACEMOD = resolver('../node_modules/ace-editor-builds/src');
 var APP_SCRIPTS = resolver('../app/assets/scripts');
+var PLOMINO = resolver('../../src/Products/CMFPlomino/browser/static/js');
 
 var alias = {
   // Legacy bower aliases
@@ -35,7 +38,20 @@ var alias = {
   'bower/tinymce-builded': TINYMCE(),
 
   // Plone core-bundles and mockup aliases
+  // 'jquery': JQUERY_BASE('dist/jquery'),
+  // 'plomino-dynamic': PLOMINO('dynamic'),
+  // 'plomino-formula': PLOMINO('formula'),
+
+  // 'ace': ACEMOD('ace'),
   'ace': 'ace',
+  // 'ace/mode/javascript': ACEMOD('mode-javascript'),
+  // 'ace/mode/text': ACEMOD('mode-text'),
+  // 'ace/mode/css': ACEMOD('mode-css'),
+  // 'ace/mode/html': ACEMOD('mode-html'),
+  // 'ace/mode/xml': ACEMOD('mode-xml'),
+  // 'ace/mode/less': ACEMOD('mode-less'),
+  // 'ace/mode/python': ACEMOD('mode-python'),
+  // 'ace/mode/ini': ACEMOD('mode-ini'),
   'bootstrap-alert': 'bootstrap/js/alert',
   'bootstrap-collapse': 'bootstrap/js/collapse',
   'bootstrap-dropdown': 'bootstrap/js/dropdown',

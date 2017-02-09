@@ -890,6 +890,9 @@ define([
       if (typeof response === 'string') {
         self.$raw = $('<div />').append($(utils.parseBodyTag(response)));
       }
+      else {
+        console.log('cannot be parsed', response);
+      }
       
       self.render.apply(self, [options || self.options]);
       self.$modal.addClass(self.options.templateOptions.classActiveName);

@@ -47,6 +47,7 @@ export class FormSettingsComponent implements OnInit {
     tab: any;
 
     formSaving:boolean = false;
+    macrosWidgetTimer: any = null;
 
     // This needs to handle both views and forms
     heading: string;
@@ -68,7 +69,15 @@ export class FormSettingsComponent implements OnInit {
         let onSaveFinishCb:any = null;
 
         this.formsService.formSettingsSave$.subscribe((data) => {
-            if(this.tab.formUniqueId !== data.formUniqueId)
+            console.info('this.formsService.formSettingsSave$.subscribe called', data);
+            console.info('this.tab.formUniqueId !== data.formUniqueId',
+                this.tab.formUniqueId !== data.formUniqueId);
+
+            if (typeof data.formUniqueId === 'undefined') {
+                data.formUniqueId = this.tab.formUniqueId;
+            }
+            
+            if (this.tab.formUniqueId !== data.formUniqueId)
                 return;
 
             onSaveFinishCb = data.cb;
@@ -77,6 +86,9 @@ export class FormSettingsComponent implements OnInit {
         });
 
         this.formsService.onFormContentBeforeSave$.subscribe((data:{id:any, content:any}) => {
+            console.info('this.formsService.onFormContentBeforeSave$.subscribe', data);
+            console.info('this.tab.formUniqueId !== data.id',
+                this.tab.formUniqueId !== data.id);
             if (this.tab.formUniqueId !== data.id)
                 return;
 
@@ -88,7 +100,7 @@ export class FormSettingsComponent implements OnInit {
     }
 
     saveFormSettings(formData: any, formLayout: any, cb: any) {
-
+        console.info('saveFormSettings called');
         this.formSaving = true;
         let $formId:any = '';
       
@@ -185,7 +197,10 @@ export class FormSettingsComponent implements OnInit {
     private updateMacroses() {
         if (this.formSettings) {
             window['MacroWidgetPromise'].then((MacroWidget: any) => {
-                setTimeout(() => { // for exclude bugs
+                if (this.macrosWidgetTimer !== null) {
+                    clearTimeout(this.macrosWidgetTimer);
+                }
+                this.macrosWidgetTimer = setTimeout(() => { // for exclude bugs
                     let $el = $('.form-settings-wrapper ' + 
                     '#formfield-form-widgets-IHelpers-helpers > ul.plomino-macros');
                     if ($el.length) {

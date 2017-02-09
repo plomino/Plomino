@@ -15,6 +15,11 @@ export class FieldsService {
   }
 
   updateField(fieldData: any, newFieldData: any, id: any) {
+    console.info('this.updatesStream$.next', {
+      fieldData: fieldData,
+      newData: newFieldData,
+      newId: id
+    });
     this.updatesStream$.next({
       fieldData: fieldData,
       newData: newFieldData,

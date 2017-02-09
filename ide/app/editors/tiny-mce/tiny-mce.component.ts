@@ -40,8 +40,6 @@ import {
 import { UpdateFieldService } from './services';
 
 import 'jquery';
-
-declare let $: any;
 declare var tinymce: any;
 
 @Component({
@@ -97,6 +95,8 @@ export class TinyMCEComponent implements AfterViewInit, OnInit, OnDestroy {
     insertionSubscription: Subscription;
     templatesSubscription: Subscription;
 
+    autoSaveTimer: any = null;
+
     constructor(private elementService: ElementService,
                 private fieldsService: FieldsService,
                 private draggingService: DraggingService,
@@ -138,6 +138,7 @@ export class TinyMCEComponent implements AfterViewInit, OnInit, OnDestroy {
 
         this.fieldsService.listenToUpdates()
         .subscribe((updateData) => {
+            console.info('this.updateField(updateData)', updateData);
             this.updateField(updateData);
         });
 
@@ -146,6 +147,7 @@ export class TinyMCEComponent implements AfterViewInit, OnInit, OnDestroy {
         });
 
         this.formsService.formContentSave$.subscribe((data) => {
+            console.info('this.formsService.formContentSave$.subscribe', data);
 
             this.changeDetector.detectChanges();
 
@@ -162,7 +164,18 @@ export class TinyMCEComponent implements AfterViewInit, OnInit, OnDestroy {
         } );
 
         this.formsService.getFormContentBeforeSave$.subscribe((data:{id:any}) => {
-            if(data.id !== this.item.formUniqueId)
+            console.info('getFormContentBeforeSave$', data);
+            console.info('data.id !== this.item.formUniqueId',
+                data.id !== this.item.formUniqueId);
+            
+            console.info('this.item.formUniqueId', this.item.formUniqueId);
+            console.info('data.id', data.id);
+            
+            if (typeof this.item.formUniqueId === 'undefined') {
+                this.item.formUniqueId = data.id;
+            }
+            
+            if (data.id !== this.item.formUniqueId)
                 return;
 
             this.formsService.onFormContentBeforeSave({
@@ -184,6 +197,7 @@ export class TinyMCEComponent implements AfterViewInit, OnInit, OnDestroy {
 
     ngAfterViewInit(): void {
         let tiny = this;
+
         tinymce.init({
             cleanup : false,
             selector:'.tinymce-wrap',
@@ -191,8 +205,8 @@ export class TinyMCEComponent implements AfterViewInit, OnInit, OnDestroy {
             force_br_newlines : true,
             force_p_newlines : false,
             forced_root_block: '',
-            plugins: ['code', 'save', 'link', 'noneditable'],
-            toolbar: 'save | undo redo | formatselect | bold italic underline | alignleft aligncenter alignright alignjustify | bullist numlist | outdent indent | unlink link | image',
+            plugins: ['code', 'save', 'link', 'noneditable', 'plomino'],
+            toolbar: 'save | undo redo | formatselect | bold italic underline | alignleft aligncenter alignright alignjustify | bullist numlist | outdent indent | unlink link | image | plominofield plominolabel plominoaction plominosubform plominohidewhen plominocache plominopagebreak',
             save_onsavecallback: () => { this.formsService.saveForm(this.item.formUniqueId); this.changeDetector.markForCheck(); },
             setup : (editor: any) => {
 
@@ -287,11 +301,15 @@ export class TinyMCEComponent implements AfterViewInit, OnInit, OnDestroy {
             .subscribe((data) => {
                 let newData = '';
                 if (data && data.length) {
+                    console.info('this.widgetService.getFormLayout', this.id, data);
                     this.widgetService.getFormLayout(this.id, data)
                         .subscribe((formLayout: string) => {
+                            console.info('tinymce setContent code (0)');
                             tinymce.get(this.id).setContent(formLayout);
+                            // console.log(formLayout);
                         });
                 } else {
+                    console.info('tinymce setContent code (1)');
                     tinymce.get(this.id).setContent(newData);
                 }
             }, (err) => {
@@ -332,6 +350,7 @@ export class TinyMCEComponent implements AfterViewInit, OnInit, OnDestroy {
         let x = Math.round(mouseEvent.clientX - offset.left);
         let y = Math.round(mouseEvent.clientY - offset.top);
         let rng = this.getCaretFromEvent(x, y, editor);
+        console.info('this.getCaretFromEvent', rng);
 
         // if (startContainer.nodeName !== 'body') {
         //     let newRng = tinymce.DOM.createRng();
@@ -347,8 +366,10 @@ export class TinyMCEComponent implements AfterViewInit, OnInit, OnDestroy {
         editor.selection.setRng(rng);
         if (this.dragData.resolved) {
             this.addElement(this.dragData);
+            console.info('this.addElement', this.dragData);
         } else {
             this.resolveDragData(this.dragData, this.dragData.resolver);
+            console.info('this.resolveDragData', this.dragData, this.dragData.resolver);
         }
     }
 
@@ -356,8 +377,11 @@ export class TinyMCEComponent implements AfterViewInit, OnInit, OnDestroy {
         let ed = tinymce.get(this.id);
         let dataToUpdate: any[] = ed.dom.select(`*[data-plominoid=${updateData.fieldData.id}]`);
 
-        if (dataToUpdate.length) {
+        console.info('dataToUpdate selector', updateData.fieldData.id);
+        console.info('dataToUpdate', dataToUpdate);
 
+        if (dataToUpdate.length) {
+            console.info('dataToUpdate presents');
             Observable.from(dataToUpdate)
                 .map((element) => {
                     let normalizedType = $(element).attr('class').split(' ')[0].slice(7, -5);
@@ -371,14 +395,31 @@ export class TinyMCEComponent implements AfterViewInit, OnInit, OnDestroy {
                     };
                 })
                 .flatMap((itemToReplace: any) => {
+                    console.info('itemToReplace', itemToReplace);
+                    console.info('this.updateFieldService.updateField(itemToReplace)');
                     return this.updateFieldService.updateField(itemToReplace);
                 })
                 .subscribe((data: any) => {
-                    let selection = ed.selection.select(data.oldTemplate);
+                    console.info('updateField => subscribe => data', data);
+                    
                     try {
+                        let selection = ed.selection.select(data.oldTemplate);
+                        console.info('selection', selection);
+                        console.info('mceReplaceContent', data.newTemplate);
                         ed.execCommand('mceReplaceContent', false, data.newTemplate);
                     }
-                    catch (e) {}
+                    catch (e) {
+                        console.log('content cannot be replaced :)', data.newTemplate);
+                    }
+
+                    if (this.autoSaveTimer !== null) {
+                        clearTimeout(this.autoSaveTimer);
+                    }
+                    this.autoSaveTimer = setTimeout(() => {
+                        console.info('saving your form...');
+                        this.formsService.saveForm(this.item.formUniqueId, false);
+                        this.changeDetector.markForCheck();
+                    }, 500);
                 });
 
         }
@@ -442,6 +483,7 @@ export class TinyMCEComponent implements AfterViewInit, OnInit, OnDestroy {
         }
 
         this.insertElement(baseUrl, type, elementId);
+        console.info('this.insertElement', baseUrl, type, elementId);
     }
 
     private insertElement(baseUrl: string, type: string, value: string, option?: string) {
@@ -472,16 +514,23 @@ export class TinyMCEComponent implements AfterViewInit, OnInit, OnDestroy {
                 container = "div";
             }
 		}
+
+        console.info('plominoClass', plominoClass);
+        console.info('type', type);
+        console.info('container', container);
         
         if (type == 'label') {
             this.elementService.getWidget(baseUrl, type, value)
                 .subscribe((widgetTemplate: any) => {
                     ed.execCommand('mceInsertContent', false, `${widgetTemplate}<br />`, {skip_undo : 1});
+                    console.info('mceInsertContent (0)', `${widgetTemplate}<br />`);
                 });
         } else if (plominoClass !== undefined) {
 
+            console.info('this.elementService.getWidget(baseUrl, type, value)', baseUrl, type, value);
             this.elementService.getWidget(baseUrl, type, value)
                 .subscribe((response) => {
+                    console.info('response', response);
                     let responseAsElement = $(response);
                     let container = 'span';
 
@@ -507,11 +556,18 @@ export class TinyMCEComponent implements AfterViewInit, OnInit, OnDestroy {
                         tinymce.DOM.hasClass(selection, 'plominoSubformClass')) {
 
                         ed.execCommand('mceInsertContent', false, content, {skip_undo : 1});
+                        console.info('mceInsertContent (1)', content);
                     } else {
 
                         ed.execCommand('mceInsertContent', false, content, {skip_undo : 1});
+                        console.info('mceInsertContent (2)', content);
                     }
 
+                    console.info('this.tabsService.selectField', {
+                        id: value,
+                        type: `Plomino${type}`,
+                        parent: this.id
+                    });
                     this.tabsService.selectField({
                         id: value,
                         type: `Plomino${type}`,
@@ -575,8 +631,14 @@ export class TinyMCEComponent implements AfterViewInit, OnInit, OnDestroy {
                             value + '" data-plomino-position="end">&nbsp;</span><br />';
 				
                 ed.execCommand('mceInsertContent', false, zone, {skip_undo : 1});
+                console.info('mceInsertContent (3) zone', zone);
 			}
 
+            console.info('this.tabsService.selectField', {
+                id: value,
+                type: `Plomino${type}`,
+                parent: this.id
+            });
             this.tabsService.selectField({
                 id: value,
                 type: `Plomino${type}`,
@@ -589,6 +651,7 @@ export class TinyMCEComponent implements AfterViewInit, OnInit, OnDestroy {
     private insertGroup(group: string) {
         let editor = tinymce.get(this.id);
         editor.execCommand('mceInsertContent', false, group, { skip_undo : 1 });
+        console.info('insertGroup -> mceInsertContent (4) group', group);
     }
     
     private resolveDragData(data: any, resolver: any): void {

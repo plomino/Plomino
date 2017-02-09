@@ -17,8 +17,10 @@ export class UpdateFieldService {
     
     // TODO: Replace assign with passing data through operators in sequence
     // tiny-mce.component.ts 307 -> 323
+    console.info('this.getElementLayout(item)');
     return this.getElementLayout(item).map((itemTemplate: any) => {
-      if (item.type === 'Field') {
+      console.info('itemTemplate', itemTemplate);
+      if (item.type === 'Field' || 'Action') {
         return Object.assign({}, { 
           newTemplate: this.wrapFieldOrAction(item.type, item.newId, itemTemplate) 
         }, { 
@@ -37,6 +39,7 @@ export class UpdateFieldService {
 
 
   private getElementLayout(element: any): Observable<Response> {
+    console.info('this.elementService.getWidget', element.base, element.type.toLowerCase(), element.newId);
     return this.elementService.getWidget(element.base, element.type.toLowerCase(), element.newId)
   }
 
