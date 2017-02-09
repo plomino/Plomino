@@ -50,7 +50,7 @@
                                         <ul>
                                             <tal:actionsforms tal:repeat="action_tuple python:form.getActions(None, False)">
                                                 <li tal:define="action python:action_tuple[0]">
-                                                    <a href="" tal:attributes="href python:action.absolute_url()+'/edit'" tal:replace="action/id">action name</a>
+                                                    <a href="" tal:attributes="href python:action.absolute_url()+'/edit'" tal:content="action/id">action name</a>
                                                 </li>
                                             </tal:actionsforms>
                                         </ul>
