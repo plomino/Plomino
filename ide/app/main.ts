@@ -18,6 +18,8 @@ window['registryPromise'] = <Promise<any>> new Promise(
     window['registryPromiseResolve'] = resolve;
 });
 
+// console.info = () => {};
+
 enableProdMode();
 bootstrap(AppComponent, [
     HTTP_PROVIDERS,

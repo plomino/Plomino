@@ -304,6 +304,7 @@ export class TinyMCEComponent implements AfterViewInit, OnInit, OnDestroy {
                     });
                 });
             },
+            content_css: ['theme/barceloneta-compiled.css', 'theme/++plone++static/plone-compiled.css'],
             content_style: require('./tinymce.css'),
 		    menubar: "file edit insert view format table tools",
             height : "780",
