@@ -9,6 +9,7 @@ install:
   - mkdir -p buildout-cache/{eggs,downloads}
   - python bootstrap-buildout.py --setuptools-version=8.3 -c travis.cfg
   - bin/buildout -Nc travis.cfg
+  - cd ide; npm run build; cd ..
 script:
   - bin/test
 
