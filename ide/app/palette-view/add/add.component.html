@@ -19,7 +19,9 @@
         <div class="item">
             <comp *ngFor="let comp of group.components">
             <button type="button" 
-                    class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored" 
+                    class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored"
+                    [class.mdl-color--cyan-900]="group.title === 'Form'" 
+                    [class.mdl-color--purple-900]="group.title === 'DB'" 
                     title="Add {{comp.title}}"
                     [disabled]="(comp.type !== 'PlominoForm' && 
                                 comp.type !== 'PlominoView') && 
