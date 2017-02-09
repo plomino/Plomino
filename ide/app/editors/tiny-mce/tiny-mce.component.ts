@@ -233,7 +233,9 @@ export class TinyMCEComponent implements AfterViewInit, OnInit, OnDestroy {
                     this.zone.run(() => {
                         let $element =  $(ev.target);
                         let eventTarget = <any> ev.target;
-                        if (eventTarget.control || eventTarget.type === 'radio') {
+                        console.info('mousedown $element', $element);
+                        if (eventTarget.control || 
+                            ['radio', 'select-one'].indexOf(eventTarget.type) !== -1) {
                             $element = $element.parent();
                         }
                         let $parent = $element.parent();
