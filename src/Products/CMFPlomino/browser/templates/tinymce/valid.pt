@@ -23,9 +23,7 @@
 					<fieldset tal:define="field python:here.restrictedTraverse(fieldurl);">
 						<p>
 							<a tal:attributes="href python:field.absolute_url() + '/edit'" target="_blank"
-								i18n:translate="plominofield_mainsettings">Edit the field</a><br />
-							<a tal:attributes="href python:field.absolute_url() + '#autotoc-item-autotoc-4'"
-								target="_blank" i18n:translate="plominofield_specificsettings">Edit field settings</a>
+								i18n:translate="plominofield_mainsettings">Edit the field settings</a>
 						</p>
 					</fieldset>
 
