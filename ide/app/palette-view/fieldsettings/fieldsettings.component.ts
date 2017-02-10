@@ -149,6 +149,7 @@ export class FieldSettingsComponent implements OnInit {
             formulasSelector += '#formfield-form-widgets-validation_formula';
             formulasSelector += ',#formfield-form-widgets-formula';
             formulasSelector += ',#formfield-form-widgets-html_attributes_formula';
+            formulasSelector += ',#form-widgets-ISelectionField-selectionlistformula';
             setTimeout(() => { $(formulasSelector).remove(); }, 500);
         }
     }
