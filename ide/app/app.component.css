@@ -32,6 +32,48 @@
   /*padding-top: 64px;*/
 } 
 
+.palette-wrapper /deep/ .mdl-tabs {
+  display: block;
+    width: 100%;
+}
+
+.palette-wrapper /deep/ .mdl-tabs__tab-bar {
+    height: 58px;
+    padding: 0;
+    margin: 0;
+    white-space: nowrap;
+    display: block;
+    text-align: center;
+}
+
+.palette-wrapper /deep/ .mdl-tabs__tab {
+    margin: 0;
+    border: none;
+    padding: 7px 25px 0px 25px;
+    float: none;
+    position: relative;
+    display: -webkit-inline-box;
+    display: -ms-inline-flexbox;
+    display: inline-flex;
+    text-decoration: none;
+    height: 58px;
+    line-height: normal;
+    font-weight: 500;
+    font-size: 14px;
+    text-transform: uppercase;
+    color: rgba(0,0,0,.54);
+    overflow: hidden;
+    white-space: normal;
+    max-width: 25%;
+    text-align: center;
+    -webkit-box-pack: center;
+        -ms-flex-pack: center;
+            justify-content: center;
+    -webkit-box-align: start;
+        -ms-flex-align: start;
+            align-items: flex-start;
+}
+
 .palette-wrapper /deep/ .nav-tabs {
   width: 336px;
   position: fixed;
