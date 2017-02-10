@@ -254,14 +254,7 @@ export class AppComponent implements OnInit, AfterViewInit {
         }
 
         this.wrapperWidth = width;
-
-        $wrapper
-        // .css('-ms-flex-preferred-size', `${ width }px`)
-        .css(attribute, `${ width }px`);
-
-        /* for fixed tabs */
-        // $('plomino-palette ul.nav-tabs')
-        // .css('width', `${ $('.palette-wrapper').width() - 2 }px`);
+        $wrapper.css(attribute, `${ width }px`);
     }
 
     resizeTree(event: { directions: string[], difference: {x: number, y: number} }) {

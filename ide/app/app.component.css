@@ -37,6 +37,10 @@
     width: 100%;
 }
 
+.palette-wrapper /deep/ .add-wrapper {
+  padding-top: 5px;
+}
+
 .palette-wrapper /deep/ .mdl-tabs__tab-bar {
     height: 58px;
     padding: 0;
@@ -49,7 +53,7 @@
 .palette-wrapper /deep/ .mdl-tabs__tab {
     margin: 0;
     border: none;
-    padding: 7px 25px 0px 25px;
+    padding: 10px 25px 0px 25px;
     float: none;
     position: relative;
     display: -webkit-inline-box;
@@ -60,7 +64,7 @@
     line-height: normal;
     font-weight: 500;
     font-size: 14px;
-    text-transform: uppercase;
+    text-transform: none;
     color: rgba(0,0,0,.54);
     overflow: hidden;
     white-space: normal;
