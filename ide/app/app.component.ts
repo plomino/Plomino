@@ -208,20 +208,6 @@ export class AppComponent implements OnInit, AfterViewInit {
             window['TineMCE'] = require('mockup-patterns-tinymce');
             require('./assets/scripts/macros.js');
             require('./assets/scripts/dynamic.js');
-            // require('./assets/scripts/formula.js');
-            require('./assets/scripts/tinymce.js');
-            require('./assets/scripts/tinymce.plominofield.js');
-            require('./assets/scripts/tinymce.plominolabel.js');
-            require('./assets/scripts/tinymce.valid.js');
-
-            // Promise.all([
-            //     window['MacroWidgetPromise'],
-            //     window['PlominoMacrosPromise'],
-            //     window['registryPromise']
-            // ])
-            // .then((result) => {
-            //     console.log(result);
-            // });
         });
     }
 

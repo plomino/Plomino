@@ -205,8 +205,8 @@ export class TinyMCEComponent implements AfterViewInit, OnInit, OnDestroy {
             force_br_newlines : true,
             force_p_newlines : false,
             forced_root_block: '',
-            plugins: ['code', 'save', 'link', 'noneditable', 'plomino', 'preview'],
-            toolbar: 'save | undo redo | formatselect | bold italic underline | alignleft aligncenter alignright alignjustify | bullist numlist | outdent indent | unlink link | image | plominofield plominolabel plominoaction plominosubform plominohidewhen plominocache plominopagebreak',
+            plugins: ['code', 'save', 'link', 'noneditable', 'preview'],
+            toolbar: 'save | undo redo | formatselect | bold italic underline | alignleft aligncenter alignright alignjustify | bullist numlist | outdent indent | unlink link | image',
             save_onsavecallback: () => { this.formsService.saveForm(this.item.formUniqueId); this.changeDetector.markForCheck(); },
             setup : (editor: any) => {
 
