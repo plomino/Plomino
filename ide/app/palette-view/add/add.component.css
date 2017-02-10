@@ -11,9 +11,22 @@ group:first-child .item {
   margin: 5px 10px;
 }
 
+.material-icons {
+  font-size: 16px;
+}
+
 .mdl-button {
   text-shadow: none;
   margin: 5px;
+  /*width: calc(100% - 10px);*/
+  text-align: left;
+  font-size: small;
+  text-overflow: ellipsis;
+  width: 46%;
+}
+
+.small-left-margin {
+  margin-left: 5px;
 }
 
 .mdl-button:hover, .mdl-button:active, .mdl-button:visited {

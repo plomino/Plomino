@@ -113,6 +113,7 @@ var alias = {
   'mockup-patterns-thememapper-url': MOCKUP('patterns/thememapper'),
   'mockup-patterns-tinymce.less': MOCKUP('patterns/tinymce/less/pattern.tinymce.less'),
   'mockup-patterns-tinymce': MOCKUP('patterns/tinymce/pattern'),
+  'mockup-patterns-tinymce-links': MOCKUP('patterns/tinymce/js/links'),
   'mockup-patterns-tinymce-url': MOCKUP('patterns/tinymce'),
   'mockup-patterns-toggle': MOCKUP('patterns/toggle/pattern'),
   'mockup-patterns-tooltip': MOCKUP('patterns/tooltip/pattern'),

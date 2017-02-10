@@ -45,6 +45,18 @@ export class AddComponent {
 
     }
 
+    getComponentIconCode(componentType: string) {
+        console.info('componentType', componentType);
+        return {
+            'PlominoForm': 'featured_play_list',
+            'PlominoLabel': 'label',
+            'PlominoField': 'input',
+            'PlominoHidewhen': 'label_outline',
+            'PlominoAction': 'gavel',
+            'PlominoView': 'remove_red_eye',
+        }[componentType] || 'input';
+    }
+
     ngOnInit() {
         // Set up the addable components
         this.addableComponents = [

@@ -126,6 +126,22 @@ export class TabsService {
 
   private retrieveTab(tree: any[], tab: any): any {
     let pindex = this.index(tab.path[0].type);
+    if (!tree[pindex]) {
+      if (tab.path[0].type === 'Fields') {
+        const tabUrlArray = tab.url.split('/');
+        const formUrl = tabUrlArray.slice(0, tabUrlArray.length - 1).join('/');
+        for (let form of tree[0].children) {
+          if (form.url == formUrl) {
+            for (let field of form.children) {
+              if (field.url == tab.url) {
+                return field;
+              }
+            }
+          }
+        }
+      }
+      return;
+    }
     for (let elt of tree[pindex].children) {
       if (elt.url.split('/').pop() == tab.url.split('/').pop()) {
         if (tab.path.length > 1) {

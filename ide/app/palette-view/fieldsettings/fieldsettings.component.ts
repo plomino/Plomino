@@ -119,6 +119,17 @@ export class FieldSettingsComponent implements OnInit {
         this.loadSettings();
     }
 
+    openFieldCode(): void {
+        const eventData = {
+            formUniqueId: this.field.formUniqueId,
+            editor: 'code',
+            label: this.field.label,
+            path: [{ name: this.field.label, type: 'Fields' }],
+            url: this.field.url
+        };
+        this.tabsService.openTab(eventData, true);
+    }
+
     private updateMacroses() {
         if (this.field) {
             window['MacroWidgetPromise'].then((MacroWidget: any) => {

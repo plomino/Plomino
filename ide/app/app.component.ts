@@ -208,6 +208,7 @@ export class AppComponent implements OnInit, AfterViewInit {
             window['TineMCE'] = require('mockup-patterns-tinymce');
             require('./assets/scripts/macros.js');
             require('./assets/scripts/dynamic.js');
+            require('./assets/scripts/links.js');
         });
     }
 

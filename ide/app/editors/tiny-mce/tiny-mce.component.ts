@@ -57,6 +57,7 @@ declare var tinymce: any;
         [style.height]="theEditor.offsetHeight+'px'" 
         [style.margin-top]="'-'+theEditor.offsetHeight+'px'" 
         [allowDrop]="allowDrop()"  
+        (onDragEnter)="_test($event)"
         (onDropSuccess)="dropped($event)">
     </div>
     `,
@@ -198,6 +199,8 @@ export class TinyMCEComponent implements AfterViewInit, OnInit, OnDestroy {
     ngAfterViewInit(): void {
         let tiny = this;
 
+        const LinkModal = window['LinkModal'];
+
         tinymce.init({
             cleanup : false,
             selector:'.tinymce-wrap',
@@ -205,11 +208,144 @@ export class TinyMCEComponent implements AfterViewInit, OnInit, OnDestroy {
             force_br_newlines : true,
             force_p_newlines : false,
             forced_root_block: '',
-            plugins: ['code', 'save', 'link', 'noneditable', 'preview'],
+            linkModal: null,
+            addLinkClicked: function () {
+                tiny.zone.runOutsideAngular(() => {
+                    var self = <any>this;
+                    if (self.linkModal === null) {
+                        var $el = $('<div/>').insertAfter(self.$el);
+                        var linkTypes = ['internal', 'upload', 'external', 'email', 'anchor'];
+                        if(!self.options.upload){
+                            linkTypes.splice(1, 1);
+                        }
+                        self.linkModal = new LinkModal($el,
+                            $.extend(true, {}, self.options, {
+                            tinypattern: self,
+                            linkTypes: linkTypes
+                            })
+                        );
+                        self.linkModal.show();
+                    } else {
+                        self.linkModal.reinitialize();
+                        self.linkModal.show();
+                    }
+                });
+            },
+            // addImageClicked: function() {
+            //   var self = this;
+            //   if (self.imageModal === null) {
+            //     var linkTypes = ['image', 'uploadImage', 'externalImage'];
+            //     if(!self.options.upload){
+            //       linkTypes.splice(1, 1);
+            //     }
+            //     var options = $.extend(true, {}, self.options, {
+            //       tinypattern: self,
+            //       linkTypes: linkTypes,
+            //       initialLinkType: 'image',
+            //       text: {
+            //         insertHeading: _t('Insert Image')
+            //       },
+            //       relatedItems: {
+            //         baseCriteria: [{
+            //           i: 'portal_type',
+            //           o: 'plone.app.querystring.operation.list.contains',
+            //           v: self.options.imageTypes.concat(self.options.folderTypes)
+            //         }],
+            //         selectableTypes: self.options.imageTypes,
+            //         resultTemplate: ResultTemplate,
+            //         selectionTemplate: SelectionTemplate
+            //       }
+            //     });
+            //     var $el = $('<div/>').insertAfter(self.$el);
+            //     self.imageModal = new LinkModal($el, options);
+            //     self.imageModal.show();
+            //   } else {
+            //     self.imageModal.reinitialize();
+            //     self.imageModal.show();
+            //   }
+            // },
+            // generateUrl: function(data) {
+            //   var self = this;
+            //   var part = data[self.options.linkAttribute];
+            //   return self.options.prependToUrl + part + self.options.appendToUrl;
+            // },
+            // generateImageUrl: function(data, scale_name) {
+            //   var self = this;
+            //   var url = self.generateUrl(data);
+            //   if (scale_name !== ''){
+            //     var part = scale_name;
+            //     for(var i=0; i<self.options.scales.length; i=i+1){
+            //       if(self.options.scales[i].name === scale_name){
+            //         part = self.options.scales[i].part;
+            //       }
+            //     }
+            //     url = (url + self.options.prependToScalePart + part +
+            //            self.options.appendToScalePart);
+            //   }else{
+            //     url = url + self.options.appendToOriginalScalePart;
+            //   }
+            //   return url;
+            // },
+            // stripGeneratedUrl: function(url) {
+            //   // to get original attribute back
+            //   var self = this;
+            //   url = url.split(self.options.prependToScalePart, 2)[0];
+            //   if (self.options.prependToUrl) {
+            //     var parts = url.split(self.options.prependToUrl, 2);
+            //     if (parts.length === 2) {
+            //       url = parts[1];
+            //     }
+            //   }
+            //   if (self.options.appendToUrl) {
+            //     url = url.split(self.options.appendToUrl)[0];
+            //   }
+            //   return url;
+            // },
+            // getScaleFromUrl: function(url) {
+            //   var self = this;
+            //   var split = url.split(self.options.prependToScalePart);
+            //   if (split.length !== 2) {
+            //     // not valid scale, screw it
+            //     return null;
+            //   }
+            //   if (self.options.appendToScalePart) {
+            //     url = split[1].split(self.options.appendToScalePart)[0];
+            //   } else {
+            //     url = split[1];
+            //   }
+            //   if (url.indexOf('/image_') !== -1) {
+            //     url = url.split('/image_')[1];
+            //   }
+            //   return url;
+            // },
+            linkAttribute: 'path',
+            prependToScalePart: '/imagescale/', // some value here is required to be able to parse scales back
+            appendToScalePart: '',
+            appendToOriginalScalePart: '',
+            defaultScale: 'large',
+            scales: 'Listing (16x16):listing,Icon (32x32):icon,Tile (64x64):tile,' +
+                    'Thumb (128x128):thumb,Mini (200x200):mini,Preview (400x400):preview,' +
+                    'Large (768x768):large',
+            targetList: [
+            {text: 'Open in this window / frame', value: ''},
+            {text: 'Open in new window', value: '_blank'},
+            {text: 'Open in parent window / frame', value: '_parent'},
+            {text: 'Open in top frame (replaces all frames)', value: '_top'}
+            ],
+            imageTypes: ['Image'],
+            folderTypes: ['Folder', 'Plone Site'],
+            // plugins: ['advlist', 'autolink', 'lists', 'charmap', 'print', 'preview', 'anchor', 'searchreplace',
+            //       'visualblocks', 'code', 'fullscreen', 'insertdatetime', 'media', 'table', 'contextmenu',
+            //       'paste', 'plonelink', 'ploneimage'],
+            plugins: ['code', 'save', 'link', 'noneditable', 'preview', 'ploneimage', 'plonelink'],
             toolbar: 'save | undo redo | formatselect | bold italic underline' +
             ' | alignleft aligncenter alignright alignjustify | ' +
-            'bullist numlist | outdent indent | unlink link | image | ' +
-            'plonelink ploneimage',
+            'bullist numlist | outdent indent | ' +
+            'plonelink unlink ploneimage',
+            // toolbar: 'undo redo | styleselect | bold italic | ' +
+            //      'alignleft aligncenter alignright alignjustify | ' +
+            //      'bullist numlist outdent indent | ' +
+            //      'unlink plonelink ploneimage',
             save_onsavecallback: () => { this.formsService.saveForm(this.item.formUniqueId); this.changeDetector.markForCheck(); },
             setup : (editor: any) => {
 
@@ -239,6 +375,13 @@ export class TinyMCEComponent implements AfterViewInit, OnInit, OnDestroy {
                 editor.on('activate', (e: any) => {
                     let $editorFrame = $(this.editorElement.nativeElement).find('iframe[id*=mce_]');
                 });
+
+                // editor.on('mouseover', (ev: MouseEvent) => {
+                //     let $element = $(ev.target);
+                //     this.zone.run(() => {
+                //         console.info('mouseover $element', $element);
+                //     });
+                // });
 
                 editor.on('mousedown', (ev: MouseEvent) => {
                     let $element = $(ev.target);
@@ -360,6 +503,25 @@ export class TinyMCEComponent implements AfterViewInit, OnInit, OnDestroy {
 
     allowDrop() {
         return () => this.dragData.parent === this.id;
+    }
+
+    _test(eventData: any) {
+        let offset = $(this.editorElement.nativeElement)
+                        .find(`iframe[id*='${this.id}']`)
+                        .offset();
+        let editor = tinymce.get(this.id);
+        let x = Math.round(eventData.mouseEvent.clientX - offset.left);
+        let y = Math.round(eventData.mouseEvent.clientY - offset.top);
+        let rng = this.getCaretFromEvent(x, y, editor);
+        editor.selection.setRng(rng);
+        // if (this.dragData.resolved) {
+        //     // this.addElement(this.dragData);
+        //     // console.info('this.addElement', this.dragData);
+        // } else {
+        //     this.resolveDragData(this.dragData, this.dragData.resolver);
+        //     console.info('this.resolveDragData', this.dragData, this.dragData.resolver);
+        // }
+        console.info(this.dragData, eventData.mouseEvent);
     }
 
     dropped({ mouseEvent }: any) {

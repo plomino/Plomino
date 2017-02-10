@@ -1,16 +1,17 @@
 <div class="add-wrapper">
      <div class="templates">
 
-        <button class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored"
+        <button class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--colored"
             *ngFor="let template of templates, let i = index"
             [hidden]="template.hidewhen(activeTab)"
             dnd-draggable
             [dragEnabled]="true"
             (onDragStart)="startDrag('template', template.id)"
             (onDragEnd)="endDrag()"
+            [title]="template.title"
             (click)="addTemplate(template.id)">
-            {{template.title}}
-        
+            <span class="icon material-icons">{{getComponentIconCode('input')}}</span>
+            <span class="small-left-margin">{{template.title}}</span>
         </button>
     </div>
     
@@ -19,7 +20,7 @@
         <div class="item">
             <comp *ngFor="let comp of group.components">
             <button type="button" 
-                    class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored"
+                    class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent mdl-button--colored"
                     [class.mdl-color--cyan-900]="group.title === 'Form'" 
                     [class.mdl-color--purple-900]="group.title === 'DB'" 
                     title="Add {{comp.title}}"
@@ -31,8 +32,10 @@
                     [dragEnabled]="true"
                     (onDragStart)="startDrag(comp.type)"
                     (onDragEnd)="endDrag()"  
+                    [title]="comp.title"
                     (click)="add(comp.type, true)">
-                {{comp.title}}
+                <span class="material-icons">{{getComponentIconCode(comp.type)}}</span>
+                <span class="small-left-margin">{{comp.title}}</span>
             </button>
             </comp>
         </div>

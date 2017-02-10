@@ -1,19 +1,27 @@
 <div class="field-settings-wrapper">
   <div class="fieldsettings--control-buttons" *ngIf="formTemplate">
-    <a class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent"
+    <a class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent mdl-color--teal-700"
        *ngIf="formTemplate"
        (click)="submitForm()">
       <span *ngIf="formSaving">
           <loading class="white"></loading>
         </span>
       <span *ngIf="!formSaving">
+        <span class="icon material-icons">save</span>
           Save
         </span>
     </a>
-    <a class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect"
+    <a class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent mdl-color--grey-300"
        *ngIf="formTemplate"
        (click)="cancelForm()">
+       <span class="icon material-icons">cancel</span>
       Cancel
+    </a>
+    <a class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored"
+      *ngIf="formTemplate"
+      (click)="openFieldCode()">
+      <span class="icon material-icons">code</span>
+      Code
     </a>
   </div>
   <div #fieldForm [innerHTML]="formTemplate | safePloneHtml"></div>

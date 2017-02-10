@@ -97,9 +97,7 @@ tab {
 .well,
 plomino-palette,
 plomino-tree {
-   /*-ms-flex-preferred-size: 464px;*/
-   /*flex-basis: 464px;*/
-   width: 464px;
+   width: 600px;
    transition: none;
 }
 
