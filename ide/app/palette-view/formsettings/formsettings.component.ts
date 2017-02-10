@@ -208,6 +208,12 @@ export class FormSettingsComponent implements OnInit {
                     }
                 }, 200);
             });
+
+            let formulasSelector = '';
+            formulasSelector += '#formfield-form-widgets-document_title';
+            formulasSelector += ',#formfield-form-widgets-document_id';
+            formulasSelector += ',#formfield-form-widgets-search_formula';
+            setTimeout(() => { $(formulasSelector).hide(); }, 500);
         }
     }
 

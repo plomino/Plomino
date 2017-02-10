@@ -133,6 +133,12 @@ export class FieldSettingsComponent implements OnInit {
                     }
                 }, 200);
             });
+
+            let formulasSelector = '';
+            formulasSelector += '#formfield-form-widgets-validation_formula';
+            formulasSelector += ',#formfield-form-widgets-formula';
+            formulasSelector += ',#formfield-form-widgets-html_attributes_formula';
+            setTimeout(() => { $(formulasSelector).hide(); }, 500);
         }
     }
 
