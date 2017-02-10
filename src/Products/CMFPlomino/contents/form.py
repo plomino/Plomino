@@ -3,7 +3,8 @@ import decimal
 from jsonutil import jsonutil as json
 import logging
 from plone import api
-from plone.app.z3cform.wysiwyg import WysiwygFieldWidget
+from plone.app.textfield import RichText as RichTextField
+from plone.app.z3cform.widget import RichTextFieldWidget
 from plone.autoform import directives as form
 from plone.dexterity.content import Container
 from plone.supermodel import directives, model
@@ -42,8 +43,8 @@ class IPlominoForm(model.Schema):
     """ Plomino form schema
     """
 
-    form.widget('form_layout', WysiwygFieldWidget)
-    form_layout = schema.Text(
+    form.widget('form_layout', RichTextFieldWidget)
+    form_layout = RichTextField(
         title=_('CMFPlomino_label_FormLayout', default="Form layout"),
         description=_('CMFPlomino_help_FormLayout',
             default="Text with 'Plominofield' styles correspond to the"
