@@ -51,7 +51,8 @@ div.plominoLabelClass {
     background-color: #1b6899;
 }
 
-.mce-content-body .plominoGroupClass[contentEditable=false][data-mce-selected] {
+.mce-content-body .plominoGroupClass[contentEditable=false][data-mce-selected],
+.mce-content-body .plominoGroupClass:hover {
     outline-style: dotted;
     outline-width: 1px;
 }
