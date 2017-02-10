@@ -7,6 +7,9 @@ Changelog
 - Restore View custom template
 - Unquote plus signs when reading input [instification]
 - Add option to send plain text emails [instification]
+- Experimental IDE [Maxime Bouveron]
+- runAsOwner API [djay]
+
 
 2.0b4 (2016-05-27)
 ------------------
