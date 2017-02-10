@@ -44,7 +44,8 @@ div.plominoLabelClass {
 
 
 .plominoFieldClass {
-    outline: 1px dashed #1b6899;
+    outline: none;
+    /*outline: 1px dashed #1b6899;*/
 }
 .plominoFieldClass:hover:before {
     color: #ffffff;

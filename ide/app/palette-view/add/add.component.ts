@@ -46,7 +46,6 @@ export class AddComponent {
     }
 
     getComponentIconCode(componentType: string) {
-        console.info('componentType', componentType);
         return {
             'PlominoForm': 'featured_play_list',
             'PlominoLabel': 'label',
