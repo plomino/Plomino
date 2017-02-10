@@ -213,7 +213,7 @@ export class FormSettingsComponent implements OnInit {
             formulasSelector += '#formfield-form-widgets-document_title';
             formulasSelector += ',#formfield-form-widgets-document_id';
             formulasSelector += ',#formfield-form-widgets-search_formula';
-            setTimeout(() => { $(formulasSelector).hide(); }, 500);
+            setTimeout(() => { $(formulasSelector).remove(); }, 500);
         }
     }
 

@@ -138,7 +138,7 @@ export class FieldSettingsComponent implements OnInit {
             formulasSelector += '#formfield-form-widgets-validation_formula';
             formulasSelector += ',#formfield-form-widgets-formula';
             formulasSelector += ',#formfield-form-widgets-html_attributes_formula';
-            setTimeout(() => { $(formulasSelector).hide(); }, 500);
+            setTimeout(() => { $(formulasSelector).remove(); }, 500);
         }
     }
 
