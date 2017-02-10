@@ -1,7 +1,7 @@
 Changelog
 =========
 
-2.0b5 (unreleased)
+2.0b5 (2017-02-10)
 ------------------
 
 - Restore View custom template
