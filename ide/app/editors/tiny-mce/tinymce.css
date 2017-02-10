@@ -59,9 +59,9 @@ div.plominoLabelClass {
 
 .plominoLabelClass {
     outline: 1px dashed #03632C;
-    padding-left: 25px;
+    /*padding-left: 25px;*/
     min-width: 100px;
-    background-image: url('++resource++Products.CMFPlomino/img/PlominoLabel.png');
+    /*background-image: url('++resource++Products.CMFPlomino/img/PlominoLabel.png');*/
     background-position: 0 0;
     background-repeat: no-repeat;
 }
