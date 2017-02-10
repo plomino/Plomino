@@ -53,12 +53,22 @@ div.plominoLabelClass {
 
 .mce-content-body .plominoGroupClass[contentEditable=false][data-mce-selected],
 .mce-content-body .plominoGroupClass:hover {
-    outline-style: dotted;
-    outline-width: 1px;
+    outline-style: dashed;
+    outline-width: 2px;
+    outline-offset: 5px;
 }
 
+.mce-content-body .plominoGroupClass[contentEditable=false][data-mce-selected],
+.mce-content-body .plominoGroupClass:focus {
+    outline-color: navy;
+}
+
+/*.mce-content-body .plominoLabelClass[contentEditable=false][data-mce-selected] {
+    outline: none !important;
+}*/
+
 .plominoLabelClass {
-    outline: 1px dashed #03632C;
+    outline: none;
     /*padding-left: 25px;*/
     min-width: 100px;
     /*background-image: url('++resource++Products.CMFPlomino/img/PlominoLabel.png');*/
