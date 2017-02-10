@@ -240,11 +240,13 @@ export class WidgetService {
       }
       
       if (response !== undefined) {
-        content = `<${container} class="${$class} mceNonEditable" data-mce-resize="false" data-plominoid="${$id}">
+        content = `<${container} data-present-method="convertGroupFields_1"
+                  class="${$class} mceNonEditable" data-mce-resize="false"
+                  data-plominoid="${$id}">
                       ${response}
                    </${container}><br />`;
       } else {
-        content = `<span class="${$class}">${$id}</span><br />`;
+        content = `<span data-present-method="convertGroupFields_2" class="${$class}">${$id}</span><br />`;
       }
 
       return this.wrapIntoEditable(content);
@@ -260,6 +262,7 @@ export class WidgetService {
 
     let container = 'span';
     let content = `<${container} class="${$class} mceNonEditable" 
+                              data-present-method="convertGroupHidewhens"
                               data-mce-resize="false"
                               data-plomino-position="${$position}" 
                               data-plominoid="${$newId}">
@@ -285,11 +288,13 @@ export class WidgetService {
       }
       
       if (response != undefined) {
-        content = `<${container} class="${$class} mceNonEditable" data-mce-resize="false" data-plominoid="${$id}">
+        content = `<${container} data-present-method="convertFormFields_1" 
+                    class="${$class} mceNonEditable" data-mce-resize="false"
+                    data-plominoid="${$id}">
                       ${response}
                    </${container}><br />`;
       } else {
-        content = `<span class="${$class}">${$id}</span><br />`;
+        content = `<span data-present-method="convertFormFields_2" class="${$class}">${$id}</span><br />`;
       }
 
       return content;
@@ -304,6 +309,7 @@ export class WidgetService {
     let container = 'span';
     let content = `<${container} class="${$class} mceNonEditable" 
                               data-mce-resize="false"
+                              data-present-method="convertFormHidewhens"
                               data-plomino-position="${$position}" 
                               data-plominoid="${$id}">
                     &nbsp;

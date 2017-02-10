@@ -467,9 +467,9 @@ export class TinyMCEComponent implements AfterViewInit, OnInit, OnDestroy {
                     console.info('this.widgetService.getFormLayout', this.id, data);
                     this.widgetService.getFormLayout(this.id, data)
                         .subscribe((formLayout: string) => {
+                            formLayout = formLayout.replace(/<br><\/div><br>$/, '<br></div><br><br>');
                             console.info('tinymce setContent code (0)');
                             tinymce.get(this.id).setContent(formLayout);
-                            // console.log(formLayout);
                         });
                 } else {
                     console.info('tinymce setContent code (1)');
@@ -533,19 +533,9 @@ export class TinyMCEComponent implements AfterViewInit, OnInit, OnDestroy {
         let y = Math.round(mouseEvent.clientY - offset.top);
         let rng = this.getCaretFromEvent(x, y, editor);
         console.info('this.getCaretFromEvent', rng);
-
-        // if (startContainer.nodeName !== 'body') {
-        //     let newRng = tinymce.DOM.createRng();
-        //     let newStartOffset = startOffset !== endOffset ? endOffset : startOffset;
-        //     let newEndOffset = endOffset;
-        //     newRng.setStart(startContainer.parentNode, newStartOffset);
-        //     newRng.setEnd(startContainer.parentNode, newEndOffset);
-        //     editor.selection.setRng(newRng);
-        // } else {
-        //     editor.selection.setRng(rng);
-        // }
         
         editor.selection.setRng(rng);
+        console.info('!', rng);
         if (this.dragData.resolved) {
             this.addElement(this.dragData);
             console.info('this.addElement', this.dragData);
