@@ -74,8 +74,9 @@ A form can also contain some action buttons to trigger specific processing::
     ...         mandatory=True,
     ...         field_type="TEXT",
     ...         field_mode="EDITABLE")
-    >>> db.frm1.form_layout = """1 <p>please enter a value for field1:
-    ... <span class="plominoFieldClass">field1</span></p>"""
+    >>> from plone.app.textfield.value import RichTextValue
+    >>> db.frm1.form_layout = RichTextValue("""1 <p>please enter a value for field1:
+    ... <span class="plominoFieldClass">field1</span></p>""", 'text/plain', 'text/html')
     >>> db.frm1.displayDocument(None, True, True)
     u'<input type=\'hidden\' name=\'Form\' value=\'frm1\' />1 <p>please enter a value for field1:<span>\n    \n    \n        <input type="text" id="field1" name="field1" value="" />\n    \n    \n</span></p>'
 
@@ -111,13 +112,13 @@ formula, the item value was set by the formula for ``field2``::
 
 Let's set a layout which contains our fields::
 
-    >>> db.frm1.form_layout = """2 <p>please enter a value for field1:
+    >>> db.frm1.form_layout = RichTextValue("""2 <p>please enter a value for field1:
     ... <span class="plominoLabelClass">field1</span>
     ... <span class="plominoFieldClass">field1</span></p><p>Comment:
     ... <span class="plominoLabelClass">field2</span>
     ... <span class="plominoFieldClass">field2</span></p><p>
     ... <span class="plominoFieldClass">field3</span></p><p>
-    ... <span class="plominoFieldClass">field4</span></p>"""
+    ... <span class="plominoFieldClass">field4</span></p>""", 'text/plain', 'text/html')
 
 
 Formulas can include scripts from resources
@@ -376,14 +377,14 @@ The default text widget is a basic HTML text input::
     ...         title='Title for drummer',
     ...         field_type="SELECTION",
     ...         field_mode="EDITABLE")
-    >>> db.frm2.form_layout = """3 <p>Who is the guitarist:
+    >>> db.frm2.form_layout = RichTextValue("""3 <p>Who is the guitarist:
     ... <span class="plominoLabelClass">guitarist</span></p>
     ... <span class="plominoFieldClass">guitarist</span></p>
     ... <span class="plominoLabelClass">bassist: Label for bassist</span></p>
     ... <span class="plominoFieldClass">bassist</span></p>
     ... <span class="plominoLabelClass">drummer</span></p>
     ... <span class="plominoFieldClass">drummer</span></p>
-    ... """
+    ... """, 'text/plain', 'text/html')
     >>> db.frm2.bassist.widget = "CHECKBOX"
     >>> db.frm2.bassist.selectionlist = [u"John Paul Jones", u"Chris Chameleon"]
     >>> db.frm2.drummer.widget = "RADIO"
@@ -411,7 +412,7 @@ Selection field::
     ...         field_mode="EDITABLE")
     >>> db.frm2.artistsfield.selectionlist = [u'The Beatles', u'The Doors', u'The Pixies']
     >>> db.frm2.artistsfield.widget="SELECT"
-    >>> db.frm2.form_layout = """4 <p>choose:<span class="plominoFieldClass">artistsfield</span></p>"""
+    >>> db.frm2.form_layout = RichTextValue("""4 <p>choose:<span class="plominoFieldClass">artistsfield</span></p>""", 'text/plain', 'text/html')
     >>> db.cleanRequestCache()
     >>> db.frm2.displayDocument(None, True, True
     ...         ).replace('\n', '').replace('\t', '')
@@ -428,8 +429,8 @@ Date/Time field::
     ...         title='lastalbum',
     ...         field_type="DATETIME",
     ...         field_mode="EDITABLE")
-    >>> db.frm2.form_layout = """5 <p>last album release date:
-    ... <span class="plominoFieldClass">lastalbum</span></p>"""
+    >>> db.frm2.form_layout = RichTextValue("""5 <p>last album release date:
+    ... <span class="plominoFieldClass">lastalbum</span></p>""", 'text/plain', 'text/html')
     >>> doc4=db.createDocument()
     >>> doc4.setItem('field1', 'ola')
     >>> from DateTime import DateTime
@@ -451,7 +452,7 @@ Number field::
     ...         title='price',
     ...         field_type="NUMBER",
     ...         field_mode="EDITABLE")
-    >>> db.frm2.form_layout = """6 <p>Price:<span class="plominoFieldClass">price</span></p>"""
+    >>> db.frm2.form_layout = RichTextValue("""6 <p>Price:<span class="plominoFieldClass">price</span></p>""", 'text/plain', 'text/html')
     >>> db.frm2.price.number_type = u'INTEGER'
     >>> db.frm2.price.getSettings().validate("3")
     []
@@ -474,8 +475,8 @@ Rich-text field::
     ...         title='Comments',
     ...         field_type="RICHTEXT",
     ...         field_mode="EDITABLE")
-    >>> db.frm2.form_layout = """7 <p>My comments:
-    ...  <span class="plominoFieldClass">comments</span></p>"""
+    >>> db.frm2.form_layout = RichTextValue("""7 <p>My comments:
+    ...  <span class="plominoFieldClass">comments</span></p>""", 'text/plain', 'text/html')
     >>> doc4.setItem('comments',
     ... """I am not sure it is <b>correct</b><br/>.\n
     ... So please, check <a href='http://www.google.com'>here</a>""")
@@ -497,7 +498,7 @@ A name field allow to select a user in the Plone portal members list::
     ...         field_type="NAME",
     ...         field_mode="EDITABLE")
     >>> db.frm2.buyer.type = u'MULTI'
-    >>> db.frm2.form_layout = """9 <p>Who: <span class="plominoFieldClass">buyer</span></p>"""
+    >>> db.frm2.form_layout = RichTextValue("""9 <p>Who: <span class="plominoFieldClass">buyer</span></p>""", 'text/plain', 'text/html')
     >>> db.cleanRequestCache()
     >>> db.frm2.displayDocument(None, True, True).replace('\n', '').replace('\t', '')
     u'<input type=\'hidden\' name=\'Form\' value=\'frm2\' />9 <p>Who: <span>                            <input type="text" class="pat-select2" id="buyer" name="buyer" data-pat-select2="vocabularyUrl:http://nohost/plone/mydb/frm2/buyer/filterusers;multiple:true;initialValues:[\':\']">            </input>                                </span></p>'
@@ -514,8 +515,8 @@ A name field allow to select a user in the Plone portal members list::
 #     >>> db.frm2.relatedartist.widget = u'SELECT'
 #     >>> db.frm2.relatedartist.sourceview = u'view1'
 #     >>> db.frm2.relatedartist.labelcolumn = u'col1'
-#     >>> db.frm2.form_layout = """10 <p>Related artist:
-#     ... <span class="plominoFieldClass">relatedartist</span></p>"""
+#     >>> db.frm2.form_layout = RichTextValue("""10 <p>Related artist:
+#     ... <span class="plominoFieldClass">relatedartist</span></p>""", 'text/plain', 'text/html')
 #     >>> db.cleanRequestCache()
 #     >>> result = db.frm2.displayDocument(None, True, True)
 #     >>> """<option value="%s">London calling</option>""" % (doc1.id) in result
@@ -535,7 +536,7 @@ A field can be computed::
     ...         field_type="TEXT",
     ...         field_mode="COMPUTED")
     >>> db.frm2.welcome.formula = """message="Welcome "+plominoDocument.buyer\nreturn message"""
-    >>> db.frm2.form_layout = """11 <p><span class="plominoFieldClass">welcome</span></p>"""
+    >>> db.frm2.form_layout = RichTextValue("""11 <p><span class="plominoFieldClass">welcome</span></p>""", 'text/plain', 'text/html')
     >>> doc4.setItem('buyer',"test_user_1_")
     >>> doc4.save()
     >>> db.cleanRequestCache()

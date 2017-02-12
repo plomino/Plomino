@@ -92,8 +92,9 @@ Add some minimal content to test access (view 1 displays all documents)::
     ...         field_type="TEXT",
     ...         field_mode="EDITABLE")
     >>> db.form1.field1.widget="TEXT"
-    >>> db.form1.form_layout = """<p>field1 : <span class="plominoFieldClass">field1</span></p>
-    ... <p>action : <span class="plominoActionClass">powerful_action</span></p>"""
+    >>> from plone.app.textfield.value import RichTextValue
+    >>> db.form1.form_layout = RichTextValue("""<p>field1 : <span class="plominoFieldClass">field1</span></p>, 'text/plain', 'text/html')
+    ... <p>action : <span class="plominoActionClass">powerful_action</span></p>""", 'text/plain', 'text/html')
     >>> id = db.invokeFactory('PlominoView',
     ...         id='view1', title='View 1', selection_formula='True')
     >>> doc = db.createDocument()
@@ -163,7 +164,7 @@ Add form with a computed-on-display field that calls an agent::
     ... return 'I made a change in %(docid)s'
     ... """ % {'docid': docid2, 'doctitle': "Set by Agent"})
     >>> db.form2.editingdisplayfield.widget="TEXT"
-    >>> db.form2.form_layout = """<p>editingdisplayfield : <span class="plominoFieldClass">editingdisplayfield</span></p>"""
+    >>> db.form2.form_layout = RichTextValue("""<p>editingdisplayfield : <span class="plominoFieldClass">editingdisplayfield</span></p>""", 'text/plain', 'text/html')
 
 Alternatively try and nicer way to gain extra permissions without using an agent
 
@@ -189,7 +190,7 @@ Alternatively try and nicer way to gain extra permissions without using an agent
     ... return 'I made a change in %(docid)s'
     ... """ % {'docid': docid2, 'doctitle': "Set by formula run as owner"})
     >>> db.formagentless.editingdisplayfield.widget="TEXT"
-    >>> db.formagentless.form_layout = """<p>editingdisplayfield : <span class="plominoFieldClass">editingdisplayfield</span></p>"""
+    >>> db.formagentless.form_layout = RichTextValue("""<p>editingdisplayfield : <span class="plominoFieldClass">editingdisplayfield</span></p>""", 'text/plain', 'text/html')
 
 
 Create the browser object we'll be using::

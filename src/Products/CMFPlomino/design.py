@@ -15,6 +15,7 @@ from OFS.Image import manage_addImage
 from OFS.ObjectManager import ObjectManager
 import os
 from plone import api
+from plone.app.textfield.value import RichTextValue
 from plone.dexterity.interfaces import IDexterityFTI
 from plone.protect.interfaces import IDisableCSRFProtection
 from Products.DCWorkflow.DCWorkflow import DCWorkflowDefinition
@@ -970,7 +971,11 @@ class DesignManager:
 
         params = {}
         for (id, attr) in attributes:
-            params[id] = getattr(obj, id, None)
+            if id == 'form_layout':
+                val = getattr(obj, id, None)
+                params[id] = (val and val.raw) or ''
+            else:
+                params[id] = getattr(obj, id, None)
         data['params'] = params
 
         if not isDatabase:
@@ -1178,6 +1183,9 @@ class DesignManager:
         container.invokeFactory(element_type, id=id, **params)
         obj = getattr(container, id)
         obj.title = element['title']
+        if element_type == 'PlominoForm':
+            obj.form_layout = RichTextValue(
+                params.get('form_layout', ''), 'text/plain', 'text/html')
         obj.reindexObject()
 
         if element_type == "PlominoField":

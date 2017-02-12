@@ -7,6 +7,7 @@ from plone.app.testing import FunctionalTesting
 from plone.app.testing import IntegrationTesting
 from plone.app.testing import PloneSandboxLayer
 from plone.app.testing import TEST_USER_ID, TEST_USER_NAME, login, setRoles
+from plone.app.textfield.value import RichTextValue
 from plone.testing import z2
 
 import Products.CMFPlomino
@@ -36,7 +37,9 @@ class ProductsCmfplominoLayer(PloneSandboxLayer):
             id='frm_test',
             title='Form 1',
             container=db)
-        frm_test.form_layout = """<p>please enter a value for field_1: <span class="plominoFieldClass">field_1</span></p>"""
+        frm_test.form_layout = RichTextValue(
+            """<p>please enter a value for field_1: <span class="plominoFieldClass">field_1</span></p>""",
+            'text/plain', 'text/html')
         field_1 = api.content.create(
             type='PlominoField',
             id='field_1',

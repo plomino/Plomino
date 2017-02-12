@@ -4,7 +4,7 @@ Changelog
 2.0b6 (unreleased)
 ------------------
 
-- Nothing changed yet.
+Breaking change: form_layout is now a RichTextValue.
 
 
 2.0b5 (2017-02-10)
