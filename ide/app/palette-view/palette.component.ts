@@ -30,9 +30,7 @@ import {
     TemplatesService,
 } from '../services';
 
-import 'lodash';
 import {FormsService} from "../services/forms.service";
-declare let _: any;
 
 @Component({
     selector: 'plomino-palette',

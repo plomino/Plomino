@@ -1,0 +1,15 @@
+<form #theEditor 
+    class="tiny-editor">
+    <textarea class="tinymce-wrap" 
+            [id]="id">
+    </textarea>
+</form>
+<div *ngIf="isDragged" 
+    dnd-droppable 
+    class="drop-zone"
+    [style.height]="theEditor.offsetHeight+'px'" 
+    [style.margin-top]="'-'+theEditor.offsetHeight+'px'" 
+    [allowDrop]="allowDrop()"  
+    (onDragEnter)="_test($event)"
+    (onDropSuccess)="dropped($event)">
+</div>

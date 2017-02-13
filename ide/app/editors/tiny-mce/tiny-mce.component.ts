@@ -39,28 +39,9 @@ import {
 
 import { UpdateFieldService } from './services';
 
-import 'jquery';
-declare var tinymce: any;
-
 @Component({
     selector: 'plomino-tiny-mce',
-    template: `
-    <form #theEditor 
-        class="tiny-editor">
-        <textarea class="tinymce-wrap" 
-                [id]="id">
-        </textarea>
-    </form>
-    <div *ngIf="isDragged" 
-        dnd-droppable 
-        class="drop-zone"
-        [style.height]="theEditor.offsetHeight+'px'" 
-        [style.margin-top]="'-'+theEditor.offsetHeight+'px'" 
-        [allowDrop]="allowDrop()"  
-        (onDragEnter)="_test($event)"
-        (onDropSuccess)="dropped($event)">
-    </div>
-    `,
+    template: require('./tiny-mce.template.html'),
     styles: [`
         .drop-zone {
             width: 100%;
@@ -71,7 +52,7 @@ declare var tinymce: any;
         .dnd-drag-over {
             opacity: 0.1;
         }
-        `],
+    `],
     directives: [DND_DIRECTIVES],
     providers: [ElementService, UpdateFieldService],
     changeDetection: ChangeDetectionStrategy.OnPush
