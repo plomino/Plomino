@@ -751,7 +751,9 @@ class PlominoForm(Container):
     security.declarePrivate('_get_html_content')
 
     def _get_html_content(self):
-        html_content = self.form_layout or ''
+        html_content = self.form_layout
+        if not html_content:
+            return''
         return html_content.raw.replace('\n', '')
 
     security.declareProtected(READ_PERMISSION, 'applyHideWhen')
