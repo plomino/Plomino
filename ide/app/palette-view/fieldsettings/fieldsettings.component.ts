@@ -135,9 +135,6 @@ export class FieldSettingsComponent implements OnInit {
             ],
             url: this.field.url
         };
-        console.log('field', this.field);
-        console.log('fieldForm', this.fieldForm);
-        console.log(JSON.stringify(eventData));
         this.tabsService.openTab(eventData, true);
     }
 
