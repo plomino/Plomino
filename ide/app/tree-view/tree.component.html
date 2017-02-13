@@ -9,7 +9,7 @@
 
 <div class="treeview-wrapper">
 
-    <ul *ngIf="filtered">
+    <!--<ul *ngIf="filtered">
         
         <li *ngFor="let result of searchResults.member">
             
@@ -29,32 +29,25 @@
             </span>
         
         </li>
-    </ul>
+    </ul>-->
 
-    <ul *ngIf="!filtered" 
-        class="tree-node">
+    <ul *ngIf="!filtered" class="tree-node">
     
-        <li *ngFor="let type of data" 
-            class="tree-node--collapsible"
-            [class.closed]="type.collapsed"
-            [class.click-cursor]="type.children.length"
-            [class.hasChild]="type.children.length !== 0">
+    <li 
+        class="tree-node--collapsible"
+        [class.closed]="false"
+        >
+        
+        <span class="tree-node--name click-cursor" (click)="selectDBSettingsTab()" style="text-transform: capitalize">
+            {{ data && data.length ? data[0].url.split('/')[data[0].url.split('/').length - 2] : '' }}
+        </span>
+        
+        <ul [collapse]="false">
             
-            <span (click)="type.collapsed = !type.collapsed" class="tree-node--name">
-            {{type.label}}
-            </span>
-            
-            <!--<span (click)="onAdd({url:type.url, type:type.type})" 
-                class="link glyphicon glyphicon-plus click-cursor">
-            </span>-->
-            
-            <ul *ngIf="type.label != 'Agents'" [collapse]="type.collapsed">
-            
-            <li *ngFor="let typeName of type.children"
-                class="tree-node--collapsible"
+            <li *ngFor="let typeName of data"
+                class="tree-node--collapsible click-cursor"
                 [class.closed]="typeName.collapsed"
-                [class.click-cursor]="typeName.children.length"
-                (click)="type.label !== 'Forms' || onEdit({formUniqueId: typeName.formUniqueId, label:typeName.label, url:typeName.url, editor:'layout',path:[{name:typeName.label,type:type.label}]})"
+                (click)="typeName.typeLabel !== 'Forms' || onEdit({formUniqueId: typeName.formUniqueId, label:typeName.label, url:typeName.url, editor:'layout',path:[{name:typeName.label,type:typeName.typeLabel}]})"
                 [class.hasChild]="typeName.children.length !== 0">
 
                 <span class="tree-node--name"
@@ -66,49 +59,27 @@
                       <img [src]="getTypeImage(typeName)">
                     </span>
                     
-                    {{typeName.url | extractName}}
+                    {{ typeName.url | extractName }}
                 </span>
                 
-                <!--<span 
-                    *ngIf="type.label !== 'Forms'"
-                    (click)='onEdit({formUniqueId: typeName.formUniqueId, label:typeName.label, url:typeName.url, editor:"code",path:[{name:typeName.label,type:type.label}]})'
-                    class="link glyphicon glyphicon-align-left click-cursor">
-                </span>-->
-                
                 <ul [collapse]="typeName.collapsed" *ngIf="typeName.children.length">
-                
-                <!--<li *ngFor="let childType of typeName.children"
-                    class="tree-node--collapsible"
-                    [class.closed]="childType.collapsed"
-                    [class.hasChild]="childType.children.length !== 0">
-                    
-                    <span (click)="childType.collapsed = !childType.collapsed" class="tree-node--name">
-                        {{childType.label}}
-                    </span>-->
-
-                    <!--<span (click)="onAdd({url:childType.url, type:childType.type})" 
-                        class="link glyphicon glyphicon-plus click-cursor">
-                    </span>-->
-                    
-                    <!--<ul [collapse]="childType.collapsed || childType.children.length === 0">-->
-                    
                     <li *ngFor="let childName of typeName.children">
 
                         <span #selectable 
-                        [class.selected]="isItSelected(childName)" 
-                        dnd-draggable 
-                        [dragEnabled]="true" 
-                        (onDragEnd)="endDrag()"
-                        (click)="openFieldSettings({
-                            name: childName.url, 
-                            type: childName.type, 
-                            parent: typeName.url,
-                            resolved: true
-                        })" 
-                        (onDragStart)="startDrag({ 
+                            [class.selected]="isItSelected(childName)" 
+                            dnd-draggable 
+                            [dragEnabled]="true" 
+                            (onDragEnd)="endDrag()"
+                            (click)="openFieldSettings({
                                 name: childName.url, 
                                 type: childName.type, 
-                                parent: typeName.url,
+                                parent: childName.typeNameUrl,
+                                resolved: true
+                            })" 
+                            (onDragStart)="startDrag({ 
+                                name: childName.url, 
+                                type: childName.type, 
+                                parent: childName.typeNameUrl,
                                 resolved: true 
                             })">
                         
@@ -118,45 +89,9 @@
 
                             {{childName.url | extractName}}
                         </span>
-                        
-                        <!--<span (click)='_onEdit({label:childName.label, url:childName.url, editor:"code",path:[{name:typeName.label ,type:type.label},{name:childName.label,type:childType.label}]})' 
-                            class="link glyphicon glyphicon-align-left click-cursor">
-                        </span>-->
-                        
-                        <!--<span (click)='onEdit({label:childName.label, url:childName.url, editor:"settings",path:[{name:typeName.label ,type:type.label},{name:childName.label,type:childType.label}]})' 
-                            class="link glyphicon glyphicon-cog click-cursor">
-                        </span>-->
                     </li>
-                    <!--</ul>-->
-                <!--</li>-->
                 </ul>
             </li>
-            </ul>
-
-            <ul *ngIf="type.label == 'Agents'" 
-                [collapse]="type.collapsed">
-                
-                <li *ngFor="let typeName of type.children">
-                
-                <span #selectable 
-                    [class.selected]="typeName === selected" 
-                    (click)="typeName.collapsed = !typeName.collapsed">
-                    {{typeName.label}}
-                </span>
-                
-                <span *ngIf="type.label === 'Forms'" 
-                    (click)='onEdit({formUniqueId: typeName.formUniqueId, label:typeName.label, url:typeName.url, editor:"layout",path:[{name:typeName.label,type:type.label}]})'
-                    class="link glyphicon glyphicon-file click-cursor">
-                </span>
-                
-                <span (click)='onEdit({formUniqueId: typeName.formUniqueId, label:typeName.label, url:typeName.url, editor:"code",path:[{name:typeName.label,type:type.label}]})'
-                    class="link glyphicon glyphicon-align-left click-cursor">
-                </span>
-                
-                <span (click)='onEdit({formUniqueId: typeName.formUniqueId, label:typeName.label, url:typeName.url, editor:"settings",path:[{name:typeName.label,type:type.label}]})'
-                    class="link glyphicon glyphicon-cog click-cursor">
-                </span>
-                </li>
             </ul>
         </li>
 

@@ -31,7 +31,7 @@ ul {
 .tree-node--collapsible.hasChild.closed > .tree-node--name:before {
     transform: rotate(-90deg);
 }
-.tree-node--collapsible.click-cursor {
+.click-cursor {
     cursor: pointer;
 }
 .tree-node__child-type-image {

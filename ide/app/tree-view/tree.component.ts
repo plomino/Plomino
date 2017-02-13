@@ -15,6 +15,7 @@ import { DND_DIRECTIVES } from 'ng2-dnd/ng2-dnd';
 import { 
     ElementService,
     TabsService,
+    FormsService,
     DraggingService 
 } from '../services';
 
@@ -41,6 +42,7 @@ export class TreeComponent implements OnInit {
 
     constructor(private _elementService: ElementService,
                 private tabsService: TabsService,
+                private formsService: FormsService,
                 public draggingService: DraggingService) { }
     
     ngOnInit() {
@@ -59,6 +61,10 @@ export class TreeComponent implements OnInit {
             return true;
         }
         else { return false; }
+    }
+
+    selectDBSettingsTab() {
+      this.formsService.changePaletteTab(3);
     }
 
     getTypeImage(childName: any) {

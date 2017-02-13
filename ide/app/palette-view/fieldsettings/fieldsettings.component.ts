@@ -163,10 +163,7 @@ export class FieldSettingsComponent implements OnInit {
     }
 
     private clickAddLink() {
-        const $addLink = $('plomino-palette > tabset > ul > li > a > span:contains("Add")');
-        if ($addLink.length !== 0) {
-            $addLink.click();
-        }
+      this.formsService.changePaletteTab(0);
     }
 
     private loadSettings() {

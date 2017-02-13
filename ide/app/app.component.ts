@@ -148,33 +148,45 @@ export class AppComponent implements OnInit, AfterViewInit {
   }
 
   ngOnInit() {
-    this.treeService.getTree()
+    this.treeService
+    .getTree()
     .subscribe((tree) => {
-      const data = this.collapseTreeElements(tree, this.data);
+      let data = this.collapseTreeElements(tree, this.data);
       if (!data) { return; }
 
       /* little callback hell */
+      data = data.filter((dataItem: any) => dataItem.type !== 'PlominoAgent');
+
+      const topFormsViewsList: any[] = [];
       data.forEach((z: any, topIndex: number) => {
         z.children.forEach((firstLevelChildrenItem: any, index: number) => {
           let tmp = firstLevelChildrenItem.children;
           firstLevelChildrenItem.children.forEach((subChild: any) => {
+            firstLevelChildrenItem.typeLabel = z.label;
+            subChild.children.forEach((subChild: any) => {
+              subChild.typeNameUrl = firstLevelChildrenItem.url;
+            });
             tmp = tmp.concat(subChild.children);
           });
           tmp = tmp.filter((item: any) => {
             return !item.folder;
           });
           data[topIndex].children[index].children = tmp;
-        })
+          data[topIndex].children[index].typeNameUrl = z.url;
+          topFormsViewsList.push(firstLevelChildrenItem);
+        });
       });
       
       /* extracting children of children */
-      this.data = data;
+      this.data = topFormsViewsList;
     });
     
-    this.tabsService.getTabs()
+    this.tabsService
+    .getTabs()
     .subscribe((tabs) => { this.tabs = tabs; })
 
-    this.draggingService.getDragging()
+    this.draggingService
+    .getDragging()
     .subscribe((dragData: any) => {
       this.isDragging = !!dragData;
       this.dragData = dragData;

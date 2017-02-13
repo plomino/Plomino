@@ -36,9 +36,11 @@ export class TreeService {
     }
 
     updateTree() {
-        return this.http.get("../../@@designtree").map((res: Response) => res.json() )
-                        .forEach((response) => {
-                            this.tree$.next(this.addUniqueIdsForForms(response));
-                        });
+      return this.http
+      .get("../../@@designtree")
+      .map((res: Response) => res.json())
+      .forEach((response) => {
+          this.tree$.next(this.addUniqueIdsForForms(response));
+      });
     }
 }

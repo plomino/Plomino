@@ -272,7 +272,7 @@ export class WidgetService {
   }
 
   private convertFormFields(base: string, element: any): Observable<any> {
-    console.info('convertFormFields', base, element);
+    // console.info('convertFormFields', base, element);
     let $class = element.attr('class');
     let $type = $class.slice(7, -5).toLowerCase();
     let $id = element.text();
