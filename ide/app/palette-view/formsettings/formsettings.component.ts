@@ -223,7 +223,7 @@ export class FormSettingsComponent implements OnInit {
                 this.tab = tab;
             })
             .flatMap((tab: any) => {
-                if (tab) {
+                if (tab && tab.url) {
                     return this.objService.getFormSettings(tab.url);
                 } else {
                     return Observable.of('');

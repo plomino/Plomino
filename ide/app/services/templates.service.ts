@@ -18,6 +18,7 @@ export class TemplatesService {
   }
 
   getTemplates(formUrl: string): Observable<any> {
+    console.info('getTemplates called', formUrl);
     return this.http.get(`${formUrl}/@@list-templates`).map(this.extractData);
   }
 

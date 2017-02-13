@@ -18,6 +18,7 @@ export class ObjService {
     }
     
     getFieldSettings(fieldUrl: string): Observable<any> {
+        console.info('getFieldSettings called', fieldUrl);
         return this.http.get(`${fieldUrl}/@@edit?ajax_load=1&ajax_include_head=1`)
                     .map(this.extractText);
     }
@@ -28,6 +29,7 @@ export class ObjService {
     }
     
     getFormSettings(formUrl: string): Observable<any> {
+        console.info('getFormSettings called', formUrl);
         return this.http.get(`${formUrl}/@@edit?ajax_load=1&ajax_include_head=1`)
                     .map(this.extractText);
     }

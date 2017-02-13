@@ -99,7 +99,8 @@ export class AddComponent {
         this.tabsService.getActiveTab()
             .subscribe((tab) => {
                 this.activeTab = tab;
-                if (tab) {
+                if (tab && tab.url) {
+                    console.info('new active tab', JSON.stringify(tab));
                     this.templatesService.getTemplates(tab.url).subscribe((templates: any[]) => {
                         this.templates = templates.map((template) => {
                             return Object.assign({}, template, {

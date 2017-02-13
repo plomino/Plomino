@@ -120,20 +120,24 @@ export class FieldSettingsComponent implements OnInit {
     }
 
     openFieldCode(): void {
-        //path:[{name:typeName.label ,type:type.label},{name:childName.label,type:childType.label}]
+        let $form: JQuery = $(this.fieldForm.nativeElement);
+        let form: HTMLFormElement = <HTMLFormElement> $form.find('form').get(0);
+        let formData: any = new FormData(form);
+        const label = formData.get('form.widgets.IBasic.title');
+        const urlData = this.field.url.split('/');
         const eventData = {
-            // formUniqueId: this.field.formUniqueId,
+            formUniqueId: this.field.formUniqueId,
             editor: 'code',
-            label: this.field.id,
-            // path: [{ name: this.field.label, type: 'Fields' }],
+            label: label,
             path: [
-                { name: 'testable form', type: 'Forms' },
-                { name: this.field.id, type: 'plominoField' }
+                { name: urlData[urlData.length - 2], type: 'Forms' },
+                { name: label, type: 'Fields' }
             ],
             url: this.field.url
         };
-        console.log(this.field);
-        console.log(eventData);
+        console.log('field', this.field);
+        console.log('fieldForm', this.fieldForm);
+        console.log(JSON.stringify(eventData));
         this.tabsService.openTab(eventData, true);
     }
 
