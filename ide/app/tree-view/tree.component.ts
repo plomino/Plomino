@@ -81,6 +81,7 @@ export class TreeComponent implements OnInit {
     onEdit(event: any) {
         this.openTab.emit(event);
     }
+    
     onAdd(event: any) {
         this.add.emit(event);
     }

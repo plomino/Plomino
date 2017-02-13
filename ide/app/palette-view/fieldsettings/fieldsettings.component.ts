@@ -120,13 +120,20 @@ export class FieldSettingsComponent implements OnInit {
     }
 
     openFieldCode(): void {
+        //path:[{name:typeName.label ,type:type.label},{name:childName.label,type:childType.label}]
         const eventData = {
-            formUniqueId: this.field.formUniqueId,
+            // formUniqueId: this.field.formUniqueId,
             editor: 'code',
-            label: this.field.label,
-            path: [{ name: this.field.label, type: 'Fields' }],
+            label: this.field.id,
+            // path: [{ name: this.field.label, type: 'Fields' }],
+            path: [
+                { name: 'testable form', type: 'Forms' },
+                { name: this.field.id, type: 'plominoField' }
+            ],
             url: this.field.url
         };
+        console.log(this.field);
+        console.log(eventData);
         this.tabsService.openTab(eventData, true);
     }
 
