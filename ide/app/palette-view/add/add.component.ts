@@ -45,17 +45,6 @@ export class AddComponent {
 
     }
 
-    getComponentIconCode(componentType: string) {
-        return {
-            'PlominoForm': 'featured_play_list',
-            'PlominoLabel': 'label',
-            'PlominoField': 'input',
-            'PlominoHidewhen': 'label_outline',
-            'PlominoAction': 'gavel',
-            'PlominoView': 'remove_red_eye',
-        }[componentType] || 'input';
-    }
-
     ngOnInit() {
         // Set up the addable components
         this.addableComponents = [
@@ -286,47 +275,11 @@ export class AddComponent {
 
     // Refactor this code, put switch into separated fn
     startDrag(type: any, templateId?: any): void {
-        let data: any;
-        let draggingData: any = {};
-        switch(type) {
-            case 'PlominoForm':
-                data = {
-                    '@type': 'PlominoForm'
-                };
-                break;
-            case 'PlominoView':
-                data = {
-                    '@type': 'PlominoView'
-                };
-                break;
-            case 'PlominoLabel':
-                data = {
-                  '@type': 'PlominoLabel'  
-                };
-                break;
-            case 'PlominoField':
-                data = {
-                    '@type': 'PlominoField'
-                };
-                break;
-            case 'PlominoHidewhen':
-                data = {
-                    '@type': 'PlominoHidewhen'
-                }
-                break;
-            case 'PlominoAction':
-                data = {
-                    '@type': 'PlominoAction'
-                };
-                break;
-            case 'template':
-                data = { 
-                    '@type': 'PlominoTemplate'
-                };
-                break;
-            default: return;
-        }
-        
+        const draggingData: DraggingData = {
+          '@type': type === 'template' ? 'PlominoTemplate' : type,
+          resolver: () => {},
+          resolved: false,
+        };
 
         /* @Resolved & @Resolver are needed,
          * because we have 2 types of drag data for now
@@ -335,22 +288,16 @@ export class AddComponent {
          * palette, which needs to be populated!
          * @Resolver will be called on drop event in tinymce.component
          */
-        if (type === 'PlominoForm' || type === 'PlominoView') {
-            Object.assign(draggingData, data, {
-                resolved: false
-            });
-        } else {
-            Object.assign(draggingData, data, {
-                parent: this.activeTab.url,
-                resolved: false
-            });
+        if (type !== 'PlominoForm' && type !== 'PlominoView') {
+            draggingData.parent = this.activeTab.url;
         }
 
         if (type !== 'template') {
-            draggingData.resolver = (data: any) => {
-                this.add(data['@type']);
+            draggingData.resolver = (data = {'@type': ''}) => {
+              this.add(data['@type']);
             }
         } else {
+            draggingData.templateId = templateId;
             draggingData.resolver = () => {
                 this.addTemplate(templateId);
             }

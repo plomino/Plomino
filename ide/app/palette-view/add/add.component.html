@@ -10,7 +10,6 @@
             (onDragEnd)="endDrag()"
             [title]="template.title"
             (click)="addTemplate(template.id)">
-            <span class="icon material-icons">{{getComponentIconCode('input')}}</span>
             <span class="small-left-margin">{{template.title}}</span>
         </button>
     </div>
@@ -34,7 +33,6 @@
                     (onDragEnd)="endDrag()"  
                     [title]="comp.title"
                     (click)="add(comp.type, true)">
-                <span class="material-icons">{{getComponentIconCode(comp.type)}}</span>
                 <span class="small-left-margin">{{comp.title}}</span>
             </button>
             </comp>
