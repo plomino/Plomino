@@ -193,7 +193,7 @@ export class AppComponent implements OnInit, AfterViewInit {
     })
 
     $(() => {
-      $('.palette-wrapper')
+      $('.palette-wrapper .mdl-tabs__panel')
       .css('height', `${ window.innerHeight / 2 }px`);
 
       window['Modal'] = require('mockup-patterns-modal');
@@ -257,7 +257,7 @@ export class AppComponent implements OnInit, AfterViewInit {
 
     if (!directions.length) { return; }
 
-    const $wrapper = $('.palette-wrapper');
+    const $wrapper = $('.palette-wrapper .mdl-tabs__panel');
     let height = parseInt($wrapper.css('height').replace('px', ''), 10);
 
     if (contains(this.DIRECTION_UP)) {
