@@ -1,0 +1,23 @@
+<div class="add-wrapper">
+    <group *ngFor="let group of addableComponents"
+        [hidden]="group.hidden(activeTab)">
+        <div class="item">
+            <comp *ngFor="let comp of group.components">
+            <button type="button" 
+                    class="btn btn-default" 
+                    title="Add {{comp.title}}"
+                    [disabled]="(comp.type !== 'PlominoForm' && 
+                                comp.type !== 'PlominoView') && 
+                                !activeTab" 
+                    id="{{comp.type}}"
+                    dnd-draggable 
+                    [dragEnabled]="true"
+                    (onDragStart)="startDrag(comp.type)"
+                    (onDragEnd)="endDrag()"  
+                    (click)="add(comp.type, true)">
+                {{comp.title}}
+            </button>
+            </comp>
+        </div>
+    </group>
+</div>

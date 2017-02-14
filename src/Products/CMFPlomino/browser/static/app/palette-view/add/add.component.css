@@ -1,0 +1,10 @@
+.add-wrapper {
+    padding-bottom: 10px;
+    border-bottom: 1px solid lightgray;
+    min-height: 145px;
+    overflow-y: auto;
+}
+
+.item {
+    padding-top: 10px;
+}

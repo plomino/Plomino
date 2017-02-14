@@ -1,0 +1,66 @@
+.wrap-app {
+    display: flex;
+    flex-direction: row;
+    height: 100vh;
+}
+
+.sidebar {
+    height: 100vh;
+    overflow: hidden;
+    margin-bottom: 0;
+}
+
+.main-app {
+    width: 100%;
+    height: 100vh;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 0;
+}
+
+tab {
+    height: 900px;
+    overflow: auto;
+}
+
+.well,
+plomino-palette,
+plomino-tree {
+    width: 400px;
+}
+
+.tabunsaved {
+    font-style: italic;
+}
+
+
+.drop-zone-container {
+    position: absolute;
+    background-color: rgba(255, 255, 255, 0.8);
+    z-index: 999;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: -webkit-flex;
+    display: -moz-flex;
+    display: -ms-flex;
+    display: -o-flex;
+    display: flex;
+    justify-content: center;
+}
+
+.drop-zone-label {
+    -ms-align-self: center;
+    align-self: center;
+    text-align: center;
+}
+
+.drop-zone-label .glyphicon {
+    font-size: 40px;
+}
+
+.drop-zone-label .heading {
+    font-size: 25px;
+}
