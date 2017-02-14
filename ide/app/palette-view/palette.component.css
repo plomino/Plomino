@@ -10,3 +10,15 @@ plomino-palette .tab-container .tab-content {
 .mdl-tabs__tab:hover, .mdl-tabs__tab:active, .mdl-tabs__tab:visited {
     text-decoration: none;
 }
+
+/deep/ .scrolling-container {
+  overflow-y: auto;
+}
+
+/deep/ .scrolling-container--66 {
+  height: 283.5px;
+}
+
+/deep/ .scrolling-container--76 {
+  height: 273.5px;
+}

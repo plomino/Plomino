@@ -24,10 +24,9 @@
 
 .palette-wrapper {
   /*max-height: 80%;*/
-  overflow-y: auto;
-  height: 300px;
+  overflow: hidden;
+  /*height: 300px;*/
   transition: none;
-  overflow-x: hidden;
   /*min-height: 150px;*/
   /*padding-top: 64px;*/
 } 
@@ -48,6 +47,12 @@
     white-space: nowrap;
     display: block;
     text-align: center;
+    user-select: none;
+}
+
+.palette-wrapper /deep/ .mdl-tabs__panel {
+  overflow-y: auto;
+  height: 300px;
 }
 
 .palette-wrapper /deep/ .mdl-tabs__tab {
