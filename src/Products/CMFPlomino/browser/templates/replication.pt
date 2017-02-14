@@ -16,7 +16,7 @@
             <fieldset>
                 <legend>CSV Importation</legend>
                 <form name="importCSV" id="importCSV" action="manage_importation" method="POST" enctype="multipart/form-data">
-                    <tal:vars tal:define="report here/getReport"
+                    <tal:vars tal:define="report python:getattr(context, 'importReport', []) or [];"
                         tal:condition="report">
                         <dl class="collapsible inline collapsedOnLoad">
                             <dt class="collapsibleHeader">Import report</dt>

@@ -263,15 +263,6 @@ class ReplicationManager:
         # result sent
         return (nbDocDone, nbDocFailed)
 
-    security.declarePublic('getReport')
-
-    def getReport(self):
-        """ Returns last importation report
-        """
-        if not (hasattr(self, 'importReport')):
-            self.importReport = None
-        return self.importReport
-
     security.declareProtected(EDIT_PERMISSION, 'resetReport')
 
     def resetReport(self):
@@ -284,7 +275,7 @@ class ReplicationManager:
     def addToReport(self, lineNumber, infoMessage, error=False):
         """ Adds entry to report
         """
-        if not self.getReport():
+        if not self.importReport:
             self.importReport = []
         if error:
             state = 'error'
