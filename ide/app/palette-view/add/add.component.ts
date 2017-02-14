@@ -274,11 +274,12 @@ export class AddComponent {
     }
 
     // Refactor this code, put switch into separated fn
-    startDrag(type: any, templateId?: any): void {
+    startDrag(eventData: MouseEvent, type: any, templateId?: any): void {
         const draggingData: DraggingData = {
           '@type': type === 'template' ? 'PlominoTemplate' : type,
           resolver: () => {},
           resolved: false,
+          eventData: eventData
         };
 
         /* @Resolved & @Resolver are needed,

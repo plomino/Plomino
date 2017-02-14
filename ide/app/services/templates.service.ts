@@ -19,8 +19,19 @@ export class TemplatesService {
 
   getTemplate(formUrl: string, templateId: string): Observable<string> {
     return Observable.of(`
-      <span class="plominoLabelClass mceNonEditable">Untitled</span>
-      <span><input type="text"></span>
+      <div id="drag-autopreview" class="plominoGroupClass mceNonEditable"
+        contenteditable="false">
+        <span class="mceEditable" contenteditable="false">
+          <span class="plominoLabelClass mceNonEditable"
+            contenteditable="false">
+            Untitled
+          </span><br>
+        </span>
+        <span class="plominoFieldClass mceNonEditable"
+          data-present-method="convertFormFields_1"
+          contenteditable="false"> <input type="text"> 
+        </span>
+      </div>
     `);
   }
 

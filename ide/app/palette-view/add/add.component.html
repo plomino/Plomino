@@ -6,7 +6,7 @@
             [hidden]="template.hidewhen(activeTab)"
             dnd-draggable
             [dragEnabled]="true"
-            (onDragStart)="startDrag('template', template.id)"
+            (onDragStart)="startDrag($event, 'template', template.id)"
             (onDragEnd)="endDrag()"
             [title]="template.title"
             (click)="addTemplate(template.id)">
@@ -29,7 +29,7 @@
                     id="{{comp.type}}"
                     dnd-draggable 
                     [dragEnabled]="true"
-                    (onDragStart)="startDrag(comp.type)"
+                    (onDragStart)="startDrag($event, comp.type)"
                     (onDragEnd)="endDrag()"  
                     [title]="comp.title"
                     (click)="add(comp.type, true)">

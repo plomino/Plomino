@@ -4,6 +4,7 @@ interface DraggingData {
   '@type': string;
   'parent'?: string;
   'resolved': boolean;
+  'eventData'?: any;
 }
 
 interface TinyMceObservable {

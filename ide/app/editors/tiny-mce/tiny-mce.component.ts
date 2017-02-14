@@ -78,6 +78,7 @@ export class TinyMCEComponent implements AfterViewInit, OnInit, OnDestroy {
     templatesSubscription: Subscription;
 
     autoSaveTimer: any = null;
+    autoSavedContent: string = null;
 
     constructor(private elementService: ElementService,
       private fieldsService: FieldsService,
@@ -359,12 +360,12 @@ export class TinyMCEComponent implements AfterViewInit, OnInit, OnDestroy {
               let $editorFrame = $(this.editorElement.nativeElement).find('iframe[id*=mce_]');
             });
 
-            editor.on('mouseover', (ev: MouseEvent) => {
-              let $element = $(ev.target);
-              this.zone.run(() => {
-                console.info('mouseover $element', $element);
-              });
-            });
+            // editor.on('mouseover', (ev: MouseEvent) => {
+            //   let $element = $(ev.target);
+            //   this.zone.run(() => {
+            //     console.info('mouseover $element', $element);
+            //   });
+            // });
 
             editor.on('mousedown', (ev: MouseEvent) => {
                 let $element = $(ev.target);
@@ -441,6 +442,68 @@ export class TinyMCEComponent implements AfterViewInit, OnInit, OnDestroy {
       });
 
       this.getFormLayout();
+
+      this.draggingService
+      .onPaletteCustomDragEvent()
+      .subscribe((eventData: MouseEvent) => {
+        // this.draggingService.setDragging(false);
+        this.dragData = this.draggingService.currentDraggingData 
+          ? this.draggingService.currentDraggingData 
+          : this.draggingService.previousDraggingData;
+        this.removeExampleWidget();
+        this.dropped({ mouseEvent: eventData });
+        this.autoSavedContent = tinymce.get(this.id).getContent();
+        this.autoSavedContent = this.autoSavedContent.replace(/<br \/><br \/>/g, '<br />');
+        tinymce.get(this.id).setContent(this.autoSavedContent);
+      });
+
+      this.draggingService
+      .onPaletteCustomDragEventCancel()
+      .subscribe((eventData: MouseEvent) => {
+        this.removeExampleWidget();
+        if (this.autoSavedContent) {
+          tinymce.get(this.id).setContent(this.autoSavedContent);
+        }
+      });
+
+
+      this.draggingService
+      .onPaletteCustomDragMMOIEvent()
+      .subscribe((eventData: MouseEvent) => {
+        // this.removeExampleWidget();
+        // if (this.autoSavedContent) {
+        //   tinymce.get(this.id).setContent(this.autoSavedContent);
+        // }
+      });
+
+      this.draggingService
+      .onPaletteCustomDragMMIIEvent()
+      .subscribe((eventData: MouseEvent) => {
+        this.autoSavedContent = tinymce.get(this.id).getContent();
+        this.dragData = this.draggingService.currentDraggingData 
+          ? this.draggingService.currentDraggingData 
+          : this.draggingService.previousDraggingData;
+        
+        // calculate the point
+
+        // get x/y of the point
+
+        // put the div into the point
+        // const $mockWidgetGroup = $(
+        //   `<div style="background: white; width: 200px; height: 25px;">demo</div>`
+        // );
+
+        this.removeExampleWidget();
+        this.insertTemplatePreviewAtTheCursor(eventData);
+      });
+    }
+
+    removeExampleWidget() {
+      const editor = tinymce.get(this.id);
+      editor.focus(); //give the editor focus
+      editor.selection.select(editor.dom.select('#drag-autopreview')[0]);
+      editor.selection.collapse(0);
+      editor.dom.remove('drag-autopreview');
     }
 
     getFormLayout() {
@@ -453,13 +516,13 @@ export class TinyMCEComponent implements AfterViewInit, OnInit, OnDestroy {
           this.widgetService
           .getFormLayout(this.id, data)
           .subscribe((formLayout: string) => {
-            formLayout = formLayout.replace(/<br><\/div><br>$/, '<br></div><br><br>');
-            console.info('tinymce setContent code (0)');
+            formLayout = formLayout.replace(/<br><\/div><br>$/, '<br></div><br><br>') + '<br/>';
             tinymce.get(this.id).setContent(formLayout);
+            this.autoSavedContent = formLayout;
           });
         } else {
-          console.info('tinymce setContent code (1)');
           tinymce.get(this.id).setContent(newData);
+          this.autoSavedContent = newData;
         }
       }, (err) => {
         console.error(err);
@@ -491,66 +554,44 @@ export class TinyMCEComponent implements AfterViewInit, OnInit, OnDestroy {
         return () => this.dragData.parent === this.id;
     }
 
-    _test2(eventData: any) {
-      // const editor = tinymce.get(this.id);
-      console.info('test2');
-      // editor.focus();
-      // editor.selection.select(editor.dom.select('#drag-autopreview')[0]);
-      // editor.selection.collapse(0);
-      // editor.dom.remove('drag-autopreview');
-    }
-
-    _test(eventData: any) {
-      // const offset = $(this.editorElement.nativeElement)
-      //   .find(`iframe[id*='${this.id}']`).offset();
+    insertTemplatePreviewAtTheCursor(eventData: any) {
+      const offset = $(this.editorElement.nativeElement)
+        .find(`iframe[id*='${this.id}']`).offset();
       
-      // const editor = tinymce.get(this.id);
-      // let x = Math.round(eventData.mouseEvent.clientX - offset.left);
-      // let y = Math.round(eventData.mouseEvent.clientY - offset.top);
+      const editor = tinymce.get(this.id);
+      let x = Math.round(eventData.clientX - offset.left);
+      let y = Math.round(eventData.clientY - offset.top);
 
-      // if (x <= 0) { x = 1; }
-      // if (y <= 0) { y = 1; }
+      if (x <= 0) { x = 1; }
+      if (y <= 0) { y = 1; }
 
-      // const rng = this.getCaretFromEvent(x, y, editor);
+      const rng = this.getCaretFromEvent(x, y, editor);
 
-      // if (rng) {
-      //   editor.selection.setRng(rng);
-      //   let tpl = this.draggingService.currentDraggingTemplateCode;
-      //   editor.execCommand('mceInsertRawHTML', false,
-      //     `<div id="drag-autopreview">${ tpl }</div>`, { skip_undo : 1 });
-      // }
-
-      
-      // if (this.dragData.resolved) {
-      //     // this.addElement(this.dragData);
-      //     // console.info('this.addElement', this.dragData);
-      // } else {
-      //     this.resolveDragData(this.dragData, this.dragData.resolver);
-      //     console.info('this.resolveDragData', this.dragData, this.dragData.resolver);
-      // }
-
-      console.info(this.dragData, eventData.mouseEvent);
+      if (rng) {
+        editor.selection.setRng(rng);
+        let tpl = this.draggingService.currentDraggingTemplateCode;
+        editor.execCommand('mceInsertRawHTML', false, tpl);
+      }
     }
 
     dropped({ mouseEvent }: any) {
-        let offset = $(this.editorElement.nativeElement)
-                        .find(`iframe[id*='${this.id}']`)
-                        .offset();
-        let editor = tinymce.get(this.id);
-        let x = Math.round(mouseEvent.clientX - offset.left);
-        let y = Math.round(mouseEvent.clientY - offset.top);
-        let rng = this.getCaretFromEvent(x, y, editor);
-        console.info('this.getCaretFromEvent', rng);
-        
-        editor.selection.setRng(rng);
+      let offset = $(this.editorElement.nativeElement)
+        .find(`iframe[id*='${this.id}']`).offset();
+      let editor = tinymce.get(this.id);
+      let x = Math.round(mouseEvent.clientX - offset.left);
+      let y = Math.round(mouseEvent.clientY - offset.top);
+      let rng = this.getCaretFromEvent(x, y, editor);
+      console.info('this.getCaretFromEvent', rng);
+      
+      editor.selection.setRng(rng);
 
-        if (this.dragData.resolved) {
-            this.addElement(this.dragData);
-            console.info('this.addElement', this.dragData);
-        } else {
-            this.resolveDragData(this.dragData, this.dragData.resolver);
-            console.info('this.resolveDragData', this.dragData, this.dragData.resolver);
-        }
+      if (this.dragData.resolved) {
+          this.addElement(this.dragData);
+          console.info('this.addElement', this.dragData);
+      } else {
+          this.resolveDragData(this.dragData, this.dragData.resolver);
+          console.info('this.resolveDragData', this.dragData, this.dragData.resolver);
+      }
     }
 
     private updateField(updateData: any) {
@@ -668,36 +709,32 @@ export class TinyMCEComponent implements AfterViewInit, OnInit, OnDestroy {
 
     private insertElement(baseUrl: string, type: string, value: string, option?: string) {
 
-        // TODO: Move this method to service
+      // TODO: Move this method to service
 
-		let ed: any = tinymce.get(this.id);
-        let selection: any = ed.selection.getNode();
-        let title: string;
-        let plominoClass: string;
-        let content: string;
+		  let ed: any = tinymce.get(this.id);
+      let selection: any = ed.selection.getNode();
+      let title: string;
+      let plominoClass: string;
+      let content: string;
 
-        var container = 'span';
+      var container = 'span';
 
-		if (type === 'action') {
-			plominoClass = 'plominoActionClass';
-        } else if (type === 'field') {
-			plominoClass = 'plominoFieldClass';
-            container = "div";
-        } else if (type === 'subform') {
-			plominoClass = 'plominoSubformClass';
-            container = "div";
-        } else if (type === 'label') {
-			plominoClass = 'plominoLabelClass';
-			if (option == '0') {
-				container = "span";
-			} else {
-                container = "div";
-            }
-		}
-
-        console.info('plominoClass', plominoClass);
-        console.info('type', type);
-        console.info('container', container);
+		  if (type === 'action') {
+			  plominoClass = 'plominoActionClass';
+      } else if (type === 'field') {
+			  plominoClass = 'plominoFieldClass';
+        container = "div";
+      } else if (type === 'subform') {
+			  plominoClass = 'plominoSubformClass';
+        container = "div";
+      } else if (type === 'label') {
+			  plominoClass = 'plominoLabelClass';
+  			if (option == '0') {
+  				container = "span";
+  			} else {
+          container = "div";
+        }
+  		}
         
         if (type == 'label') {
             this.elementService.getWidget(baseUrl, type, value)
@@ -829,9 +866,8 @@ export class TinyMCEComponent implements AfterViewInit, OnInit, OnDestroy {
 	}
 
     private insertGroup(group: string) {
-      console.log('insertGroup', group);
       let editor = tinymce.get(this.id);
-      editor.execCommand('mceInsertContent', false, group, { skip_undo : 1 });
+      editor.execCommand('mceInsertContent', false, `${ group }`, { skip_undo : 1 });
       console.info('insertGroup -> mceInsertContent (4) group', group);
     }
     

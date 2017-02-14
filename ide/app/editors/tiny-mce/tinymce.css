@@ -59,6 +59,12 @@ div.plominoLabelClass {
     outline-offset: 5px;
 }
 
+#drag-autopreview {
+  opacity: 0.3;
+  outline: 2px dashed #cccccc;
+  outline-offset: 5px;
+}
+
 .mce-content-body .plominoGroupClass[contentEditable=false][data-mce-selected],
 .mce-content-body .plominoGroupClass:focus {
     outline-color: navy;
