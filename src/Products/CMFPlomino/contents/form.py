@@ -753,8 +753,11 @@ class PlominoForm(Container):
     def _get_html_content(self):
         html_content = self.form_layout
         if not html_content:
-            return''
-        return html_content.raw.replace('\n', '')
+            return ''
+        if isinstance(html_content, basestring):
+            return html_content.replace('\n', '')
+        else:
+            return html_content.raw.replace('\n', '')
 
     security.declareProtected(READ_PERMISSION, 'applyHideWhen')
 
