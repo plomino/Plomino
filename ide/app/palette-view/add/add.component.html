@@ -1,7 +1,7 @@
 <div class="add-wrapper">
      <div class="templates">
 
-        <button class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--colored"
+        <button class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored"
             *ngFor="let template of templates, let i = index"
             [hidden]="template.hidewhen(activeTab)"
             dnd-draggable
@@ -17,9 +17,9 @@
     <group *ngFor="let group of addableComponents"
         [hidden]="group.hidden(activeTab)">
         <div class="item">
-            <comp *ngFor="let comp of group.components">
             <button type="button" 
-                    class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent mdl-button--colored"
+                    *ngFor="let comp of group.components"
+                    class="mdl-button mdl-js-button mdl-button--raised mdl-button--accent mdl-button--colored"
                     [class.mdl-color--cyan-900]="group.title === 'Form'" 
                     [class.mdl-color--purple-900]="group.title === 'DB'" 
                     title="Add {{comp.title}}"
@@ -35,7 +35,6 @@
                     (click)="add(comp.type, true)">
                 <span class="small-left-margin">{{comp.title}}</span>
             </button>
-            </comp>
         </div>
     </group>
 </div>
