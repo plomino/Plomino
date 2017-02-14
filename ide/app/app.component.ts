@@ -196,6 +196,8 @@ export class AppComponent implements OnInit, AfterViewInit {
       $('.palette-wrapper .mdl-tabs__panel')
       .css('height', `${ window.innerHeight / 2 }px`);
 
+      this.resizeInnerScrollingContainers();
+
       window['Modal'] = require('mockup-patterns-modal');
       window['TineMCE'] = require('mockup-patterns-tinymce');
 
@@ -247,6 +249,15 @@ export class AppComponent implements OnInit, AfterViewInit {
     $wrapper.css(attribute, `${ width }px`);
   }
 
+  resizeInnerScrollingContainers() {
+    const $wrapper = $('.palette-wrapper .mdl-tabs__panel');
+    const $containers76 = $('.scrolling-container--76');
+    const $containers66 = $('.scrolling-container--66');
+    const height = parseInt($wrapper.css('height').replace('px', ''), 10);
+    $containers76.css('height', `${ height - 76 }px`);
+    $containers66.css('height', `${ height - 66 }px`);
+  }
+
   resizeTree(event: { directions: string[], difference: {x: number, y: number} }) {
     const directions = event.directions;
     const difference = event.difference;
@@ -268,6 +279,7 @@ export class AppComponent implements OnInit, AfterViewInit {
     }
 
     $wrapper.css('height', `${ height }px`);
+    this.resizeInnerScrollingContainers();
   }
 
   indexOf(type: any) {
