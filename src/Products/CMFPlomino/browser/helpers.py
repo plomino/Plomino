@@ -562,7 +562,10 @@ class MacroTemplateView(BrowserView):
                          'id':form.id,
 #                         'path':path,
                          'group':group,
-                         'description':form.description} )
+                         'description':form.description,
+                         'layout': form.form_layout, # Used while dragging
+                    }
+            )
         self.request.RESPONSE.setHeader(
             'content-type', 'text/plain; charset=utf-8')
         return json.dumps(res)
