@@ -33,3 +33,15 @@ group:first-child .item {
   text-decoration: none;
   color: white;
 }
+
+/deep/ .plominoGroupClass {
+  font-family: "Roboto", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1.42857143;
+  color: #4d4d4d;
+  -webkit-font-smoothing: antialiased;
+  cursor: pointer !important;
+  opacity: 0.5;
+}
+

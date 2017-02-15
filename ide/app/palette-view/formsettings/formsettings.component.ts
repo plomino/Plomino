@@ -213,7 +213,12 @@ export class FormSettingsComponent implements OnInit {
             formulasSelector += '#formfield-form-widgets-document_title';
             formulasSelector += ',#formfield-form-widgets-document_id';
             formulasSelector += ',#formfield-form-widgets-search_formula';
-            setTimeout(() => { $(formulasSelector).remove(); }, 500);
+            formulasSelector += ',#fieldset-events';
+            setTimeout(() => {
+              $(formulasSelector).remove();
+              $('.plomino-formula').parent('div.field').remove();
+              $('#content').css('margin-bottom', 0);
+            }, 500);
         }
     }
 

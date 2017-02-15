@@ -24,10 +24,9 @@
       Code
     </a>
   </div>
-  <div class="scrolling-container scrolling-container--66" #fieldForm [innerHTML]="formTemplate | safePloneHtml"></div>
-
   <div class="mdl-card mdl-shadow--2dp settings-alert-no-object"
       *ngIf="!formTemplate">
     <div class="mdl-card__supporting-text">Please select field</div>
   </div>
+  <div class="scrolling-container scrolling-container--66" #fieldForm [innerHTML]="formTemplate | safePloneHtml"></div>
 </div>

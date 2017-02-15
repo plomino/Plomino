@@ -30,13 +30,11 @@
         Code
       </a>
     </div>
-    
+    <div class="mdl-card mdl-shadow--2dp settings-alert-no-object"
+      *ngIf="!formSettings">
+      <div class="mdl-card__supporting-text">Please select form</div>
+    </div>
     <div class="scrolling-container scrolling-container--76" #formElem 
         [innerHTML]="formSettings | safePloneHtml">
     </div>
-
-    <div class="mdl-card mdl-shadow--2dp settings-alert-no-object"
-      *ngIf="!formSettings">
-    <div class="mdl-card__supporting-text">Please select form</div>
-  </div>
 </div>
