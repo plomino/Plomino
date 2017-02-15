@@ -1,7 +1,7 @@
 Changelog
 =========
 
-2.0b7 (unreleased)
+2.0b7 (2017-02-15)
 ------------------
 
 - Do not break old forms because of form_layout.
