@@ -142,7 +142,7 @@ class MacroWidget(Widget):
         prefixes = ["macro_%s_%s_"%(typename,f.lower()) for f in FIELD_TYPES.keys() if f != thistype]
 
         dbs = []
-        for path in db.import_macros:
+        for path in db.getImportMacros():
             ## restrictedTraverse only ascii path, can't be unicode
             path = asAscii(path)
             if path == '.':
@@ -244,7 +244,7 @@ def load_macro(formid, helper, db, ids, curpath):
     form = None
     db_import = None
 
-    for db_path in db.import_macros:
+    for db_path in db.getImportMacros():
         # restrictedTraverse only ascii path, can't be unicode
         db_path = asAscii(db_path)
         if db_path == '.':
@@ -534,7 +534,7 @@ class MacroTemplateView(BrowserView):
         found = set()
 
         dbs = []
-        for path in db.import_macros:
+        for path in db.getImportMacros():
             ## restrictedTraverse only ascii path, can't be unicode
             path = asAscii(path)
             if path == '.':
