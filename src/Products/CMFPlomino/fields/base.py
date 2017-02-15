@@ -107,7 +107,7 @@ class BaseField(object):
                 if not request_value:
                     request_value = request.get(fieldName + '_querystring', '')
                 fieldValue = asUnicode(request_value)
-            if not fieldValue:
+            if fieldValue is None:
                 fieldValue = ""
 
         elif mode in ["DISPLAY", "COMPUTED"]:
