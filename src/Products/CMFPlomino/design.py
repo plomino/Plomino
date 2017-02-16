@@ -979,7 +979,7 @@ class DesignManager:
                 dm = getMultiAdapter((obj, attr), IDataManager)
                 #TODO: needs to be the same as import due to form_layout
                 #params[id] = dm.get()
-                params[id] = getattr(obj, id)
+                params[id] = getattr(obj, id, None)
         get_data(obj, schema)
         for behaviour in IBehaviorAssignable(obj).enumerateBehaviors():
             get_data(obj,behaviour.interface)

@@ -158,7 +158,6 @@ class IPlominoDatabase(model.Schema):
     #TODO: proper vocabulary of all other db's in site. perhaps with UUID in
     # case they are renamed
     directives.widget('import_macros', SelectFieldWidget)
-                      #pattern_options={'myoption': 'myvalue'})
     import_macros = schema.List(
         title=_("CMFPlomino_label_include_macros_from",
             default="Import Macros"),
@@ -200,6 +199,12 @@ class PlominoDatabase(
         filterOut = ['PlominoDocument']
         types = PortalFolder.allowedContentTypes(self)
         return [ctype for ctype in types if ctype.getId() not in filterOut]
+
+    def getImportMacros(self):
+        if getattr(self, 'import_macros') is not None:
+            return self.import_macros
+        else:
+            return default_macros(self)
 
     security.declarePublic('getStatus')
 

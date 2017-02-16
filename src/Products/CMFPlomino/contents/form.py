@@ -1233,11 +1233,13 @@ class PlominoForm(Container):
 
         return html_content
 
-    def example_widget(self, widget_type, id):
-        if not id:
-            return
+    def example_widget(self, widget_type, id=None):
+        """ id=None means we are dragging so just need a basic example
+        """
         db = self.getParentDatabase()
         if widget_type == "field":
+            if id is None:
+                return "<input value='...'/>"
             field = self.getFormField(id)
             if field is not None:
                 # Some widgets/types prefer a fieldvalue
@@ -1269,6 +1271,8 @@ class PlominoForm(Container):
                     return field_pq.outer_html()
 
         elif widget_type == "subform":
+            if id is None:
+                return "<h2>Subform</h2><input value='...'/>"
             subform = getattr(self, id, None)
             if not isinstance(subform, PlominoForm):
                 return
@@ -1280,6 +1284,8 @@ class PlominoForm(Container):
             return rendering
 
         elif widget_type == 'action':
+            if id is None:
+                return "<input type='submit' value='...'/>"
             action = getattr(self, id, None)
             if not isinstance(action, PlominoAction):
                 return
@@ -1292,6 +1298,9 @@ class PlominoForm(Container):
             return action_render
 
         elif widget_type == 'label':
+            if id is None:
+                return '<span class="plominoLabelClass">Untitled</span>'
+
             if ':' not in id:
                 field = self.getFormField(id)
                 if field is not None:
