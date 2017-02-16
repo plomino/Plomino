@@ -66,7 +66,8 @@
 <div class="formControls" metal:define-macro="OpenFormActionBar">
 <span class="actionButtons">
     <tal:defaultactions tal:condition="python:not(view.form.hide_default_actions)">
-        <tal:block metal:use-macro="context/plomino_actions/macros/CloseAction">display
+        <tal:block tal:condition="python:not context.REQUEST.get('Plomino_Parent_Form')"
+            metal:use-macro="context/plomino_actions/macros/CloseAction">display
         close action</tal:block>
         <input type="submit" class="context plominoSave" name="plomino_save"
             value="Save" i18n:domain="Products.CMFPlomino" i18n:attributes="value" />
