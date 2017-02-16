@@ -40,18 +40,24 @@ export class TinyMCEFormContentManagerService {
       dragging.target = null;
     });
 
-    // $('iframe:visible').contents().off('.cmb')
-    // .on('mousemove.cmb', function () {
-    //   if (dragging.target === null) {
-    //     $('iframe:visible').contents().find('*:last');
-    //     $(dragging.currentDraggingTemplateCode)
-    //     .insertAfter(dragging.target);
-    //   }
-    // })
-    // .on('mouseleave.cmb', function () {
-    //   that.selectAndRemoveElementById(editorId, 'drag-autopreview');
-    //   dragging.target = null;
-    // });
+    $('iframe:visible').contents().off('.cmb')
+    .on('mousemove.cmb', function () {
+      if (!dragging.target) {
+        console.log('body-move', 
+          $('iframe:visible').contents().find('*:not(.mce-visual-caret):last').get(0),
+          dragging.currentDraggingTemplateCode);
+      }
+      
+      // if (dragging.target === null) {
+      //   $('iframe:visible').contents().find('*:last');
+      //   $(dragging.currentDraggingTemplateCode)
+      //   .insertAfter(dragging.target);
+      // }
+    })
+    .on('mouseleave.cmb', function () {
+      // that.selectAndRemoveElementById(editorId, 'drag-autopreview');
+      // dragging.target = null;
+    });
   }
 
   getContent(editorId: any): string {
@@ -93,10 +99,7 @@ export class TinyMCEFormContentManagerService {
     else {
       if (target) {
         let $content = $(contentHTML);
-        // $content.addClass('latest-added-group');
         $content.insertAfter($(target));
-        // $content = $('iframe:visible').contents().find('.latest-added-group');
-        // $content.removeClass('latest-added-group');
         $('iframe:visible').contents().click();
 
         this.setContent(editorId, this.getContent(editorId));
@@ -141,12 +144,6 @@ export class TinyMCEFormContentManagerService {
 
   getCaretRangeFromMouseEvent(editorId: any, eventData: MouseEvent) {
     const editor = tinymce.get(editorId);
-    // const offset = $(`iframe[id*='${ editorId }']`).offset();
-    // let x = Math.round(eventData.clientX - offset.left);
-    // let y = Math.round(eventData.clientY - offset.top);
-
-    // if (x <= 0) { x = 1; }
-    // if (y <= 0) { y = 1; }
 
     const x = eventData.clientX;
     const y = eventData.clientY;

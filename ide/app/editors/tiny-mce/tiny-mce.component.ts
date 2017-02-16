@@ -460,7 +460,8 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
     let targetGroup = this.draggingService.target === null 
       ? null : this.draggingService.target.get(0);
     if (!targetGroup) {
-      targetGroup = $('iframe:visible').contents().find('*:last').get(0);
+      targetGroup = $('iframe:visible').contents()
+        .find('*:not(.mce-visual-caret):last').get(0);
     }
     console.info('dropped', targetGroup);
     this.draggingService.target = null;
