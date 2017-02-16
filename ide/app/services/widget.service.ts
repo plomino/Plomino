@@ -59,23 +59,23 @@ export class WidgetService {
       });
       
       return Observable.from(items$)
-                .concatMap((item: any) => {
-                  if (item.type === 'hidewhen') {
-                    return this.convertGroupHidewhens(item.contents, item.baseUrl, item.el);
-                  }
-                  
-                  if (item.type === 'label') {
-                    return this.convertLabel(item.baseUrl, item.el, 'group', item.contents);
-                  }
+      .concatMap((item: any) => {
+        if (item.type === 'hidewhen') {
+          return this.convertGroupHidewhens(item.contents, item.baseUrl, item.el);
+        }
+        
+        if (item.type === 'label') {
+          return this.convertLabel(item.baseUrl, item.el, 'group', item.contents);
+        }
 
-                  return this.convertGroupFields(item.contents, item.baseUrl, item.el);
-                })
-                .reduce((formString: any, formItem: any) => {
-                  return formString += formItem;
-                }, '')
-                .map((formString) => {
-                  return this.wrapIntoGroup(formString, input.groupid);
-                })
+        return this.convertGroupFields(item.contents, item.baseUrl, item.el);
+      })
+      .reduce((formString: any, formItem: any) => {
+        return formString += formItem;
+      }, '')
+      .map((formString) => {
+        return this.wrapIntoGroup(formString, input.groupid);
+      })
   }
 
   getFormLayout(baseUrl: string, layout: any): Observable<any> {
@@ -239,14 +239,24 @@ export class WidgetService {
         container = "div";
       }
       
+      // if (response !== undefined) {
+      //   content = `<${container} data-present-method="convertGroupFields_1"
+      //             class="${$class} mceNonEditable" data-mce-resize="false"
+      //             data-plominoid="${$id}">
+      //                 ${response}
+      //              </${container}><br />`;
+      // } else {
+      //   content = `<span data-present-method="convertGroupFields_2" class="${$class}">${$id}</span><br />`;
+      // }
+      
       if (response !== undefined) {
         content = `<${container} data-present-method="convertGroupFields_1"
                   class="${$class} mceNonEditable" data-mce-resize="false"
                   data-plominoid="${$id}">
                       ${response}
-                   </${container}><br />`;
+                   </${container}>`;
       } else {
-        content = `<span data-present-method="convertGroupFields_2" class="${$class}">${$id}</span><br />`;
+        content = `<span data-present-method="convertGroupFields_2" class="${$class}">${$id}</span>`;
       }
 
       return this.wrapIntoEditable(content);
@@ -287,14 +297,24 @@ export class WidgetService {
         container = "div";
       }
       
+      // if (response != undefined) {
+      //   content = `<${container} data-present-method="convertFormFields_1" 
+      //               class="${$class} mceNonEditable" data-mce-resize="false"
+      //               data-plominoid="${$id}">
+      //                 ${response}
+      //              </${container}><br />`;
+      // } else {
+      //   content = `<span data-present-method="convertFormFields_2" class="${$class}">${$id}</span><br />`;
+      // }
+      
       if (response != undefined) {
         content = `<${container} data-present-method="convertFormFields_1" 
                     class="${$class} mceNonEditable" data-mce-resize="false"
                     data-plominoid="${$id}">
                       ${response}
-                   </${container}><br />`;
+                   </${container}>`;
       } else {
-        content = `<span data-present-method="convertFormFields_2" class="${$class}">${$id}</span><br />`;
+        content = `<span data-present-method="convertFormFields_2" class="${$class}">${$id}</span>`;
       }
 
       return content;
@@ -332,9 +352,11 @@ export class WidgetService {
     return this.getWidget(base, $type, $id)
               .map((response) => {
                 if (type === 'group') {
-                  return this.wrapIntoEditable(`${response}<br />`);
+                  // return this.wrapIntoEditable(`${response}<br />`);
+                  return this.wrapIntoEditable(`${response}`);
                 } else {
-                  return `${response}<br />`;
+                  // return `${response}<br />`;
+                  return `${response}`;
                 } 
               });
   }
@@ -355,7 +377,7 @@ export class WidgetService {
               .attr('data-groupid', groupId)
               .wrap('<div />')
               .parent()
-              .append('<br />')
+              // .append('<br />')
               .html();
   }
 

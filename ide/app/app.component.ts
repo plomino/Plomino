@@ -1,3 +1,7 @@
+import { 
+  TinyMCEFormContentManagerService
+} from './editors/tiny-mce/content-manager/content-manager.service';
+
 // Core
 import { 
   Component, 
@@ -87,7 +91,8 @@ import { LoadingComponent } from "./editors/loading/loading.component";
     DraggingService,
     TemplatesService,
     WidgetService,
-    FormsService
+    FormsService,
+    TinyMCEFormContentManagerService
   ],
   pipes: [ExtractNamePipe],
   animations: [
@@ -133,15 +138,17 @@ export class AppComponent implements OnInit, AfterViewInit {
     private tabsService: TabsService,
     private draggingService: DraggingService,
     private zone: NgZone,
-    private changeDetector: ChangeDetectorRef) { }
+    private changeDetector: ChangeDetectorRef) {
+      window['jquery'] = jQuery;
+    }
 
   collapseTreeElements(data:any, oldData:any) {
     if(!Array.isArray(data) || Array.isArray(oldData))
-        return data;
+      return data;
 
     data.forEach((item: any) => {
-        item.collapsed = !(item.label === 'Forms' && item.type === 'PlominoForm');
-        item.children = this.collapseTreeElements(item.children, null);
+      item.collapsed = !(item.label === 'Forms' && item.type === 'PlominoForm');
+      item.children = this.collapseTreeElements(item.children, null);
     });
 
     return data.slice();

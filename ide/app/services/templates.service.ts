@@ -41,6 +41,7 @@ export class TemplatesService {
   }
 
   insertTemplate(templateData: any): void {
+    console.log('omg', templateData);
     this.$insertion.next(templateData);
   }
 

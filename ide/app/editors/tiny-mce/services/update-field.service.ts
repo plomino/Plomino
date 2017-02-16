@@ -17,9 +17,7 @@ export class UpdateFieldService {
     
     // TODO: Replace assign with passing data through operators in sequence
     // tiny-mce.component.ts 307 -> 323
-    console.info('this.getElementLayout(item)');
     return this.getElementLayout(item).map((itemTemplate: any) => {
-      console.info('itemTemplate', itemTemplate);
       if (item.type === 'Field' || 'Action') {
         return Object.assign({}, { 
           newTemplate: this.wrapFieldOrAction(item.type, item.newId, itemTemplate) 
@@ -39,8 +37,9 @@ export class UpdateFieldService {
 
 
   private getElementLayout(element: any): Observable<Response> {
-    console.info('this.elementService.getWidget', element.base, element.type.toLowerCase(), element.newId);
-    return this.elementService.getWidget(element.base, element.type.toLowerCase(), element.newId)
+    return this.elementService.getWidget(
+      element.base, element.type.toLowerCase(), element.newId
+    );
   }
 
   private wrapElement(elType: string, id: string, content: string) {
@@ -67,11 +66,12 @@ export class UpdateFieldService {
     }
     
     if (contentString != undefined) {
-      content = `<${container} class="${$class} mceNonEditable" 
-                              data-mce-resize="false" 
-                              data-plominoid="${id}">
+      content = `
+        <${container} class="${$class} mceNonEditable" 
+          data-mce-resize="false" 
+          data-plominoid="${id}">
           ${contentString}    
-      </${container}>`;
+        </${container}>`;
     } else {
       content = `<span class="${$class}">${id}</span>`;
     }
@@ -86,12 +86,13 @@ export class UpdateFieldService {
     let $id = $element.text().split(':')[1];
   
     let container = 'div';
-    let content = `<${container} class="${$class} mceNonEditable" 
-                              data-mce-resize="false"
-                              data-plomino-position="${$position}" 
-                              data-plominoid="${$id}">
-                    &nbsp;
-                  </${container}>${ $position === 'start' ? '' : '<br />' }`;
+    let content = `
+      <${container} class="${$class} mceNonEditable" 
+        data-mce-resize="false"
+        data-plomino-position="${$position}" 
+        data-plominoid="${$id}">
+        &nbsp;
+      </${container}>${ $position === 'start' ? '' : '<br />' }`;
 
     return content;
   }

@@ -258,19 +258,24 @@ export class AddComponent {
     }
 
 
-    addTemplate(templateId: string) {
-        this.templatesService.addTemplate(this.activeTab.url, templateId)
-            .subscribe((response: any) => {
-                this.widgetService.getGroupLayout(this.activeTab.url, response)
-                    .subscribe((layout: any) => {
-                        this.treeService.updateTree().then(() => {
-                            this.templatesService.insertTemplate(Object.assign({}, response, {
-                                parent: this.activeTab.url,
-                                group: layout
-                            }));
-                        })
-                    });    
-            });
+    addTemplate(target: any, templateId: string) {
+      this.templatesService.addTemplate(this.activeTab.url, templateId)
+      .subscribe((response: any) => {
+        this.widgetService.getGroupLayout(this.activeTab.url, response)
+        .subscribe((layout: any) => {
+            this.treeService.updateTree().then(() => {
+              this.templatesService.insertTemplate(Object.assign({}, response, {
+                parent: this.activeTab.url,
+                target: target,
+                group: layout
+              }));
+            })
+        });    
+      });
+    }
+
+    simulateDrag(eventData: MouseEvent, type: any, templateId?: any) {
+      this.startDrag(eventData, type, templateId);
     }
 
     // Refactor this code, put switch into separated fn
@@ -299,8 +304,8 @@ export class AddComponent {
             }
         } else {
             draggingData.templateId = templateId;
-            draggingData.resolver = () => {
-                this.addTemplate(templateId);
+            draggingData.resolver = (target) => {
+              this.addTemplate(target, templateId);
             }
         }
 
