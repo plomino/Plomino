@@ -7,26 +7,26 @@
           <loading class="white"></loading>
         </span>
         <span *ngIf="!formSaving">
-          <span class="icon material-icons">save</span>
+          <!--<span class="icon material-icons">save</span>-->
           Save
         </span>
       </a>
       <a class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--colored mdl-color--grey-300"
          *ngIf="formSettings"
          (click)="cancelForm()">
-         <span class="icon material-icons">cancel</span>
+         <!--<span class="icon material-icons">cancel</span>-->
         Cancel
       </a>
       <a class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--colored mdl-color--green-900"
          *ngIf="formSettings"
          (click)="openFormPreview(tab.url)">
-         <span class="icon material-icons">slideshow</span>
+         <!--<span class="icon material-icons">slideshow</span>-->
         Preview
       </a>
       <a class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--colored"
          *ngIf="formSettings"
          (click)="openFormCode(tab)">
-         <span class="icon material-icons">code</span>
+         <!--<span class="icon material-icons">code</span>-->
         Code
       </a>
     </div>
