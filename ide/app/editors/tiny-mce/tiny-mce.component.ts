@@ -256,6 +256,7 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
         editor.on('activate', (e: any) => {
           let $editorFrame = $(this.editorElement.nativeElement)
             .find('iframe[id*=mce_]');
+          console.info('activate tinymce', this.id);
         });
 
         editor.on('mousedown', (ev: MouseEvent) => {

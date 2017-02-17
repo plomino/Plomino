@@ -13,6 +13,9 @@ declare let _:any;
 
 @Injectable()
 export class TabsService {
+
+  public closing: boolean = false;
+
   private activeTab$: BehaviorSubject<any> = new BehaviorSubject(null);
   private activeField$: BehaviorSubject<any> = new BehaviorSubject(null);
   private tabs$: BehaviorSubject<any[]> = new BehaviorSubject([]);

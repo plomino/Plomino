@@ -190,7 +190,19 @@ export class AppComponent implements OnInit, AfterViewInit {
     
     this.tabsService
     .getTabs()
-    .subscribe((tabs) => { this.tabs = tabs; })
+    .subscribe((tabs: any) => {
+      this.tabs = tabs;
+
+      tabs.forEach((tab: any) => {
+        if (tab.active && this.tabsService.closing) {
+          setTimeout(() => {
+            tinymce.EditorManager.execCommand('mceRemoveEditor', true, tab.url);
+            tinymce.EditorManager.execCommand('mceAddEditor', true, tab.url);
+          });
+          this.tabsService.closing = false;
+        }
+      });
+    });
 
     this.draggingService
     .getDragging()
@@ -361,6 +373,7 @@ export class AppComponent implements OnInit, AfterViewInit {
   }
 
   closeTab(tab: any) {
+    this.tabsService.closing = true;
     this.tabsService.closeTab(tab);
   }
 
@@ -384,6 +397,18 @@ export class AppComponent implements OnInit, AfterViewInit {
 
   onTabSelect(tab: any) {
     this.tabsService.setActiveTab(tab, true);
+
+    // check that tinymce is broken after 100ms
+    setTimeout(() => {
+      let x = $('iframe:visible').contents().find('body').html();
+      if (typeof x === 'undefined') {
+        tinymce.EditorManager.execCommand('mceAddEditor', true, tab.url);
+      }
+      else if (!x.length) {
+        tinymce.EditorManager.execCommand('mceRemoveEditor', true, tab.url);
+        tinymce.EditorManager.execCommand('mceAddEditor', true, tab.url);
+      }
+    }, 100);
   }
 
   fieldSelected(fieldData: any): void {
