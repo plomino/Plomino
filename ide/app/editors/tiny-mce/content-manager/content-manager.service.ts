@@ -1,3 +1,4 @@
+import { DraggingService } from './../../../services/dragging.service';
 import { Injectable } from '@angular/core';
 
 @Injectable()
@@ -87,7 +88,7 @@ export class TinyMCEFormContentManagerService {
     this.log('insertRawHTML contentHTML', contentHTML);
   }
 
-  insertContent(editorId: any, dragging: any, contentHTML: string, options?: any): void {
+  insertContent(editorId: any, dragging: DraggingService, contentHTML: string, options?: any): void {
     const editor = tinymce.get(editorId);
 
     let target: any = null;
@@ -100,7 +101,16 @@ export class TinyMCEFormContentManagerService {
     }
     
     if (options) {
+      delete options['target'];
+      const a = editor.getContent().length;
+      
       editor.execCommand('mceInsertContent', false, contentHTML, options);
+      
+      setTimeout(() => {
+        if (a === editor.getContent().length) {
+          editor.execCommand('mceInsertContent', false, contentHTML, options);
+        }
+      }, 100);
     }
     else {
       if (target) {

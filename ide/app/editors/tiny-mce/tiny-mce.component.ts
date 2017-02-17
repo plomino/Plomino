@@ -233,7 +233,7 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
         if(this.editorInstance) {
           this.editorInstance.remove();
         } else {
-          this.getFormLayout();
+          // this.getFormLayout();
         }
 
         editor.addMenuItem('PreviewButton', {
@@ -335,7 +335,7 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
       resize: false
     });
 
-    // this.getFormLayout();
+    this.getFormLayout();
 
     this.draggingService
     .onPaletteCustomDragEvent()
@@ -468,7 +468,7 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
     }
 
     if (this.dragData === null) {
-      console.error('possible error: no this.dragData');
+      return false;
     }
 
     let targetGroup = this.draggingService.target === null 
