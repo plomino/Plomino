@@ -14,6 +14,19 @@ export class UpdateFieldService {
   constructor(private elementService: ElementService) { }
 
   updateField(item: any): Observable<any> {
+
+    console.info(item, item.oldTemplate.outerHTML);
+    if (item.type === 'Hidewhen') {
+      let result = Object.assign({}, { 
+        newTemplate: this.wrapHidewhen2(item.type, item.newId, item.oldTemplate),
+        item: item
+      }, { 
+        oldTemplate: item.oldTemplate 
+      });
+
+      return Observable.of(result);
+    }
+    // throw 'fuck';
     
     // TODO: Replace assign with passing data through operators in sequence
     // tiny-mce.component.ts 307 -> 323
@@ -79,16 +92,40 @@ export class UpdateFieldService {
     return content;
   }
 
+  private wrapHidewhen2(elType: string, id: string, contentString: string) {
+    let $element = $(contentString); 
+    let $class = $element.attr('class');
+    // let $position = $element.text().split(':')[0];
+    // let $id = $element.text().split(':')[1];
+    let $position = $element.data('plominoPosition');
+    // let $id = $element.data('plominoid');
+  
+    let container = 'span';
+    let content = `
+      <${container} class="${$class}"
+        data-present-method="convertFormHidewhens" 
+        data-mce-resize="false"
+        content-editable="false"
+        data-plomino-position="${$position}" 
+        data-plominoid="${id}">
+        &nbsp;
+      </${container}>${ $position === 'start' ? '' : '<br />' }`;
+
+    return content;
+  }
+
   private wrapHidewhen(elType: string, id: string, contentString: string) {
     let $element = $(contentString); 
     let $class = $element.attr('class');
     let $position = $element.text().split(':')[0];
     let $id = $element.text().split(':')[1];
   
-    let container = 'div';
+    let container = 'span';
     let content = `
-      <${container} class="${$class} mceNonEditable" 
+      <${container} class="${$class}"
+        data-present-method="convertFormHidewhens" 
         data-mce-resize="false"
+        content-editable="false"
         data-plomino-position="${$position}" 
         data-plominoid="${$id}">
         &nbsp;

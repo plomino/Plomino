@@ -498,6 +498,7 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
     );
 
     if (dataToUpdate.length) {
+      const hwPos = { start: false, end: false };
       Observable.from(dataToUpdate).map((element) => {
         /* WTF? */
         let normalizedType = $(element).attr('class')
@@ -513,9 +514,22 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
         };
       })
       .flatMap((itemToReplace: any) => {
+        console.info('itemToReplace', itemToReplace);
         return this.updateFieldService.updateField(itemToReplace);
       })
       .subscribe((data: any) => {
+        console.log(data);
+
+        if (data.item.type === 'Hidewhen') {
+          let $position = $(data.oldTemplate).data('plominoPosition');
+          if (hwPos[$position]) {
+            return false;
+          }
+          else {
+            hwPos[$position] = true;
+          }
+        }
+        
         this.contentManager.selectContent(this.id, data.oldTemplate);
         this.contentManager.replaceContent(this.id, data.newTemplate);
 

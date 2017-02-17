@@ -82,36 +82,36 @@ export class FieldSettingsComponent implements OnInit {
         
         console.info('this.objService.updateFormSettings', this.field.url, formData);
         this.objService.updateFormSettings(this.field.url, formData)
-            .flatMap((responseData: any) => {
-                console.info('responseData', responseData);
-                if (responseData.html.indexOf('dl.error') > -1) {
-                    console.info('responseData.html.indexOf(dl.error) > -1', responseData.html.indexOf('dl.error'));
-                    return Observable.of(responseData.html);
-                } else {
-                    let $fieldId = responseData.url.slice(responseData.url.lastIndexOf('/') + 1);
-                    let newUrl = this.field.url.slice(0, this.field.url.lastIndexOf('/') + 1) + $fieldId; 
-                    this.field.url = newUrl;
-                    console.info('its ok $fieldId', $fieldId);
-                    console.info('newUrl', newUrl);
-                    console.info('this.fieldsService.updateField', this.field, this.formAsObject($form), $fieldId);
-                    this.fieldsService.updateField(this.field, this.formAsObject($form), $fieldId);
-                    this.field.id = $fieldId;
-                    console.info('this.field.id = $fieldId', this.field.id);
-                    this.treeService.updateTree();
-                    console.info('this.treeService.updateTree();');
-                    console.info('return this.objService.getFieldSettings(newUrl);', newUrl);
-                    return this.objService.getFieldSettings(newUrl);
-                }
-            })
-            .subscribe((responseHtml: string) => {
-                console.info('submitForm responseHtml received');
-                this.formTemplate = responseHtml;
-                this.formSaving = false;
-                this.updateMacroses();
-                this.changeDetector.markForCheck();
-            }, (err: any) => { 
-                console.error(err) 
-            });
+        .flatMap((responseData: any) => {
+          console.info('responseData', responseData);
+          if (responseData.html.indexOf('dl.error') > -1) {
+            console.info('responseData.html.indexOf(dl.error) > -1', responseData.html.indexOf('dl.error'));
+            return Observable.of(responseData.html);
+          } else {
+            let $fieldId = responseData.url.slice(responseData.url.lastIndexOf('/') + 1);
+            let newUrl = this.field.url.slice(0, this.field.url.lastIndexOf('/') + 1) + $fieldId; 
+            this.field.url = newUrl;
+            console.info('its ok $fieldId', $fieldId);
+            console.info('newUrl', newUrl);
+            console.info('this.fieldsService.updateField', this.field, this.formAsObject($form), $fieldId);
+            this.fieldsService.updateField(this.field, this.formAsObject($form), $fieldId);
+            this.field.id = $fieldId;
+            console.info('this.field.id = $fieldId', this.field.id);
+            this.treeService.updateTree();
+            console.info('this.treeService.updateTree();');
+            console.info('return this.objService.getFieldSettings(newUrl);', newUrl);
+            return this.objService.getFieldSettings(newUrl);
+          }
+        })
+        .subscribe((responseHtml: string) => {
+            console.info('submitForm responseHtml received');
+            this.formTemplate = responseHtml;
+            this.formSaving = false;
+            this.updateMacroses();
+            this.changeDetector.markForCheck();
+        }, (err: any) => { 
+            console.error(err) 
+        });
     }
 
     cancelForm() {

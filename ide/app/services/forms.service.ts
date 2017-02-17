@@ -49,7 +49,7 @@ export class FormsService {
 
     saveForm(id: any, changeTab = true) {
         console.info('saveForm called, this.formSaving', this.formSaving);
-        // if (this.formSaving) return;
+        if (this.formSaving) return;
         this.formSaving = true;
 
         if (changeTab) {

@@ -36,6 +36,8 @@ export class ObjService {
 
     
     updateFormSettings(formUrl: string, formData: FormData): Observable<any> {
+      console.info('updateFormSettings', formUrl, (<any>formData).entries());
+      //<p><span class="plominoHidewhenClass mceNonEditable" data-plominoid="defaulthidewhen-1" data-plomino-position="start">&nbsp;</span><span class="plominoHidewhenClass mceNonEditable" data-plominoid="defaulthidewhen-1" data-plomino-position="end">&nbsp;</span>&nbsp;</p>
         return this.http.post(`${formUrl}/@@edit`, formData)
                     .map(this.extractTextAndUrl);
     }
