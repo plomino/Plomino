@@ -1,8 +1,12 @@
 <div tal:define="
     field python:options['field'];
     fieldvalue python:options['fieldvalue'];
-    columns python:field.getSettings().getColumnLabels();"
-    tal:condition="fieldvalue">
+    columns python:field.getSettings().getColumnLabels();
+    dynamic python:getattr(field, 'isDynamicField', False);
+    klass python:dynamic and 'dynamicfield' or '';"
+    tal:condition="fieldvalue"
+    tal:attributes="class klass;
+        data-dynamicfield python:dynamic and '%s/%s' % (form_id, field_id) or None;">
     <table tal:define="rows python:fieldvalue['rendered']">
         <tr>
             <th tal:repeat="col columns"
