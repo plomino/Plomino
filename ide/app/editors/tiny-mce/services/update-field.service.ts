@@ -33,7 +33,8 @@ export class UpdateFieldService {
     return this.getElementLayout(item).map((itemTemplate: any) => {
       if (item.type === 'Field' || 'Action') {
         return Object.assign({}, { 
-          newTemplate: this.wrapFieldOrAction(item.type, item.newId, itemTemplate) 
+          newTemplate: this.wrapFieldOrAction(item.type, item.newId, itemTemplate),
+          item: item
         }, { 
           oldTemplate: item.oldTemplate 
         });

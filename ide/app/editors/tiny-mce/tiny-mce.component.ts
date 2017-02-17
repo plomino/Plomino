@@ -499,6 +499,7 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
 
     if (dataToUpdate.length) {
       const hwPos = { start: false, end: false };
+      let i = 0;
       Observable.from(dataToUpdate).map((element) => {
         /* WTF? */
         let normalizedType = $(element).attr('class')
@@ -525,6 +526,11 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
           }
           else {
             hwPos[$position] = true;
+          }
+        }
+        else {
+          if (++i > 1) {
+            return false;
           }
         }
         
