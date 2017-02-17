@@ -302,6 +302,7 @@ export class WidgetService {
       if (response != undefined) {
         content = `<${container} data-present-method="convertFormFields_1" 
                     class="${$class} mceNonEditable" data-mce-resize="false"
+                    contenteditable="false"
                     data-plominoid="${$id}">
                       ${response}
                    </${container}>`;
@@ -346,10 +347,10 @@ export class WidgetService {
       let result = '';
       if (type === 'group') {
         // return this.wrapIntoEditable(`${response}<br />`);
-        result = this.wrapIntoEditable(`${response}`);
+        result = this.wrapIntoEditable(`${response}<br />`);
       } else {
         // return `${response}<br />`;
-        result = `${response}`;
+        result = `${response}<br />`;
       }
       return result;
     });
@@ -369,6 +370,7 @@ export class WidgetService {
     return $wrapper.html(content)
               .addClass('plominoGroupClass mceNonEditable')
               .attr('data-groupid', groupId)
+              // .attr('contenteditable', 'false')
               .wrap('<div />')
               .parent()
               // .append('<br />')

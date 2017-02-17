@@ -410,7 +410,12 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
         $inner.css('opacity', '0');
         this.autoSavedContent = data;
         const loadingElements = this.widgetService.getFormLayout(this.id);
-        Promise.all(loadingElements).then(() => { $inner.css('opacity', ''); });
+        Promise.all(loadingElements).then(() => {
+          $inner.css('opacity', '');
+          this.contentManager.setContent(
+            this.id, this.contentManager.getContent(this.id), this.draggingService
+          );
+        });
       }
       else {
         this.contentManager.setContent(
@@ -455,9 +460,11 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
   }
 
   dropped({ mouseEvent }: any) {
-    console.log('DROPPPEDD');
-    // const rng = this.contentManager.getCaretRangeFromMouseEvent(this.id, mouseEvent);
-    // this.contentManager.setRange(this.id, rng);
+    if (this.dragData === null) {
+      this.dragData = this.draggingService.currentDraggingData 
+        ? this.draggingService.currentDraggingData 
+        : this.draggingService.previousDraggingData;
+    }
 
     let targetGroup = this.draggingService.target === null 
       ? null : this.draggingService.target.get(0);
@@ -572,7 +579,8 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
 
       case 'PlominoPagebreak':
         this.contentManager.insertContent(
-          this.id, '<hr class="plominoPagebreakClass"><br />', { target: element.target }
+          this.id, this.draggingService,
+          '<hr class="plominoPagebreakClass"><br />', { target: element.target }
         );
         return;
 
@@ -613,7 +621,8 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
       this.elementService.getWidget(baseUrl, type, value)
       .subscribe((widgetTemplate: any) => {
         this.contentManager.insertContent(
-          this.id, `${widgetTemplate}`, { skip_undo: 1 }
+          this.id, this.draggingService,
+          `${widgetTemplate}`, { skip_undo: 1 }
         );
       });
     }
@@ -640,7 +649,7 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
         }
 
         this.contentManager.insertContent(
-          this.id, content, { skip_undo: 1 }
+          this.id, this.draggingService, content, { skip_undo: 1 }
         );
   
         console.info('this.tabsService.selectField', {
@@ -711,7 +720,7 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
           value + '" data-plomino-position="end">&nbsp;</span>';
 				
         this.contentManager.insertContent(
-          this.id, zone, { skip_undo: 1 }
+          this.id, this.draggingService, zone, { skip_undo: 1 }
         );
 			}
       
@@ -725,7 +734,7 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
 
   private insertGroup(group: string, target?: any) {
     this.contentManager.insertContent(
-      this.id, group, { skip_undo: 1, target: target }
+      this.id, this.draggingService, group, { skip_undo: 1, target: target }
     );
   }
   

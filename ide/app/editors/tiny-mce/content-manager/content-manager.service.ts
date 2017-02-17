@@ -40,24 +40,24 @@ export class TinyMCEFormContentManagerService {
       dragging.target = null;
     });
 
-    $('iframe:visible').contents().off('.cmb')
-    .on('mousemove.cmb', function () {
-      if (!dragging.target) {
-        // console.log('body-move', 
-        //   $('iframe:visible').contents().find('*:not(.mce-visual-caret):last').get(0),
-        //   dragging.currentDraggingTemplateCode);
-      }
+    // $('iframe:visible').contents().off('.cmb')
+    // .on('mousemove.cmb', function () {
+    //   if (!dragging.target) {
+    //     // console.log('body-move', 
+    //     //   $('iframe:visible').contents().find('*:not(.mce-visual-caret):last').get(0),
+    //     //   dragging.currentDraggingTemplateCode);
+    //   }
       
-      // if (dragging.target === null) {
-      //   $('iframe:visible').contents().find('*:last');
-      //   $(dragging.currentDraggingTemplateCode)
-      //   .insertAfter(dragging.target);
-      // }
-    })
-    .on('mouseleave.cmb', function () {
-      // that.selectAndRemoveElementById(editorId, 'drag-autopreview');
-      // dragging.target = null;
-    });
+    //   // if (dragging.target === null) {
+    //   //   $('iframe:visible').contents().find('*:last');
+    //   //   $(dragging.currentDraggingTemplateCode)
+    //   //   .insertAfter(dragging.target);
+    //   // }
+    // })
+    // .on('mouseleave.cmb', function () {
+    //   // that.selectAndRemoveElementById(editorId, 'drag-autopreview');
+    //   // dragging.target = null;
+    // });
   }
 
   getContent(editorId: any): string {
@@ -71,12 +71,14 @@ export class TinyMCEFormContentManagerService {
 
   selectAndRemoveElementById(editorId: any, elementId: string): void {
     const editor = tinymce.get(editorId);
-    editor.focus(); //give the editor focus
-    editor.selection.select(editor.dom.select(`#${ elementId }`)[0]);
-    editor.selection.collapse(0);
-    editor.dom.remove(elementId);
-
-    this.log('selectAndRemoveElementById elementId', elementId, 2);
+    if (editor) {
+      editor.focus(); //give the editor focus
+      editor.selection.select(editor.dom.select(`#${ elementId }`)[0]);
+      editor.selection.collapse(0);
+      editor.dom.remove(elementId);
+  
+      this.log('selectAndRemoveElementById elementId', elementId, 2);
+    }
   }
 
   insertRawHTML(editorId: any, contentHTML: string): void {
@@ -85,12 +87,16 @@ export class TinyMCEFormContentManagerService {
     this.log('insertRawHTML contentHTML', contentHTML);
   }
 
-  insertContent(editorId: any, contentHTML: string, options?: any): void {
+  insertContent(editorId: any, dragging: any, contentHTML: string, options?: any): void {
     const editor = tinymce.get(editorId);
 
     let target: any = null;
     if (options.target) {
       target = options.target;
+    }
+
+    if (contentHTML === '<div class="plominoGroupClass mceNonEditable"></div>') {
+      return;
     }
     
     if (options) {
@@ -101,14 +107,13 @@ export class TinyMCEFormContentManagerService {
         let $content = $(contentHTML);
         $content.insertAfter($(target));
         $('iframe:visible').contents().click();
-
-        this.setContent(editorId, this.getContent(editorId));
       }
       else {
         editor.execCommand('mceInsertContent', false, contentHTML);
       }
     }
 
+    this.setContent(editorId, this.getContent(editorId), dragging);
     this.log('insertContent contentHTML', contentHTML);
   }
 
