@@ -299,7 +299,8 @@ export class AddComponent {
         }
 
         if (type !== 'template') {
-            draggingData.resolver = (data = {'@type': ''}) => {
+            draggingData.resolver = (target, data = {'@type': ''}) => {
+              console.info('this.add data', data, 'data[@type]', data['@type']);
               this.add(data['@type']);
             }
         } else {
@@ -309,6 +310,9 @@ export class AddComponent {
             }
         }
 
+        this.draggingService.currentDraggingData = draggingData;
+        console.info('this.draggingService', this.draggingService);
+        
         this.draggingService.setDragging(draggingData);
     }
 

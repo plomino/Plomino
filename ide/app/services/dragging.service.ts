@@ -55,6 +55,7 @@ export class DraggingService {
       }
     }
     else {
+      console.log('null dragData');
       this.previousDraggingData = this.currentDraggingData === null 
         ? null : Object.assign(this.currentDraggingData);
       this.currentDraggingData = null;

@@ -99,6 +99,7 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
       let dataToInsert = Object.assign({}, insertion, { 
         type: insertion['@type']
       });
+      console.log('insertionSubscription', dataToInsert);
       if (insertionParent === this.id) {
         this.addElement(dataToInsert);
         this.changeDetector.markForCheck();
@@ -466,6 +467,10 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
         : this.draggingService.previousDraggingData;
     }
 
+    if (this.dragData === null) {
+      console.error('possible error: no this.dragData');
+    }
+
     let targetGroup = this.draggingService.target === null 
       ? null : this.draggingService.target.get(0);
     if (!targetGroup) {
@@ -474,7 +479,7 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
     }
     console.info('dropped', targetGroup);
     this.draggingService.target = null;
-
+    
     if (this.dragData.resolved) {
       this.addElement(this.dragData);
       console.info('this.addElement', this.dragData);
@@ -719,6 +724,7 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
           '<span class="' + cssclass + ' mceNonEditable" data-plominoid="' + 
           value + '" data-plomino-position="end">&nbsp;</span>';
 				
+        console.log('zone', zone);
         this.contentManager.insertContent(
           this.id, this.draggingService, zone, { skip_undo: 1 }
         );
