@@ -4,10 +4,7 @@
         <button class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored"
             *ngFor="let template of templates, let i = index"
             [hidden]="template.hidewhen(activeTab)"
-            dnd-draggable
-            [dragEnabled]="true"
-            (onDragStart)="startDrag($event, 'template', template.id)"
-            (onDragEnd)="endDrag()"
+            (mousedown)="simulateDrag($event, 'template', template.id)"
             [title]="template.title"
             (click)="addTemplate(template.id)">
             <span class="small-left-margin">{{template.title}}</span>

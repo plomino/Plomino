@@ -14,12 +14,11 @@ export class DraggingService {
   currentDraggingData: DraggingData = null;
   previousDraggingData: DraggingData = null;
   currentDraggingTemplateCode: string;
+  target: JQuery = null;
 
   constructor(private templateService: TemplatesService) {}
   
   setDragging(data?: any): void {
-    // this.currentDraggingTemplateCode = '';
-
     if (data !== false && data !== null) {
       this.currentDraggingData = <DraggingData>data;
       // preload the widget code
@@ -31,8 +30,7 @@ export class DraggingService {
         .subscribe((widgetCode: string) => {
           this.currentDraggingTemplateCode = widgetCode;
   
-          if (this.currentDraggingData.eventData &&
-            this.currentDraggingData.eventData.mouseEvent) {
+          if (this.currentDraggingData.eventData) {
             const $dragCursor = $(this.currentDraggingTemplateCode);
     
             $dragCursor.css({
@@ -41,10 +39,11 @@ export class DraggingService {
             });
   
             $dragCursor.attr('id', 'drag-data-cursor');
+            $dragCursor.css('pointer-events', 'none');
             $('body').append($dragCursor);
   
             this.startDragging(
-              this.currentDraggingData.eventData.mouseEvent
+              this.currentDraggingData.eventData
             );
           }
         });
@@ -107,7 +106,7 @@ export class DraggingService {
 
     $('iframe').contents()
     .on('mousemove.drgs', ((e: any) => this.drag(e, true)).bind(this))
-    .on('mouseup.drgs', this.stopDragging.bind(this));
+    .on('mouseup.drgs', ((e: any) => this.stopDragging(e, true)).bind(this));
 
     this.drag(e);
   }
@@ -121,12 +120,18 @@ export class DraggingService {
         return;
     }
 
+    $('.drop-zone').remove();
+    $('iframe:visible').contents()
+      .find('body,html')
+      .css('pointer-events', 'none !important');
+
     if (iframe && offset) {
       $('#drag-data-cursor')
       .css('top', pos.y + offset.top - 10)
       .css('left', pos.x + offset.left - 5);
 
       this.moveMouseEventInIFrameCallback(e);
+      // console.log('1', document.elementFromPoint(pos.x + offset.top, pos.y + offset.left));
     }
     else {
       $('#drag-data-cursor').css('top', pos.y - 10).css('left', pos.x - 5);
@@ -153,19 +158,23 @@ export class DraggingService {
     this.customPaletteDragMouseMoveOutIFrameEvent$.next(eventData);
   }
 
-  private stopDragging(eventData: MouseEvent) {
-    $(document).off('.drgs');
-    $('iframe').contents().off('.drgs');
+  private stopDragging(eventData: MouseEvent, iframe?: boolean) {
+    $(document).off('.drgs').off('.cme');
+    $('iframe').contents().off('.drgs').off('.cme');
+    $('iframe').contents().find('.plominoGroupClass').off('.cme');
     $('#drag-data-cursor').remove();
+
+    console.log('stopDragging');
 
     const pos = this.getMousePos(eventData);
     const offset = $('iframe').offset();
     const inIFrame = pos.x >= offset.left && pos.y >= offset.top;
 
-    if (inIFrame) {
+    if (iframe || inIFrame) {
       this.customPaletteDragEvent$.next(eventData);
     }
     else {
+      console.log('cancel', eventData);
       this.customPaletteDragEventCancel$.next(eventData);
     }
   }

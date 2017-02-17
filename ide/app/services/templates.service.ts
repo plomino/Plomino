@@ -14,7 +14,9 @@ export class TemplatesService {
   constructor(private http: Http) {}
   
   addTemplate(formUrl: string, templateId: string): Observable<any> {
-    return this.http.get(`${formUrl}/add-template?id=${templateId}`).map(this.extractData);
+    return templateId ? 
+      this.http.get(`${formUrl}/add-template?id=${templateId}`).map(this.extractData):
+      Observable.of('');
   }
 
   getTemplate(formUrl: string, templateId: string): Observable<string> {
@@ -36,7 +38,6 @@ export class TemplatesService {
   }
 
   getTemplates(formUrl: string): Observable<any> {
-    console.info('getTemplates called', formUrl);
     return this.http.get(`${formUrl}/@@list-templates`).map(this.extractData);
   }
 
