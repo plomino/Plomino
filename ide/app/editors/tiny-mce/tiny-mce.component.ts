@@ -334,7 +334,7 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
       resize: false
     });
 
-    this.getFormLayout();
+    // this.getFormLayout();
 
     this.draggingService
     .onPaletteCustomDragEvent()
@@ -398,25 +398,27 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
   }
 
   getFormLayout() {
-    this.elementService
-    .getElementFormLayout(this.id)
+    this.elementService.getElementFormLayout(this.id)
     .subscribe((data) => {
       let newData = '';
+      
       if (data && data.length) {
-        this.widgetService
-        .getFormLayout(this.id, data)
-        .subscribe((formLayout: string) => {
-          this.contentManager.setContent(
-            this.id, formLayout, this.draggingService
-          );
-          this.autoSavedContent = formLayout;
-        });
-      } else {
+        this.contentManager.setContent(
+          this.id, data, this.draggingService
+        );
+        const $inner = $(`iframe[id="${ this.id }_ifr"]`).contents().find('#tinymce');
+        $inner.css('opacity', '0');
+        this.autoSavedContent = data;
+        const loadingElements = this.widgetService.getFormLayout(this.id);
+        Promise.all(loadingElements).then(() => { $inner.css('opacity', ''); });
+      }
+      else {
         this.contentManager.setContent(
           this.id, newData, this.draggingService
         );
         this.autoSavedContent = newData;
       }
+
     }, (err) => {
       console.error(err);
     });

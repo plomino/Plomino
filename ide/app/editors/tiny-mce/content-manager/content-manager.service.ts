@@ -43,9 +43,9 @@ export class TinyMCEFormContentManagerService {
     $('iframe:visible').contents().off('.cmb')
     .on('mousemove.cmb', function () {
       if (!dragging.target) {
-        console.log('body-move', 
-          $('iframe:visible').contents().find('*:not(.mce-visual-caret):last').get(0),
-          dragging.currentDraggingTemplateCode);
+        // console.log('body-move', 
+        //   $('iframe:visible').contents().find('*:not(.mce-visual-caret):last').get(0),
+        //   dragging.currentDraggingTemplateCode);
       }
       
       // if (dragging.target === null) {

@@ -1,3 +1,4 @@
+import { Observable } from 'rxjs/Observable';
 import { Injectable } from '@angular/core';
 
 import { Http, Response } from '@angular/http';
@@ -78,75 +79,66 @@ export class WidgetService {
       })
   }
 
-  getFormLayout(baseUrl: string, layout: any): Observable<any> {
-    let fields$: any[] = [];
-    let $elements = $('<div />')
-      .html(layout)
-      .find('.plominoGroupClass, .plominoFieldClass:not(.plominoGroupClass .plominoFieldClass), .plominoHidewhenClass:not(.plominoGroupClass .plominoHidewhenClass), .plominoActionClass:not(.plominoGroupClass .plominoActionClass), .plominoLabelClass:not(.plominoGroupClass .plominoLabelClass)');
+  getFormLayout(baseUrl: string) {
 
-    $elements.each((index: number, element: any) => {
-      let $element = $(element);
-      let $class = $element.attr('class').split(' ')[0]
+    const $edIFrame = $(`iframe[id="${ baseUrl }_ifr"]`).contents();
+    $edIFrame.css('opacity', 0);
+    let $elements = $edIFrame.find('.plominoGroupClass, ' +
+      '.plominoFieldClass:not(.plominoGroupClass .plominoFieldClass), ' +
+      '.plominoHidewhenClass:not(.plominoGroupClass .plominoHidewhenClass), ' +
+      '.plominoActionClass:not(.plominoGroupClass .plominoActionClass),' +
+      ' .plominoLabelClass:not(.plominoGroupClass .plominoLabelClass)');
+
+    const context = this;
+    let promiseList: any[] = [];
+
+    $elements.each(function () {
+      let $element = $(this);
+      let $class = $element.attr('class').split(' ')[0];
       let $groupId = '';
 
       if ($class === 'plominoGroupClass') {
         $groupId = $element.attr('data-groupid');
+        promiseList.push(new Promise((resolve, reject) => {
+          context.convertFormGroups(baseUrl, $element, $groupId)
+          .subscribe((result: any) => {
+            $element.replaceWith(result);
+            resolve();
+          });
+        }));
+      }
+      else if ($class === 'plominoFieldClass' ||
+               $class === 'plominoActionClass') {
+        promiseList.push(new Promise((resolve, reject) => {
+          context.convertFormFields(baseUrl, $element)
+          .subscribe((result: any) => {
+            $element.replaceWith(result);
+            resolve();
+          });
+        }));
+      }
+      else if ($class === 'plominoHidewhenClass') {
+        promiseList.push(new Promise((resolve, reject) => {
+          context.convertFormHidewhens(baseUrl, $element)
+          .subscribe((result: any) => {
+            $element.replaceWith(result);
+            resolve();
+          });
+        }));
+      }
+      else if ($class === 'plominoLabelClass') {
+        promiseList.push(new Promise((resolve, reject) => {
+          context.convertLabel(baseUrl, $element, 'form')
+          .subscribe((result: any) => {
+            $element.replaceWith(result);
+            resolve();
+          });
+        }));
       }
       
-      switch($class) {
-        case 'plominoGroupClass':
-          fields$.push({
-            type: 'group',
-            url: baseUrl,
-            groupId: $groupId,
-            el: $element
-          });
-          break;
-        case 'plominoFieldClass':
-        case 'plominoActionClass':
-          fields$.push({
-            type: 'field',
-            url: baseUrl,
-            el: $element
-          });
-          break;
-        case 'plominoHidewhenClass':
-          fields$.push({
-            type: 'hidewhen',
-            url: baseUrl,
-            el: $element
-          });
-          break;
-        case 'plominoLabelClass':
-          fields$.push({
-            type: 'label',
-            url: baseUrl,
-            el: $element
-          });
-          break;
-        default:
-      }
     });
-    return Observable.from(fields$)
-              .concatMap((fieldData: any) => {
-                
-                if (fieldData.type === 'group') {
-                  return this.convertFormGroups(fieldData.url, fieldData.el, fieldData.groupId); 
-                }
 
-                if (fieldData.type === 'hidewhen') {
-                  return this.convertFormHidewhens(fieldData.url, fieldData.el);
-                }
-
-                if (fieldData.type === 'label') {
-                  return this.convertLabel(fieldData.url, fieldData.el, 'form');
-                }
-
-                return this.convertFormFields(fieldData.url, fieldData.el);
-              })
-              .reduce((formString: any, formItem: any) => {
-                return formString += formItem;
-              }, '');
+    return promiseList;
   }
 
   private convertFormGroups(base: string, element: any, groupId: any): Observable<any> {
@@ -201,27 +193,27 @@ export class WidgetService {
     });
 
     return Observable.from(fields$)
-              .concatMap((fieldData: any) => {
-                if (fieldData.type === 'group') {
-                  return this.convertFormGroups(fieldData.url, fieldData.el, fieldData.groupId); 
-                }
+    .concatMap((fieldData: any) => {
+      if (fieldData.type === 'group') {
+        return this.convertFormGroups(fieldData.url, fieldData.el, fieldData.groupId); 
+      }
 
-                if (fieldData.type === 'hidewhen') {
-                  return this.convertFormHidewhens(fieldData.url, fieldData.el);
-                }
+      if (fieldData.type === 'hidewhen') {
+        return this.convertFormHidewhens(fieldData.url, fieldData.el);
+      }
 
-                if (fieldData.type === 'label') {
-                  return this.convertLabel(fieldData.url, fieldData.el, 'group');
-                }
+      if (fieldData.type === 'label') {
+        return this.convertLabel(fieldData.url, fieldData.el, 'group');
+      }
 
-                return this.convertFormFields(fieldData.url, fieldData.el);
-              })
-              .reduce((formString: any, formItem: any) => {
-                return formString += formItem;
-              }, '')
-              .map((groupString) => {
-                return this.wrapIntoGroup(groupString, $groupId);
-              })
+      return this.convertFormFields(fieldData.url, fieldData.el);
+    })
+    .reduce((formString: any, formItem: any) => {
+      return formString += formItem;
+    }, '')
+    .map((groupString) => {
+      return this.wrapIntoGroup(groupString, $groupId);
+    })
     
   }
 
@@ -334,7 +326,7 @@ export class WidgetService {
                               data-plominoid="${$id}">
                     &nbsp;
                   </${container}>${ $position === 'start' ? '' : '<br />' }`;
-
+    
     return Observable.of(content);
   }
 
@@ -350,15 +342,17 @@ export class WidgetService {
     }
 
     return this.getWidget(base, $type, $id)
-              .map((response) => {
-                if (type === 'group') {
-                  // return this.wrapIntoEditable(`${response}<br />`);
-                  return this.wrapIntoEditable(`${response}`);
-                } else {
-                  // return `${response}<br />`;
-                  return `${response}`;
-                } 
-              });
+    .map((response) => {
+      let result = '';
+      if (type === 'group') {
+        // return this.wrapIntoEditable(`${response}<br />`);
+        result = this.wrapIntoEditable(`${response}`);
+      } else {
+        // return `${response}<br />`;
+        result = `${response}`;
+      }
+      return result;
+    });
   }
 
   private wrapIntoEditable(content: string): string {
