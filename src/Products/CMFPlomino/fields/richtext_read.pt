@@ -5,8 +5,8 @@
     form_id python:field.aq_parent.id;">
     <tal:block tal:condition="not:dynamic"
         tal:content="structure python:options['fieldvalue']">Rich text</tal:block>
-    <span tal:condition="dynamic" class="dynamicfield"
+    <div tal:condition="dynamic" class="dynamicfield"
         tal:attributes="class python:dynamic and 'dynamicfield' or '';
             data-dynamicfield python:dynamic and '%s/%s' % (form_id, field_id) or None;"
-        tal:content="structure python:options['fieldvalue']">Rich text</span>
+        tal:content="structure python:options['fieldvalue']">Rich text</div>
 </tal:field>
