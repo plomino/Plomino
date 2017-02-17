@@ -1267,7 +1267,7 @@ class PlominoForm(Container):
                     # Handle hidden fields
                     hidden = field_pq.find('input[type="hidden"]')
                     if hidden:
-                        pq('<span>[hidden field]</span>').insertBefore(hidden)
+                        pq('<span>[Hidden: %s]</span>' % field.Title()).insertBefore(hidden)
                     return field_pq.outer_html()
 
         elif widget_type == "subform":
