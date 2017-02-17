@@ -518,9 +518,7 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
         return this.updateFieldService.updateField(itemToReplace);
       })
       .subscribe((data: any) => {
-        console.log(data);
-
-        if (data.item.type === 'Hidewhen') {
+        if (data.item && data.item.type === 'Hidewhen') {
           let $position = $(data.oldTemplate).data('plominoPosition');
           if (hwPos[$position]) {
             return false;
