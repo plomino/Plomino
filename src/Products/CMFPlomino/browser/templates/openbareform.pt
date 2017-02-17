@@ -64,8 +64,8 @@
                     tal:attributes="value view/request/Plomino_Parent_Field;" />
                 <input tal:condition="view/request/Plomino_Parent_Form | nothing"
                     type="hidden"
-                    name="Plomino_Parent_Form | nothing"
-                    tal:attributes="value view/request/Plomino_Parent_Form;" />
+                    name="Plomino_Parent_Form"
+                    tal:attributes="value view/request/Plomino_Parent_Form | nothing;" />
 
                 <span metal:use-macro="context/plomino_actions/macros/OpenFormActionBar">display form actions</span><br/>
             </tal:block_has_createpermission>
