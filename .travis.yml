@@ -11,7 +11,7 @@ install:
   - bin/buildout -Nc travis.cfg
   - cd ide && npm install && npm run build && cd ..
 script:
-  - bin/test
+  - bin/test -s Products.CMFPlomino  --all
 
 notifications:
   irc:
