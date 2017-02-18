@@ -37,7 +37,10 @@ export class TinyMCEFormContentManagerService {
       }
     })
     .on('mouseleave.cme', function () {
-      that.selectAndRemoveElementById(editorId, 'drag-autopreview');
+      if (dragging.currentDraggingData) {
+        that.selectAndRemoveElementById(editorId, 'drag-autopreview');
+      }
+      
       dragging.target = null;
     });
 
