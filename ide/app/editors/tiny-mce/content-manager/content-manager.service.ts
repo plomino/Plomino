@@ -4,7 +4,7 @@ import { Injectable } from '@angular/core';
 @Injectable()
 export class TinyMCEFormContentManagerService {
 
-  logLevel = 2;
+  logLevel = 3;
 
   constructor() { }
 

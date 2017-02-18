@@ -40,10 +40,13 @@ export class ObjService {
       let layout = formData.get('form.widgets.form_layout');
       if (layout) {
         layout = layout.replace(/\r/g , '').replace(/\xa0/g, ' ');
-        let $layout = $(`<div>${ layout }</div>`);
+        let $layout = $(`<div id="tmp-layout" style="display: none">${ layout }</div>`);
+        $('body').append($layout);
+        $layout = $("#tmp-layout");
   
-        $layout.find('.plominoHidewhenClass,.plominoCacheClass').each((index, element) => {
-          let $element = $(element);
+        $layout.find('.plominoHidewhenClass,.plominoCacheClass')
+        .each(function () {
+          let $element = $(this);
           let position = $element.attr('data-plomino-position');
           let hwid = $element.attr('data-plominoid');
           if (position && hwid) {
@@ -61,8 +64,8 @@ export class ObjService {
           }
         });
   
-        $layout.find('.plominoLabelClass').each((index, element) => {
-          let $element = $(element);
+        $layout.find('.plominoLabelClass').each(function () {
+          let $element = $(this);
           let tag = $element.prop('tagName');
           let id = $element.attr('data-plominoid');
 
@@ -84,12 +87,12 @@ export class ObjService {
             html = html.replace(/<\/p>/g, ' ');
             html = html.replace(/<p\/>/g, ' ');
             let span = `<span class="plominoLabelClass">${id}:${html}</span>`;
-            $element.replaceWith(span);
+            $(this).replaceWith(span);
           }
         });
   
-        $layout.find('*[data-plominoid]').each((index, element) => {
-          let $element = $(element);
+        $layout.find('*[data-plominoid]').each(function () {
+          let $element = $(this);
           let id = $element.attr('data-plominoid');
           let pClass = $element.removeClass('mceNonEditable').attr('class');
           let span = `<span class="${pClass}">${id}</span>`;
@@ -97,6 +100,7 @@ export class ObjService {
         });
 
         formData.set('form.widgets.form_layout', $layout.html());
+        $layout.remove();
       }
       //<p><span class="plominoHidewhenClass mceNonEditable" data-plominoid="defaulthidewhen-1" data-plomino-position="start">&nbsp;</span><span class="plominoHidewhenClass mceNonEditable" data-plominoid="defaulthidewhen-1" data-plomino-position="end">&nbsp;</span>&nbsp;</p>
         return this.http.post(`${formUrl}/@@edit`, formData)

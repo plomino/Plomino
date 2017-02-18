@@ -240,7 +240,11 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
           text: 'Open form in new tab',
           context: 'view',
           onclick: () => {
-            window.open(`${ this.item.url }/OpenForm`);
+            this.formsService.saveForm(this.item.formUniqueId, false);
+            this.changeDetector.markForCheck();
+            setTimeout(() => {
+              window.open(`${ this.item.url }/OpenForm`);
+            }, 200);
             return;
           }
         });

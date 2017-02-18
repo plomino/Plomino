@@ -200,6 +200,9 @@ export class FormSettingsComponent implements OnInit {
                 if (this.macrosWidgetTimer !== null) {
                     clearTimeout(this.macrosWidgetTimer);
                 }
+
+                console.info('!!', $('.field-settings-wrapper .select2-choices').length);
+                
                 this.macrosWidgetTimer = setTimeout(() => { // for exclude bugs
                     let $el = $('.form-settings-wrapper ' + 
                     '#formfield-form-widgets-IHelpers-helpers > ul.plomino-macros');

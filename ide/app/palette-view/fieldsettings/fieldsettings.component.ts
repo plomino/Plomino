@@ -80,6 +80,7 @@ export class FieldSettingsComponent implements OnInit {
 
         this.formSaving = true;
         
+        const oldId = this.field.url.split('/').pop();
         console.info('this.objService.updateFormSettings', this.field.url, formData);
         this.objService.updateFormSettings(this.field.url, formData)
         .flatMap((responseData: any) => {
@@ -106,6 +107,37 @@ export class FieldSettingsComponent implements OnInit {
         .subscribe((responseHtml: string) => {
             console.info('submitForm responseHtml received');
             this.formTemplate = responseHtml;
+            let newTitle = $(`<div>${responseHtml}</div>`).find('#form-widgets-IBasic-title').val();
+            let newId = $(`<div>${responseHtml}</div>`).find('#form-widgets-IShortName-id').val();
+            
+            /**
+             * fixing the replace bugs, not right but should work
+             * should be rebuilded
+             */
+            setTimeout(() => {
+              const $frame = $('iframe:visible').contents();
+              if ($frame
+                .find(`.plominoGroupClass[data-groupid="${oldId}"]`).length) {
+                  console.info('found');
+                $frame.find(`.plominoLabelClass[data-plominoid="${oldId}"]`)
+                  .text(newTitle)
+                  .attr('data-plominoid', newId);
+
+                $frame.find(`.plominoGroupClass[data-groupid="${oldId}"]`)
+                  .attr('data-groupid', newId);
+                $frame.find(`.plominoFieldClass[data-plominoid="${oldId}"]`)
+                  .attr('data-plominoid', newId);
+
+                if ($frame.find(`.plominoFieldClass > input[id="${oldId}"]`).length) {
+
+                  $frame.find(`.plominoFieldClass > input[id="${oldId}"]`)
+                  .attr('id', newId)
+                  .attr('name', newId);
+                }
+                
+              }
+            }, 100);
+            
             this.formSaving = false;
             this.updateMacroses();
             this.changeDetector.markForCheck();
@@ -139,27 +171,27 @@ export class FieldSettingsComponent implements OnInit {
     }
 
     private updateMacroses() {
-        if (this.field) {
-            window['MacroWidgetPromise'].then((MacroWidget: any) => {
-                if (this.macrosWidgetTimer !== null) {
-                    clearTimeout(this.macrosWidgetTimer);
-                }
-                this.macrosWidgetTimer = setTimeout(() => { // for exclude bugs
-                    let $el = $('.field-settings-wrapper ' + 
-                    '#formfield-form-widgets-IHelpers-helpers > ul.plomino-macros');
-                    if ($el.length) {
-                        this.zone.runOutsideAngular(() => { new MacroWidget($el); });
-                    }
-                }, 200);
-            });
+      if (this.field) {
+        window['MacroWidgetPromise'].then((MacroWidget: any) => {
+          if (this.macrosWidgetTimer !== null) {
+            clearTimeout(this.macrosWidgetTimer);
+          }
+          this.macrosWidgetTimer = setTimeout(() => { // for exclude bugs
+            let $el = $('.field-settings-wrapper ' + 
+            '#formfield-form-widgets-IHelpers-helpers > ul.plomino-macros');
+            if ($el.length) {
+              this.zone.runOutsideAngular(() => { new MacroWidget($el); });
+            }
+          }, 200);
+        });
 
-            let formulasSelector = '';
-            formulasSelector += '#formfield-form-widgets-validation_formula';
-            formulasSelector += ',#formfield-form-widgets-formula';
-            formulasSelector += ',#formfield-form-widgets-html_attributes_formula';
-            formulasSelector += ',#formfield-form-widgets-ISelectionField-selectionlistformula';
-            setTimeout(() => { $(formulasSelector).remove(); }, 500);
-        }
+        let formulasSelector = '';
+        formulasSelector += '#formfield-form-widgets-validation_formula';
+        formulasSelector += ',#formfield-form-widgets-formula';
+        formulasSelector += ',#formfield-form-widgets-html_attributes_formula';
+        formulasSelector += ',#formfield-form-widgets-ISelectionField-selectionlistformula';
+        setTimeout(() => { $(formulasSelector).remove(); }, 500);
+      }
     }
 
     private clickAddLink() {
