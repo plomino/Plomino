@@ -51,6 +51,7 @@ export class ObjService {
   
           $(this).removeClass('mceNonEditable')
             .removeAttr('data-plominoid')
+            .removeAttr('data-present-method')
             .removeAttr('data-plomino-position');
   
           if (position === 'end' && $(this).next().get(0).tagName === 'BR') {

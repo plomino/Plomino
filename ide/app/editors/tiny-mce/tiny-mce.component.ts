@@ -221,8 +221,8 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
         'preview', 'ploneimage', 'plonelink'],
       toolbar: 'save | undo redo | formatselect | bold italic underline' +
       ' | alignleft aligncenter alignright alignjustify | ' +
-      'bullist numlist | outdent indent | ' +
-      'plonelink unlink ploneimage',
+      'bullist numlist | outdent indent',
+      // 'plonelink unlink ploneimage',
 
       save_onsavecallback: () => {
         this.formsService.saveForm(this.item.formUniqueId);
@@ -537,13 +537,13 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
         this.contentManager.selectContent(this.id, data.oldTemplate);
         this.contentManager.replaceContent(this.id, data.newTemplate);
 
-        if (this.autoSaveTimer !== null) {
-          clearTimeout(this.autoSaveTimer);
-        }
-        this.autoSaveTimer = setTimeout(() => {
-          this.formsService.saveForm(this.item.formUniqueId, false);
-          this.changeDetector.markForCheck();
-        }, 500);
+        // if (this.autoSaveTimer !== null) {
+        //   clearTimeout(this.autoSaveTimer);
+        // }
+        // this.autoSaveTimer = setTimeout(() => {
+        //   this.formsService.saveForm(this.item.formUniqueId, false);
+        //   this.changeDetector.markForCheck();
+        // }, 500);
       });
     }
   }

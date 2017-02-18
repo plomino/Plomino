@@ -3,10 +3,10 @@ import { Injectable } from '@angular/core';
 
 import { Http, Response } from '@angular/http';
 
-import 'jquery';
-declare let $: any;
-import 'lodash';
-declare let _: any;
+// import 'jquery';
+// declare let $: any;
+// import 'lodash';
+// declare let _: any;
 
 @Injectable()
 export class WidgetService {
@@ -19,7 +19,7 @@ export class WidgetService {
     // return new Promise((resolve) => {
 
       let $elements = $('<div />').html(input.layout)
-                        .find('.plominoFieldClass, .plominoHidewhenClass, .plominoActionClass, .plominoLabelClass');
+        .find('.plominoFieldClass, .plominoHidewhenClass, .plominoActionClass, .plominoLabelClass');
       let resultingElementsString = '';
       let contents = input.group_contents;
       let items$: any[] = [];
@@ -267,7 +267,7 @@ export class WidgetService {
                               data-plomino-position="${$position}" 
                               data-plominoid="${$newId}">
                     &nbsp;
-                  </${container}>${ $position === 'start' ? '' : '<br />' }`;
+                  </${container}>`;
     return Observable.of(this.wrapIntoEditable(content));
   }
 
