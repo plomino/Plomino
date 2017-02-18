@@ -9,6 +9,9 @@ install:
   - mkdir -p buildout-cache/{eggs,downloads}
   - python bootstrap-buildout.py --setuptools-version=8.3 -c travis.cfg
   - bin/buildout -Nc travis.cfg
+  - npm cache clean
+  - npm set registry http://registry.npmjs.org
+  - npm update -g
   - cd ide && npm install && npm run build && cd ..
 script:
   - bin/test -s Products.CMFPlomino  --all
