@@ -42,33 +42,36 @@ export class ObjService {
         layout = layout.replace(/\r/g , '').replace(/\xa0/g, ' ');
         let $layout = $(`<div>${ layout }</div>`);
   
-        $layout.find('.plominoHidewhenClass,.plominoCacheClass').each(function () {
-          let position = $(this).attr('data-plomino-position');
-          let hwid = $(this).attr('data-plominoid');
+        $layout.find('.plominoHidewhenClass,.plominoCacheClass').each((index, element) => {
+          let $element = $(element);
+          let position = $element.attr('data-plomino-position');
+          let hwid = $element.attr('data-plominoid');
           if (position && hwid) {
-            $(this).text(`${position}:${hwid}`);
+            $element.text(`${position}:${hwid}`);
           }
   
-          $(this).removeClass('mceNonEditable')
+          $element.removeClass('mceNonEditable')
             .removeAttr('data-plominoid')
             .removeAttr('data-present-method')
             .removeAttr('data-plomino-position');
   
-          if (position === 'end' && $(this).next().get(0).tagName === 'BR') {
-            $(this).next().remove();
+          if (position === 'end' && $element.next().length 
+            && $element.next().prop('tagName') === 'BR') {
+            $element.next().remove();
           }
         });
   
-        $layout.find('.plominoLabelClass').each(function () {
-          let tag = $(this).prop('tagName');
-          let id = $(this).attr('data-plominoid');
-          
+        $layout.find('.plominoLabelClass').each((index, element) => {
+          let $element = $(element);
+          let tag = $element.prop('tagName');
+          let id = $element.attr('data-plominoid');
+
           if (!id) {
             return true;
           }
   
           if (tag === 'SPAN') {
-            $(this)
+            $element
             .removeClass('mceNonEditable')
             .removeAttr('data-plominoid')
             .empty()
@@ -76,18 +79,19 @@ export class ObjService {
           }
   
           if (tag === 'DIV') {
-            let html = $(this).find('.plominoLabelContent').html();
+            let html = $element.find('.plominoLabelContent').html();
             html = html.replace(/<p>/g, ' ');
             html = html.replace(/<\/p>/g, ' ');
             html = html.replace(/<p\/>/g, ' ');
             let span = `<span class="plominoLabelClass">${id}:${html}</span>`;
-            $(this).replaceWith(span);
+            $element.replaceWith(span);
           }
         });
   
-        $layout.find('*[data-plominoid]').each(function () {
-          let id = $(this).attr('data-plominoid');
-          let pClass = $(this).removeClass('mceNonEditable').attr('class');
+        $layout.find('*[data-plominoid]').each((index, element) => {
+          let $element = $(element);
+          let id = $element.attr('data-plominoid');
+          let pClass = $element.removeClass('mceNonEditable').attr('class');
           let span = `<span class="${pClass}">${id}</span>`;
           $(this).replaceWith(span);
         });
