@@ -110,7 +110,7 @@ export class UpdateFieldService {
         data-plomino-position="${$position}" 
         data-plominoid="${id}">
         &nbsp;
-      </${container}>${ $position === 'start' ? '' : '<br />' }`;
+      </${container}>`;
 
     return content;
   }
