@@ -1,8 +1,12 @@
 var path = require('path');
 var webpack = require('webpack');
 
+var startsWith = function (str, searchString) {
+  return str.lastIndexOf(searchString, 0) === 0;
+};
+
 function resolve(base) {
-  return base.startsWith('/') ? base
+  return startsWith(base, '/') ? base
     : path.resolve(path.join(path.dirname(__filename), base));
 }
 
