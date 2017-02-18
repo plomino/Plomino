@@ -1,10 +1,12 @@
 language: python
-sudo: false
+sudo: required
 cache:
   directories:
     - buildout-cache
 python:
   - 2.7
+node_js:
+  - "6.1"
 install:
   - mkdir -p buildout-cache/{eggs,downloads}
   - python bootstrap-buildout.py --setuptools-version=8.3 -c travis.cfg
