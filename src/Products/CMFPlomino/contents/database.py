@@ -201,7 +201,7 @@ class PlominoDatabase(
         return [ctype for ctype in types if ctype.getId() not in filterOut]
 
     def getImportMacros(self):
-        if getattr(self, 'import_macros') is not None:
+        if getattr(self, 'import_macros', None) is not None:
             return self.import_macros
         else:
             return default_macros(self)
