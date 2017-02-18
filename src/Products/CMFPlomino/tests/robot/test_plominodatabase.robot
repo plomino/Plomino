@@ -14,7 +14,7 @@
 #
 # 2) Run robot tests:
 #
-# $ bin/robot src/plonetraining/testing/tests/robot/test_plominodatabase.robot
+# $ bin/robot src/Products/CMFPlomino/tests/robot/test_plominodatabase.robot
 #
 # See the http://docs.plone.org for further details (search for robot
 # framework).
@@ -65,7 +65,7 @@ a plominodatabase 'My PlominoDatabase'
 # --- WHEN -------------------------------------------------------------------
 
 I type '${title}' into the title field
-  Input Text  name=form.widgets.title  ${title}
+  Input Text  name=form.widgets.IBasic.title  ${title}
 
 I submit the form
   Click Button  Save
