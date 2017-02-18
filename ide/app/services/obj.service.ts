@@ -60,8 +60,9 @@ export class ObjService {
         });
   
         $layout.find('.plominoLabelClass').each(function () {
-          let tag = this.tagName;
+          let tag = $(this).prop('tagName');
           let id = $(this).attr('data-plominoid');
+          
           if (!id) {
             return true;
           }

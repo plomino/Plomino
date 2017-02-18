@@ -531,6 +531,7 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
         else {
           if (++i > 1) {
             return false;
+
           }
         }
         
