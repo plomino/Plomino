@@ -47,9 +47,21 @@ class ProductsCmfplominoLayer(PloneSandboxLayer):
 
         db.createDocument("doc1")
 
+class ProductsMacrosLayer(PloneSandboxLayer):
+
+    defaultBases = (PLONE_APP_CONTENTTYPES_FIXTURE,)
+
+    def setUpZope(self, app, configurationContext):
+        self.loadZCML(package=Products.CMFPlomino)
+        z2.installProduct(app, 'Products.CMFPlomino')
+
+    def setUpPloneSite(self, portal):
+        applyProfile(portal, 'Products.CMFPlomino:default')
+        applyProfile(portal, 'Products.CMFPlomino:macros')
 
 PRODUCTS_CMFPLOMINO_FIXTURE = ProductsCmfplominoLayer()
 
+PRODUCTS_MACROS_FIXTURE = ProductsMacrosLayer()
 
 PRODUCTS_CMFPLOMINO_INTEGRATION_TESTING = IntegrationTesting(
     bases=(PRODUCTS_CMFPLOMINO_FIXTURE,),
@@ -66,6 +78,7 @@ PRODUCTS_CMFPLOMINO_FUNCTIONAL_TESTING = FunctionalTesting(
 PRODUCTS_CMFPLOMINO_ACCEPTANCE_TESTING = FunctionalTesting(
     bases=(
         PRODUCTS_CMFPLOMINO_FIXTURE,
+#        PRODUCTS_MACROS_FIXTURE,
         REMOTE_LIBRARY_BUNDLE_FIXTURE,
         z2.ZSERVER_FIXTURE
     ),

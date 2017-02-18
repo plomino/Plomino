@@ -18,6 +18,7 @@ before_install:
   - npm --version
   - node --version
   - tsc --version
+  - sudo apt-get install geckodriver chromedriver
 install:
   - mkdir -p buildout-cache/{eggs,downloads}
   - python bootstrap-buildout.py --setuptools-version=8.3 -c travis.cfg

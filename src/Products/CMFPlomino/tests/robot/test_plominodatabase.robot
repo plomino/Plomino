@@ -47,6 +47,14 @@ Scenario: As a site administrator I can view a PlominoDatabase
    When I go to the plominodatabase view
    Then I can see the plominodatabase title 'My PlominoDatabase'
 
+Scenario: As a site administrator I can add a form
+  Given a logged-in site administrator
+    and a plominodatabase 'My PlominoDatabase'
+    and I open the ide
+   When I add a form
+    and I add a "Field" field
+    and I click save
+   Then I can see the plominodatabase title 'My PlominoDatabase'
 
 *** Keywords *****************************************************************
 
@@ -73,6 +81,24 @@ I submit the form
 I go to the plominodatabase view
   Go To  ${PLONE_URL}/my-plominodatabase
   Wait until page contains  Site Map
+
+I open the ide
+  #Click Element  link=IDE
+  Go To  ${PLONE_URL}/my-plominodatabase/++resource++Products.CMFPlomino/ide/index.html
+  wait until page contains  DB Settings
+
+I add a form
+   wait until page contains  Form
+  Click Button  css=button[title="Form"]
+#   Click Button  id=PlominoForm
+# Drag And Drop
+  Capture Page Screenshot
+  wait until page contains  new-form
+  wait until page contains  css:div.mce-edit-area
+
+I add a "${field}" field
+  Capture Page Screenshot
+  Click Button  css=button[title="${field}"]
 
 
 # --- THEN -------------------------------------------------------------------
