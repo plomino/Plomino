@@ -14,8 +14,6 @@ export class UpdateFieldService {
   constructor(private elementService: ElementService) { }
 
   updateField(item: any): Observable<any> {
-
-    console.info(item, item.oldTemplate.outerHTML);
     if (item.type === 'Hidewhen') {
       let result = Object.assign({}, { 
         newTemplate: this.wrapHidewhen2(item.type, item.newId, item.oldTemplate),
@@ -26,7 +24,6 @@ export class UpdateFieldService {
 
       return Observable.of(result);
     }
-    // throw 'fuck';
     
     // TODO: Replace assign with passing data through operators in sequence
     // tiny-mce.component.ts 307 -> 323

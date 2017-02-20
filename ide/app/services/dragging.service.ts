@@ -25,6 +25,7 @@ export class DraggingService {
       let {parent, templateId} = this.currentDraggingData;
 
       if (data['@type'] === 'PlominoTemplate' && !this.currentDraggingData.resolved) {
+        console.log('this.currentDraggingData', this.currentDraggingData);
         const widgetCode = this.currentDraggingData.template.layout;
         this.templateService
         .getTemplate(parent, templateId)
@@ -115,7 +116,7 @@ export class DraggingService {
 
   private drag(e: MouseEvent, iframe?: boolean) {
     const pos = this.getMousePos(e);
-    const offset = $('iframe').offset();
+    const offset = $('iframe:visible').offset();
   
     if (pos === null) {
         this.stopDragging(e);
@@ -161,9 +162,11 @@ export class DraggingService {
   }
 
   private stopDragging(eventData: MouseEvent, iframe?: boolean) {
-    $(document).off('.drgs').off('.cme');
-    $('iframe:visible').contents().off('.drgs').off('.cme').off('.cmb');
-    $('iframe:visible').contents().find('.plominoGroupClass').off('.cme');
+    $(document).off('.drgs');
+    // $(document).off('.drgs').off('.cme');
+    // $('iframe:visible').contents().off('.drgs').off('.cme').off('.cmb');
+    $('iframe:visible').contents().off('.drgs');
+    // $('iframe:visible').contents().find('.plominoGroupClass').off('.cme');
     $('#drag-data-cursor').remove();
 
     console.log('stopDragging');
@@ -177,6 +180,7 @@ export class DraggingService {
     }
     else {
       console.log('cancel', eventData);
+      this.currentDraggingData = null;
       this.customPaletteDragEventCancel$.next(eventData);
     }
   }

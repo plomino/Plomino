@@ -8,12 +8,20 @@ interface PlominoDraggingData {
   'eventData'?: any;
 }
 
+interface PlominoFormGroupContent {
+  id: string;
+  layout: string;
+  old_id: string;
+  title: string;
+}
+
 interface PlominoFormGroupTemplate {
   layout: string;
   description: string;
   group: string;
   id: string;
   title: string;
+  group_contents?: PlominoFormGroupContent[];
 }
 
 interface TinyMceObservable {

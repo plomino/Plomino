@@ -29,18 +29,16 @@ export class FormsService {
     }
 
     getFormContentBeforeSave(id:any) {
-        console.info('getFormContentBeforeSave id', id);
-        this.getFormContentBeforeSaveSource.next({
-            id: id
-        })
+      this.getFormContentBeforeSaveSource.next({
+        id: id
+      });
     }
 
     onFormContentBeforeSave(data:{id:any, content:any}) {
-        console.info('onFormContentBeforeSave id', data.id);
-        this.onFormContentBeforeSaveSource.next({
-            id: data.id,
-            content: data.content
-        })
+      this.onFormContentBeforeSaveSource.next({
+        id: data.id,
+        content: data.content
+      });
     }
 
     changePaletteTab(tabIndex: number) {

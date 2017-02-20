@@ -47,6 +47,15 @@ export class TabsService {
     return this.activeField$.asObservable().share();
   }
 
+  setActiveTabDirty() {
+    let tabs = this.tabs$.getValue().slice(0);
+    tabs.forEach((tab) => {
+      if (tab.active) {
+        tab.isdirty = true;
+      }
+    });
+  }
+
   setActiveTab(tab: any, showAdd = false): void {
     
     if (tab.active) {

@@ -268,7 +268,6 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
           this.zone.run(() => {
             let $element =  $(ev.target);
             let eventTarget = <any> ev.target;
-            console.info('mousedown $element', $element);
 
             if (eventTarget.control ||
               (['radio', 'select-one'].indexOf(eventTarget.type) !== -1)) {
@@ -350,56 +349,7 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
       
       this.contentManager.selectAndRemoveElementById(this.id, 'drag-autopreview');
       this.dropped({ mouseEvent: eventData });
-      // this.autoSavedContent = this.contentManager.getContent(this.id);
-      // this.contentManager.setContent(this.id, this.autoSavedContent);
     });
-
-    // this.draggingService
-    // .onPaletteCustomDragEventCancel()
-    // .subscribe((eventData: MouseEvent) => {
-    //   this.contentManager.selectAndRemoveElementById(this.id, 'drag-autopreview');
-    //   if (this.autoSavedContent) {
-    //     this.contentManager.setContent(this.id, this.autoSavedContent);
-    //   }
-    // });
-
-
-    // this.draggingService
-    // .onPaletteCustomDragMMOIEvent()
-    // .subscribe((eventData: MouseEvent) => {
-    //   // this.removeExampleWidget();
-    //   // if (this.autoSavedContent) {
-    //   //   tinymce.get(this.id).setContent(this.autoSavedContent);
-    //   // }
-    // });
-
-    // this.draggingService
-    // .onPaletteCustomDragMMIIEvent()
-    // // .distinctUntilChanged((eventData: MouseEvent) => {
-    // //   const rng = this.contentManager.getCaretRangeFromMouseEvent(this.id, eventData);
-    // //   return rng.startOffset;
-    // // })
-    // .map((test: any) => 
-    //   this.contentManager.getCaretRangeFromMouseEvent(this.id, test).startOffset)
-    // .subscribe((test2: any) => console.log(test2));
-    // .subscribe((eventData: MouseEvent) => {
-    //   this.autoSavedContent = this.contentManager.getContent(this.id);
-    //   this.dragData = this.draggingService.currentDraggingData 
-    //     ? this.draggingService.currentDraggingData 
-    //     : this.draggingService.previousDraggingData;
-      
-    //   // calculate the point
-
-    //   // get x/y of the point
-
-    //   // put the div into the point
-    //   // const $mockWidgetGroup = $(
-    //   //   `<div style="background: white; width: 200px; height: 25px;">demo</div>`
-    //   // );
-
-    //   this.contentManager.selectAndRemoveElementById(this.id, 'drag-autopreview');
-    //   this.insertTemplatePreviewAtTheCursor(eventData);
-    // });
   }
 
   getFormLayout() {
@@ -452,18 +402,6 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
     return () => this.dragData.parent === this.id;
   }
 
-  insertTemplatePreviewAtTheCursor(eventData: any) {
-    console.log('FAAAKE');
-    // const rng = this.contentManager.getCaretRangeFromMouseEvent(this.id, eventData);
-
-    // if (rng) {
-    //   this.contentManager.setRange(this.id, rng);
-    //   this.contentManager.insertRawHTML(
-    //     this.id, this.draggingService.currentDraggingTemplateCode
-    //   );
-    // }
-  }
-
   dropped({ mouseEvent }: any) {
     if (this.dragData === null) {
       this.dragData = this.draggingService.currentDraggingData 
@@ -477,20 +415,18 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
 
     let targetGroup = this.draggingService.target === null 
       ? null : this.draggingService.target.get(0);
+
     if (!targetGroup) {
       const $latestTarget = $('iframe:visible').contents()
           .find('*:not(.mce-visual-caret):last');
       targetGroup = $latestTarget.get(0);
     }
-    console.info('dropped', targetGroup);
     this.draggingService.target = null;
     
     if (this.dragData.resolved) {
       this.addElement(this.dragData);
-      console.info('this.addElement', this.dragData);
     } else {
       this.resolveDragData(targetGroup, this.dragData, this.dragData.resolver);
-      console.info('this.resolveDragData', this.dragData, this.dragData.resolver);
     }
 
     this.draggingService.currentDraggingData = null;
@@ -520,7 +456,6 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
         };
       })
       .flatMap((itemToReplace: any) => {
-        console.info('itemToReplace', itemToReplace);
         return this.updateFieldService.updateField(itemToReplace);
       })
       .subscribe((data: any) => {
@@ -658,7 +593,6 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
     else if (plominoClass !== undefined) {
       this.elementService.getWidget(baseUrl, type, value)
       .subscribe((response) => {
-        console.info('response', response);
         let responseAsElement = $(response);
         let container = 'span';
 
@@ -680,12 +614,6 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
         this.contentManager.insertContent(
           this.id, this.draggingService, content, { skip_undo: 1 }
         );
-  
-        console.info('this.tabsService.selectField', {
-          id: value,
-          type: `Plomino${type}`,
-          parent: this.id
-        });
 
         this.tabsService.selectField({
           id: value,

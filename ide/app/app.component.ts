@@ -429,7 +429,6 @@ export class AppComponent implements OnInit, AfterViewInit {
   }
 
   private resolveData(data: any, resolver: Function): void {
-    console.info('app.component.ts resolveData');
     resolver(null, data);
   }
 }

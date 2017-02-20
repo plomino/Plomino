@@ -1,3 +1,4 @@
+import { WidgetService } from './widget.service';
 import { Injectable } from '@angular/core';
 
 import { 
@@ -10,8 +11,9 @@ import { Observable, Subject } from 'rxjs/Rx';
 @Injectable()
 export class TemplatesService {
   $insertion: Subject<any> = new Subject();
+  templatesRegistry = {};
 
-  constructor(private http: Http) {}
+  constructor(private http: Http, private widgetService: WidgetService) {}
   
   addTemplate(formUrl: string, templateId: string): Observable<any> {
     return templateId ? 
@@ -19,9 +21,26 @@ export class TemplatesService {
       Observable.of('');
   }
 
+  buildTemplate(formUrl: string, template: PlominoFormGroupTemplate): void {
+    if (!this.templatesRegistry.hasOwnProperty(formUrl)) {
+      this.templatesRegistry[formUrl] = {};
+    }
+
+    this.widgetService
+    .loadAndParseTemplatesLayout(formUrl, template)
+    .subscribe((result: string) => {
+      const $result = $(result).attr('id', 'drag-autopreview');
+      $result.find('input,textarea,button').removeAttr('name').removeAttr('id');
+      $result.find('span').removeAttr('data-plominoid').removeAttr('data-mce-resize');
+      $result.removeAttr('data-groupid');
+      this.templatesRegistry[formUrl][template.id] = $result.get(0).outerHTML;
+    });
+  }
+
   getTemplate(formUrl: string, templateId: string): Observable<string> {
-    return Observable.of(`
-      <div id="drag-autopreview" class="plominoGroupClass mceNonEditable"
+    return Observable.of(this.templatesRegistry[formUrl][templateId] 
+      ? this.templatesRegistry[formUrl][templateId] 
+      : `<div id="drag-autopreview" class="plominoGroupClass mceNonEditable"
         contenteditable="false">
         <span class="mceEditable" contenteditable="false">
           <span class="plominoLabelClass mceNonEditable"

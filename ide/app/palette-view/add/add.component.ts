@@ -96,10 +96,12 @@ export class AddComponent implements OnInit, AfterViewInit {
         .subscribe((tab) => {
           this.activeTab = tab;
           if (tab && tab.url) {
-            // console.info('new active tab', JSON.stringify(tab));
             this.templatesService.getTemplates(tab.url)
             .subscribe((templates: PlominoFormGroupTemplate[]) => {
               this.templates = templates.map((template) => {
+                
+                this.templatesService.buildTemplate(tab.url, template);
+
                 return Object.assign({}, template, {
                   url: `${tab.url.slice(0, tab.url.lastIndexOf('/'))}/${template.id}`,
                   hidewhen: (tab: any) => {
@@ -308,7 +310,6 @@ export class AddComponent implements OnInit, AfterViewInit {
 
         if (type !== 'template') {
             draggingData.resolver = (target, data = {'@type': ''}) => {
-              console.info('this.add data', data, 'data[@type]', data['@type']);
               this.add(data['@type']);
             }
         } else {
@@ -320,7 +321,6 @@ export class AddComponent implements OnInit, AfterViewInit {
         }
 
         this.draggingService.currentDraggingData = draggingData;
-        console.info('this.draggingService', this.draggingService);
         
         this.draggingService.setDragging(draggingData);
     }

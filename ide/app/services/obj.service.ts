@@ -18,7 +18,6 @@ export class ObjService {
     }
     
     getFieldSettings(fieldUrl: string): Observable<any> {
-        console.info('getFieldSettings called', fieldUrl);
         return this.http.get(`${fieldUrl}/@@edit?ajax_load=1&ajax_include_head=1`)
                     .map(this.extractText);
     }
@@ -29,14 +28,12 @@ export class ObjService {
     }
     
     getFormSettings(formUrl: string): Observable<any> {
-        console.info('getFormSettings called', formUrl);
         return this.http.get(`${formUrl}/@@edit?ajax_load=1&ajax_include_head=1`)
                     .map(this.extractText);
     }
 
     
     updateFormSettings(formUrl: string, formData: any): Observable<any> {
-      console.info('updateFormSettings', formUrl, (<any>formData).entries());
       let layout = formData.get('form.widgets.form_layout');
       if (layout) {
         layout = layout.replace(/\r/g , '').replace(/\xa0/g, ' ');
@@ -70,7 +67,15 @@ export class ObjService {
           let id = $element.attr('data-plominoid');
 
           if (!id) {
-            return true;
+            const $parentGroupElement = $element.parent().parent();
+
+            if ($parentGroupElement.hasClass('plominoGroupClass') 
+              && $parentGroupElement.attr('data-groupid')) {
+              id = $parentGroupElement.attr('data-groupid');
+            }
+            else {
+              return true;
+            }
           }
   
           if (tag === 'SPAN') {
@@ -102,8 +107,8 @@ export class ObjService {
         formData.set('form.widgets.form_layout', $layout.html());
         $layout.remove();
       }
-      //<p><span class="plominoHidewhenClass mceNonEditable" data-plominoid="defaulthidewhen-1" data-plomino-position="start">&nbsp;</span><span class="plominoHidewhenClass mceNonEditable" data-plominoid="defaulthidewhen-1" data-plomino-position="end">&nbsp;</span>&nbsp;</p>
-        return this.http.post(`${formUrl}/@@edit`, formData)
+      
+      return this.http.post(`${formUrl}/@@edit`, formData)
                     .map(this.extractTextAndUrl);
     }
 

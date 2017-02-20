@@ -58,7 +58,7 @@
           (select)="onTabSelect(tabz)">
         
         <template tabHeading>
-            <span [class.tabunsaved]="tabz.isdirty">
+            <span class="tab-trigger" [class.tabunsaved]="tabz.isdirty">
               <loading *ngIf="tabz.isloading"></loading>
               <span *ngIf="tabz.isdirty">* </span>
               <span class="tab-type-image">

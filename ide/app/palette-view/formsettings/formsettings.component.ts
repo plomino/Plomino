@@ -69,10 +69,6 @@ export class FormSettingsComponent implements OnInit {
         let onSaveFinishCb:any = null;
 
         this.formsService.formSettingsSave$.subscribe((data) => {
-            console.info('this.formsService.formSettingsSave$.subscribe called', data);
-            console.info('this.tab.formUniqueId !== data.formUniqueId',
-                this.tab.formUniqueId !== data.formUniqueId);
-
             if (typeof data.formUniqueId === 'undefined') {
                 data.formUniqueId = this.tab.formUniqueId;
             }
@@ -86,9 +82,6 @@ export class FormSettingsComponent implements OnInit {
         });
 
         this.formsService.onFormContentBeforeSave$.subscribe((data:{id:any, content:any}) => {
-            console.info('this.formsService.onFormContentBeforeSave$.subscribe', data);
-            console.info('this.tab.formUniqueId !== data.id',
-                this.tab.formUniqueId !== data.id);
             if (this.tab.formUniqueId !== data.id)
                 return;
 
@@ -100,7 +93,6 @@ export class FormSettingsComponent implements OnInit {
     }
 
     saveFormSettings(formData: any, formLayout: any, cb: any) {
-        console.info('saveFormSettings called');
         this.formSaving = true;
         let $formId:any = '';
       
@@ -124,6 +116,7 @@ export class FormSettingsComponent implements OnInit {
                     this.changeDetector.markForCheck();
                 }
 
+                this.formsService.formSaving = false;
                 this.changeDetector.markForCheck();
                 return this.objService.getFormSettings(newUrl);
             }
@@ -201,7 +194,7 @@ export class FormSettingsComponent implements OnInit {
                     clearTimeout(this.macrosWidgetTimer);
                 }
 
-                console.info('!!', $('.field-settings-wrapper .select2-choices').length);
+                console.info('!! select2', $('.field-settings-wrapper .select2-choices').length);
                 
                 this.macrosWidgetTimer = setTimeout(() => { // for exclude bugs
                     let $el = $('.form-settings-wrapper ' + 

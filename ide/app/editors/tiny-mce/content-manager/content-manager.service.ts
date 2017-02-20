@@ -1,12 +1,13 @@
+import { TabsService } from './../../../services/tabs.service';
 import { DraggingService } from './../../../services/dragging.service';
-import { Injectable } from '@angular/core';
+import { Injectable, ChangeDetectorRef } from '@angular/core';
 
 @Injectable()
 export class TinyMCEFormContentManagerService {
 
   logLevel = 0;
 
-  constructor() { }
+  constructor(private changeDetector: ChangeDetectorRef, private tabsService: TabsService) { }
 
   log(func = 'null', msg = 'empty', requiredLevel = 1) {
     if (this.logLevel >= requiredLevel) {
@@ -15,7 +16,12 @@ export class TinyMCEFormContentManagerService {
   }
 
   setContent(editorId: any, contentHTML: string, dragging?: any): void {
-    const editor = tinymce.get(editorId);
+    let editor = tinymce.get(editorId);
+    
+    if (!editor) {
+      const tinyId = $('iframe:visible').attr('id').replace('_ifr', '');
+      editor = tinymce.EditorManager.editors[tinyId];
+    }
 
     if (!/<br\040?\/?>(\s+)?$/ig.test(contentHTML)) {
       contentHTML = contentHTML + '<br>';
@@ -31,6 +37,7 @@ export class TinyMCEFormContentManagerService {
     .on('mousemove.cme', function () {
       if (dragging.currentDraggingData) {
         that.selectAndRemoveElementById(editorId, 'drag-autopreview');
+        $('iframe:visible').contents().find('#drag-autopreview').remove();
         dragging.target = $(this);
         $(dragging.currentDraggingTemplateCode)
         .insertAfter(dragging.target);
@@ -39,6 +46,7 @@ export class TinyMCEFormContentManagerService {
     .on('mouseleave.cme', function () {
       if (dragging.currentDraggingData) {
         that.selectAndRemoveElementById(editorId, 'drag-autopreview');
+        $('iframe:visible').contents().find('#drag-autopreview').remove();
       }
       
       dragging.target = null;
@@ -46,21 +54,11 @@ export class TinyMCEFormContentManagerService {
 
     $('iframe:visible').contents().off('.cmb')
     .on('mousemove.cmb', function () {
-      // if (!dragging.target) {
-      //   console.log('body-move', 
-      //     $('iframe:visible').contents().find('*:not(.mce-visual-caret):last').get(0),
-      //     dragging.currentDraggingTemplateCode);
-      // }
-      // else {
-      //   console.log('body-move, target', 
-      //     dragging.target,
-      //     dragging.currentDraggingTemplateCode);
-      // }
-      
       if (dragging.currentDraggingData && dragging.target === null) {
         const $latestTarget = $('iframe:visible').contents()
           .find('*:not(.mce-visual-caret):last');
         that.selectAndRemoveElementById(editorId, 'drag-autopreview');
+        $('iframe:visible').contents().find('#drag-autopreview').remove();
         $(dragging.currentDraggingTemplateCode)
         .insertBefore($latestTarget);
       }
@@ -68,12 +66,18 @@ export class TinyMCEFormContentManagerService {
     .on('mouseleave.cmb', function () {
       if (dragging.currentDraggingData) {
         that.selectAndRemoveElementById(editorId, 'drag-autopreview');
+        $('iframe:visible').contents().find('#drag-autopreview').remove();
       }
     });
   }
 
   getContent(editorId: any): string {
-    const editor = tinymce.get(editorId);
+    let editor = tinymce.get(editorId);
+
+    if (!editor) {
+      const tinyId = $('iframe:visible').attr('id').replace('_ifr', '');
+      editor = tinymce.EditorManager.editors[tinyId];
+    }
     const content = editor.getContent();
 
     return (/<br\040?\/?>(\s+)?$/ig.test(content)) 
@@ -100,9 +104,15 @@ export class TinyMCEFormContentManagerService {
   }
 
   insertContent(editorId: any, dragging: DraggingService, contentHTML: string, options?: any): void {
-    const editor = tinymce.get(editorId);
+    let editor = tinymce.get(editorId);
+
+    if (!editor) {
+      const tinyId = $('iframe:visible').attr('id').replace('_ifr', '');
+      editor = tinymce.EditorManager.editors[tinyId];
+    }
 
     let target: any = null;
+    
     if (options.target) {
       target = options.target;
     }
@@ -111,8 +121,8 @@ export class TinyMCEFormContentManagerService {
       return;
     }
     
-    if (options) {
-      delete options['target'];
+    if (options && !options.target) {
+      // delete options['target'];
       const a = editor.getContent().length;
       
       editor.execCommand('mceInsertContent', false, contentHTML, options);
@@ -137,6 +147,8 @@ export class TinyMCEFormContentManagerService {
       }
     }
 
+    this.changeDetector.markForCheck();
+    // this.tabsService.setActiveTabDirty();
     this.setContent(editorId, this.getContent(editorId), dragging);
     this.log('insertContent contentHTML', contentHTML);
   }
