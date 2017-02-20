@@ -558,12 +558,21 @@ class MacroTemplateView(BrowserView):
                 continue
             found.add(form.id)
             group = '' # not sure if we will use groups in the palette
+
+            contents = []
+            for id in set(form.objectIds()):
+                item = form[id]
+                example = form.example_widget(id=id)
+                contents.append({'id':id, 'old_id':id, 'title':item.title,
+                                 'layout': example})
+
             res.append( {'title':form.Title(),
                          'id':form.id,
 #                         'path':path,
                          'group':group,
                          'description':form.description,
                          'layout': form.form_layout, # Used while dragging
+                         'group_contents': contents
                     }
             )
         self.request.RESPONSE.setHeader(
@@ -640,7 +649,9 @@ class MacroTemplateView(BrowserView):
             item = form[id]
             newid = new_id(newgroupid,item.id)
             action(item, self.form, id=newid if newid != id else None)
-            new_contents.append({'id':newid, 'old_id':id, 'title':item.title})
+            example = form.example_widget(id=id)
+            new_contents.append({'id':newid, 'old_id':id, 'title':item.title,
+                                 'layout':example})
 
 
         # TODO now adjust the html of the layout with the new ids and return it
