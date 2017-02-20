@@ -4,7 +4,7 @@
         <button class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored"
             *ngFor="let template of templates, let i = index"
             [hidden]="template.hidewhen(activeTab)"
-            (mousedown)="simulateDrag($event, 'template', template.id)"
+            (mousedown)="simulateDrag($event, 'template', template)"
             [title]="template.title"
             (click)="addTemplate(template.id)">
             <span class="small-left-margin">{{template.title}}</span>
@@ -15,21 +15,21 @@
         [hidden]="group.hidden(activeTab)">
         <div class="item">
             <button type="button" 
-                    *ngFor="let comp of group.components"
-                    class="mdl-button mdl-js-button mdl-button--raised mdl-button--accent mdl-button--colored"
-                    [class.mdl-color--cyan-900]="group.title === 'Form'" 
-                    [class.mdl-color--purple-900]="group.title === 'DB'" 
-                    title="Add {{comp.title}}"
-                    [disabled]="(comp.type !== 'PlominoForm' && 
-                                comp.type !== 'PlominoView') && 
-                                !activeTab" 
-                    id="{{comp.type}}"
-                    dnd-draggable 
-                    [dragEnabled]="true"
-                    (onDragStart)="startDrag($event, comp.type)"
-                    (onDragEnd)="endDrag()"  
-                    [title]="comp.title"
-                    (click)="add(comp.type, true)">
+                *ngFor="let comp of group.components"
+                class="mdl-button mdl-js-button mdl-button--raised mdl-button--accent mdl-button--colored"
+                [class.mdl-color--cyan-900]="group.title === 'Form'" 
+                [class.mdl-color--purple-900]="group.title === 'DB'" 
+                title="Add {{comp.title}}"
+                [disabled]="(comp.type !== 'PlominoForm' && 
+                            comp.type !== 'PlominoView') && 
+                            !activeTab" 
+                id="{{comp.type}}"
+                dnd-draggable 
+                [dragEnabled]="true"
+                (onDragStart)="startDrag($event, comp.type)"
+                (onDragEnd)="endDrag()"  
+                [title]="comp.title"
+                (click)="add(comp.type, true)">
                 <span class="small-left-margin">{{comp.title}}</span>
             </button>
         </div>

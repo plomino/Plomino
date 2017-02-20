@@ -86,26 +86,27 @@ export class AddComponent {
         ];
 
         this.tabsService.getActiveTab()
-            .subscribe((tab) => {
-                this.activeTab = tab;
-                if (tab && tab.url) {
-                    // console.info('new active tab', JSON.stringify(tab));
-                    this.templatesService.getTemplates(tab.url).subscribe((templates: any[]) => {
-                        this.templates = templates.map((template) => {
-                            return Object.assign({}, template, {
-                                url: `${tab.url.slice(0, tab.url.lastIndexOf('/'))}/${template.id}`,
-                                hidewhen: (tab: any) => {
-                                    if (!tab) return true;
-                                    return tab.type !== 'PlominoForm';        
-                                }
-                            })
-                        });
-                        this.changeDetector.markForCheck();
-                    });
-                } else {
-                    this.changeDetector.markForCheck();
-                }
+        .subscribe((tab) => {
+          this.activeTab = tab;
+          if (tab && tab.url) {
+            // console.info('new active tab', JSON.stringify(tab));
+            this.templatesService.getTemplates(tab.url)
+            .subscribe((templates: PlominoFormGroupTemplate[]) => {
+              this.templates = templates.map((template) => {
+                return Object.assign({}, template, {
+                  url: `${tab.url.slice(0, tab.url.lastIndexOf('/'))}/${template.id}`,
+                  hidewhen: (tab: any) => {
+                    if (!tab) return true;
+                    return tab.type !== 'PlominoForm';        
+                  }
+                })
+              });
+              this.changeDetector.markForCheck();
             });
+          } else {
+            this.changeDetector.markForCheck();
+          }
+        });
     }
 
     // When a Form or View is selected, adjust the addable state of the
@@ -274,13 +275,13 @@ export class AddComponent {
       });
     }
 
-    simulateDrag(eventData: MouseEvent, type: any, templateId?: any) {
-      this.startDrag(eventData, type, templateId);
+    simulateDrag(eventData: MouseEvent, type: any, template?: PlominoFormGroupTemplate) {
+      this.startDrag(eventData, type, template);
     }
 
     // Refactor this code, put switch into separated fn
-    startDrag(eventData: MouseEvent, type: any, templateId?: any): void {
-        const draggingData: DraggingData = {
+    startDrag(eventData: MouseEvent, type: any, template?: PlominoFormGroupTemplate) {
+        const draggingData: PlominoDraggingData = {
           '@type': type === 'template' ? 'PlominoTemplate' : type,
           resolver: () => {},
           resolved: false,
@@ -304,9 +305,10 @@ export class AddComponent {
               this.add(data['@type']);
             }
         } else {
-            draggingData.templateId = templateId;
+            draggingData.templateId = template.id;
+            draggingData.template = template;
             draggingData.resolver = (target) => {
-              this.addTemplate(target, templateId);
+              this.addTemplate(target, template.id);
             }
         }
 

@@ -11,8 +11,8 @@ export class DraggingService {
   customPaletteDragEventCancel$: Subject<any> = new Subject<any>();
   customPaletteDragMouseMoveInIFrameEvent$: Subject<any> = new Subject<any>();
   customPaletteDragMouseMoveOutIFrameEvent$: Subject<any> = new Subject<any>();
-  currentDraggingData: DraggingData = null;
-  previousDraggingData: DraggingData = null;
+  currentDraggingData: PlominoDraggingData = null;
+  previousDraggingData: PlominoDraggingData = null;
   currentDraggingTemplateCode: string;
   target: JQuery = null;
 
@@ -20,11 +20,12 @@ export class DraggingService {
   
   setDragging(data?: any): void {
     if (data !== false && data !== null) {
-      this.currentDraggingData = <DraggingData>data;
+      this.currentDraggingData = <PlominoDraggingData>data;
       // preload the widget code
       let {parent, templateId} = this.currentDraggingData;
 
       if (data['@type'] === 'PlominoTemplate' && !this.currentDraggingData.resolved) {
+        const widgetCode = this.currentDraggingData.template.layout;
         this.templateService
         .getTemplate(parent, templateId)
         .subscribe((widgetCode: string) => {

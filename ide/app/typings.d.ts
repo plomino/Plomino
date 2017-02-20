@@ -1,10 +1,19 @@
-interface DraggingData {
+interface PlominoDraggingData {
   'templateId'?: string;
+  'template'?: PlominoFormGroupTemplate;
   'resolver': (data?: any) => void;
   '@type': string;
   'parent'?: string;
   'resolved': boolean;
   'eventData'?: any;
+}
+
+interface PlominoFormGroupTemplate {
+  layout: string;
+  description: string;
+  group: string;
+  id: string;
+  title: string;
 }
 
 interface TinyMceObservable {
