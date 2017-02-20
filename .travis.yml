@@ -9,6 +9,8 @@ node_js:
   - "6.0"
   - "5.6"
   - "4.3"
+addons:
+  firefox: "50.0"
 before_install:
   - sudo apt-get update
   - wget http://security.ubuntu.com/ubuntu/pool/main/i/icu/libicu52_52.1-3ubuntu0.4_amd64.deb
