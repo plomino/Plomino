@@ -14,15 +14,13 @@
     <group *ngFor="let group of addableComponents"
         [hidden]="group.hidden(activeTab)">
         <div class="item">
-            <button type="button" 
+            <!-- firefox hack: button replaced to div -->
+            <div type="button" 
                 *ngFor="let comp of group.components"
-                class="mdl-button mdl-js-button mdl-button--raised mdl-button--accent mdl-button--colored"
+                class="mdl-button mdl-button--raised mdl-button--accent mdl-button--colored"
                 [class.mdl-color--cyan-900]="group.title === 'Form'" 
                 [class.mdl-color--purple-900]="group.title === 'DB'" 
                 title="Add {{comp.title}}"
-                [disabled]="(comp.type !== 'PlominoForm' && 
-                            comp.type !== 'PlominoView') && 
-                            !activeTab" 
                 id="{{comp.type}}"
                 dnd-draggable 
                 [dragEnabled]="true"
@@ -31,7 +29,7 @@
                 [title]="comp.title"
                 (click)="add(comp.type, true)">
                 <span class="small-left-margin">{{comp.title}}</span>
-            </button>
+            </div>
         </div>
     </group>
 </div>

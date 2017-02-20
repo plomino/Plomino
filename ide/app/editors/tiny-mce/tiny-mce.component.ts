@@ -20,7 +20,7 @@ import {
     Response
 } from '@angular/http';
 
-import {DND_DIRECTIVES} from 'ng2-dnd/ng2-dnd';
+import {DND_DIRECTIVES} from 'ng2-dnd';
 
 import {
     Subscription,

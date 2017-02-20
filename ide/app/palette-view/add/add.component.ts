@@ -3,12 +3,14 @@ import {
     Input, 
     Output, 
     OnInit, 
+    AfterViewInit,
     EventEmitter,
     ChangeDetectorRef,
+    ElementRef,
     ChangeDetectionStrategy
 } from '@angular/core';
 
-import { DND_DIRECTIVES } from 'ng2-dnd/ng2-dnd';
+import { DND_DIRECTIVES } from 'ng2-dnd';
 
 import { 
     ElementService,
@@ -29,7 +31,7 @@ import {
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 
-export class AddComponent {
+export class AddComponent implements OnInit, AfterViewInit {
     activeTab: any;
     templates: any[] = [];
     addableComponents: Array<any> = [];
@@ -39,10 +41,15 @@ export class AddComponent {
                 private tabsService: TabsService,
                 private fieldsService: FieldsService,
                 private draggingService: DraggingService,
+                private elementRef: ElementRef,
                 private changeDetector: ChangeDetectorRef,
                 private templatesService: TemplatesService,
                 private widgetService: WidgetService) { 
 
+    }
+
+    ngAfterViewInit() {
+      // const isFF = 'MozAppearance' in document.documentElement.style;
     }
 
     ngOnInit() {

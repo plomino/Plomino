@@ -10,7 +10,7 @@ import {
 } from '@angular/core';
 
 import { CollapseDirective } from 'ng2-bootstrap/ng2-bootstrap';
-import { DND_DIRECTIVES } from 'ng2-dnd/ng2-dnd';
+import { DND_DIRECTIVES } from 'ng2-dnd';
 
 import { 
     ElementService,
