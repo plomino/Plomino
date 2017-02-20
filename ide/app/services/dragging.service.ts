@@ -105,7 +105,7 @@ export class DraggingService {
     .on('mousemove.drgs', this.drag.bind(this))
     .on('mouseup.drgs', this.stopDragging.bind(this));
 
-    $('iframe').contents()
+    $('iframe:visible').contents()
     .on('mousemove.drgs', ((e: any) => this.drag(e, true)).bind(this))
     .on('mouseup.drgs', ((e: any) => this.stopDragging(e, true)).bind(this));
 
@@ -161,14 +161,14 @@ export class DraggingService {
 
   private stopDragging(eventData: MouseEvent, iframe?: boolean) {
     $(document).off('.drgs').off('.cme');
-    $('iframe').contents().off('.drgs').off('.cme');
-    $('iframe').contents().find('.plominoGroupClass').off('.cme');
+    $('iframe:visible').contents().off('.drgs').off('.cme').off('.cmb');
+    $('iframe:visible').contents().find('.plominoGroupClass').off('.cme');
     $('#drag-data-cursor').remove();
 
     console.log('stopDragging');
 
     const pos = this.getMousePos(eventData);
-    const offset = $('iframe').offset();
+    const offset = $('iframe:visible').offset();
     const inIFrame = pos.x >= offset.left && pos.y >= offset.top;
 
     if (iframe || inIFrame) {

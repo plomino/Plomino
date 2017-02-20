@@ -4,7 +4,7 @@ import { Injectable } from '@angular/core';
 @Injectable()
 export class TinyMCEFormContentManagerService {
 
-  logLevel = 3;
+  logLevel = 0;
 
   constructor() { }
 
@@ -44,24 +44,32 @@ export class TinyMCEFormContentManagerService {
       dragging.target = null;
     });
 
-    // $('iframe:visible').contents().off('.cmb')
-    // .on('mousemove.cmb', function () {
-    //   if (!dragging.target) {
-    //     // console.log('body-move', 
-    //     //   $('iframe:visible').contents().find('*:not(.mce-visual-caret):last').get(0),
-    //     //   dragging.currentDraggingTemplateCode);
-    //   }
+    $('iframe:visible').contents().off('.cmb')
+    .on('mousemove.cmb', function () {
+      // if (!dragging.target) {
+      //   console.log('body-move', 
+      //     $('iframe:visible').contents().find('*:not(.mce-visual-caret):last').get(0),
+      //     dragging.currentDraggingTemplateCode);
+      // }
+      // else {
+      //   console.log('body-move, target', 
+      //     dragging.target,
+      //     dragging.currentDraggingTemplateCode);
+      // }
       
-    //   // if (dragging.target === null) {
-    //   //   $('iframe:visible').contents().find('*:last');
-    //   //   $(dragging.currentDraggingTemplateCode)
-    //   //   .insertAfter(dragging.target);
-    //   // }
-    // })
-    // .on('mouseleave.cmb', function () {
-    //   // that.selectAndRemoveElementById(editorId, 'drag-autopreview');
-    //   // dragging.target = null;
-    // });
+      if (dragging.currentDraggingData && dragging.target === null) {
+        const $latestTarget = $('iframe:visible').contents()
+          .find('*:not(.mce-visual-caret):last');
+        that.selectAndRemoveElementById(editorId, 'drag-autopreview');
+        $(dragging.currentDraggingTemplateCode)
+        .insertBefore($latestTarget);
+      }
+    })
+    .on('mouseleave.cmb', function () {
+      if (dragging.currentDraggingData) {
+        that.selectAndRemoveElementById(editorId, 'drag-autopreview');
+      }
+    });
   }
 
   getContent(editorId: any): string {
@@ -117,8 +125,11 @@ export class TinyMCEFormContentManagerService {
     }
     else {
       if (target) {
-        let $content = $(contentHTML);
-        $content.insertAfter($(target));
+        const $content = $(contentHTML);
+        const $latestTarget = $('iframe:visible').contents()
+          .find('*:not(.mce-visual-caret):last');
+        const lastInsert = $latestTarget.get(0) === target;
+        $content[lastInsert ? 'insertBefore': 'insertAfter']($(target));
         $('iframe:visible').contents().click();
       }
       else {
