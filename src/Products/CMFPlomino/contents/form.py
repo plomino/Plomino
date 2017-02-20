@@ -1233,9 +1233,18 @@ class PlominoForm(Container):
 
         return html_content
 
-    def example_widget(self, widget_type, id=None):
+    def example_widget(self, widget_type=None, id=None):
         """ id=None means we are dragging so just need a basic example
         """
+
+        if widget_type is None:
+            # Used in list_templates because we don't know the type
+            item = getattr(self, id, None)
+            widget_type = 'field' if isinstance(item, PlominoField) else \
+                'action' if isinstance(item, PlominoAction) else None
+            if widget_type is None:
+                return 'Unknown'
+
         db = self.getParentDatabase()
         if widget_type == "field":
             if id is None:
