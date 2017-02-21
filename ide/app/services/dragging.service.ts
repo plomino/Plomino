@@ -15,6 +15,7 @@ export class DraggingService {
   previousDraggingData: PlominoDraggingData = null;
   currentDraggingTemplateCode: string;
   target: JQuery = null;
+  targetRange: Range = null;
 
   constructor(private templateService: TemplatesService) {}
   
@@ -148,6 +149,7 @@ export class DraggingService {
         this.moveMouseEventInIFrameCallback(e);
       }
       else {
+        $('iframe:visible').contents().find('#drag-autopreview').remove();
         this.moveMouseEventOutIFrameCallback(e);
       }
     }
