@@ -2,6 +2,7 @@ interface PlominoIFrameMouseMove {
   originalEvent: MouseEvent;
   draggingService: any;
   editorId: string;
+  $group?: JQuery;
 }
 
 interface PlominoIFrameMouseLeave {
