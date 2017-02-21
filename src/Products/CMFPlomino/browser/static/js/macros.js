@@ -123,7 +123,7 @@ require([
                 else {
                     // find the exisitng tags and make them editable
                     //TODO: should only do once
-                    $(el).find('.plomino_edit_macro').each(function(i, el) {
+                    $(el).find('.select2-search-choice').each(function(i, el) {
                         $(el).on("click", function(evt) {
                             evt.preventDefault();
                             //TODO: how to get the value for this rendered one?
@@ -184,6 +184,17 @@ require([
 
                     }
                 });
+            }
+
+            if (edit_url[0] == '#') {
+                // It's an AND etc
+                return;
+            }
+            if (edit_url == null) {
+                new Modal($(macro_select), {
+                    title: "Macro not found",
+                    html: "<div>Macro not found</div>"}).show();
+                return;
             }
 
             //ensure we have an unique id since select2 doesn't allow two items the same
