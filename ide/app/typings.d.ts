@@ -1,3 +1,13 @@
+interface PlominoIFrameMouseMove {
+  originalEvent: MouseEvent;
+  draggingService: any;
+  editorId: string;
+}
+
+interface PlominoIFrameMouseLeave {
+  draggingService: any;
+}
+
 interface PlominoDraggingData {
   'templateId'?: string;
   'template'?: PlominoFormGroupTemplate;

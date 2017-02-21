@@ -1,13 +1,77 @@
+import { Observable, Subject } from 'rxjs/Rx';
 import { TabsService } from './../../../services/tabs.service';
 import { DraggingService } from './../../../services/dragging.service';
 import { Injectable, ChangeDetectorRef } from '@angular/core';
 
 @Injectable()
 export class TinyMCEFormContentManagerService {
+  private logLevel = 0;
 
-  logLevel = 0;
+  private iframeMouseMoveEvents: Subject<PlominoIFrameMouseMove> 
+    = new Subject<PlominoIFrameMouseMove>();
+  private iframeMouseMoveEvents$: Observable<PlominoIFrameMouseMove> 
+    = this.iframeMouseMoveEvents.asObservable();
+  
+  private iframeMouseLeaveEvents: Subject<PlominoIFrameMouseLeave> 
+    = new Subject<PlominoIFrameMouseLeave>();
+  private iframeMouseLeaveEvents$: Observable<PlominoIFrameMouseLeave> 
+    = this.iframeMouseLeaveEvents.asObservable();
 
-  constructor(private changeDetector: ChangeDetectorRef, private tabsService: TabsService) { }
+  constructor(private changeDetector: ChangeDetectorRef, 
+  private tabsService: TabsService) {
+    interface OneInTimeObservable<PlominoIFrameMouseMove> 
+      extends Observable<PlominoIFrameMouseMove> {
+      oneInTime: (delay: any) => Observable<PlominoIFrameMouseMove>;
+    };
+
+    (<any>Observable).prototype.oneInTime = function (delay: any) {
+     return this.take(1).merge(Observable.empty().delay(delay)).repeat();
+    };
+
+    /**
+     * listening on the MouseMove event on the tinymce editable body.
+     * note: this event callback different with the .PlominoGroup MouseMove
+     */
+    (
+      <OneInTimeObservable<PlominoIFrameMouseMove>>
+      this.iframeMouseMoveEvents$
+    )
+    .oneInTime(500)
+    .subscribe((event) => {
+      const dragging = event.draggingService;
+      const editorId = event.editorId;
+      const originalEvent = event.originalEvent;
+
+      if (dragging.currentDraggingData && dragging.target === null) {
+        const range = 
+          this.getCaretRangeFromMouseEvent(editorId, originalEvent);
+        if (this.rangeAccepted(range)) {
+          $('iframe:visible').contents().find('#drag-autopreview').remove();
+          range.insertNode($(dragging.currentDraggingTemplateCode).get(0));
+          dragging.targetRange = range;
+          return;
+        }
+        const $latestTarget = $('iframe:visible').contents()
+          .find('*:not(.mce-visual-caret):last');
+        $('iframe:visible').contents().find('#drag-autopreview').remove();
+        $(dragging.currentDraggingTemplateCode)
+        .insertBefore($latestTarget);
+      }
+    });
+
+    /**
+     * listening on the MouseLeave event on the tinymce editable body.
+     * note: this event callback different with the .PlominoGroup MouseLeave
+     */
+    this.iframeMouseLeaveEvents$
+    .subscribe((event) => {
+      const dragging = event.draggingService;
+
+      if (dragging.currentDraggingData) {
+        $('iframe:visible').contents().find('#drag-autopreview').remove();
+      }
+    });
+  }
 
   log(func = 'null', msg = 'empty', requiredLevel = 1) {
     if (this.logLevel >= requiredLevel) {
@@ -19,8 +83,8 @@ export class TinyMCEFormContentManagerService {
     let editor = tinymce.get(editorId);
     
     if (!editor) {
-      const tinyId = $('iframe:visible').attr('id').replace('_ifr', '');
-      editor = tinymce.EditorManager.editors[tinyId];
+      editorId = $('iframe:visible').attr('id').replace('_ifr', '');
+      editor = tinymce.EditorManager.editors[editorId];
     }
 
     if (!/<br\040?\/?>(\s+)?$/ig.test(contentHTML)) {
@@ -36,7 +100,6 @@ export class TinyMCEFormContentManagerService {
     .find('.plominoGroupClass').off('.cme')
     .on('mousemove.cme', function () {
       if (dragging.currentDraggingData) {
-        that.selectAndRemoveElementById(editorId, 'drag-autopreview');
         $('iframe:visible').contents().find('#drag-autopreview').remove();
         dragging.target = $(this);
         $(dragging.currentDraggingTemplateCode)
@@ -45,29 +108,25 @@ export class TinyMCEFormContentManagerService {
     })
     .on('mouseleave.cme', function () {
       if (dragging.currentDraggingData) {
-        that.selectAndRemoveElementById(editorId, 'drag-autopreview');
         $('iframe:visible').contents().find('#drag-autopreview').remove();
       }
       
       dragging.target = null;
+      dragging.targetRange = null;
     });
 
     $('iframe:visible').contents().off('.cmb')
-    .on('mousemove.cmb', function () {
-      if (dragging.currentDraggingData && dragging.target === null) {
-        const $latestTarget = $('iframe:visible').contents()
-          .find('*:not(.mce-visual-caret):last');
-        that.selectAndRemoveElementById(editorId, 'drag-autopreview');
-        $('iframe:visible').contents().find('#drag-autopreview').remove();
-        $(dragging.currentDraggingTemplateCode)
-        .insertBefore($latestTarget);
-      }
+    .on('mousemove.cmb', function (evt) {
+      that.iframeMouseMoveEvents.next({
+        originalEvent: <MouseEvent>evt.originalEvent,
+        draggingService: dragging,
+        editorId
+      });
     })
     .on('mouseleave.cmb', function () {
-      if (dragging.currentDraggingData) {
-        that.selectAndRemoveElementById(editorId, 'drag-autopreview');
-        $('iframe:visible').contents().find('#drag-autopreview').remove();
-      }
+      that.iframeMouseLeaveEvents.next({
+        draggingService: dragging
+      });
     });
   }
 
@@ -75,8 +134,8 @@ export class TinyMCEFormContentManagerService {
     let editor = tinymce.get(editorId);
 
     if (!editor) {
-      const tinyId = $('iframe:visible').attr('id').replace('_ifr', '');
-      editor = tinymce.EditorManager.editors[tinyId];
+      editorId = $('iframe:visible').attr('id').replace('_ifr', '');
+      editor = tinymce.EditorManager.editors[editorId];
     }
     const content = editor.getContent();
 
@@ -103,12 +162,16 @@ export class TinyMCEFormContentManagerService {
     this.log('insertRawHTML contentHTML', contentHTML);
   }
 
+  rangeAccepted(range: Range): boolean {
+    return range && $(range.startContainer).prop('tagName') === 'P';
+  }
+
   insertContent(editorId: any, dragging: DraggingService, contentHTML: string, options?: any): void {
     let editor = tinymce.get(editorId);
 
     if (!editor) {
-      const tinyId = $('iframe:visible').attr('id').replace('_ifr', '');
-      editor = tinymce.EditorManager.editors[tinyId];
+      editorId = $('iframe:visible').attr('id').replace('_ifr', '');
+      editor = tinymce.EditorManager.editors[editorId];
     }
 
     let target: any = null;
@@ -139,14 +202,27 @@ export class TinyMCEFormContentManagerService {
         const $latestTarget = $('iframe:visible').contents()
           .find('*:not(.mce-visual-caret):last');
         const lastInsert = $latestTarget.get(0) === target;
-        $content[lastInsert ? 'insertBefore': 'insertAfter']($(target));
+        const range = dragging.targetRange;
+        console.info(
+          'target && !options, dragging.targetRange', dragging.targetRange,
+          'lastInsert', lastInsert);
+        if (this.rangeAccepted(range)) {
+          range.insertNode($content.get(0));
+        }
+        else {
+          $content[lastInsert ? 'insertBefore': 'insertAfter']($(target));
+        }
+        
         $('iframe:visible').contents().click();
       }
       else {
+        console.info(
+          '!target && !options, dragging.targetRange', dragging.targetRange);
         editor.execCommand('mceInsertContent', false, contentHTML);
       }
     }
 
+    dragging.targetRange = null;
     this.changeDetector.markForCheck();
     // this.tabsService.setActiveTabDirty();
     this.setContent(editorId, this.getContent(editorId), dragging);
@@ -183,7 +259,7 @@ export class TinyMCEFormContentManagerService {
     }
   }
 
-  getCaretRangeFromMouseEvent(editorId: any, eventData: MouseEvent) {
+  getCaretRangeFromMouseEvent(editorId: any, eventData: MouseEvent): Range {
     const editor = tinymce.get(editorId);
 
     const x = eventData.clientX;
