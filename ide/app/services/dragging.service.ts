@@ -16,6 +16,7 @@ export class DraggingService {
   currentDraggingTemplateCode: string;
   target: JQuery = null;
   targetRange: Range = null;
+  targetSideBottom: boolean = true;
 
   constructor(private templateService: TemplatesService) {}
   
