@@ -52,6 +52,37 @@ export class DraggingService {
           }
         });
       }
+      else if (data['@type'] === 'PlominoHidewhen' && !this.currentDraggingData.resolved) {
+        console.log('hw this.currentDraggingData', this.currentDraggingData);
+
+        this.currentDraggingTemplateCode = `
+          <div id="drag-autopreview">
+            <span class="plominoHidewhenClass mceNonEditable"
+            data-plomino-position="start"
+            contenteditable="false">&nbsp;</span>
+            <span class="plominoHidewhenClass mceNonEditable"
+            data-plomino-position="end"
+            contenteditable="false">&nbsp;</span>
+          </div>
+        `;
+
+        if (this.currentDraggingData.eventData) {
+          const $dragCursor = $(this.currentDraggingTemplateCode);
+  
+          $dragCursor.css({
+            position: 'absolute',
+            display: 'block',
+          });
+
+          $dragCursor.attr('id', 'drag-data-cursor');
+          $dragCursor.css('pointer-events', 'none');
+          $('body').append($dragCursor);
+
+          this.startDragging(
+            this.currentDraggingData.eventData
+          );
+        }
+      }
       else {
         this.previousDraggingData = this.currentDraggingData === null 
           ? null : Object.assign(this.currentDraggingData);

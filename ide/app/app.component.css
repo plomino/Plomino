@@ -41,6 +41,74 @@
   -webkit-user-drag: element;
 }
 
+/deep/[data-plomino-position="start"] {
+    padding: 2px 10px;
+    color: #cccccc;
+    background-color:  #cccccc;
+    background-repeat: no-repeat;
+    margin-right:0.7em;
+    display:inline;
+}
+
+/deep/[data-plomino-position="end"] {
+    padding: 2px 10px;
+    color: #cccccc;
+    background-color:  #cccccc;
+    background-repeat: no-repeat;
+    margin-left:0.7em;
+    display:inline-block;
+}
+
+/deep/.nav-link {
+  -moz-user-select: none;
+  -khtml-user-select: none;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+/deep/.mdl-button {
+  -moz-user-select: none;
+  -khtml-user-select: none;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+/deep/.plominoHidewhenClass[data-plomino-position] {
+    background-image: url('++resource++Products.CMFPlomino/img/PlominoHideWhen.png');
+}
+/deep/.plominoLabelClass[data-plomino-position] {
+    background-image: url('++resource++Products.CMFPlomino/img/PlominoLabel.png');
+}
+/deep/.plominoCacheClass[data-plomino-position] {
+    background-image: url('++resource++Products.CMFPlomino/img/PlominoCache.png');
+}
+
+/deep/[data-plomino-position]:after {
+    border: solid transparent;
+    content: " ";
+    height: 0;
+    width: 0;
+    position: absolute;
+    pointer-events: none;
+    border-color: rgba(187,0,0,0);
+    border-width: 0.7em;
+    margin-top: -0.7em;
+    z-index: 1;
+    top: 50%;
+}
+
+/deep/[data-plomino-position="start"]:after {
+    left: 100%;
+    border-left-width: 8px;
+    border-left-color:  #cccccc;
+}
+
+/deep/[data-plomino-position="end"]:after {
+    right: 100%;
+    border-right-width: 8px;
+    border-right-color:  #cccccc;
+}
+
 /*/deep/.dnd-drag-start {
     -moz-transform:scale(0.8);
     -webkit-transform:scale(0.8);
