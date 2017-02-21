@@ -7626,7 +7626,7 @@ require([
                 else {
                     // find the exisitng tags and make them editable
                     //TODO: should only do once
-                    $(el).find('.plomino_edit_macro').each(function(i, el) {
+                    $(el).find('.select2-search-choice').each(function(i, el) {
                         $(el).on("click", function(evt) {
                             evt.preventDefault();
                             //TODO: how to get the value for this rendered one?
@@ -7689,6 +7689,17 @@ require([
                 });
             }
 
+            if (edit_url[0] == '#') {
+                // It's an AND etc
+                return;
+            }
+            if (edit_url == null) {
+                new Modal($(macro_select), {
+                    title: "Macro not found",
+                    html: "<div>Macro not found</div>"}).show();
+                return;
+            }
+
             //ensure we have an unique id since select2 doesn't allow two items the same
             var macroid = data['_macro_id_'];
             var i = 1;
@@ -7731,7 +7742,11 @@ require([
                     actions: {
                         'input.plominoSave': {
                             onSuccess: function(modal, response, state, xhr, form) {
-                                if(response.errors) {
+                                // If validation_errors is in the form, the form submit failed
+                                if ($(response).find('#validation_errors').length > 0) {
+                                    return false;
+                                }
+                                else if (response.errors) {
                                     return false;
                                 }
                                 modal.hide();
@@ -7790,6 +7805,12 @@ require([
             // Remove any onclick values
             $('.plominoClose', self.$modal).each(function() {
                 this.removeAttribute('onclick');
+            });
+            // Remove validation error links
+            $('#validation_errors a').each(function() {
+                $(this).replaceWith(function(){
+                    return $("<span>" + $(this).html() + "</span>");
+                });
             });
             self.render();
         },

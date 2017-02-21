@@ -24,13 +24,16 @@ require([
             data._hidewhens = self.getHidewhens();
             data._fields = self.getDynamicFields();
             data._validation = field.id;
-            $.post(self.options.url + '/dynamic_evaluation',
-                data,
-                function(response) {
-                    self.applyHidewhens(response.hidewhens);
-                    self.applyDynamicFields(response.fields);
-                },
-                'json');
+            // Only evaluate if we have a hidewhen or dynamic field
+            if (data._hidewhens.length > 0 || data._fields.length > 0) {
+                $.post(self.options.url + '/dynamic_evaluation',
+                    data,
+                    function(response) {
+                        self.applyHidewhens(response.hidewhens);
+                        self.applyDynamicFields(response.fields);
+                    },
+                    'json');
+            };
         },
         getCurrentInputs: function() {
             var data = {};
@@ -76,7 +79,6 @@ require([
         applyDynamicFields: function(fields) {
             var self = this;
             for(var i=0; i<fields.length; i++) {
-                console.log(fields[i]);
                 var fieldid = fields[i][0];
                 var value = fields[i][1];
                 var field = self.$el.find('.dynamicfield[data-dynamicfield="'+fieldid+'"]');
