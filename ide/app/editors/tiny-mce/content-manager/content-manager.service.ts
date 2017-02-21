@@ -168,10 +168,9 @@ export class TinyMCEFormContentManagerService {
     .find('.plominoGroupClass').off('.cme')
     .on('mousemove.cme', function (evt) {
       if (dragging.currentDraggingData) {
-        that.iframeGroupMouseMoveEvents.next(
-        <PlominoIFrameMouseMove>{
+        that.iframeGroupMouseMoveEvents.next({
           draggingService: dragging,
-          originalEvent: evt.originalEvent,
+          originalEvent: <MouseEvent>evt.originalEvent,
           $group: $(this),
           editorId
         });
@@ -179,7 +178,7 @@ export class TinyMCEFormContentManagerService {
     })
     .on('mouseleave.cme', function () {
       that.iframeGroupMouseLeaveEvents.next(
-        <PlominoIFrameMouseLeave>{ draggingService: dragging }
+        { draggingService: dragging }
       );
     });
 
