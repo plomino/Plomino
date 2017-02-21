@@ -55,7 +55,10 @@ export class TinyMCEFormContentManagerService {
       if (dragging.currentDraggingData && dragging.target === null) {
         const range = 
           this.getCaretRangeFromMouseEvent(editorId, originalEvent);
-        console.info('range', range);
+          
+        console.info('range', range.startContainer, range.startOffset,
+          range.commonAncestorContainer);
+
         if (this.rangeAccepted(range)) {
           $('iframe:visible').contents().find('#drag-autopreview').remove();
           range.insertNode($(dragging.currentDraggingTemplateCode).get(0));
@@ -230,8 +233,8 @@ export class TinyMCEFormContentManagerService {
   }
 
   rangeAccepted(range: Range): boolean {
-    return range && ['P', 'BR', 'BODY']
-      .indexOf($(range.startContainer).prop('tagName')) !== -1;
+    return Boolean(range)/* && ['P', 'BR', 'BODY']
+      .indexOf($(range.startContainer).prop('tagName')) !== -1*/;
   }
 
   insertContent(editorId: any, dragging: DraggingService, contentHTML: string, options?: any): void {
