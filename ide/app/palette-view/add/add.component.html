@@ -6,7 +6,8 @@
             [hidden]="template.hidewhen(activeTab)"
             (mousedown)="simulateDrag($event, 'template', template)"
             [title]="template.title"
-            (click)="addTemplate(template.id)">
+            [attr.data-template-id]="template.id"
+            (mouseup)="addTemplate($event, null, template.id)">
             <span class="small-left-margin">{{template.title}}</span>
         </button>
     </div>

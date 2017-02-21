@@ -35,6 +35,7 @@ export class AddComponent implements OnInit, AfterViewInit {
     activeTab: any;
     templates: any[] = [];
     addableComponents: Array<any> = [];
+    mouseDownTemplateId: string;
 
     constructor(private elementService: ElementService,
                 private treeService: TreeService,
@@ -268,7 +269,21 @@ export class AddComponent implements OnInit, AfterViewInit {
     }
 
 
-    addTemplate(target: any, templateId: string) {
+    addTemplate(eventData: MouseEvent, target: any, templateId: string) {
+
+      const a = $(eventData.currentTarget).data('templateId');
+      const b = templateId;
+      const c = this.mouseDownTemplateId;
+      
+      // 1. form insert: undefined, template-text, template-text
+      // 2. form drag and return to blank: no
+      // 3. form drag and return to keyboard: template_radio template_radio template_text
+      // 4. click: template_long_text template_long_text template_long_text
+
+      if (typeof a !== 'undefined' && (c !== b)) {
+        return false;
+      }
+      
       this.templatesService.addTemplate(this.activeTab.url, templateId)
       .subscribe((response: any) => {
         this.widgetService.getGroupLayout(this.activeTab.url, response)
@@ -285,6 +300,7 @@ export class AddComponent implements OnInit, AfterViewInit {
     }
 
     simulateDrag(eventData: MouseEvent, type: any, template?: PlominoFormGroupTemplate) {
+      this.mouseDownTemplateId = template.id;
       this.startDrag(eventData, type, template);
     }
 
@@ -316,7 +332,7 @@ export class AddComponent implements OnInit, AfterViewInit {
             draggingData.templateId = template.id;
             draggingData.template = template;
             draggingData.resolver = (target) => {
-              this.addTemplate(target, template.id);
+              this.addTemplate(eventData, target, template.id);
             }
         }
 

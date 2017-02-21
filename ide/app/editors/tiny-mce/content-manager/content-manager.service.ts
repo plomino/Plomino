@@ -108,7 +108,8 @@ export class TinyMCEFormContentManagerService {
       const groupHeight = $group.height();
       const yPositionInsideGroup = originalEvent.clientY - $group.offset().top;
       const hoverAtBottom = yPositionInsideGroup >= groupHeight * 0.4;
-      dragging.targetSideBottom = hoverAtBottom;
+      // dragging.targetSideBottom = hoverAtBottom;
+      dragging.targetSideBottom = true;
       
       dragging.target = $group;
       $('iframe:visible').contents().find('#drag-autopreview').remove();
@@ -258,6 +259,8 @@ export class TinyMCEFormContentManagerService {
     if (options && !options.target) {
       const a = editor.getContent().length;
       
+      editor.selection.select((<any>editor).getBody(), true);
+      editor.selection.collapse(false);
       editor.execCommand('mceInsertContent', false, contentHTML, options);
       
       setTimeout(() => {

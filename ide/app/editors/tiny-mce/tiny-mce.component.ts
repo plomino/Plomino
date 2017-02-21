@@ -110,7 +110,7 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
     .subscribe((insertion) => {
       let parent = insertion.parent;
       if (insertion.parent === this.id) {
-        console.log('insertion', insertion);
+        console.log('insertion template', insertion);
         this.insertGroup(insertion.group, insertion.target);
         this.changeDetector.markForCheck();
       }
