@@ -18,15 +18,15 @@
             <!-- firefox hack: button replaced to div -->
             <div type="button" 
                 *ngFor="let comp of group.components"
-                class="mdl-button mdl-button--raised mdl-button--accent mdl-button--colored"
+                class="mdl-button mdl-button--raised mdl-button--accent mdl-button--colored mdl-color--purple-900"
                 [class.mdl-color--cyan-900]="group.title === 'Form'" 
                 [class.mdl-color--purple-900]="group.title === 'DB'" 
                 title="Add {{comp.title}}"
                 id="{{comp.type}}"
-                dnd-draggable 
+                dnd-draggable=""
                 [dragEnabled]="true"
                 (onDragStart)="startDrag($event, comp.type)"
-                (onDragEnd)="endDrag()"  
+                (onDragEnd)="endDrag()"
                 [title]="comp.title"
                 (click)="add(comp.type, true)">
                 <span class="small-left-margin">{{comp.title}}</span>

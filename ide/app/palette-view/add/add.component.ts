@@ -111,6 +111,14 @@ export class AddComponent implements OnInit, AfterViewInit {
                   }
                 })
               });
+              $('#PlominoHidewhen')
+                .removeAttr('dnd-draggable')
+                .removeAttr('draggable')
+                .unbind().bind('mousedown', ($event) => {
+                  this.simulateDrag(<MouseEvent>$event.originalEvent, 'PlominoHidewhen');
+                }).bind('mouseup', ($event) => {
+                  // this.add('PlominoHidewhen');
+                });
               this.changeDetector.markForCheck();
             });
           } else {
@@ -300,7 +308,7 @@ export class AddComponent implements OnInit, AfterViewInit {
     }
 
     simulateDrag(eventData: MouseEvent, type: any, template?: PlominoFormGroupTemplate) {
-      this.mouseDownTemplateId = template.id;
+      this.mouseDownTemplateId = template ? template.id : null;
       this.startDrag(eventData, type, template);
     }
 
