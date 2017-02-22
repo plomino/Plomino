@@ -70,7 +70,7 @@ export class WidgetService {
 
     $elements.each((index: number, element: any) => {
       let $element = $(element);
-      let itemPromiseResolve;
+      let itemPromiseResolve: any;
       const itemPromise = new Promise((resolve, reject) => {
         itemPromiseResolve = resolve;
       });
