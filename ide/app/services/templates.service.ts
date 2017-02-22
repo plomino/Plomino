@@ -22,6 +22,8 @@ export class TemplatesService {
   }
 
   buildTemplate(formUrl: string, template: PlominoFormGroupTemplate): void {
+    if (template.title === "template_dummy2")
+      console.info('buildTemplate', 'formUrl', formUrl, 'template', template);
     if (!this.templatesRegistry.hasOwnProperty(formUrl)) {
       this.templatesRegistry[formUrl] = {};
     }
@@ -29,7 +31,10 @@ export class TemplatesService {
     this.widgetService
     .loadAndParseTemplatesLayout(formUrl, template)
     .subscribe((result: string) => {
-      const $result = $(result).addClass('drag-autopreview');
+      if (template.title === "template_dummy2")
+        console.info('result builded', result);
+      const $result = $(result);
+      $result.addClass('drag-autopreview');
       $result.find('input,textarea,button').removeAttr('name').removeAttr('id');
       $result.find('span').removeAttr('data-plominoid').removeAttr('data-mce-resize');
       $result.removeAttr('data-groupid');
@@ -38,6 +43,9 @@ export class TemplatesService {
   }
 
   getTemplate(formUrl: string, templateId: string): Observable<string> {
+    if (!this.templatesRegistry.hasOwnProperty(formUrl)) {
+      this.templatesRegistry[formUrl] = {};
+    }
     return Observable.of(this.templatesRegistry[formUrl][templateId] 
       ? this.templatesRegistry[formUrl][templateId] 
       : `<div class="drag-autopreview plominoGroupClass mceNonEditable"

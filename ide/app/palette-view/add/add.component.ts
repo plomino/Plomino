@@ -65,6 +65,7 @@ export class AddComponent implements OnInit, AfterViewInit {
                     { title: 'Pagebreak', icon: 'tasks', type: 'PlominoPagebreak', addable: true },
                     { title: 'Hide When', icon: 'sunglasses', type: 'PlominoHidewhen', addable: true },
                     { title: 'Action', icon: 'cog', type: 'PlominoAction', addable: true },
+                    { title: 'Subform', icon: 'cog', type: 'PlominoSubform', addable: true },
                 ],
                 hidden: (tab: any) => {
                     if (!tab) return true;
@@ -259,6 +260,16 @@ export class AddComponent implements OnInit, AfterViewInit {
                 target
               }
               this.fieldsService.insertField(field);
+              break;
+          case 'PlominoSubform':
+              field = {
+                name: `${this.activeTab.url}/defaultSubform`,
+                title: 'defaultSubform',
+                '@type': 'PlominoSubform',
+                target
+              }
+              // <div class="plominoSubformClass mceNonEditable" data-plominoid="new-form-8"> </div>
+              // this.fieldsService.insertField(field);
               break;
           case 'PlominoHidewhen':
               field = {

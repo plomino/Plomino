@@ -23,6 +23,7 @@ export class DraggingService {
   private fieldsService: FieldsService) {}
   
   setDragging(data?: any): void {
+    console.info('setDragging', data);
     if (data !== false && data !== null) {
       this.currentDraggingData = <PlominoDraggingData>data;
       // preload the widget code
@@ -31,10 +32,12 @@ export class DraggingService {
       if (data['@type'] === 'PlominoTemplate' && !this.currentDraggingData.resolved) {
         console.info('this.currentDraggingData', this.currentDraggingData);
         const widgetCode = this.currentDraggingData.template.layout;
+        console.info('widgetCode initialized', widgetCode);
         this.templateService
         .getTemplate(parent, templateId)
         .subscribe((widgetCode: string) => {
           this.currentDraggingTemplateCode = widgetCode;
+          console.info('widgetCode updated', widgetCode);
   
           if (this.currentDraggingData.eventData) {
             const $dragCursor = $(this.currentDraggingTemplateCode);
