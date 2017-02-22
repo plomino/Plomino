@@ -375,8 +375,17 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
         const loadingElements = this.widgetService.getFormLayout(this.id);
         Promise.all(loadingElements).then(() => {
           $inner.css('opacity', '');
+          const $content = $(`<div>${this.contentManager.getContent(this.id)}</div>`);
+          $content.find('div.plominoLabelClass').each((i, element) => {
+            const $element = $(element);
+            if ($element.next().length && $element.next().prop('tagName') === 'BR'
+            && $element.next().next().length 
+            && $element.next().next().prop('tagName') === 'BR') {
+              $element.next().next().remove();
+            }
+          });
           this.contentManager.setContent(
-            this.id, this.contentManager.getContent(this.id), this.draggingService
+            this.id, $content.html(), this.draggingService
           );
         });
       }
