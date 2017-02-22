@@ -1,3 +1,4 @@
+import { FieldsService } from './fields.service';
 import { TemplatesService } from './templates.service';
 import { Injectable } from '@angular/core';
 
@@ -18,7 +19,8 @@ export class DraggingService {
   targetRange: Range = null;
   targetSideBottom: boolean = true;
 
-  constructor(private templateService: TemplatesService) {}
+  constructor(private templateService: TemplatesService, 
+  private fieldsService: FieldsService) {}
   
   setDragging(data?: any): void {
     if (data !== false && data !== null) {
@@ -27,7 +29,7 @@ export class DraggingService {
       let {parent, templateId} = this.currentDraggingData;
 
       if (data['@type'] === 'PlominoTemplate' && !this.currentDraggingData.resolved) {
-        console.log('this.currentDraggingData', this.currentDraggingData);
+        console.info('this.currentDraggingData', this.currentDraggingData);
         const widgetCode = this.currentDraggingData.template.layout;
         this.templateService
         .getTemplate(parent, templateId)
@@ -53,10 +55,10 @@ export class DraggingService {
         });
       }
       else if (data['@type'] === 'PlominoHidewhen' && !this.currentDraggingData.resolved) {
-        console.log('hw this.currentDraggingData', this.currentDraggingData);
+        console.info('hw this.currentDraggingData', this.currentDraggingData);
 
         this.currentDraggingTemplateCode = `
-          <div id="drag-autopreview">
+          <div class="drag-autopreview">
             <span class="plominoHidewhenClass mceNonEditable"
             data-plomino-position="start"
             contenteditable="false">&nbsp;</span>
@@ -83,6 +85,34 @@ export class DraggingService {
           );
         }
       }
+      else if (
+        ['PlominoAction', 'PlominoLabel', 'PlominoField'].indexOf(data['@type']) !== -1
+        && !this.currentDraggingData.resolved) {
+        console.info('action/label/field this.currentDraggingData', this.currentDraggingData);
+
+        this.fieldsService
+        .getTemplate(parent, data['@type'].replace('Plomino', '').toLowerCase())
+        .subscribe((widgetCode: string) => {
+          this.currentDraggingTemplateCode = widgetCode;
+  
+          if (this.currentDraggingData.eventData) {
+            const $dragCursor = $(`<div>${this.currentDraggingTemplateCode}</div>`);
+    
+            $dragCursor.css({
+              position: 'absolute',
+              display: 'block',
+            });
+  
+            $dragCursor.attr('id', 'drag-data-cursor');
+            $dragCursor.css('pointer-events', 'none');
+            $('body').append($dragCursor);
+  
+            this.startDragging(
+              this.currentDraggingData.eventData
+            );
+          }
+        });
+      }
       else {
         this.previousDraggingData = this.currentDraggingData === null 
           ? null : Object.assign(this.currentDraggingData);
@@ -90,7 +120,7 @@ export class DraggingService {
       }
     }
     else {
-      console.log('null dragData');
+      console.info('null dragData');
       this.previousDraggingData = this.currentDraggingData === null 
         ? null : Object.assign(this.currentDraggingData);
       this.currentDraggingData = null;
@@ -181,7 +211,7 @@ export class DraggingService {
         this.moveMouseEventInIFrameCallback(e);
       }
       else {
-        $('iframe:visible').contents().find('#drag-autopreview').remove();
+        $('iframe:visible').contents().find('.drag-autopreview').remove();
         this.moveMouseEventOutIFrameCallback(e);
       }
     }

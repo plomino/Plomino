@@ -67,7 +67,7 @@ div.plominoLabelClass {
   margin-right: 10px;
 }
 
-#drag-autopreview {
+.drag-autopreview {
   opacity: 0.3;
   outline: 2px dashed #cccccc;
   outline-offset: 5px;

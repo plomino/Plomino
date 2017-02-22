@@ -36,6 +36,7 @@ export class AddComponent implements OnInit, AfterViewInit {
     templates: any[] = [];
     addableComponents: Array<any> = [];
     mouseDownTemplateId: string;
+    mouseDownTime: number;
 
     constructor(private elementService: ElementService,
                 private treeService: TreeService,
@@ -111,14 +112,20 @@ export class AddComponent implements OnInit, AfterViewInit {
                   }
                 })
               });
-              $('#PlominoHidewhen')
+
+              $('#PlominoHidewhen, #PlominoAction, #PlominoField, #PlominoLabel')
+              .each((i, element) => {
+                const $element = $(element);
+                const $id = $element.attr('id');
+
+                $element
                 .removeAttr('dnd-draggable')
                 .removeAttr('draggable')
                 .unbind().bind('mousedown', ($event) => {
-                  this.simulateDrag(<MouseEvent>$event.originalEvent, 'PlominoHidewhen');
-                }).bind('mouseup', ($event) => {
-                  // this.add('PlominoHidewhen');
+                  this.simulateDrag(<MouseEvent>$event.originalEvent, $id);
                 });
+              });
+              
               this.changeDetector.markForCheck();
             });
           } else {
@@ -145,135 +152,151 @@ export class AddComponent implements OnInit, AfterViewInit {
     //     }
     // }
 
-    add(type: any) {
-        // XXX: Handle the adding of components. This needs to take into account
-        // the currently selected object. i.e. if we're on a Form, the
-        // field/action/hidewhen should be created then added to the form.
-        // If we're on a view, the action/column should be added to the view.
-        // The tree should be updated and, if it's a Form, the object should
-        // be added to the layout. If it's a Drag and Drop (not implemented) yet,
-        // The new field etc. should be added at the cursor. Otherwise to the
-        // end of the form layout.
+    add(type: any, target?: any) {
+      const clickTime = (new Date).getTime();
 
-        // XXX: this is handled in the modal popup via the ElementService/TreeComponent
-        // by calling postElement. We effectively need to do the exact same thing,
-        // but bypass the modal and just set a default title/id for the object
+      //todo: detect click
+      // if (clickTime > (this.mouseDownTime + 500)) {
+      //   return false;
+      // }
 
-        // XXX: For updating the tree, can that be handled via the ElementService?
-        // If the POST that creates the new object happens over there, can there be
-        // something that the main app/tree subscribes to so it refreshes automatically?
-        let randomId: number = Math.round((Math.random() * 999 - 0));
-        let field: any;
-        switch (type) {
-            case 'PlominoForm':
-                let formElement: any = {
-                    '@type': 'PlominoForm',
-                    'title': 'New Form'
-                };
-                this.elementService.postElement('../../', formElement).subscribe((response) => {
-                    this.treeService.updateTree().then(() => {
-                        this.tabsService.openTab({
-                            formUniqueId: response.formUniqueId,
-                            editor: 'layout',
-                            label: response.title,
-                            url: response['@id'] + response.id,
-                            path: [{
-                                name: response.title,
-                                type: 'Forms'
-                            }]
-                        });
-                    });
+      // XXX: Handle the adding of components. This needs to take into account
+      // the currently selected object. i.e. if we're on a Form, the
+      // field/action/hidewhen should be created then added to the form.
+      // If we're on a view, the action/column should be added to the view.
+      // The tree should be updated and, if it's a Form, the object should
+      // be added to the layout. If it's a Drag and Drop (not implemented) yet,
+      // The new field etc. should be added at the cursor. Otherwise to the
+      // end of the form layout.
+
+      // XXX: this is handled in the modal popup via the ElementService/TreeComponent
+      // by calling postElement. We effectively need to do the exact same thing,
+      // but bypass the modal and just set a default title/id for the object
+
+      // XXX: For updating the tree, can that be handled via the ElementService?
+      // If the POST that creates the new object happens over there, can there be
+      // something that the main app/tree subscribes to so it refreshes automatically?
+      let randomId: number = Math.round((Math.random() * 999 - 0));
+      let field: any;
+      switch (type) {
+          case 'PlominoForm':
+              let formElement: any = {
+                  '@type': 'PlominoForm',
+                  'title': 'New Form'
+              };
+              this.elementService.postElement('../../', formElement).subscribe((response) => {
+                  this.treeService.updateTree().then(() => {
+                      this.tabsService.openTab({
+                          formUniqueId: response.formUniqueId,
+                          editor: 'layout',
+                          label: response.title,
+                          url: response['@id'] + response.id,
+                          path: [{
+                              name: response.title,
+                              type: 'Forms'
+                          }]
+                      });
+                  });
+              });
+              break;
+          case 'PlominoView':
+              let viewElement: any = {
+                  '@type': 'PlominoView',
+                  'title': 'New View'
+              };
+              this.elementService.postElement('../../', viewElement).subscribe((response) => {
+                  this.treeService.updateTree().then(() => {
+                      this.tabsService.openTab({
+                          editor: 'code',
+                          label: response.title,
+                          url: response['@id'] + response.id,
+                          path: [{
+                              name: response.title,
+                              type: 'Views'
+                          }]
+                      });
+                  });
+                  console.log('Added new view')
+              });
+              // Get the ID of the new element back in the response.
+              // Update the Tree
+              // Open the View in the editor
+              break;
+          case 'PlominoLabel':
+              let field: any = {
+                  '@type': 'PlominoLabel',
+                  title: 'defaultLabel',
+                  name: `${this.activeTab.url}/defaultLabel`,
+                  target
+              };
+              this.fieldsService.insertField(field);
+              break;
+          case 'PlominoField':
+              field = {
+                  title: 'defaultField',
+                  '@type': 'PlominoField',
+                  target
+              }
+              this.elementService.postElement(this.activeTab.url, field)
+                  .subscribe((response) => {
+                      let extendedField = Object.assign({}, field, {
+                          name: `${this.activeTab.url}/${response.created}`
+                      });
+
+                      this.treeService.updateTree()
+                          .then(() => {
+                              this.fieldsService.insertField(extendedField);
+                          });
+                  })
+              break;
+          case 'PlominoHidewhen':
+              field = {
+                  title: 'defaultHidewhen',
+                  '@type': 'PlominoHidewhen',
+              }
+              /**
+               * here the code does HTTP POST query to create a new field/etc
+               * and returns its widget code
+               */
+              this.elementService.postElement(this.activeTab.url, field)
+              .subscribe((response) => {
+                let extendedField = Object.assign({}, field, {
+                  name: response['@id'],
+                  target
                 });
-                break;
-            case 'PlominoView':
-                let viewElement: any = {
-                    '@type': 'PlominoView',
-                    'title': 'New View'
-                };
-                this.elementService.postElement('../../', viewElement).subscribe((response) => {
-                    this.treeService.updateTree().then(() => {
-                        this.tabsService.openTab({
-                            editor: 'code',
-                            label: response.title,
-                            url: response['@id'] + response.id,
-                            path: [{
-                                name: response.title,
-                                type: 'Views'
-                            }]
-                        });
-                    });
-                    console.log('Added new view')
+
+                this.treeService.updateTree()
+                .then(() => {
+                  console.info('extendedField', extendedField);
+                  this.fieldsService.insertField(extendedField);
                 });
-                // Get the ID of the new element back in the response.
-                // Update the Tree
-                // Open the View in the editor
-                break;
-            case 'PlominoLabel':
-                let field: any = {
-                    '@type': 'PlominoLabel',
-                    title: 'defaultLabel',
-                    name: `${this.activeTab.url}/defaultLabel`
-                };
-                this.fieldsService.insertField(field);
-                break;
-            case 'PlominoField':
-                field = {
-                    title: 'defaultField',
-                    '@type': 'PlominoField'
-                }
-                this.elementService.postElement(this.activeTab.url, field)
-                    .subscribe((response) => {
-                        let extendedField = Object.assign({}, field, {
-                            name: `${this.activeTab.url}/${response.created}`
-                        });
-
-                        this.treeService.updateTree()
-                            .then(() => {
-                                this.fieldsService.insertField(extendedField);
-                            });
-                    })
-                break;
-            case 'PlominoHidewhen':
-                field = {
-                    title: 'defaultHidewhen',
-                    '@type': 'PlominoHidewhen',
-                }
-                this.elementService.postElement(this.activeTab.url, field)
-                    .subscribe((response) => {
-                        let extendedField = Object.assign({}, field, {
-                            name: response['@id']
-                        });
-
-                        this.treeService.updateTree()
-                            .then(() => {
-                                this.fieldsService.insertField(extendedField);
-                            });
-                    })
-                break;
-            case 'PlominoAction':
-                field = {
-                    title: 'defaultAction',
-                    action_type: 'OPENFORM',
-                    '@type': 'PlominoAction'
-                }
-                this.elementService.postElement(this.activeTab.url, field)
-                    .subscribe((response) => {
-                        let extendedField = Object.assign({}, field, {
-                            name: response['@id']
-                        });
-                        this.treeService.updateTree()
-                            .then(() => {
-                                this.fieldsService.insertField(extendedField);
-                            });
-                    })
-                break;
-            case 'column':
-                // Add the action to the view. Update the tree etc.
-                console.log('Adding a column');
-                break;
-            default:
-                console.log(type + ' not handled yet')
-        }
+              });
+              break;
+          case 'PlominoAction':
+              field = {
+                  title: 'defaultAction',
+                  action_type: 'OPENFORM',
+                  '@type': 'PlominoAction',
+                  target
+              }
+              this.elementService.postElement(this.activeTab.url, field)
+                  .subscribe((response) => {
+                      let extendedField = Object.assign({}, field, {
+                          name: response['@id']
+                      });
+                      this.treeService.updateTree()
+                          .then(() => {
+                              this.fieldsService.insertField(extendedField);
+                          });
+                  })
+              break;
+          case 'column':
+              // Add the action to the view. Update the tree etc.
+              console.log('Adding a column');
+              break;
+          default:
+              console.log(type + ' not handled yet')
+      }
     }
 
 
@@ -282,13 +305,15 @@ export class AddComponent implements OnInit, AfterViewInit {
       const a = $(eventData.currentTarget).data('templateId');
       const b = templateId;
       const c = this.mouseDownTemplateId;
+      const clickTime = (new Date).getTime();
       
       // 1. form insert: undefined, template-text, template-text
       // 2. form drag and return to blank: no
       // 3. form drag and return to keyboard: template_radio template_radio template_text
       // 4. click: template_long_text template_long_text template_long_text
 
-      if (typeof a !== 'undefined' && (c !== b)) {
+      if (clickTime > (this.mouseDownTime + 500) && 
+        (typeof a !== 'undefined' && (c !== b))) {
         return false;
       }
       
@@ -309,6 +334,7 @@ export class AddComponent implements OnInit, AfterViewInit {
 
     simulateDrag(eventData: MouseEvent, type: any, template?: PlominoFormGroupTemplate) {
       this.mouseDownTemplateId = template ? template.id : null;
+      this.mouseDownTime = (new Date).getTime();
       this.startDrag(eventData, type, template);
     }
 
@@ -334,7 +360,7 @@ export class AddComponent implements OnInit, AfterViewInit {
 
         if (type !== 'template') {
             draggingData.resolver = (target, data = {'@type': ''}) => {
-              this.add(data['@type']);
+              this.add(data['@type'], target);
             }
         } else {
             draggingData.templateId = template.id;

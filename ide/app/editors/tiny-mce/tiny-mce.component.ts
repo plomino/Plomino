@@ -93,8 +93,13 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
     private contentManager: TinyMCEFormContentManagerService,
     private http: Http,
     private zone: NgZone) {
+    
+    /**
+     * fields, hidewhens, actions, etc
+     */
     this.insertionSubscription = this.fieldsService.getInsertion()
     .subscribe((insertion) => {
+      console.info('fieldsService.getInsertion', insertion);
       let insertionParent = insertion.name.slice(0, insertion.name.lastIndexOf('/'));
       let dataToInsert = Object.assign({}, insertion, { 
         type: insertion['@type']
@@ -106,6 +111,9 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
       }
     });
 
+    /**
+     * form components like text/long text/etc
+     */
     this.templatesSubscription = this.templatesService.getInsertion()
     .subscribe((insertion) => {
       let parent = insertion.parent;
@@ -551,11 +559,13 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
       default: return;
     }
 
-    this.insertElement(baseUrl, type, elementId);
+    console.info('element.target', element.target);
+    let target: any = element.target || null;
+    this.insertElement(target, baseUrl, type, elementId);
   }
 
   private insertElement(
-    baseUrl: string, type: string, value: string, option?: string) {
+    target: any, baseUrl: string, type: string, value: string, option?: string) {
     let ed: any = tinymce.get(this.id);
     let selection: any = ed.selection.getNode();
     let title: string;
@@ -586,7 +596,7 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
       .subscribe((widgetTemplate: any) => {
         this.contentManager.insertContent(
           this.id, this.draggingService,
-          `${widgetTemplate}`, { skip_undo: 1 }
+          `${widgetTemplate}`, { skip_undo: 1, target }
         );
       });
     }
@@ -612,7 +622,7 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
         }
 
         this.contentManager.insertContent(
-          this.id, this.draggingService, content, { skip_undo: 1 }
+          this.id, this.draggingService, content, { skip_undo: 1, target }
         );
 
         this.tabsService.selectField({
@@ -678,7 +688,7 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
 				
         console.log('zone', zone);
         this.contentManager.insertContent(
-          this.id, this.draggingService, zone, { skip_undo: 1 }
+          this.id, this.draggingService, zone, { skip_undo: 1, target }
         );
 			}
       

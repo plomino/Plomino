@@ -29,7 +29,7 @@ export class TemplatesService {
     this.widgetService
     .loadAndParseTemplatesLayout(formUrl, template)
     .subscribe((result: string) => {
-      const $result = $(result).attr('id', 'drag-autopreview');
+      const $result = $(result).addClass('drag-autopreview');
       $result.find('input,textarea,button').removeAttr('name').removeAttr('id');
       $result.find('span').removeAttr('data-plominoid').removeAttr('data-mce-resize');
       $result.removeAttr('data-groupid');
@@ -40,7 +40,7 @@ export class TemplatesService {
   getTemplate(formUrl: string, templateId: string): Observable<string> {
     return Observable.of(this.templatesRegistry[formUrl][templateId] 
       ? this.templatesRegistry[formUrl][templateId] 
-      : `<div id="drag-autopreview" class="plominoGroupClass mceNonEditable"
+      : `<div class="drag-autopreview plominoGroupClass mceNonEditable"
         contenteditable="false">
         <span class="mceEditable" contenteditable="false">
           <span class="plominoLabelClass mceNonEditable"

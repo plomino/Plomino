@@ -46,7 +46,7 @@ export class TinyMCEFormContentManagerService {
       <OneInTimeObservable<PlominoIFrameMouseMove>>
       this.iframeMouseMoveEvents$
     )
-    .oneInTime(500)
+    .oneInTime(300)
     .subscribe((event) => {
       const dragging = event.draggingService;
       const editorId = event.editorId;
@@ -59,17 +59,23 @@ export class TinyMCEFormContentManagerService {
         console.info('range', range.startContainer, range.startOffset,
           range.commonAncestorContainer);
 
+        const currentDragCode = dragging.currentDraggingTemplateCode;
+        const $currentDragNode = $(currentDragCode);
+
+        if (!$currentDragNode.hasClass('drag-autopreview')) {
+          $currentDragNode.addClass('drag-autopreview');
+        }
+
         if (this.rangeAccepted(range)) {
-          $('iframe:visible').contents().find('#drag-autopreview').remove();
-          range.insertNode($(dragging.currentDraggingTemplateCode).get(0));
+          $('iframe:visible').contents().find('.drag-autopreview').remove();
+          range.insertNode($currentDragNode.get(0));
           dragging.targetRange = range;
           return;
         }
         const $latestTarget = $('iframe:visible').contents()
           .find('*:not(.mce-visual-caret):last');
-        $('iframe:visible').contents().find('#drag-autopreview').remove();
-        $(dragging.currentDraggingTemplateCode)
-        .insertBefore($latestTarget);
+        $('iframe:visible').contents().find('.drag-autopreview').remove();
+        $currentDragNode.insertBefore($latestTarget);
       }
     });
 
@@ -82,7 +88,7 @@ export class TinyMCEFormContentManagerService {
       const dragging = event.draggingService;
 
       if (dragging.currentDraggingData) {
-        $('iframe:visible').contents().find('#drag-autopreview').remove();
+        $('iframe:visible').contents().find('.drag-autopreview').remove();
       }
     });
 
@@ -94,7 +100,7 @@ export class TinyMCEFormContentManagerService {
       <OneInTimeObservable<PlominoIFrameMouseMove>>
       this.iframeGroupMouseMoveEvents$
     )
-    .oneInTime(200)
+    // .oneInTime(200)
     .subscribe((event) => {
       const originalEvent = event.originalEvent;
       const dragging = event.draggingService;
@@ -112,7 +118,7 @@ export class TinyMCEFormContentManagerService {
       dragging.targetSideBottom = true;
       
       dragging.target = $group;
-      $('iframe:visible').contents().find('#drag-autopreview').remove();
+      $('iframe:visible').contents().find('.drag-autopreview').remove();
 
       let $preview = $(dragging.currentDraggingTemplateCode);
       if (!hoverAtBottom) {
@@ -122,7 +128,27 @@ export class TinyMCEFormContentManagerService {
         });
       }
       
-      $preview.insertAfter(dragging.target);
+      if (/hidewhenclass/ig.test($preview.get(0).outerHTML)) {
+        const $templateA = $(`
+          <span class="drag-autopreview plominoHidewhenClass mceNonEditable"
+            data-plomino-position="start"
+            contenteditable="false">&nbsp;</span>
+        `);
+        const $templateB = $(`
+          <span class="drag-autopreview plominoHidewhenClass mceNonEditable"
+            data-plomino-position="end"
+            contenteditable="false">&nbsp;</span>
+        `);
+
+        $templateA.insertBefore(dragging.target);
+        $templateB.insertAfter(dragging.target);
+      }
+      else {
+        if (!$preview.hasClass('drag-autopreview')) {
+          $preview.addClass('drag-autopreview');
+        }
+        $preview.insertAfter(dragging.target);
+      }
     });
 
     /**
@@ -137,7 +163,7 @@ export class TinyMCEFormContentManagerService {
     .subscribe((event) => {
       const dragging = event.draggingService;
       if (dragging.currentDraggingData) {
-        $('iframe:visible').contents().find('#drag-autopreview').remove();
+        $('iframe:visible').contents().find('.drag-autopreview').remove();
       }
       
       dragging.target = null;
@@ -239,6 +265,7 @@ export class TinyMCEFormContentManagerService {
   }
 
   insertContent(editorId: any, dragging: DraggingService, contentHTML: string, options?: any): void {
+    $('iframe:visible').contents().find('.drag-autopreview').remove(); // just in case
     let editor = tinymce.get(editorId);
 
     if (!editor) {
@@ -255,6 +282,52 @@ export class TinyMCEFormContentManagerService {
     if (contentHTML === '<div class="plominoGroupClass mceNonEditable"></div>') {
       return;
     }
+
+    if (/hidewhenclass/ig.test(contentHTML)) {
+      console.info('this is hidewhen insertion');
+      const $target = $(target);
+      if (target && $target.hasClass('plominoGroupClass')) {
+        /**
+         * split hidewhen on 2 different spans
+         */
+        console.info('target ok and target is plominoGroupClass');
+        let spans = contentHTML.split('</span>&nbsp;');
+        if (spans.length > 1) {
+          spans[0] = spans[0] + '</span>';
+        }
+        else {
+          spans = contentHTML.split('</span><span class="plominoHidewhenClass');
+          spans[0] = spans[0] + '</span>';
+          spans[1] = '<span class="plominoHidewhenClass' + spans[1];
+        }
+
+        /* just in case */
+        $('iframe:visible').contents()
+          .find('.drag-autopreview').remove();
+
+        $(spans[0]).insertBefore($target);
+        $(spans[1]).insertAfter($target);
+        
+        $('iframe:visible').contents().click();
+        editor.setDirty(true);
+        return;
+      }
+      else {
+        console.info('not target ok and target is plominoGroupClass',
+        'target', $(target).get(0).outerHTML,
+        '$(target).hasClass(\'plominoGroupClass\')',
+        $(target).hasClass('plominoGroupClass'));
+        contentHTML = `<p>${contentHTML}</p>`;
+      }
+    }
+
+    if ($(contentHTML).hasClass('plominoActionClass')
+      || $(contentHTML).hasClass('plominoFieldClass')
+      || $(contentHTML).hasClass('plominoLabelClass')) {
+      contentHTML = `<p>${contentHTML}</p>`;
+    }
+
+    console.log(target, options);
     
     if (options && !options.target) {
       const a = editor.getContent().length;
@@ -278,6 +351,8 @@ export class TinyMCEFormContentManagerService {
         const range = dragging.targetRange;
         console.info(
           'target && !options, dragging.targetRange', dragging.targetRange,
+          'this.rangeAccepted(range)', this.rangeAccepted(range),
+          'target', target,
           'lastInsert', lastInsert);
         if (this.rangeAccepted(range)) {
           range.insertNode($content.get(0));
@@ -301,6 +376,7 @@ export class TinyMCEFormContentManagerService {
     dragging.targetRange = null;
     this.changeDetector.markForCheck();
     this.setContent(editorId, this.getContent(editorId), dragging);
+    editor.setDirty(true);
     this.log('insertContent contentHTML', contentHTML);
   }
 
