@@ -54,6 +54,30 @@ export class DraggingService {
           }
         });
       }
+      else if (data['@type'] === 'PlominoPagebreak' && !this.currentDraggingData.resolved) {
+        this.currentDraggingTemplateCode = `
+          <div class="drag-autopreview">
+            <hr class="plominoPagebreakClass">
+          </div>
+        `;
+
+        if (this.currentDraggingData.eventData) {
+          const $dragCursor = $(this.currentDraggingTemplateCode);
+  
+          $dragCursor.css({
+            position: 'absolute',
+            display: 'block',
+          });
+
+          $dragCursor.attr('id', 'drag-data-cursor');
+          $dragCursor.css('pointer-events', 'none');
+          $('body').append($dragCursor);
+
+          this.startDragging(
+            this.currentDraggingData.eventData
+          );
+        }
+      }
       else if (data['@type'] === 'PlominoHidewhen' && !this.currentDraggingData.resolved) {
         console.info('hw this.currentDraggingData', this.currentDraggingData);
 

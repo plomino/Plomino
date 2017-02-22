@@ -101,6 +101,13 @@
     transition: border-color ease-in-out .15s, box-shadow ease-in-out .15s;
 }
 
+/deep/.plominoPagebreakClass {
+  width: 100% !important;
+  min-width: 200px !important;
+  border-width: 10px !important;
+  margin: 0 !important;
+}
+
 /deep/.plominoLabelClass[data-plomino-position] {
     background-image: url('++resource++Products.CMFPlomino/img/PlominoLabel.png');
 }

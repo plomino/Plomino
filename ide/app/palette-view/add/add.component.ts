@@ -62,6 +62,7 @@ export class AddComponent implements OnInit, AfterViewInit {
                 components: [
                     { title: 'Label', icon: '', type: 'PlominoLabel', addable: true },
                     { title: 'Field', icon: 'tasks', type: 'PlominoField', addable: true },
+                    { title: 'Pagebreak', icon: 'tasks', type: 'PlominoPagebreak', addable: true },
                     { title: 'Hide When', icon: 'sunglasses', type: 'PlominoHidewhen', addable: true },
                     { title: 'Action', icon: 'cog', type: 'PlominoAction', addable: true },
                 ],
@@ -113,7 +114,8 @@ export class AddComponent implements OnInit, AfterViewInit {
                 })
               });
 
-              $('#PlominoHidewhen, #PlominoAction, #PlominoField, #PlominoLabel')
+              $('#PlominoHidewhen, #PlominoAction, ' +
+                '#PlominoField, #PlominoLabel, #PlominoPagebreak')
               .each((i, element) => {
                 const $element = $(element);
                 const $id = $element.attr('id');
@@ -248,6 +250,15 @@ export class AddComponent implements OnInit, AfterViewInit {
                               this.fieldsService.insertField(extendedField);
                           });
                   })
+              break;
+          case 'PlominoPagebreak':
+              field = {
+                name: `${this.activeTab.url}/defaultPagebreak`,
+                title: 'defaultPagebreak',
+                '@type': 'PlominoPagebreak',
+                target
+              }
+              this.fieldsService.insertField(field);
               break;
           case 'PlominoHidewhen':
               field = {
