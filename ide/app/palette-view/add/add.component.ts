@@ -103,7 +103,7 @@ export class AddComponent implements OnInit, AfterViewInit {
             this.templatesService.getTemplates(tab.url)
             .subscribe((templates: PlominoFormGroupTemplate[]) => {
               this.templates = templates.map((template) => {
-                
+
                 this.templatesService.buildTemplate(tab.url, template);
 
                 return Object.assign({}, template, {
@@ -340,16 +340,18 @@ export class AddComponent implements OnInit, AfterViewInit {
       }
       
       this.templatesService.addTemplate(this.activeTab.url, templateId)
-      .subscribe((response: any) => {
+      .subscribe((response: PlominoFormGroupTemplate) => {
+        response = this.templatesService.fixCustomTemplate(response);
         this.widgetService.getGroupLayout(this.activeTab.url, response)
         .subscribe((layout: any) => {
-            this.treeService.updateTree().then(() => {
-              this.templatesService.insertTemplate(Object.assign({}, response, {
-                parent: this.activeTab.url,
-                target: target,
-                group: layout
-              }));
-            })
+          layout = this.templatesService.fixBuildedTemplate(layout);
+          this.treeService.updateTree().then(() => {
+            this.templatesService.insertTemplate(Object.assign({}, response, {
+              parent: this.activeTab.url,
+              target: target,
+              group: layout
+            }));
+          });
         });    
       });
     }

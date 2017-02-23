@@ -103,29 +103,54 @@ export class FieldSettingsComponent implements OnInit {
              * should be rebuilded
              */
             setTimeout(() => {
+              const pfc = '.plominoFieldClass';
               const $frame = $('iframe:visible').contents();
-              if ($frame
-                .find(`.plominoGroupClass[data-groupid="${oldId}"]`).length) {
-                $frame.find(`.plominoLabelClass[data-plominoid="${oldId}"]`)
-                  .text(newTitle)
-                  .attr('data-plominoid', newId);
+              console.info('id/title was changed',
+                'newTitle', newTitle,
+                'newId', newId,
+                'oldId', oldId);
+              
+              /* fix id of old field */
+              $frame.find(`${pfc}[data-plominoid="${oldId}"]`)
+                .attr('data-plominoid', newId);
 
-                $frame.find(`.plominoGroupClass[data-groupid="${oldId}"] > span > .plominoLabelClass`)
-                  .text(newTitle)
-                  .attr('data-plominoid', newId);
+              /* fix id of old field inputs */
+              $frame.find(
+                `${pfc} > input[id="${oldId}"], ${pfc} > textarea[id="${oldId}"]`)
+                .attr('id', newId).attr('name', newId);
 
-                $frame.find(`.plominoGroupClass[data-groupid="${oldId}"]`)
-                  .attr('data-groupid', newId);
-                $frame.find(`.plominoFieldClass[data-plominoid="${oldId}"]`)
-                  .attr('data-plominoid', newId);
+              /* fix id of old group */
+              $frame.find(`.plominoGroupClass[data-groupid="${oldId}"]`)
+                .attr('data-groupid', newId);
 
-                if ($frame.find(`.plominoFieldClass > input[id="${oldId}"]`).length) {
+              /* get new id field related label */
+              let $relatedLabel: JQuery;
+              let $targetField = $frame.find(`${pfc}[data-plominoid="${newId}"]`);
+  
+              console.info('$targetField', $targetField.get(0).outerHTML);
+              console.info('$targetField.parent()', $targetField.parent().get(0).outerHTML);
 
-                  $frame.find(`.plominoFieldClass > input[id="${oldId}"]`)
-                  .attr('id', newId)
-                  .attr('name', newId);
-                }
-                
+              if ($targetField.length && $targetField.parent().hasClass('plominoGroupClass')) {
+                $relatedLabel = $targetField.parent().find('.plominoLabelClass');
+              }
+              else if ($targetField.length && $targetField.parent().prev().length) {
+                $relatedLabel = $targetField.parent().prev().find('.plominoLabelClass');
+              }
+
+              if ($relatedLabel.length) {
+                $relatedLabel.each((i, relatedLabelNode) => {
+                  const $relatedLabelNode = $(relatedLabelNode);
+                  if ($relatedLabelNode.next().next().hasClass('plominoFieldClass')
+                  && $relatedLabelNode.next().next().attr('data-plominoid') === newId) {
+                    $relatedLabelNode.text(newTitle).attr('data-plominoid', newId);
+                  }
+                  else if ($relatedLabelNode.parent().next()
+                    .children().first().hasClass('plominoFieldClass')
+                  && $relatedLabelNode.parent().next()
+                    .children().first().attr('data-plominoid') === newId) {
+                    $relatedLabelNode.text(newTitle).attr('data-plominoid', newId);
+                  }
+                });
               }
             }, 100);
             
