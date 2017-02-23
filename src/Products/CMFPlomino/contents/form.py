@@ -308,14 +308,20 @@ class PlominoForm(Container):
                 return True
         return False
 
-    def getFormAction(self):
-        """ For a multi page form, submit to a custom action """
+    def getFormAction(self, bare=False):
+        """
+        For a multi page form, submit to a custom action
+        For a page, submit to itself
+        For a normal form, submit to Open{Bare}Form as appropriate
+        """
         if self.getIsMulti():
             action = '/page/%s' % self._get_current_page()
         elif self.isPage:
             action = ''
+        elif bare:
+            action = '/OpenBareForm'
         else:
-            action = '/createDocument'
+            action = '/OpenForm'
         return '%s%s' % (self.absolute_url(), action)
 
     def _get_resource_urls(self, field_name):

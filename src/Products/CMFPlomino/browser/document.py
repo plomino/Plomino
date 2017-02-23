@@ -95,9 +95,9 @@ class DocumentView(BrowserView):
             # If a user tries to edit a multipage form
             if self.target.getIsMulti():
                 return self.redirect('page', '1')
-            return self.edit_template()
+            return self._validate(self.edit_template)
         if self.action == "bareedit":
-            return self.bare_edit_template()
+            return self._validate(self.bare_edit_template)
         if self.action == "bareview":
             return self.bare_view_template()
         elif self.action == "save":
@@ -124,6 +124,21 @@ class DocumentView(BrowserView):
 
     def __call__(self):
         return self.render()
+
+    def _validate(self, template):
+        self.page_errors = []
+        if self.request['REQUEST_METHOD'] == 'POST':
+            form = self.target.getForm()
+
+            # Try to validate the form
+            errors = form.validateInputs(self.request, doc=self.target)
+            if errors:
+                self.page_errors = errors
+                return template()
+            else:
+                return self.doc.saveDocument(self.request)
+        else:
+            return template()
 
     def _page_edit(self):
         # Multipage edit mode
