@@ -47,14 +47,33 @@ export class WidgetService {
   }
 
   getGroupLayout(baseUrl: string, input: any, templateMode?: boolean): Observable<any> {
-    let $elements = $('<div />').html(input.layout)
-      .find('.plominoFieldClass, .plominoHidewhenClass, .plominoActionClass, .plominoLabelClass');
+    if (input.title === "template_dummy2")
+      console.info('getGroupLayout', input);
+    /**
+     * decided to use the DOM
+     */
+    let $groupLayout = $(
+      `<div id="tmp-group-layout-id${input.id}" role="group"
+        style="visibility: hidden; position: absolute"
+        >${input.layout}</div>`
+    );
+
+    $('body').append($groupLayout);
+    $groupLayout = $(`#tmp-group-layout-id${input.id}`);
+
+    let $elements = $groupLayout
+      .find('.plominoFieldClass, .plominoHidewhenClass, ' +
+      '.plominoActionClass, .plominoLabelClass');
     let resultingElementsString = '';
     let contents = input.group_contents;
     let items$: any[] = [];
 
     $elements.each((index: number, element: any) => {
       let $element = $(element);
+      let itemPromiseResolve: any;
+      const itemPromise = new Promise((resolve, reject) => {
+        itemPromiseResolve = resolve;
+      });
       
       switch($element.attr('class')) {
         case 'plominoFieldClass':
@@ -64,7 +83,9 @@ export class WidgetService {
             contents: contents,
             baseUrl: baseUrl,
             el: $element,
-            templateMode: Boolean(templateMode)
+            templateMode: Boolean(templateMode),
+            itemPromise,
+            itemPromiseResolve,
           });
           break;
         case 'plominoHidewhenClass':
@@ -73,7 +94,9 @@ export class WidgetService {
             contents: contents,
             baseUrl: baseUrl,
             el: $element,
-            templateMode: Boolean(templateMode)
+            templateMode: Boolean(templateMode),
+            itemPromise,
+            itemPromiseResolve,
           });
           break;
         case 'plominoLabelClass':
@@ -82,30 +105,74 @@ export class WidgetService {
             contents: contents,
             baseUrl: baseUrl,
             el: $element,
-            templateMode: Boolean(templateMode)
+            templateMode: Boolean(templateMode),
+            itemPromise,
+            itemPromiseResolve,
           });
           break;
         default:
       }
     });
+
+    items$.forEach((item: any) => {
+
+      ({
+        field: (item: any) => 
+          this.convertGroupFields(
+            item.contents, item.baseUrl, item.el
+          ),
+        hidewhen: (item: any) => 
+          this.convertGroupHidewhens(
+            item.contents, item.baseUrl, item.el
+          ),
+        label: (item: any) => 
+          this.convertLabel(
+            item.baseUrl, item.el, 'group', item.contents
+          ),
+      }[item.type])(item)
+      .subscribe((result: string) => {
+        item.el.replaceWith($(result));
+
+        $groupLayout
+        .find('p > span.mceEditable > .plominoLabelClass').each((i, lElement) => {
+          let $tmpLabel = $(lElement);
+          if ($tmpLabel.next().length && $tmpLabel.next().prop('tagName') === 'BR') {
+            let $parentPTag = $tmpLabel.parent().parent();
+            $parentPTag.replaceWith($parentPTag.html());
+          }
+        });
+        
+        item.itemPromiseResolve(result);
+      });
+    });
     
     return Observable.from(items$)
-    .concatMap((item: any) => {
-      if (item.type === 'hidewhen') {
-        return this.convertGroupHidewhens(item.contents, item.baseUrl, item.el);
-      }
-      
-      if (item.type === 'label') {
-        return this.convertLabel(item.baseUrl, item.el, 'group', item.contents);
-      }
-
-      return this.convertGroupFields(item.contents, item.baseUrl, item.el);
+    .map((item$) => {
+      return Observable.fromPromise(item$.itemPromise);
     })
+    .concatAll()
+    .concatMap((result: string) => result)
     .reduce((formString: any, formItem: any) => {
       return formString += formItem;
     }, '')
-    .map((formString) => {
-      return this.wrapIntoGroup(formString, input.groupid);
+    .map((formString: any) => {
+      // if ($groupLayout.children().last().length && 
+      // $groupLayout.children().last().prop('tagName') === 'P' && 
+      // $groupLayout.children().last().html().trim().length === 0) {
+      //   $groupLayout.children().last().remove();
+      // }
+
+      const $wrongLabels = $groupLayout
+      .find('span.mceEditable > span.mceEditable > .plominoLabelClass');
+      
+      $wrongLabels.each((i, wLabelElement) => {
+        const $label = $(wLabelElement);
+        $label.parent().parent().replaceWith($label.parent());
+      });
+      
+      const result = $groupLayout.html();
+      $groupLayout.remove();
+      return this.wrapIntoGroup(result, input.groupid);
     });
   }
 
@@ -114,8 +181,8 @@ export class WidgetService {
   }
 
   getFormLayout(baseUrl: string) {
-
     const $edIFrame = $(`iframe[id="${ baseUrl }_ifr"]`).contents();
+    console.info('IFRAME LOADED', $edIFrame.find('#tinymce').html());
     $edIFrame.css('opacity', 0);
     let $elements = $edIFrame.find('.plominoGroupClass, ' +
       '.plominoFieldClass:not(.plominoGroupClass .plominoFieldClass), ' +
@@ -229,19 +296,37 @@ export class WidgetService {
   }
 
   private convertFormGroups(base: string, element: any, groupId: any): Observable<any> {
+    console.info('convertFormGroups element', element);
     let $groupId = element.attr('data-groupid');
     let fields$: any[] = [];
 
-    let $elements = $('<div />')
-      .html(element.html())
+    const randomId = Math.floor(Math.random() * 1e5) + 1e4 + 1;
+
+    /**
+     * decided to use the DOM
+     */
+    let $groupLayout = $(
+      `<div id="tmp-cgroup-layout-id${randomId}" role="group"
+        style="visibility: hidden; position: absolute"
+        >${element.html()}</div>`
+    );
+
+    $('body').append($groupLayout);
+    $groupLayout = $(`#tmp-cgroup-layout-id${randomId}`);
+
+    let $elements = $groupLayout
       .find('.plominoGroupClass, ' + 
       '.plominoFieldClass:not(.plominoGroupClass .plominoFieldClass), ' + 
       '.plominoHidewhenClass:not(.plominoGroupClass .plominoHidewhenClass), ' + 
       '.plominoActionClass:not(.plominoGroupClass .plominoActionClass), ' + 
-      '.plominoLabelClass:not(.plominoGroupClass .plominoLabelClass)');  
+      '.plominoLabelClass:not(.plominoGroupClass .plominoLabelClass)');
 
     $elements.each((index: number, element: any) => {
       let $element = $(element);
+      let itemPromiseResolve: any;
+      const itemPromise = new Promise((resolve, reject) => {
+        itemPromiseResolve = resolve;
+      });
       let $class = $element.attr('class').split(' ')[0];
       let $groupId = '';
 
@@ -255,56 +340,100 @@ export class WidgetService {
             type: 'group',
             url: base,
             groupId: $groupId,
-            el: $element
+            el: $element,
+            itemPromise,
+            itemPromiseResolve,
           });
         case 'plominoFieldClass':
         case 'plominoActionClass':
           fields$.push({
             type: 'field',
             url: base,
-            el: $element
+            el: $element,
+            itemPromise,
+            itemPromiseResolve,
           });
           break;
         case 'plominoHidewhenClass':
           fields$.push({
             type: 'hidewhen',
             url: base,
-            el: $element
+            el: $element,
+            itemPromise,
+            itemPromiseResolve,
           });
           break;
         case 'plominoLabelClass':
           fields$.push({
             url: base,
             type: 'label',
-            el: $element
+            el: $element,
+            itemPromise,
+            itemPromiseResolve,
           });
           break;
         default:
       }
     });
 
+    fields$.forEach((item: any) => {
+
+      ({
+        group: (item: any) => 
+          this.convertFormGroups(
+            item.url, item.el, item.groupId
+          ),
+        field: (item: any) => 
+          this.convertFormFields(
+            item.url, item.el
+          ),
+        hidewhen: (item: any) => 
+          this.convertFormHidewhens(
+            item.url, item.el
+          ),
+        label: (item: any) => 
+          this.convertLabel(
+            item.url, item.el, 'group'
+          ),
+      }[item.type])(item)
+      .subscribe((result: string) => {
+        item.el.replaceWith($(result));
+
+        $groupLayout
+        .find('p > span.mceEditable > .plominoLabelClass').each((i, lElement) => {
+          let $tmpLabel = $(lElement);
+          if ($tmpLabel.next().length && $tmpLabel.next().prop('tagName') === 'BR') {
+            let $parentPTag = $tmpLabel.parent().parent();
+            $parentPTag.replaceWith($parentPTag.html());
+          }
+        });
+        
+        item.itemPromiseResolve(result);
+      });
+    });
+
     return Observable.from(fields$)
-    .concatMap((fieldData: any) => {
-      if (fieldData.type === 'group') {
-        return this.convertFormGroups(fieldData.url, fieldData.el, fieldData.groupId); 
-      }
-
-      if (fieldData.type === 'hidewhen') {
-        return this.convertFormHidewhens(fieldData.url, fieldData.el);
-      }
-
-      if (fieldData.type === 'label') {
-        return this.convertLabel(fieldData.url, fieldData.el, 'group');
-      }
-
-      return this.convertFormFields(fieldData.url, fieldData.el);
+    .map((item$) => {
+      return Observable.fromPromise(item$.itemPromise);
     })
+    .concatAll()
+    .concatMap((result: string) => result)
     .reduce((formString: any, formItem: any) => {
       return formString += formItem;
     }, '')
     .map((groupString) => {
-      return this.wrapIntoGroup(groupString, $groupId);
-    })
+      const $wrongLabels = $groupLayout
+      .find('span.mceEditable > span.mceEditable > .plominoLabelClass');
+      
+      $wrongLabels.each((i, wLabelElement) => {
+        const $label = $(wLabelElement);
+        $label.parent().parent().replaceWith($label.parent());
+      });
+      
+      const result = $groupLayout.html();
+      $groupLayout.remove();
+      return this.wrapIntoGroup(result, $groupId);
+    });
     
   }
 
@@ -436,14 +565,20 @@ export class WidgetService {
     }
 
     return (template 
-      ? this.getWidget(base, $type, $id, template) 
-      : this.getWidget(base, $type, $id)
-      ).map((response) => {
+    ? this.getWidget(base, $type, $id, template) 
+    : this.getWidget(base, $type, $id)
+    ).map((response) => {
+      const $response = $(response);
+      // if ($response.length === 1 && $response.prop('tagName') === 'P') {
+      //   response = $response.html();
+      // }
       let result = '';
       if (type === 'group') {
-        result = this.wrapIntoEditable(`${response}<br />`);
+        // result = this.wrapIntoEditable(`${response}<br />`);
+        result = $response.get(0).outerHTML;
       } else {
-        result = `${response}<br />`;
+        // result = `${response}<br />`;
+        result = `${response}`;
       }
       return result;
     });
@@ -459,6 +594,7 @@ export class WidgetService {
   }
 
   private wrapIntoGroup(content: string, groupId: string): string {
+    // console.info('wrap', content, groupId);
     let $wrapper = $('<div />');
     return $wrapper.html(content)
               .addClass('plominoGroupClass mceNonEditable')

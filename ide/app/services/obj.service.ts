@@ -32,7 +32,9 @@ export class ObjService {
                     .map(this.extractText);
     }
 
-    
+    /**
+     * This code calling on the form saving.
+     */
     updateFormSettings(formUrl: string, formData: any): Observable<any> {
       let layout = formData.get('form.widgets.form_layout');
       if (layout) {
@@ -60,6 +62,14 @@ export class ObjService {
             $element.next().remove();
           }
         });
+
+        $layout.find('span.mceEditable').each((i, mceEditable) => {
+          const $mceEditable = $(mceEditable);
+          if ($mceEditable.children().last().prop('tagName') === 'BR') {
+            $mceEditable.children().last().remove();
+            $mceEditable.replaceWith(`<p>${$mceEditable.html()}</p>`);
+          }
+        });
   
         $layout.find('.plominoLabelClass').each(function () {
           let $element = $(this);
@@ -67,13 +77,19 @@ export class ObjService {
           let id = $element.attr('data-plominoid');
 
           if (!id) {
-            const $parentGroupElement = $element.parent().parent();
+            const $relateFieldElement = $element.parent().next();
 
-            if ($parentGroupElement.hasClass('plominoGroupClass') 
-              && $parentGroupElement.attr('data-groupid')) {
-              id = $parentGroupElement.attr('data-groupid');
+            if ($relateFieldElement.hasClass('plominoFieldClass') 
+              && $relateFieldElement.attr('data-plominoid')) {
+              id = $relateFieldElement.attr('data-plominoid');
+            }
+            else if ($relateFieldElement.prop('tagName') === 'P' 
+              && $relateFieldElement.children().first().hasClass('plominoFieldClass') 
+              && $relateFieldElement.children().first().attr('data-plominoid')) {
+              id = $relateFieldElement.children().first().attr('data-plominoid');
             }
             else {
+              console.info("???????", id, tag, $element);
               return true;
             }
           }
@@ -107,6 +123,9 @@ export class ObjService {
         formData.set('form.widgets.form_layout', $layout.html());
         $layout.remove();
       }
+      
+      // throw formData.get('form.widgets.form_layout');
+      console.warn(formData.get('form.widgets.form_layout'));
       
       return this.http.post(`${formUrl}/@@edit`, formData)
                     .map(this.extractTextAndUrl);

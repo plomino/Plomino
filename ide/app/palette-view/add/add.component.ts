@@ -65,6 +65,7 @@ export class AddComponent implements OnInit, AfterViewInit {
                     { title: 'Pagebreak', icon: 'tasks', type: 'PlominoPagebreak', addable: true },
                     { title: 'Hide When', icon: 'sunglasses', type: 'PlominoHidewhen', addable: true },
                     { title: 'Action', icon: 'cog', type: 'PlominoAction', addable: true },
+                    { title: 'Subform', icon: 'cog', type: 'PlominoSubform', addable: true },
                 ],
                 hidden: (tab: any) => {
                     if (!tab) return true;
@@ -102,7 +103,7 @@ export class AddComponent implements OnInit, AfterViewInit {
             this.templatesService.getTemplates(tab.url)
             .subscribe((templates: PlominoFormGroupTemplate[]) => {
               this.templates = templates.map((template) => {
-                
+
                 this.templatesService.buildTemplate(tab.url, template);
 
                 return Object.assign({}, template, {
@@ -260,6 +261,16 @@ export class AddComponent implements OnInit, AfterViewInit {
               }
               this.fieldsService.insertField(field);
               break;
+          case 'PlominoSubform':
+              field = {
+                name: `${this.activeTab.url}/defaultSubform`,
+                title: 'defaultSubform',
+                '@type': 'PlominoSubform',
+                target
+              }
+              // <div class="plominoSubformClass mceNonEditable" data-plominoid="new-form-8"> </div>
+              // this.fieldsService.insertField(field);
+              break;
           case 'PlominoHidewhen':
               field = {
                   title: 'defaultHidewhen',
@@ -329,16 +340,18 @@ export class AddComponent implements OnInit, AfterViewInit {
       }
       
       this.templatesService.addTemplate(this.activeTab.url, templateId)
-      .subscribe((response: any) => {
+      .subscribe((response: PlominoFormGroupTemplate) => {
+        response = this.templatesService.fixCustomTemplate(response);
         this.widgetService.getGroupLayout(this.activeTab.url, response)
         .subscribe((layout: any) => {
-            this.treeService.updateTree().then(() => {
-              this.templatesService.insertTemplate(Object.assign({}, response, {
-                parent: this.activeTab.url,
-                target: target,
-                group: layout
-              }));
-            })
+          layout = this.templatesService.fixBuildedTemplate(layout);
+          this.treeService.updateTree().then(() => {
+            this.templatesService.insertTemplate(Object.assign({}, response, {
+              parent: this.activeTab.url,
+              target: target,
+              group: layout
+            }));
+          });
         });    
       });
     }

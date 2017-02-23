@@ -21,23 +21,83 @@ export class TemplatesService {
       Observable.of('');
   }
 
+  fixCustomTemplate(template: PlominoFormGroupTemplate) {
+    /**
+     * this code fixing custom templates and removing groups from them
+     */
+    const $layout = $(`<div>${template.layout}</div>`);
+    $layout.find('[data-groupid]').each((i, divGroup) => {
+      const $divGroup = $(divGroup);
+      $divGroup.replaceWith($divGroup.html());
+    });
+
+    $layout.find('span.mceEditable').each((i, mceEditable) => {
+      const $mceEditable = $(mceEditable);
+      $mceEditable.replaceWith($mceEditable.html());
+    });
+
+    // $layout.find('input,textarea,button')
+    //   .removeAttr('name').removeAttr('id');
+
+    template.layout = $layout.html();
+
+    // template.group_contents = template.group_contents.map((groupContent) => {
+    //   const $contentLayout = $(`<div>${groupContent.layout}</div>`);
+    //   $contentLayout.find('input,textarea,button')
+    //     .removeAttr('name').removeAttr('id');
+    //   groupContent.layout = $contentLayout.html();
+    //   return groupContent;
+    // });
+
+    return template;
+  }
+
+  fixBuildedTemplate(templateHTML: string) {
+    const $result = $(templateHTML);
+    $result.find('.plominoLabelClass').each((i, pLabel) => {
+      const $pLabel = $(pLabel);
+      const $pLabelParent = $pLabel.parent();
+
+      if ($pLabelParent.hasClass('mceEditable') && $pLabel.next().length
+      && $pLabel.next().prop('tagName') === 'BR'
+      && $pLabelParent.next().length
+      && $pLabelParent.next().prop('tagName') === 'BR') {
+        $pLabelParent.next().remove();
+      }
+    }); 
+
+    return $result.get(0).outerHTML;
+  }
+
   buildTemplate(formUrl: string, template: PlominoFormGroupTemplate): void {
+    if (template.title === "template_dummy2")
+      console.info('buildTemplate', 'formUrl', formUrl, 'template', template);
     if (!this.templatesRegistry.hasOwnProperty(formUrl)) {
       this.templatesRegistry[formUrl] = {};
     }
 
+    template = this.fixCustomTemplate(template);
+    
     this.widgetService
     .loadAndParseTemplatesLayout(formUrl, template)
     .subscribe((result: string) => {
-      const $result = $(result).addClass('drag-autopreview');
+      if (template.title === "template_dummy2")
+        console.info('result builded', result);
+      const $result = $(result);
+      $result.addClass('drag-autopreview');
       $result.find('input,textarea,button').removeAttr('name').removeAttr('id');
       $result.find('span').removeAttr('data-plominoid').removeAttr('data-mce-resize');
       $result.removeAttr('data-groupid');
-      this.templatesRegistry[formUrl][template.id] = $result.get(0).outerHTML;
+
+      this.templatesRegistry[formUrl][template.id] = 
+        this.fixBuildedTemplate($result.get(0).outerHTML);
     });
   }
 
   getTemplate(formUrl: string, templateId: string): Observable<string> {
+    if (!this.templatesRegistry.hasOwnProperty(formUrl)) {
+      this.templatesRegistry[formUrl] = {};
+    }
     return Observable.of(this.templatesRegistry[formUrl][templateId] 
       ? this.templatesRegistry[formUrl][templateId] 
       : `<div class="drag-autopreview plominoGroupClass mceNonEditable"

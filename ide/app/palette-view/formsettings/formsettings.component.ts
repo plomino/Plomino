@@ -219,21 +219,21 @@ export class FormSettingsComponent implements OnInit {
     }
 
     private getSettings() {
-        this.tabsService.getActiveTab()
-            .do((tab) => {
-                this.tab = tab;
-            })
-            .flatMap((tab: any) => {
-                if (tab && tab.url) {
-                    return this.objService.getFormSettings(tab.url);
-                } else {
-                    return Observable.of('');
-                }
-            })
-            .subscribe((template) => {
-                this.formSettings = template;
-                this.updateMacroses();
-                this.changeDetector.markForCheck();
-            });
+      this.tabsService.getActiveTab()
+        .do((tab) => {
+          this.tab = tab;
+        })
+        .flatMap((tab: any) => {
+          if (tab && tab.url) {
+            return this.objService.getFormSettings(tab.url);
+          } else {
+            return Observable.of('');
+          }
+        })
+        .subscribe((template) => {
+          this.formSettings = template;
+          this.updateMacroses();
+          this.changeDetector.markForCheck();
+        });
     }
 }
