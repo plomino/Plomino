@@ -24,6 +24,8 @@ export class UpdateFieldService {
 
       return Observable.of(result);
     }
+
+    console.warn(item);
     
     // TODO: Replace assign with passing data through operators in sequence
     // tiny-mce.component.ts 307 -> 323

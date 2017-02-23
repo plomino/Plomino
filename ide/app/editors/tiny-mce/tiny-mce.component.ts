@@ -289,7 +289,11 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
             let $parent = $element.parent();
             let $elementIsGroup = $element.hasClass('plominoGroupClass');
             let elementIsLabel = $element.hasClass('plominoLabelClass');
+            let elementIsSubform = $element.hasClass('plominoSubformClass');
+            let parentIsSubform = $parent.hasClass('plominoSubformClass');
             let parentIsLabel = $parent.hasClass('plominoLabelClass');
+
+            console.warn(elementIsSubform, parentIsSubform, $element, $parent);
 
             let $elementId = $element.data('plominoid');
             let $parentId = $parent.data('plominoid');
@@ -317,7 +321,15 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
             
             if (elementIsLabel || parentIsLabel) {
                 this.fieldSelected.emit(null);
-            } else {
+            } 
+            else if (elementIsSubform || parentIsSubform) {
+              /**
+               * subform clicked
+               */
+              let id = $elementId || $parentId;
+              this.fieldSelected.emit({ id: id, type: 'subform', parent: this.id });
+            }
+            else {
               if ($elementId || $parentId) {
                 let id = $elementId || $parentId;
                     
@@ -609,6 +621,16 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
         this.contentManager.insertContent(
           this.id, this.draggingService,
           `${widgetTemplate}`, { skip_undo: 1, target }
+        );
+      });
+    }
+    else if (type == 'subform') {
+      this.elementService.getWidget(baseUrl, type, null)
+      .subscribe((widgetTemplate: any) => {
+        this.contentManager.insertContent(
+          this.id, this.draggingService,
+          `<div class="plominoSubformClass mceNonEditable"
+          >${widgetTemplate}</div>`, { skip_undo: 1, target }
         );
       });
     }
