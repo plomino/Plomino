@@ -186,10 +186,13 @@ require([
                 });
             }
 
-            if (edit_url[0] == '#') {
-                // It's an AND etc
+            var macroid = data['_macro_id_'];
+
+            if (edit_url[0] == '#' && self.ids[macroid]) {
+                // It's an AND etc, and its already been added
                 return;
             }
+
             if (edit_url == null) {
                 new Modal($(macro_select), {
                     title: "Macro not found",

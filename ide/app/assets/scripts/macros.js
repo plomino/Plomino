@@ -192,9 +192,10 @@ require([
                     }
                 });
             }
+            var macroid = data['_macro_id_'];
 
-            if (edit_url[0] == '#') {
-                // It's an AND etc
+            if (edit_url[0] == '#' && self.ids[macroid]) {
+                // It's an AND etc, and its already been added
                 return;
             }
             if (edit_url == null) {
@@ -205,7 +206,6 @@ require([
             }
 
             //ensure we have an unique id since select2 doesn't allow two items the same
-            var macroid = data['_macro_id_'];
             var i = 1;
             while (macroid==undefined || self.ids[macroid]) {
                 macroid = formid + '_' + i;
