@@ -57,6 +57,32 @@ export class DraggingService {
           }
         });
       }
+      else if (data['@type'] === 'PlominoSubform' && !this.currentDraggingData.resolved) {
+        this.currentDraggingTemplateCode = `
+          <div class="drag-autopreview">
+            <span class="plominoSubformClass mceNonEditable">
+            <h2>Subform</h2><input type="text" value='...'/>
+            </span>
+          </div>
+        `;
+
+        if (this.currentDraggingData.eventData) {
+          const $dragCursor = $(this.currentDraggingTemplateCode);
+  
+          $dragCursor.css({
+            position: 'absolute',
+            display: 'block',
+          });
+
+          $dragCursor.attr('id', 'drag-data-cursor');
+          $dragCursor.css('pointer-events', 'none');
+          $('body').append($dragCursor);
+
+          this.startDragging(
+            this.currentDraggingData.eventData
+          );
+        }
+      }
       else if (data['@type'] === 'PlominoPagebreak' && !this.currentDraggingData.resolved) {
         this.currentDraggingTemplateCode = `
           <div class="drag-autopreview">

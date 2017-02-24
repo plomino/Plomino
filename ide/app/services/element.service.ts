@@ -67,15 +67,16 @@ export class ElementService {
     }
 
     deleteElement(url: string) {
-        return this.http.delete(url);
+      return this.http.delete(url);
     }
 
     searchElement(query: string) {
-        return this.http.get('../../search?SearchableText='+query+'*', { headers: this.headers }).map((res: Response) => res.json());
+      return this.http.get('../../search?SearchableText='+query+'*', { headers: this.headers }).map((res: Response) => res.json());
     }
 
     getWidget(base: string, type: string, id: string): Observable<Response> {
-        return this.http.get(`${base}/@@tinyform/example_widget?widget_type=${type}&id=${id}`)
-                .map((response) => response.json());
+      return this.http.get(
+        `${base}/@@tinyform/example_widget?widget_type=${type}${ id ? `&id=${id}` : '' }`)
+        .map((response) => response.json());
     }
 }

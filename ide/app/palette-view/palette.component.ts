@@ -56,7 +56,7 @@ export class PaletteComponent implements OnInit {
         { title: 'Add', id: 'add', active: true },
         { title: 'Field Settings', id: 'item' },
         { title: 'Form Settings', id: 'group' },
-        { title: 'DB Settings', id: 'db' }
+        { title: 'DB Settings', id: 'db' },
     ];
 
     constructor(private changeDetector: ChangeDetectorRef,
@@ -77,8 +77,10 @@ export class PaletteComponent implements OnInit {
 
         this.tabsService.getActiveField().subscribe((activeField) => {
             this.selectedField = activeField;
+            // console.warn('ACTIVE', activeField);
             if (activeField) {
-                this.updateTabs(false, this.tabs, this.selectedTab && this.selectedTab.type, activeField.type);
+                this.updateTabs(false, this.tabs, 
+                this.selectedTab && this.selectedTab.type, activeField.type);
             }
             this.changeDetector.markForCheck();
         });
@@ -109,17 +111,26 @@ export class PaletteComponent implements OnInit {
         let group = _.find(clonnedTabs, { id: 'group' });
         let field = _.find(clonnedTabs, { id: 'item' });
 
+        // console.warn('activeTabType', activeTabType, 'activeFieldType', activeFieldType);
         group.title = activeTabType === 'PlominoForm' ? 'Form Settings' : 'View Settings';
 
         if (activeFieldType) {
+          let title: string;
+          
+          if (activeFieldType  !== 'subform') {
             let tempTitle = activeFieldType.slice(7).toLowerCase();
-            let title = tempTitle.slice(0, 1).toUpperCase() + tempTitle.slice(1);
-            field.title = `${title} Settings`
-            clonnedTabs.forEach((tab) => {
-                tab.active = false;
-            });
+            title = tempTitle.slice(0, 1).toUpperCase() + tempTitle.slice(1);
+          }
+          else {
+            title = 'Subform';
+          }
 
-            clonnedTabs[1].active = true;
+          field.title = `${title} Settings`
+          clonnedTabs.forEach((tab) => {
+              tab.active = false;
+          });
+
+          clonnedTabs[1].active = true;
         } else {
             if (showAddTab) {
                 clonnedTabs.forEach((tab) => {

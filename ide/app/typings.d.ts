@@ -56,6 +56,7 @@ interface TinyMceEditor extends TinyMceObservable {
   selection?: any
   buttons?: any
   dom?: any
+  id?: string
   execCommand: (command: string, user_interface: boolean, value: string, extra?: any) => boolean
 }
 

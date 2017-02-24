@@ -100,6 +100,7 @@ export class AddComponent implements OnInit, AfterViewInit {
         .subscribe((tab) => {
           this.activeTab = tab;
           if (tab && tab.url) {
+            console.info('tab && tab.url', tab, tab.url);
             this.templatesService.getTemplates(tab.url)
             .subscribe((templates: PlominoFormGroupTemplate[]) => {
               this.templates = templates.map((template) => {
@@ -116,7 +117,7 @@ export class AddComponent implements OnInit, AfterViewInit {
               });
 
               $('#PlominoHidewhen, #PlominoAction, ' +
-                '#PlominoField, #PlominoLabel, #PlominoPagebreak')
+                '#PlominoField, #PlominoLabel, #PlominoPagebreak, #PlominoSubform')
               .each((i, element) => {
                 const $element = $(element);
                 const $id = $element.attr('id');
@@ -241,16 +242,16 @@ export class AddComponent implements OnInit, AfterViewInit {
                   target
               }
               this.elementService.postElement(this.activeTab.url, field)
-                  .subscribe((response) => {
-                      let extendedField = Object.assign({}, field, {
-                          name: `${this.activeTab.url}/${response.created}`
-                      });
-
-                      this.treeService.updateTree()
-                          .then(() => {
-                              this.fieldsService.insertField(extendedField);
-                          });
-                  })
+                .subscribe((response) => {
+                  let extendedField = Object.assign({}, field, {
+                    name: `${this.activeTab.url}/${response.created}`
+                  });
+  
+                  this.treeService.updateTree()
+                  .then(() => {
+                    this.fieldsService.insertField(extendedField);
+                  });
+                })
               break;
           case 'PlominoPagebreak':
               field = {
@@ -268,8 +269,7 @@ export class AddComponent implements OnInit, AfterViewInit {
                 '@type': 'PlominoSubform',
                 target
               }
-              // <div class="plominoSubformClass mceNonEditable" data-plominoid="new-form-8"> </div>
-              // this.fieldsService.insertField(field);
+              this.fieldsService.insertField(field);
               break;
           case 'PlominoHidewhen':
               field = {

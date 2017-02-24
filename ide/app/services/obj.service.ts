@@ -125,7 +125,7 @@ export class ObjService {
       }
       
       // throw formData.get('form.widgets.form_layout');
-      console.warn(formData.get('form.widgets.form_layout'));
+      // console.warn(formData.get('form.widgets.form_layout'));
       
       return this.http.post(`${formUrl}/@@edit`, formData)
                     .map(this.extractTextAndUrl);

@@ -123,7 +123,7 @@ div.plominoLabelContent:before {
 
 
 .plominoActionClass {
-    outline: 1px dashed #124465;
+    outline: none !important;
 }
 .plominoActionClass:hover:before {
     color:  #ffffff;
