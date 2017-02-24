@@ -52,6 +52,11 @@ export class TreeComponent implements OnInit {
             });
     }
 
+    getCollapseState(collapseVar: any, selected: boolean) {
+      return typeof collapseVar === 'undefined' && !selected 
+        ? true : (collapseVar === null ? false : (collapseVar === true));
+    }
+
     isItSelected(name: any) {
         if (name === this.selected){
             if (this.selected != this.previousSelected) {

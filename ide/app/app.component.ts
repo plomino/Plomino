@@ -191,7 +191,6 @@ export class AppComponent implements OnInit, AfterViewInit {
       
       /* extracting children of children */
       this.data = topFormsViewsList;
-      console.log(topFormsViewsList);
       this.formsList.setForms(topFormsViewsList);
     });
     

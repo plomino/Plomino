@@ -5,7 +5,7 @@ import { Injectable, ChangeDetectorRef } from '@angular/core';
 
 @Injectable()
 export class TinyMCEFormContentManagerService {
-  private logLevel = 4;
+  private logLevel = 0;
 
   private iframeMouseMoveEvents: Subject<PlominoIFrameMouseMove> 
     = new Subject<PlominoIFrameMouseMove>();

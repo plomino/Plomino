@@ -188,7 +188,6 @@ export class WidgetService {
 
   getFormLayout(baseUrl: string) {
     const $edIFrame = $(`iframe[id="${ baseUrl }_ifr"]`).contents();
-    console.info('IFRAME LOADED', $edIFrame.find('#tinymce').html());
     $edIFrame.css('opacity', 0);
     let $elements = $edIFrame.find('.plominoGroupClass, .plominoSubformClass, ' +
       '.plominoFieldClass:not(.plominoGroupClass .plominoFieldClass), ' +
@@ -314,7 +313,6 @@ export class WidgetService {
   }
 
   private convertFormGroups(base: string, element: any, groupId: any): Observable<any> {
-    console.info('convertFormGroups element', element);
     let $groupId = element.attr('data-groupid');
     let fields$: any[] = [];
 
@@ -583,7 +581,6 @@ export class WidgetService {
 
     return this.getWidget(base, 'subform', $id === 'Subform' ? null : $id)
     .map((response: string) => {
-      console.info('subform received', response, $id, $class);
       let $response = $(response);
       if ($response.length > 1) {
         $response = $(`<div>${response}</div>`);

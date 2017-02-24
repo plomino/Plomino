@@ -77,7 +77,7 @@ export class PaletteComponent implements OnInit {
 
         this.tabsService.getActiveField().subscribe((activeField) => {
             this.selectedField = activeField;
-            console.warn('ACTIVE', activeField);
+            // console.warn('ACTIVE', activeField);
             if (activeField) {
                 this.updateTabs(false, this.tabs, 
                 this.selectedTab && this.selectedTab.type, activeField.type);
@@ -111,7 +111,7 @@ export class PaletteComponent implements OnInit {
         let group = _.find(clonnedTabs, { id: 'group' });
         let field = _.find(clonnedTabs, { id: 'item' });
 
-        console.warn('activeTabType', activeTabType, 'activeFieldType', activeFieldType);
+        // console.warn('activeTabType', activeTabType, 'activeFieldType', activeFieldType);
         group.title = activeTabType === 'PlominoForm' ? 'Form Settings' : 'View Settings';
 
         if (activeFieldType) {
