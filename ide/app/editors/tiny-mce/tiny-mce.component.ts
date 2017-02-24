@@ -287,18 +287,32 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
             }
             
             let $parent = $element.parent();
+            let $grandParent = $parent.parent();
+            let $grandGrandParent = $grandParent.parent();
+            let $closest = $element.closest('[data-mce-selected]');
             let $elementIsGroup = $element.hasClass('plominoGroupClass');
             let elementIsLabel = $element.hasClass('plominoLabelClass');
             let elementIsSubform = $element.hasClass('plominoSubformClass');
-            let parentIsSubform = $parent.hasClass('plominoSubformClass');
+            let parentIsSubform = $parent.hasClass('plominoSubformClass')
+              || $grandParent.hasClass('plominoSubformClass')
+              || $grandGrandParent.hasClass('plominoSubformClass');
+            let closestIsSubform = $closest.hasClass('plominoSubformClass')
+              || ($parent.hasClass('plominoFieldGroup') && 
+              $parent.closest('[data-mce-selected]').hasClass('plominoSubformClass'));
             let parentIsLabel = $parent.hasClass('plominoLabelClass');
-
-            console.warn(elementIsSubform, parentIsSubform, $element, $parent);
 
             let $elementId = $element.data('plominoid');
             let $parentId = $parent.data('plominoid');
 
-            if ($elementIsGroup) {
+            console.warn($element, $parent, $grandParent, $grandGrandParent, $closest);
+
+            if (!elementIsSubform && (parentIsSubform || closestIsSubform)) {
+              elementIsSubform = true;
+            }
+
+            console.info('elementIsSubform', elementIsSubform);
+
+            if (!elementIsSubform && $elementIsGroup) {
               let groupChildrenQuery = 
                 '.plominoFieldClass, .plominoHidewhenClass, .plominoActionClass';
               let $groupChildren = $element.find(groupChildrenQuery);
@@ -319,14 +333,16 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
               }
             }
             
-            if (elementIsLabel || parentIsLabel) {
+            if (!elementIsSubform && (elementIsLabel || parentIsLabel)) {
+              console.info('null 1');
                 this.fieldSelected.emit(null);
             } 
-            else if (elementIsSubform || parentIsSubform) {
+            else if (elementIsSubform) {
               /**
                * subform clicked
                */
               let id = $elementId || $parentId;
+              console.info('zaqwert');
               this.fieldSelected.emit({ id: id, type: 'subform', parent: this.id });
             }
             else {
@@ -343,6 +359,7 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
 
                 this.fieldSelected.emit({ id: id, type: type, parent: this.id });
               } else {
+                console.info('null 2');
                 this.fieldSelected.emit(null);
               }
             }

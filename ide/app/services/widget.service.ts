@@ -47,8 +47,6 @@ export class WidgetService {
   }
 
   getGroupLayout(baseUrl: string, input: any, templateMode?: boolean): Observable<any> {
-    if (input.title === "template_dummy2")
-      console.info('getGroupLayout', input);
     /**
      * decided to use the DOM
      */
@@ -170,12 +168,6 @@ export class WidgetService {
       return formString += formItem;
     }, '')
     .map((formString: any) => {
-      // if ($groupLayout.children().last().length && 
-      // $groupLayout.children().last().prop('tagName') === 'P' && 
-      // $groupLayout.children().last().html().trim().length === 0) {
-      //   $groupLayout.children().last().remove();
-      // }
-
       const $wrongLabels = $groupLayout
       .find('span.mceEditable > span.mceEditable > .plominoLabelClass');
       

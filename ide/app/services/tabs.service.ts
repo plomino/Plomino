@@ -32,15 +32,39 @@ export class TabsService {
   selectField(fieldData: { id: string, type: string, parent: string }): void {
     let field: any = null;
 
-    if (fieldData && fieldData.id) {
-      field = Object.assign({}, { 
-        id: fieldData.id, 
-        url: `${fieldData.parent}/${fieldData.id}`, 
-        type: fieldData.type 
-      });
-    }
+    console.info('selectField', fieldData);
 
-    this.activeField$.next(field);
+    if (fieldData && !fieldData.id && fieldData.type === 'subform') {
+      setTimeout(() => {
+        console.info('hacked id', $('iframe:visible').contents()
+          .find('[data-mce-selected="1"]').data('plominoid'));
+        fieldData.id = $('iframe:visible').contents()
+          .find('[data-mce-selected="1"]').data('plominoid');
+
+        if (fieldData && fieldData.id) {
+        
+          field = Object.assign({}, { 
+            id: fieldData.id, 
+            url: `${fieldData.parent}/${fieldData.id}`, 
+            type: fieldData.type 
+          });
+        }
+    
+        this.activeField$.next(field);
+      }, 100);
+    }
+    else {
+      if (fieldData && fieldData.id) {
+        
+        field = Object.assign({}, { 
+          id: fieldData.id, 
+          url: `${fieldData.parent}/${fieldData.id}`, 
+          type: fieldData.type 
+        });
+      }
+  
+      this.activeField$.next(field);
+    }
   }
 
   getActiveField(): Observable<any> {
