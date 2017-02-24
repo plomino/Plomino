@@ -40,7 +40,6 @@ export class TreeService {
       .get("../../@@designtree")
       .map((res: Response) => res.json())
       .forEach((response) => {
-        console.warn(response);
         this.tree$.next(this.addUniqueIdsForForms(response));
       });
     }

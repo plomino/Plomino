@@ -185,9 +185,8 @@ export class TinyMCEFormContentManagerService {
       editor = tinymce.EditorManager.editors[editorId];
     }
 
-    if (!/<br\040?\/?>(\s+)?$/ig.test(contentHTML)) {
-      contentHTML = contentHTML + '<br>';
-    }
+    contentHTML = contentHTML.replace(/(<p>&nbsp;<\/p>(\s+)?)+?$/i, '');
+    contentHTML = contentHTML + ('<p>&nbsp;</p>'.repeat(60));
 
     editor.setContent(contentHTML);
     this.log('setContent contentHTML', contentHTML, 3);
@@ -235,10 +234,7 @@ export class TinyMCEFormContentManagerService {
       editor = tinymce.EditorManager.editors[editorId];
     }
     const content = editor.getContent();
-
-    return (/<br\040?\/?>(\s+)?$/ig.test(content)) 
-      ? content.replace(/<br\040?\/?>(\s+)?$/ig, '') 
-      : content;
+    return content.replace(/(<p>&nbsp;<\/p>(\s+)?)+?$/i, '');
   }
 
   selectAndRemoveElementById(editorId: any, elementId: string): void {
