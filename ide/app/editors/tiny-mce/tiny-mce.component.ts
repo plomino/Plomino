@@ -304,7 +304,7 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
             let $elementId = $element.data('plominoid');
             let $parentId = $parent.data('plominoid');
 
-            console.warn($element, $parent, $grandParent, $grandGrandParent, $closest);
+            // console.warn($element, $parent, $grandParent, $grandGrandParent, $closest);
 
             if (!elementIsSubform && (parentIsSubform || closestIsSubform)) {
               elementIsSubform = true;
@@ -445,7 +445,11 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
   }
 
   allowDrop() {
-    return () => this.dragData.parent === this.id;
+    return () => {
+      return this.dragData.type !== 'PlominoForm' 
+        ? this.dragData.parent === this.id
+        : this.dragData.name !== this.id;
+    }
   }
 
   dropped({ mouseEvent }: any) {
@@ -536,6 +540,7 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
   }
 
   private addElement(element: { name: string, type: string, target?: any }) {
+    console.info('addElement', element);
     let type: string;
     let elementClass: string;
     let elementEditionPage: string;
@@ -566,6 +571,7 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
         type = 'action';
         break;
 
+      case 'PlominoForm':
       case 'PlominoSubform':
         elementClass = 'plominoSubformClass';
         elementEditionPage = '@@tinymceplominoform/subform_form';

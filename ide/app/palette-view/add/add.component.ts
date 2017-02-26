@@ -129,6 +129,11 @@ export class AddComponent implements OnInit, AfterViewInit {
                   this.simulateDrag(<MouseEvent>$event.originalEvent, $id);
                 });
               });
+
+              this.draggingService.subformDragEvent$
+              .subscribe((mouseEvent) => {
+                this.simulateDrag(mouseEvent, 'PlominoSubform');
+              });
               
               this.changeDetector.markForCheck();
             });

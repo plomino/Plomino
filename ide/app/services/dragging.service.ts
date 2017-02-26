@@ -19,6 +19,9 @@ export class DraggingService {
   targetRange: Range = null;
   targetSideBottom: boolean = true;
 
+  subformDragEvent: Subject<MouseEvent> = new Subject<MouseEvent>();
+  subformDragEvent$: Observable<MouseEvent> = this.subformDragEvent.asObservable();
+
   constructor(private templateService: TemplatesService, 
   private fieldsService: FieldsService) {}
   
@@ -60,7 +63,7 @@ export class DraggingService {
       else if (data['@type'] === 'PlominoSubform' && !this.currentDraggingData.resolved) {
         this.currentDraggingTemplateCode = `
           <div class="drag-autopreview">
-            <span class="plominoSubformClass mceNonEditable">
+            <span class="plominoSubformClass mceNonEditable" data-plominoid="Subform">
             <h2>Subform</h2><input type="text" value='...'/>
             </span>
           </div>

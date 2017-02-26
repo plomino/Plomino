@@ -36,10 +36,15 @@ export class TabsService {
 
     if (fieldData && !fieldData.id && fieldData.type === 'subform') {
       setTimeout(() => {
-        console.info('hacked id', $('iframe:visible').contents()
-          .find('[data-mce-selected="1"]').data('plominoid'));
-        fieldData.id = $('iframe:visible').contents()
-          .find('[data-mce-selected="1"]').data('plominoid');
+        const $selected = $('iframe:visible').contents()
+          .find('[data-mce-selected="1"]');
+        console.info('hacked id', $selected.data('plominoid'));
+        fieldData.id = $selected.data('plominoid');
+
+        if (typeof fieldData.id === 'undefined' 
+        && $selected.hasClass('plominoSubformClass')) {
+          fieldData.id = 'Subform';
+        }
 
         if (fieldData && fieldData.id) {
         

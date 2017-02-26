@@ -72,6 +72,14 @@ export class TreeComponent implements OnInit {
       this.formsService.changePaletteTab(3);
     }
 
+    dragSubform(selected: boolean, mouseEvent: MouseEvent, 
+    typeLabel: string, typeNameUrl: string) {
+      if (tinymce.activeEditor && selected && typeLabel === 'Forms' 
+        && typeNameUrl !== tinymce.activeEditor.id) {
+        this.draggingService.subformDragEvent.next(mouseEvent);
+      }
+    }
+
     getTypeImage(childName: any) {
         return {
             'PlominoField': 'images/ic_input_black_18px.svg',
