@@ -8,7 +8,7 @@ $ npm install
 $ npm run build
 ```
 
-# you will also need a built plone to properly test the ide. ensure you have python 2.7 and prerequsites for http://pillow.readthedocs.io/en/3.1.x/installation.html
+you will also need a built plone to properly test the ide. ensure you have python 2.7 and prerequsites for http://pillow.readthedocs.io/en/3.1.x/installation.html
 
 ```
 $ cd ..
@@ -17,6 +17,12 @@ $ bin/python bootstrap-buildout.py --setuptools-version=8.3
 $ bin/buildout -N
 ```
 
+You may also have to build the Plomino js using
+
+```
+./bin/plone-compile-resources --site-id=Plone --bundle=plomino
+```
+NB: if commiting this compiled version ensure you update src/Products/CMFPlomino/profiles/default/registry.xml with the compiled date and reinstall the plugin)
 
 
 # Run
