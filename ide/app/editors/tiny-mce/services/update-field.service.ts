@@ -59,8 +59,10 @@ export class UpdateFieldService {
   }
 
 
-  private getElementLayout(element: any): Observable<any> {
-    return this.elementService.getWidget(
+  private getElementLayout(element: PlominoUpdatingItemData): Observable<string> {
+    return element.newTitle ? this.elementService.getWidget(
+      element.base, element.type.toLowerCase(), element.newId, element.newTitle
+    ) : this.elementService.getWidget(
       element.base, element.type.toLowerCase(), element.newId
     );
   }

@@ -501,7 +501,7 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
       })
       .toArray();
 
-    console.warn(dataToUpdate);
+    // console.warn(dataToUpdate);
 
     if (dataToUpdate.length) {
       const hwPos = { start: false, end: false };
@@ -517,7 +517,8 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
           base: this.id,
           type: normalizedType,
           newId: updateData.newId,
-          oldTemplate: element
+          oldTemplate: element,
+          newTitle: updateData.newData.title
         };
       })
       .flatMap((itemToReplace: PlominoUpdatingItemData) => {

@@ -23,6 +23,7 @@ interface PlominoUpdatingItemData {
   type: string;
   newId: string;
   oldTemplate: HTMLElement;
+  newTitle?: string;
 }
 
 interface PlominoLayoutElementReplaceData {

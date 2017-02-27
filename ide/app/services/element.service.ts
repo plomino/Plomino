@@ -94,15 +94,15 @@ export class ElementService {
     ).map((res: Response) => res.json());
   }
 
-  getWidget(base: string, type: string, id: string): Observable<string> {
-    this.log.info('type', type, 'id', id);
+  getWidget(base: string, type: string, id: string, newTitle?: string): Observable<string> {
+    this.log.info('type', type, 'id', id, 'newTitle', newTitle);
     this.log.extra('element.service.ts getWidget');
-    // if (type === 'label') {
-    //   return Observable.of(
-    //     `<span class="plominoLabelClass mceNonEditable"
-    //       ${ id ? `data-plominoid="${ id }"` : '' }>${ content.title }</span>`
-    //   );
-    // }
+    if (type === 'label') {
+      return Observable.of(
+        `<span class="plominoLabelClass mceNonEditable"
+          ${ id ? `data-plominoid="${ id }"` : '' }>${ newTitle }</span>`
+      );
+    }
     return this.http.get(
       `${base}/@@tinyform/example_widget?widget_type=${type}${ id ? `&id=${id}` : '' }`,
       'element.service.ts getWidget')
