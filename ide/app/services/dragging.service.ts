@@ -1,3 +1,4 @@
+import { LogService } from './log.service';
 import { FieldsService } from './fields.service';
 import { TemplatesService } from './templates.service';
 import { Injectable } from '@angular/core';
@@ -23,24 +24,25 @@ export class DraggingService {
   subformDragEvent$: Observable<MouseEvent> = this.subformDragEvent.asObservable();
 
   constructor(private templateService: TemplatesService, 
+  private log: LogService,
   private fieldsService: FieldsService) {}
   
   setDragging(data?: any): void {
-    console.info('setDragging', data);
+    this.log.info('setDragging', data);
     if (data !== false && data !== null) {
       this.currentDraggingData = <PlominoDraggingData>data;
       // preload the widget code
       let {parent, templateId} = this.currentDraggingData;
 
       if (data['@type'] === 'PlominoTemplate' && !this.currentDraggingData.resolved) {
-        console.info('this.currentDraggingData', this.currentDraggingData);
+        this.log.info('this.currentDraggingData', this.currentDraggingData);
         const widgetCode = this.currentDraggingData.template.layout;
-        console.info('widgetCode initialized', widgetCode);
+        this.log.info('widgetCode initialized', widgetCode);
         this.templateService
         .getTemplate(parent, templateId)
         .subscribe((widgetCode: string) => {
           this.currentDraggingTemplateCode = widgetCode;
-          console.info('widgetCode updated', widgetCode);
+          this.log.info('widgetCode updated', widgetCode);
   
           if (this.currentDraggingData.eventData) {
             const $dragCursor = $(this.currentDraggingTemplateCode);
@@ -111,7 +113,7 @@ export class DraggingService {
         }
       }
       else if (data['@type'] === 'PlominoHidewhen' && !this.currentDraggingData.resolved) {
-        console.info('hw this.currentDraggingData', this.currentDraggingData);
+        this.log.info('hw this.currentDraggingData', this.currentDraggingData);
 
         this.currentDraggingTemplateCode = `
           <div class="drag-autopreview">
@@ -144,7 +146,7 @@ export class DraggingService {
       else if (
         ['PlominoAction', 'PlominoLabel', 'PlominoField'].indexOf(data['@type']) !== -1
         && !this.currentDraggingData.resolved) {
-        console.info('action/label/field this.currentDraggingData', this.currentDraggingData);
+        this.log.info('action/label/field this.currentDraggingData', this.currentDraggingData);
 
         this.fieldsService
         .getTemplate(parent, data['@type'].replace('Plomino', '').toLowerCase())
@@ -176,7 +178,7 @@ export class DraggingService {
       }
     }
     else {
-      console.info('null dragData');
+      this.log.info('null dragData');
       this.previousDraggingData = this.currentDraggingData === null 
         ? null : Object.assign(this.currentDraggingData);
       this.currentDraggingData = null;

@@ -33,6 +33,7 @@ import {
     FieldsService,
     DraggingService,
     TemplatesService,
+    LogService,
     WidgetService,
     TabsService,
     FormsService
@@ -86,6 +87,7 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
     private draggingService: DraggingService,
     private templatesService: TemplatesService,
     private widgetService: WidgetService,
+    private log: LogService,
     private formsService: FormsService,
     private changeDetector: ChangeDetectorRef,
     private tabsService: TabsService,
@@ -98,13 +100,14 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
      * fields, hidewhens, actions, etc
      */
     this.insertionSubscription = this.fieldsService.getInsertion()
-    .subscribe((insertion) => {
-      console.info('fieldsService.getInsertion', insertion);
+    .subscribe((insertion: InsertFieldEvent) => {
+      this.log.info('fieldsService.getInsertion', insertion);
+      this.log.extra('tiny-mce.component.ts this.insertionSubscription');
       let insertionParent = insertion.name.slice(0, insertion.name.lastIndexOf('/'));
       let dataToInsert = Object.assign({}, insertion, { 
         type: insertion['@type']
       });
-      console.log('insertionSubscription', dataToInsert);
+      this.log.info('insertionSubscription', dataToInsert);
       if (insertionParent === this.id) {
         this.addElement(dataToInsert);
         this.changeDetector.markForCheck();
@@ -115,10 +118,12 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
      * form components like text/long text/etc
      */
     this.templatesSubscription = this.templatesService.getInsertion()
-    .subscribe((insertion) => {
+    .subscribe((insertion: InsertTemplateEvent) => {
+      this.log.info('templatesService.getInsertion', insertion);
+      this.log.extra('tiny-mce.component.ts this.templatesSubscription');
       let parent = insertion.parent;
       if (insertion.parent === this.id) {
-        console.log('insertion template', insertion);
+        this.log.info('insertion template', insertion);
         this.insertGroup(insertion.group, insertion.target);
         this.changeDetector.markForCheck();
       }
@@ -310,7 +315,7 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
               elementIsSubform = true;
             }
 
-            console.info('elementIsSubform', elementIsSubform);
+            this.log.info('elementIsSubform', elementIsSubform);
 
             if (!elementIsSubform && $elementIsGroup) {
               let groupChildrenQuery = 
@@ -334,15 +339,13 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
             }
             
             if (!elementIsSubform && (elementIsLabel || parentIsLabel)) {
-              console.info('null 1');
-                this.fieldSelected.emit(null);
+              this.fieldSelected.emit(null);
             } 
             else if (elementIsSubform) {
               /**
                * subform clicked
                */
               let id = $elementId || $parentId;
-              console.info('zaqwert');
               this.fieldSelected.emit({ id: id, type: 'subform', parent: this.id });
             }
             else {
@@ -359,7 +362,6 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
 
                 this.fieldSelected.emit({ id: id, type: type, parent: this.id });
               } else {
-                console.info('null 2');
                 this.fieldSelected.emit(null);
               }
             }
@@ -426,7 +428,7 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
       }
 
     }, (err) => {
-      console.error(err);
+      this.log.error(err);
     });
   }
 
@@ -482,11 +484,24 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
     this.draggingService.currentDraggingData = null;
   }
 
-  private updateField(updateData: any) {
-    let ed = tinymce.get(this.id);
-    let dataToUpdate: any[] = this.contentManager.selectDOM(
-      this.id, `*[data-plominoid=${updateData.fieldData.id}]`
-    );
+  /**
+   * this method calling on observable subject triggering
+   * fieldsService.listenToUpdates()
+   * 
+   * after fieldsettings.component.ts calling submitForm()
+   */
+  private updateField(updateData: PlominoFieldUpdatesStreamEvent) {
+    this.log.info('tinymce -> updateField callback', updateData);
+
+    const editor = tinymce.get(this.id);
+    const dataToUpdate = $(editor.getBody())
+      .find(`*[data-plominoid=${updateData.fieldData.id}]`)
+      .filter(function () {
+        return $(this).closest('.mce-offscreen-selection').length === 0;
+      })
+      .toArray();
+
+    console.warn(dataToUpdate);
 
     if (dataToUpdate.length) {
       const hwPos = { start: false, end: false };
@@ -498,17 +513,17 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
         let typeCapitalized = normalizedType[0].toUpperCase() +
           normalizedType.slice(1);
 
-        return {
+        return <PlominoUpdatingItemData> {
           base: this.id,
           type: normalizedType,
           newId: updateData.newId,
           oldTemplate: element
         };
       })
-      .flatMap((itemToReplace: any) => {
+      .flatMap((itemToReplace: PlominoUpdatingItemData) => {
         return this.updateFieldService.updateField(itemToReplace);
       })
-      .subscribe((data: any) => {
+      .subscribe((data) => {
         if (data.item && data.item.type === 'Hidewhen') {
           let $position = $(data.oldTemplate).data('plominoPosition');
           if (hwPos[$position]) {
@@ -519,28 +534,18 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
           }
         }
         else {
-          if (++i > 1) {
-            return false;
-
-          }
+          this.log.info('dataToUpdate subscribe enter', dataToUpdate, ++i, data);
+          this.log.extra(`tiny-mce.component.ts, data: ${ JSON.stringify(data) }`);
         }
         
         this.contentManager.selectContent(this.id, data.oldTemplate);
         this.contentManager.replaceContent(this.id, data.newTemplate);
-
-        // if (this.autoSaveTimer !== null) {
-        //   clearTimeout(this.autoSaveTimer);
-        // }
-        // this.autoSaveTimer = setTimeout(() => {
-        //   this.formsService.saveForm(this.item.formUniqueId, false);
-        //   this.changeDetector.markForCheck();
-        // }, 500);
       });
     }
   }
 
   private addElement(element: { name: string, type: string, target?: any }) {
-    console.info('addElement', element);
+    this.log.info('addElement', element);
     let type: string;
     let elementClass: string;
     let elementEditionPage: string;
@@ -594,7 +599,6 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
         break;
 
       case 'PlominoPagebreak':
-        console.info('plomino pagebreak');
         $('iframe:visible').contents()
           .find('.drag-autopreview').remove(); // just in case
         this.contentManager.insertContent(
@@ -606,7 +610,7 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
       default: return;
     }
 
-    console.info('element.target', element.target);
+    this.log.info('element.target', element.target);
     let target: any = element.target || null;
     this.insertElement(target, baseUrl, type, elementId);
   }
@@ -743,7 +747,6 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
           '<span class="' + cssclass + ' mceNonEditable" data-plominoid="' + 
           value + '" data-plomino-position="end">&nbsp;</span>';
 				
-        console.log('zone', zone);
         this.contentManager.insertContent(
           this.id, this.draggingService, zone, { skip_undo: 1, target }
         );
