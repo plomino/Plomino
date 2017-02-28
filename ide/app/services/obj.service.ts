@@ -1,3 +1,4 @@
+import { LabelsRegistryService } from './../editors/tiny-mce/services/labels-registry.service';
 import { LogService } from './log.service';
 import { Response } from '@angular/http';
 import { PlominoHTTPAPIService } from './http-api.service';
@@ -8,7 +9,8 @@ import { Observable } from 'rxjs/Observable';
 export class ObjService {
     // For handling the injection/fetching/submission of Plomino objects
 
-    constructor(private http: PlominoHTTPAPIService, private log: LogService) {}
+    constructor(private http: PlominoHTTPAPIService, private log: LogService,
+    private labelsRegistry: LabelsRegistryService) {}
 
     getFieldSettings(fieldUrl: string): Observable<any> {
         return this.http.get(
@@ -39,6 +41,7 @@ export class ObjService {
       formUrl: string, formData: any
     ): Observable<{html: string, url: string}> {
       let layout = formData.get('form.widgets.form_layout');
+      const context = this;
       if (layout) {
         /**
          * this code will be running only while form saving
@@ -77,34 +80,47 @@ export class ObjService {
         });
   
         $layout.find('.plominoLabelClass').each(function () {
-          let $element = $(this);
-          let tag = $element.prop('tagName');
+          const $element = $(this);
+          const tag = $element.prop('tagName');
           let id = $element.attr('data-plominoid');
+          let title = $element.text();
 
-          if (!id) {
-            const $relateFieldElement = $element.parent().next();
+          // const $relateFieldElement = 
+          //   $layout.find(`.plominoFieldClass[data-plominoid="${ id }"]`);
 
-            if ($relateFieldElement.hasClass('plominoFieldClass') 
-              && $relateFieldElement.attr('data-plominoid')) {
-              id = $relateFieldElement.attr('data-plominoid');
-            }
-            else if ($relateFieldElement.prop('tagName') === 'P' 
-              && $relateFieldElement.children().first().hasClass('plominoFieldClass') 
-              && $relateFieldElement.children().first().attr('data-plominoid')) {
-              id = $relateFieldElement.children().first().attr('data-plominoid');
-            }
-            else {
-              this.log.info("???????", id, tag, $element);
-              return true;
-            }
-          }
+          const relatedFieldTitle = context.labelsRegistry.get(`${formUrl}/${id}`);
+
+          // if (!id) {
+          //   const $relateFieldElement = $element.parent().next();
+
+          //   if ($relateFieldElement.hasClass('plominoFieldClass') 
+          //     && $relateFieldElement.attr('data-plominoid')) {
+          //     id = $relateFieldElement.attr('data-plominoid');
+          //   }
+          //   else if ($relateFieldElement.prop('tagName') === 'P' 
+          //     && $relateFieldElement.children().first().hasClass('plominoFieldClass') 
+          //     && $relateFieldElement.children().first().attr('data-plominoid')) {
+          //     id = $relateFieldElement.children().first().attr('data-plominoid');
+          //   }
+          //   else {
+          //     this.log.info("???????", id, tag, $element);
+          //     return true;
+          //   }
+          // }
   
           if (tag === 'SPAN') {
             $element
+            .removeClass('mceEditable')
             .removeClass('mceNonEditable')
-            .removeAttr('data-plominoid')
-            .empty()
-            .text(id);
+            .removeAttr('data-plominoid');
+
+            if (relatedFieldTitle === title) {
+              $element.text(id);
+            }
+            else {
+              let html = $element.html();
+              $element.html(`${id}:${html}`);
+            }
           }
   
           if (tag === 'DIV') {

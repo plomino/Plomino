@@ -1,3 +1,48 @@
+interface PlominoFormDataAPIResponse {
+  '@id': string;
+  '@type': string;
+  UID: string;
+  ajax_include_head: any;
+  ajax_load: any;
+  beforeCreateDocument: string;
+  beforeSaveDocument: string;
+  created: string;
+  description: string;
+  document_id: string;
+  document_title: string;
+  dynamic_document_title: boolean;
+  form_layout: string;
+  form_method: string;
+  helpers: any[];
+  hide_default_actions: boolean;
+  id: string;
+  isMulti: boolean;
+  isPage: boolean;
+  isSearchForm: boolean;
+  items: { '@id': string, '@type': string, description: string, title: string }[];
+  items_total: number;
+  modified: string;
+  onCreateDocument: string;
+  onDeleteDocument: string;
+  onDisplay: string;
+  onOpenDocument: string;
+  onSaveDocument: string;
+  onSearch: string;
+  parent: { '@id': string, '@type': string, description: string, title: string };
+  resources_css: any;
+  resources_js: any;
+  review_state: string;
+  search_formula: string;
+  search_view: any;
+  store_dynamic_document_title: boolean;
+  title: string;
+}
+
+interface PlominoFieldDataAPIResponse extends PlominoFormDataAPIResponse {
+  field_type: string;
+  selectionlist: any;
+}
+
 interface PlominoFieldRepresentationObject {
   id: string;
   formUniqueId?: any;
@@ -55,8 +100,8 @@ interface PlominoDraggingData {
 
 interface PlominoFormGroupContent {
   id: string;
-  layout: string;
-  old_id: string;
+  layout?: string;
+  old_id?: string;
   title: string;
 }
 

@@ -1,3 +1,4 @@
+import { LabelsRegistryService } from './editors/tiny-mce/services/labels-registry.service';
 import { 
   TinyMCEFormContentManagerService
 } from './editors/tiny-mce/content-manager/content-manager.service';
@@ -49,6 +50,7 @@ import {
   FieldsService,
   DraggingService,
   TemplatesService,
+  PlominoElementAdapterService,
   WidgetService,
   FormsService,
   PlominoFormsListService
@@ -99,7 +101,9 @@ import { LoadingComponent } from "./editors/loading/loading.component";
     WidgetService,
     FormsService,
     PlominoFormsListService,
-    TinyMCEFormContentManagerService
+    TinyMCEFormContentManagerService,
+    PlominoElementAdapterService,
+    LabelsRegistryService
   ],
   pipes: [ExtractNamePipe],
   animations: [
@@ -282,9 +286,11 @@ export class AppComponent implements OnInit, AfterViewInit {
     const $wrapper = $('.palette-wrapper .mdl-tabs__panel');
     const $containers76 = $('.scrolling-container--76');
     const $containers66 = $('.scrolling-container--66');
+    const $containers0 = $('.scrolling-container--0');
     const height = parseInt($wrapper.css('height').replace('px', ''), 10);
     $containers76.css('height', `${ height - 76 }px`);
     $containers66.css('height', `${ height - 66 }px`);
+    $containers0.css('height', `${ height }px`);
   }
 
   resizeTree(event: { directions: string[], difference: {x: number, y: number} }) {

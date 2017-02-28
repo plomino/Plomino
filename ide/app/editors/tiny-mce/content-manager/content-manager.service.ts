@@ -398,6 +398,16 @@ export class TinyMCEFormContentManagerService {
     }
   }
 
+  setSelectionContent(editorId: any, contentHTML: any): any {
+    const editor = tinymce.get(editorId);
+    try {
+      return editor.selection.setContent(contentHTML);
+    } catch (e) {
+      this.log('selectContent content cannot be setted contentHTML', contentHTML);
+      return false;
+    }
+  }
+
   replaceContent(editorId: any, contentHTML: string): void {
     const editor = tinymce.get(editorId);
     try {
