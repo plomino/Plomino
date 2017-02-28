@@ -18,6 +18,7 @@ import {
     ObjService,
     TabsService,
     TreeService,
+    LogService,
     FormsService
 } from '../../services';
 import { PloneHtmlPipe } from '../../pipes';
@@ -55,6 +56,7 @@ export class FormSettingsComponent implements OnInit {
     private formLayout: string = '';
 
     constructor(private objService: ObjService,
+                private log: LogService,
                 private changeDetector: ChangeDetectorRef,
                 private tabsService: TabsService,
                 private treeService: TreeService,
@@ -194,7 +196,7 @@ export class FormSettingsComponent implements OnInit {
                     clearTimeout(this.macrosWidgetTimer);
                 }
 
-                console.info('!! select2', $('.field-settings-wrapper .select2-choices').length);
+                this.log.info('!! select2', $('.field-settings-wrapper .select2-choices').length);
                 
                 this.macrosWidgetTimer = setTimeout(() => { // for exclude bugs
                     let $el = $('.form-settings-wrapper ' + 

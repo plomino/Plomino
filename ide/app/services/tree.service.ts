@@ -1,12 +1,6 @@
-import {
-    Injectable
-} from '@angular/core';
-
-import {
-    Http,
-    Response
-} from '@angular/http';
-
+import { PlominoHTTPAPIService } from './http-api.service';
+import { Injectable } from '@angular/core';
+import { Response } from '@angular/http';
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 import { Observable } from 'rxjs/Observable';
 
@@ -14,7 +8,7 @@ import { Observable } from 'rxjs/Observable';
 export class TreeService {
     private tree$: BehaviorSubject<any> = new BehaviorSubject(null);
 
-    constructor(private http: Http) { 
+    constructor(private http: PlominoHTTPAPIService) { 
         this.updateTree();
     }
     

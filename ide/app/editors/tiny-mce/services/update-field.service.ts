@@ -1,19 +1,22 @@
+import { LogService } from './../../../services/log.service';
 import { Injectable } from '@angular/core';
 import { Response } from '@angular/http';
-
 import { Observable } from 'rxjs/Rx';
-
 import { ElementService } from '../../../services';
-
-import 'jquery';
-declare let $: any;
 
 @Injectable()
 export class UpdateFieldService {
   
-  constructor(private elementService: ElementService) { }
+  constructor(private elementService: ElementService,
+  private log: LogService) { }
 
-  updateField(item: any): Observable<any> {
+  /**
+   * this function calling in map case, for each element selected
+   * by *[data-plominoid="OLD_ID"] while field updating
+   * 
+   * calling from tiny-mce.component.ts updateField method
+   */
+  updateField(item: PlominoUpdatingItemData): Observable<PlominoLayoutElementReplaceData> {
     if (item.type === 'Hidewhen') {
       let result = Object.assign({}, { 
         newTemplate: this.wrapHidewhen2(item.type, item.newId, item.oldTemplate),
@@ -27,7 +30,14 @@ export class UpdateFieldService {
     
     // TODO: Replace assign with passing data through operators in sequence
     // tiny-mce.component.ts 307 -> 323
-    return this.getElementLayout(item).map((itemTemplate: any) => {
+
+    /**
+     * @param {string} itemTemplate - element's new html-source string, coming from server
+     */
+    const elLayoutCallback = (itemTemplate: string): PlominoLayoutElementReplaceData => {
+      this.log.info('itemTemplate', itemTemplate);
+      this.log.extra('update-field.service.ts elLayoutCallback');
+
       if (item.type === 'Field' || 'Action') {
         return Object.assign({}, { 
           newTemplate: this.wrapFieldOrAction(item.type, item.newId, itemTemplate),
@@ -43,12 +53,16 @@ export class UpdateFieldService {
           oldTemplate: item.oldTemplate 
         });
       }
-    });
+    };
+
+    return this.getElementLayout(item).map(elLayoutCallback);
   }
 
 
-  private getElementLayout(element: any): Observable<Response> {
-    return this.elementService.getWidget(
+  private getElementLayout(element: PlominoUpdatingItemData): Observable<string> {
+    return element.newTitle ? this.elementService.getWidget(
+      element.base, element.type.toLowerCase(), element.newId, element.newTitle
+    ) : this.elementService.getWidget(
       element.base, element.type.toLowerCase(), element.newId
     );
   }
@@ -90,7 +104,7 @@ export class UpdateFieldService {
     return content;
   }
 
-  private wrapHidewhen2(elType: string, id: string, contentString: string) {
+  private wrapHidewhen2(elType: string, id: string, contentString: HTMLElement) {
     let $element = $(contentString); 
     let $class = $element.attr('class');
     // let $position = $element.text().split(':')[0];

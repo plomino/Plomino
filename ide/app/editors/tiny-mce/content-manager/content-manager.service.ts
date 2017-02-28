@@ -1,3 +1,4 @@
+import { LogService } from './../../../services/log.service';
 import { Observable, Subject } from 'rxjs/Rx';
 import { TabsService } from './../../../services/tabs.service';
 import { DraggingService } from './../../../services/dragging.service';
@@ -28,6 +29,7 @@ export class TinyMCEFormContentManagerService {
     = this.iframeGroupMouseLeaveEvents.asObservable();
 
   constructor(private changeDetector: ChangeDetectorRef, 
+  private logService: LogService,
   private tabsService: TabsService) {
     interface OneInTimeObservable<PlominoIFrameMouseMove> 
       extends Observable<PlominoIFrameMouseMove> {
@@ -56,7 +58,7 @@ export class TinyMCEFormContentManagerService {
         const range = 
           this.getCaretRangeFromMouseEvent(editorId, originalEvent);
           
-        console.info('range', range.startContainer, range.startOffset,
+        this.logService.info('range', range.startContainer, range.startOffset,
           range.commonAncestorContainer);
 
         const currentDragCode = dragging.currentDraggingTemplateCode;
@@ -173,7 +175,7 @@ export class TinyMCEFormContentManagerService {
 
   log(func = 'null', msg = 'empty', requiredLevel = 1) {
     if (this.logLevel >= requiredLevel) {
-      console.info(func, msg);
+      this.logService.info(func, msg);
     }
   }
 
@@ -280,13 +282,13 @@ export class TinyMCEFormContentManagerService {
     }
 
     if (/hidewhenclass/ig.test(contentHTML)) {
-      console.info('this is hidewhen insertion');
+      this.logService.info('this is hidewhen insertion');
       const $target = $(target);
       if (target && $target.hasClass('plominoGroupClass')) {
         /**
          * split hidewhen on 2 different spans
          */
-        console.info('target ok and target is plominoGroupClass');
+        this.logService.info('target ok and target is plominoGroupClass');
         let spans = contentHTML.split('</span>&nbsp;');
         if (spans.length > 1) {
           spans[0] = spans[0] + '</span>';
@@ -309,7 +311,7 @@ export class TinyMCEFormContentManagerService {
         return;
       }
       else {
-        console.info('not target ok and target is plominoGroupClass',
+        this.logService.info('not target ok and target is plominoGroupClass',
         'target', $(target).get(0).outerHTML,
         '$(target).hasClass(\'plominoGroupClass\')',
         $(target).hasClass('plominoGroupClass'));
@@ -345,7 +347,7 @@ export class TinyMCEFormContentManagerService {
           .find('*:not(.mce-visual-caret):last');
         const lastInsert = $latestTarget.get(0) === target;
         const range = dragging.targetRange;
-        console.info(
+        this.logService.info(
           'target && !options, dragging.targetRange', dragging.targetRange,
           'this.rangeAccepted(range)', this.rangeAccepted(range),
           'target', target,
@@ -363,7 +365,7 @@ export class TinyMCEFormContentManagerService {
         $('iframe:visible').contents().click();
       }
       else {
-        console.info(
+        this.logService.info(
           '!target && !options, dragging.targetRange', dragging.targetRange);
         editor.execCommand('mceInsertContent', false, contentHTML);
       }
@@ -376,7 +378,7 @@ export class TinyMCEFormContentManagerService {
     this.log('insertContent contentHTML', contentHTML);
   }
 
-  selectDOM(editorId: any, selector: string): any {
+  selectDOM(editorId: any, selector: string): HTMLElement[] {
     const editor = tinymce.get(editorId);
     try {
       return editor.dom.select(selector);
@@ -386,7 +388,7 @@ export class TinyMCEFormContentManagerService {
     }
   }
 
-  selectContent(editorId: any, contentHTML: string): any {
+  selectContent(editorId: any, contentHTML: any): any {
     const editor = tinymce.get(editorId);
     try {
       return editor.selection.select(contentHTML);

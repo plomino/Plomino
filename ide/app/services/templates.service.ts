@@ -1,23 +1,22 @@
+import { PlominoHTTPAPIService } from './http-api.service';
 import { WidgetService } from './widget.service';
 import { Injectable } from '@angular/core';
-
-import { 
-  Http, 
-  Response 
-} from '@angular/http';
-
+import { Response } from '@angular/http';
 import { Observable, Subject } from 'rxjs/Rx';
 
 @Injectable()
 export class TemplatesService {
-  $insertion: Subject<any> = new Subject();
+  $insertion: Subject<InsertTemplateEvent> = new Subject<InsertTemplateEvent>();
   templatesRegistry = {};
 
-  constructor(private http: Http, private widgetService: WidgetService) {}
+  constructor(private http: PlominoHTTPAPIService, private widgetService: WidgetService) {}
   
   addTemplate(formUrl: string, templateId: string): Observable<any> {
     return templateId ? 
-      this.http.get(`${formUrl}/add-template?id=${templateId}`).map(this.extractData):
+      this.http.get(
+        `${formUrl}/add-template?id=${templateId}`,
+        'templates.service.ts addTemplate'
+      ).map(this.extractData):
       Observable.of('');
   }
 
@@ -113,14 +112,17 @@ export class TemplatesService {
   }
 
   getTemplates(formUrl: string): Observable<any> {
-    return this.http.get(`${formUrl}/@@list-templates`).map(this.extractData);
+    return this.http.get(
+      `${formUrl}/@@list-templates`,
+      'templates.service.ts getTemplates'
+    ).map(this.extractData);
   }
 
-  insertTemplate(templateData: any): void {
+  insertTemplate(templateData: InsertTemplateEvent): void {
     this.$insertion.next(templateData);
   }
 
-  getInsertion(): Observable<any> {
+  getInsertion(): Observable<InsertTemplateEvent> {
     return this.$insertion.asObservable();
   }
 

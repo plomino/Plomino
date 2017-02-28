@@ -17,6 +17,7 @@ import {
     TreeService,
     TabsService,
     FieldsService,
+    LogService,
     DraggingService,
     TemplatesService,
     WidgetService
@@ -41,6 +42,7 @@ export class AddComponent implements OnInit, AfterViewInit {
     constructor(private elementService: ElementService,
                 private treeService: TreeService,
                 private tabsService: TabsService,
+                private log: LogService,
                 private fieldsService: FieldsService,
                 private draggingService: DraggingService,
                 private elementRef: ElementRef,
@@ -100,7 +102,7 @@ export class AddComponent implements OnInit, AfterViewInit {
         .subscribe((tab) => {
           this.activeTab = tab;
           if (tab && tab.url) {
-            console.info('tab && tab.url', tab, tab.url);
+            this.log.info('tab && tab.url', tab, tab.url);
             this.templatesService.getTemplates(tab.url)
             .subscribe((templates: PlominoFormGroupTemplate[]) => {
               this.templates = templates.map((template) => {
@@ -129,6 +131,11 @@ export class AddComponent implements OnInit, AfterViewInit {
                   this.simulateDrag(<MouseEvent>$event.originalEvent, $id);
                 });
               });
+
+              this.draggingService.subformDragEvent$
+              .subscribe((mouseEvent) => {
+                this.simulateDrag(mouseEvent, 'PlominoSubform');
+              });
               
               this.changeDetector.markForCheck();
             });
@@ -156,7 +163,7 @@ export class AddComponent implements OnInit, AfterViewInit {
     //     }
     // }
 
-    add(type: any, target?: any) {
+    add(type: string, target?: HTMLElement) {
       const clickTime = (new Date).getTime();
 
       //todo: detect click
@@ -181,57 +188,58 @@ export class AddComponent implements OnInit, AfterViewInit {
       // If the POST that creates the new object happens over there, can there be
       // something that the main app/tree subscribes to so it refreshes automatically?
       let randomId: number = Math.round((Math.random() * 999 - 0));
-      let field: any;
+      let field: InsertFieldEvent;
       switch (type) {
           case 'PlominoForm':
-              let formElement: any = {
+              let formElement: InsertFieldEvent = {
                   '@type': 'PlominoForm',
                   'title': 'New Form'
               };
-              this.elementService.postElement('../../', formElement).subscribe((response) => {
-                  this.treeService.updateTree().then(() => {
-                      this.tabsService.openTab({
-                          formUniqueId: response.formUniqueId,
-                          editor: 'layout',
-                          label: response.title,
-                          url: response['@id'] + response.id,
-                          path: [{
-                              name: response.title,
-                              type: 'Forms'
-                          }]
-                      });
+              this.elementService.postElement('../../', formElement)
+              .subscribe((response: AddFieldResponse) => {
+                this.treeService.updateTree().then(() => {
+                  this.tabsService.openTab({
+                    formUniqueId: response.formUniqueId,
+                    editor: 'layout',
+                    label: response.title,
+                    url: response['@id'] + response.id,
+                    path: [{
+                        name: response.title,
+                        type: 'Forms'
+                    }]
                   });
+                });
               });
               break;
           case 'PlominoView':
-              let viewElement: any = {
-                  '@type': 'PlominoView',
-                  'title': 'New View'
+              let viewElement: InsertFieldEvent = {
+                '@type': 'PlominoView',
+                'title': 'New View'
               };
-              this.elementService.postElement('../../', viewElement).subscribe((response) => {
-                  this.treeService.updateTree().then(() => {
-                      this.tabsService.openTab({
-                          editor: 'code',
-                          label: response.title,
-                          url: response['@id'] + response.id,
-                          path: [{
-                              name: response.title,
-                              type: 'Views'
-                          }]
-                      });
+              this.elementService.postElement('../../', viewElement)
+              .subscribe((response: AddFieldResponse) => {
+                this.treeService.updateTree().then(() => {
+                  this.tabsService.openTab({
+                    editor: 'code',
+                    label: response.title,
+                    url: response['@id'] + response.id,
+                    path: [{
+                        name: response.title,
+                        type: 'Views'
+                    }]
                   });
-                  console.log('Added new view')
+                });
               });
               // Get the ID of the new element back in the response.
               // Update the Tree
               // Open the View in the editor
               break;
           case 'PlominoLabel':
-              let field: any = {
-                  '@type': 'PlominoLabel',
-                  title: 'defaultLabel',
-                  name: `${this.activeTab.url}/defaultLabel`,
-                  target
+              let field: InsertFieldEvent = {
+                '@type': 'PlominoLabel',
+                title: 'defaultLabel',
+                name: `${this.activeTab.url}/defaultLabel`,
+                target
               };
               this.fieldsService.insertField(field);
               break;
@@ -242,16 +250,16 @@ export class AddComponent implements OnInit, AfterViewInit {
                   target
               }
               this.elementService.postElement(this.activeTab.url, field)
-                .subscribe((response) => {
-                  let extendedField = Object.assign({}, field, {
-                    name: `${this.activeTab.url}/${response.created}`
-                  });
-  
-                  this.treeService.updateTree()
-                  .then(() => {
-                    this.fieldsService.insertField(extendedField);
-                  });
-                })
+              .subscribe((response: AddFieldResponse) => {
+                let extendedField: InsertFieldEvent = Object.assign({}, field, {
+                  name: `${this.activeTab.url}/${response.created}`
+                });
+
+                this.treeService.updateTree()
+                .then(() => {
+                  this.fieldsService.insertField(extendedField);
+                });
+              })
               break;
           case 'PlominoPagebreak':
               field = {
@@ -281,7 +289,7 @@ export class AddComponent implements OnInit, AfterViewInit {
                * and returns its widget code
                */
               this.elementService.postElement(this.activeTab.url, field)
-              .subscribe((response) => {
+              .subscribe((response: AddFieldResponse) => {
                 let extendedField = Object.assign({}, field, {
                   name: response['@id'],
                   target
@@ -289,7 +297,7 @@ export class AddComponent implements OnInit, AfterViewInit {
 
                 this.treeService.updateTree()
                 .then(() => {
-                  console.info('extendedField', extendedField);
+                  this.log.info('extendedField', extendedField);
                   this.fieldsService.insertField(extendedField);
                 });
               });
@@ -302,15 +310,15 @@ export class AddComponent implements OnInit, AfterViewInit {
                   target
               }
               this.elementService.postElement(this.activeTab.url, field)
-                  .subscribe((response) => {
-                      let extendedField = Object.assign({}, field, {
-                          name: response['@id']
-                      });
-                      this.treeService.updateTree()
-                          .then(() => {
-                              this.fieldsService.insertField(extendedField);
-                          });
-                  })
+              .subscribe((response: AddFieldResponse) => {
+                let extendedField = Object.assign({}, field, {
+                    name: response['@id']
+                });
+                this.treeService.updateTree()
+                  .then(() => {
+                      this.fieldsService.insertField(extendedField);
+                  });
+                })
               break;
           case 'column':
               // Add the action to the view. Update the tree etc.
@@ -343,10 +351,11 @@ export class AddComponent implements OnInit, AfterViewInit {
       .subscribe((response: PlominoFormGroupTemplate) => {
         response = this.templatesService.fixCustomTemplate(response);
         this.widgetService.getGroupLayout(this.activeTab.url, response)
-        .subscribe((layout: any) => {
+        .subscribe((layout: string) => {
           layout = this.templatesService.fixBuildedTemplate(layout);
           this.treeService.updateTree().then(() => {
-            this.templatesService.insertTemplate(Object.assign({}, response, {
+            this.templatesService.insertTemplate(
+              <InsertTemplateEvent> Object.assign({}, response, {
               parent: this.activeTab.url,
               target: target,
               group: layout

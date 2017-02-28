@@ -1,3 +1,4 @@
+import { LogService } from './log.service';
 import { 
   Injectable,
   NgZone 
@@ -22,7 +23,7 @@ export class TabsService {
   private tree: any;
 
   constructor(private treeService: TreeService,
-              private zone: NgZone) {
+  private log: LogService, private zone: NgZone) {
     this.treeService.getTree()
       .subscribe((tree) => {
         this.tree = tree;
@@ -32,14 +33,19 @@ export class TabsService {
   selectField(fieldData: { id: string, type: string, parent: string }): void {
     let field: any = null;
 
-    console.info('selectField', fieldData);
+    this.log.info('selectField', fieldData);
 
     if (fieldData && !fieldData.id && fieldData.type === 'subform') {
       setTimeout(() => {
-        console.info('hacked id', $('iframe:visible').contents()
-          .find('[data-mce-selected="1"]').data('plominoid'));
-        fieldData.id = $('iframe:visible').contents()
-          .find('[data-mce-selected="1"]').data('plominoid');
+        const $selected = $('iframe:visible').contents()
+          .find('[data-mce-selected="1"]');
+        this.log.info('hacked id', $selected.data('plominoid'));
+        fieldData.id = $selected.data('plominoid');
+
+        if (typeof fieldData.id === 'undefined' 
+        && $selected.hasClass('plominoSubformClass')) {
+          fieldData.id = 'Subform';
+        }
 
         if (fieldData && fieldData.id) {
         

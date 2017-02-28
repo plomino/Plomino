@@ -1,43 +1,48 @@
+import { LogService } from './log.service';
+import { Response } from '@angular/http';
+import { PlominoHTTPAPIService } from './http-api.service';
 import { Injectable } from '@angular/core';
-import { 
-    Http, 
-    Headers, 
-    Response, 
-    RequestOptions
-} from '@angular/http';
-
 import { Observable } from 'rxjs/Observable';
 
 @Injectable()
 export class ObjService {
     // For handling the injection/fetching/submission of Plomino objects
 
-    constructor(private http:Http) {
-        let headers = new Headers({ 'Content-Type': 'text/html' });
-        let options = new RequestOptions({ headers: headers });
-    }
-    
+    constructor(private http: PlominoHTTPAPIService, private log: LogService) {}
+
     getFieldSettings(fieldUrl: string): Observable<any> {
-        return this.http.get(`${fieldUrl}/@@edit?ajax_load=1&ajax_include_head=1`)
-                    .map(this.extractText);
+        return this.http.get(
+          `${fieldUrl}/@@edit?ajax_load=1&ajax_include_head=1`,
+          'obj.service.ts getFieldSettings'
+        ).map(this.extractText);
     }
 
     updateFieldSettings(fieldUrl: string, formData: FormData): Observable<any> {
-        return this.http.post(`${fieldUrl}/@@edit`, formData)
-                    .map(this.extractTextAndUrl);
+        return this.http.postWithOptions(
+          `${fieldUrl}/@@edit`, formData, {},
+          'obj.service.ts updateFieldSettings'
+        ).map(this.extractTextAndUrl);
     }
     
     getFormSettings(formUrl: string): Observable<any> {
-        return this.http.get(`${formUrl}/@@edit?ajax_load=1&ajax_include_head=1`)
-                    .map(this.extractText);
+        return this.http.get(
+          `${formUrl}/@@edit?ajax_load=1&ajax_include_head=1`,
+          'obj.service.ts getFormSettings'
+        ).map(this.extractText);
     }
 
     /**
-     * This code calling on the form saving.
+     * this code calling on the form saving.
+     * this code calling on the field-settings saving.
      */
-    updateFormSettings(formUrl: string, formData: any): Observable<any> {
+    updateFormSettings(
+      formUrl: string, formData: any
+    ): Observable<{html: string, url: string}> {
       let layout = formData.get('form.widgets.form_layout');
       if (layout) {
+        /**
+         * this code will be running only while form saving
+         */
         layout = layout.replace(/\r/g , '').replace(/\xa0/g, ' ');
         let $layout = $(`<div id="tmp-layout" style="display: none">${ layout }</div>`);
         $('body').append($layout);
@@ -89,7 +94,7 @@ export class ObjService {
               id = $relateFieldElement.children().first().attr('data-plominoid');
             }
             else {
-              console.info("???????", id, tag, $element);
+              this.log.info("???????", id, tag, $element);
               return true;
             }
           }
@@ -127,32 +132,38 @@ export class ObjService {
       // throw formData.get('form.widgets.form_layout');
       // console.warn(formData.get('form.widgets.form_layout'));
       
-      return this.http.post(`${formUrl}/@@edit`, formData)
-                    .map(this.extractTextAndUrl);
+      return this.http.postWithOptions(
+        `${formUrl}/@@edit`, formData, {},
+        'obj.service.ts updateFormSettings'
+      ).map(this.extractTextAndUrl);
     }
 
 
 
     // Change this to use Promises/Observable pattern
     getDB(): Observable<any> {
-        return this.http.get("../../@@edit?ajax_load=1&ajax_include_head=1")
-            .map(this.extractText);
+      return this.http.get(
+        "../../@@edit?ajax_load=1&ajax_include_head=1",
+        'obj.service.ts getDB'
+      ).map(this.extractText);
     }
 
     // Form should be a jquery form object
     submitDB(formData: FormData): Observable<any> {
-        return this.http.post("../../@@edit", formData)
-            .map(this.extractText);
+      return this.http.postWithOptions(
+        "../../@@edit", formData, {},
+        'obj.service.ts submitDB'
+      ).map(this.extractText);
     }
 
-    private extractText(response: Response): any {
-        return response.text();
+    private extractText(response: Response) {
+      return response.text();
     }
 
-    private extractTextAndUrl(response: Response): any {
-        return {
-            html: response.text(),
-            url: response.url.slice(0, response.url.indexOf('@') - 1)
-        }
+    private extractTextAndUrl(response: Response) {
+      return {
+        html: response.text(),
+        url: response.url.slice(0, response.url.indexOf('@') - 1)
+      }
     }
 }

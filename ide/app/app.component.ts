@@ -39,7 +39,9 @@ import {
 } from './editors';
 
 // Services
-import { 
+import {
+  LogService,
+  PlominoHTTPAPIService,
   TreeService,
   ElementService,
   ObjService,
@@ -85,6 +87,8 @@ import { LoadingComponent } from "./editors/loading/loading.component";
     ResizeDividerComponent
   ],
   providers: [
+    LogService,
+    PlominoHTTPAPIService,
     TreeService, 
     ElementService, 
     ObjService, 
