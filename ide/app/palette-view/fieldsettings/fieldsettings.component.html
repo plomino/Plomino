@@ -49,6 +49,7 @@
           style="width: 40%"
           (change)="labelRelationSelected($event)"
           class="text-widget asciiline-field">
+          <option></option>
           <option *ngFor="let key of labelsRegistry.getRegistry().keys()"
             [value]="key.split('/').pop()"
             [selected]="field.url === key"
@@ -61,7 +62,8 @@
         <span class="option">
           <input id="form-widgets-label-separate"
           class="single-checkbox-widget required bool-field"
-          [checked]="isLabelSeparated()"
+          [(ngModel)]="labelAdvanced"
+          (change)="labelAdvancedChanged($event)"
           value="selected" type="checkbox">
           <label for="form-widgets-label-separate">
             <span class="label" style="color: black">Advanced label</span>
@@ -71,11 +73,25 @@
       </div>
       <div class="field" style="padding: 0 10px; margin: 15px 0;">
         <label for="form-widgets-label-fieldtitle"
-          class="horizontal" style="display: block">Title</label>
+          class="horizontal" style="display: block">Field title</label>
 
         <input type="text"
-          id="form-widgets-label-fieldtitle" [ngModel]="fieldTitle">
+          id="form-widgets-label-fieldtitle" [(ngModel)]="fieldTitle">
 
+      </div>
+      <div class="field" style="padding: 0 10px; margin: 15px 0;"
+        *ngIf="!labelAdvanced">
+        <button
+          class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent mdl-color--teal-700"
+          (click)="saveLabelTitle()">
+          <span *ngIf="labelSaving">
+            <loading class="white"></loading>
+          </span>
+          <span *ngIf="!labelSaving">
+            <!--<span class="icon material-icons">save</span>-->
+              Save
+          </span>
+        </button>
       </div>
     </div>
   </div>

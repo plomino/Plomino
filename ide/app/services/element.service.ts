@@ -100,7 +100,7 @@ export class ElementService {
     if (type === 'label') {
       return Observable.of(
         `<span class="plominoLabelClass mceEditable"
-          ${ id ? `data-plominoid="${ id }"` : '' }>${ newTitle }</span>`
+          ${ id ? `data-plominoid="${ id }"` : '' }>${ newTitle || 'Untitled' }</span>`
       );
     }
     return this.http.get(

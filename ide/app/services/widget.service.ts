@@ -703,6 +703,7 @@ export class WidgetService {
     if (!content && id && type === 'label' && splitId.length === 2) {
       return Observable.of(
         `<span class="plominoLabelClass mceNonEditable"
+          data-advanced="1"
           data-plominoid="${ splitId[0] }">${ splitId[1] }</span>`
       );
     }

@@ -83,30 +83,11 @@ export class ObjService {
           const $element = $(this);
           const tag = $element.prop('tagName');
           let id = $element.attr('data-plominoid');
-          let title = $element.text();
 
-          // const $relateFieldElement = 
-          //   $layout.find(`.plominoFieldClass[data-plominoid="${ id }"]`);
-
+          /* current element (label) text */
+          const title = $element.html();
           const relatedFieldTitle = context.labelsRegistry.get(`${formUrl}/${id}`);
-
-          // if (!id) {
-          //   const $relateFieldElement = $element.parent().next();
-
-          //   if ($relateFieldElement.hasClass('plominoFieldClass') 
-          //     && $relateFieldElement.attr('data-plominoid')) {
-          //     id = $relateFieldElement.attr('data-plominoid');
-          //   }
-          //   else if ($relateFieldElement.prop('tagName') === 'P' 
-          //     && $relateFieldElement.children().first().hasClass('plominoFieldClass') 
-          //     && $relateFieldElement.children().first().attr('data-plominoid')) {
-          //     id = $relateFieldElement.children().first().attr('data-plominoid');
-          //   }
-          //   else {
-          //     this.log.info("???????", id, tag, $element);
-          //     return true;
-          //   }
-          // }
+          const theLabelIsAdvanced = Boolean($element.attr('data-advanced'));
   
           if (tag === 'SPAN') {
             $element
@@ -114,13 +95,9 @@ export class ObjService {
             .removeClass('mceNonEditable')
             .removeAttr('data-plominoid');
 
-            if (relatedFieldTitle === title) {
-              $element.text(id);
-            }
-            else {
-              let html = $element.html();
-              $element.html(`${id}:${html}`);
-            }
+            $element.html(
+              theLabelIsAdvanced ? `${id}:${$element.html().trim()}` : id
+            );
           }
   
           if (tag === 'DIV') {

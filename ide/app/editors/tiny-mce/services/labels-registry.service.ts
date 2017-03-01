@@ -5,8 +5,8 @@ export class LabelsRegistryService {
   private labelsRegistry: Map<string, Object> = new Map<string, Object>();
   constructor() { }
 
-  update(id: string, title: string) {
-    this.labelsRegistry.set(id, { title });
+  update(id: string, value: string, key = 'title') {
+    this.labelsRegistry.set(id, { [key]: value });
   }
 
   getRegistry() {
