@@ -452,6 +452,7 @@ export class FieldSettingsComponent implements OnInit {
 
             this.labelsRegistry.onUpdated()
             .subscribe(() => {
+              this.labelAdvanced = Boolean(this.$selectedElement.attr('data-advanced'));
               this.updateFieldTitle(field);
             });
 

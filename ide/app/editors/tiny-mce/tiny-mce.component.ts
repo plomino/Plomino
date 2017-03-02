@@ -68,6 +68,8 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
   @Output() isLoading: EventEmitter<any> = new EventEmitter();
   @Output() fieldSelected: EventEmitter<any> = new EventEmitter();
 
+  labelMarkupEvent: EventEmitter<any> = new EventEmitter();
+
   @ViewChild('theEditor') editorElement: ElementRef;
 
   data: string;
@@ -273,6 +275,16 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
           tiny.isDirty.emit(true);
         });
 
+        editor.on('NodeChange', (nodeChangeEvent: any) => {
+          if (nodeChangeEvent.selectionChange === true) {
+            const $label = $(nodeChangeEvent.element).closest('.plominoLabelClass');
+
+            if ($label.length) {
+              this.labelMarkupEvent.next($label);
+            }
+          }
+        });
+
         editor.on('activate', (e: any) => {
           let $editorFrame = $(this.editorElement.nativeElement)
             .find('iframe[id*=mce_]');
@@ -311,24 +323,23 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
 
             let $elementId = $element.data('plominoid');
             let $parentId = $parent.data('plominoid');
+            let $closestLabel = $element.closest('.plominoLabelClass');
 
             this.log.info($element, $parent, $grandParent, $grandGrandParent, $closest);
             this.log.extra('tiny-mce.component.ts editor.on(\'mousedown\', ...)');
 
-            this.adapter.select($element);
+            this.adapter.select($closestLabel.length ? $closestLabel : $element);
 
             if (!elementIsSubform && (parentIsSubform || closestIsSubform)) {
               elementIsSubform = true;
             }
-
-            this.log.info('elementIsSubform', elementIsSubform);
 
             if (!elementIsSubform && $elementIsGroup) {
               let groupChildrenQuery = 
                 '.plominoFieldClass, .plominoHidewhenClass, .plominoActionClass';
               let $groupChildren = $element.find(groupChildrenQuery);
               if ($groupChildren.length > 1) {
-                this.log.info('field selected #a');
+                // this.log.info('field selected #a');
                 this.fieldSelected.emit(null);
                 return;
               }
@@ -336,7 +347,7 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
                 let $child = $groupChildren;
                 let $childId = $child.data('plominoid');
                 let $childType = this.extractClass($child.attr('class'));
-                this.log.info('field selected #b');
+                // this.log.info('field selected #b');
                 this.fieldSelected.emit({
                   id: $childId,
                   type: $childType,
@@ -346,8 +357,10 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
               }
             }
             
-            if (!elementIsSubform && (elementIsLabel || parentIsLabel)) {
-              this.log.info('field selected #c');
+            if (!elementIsSubform && (elementIsLabel || parentIsLabel || $closestLabel.length)) {
+              if (!$elementId) {
+                $elementId = $closestLabel.attr('data-plominoid');
+              }
               this.fieldSelected.emit({
                 id: $elementId,
                 type: 'label',
@@ -359,7 +372,7 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
                * subform clicked
                */
               let id = $elementId || $parentId;
-              this.log.info('field selected #d');
+              // this.log.info('field selected #d');
               this.fieldSelected.emit({ id: id, type: 'subform', parent: this.id });
             }
             else {
@@ -374,10 +387,10 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
 
                 let type = $elementType || $parentType;
 
-                this.log.info('field selected #e');
+                // this.log.info('field selected #e');
                 this.fieldSelected.emit({ id: id, type: type, parent: this.id });
               } else {
-                this.log.info('field selected #f');
+                // this.log.info('field selected #f');
                 this.fieldSelected.emit(null);
               }
             }
@@ -405,6 +418,29 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
       this.contentManager.selectAndRemoveElementById(this.id, 'drag-autopreview');
       this.dropped({ mouseEvent: eventData });
     });
+
+    this.labelMarkupEvent.asObservable()
+    .subscribe(($element: JQuery) => {
+      /**
+       * when markup changed on any plominoLabelClass element
+       */
+      const hasMarkup = $element.text().trim() !== $element.html().trim();
+      const dataAdvanced = Boolean($element.attr('data-advanced'));
+
+      if (hasMarkup || (dataAdvanced && !hasMarkup)) {
+        this.log.info('label markup inserted', $element);
+        this.log.extra('tiny-mce.component.ts');
+        
+        $element.attr('data-advanced', '1');
+  
+        const selectedId = $element.attr('data-plominoid');
+        const temporaryTitle = $element.html();
+  
+        this.labelsRegistry.update(
+          `${ this.id }/${ selectedId }`, temporaryTitle, 'just_in_case'
+        );
+      }
+    });
   }
 
   /**
@@ -414,7 +450,7 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
     this.elementService.getElementFormLayout(this.id)
     .subscribe((form: PlominoFormDataAPIResponse) => {
       for (let item of form.items) {
-        this.labelsRegistry.update(item['@id'], item.title);
+        this.labelsRegistry.update(item['@id'], item.title, 'title');
       }
       const data = form.form_layout;
       let newData = '';
@@ -525,9 +561,9 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
         const $plominoElement = $(this);
         if (originalTitle === null && $plominoElement.hasClass('plominoLabelClass')) {
           context.labelsRegistry.update(
-            updateData.fieldData.url, $plominoElement.text()
+            updateData.fieldData.url, $plominoElement.html().trim()
           );
-          originalTitle = $plominoElement.text();
+          originalTitle = $plominoElement.html().trim();
         }
         return $plominoElement.closest('.mce-offscreen-selection').length === 0;
       })

@@ -614,8 +614,6 @@ export class WidgetService {
     type: 'form' | 'group', ids: PlominoFormGroupContent[] = [],
     labelsRegistry?: Map<string, Object>
   ): Observable<string> {
-    this.log.info('labelsRegistry', labelsRegistry);
-    this.log.extra('widget.service.ts convertLabel');
     let $class = element.attr('class').split(' ')[0];
     let $type = $class.slice(7, -5).toLowerCase();
 
@@ -626,23 +624,35 @@ export class WidgetService {
     let $id: string = null;
     let template: PlominoFormGroupContent = null;
 
+    let tmpId = element.html();
+    const hasAdvancedTitle = tmpId.indexOf(':') !== -1;
+
+    if (hasAdvancedTitle) {
+      tmpId = tmpId.split(':')[0];
+    }
+
     if (ids.length) {
-      const $idData = this.findId(ids, element.text());
+      const $idData = this.findId(ids, tmpId);
       $id = $idData.id;
 
       if ($idData && $idData.layout) {
         template = $idData;
       }
     } else {
-      $id = element.text();
+      $id = tmpId;
     }
 
-    this.log.info('convertLabel', $id, `${ base }/${ $id }`, labelsRegistry ? labelsRegistry.get(`${ base }/${ $id }`) : null, template);
+    this.log.info('convertLabel', $id, `${ base }/${ $id }`, 
+      labelsRegistry ? labelsRegistry.get(`${ base }/${ $id }`) : null, template);
     this.log.extra('widget.service.ts convertLabel');
 
     if (!template && labelsRegistry && labelsRegistry.has(`${ base }/${ $id }`)) {
       template = { id: $id, title: labelsRegistry.get(`${ base }/${ $id }`)['title'] };
       // labelsRegistry.delete(`${ base }/${ $id }`); // just in case
+    }
+
+    if (template && hasAdvancedTitle) {
+      template.title = element.html();
     }
 
     return (template 
@@ -688,9 +698,14 @@ export class WidgetService {
     this.log.info('type', type, 'id', id, 'content', content);
     this.log.extra('widget.service.ts getWidget');
     if (content && type === 'label') {
+      const splitTitle = content.title.split(':');
+      if (splitTitle.length === 2) {
+        content.title = splitTitle[1];
+      }
       return Observable.of(
         `<span class="plominoLabelClass mceNonEditable"
-          ${ id ? `data-plominoid="${ id }"` : '' }>${ content.title }</span>`
+          ${ splitTitle.length === 2 ? ` data-advanced="1"` : '' }
+          ${ id ? ` data-plominoid="${ id }"` : '' }>${ content.title }</span>`
       );
     }
     const splitId = id.split(':');
