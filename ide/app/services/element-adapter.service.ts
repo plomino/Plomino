@@ -14,7 +14,7 @@ export class PlominoElementAdapterService {
   private labelsRegistry: LabelsRegistryService) {}
 
   endPoint(type: string, source: string) {
-    this.log.info('endPoint', type, source);
+    // this.log.info('endPoint', type, source);
     if (type === 'label') {
       const $source = $(source);
       /**
@@ -51,24 +51,39 @@ export class PlominoElementAdapterService {
      */
     if ($element.hasClass('plominoLabelClass')) {
       $('iframe:visible').contents().find('.plominoLabelClass').off('input.adapter');
+
       $element.on('input.adapter', ($event) => {
         const labelAdvanced = Boolean($element.attr('data-advanced'));
-        // do nothing at this moment
-        this.log.info(labelAdvanced);
+
+        if (!labelAdvanced) {
+          const selectedId = $element.attr('data-plominoid');
+          const temporaryTitle = $element.html();
+          this.labelsRegistry.update(
+            `${ tinymce.activeEditor.id }/${ selectedId }`,
+            temporaryTitle, 'temporary_title'
+          );
+
+          const $allTheSame = $('iframe:visible').contents()
+            .find(`.plominoLabelClass[data-plominoid="${ selectedId }"]`)
+            .filter((i, element) => element !== $element.get(0) 
+              && !Boolean($(element).attr('data-advanced')));
+
+          $allTheSame.html(temporaryTitle);
+        }
       });
     }
 
     /**
      * if it was the label before - turn field title to unsaved state
      */
-    const $before = this.$previousSelectedElement;
-    if ($before && $before.hasClass('plominoLabelClass')
-      && !Boolean($before.attr('data-advanced'))
-    ) {
-      const fieldId = `${ tinymce.activeEditor.id }/${ $before.attr('data-plominoid') }`;
-      const fieldTitle = this.labelsRegistry.get(fieldId) || 'Untitled';
-      $before.html(fieldTitle);
-    }
+    // const $before = this.$previousSelectedElement;
+    // if ($before && $before.hasClass('plominoLabelClass')
+    //   && !Boolean($before.attr('data-advanced'))
+    // ) {
+    //   const fieldId = `${ tinymce.activeEditor.id }/${ $before.attr('data-plominoid') }`;
+    //   const fieldTitle = this.labelsRegistry.get(fieldId) || 'Untitled';
+    //   $before.html(fieldTitle);
+    // }
   }
 
   getSelectedBefore() {

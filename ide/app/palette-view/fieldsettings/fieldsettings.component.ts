@@ -240,6 +240,30 @@ export class FieldSettingsComponent implements OnInit {
         this.tabsService.openTab(eventData, true);
     }
 
+    isLabelSettingsSaved() {
+      return true;
+    }
+
+    private updateTemporaryTitle() {
+      const selectedId = $('#form-widgets-label-relation').val();
+      const temporaryTitle = $('#form-widgets-label-fieldtitle').val();
+      this.labelsRegistry.update(
+        `${tinymce.activeEditor.id}/${selectedId}`, 
+        temporaryTitle, 'temporary_title'
+      );
+      if (!this.labelAdvanced) {
+        this.$selectedElement.html(temporaryTitle);
+        const $allTheSame = $('iframe:visible').contents()
+          .find(`.plominoLabelClass[data-plominoid="${ selectedId }"]`)
+          .filter((i, element) => element !== this.$selectedElement.get(0) 
+            && !Boolean($(element).attr('data-advanced')));
+
+        $allTheSame.html(temporaryTitle);
+        this.changeDetector.detectChanges();
+      }
+      tinymce.activeEditor.setDirty(true);
+    }
+
     private updateMacroses() {
       if (this.field) {
         window['MacroWidgetPromise'].then((MacroWidget: any) => {
@@ -331,6 +355,34 @@ export class FieldSettingsComponent implements OnInit {
       this.changeDetector.detectChanges();
     }
 
+    private updateFieldTitle(field: PlominoFieldRepresentationObject) {
+      const tmpId = this.field.url.split('/').pop();
+      this.fieldTitle = this.labelsRegistry.get(field.url);
+      if (this.fieldTitle === null
+        && tmpId !== 'defaultLabel') {
+        this.elementService
+          .getElement(field.url)
+          .catch((error: any) => {
+            return Observable.of(null);
+          })
+          .subscribe((fieldData: PlominoFieldDataAPIResponse) => {
+            if (fieldData) {
+              this.labelsRegistry.update(field.url, fieldData.title, 'title', false);
+              this.fieldTitle = fieldData.title;
+            }
+            else {
+              this.fieldTitle = 'Untitled';
+            }
+          });
+      }
+      else if (tmpId === 'defaultLabel') {
+        this.fieldTitle = 'Untitled';
+      }
+
+      this.changeDetector.detectChanges();
+      // tinymce.activeEditor.setDirty(true);
+    }
+
     private loadSettings() {
       this.tabsService.getActiveField()
         .do((field) => {
@@ -374,30 +426,7 @@ export class FieldSettingsComponent implements OnInit {
             this.log.extra('fieldsettings.component.ts label');
 
             this.labelAdvanced = Boolean(this.$selectedElement.attr('data-advanced'));
-            const tmpId = this.field.url.split('/').pop();
-
-            this.fieldTitle = this.labelsRegistry.get(field.url);
-            if (this.fieldTitle === null
-              && tmpId !== 'defaultLabel') {
-              this.elementService
-                .getElement(field.url)
-                .catch((error: any) => {
-                  return Observable.of(null);
-                })
-                .subscribe((fieldData: PlominoFieldDataAPIResponse) => {
-                  if (fieldData) {
-                    this.labelsRegistry.update(field.url, fieldData.title);
-                    this.fieldTitle = fieldData.title;
-                    this.changeDetector.detectChanges();
-                  }
-                  else {
-                    this.fieldTitle = 'Untitled';
-                  }
-                });
-            }
-            else if (tmpId === 'defaultLabel') {
-              this.fieldTitle = 'Untitled';
-            }
+            this.updateFieldTitle(field);
 
             setTimeout(() => {
               const $select = $('#form-widgets-label-relation');
@@ -421,6 +450,11 @@ export class FieldSettingsComponent implements OnInit {
               }
             }, 100);
 
+            this.labelsRegistry.onUpdated()
+            .subscribe(() => {
+              this.updateFieldTitle(field);
+            });
+
             return Observable.of(false);
           }
           else if (field && field.id) {
@@ -434,6 +468,18 @@ export class FieldSettingsComponent implements OnInit {
           if (!template) {
             return;
           }
+
+          /**
+           * patch field settings
+           */
+          const temporaryTitle = this.labelsRegistry.get(this.field.url);
+          
+          if (temporaryTitle) {
+            const $template = $(`<div>${template}</div>`);
+            $template.find('#form-widgets-IBasic-title').attr('value', temporaryTitle);
+            template = $template.html();
+          }
+
           this.formTemplate = template;
 
           setTimeout(() => {

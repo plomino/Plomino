@@ -324,9 +324,11 @@ export class TinyMCEFormContentManagerService {
     }
 
     if ($(contentHTML).hasClass('plominoActionClass')
-      || $(contentHTML).hasClass('plominoFieldClass')
-      || $(contentHTML).hasClass('plominoLabelClass')) {
+      || $(contentHTML).hasClass('plominoFieldClass')) {
       contentHTML = `<p>${contentHTML}</p>`;
+    }
+    else if ($(contentHTML).hasClass('plominoLabelClass')) {
+      contentHTML = `<p contenteditable="false">${contentHTML}</p>`;
     }
     
     if (options && !options.target) {

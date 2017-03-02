@@ -75,11 +75,11 @@
         <label for="form-widgets-label-fieldtitle"
           class="horizontal" style="display: block">Field title</label>
 
-        <input type="text"
+        <input type="text" (input)="updateTemporaryTitle()"
           id="form-widgets-label-fieldtitle" [(ngModel)]="fieldTitle">
 
       </div>
-      <div class="field" style="padding: 0 10px; margin: 15px 0;"
+      <!--<div class="field" style="padding: 0 10px; margin: 15px 0;"
         *ngIf="!labelAdvanced">
         <button
           class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent mdl-color--teal-700"
@@ -88,11 +88,10 @@
             <loading class="white"></loading>
           </span>
           <span *ngIf="!labelSaving">
-            <!--<span class="icon material-icons">save</span>-->
               Save
           </span>
         </button>
-      </div>
+      </div>-->
     </div>
   </div>
 </div>

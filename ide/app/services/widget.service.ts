@@ -619,6 +619,10 @@ export class WidgetService {
     let $class = element.attr('class').split(' ')[0];
     let $type = $class.slice(7, -5).toLowerCase();
 
+    if (element.parent().attr('contenteditable') !== 'false') {
+      element.parent().attr('contenteditable', 'false');
+    }
+
     let $id: string = null;
     let template: PlominoFormGroupContent = null;
 
@@ -646,17 +650,7 @@ export class WidgetService {
     : this.getWidget(base, $type, $id)
     ).map((response) => {
       const $response = $(response);
-      // if ($response.length === 1 && $response.prop('tagName') === 'P') {
-      //   response = $response.html();
-      // }
-      let result = '';
-      if (type === 'group') {
-        // result = this.wrapIntoEditable(`${response}<br />`);
-        result = $response.get(0).outerHTML;
-      } else {
-        // result = `${response}<br />`;
-        result = `${response}`;
-      }
+      const result = (type === 'group') ? $response.get(0).outerHTML : `${response}`;
       return this.adapter.endPoint('label', result);
     });
   }
