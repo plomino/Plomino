@@ -152,7 +152,7 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
           if ($element.closest('.plominoGroupClass').length) {
             $element = $element.closest('.plominoGroupClass');
           }
-          $body.animate({ scrollTop: $element.offset().top }, 'slow');
+          $body.animate({ scrollTop: $element.offset().top }, { duration: 'medium', easing: 'swing' });
         }
       }
     });
