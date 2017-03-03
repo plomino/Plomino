@@ -98,13 +98,19 @@ class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
         else:
             return "/".join(path)
 
-    def getFormAction(self):
-        """ For a multi page form, submit to a custom action """
+    def getFormAction(self, bare=False):
+        """
+        For a multi page form, submit to a custom action
+        For a single page form, return Edit{Bare}Document
+        which will then save if possible
+        """
         form = self.getForm()
         if form.getIsMulti():
             action = 'page/%s' % form._get_current_page()
+        elif bare:
+            action = 'EditBareDocument'
         else:
-            action = 'saveDocument'
+            action = 'EditDocument'
         return '%s/%s' % (self.doc_url(), action)
 
     security.declarePublic('setItem')
