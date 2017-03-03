@@ -121,14 +121,6 @@ class IPlominoForm(model.Schema):
             " etc."),
     )
 
-    isMulti = schema.Bool(
-        title=_('CMFPlomino_label_isMulti', default="Multi page form"),
-        default=False,
-        description=_('CMFPlomino_help_isMulti', default="Split the form into"
-            " pages. It will be possible to navigate backwards and forwards"
-            " through the form."),
-    )
-
     isSearchForm = schema.Bool(
         title=_('CMFPlomino_label_SearchForm', default="Search form"),
         description=_('CMFPlomino_help_SearchForm',
@@ -303,16 +295,33 @@ class PlominoForm(Container):
         return value
 
     def getIsMulti(self):
-        return getattr(self, 'isMulti', False)
+        # TODO: Cache this?
+        html_content = self.form_layout or ''
+        if not html_content:
+            return False
 
-    def getFormAction(self):
-        """ For a multi page form, submit to a custom action """
+        # The form is multipage if there is a pagebreak HR
+        html = pq(html_content)
+        for elem in html.children():
+            if elem.tag == 'hr' and \
+                    elem.attrib.get('class') == 'plominoPagebreakClass':
+                return True
+        return False
+
+    def getFormAction(self, bare=False):
+        """
+        For a multi page form, submit to a custom action
+        For a page, submit to itself
+        For a normal form, submit to Open{Bare}Form as appropriate
+        """
         if self.getIsMulti():
             action = '/page/%s' % self._get_current_page()
         elif self.isPage:
             action = ''
+        elif bare:
+            action = '/OpenBareForm'
         else:
-            action = '/createDocument'
+            action = '/OpenForm'
         return '%s%s' % (self.absolute_url(), action)
 
     def _get_resource_urls(self, field_name):

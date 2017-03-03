@@ -1,3 +1,4 @@
+import { PlominoElementAdapterService } from './element-adapter.service';
 import { LogService } from './log.service';
 import { 
   Injectable,
@@ -23,6 +24,7 @@ export class TabsService {
   private tree: any;
 
   constructor(private treeService: TreeService,
+  private adapter: PlominoElementAdapterService,
   private log: LogService, private zone: NgZone) {
     this.treeService.getTree()
       .subscribe((tree) => {
@@ -33,7 +35,7 @@ export class TabsService {
   selectField(fieldData: { id: string, type: string, parent: string }): void {
     let field: any = null;
 
-    this.log.info('selectField', fieldData);
+    // this.log.info('selectField', fieldData, this.adapter.getSelectedBefore());
 
     if (fieldData && !fieldData.id && fieldData.type === 'subform') {
       setTimeout(() => {

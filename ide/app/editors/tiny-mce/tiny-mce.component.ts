@@ -34,12 +34,13 @@ import {
     DraggingService,
     TemplatesService,
     LogService,
+    PlominoElementAdapterService,
     WidgetService,
     TabsService,
     FormsService
 } from '../../services';
 
-import { UpdateFieldService } from './services';
+import { UpdateFieldService, LabelsRegistryService } from './services';
 
 @Component({
     selector: 'plomino-tiny-mce',
@@ -67,6 +68,8 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
   @Output() isLoading: EventEmitter<any> = new EventEmitter();
   @Output() fieldSelected: EventEmitter<any> = new EventEmitter();
 
+  labelMarkupEvent: EventEmitter<any> = new EventEmitter();
+
   @ViewChild('theEditor') editorElement: ElementRef;
 
   data: string;
@@ -88,7 +91,9 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
     private templatesService: TemplatesService,
     private widgetService: WidgetService,
     private log: LogService,
+    private adapter: PlominoElementAdapterService,
     private formsService: FormsService,
+    private labelsRegistry: LabelsRegistryService,
     private changeDetector: ChangeDetectorRef,
     private tabsService: TabsService,
     private updateFieldService: UpdateFieldService,
@@ -270,6 +275,16 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
           tiny.isDirty.emit(true);
         });
 
+        editor.on('NodeChange', (nodeChangeEvent: any) => {
+          if (nodeChangeEvent.selectionChange === true) {
+            const $label = $(nodeChangeEvent.element).closest('.plominoLabelClass');
+
+            if ($label.length) {
+              this.labelMarkupEvent.next($label);
+            }
+          }
+        });
+
         editor.on('activate', (e: any) => {
           let $editorFrame = $(this.editorElement.nativeElement)
             .find('iframe[id*=mce_]');
@@ -308,20 +323,23 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
 
             let $elementId = $element.data('plominoid');
             let $parentId = $parent.data('plominoid');
+            let $closestLabel = $element.closest('.plominoLabelClass');
 
-            // console.warn($element, $parent, $grandParent, $grandGrandParent, $closest);
+            this.log.info($element, $parent, $grandParent, $grandGrandParent, $closest);
+            this.log.extra('tiny-mce.component.ts editor.on(\'mousedown\', ...)');
+
+            this.adapter.select($closestLabel.length ? $closestLabel : $element);
 
             if (!elementIsSubform && (parentIsSubform || closestIsSubform)) {
               elementIsSubform = true;
             }
-
-            this.log.info('elementIsSubform', elementIsSubform);
 
             if (!elementIsSubform && $elementIsGroup) {
               let groupChildrenQuery = 
                 '.plominoFieldClass, .plominoHidewhenClass, .plominoActionClass';
               let $groupChildren = $element.find(groupChildrenQuery);
               if ($groupChildren.length > 1) {
+                // this.log.info('field selected #a');
                 this.fieldSelected.emit(null);
                 return;
               }
@@ -329,6 +347,7 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
                 let $child = $groupChildren;
                 let $childId = $child.data('plominoid');
                 let $childType = this.extractClass($child.attr('class'));
+                // this.log.info('field selected #b');
                 this.fieldSelected.emit({
                   id: $childId,
                   type: $childType,
@@ -338,14 +357,22 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
               }
             }
             
-            if (!elementIsSubform && (elementIsLabel || parentIsLabel)) {
-              this.fieldSelected.emit(null);
+            if (!elementIsSubform && (elementIsLabel || parentIsLabel || $closestLabel.length)) {
+              if (!$elementId) {
+                $elementId = $closestLabel.attr('data-plominoid');
+              }
+              this.fieldSelected.emit({
+                id: $elementId,
+                type: 'label',
+                parent: this.id
+              });
             } 
             else if (elementIsSubform) {
               /**
                * subform clicked
                */
               let id = $elementId || $parentId;
+              // this.log.info('field selected #d');
               this.fieldSelected.emit({ id: id, type: 'subform', parent: this.id });
             }
             else {
@@ -360,8 +387,10 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
 
                 let type = $elementType || $parentType;
 
+                // this.log.info('field selected #e');
                 this.fieldSelected.emit({ id: id, type: type, parent: this.id });
               } else {
+                // this.log.info('field selected #f');
                 this.fieldSelected.emit(null);
               }
             }
@@ -389,11 +418,41 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
       this.contentManager.selectAndRemoveElementById(this.id, 'drag-autopreview');
       this.dropped({ mouseEvent: eventData });
     });
+
+    this.labelMarkupEvent.asObservable()
+    .subscribe(($element: JQuery) => {
+      /**
+       * when markup changed on any plominoLabelClass element
+       */
+      const hasMarkup = $element.text().trim() !== $element.html().trim();
+      const dataAdvanced = Boolean($element.attr('data-advanced'));
+
+      if (hasMarkup || (dataAdvanced && !hasMarkup)) {
+        this.log.info('label markup inserted', $element);
+        this.log.extra('tiny-mce.component.ts');
+        
+        $element.attr('data-advanced', '1');
+  
+        const selectedId = $element.attr('data-plominoid');
+        const temporaryTitle = $element.html();
+  
+        this.labelsRegistry.update(
+          `${ this.id }/${ selectedId }`, temporaryTitle, 'just_in_case'
+        );
+      }
+    });
   }
 
+  /**
+   * calling REST-API and receiving form data
+   */
   getFormLayout() {
     this.elementService.getElementFormLayout(this.id)
-    .subscribe((data) => {
+    .subscribe((form: PlominoFormDataAPIResponse) => {
+      for (let item of form.items) {
+        this.labelsRegistry.update(item['@id'], item.title, 'title');
+      }
+      const data = form.form_layout;
       let newData = '';
       
       if (data && data.length) {
@@ -491,17 +550,26 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
    * after fieldsettings.component.ts calling submitForm()
    */
   private updateField(updateData: PlominoFieldUpdatesStreamEvent) {
+    const context = this;
     this.log.info('tinymce -> updateField callback', updateData);
 
+    let originalTitle = this.labelsRegistry.get(updateData.fieldData.url);
     const editor = tinymce.get(this.id);
     const dataToUpdate = $(editor.getBody())
       .find(`*[data-plominoid=${updateData.fieldData.id}]`)
       .filter(function () {
-        return $(this).closest('.mce-offscreen-selection').length === 0;
+        const $plominoElement = $(this);
+        if (originalTitle === null && $plominoElement.hasClass('plominoLabelClass')) {
+          context.labelsRegistry.update(
+            updateData.fieldData.url, $plominoElement.html().trim()
+          );
+          originalTitle = $plominoElement.html().trim();
+        }
+        return $plominoElement.closest('.mce-offscreen-selection').length === 0;
       })
       .toArray();
 
-    // console.warn(dataToUpdate);
+    this.log.info('originalTitle', originalTitle);
 
     if (dataToUpdate.length) {
       const hwPos = { start: false, end: false };
@@ -513,12 +581,18 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
         let typeCapitalized = normalizedType[0].toUpperCase() +
           normalizedType.slice(1);
 
+        let newTitle = updateData.newData.title;
+
+        if (normalizedType === 'Label' && originalTitle !== element.innerText) {
+          newTitle = element.innerHTML;
+        }
+
         return <PlominoUpdatingItemData> {
           base: this.id,
           type: normalizedType,
           newId: updateData.newId,
           oldTemplate: element,
-          newTitle: updateData.newData.title
+          newTitle
         };
       })
       .flatMap((itemToReplace: PlominoUpdatingItemData) => {
@@ -538,9 +612,12 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
           this.log.info('dataToUpdate subscribe enter', dataToUpdate, ++i, data);
           this.log.extra(`tiny-mce.component.ts, data: ${ JSON.stringify(data) }`);
         }
-        
+
+        data.newTemplate = 
+          this.adapter.endPoint(data.item.type.toLowerCase(), data.newTemplate);
+
         this.contentManager.selectContent(this.id, data.oldTemplate);
-        this.contentManager.replaceContent(this.id, data.newTemplate);
+        this.contentManager.setSelectionContent(this.id, data.newTemplate);
       });
     }
   }

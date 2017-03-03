@@ -1,3 +1,5 @@
+import { LabelsRegistryService } from './../editors/tiny-mce/services/labels-registry.service';
+import { PlominoElementAdapterService } from './element-adapter.service';
 import { LogService } from './log.service';
 import { PlominoHTTPAPIService } from './http-api.service';
 import { Subject, Observable } from 'rxjs/Rx';
@@ -18,6 +20,8 @@ export class WidgetService {
   } = {};
 
   constructor(private http: PlominoHTTPAPIService,
+  private adapter: PlominoElementAdapterService,
+  private labelsRegistry: LabelsRegistryService,
   private log: LogService) { }
 
   getWidgetCacheData(formUrl: string, widgetType: string, id: string): string {
@@ -192,6 +196,7 @@ export class WidgetService {
   }
 
   getFormLayout(baseUrl: string) {
+    this.log.info('getFormLayout called', baseUrl);
     const $edIFrame = $(`iframe[id="${ baseUrl }_ifr"]`).contents();
     $edIFrame.css('opacity', 0);
     let $elements = $edIFrame.find('.plominoGroupClass, .plominoSubformClass, ' +
@@ -207,7 +212,7 @@ export class WidgetService {
 
     const $widgets = $edIFrame.find(
       '.plominoFieldClass, .plominoHidewhenClass, ' +
-      '.plominoActionClass, .plominoLabelClass, .plominoSubformClass'
+      '.plominoActionClass, .plominoSubformClass'
     );
 
     $widgets.each(function () {
@@ -225,6 +230,7 @@ export class WidgetService {
 
     const widgetsFromServer = new Subject<any>();
     const widgetsObservable$: Observable<any> = widgetsFromServer.asObservable();
+    const labelsRegistry = this.labelsRegistry.getRegistry();
 
     $elements.each(function () {
       let $element = $(this);
@@ -233,11 +239,10 @@ export class WidgetService {
 
       if ($class === 'plominoGroupClass') {
         $groupId = $element.attr('data-groupid');
-        // this.log.info('getFormLayout parsing plominoGroupClass');
         promiseList.push(new Promise((resolve, reject) => {
           widgetsObservable$
           .subscribe((() => {
-            context.convertFormGroups(baseUrl, $element, $groupId)
+            context.convertFormGroups(baseUrl, $element, $groupId, labelsRegistry)
             .subscribe((result: any) => {
               $element.replaceWith(result);
               resolve();
@@ -286,7 +291,7 @@ export class WidgetService {
         promiseList.push(new Promise((resolve, reject) => {
           widgetsObservable$
           .subscribe((() => {
-            context.convertLabel(baseUrl, $element, 'form')
+            context.convertLabel(baseUrl, $element, 'form', [], labelsRegistry)
             .subscribe((result: any) => {
               $element.replaceWith(result);
               resolve();
@@ -318,7 +323,9 @@ export class WidgetService {
     return promiseList;
   }
 
-  private convertFormGroups(base: string, element: any, groupId: any): Observable<any> {
+  private convertFormGroups(
+    base: string, element: any, groupId: any, labelsRegistry?: Map<string, Object>
+  ): Observable<any> {
     let $groupId = element.attr('data-groupid');
     let fields$: any[] = [];
 
@@ -412,7 +419,7 @@ export class WidgetService {
       ({
         group: (item: any) => 
           this.convertFormGroups(
-            item.url, item.el, item.groupId
+            item.url, item.el, item.groupId, labelsRegistry
           ),
         field: (item: any) => 
           this.convertFormFields(
@@ -424,7 +431,7 @@ export class WidgetService {
           ),
         label: (item: any) => 
           this.convertLabel(
-            item.url, item.el, 'group'
+            item.url, item.el, 'group', [], labelsRegistry
           ),
         subform: (item: any) => 
           this.convertFormSubform(
@@ -604,23 +611,48 @@ export class WidgetService {
 
   private convertLabel(
     base: string, element: JQuery, 
-    type: 'form' | 'group', ids: PlominoFormGroupContent[] = []
+    type: 'form' | 'group', ids: PlominoFormGroupContent[] = [],
+    labelsRegistry?: Map<string, Object>
   ): Observable<string> {
     let $class = element.attr('class').split(' ')[0];
     let $type = $class.slice(7, -5).toLowerCase();
 
+    if (element.parent().attr('contenteditable') !== 'false') {
+      element.parent().attr('contenteditable', 'false');
+    }
+
     let $id: string = null;
     let template: PlominoFormGroupContent = null;
 
+    let tmpId = element.html();
+    const hasAdvancedTitle = tmpId.indexOf(':') !== -1;
+
+    if (hasAdvancedTitle) {
+      tmpId = tmpId.split(':')[0];
+    }
+
     if (ids.length) {
-      const $idData = this.findId(ids, element.text());
+      const $idData = this.findId(ids, tmpId);
       $id = $idData.id;
 
       if ($idData && $idData.layout) {
         template = $idData;
       }
     } else {
-      $id = element.text();
+      $id = tmpId;
+    }
+
+    this.log.info('convertLabel', $id, `${ base }/${ $id }`, 
+      labelsRegistry ? labelsRegistry.get(`${ base }/${ $id }`) : null, template);
+    this.log.extra('widget.service.ts convertLabel');
+
+    if (!template && labelsRegistry && labelsRegistry.has(`${ base }/${ $id }`)) {
+      template = { id: $id, title: labelsRegistry.get(`${ base }/${ $id }`)['title'] };
+      // labelsRegistry.delete(`${ base }/${ $id }`); // just in case
+    }
+
+    if (template && hasAdvancedTitle) {
+      template.title = element.html();
     }
 
     return (template 
@@ -628,18 +660,8 @@ export class WidgetService {
     : this.getWidget(base, $type, $id)
     ).map((response) => {
       const $response = $(response);
-      // if ($response.length === 1 && $response.prop('tagName') === 'P') {
-      //   response = $response.html();
-      // }
-      let result = '';
-      if (type === 'group') {
-        // result = this.wrapIntoEditable(`${response}<br />`);
-        result = $response.get(0).outerHTML;
-      } else {
-        // result = `${response}<br />`;
-        result = `${response}`;
-      }
-      return result;
+      const result = (type === 'group') ? $response.get(0).outerHTML : `${response}`;
+      return this.adapter.endPoint('label', result);
     });
   }
 
@@ -676,9 +698,22 @@ export class WidgetService {
     this.log.info('type', type, 'id', id, 'content', content);
     this.log.extra('widget.service.ts getWidget');
     if (content && type === 'label') {
+      const splitTitle = content.title.split(':');
+      if (splitTitle.length === 2) {
+        content.title = splitTitle[1];
+      }
       return Observable.of(
         `<span class="plominoLabelClass mceNonEditable"
-          ${ id ? `data-plominoid="${ id }"` : '' }>${ content.title }</span>`
+          ${ splitTitle.length === 2 ? ` data-advanced="1"` : '' }
+          ${ id ? ` data-plominoid="${ id }"` : '' }>${ content.title }</span>`
+      );
+    }
+    const splitId = id.split(':');
+    if (!content && id && type === 'label' && splitId.length === 2) {
+      return Observable.of(
+        `<span class="plominoLabelClass mceNonEditable"
+          data-advanced="1"
+          data-plominoid="${ splitId[0] }">${ splitId[1] }</span>`
       );
     }
     if (content && type === 'field') {

@@ -22,7 +22,7 @@ class FormView(BrowserView):
         self.form = self.context
         self.target = self.context
 
-    def openform(self):
+    def _process_form(self, template):
         if (hasattr(self.context, 'onDisplay') and
                 self.context.onDisplay):
             try:
@@ -38,10 +38,25 @@ class FormView(BrowserView):
             # We could do extra handling of the response here if needed
             if response is not None:
                 return response
-        return self.template()
+
+        self.page_errors = []
+
+        if self.request['REQUEST_METHOD'] == 'POST':
+            errors = self.form.validateInputs(self.request)
+            # We can't continue if there are errors
+            if errors:
+                # inject these into the form
+                self.page_errors = errors
+            else:
+                self.form.createDocument(self.request)
+
+        return template()
+
+    def openform(self):
+        return self._process_form(self.template)
 
     def openbareform(self):
-        return self.bare_template()
+        return self._process_form(self.bare_template)
 
     def addField(self):
         # specific field settings are managed as instance behaviors (using

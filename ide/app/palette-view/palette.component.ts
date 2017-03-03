@@ -97,9 +97,11 @@ export class PaletteComponent implements OnInit {
       const $wrapper = $('.palette-wrapper .mdl-tabs__panel');
       const $containers76 = $('.scrolling-container--76');
       const $containers66 = $('.scrolling-container--66');
+      const $containers0 = $('.scrolling-container--0');
       const height = parseInt($wrapper.css('height').replace('px', ''), 10);
       $containers76.css('height', `${ height - 76 }px`);
       $containers66.css('height', `${ height - 66 }px`);
+      $containers0.css('height', `${ height }px`);
     }
 
     setActiveTab(tabIndex: number):void {
@@ -117,9 +119,12 @@ export class PaletteComponent implements OnInit {
         if (activeFieldType) {
           let title: string;
           
-          if (activeFieldType  !== 'subform') {
+          if (activeFieldType !== 'subform' && activeFieldType !== 'label') {
             let tempTitle = activeFieldType.slice(7).toLowerCase();
             title = tempTitle.slice(0, 1).toUpperCase() + tempTitle.slice(1);
+          }
+          else if (activeFieldType === 'label') {
+            title = 'Label';
           }
           else {
             title = 'Subform';

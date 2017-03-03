@@ -20,7 +20,7 @@ export class ElementService {
     this.headers.append('Content-Type', 'application/json');
   }
 
-  getElement(id: string) {
+  getElement(id: string): Observable<PlominoFieldDataAPIResponse> {
     return this.http.getWithOptions(
       id, { headers: this.headers },
       'element.service.ts getElement'
@@ -29,11 +29,11 @@ export class ElementService {
 
   // Had some issues with TinyMCEComponent, had to do this instead of using getElement() method
   // XXX: This should really call the getForm_layout method on the Form object?
-  getElementFormLayout(id: string) {
+  getElementFormLayout(id: string): Observable<PlominoFormDataAPIResponse> {
     return this.http.getWithOptions(
       id, { headers: this.headers },
       'element.service.ts getElementFormLayout'
-    ).map((res: Response) => res.json().form_layout);
+    ).map((res: Response) => res.json());
   }
 
   getElementCode(url: string) {
@@ -99,8 +99,8 @@ export class ElementService {
     this.log.extra('element.service.ts getWidget');
     if (type === 'label') {
       return Observable.of(
-        `<span class="plominoLabelClass mceNonEditable"
-          ${ id ? `data-plominoid="${ id }"` : '' }>${ newTitle }</span>`
+        `<span class="plominoLabelClass mceEditable"
+          ${ id ? `data-plominoid="${ id }"` : '' }>${ newTitle || 'Untitled' }</span>`
       );
     }
     return this.http.get(

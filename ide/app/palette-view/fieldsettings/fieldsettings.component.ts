@@ -1,4 +1,7 @@
-import { Response } from '@angular/http';
+import { PlominoElementAdapterService } from './../../services/element-adapter.service';
+import { LabelsRegistryService } from './../../editors/tiny-mce/services/labels-registry.service';
+import { DraggingService } from './../../services/dragging.service';
+import { TinyMCEFormContentManagerService } from './../../editors/tiny-mce/content-manager/content-manager.service';
 import { 
   Component,
   OnInit,
@@ -24,6 +27,7 @@ import {
   FieldsService,
   WidgetService,
   PlominoFormsListService,
+  ElementService,
   FormsService
 } from '../../services';
 
@@ -51,12 +55,22 @@ export class FieldSettingsComponent implements OnInit {
 
     formSaving: boolean = false;
     macrosWidgetTimer: number = null;
+
+    fieldTitle: string;
+    labelAdvanced: boolean;
+    labelSaving: boolean;
+    $selectedElement: JQuery;
     
     constructor(private objService: ObjService,
                 private log: LogService,
                 private tabsService: TabsService,
+                private contentManager: TinyMCEFormContentManagerService,
+                private labelsRegistry: LabelsRegistryService,
+                private adapter: PlominoElementAdapterService,
                 private zone: NgZone,
                 private http: PlominoHTTPAPIService,
+                private draggingService: DraggingService,
+                private elementService: ElementService,
                 private formsService: FormsService,
                 private widgetService: WidgetService,
                 private formsList: PlominoFormsListService,
@@ -101,7 +115,9 @@ export class FieldSettingsComponent implements OnInit {
           let newUrl = this.field.url.slice(
             0, this.field.url.lastIndexOf('/') + 1) + $fieldId; 
           this.field.url = newUrl;
-          this.log.info('calling update field...', this.field, this.formAsObject($form), $fieldId);
+          this.log.info('calling update field...', 
+          this.field, this.formAsObject($form), $fieldId);
+          
           this.fieldsService.updateField(
             this.field, this.formAsObject($form), $fieldId
           );
@@ -112,9 +128,10 @@ export class FieldSettingsComponent implements OnInit {
       })
       .subscribe((responseHtml: string) => {
         this.formTemplate = responseHtml;
-        let newTitle = $(`<div>${responseHtml}</div>`)
+
+        let newTitle: string = $(`<div>${responseHtml}</div>`)
           .find('#form-widgets-IBasic-title').val();
-        let newId = $(`<div>${responseHtml}</div>`)
+        let newId: string = $(`<div>${responseHtml}</div>`)
           .find('#form-widgets-IShortName-id').val();
         
         /**
@@ -128,6 +145,12 @@ export class FieldSettingsComponent implements OnInit {
             'newTitle', newTitle,
             'newId', newId,
             'oldId', oldId);
+
+          const baseUrl = this.field.url.slice(
+            0, this.field.url.lastIndexOf('/') + 1);
+          this.labelsRegistry.replace(
+            `${baseUrl}${oldId}`, `${baseUrl}${newId}`, newTitle
+          );
           
           /* fix id of old field */
           $frame.find(`${pfc}[data-plominoid="${oldId}"]`)
@@ -146,8 +169,8 @@ export class FieldSettingsComponent implements OnInit {
           let $relatedLabel: JQuery;
           let $targetField = $frame.find(`${pfc}[data-plominoid="${newId}"]`);
 
-          this.log.info('$targetField', $targetField.get(0).outerHTML);
-          this.log.info('$targetField.parent()', $targetField.parent().get(0).outerHTML);
+          // this.log.info('$targetField', $targetField.get(0).outerHTML);
+          // this.log.info('$targetField.parent()', $targetField.parent().get(0).outerHTML);
 
           if ($targetField.length && $targetField.parent().hasClass('plominoGroupClass')) {
             $relatedLabel = $targetField.parent().find('.plominoLabelClass');
@@ -160,17 +183,30 @@ export class FieldSettingsComponent implements OnInit {
             $relatedLabel.each((i, relatedLabelNode) => {
               const $relatedLabelNode = $(relatedLabelNode);
               if ($relatedLabelNode.next().next().hasClass('plominoFieldClass')
-              && $relatedLabelNode.next().next().attr('data-plominoid') === newId) {
-                $relatedLabelNode.text(newTitle).attr('data-plominoid', newId);
+                && $relatedLabelNode.next().next().attr('data-plominoid') === newId
+              ) {
+                $relatedLabelNode.text(
+                  $relatedLabelNode.text()
+                ).attr('data-plominoid', newId);
               }
               else if ($relatedLabelNode.parent().next()
-                .children().first().hasClass('plominoFieldClass')
-              && $relatedLabelNode.parent().next()
-                .children().first().attr('data-plominoid') === newId) {
-                $relatedLabelNode.text(newTitle).attr('data-plominoid', newId);
+                  .children().first().hasClass('plominoFieldClass')
+                && $relatedLabelNode.parent().next()
+                  .children().first().attr('data-plominoid') === newId
+              ) {
+                $relatedLabelNode.text(
+                  $relatedLabelNode.text()
+                ).attr('data-plominoid', newId);
               }
             });
           }
+
+          /* fix tinymce selection plugin */
+          this.contentManager.setContent(
+            tinymce.activeEditor.id, 
+            this.contentManager.getContent(tinymce.activeEditor.id), 
+            this.draggingService
+          );
         }, 100);
         
         this.formSaving = false;
@@ -204,6 +240,30 @@ export class FieldSettingsComponent implements OnInit {
         this.tabsService.openTab(eventData, true);
     }
 
+    isLabelSettingsSaved() {
+      return true;
+    }
+
+    private updateTemporaryTitle() {
+      const selectedId = $('#form-widgets-label-relation').val();
+      const temporaryTitle = $('#form-widgets-label-fieldtitle').val();
+      this.labelsRegistry.update(
+        `${tinymce.activeEditor.id}/${selectedId}`, 
+        temporaryTitle, 'temporary_title'
+      );
+      if (!this.labelAdvanced) {
+        this.$selectedElement.html(temporaryTitle);
+        const $allTheSame = $('iframe:visible').contents()
+          .find(`.plominoLabelClass[data-plominoid="${ selectedId }"]`)
+          .filter((i, element) => element !== this.$selectedElement.get(0) 
+            && !Boolean($(element).attr('data-advanced')));
+
+        $allTheSame.html(temporaryTitle);
+        this.changeDetector.detectChanges();
+      }
+      tinymce.activeEditor.setDirty(true);
+    }
+
     private updateMacroses() {
       if (this.field) {
         window['MacroWidgetPromise'].then((MacroWidget: any) => {
@@ -232,6 +292,97 @@ export class FieldSettingsComponent implements OnInit {
       this.formsService.changePaletteTab(0);
     }
 
+    private saveLabelTitle() {
+      const title = this.fieldTitle;
+      const selectedId = $('#form-widgets-label-relation').val();
+      if (selectedId) {
+        this.labelSaving = true;
+        this.elementService.patchElement(
+          `${tinymce.activeEditor.id}/${selectedId}`, { title }
+        );
+        
+        setTimeout(() => {
+          this.labelSaving = false;
+          this.$selectedElement.html(title);
+          this.changeDetector.detectChanges();
+        }, 200);
+      }
+    }
+
+    private labelRelationSelected(eventData: Event) {
+      const selectedId = $(eventData.target).val();
+
+      this.$selectedElement.attr('data-plominoid', selectedId);
+      
+      if (!this.labelAdvanced) {
+        this.fieldTitle = this.labelsRegistry.get(
+          `${tinymce.activeEditor.id}/${selectedId}`
+        );
+
+        if (this.fieldTitle === null) {
+          this.elementService
+            .getElement(`${tinymce.activeEditor.id}/${selectedId}`)
+            .catch((error: any) => {
+              return Observable.of(null);
+            })
+            .subscribe((fieldData: PlominoFieldDataAPIResponse) => {
+              if (fieldData) {
+                this.labelsRegistry.update(
+                  `${tinymce.activeEditor.id}/${selectedId}`, fieldData.title
+                );
+                this.fieldTitle = fieldData.title;
+              }
+              else {
+                this.fieldTitle = 'Untitled';
+              }
+            });
+        }
+
+        this.$selectedElement.html(this.fieldTitle);
+        this.changeDetector.detectChanges();
+      }
+    }
+
+    private labelAdvancedChanged(eventData: Event) {
+      const selectedId = $(eventData.target).val();
+      const checked = (<HTMLInputElement> eventData.target).checked;
+      this.$selectedElement.attr('data-advanced', checked ? '1' : '');
+
+      if (selectedId && this.fieldTitle && !checked) {
+        this.$selectedElement.html(this.fieldTitle);
+      }
+
+      this.changeDetector.detectChanges();
+    }
+
+    private updateFieldTitle(field: PlominoFieldRepresentationObject) {
+      const tmpId = this.field.url.split('/').pop();
+      this.fieldTitle = this.labelsRegistry.get(field.url);
+      if (this.fieldTitle === null
+        && tmpId !== 'defaultLabel') {
+        this.elementService
+          .getElement(field.url)
+          .catch((error: any) => {
+            return Observable.of(null);
+          })
+          .subscribe((fieldData: PlominoFieldDataAPIResponse) => {
+            if (fieldData) {
+              this.labelsRegistry.update(field.url, fieldData.title, 'title', false);
+              this.fieldTitle = fieldData.title;
+            }
+            else {
+              this.fieldTitle = 'Untitled';
+            }
+          });
+      }
+      else if (tmpId === 'defaultLabel') {
+        this.fieldTitle = 'Untitled';
+      }
+
+      this.changeDetector.detectChanges();
+      // tinymce.activeEditor.setDirty(true);
+    }
+
     private loadSettings() {
       this.tabsService.getActiveField()
         .do((field) => {
@@ -241,11 +392,12 @@ export class FieldSettingsComponent implements OnInit {
 
             this.field = field;
         })
-        .flatMap((field: any) => {
+        .flatMap((field: PlominoFieldRepresentationObject) => {
+
+          this.$selectedElement = this.adapter.getSelected();
+
           if (field && field.type === 'subform') {
             const forms = this.formsList.getForms();
-
-            // console.warn('FORMS', forms);
 
             return Observable.of(
               `<div class="outer-wrapper">
@@ -269,6 +421,43 @@ export class FieldSettingsComponent implements OnInit {
               </div><!--/outer-wrapper -->`
             );
           }
+          else if (field && field.type === 'label') {
+            this.log.info('field', field);
+            this.log.extra('fieldsettings.component.ts label');
+
+            this.labelAdvanced = Boolean(this.$selectedElement.attr('data-advanced'));
+            this.updateFieldTitle(field);
+
+            setTimeout(() => {
+              const $select = $('#form-widgets-label-relation');
+              if ($select.length) {
+                const $select2 = (<any>$select).select2({
+                  placeholder: 'Select the field'
+                });
+    
+                $select.off('change.lsevents');
+                $select2.val('').trigger('change');
+                this.log.info('this.field', this.field);
+                this.log.extra('fieldsettings.component.ts ngOnInit');
+    
+                if (this.field.id) {
+                  $select2.val(this.field.id).trigger('change');
+                }
+
+                $select.on('change.lsevents', ($event) => {
+                  this.labelRelationSelected($event);
+                });
+              }
+            }, 100);
+
+            this.labelsRegistry.onUpdated()
+            .subscribe(() => {
+              this.labelAdvanced = Boolean(this.$selectedElement.attr('data-advanced'));
+              this.updateFieldTitle(field);
+            });
+
+            return Observable.of(false);
+          }
           else if (field && field.id) {
             return this.objService.getFieldSettings(field.url)
           }
@@ -276,7 +465,22 @@ export class FieldSettingsComponent implements OnInit {
             return Observable.of('');
           }
         })
-        .subscribe((template) => {
+        .subscribe((template: any) => {
+          if (!template) {
+            return;
+          }
+
+          /**
+           * patch field settings
+           */
+          const temporaryTitle = this.labelsRegistry.get(this.field.url);
+          
+          if (temporaryTitle) {
+            const $template = $(`<div>${template}</div>`);
+            $template.find('#form-widgets-IBasic-title').attr('value', temporaryTitle);
+            template = $template.html();
+          }
+
           this.formTemplate = template;
 
           setTimeout(() => {
@@ -311,7 +515,7 @@ export class FieldSettingsComponent implements OnInit {
                   url += $select2.val();
 
                   this.http.get(url, 'fieldsettings.component.ts loadSettings')
-                  .subscribe((response: Response) => {
+                  .subscribe((response: any) => {
                     this.widgetService.getGroupLayout(
                       tinymce.activeEditor.id,
                       { id: this.field.id, layout: response.json() }

@@ -1,5 +1,5 @@
 <div class="field-settings-wrapper">
-  <div class="fieldsettings--control-buttons" *ngIf="formTemplate && field.type !== 'subform'">
+  <div class="fieldsettings--control-buttons" *ngIf="formTemplate && field && field.type !== 'subform' && field.type !== 'label'">
     <a class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent mdl-color--teal-700"
        *ngIf="formTemplate"
        (click)="submitForm()">
@@ -25,8 +25,73 @@
     </a>
   </div>
   <div class="mdl-card mdl-shadow--2dp settings-alert-no-object"
-      *ngIf="!formTemplate">
+      *ngIf="!formTemplate && !(field && field.type === 'label')">
     <div class="mdl-card__supporting-text">Please select field</div>
   </div>
-  <div class="scrolling-container scrolling-container--66" #fieldForm [innerHTML]="formTemplate | safePloneHtml"></div>
+  <div
+    *ngIf="!field || (field && field.type !== 'label')"
+    class="scrolling-container"
+    [class.scrolling-container--66]="!field || (field && field.type !== 'label')"
+    [class.scrolling-container--0]="field && field.type === 'label'"
+    #fieldForm [innerHTML]="formTemplate | safePloneHtml"></div>
+  <div
+    *ngIf="field && field.type === 'label'"
+    class="scrolling-container scrolling-container--0">
+    <div class="outer-wrapper">
+      <legend style="padding: 0 10px; margin: 15px 0;">
+      Label settings</legend>
+      <div class="field" style="padding: 0 10px; margin: 15px 0;">
+        <label for="form-widgets-label-relation"
+          class="horizontal" style="display: block">Label for field</label>
+
+        <select id="form-widgets-label-relation"
+          name="form.widgets.label.relation"
+          style="width: 40%"
+          (change)="labelRelationSelected($event)"
+          class="text-widget asciiline-field">
+          <option></option>
+          <option *ngFor="let key of labelsRegistry.getRegistry().keys()"
+            [value]="key.split('/').pop()"
+            [selected]="field.url === key"
+            [innerHTML]="key.split('/').pop()">
+          </option>
+        </select>
+
+      </div>
+      <div class="field" style="padding: 0 10px; margin: 15px 0;">
+        <span class="option">
+          <input id="form-widgets-label-separate"
+          class="single-checkbox-widget required bool-field"
+          [(ngModel)]="labelAdvanced"
+          (change)="labelAdvancedChanged($event)"
+          value="selected" type="checkbox">
+          <label for="form-widgets-label-separate">
+            <span class="label" style="color: black">Advanced label</span>
+          </label>
+        </span>
+        <div class="formHelp">Use seperate title in errors and datagrids</div>
+      </div>
+      <div class="field" style="padding: 0 10px; margin: 15px 0;">
+        <label for="form-widgets-label-fieldtitle"
+          class="horizontal" style="display: block">Field title</label>
+
+        <input type="text" (input)="updateTemporaryTitle()"
+          id="form-widgets-label-fieldtitle" [(ngModel)]="fieldTitle">
+
+      </div>
+      <!--<div class="field" style="padding: 0 10px; margin: 15px 0;"
+        *ngIf="!labelAdvanced">
+        <button
+          class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent mdl-color--teal-700"
+          (click)="saveLabelTitle()">
+          <span *ngIf="labelSaving">
+            <loading class="white"></loading>
+          </span>
+          <span *ngIf="!labelSaving">
+              Save
+          </span>
+        </button>
+      </div>-->
+    </div>
+  </div>
 </div>

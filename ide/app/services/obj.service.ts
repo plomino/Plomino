@@ -1,14 +1,19 @@
+import { ElementService } from './element.service';
+import { LabelsRegistryService } from './../editors/tiny-mce/services/labels-registry.service';
 import { LogService } from './log.service';
 import { Response } from '@angular/http';
 import { PlominoHTTPAPIService } from './http-api.service';
-import { Injectable } from '@angular/core';
+import { Injectable, ChangeDetectorRef } from '@angular/core';
 import { Observable } from 'rxjs/Observable';
 
 @Injectable()
 export class ObjService {
     // For handling the injection/fetching/submission of Plomino objects
 
-    constructor(private http: PlominoHTTPAPIService, private log: LogService) {}
+    constructor(private http: PlominoHTTPAPIService, private log: LogService,
+    private elementService: ElementService,
+    private changeDetector: ChangeDetectorRef,
+    private labelsRegistry: LabelsRegistryService) {}
 
     getFieldSettings(fieldUrl: string): Observable<any> {
         return this.http.get(
@@ -39,6 +44,7 @@ export class ObjService {
       formUrl: string, formData: any
     ): Observable<{html: string, url: string}> {
       let layout = formData.get('form.widgets.form_layout');
+      const context = this;
       if (layout) {
         /**
          * this code will be running only while form saving
@@ -77,34 +83,43 @@ export class ObjService {
         });
   
         $layout.find('.plominoLabelClass').each(function () {
-          let $element = $(this);
-          let tag = $element.prop('tagName');
+          const $element = $(this);
+          const tag = $element.prop('tagName');
           let id = $element.attr('data-plominoid');
+          const theLabelIsAdvanced = Boolean($element.attr('data-advanced'));
 
-          if (!id) {
-            const $relateFieldElement = $element.parent().next();
+          if (id && !theLabelIsAdvanced) {
+            /**
+             * the label is not advanced - save its field title
+             */
+            
+            /* current element (label) text */
+            const title = $element.html();
+            const relatedFieldTitle = context.labelsRegistry.get(`${formUrl}/${id}`, 'title');
+            const relatedFieldTemporaryTitle = context.labelsRegistry.get(`${formUrl}/${id}`);
 
-            if ($relateFieldElement.hasClass('plominoFieldClass') 
-              && $relateFieldElement.attr('data-plominoid')) {
-              id = $relateFieldElement.attr('data-plominoid');
-            }
-            else if ($relateFieldElement.prop('tagName') === 'P' 
-              && $relateFieldElement.children().first().hasClass('plominoFieldClass') 
-              && $relateFieldElement.children().first().attr('data-plominoid')) {
-              id = $relateFieldElement.children().first().attr('data-plominoid');
-            }
-            else {
-              this.log.info("???????", id, tag, $element);
-              return true;
+            if (relatedFieldTemporaryTitle !== relatedFieldTitle) {
+              /**
+               * save the field title
+               */
+              context.elementService.patchElement(
+                `${formUrl}/${id}`, { title: relatedFieldTemporaryTitle }
+              ).subscribe(() => {});
+              
+              $element.html(relatedFieldTemporaryTitle);
+              context.changeDetector.detectChanges();
             }
           }
   
           if (tag === 'SPAN') {
             $element
+            .removeClass('mceEditable')
             .removeClass('mceNonEditable')
-            .removeAttr('data-plominoid')
-            .empty()
-            .text(id);
+            .removeAttr('data-plominoid');
+
+            $element.html(
+              theLabelIsAdvanced ? `${id}:${$element.html().trim()}` : id
+            );
           }
   
           if (tag === 'DIV') {
@@ -127,6 +142,22 @@ export class ObjService {
 
         formData.set('form.widgets.form_layout', $layout.html());
         $layout.remove();
+      }
+      else {
+        /**
+         * field settings saving
+         */
+        const workingId = formData.get('form.widgets.IShortName.id');
+        const newTitle = formData.get('form.widgets.IBasic.title');
+        
+        this.labelsRegistry.update(`${ formUrl }/${ workingId }`, newTitle, 'title', true);
+        this.labelsRegistry.update(`${ formUrl }/${ workingId }`, newTitle, 'temporary_title');
+
+        const $allTheSame = $('iframe:visible').contents()
+          .find(`.plominoLabelClass[data-plominoid="${ workingId }"]`)
+          .filter((i, element) => !Boolean($(element).attr('data-advanced')));
+
+        $allTheSame.html(newTitle);
       }
       
       // throw formData.get('form.widgets.form_layout');

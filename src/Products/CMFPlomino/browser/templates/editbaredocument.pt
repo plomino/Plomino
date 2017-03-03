@@ -36,16 +36,29 @@
             <form 
                 tal:define="
                     form_method python:form.getFormMethod();
+                    form_action python:view.doc.getFormAction(bare=True);
                     enctype python:(form_method == 'POST') and 'multipart/form-data'
                     "
                 tal:attributes="
                     name form/id;
-                    action python:view.doc.doc_url()+'/saveDocument';
+                    action form_action;
                     method form_method;
                     enctype enctype|nothing;
                     data-pat-plominodynamic string:url:${form/absolute_url};;docid:${view/doc/id};
                     "
                 id="plomino_form">
+
+                <div tal:condition="view/page_errors|nothing" id="validation_errors">
+                    <div id="validation_failed">
+                        <h1>Validation failed</h1>
+                        <ul id="error_list">
+                            <tal:errors repeat="e view/page_errors">
+                                <li tal:content="structure e/error"
+                                    tal:attributes="id string:error_${e/field}" />
+                            </tal:errors>
+                        </ul>
+                    </div>
+                </div>
                 
                 <span tal:content="structure python:view.doc.editWithForm(form)" />
 

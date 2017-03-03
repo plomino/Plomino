@@ -1,3 +1,4 @@
+import { PlominoElementAdapterService } from './../../../services/element-adapter.service';
 import { LogService } from './../../../services/log.service';
 import { Observable, Subject } from 'rxjs/Rx';
 import { TabsService } from './../../../services/tabs.service';
@@ -30,6 +31,7 @@ export class TinyMCEFormContentManagerService {
 
   constructor(private changeDetector: ChangeDetectorRef, 
   private logService: LogService,
+  private adapter: PlominoElementAdapterService,
   private tabsService: TabsService) {
     interface OneInTimeObservable<PlominoIFrameMouseMove> 
       extends Observable<PlominoIFrameMouseMove> {
@@ -266,6 +268,8 @@ export class TinyMCEFormContentManagerService {
     $('iframe:visible').contents().find('.drag-autopreview').remove(); // just in case
     let editor = tinymce.get(editorId);
 
+    const INSERT_EVENT_UNIQUE = Math.random().toString();
+
     if (!editor) {
       editorId = $('iframe:visible').attr('id').replace('_ifr', '');
       editor = tinymce.EditorManager.editors[editorId];
@@ -320,12 +324,12 @@ export class TinyMCEFormContentManagerService {
     }
 
     if ($(contentHTML).hasClass('plominoActionClass')
-      || $(contentHTML).hasClass('plominoFieldClass')
-      || $(contentHTML).hasClass('plominoLabelClass')) {
+      || $(contentHTML).hasClass('plominoFieldClass')) {
       contentHTML = `<p>${contentHTML}</p>`;
     }
-
-    console.log(target, options);
+    else if ($(contentHTML).hasClass('plominoLabelClass')) {
+      contentHTML = `<p contenteditable="false">${contentHTML}</p>`;
+    }
     
     if (options && !options.target) {
       const a = editor.getContent().length;
@@ -353,13 +357,14 @@ export class TinyMCEFormContentManagerService {
           'target', target,
           'lastInsert', lastInsert);
         if (this.rangeAccepted(range)) {
+          $content.attr('data-event-unique', INSERT_EVENT_UNIQUE)
           range.insertNode($content.get(0));
         }
         else {
           $content[
             lastInsert || !dragging.targetSideBottom 
             ? 'insertBefore': 'insertAfter'
-          ]($(target));
+          ]($(target)).attr('data-event-unique', INSERT_EVENT_UNIQUE);
         }
         
         $('iframe:visible').contents().click();
@@ -376,6 +381,23 @@ export class TinyMCEFormContentManagerService {
     this.setContent(editorId, this.getContent(editorId), dragging);
     editor.setDirty(true);
     this.log('insertContent contentHTML', contentHTML);
+
+    if ($(contentHTML).html().indexOf('data-plominoid="defaultLabel"') !== -1) {
+      /** if content is a label then click on it to show settings */
+      const $label = $('iframe:visible').contents()
+        .find('.plominoLabelClass').filter(function () {
+          return INSERT_EVENT_UNIQUE === $(this).parent().attr('data-event-unique');
+        });
+      
+      if ($label.length) {
+        this.adapter.select($label);
+        this.tabsService.selectField(
+          { id: 'defaultLabel', parent: editorId, type: 'label' }
+        );
+  
+        $('a[href="#palette-tab-1-panel"] > span').click();
+      }
+    }
   }
 
   selectDOM(editorId: any, selector: string): HTMLElement[] {
@@ -394,6 +416,16 @@ export class TinyMCEFormContentManagerService {
       return editor.selection.select(contentHTML);
     } catch (e) {
       this.log('selectContent content cannot be selected contentHTML', contentHTML);
+      return false;
+    }
+  }
+
+  setSelectionContent(editorId: any, contentHTML: any): any {
+    const editor = tinymce.get(editorId);
+    try {
+      return editor.selection.setContent(contentHTML);
+    } catch (e) {
+      this.log('selectContent content cannot be setted contentHTML', contentHTML);
       return false;
     }
   }
