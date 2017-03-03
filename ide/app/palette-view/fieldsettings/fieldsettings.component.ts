@@ -240,8 +240,23 @@ export class FieldSettingsComponent implements OnInit {
         this.tabsService.openTab(eventData, true);
     }
 
-    isLabelSettingsSaved() {
-      return true;
+    private openFormTab(formId: string) {
+      this.elementService.getElementFormLayout(`../../${ formId }`)
+      .subscribe((formData) => {
+        this.tabsService.openTab({
+          // formUniqueId: response.formUniqueId,
+          editor: 'layout',
+          label: formData.title,
+          url: formData['@id'],
+          path: [{
+              name: formData.title,
+              type: 'Forms'
+          }]
+        });
+
+        this.formsService.changePaletteTab(0);
+        this.field = null;
+      });
     }
 
     private updateTemporaryTitle() {
@@ -383,6 +398,11 @@ export class FieldSettingsComponent implements OnInit {
       // tinymce.activeEditor.setDirty(true);
     }
 
+    private getSelectedSubform() {
+      const $select: any = $('#form-widgets-subform-id');
+      return $select.select2().val();
+    }
+
     private loadSettings() {
       this.tabsService.getActiveField()
         .do((field) => {
@@ -411,6 +431,8 @@ export class FieldSettingsComponent implements OnInit {
                 if (this.field.id && this.field.id !== 'Subform') {
                   $select2.val(this.field.id).trigger('change');
                 }
+
+                this.changeDetector.detectChanges();
                 
                 $select.on('change.sfevents', (event) => {
                   /**
@@ -447,6 +469,8 @@ export class FieldSettingsComponent implements OnInit {
                             $select2.val(this.field.id).trigger('change');
                           }
                         }
+
+                        this.changeDetector.detectChanges();
                       });
                     })
                   }
