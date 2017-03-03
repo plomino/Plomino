@@ -141,6 +141,22 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
       this.changeDetector.markForCheck();
     });
 
+    this.tabsService.getActiveField()
+    .subscribe((fieldData: any) => {
+      if (fieldData && fieldData.type === 'PlominoField'
+        && fieldData.id && fieldData.url.replace(`/${ fieldData.id }`, '') === this.id
+      ) {
+        const $body = $(tinymce.get(this.id).getBody());
+        let $element = $body.find(`.plominoFieldClass[data-plominoid="${ fieldData.id }"]`);
+        if ($element.length) {
+          if ($element.closest('.plominoGroupClass').length) {
+            $element = $element.closest('.plominoGroupClass');
+          }
+          $body.animate({ scrollTop: $element.offset().top }, 'slow');
+        }
+      }
+    });
+
     this.fieldsService.listenToUpdates()
     .subscribe((updateData) => { this.updateField(updateData); });
 

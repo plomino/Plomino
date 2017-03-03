@@ -136,6 +136,7 @@ export class DraggingService {
 
           $dragCursor.attr('id', 'drag-data-cursor');
           $dragCursor.css('pointer-events', 'none');
+          $dragCursor.css('transform', 'translate3d(0, 0, 0)');
           $('body').append($dragCursor);
 
           this.startDragging(
