@@ -642,7 +642,7 @@ export class WidgetService {
       $id = tmpId;
     }
 
-    this.log.info('convertLabel', $id, `${ base }/${ $id }`, 
+    this.log.info('convertLabel', $class, $id, `${ base }/${ $id }`, 
       labelsRegistry ? labelsRegistry.get(`${ base }/${ $id }`) : null, template);
     this.log.extra('widget.service.ts convertLabel');
 

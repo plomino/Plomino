@@ -25,11 +25,11 @@
     </a>
   </div>
   <div class="mdl-card mdl-shadow--2dp settings-alert-no-object"
-      *ngIf="!formTemplate && !(field && field.type === 'label')">
+      *ngIf="!formTemplate && !(field && field.type === 'label') && !(field && field.type === 'subform')">
     <div class="mdl-card__supporting-text">Please select field</div>
   </div>
   <div
-    *ngIf="!field || (field && field.type !== 'label')"
+    *ngIf="!field || (field && field.type !== 'label' && field.type !== 'subform')"
     class="scrolling-container"
     [class.scrolling-container--66]="!field || (field && field.type !== 'label')"
     [class.scrolling-container--0]="field && field.type === 'label'"
@@ -46,17 +46,20 @@
 
         <select id="form-widgets-subform-id"
           name="form.widgets.subform.id"
+          #selectedFormId
           class="text-widget asciiline-field">
           <option></option>
           <option
-            *ngFor="let form of formsList.getFiltered(form.url)"
+            *ngFor="let form of formsList.getFiltered()"
             [value]="form.url.split('/').pop()"
             [innerHTML]="form.label">
         </select>
 
       </div>
       <div class="field" style="padding: 0 10px; margin: 15px 0;">
-        <button class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored">
+        <button class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored"
+          (click)="openFormTab(getSelectedSubform())"
+          [disabled]="!getSelectedSubform()">
           Edit Subform
         </button>
       </div>
