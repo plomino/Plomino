@@ -13,4 +13,8 @@ export class PlominoFormsListService {
   getForms() {
     return this.forms;
   }
+
+  getFiltered(url: string) {
+    return this.getForms().filter((form) => tinymce.activeEditor.id !== url);
+  }
 }

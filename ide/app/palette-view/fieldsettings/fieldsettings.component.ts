@@ -397,29 +397,63 @@ export class FieldSettingsComponent implements OnInit {
           this.$selectedElement = this.adapter.getSelected();
 
           if (field && field.type === 'subform') {
-            const forms = this.formsList.getForms();
-
-            return Observable.of(
-              `<div class="outer-wrapper">
-                <legend style="padding: 0 10px; margin: 15px 0;">
-                Subform settings</legend>
-                <div class="field" style="padding: 0 10px; margin: 15px 0;">
-                  <label for="form-widgets-subform-id"
-                    class="horizontal" style="display: block">Select form</label>
-
-                  <select id="form-widgets-subform-id"
-                    name="form.widgets.subform.id"
-                    class="text-widget asciiline-field">
-                    <option></option>
-                    ${ forms
-                      .filter((form) => tinymce.activeEditor.id !== form.url)
-                      .map((form) => `<option value="${form.url.split('/').pop()}">
-                      ${form.label}</option>`).join('') }
-                  </select>
-
-                </div>
-              </div><!--/outer-wrapper -->`
-            );
+            setTimeout(() => {
+              const $select = $('#form-widgets-subform-id');
+              if ($select.length) {
+                const $select2 = (<any>$select).select2({
+                  placeholder: 'Select the form'
+                });
+  
+                $select.off('change.sfevents');
+                $select2.val('').trigger('change');
+                this.log.info(this.field);
+  
+                if (this.field.id && this.field.id !== 'Subform') {
+                  $select2.val(this.field.id).trigger('change');
+                }
+                
+                $select.on('change.sfevents', (event) => {
+                  /**
+                   * receipt:
+                   * 1. value of select2 - [ok]
+                   * 2. reference to subform element - [ok]
+                   * 3. current form url - [tinymce.activeEditor.id]
+                   */
+                  $('iframe:visible').contents()
+                    .find('[data-mce-selected="1"]')
+                    .attr('data-plominoid', $select2.val());
+  
+                  if ($select2.val() && tinymce.activeEditor.id) {
+                    let url = tinymce.activeEditor.id;
+                    url += '/@@tinyform/example_widget?widget_type=subform&id=';
+                    url += $select2.val();
+  
+                    this.http.get(url, 'fieldsettings.component.ts loadSettings')
+                    .subscribe((response: any) => {
+                      this.widgetService.getGroupLayout(
+                        tinymce.activeEditor.id,
+                        { id: this.field.id, layout: response.json() }
+                      )
+                      .subscribe((result: string) => {
+                        try {
+                          const subformHTML = $($(result).html()).html();
+                          $('iframe:visible').contents()
+                            .find('[data-mce-selected="1"]').html(subformHTML);
+                          tinymce.activeEditor.setDirty(true);
+                        }
+                        catch (e) {
+                          $select2.val('').trigger('change');
+                          if (this.field.id && this.field.id !== 'Subform') {
+                            $select2.val(this.field.id).trigger('change');
+                          }
+                        }
+                      });
+                    })
+                  }
+                });
+              }
+            }, 100);
+            return Observable.of(false);
           }
           else if (field && field.type === 'label') {
             this.log.info('field', field);
@@ -482,63 +516,6 @@ export class FieldSettingsComponent implements OnInit {
           }
 
           this.formTemplate = template;
-
-          setTimeout(() => {
-            const $select = $('#form-widgets-subform-id');
-            if ($select.length) {
-              const $select2 = (<any>$select).select2({
-                placeholder: 'Select the form'
-              });
-
-              $select.off('change.sfevents');
-              $select2.val('').trigger('change');
-              this.log.info(this.field);
-
-              if (this.field.id && this.field.id !== 'Subform') {
-                $select2.val(this.field.id).trigger('change');
-              }
-              
-              $select.on('change.sfevents', (event) => {
-                /**
-                 * receipt:
-                 * 1. value of select2 - [ok]
-                 * 2. reference to subform element - [ok]
-                 * 3. current form url - [tinymce.activeEditor.id]
-                 */
-                $('iframe:visible').contents()
-                  .find('[data-mce-selected="1"]')
-                  .attr('data-plominoid', $select2.val());
-
-                if ($select2.val() && tinymce.activeEditor.id) {
-                  let url = tinymce.activeEditor.id;
-                  url += '/@@tinyform/example_widget?widget_type=subform&id=';
-                  url += $select2.val();
-
-                  this.http.get(url, 'fieldsettings.component.ts loadSettings')
-                  .subscribe((response: any) => {
-                    this.widgetService.getGroupLayout(
-                      tinymce.activeEditor.id,
-                      { id: this.field.id, layout: response.json() }
-                    )
-                    .subscribe((result: string) => {
-                      try {
-                        const subformHTML = $($(result).html()).html();
-                        $('iframe:visible').contents()
-                          .find('[data-mce-selected="1"]').html(subformHTML);
-                        tinymce.activeEditor.setDirty(true);
-                      }
-                      catch (e) {
-                        $select2.val('').trigger('change');
-                        if (this.field.id && this.field.id !== 'Subform') {
-                          $select2.val(this.field.id).trigger('change');
-                        }
-                      }
-                    });
-                  })
-                }
-              });
-            }
-          }, 100);
           
           this.updateMacroses();
           this.changeDetector.detectChanges();

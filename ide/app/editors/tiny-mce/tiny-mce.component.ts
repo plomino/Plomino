@@ -440,21 +440,26 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
       /**
        * when markup changed on any plominoLabelClass element
        */
-      const hasMarkup = $element.text().trim() !== $element.html().trim();
+      const a = $element.text().replace(/\s+/g, ' ').trim();
+      const b = $element.html().replace(/&nbsp;/g, ' ').replace(/\s+/g, ' ').trim();
+      const hasMarkup = a !== b;
       const dataAdvanced = Boolean($element.attr('data-advanced'));
 
       if (hasMarkup || (dataAdvanced && !hasMarkup)) {
         this.log.info('label markup inserted', $element);
         this.log.extra('tiny-mce.component.ts');
         
-        $element.attr('data-advanced', '1');
-  
-        const selectedId = $element.attr('data-plominoid');
-        const temporaryTitle = $element.html();
-  
-        this.labelsRegistry.update(
-          `${ this.id }/${ selectedId }`, temporaryTitle, 'just_in_case'
-        );
+        if (hasMarkup) {
+          $element.attr('data-advanced', '1');
+        }
+        else {
+          const selectedId = $element.attr('data-plominoid');
+          const temporaryTitle = $element.html();
+    
+          this.labelsRegistry.update(
+            `${ this.id }/${ selectedId }`, temporaryTitle, 'temporary_title'
+          ); 
+        }
       }
     });
   }
