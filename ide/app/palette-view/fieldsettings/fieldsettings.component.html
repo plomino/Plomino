@@ -35,6 +35,34 @@
     [class.scrolling-container--0]="field && field.type === 'label'"
     #fieldForm [innerHTML]="formTemplate | safePloneHtml"></div>
   <div
+    *ngIf="field && field.type === 'subform'"
+    class="scrolling-container scrolling-container--0">
+    <div class="outer-wrapper">
+      <legend style="padding: 0 10px; margin: 15px 0;">
+      Subform settings</legend>
+      <div class="field" style="padding: 0 10px; margin: 15px 0;">
+        <label for="form-widgets-subform-id"
+          class="horizontal" style="display: block">Select form</label>
+
+        <select id="form-widgets-subform-id"
+          name="form.widgets.subform.id"
+          class="text-widget asciiline-field">
+          <option></option>
+          <option
+            *ngFor="let form of formsList.getFiltered(form.url)"
+            [value]="form.url.split('/').pop()"
+            [innerHTML]="form.label">
+        </select>
+
+      </div>
+      <div class="field" style="padding: 0 10px; margin: 15px 0;">
+        <button class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored">
+          Edit Subform
+        </button>
+      </div>
+    </div><!--/outer-wrapper -->
+  </div>
+  <div
     *ngIf="field && field.type === 'label'"
     class="scrolling-container scrolling-container--0">
     <div class="outer-wrapper">
