@@ -1,3 +1,4 @@
+import { LogService } from './log.service';
 import {Injectable} from '@angular/core';
 
 import {Subject, Observable, } from 'rxjs/Rx'
@@ -7,7 +8,8 @@ export class FormsService {
     private paletteTabChangeEventSource: Subject<any> = new Subject();
     private formSettingsSaveEventSource: Subject<any> = new Subject();
     private formContentSaveEventSource: Subject<any> = new Subject();
-    private formIdChangedEventSource: Subject<any> = new Subject();
+    private formIdChangedEventSource: Subject<{oldId: any, newId: any}> 
+      = new Subject<{oldId: any, newId: any}>();
     private getFormContentBeforeSaveSource: Subject<any> = new Subject();
     private onFormContentBeforeSaveSource: Subject<any> = new Subject();
 
@@ -16,7 +18,7 @@ export class FormsService {
     paletteTabChange$: Observable<any> = this.paletteTabChangeEventSource.asObservable();
     formSettingsSave$: Observable<any> = this.formSettingsSaveEventSource.asObservable();
     formContentSave$: Observable<any> = this.formContentSaveEventSource.asObservable();
-    formIdChanged$: Observable<any> = this.formIdChangedEventSource.asObservable();
+    formIdChanged$: Observable<{oldId: any, newId: any}> = this.formIdChangedEventSource.asObservable();
     getFormContentBeforeSave$: Observable<any> = this.getFormContentBeforeSaveSource.asObservable();
     onFormContentBeforeSave$: Observable<any> = this.onFormContentBeforeSaveSource.asObservable();
 
@@ -24,7 +26,7 @@ export class FormsService {
     formContentSaving: boolean = false;
     formSaving: boolean = false;
 
-    constructor() {
+    constructor(private log: LogService) {
 
     }
 
@@ -46,7 +48,8 @@ export class FormsService {
     }
 
     saveForm(id: any, changeTab = true) {
-        console.info('saveForm called, this.formSaving', this.formSaving);
+        this.log.info('saveForm called, this.formSaving', this.formSaving);
+        
         if (this.formSaving) return;
         this.formSaving = true;
 

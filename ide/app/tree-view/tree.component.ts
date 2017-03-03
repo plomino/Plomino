@@ -52,6 +52,11 @@ export class TreeComponent implements OnInit {
             });
     }
 
+    getCollapseState(collapseVar: any, selected: boolean) {
+      return typeof collapseVar === 'undefined' && !selected 
+        ? true : (collapseVar === null ? false : (collapseVar === true));
+    }
+
     isItSelected(name: any) {
         if (name === this.selected){
             if (this.selected != this.previousSelected) {
@@ -65,6 +70,14 @@ export class TreeComponent implements OnInit {
 
     selectDBSettingsTab() {
       this.formsService.changePaletteTab(3);
+    }
+
+    dragSubform(selected: boolean, mouseEvent: MouseEvent, 
+    typeLabel: string, typeNameUrl: string) {
+      if (tinymce.activeEditor && selected && typeLabel === 'Forms' 
+        && typeNameUrl !== tinymce.activeEditor.id) {
+        this.draggingService.subformDragEvent.next(mouseEvent);
+      }
     }
 
     getTypeImage(childName: any) {

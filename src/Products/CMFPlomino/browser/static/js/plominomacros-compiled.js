@@ -328,3 +328,6 @@ require([
  });
     return PlominoMacros;
 });
+
+define("/Users/dylanjay/Projects/collective/Plomino2/src/Products/CMFPlomino/browser/static/js/macros.js", function(){});
+

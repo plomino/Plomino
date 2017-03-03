@@ -46,14 +46,15 @@
             
             <li *ngFor="let typeName of data"
                 class="tree-node--collapsible click-cursor"
-                [class.closed]="typeName.collapsed"
+                (mousedown)="dragSubform(selected, $event, typeName.typeLabel, typeName.url)"
+                [class.closed]="getCollapseState(typeName.collapsed, selected && (typeName.url === selected.url))"
                 (click)="typeName.typeLabel !== 'Forms' || onEdit({formUniqueId: typeName.formUniqueId, label:typeName.label, url:typeName.url, editor:'layout',path:[{name:typeName.label,type:typeName.typeLabel}]})"
                 [class.hasChild]="typeName.children.length !== 0">
 
                 <span class="tree-node--name"
                     #selectable
                     [class.selected]="selected && (typeName.url === selected.url)" 
-                    (click)="typeName.collapsed = !typeName.collapsed">
+                    (click)="typeName.collapsed = !getCollapseState(typeName.collapsed, selected && (typeName.url === selected.url))">
                     
                     <span class="tree-node__child-type-image">
                       <img [src]="getTypeImage(typeName)">
@@ -62,7 +63,7 @@
                     {{ typeName.url | extractName }}
                 </span>
                 
-                <ul [collapse]="typeName.collapsed" *ngIf="typeName.children.length">
+                <ul [collapse]="getCollapseState(typeName.collapsed, selected && (typeName.url === selected.url))" *ngIf="typeName.children.length">
                     <li *ngFor="let childName of typeName.children">
 
                         <span #selectable 

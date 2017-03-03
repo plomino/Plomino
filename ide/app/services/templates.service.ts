@@ -1,44 +1,93 @@
+import { PlominoHTTPAPIService } from './http-api.service';
 import { WidgetService } from './widget.service';
 import { Injectable } from '@angular/core';
-
-import { 
-  Http, 
-  Response 
-} from '@angular/http';
-
+import { Response } from '@angular/http';
 import { Observable, Subject } from 'rxjs/Rx';
 
 @Injectable()
 export class TemplatesService {
-  $insertion: Subject<any> = new Subject();
+  $insertion: Subject<InsertTemplateEvent> = new Subject<InsertTemplateEvent>();
   templatesRegistry = {};
 
-  constructor(private http: Http, private widgetService: WidgetService) {}
+  constructor(private http: PlominoHTTPAPIService, private widgetService: WidgetService) {}
   
   addTemplate(formUrl: string, templateId: string): Observable<any> {
     return templateId ? 
-      this.http.get(`${formUrl}/add-template?id=${templateId}`).map(this.extractData):
+      this.http.get(
+        `${formUrl}/add-template?id=${templateId}`,
+        'templates.service.ts addTemplate'
+      ).map(this.extractData):
       Observable.of('');
   }
 
+  fixCustomTemplate(template: PlominoFormGroupTemplate) {
+    /**
+     * this code fixing custom templates and removing groups from them
+     */
+    const $layout = $(`<div>${template.layout}</div>`);
+    $layout.find('[data-groupid]').each((i, divGroup) => {
+      const $divGroup = $(divGroup);
+      $divGroup.replaceWith($divGroup.html());
+    });
+
+    $layout.find('span.mceEditable').each((i, mceEditable) => {
+      const $mceEditable = $(mceEditable);
+      $mceEditable.replaceWith($mceEditable.html());
+    });
+
+    // $layout.find('input,textarea,button')
+    //   .removeAttr('name').removeAttr('id');
+
+    template.layout = $layout.html();
+
+    // template.group_contents = template.group_contents.map((groupContent) => {
+    //   const $contentLayout = $(`<div>${groupContent.layout}</div>`);
+    //   $contentLayout.find('input,textarea,button')
+    //     .removeAttr('name').removeAttr('id');
+    //   groupContent.layout = $contentLayout.html();
+    //   return groupContent;
+    // });
+
+    return template;
+  }
+
+  fixBuildedTemplate(templateHTML: string) {
+    const $result = $(templateHTML);
+    $result.find('.plominoLabelClass').each((i, pLabel) => {
+      const $pLabel = $(pLabel);
+      const $pLabelParent = $pLabel.parent();
+
+      $pLabelParent.attr('contenteditable', 'false');
+
+      if ($pLabelParent.hasClass('mceEditable') && $pLabel.next().length
+      && $pLabel.next().prop('tagName') === 'BR'
+      && $pLabelParent.next().length
+      && $pLabelParent.next().prop('tagName') === 'BR') {
+        $pLabelParent.next().remove();
+      }
+    }); 
+
+    return $result.get(0).outerHTML;
+  }
+
   buildTemplate(formUrl: string, template: PlominoFormGroupTemplate): void {
-    if (template.title === "template_dummy2")
-      console.info('buildTemplate', 'formUrl', formUrl, 'template', template);
     if (!this.templatesRegistry.hasOwnProperty(formUrl)) {
       this.templatesRegistry[formUrl] = {};
     }
 
+    template = this.fixCustomTemplate(template);
+    
     this.widgetService
     .loadAndParseTemplatesLayout(formUrl, template)
     .subscribe((result: string) => {
-      if (template.title === "template_dummy2")
-        console.info('result builded', result);
       const $result = $(result);
       $result.addClass('drag-autopreview');
       $result.find('input,textarea,button').removeAttr('name').removeAttr('id');
       $result.find('span').removeAttr('data-plominoid').removeAttr('data-mce-resize');
       $result.removeAttr('data-groupid');
-      this.templatesRegistry[formUrl][template.id] = $result.get(0).outerHTML;
+
+      this.templatesRegistry[formUrl][template.id] = 
+        this.fixBuildedTemplate($result.get(0).outerHTML);
     });
   }
 
@@ -65,14 +114,17 @@ export class TemplatesService {
   }
 
   getTemplates(formUrl: string): Observable<any> {
-    return this.http.get(`${formUrl}/@@list-templates`).map(this.extractData);
+    return this.http.get(
+      `${formUrl}/@@list-templates`,
+      'templates.service.ts getTemplates'
+    ).map(this.extractData);
   }
 
-  insertTemplate(templateData: any): void {
+  insertTemplate(templateData: InsertTemplateEvent): void {
     this.$insertion.next(templateData);
   }
 
-  getInsertion(): Observable<any> {
+  getInsertion(): Observable<InsertTemplateEvent> {
     return this.$insertion.asObservable();
   }
 

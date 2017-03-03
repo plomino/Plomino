@@ -1,3 +1,4 @@
+import { LabelsRegistryService } from './editors/tiny-mce/services/labels-registry.service';
 import { 
   TinyMCEFormContentManagerService
 } from './editors/tiny-mce/content-manager/content-manager.service';
@@ -39,7 +40,9 @@ import {
 } from './editors';
 
 // Services
-import { 
+import {
+  LogService,
+  PlominoHTTPAPIService,
   TreeService,
   ElementService,
   ObjService,
@@ -47,8 +50,10 @@ import {
   FieldsService,
   DraggingService,
   TemplatesService,
+  PlominoElementAdapterService,
   WidgetService,
-  FormsService
+  FormsService,
+  PlominoFormsListService
 } from './services';
 
 // Pipes 
@@ -84,6 +89,8 @@ import { LoadingComponent } from "./editors/loading/loading.component";
     ResizeDividerComponent
   ],
   providers: [
+    LogService,
+    PlominoHTTPAPIService,
     TreeService, 
     ElementService, 
     ObjService, 
@@ -93,7 +100,10 @@ import { LoadingComponent } from "./editors/loading/loading.component";
     TemplatesService,
     WidgetService,
     FormsService,
-    TinyMCEFormContentManagerService
+    PlominoFormsListService,
+    TinyMCEFormContentManagerService,
+    PlominoElementAdapterService,
+    LabelsRegistryService
   ],
   pipes: [ExtractNamePipe],
   animations: [
@@ -117,6 +127,7 @@ export class AppComponent implements OnInit, AfterViewInit {
 
   data: any;
   selectedField: IField;
+  selected: any;
   tabs: Array<any> = [];
 
   isModalOpen: boolean = false;
@@ -138,6 +149,7 @@ export class AppComponent implements OnInit, AfterViewInit {
     private objService: ObjService,
     private tabsService: TabsService,
     private draggingService: DraggingService,
+    private formsList: PlominoFormsListService,
     private zone: NgZone,
     private changeDetector: ChangeDetectorRef) {
       window['jquery'] = jQuery;
@@ -187,6 +199,7 @@ export class AppComponent implements OnInit, AfterViewInit {
       
       /* extracting children of children */
       this.data = topFormsViewsList;
+      this.formsList.setForms(topFormsViewsList);
     });
     
     this.tabsService
@@ -273,9 +286,11 @@ export class AppComponent implements OnInit, AfterViewInit {
     const $wrapper = $('.palette-wrapper .mdl-tabs__panel');
     const $containers76 = $('.scrolling-container--76');
     const $containers66 = $('.scrolling-container--66');
+    const $containers0 = $('.scrolling-container--0');
     const height = parseInt($wrapper.css('height').replace('px', ''), 10);
     $containers76.css('height', `${ height - 76 }px`);
     $containers66.css('height', `${ height - 66 }px`);
+    $containers0.css('height', `${ height }px`);
   }
 
   resizeTree(event: { directions: string[], difference: {x: number, y: number} }) {

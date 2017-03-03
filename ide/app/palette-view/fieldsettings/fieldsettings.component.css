@@ -24,3 +24,7 @@
 .mdl-button--accent {
     margin-right: 16px;
 }
+
+/deep/.outer-wrapper .select2-container {
+  width: 50% !important;
+}

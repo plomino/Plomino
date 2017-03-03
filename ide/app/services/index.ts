@@ -1,3 +1,6 @@
+export { LogService } from './log.service';
+export { PlominoHTTPAPIService } from './http-api.service';
+export { PlominoElementAdapterService } from './element-adapter.service';
 export { ElementService } from './element.service';
 export { ObjService } from './obj.service';
 export { TreeService } from './tree.service';
@@ -7,3 +10,4 @@ export { DraggingService } from './dragging.service';
 export { TemplatesService } from './templates.service';
 export { WidgetService } from './widget.service';
 export { FormsService } from './forms.service'
+export { PlominoFormsListService } from './forms-list.service'

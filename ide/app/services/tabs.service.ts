@@ -1,3 +1,5 @@
+import { PlominoElementAdapterService } from './element-adapter.service';
+import { LogService } from './log.service';
 import { 
   Injectable,
   NgZone 
@@ -22,7 +24,8 @@ export class TabsService {
   private tree: any;
 
   constructor(private treeService: TreeService,
-              private zone: NgZone) {
+  private adapter: PlominoElementAdapterService,
+  private log: LogService, private zone: NgZone) {
     this.treeService.getTree()
       .subscribe((tree) => {
         this.tree = tree;
@@ -32,15 +35,44 @@ export class TabsService {
   selectField(fieldData: { id: string, type: string, parent: string }): void {
     let field: any = null;
 
-    if (fieldData && fieldData.id) {
-      field = Object.assign({}, { 
-        id: fieldData.id, 
-        url: `${fieldData.parent}/${fieldData.id}`, 
-        type: fieldData.type 
-      });
-    }
+    // this.log.info('selectField', fieldData, this.adapter.getSelectedBefore());
 
-    this.activeField$.next(field);
+    if (fieldData && !fieldData.id && fieldData.type === 'subform') {
+      setTimeout(() => {
+        const $selected = $('iframe:visible').contents()
+          .find('[data-mce-selected="1"]');
+        this.log.info('hacked id', $selected.data('plominoid'));
+        fieldData.id = $selected.data('plominoid');
+
+        if (typeof fieldData.id === 'undefined' 
+        && $selected.hasClass('plominoSubformClass')) {
+          fieldData.id = 'Subform';
+        }
+
+        if (fieldData && fieldData.id) {
+        
+          field = Object.assign({}, { 
+            id: fieldData.id, 
+            url: `${fieldData.parent}/${fieldData.id}`, 
+            type: fieldData.type 
+          });
+        }
+    
+        this.activeField$.next(field);
+      }, 100);
+    }
+    else {
+      if (fieldData && fieldData.id) {
+        
+        field = Object.assign({}, { 
+          id: fieldData.id, 
+          url: `${fieldData.parent}/${fieldData.id}`, 
+          type: fieldData.type 
+        });
+      }
+  
+      this.activeField$.next(field);
+    }
   }
 
   getActiveField(): Observable<any> {

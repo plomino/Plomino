@@ -1,3 +1,5 @@
+import { PlominoElementAdapterService } from './../../../services/element-adapter.service';
+import { LogService } from './../../../services/log.service';
 import { Observable, Subject } from 'rxjs/Rx';
 import { TabsService } from './../../../services/tabs.service';
 import { DraggingService } from './../../../services/dragging.service';
@@ -5,7 +7,7 @@ import { Injectable, ChangeDetectorRef } from '@angular/core';
 
 @Injectable()
 export class TinyMCEFormContentManagerService {
-  private logLevel = 4;
+  private logLevel = 0;
 
   private iframeMouseMoveEvents: Subject<PlominoIFrameMouseMove> 
     = new Subject<PlominoIFrameMouseMove>();
@@ -28,6 +30,8 @@ export class TinyMCEFormContentManagerService {
     = this.iframeGroupMouseLeaveEvents.asObservable();
 
   constructor(private changeDetector: ChangeDetectorRef, 
+  private logService: LogService,
+  private adapter: PlominoElementAdapterService,
   private tabsService: TabsService) {
     interface OneInTimeObservable<PlominoIFrameMouseMove> 
       extends Observable<PlominoIFrameMouseMove> {
@@ -56,7 +60,7 @@ export class TinyMCEFormContentManagerService {
         const range = 
           this.getCaretRangeFromMouseEvent(editorId, originalEvent);
           
-        console.info('range', range.startContainer, range.startOffset,
+        this.logService.info('range', range.startContainer, range.startOffset,
           range.commonAncestorContainer);
 
         const currentDragCode = dragging.currentDraggingTemplateCode;
@@ -173,7 +177,7 @@ export class TinyMCEFormContentManagerService {
 
   log(func = 'null', msg = 'empty', requiredLevel = 1) {
     if (this.logLevel >= requiredLevel) {
-      console.info(func, msg);
+      this.logService.info(func, msg);
     }
   }
 
@@ -185,9 +189,8 @@ export class TinyMCEFormContentManagerService {
       editor = tinymce.EditorManager.editors[editorId];
     }
 
-    if (!/<br\040?\/?>(\s+)?$/ig.test(contentHTML)) {
-      contentHTML = contentHTML + '<br>';
-    }
+    contentHTML = contentHTML.replace(/(<p>&nbsp;<\/p>(\s+)?)+?$/i, '');
+    contentHTML = contentHTML + ('<p>&nbsp;</p>'.repeat(60));
 
     editor.setContent(contentHTML);
     this.log('setContent contentHTML', contentHTML, 3);
@@ -235,10 +238,7 @@ export class TinyMCEFormContentManagerService {
       editor = tinymce.EditorManager.editors[editorId];
     }
     const content = editor.getContent();
-
-    return (/<br\040?\/?>(\s+)?$/ig.test(content)) 
-      ? content.replace(/<br\040?\/?>(\s+)?$/ig, '') 
-      : content;
+    return content.replace(/(<p>&nbsp;<\/p>(\s+)?)+?$/i, '');
   }
 
   selectAndRemoveElementById(editorId: any, elementId: string): void {
@@ -268,6 +268,8 @@ export class TinyMCEFormContentManagerService {
     $('iframe:visible').contents().find('.drag-autopreview').remove(); // just in case
     let editor = tinymce.get(editorId);
 
+    const INSERT_EVENT_UNIQUE = Math.random().toString();
+
     if (!editor) {
       editorId = $('iframe:visible').attr('id').replace('_ifr', '');
       editor = tinymce.EditorManager.editors[editorId];
@@ -284,13 +286,13 @@ export class TinyMCEFormContentManagerService {
     }
 
     if (/hidewhenclass/ig.test(contentHTML)) {
-      console.info('this is hidewhen insertion');
+      this.logService.info('this is hidewhen insertion');
       const $target = $(target);
       if (target && $target.hasClass('plominoGroupClass')) {
         /**
          * split hidewhen on 2 different spans
          */
-        console.info('target ok and target is plominoGroupClass');
+        this.logService.info('target ok and target is plominoGroupClass');
         let spans = contentHTML.split('</span>&nbsp;');
         if (spans.length > 1) {
           spans[0] = spans[0] + '</span>';
@@ -313,7 +315,7 @@ export class TinyMCEFormContentManagerService {
         return;
       }
       else {
-        console.info('not target ok and target is plominoGroupClass',
+        this.logService.info('not target ok and target is plominoGroupClass',
         'target', $(target).get(0).outerHTML,
         '$(target).hasClass(\'plominoGroupClass\')',
         $(target).hasClass('plominoGroupClass'));
@@ -322,12 +324,12 @@ export class TinyMCEFormContentManagerService {
     }
 
     if ($(contentHTML).hasClass('plominoActionClass')
-      || $(contentHTML).hasClass('plominoFieldClass')
-      || $(contentHTML).hasClass('plominoLabelClass')) {
+      || $(contentHTML).hasClass('plominoFieldClass')) {
       contentHTML = `<p>${contentHTML}</p>`;
     }
-
-    console.log(target, options);
+    else if ($(contentHTML).hasClass('plominoLabelClass')) {
+      contentHTML = `<p contenteditable="false">${contentHTML}</p>`;
+    }
     
     if (options && !options.target) {
       const a = editor.getContent().length;
@@ -349,25 +351,26 @@ export class TinyMCEFormContentManagerService {
           .find('*:not(.mce-visual-caret):last');
         const lastInsert = $latestTarget.get(0) === target;
         const range = dragging.targetRange;
-        console.info(
+        this.logService.info(
           'target && !options, dragging.targetRange', dragging.targetRange,
           'this.rangeAccepted(range)', this.rangeAccepted(range),
           'target', target,
           'lastInsert', lastInsert);
         if (this.rangeAccepted(range)) {
+          $content.attr('data-event-unique', INSERT_EVENT_UNIQUE)
           range.insertNode($content.get(0));
         }
         else {
           $content[
             lastInsert || !dragging.targetSideBottom 
             ? 'insertBefore': 'insertAfter'
-          ]($(target));
+          ]($(target)).attr('data-event-unique', INSERT_EVENT_UNIQUE);
         }
         
         $('iframe:visible').contents().click();
       }
       else {
-        console.info(
+        this.logService.info(
           '!target && !options, dragging.targetRange', dragging.targetRange);
         editor.execCommand('mceInsertContent', false, contentHTML);
       }
@@ -378,9 +381,26 @@ export class TinyMCEFormContentManagerService {
     this.setContent(editorId, this.getContent(editorId), dragging);
     editor.setDirty(true);
     this.log('insertContent contentHTML', contentHTML);
+
+    if ($(contentHTML).html().indexOf('data-plominoid="defaultLabel"') !== -1) {
+      /** if content is a label then click on it to show settings */
+      const $label = $('iframe:visible').contents()
+        .find('.plominoLabelClass').filter(function () {
+          return INSERT_EVENT_UNIQUE === $(this).parent().attr('data-event-unique');
+        });
+      
+      if ($label.length) {
+        this.adapter.select($label);
+        this.tabsService.selectField(
+          { id: 'defaultLabel', parent: editorId, type: 'label' }
+        );
+  
+        $('a[href="#palette-tab-1-panel"] > span').click();
+      }
+    }
   }
 
-  selectDOM(editorId: any, selector: string): any {
+  selectDOM(editorId: any, selector: string): HTMLElement[] {
     const editor = tinymce.get(editorId);
     try {
       return editor.dom.select(selector);
@@ -390,12 +410,22 @@ export class TinyMCEFormContentManagerService {
     }
   }
 
-  selectContent(editorId: any, contentHTML: string): any {
+  selectContent(editorId: any, contentHTML: any): any {
     const editor = tinymce.get(editorId);
     try {
       return editor.selection.select(contentHTML);
     } catch (e) {
       this.log('selectContent content cannot be selected contentHTML', contentHTML);
+      return false;
+    }
+  }
+
+  setSelectionContent(editorId: any, contentHTML: any): any {
+    const editor = tinymce.get(editorId);
+    try {
+      return editor.selection.setContent(contentHTML);
+    } catch (e) {
+      this.log('selectContent content cannot be setted contentHTML', contentHTML);
       return false;
     }
   }
