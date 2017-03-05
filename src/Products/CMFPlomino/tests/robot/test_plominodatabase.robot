@@ -66,11 +66,24 @@ Scenario: I can add a field to a form
    When I add a "Text" field
    Then I can see field "field_1" in the editor
 
-#Scenario: As a site administrator I can add a form
+#Scenario: As a site administrator I can add a form by click
 #  Given a logged-in test user
 #    and I open the ide for "mydb"
 #   When I add a form by click
 #   Then I can see "new-form" is open
+
+#Scenario: As a site administrator I can add a form by drag
+#  Given a logged-in test user
+#    and I open the ide for "mydb"
+#   When I add a form by drag
+#   Then I can see "new-form" is open
+
+Scenario: I can rename a form
+  Given I have a form open
+   When I enter "mynewid" in "Id" in "Form Settings"
+   Then I can see "mynewid" is open
+
+
 
 *** Keywords *****************************************************************
 
@@ -93,6 +106,11 @@ I open the ide for "${db}"
   #Click Element  link=IDE
   Go To  ${PLONE_URL}/${db}/++resource++Products.CMFPlomino/ide/index.html
   wait until page contains  ${db}
+
+I have a form open
+  Given a logged-in test user
+    and I open the ide for "mydb"
+    and I open the first form   #TODO   When I open a form "frm_test"
 
 
 # --- WHEN -------------------------------------------------------------------
@@ -138,6 +156,12 @@ I open a form "${formid}"
 I open the first form
   Click Element  xpath=//li//li[1]/span[contains(@class,"tree-node--name")]
 
+I enter "${value}" in "${field}" in "${tab}"
+  Click Link  ${tab}
+  Input Text  xpath=//input[@id=//label[normalize-space(text())="${field}"]/@for]  ${value}
+  Click Link  link=Save
+  wait until page contains element  link=Save
+
 
 # --- THEN -------------------------------------------------------------------
 
@@ -151,8 +175,9 @@ I can see the plominodatabase title '${title}'
   Page should contain  ${title}
 
 I can see "${formid}" is open
-  page contains  new-form
-  page contains element css:div.mce-edit-area
+  Capture Page Screenshot
+  page should contain   ${formid}
+  page should contain element  css=div.mce-edit-area
 
 
 I can see field "${fieldid} in the editor
