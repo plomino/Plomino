@@ -89,7 +89,7 @@
         </select>
 
       </div>
-      <div class="field" style="padding: 0 10px; margin: 15px 0;">
+      <div class="field" style="padding: 0 10px; margin: 15px 0;" *ngIf="getSelectedRelatedField()">
         <span class="option">
           <input id="form-widgets-label-separate"
           class="single-checkbox-widget required bool-field"
@@ -102,7 +102,8 @@
         </span>
         <div class="formHelp">Use seperate title in errors and datagrids</div>
       </div>
-      <div class="field" style="padding: 0 10px; margin: 15px 0;">
+      <div class="field" style="padding: 0 10px; margin: 15px 0;"
+        *ngIf="getSelectedRelatedField()">
         <label for="form-widgets-label-fieldtitle"
           class="horizontal" style="display: block">Field title</label>
 

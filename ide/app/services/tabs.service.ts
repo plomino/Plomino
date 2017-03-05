@@ -35,7 +35,7 @@ export class TabsService {
   selectField(fieldData: { id: string, type: string, parent: string }): void {
     let field: any = null;
 
-    // this.log.info('selectField', fieldData, this.adapter.getSelectedBefore());
+    this.log.info('selectField', fieldData, this.adapter.getSelectedBefore());
 
     if (fieldData && !fieldData.id && fieldData.type === 'subform') {
       setTimeout(() => {

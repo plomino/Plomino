@@ -371,6 +371,9 @@ export class FieldSettingsComponent implements OnInit {
     }
 
     private updateFieldTitle(field: PlominoFieldRepresentationObject) {
+      if (!this.field) {
+        return;
+      }
       const tmpId = this.field.url.split('/').pop();
       this.fieldTitle = this.labelsRegistry.get(field.url);
       if (this.fieldTitle === null
@@ -400,6 +403,11 @@ export class FieldSettingsComponent implements OnInit {
 
     private getSelectedSubform() {
       const $select: any = $('#form-widgets-subform-id');
+      return $select.select2().val();
+    }
+
+    private getSelectedRelatedField() {
+      const $select: any = $('#form-widgets-label-relation');
       return $select.select2().val();
     }
 
@@ -524,6 +532,11 @@ export class FieldSettingsComponent implements OnInit {
           }
         })
         .subscribe((template: any) => {
+          const $scrollingContainer = $('.scrolling-container:visible');
+          if ($scrollingContainer.length) {
+            $scrollingContainer.get(0).scrollIntoView();
+          }
+          
           if (!template) {
             return;
           }

@@ -102,6 +102,10 @@ div.plominoLabelClass div.plominoLabelContent {
     padding: 0;
 }
 
+.mce-content-body .plominoLabelClass[contentEditable=false]:hover {
+    outline: 2px solid #7acaff;
+}
+
 div.plominoLabelContent {
     padding-left: 0;
     padding-right: 0;

@@ -20,8 +20,8 @@ export class PlominoElementAdapterService {
       /**
        * make labels editable
        */
-      source = $source.removeClass('mceNonEditable')
-        .addClass('mceEditable').get(0).outerHTML;
+      // source = $source.removeClass('mceNonEditable')
+      //   .addClass('mceEditable').get(0).outerHTML;
 
       /**
        * <span class="plominoLabelClass mceNonEditable" 
@@ -46,11 +46,28 @@ export class PlominoElementAdapterService {
     this.log.info('after', this.$previousSelectedElement);
     this.log.extra('element-adapter.service.ts select');
 
+    /** blur */
+    $('iframe:visible').contents()
+      .find('.plominoLabelClass')
+      .filter((i, element) => element !== $element.get(0))
+      .removeClass('mceEditable')
+      .attr('contenteditable', 'false')
+      .addClass('mceNonEditable');
+  
     /**
      * if $element is label - make it listen to input event
      */
     if ($element.hasClass('plominoLabelClass')) {
-      $('iframe:visible').contents().find('.plominoLabelClass').off('input.adapter');
+      $('iframe:visible').contents()
+        .find('.plominoLabelClass').off('.adapter');
+
+      $element
+        .one('dblclick.adapter', () => {
+          $element
+            .removeClass('mceNonEditable')
+            .attr('contenteditable', 'true')
+            .addClass('mceEditable');
+        });
 
       $element.on('input.adapter', ($event) => {
         const labelAdvanced = Boolean($element.attr('data-advanced'));

@@ -1,3 +1,4 @@
+import { PlominoElementAdapterService } from './element-adapter.service';
 import { LogService } from './log.service';
 import { PlominoHTTPAPIService } from './http-api.service';
 import { Injectable } from '@angular/core';
@@ -14,13 +15,19 @@ export class ElementService {
 
   headers: Headers;
 
-  constructor(private http: PlominoHTTPAPIService, private log: LogService) {
+  constructor(
+    private http: PlominoHTTPAPIService, private log: LogService,
+    private adapter: PlominoElementAdapterService
+  ) {
     this.headers = new Headers();
     this.headers.append('Accept', 'application/json');
     this.headers.append('Content-Type', 'application/json');
   }
 
   getElement(id: string): Observable<PlominoFieldDataAPIResponse> {
+    if (id.split('/').pop() === 'defaultLabel') {
+      return Observable.of(null);
+    }
     return this.http.getWithOptions(
       id, { headers: this.headers },
       'element.service.ts getElement'
@@ -99,9 +106,9 @@ export class ElementService {
     this.log.extra('element.service.ts getWidget');
     if (type === 'label') {
       return Observable.of(
-        `<span class="plominoLabelClass mceEditable"
+        this.adapter.endPoint('label', `<span class="plominoLabelClass mceNonEditable"
           ${ id ? `data-plominoid="${ id }"` : '' }>${ newTitle || 'Untitled' }</span>`
-      );
+      ));
     }
     return this.http.get(
       `${base}/@@tinyform/example_widget?widget_type=${type}${ id ? `&id=${id}` : '' }`,
