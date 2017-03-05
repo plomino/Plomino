@@ -2,12 +2,12 @@
 from plone import api
 from plone.app.contenttypes.testing import PLONE_APP_CONTENTTYPES_FIXTURE
 from plone.app.robotframework.testing import REMOTE_LIBRARY_BUNDLE_FIXTURE
-from plone.app.testing import applyProfile
+from plone.app.testing import applyProfile, ploneSite
 from plone.app.testing import FunctionalTesting
 from plone.app.testing import IntegrationTesting
 from plone.app.testing import PloneSandboxLayer
 from plone.app.testing import TEST_USER_ID, TEST_USER_NAME, login, setRoles
-from plone.testing import z2
+from plone.testing import z2, Layer
 
 import Products.CMFPlomino
 
@@ -47,19 +47,22 @@ class ProductsCmfplominoLayer(PloneSandboxLayer):
 
         db.createDocument("doc1")
 
-class ProductsMacrosLayer(PloneSandboxLayer):
-
-    defaultBases = (PLONE_APP_CONTENTTYPES_FIXTURE,)
-
-    def setUpZope(self, app, configurationContext):
-        self.loadZCML(package=Products.CMFPlomino)
-        z2.installProduct(app, 'Products.CMFPlomino')
-
-    def setUpPloneSite(self, portal):
-        applyProfile(portal, 'Products.CMFPlomino:default')
-        applyProfile(portal, 'Products.CMFPlomino:macros')
-
 PRODUCTS_CMFPLOMINO_FIXTURE = ProductsCmfplominoLayer()
+
+class ProductsMacrosLayer(Layer):
+
+    defaultBases = (PRODUCTS_CMFPLOMINO_FIXTURE,)
+
+#    def setUpZope(self, app, configurationContext):
+#        self.loadZCML(package=Products.CMFPlomino)
+#        z2.installProduct(app, 'Products.CMFPlomino')
+
+    def setUp(self):
+ #       applyProfile(portal, 'Products.CMFPlomino:default')
+#        super(ProductsMacrosLayer, self).setUpPloneSite(portal)
+        with ploneSite() as portal:
+            applyProfile(portal, 'Products.CMFPlomino.defaultmacros:macros')
+
 
 PRODUCTS_MACROS_FIXTURE = ProductsMacrosLayer()
 
@@ -77,8 +80,8 @@ PRODUCTS_CMFPLOMINO_FUNCTIONAL_TESTING = FunctionalTesting(
 
 PRODUCTS_CMFPLOMINO_ACCEPTANCE_TESTING = FunctionalTesting(
     bases=(
+        PRODUCTS_MACROS_FIXTURE,
         PRODUCTS_CMFPLOMINO_FIXTURE,
-#        PRODUCTS_MACROS_FIXTURE,
         REMOTE_LIBRARY_BUNDLE_FIXTURE,
         z2.ZSERVER_FIXTURE
     ),
