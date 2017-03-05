@@ -1,3 +1,6 @@
+
+
+
 # ============================================================================
 # DEXTERITY ROBOT TESTS
 # ============================================================================
@@ -20,6 +23,9 @@
 # framework).
 #
 # ============================================================================
+
+
+
 
 *** Settings *****************************************************************
 
@@ -47,14 +53,37 @@ Scenario: As a site administrator I can view a PlominoDatabase
    When I go to the plominodatabase view
    Then I can see the plominodatabase title 'My PlominoDatabase'
 
-Scenario: As a site administrator I can add a form
-  Given a logged-in site administrator
-    and a plominodatabase 'My PlominoDatabase'
-    and I open the ide
-   When I add a form
-    and I add a "Field" field
-    and I click save
-   Then I can see the plominodatabase title 'My PlominoDatabase'
+Scenario: As a site administrator I can open a form
+  Given a logged-in test user
+    and I open the ide for "mydb"
+   When I open the first form   #TODO   When I open a form "frm_test"
+   Then I can see field "field_a" in the editor
+
+Scenario: I can add a field to a form
+  Given a logged-in test user
+    and I open the ide for "mydb"
+    and I open the first form   #TODO   When I open a form "frm_test"
+   When I add a "Text" field
+   Then I can see field "field_1" in the editor
+
+#Scenario: As a site administrator I can add a form by click
+#  Given a logged-in test user
+#    and I open the ide for "mydb"
+#   When I add a form by click
+#   Then I can see "new-form" is open
+
+#Scenario: As a site administrator I can add a form by drag
+#  Given a logged-in test user
+#    and I open the ide for "mydb"
+#   When I add a form by drag
+#   Then I can see "new-form" is open
+
+Scenario: I can rename a form
+  Given I have a form open
+   When I enter "mynewid" in "Id" in "Form Settings"
+   Then I can see "mynewid" is open
+
+
 
 *** Keywords *****************************************************************
 
@@ -63,11 +92,25 @@ Scenario: As a site administrator I can add a form
 a logged-in site administrator
   Enable autologin as  Site Administrator
 
+a logged-in test user
+  Enable autologin as  Manager  ##TODO real test user
+
 an add plominodatabase form
   Go To  ${PLONE_URL}/++add++PlominoDatabase
 
 a plominodatabase 'My PlominoDatabase'
   Create content  type=PlominoDatabase  id=my-plominodatabase  title=My PlominoDatabase
+
+I open the ide for "${db}"
+  #Go To  ${PLONE_URL}/mydb
+  #Click Element  link=IDE
+  Go To  ${PLONE_URL}/${db}/++resource++Products.CMFPlomino/ide/index.html
+  wait until page contains  ${db}
+
+I have a form open
+  Given a logged-in test user
+    and I open the ide for "mydb"
+    and I open the first form   #TODO   When I open a form "frm_test"
 
 
 # --- WHEN -------------------------------------------------------------------
@@ -82,23 +125,42 @@ I go to the plominodatabase view
   Go To  ${PLONE_URL}/my-plominodatabase
   Wait until page contains  Site Map
 
-I open the ide
-  #Click Element  link=IDE
-  Go To  ${PLONE_URL}/my-plominodatabase/++resource++Products.CMFPlomino/ide/index.html
-  wait until page contains  DB Settings
 
-I add a form
+I add a form by click
    wait until page contains  Form
-  Click Button  css=button[title="Form"]
-#   Click Button  id=PlominoForm
-# Drag And Drop
+  Capture Page Screenshot
+#  Click Element  css=button[title="Form"]
+   Click Element  id=PlominoForm
   Capture Page Screenshot
   wait until page contains  new-form
   wait until page contains  css:div.mce-edit-area
 
+I add a form by dnd
+   wait until page contains  Form
+   drag and drop  id=PlominoForm  css=div.main-app.panel
+  Capture Page Screenshot
+  wait until page contains  new-form
+  wait until page contains  css:div.mce-edit-area
+
+
+
 I add a "${field}" field
   Capture Page Screenshot
-  Click Button  css=button[title="${field}"]
+  Click Element  xpath=//button[@title="${field}"]
+
+I open a form "${formid}"
+  Capture Page Screenshot
+  wait until page contains  ${formid}
+  Click Element  xpath=//span[contains(@class,"tree-node--name") and contains(text(),"${formid}")]
+
+I open the first form
+  Click Element  xpath=//li//li[1]/span[contains(@class,"tree-node--name")]
+
+I enter "${value}" in "${field}" in "${tab}"
+  Click Link  ${tab}
+  Input Text  xpath=//input[@id=//label[normalize-space(text())="${field}"]/@for]  ${value}
+  Click Link  link=Save
+  wait until page contains element  link=Save
 
 
 # --- THEN -------------------------------------------------------------------
@@ -111,3 +173,14 @@ a plominodatabase with the title '${title}' has been created
 I can see the plominodatabase title '${title}'
   Wait until page contains  Site Map
   Page should contain  ${title}
+
+I can see "${formid}" is open
+  Capture Page Screenshot
+  page should contain   ${formid}
+  page should contain element  css=div.mce-edit-area
+
+
+I can see field "${fieldid} in the editor
+  Wait until page contains  Insert
+  select frame  css=.mce-edit-area iframe
+  Page should contain element  css=span.plominoFieldClass.mceNonEditable
