@@ -1,4 +1,6 @@
-language: python
+language:
+  - python
+  - node_js
 sudo: required
 cache:
   directories:
@@ -6,11 +8,16 @@ cache:
 python:
   - 2.7
 node_js:
-  - "6.0"
-  - "5.6"
-  - "4.3"
+  - "6"
+env:
+  - CXX=g++-4.8
 addons:
   firefox: "50.0"
+  apt:
+    sources:
+      - ubuntu-toolchain-r-test
+    packages:
+      - g++-4.8
 before_install:
   - sudo apt-get update
   - wget http://security.ubuntu.com/ubuntu/pool/main/i/icu/libicu52_52.1-3ubuntu0.4_amd64.deb
@@ -28,6 +35,7 @@ before_install:
   - tar -xzf geckodriver-v0.14.0-linux64.tar.gz -C geckodriver
   - export PATH=$PATH:$PWD/geckodriver
 install:
+  - nvm use 6
   - npm --version
   - node --version
   - tsc --version
