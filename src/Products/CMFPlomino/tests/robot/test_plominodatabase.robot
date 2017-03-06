@@ -136,7 +136,7 @@ I add a form by click
    Click Element  id=PlominoForm
   Capture Page Screenshot
   wait until page contains  new-form
-  wait until page contains  css:div.mce-edit-area
+  wait until page contains element  css=div.mce-tinymce
 
 I add a form by dnd
    wait until page contains  Form
