@@ -20,6 +20,8 @@ export class PlominoApplicationLoaderService {
   }
 
   private onLoad() {
-    $('#application-loader').remove();
+    setTimeout(() => {
+      $('#application-loader').remove();
+    }, 100);
   }
 }

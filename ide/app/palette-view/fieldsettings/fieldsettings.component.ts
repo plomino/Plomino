@@ -411,6 +411,19 @@ export class FieldSettingsComponent implements OnInit {
       return $select.select2().val();
     }
 
+    private deleteField() {
+      this.elementService.deleteElement(this.field.url)
+      .subscribe(() => {
+        $('iframe:visible').contents()
+          .find(`[data-plominoid="${ this.field.id }"],[data-groupid="${ this.field.id }"]`)
+          .remove();
+        this.field = null;
+        this.formTemplate = null;
+        this.changeDetector.detectChanges();
+        this.treeService.updateTree();
+      });
+    }
+
     private loadSettings() {
       this.tabsService.getActiveField()
         .do((field) => {
