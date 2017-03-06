@@ -8,7 +8,7 @@ from plone import api
 
 from Products.CMFPlomino.testing import PRODUCTS_CMFPLOMINO_INTEGRATION_TESTING  # noqa
 
-import unittest2 as unittest
+import unittest
 
 
 class PlominoDatabaseIntegrationTest(unittest.TestCase):
