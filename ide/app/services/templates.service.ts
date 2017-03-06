@@ -128,7 +128,7 @@ export class TemplatesService {
     return this.$insertion.asObservable();
   }
 
-  private extractData(response: Response): Response {
+  private extractData(response: Response) {
     return response.json();
   }
 }

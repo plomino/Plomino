@@ -341,8 +341,24 @@ export class TinyMCEFormContentManagerService {
       contentHTML = `<span class="mceNonEditable">${contentHTML}</span>`;
       // contentHTML = `<p contenteditable="false">${contentHTML}</p>`;
     }
+
+    const $iframeContents = $('iframe:visible').contents();
+    const $latestTarget = $(
+      $.merge(
+        $iframeContents.find('#tinymce *:first').toArray(),
+        $iframeContents.find('#tinymce *:not(.mce-visual-caret)')
+        .filter(function (i, tag) {
+          return $(tag).text().trim() 
+            && !($(tag).closest('.plominoGroupClass').length 
+            && !$(tag).hasClass('plominoGroupClass'));
+          }).toArray()
+      )
+    ).last();
+    if (typeof target === 'boolean' || target === null) {
+      target = $latestTarget.get(0);
+    }
     
-    if (options && !options.target) {
+    if (options && !options.target && !target) {
       const a = editor.getContent().length;
       
       editor.selection.select((<any>editor).getBody(), true);
@@ -358,21 +374,6 @@ export class TinyMCEFormContentManagerService {
     else {
       if (target) {
         const $content = $(contentHTML);
-        const $iframeContents = $('iframe:visible').contents();
-        const $latestTarget = $(
-          $.merge(
-            $iframeContents.find('#tinymce *:first').toArray(),
-            $iframeContents.find('#tinymce *:not(.mce-visual-caret)')
-            .filter(function (i, tag) {
-              return $(tag).text().trim() 
-                && !($(tag).closest('.plominoGroupClass').length 
-                && !$(tag).hasClass('plominoGroupClass'));
-              }).toArray()
-          )
-        ).last();
-        if (typeof target === 'boolean') {
-          target = $latestTarget.get(0);
-        }
         const lastInsert = $latestTarget.get(0) === target;
         const range = dragging.targetRange;
         this.logService.info(
