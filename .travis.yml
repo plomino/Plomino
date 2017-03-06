@@ -8,7 +8,7 @@ cache:
 python:
   - 2.7
 node_js:
-  - "6"
+  - "6.1"
 env:
   - CXX=g++-4.8
 addons:
@@ -35,6 +35,7 @@ before_install:
   - tar -xzf geckodriver-v0.14.0-linux64.tar.gz -C geckodriver
   - export PATH=$PATH:$PWD/geckodriver
 install:
+  - nvm install 6.1
   - nvm use 6.1
   - npm --version
   - node --version
