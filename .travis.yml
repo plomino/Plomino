@@ -35,7 +35,7 @@ before_install:
   - tar -xzf geckodriver-v0.14.0-linux64.tar.gz -C geckodriver
   - export PATH=$PATH:$PWD/geckodriver
 install:
-  - nvm use 6
+  - nvm use 6.1
   - npm --version
   - node --version
   - tsc --version
