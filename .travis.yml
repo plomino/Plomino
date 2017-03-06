@@ -22,6 +22,8 @@ before_install:
   - sudo apt-get update
   - wget http://security.ubuntu.com/ubuntu/pool/main/i/icu/libicu52_52.1-3ubuntu0.4_amd64.deb
   - sudo dpkg -i libicu52_52*.deb
+  - nvm install 6.1
+  - nvm use 6.1
   - npm i -g npm@3
   - npm i -g typescript@2.1.4
   - npm --version
@@ -35,8 +37,6 @@ before_install:
   - tar -xzf geckodriver-v0.14.0-linux64.tar.gz -C geckodriver
   - export PATH=$PATH:$PWD/geckodriver
 install:
-  - nvm install 6.1
-  - nvm use 6.1
   - npm --version
   - node --version
   - tsc --version
