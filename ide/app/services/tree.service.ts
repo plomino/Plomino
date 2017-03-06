@@ -32,7 +32,17 @@ export class TreeService {
     updateTree() {
       return this.http
       .get("../../@@designtree")
-      .map((res: Response) => res.json())
+      .map((res: Response) => {
+        if (res.url && res.url.indexOf('came_from=') !== -1) {
+          /**
+           * the user is not authorised
+           * redirect to auth
+           */
+          let redirectURL = res.url.replace(/(came_from=).+?$/, '$1');
+          window.location.href = `${ redirectURL }${ encodeURIComponent(window.location.href) }`;
+        }
+        return res.json();
+      })
       .forEach((response) => {
         this.tree$.next(this.addUniqueIdsForForms(response));
       });
