@@ -66,11 +66,11 @@ Scenario: I can add a field to a form
    When I add a "Text" field
    Then I can see field "field_1" in the editor
 
-#Scenario: As a site administrator I can add a form by click
-#  Given a logged-in test user
-#    and I open the ide for "mydb"
-#   When I add a form by click
-#   Then I can see "new-form" is open
+Scenario: As a site administrator I can add a form by click
+  Given a logged-in test user
+    and I open the ide for "mydb"
+   When I add a form by click
+   Then I can see "new-form" is open
 
 #Scenario: As a site administrator I can add a form by drag
 #  Given a logged-in test user

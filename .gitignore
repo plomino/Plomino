@@ -25,3 +25,6 @@ local.cfg
 pip-selfcheck.json
 lib/
 include/python*
+.idea/
+log.html
+report.html
