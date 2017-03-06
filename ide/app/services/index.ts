@@ -11,3 +11,4 @@ export { TemplatesService } from './templates.service';
 export { WidgetService } from './widget.service';
 export { FormsService } from './forms.service'
 export { PlominoFormsListService } from './forms-list.service'
+export { PlominoApplicationLoaderService } from './application-loader.service'

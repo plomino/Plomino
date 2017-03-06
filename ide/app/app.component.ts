@@ -53,7 +53,8 @@ import {
   PlominoElementAdapterService,
   WidgetService,
   FormsService,
-  PlominoFormsListService
+  PlominoFormsListService,
+  PlominoApplicationLoaderService,
 } from './services';
 
 // Pipes 
@@ -103,7 +104,8 @@ import { LoadingComponent } from "./editors/loading/loading.component";
     PlominoFormsListService,
     TinyMCEFormContentManagerService,
     PlominoElementAdapterService,
-    LabelsRegistryService
+    LabelsRegistryService,
+    PlominoApplicationLoaderService,
   ],
   pipes: [ExtractNamePipe],
   animations: [
@@ -150,6 +152,7 @@ export class AppComponent implements OnInit, AfterViewInit {
     private tabsService: TabsService,
     private draggingService: DraggingService,
     private formsList: PlominoFormsListService,
+    private appLoader: PlominoApplicationLoaderService,
     private zone: NgZone,
     private changeDetector: ChangeDetectorRef) {
       window['jquery'] = jQuery;
@@ -200,6 +203,7 @@ export class AppComponent implements OnInit, AfterViewInit {
       /* extracting children of children */
       this.data = topFormsViewsList;
       this.formsList.setForms(topFormsViewsList);
+      this.appLoader.markLoaded('app.component');
     });
     
     this.tabsService

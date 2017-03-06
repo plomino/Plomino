@@ -106,6 +106,7 @@ I open the ide for "${db}"
   #Go To  ${PLONE_URL}/mydb
   #Click Element  link=IDE
   Go To  ${PLONE_URL}/${db}/++resource++Products.CMFPlomino/ide/index.html
+  Wait Until Element Is Not Visible  id=application-loader
   wait until page contains  ${db}
 
 I have a form open

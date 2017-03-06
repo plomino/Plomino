@@ -17,6 +17,11 @@ window['registryPromise'] = <Promise<any>> new Promise(
     (resolve, reject) => {
     window['registryPromiseResolve'] = resolve;
 });
+window['materialPromise'] = <Promise<any>> new Promise(
+    (resolve, reject) => {
+    window['materialPromiseResolve'] = resolve;
+    window['materialPromiseReject'] = reject;
+});
 
 // console.info = () => {};
 
