@@ -56,15 +56,16 @@ Scenario: As a site administrator I can view a PlominoDatabase
 Scenario: As a site administrator I can open a form
   Given a logged-in test user
     and I open the ide for "mydb"
-   When I open the first form   #TODO   When I open a form "frm_test"
-   Then I can see field "field_a" in the editor
+   When I open the first form
+   #TODO When I open a form "frm_test"
+   Then I can see field "field_1" in the editor
 
 Scenario: I can add a field to a form
   Given a logged-in test user
     and I open the ide for "mydb"
     and I open the first form   #TODO   When I open a form "frm_test"
    When I add a "Text" field
-   Then I can see field "field_1" in the editor
+   Then I can see field "text" in the editor
 
 Scenario: As a site administrator I can add a form by click
   Given a logged-in test user
@@ -151,7 +152,8 @@ I add a "${field}" field
 I open a form "${formid}"
   Capture Page Screenshot
   wait until page contains  ${formid}
-  Click Element  xpath=//span[contains(@class,"tree-node--name") and contains(text(),"${formid}")]
+  #TODO: not sure why I can't isolate the text from the tree
+  Click Element  xpath=//span[contains(@class,"tree-node--name")][normalize-space(text())="${formid}"]
 
 I open the first form
   Click Element  xpath=//li//li[1]/span[contains(@class,"tree-node--name")]
@@ -166,7 +168,7 @@ I enter "${value}" in "${field}" in "${tab}"
 # --- THEN -------------------------------------------------------------------
 
 a plominodatabase with the title '${title}' has been created
-  Wait until page contains  Site Map
+  Wait until page contains  Item created
   Page should contain  ${title}
   Page should contain  Item created
 
@@ -180,7 +182,10 @@ I can see "${formid}" is open
   page should contain element  css=div.mce-edit-area
 
 
-I can see field "${fieldid} in the editor
+I can see field "${fieldid}" in the editor
   Wait until page contains  Insert
+  wait until page contains element  css=.mce-edit-area
   select frame  css=.mce-edit-area iframe
+  Wait until page contains element  css=span.plominoFieldClass.mceNonEditable  #TODO change for test based on spinner
   Page should contain element  css=span.plominoFieldClass.mceNonEditable
+  Page should contain element  xpath=//span[contains(@class,"plominoFieldClass")][@data-plominoid="${fieldid}"]
