@@ -6,6 +6,7 @@ import { Injectable } from '@angular/core';
 export class PlominoElementAdapterService {
   private $previousSelectedElement: JQuery;
   private $latestSelectedElement: JQuery;
+  private $latestSelectedPosition: JQuery;
 
   /**
    * this service is end-point for each element on the markup
@@ -36,6 +37,13 @@ export class PlominoElementAdapterService {
       }
     }
     return source;
+  }
+
+  /**
+   * difference with the select is that position not exactly selected element like field
+   */
+  selectPosition($position: JQuery) {
+    this.$latestSelectedPosition = $position;
   }
 
   select($element: JQuery) {
@@ -109,5 +117,9 @@ export class PlominoElementAdapterService {
 
   getSelected() {
     return this.$latestSelectedElement;
+  }
+
+  getSelectedPosition() {
+    return this.$latestSelectedPosition;
   }
 }

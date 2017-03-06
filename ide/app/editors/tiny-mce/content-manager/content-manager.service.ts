@@ -82,7 +82,7 @@ export class TinyMCEFormContentManagerService {
             $iframeContents.find('#tinymce *:first').toArray(),
             $iframeContents.find('#tinymce *:not(.mce-visual-caret)')
             .filter(function (i, tag) {
-              return $(tag).text().trim() 
+              return $(tag).html().replace(/&nbsp;/g, '').trim() 
                 && !($(tag).closest('.plominoGroupClass').length 
                 && !$(tag).hasClass('plominoGroupClass'));
               }).toArray()
@@ -348,7 +348,7 @@ export class TinyMCEFormContentManagerService {
         $iframeContents.find('#tinymce *:first').toArray(),
         $iframeContents.find('#tinymce *:not(.mce-visual-caret)')
         .filter(function (i, tag) {
-          return $(tag).text().trim() 
+          return $(tag).html().replace(/&nbsp;/g, '').trim() 
             && !($(tag).closest('.plominoGroupClass').length 
             && !$(tag).hasClass('plominoGroupClass'));
           }).toArray()

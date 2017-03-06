@@ -128,6 +128,13 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
       this.log.extra('tiny-mce.component.ts this.templatesSubscription');
       let parent = insertion.parent;
       if (insertion.parent === this.id) {
+        if (insertion.target === null) {
+          const $selected = this.adapter.getSelectedPosition() || this.adapter.getSelected();
+          insertion.target = $selected && $selected.prop('tagName') !== 'BODY' 
+            ? ($selected.prev().length 
+            ? $selected.prev().get(0) : $selected.get(0)) : null;
+          // console.warn(insertion.target, $selected);
+        }
         this.log.info('insertion template', insertion);
         this.insertGroup(insertion.group, insertion.target);
         this.changeDetector.markForCheck();
@@ -308,6 +315,7 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
 
         editor.on('mousedown', (ev: MouseEvent) => {
           let $element = $(ev.target);
+          this.adapter.selectPosition($element);
 
           this.zone.run(() => {
             let $element =  $(ev.target);
@@ -556,7 +564,7 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
           $iframeContents.find('#tinymce *:first').toArray(),
           $iframeContents.find('#tinymce *:not(.mce-visual-caret)')
           .filter(function (i, tag) {
-            return $(tag).text().trim() 
+            return $(tag).html().replace(/&nbsp;/g, '').trim() 
               && !($(tag).closest('.plominoGroupClass').length 
               && !$(tag).hasClass('plominoGroupClass'));
             }).toArray()
