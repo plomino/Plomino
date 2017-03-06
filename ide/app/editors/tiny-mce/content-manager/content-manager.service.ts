@@ -76,9 +76,19 @@ export class TinyMCEFormContentManagerService {
           dragging.targetRange = range;
           return;
         }
-        const $latestTarget = $('iframe:visible').contents()
-          .find('*:not(.mce-visual-caret):last');
-        $('iframe:visible').contents().find('.drag-autopreview').remove();
+        const $iframeContents = $('iframe:visible').contents();
+        const $latestTarget = $(
+          $.merge(
+            $iframeContents.find('#tinymce *:first').toArray(),
+            $iframeContents.find('#tinymce *:not(.mce-visual-caret)')
+            .filter(function (i, tag) {
+              return $(tag).text().trim() 
+                && !($(tag).closest('.plominoGroupClass').length 
+                && !$(tag).hasClass('plominoGroupClass'));
+              }).toArray()
+          )
+        ).last();
+        $iframeContents.find('.drag-autopreview').remove();
         $currentDragNode.insertBefore($latestTarget);
       }
     });
@@ -190,7 +200,7 @@ export class TinyMCEFormContentManagerService {
     }
 
     contentHTML = contentHTML.replace(/(<p>&nbsp;<\/p>(\s+)?)+?$/i, '');
-    contentHTML = contentHTML + ('<p>&nbsp;</p>'.repeat(60));
+    contentHTML = contentHTML + ('<p>&nbsp;</p>'.repeat(30));
 
     editor.setContent(contentHTML);
     this.log('setContent contentHTML', contentHTML, 3);
@@ -328,7 +338,8 @@ export class TinyMCEFormContentManagerService {
       contentHTML = `<p>${contentHTML}</p>`;
     }
     else if ($(contentHTML).hasClass('plominoLabelClass')) {
-      contentHTML = `<p contenteditable="false">${contentHTML}</p>`;
+      contentHTML = `<span class="mceNonEditable">${contentHTML}</span>`;
+      // contentHTML = `<p contenteditable="false">${contentHTML}</p>`;
     }
     
     if (options && !options.target) {
@@ -347,8 +358,21 @@ export class TinyMCEFormContentManagerService {
     else {
       if (target) {
         const $content = $(contentHTML);
-        const $latestTarget = $('iframe:visible').contents()
-          .find('*:not(.mce-visual-caret):last');
+        const $iframeContents = $('iframe:visible').contents();
+        const $latestTarget = $(
+          $.merge(
+            $iframeContents.find('#tinymce *:first').toArray(),
+            $iframeContents.find('#tinymce *:not(.mce-visual-caret)')
+            .filter(function (i, tag) {
+              return $(tag).text().trim() 
+                && !($(tag).closest('.plominoGroupClass').length 
+                && !$(tag).hasClass('plominoGroupClass'));
+              }).toArray()
+          )
+        ).last();
+        if (typeof target === 'boolean') {
+          target = $latestTarget.get(0);
+        }
         const lastInsert = $latestTarget.get(0) === target;
         const range = dragging.targetRange;
         this.logService.info(
@@ -361,10 +385,9 @@ export class TinyMCEFormContentManagerService {
           range.insertNode($content.get(0));
         }
         else {
-          $content[
-            lastInsert || !dragging.targetSideBottom 
-            ? 'insertBefore': 'insertAfter'
-          ]($(target)).attr('data-event-unique', INSERT_EVENT_UNIQUE);
+          const $first = $iframeContents.find('#tinymce *:first');
+          $content[lastInsert && $first.get(0) === target ? 'insertBefore' :'insertAfter']($(target))
+            .attr('data-event-unique', INSERT_EVENT_UNIQUE);
         }
         
         $('iframe:visible').contents().click();
@@ -375,6 +398,8 @@ export class TinyMCEFormContentManagerService {
         editor.execCommand('mceInsertContent', false, contentHTML);
       }
     }
+
+    $('.drop-zone').remove();
 
     dragging.targetRange = null;
     this.changeDetector.markForCheck();

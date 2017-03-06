@@ -1,3 +1,4 @@
+import { LabelsRegistryService } from './../../editors/tiny-mce/services/labels-registry.service';
 import { 
     Component, 
     Input, 
@@ -43,6 +44,7 @@ export class AddComponent implements OnInit, AfterViewInit {
                 private treeService: TreeService,
                 private tabsService: TabsService,
                 private log: LogService,
+                private labelsRegistry: LabelsRegistryService,
                 private fieldsService: FieldsService,
                 private draggingService: DraggingService,
                 private elementRef: ElementRef,
@@ -254,6 +256,10 @@ export class AddComponent implements OnInit, AfterViewInit {
                 let extendedField: InsertFieldEvent = Object.assign({}, field, {
                   name: `${this.activeTab.url}/${response.created}`
                 });
+
+                this.labelsRegistry.update(
+                  `${ this.activeTab.url }/${ response.created }`, field.title, 'title'
+                );
 
                 this.treeService.updateTree()
                 .then(() => {

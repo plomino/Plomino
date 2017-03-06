@@ -54,8 +54,8 @@ export class WidgetService {
   getGroupLayout(
     baseUrl: string, input: PlominoFormGroupTemplate, templateMode?: boolean
   ): Observable<string> {
-    this.log.info('input', JSON.stringify(input));
-    this.log.extra('widget.service.ts getGroupLayout');
+    // this.log.info('input', JSON.stringify(input));
+    // this.log.extra('widget.service.ts getGroupLayout');
     /**
      * decided to use the DOM
      */
@@ -196,7 +196,7 @@ export class WidgetService {
   }
 
   getFormLayout(baseUrl: string) {
-    this.log.info('getFormLayout called', baseUrl);
+    // this.log.info('getFormLayout called', baseUrl);
     const $edIFrame = $(`iframe[id="${ baseUrl }_ifr"]`).contents();
     $edIFrame.css('opacity', 0);
     let $elements = $edIFrame.find('.plominoGroupClass, .plominoSubformClass, ' +
@@ -642,9 +642,9 @@ export class WidgetService {
       $id = tmpId;
     }
 
-    this.log.info('convertLabel', $class, $id, `${ base }/${ $id }`, 
-      labelsRegistry ? labelsRegistry.get(`${ base }/${ $id }`) : null, template);
-    this.log.extra('widget.service.ts convertLabel');
+    // this.log.info('convertLabel', $class, $id, `${ base }/${ $id }`, 
+    //   labelsRegistry ? labelsRegistry.get(`${ base }/${ $id }`) : null, template);
+    // this.log.extra('widget.service.ts convertLabel');
 
     if (!template && labelsRegistry && labelsRegistry.has(`${ base }/${ $id }`)) {
       template = { id: $id, title: labelsRegistry.get(`${ base }/${ $id }`)['title'] };
@@ -695,8 +695,8 @@ export class WidgetService {
 
   private getWidget(baseUrl: string, type: string, id: string, 
   content?: PlominoFormGroupContent): Observable<string> {
-    this.log.info('type', type, 'id', id, 'content', content);
-    this.log.extra('widget.service.ts getWidget');
+    // this.log.info('type', type, 'id', id, 'content', content);
+    // this.log.extra('widget.service.ts getWidget');
     if (content && type === 'label') {
       const splitTitle = content.title.split(':');
       if (splitTitle.length === 2) {
