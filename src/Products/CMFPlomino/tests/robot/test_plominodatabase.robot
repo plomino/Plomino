@@ -54,6 +54,7 @@ Scenario: As a site administrator I can view a PlominoDatabase
    Then I can see the plominodatabase title 'My PlominoDatabase'
 
 Scenario: As a site administrator I can open a form
+  Set selenium timeout  100
   Given a logged-in test user
     and I open the ide for "mydb"
    When I open the first form

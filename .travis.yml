@@ -54,6 +54,9 @@ before_script:
   - sleep 3 # give xvfb some time to start
 script:
   - bin/test -s Products.CMFPlomino  --all
+after_script:
+  - tail -n +1 parts/test/test_plominodatabase/*/*.xml
+  - travis-artifacts upload --path parts/test
 
 notifications:
   irc:
