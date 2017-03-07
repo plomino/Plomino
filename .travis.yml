@@ -2,6 +2,7 @@ language:
   - python
   - node_js
 sudo: required
+dist: trusty
 cache:
   directories:
     - buildout-cache
@@ -19,8 +20,6 @@ addons:
       - google-chrome
     packages:
       - g++-4.8
-      - libfontconfig1
-      - lsb-base
       - google-chrome-stable
 
 before_install:
