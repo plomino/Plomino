@@ -36,6 +36,8 @@ before_install:
   - mkdir geckodriver
   - tar -xzf geckodriver-v0.14.0-linux64.tar.gz -C geckodriver
   - export PATH=$PATH:$PWD/geckodriver
+  - sudo apt install chromium-chromedriver
+  - export PATH=$PATH:/usr/lib/chromium-browser/
 install:
   - npm --version
   - node --version
