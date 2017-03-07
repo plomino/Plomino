@@ -6,6 +6,7 @@ import 'zone.js/dist/zone';
 import '@angular/platform-browser';
 import '@angular/core';
 import 'ng2-dnd';
+import 'dialog-polyfill';
 
 // -- Boostrap modal --
 

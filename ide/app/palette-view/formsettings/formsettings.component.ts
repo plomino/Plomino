@@ -24,10 +24,6 @@ import {
 import { PloneHtmlPipe } from '../../pipes';
 import {ElementService} from "../../services/element.service";
 import {WidgetService} from "../../services/widget.service";
-
-declare let $: any;
-declare var tinymce: any;
-
 import { LoadingComponent } from '../../editors';
 
 @Component({
@@ -45,10 +41,9 @@ import { LoadingComponent } from '../../editors';
 export class FormSettingsComponent implements OnInit {
     @ViewChild('formElem') formElem: ElementRef;
 
-    tab: any;
-
-    formSaving:boolean = false;
-    macrosWidgetTimer: any = null;
+    tab: PlominoTab;
+    formSaving: boolean = false;
+    macrosWidgetTimer: number = null;
 
     // This needs to handle both views and forms
     heading: string;
@@ -189,35 +184,49 @@ export class FormSettingsComponent implements OnInit {
         window.open(`${formUrl}/OpenForm`);
     }
 
+    private deleteForm(tabData: PlominoTab) {
+      this.elementService
+        .deleteElement(tabData.url)
+        .subscribe(() => {
+          this.tabsService.closeTab(this.tab);
+          this.tab = null;
+          this.formSettings = '';
+          this.formLayout = '';
+          this.changeDetector.detectChanges();
+          this.treeService.updateTree();
+          this.changeDetector.markForCheck();
+        });
+    }
+
     private updateMacroses() {
-        if (this.formSettings) {
-            window['MacroWidgetPromise'].then((MacroWidget: any) => {
-                if (this.macrosWidgetTimer !== null) {
-                    clearTimeout(this.macrosWidgetTimer);
-                }
+      if (this.formSettings) {
+        window['MacroWidgetPromise'].then((MacroWidget: any) => {
+          if (this.macrosWidgetTimer !== null) {
+            clearTimeout(this.macrosWidgetTimer);
+          }
 
-                this.log.info('!! select2', $('.field-settings-wrapper .select2-choices').length);
-                
-                this.macrosWidgetTimer = setTimeout(() => { // for exclude bugs
-                    let $el = $('.form-settings-wrapper ' + 
-                    '#formfield-form-widgets-IHelpers-helpers > ul.plomino-macros');
-                    if ($el.length) {
-                        this.zone.runOutsideAngular(() => { new MacroWidget($el); });
-                    }
-                }, 200);
-            });
+          this.log.info('!! select2', $('.field-settings-wrapper .select2-choices').length);
+          
+          this.macrosWidgetTimer = setTimeout(() => { // for exclude bugs
+            let $el = $('.form-settings-wrapper ' + 
+            '#formfield-form-widgets-IHelpers-helpers > ul.plomino-macros');
+            if ($el.length) {
+              this.zone.runOutsideAngular(() => { new MacroWidget($el); });
+            }
+          }, 200);
+        });
 
-            let formulasSelector = '';
-            formulasSelector += '#formfield-form-widgets-document_title';
-            formulasSelector += ',#formfield-form-widgets-document_id';
-            formulasSelector += ',#formfield-form-widgets-search_formula';
-            formulasSelector += ',#fieldset-events';
-            setTimeout(() => {
-              $(formulasSelector).remove();
-              $('.plomino-formula').parent('div.field').remove();
-              $('#content').css('margin-bottom', 0);
-            }, 500);
-        }
+        let formulasSelector = '';
+        formulasSelector += '#formfield-form-widgets-document_title';
+        formulasSelector += ',#formfield-form-widgets-document_id';
+        formulasSelector += ',#formfield-form-widgets-search_formula';
+        formulasSelector += ',#fieldset-events';
+        setTimeout(() => {
+          $(formulasSelector).remove();
+          $('.plomino-formula').parent('div.field').remove();
+          $('#content').css('margin-bottom', 0);
+        }, 500);
+      }
     }
 
     private getSettings() {

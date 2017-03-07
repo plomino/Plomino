@@ -23,6 +23,10 @@ export class LabelsRegistryService {
     }
   }
 
+  remove(id: string) {
+    this.labelsRegistry.delete(id);
+  }
+
   onUpdated() {
     return this.updated.asObservable();
   }

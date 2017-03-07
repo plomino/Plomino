@@ -5,10 +5,20 @@
             <!--<span class="icon material-icons">save</span>-->
         Save
       </a>
-      <a class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-color--grey-300"
+      <a class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent mdl-color--grey-300"
             (click)="cancelForm()">
             <!--<span class="icon material-icons">cancel</span>-->
         Cancel
+      </a>
+      <a class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent mdl-color--yellow-900"
+            (click)="showImportExport()">
+            <!--<span class="icon material-icons">cancel</span>-->
+        Import/Export
+      </a>
+      <a class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-color--purple-300"
+            (click)="showACL()">
+            <!--<span class="icon material-icons">cancel</span>-->
+        ACL
       </a>
   </div>
   <div class="scrolling-container scrolling-container--66" #dbform [innerHTML]="dbForm | safePloneHtml"></div>

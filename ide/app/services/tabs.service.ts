@@ -18,7 +18,7 @@ export class TabsService {
 
   public closing: boolean = false;
 
-  private activeTab$: BehaviorSubject<any> = new BehaviorSubject(null);
+  private activeTab$: BehaviorSubject<PlominoTab> = new BehaviorSubject(null);
   private activeField$: BehaviorSubject<any> = new BehaviorSubject(null);
   private tabs$: BehaviorSubject<any[]> = new BehaviorSubject([]);
   private tree: any;
@@ -160,7 +160,7 @@ export class TabsService {
     this.activeTab$.next(activeTab);
   }
 
-  getActiveTab(): Observable<any> {
+  getActiveTab(): Observable<PlominoTab> {
     return this.activeTab$.asObservable();
   }
 
