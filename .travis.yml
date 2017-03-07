@@ -12,6 +12,7 @@ node_js:
 env:
   - CXX=g++-4.8
 addons:
+  - selenium
   firefox: "50.0"
   apt:
     sources:
@@ -19,6 +20,8 @@ addons:
       - google-chrome
     packages:
       - g++-4.8
+      - libfontconfig1
+      - lsb-base
       - google-chrome-stable
 
 before_install:
