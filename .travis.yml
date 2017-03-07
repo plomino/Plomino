@@ -47,7 +47,7 @@ install:
   - node --version
   - tsc --version
   - mkdir -p buildout-cache/{eggs,downloads}
-  - python bootstrap-buildout.py --setuptools-version=8.3 -c travis.cfg
+  - python bootstrap-buildout.py -v 2.2.5 --setuptools-version=8.3 -c travis.cfg
   - bin/buildout -Nc travis.cfg
   - npm cache clean
   - npm set registry http://registry.npmjs.org
