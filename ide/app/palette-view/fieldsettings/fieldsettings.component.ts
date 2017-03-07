@@ -62,21 +62,22 @@ export class FieldSettingsComponent implements OnInit {
     $selectedElement: JQuery;
     
     constructor(private objService: ObjService,
-                private log: LogService,
-                private tabsService: TabsService,
-                private contentManager: TinyMCEFormContentManagerService,
-                private labelsRegistry: LabelsRegistryService,
-                private adapter: PlominoElementAdapterService,
-                private zone: NgZone,
-                private http: PlominoHTTPAPIService,
-                private draggingService: DraggingService,
-                private elementService: ElementService,
-                private formsService: FormsService,
-                private widgetService: WidgetService,
-                private formsList: PlominoFormsListService,
-                private fieldsService: FieldsService,
-                private changeDetector: ChangeDetectorRef,
-                private treeService: TreeService) { }
+      private log: LogService,
+      private tabsService: TabsService,
+      private contentManager: TinyMCEFormContentManagerService,
+      private labelsRegistry: LabelsRegistryService,
+      private adapter: PlominoElementAdapterService,
+      private zone: NgZone,
+      private http: PlominoHTTPAPIService,
+      private draggingService: DraggingService,
+      private elementService: ElementService,
+      private formsService: FormsService,
+      private widgetService: WidgetService,
+      private formsList: PlominoFormsListService,
+      private fieldsService: FieldsService,
+      private changeDetector: ChangeDetectorRef,
+      private treeService: TreeService
+    ) {}
 
     ngOnInit() {
       this.loadSettings();
@@ -412,17 +413,21 @@ export class FieldSettingsComponent implements OnInit {
     }
 
     private deleteField() {
-      this.elementService.deleteElement(this.field.url)
-      .subscribe(() => {
-        this.labelsRegistry.remove(this.field.url);
-        $('iframe:visible').contents()
-          .find(`[data-plominoid="${ this.field.id }"],[data-groupid="${ this.field.id }"]`)
-          .remove();
-        this.field = null;
-        this.formTemplate = null;
-        this.changeDetector.detectChanges();
-        this.treeService.updateTree();
-      });
+      this.elementService.awaitForConfirm()
+      .then(() => {
+        this.elementService.deleteElement(this.field.url)
+        .subscribe(() => {
+          this.labelsRegistry.remove(this.field.url);
+          $('iframe:visible').contents()
+            .find(`[data-plominoid="${ this.field.id }"],[data-groupid="${ this.field.id }"]`)
+            .remove();
+          this.field = null;
+          this.formTemplate = null;
+          this.changeDetector.detectChanges();
+          this.treeService.updateTree();
+        });
+      })
+      .catch(() => null);
     }
 
     private loadSettings() {

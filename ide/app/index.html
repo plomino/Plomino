@@ -144,6 +144,13 @@
       outline: none;
       text-decoration: none;
     }
+
+    .mdl-button, .mdl-button:hover,
+    .mdl-button:focus, .mdl-button:active, .mdl-button:visited {
+      text-decoration: none;
+      text-shadow: none !important;
+      padding: 0 16px !important;
+    }
   </style>
 </head>
 
@@ -207,6 +214,23 @@
       <button type="button"
       class="mdl-button mdl-button--raised mdl-button--colored">
         Close
+      </button>
+    </div>
+  </dialog>
+
+  <dialog id="confirm-dialog" class="mdl-dialog">
+    <h4 class="mdl-dialog__title">Confirm</h4>
+    <div class="mdl-dialog__content">
+      Do you agree to delete this object?
+    </div>
+    <div class="mdl-dialog__actions">
+      <button type="button"
+        class="mdl-button close">
+        Disagree
+      </button>
+      <button type="button"
+        class="mdl-button agree">
+        Agree
       </button>
     </div>
   </dialog>
