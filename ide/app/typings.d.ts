@@ -1,3 +1,23 @@
+interface PlominoTab {
+  url: string;
+  folder: boolean;
+  type: string;
+  children: any[];
+  label: string;
+  formUniqueId?: any;
+  showAdd?: boolean;
+  typeLabel?: string;
+  typeNameUrl?: string;
+}
+
+interface HTMLDialogElement extends HTMLElement {
+  open: boolean,
+  returnValue: any,
+  close: (returnValue?: any)=>void,
+  show: ()=>void,
+  showModal: ()=>void
+}
+
 interface PlominoFormDataAPIResponse {
   '@id': string;
   '@type': string;
@@ -199,3 +219,4 @@ interface TinyMceStatic extends TinyMceObservable {
 }
 
 declare var tinymce: TinyMceStatic;
+declare var dialogPolyfill: any;

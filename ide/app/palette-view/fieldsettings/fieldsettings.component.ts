@@ -414,6 +414,7 @@ export class FieldSettingsComponent implements OnInit {
     private deleteField() {
       this.elementService.deleteElement(this.field.url)
       .subscribe(() => {
+        this.labelsRegistry.remove(this.field.url);
         $('iframe:visible').contents()
           .find(`[data-plominoid="${ this.field.id }"],[data-groupid="${ this.field.id }"]`)
           .remove();

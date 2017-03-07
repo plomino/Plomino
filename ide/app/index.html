@@ -7,8 +7,10 @@
   <!-- Imports -->
   <link href="bootstrap/css/bootstrap.min.css" rel="stylesheet">
   <link async href="theme/select2.css" rel="stylesheet">
-  <link rel="stylesheet" href="theme/barceloneta-compiled.css">
-  <link rel="stylesheet" href="theme/++plone++static/plone-compiled.css">
+  <link async rel="stylesheet" href="theme/barceloneta-compiled.css">
+  <link async rel="stylesheet" href="theme/++plone++static/plone-compiled.css">
+  <link async rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/dialog-polyfill/0.4.2/dialog-polyfill.min.css">
   <style>
     /* Plone Form styles */    
     div.outer-wrapper div.container {
@@ -160,6 +162,18 @@
     <!-- thx to http://codepen.io/kittylion/npgAE -->
     <div class="frontpage-spinner"></div>
   </plomino-app>
+  
+  <dialog id="db-import-export-dialog" class="mdl-dialog">
+    <h4 class="mdl-dialog__title">Import / Export Replication</h4>
+    <div class="mdl-dialog__content">
+        <div class="mdl-spinner mdl-js-spinner is-active"></div>
+    </div>
+    <div class="mdl-dialog__actions">
+        <button type="button" class="mdl-button">Agree</button>
+        <button type="button" class="mdl-button close">Disagree</button>
+    </div>
+  </dialog>
+
   <script defer src="https://code.getmdl.io/1.3.0/material.min.js"
     onload="window.materialPromiseResolve()"
     onerror="window.materialPromiseReject()"></script>

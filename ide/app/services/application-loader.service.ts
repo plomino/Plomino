@@ -22,6 +22,6 @@ export class PlominoApplicationLoaderService {
   private onLoad() {
     setTimeout(() => {
       $('#application-loader').remove();
-    }, 100);
+    }, 300);
   }
 }

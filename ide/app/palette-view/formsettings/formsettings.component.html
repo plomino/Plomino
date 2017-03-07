@@ -11,23 +11,33 @@
           Save
         </span>
       </a>
-      <a class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--colored mdl-color--grey-300"
+      <a class="mdl-button mdl-js-button mdl-button--raised
+        mdl-js-ripple-effect mdl-button--colored mdl-color--grey-300"
          *ngIf="formSettings"
          (click)="cancelForm()">
          <!--<span class="icon material-icons">cancel</span>-->
         Cancel
       </a>
-      <a class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--colored mdl-color--green-900"
+      <a class="mdl-button mdl-js-button mdl-button--raised
+        mdl-js-ripple-effect mdl-button--colored mdl-color--green-900"
          *ngIf="formSettings"
          (click)="openFormPreview(tab.url)">
          <!--<span class="icon material-icons">slideshow</span>-->
         Preview
       </a>
-      <a class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--colored"
+      <a class="mdl-button mdl-js-button mdl-button--raised
+        mdl-js-ripple-effect mdl-button--colored mdl-color--blue-700"
          *ngIf="formSettings"
          (click)="openFormCode(tab)">
          <!--<span class="icon material-icons">code</span>-->
         Code
+      </a>
+      <a class="mdl-button mdl-js-button mdl-button--raised
+        mdl-js-ripple-effect mdl-button--colored mdl-color--pink-500"
+         *ngIf="formSettings"
+         (click)="deleteForm(tab)">
+         <!--<span class="icon material-icons">code</span>-->
+        Delete
       </a>
     </div>
     <div class="mdl-card mdl-shadow--2dp settings-alert-no-object"
