@@ -37,6 +37,9 @@ Library  Remote  ${PLONE_URL}/RobotRemote
 Test Setup  Open test browser
 Test Teardown  Close all browsers
 
+*** Variables ****************************************************************
+
+${BROWSER}  Chrome
 
 *** Test Cases ***************************************************************
 
@@ -74,17 +77,23 @@ Scenario: As a site administrator I can add a form by click
    When I add a form by click
    Then I can see "new-form" is open
 
-#Scenario: As a site administrator I can add a form by drag
-#  Given a logged-in test user
-#    and I open the ide for "mydb"
-#   When I add a form by drag
-#   Then I can see "new-form" is open
+Scenario: As a site administrator I can add a form by dnd
+  Given a logged-in test user
+    and I open the ide for "mydb"
+   When I add a form by dnd
+   Then I can see "new-form" is open
 
 Scenario: I can rename a form
   Given I have a form open
    When I enter "mynewid" in "Id" in "Form Settings"
    Then I can see "mynewid" is open
 
+Scenario: I can change the label and title at the same time
+  Given I have a form open
+   When I add a "Text" field
+    and I edit the label "text" to "My text question"
+   Then I see "My text question" in "title" in "Label Settings"
+    and I see "My text question" in "title" in "Form Settings"
 
 
 *** Keywords *****************************************************************
@@ -131,10 +140,8 @@ I go to the plominodatabase view
 
 I add a form by click
    wait until page contains  Form
-  Capture Page Screenshot
 #  Click Element  css=button[title="Form"]
-   Click Element  id=PlominoForm
-  Capture Page Screenshot
+   Click Element  xpath=//div[@class="palette-wrapper"]//*[@title="Form"]
   wait until page contains  new-form
   wait until page contains element  css=div.mce-tinymce
 
@@ -159,6 +166,8 @@ I open a form "${formid}"
 
 I open the first form
   Click Element  xpath=//li//li[1]/span[contains(@class,"tree-node--name")]
+  wait until page contains element   xpath=//div[@class="palette-wrapper"]//*[@title="Field"]
+  wait until page contains element   css=.mce-edit-area iframe
 
 I enter "${value}" in "${field}" in "${tab}"
   Click Link  ${tab}
@@ -166,6 +175,15 @@ I enter "${value}" in "${field}" in "${tab}"
   Click Link  link=Save
   wait until page contains element  link=Save
 
+I edit the label "${fieldid}" to "${text}"
+  select frame  css=.mce-edit-area iframe
+  ${label} =  set variable  xpath=//span[contains(@class,"plominoLabelClass")][@data-plominoid="${fieldid}"]
+  wait until page contains element  ${label}
+  double click element  ${label}
+  Press Key    ${label}   \\1
+  Press Key    ${label}   \\127
+  press key  ${label}  ${text}
+  unselect frame
 
 # --- THEN -------------------------------------------------------------------
 
@@ -191,3 +209,11 @@ I can see field "${fieldid}" in the editor
   Wait until page contains element  css=span.plominoFieldClass.mceNonEditable  #TODO change for test based on spinner
   Page should contain element  css=span.plominoFieldClass.mceNonEditable
   Page should contain element  xpath=//span[contains(@class,"plominoFieldClass")][@data-plominoid="${fieldid}"]
+  unselect frame
+
+I see "${value}" in "${field}" in "${tab}"
+  capture page screenshot
+  Click Link  ${tab}
+  ${text} =  get value  xpath=//input[@id=//label[normalize-space(text())="${field}"]/@for]
+  should be equal  ${text}  ${value}
+
