@@ -147,7 +147,7 @@ I add a form by click
 
 I add a form by dnd
    wait until page contains  Form
-   drag and drop  id=PlominoForm  css=div.main-app.panel
+   drag and drop  xpath=//div[@class="palette-wrapper"]//*[@title="Form"]  css=div.main-app.panel
   Capture Page Screenshot
   wait until page contains  new-form
   wait until page contains  css:div.mce-edit-area
@@ -172,8 +172,8 @@ I open the first form
 I enter "${value}" in "${field}" in "${tab}"
   Click Link  ${tab}
   Input Text  xpath=//input[@id=//label[normalize-space(text())="${field}"]/@for]  ${value}
-  Click Link  link=Save
-  wait until page contains element  link=Save
+  Click Link  link=SAVE
+  wait until page contains element  link=SAVE
 
 I edit the label "${fieldid}" to "${text}"
   select frame  css=.mce-edit-area iframe
