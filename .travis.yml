@@ -16,8 +16,11 @@ addons:
   apt:
     sources:
       - ubuntu-toolchain-r-test
+      - google-chrome
     packages:
       - g++-4.8
+      - google-chrome-stable
+
 before_install:
   - sudo apt-get update
   - wget http://security.ubuntu.com/ubuntu/pool/main/i/icu/libicu52_52.1-3ubuntu0.4_amd64.deb
