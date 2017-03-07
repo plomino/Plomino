@@ -6,6 +6,8 @@ interface PlominoTab {
   label: string;
   formUniqueId?: any;
   showAdd?: boolean;
+  active?: boolean;
+  editor?: any;
   typeLabel?: string;
   typeNameUrl?: string;
 }

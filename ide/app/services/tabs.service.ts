@@ -88,11 +88,13 @@ export class TabsService {
     });
   }
 
-  setActiveTab(tab: any, showAdd = false): void {
+  setActiveTab(tab: PlominoTab, showAdd = false): void {
     
     if (tab.active) {
       return;
     }
+
+    window.location.hash = `#form=${ tab.url.split('/').pop() }`;
 
     let tabs = this.tabs$.getValue().slice(0);
     let normalizedTab: any = Object.assign({}, this.retrieveTab(this.tree, tab), { showAdd: showAdd });

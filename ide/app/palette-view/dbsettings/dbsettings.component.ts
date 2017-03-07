@@ -55,10 +55,6 @@ export class DBSettingsComponent {
         dialogPolyfill.registerDialog(this.importExportDialog);
       }
 
-      if (!this.okDialog.showModal) {
-        dialogPolyfill.registerDialog(this.okDialog);
-      }
-
       if (!this.aclDialog.showModal) {
         dialogPolyfill.registerDialog(this.aclDialog);
       }
@@ -66,11 +62,6 @@ export class DBSettingsComponent {
       this.importExportDialog.querySelector('.mdl-dialog__actions button')
       .addEventListener('click', () => {
         this.importExportDialog.close();
-      });
-
-      this.okDialog.querySelector('.mdl-dialog__actions button')
-      .addEventListener('click', () => {
-        this.okDialog.close();
       });
 
       this.aclDialog.querySelector('.mdl-dialog__actions button')
@@ -154,28 +145,13 @@ export class DBSettingsComponent {
 
           const form = <HTMLFormElement> submitEvent.currentTarget;
           const formData = new FormData(form);
-          
+
           this.http.postWithOptions(
             form.action.replace('++resource++Products.CMFPlomino/ide/', ''),
             formData, new RequestOptions({
               headers: new Headers({})
             })
           )
-          .map((response: Response) => {
-            if (response.status === 500) {
-              throw response.json().error_type;
-            }
-            else {
-              return response;
-            }
-          })
-          .catch((error: any) => {
-            this.okDialog
-              .querySelector('.mdl-dialog__content')
-              .innerHTML = `<p>${ error }</p>`;
-            this.okDialog.showModal();
-            return Observable.throw(error);
-          })
           .subscribe((response: Response) => {
             let result = response.text();
             updateACLContent(result);
@@ -260,26 +236,9 @@ export class DBSettingsComponent {
           this.http.postWithOptions(
             form.action.replace('++resource++Products.CMFPlomino/ide/', ''),
             formData, new RequestOptions({
-              headers: new Headers({
-                // 'Content-Type': 'multipart/form-data'
-              })
+              headers: new Headers({})
             })
           )
-          .map((response: Response) => {
-            if (response.status === 500) {
-              throw response.json().error_type;
-            }
-            else {
-              return response;
-            }
-          })
-          .catch((error: any) => {
-            this.okDialog
-              .querySelector('.mdl-dialog__content')
-              .innerHTML = `<p>${ error }</p>`;
-            this.okDialog.showModal();
-            return Observable.throw(error);
-          })
           .subscribe((response: Response) => {
             let result = response.text();
             if (response.url.indexOf('AsJSON') !== -1) {
