@@ -16,8 +16,11 @@ addons:
   apt:
     sources:
       - ubuntu-toolchain-r-test
+      - google-chrome
     packages:
       - g++-4.8
+      - google-chrome-stable
+
 before_install:
   - sudo apt-get update
   - wget http://security.ubuntu.com/ubuntu/pool/main/i/icu/libicu52_52.1-3ubuntu0.4_amd64.deb
@@ -36,6 +39,8 @@ before_install:
   - mkdir geckodriver
   - tar -xzf geckodriver-v0.14.0-linux64.tar.gz -C geckodriver
   - export PATH=$PATH:$PWD/geckodriver
+  - sudo apt-get install chromium-chromedriver
+  - export PATH=$PATH:/usr/lib/chromium-browser/
 install:
   - npm --version
   - node --version
@@ -43,7 +48,6 @@ install:
   - mkdir -p buildout-cache/{eggs,downloads}
   - python bootstrap-buildout.py --setuptools-version=8.3 -c travis.cfg
   - bin/buildout -Nc travis.cfg
-  - pip install unittest2
   - npm cache clean
   - npm set registry http://registry.npmjs.org
   - npm update -g
