@@ -178,6 +178,7 @@ I open the first form
 
 I enter "${value}" in "${field}" in "${tab}"
   Click Link  ${tab}
+  wait until page contains element  xpath=//input[@id=//label[normalize-space(text())="${field}"]/@for]
   Input Text  xpath=//input[@id=//label[normalize-space(text())="${field}"]/@for]  ${value}
   Click Link  link=SAVE
   wait until page contains element  link=SAVE
