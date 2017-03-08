@@ -14,6 +14,7 @@ import { Observable } from 'rxjs/Rx';
 export class ElementService {
 
   headers: Headers;
+  confirmDialog: HTMLDialogElement;
 
   constructor(
     private http: PlominoHTTPAPIService, private log: LogService,
@@ -22,7 +23,28 @@ export class ElementService {
     this.headers = new Headers();
     this.headers.append('Accept', 'application/json');
     this.headers.append('Content-Type', 'application/json');
+
+    this.confirmDialog = <HTMLDialogElement> 
+      document.querySelector('#confirm-dialog');
   }
+
+  awaitForConfirm(): Promise<boolean> {
+    this.confirmDialog.showModal();
+    return new Promise((resolve, reject) => {
+      $(this.confirmDialog)
+        .find('.close').off('click.confirm')
+        .on('click.confirm', () => {
+          reject(false);
+          this.confirmDialog.close();
+        });
+      $(this.confirmDialog)
+        .find('.agree').off('click.confirm')
+        .on('click.confirm', () => {
+          resolve(true);
+          this.confirmDialog.close();
+        });
+      });
+    }
 
   getElement(id: string): Observable<PlominoFieldDataAPIResponse> {
     if (id.split('/').pop() === 'defaultLabel') {

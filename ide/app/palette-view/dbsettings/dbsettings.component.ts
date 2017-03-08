@@ -37,6 +37,8 @@ export class DBSettingsComponent {
 
     dbForm: string = '';
     importExportDialog: HTMLDialogElement;
+    aclDialog: HTMLDialogElement;
+    okDialog: HTMLDialogElement;
 
     constructor(private objService: ObjService,
       private changeDetector: ChangeDetectorRef,
@@ -44,13 +46,27 @@ export class DBSettingsComponent {
     ) {
       this.importExportDialog = <HTMLDialogElement> 
         document.querySelector('#db-import-export-dialog');
+      this.aclDialog = <HTMLDialogElement> 
+        document.querySelector('#db-acl-dialog');
+      this.okDialog = <HTMLDialogElement> 
+        document.querySelector('#ok-dialog');
+
       if (!this.importExportDialog.showModal) {
         dialogPolyfill.registerDialog(this.importExportDialog);
       }
 
-      this.importExportDialog.querySelector('.close')
+      if (!this.aclDialog.showModal) {
+        dialogPolyfill.registerDialog(this.aclDialog);
+      }
+
+      this.importExportDialog.querySelector('.mdl-dialog__actions button')
       .addEventListener('click', () => {
         this.importExportDialog.close();
+      });
+
+      this.aclDialog.querySelector('.mdl-dialog__actions button')
+      .addEventListener('click', () => {
+        this.aclDialog.close();
       });
     }
 
@@ -89,27 +105,168 @@ export class DBSettingsComponent {
       this.getDbSettings();
     }
 
+    private showACL() {
+      const contentBlock = this.aclDialog
+        .querySelector('.mdl-dialog__content');
+      const accessRightsBlock = contentBlock.querySelector('#acl-access-rights');
+      const accessUserRolesBlock = contentBlock.querySelector('#acl-user-roles');
+      const accessSpcActionBlock = contentBlock.querySelector('#acl-spc-action-rights');
+
+      const prepareACLContent = () => {
+        accessRightsBlock.innerHTML = 
+          `<p><div class="mdl-spinner mdl-js-spinner is-active"></div></p>`;
+        accessUserRolesBlock.innerHTML = 
+          `<p><div class="mdl-spinner mdl-js-spinner is-active"></div></p>`;
+        accessSpcActionBlock.innerHTML = 
+          `<p><div class="mdl-spinner mdl-js-spinner is-active"></div></p>`;
+        
+        componentHandler.upgradeDom();
+      };
+
+      prepareACLContent();
+
+      const updateACLContent = (content: string) => {
+        const $parsedVD = $(content);
+        const $importExportPlominoForm = $parsedVD.find('#content .pat-autotoc.autotabs');
+        $importExportPlominoForm.find('legend').remove();
+        const $fieldSets = $importExportPlominoForm.find('fieldset');
+
+        const accessRightsBlockHTML = $fieldSets.first().html();
+        const accessUserRolesBlockHTML = $fieldSets.slice(1, 2).first().html();
+        const accessSpcActionBlockHTML = $fieldSets.last().html();
+        
+        accessRightsBlock.innerHTML = `<p>${ accessRightsBlockHTML }</p>`;
+        accessUserRolesBlock.innerHTML = `<p>${ accessUserRolesBlockHTML }</p>`;
+        accessSpcActionBlock.innerHTML = `<p>${ accessSpcActionBlockHTML }</p>`;
+
+        $(this.aclDialog).find('form').submit((submitEvent: Event) => {
+          submitEvent.preventDefault();
+          submitEvent.stopPropagation();
+
+          const form = <HTMLFormElement> submitEvent.currentTarget;
+          const formData = new FormData(form);
+
+          this.http.postWithOptions(
+            form.action.replace('++resource++Products.CMFPlomino/ide/', ''),
+            formData, new RequestOptions({
+              headers: new Headers({})
+            })
+          )
+          .subscribe((response: Response) => {
+            let result = response.text();
+            updateACLContent(result);
+          });
+        });
+      };
+      
+      this.aclDialog.showModal();
+
+      this.http.get(
+        `${ window.location
+            .pathname
+            .replace('++resource++Products.CMFPlomino/ide/', '')
+            .replace('/index.html', '')
+          }/DatabaseACL`
+      )
+      .subscribe((response: Response) => {
+        updateACLContent(response.text());
+      });
+    }
+
     private showImportExport() {
-      const content = this.importExportDialog
+      const contentBlock = this.importExportDialog
         .querySelector('.mdl-dialog__content');
 
-      content.innerHTML = `<div class="mdl-spinner mdl-js-spinner is-active"></div>`;
+      const CSVImportationBlock = contentBlock.querySelector('#csv-importation');
+      const JSONImportExportBlock = contentBlock.querySelector('#json-import-export');
+
+      CSVImportationBlock.innerHTML = 
+        `<p><div class="mdl-spinner mdl-js-spinner is-active"></div></p>`;
+      JSONImportExportBlock.innerHTML = 
+        `<p><div class="mdl-spinner mdl-js-spinner is-active"></div></p>`;
+      
+      componentHandler.upgradeDom();
       this.importExportDialog.showModal();
 
       /**
        * load import/export form
        */
-      this.http.get(`../../DatabaseReplication`)
+      this.http.get(
+        `${ window.location
+            .pathname
+            .replace('++resource++Products.CMFPlomino/ide/', '')
+            .replace('/index.html', '')
+          }/DatabaseReplication`
+      )
       .subscribe((response: Response) => {
-        let $parsedVD = $(response.toString());
-        let $importExportPlominoForm = $parsedVD.find('#content .pat-autotoc.autotabs');
-        content.innerHTML = $importExportPlominoForm.get(0).outerHTML;
+        const $parsedVD = $(response.text());
+        const $importExportPlominoForm = $parsedVD.find('#content .pat-autotoc.autotabs');
+        $importExportPlominoForm.find('legend').remove();
+        const $fieldSets = $importExportPlominoForm.find('fieldset');
+        const CSVImportationBlockHTML = $fieldSets.first().html();
+        const JSONImportExportBlockHTML = $fieldSets.last().html();
+        
+        CSVImportationBlock.innerHTML = `<p>${ CSVImportationBlockHTML }</p>`;
+        JSONImportExportBlock.innerHTML = `<p>${ JSONImportExportBlockHTML }</p>`;
 
-        /* memory clean */
-        $parsedVD.remove();
-        $parsedVD = null;
-        $importExportPlominoForm.remove();
-        $importExportPlominoForm = null;
+        $(this.importExportDialog)
+          .find('.actionButtons input#import_csv')
+          .replaceWith(`
+            <input type="hidden" name="import_csv" value="Import">
+            <button type="submit"
+              class="mdl-button mdl-button-js
+                mdl-color-text--white
+                mdl-button--raised mdl-color--blue-900">
+              Import
+            </button>
+          `);
+
+        componentHandler.upgradeDom();
+
+        $(this.importExportDialog).find('form').submit((submitEvent: Event) => {
+          submitEvent.preventDefault();
+          submitEvent.stopPropagation();
+          const form = <HTMLFormElement> submitEvent.currentTarget;
+          const formData = new FormData(form);
+
+          if (/^.+?manage_importation$/.test(form.action)) {
+            formData.set('actionType', 'import');
+          }
+
+          this.http.postWithOptions(
+            form.action.replace('++resource++Products.CMFPlomino/ide/', ''),
+            formData, new RequestOptions({
+              headers: new Headers({})
+            })
+          )
+          .subscribe((response: Response) => {
+            let result = response.text();
+            if (response.url.indexOf('AsJSON') !== -1) {
+              window.URL = (<any> window).webkitURL || window.URL;
+              const jsonString = JSON.stringify(response.json(), undefined, 2);
+              var link = document.createElement('a');
+              link.download = 'data.json';
+              var blob = new Blob([jsonString], { type: 'text/plain' });
+              link.href = window.URL.createObjectURL(blob);
+              link.click();
+            }
+            else {
+              let start = result.indexOf('<div class="outer-wrapper">');
+              let end = result.indexOf('<!--/outer-wrapper -->');
+              result = result.slice(start, end);
+              start = result.indexOf('<aside id="global_statusmessage">');
+              end = result.indexOf('</aside>');
+              result = result.slice(start, end + '</aside>'.length);
+
+              this.okDialog
+              .querySelector('.mdl-dialog__content')
+              .innerHTML = `<p>${ $(result).text() }</p>`;
+
+              // this.importExportDialog.close();
+              this.okDialog.showModal();
+            }
+          });
+        });
       });
     }
 

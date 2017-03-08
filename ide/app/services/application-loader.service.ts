@@ -22,6 +22,13 @@ export class PlominoApplicationLoaderService {
   private onLoad() {
     setTimeout(() => {
       $('#application-loader').remove();
+
+      const splitHash = window.location.hash.split('form=');
+      const formLink = splitHash.pop();
+      
+      if (splitHash.length && formLink && formLink !== 'form=') {
+        $(`.tree-node--name:contains("${ formLink }")`).click();
+      }
     }, 300);
   }
 }

@@ -185,17 +185,21 @@ export class FormSettingsComponent implements OnInit {
     }
 
     private deleteForm(tabData: PlominoTab) {
-      this.elementService
-        .deleteElement(tabData.url)
-        .subscribe(() => {
-          this.tabsService.closeTab(this.tab);
-          this.tab = null;
-          this.formSettings = '';
-          this.formLayout = '';
-          this.changeDetector.detectChanges();
-          this.treeService.updateTree();
-          this.changeDetector.markForCheck();
-        });
+      this.elementService.awaitForConfirm()
+      .then(() => {
+        this.elementService
+          .deleteElement(tabData.url)
+          .subscribe(() => {
+            this.tabsService.closeTab(this.tab);
+            this.tab = null;
+            this.formSettings = '';
+            this.formLayout = '';
+            this.changeDetector.detectChanges();
+            this.treeService.updateTree();
+            this.changeDetector.markForCheck();
+          });
+      })
+      .catch(() => null);
     }
 
     private updateMacroses() {
