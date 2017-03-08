@@ -35,7 +35,8 @@ Resource  plone/app/robotframework/keywords.robot
 Library  Remote  ${PLONE_URL}/RobotRemote
 
 Test Setup  Open test browser
-Test Teardown  Close all browsers
+Test Teardown  Plone Test Teardown
+
 
 *** Variables ****************************************************************
 
@@ -92,11 +93,17 @@ Scenario: I can change the label and title at the same time
   Given I have a form open
    When I add a "Text" field
     and I edit the label "text" to "My text question"
-   Then I see "My text question" in "title" in "Label Settings"
-    and I see "My text question" in "title" in "Form Settings"
+   Then I see "My text question" in "Field title" in "Label Settings"
+    and I select the field "text"
+    and I see "My text question" in "Title" in "Field Settings"
 
 
 *** Keywords *****************************************************************
+
+Plone Test Teardown
+    Run Keyword If Test Failed  ${SELENIUM_RUN_ON_FAILURE}
+    Close all browsers
+
 
 # --- Given ------------------------------------------------------------------
 
@@ -171,6 +178,7 @@ I open the first form
 
 I enter "${value}" in "${field}" in "${tab}"
   Click Link  ${tab}
+  wait until page contains element  xpath=//input[@id=//label[normalize-space(text())="${field}"]/@for]
   Input Text  xpath=//input[@id=//label[normalize-space(text())="${field}"]/@for]  ${value}
   Click Link  link=SAVE
   wait until page contains element  link=SAVE
@@ -180,10 +188,21 @@ I edit the label "${fieldid}" to "${text}"
   ${label} =  set variable  xpath=//span[contains(@class,"plominoLabelClass")][@data-plominoid="${fieldid}"]
   wait until page contains element  ${label}
   double click element  ${label}
-  Press Key    ${label}   \\1
-  Press Key    ${label}   \\127
+  #Press Key    ${label}   \\1       #Ctrl-A
+  #Press Key    ${label}   \\127     #DELETE
+  clear element text  ${label}
   press key  ${label}  ${text}
   unselect frame
+
+I select the field "${fieldid}"
+  select frame  css=.mce-edit-area iframe
+  ${label} =  set variable  xpath=//span[contains(@class,"plominoFieldClass")][@data-plominoid="${fieldid}"]
+  wait until page contains element  ${label}
+  click element  ${label}
+  unselect frame
+  wait until page contains  Field Settings
+
+
 
 # --- THEN -------------------------------------------------------------------
 
