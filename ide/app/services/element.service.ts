@@ -29,6 +29,9 @@ export class ElementService {
   }
 
   awaitForConfirm(): Promise<boolean> {
+    this.confirmDialog
+      .querySelector('.mdl-dialog__content')
+      .innerHTML = 'Do you agree to delete this object?';
     this.confirmDialog.showModal();
     return new Promise((resolve, reject) => {
       $(this.confirmDialog)

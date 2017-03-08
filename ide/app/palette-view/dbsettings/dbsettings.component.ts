@@ -39,6 +39,7 @@ export class DBSettingsComponent {
     importExportDialog: HTMLDialogElement;
     aclDialog: HTMLDialogElement;
     okDialog: HTMLDialogElement;
+    confirmDialog: HTMLDialogElement;
 
     constructor(private objService: ObjService,
       private changeDetector: ChangeDetectorRef,
@@ -50,6 +51,8 @@ export class DBSettingsComponent {
         document.querySelector('#db-acl-dialog');
       this.okDialog = <HTMLDialogElement> 
         document.querySelector('#ok-dialog');
+      this.confirmDialog = <HTMLDialogElement> 
+        document.querySelector('#confirm-dialog');
 
       if (!this.importExportDialog.showModal) {
         dialogPolyfill.registerDialog(this.importExportDialog);
@@ -59,15 +62,19 @@ export class DBSettingsComponent {
         dialogPolyfill.registerDialog(this.aclDialog);
       }
 
+      if (!this.confirmDialog.showModal) {
+        dialogPolyfill.registerDialog(this.confirmDialog);
+      }
+
       this.importExportDialog.querySelector('.mdl-dialog__actions button')
-      .addEventListener('click', () => {
-        this.importExportDialog.close();
-      });
+        .addEventListener('click', () => {
+          this.importExportDialog.close();
+        });
 
       this.aclDialog.querySelector('.mdl-dialog__actions button')
-      .addEventListener('click', () => {
-        this.aclDialog.close();
-      });
+        .addEventListener('click', () => {
+          this.aclDialog.close();
+        });
     }
 
     submitForm() {
@@ -103,6 +110,27 @@ export class DBSettingsComponent {
 
     ngOnInit() {
       this.getDbSettings();
+    }
+
+    awaitForConfirm(question: string): Promise<boolean> {
+      this.confirmDialog
+      .querySelector('.mdl-dialog__content')
+      .innerHTML = question;
+      this.confirmDialog.showModal();
+      return new Promise((resolve, reject) => {
+        $(this.confirmDialog)
+          .find('.close').off('click.confirm')
+          .on('click.confirm', () => {
+            reject(false);
+            this.confirmDialog.close();
+          });
+        $(this.confirmDialog)
+          .find('.agree').off('click.confirm')
+          .on('click.confirm', () => {
+            resolve(true);
+            this.confirmDialog.close();
+          });
+        });
     }
 
     private parseFieldsets(content: string) {
@@ -306,6 +334,8 @@ export class DBSettingsComponent {
             const formData = new FormData(form);
             let targetFiletype: string = null;
             let targetFiletypeMime: string = null;
+
+            const importDesignFormSubmitted = form.name === 'ImportDesign';
             
             if (form.action.indexOf('exportDesign') !== -1) {
               targetFiletype = formData.get('targettype') === 'file' 
@@ -322,51 +352,84 @@ export class DBSettingsComponent {
 
             submitEvent.preventDefault();
             submitEvent.stopPropagation();
+
+            ((): Promise<any> => {
+              if (importDesignFormSubmitted) {
+                const anyChanges = tinymce.editors
+                  .some((editor) => editor.isDirty());
   
-            this.http.postWithOptions(
-              form.action.replace('++resource++Products.CMFPlomino/ide/', ''),
-              formData, new RequestOptions({
-                headers: new Headers({})
-              })
-            )
-            .subscribe((response: Response) => {
-              let result = response.text();
-              if (targetFiletype !== null) {
-                window.URL = window.URL || (<any> window).webkitURL;
-                const jsonString = JSON.stringify(response.json(), undefined, 2)
-                var link = document.createElement('a');
-                link.download = 'data.' + targetFiletype;
-                var blob = new Blob([jsonString], { type: targetFiletypeMime });
-                link.href = window.URL.createObjectURL(blob);
-                link.click();
+                if (anyChanges) {
+                  /**
+                   * warn the user of any unsaved changes
+                   */
+                  return this.awaitForConfirm(
+                    'Do you agree to undo all unsaved changes?'
+                  );
+                }
               }
-              else {
-                let start = result.indexOf('<div class="outer-wrapper">');
-                let end = result.indexOf('<!--/outer-wrapper -->');
-                result = result.slice(start, end);
-                start = result.indexOf('<aside id="global_statusmessage">');
-                end = result.indexOf('</aside>');
-                result = result.slice(start, end + '</aside>'.length);
+
+              return Promise.resolve();
+            })()
+            .then(() => {
+              this.http.postWithOptions(
+                form.action.replace('++resource++Products.CMFPlomino/ide/', ''),
+                formData, new RequestOptions({
+                  headers: new Headers({})
+                })
+              )
+              .subscribe((response: Response) => {
+                let result = response.text();
+                if (targetFiletype !== null) {
+                  window.URL = window.URL || (<any> window).webkitURL;
+                  const jsonString = JSON.stringify(response.json(), undefined, 2)
+                  var link = document.createElement('a');
+                  link.download = 'data.' + targetFiletype;
+                  var blob = new Blob([jsonString], { type: targetFiletypeMime });
+                  link.href = window.URL.createObjectURL(blob);
+                  link.click();
+                }
+                else {
+                  let start = result.indexOf('<div class="outer-wrapper">');
+                  let end = result.indexOf('<!--/outer-wrapper -->');
+                  result = result.slice(start, end);
+                  start = result.indexOf('<aside id="global_statusmessage">');
+                  end = result.indexOf('</aside>');
+                  result = result.slice(start, end + '</aside>'.length);
+    
+                  this.okDialog
+                  .querySelector('.mdl-dialog__content')
+                  .innerHTML = `<p>${ $(result).text() }</p>`;
+    
+                  // this.importExportDialog.close();
   
-                this.okDialog
-                .querySelector('.mdl-dialog__content')
-                .innerHTML = `<p>${ $(result).text() }</p>`;
-  
-                // this.importExportDialog.close();
-                this.okDialog.showModal();
-              }
-            });
+                  if (importDesignFormSubmitted) {
+                    window['reloadAccepted'] = true;
+                    window.location.reload();
+                  }
+                  else {
+                    this.okDialog.showModal();
+                  }
+                }
+              });
+            })
+            .catch(() => null);          
           });
 
         });
       });
     }
 
+    private hasAuthPermissions() {
+      return !(this.dbForm.indexOf(
+        'You do not have sufficient privileges to view this page'
+      ) !== -1);
+    }
+
     private getDbSettings() {
-      this.objService.getDB().subscribe(html => { 
+      this.objService.getDB().subscribe((html) => { 
         this.dbForm = html;
         this.changeDetector.markForCheck();
-      }, err => { 
+      }, (err) => { 
         console.error(err);
       });
     }

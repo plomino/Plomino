@@ -77,16 +77,20 @@ export class PlominoHTTPAPIService {
       const tmp = response.json();
       throw tmp.error_type || tmp.toString();
     }
+    else if (response.status === 401) {
+      const tmp = response.json();
+      throw tmp.message || tmp.toString();
+    }
     else {
       return response;
     }
   }
 
   throwError(error: any) {
-    this.okDialog
-      .querySelector('.mdl-dialog__content')
+    const okDialog = <HTMLDialogElement> document.querySelector('#ok-dialog');
+    okDialog.querySelector('.mdl-dialog__content')
       .innerHTML = `<p>${ error }</p>`;
-    this.okDialog.showModal();
+    okDialog.showModal();
     return Observable.throw(error);
   }
 

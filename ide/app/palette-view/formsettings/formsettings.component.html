@@ -1,5 +1,5 @@
 <div class="form-settings-wrapper">
-    <div class="formsettings--control-buttons" *ngIf="formSettings">
+    <div class="formsettings--control-buttons" *ngIf="formSettings && hasAuthPermissions()">
       <a class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent mdl-color--teal-700"
          *ngIf="formSettings"
          (click)="submitForm()">
