@@ -192,6 +192,7 @@ export class TinyMCEFormContentManagerService {
   }
 
   setContent(editorId: any, contentHTML: string, dragging?: any): void {
+    // console.warn('setContent called');
     let editor = tinymce.get(editorId);
     
     if (!editor) {
