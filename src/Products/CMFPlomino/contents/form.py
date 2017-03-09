@@ -308,18 +308,21 @@ class PlominoForm(Container):
                 return True
         return False
 
-    def getFormAction(self, bare=False):
+    def getFormAction(self, request, bare=False):
         """
         For a multi page form, submit to a custom action
         For a page, submit to itself
         For a normal form, submit to Open{Bare}Form as appropriate
         """
+        is_childform = False = request.get("Plomino_Parent_Field", None) is not None
         if self.getIsMulti():
             action = '/page/%s' % self._get_current_page()
         elif self.isPage:
             action = ''
         elif bare:
             action = '/OpenBareForm'
+        elif is_childform:
+            action = '/createDocument'
         else:
             action = '/OpenForm'
         return '%s%s' % (self.absolute_url(), action)

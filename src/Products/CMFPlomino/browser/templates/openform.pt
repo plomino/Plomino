@@ -48,7 +48,7 @@
                 enctype python:(form_method == 'POST') and 'multipart/form-data'"
             tal:attributes="
                 name view/form/id;
-                action python:view.form.getFormAction();
+                action python:view.form.getFormAction(request);
                 method python:view.form.getFormMethod();
                 data-pat-plominodynamic string:url:${view/form/absolute_url};
                 class python: macro_context and 'plomino-macro' or '';
@@ -99,7 +99,7 @@
                 enctype python:(form_method == 'POST') and 'multipart/form-data'"
             tal:attributes="
                 name view/form/id;
-                action python:view.form.getFormAction();
+                action python:view.form.getFormAction(request);
                 method python:view.form.getFormMethod();
                 data-pat-plominodynamic string:url:${view/form/absolute_url};
                 enctype enctype|nothing;
