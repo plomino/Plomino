@@ -63,7 +63,7 @@ export class FormSettingsComponent implements OnInit {
     ngOnInit() {
         this.getSettings();
 
-        let onSaveFinishCb:any = null;
+        let onSaveFinishCb: any = null;
 
         this.formsService.formSettingsSave$.subscribe((data) => {
             if (typeof data.formUniqueId === 'undefined') {
@@ -89,9 +89,15 @@ export class FormSettingsComponent implements OnInit {
         });
     }
 
-    saveFormSettings(formData: any, formLayout: any, cb: any) {
+    private hasAuthPermissions() {
+      return !(this.formSettings.indexOf(
+        'You do not have sufficient privileges to view this page'
+      ) !== -1);
+    }
+
+    saveFormSettings(formData: FormData, formLayout: any, cb: any) {
         this.formSaving = true;
-        let $formId:any = '';
+        let $formId: any = '';
       
         formData.set('form.widgets.form_layout', formLayout);
       

@@ -129,6 +129,12 @@ export class TemplatesService {
   }
 
   private extractData(response: Response) {
+    if (response.text().indexOf(
+      'You do not have sufficient privileges to view this page'
+    ) !== -1) {
+      return [];
+    };
+    
     return response.json();
   }
 }

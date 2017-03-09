@@ -39,6 +39,7 @@ export class DBSettingsComponent {
     importExportDialog: HTMLDialogElement;
     aclDialog: HTMLDialogElement;
     okDialog: HTMLDialogElement;
+    confirmDialog: HTMLDialogElement;
 
     constructor(private objService: ObjService,
       private changeDetector: ChangeDetectorRef,
@@ -50,6 +51,8 @@ export class DBSettingsComponent {
         document.querySelector('#db-acl-dialog');
       this.okDialog = <HTMLDialogElement> 
         document.querySelector('#ok-dialog');
+      this.confirmDialog = <HTMLDialogElement> 
+        document.querySelector('#confirm-dialog');
 
       if (!this.importExportDialog.showModal) {
         dialogPolyfill.registerDialog(this.importExportDialog);
@@ -59,15 +62,19 @@ export class DBSettingsComponent {
         dialogPolyfill.registerDialog(this.aclDialog);
       }
 
+      if (!this.confirmDialog.showModal) {
+        dialogPolyfill.registerDialog(this.confirmDialog);
+      }
+
       this.importExportDialog.querySelector('.mdl-dialog__actions button')
-      .addEventListener('click', () => {
-        this.importExportDialog.close();
-      });
+        .addEventListener('click', () => {
+          this.importExportDialog.close();
+        });
 
       this.aclDialog.querySelector('.mdl-dialog__actions button')
-      .addEventListener('click', () => {
-        this.aclDialog.close();
-      });
+        .addEventListener('click', () => {
+          this.aclDialog.close();
+        });
     }
 
     submitForm() {
@@ -105,6 +112,42 @@ export class DBSettingsComponent {
       this.getDbSettings();
     }
 
+    awaitForConfirm(question: string): Promise<boolean> {
+      this.confirmDialog
+      .querySelector('.mdl-dialog__content')
+      .innerHTML = question;
+      this.confirmDialog.showModal();
+      return new Promise((resolve, reject) => {
+        $(this.confirmDialog)
+          .find('.close').off('click.confirm')
+          .on('click.confirm', () => {
+            reject(false);
+            this.confirmDialog.close();
+          });
+        $(this.confirmDialog)
+          .find('.agree').off('click.confirm')
+          .on('click.confirm', () => {
+            resolve(true);
+            this.confirmDialog.close();
+          });
+        });
+    }
+
+    private parseFieldsets(content: string) {
+      const $parsedVD = $(content);
+      const $importExportPlominoForm = $parsedVD.find('#content .pat-autotoc.autotabs');
+      $importExportPlominoForm.find('legend').remove();
+      return $importExportPlominoForm.find('fieldset');
+    }
+
+    private getDBOptionsLink(link: string) {
+      return `${ 
+        window.location.pathname
+        .replace('++resource++Products.CMFPlomino/ide/', '')
+        .replace('/index.html', '')
+      }/${ link }`;
+    }
+
     private showACL() {
       const contentBlock = this.aclDialog
         .querySelector('.mdl-dialog__content');
@@ -126,11 +169,7 @@ export class DBSettingsComponent {
       prepareACLContent();
 
       const updateACLContent = (content: string) => {
-        const $parsedVD = $(content);
-        const $importExportPlominoForm = $parsedVD.find('#content .pat-autotoc.autotabs');
-        $importExportPlominoForm.find('legend').remove();
-        const $fieldSets = $importExportPlominoForm.find('fieldset');
-
+        const $fieldSets = this.parseFieldsets(content);
         const accessRightsBlockHTML = $fieldSets.first().html();
         const accessUserRolesBlockHTML = $fieldSets.slice(1, 2).first().html();
         const accessSpcActionBlockHTML = $fieldSets.last().html();
@@ -161,13 +200,7 @@ export class DBSettingsComponent {
       
       this.aclDialog.showModal();
 
-      this.http.get(
-        `${ window.location
-            .pathname
-            .replace('++resource++Products.CMFPlomino/ide/', '')
-            .replace('/index.html', '')
-          }/DatabaseACL`
-      )
+      this.http.get(this.getDBOptionsLink('DatabaseACL'))
       .subscribe((response: Response) => {
         updateACLContent(response.text());
       });
@@ -179,10 +212,16 @@ export class DBSettingsComponent {
 
       const CSVImportationBlock = contentBlock.querySelector('#csv-importation');
       const JSONImportExportBlock = contentBlock.querySelector('#json-import-export');
+      const DesignManageBlock = contentBlock.querySelector('#design-manage');
+      const DesignImportExportBlock = contentBlock.querySelector('#design-import-export');
 
       CSVImportationBlock.innerHTML = 
         `<p><div class="mdl-spinner mdl-js-spinner is-active"></div></p>`;
       JSONImportExportBlock.innerHTML = 
+        `<p><div class="mdl-spinner mdl-js-spinner is-active"></div></p>`;
+      DesignManageBlock.innerHTML = 
+        `<p><div class="mdl-spinner mdl-js-spinner is-active"></div></p>`;
+      DesignImportExportBlock.innerHTML = 
         `<p><div class="mdl-spinner mdl-js-spinner is-active"></div></p>`;
       
       componentHandler.upgradeDom();
@@ -191,18 +230,9 @@ export class DBSettingsComponent {
       /**
        * load import/export form
        */
-      this.http.get(
-        `${ window.location
-            .pathname
-            .replace('++resource++Products.CMFPlomino/ide/', '')
-            .replace('/index.html', '')
-          }/DatabaseReplication`
-      )
+      this.http.get(this.getDBOptionsLink('DatabaseReplication'))
       .subscribe((response: Response) => {
-        const $parsedVD = $(response.text());
-        const $importExportPlominoForm = $parsedVD.find('#content .pat-autotoc.autotabs');
-        $importExportPlominoForm.find('legend').remove();
-        const $fieldSets = $importExportPlominoForm.find('fieldset');
+        const $fieldSets = this.parseFieldsets(response.text());
         const CSVImportationBlockHTML = $fieldSets.first().html();
         const JSONImportExportBlockHTML = $fieldSets.last().html();
         
@@ -223,9 +253,12 @@ export class DBSettingsComponent {
 
         componentHandler.upgradeDom();
 
-        $(this.importExportDialog).find('form').submit((submitEvent: Event) => {
+        $(this.importExportDialog).find(
+          '#csv-importation form, #json-import-export form'
+        ).submit((submitEvent: Event) => {
           submitEvent.preventDefault();
           submitEvent.stopPropagation();
+
           const form = <HTMLFormElement> submitEvent.currentTarget;
           const formData = new FormData(form);
 
@@ -242,7 +275,7 @@ export class DBSettingsComponent {
           .subscribe((response: Response) => {
             let result = response.text();
             if (response.url.indexOf('AsJSON') !== -1) {
-              window.URL = (<any> window).webkitURL || window.URL;
+              window.URL = window.URL || (<any> window).webkitURL;
               const jsonString = JSON.stringify(response.json(), undefined, 2);
               var link = document.createElement('a');
               link.download = 'data.json';
@@ -267,14 +300,136 @@ export class DBSettingsComponent {
             }
           });
         });
+
+        /**
+         * load design settings
+         */
+        this.http.get(this.getDBOptionsLink('DatabaseDesign'))
+        .subscribe((response: Response) => {
+          const $fieldSets = this.parseFieldsets(response.text());
+
+          const DesignManageBlockHTML = $fieldSets.slice(1, 2).first().html();
+          const DesignImportExportBlockHTML = $fieldSets.last().html();
+          
+          DesignManageBlock.innerHTML = `<p>${ DesignManageBlockHTML }</p>`;
+          DesignImportExportBlock.innerHTML = `<p>${ DesignImportExportBlockHTML }</p>`;
+
+          $(this.importExportDialog)
+            .find('#design-import-export input[name="submit_refresh_import"]')
+            .remove();
+          
+          $(this.importExportDialog)
+            .find('#design-manage a.standalone')
+            .each((i, element: HTMLAnchorElement) => {
+              element.target = '_new';
+              element.href = this.getDBOptionsLink(
+                element.href.replace(/^.*\/(\S+\/\S+)$/i, '$1')
+              );
+            });
+
+          $(this.importExportDialog).find(
+            '#design-manage form, #design-import-export form'
+          ).submit((submitEvent: Event) => {
+            const form = <HTMLFormElement> submitEvent.currentTarget;
+            const formData = new FormData(form);
+            let targetFiletype: string = null;
+            let targetFiletypeMime: string = null;
+
+            const importDesignFormSubmitted = form.name === 'ImportDesign';
+            
+            if (form.action.indexOf('exportDesign') !== -1) {
+              targetFiletype = formData.get('targettype') === 'file' 
+                ? 'json' : 'zip';
+              targetFiletypeMime = formData.get('targettype') === 'file' 
+                ? 'text/plain' : 'octet/stream';
+            }
+
+            if (targetFiletypeMime === 'octet/stream') {
+              form.action = form.action.replace('++resource++Products.CMFPlomino/ide/', '')
+              form.submit();
+              return true;
+            }
+
+            submitEvent.preventDefault();
+            submitEvent.stopPropagation();
+
+            ((): Promise<any> => {
+              if (importDesignFormSubmitted) {
+                const anyChanges = tinymce.editors
+                  .some((editor) => editor.isDirty());
+  
+                if (anyChanges) {
+                  /**
+                   * warn the user of any unsaved changes
+                   */
+                  return this.awaitForConfirm(
+                    'Do you agree to undo all unsaved changes?'
+                  );
+                }
+              }
+
+              return Promise.resolve();
+            })()
+            .then(() => {
+              this.http.postWithOptions(
+                form.action.replace('++resource++Products.CMFPlomino/ide/', ''),
+                formData, new RequestOptions({
+                  headers: new Headers({})
+                })
+              )
+              .subscribe((response: Response) => {
+                let result = response.text();
+                if (targetFiletype !== null) {
+                  window.URL = window.URL || (<any> window).webkitURL;
+                  const jsonString = JSON.stringify(response.json(), undefined, 2)
+                  var link = document.createElement('a');
+                  link.download = 'data.' + targetFiletype;
+                  var blob = new Blob([jsonString], { type: targetFiletypeMime });
+                  link.href = window.URL.createObjectURL(blob);
+                  link.click();
+                }
+                else {
+                  let start = result.indexOf('<div class="outer-wrapper">');
+                  let end = result.indexOf('<!--/outer-wrapper -->');
+                  result = result.slice(start, end);
+                  start = result.indexOf('<aside id="global_statusmessage">');
+                  end = result.indexOf('</aside>');
+                  result = result.slice(start, end + '</aside>'.length);
+    
+                  this.okDialog
+                  .querySelector('.mdl-dialog__content')
+                  .innerHTML = `<p>${ $(result).text() }</p>`;
+    
+                  // this.importExportDialog.close();
+  
+                  if (importDesignFormSubmitted) {
+                    window['reloadAccepted'] = true;
+                    window.location.reload();
+                  }
+                  else {
+                    this.okDialog.showModal();
+                  }
+                }
+              });
+            })
+            .catch(() => null);          
+          });
+
+        });
       });
     }
 
+    private hasAuthPermissions() {
+      return !(this.dbForm.indexOf(
+        'You do not have sufficient privileges to view this page'
+      ) !== -1);
+    }
+
     private getDbSettings() {
-      this.objService.getDB().subscribe(html => { 
+      this.objService.getDB().subscribe((html) => { 
         this.dbForm = html;
         this.changeDetector.markForCheck();
-      }, err => { 
+      }, (err) => { 
         console.error(err);
       });
     }

@@ -1,5 +1,5 @@
 <div class="db-settings-wrapper">
-  <div class="dbsettings--control-buttons">
+  <div class="dbsettings--control-buttons" *ngIf="hasAuthPermissions()">
       <a class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent mdl-color--teal-700"
             (click)="submitForm()">
             <!--<span class="icon material-icons">save</span>-->

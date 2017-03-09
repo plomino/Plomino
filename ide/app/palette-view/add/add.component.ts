@@ -197,7 +197,7 @@ export class AddComponent implements OnInit, AfterViewInit {
                   '@type': 'PlominoForm',
                   'title': 'New Form'
               };
-              this.elementService.postElement('../../', formElement)
+              this.elementService.postElement(this.getDBOptionsLink(''), formElement)
               .subscribe((response: AddFieldResponse) => {
                 this.treeService.updateTree().then(() => {
                   this.tabsService.openTab({
@@ -218,7 +218,7 @@ export class AddComponent implements OnInit, AfterViewInit {
                 '@type': 'PlominoView',
                 'title': 'New View'
               };
-              this.elementService.postElement('../../', viewElement)
+              this.elementService.postElement(this.getDBOptionsLink(''), viewElement)
               .subscribe((response: AddFieldResponse) => {
                 this.treeService.updateTree().then(() => {
                   this.tabsService.openTab({
@@ -416,5 +416,13 @@ export class AddComponent implements OnInit, AfterViewInit {
 
     endDrag(): void {
         this.draggingService.setDragging(false);
+    }
+
+    private getDBOptionsLink(link: string) {
+      return `${ 
+        window.location.pathname
+        .replace('++resource++Products.CMFPlomino/ide/', '')
+        .replace('/index.html', '')
+      }/${ link }`;
     }
 }

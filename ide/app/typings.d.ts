@@ -180,6 +180,7 @@ interface TinyMceEditor extends TinyMceObservable {
   remove: () => void
   hide: () => void
   setDirty: (dirty: boolean) => void
+  isDirty: () => boolean
   show: () => void
   getContent: (args?: Object) => string
   getBody: () => string
@@ -215,6 +216,7 @@ interface TinyMceStatic extends TinyMceObservable {
   execCommand: (command: string, user_interface: boolean, value: string) => boolean;
   activeEditor: TinyMceEditor;
   get: (id: string) => TinyMceEditor;
+  editors: TinyMceEditor[];
   EditorManager: any;
   DOM: any;
   dom: any;

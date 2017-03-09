@@ -188,6 +188,16 @@ export class ObjService {
     }
 
     private extractText(response: Response) {
+      if (response.text().indexOf(
+        'You do not have sufficient privileges to view this page'
+      ) !== -1) {
+        return `<div class="outer-wrapper">
+          <p style="text-align: center; padding-top: 20px;">
+            You do not have sufficient privileges to view this page
+          </p>
+        </div><!--/outer-wrapper -->`;
+      };
+
       return response.text();
     }
 

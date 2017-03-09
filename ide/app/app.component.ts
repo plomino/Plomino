@@ -441,7 +441,7 @@ export class AppComponent implements OnInit, AfterViewInit {
     $(window)
     .unbind('beforeunload')
     .bind('beforeunload', (eventObject: any) => {
-      if (tabz.isdirty) {
+      if (tabz.isdirty && !window['reloadAccepted']) {
         return confirm('Do you want to close window. The form is unsaved.');
       }
     });
