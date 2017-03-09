@@ -78,7 +78,8 @@ export class FormSettingsComponent implements OnInit {
             this.formsService.getFormContentBeforeSave(data.formUniqueId);
         });
 
-        this.formsService.onFormContentBeforeSave$.subscribe((data:{id:any, content:any}) => {
+        this.formsService.onFormContentBeforeSave$
+          .subscribe((data:{id:any, content:any}) => {
             if (this.tab.formUniqueId !== data.id)
                 return;
 
@@ -106,7 +107,8 @@ export class FormSettingsComponent implements OnInit {
                 return Observable.of(responseData.html);
             } else {
                 $formId = responseData.url.slice(responseData.url.lastIndexOf('/') + 1);
-                let newUrl = this.tab.url.slice(0, this.tab.url.lastIndexOf('/') + 1) + $formId;
+                let newUrl = this.tab.url
+                  .slice(0, this.tab.url.lastIndexOf('/') + 1) + $formId;
                 let oldUrl = this.tab.url;
 
                 if (newUrl && oldUrl && newUrl !== oldUrl) {

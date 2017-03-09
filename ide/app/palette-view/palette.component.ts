@@ -119,12 +119,18 @@ export class PaletteComponent implements OnInit {
         if (activeFieldType) {
           let title: string;
           
-          if (activeFieldType !== 'subform' && activeFieldType !== 'label') {
+          if (activeFieldType !== 'subform'
+            && activeFieldType !== 'label'
+            && activeFieldType !== 'group'
+          ) {
             let tempTitle = activeFieldType.slice(7).toLowerCase();
             title = tempTitle.slice(0, 1).toUpperCase() + tempTitle.slice(1);
           }
           else if (activeFieldType === 'label') {
             title = 'Label';
+          }
+          else if (activeFieldType === 'group') {
+            title = 'Group';
           }
           else {
             title = 'Subform';

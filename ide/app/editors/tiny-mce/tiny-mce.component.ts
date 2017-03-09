@@ -359,29 +359,34 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
             }
 
             if (!elementIsSubform && $elementIsGroup) {
-              let groupChildrenQuery = 
-                '.plominoFieldClass, .plominoHidewhenClass, .plominoActionClass';
-              let $groupChildren = $element.find(groupChildrenQuery);
-              if ($groupChildren.length > 1) {
-                this.log.info('field selected #a');
-                this.fieldSelected.emit(null);
-                return;
-              }
-              else {
-                let $child = $groupChildren;
-                let $childId = $child.data('plominoid');
-                let $childType = this.extractClass($child.attr('class'));
-                this.log.info('field selected #b');
-                this.fieldSelected.emit({
-                  id: $childId,
-                  type: $childType,
-                  parent: this.id
-                });
-                return;
-              }
+              this.fieldSelected.emit({
+                id: $element.attr('data-groupid'),
+                type: 'group',
+                parent: this.id
+              });
+
+              // let groupChildrenQuery = 
+              //   '.plominoFieldClass, .plominoHidewhenClass, .plominoActionClass';
+              // let $groupChildren = $element.find(groupChildrenQuery);
+              // if ($groupChildren.length > 1) {
+              //   this.log.info('field selected #a');
+              //   this.fieldSelected.emit(null);
+              //   return;
+              // }
+              // else {
+              //   let $child = $groupChildren;
+              //   let $childId = $child.data('plominoid');
+              //   let $childType = this.extractClass($child.attr('class'));
+              //   this.log.info('field selected #b');
+              //   this.fieldSelected.emit({
+              //     id: $childId,
+              //     type: $childType,
+              //     parent: this.id
+              //   });
+              //   return;
+              // }
             }
-            
-            if (!elementIsSubform && (elementIsLabel || parentIsLabel || $closestLabel.length)) {
+            else if (!elementIsSubform && (elementIsLabel || parentIsLabel || $closestLabel.length)) {
               if (!$elementId) {
                 $elementId = $closestLabel.attr('data-plominoid');
               }
@@ -400,24 +405,33 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
               this.log.info('field selected #d');
               this.fieldSelected.emit({ id: id, type: 'subform', parent: this.id });
             }
-            else {
-              if ($elementId || $parentId) {
-                let id = $elementId || $parentId;
-                    
-                let $elementType = $element.data('plominoid')
-                  ? this.extractClass($element.attr('class')) : null;
+            else if ($elementId || $parentId) {
+              let id = $elementId || $parentId;
+                  
+              let $elementType = $element.data('plominoid')
+                ? this.extractClass($element.attr('class')) : null;
 
-                let $parentType = $parent.data('plominoid') 
-                  ? this.extractClass($parent.attr('class')) : null;
+              let $parentType = $parent.data('plominoid') 
+                ? this.extractClass($parent.attr('class')) : null;
 
-                let type = $elementType || $parentType;
+              let type = $elementType || $parentType;
 
-                this.log.info('field selected #e');
-                this.fieldSelected.emit({ id: id, type: type, parent: this.id });
-              } else {
-                this.log.info('field selected #f');
-                this.fieldSelected.emit(null);
-              }
+              this.log.info('field selected #e');
+              this.fieldSelected.emit({ id: id, type: type, parent: this.id });
+            } else if ($element.children().length
+              && $element.children().first().hasClass('plominoLabelClass')
+            ) {
+              $element = $element.children().first();
+              $elementId = $element.attr('data-plominoid');
+              this.log.info('field selected #e2', $elementId, $element.get(0));
+              this.fieldSelected.emit({
+                id: $elementId,
+                type: 'label',
+                parent: this.id
+              });
+            } else {
+              this.log.info('field selected #f');
+              this.fieldSelected.emit(null);
             }
           });
         });

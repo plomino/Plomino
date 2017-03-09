@@ -166,7 +166,7 @@
   border: 1px dashed #000;
 }
 
-.palette-wrapper /deep/ .mdl-tabs {
+.palette-wrapper /deep/ .mdl-tabs:not(.default) {
   display: block;
     width: 100%;
 }
@@ -175,7 +175,7 @@
   padding-top: 5px;
 }
 
-.palette-wrapper /deep/ .mdl-tabs__tab-bar {
+.palette-wrapper /deep/ .mdl-tabs__tab-bar:not(.default) {
     height: 58px;
     padding: 0;
     margin: 0;
@@ -185,12 +185,16 @@
     user-select: none;
 }
 
-.palette-wrapper /deep/ .mdl-tabs__panel {
+.palette-wrapper /deep/ .mdl-tabs__panel:not(.default) {
   overflow-y: auto;
   height: 300px;
 }
 
-.palette-wrapper /deep/ .mdl-tabs__tab {
+.palette-wrapper /deep/ .mdl-tabs__tab fieldset {
+  margin-top: 10px;
+}
+
+.palette-wrapper /deep/ .mdl-tabs__tab:not(.default) {
     margin: 0;
     border: none;
     padding: 10px 25px 0px 25px;

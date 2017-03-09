@@ -115,13 +115,17 @@ export class FieldSettingsComponent implements OnInit {
           // todo: newUrl - WTF?
           let newUrl = this.field.url.slice(
             0, this.field.url.lastIndexOf('/') + 1) + $fieldId; 
-          this.field.url = newUrl;
-          this.log.info('calling update field...', 
-          this.field, this.formAsObject($form), $fieldId);
           
+          this.field.url = newUrl;
+          
+          this.log.info('calling update field...', 
+            this.field, this.formAsObject($form), $fieldId
+          );
+
           this.fieldsService.updateField(
             this.field, this.formAsObject($form), $fieldId
           );
+
           this.field.id = $fieldId;
           this.treeService.updateTree();
           return this.objService.getFieldSettings(newUrl);
@@ -554,14 +558,58 @@ export class FieldSettingsComponent implements OnInit {
 
             return Observable.of(false);
           }
+          else if (field && field.type === 'group') {
+            this.log.info('group', field);
+            this.log.extra('fieldsettings.component.ts group');
+            return Observable.of(false);
+          }
           else if (field && field.id) {
+            this.formTemplate = 
+              `<p><div class="mdl-spinner mdl-js-spinner is-active"></div></p>`;
+            componentHandler.upgradeDom();
+
             return this.objService.getFieldSettings(field.url)
+              .map((settingsHTML) => {
+                const $settings = $(`<div>${ settingsHTML }</div>`);
+                $settings.find('form')
+                  .prepend(`<div class="mdl-tabs__tab-bar default"></div>`);
+                $settings.find('#content')
+                  .css('margin-bottom', '0');
+                $settings.find('form')
+                  .wrap(`<div class="mdl-tabs mdl-js-tabs default mdl-js-ripple-effect"></div>`);
+                $settings.find('fieldset').each((i, element) => {
+                  const $element = $(element);
+                  $element.css('margin-top', '10px');
+                  const tabId = Math.floor(Math.random() * 10e10) + 10e10 - 1;
+                  const $legend = $element.find('legend');
+                  const legend = $legend.text().trim();
+
+                  $settings.find('.mdl-tabs__tab-bar').append(`
+                    <a href="#fs-tab-${ tabId }" style="width: 50%"
+                      class="mdl-tabs__tab default ${ i === 0 ? 'is-active' : '' }">
+                      ${ legend }
+                    </a>
+                  `);
+
+                  $legend.remove();
+                  
+                  $element.replaceWith(`
+                  <div class="mdl-tabs__panel ${ i === 0 ? 'is-active' : '' }"
+                    id="fs-tab-${ tabId }">
+                    ${ element.outerHTML }
+                  </div>
+                  `);
+                });
+
+                return $settings.get(0).outerHTML;
+              });
           }
           else {
             return Observable.of('');
           }
         })
         .subscribe((template: any) => {
+          console.log(template);
           const $scrollingContainer = $('.scrolling-container:visible');
           if ($scrollingContainer.length) {
             $scrollingContainer.get(0).scrollIntoView();
@@ -586,6 +634,7 @@ export class FieldSettingsComponent implements OnInit {
           
           this.updateMacroses();
           this.changeDetector.detectChanges();
+          componentHandler.upgradeDom();
         }); 
     }
 

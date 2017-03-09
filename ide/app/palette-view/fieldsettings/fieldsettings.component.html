@@ -1,5 +1,5 @@
 <div class="field-settings-wrapper">
-  <div class="fieldsettings--control-buttons" *ngIf="formTemplate && field && field.type !== 'subform' && field.type !== 'label'">
+  <div class="fieldsettings--control-buttons" *ngIf="formTemplate && field && field.type !== 'subform' && field.type !== 'label' && field.type !== 'group'">
     <a class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent mdl-color--teal-700"
        *ngIf="formTemplate"
        (click)="submitForm()">
@@ -31,11 +31,11 @@
     </a>
   </div>
   <div class="mdl-card mdl-shadow--2dp settings-alert-no-object"
-      *ngIf="!formTemplate && !(field && field.type === 'label') && !(field && field.type === 'subform')">
+      *ngIf="!formTemplate && !(field && field.type === 'label') && !(field && field.type === 'subform') && !(field && field.type === 'group')">
     <div class="mdl-card__supporting-text">Please select field</div>
   </div>
   <div
-    *ngIf="!field || (field && field.type !== 'label' && field.type !== 'subform')"
+    *ngIf="!field || (field && field.type !== 'label' && field.type !== 'subform' && field.type !== 'group')"
     class="scrolling-container"
     [class.scrolling-container--66]="!field || (field && field.type !== 'label')"
     [class.scrolling-container--0]="field && field.type === 'label'"
@@ -72,6 +72,34 @@
     </div><!--/outer-wrapper -->
   </div>
   <div
+    *ngIf="field && field.type === 'group'"
+    class="scrolling-container scrolling-container--0">
+    <div class="outer-wrapper">
+      <legend style="padding: 0 10px; margin: 15px 0;">
+      Group settings</legend>
+      <div class="field" style="padding: 0 10px; margin: 15px 0;">
+        <label for="form-widgets-group-x-id"
+          class="horizontal" style="display: block">Change id to</label>
+
+        <input type="text"
+          id="form-widgets-group-x-id" [(ngModel)]="group">
+
+      </div>
+      <div class="field" style="padding: 0 10px; margin: 15px 0;">
+          <button
+            class="mdl-button mdl-js-button mdl-button--raised
+            mdl-js-ripple-effect mdl-button--accent mdl-color--teal-700">
+            <span *ngIf="groupSaving">
+              <loading class="white"></loading>
+            </span>
+            <span *ngIf="!groupSaving">
+                Save
+            </span>
+          </button>
+        </div>
+    </div>
+  </div>
+  <div
     *ngIf="field && field.type === 'label'"
     class="scrolling-container scrolling-container--0">
     <div class="outer-wrapper">
@@ -95,7 +123,8 @@
         </select>
 
       </div>
-      <div class="field" style="padding: 0 10px; margin: 15px 0;" *ngIf="getSelectedRelatedField()">
+      <div class="field" style="padding: 0 10px; margin: 15px 0;"
+        *ngIf="getSelectedRelatedField()">
         <span class="option">
           <input id="form-widgets-label-separate"
           class="single-checkbox-widget required bool-field"
@@ -117,19 +146,6 @@
           id="form-widgets-label-fieldtitle" [(ngModel)]="fieldTitle">
 
       </div>
-      <!--<div class="field" style="padding: 0 10px; margin: 15px 0;"
-        *ngIf="!labelAdvanced">
-        <button
-          class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent mdl-color--teal-700"
-          (click)="saveLabelTitle()">
-          <span *ngIf="labelSaving">
-            <loading class="white"></loading>
-          </span>
-          <span *ngIf="!labelSaving">
-              Save
-          </span>
-        </button>
-      </div>-->
     </div>
   </div>
 </div>
