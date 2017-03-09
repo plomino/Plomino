@@ -1,6 +1,6 @@
 import { Component, Input, Output, EventEmitter, ViewChild } from '@angular/core';
 import { REACTIVE_FORM_DIRECTIVES } from '@angular/forms';
-import { ElementService } from '../../../services';
+import { ElementService, LogService } from '../../../services';
 import { ChangeDetectorRef } from '@angular/core';
 
 @Component({
@@ -43,8 +43,11 @@ export class FieldsSettingsComponent {
     @ViewChild('form') form: any;
     @ViewChild('theForm') theForm: any;
 
-    constructor(private _elementService: ElementService,
-                private changeDetector: ChangeDetectorRef) { }
+    constructor(
+      private _elementService: ElementService,
+      private changeDetector: ChangeDetectorRef,
+      private log: LogService,
+    ) { }
 
     ngAfterViewInit() {
         this.getElement();
@@ -83,6 +86,7 @@ export class FieldsSettingsComponent {
                 },
                 err => console.error(err)
             );
+        this.log.extra('fields-settings.component.ts getElement');
     }
 
     onSubmit(id: string,
@@ -112,6 +116,7 @@ export class FieldsSettingsComponent {
                     },
                     err => console.error(err)
                 );
+        this.log.extra('fields-settings.component.ts onSubmit');
     }
 
     updateConditional() {
@@ -193,6 +198,7 @@ export class FieldsSettingsComponent {
                 }
                 break;
         }
+        this.log.extra('fields-settings.component.ts updateConditional');
     }
 
     patchConditional() {
@@ -202,7 +208,8 @@ export class FieldsSettingsComponent {
         }
         this._elementService.patchElement(this.id, JSON.stringify(element)).subscribe(
             () => { this.isDirty.emit(false) }
-        )
+        );
+        this.log.extra('fields-settings.component.ts patchConditional');
     }
 
     deleteElement() {
@@ -210,5 +217,6 @@ export class FieldsSettingsComponent {
             () => this.elementDeleted.emit(this.data["@id"]),
             err => console.error(err)
         );
+        this.log.extra('fields-settings.component.ts deleteElement');
     }
 }

@@ -450,9 +450,13 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
        * when markup changed on any plominoLabelClass element
        */
       const a = $element.text().replace(/\s+/g, ' ').trim();
-      const b = $element.html().replace(/&nbsp;/g, ' ').replace(/\s+/g, ' ').trim();
-      const hasMarkup = a !== b;
+      let b = $element.html().replace(/&nbsp;/g, ' ').replace(/\s+/g, ' ').trim();
+      const hasMarkup = a !== b && b !== '<br>';
       const dataAdvanced = Boolean($element.attr('data-advanced'));
+
+      if (b === '<br>') {
+        b = '';
+      }
 
       if (hasMarkup || (dataAdvanced && !hasMarkup)) {
         this.log.info('label markup inserted', $element);

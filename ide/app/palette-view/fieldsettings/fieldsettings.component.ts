@@ -241,8 +241,18 @@ export class FieldSettingsComponent implements OnInit {
         this.tabsService.openTab(eventData, true);
     }
 
+    private getDBOptionsLink(link: string) {
+      return `${ 
+        window.location.pathname
+        .replace('++resource++Products.CMFPlomino/ide/', '')
+        .replace('/index.html', '')
+      }/${ link }`;
+    }
+
     private openFormTab(formId: string) {
-      this.elementService.getElementFormLayout(`../../${ formId }`)
+      this.log.info('calling elementService on openFormTab');
+      this.log.extra('fieldsettings.component.ts openFormTab');
+      this.elementService.getElementFormLayout(this.getDBOptionsLink(formId))
       .subscribe((formData) => {
         this.tabsService.openTab({
           // formUniqueId: response.formUniqueId,
@@ -263,6 +273,7 @@ export class FieldSettingsComponent implements OnInit {
     private updateTemporaryTitle() {
       const selectedId = $('#form-widgets-label-relation').val();
       const temporaryTitle = $('#form-widgets-label-fieldtitle').val();
+      this.log.info('updateTemporaryTitle...', selectedId, temporaryTitle);
       this.labelsRegistry.update(
         `${tinymce.activeEditor.id}/${selectedId}`, 
         temporaryTitle, 'temporary_title'

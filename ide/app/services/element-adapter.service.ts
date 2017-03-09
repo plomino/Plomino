@@ -78,6 +78,7 @@ export class PlominoElementAdapterService {
         });
 
       $element.on('input.adapter', ($event) => {
+        this.log.info('input.adapter', $element.html());
         const labelAdvanced = Boolean($element.attr('data-advanced'));
 
         if (!labelAdvanced) {
