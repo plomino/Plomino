@@ -450,9 +450,13 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
        * when markup changed on any plominoLabelClass element
        */
       const a = $element.text().replace(/\s+/g, ' ').trim();
-      const b = $element.html().replace(/&nbsp;/g, ' ').replace(/\s+/g, ' ').trim();
+      const b = $element.html()
+        .replace(/&nbsp;/g, ' ')
+        .replace(/^(.+?)?<br>$/, '$1')
+        .replace(/\s+/g, ' ').trim();
       const hasMarkup = a !== b;
       const dataAdvanced = Boolean($element.attr('data-advanced'));
+      this.log.info('a,b', a, b, 'hasMarkup', hasMarkup, 'dataAdvanced', dataAdvanced);
 
       if (hasMarkup || (dataAdvanced && !hasMarkup)) {
         this.log.info('label markup inserted', $element);
@@ -463,11 +467,22 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
         }
         else {
           const selectedId = $element.attr('data-plominoid');
-          const temporaryTitle = $element.html();
     
           this.labelsRegistry.update(
-            `${ this.id }/${ selectedId }`, temporaryTitle, 'temporary_title'
-          ); 
+            `${ this.id }/${ selectedId }`, b, 'temporary_title'
+          );
+        }
+      }
+      else if (!hasMarkup && !dataAdvanced && b.length === 0) {
+        this.log.info('reselected $element');
+        this.adapter.select($element);
+
+        const selectedId = $element.attr('data-plominoid');
+    
+        if (selectedId) {
+          this.labelsRegistry.update(
+            `${ this.id }/${ selectedId }`, b, 'temporary_title'
+          );
         }
       }
     });

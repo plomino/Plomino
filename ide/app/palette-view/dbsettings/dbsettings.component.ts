@@ -1,3 +1,4 @@
+import { LogService } from './../../services/log.service';
 import { PlominoHTTPAPIService } from './../../services/http-api.service';
 import { 
     Component, 
@@ -40,10 +41,12 @@ export class DBSettingsComponent {
     aclDialog: HTMLDialogElement;
     okDialog: HTMLDialogElement;
     confirmDialog: HTMLDialogElement;
+    userHasDesignPermissions: boolean = null;
 
     constructor(private objService: ObjService,
       private changeDetector: ChangeDetectorRef,
       private http: PlominoHTTPAPIService,
+      private log: LogService,
     ) {
       this.importExportDialog = <HTMLDialogElement> 
         document.querySelector('#db-import-export-dialog');
@@ -423,6 +426,21 @@ export class DBSettingsComponent {
       return !(this.dbForm.indexOf(
         'You do not have sufficient privileges to view this page'
       ) !== -1);
+    }
+
+    private hasDesignPermissions() {
+      if (this.userHasDesignPermissions === null) {
+        this.userHasDesignPermissions = false;
+        this.http.get(this.getDBOptionsLink('DatabaseDesign'))
+          .subscribe((response: Response) => {
+            this.userHasDesignPermissions = !(response.text().indexOf(
+              'You do not have sufficient privileges to view this page'
+            ) !== -1);
+            this.changeDetector.markForCheck();
+            this.log.info('hasDesignPermissions', this.userHasDesignPermissions);
+          });
+      }
+      return this.userHasDesignPermissions;
     }
 
     private getDbSettings() {

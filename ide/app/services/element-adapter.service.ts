@@ -77,12 +77,17 @@ export class PlominoElementAdapterService {
             .addClass('mceEditable');
         });
 
+      this.log.info('element input.adapter event attached', $element.get(0));
       $element.on('input.adapter', ($event) => {
+        this.log.info('input.adapter', $element.html());
         const labelAdvanced = Boolean($element.attr('data-advanced'));
 
         if (!labelAdvanced) {
           const selectedId = $element.attr('data-plominoid');
-          const temporaryTitle = $element.html();
+          const temporaryTitle = 
+            $element.html().replace(/&nbsp;/g, ' ')
+              .replace(/^(.+?)?<br>$/, '$1')
+              .replace(/\s+/g, ' ').trim();
           this.labelsRegistry.update(
             `${ tinymce.activeEditor.id }/${ selectedId }`,
             temporaryTitle, 'temporary_title'

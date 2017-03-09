@@ -1,6 +1,6 @@
 import { Component, Input, Output, EventEmitter, ViewChild } from '@angular/core';
 import { REACTIVE_FORM_DIRECTIVES } from '@angular/forms';
-import { ElementService } from '../../../services';
+import { ElementService, LogService } from '../../../services';
 
 @Component({
     selector: 'plomino-actions-settings',
@@ -17,7 +17,10 @@ export class ActionsSettingsComponent {
     @Output() elementDeleted = new EventEmitter();
     @ViewChild('form') form: any;
 
-    constructor(private _elementService: ElementService) { }
+    constructor(
+      private _elementService: ElementService,
+      private log: LogService,
+    ) { }
 
     ngOnInit() {
         this.getElement();
@@ -37,6 +40,7 @@ export class ActionsSettingsComponent {
                 },
                 err => console.error(err)
             );
+      this.log.extra('actions-settings.component.ts getElement');
     }
 
     onSubmit(id: string, title: string, description: string, actionType:string, actionDisplay:string, inActionBar: boolean) {
@@ -54,6 +58,7 @@ export class ActionsSettingsComponent {
             },
             err => console.error(err)
         );
+        this.log.extra('actions-settings.component.ts onSubmit');
     }
 
     deleteElement() {
@@ -61,5 +66,6 @@ export class ActionsSettingsComponent {
             () => this.elementDeleted.emit(this.data["@id"]),
             err => console.error(err)
         );
+        this.log.extra('actions-settings.component.ts deleteElement');
     }
 }

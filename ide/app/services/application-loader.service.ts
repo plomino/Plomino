@@ -24,10 +24,12 @@ export class PlominoApplicationLoaderService {
       $('#application-loader').remove();
 
       const splitHash = window.location.hash.split('form=');
-      const formLink = splitHash.pop();
+      const formLink = splitHash.pop().trim();
       
       if (splitHash.length && formLink && formLink !== 'form=') {
-        $(`.tree-node--name:contains("${ formLink }")`).click();
+        $(`.tree-node--name:contains("${ formLink }")`)
+          .filter((i, node: HTMLElement) => $(node).text().trim() === formLink)
+          .click();
       }
     }, 300);
   }
