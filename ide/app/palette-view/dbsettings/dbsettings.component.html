@@ -1,25 +1,36 @@
 <div class="db-settings-wrapper">
-  <div class="dbsettings--control-buttons" *ngIf="hasAuthPermissions()">
-      <a class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent mdl-color--teal-700"
-            (click)="submitForm()">
-            <!--<span class="icon material-icons">save</span>-->
+  <div class="dbsettings--control-buttons" *ngIf="hasAuthPermissions() || hasDesignPermissions()">
+      <button class="mdl-button mdl-js-button
+        mdl-button--raised mdl-js-ripple-effect
+        mdl-button--accent mdl-color--teal-700"
+        style="white-space: normal"
+        [disabled]="!hasAuthPermissions()"
+        (click)="submitForm()">
         Save
-      </a>
-      <a class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent mdl-color--grey-300"
-            (click)="cancelForm()">
-            <!--<span class="icon material-icons">cancel</span>-->
+      </button>
+      <button class="mdl-button mdl-js-button
+        mdl-button--raised mdl-js-ripple-effect
+        mdl-button--accent mdl-color--grey-300"
+        style="white-space: normal"
+        [disabled]="!hasAuthPermissions()"
+        (click)="cancelForm()">
         Cancel
-      </a>
-      <a class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent mdl-color--yellow-900"
-            (click)="showImportExport()">
-            <!--<span class="icon material-icons">cancel</span>-->
+      </button>
+      <button class="mdl-button mdl-js-button
+        mdl-button--raised mdl-js-ripple-effect
+        mdl-button--accent mdl-color--yellow-900"
+        style="white-space: normal"
+        (click)="showImportExport()">
         Import/Export
-      </a>
-      <a class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-color--purple-300"
-            (click)="showACL()">
-            <!--<span class="icon material-icons">cancel</span>-->
+      </button>
+      <button class="mdl-button mdl-js-button
+        mdl-button--raised mdl-js-ripple-effect
+        mdl-color--purple-300"
+        style="white-space: normal"
+        [disabled]="!hasAuthPermissions()"
+        (click)="showACL()">
         ACL
-      </a>
+      </button>
   </div>
   <div class="scrolling-container scrolling-container--66" #dbform [innerHTML]="dbForm | safePloneHtml"></div>
 </div>
