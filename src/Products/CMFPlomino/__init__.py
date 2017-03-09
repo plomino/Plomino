@@ -65,8 +65,8 @@ def _extended_json_decoding(dct):
 json._default_decoder = JSONDecoder(
     encoding=None,
     object_hook=_extended_json_decoding,
-    object_pairs_hook=None,
-    parse_float=decimal.Decimal)
+    object_pairs_hook=None
+)
 
 
 class PlominoCoreUtils:
