@@ -128,32 +128,34 @@ export class FormSettingsComponent implements OnInit {
         }).bind(this);
 
         this.objService.updateFormSettings(this.tab.url, formData)
-            .flatMap((responseData: any) => flatMapCallback(responseData))
-            .subscribe((responseHtml: string) => {
+          .flatMap((responseData: any) => flatMapCallback(responseData))
+          .map(this.parseTabs)
+          .subscribe((responseHtml: string) => {
 
-                this.treeService.updateTree().then(() => {
-                    this.formSaving = false;
-                    this.formSettings = responseHtml;
-                    this.updateMacroses();
-                    this.changeDetector.markForCheck();
+            this.treeService.updateTree().then(() => {
+                this.formSaving = false;
+                this.formSettings = responseHtml;
+                this.updateMacroses();
+                this.changeDetector.markForCheck();
+                componentHandler.upgradeDom();
 
-                    if (cb) {
-                        cb();
+                if (cb) {
+                  cb();
+                }
+                else {
+                  /* reinitialize tinymce */
+                  Object.keys(tinymce.EditorManager.editors)
+                  .forEach((key: string) => {
+                    if (isNaN(parseInt(key, 10))) {
+                      tinymce.EditorManager.execCommand('mceRemoveEditor', true, key);
+                      tinymce.EditorManager.execCommand('mceAddEditor', true, key);
                     }
-                    else {
-                        /* reinitialize tinymce */
-                        Object.keys(tinymce.EditorManager.editors)
-                        .forEach((key: string) => {
-                          if (isNaN(parseInt(key, 10))) {
-                            tinymce.EditorManager.execCommand('mceRemoveEditor', true, key);
-                            tinymce.EditorManager.execCommand('mceAddEditor', true, key);
-                          }
-                        });
-                    }
-                });
-            }, err => {
-                console.error(err)
+                  });
+                }
             });
+          }, err => {
+              console.error(err)
+          });
     }
 
     submitForm() {
@@ -241,6 +243,45 @@ export class FormSettingsComponent implements OnInit {
       }
     }
 
+    private parseTabs(settingsHTML: string): string {
+      const $settings = $(`<div>${ settingsHTML }</div>`);
+      $settings.find('form')
+        .prepend(`<div class="mdl-tabs__tab-bar default"></div>`);
+      $settings.find('#content')
+        .css('margin-bottom', '0');
+      $settings.find('form')
+        .wrap(`<div class="mdl-tabs mdl-js-tabs default mdl-js-ripple-effect"></div>`);
+      $settings.find('fieldset')
+        .filter((i, element) => {
+          return $(element).find('legend').text().trim() !== 'Events';
+        })
+        .each((i, element) => {
+        const $element = $(element);
+        $element.css('margin-top', '10px');
+        const tabId = Math.floor(Math.random() * 10e10) + 10e10 - 1;
+        const $legend = $element.find('legend');
+        const legend = $legend.text().trim();
+
+        $settings.find('.mdl-tabs__tab-bar').append(`
+          <a href="#fs-tab-${ tabId }" style="width: 50%"
+            class="mdl-tabs__tab default ${ i === 0 ? 'is-active' : '' }">
+            ${ legend }
+          </a>
+        `);
+
+        $legend.remove();
+        
+        $element.replaceWith(`
+        <div class="mdl-tabs__panel ${ i === 0 ? 'is-active' : '' }"
+          id="fs-tab-${ tabId }">
+          ${ element.outerHTML }
+        </div>
+        `);
+      });
+
+      return $settings.get(0).outerHTML;
+    }
+
     private getSettings() {
       this.tabsService.getActiveTab()
         .do((tab) => {
@@ -248,7 +289,13 @@ export class FormSettingsComponent implements OnInit {
         })
         .flatMap((tab: any) => {
           if (tab && tab.url) {
-            return this.objService.getFormSettings(tab.url);
+            this.formSettings = 
+              `<p><div class="mdl-spinner mdl-js-spinner is-active"></div></p>`;
+            componentHandler.upgradeDom();
+
+            return this.objService
+              .getFormSettings(tab.url)
+              .map(this.parseTabs);
           } else {
             return Observable.of('');
           }
@@ -257,6 +304,9 @@ export class FormSettingsComponent implements OnInit {
           this.formSettings = template;
           this.updateMacroses();
           this.changeDetector.markForCheck();
+          setTimeout(() => {
+            componentHandler.upgradeDom();
+          }, 200);
         });
     }
 }

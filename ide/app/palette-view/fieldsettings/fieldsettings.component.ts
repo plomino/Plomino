@@ -57,6 +57,7 @@ export class FieldSettingsComponent implements OnInit {
     macrosWidgetTimer: number = null;
 
     fieldTitle: string;
+    groupPrefix: string;
     labelAdvanced: boolean;
     labelSaving: boolean;
     $selectedElement: JQuery;
@@ -128,7 +129,14 @@ export class FieldSettingsComponent implements OnInit {
 
           this.field.id = $fieldId;
           this.treeService.updateTree();
-          return this.objService.getFieldSettings(newUrl);
+
+          this.formTemplate = 
+            `<p><div class="mdl-spinner mdl-js-spinner is-active"></div></p>`;
+          componentHandler.upgradeDom();
+
+          return this.objService
+            .getFieldSettings(newUrl)
+            .map(this.parseTabs);
         }
       })
       .subscribe((responseHtml: string) => {
@@ -212,6 +220,8 @@ export class FieldSettingsComponent implements OnInit {
             this.contentManager.getContent(tinymce.activeEditor.id), 
             this.draggingService
           );
+
+          componentHandler.upgradeDom();
         }, 100);
         
         this.formSaving = false;
@@ -427,6 +437,64 @@ export class FieldSettingsComponent implements OnInit {
       return $select.select2().val();
     }
 
+    private parseTabs(settingsHTML: string): string {
+      const $settings = $(`<div>${ settingsHTML }</div>`);
+      $settings.find('form')
+        .prepend(`<div class="mdl-tabs__tab-bar default"></div>`);
+      $settings.find('#content')
+        .css('margin-bottom', '0');
+      $settings.find('form')
+        .wrap(`<div class="mdl-tabs mdl-js-tabs default mdl-js-ripple-effect"></div>`);
+      $settings.find('fieldset').each((i, element) => {
+        const $element = $(element);
+        $element.css('margin-top', '10px');
+        const tabId = Math.floor(Math.random() * 10e10) + 10e10 - 1;
+        const $legend = $element.find('legend');
+        const legend = $legend.text().trim();
+
+        $settings.find('.mdl-tabs__tab-bar').append(`
+          <a href="#fs-tab-${ tabId }" style="width: 50%"
+            class="mdl-tabs__tab default ${ i === 0 ? 'is-active' : '' }">
+            ${ legend }
+          </a>
+        `);
+
+        $legend.remove();
+        
+        $element.replaceWith(`
+        <div class="mdl-tabs__panel ${ i === 0 ? 'is-active' : '' }"
+          id="fs-tab-${ tabId }">
+          ${ element.outerHTML }
+        </div>
+        `);
+      });
+
+      return $settings.get(0).outerHTML;
+    }
+
+    private saveGroupPrefix() {
+      const $group = $(tinymce.activeEditor.getBody())
+        .find(`.plominoGroupClass[data-groupid="${ this.field.id }"]`);
+      $group.attr('data-groupid', this.groupPrefix);
+      this.field.id = this.groupPrefix;
+    }
+
+    private cancelGroupPrefixChanges() {
+      this.groupPrefix = this.field.id;
+    }
+
+    private ungroup() {
+      /**
+       * ungroup: unwrap fields from plominoGroup and close
+       */
+      const $group = $(tinymce.activeEditor.getBody())
+        .find(`.plominoGroupClass[data-groupid="${ this.field.id }"]`);
+      $group.replaceWith($group.html());
+      this.field = null;
+      this.formTemplate = null;
+      this.changeDetector.detectChanges();
+    }
+
     private deleteField() {
       this.elementService.awaitForConfirm()
       .then(() => {
@@ -447,16 +515,17 @@ export class FieldSettingsComponent implements OnInit {
 
     private loadSettings() {
       this.tabsService.getActiveField()
-        .do((field) => {
+        .do((field: PlominoFieldRepresentationObject) => {
             if (field === null) {
                 this.clickAddLink();
             }
 
             this.field = field;
         })
-        .flatMap((field: PlominoFieldRepresentationObject) => {
+        .flatMap<any>((field: PlominoFieldRepresentationObject) => {
 
           this.$selectedElement = this.adapter.getSelected();
+          this.groupPrefix = null;
 
           if (field && field.type === 'subform') {
             setTimeout(() => {
@@ -561,6 +630,11 @@ export class FieldSettingsComponent implements OnInit {
           else if (field && field.type === 'group') {
             this.log.info('group', field);
             this.log.extra('fieldsettings.component.ts group');
+            this.groupPrefix = field.id;
+            const $scrollingItem = $('.fieldsettings--control-buttons');
+            if ($scrollingItem.length) {
+              $scrollingItem.get(0).scrollIntoView();
+            }
             return Observable.of(false);
           }
           else if (field && field.id) {
@@ -568,50 +642,17 @@ export class FieldSettingsComponent implements OnInit {
               `<p><div class="mdl-spinner mdl-js-spinner is-active"></div></p>`;
             componentHandler.upgradeDom();
 
-            return this.objService.getFieldSettings(field.url)
-              .map((settingsHTML) => {
-                const $settings = $(`<div>${ settingsHTML }</div>`);
-                $settings.find('form')
-                  .prepend(`<div class="mdl-tabs__tab-bar default"></div>`);
-                $settings.find('#content')
-                  .css('margin-bottom', '0');
-                $settings.find('form')
-                  .wrap(`<div class="mdl-tabs mdl-js-tabs default mdl-js-ripple-effect"></div>`);
-                $settings.find('fieldset').each((i, element) => {
-                  const $element = $(element);
-                  $element.css('margin-top', '10px');
-                  const tabId = Math.floor(Math.random() * 10e10) + 10e10 - 1;
-                  const $legend = $element.find('legend');
-                  const legend = $legend.text().trim();
-
-                  $settings.find('.mdl-tabs__tab-bar').append(`
-                    <a href="#fs-tab-${ tabId }" style="width: 50%"
-                      class="mdl-tabs__tab default ${ i === 0 ? 'is-active' : '' }">
-                      ${ legend }
-                    </a>
-                  `);
-
-                  $legend.remove();
-                  
-                  $element.replaceWith(`
-                  <div class="mdl-tabs__panel ${ i === 0 ? 'is-active' : '' }"
-                    id="fs-tab-${ tabId }">
-                    ${ element.outerHTML }
-                  </div>
-                  `);
-                });
-
-                return $settings.get(0).outerHTML;
-              });
+            return this.objService
+              .getFieldSettings(field.url)
+              .map(this.parseTabs);
           }
           else {
             return Observable.of('');
           }
         })
         .subscribe((template: any) => {
-          console.log(template);
           const $scrollingContainer = $('.scrolling-container:visible');
-          if ($scrollingContainer.length) {
+          if ($scrollingContainer.length && !this.groupPrefix) {
             $scrollingContainer.get(0).scrollIntoView();
           }
           

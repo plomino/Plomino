@@ -292,7 +292,7 @@ export class DraggingService {
     // $('iframe:visible').contents().find('.plominoGroupClass').off('.cme');
     $('#drag-data-cursor').remove();
 
-    console.log('stopDragging');
+    this.log.info('stopDragging');
 
     const pos = this.getMousePos(eventData);
     const offset = $('iframe:visible').offset();
@@ -302,7 +302,7 @@ export class DraggingService {
       this.customPaletteDragEvent$.next(eventData);
     }
     else {
-      console.log('cancel', eventData);
+      this.log.info('cancel', eventData);
       this.currentDraggingData = null;
       this.customPaletteDragEventCancel$.next(eventData);
     }

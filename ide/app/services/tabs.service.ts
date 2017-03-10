@@ -75,7 +75,7 @@ export class TabsService {
     }
   }
 
-  getActiveField(): Observable<any> {
+  getActiveField(): Observable<PlominoFieldRepresentationObject> {
     return this.activeField$.asObservable().share();
   }
 

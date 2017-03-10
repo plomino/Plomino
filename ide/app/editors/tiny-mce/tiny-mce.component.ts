@@ -429,6 +429,15 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
                 type: 'label',
                 parent: this.id
               });
+            } else if ($element.closest('.plominoGroupClass').length) {
+              $element = $element.closest('.plominoGroupClass');
+              $elementId = $element.attr('data-groupid');
+              this.log.info('field selected #e2', $elementId, $element.get(0));
+              this.fieldSelected.emit({
+                id: $elementId,
+                type: 'group',
+                parent: this.id
+              });
             } else {
               this.log.info('field selected #f');
               this.fieldSelected.emit(null);
