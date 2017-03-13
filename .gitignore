@@ -28,3 +28,5 @@ include/python*
 .idea/
 log.html
 report.html
+.vscode/
+resources/
