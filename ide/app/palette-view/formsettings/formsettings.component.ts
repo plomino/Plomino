@@ -101,65 +101,75 @@ export class FormSettingsComponent implements OnInit {
     }
 
     saveFormSettings(formData: FormData, formLayout: any, cb: any) {
-        this.formSaving = true;
-        let $formId: any = '';
-      
-        formData.set('form.widgets.form_layout', formLayout);
-      
-        const flatMapCallback = ((responseData: any) => {
-            if (responseData.html.indexOf('dl.error') > -1) {
-                return Observable.of(responseData.html);
-            } else {
-                $formId = responseData.url.slice(responseData.url.lastIndexOf('/') + 1);
-                let newUrl = this.tab.url
-                  .slice(0, this.tab.url.lastIndexOf('/') + 1) + $formId;
-                let oldUrl = this.tab.url;
+      // debugger;
+      this.formSaving = true;
+      let $formId: any = '';
+    
+      formData.set('form.widgets.form_layout', formLayout);
+    
+      const flatMapCallback = ((responseData: {html: string, url: string}) => {
+        // debugger;
+        if (responseData.html.indexOf('dl.error') > -1) {
+            return Observable.of(responseData.html);
+        } else {
+            $formId = responseData.url.slice(responseData.url.lastIndexOf('/') + 1);
+            let newUrl = this.tab.url
+              .slice(0, this.tab.url.lastIndexOf('/') + 1) + $formId;
+            let oldUrl = this.tab.url;
 
-                if (newUrl && oldUrl && newUrl !== oldUrl) {
-                    this.formsService.changeFormId({
-                        newId: newUrl,
-                        oldId: oldUrl
-                    });
-                    
-                    this.tabsService.updateTabId(this.tab, $formId);
-                    this.changeDetector.markForCheck();
-                }
-
-                this.formsService.formSaving = false;
+            if (newUrl && oldUrl && newUrl !== oldUrl) {
+                this.formsService.changeFormId({
+                    newId: newUrl,
+                    oldId: oldUrl
+                });
+                
+                this.tabsService.updateTabId(this.tab, $formId);
                 this.changeDetector.markForCheck();
-                return this.objService.getFormSettings(newUrl);
             }
-        }).bind(this);
 
-        this.objService.updateFormSettings(this.tab.url, formData)
-          .flatMap((responseData: any) => flatMapCallback(responseData))
-          .map(this.parseTabs)
-          .subscribe((responseHtml: string) => {
+            this.formsService.formSaving = false;
+            this.changeDetector.markForCheck();
+            return this.objService.getFormSettings(newUrl);
+        }
+      }).bind(this);
 
-            this.treeService.updateTree().then(() => {
-                this.formSaving = false;
-                this.formSettings = responseHtml;
-                this.updateMacroses();
-                this.changeDetector.markForCheck();
+      this.objService.updateFormSettings(this.tab.url, formData)
+        .flatMap((responseData: {html: string, url: string}) => 
+          flatMapCallback(responseData))
+        .map(this.parseTabs)
+        .subscribe((responseHtml: string) => {
+
+          this.treeService.updateTree().then(() => {
+              this.formSaving = false;
+              this.formSettings = responseHtml;
+              this.updateMacroses();
+              this.changeDetector.markForCheck();
+              
+              window['materialPromise'].then(() => {
                 componentHandler.upgradeDom();
+    
+                setTimeout(() => {
+                  componentHandler.upgradeDom();
+                }, 400);
+              });
 
-                if (cb) {
-                  cb();
-                }
-                else {
-                  /* reinitialize tinymce */
-                  Object.keys(tinymce.EditorManager.editors)
-                  .forEach((key: string) => {
-                    if (isNaN(parseInt(key, 10))) {
-                      tinymce.EditorManager.execCommand('mceRemoveEditor', true, key);
-                      tinymce.EditorManager.execCommand('mceAddEditor', true, key);
-                    }
-                  });
-                }
-            });
-          }, err => {
-              console.error(err)
+              if (cb) {
+                cb();
+              }
+              else {
+                /* reinitialize tinymce */
+                Object.keys(tinymce.EditorManager.editors)
+                .forEach((key: string) => {
+                  if (isNaN(parseInt(key, 10))) {
+                    tinymce.EditorManager.execCommand('mceRemoveEditor', true, key);
+                    tinymce.EditorManager.execCommand('mceAddEditor', true, key);
+                  }
+                });
+              }
           });
+        }, err => {
+            console.error(err)
+        });
     }
 
     submitForm() {
@@ -168,11 +178,12 @@ export class FormSettingsComponent implements OnInit {
     }
 
     saveForm(data:{content:any,cb:any}) {
+      this.log.info('saveForm CALLED!');
         let $form: any = $(this.formElem.nativeElement);
         let form: HTMLFormElement = $form.find('form').get(0);
         let formData: any = new FormData(form);
 
-        this.treeService.updateTree();
+        // this.treeService.updateTree();
 
         formData.append('form.buttons.save', 'Save');
 
@@ -191,6 +202,7 @@ export class FormSettingsComponent implements OnInit {
             path: [{ name: tab.label, type: 'Forms' }],
             url: tab.url
         };
+        this.log.info('this.tabsService.openTab #frs0001 with showAdd');
         this.tabsService.openTab(eventData, true);
     }
 
@@ -289,9 +301,14 @@ export class FormSettingsComponent implements OnInit {
     private getSettings() {
       this.tabsService.getActiveTab()
         .do((tab) => {
+          this.log.info('tab', tab);
+          this.log.extra('formsettings.component.ts getSettings -> do');
           this.tab = tab;
         })
         .flatMap((tab: any) => {
+          this.log.info('tab', tab, tab && tab.url ? tab.url : null);
+          this.log.extra('formsettings.component.ts getSettings -> flatMap');
+          
           if (tab && tab.url) {
             this.formSettings = 
               `<p><div class="mdl-spinner mdl-js-spinner is-active"></div></p>`;
@@ -306,11 +323,16 @@ export class FormSettingsComponent implements OnInit {
         })
         .subscribe((template) => {
           this.formSettings = template;
+
           this.updateMacroses();
           this.changeDetector.markForCheck();
           window['materialPromise'].then(() => {
             componentHandler.upgradeDom();
-          })
+
+            setTimeout(() => {
+              componentHandler.upgradeDom();
+            }, 400);
+          });
         });
     }
 }

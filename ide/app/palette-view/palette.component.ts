@@ -1,3 +1,4 @@
+import { LogService } from './../services/log.service';
 import { 
     Component, 
     Input, 
@@ -62,10 +63,14 @@ export class PaletteComponent implements OnInit {
     constructor(private changeDetector: ChangeDetectorRef,
                 private tabsService: TabsService,
                 private formsService: FormsService,
+                private log: LogService,
                 private templatesService: TemplatesService) { }
 
     ngOnInit() {
         this.tabsService.getActiveTab().subscribe((activeTab) => {
+          this.log.info('activeTab', activeTab);
+          this.log.extra('palette.component.ts ngOnInit');
+          
           if (activeTab && this.selectedTab 
             && activeTab.formUniqueId !== this.selectedTab.formUniqueId) {
             this.selectedTab = activeTab;

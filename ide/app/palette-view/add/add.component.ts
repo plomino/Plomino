@@ -111,6 +111,9 @@ export class AddComponent implements OnInit, AfterViewInit {
 
         this.tabsService.getActiveTab()
         .subscribe((tab) => {
+
+          this.log.info('tab', tab);
+          this.log.extra('add.component.ts this.tabsService.getActiveTab()');
           
           this.templates = [];
           this.loading = true;
@@ -154,15 +157,15 @@ export class AddComponent implements OnInit, AfterViewInit {
               .subscribe((mouseEvent) => {
                 this.simulateDrag(mouseEvent, 'PlominoSubform');
               });
-              
-              componentHandler.upgradeDom();
 
               this.loading = false;
               this.changeDetector.markForCheck();
+              this.changeDetector.detectChanges();
             });
           } else {
             this.loading = false;
             this.changeDetector.markForCheck();
+            this.changeDetector.detectChanges();
           }
         });
     }
@@ -220,6 +223,7 @@ export class AddComponent implements OnInit, AfterViewInit {
               this.elementService.postElement(this.getDBOptionsLink(''), formElement)
               .subscribe((response: AddFieldResponse) => {
                 this.treeService.updateTree().then(() => {
+                  this.log.info('this.tabsService.openTab #a001');
                   this.tabsService.openTab({
                     formUniqueId: response.formUniqueId,
                     editor: 'layout',
@@ -241,6 +245,7 @@ export class AddComponent implements OnInit, AfterViewInit {
               this.elementService.postElement(this.getDBOptionsLink(''), viewElement)
               .subscribe((response: AddFieldResponse) => {
                 this.treeService.updateTree().then(() => {
+                  this.log.info('this.tabsService.openTab #a002');
                   this.tabsService.openTab({
                     editor: 'code',
                     label: response.title,

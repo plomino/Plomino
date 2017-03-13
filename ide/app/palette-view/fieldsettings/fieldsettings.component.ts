@@ -255,6 +255,7 @@ export class FieldSettingsComponent implements OnInit {
             ],
             url: this.field.url
         };
+        this.log.info('this.tabsService.openTab #fs0001');
         this.tabsService.openTab(eventData, true);
     }
 
@@ -271,6 +272,7 @@ export class FieldSettingsComponent implements OnInit {
       this.log.extra('fieldsettings.component.ts openFormTab');
       this.elementService.getElementFormLayout(this.getDBOptionsLink(formId))
       .subscribe((formData) => {
+        this.log.info('this.tabsService.openTab #fs0002');
         this.tabsService.openTab({
           // formUniqueId: response.formUniqueId,
           editor: 'layout',
@@ -659,6 +661,7 @@ export class FieldSettingsComponent implements OnInit {
             if ($scrollingItem.length) {
               $scrollingItem.get(0).scrollIntoView();
             }
+            this.loading = false;
             return Observable.of(false);
           }
           else if (field && field.id) {

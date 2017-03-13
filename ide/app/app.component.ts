@@ -153,6 +153,7 @@ export class AppComponent implements OnInit, AfterViewInit {
     private elementService: ElementService, 
     private objService: ObjService,
     private tabsService: TabsService,
+    private log: LogService,
     private draggingService: DraggingService,
     private formsList: PlominoFormsListService,
     private appLoader: PlominoApplicationLoaderService,
@@ -392,6 +393,7 @@ export class AppComponent implements OnInit, AfterViewInit {
   }
 
   openTab(tab: any) {
+    this.log.info('this.tabsService.openTab #app0001 with showAdd');
     this.tabsService.openTab(tab, true);
   }
 

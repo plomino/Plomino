@@ -43,7 +43,7 @@ export class TreeService {
         }
         return res.json();
       })
-      .forEach((response) => {
+      .forEach((response: any) => {
         this.tree$.next(this.addUniqueIdsForForms(response));
       });
     }

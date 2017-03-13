@@ -89,6 +89,8 @@ export class TabsService {
   }
 
   setActiveTab(tab: PlominoTab, showAdd = false): void {
+
+    console.warn('SET ACTIVE TAB', tab);
     
     if (tab.active) {
       return;
@@ -107,6 +109,7 @@ export class TabsService {
   }
 
   openTab(tab: any, showAdd = true): void {
+    console.warn('OPEN TAB', tab);
     let tabs: any[] = this.tabs$.getValue();
     let tabIsOpen: boolean = _.find(tabs, { url: tab.url, editor: tab.editor });
     
@@ -136,18 +139,23 @@ export class TabsService {
     this.tabs$.next(tabs);
   }
 
-  updateTabId(tab:any, newID:number):void {
-
+  updateTabId(tab: any, newID: number): void {
+    console.warn('UPDATE TAB ID', 'tab', tab, 'newID', newID);
     let tabs = this.tabs$.getValue();
-
-    let updateTab = _.find(tabs, (item:any) => item.url === tab.url);
-
+    let updateTab: PlominoTab = _.find(tabs, (item:any) => item.url === tab.url);
     updateTab.url = `${this.getParent(updateTab.url)}/${newID}`;
-
     tab.url = `${this.getParent(updateTab.url)}/${newID}`;
+
+    /**
+     * update page hash
+     */
+    if (updateTab.active) {
+      window.location.hash = `#form=${ newID }`;
+    }
   }
 
   updateTab(tabData: any, id: any): void {
+    console.warn('UPDATE TAB', 'tabData', tabData, 'id', id);
     let tabs = this.tabs$.getValue().slice(0);
     let activeTab = Object.assign({}, this.activeTab$.getValue());
 

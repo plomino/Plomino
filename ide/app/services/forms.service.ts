@@ -78,8 +78,8 @@ export class FormsService {
         });
     }
 
-    changeFormId(data:{oldId: any, newId: any}) {
-        this.formIdChangedEventSource.next(data)
+    changeFormId(data: {oldId: string, newId: string}) {
+        this.formIdChangedEventSource.next(data);
     }
 
     getIdFromUrl(url: any) {

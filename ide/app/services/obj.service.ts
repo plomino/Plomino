@@ -32,10 +32,19 @@ export class ObjService {
     }
     
     getFormSettings(formUrl: string): Observable<any> {
-        return this.http.get(
-          `${formUrl}/@@edit?ajax_load=1&ajax_include_head=1`,
-          'obj.service.ts getFormSettings'
-        ).map(this.extractText);
+      if (this.http.recentlyChangedFormURL !== null
+        && this.http.recentlyChangedFormURL[0] === formUrl
+        && $('.tab-name').toArray().map((e) => e.innerText)
+        .indexOf(formUrl.split('/').pop()) === -1
+      ) {
+        formUrl = this.http.recentlyChangedFormURL[1];
+        this.log.info('patched formUrl!', this.http.recentlyChangedFormURL);
+        this.log.extra('obj.service.ts getFormSettings');
+      }
+      return this.http.get(
+        `${formUrl}/@@edit?ajax_load=1&ajax_include_head=1`,
+        'obj.service.ts getFormSettings'
+      ).map(this.extractText);
     }
 
     /**
@@ -46,7 +55,20 @@ export class ObjService {
       formUrl: string, formData: any
     ): Observable<{html: string, url: string}> {
       let layout = formData.get('form.widgets.form_layout');
+      const workingId = formData.get('form.widgets.IShortName.id');
       const context = this;
+
+      this.http.recentlyChangedFormURL = null;
+
+      const oldFormId = formUrl.split('/').pop();
+      const newFormUrl = oldFormId !== workingId
+        ? formUrl.replace(oldFormId, workingId)
+        : formUrl;
+
+      if (oldFormId !== workingId) {
+        this.http.recentlyChangedFormURL = [formUrl, newFormUrl];
+      }
+      
       if (layout) {
         /**
          * this code will be running only while form saving
@@ -149,7 +171,6 @@ export class ObjService {
         /**
          * field settings saving
          */
-        const workingId = formData.get('form.widgets.IShortName.id');
         const newTitle = formData.get('form.widgets.IBasic.title');
         
         this.labelsRegistry.update(`${ formUrl }/${ workingId }`, newTitle, 'title', true);
@@ -173,19 +194,23 @@ export class ObjService {
         if (layout) {
           tinymce.editors.forEach((editor: TinyMceEditor) => {
             const formId = formUrl.split('/').pop();
+
+            /**
+             * update all subforms while parent form changed
+             */
             $(editor.getBody()).find(
               `.plominoSubformClass[data-plominoid="${ formId }"]`
             ).each((i, subformElement) => {
               const $founded = $(subformElement);
               let url = editor.id;
               url += '/@@tinyform/example_widget?widget_type=subform&id=';
-              url += formId;
+              url += workingId;
 
               this.http.get(url, 'obj.service.ts refresh subforms')
                 .subscribe((response: Response) => {
                   this.widgetService.getGroupLayout(
                     editor.id,
-                    { id: formId, layout: response.json() }
+                    { id: workingId, layout: response.json() }
                   )
                   .subscribe((result: string) => {
                     try {

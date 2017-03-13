@@ -7,6 +7,7 @@ import { Injectable } from '@angular/core';
 export class PlominoHTTPAPIService {
   headers: Headers = new Headers();
   okDialog: HTMLDialogElement;
+  recentlyChangedFormURL: [string, string] = null;
         
   constructor(private http: Http, private log: LogService) {
     this.headers.append('Accept', 'application/json');
@@ -73,7 +74,7 @@ export class PlominoHTTPAPIService {
   }
 
   getErrors(response: Response) {
-    if (response.status === 500) {
+    if (response.status === 500 || response.status === 404) {
       const tmp = response.json();
       throw tmp.error_type || tmp.toString();
     }
@@ -87,13 +88,19 @@ export class PlominoHTTPAPIService {
   }
 
   throwError(error: any) {
-    if (error.indexOf('404 Not Found') === -1) {
+    if (typeof error !== 'object' 
+      && error.indexOf('404 Not Found') === -1
+      && error.indexOf('NotFound') === -1
+    ) {
       const okDialog = <HTMLDialogElement> document.querySelector('#ok-dialog');
       okDialog.querySelector('.mdl-dialog__content')
         .innerHTML = `<p>${ error }</p>`;
       okDialog.showModal();
+      return Observable.throw(error);
     }
-    return Observable.throw(error);
+    else {
+      return { subscribe: (): any => null };
+    }
   }
 
   patch(url: string, data: any, debugInformation?: string) {

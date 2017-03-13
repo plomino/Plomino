@@ -48,10 +48,12 @@ export class TreeComponent implements OnInit {
                 public draggingService: DraggingService) { }
     
     ngOnInit() {
-        this.tabsService.getActiveTab()
-            .subscribe((activeTab) => {
-                this.selected = activeTab;
-            });
+      this.tabsService.getActiveTab()
+        .subscribe((activeTab) => {
+          this.log.info('activeTab', activeTab);
+          this.log.extra('tree.component.ts ngOnInit');
+          this.selected = activeTab;
+        });
     }
 
     getCollapseState(collapseVar: any, selected: boolean) {
@@ -141,6 +143,7 @@ export class TreeComponent implements OnInit {
       let id = fieldData.name.slice(fieldData.name.lastIndexOf('/') + 1);
       if ((this.selected && this.selected.url) !== fieldData.parent) {
         let tabLabel = fieldData.parent.slice(fieldData.parent.lastIndexOf('/') + 1);
+        this.log.info('this.tabsService.openTab #t0001');
         this.tabsService.openTab({
           formUniqueId: this.selected.formUniqueId,
           editor: 'layout',
