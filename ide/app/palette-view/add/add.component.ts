@@ -38,8 +38,8 @@ import {
 })
 
 export class AddComponent implements OnInit, AfterViewInit {
-    activeTab: any;
-    templates: any[] = [];
+    activeTab: PlominoTab;
+    templates: PlominoFormGroupTemplate[] = [];
     addableComponents: Array<any> = [];
     mouseDownTemplateId: string;
     mouseDownTime: number;

@@ -65,11 +65,19 @@ interface PlominoFieldDataAPIResponse extends PlominoFormDataAPIResponse {
   selectionlist: any;
 }
 
+interface PlominoFieldTreeObject {
+  name: string;
+  type: string;
+  parent: string;
+  resolved: boolean;
+}
+
 interface PlominoFieldRepresentationObject {
   id: string;
   formUniqueId?: any;
   type: string;
-  url: string;
+  url?: string;
+  parent?: string;
 }
 
 interface PlominoFieldSettingsFormDataObject {

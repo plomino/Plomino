@@ -117,24 +117,46 @@ export class TreeComponent implements OnInit {
         this.draggingService.setDragging(null);
     }
 
-    openFieldSettings(fieldData: any): void {
-        let id = fieldData.name.slice(fieldData.name.lastIndexOf('/') + 1);
-        if ((this.selected && this.selected.url) !== fieldData.parent) {
-            let tabLabel = fieldData.parent.slice(fieldData.parent.lastIndexOf('/') + 1);
-            this.tabsService.openTab({
-                formUniqueId: this.selected.formUniqueId,
-                editor: 'layout',
-                label: tabLabel,
-                url: fieldData.parent,
-                path: [
-                    {    
-                        name: tabLabel,
-                        type: 'Forms'
-                    }
-                ],
-            }, false);
-        }  
-        this.tabsService.selectField({ id: id, type: fieldData.type, parent: fieldData.parent });
+    onTreeFieldClick(fieldData: PlominoFieldTreeObject) {
+      this.openFieldSettings(fieldData);
+      this.selectFirstOccurenceInCurrentEditor(fieldData);
+    }
+
+    selectFirstOccurenceInCurrentEditor(fieldData: PlominoFieldTreeObject) {
+      const $body = $(tinymce.activeEditor.getBody());
+      $body.find('[data-mce-selected]').removeAttr('data-mce-selected');
+      
+      const $results = $body
+        .find(
+          `.plominoFieldClass[data-plominoid="${ fieldData.name.split('/').pop() }"]`
+        );
+
+      if ($results.length) {
+        const $first = $results.first();
+        $first.attr('data-mce-selected', '1');
+      }
+    }
+
+    openFieldSettings(fieldData: PlominoFieldTreeObject): void {
+      let id = fieldData.name.slice(fieldData.name.lastIndexOf('/') + 1);
+      if ((this.selected && this.selected.url) !== fieldData.parent) {
+        let tabLabel = fieldData.parent.slice(fieldData.parent.lastIndexOf('/') + 1);
+        this.tabsService.openTab({
+          formUniqueId: this.selected.formUniqueId,
+          editor: 'layout',
+          label: tabLabel,
+          url: fieldData.parent,
+          path: [
+              {    
+                  name: tabLabel,
+                  type: 'Forms'
+              }
+          ],
+        }, false);
+      }  
+      this.tabsService.selectField({
+        id: id, type: fieldData.type, parent: fieldData.parent
+      });
     }
 
     sendSearch(query: string) {

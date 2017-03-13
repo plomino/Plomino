@@ -71,7 +71,7 @@
                             dnd-draggable 
                             [dragEnabled]="true" 
                             (onDragEnd)="endDrag()"
-                            (click)="openFieldSettings({
+                            (click)="onTreeFieldClick({
                                 name: childName.url, 
                                 type: childName.type, 
                                 parent: childName.typeNameUrl,
