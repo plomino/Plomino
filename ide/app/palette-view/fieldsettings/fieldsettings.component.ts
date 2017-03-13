@@ -513,6 +513,14 @@ export class FieldSettingsComponent implements OnInit {
       .catch(() => null);
     }
 
+    private getCurrentRegistryKeys() {
+      return Array.from(this.labelsRegistry.getRegistry().keys())
+        .filter((key: string) => {
+          const id = tinymce.activeEditor.id;
+          return key.indexOf(`${ id }/`) !== -1;
+        });
+    }
+
     private loadSettings() {
       this.tabsService.getActiveField()
         .do((field: PlominoFieldRepresentationObject) => {
@@ -552,14 +560,20 @@ export class FieldSettingsComponent implements OnInit {
                    * 2. reference to subform element - [ok]
                    * 3. current form url - [tinymce.activeEditor.id]
                    */
-                  $('iframe:visible').contents()
-                    .find('[data-mce-selected="1"]')
-                    .attr('data-plominoid', $select2.val());
+                  let $founded = $('iframe:visible').contents()
+                    .find('[data-mce-selected="1"]');
+                  if (!$founded.hasClass('plominoSubformClass')) {
+                    $founded = $founded.closest('.plominoSubformClass');
+                  }
+                  
+                  $founded.attr('data-plominoid', $select2.val());
   
                   if ($select2.val() && tinymce.activeEditor.id) {
                     let url = tinymce.activeEditor.id;
                     url += '/@@tinyform/example_widget?widget_type=subform&id=';
                     url += $select2.val();
+
+                    alert(this.field.id);
   
                     this.http.get(url, 'fieldsettings.component.ts loadSettings')
                     .subscribe((response: any) => {
@@ -569,9 +583,13 @@ export class FieldSettingsComponent implements OnInit {
                       )
                       .subscribe((result: string) => {
                         try {
-                          const subformHTML = $($(result).html()).html();
-                          $('iframe:visible').contents()
-                            .find('[data-mce-selected="1"]').html(subformHTML);
+                          const $result = $(result);
+                          $result.find('input,textarea,button').removeAttr('name').removeAttr('id');
+                          $result.find('span').removeAttr('data-plominoid').removeAttr('data-mce-resize');
+                          $result.removeAttr('data-groupid');
+                          $result.find('div').removeAttr('data-groupid');
+                          const subformHTML = $($result.html()).html();
+                          $founded.html(subformHTML);
                           tinymce.activeEditor.setDirty(true);
                         }
                         catch (e) {
@@ -591,7 +609,8 @@ export class FieldSettingsComponent implements OnInit {
             return Observable.of(false);
           }
           else if (field && field.type === 'label') {
-            this.log.info('field', field);
+            this.log.info('field', field, 'labelsRegistry', 
+              this.labelsRegistry.getRegistry());
             this.log.extra('fieldsettings.component.ts label');
 
             this.labelAdvanced = Boolean(this.$selectedElement.attr('data-advanced'));
@@ -601,7 +620,7 @@ export class FieldSettingsComponent implements OnInit {
               const $select = $('#form-widgets-label-relation');
               if ($select.length) {
                 const $select2 = (<any>$select).select2({
-                  placeholder: 'Select the field'
+                  placeholder: ''
                 });
     
                 $select.off('change.lsevents');
@@ -657,6 +676,10 @@ export class FieldSettingsComponent implements OnInit {
           }
           
           if (!template) {
+            setTimeout(() => {
+              this.changeDetector.detectChanges();
+              this.changeDetector.markForCheck();
+            }, 200);
             return;
           }
 

@@ -693,8 +693,9 @@ export class WidgetService {
     });
   }
 
-  private getWidget(baseUrl: string, type: string, id: string, 
-  content?: PlominoFormGroupContent): Observable<string> {
+  getWidget(baseUrl: string, type: string, id: string, 
+    content?: PlominoFormGroupContent
+  ): Observable<string> {
     // this.log.info('type', type, 'id', id, 'content', content);
     // this.log.extra('widget.service.ts getWidget');
     if (content && type === 'label') {

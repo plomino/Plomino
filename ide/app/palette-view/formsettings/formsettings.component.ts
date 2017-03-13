@@ -304,9 +304,9 @@ export class FormSettingsComponent implements OnInit {
           this.formSettings = template;
           this.updateMacroses();
           this.changeDetector.markForCheck();
-          setTimeout(() => {
+          window['materialPromise'].then(() => {
             componentHandler.upgradeDom();
-          }, 200);
+          })
         });
     }
 }

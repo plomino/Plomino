@@ -91,9 +91,29 @@ export class TemplatesService {
     });
   }
 
-  getTemplate(formUrl: string, templateId: string): Observable<string> {
+  getTemplate(formUrl: string, templateId: string, subform?: boolean): Observable<string> {
     if (!this.templatesRegistry.hasOwnProperty(formUrl)) {
       this.templatesRegistry[formUrl] = {};
+    }
+    if (this.templatesRegistry[formUrl][templateId]) {
+      return Observable.of(this.templatesRegistry[formUrl][templateId]);
+    }
+    else if (subform) {
+      return this.widgetService
+        .getWidget(formUrl, 'subform', templateId)
+        .map((result: string) => {
+          const $result = $(`<div>${ result }</div>`);
+          $result.addClass('drag-autopreview');
+          $result.find('input,textarea,button').removeAttr('name').removeAttr('id');
+          $result.find('span').removeAttr('data-plominoid').removeAttr('data-mce-resize');
+          $result.removeAttr('data-groupid');
+          $result.find('div').removeAttr('data-groupid');
+    
+          this.templatesRegistry[formUrl][templateId] = 
+            this.fixBuildedTemplate($result.get(0).outerHTML);
+
+          return $result.get(0).outerHTML;
+        });
     }
     return Observable.of(this.templatesRegistry[formUrl][templateId] 
       ? this.templatesRegistry[formUrl][templateId] 

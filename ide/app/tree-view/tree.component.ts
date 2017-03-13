@@ -16,7 +16,8 @@ import {
     ElementService,
     TabsService,
     FormsService,
-    DraggingService 
+    DraggingService,
+    LogService
 } from '../services';
 
 import { ExtractNamePipe } from '../pipes';
@@ -43,6 +44,7 @@ export class TreeComponent implements OnInit {
     constructor(private _elementService: ElementService,
                 private tabsService: TabsService,
                 private formsService: FormsService,
+                private log: LogService,
                 public draggingService: DraggingService) { }
     
     ngOnInit() {
@@ -74,6 +76,8 @@ export class TreeComponent implements OnInit {
 
     dragSubform(selected: boolean, mouseEvent: MouseEvent, 
     typeLabel: string, typeNameUrl: string) {
+      this.log.info(selected, mouseEvent, typeLabel, typeNameUrl);
+      this.log.extra('tree.component.ts dragSubform');
       if (tinymce.activeEditor && selected && typeLabel === 'Forms' 
         && typeNameUrl !== tinymce.activeEditor.id) {
         this.draggingService.subformDragEvent.next(mouseEvent);

@@ -1,3 +1,4 @@
+import { Observable } from 'rxjs/Rx';
 import { LabelsRegistryService } from './../../editors/tiny-mce/services/labels-registry.service';
 import { 
     Component, 
@@ -165,7 +166,7 @@ export class AddComponent implements OnInit, AfterViewInit {
     //     }
     // }
 
-    add(type: string, target?: HTMLElement) {
+    add(type: string, target?: HTMLElement, treeSubform?: boolean) {
       const clickTime = (new Date).getTime();
 
       //todo: detect click
@@ -277,14 +278,51 @@ export class AddComponent implements OnInit, AfterViewInit {
               this.fieldsService.insertField(field);
               break;
           case 'PlominoSubform':
+            /**
+             * should be similar as on subform settings
+             */
+            this.mouseDownTemplateId;
+            this.draggingService.currentDraggingTemplateCode;
+
+            const getSubformLayout$ = (this.mouseDownTemplateId) 
+              ? this.widgetService.getGroupLayout(
+                  tinymce.activeEditor.id,
+                  {
+                    id: this.mouseDownTemplateId,
+                    layout: $(this.draggingService.currentDraggingTemplateCode).html()
+                  }
+                )
+              : Observable.of('');
+
+            getSubformLayout$
+            .subscribe((result: string) => {
+              let subformHTML: string = null;
+
+              if (result) {
+                const $result = $(result);
+                $result.find('input,textarea,button')
+                  .removeAttr('name')
+                  .removeAttr('id');
+                $result.find('span')
+                  .removeAttr('data-plominoid')
+                  .removeAttr('data-mce-resize');
+                $result.removeAttr('data-groupid');
+                $result.find('div')
+                  .removeAttr('data-groupid');
+                subformHTML = $($result.html()).html();
+              }
+
               field = {
-                name: `${this.activeTab.url}/defaultSubform`,
-                title: 'defaultSubform',
+                name: `${ this.activeTab.url }/defaultSubform`,
+                title: this.mouseDownTemplateId || 'defaultSubform',
                 '@type': 'PlominoSubform',
+                subformHTML,
                 target
               }
+
               this.fieldsService.insertField(field);
-              break;
+            });
+            break;
           case 'PlominoHidewhen':
               field = {
                   title: 'defaultHidewhen',
@@ -397,9 +435,22 @@ export class AddComponent implements OnInit, AfterViewInit {
             draggingData.parent = this.activeTab.url;
         }
 
+        let treeSubform = false;
+        if (!template && eventData.target) {
+          const $target = (<HTMLElement> eventData.target).classList
+            .contains('tree-node--name') 
+              ? $(eventData.target) 
+              : $(eventData.target).find('.tree-node--name');
+          const text = $target.text().trim();
+          if (text) {
+            this.mouseDownTemplateId = text;
+            treeSubform = true;
+          }
+        }
+
         if (type !== 'template') {
             draggingData.resolver = (target, data = {'@type': ''}) => {
-              this.add(data['@type'], target);
+              this.add(data['@type'], target, treeSubform);
             }
         } else {
             draggingData.templateId = template.id;

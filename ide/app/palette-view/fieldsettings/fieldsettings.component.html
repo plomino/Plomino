@@ -133,7 +133,7 @@
           (change)="labelRelationSelected($event)"
           class="text-widget asciiline-field">
           <option></option>
-          <option *ngFor="let key of labelsRegistry.getRegistry().keys()"
+          <option *ngFor="let key of getCurrentRegistryKeys()"
             [value]="key.split('/').pop()"
             [selected]="field.url === key"
             [innerHTML]="key.split('/').pop()">

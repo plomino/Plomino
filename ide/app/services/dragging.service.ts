@@ -72,7 +72,7 @@ export class DraggingService {
         `;
 
         if (this.currentDraggingData.eventData) {
-          const $dragCursor = $(this.currentDraggingTemplateCode);
+          let $dragCursor = $(this.currentDraggingTemplateCode);
   
           $dragCursor.css({
             position: 'absolute',
@@ -86,6 +86,21 @@ export class DraggingService {
           this.startDragging(
             this.currentDraggingData.eventData
           );
+
+          const eventData = this.currentDraggingData.eventData;
+          const $target = (<HTMLElement> eventData.target)
+            .classList.contains('tree-node--name') 
+              ? $(eventData.target) 
+              : $(eventData.target).find('.tree-node--name');
+          const text = $target.text().trim();
+          if (text) {
+            this.templateService
+              .getTemplate(parent, text, true)
+              .subscribe((widgetCode: string) => {
+                $dragCursor.html($(widgetCode).html());
+                this.currentDraggingTemplateCode = `<div class="drag-autopreview">${ $dragCursor.html() }</div>`;
+              });
+          }
         }
       }
       else if (data['@type'] === 'PlominoPagebreak' && !this.currentDraggingData.resolved) {

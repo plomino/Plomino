@@ -144,11 +144,13 @@ interface InsertTemplateEvent extends PlominoFormGroupTemplate {
 
 interface InsertFieldEvent {
   '@type': string;
+  type?: string;
   title: string;
   name?: string;
   action_type?: string;
   form_layout?: string;
   target?: HTMLElement;
+  subformHTML?: string;
 }
 
 interface AddFieldResponse {

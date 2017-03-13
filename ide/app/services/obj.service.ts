@@ -1,3 +1,4 @@
+import { WidgetService } from './widget.service';
 import { ElementService } from './element.service';
 import { LabelsRegistryService } from './../editors/tiny-mce/services/labels-registry.service';
 import { LogService } from './log.service';
@@ -12,6 +13,7 @@ export class ObjService {
 
     constructor(private http: PlominoHTTPAPIService, private log: LogService,
     private elementService: ElementService,
+    private widgetService: WidgetService,
     private changeDetector: ChangeDetectorRef,
     private labelsRegistry: LabelsRegistryService) {}
 
@@ -166,7 +168,50 @@ export class ObjService {
       return this.http.postWithOptions(
         `${formUrl}/@@edit`, formData, {},
         'obj.service.ts updateFormSettings'
-      ).map(this.extractTextAndUrl);
+      )
+      .map((data: any) => {
+        if (layout) {
+          tinymce.editors.forEach((editor: TinyMceEditor) => {
+            const formId = formUrl.split('/').pop();
+            $(editor.getBody()).find(
+              `.plominoSubformClass[data-plominoid="${ formId }"]`
+            ).each((i, subformElement) => {
+              const $founded = $(subformElement);
+              let url = editor.id;
+              url += '/@@tinyform/example_widget?widget_type=subform&id=';
+              url += formId;
+
+              this.http.get(url, 'obj.service.ts refresh subforms')
+                .subscribe((response: Response) => {
+                  this.widgetService.getGroupLayout(
+                    editor.id,
+                    { id: formId, layout: response.json() }
+                  )
+                  .subscribe((result: string) => {
+                    try {
+                      const $result = $(result);
+                      $result.find('input,textarea,button')
+                        .removeAttr('name').removeAttr('id');
+                      $result.find('span')
+                        .removeAttr('data-plominoid').removeAttr('data-mce-resize');
+                      $result.removeAttr('data-groupid');
+                      $result.find('div').removeAttr('data-groupid');
+                      const subformHTML = $($result.html()).html();
+                      $founded.html(subformHTML);
+                      editor.setDirty(true);
+                    }
+                    catch (e) {
+                    }
+    
+                    this.changeDetector.detectChanges();
+                  });
+                });
+            })
+          });
+        }
+        return data;
+      })
+      .map(this.extractTextAndUrl);
     }
 
 

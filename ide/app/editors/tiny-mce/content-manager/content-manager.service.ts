@@ -201,6 +201,9 @@ export class TinyMCEFormContentManagerService {
     }
 
     contentHTML = contentHTML.replace(/(<p>&nbsp;<\/p>(\s+)?)+?$/i, '');
+    contentHTML = contentHTML
+      .replace(/plominoGroupClass mceNonEditable plominoSubformClass/gi,
+        'mceNonEditable plominoSubformClass');
     contentHTML = contentHTML + ('<p>&nbsp;</p>'.repeat(30));
 
     editor.setContent(contentHTML);

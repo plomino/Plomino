@@ -402,6 +402,10 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
                * subform clicked
                */
               let id = $elementId || $parentId;
+              if (!id) {
+                $element = $element.closest('.plominoSubformClass');
+                id = $element.attr('data-plominoid');
+              }
               this.log.info('field selected #d');
               this.fieldSelected.emit({ id: id, type: 'subform', parent: this.id });
             }
@@ -436,6 +440,16 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
               this.fieldSelected.emit({
                 id: $elementId,
                 type: 'group',
+                parent: this.id
+              });
+            }
+            else if ($element.closest('.plominoSubformClass').length) {
+              $element = $element.closest('.plominoSubformClass');
+              $elementId = $element.attr('data-plominoid');
+              this.log.info('field selected #-f2', $elementId, $element.get(0));
+              this.fieldSelected.emit({
+                id: $elementId,
+                type: 'subform',
                 parent: this.id
               });
             } else {
@@ -700,8 +714,11 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
     }
   }
 
-  private addElement(element: { name: string, type: string, target?: any }) {
+  private addElement(
+    element: InsertFieldEvent
+  ) {
     this.log.info('addElement', element);
+
     let type: string;
     let elementClass: string;
     let elementEditionPage: string;
@@ -710,7 +727,7 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
     let elementId: string = element.name.split('/').pop();
     let baseUrl: string = element.name.slice(0, element.name.lastIndexOf('/'));
     
-    switch(element.type) {
+    switch (element.type) {
       case 'PlominoField':
         elementClass = 'plominoFieldClass';
         elementEditionPage = '@@tinymceplominoform/field_form';
@@ -738,6 +755,10 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
         elementEditionPage = '@@tinymceplominoform/subform_form';
         elementIdName = 'subformid';
         type = 'subform';
+
+        if (elementId === 'defaultSubform' && element.subformHTML) {
+          elementId = element.title;
+        }
         break;
 
       case 'PlominoHidewhen':
@@ -759,7 +780,8 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
           .find('.drag-autopreview').remove(); // just in case
         this.contentManager.insertContent(
           this.id, this.draggingService,
-          '<hr class="plominoPagebreakClass">', { target: element.target }
+          '<hr class="plominoPagebreakClass">',
+          { target: element.target }
         );
         return;
 
@@ -767,12 +789,16 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
     }
 
     this.log.info('element.target', element.target);
+
     let target: any = element.target || null;
-    this.insertElement(target, baseUrl, type, elementId);
+    let subformHTML: string = element.subformHTML || null;
+
+    this.insertElement(target, baseUrl, type, elementId, subformHTML);
   }
 
   private insertElement(
-    target: any, baseUrl: string, type: string, value: string, option?: string) {
+    target: any, baseUrl: string, type: string, value: string, option?: string
+  ) {
     let ed: any = tinymce.get(this.id);
     let selection: any = ed.selection.getNode();
     let title: string;
@@ -808,11 +834,19 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
       });
     }
     else if (type == 'subform') {
-      this.elementService.getWidget(baseUrl, type, null)
+      ((): Observable<string> => {
+        if (value !== 'defaultSubform') {
+          return Observable.of(option);
+        }
+        else {
+          return this.elementService.getWidget(baseUrl, type, null)
+        }
+      })()
       .subscribe((widgetTemplate: any) => {
         this.contentManager.insertContent(
           this.id, this.draggingService,
           `<div class="plominoSubformClass mceNonEditable"
+          ${ (value !== 'defaultSubform') ? ` data-plominoid="${ value }"` : '' }
           >${widgetTemplate}</div>`, { skip_undo: 1, target }
         );
       });
