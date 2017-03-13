@@ -7,6 +7,10 @@ plomino-palette .tab-container .tab-content {
     overflow-y: scroll;
 }
 
+/deep/ .tab-content {
+  position: relative;
+}
+
 /deep/ .scrolling-container {
   overflow-y: auto;
 }

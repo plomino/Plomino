@@ -33,16 +33,14 @@ import {
 
 import { PloneHtmlPipe } from '../../pipes';
 import { IField } from '../../interfaces';
-import { LoadingComponent } from '../../editors';
+import { PlominoBlockPreloaderComponent } from "../../utility";
 
 @Component({
     selector: 'plomino-palette-fieldsettings',
     template: require('./fieldsettings.component.html'),
     styles: [require('./fieldsettings.component.css')],
-    directives: [
-        LoadingComponent
-    ],
     providers: [],
+    directives: [PlominoBlockPreloaderComponent],
     pipes: [PloneHtmlPipe],
     // changeDetection: ChangeDetectionStrategy.OnPush
 })
@@ -61,6 +59,11 @@ export class FieldSettingsComponent implements OnInit {
     labelAdvanced: boolean;
     labelSaving: boolean;
     $selectedElement: JQuery;
+
+    /**
+     * display block preloader
+     */
+    loading: boolean = false;
     
     constructor(private objService: ObjService,
       private log: LogService,
@@ -532,6 +535,7 @@ export class FieldSettingsComponent implements OnInit {
         })
         .flatMap<any>((field: PlominoFieldRepresentationObject) => {
 
+          this.loading = true;
           this.$selectedElement = this.adapter.getSelected();
           this.groupPrefix = null;
 
@@ -551,6 +555,7 @@ export class FieldSettingsComponent implements OnInit {
                   $select2.val(this.field.id).trigger('change');
                 }
 
+                this.loading = false;
                 this.changeDetector.detectChanges();
                 
                 $select.on('change.sfevents', (event) => {
@@ -630,6 +635,8 @@ export class FieldSettingsComponent implements OnInit {
                   $select2.val(this.field.id).trigger('change');
                 }
 
+                this.loading = false;
+
                 $select.on('change.lsevents', ($event) => {
                   this.labelRelationSelected($event);
                 });
@@ -664,6 +671,7 @@ export class FieldSettingsComponent implements OnInit {
               .map(this.parseTabs);
           }
           else {
+            this.loading = false;
             return Observable.of('');
           }
         })
@@ -695,7 +703,9 @@ export class FieldSettingsComponent implements OnInit {
           this.formTemplate = template;
           
           this.updateMacroses();
+          this.loading = false;
           this.changeDetector.detectChanges();
+
           componentHandler.upgradeDom();
         }); 
     }

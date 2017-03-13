@@ -1,4 +1,5 @@
-<div class="db-settings-wrapper">
+<div class="db-settings-wrapper" style="position: relative">
+  <plomino-block-preloader [loading]="loading" [palette]="true"></plomino-block-preloader>  
   <div class="dbsettings--control-buttons" *ngIf="hasAuthPermissions() || hasDesignPermissions()">
       <button class="mdl-button mdl-js-button
         mdl-button--raised mdl-js-ripple-effect

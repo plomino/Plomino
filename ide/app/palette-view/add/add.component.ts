@@ -1,5 +1,8 @@
+import { PlominoBlockPreloaderComponent } from './../../utility/block-preloader';
 import { Observable } from 'rxjs/Rx';
-import { LabelsRegistryService } from './../../editors/tiny-mce/services/labels-registry.service';
+import {
+  LabelsRegistryService
+} from './../../editors/tiny-mce/services/labels-registry.service';
 import { 
     Component, 
     Input, 
@@ -29,7 +32,7 @@ import {
     selector: 'plomino-palette-add',
     template: require('./add.component.html'),
     styles: [require('./add.component.css')],
-    directives: [DND_DIRECTIVES],
+    directives: [DND_DIRECTIVES, PlominoBlockPreloaderComponent],
     providers: [ElementService],
     changeDetection: ChangeDetectionStrategy.OnPush
 })
@@ -40,6 +43,11 @@ export class AddComponent implements OnInit, AfterViewInit {
     addableComponents: Array<any> = [];
     mouseDownTemplateId: string;
     mouseDownTime: number;
+
+    /**
+     * display block preloader
+     */
+    loading: boolean = false;
 
     constructor(private elementService: ElementService,
                 private treeService: TreeService,
@@ -103,11 +111,18 @@ export class AddComponent implements OnInit, AfterViewInit {
 
         this.tabsService.getActiveTab()
         .subscribe((tab) => {
+          
+          this.templates = [];
+          this.loading = true;
           this.activeTab = tab;
+          this.changeDetector.markForCheck();
+          this.changeDetector.detectChanges();
+
           if (tab && tab.url) {
             this.log.info('tab && tab.url', tab, tab.url);
             this.templatesService.getTemplates(tab.url)
             .subscribe((templates: PlominoFormGroupTemplate[]) => {
+              componentHandler.upgradeDom();
               this.templates = templates.map((template) => {
 
                 this.templatesService.buildTemplate(tab.url, template);
@@ -140,9 +155,13 @@ export class AddComponent implements OnInit, AfterViewInit {
                 this.simulateDrag(mouseEvent, 'PlominoSubform');
               });
               
+              componentHandler.upgradeDom();
+
+              this.loading = false;
               this.changeDetector.markForCheck();
             });
           } else {
+            this.loading = false;
             this.changeDetector.markForCheck();
           }
         });

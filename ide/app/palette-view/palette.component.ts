@@ -49,7 +49,7 @@ import {FormsService} from "../services/forms.service";
     providers: [ElementService]
 })
 export class PaletteComponent implements OnInit {
-    selectedTab: any = null;    
+    selectedTab: PlominoTab = null;    
     selectedField: any = null;
 
     tabs: Array<any> = [
@@ -66,7 +66,10 @@ export class PaletteComponent implements OnInit {
 
     ngOnInit() {
         this.tabsService.getActiveTab().subscribe((activeTab) => {
+          if (activeTab && this.selectedTab 
+            && activeTab.formUniqueId !== this.selectedTab.formUniqueId) {
             this.selectedTab = activeTab;
+            
             this.formsService.changePaletteTab(0);
             $('.drop-zone').remove();
             // don't track tiny-mce tab change event
@@ -75,6 +78,7 @@ export class PaletteComponent implements OnInit {
             //     this.tabs = this.updateTabs(activeTab.showAdd, this.tabs, activeTab.type);
             // }
             this.changeDetector.markForCheck();
+          }
         });
 
         this.tabsService.getActiveField().subscribe((activeField) => {
@@ -88,9 +92,21 @@ export class PaletteComponent implements OnInit {
         });
 
         this.formsService.paletteTabChange$.subscribe((tabIndex:number) => {
-            this.tabs.forEach((tab, index) => tab.active = (index === tabIndex));
+          let activeChanged = false;
+          this.tabs.forEach((tab, index) => {
+            const isActive = (index === tabIndex);
+            if (tab.active && isActive) {
+              return false;
+            }
+            else {
+              activeChanged = true;
+              tab.active = isActive;
+            }
+          });
+          if (activeChanged) {
             this.resizeInnerScrollingContainers();
             this.changeDetector.markForCheck();
+          }
         });
         
     }
@@ -116,7 +132,8 @@ export class PaletteComponent implements OnInit {
         let field = _.find(clonnedTabs, { id: 'item' });
 
         // console.warn('activeTabType', activeTabType, 'activeFieldType', activeFieldType);
-        group.title = activeTabType === 'PlominoForm' ? 'Form Settings' : 'View Settings';
+        group.title = !activeTabType || activeTabType === 'PlominoForm' 
+          ? 'Form Settings' : 'View Settings';
 
         if (activeFieldType) {
           let title: string;

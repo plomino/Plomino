@@ -1,5 +1,6 @@
 <form #theEditor 
     class="tiny-editor">
+    <plomino-block-preloader [loading]="loading" [palette]="false"></plomino-block-preloader>
     <textarea class="tinymce-wrap" 
             [id]="id">
     </textarea>

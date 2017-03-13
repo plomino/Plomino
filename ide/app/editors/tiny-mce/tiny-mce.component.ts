@@ -41,6 +41,7 @@ import {
 } from '../../services';
 
 import { UpdateFieldService, LabelsRegistryService } from './services';
+import { PlominoBlockPreloaderComponent } from "../../utility";
 
 @Component({
     selector: 'plomino-tiny-mce',
@@ -56,7 +57,7 @@ import { UpdateFieldService, LabelsRegistryService } from './services';
             opacity: 0.1;
         }
     `],
-    directives: [DND_DIRECTIVES],
+    directives: [DND_DIRECTIVES, PlominoBlockPreloaderComponent],
     providers: [ElementService, UpdateFieldService],
     changeDetection: ChangeDetectionStrategy.OnPush
 })
@@ -84,6 +85,11 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
 
   autoSaveTimer: any = null;
   autoSavedContent: string = null;
+
+  /**
+   * display block preloader
+   */
+  loading: boolean = true;
 
   constructor(private elementService: ElementService,
     private fieldsService: FieldsService,
@@ -559,6 +565,8 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
           this.contentManager.setContent(
             this.id, $content.html(), this.draggingService
           );
+          this.loading = false;
+          this.changeDetector.markForCheck();
         });
       }
       else {
@@ -566,10 +574,14 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
           this.id, newData, this.draggingService
         );
         this.autoSavedContent = newData;
+        this.loading = false;
+        this.changeDetector.markForCheck();
       }
 
     }, (err) => {
       this.log.error(err);
+      this.loading = false;
+      this.changeDetector.markForCheck();
     });
   }
 

@@ -21,12 +21,13 @@ import {
 import { Observable } from 'rxjs/Rx';
 import { ObjService } from '../../services/obj.service';
 import { PloneHtmlPipe } from '../../pipes';
+import { PlominoBlockPreloaderComponent } from "../../utility";
 
 @Component({
     selector: 'plomino-palette-dbsettings',
     template: require('./dbsettings.component.html'),
     styles: [require('./dbsettings.component.css')],
-    directives: [],
+    directives: [PlominoBlockPreloaderComponent],
     providers: [ObjService],
     pipes: [PloneHtmlPipe],
     changeDetection: ChangeDetectionStrategy.OnPush
@@ -42,6 +43,11 @@ export class DBSettingsComponent {
     okDialog: HTMLDialogElement;
     confirmDialog: HTMLDialogElement;
     userHasDesignPermissions: boolean = null;
+
+    /**
+     * display block preloader
+     */
+    loading: boolean = false;
 
     constructor(private objService: ObjService,
       private changeDetector: ChangeDetectorRef,

@@ -64,7 +64,9 @@ import { ExtractNamePipe } from './pipes';
 import { IField } from './interfaces';
 
 // Utility Components
-import { PlominoModalComponent, ResizeDividerComponent } from './utility';
+import {
+  PlominoModalComponent, ResizeDividerComponent, PlominoBlockPreloaderComponent
+} from './utility';
 import { LoadingComponent } from "./editors/loading/loading.component";
 
 @Component({
@@ -87,7 +89,8 @@ import { LoadingComponent } from "./editors/loading/loading.component";
     ColumnsSettingsComponent,
     AgentsSettingsComponent,
     LoadingComponent,
-    ResizeDividerComponent
+    ResizeDividerComponent,
+    PlominoBlockPreloaderComponent,
   ],
   providers: [
     LogService,

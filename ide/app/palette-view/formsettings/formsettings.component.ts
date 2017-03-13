@@ -24,15 +24,13 @@ import {
 import { PloneHtmlPipe } from '../../pipes';
 import {ElementService} from "../../services/element.service";
 import {WidgetService} from "../../services/widget.service";
-import { LoadingComponent } from '../../editors';
+import { PlominoBlockPreloaderComponent } from "../../utility";
 
 @Component({
     selector: 'plomino-palette-formsettings',
     template: require('./formsettings.component.html'),
     styles: [require('./formsettings.component.css')],
-    directives: [
-        LoadingComponent
-    ],
+    directives: [PlominoBlockPreloaderComponent],
     providers: [],
     pipes: [PloneHtmlPipe],
     changeDetection: ChangeDetectionStrategy.OnPush
@@ -48,6 +46,12 @@ export class FormSettingsComponent implements OnInit {
     // This needs to handle both views and forms
     heading: string;
     formSettings: string = '';
+
+    /**
+     * display block preloader
+     */
+    loading: boolean = false;
+    
     private formLayout: string = '';
 
     constructor(private objService: ObjService,
