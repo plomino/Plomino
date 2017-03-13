@@ -78,6 +78,9 @@
     position: relative !important;
     display: inline-block !important;
 }
+/deep/#drag-data-cursor {
+  z-index: 10000;
+}
 /deep/#drag-data-cursor input[type="text"],
 /deep/#drag-data-cursor input[type="email"],
 /deep/#drag-data-cursor input[type="password"],

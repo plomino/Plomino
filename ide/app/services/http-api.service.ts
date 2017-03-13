@@ -87,10 +87,12 @@ export class PlominoHTTPAPIService {
   }
 
   throwError(error: any) {
-    const okDialog = <HTMLDialogElement> document.querySelector('#ok-dialog');
-    okDialog.querySelector('.mdl-dialog__content')
-      .innerHTML = `<p>${ error }</p>`;
-    okDialog.showModal();
+    if (error.indexOf('404 Not Found') === -1) {
+      const okDialog = <HTMLDialogElement> document.querySelector('#ok-dialog');
+      okDialog.querySelector('.mdl-dialog__content')
+        .innerHTML = `<p>${ error }</p>`;
+      okDialog.showModal();
+    }
     return Observable.throw(error);
   }
 

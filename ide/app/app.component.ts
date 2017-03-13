@@ -447,6 +447,14 @@ export class AppComponent implements OnInit, AfterViewInit {
     });
   }
 
+  private getDBLink() {
+    return `${ 
+      window.location.pathname
+      .replace('++resource++Products.CMFPlomino/ide/', '')
+      .replace('/index.html', '')
+    }`;
+  }
+
   private resolveData(data: any, resolver: Function): void {
     resolver(null, data);
   }

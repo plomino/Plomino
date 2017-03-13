@@ -192,7 +192,7 @@ export class FieldSettingsComponent implements OnInit {
             $relatedLabel = $targetField.parent().prev().find('.plominoLabelClass');
           }
 
-          if ($relatedLabel.length) {
+          if ($relatedLabel && $relatedLabel.length) {
             $relatedLabel.each((i, relatedLabelNode) => {
               const $relatedLabelNode = $(relatedLabelNode);
               if ($relatedLabelNode.next().next().hasClass('plominoFieldClass')
@@ -572,8 +572,6 @@ export class FieldSettingsComponent implements OnInit {
                     let url = tinymce.activeEditor.id;
                     url += '/@@tinyform/example_widget?widget_type=subform&id=';
                     url += $select2.val();
-
-                    alert(this.field.id);
   
                     this.http.get(url, 'fieldsettings.component.ts loadSettings')
                     .subscribe((response: any) => {

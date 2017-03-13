@@ -179,6 +179,7 @@ export class DraggingService {
   
             $dragCursor.attr('id', 'drag-data-cursor');
             $dragCursor.css('pointer-events', 'none');
+            $dragCursor.css('z-index', 10000);
             $('body').append($dragCursor);
   
             this.startDragging(
