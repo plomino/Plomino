@@ -25,7 +25,7 @@ export class PlominoHTTPAPIService {
     });
   }
 
-  get(url: string, debugInformation?: string) {
+  get(url: string, debugInformation?: string): Observable<any> {
     this.log.info(`GET -> ${ url }`);
     if (debugInformation) {
       this.log.extra(debugInformation);
@@ -35,7 +35,7 @@ export class PlominoHTTPAPIService {
       .catch(this.throwError);
   }
 
-  getWithOptions(url: string, options: any, debugInformation?: string) {
+  getWithOptions(url: string, options: any, debugInformation?: string): Observable<any> {
     this.log.info(`GET<H> -> ${ url }`);
     if (debugInformation) {
       this.log.extra(debugInformation);
@@ -45,7 +45,7 @@ export class PlominoHTTPAPIService {
       .catch(this.throwError);
   }
 
-  delete(url: string, debugInformation?: string) {
+  delete(url: string, debugInformation?: string): Observable<any> {
     this.log.info(`DELETE -> ${ url }`);
     if (debugInformation) {
       this.log.extra(debugInformation);
@@ -53,7 +53,7 @@ export class PlominoHTTPAPIService {
     return this.http.delete(url, { headers: this.headers });
   }
 
-  post(url: string, data: any, debugInformation?: string) {
+  post(url: string, data: any, debugInformation?: string): Observable<any> {
     this.log.info(`POST -> ${ url }`);
     if (debugInformation) {
       this.log.extra(debugInformation);
@@ -63,7 +63,7 @@ export class PlominoHTTPAPIService {
       .catch(this.throwError);
   }
 
-  postWithOptions(url: string, data: any, options: any, debugInformation?: string) {
+  postWithOptions(url: string, data: any, options: any, debugInformation?: string): Observable<any> {
     this.log.info(`POST<H> -> ${ url }`);
     if (debugInformation) {
       this.log.extra(debugInformation);
@@ -87,7 +87,7 @@ export class PlominoHTTPAPIService {
     }
   }
 
-  throwError(error: any) {
+  throwError(error: any): any {
     if (typeof error !== 'object' 
       && error.indexOf('404 Not Found') === -1
       && error.indexOf('NotFound') === -1

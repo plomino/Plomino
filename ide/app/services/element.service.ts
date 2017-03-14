@@ -147,6 +147,6 @@ export class ElementService {
     return this.http.get(
       `${base}/@@tinyform/example_widget?widget_type=${type}${ id ? `&id=${id}` : '' }`,
       'element.service.ts getWidget')
-      .map((response) => response.json());
+      .map((response: any) => response.json());
   }
 }

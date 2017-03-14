@@ -169,8 +169,8 @@ export class TreeComponent implements OnInit {
         }
         else
             this._elementService.searchElement(query).subscribe(
-                data => { this.searchResults = data; this.filtered = true; },
-                err => console.error(err)
+                (data: any) => { this.searchResults = data; this.filtered = true; },
+                (err: any) => console.error(err)
             );
     }
 }

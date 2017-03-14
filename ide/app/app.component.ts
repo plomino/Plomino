@@ -159,7 +159,7 @@ export class AppComponent implements OnInit, AfterViewInit {
     private appLoader: PlominoApplicationLoaderService,
     private zone: NgZone,
     private changeDetector: ChangeDetectorRef) {
-      window['jquery'] = jQuery;
+      window['jQuery'] = jQuery;
     }
 
   collapseTreeElements(data:any, oldData:any) {
