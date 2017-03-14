@@ -32,48 +32,48 @@
   <record name="plone.formats" interface="Products.CMFPlone.interfaces.controlpanel.ITinyMCESchema" field="formats">
     <field type="plone.registry.field.Text">
       <default>{
-    "clearfix": {
-        "classes": "clearfix",
-        "block": "div"
-    },
-    "discreet": {
-        "inline": "span",
-        "classes": "discreet"
-    }
-}</default>
+        "clearfix": {
+            "classes": "clearfix",
+            "block": "div"
+        },
+        "discreet": {
+            "inline": "span",
+            "classes": "discreet"
+        }
+      }</default>
       <description xmlns:ns0="http://xml.zope.org/namespaces/i18n" ns0:domain="plone" ns0:translate="">Enter a JSON-formatted style format configuration. A format is for example the style that get applied when you press the bold button inside the editor. See http://www.tinymce.com/wiki.php/Configuration:formats</description>
       <title xmlns:ns0="http://xml.zope.org/namespaces/i18n" ns0:domain="plone" ns0:translate="">Formats</title>
     </field>
     <value>{
-    "clearfix": {
-        "classes": "clearfix",
-        "block": "div"
-    },
-    "discreet": {
-        "inline": "span",
-        "classes": "discreet"
-    },
-    "plominofield": {
-        "inline": "span",
-        "classes": "plominoFieldClass"
-    },
-    "plominolabel": {
-        "inline": "span",
-        "classes": "plominoLabelClass"
-    },
-    "plominoaction": {
-        "inline": "span",
-        "classes": "plominoActionClass"
-    },
-    "plominohidewhen": {
-        "inline": "span",
-        "classes": "plominoHidewhenClass"
-    },
-    "plominosubform": {
-        "inline": "span",
-        "classes": "plominoSubformClass"
-    }
-}</value>
+      "clearfix": {
+          "classes": "clearfix",
+          "block": "div"
+      },
+      "discreet": {
+          "inline": "span",
+          "classes": "discreet"
+      },
+      "plominofield": {
+          "inline": "span",
+          "classes": "plominoFieldClass"
+      },
+      "plominolabel": {
+          "inline": "span",
+          "classes": "plominoLabelClass"
+      },
+      "plominoaction": {
+          "inline": "span",
+          "classes": "plominoActionClass"
+      },
+      "plominohidewhen": {
+          "inline": "span",
+          "classes": "plominoHidewhenClass"
+      },
+      "plominosubform": {
+          "inline": "span",
+          "classes": "plominoSubformClass"
+      }
+    }</value>
   </record>
 
   <records interface="Products.CMFPlone.interfaces.ITinyMCESchema"
@@ -106,7 +106,7 @@
     <value key="css">
         <element>++resource++Products.CMFPlomino/css/table.less</element>
     </value>
-</records>
+  </records>
 
   <records prefix="plone.resources/plominodesign"
            interface='Products.CMFPlone.interfaces.IResourceRegistry'>
@@ -136,7 +136,7 @@
     <value key="js">++resource++Products.CMFPlomino/js/macros.js</value>
   </records>
 
-    <records prefix="plone.resources/plominorefresh"
+  <records prefix="plone.resources/plominorefresh"
            interface='Products.CMFPlone.interfaces.IResourceRegistry'>
     <value key="js">++resource++Products.CMFPlomino/js/refresh.js</value>
   </records>
