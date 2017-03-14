@@ -265,7 +265,7 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
       imageTypes: ['Image'],
       folderTypes: ['Folder', 'Plone Site'],
       plugins: ['code', 'save', 'link', 'noneditable', 
-        'preview', 'ploneimage', 'plonelink'],
+        'preview'/*, 'ploneimage', 'plonelink'*/],
       toolbar: 'save | undo redo | formatselect | bold italic underline' +
       ' | alignleft aligncenter alignright alignjustify | ' +
       'bullist numlist | outdent indent',
