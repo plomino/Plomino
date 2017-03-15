@@ -136,6 +136,7 @@ Scenario: I can add a validation rule to a field
     and I add a macro "Invalid" to "Field Settings"
     and I enter "You can't say blah" in "Invalid message" in the form
     and I save the macro
+    and I save the settings
     and I preview "frm_test"
     and I enter "blah" in "Untitled" in the form
     and I submit the form
@@ -167,7 +168,7 @@ I open the ide for "${db}"
   #Click Element  link=IDE
   Go To  ${PLONE_URL}/${db}/++resource++Products.CMFPlomino/ide/index.html
 #  Wait Until Element Is Visible  id=application-loader
-  Wait Until Element Is Not Visible  id=application-loader
+  Wait Until page does not contain element  id=application-loader
   wait until page contains  ${db}
 
 I have a form open
@@ -186,7 +187,7 @@ I submit the form
 
 I save the macro
   Click Button  css=.plominoSave
-  wait until element is not visible  css=.plominoSave
+  wait until page does not contain element  css=.plominoSave
 
 I save the settings
   Click link  link=SAVE
