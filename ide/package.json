@@ -3,7 +3,7 @@
   "version": "0.0.1",
   "scripts": {
     "watch": "webpack --progress --watch",
-    "build": "webpack --config ./config/webpack.prod.js --progress -p",
+    "build": "webpack --config ./config/webpack.prod.js --progress",
     "bundle": "webpack --config ./config/webpack.dev.js --progress",
     "reload": "browser-reload",
     "postinstall": "npm run typings install",

@@ -59,12 +59,20 @@ Scenario: As a site administrator I can view a PlominoDatabase
    Then I can see the plominodatabase title 'My PlominoDatabase'
 
 Scenario: As a site administrator I can open a form
+  Set Selenium Speed  .5 seconds
   Set selenium timeout  100
   Given a logged-in test user
     and I open the ide for "mydb"
-   When I open the first form
-   #TODO When I open a form "frm_test"
+   # When I open the first form
+   When I open a form "frm_test"
    Then I can see field "field_1" in the editor
+
+Scenario: I can add a field to a form
+  Given a logged-in test user
+    and I open the ide for "mydb"
+    and I open a form "frm_test"
+   When I add a "Text" field
+   Then I can see field "text" in the editor
 
 Scenario: As a site administrator I can add a form by click
   Given a logged-in test user
@@ -196,17 +204,22 @@ I add a form by click
   wait until page contains element  css=div.mce-tinymce
 
 I add a form by dnd
-   wait until page contains  Form
-#   drag and drop  xpath=//div[@class="palette-wrapper"]//*[@title="Form"]  css=div.main-app.panel
+  Set Selenium Timeout  10 seconds
+  wait until page contains element  jquery=#PlominoForm
+  wait until page contains element  jquery=div.main-app.panel
+#  drag and drop  jquery=#PlominoForm  jquery=plomino-app div.main-app.panel
+#  drag and drop  jquery=#PlominoForm  jquery=plomino-app div.main-app.panel
+#  drag and drop  jquery=#PlominoForm  jquery=plomino-app div.main-app.panel
+#  drag and drop  jquery=#PlominoForm  jquery=plomino-app div.main-app.panel
+#  drag and drop  jquery=#PlominoForm  jquery=plomino-app div.main-app.panel
   Chain Click And Hold  xpath=//div[@class="palette-wrapper"]//*[@title="Form"]
   Move By Offset  +300  0
   Chain Move To Element With Offset  css=div.main-app.panel  20  20
   chain sleep  5
   Chain Release  css=div.main-app.panel
   Chains Perform Now
-  Capture Page Screenshot
-  wait until page contains  new-form
-  wait until page contains  css=div.mce-tinymce
+  wait until page contains element  jquery=plomino-tree > div > ul > li > ul > li > span:contains("new-form")
+  wait until page contains element  jquery=div.mce-edit-area
 
 
 
@@ -220,8 +233,8 @@ I add a "${field}" field by dnd
 I open a form "${formid}"
   Capture Page Screenshot
   wait until page contains  ${formid}
-  #TODO: not sure why I can't isolate the text from the tree
-  Click Element  xpath=//span[contains(@class,"tree-node--name")][normalize-space(text())="${formid}"]
+  Click Element  jquery=plomino-tree > div > ul > li > ul > li > span:contains("${formid}"):first
+  #Click Element  xpath=//span[contains(@class,"tree-node--name")][normalize-space(text())="${formid}"]
   wait until form is loaded
 
 I open the first form
@@ -295,7 +308,9 @@ I can see the plominodatabase title '${title}'
   Page should contain  ${title}
 
 I can see "${formid}" is open
+  Set Selenium Timeout  10 seconds
   Capture Page Screenshot
+  wait until page contains element  css=div.mce-edit-area
   page should contain   ${formid}
   page should contain element  css=div.mce-edit-area
 

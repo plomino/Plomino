@@ -53,7 +53,7 @@ export class AgentsSettingsComponent {
     deleteElement() {
         this._elementService.deleteElement(this.data["@id"]).subscribe(
             () => this.elementDeleted.emit(this.data["@id"]),
-            err => console.error(err)
+            (err: any) => console.error(err)
         );
     }
 }

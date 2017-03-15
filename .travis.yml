@@ -24,8 +24,8 @@ addons:
 
 before_install:
   - sudo apt-get update
-  - wget http://security.ubuntu.com/ubuntu/pool/main/i/icu/libicu52_52.1-3ubuntu0.4_amd64.deb
-  - sudo dpkg -i libicu52_52*.deb
+#  - wget http://security.ubuntu.com/ubuntu/pool/main/i/icu/libicu52_52.1-3ubuntu0.4_amd64.deb
+#  - sudo dpkg -i libicu52_52*.deb
   - nvm install 6.1
   - nvm use 6.1
   - npm i -g npm@3

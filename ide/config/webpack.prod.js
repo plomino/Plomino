@@ -20,8 +20,17 @@ module.exports = webpackMerge(commonConfig, {
     },
 
     plugins: [
-        new webpack.optimize.DedupePlugin(),
-        new webpack.optimize.UglifyJsPlugin(),
+        // new webpack.optimize.DedupePlugin(),
+        new webpack.optimize.UglifyJsPlugin({
+          sourceMap: false,
+          comments: true,
+          mangle: false,
+          exclude: /\tinymce/i,
+          output: {
+            ascii_only: true,
+            unescape_regexps: true,
+          }
+        }),
         new webpack.DefinePlugin({
             'process.env': {
                 'ENV': JSON.stringify(ENV)

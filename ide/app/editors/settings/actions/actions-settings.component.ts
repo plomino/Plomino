@@ -34,11 +34,11 @@ export class ActionsSettingsComponent {
     getElement() {
         this._elementService.getElement(this.id)
             .subscribe(
-                data => {
+                (data: any) => {
                     this.data = data;
                     this.isDirty.emit(false);
                 },
-                err => console.error(err)
+                (err: any) => console.error(err)
             );
       this.log.extra('actions-settings.component.ts getElement');
     }
@@ -56,7 +56,7 @@ export class ActionsSettingsComponent {
                 this.titleChanged.emit(this.data.title);
                 this.isDirty.emit(false);
             },
-            err => console.error(err)
+            (err: any) => console.error(err)
         );
         this.log.extra('actions-settings.component.ts onSubmit');
     }
@@ -64,7 +64,7 @@ export class ActionsSettingsComponent {
     deleteElement() {
         this._elementService.deleteElement(this.data["@id"]).subscribe(
             () => this.elementDeleted.emit(this.data["@id"]),
-            err => console.error(err)
+            (err: any) => console.error(err)
         );
         this.log.extra('actions-settings.component.ts deleteElement');
     }
