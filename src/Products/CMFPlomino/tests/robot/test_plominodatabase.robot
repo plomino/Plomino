@@ -33,6 +33,7 @@ Resource  plone/app/robotframework/selenium.robot
 Resource  plone/app/robotframework/keywords.robot
 
 Library  Remote  ${PLONE_URL}/RobotRemote
+Library           ${CURDIR}/../../../../robotframework-selenium2library-extensions/src/Selenium2LibraryExtensions    WITH NAME    Selenium2LibraryExtensions
 
 Test Setup  Open test browser
 Test Teardown  Plone Test Teardown
@@ -65,29 +66,42 @@ Scenario: As a site administrator I can open a form
    #TODO When I open a form "frm_test"
    Then I can see field "field_1" in the editor
 
-Scenario: I can add a field to a form
-  Given a logged-in test user
-    and I open the ide for "mydb"
-    and I open the first form   #TODO   When I open a form "frm_test"
-   When I add a "Text" field
-   Then I can see field "text" in the editor
-
 Scenario: As a site administrator I can add a form by click
   Given a logged-in test user
     and I open the ide for "mydb"
    When I add a form by click
    Then I can see "new-form" is open
 
-Scenario: As a site administrator I can add a form by dnd
-  Given a logged-in test user
-    and I open the ide for "mydb"
-   When I add a form by dnd
-   Then I can see "new-form" is open
+# html5 dnd not currently supported by selenium - https://github.com/seleniumhq/selenium-google-code-issue-archive/issues/3604
+#Scenario: As a site administrator I can add a form by dnd
+#  Given a logged-in test user
+#    and I open the ide for "mydb"
+#   When I add a form by dnd
+#   Then I can see "new-form" is open
 
 Scenario: I can rename a form
   Given I have a form open
    When I enter "mynewid" in "Id" in "Form Settings"
    Then I can see "mynewid" is open
+
+
+Scenario: I can add a field to a form
+  Given a logged-in test user
+    and I open the ide for "mydb"
+    and I open the first form   #TODO   When I open a form "frm_test"
+   When I add a "Text" field
+   Then I can see field "text" in the editor
+    and I select the field "text"  # probably should be selected automatically? or group should?
+    and I see "text" in "Id" in "Field Settings"
+
+Scenario: I can add a field to a form by dnd
+  Given a logged-in test user
+    and I open the ide for "mydb"
+    and I open the first form   #TODO   When I open a form "frm_test"
+   When I add a "Text" field by dnd
+   Then I can see field "text" in the editor
+    and I select the field "text"
+    and I see "text" in "Id" in "Field Settings"
 
 Scenario: I can change the label and title at the same time
   Given I have a form open
@@ -97,6 +111,27 @@ Scenario: I can change the label and title at the same time
     and I select the field "text"
     and I see "My text question" in "Title" in "Field Settings"
 
+Scenario: I can preview
+  Given I have a form open
+   When I preview "frm_test"
+    and I submit the form
+   Then I will see the preview form saved
+
+
+Scenario: I can add a validation rule to a field
+  Given I have a form open
+   When I add a "Text" field
+    and I select the field "text"
+    and I add a macro "Field contains text" to "Field Settings"
+    and I enter "blah" in "Field value" in the form
+    and I save the macro
+    and I add a macro "Invalid" to "Field Settings"
+    and I enter "You can't say blah" in "Invalid message" in the form
+    and I save the macro
+    and I preview "frm_test"
+    and I enter "blah" in "Untitled" in the form
+    and I submit the form
+   Then I will see the validation error "You can't say blah" for field "text"
 
 *** Keywords *****************************************************************
 
@@ -123,6 +158,7 @@ I open the ide for "${db}"
   #Go To  ${PLONE_URL}/mydb
   #Click Element  link=IDE
   Go To  ${PLONE_URL}/${db}/++resource++Products.CMFPlomino/ide/index.html
+#  Wait Until Element Is Visible  id=application-loader
   Wait Until Element Is Not Visible  id=application-loader
   wait until page contains  ${db}
 
@@ -140,6 +176,13 @@ I type '${title}' into the title field
 I submit the form
   Click Button  Save
 
+I save the macro
+  Click Button  css=.plominoSave
+  wait until element is not visible  css=.plominoSave
+
+I save the settings
+  Click link  link=SAVE
+
 I go to the plominodatabase view
   Go To  ${PLONE_URL}/my-plominodatabase
   Wait until page contains  Site Map
@@ -154,27 +197,43 @@ I add a form by click
 
 I add a form by dnd
    wait until page contains  Form
-   drag and drop  xpath=//div[@class="palette-wrapper"]//*[@title="Form"]  css=div.main-app.panel
+#   drag and drop  xpath=//div[@class="palette-wrapper"]//*[@title="Form"]  css=div.main-app.panel
+  Chain Click And Hold  xpath=//div[@class="palette-wrapper"]//*[@title="Form"]
+  Move By Offset  +300  0
+  Chain Move To Element With Offset  css=div.main-app.panel  20  20
+  chain sleep  5
+  Chain Release  css=div.main-app.panel
+  Chains Perform Now
   Capture Page Screenshot
   wait until page contains  new-form
-  wait until page contains  css:div.mce-edit-area
+  wait until page contains  css=div.mce-tinymce
 
 
 
 I add a "${field}" field
-  Capture Page Screenshot
-  Click Element  xpath=//button[@title="${field}"]
+  Click Element  xpath=//div[@class="palette-wrapper"]//*[@title="${field}"]
+
+I add a "${field}" field by dnd
+  Selenium2Library.drag and drop  xpath=//div[@class="palette-wrapper"]//*[@title="${field}"]  css=.mce-edit-area iframe
+
 
 I open a form "${formid}"
   Capture Page Screenshot
   wait until page contains  ${formid}
   #TODO: not sure why I can't isolate the text from the tree
   Click Element  xpath=//span[contains(@class,"tree-node--name")][normalize-space(text())="${formid}"]
+  wait until form is loaded
 
 I open the first form
   Click Element  xpath=//li//li[1]/span[contains(@class,"tree-node--name")]
+  wait until form is loaded
+
+wait until form is loaded
   wait until page contains element   xpath=//div[@class="palette-wrapper"]//*[@title="Field"]
   wait until page contains element   css=.mce-edit-area iframe
+  select frame  css=.mce-edit-area iframe
+  wait until page contains element   css=.mce-content-body
+  unselect frame
 
 I enter "${value}" in "${field}" in "${tab}"
   Click Link  ${tab}
@@ -182,6 +241,11 @@ I enter "${value}" in "${field}" in "${tab}"
   Input Text  xpath=//input[@id=//label[normalize-space(text())="${field}"]/@for]  ${value}
   Click Link  link=SAVE
   wait until page contains element  link=SAVE
+
+I enter "${value}" in "${field}" in the form
+  wait until page contains element  xpath=//input[@id=//label[normalize-space(text())="${field}"]/@for]
+  Input Text  xpath=//input[@id=//label[normalize-space(text())="${field}"]/@for]  ${value}
+
 
 I edit the label "${fieldid}" to "${text}"
   select frame  css=.mce-edit-area iframe
@@ -202,7 +266,22 @@ I select the field "${fieldid}"
   unselect frame
   wait until page contains  Field Settings
 
+I add a macro "${macro}" to "${tab}"
+  Click Link  ${tab}
+  wait until element is visible  xpath=//input[@id=//label[normalize-space(text())="Id"]/@for]
+  # Hacky way to scroll down the settings
+  click element  xpath=//input[@id=//label[normalize-space(text())="Id"]/@for]
+  Press key  xpath=//input[@id=//label[normalize-space(text())="Id"]/@for]  \t\t\t\t
 
+  Click element  css=.plomino-macros-rule
+  Click element  xpath=//*[contains(@class,"select2-result")][normalize-space(text())="${macro}"]
+  wait until page contains element  css=.plominoSave
+
+I preview "${formid}"
+  Click Link  Form Settings
+  wait until page contains element  link=PREVIEW
+  Click link  link=PREVIEW
+  select window  url=${PLONE_URL}/mydb/${formid}/OpenForm
 
 # --- THEN -------------------------------------------------------------------
 
@@ -236,3 +315,5 @@ I see "${value}" in "${field}" in "${tab}"
   ${text} =  get value  xpath=//input[@id=//label[normalize-space(text())="${field}"]/@for]
   should be equal  ${text}  ${value}
 
+I will see the preview form saved
+  page should contain button  Close
