@@ -278,12 +278,18 @@ class PlominoField(Item):
 
         selection = self.getSelectionList(target)
 
+        show_upload = True
+        if self.field_type == 'ATTACHMENT' \
+           and self.getForm().isPage or target.id == 'TEMPDOC':
+            show_upload = False
+
         try:
             html = renderer(
                 field=self,
                 fieldvalue=fieldvalue,
                 selection=selection,
                 doc=target,
+                show_upload=show_upload
             )
 
             injection_zone = 'name="%s"' % self.id
