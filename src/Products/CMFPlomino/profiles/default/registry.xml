@@ -141,6 +141,18 @@
     <value key="js">++resource++Products.CMFPlomino/js/refresh.js</value>
   </records>
 
+  <records prefix="plone.resources/bootstrap-datetimepicker"
+           interface='Products.CMFPlone.interfaces.IResourceRegistry'>
+    <value key="js">++resource++Products.CMFPlomino/js/bootstrap-datetimepicker.js</value>
+    <value key="deps">jquery,moment,bootstrap-transition,bootstrap-collapse</value>
+  </records>
+  <records prefix="plone.resources/pattern-bootstrap-datetimepicker"
+           interface='Products.CMFPlone.interfaces.IResourceRegistry'>
+    <value key="js">++resource++Products.CMFPlomino/js/pattern-bootstrap-datetimepicker.js</value>
+    <value key="css">
+      <element>++resource++Products.CMFPlomino/css/pattern-bootstrap-datetimepicker.less</element>
+    </value>
+  </records>
 
   <records prefix="plone.bundles/plomino"
            interface='Products.CMFPlone.interfaces.IBundleRegistry'>
@@ -153,12 +165,17 @@
       <element>plominomultipage</element>
       <element>plominomacros</element>
       <element>plominorefresh</element>
+      <element>pattern-bootstrap-datetimepicker</element>
     </value>
     <value key="merge_with">default</value>
     <value key="enabled">True</value>
     <value key="depends">plone</value>
-        <value key="stub_js_modules">
+    <value key="stub_js_modules">
       <element>jquery</element>
+      <element>moment</element>
+      <element>bootstrap-collapse</element>
+      <element>bootstrap-transition</element>
+      <element>bootstrap-datetimepicker</element>
       <element>mockup-patterns-modal</element>
       <element>mockup-patterns-select2</element>
       <element>mockup-patterns-tree</element>

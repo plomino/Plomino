@@ -37,7 +37,7 @@
         </tal:block>
     </tal:widget>
     <tal:widget tal:condition="python: widget=='JQUERY'">
-        <input type="text" class="pat-pickadate field-datetime"
+        <input type="text" class="pat-pattern-bootstrap-datetimepicker field-datetime"
             tal:define="inputvalue python: '' if not v else v.strftime('%Y-%m-%d %H:%M');"
             tal:attributes="name field/id;
                 id field/id;
