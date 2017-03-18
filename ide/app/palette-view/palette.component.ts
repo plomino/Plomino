@@ -52,12 +52,14 @@ import {FormsService} from "../services/forms.service";
 export class PaletteComponent implements OnInit {
     selectedTab: PlominoTab = null;    
     selectedField: any = null;
+    workflowMode: boolean = false;
 
     tabs: Array<any> = [
         { title: 'Add', id: 'add', active: true },
         { title: 'Field Settings', id: 'item' },
         { title: 'Form Settings', id: 'group' },
         { title: 'DB Settings', id: 'db' },
+        { title: 'Workflow Node', id: 'wfnode', hidden: true },
     ];
 
     constructor(private changeDetector: ChangeDetectorRef,
@@ -67,6 +69,19 @@ export class PaletteComponent implements OnInit {
                 private templatesService: TemplatesService) { }
 
     ngOnInit() {
+      this.tabsService.workflowModeChanged$
+      .subscribe((value: boolean) => {
+        if (this.workflowMode !== value) {
+          this.formsService.changePaletteTab(0);
+        }
+        this.workflowMode = value;
+        this.tabs[1].hidden = value;
+        this.tabs[4].hidden = !value;
+        this.changeDetector.markForCheck();
+        this.changeDetector.detectChanges();
+        componentHandler.upgradeDom();
+      });
+
         this.tabsService.getActiveTab().subscribe((activeTab) => {
           this.log.info('activeTab', activeTab);
           this.log.extra('palette.component.ts ngOnInit');

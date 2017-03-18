@@ -1,8 +1,11 @@
+import { Subject } from 'rxjs/Rx';
+import { FormsService } from './forms.service';
 import { PlominoElementAdapterService } from './element-adapter.service';
 import { LogService } from './log.service';
 import { 
   Injectable,
-  NgZone 
+  NgZone,
+  ChangeDetectorRef 
 } from '@angular/core';
 
 import { Observable } from 'rxjs/Observable';
@@ -22,9 +25,14 @@ export class TabsService {
   private activeField$: BehaviorSubject<any> = new BehaviorSubject(null);
   private tabs$: BehaviorSubject<any[]> = new BehaviorSubject([]);
   private tree: any;
+  
+  workflowModeChange: Subject<boolean> = new Subject<boolean>();
+  workflowModeChanged$ = this.workflowModeChange.asObservable();
 
   constructor(private treeService: TreeService,
   private adapter: PlominoElementAdapterService,
+  private changeDetector: ChangeDetectorRef,
+  private formsService: FormsService,
   private log: LogService, private zone: NgZone) {
     this.treeService.getTree()
       .subscribe((tree) => {
@@ -90,13 +98,11 @@ export class TabsService {
 
   setActiveTab(tab: PlominoTab, showAdd = false): void {
 
-    // console.warn('SET ACTIVE TAB', tab);
+    const isWorkflowTab = tab.url.split('/').pop() === 'workflow';
     
     if (tab.active) {
       return;
     }
-
-    window.location.hash = `#form=${ tab.url.split('/').pop() }`;
 
     let tabs = this.tabs$.getValue().slice(0);
     let normalizedTab: any = Object.assign({}, this.retrieveTab(this.tree, tab), { showAdd: showAdd });
@@ -104,25 +110,44 @@ export class TabsService {
     
     tabs.forEach(tab => { tab.active = (tab.url === selectedTab.url) });
 
-    this.activeTab$.next(normalizedTab);
+    if (!isWorkflowTab) {
+      window.location.hash = `#form=${ tab.url.split('/').pop() }`;
+      this.activeTab$.next(normalizedTab);
+      this.workflowModeChange.next(false);
+    }
+    else {
+      this.workflowModeChange.next(true);
+    }
     this.tabs$.next(tabs);
   }
 
-  openTab(tab: any, showAdd = true): void {
+  openTab(tab: PlominoTab, showAdd = true): void {
     // console.warn('OPEN TAB', tab);
-    let tabs: any[] = this.tabs$.getValue();
-    let tabIsOpen: boolean = _.find(tabs, { url: tab.url, editor: tab.editor });
+    let tabs: PlominoTab[] = this.tabs$.getValue();
+    let tabIsOpen: PlominoTab = _.find(tabs, { url: tab.url, editor: tab.editor });
     
     if (tabIsOpen) {
-      
-      this.setActiveTab(tab, false);
-
+      if (tabIsOpen.url !== 'workflow') {
+        this.setActiveTab(tab, false);
+      }
+      else {
+        // let tabs = this.tabs$.getValue().slice(0);
+        // tabs.forEach(tab => { tab.active = (tab.url === tabIsOpen.url) });
+        // this.formsService.changePaletteTab(0);
+      }
     } else {
-      let builtedTab: any = this.buildTab(tab, showAdd);
+      let builtedTab: PlominoTab = this.buildTab(tab, showAdd);
       tabs.forEach((tab) => tab.active = false);
       tabs.push(builtedTab);
       this.tabs$.next(tabs);
-      this.setActiveTab(tab, showAdd);
+      if (builtedTab.url !== 'workflow') {
+        this.setActiveTab(tab, showAdd);
+        this.workflowModeChange.next(false);
+      }
+      else {
+        this.formsService.changePaletteTab(0);
+        this.workflowModeChange.next(true);
+      }
     }
     
   }
@@ -137,6 +162,8 @@ export class TabsService {
     }
 
     this.tabs$.next(tabs);
+    this.changeDetector.markForCheck();
+    this.changeDetector.detectChanges();
   }
 
   updateTabId(tab: any, newID: number): void {
@@ -150,7 +177,7 @@ export class TabsService {
      * update page hash
      */
     if (updateTab.active) {
-      window.location.hash = `#form=${ newID }`;
+      window.location.hash = newID.toString() === 'workflow' ? '' : `#form=${ newID }`;
     }
   }
 
@@ -178,7 +205,11 @@ export class TabsService {
     return this.tabs$.asObservable();
   }
 
-  private retrieveTab(tree: any[], tab: any): any {
+  private retrieveTab(tree: any[], tab: PlominoTab): any {
+    if (!tab.path.length) {
+      return tab;
+    }
+
     let pindex = this.index(tab.path[0].type);
 
     for (let elt of tree[pindex].children) {

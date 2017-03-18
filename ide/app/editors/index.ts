@@ -1,6 +1,7 @@
 export { ACEEditorComponent } from './ace-editor';
 export { PopoverComponent } from './popover';
-export { LoadingComponent } from './loading'
+export { LoadingComponent } from './loading';
+export { PlominoWorkflowComponent } from './workflow';
 
 export {
   ActionsSettingsComponent,

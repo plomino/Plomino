@@ -1,0 +1,130 @@
+body {
+  font-family: sans-serif;
+  font-size: 15px;
+}
+
+$border-width: 1px;
+$line-color: #00a2e5;
+$highlight-color: rgb(63,81,181);
+$line-height: 4em;
+
+.plomino-workflow-editor {
+  &__branches {
+    position: relative;
+    padding: $line-height 0; 
+    white-space: nowrap;
+    margin: 0 auto;
+    text-align: center;
+    &::after {
+      content: '';
+      display: table;
+      clear: both;
+    }
+
+    .plomino-workflow-editor__branches::before {
+      content: '';
+      position: absolute; 
+      top: 0; 
+      left: 50%;
+      border-left: $border-width solid $line-color;
+      width: 0; 
+      height: $line-height;
+    }
+  }
+
+  &__branch {
+    display: inline-block; // need white-space fix
+    vertical-align: top;
+    text-align: center;
+    list-style-type: none;
+    position: relative;
+    padding: $line-height .5em 0 .5em;
+    cursor: pointer;
+
+    &::before,
+    &::after {
+      content: '';
+      position: absolute; 
+      top: 0; 
+      right: 50%;
+      border-top: $border-width solid $line-color;
+      width: 50%; 
+      height: $line-height;
+    }
+    &::after {
+      right: auto; 
+      left: 50%;
+      border-left: $border-width solid $line-color;
+    }
+    &:only-child::after,
+    &:only-child::before {
+      display: none;
+    }
+    &:only-child {
+      padding-top: 0;
+    }
+    &:first-child::before,
+    &:last-child::after {
+      border: 0 none;
+    }
+    &:last-child::before{
+      border-right: $border-width solid $line-color;
+      border-radius: 0 5px 0 0;
+    }
+    &:first-child::after{
+      border-radius: 5px 0 0 0;
+    }
+
+    .workflow-node {
+      border: $border-width solid black;
+      padding: 0;
+      text-decoration: none;
+      display: inline-block;
+      border-radius: 0;
+      color: #333;
+      position: relative;
+      top: $border-width;
+      user-select: none;
+
+      &--selected {
+        outline: solid 2px #4a148c;
+        outline-style: double;
+      }
+
+      &--dropping {
+        border-style: dashed;
+        opacity: 0.7;
+        border-color: lightgray;
+      }
+
+      &__inner {
+        text-align: left;
+        min-height: 100px;
+        min-width: 200px;
+        padding: 6px 7px;
+        line-height: 1.4;
+      }
+
+      &:not(.workflow-node--root)::before {
+        content: '';
+        display: block;
+        position: absolute;
+        background-color: $line-color;
+        -webkit-mask: url(images/ic_arrow_drop_down_black_24px.svg) no-repeat 50% 50%;
+        mask: url(images/ic_arrow_drop_down_black_24px.svg) no-repeat 50% 50%;
+        background-repeat: no-repeat;
+        width: 24px;
+        height: 24px;
+        top: -15px;
+        left: 0;
+        width: 100%;
+      }
+
+      &:hover {
+        background: $highlight-color;
+        color: #fff;
+        border: $border-width solid $highlight-color;
+      }
+    }
+  }
+}

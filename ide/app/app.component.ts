@@ -36,7 +36,8 @@ import {
   HideWhenSettingsComponent,
   ViewsSettingsComponent,
   ColumnsSettingsComponent,
-  AgentsSettingsComponent
+  AgentsSettingsComponent,
+  PlominoWorkflowComponent,
 } from './editors';
 
 // Services
@@ -91,6 +92,7 @@ import { LoadingComponent } from "./editors/loading/loading.component";
     LoadingComponent,
     ResizeDividerComponent,
     PlominoBlockPreloaderComponent,
+    PlominoWorkflowComponent,
   ],
   providers: [
     LogService,
@@ -424,16 +426,16 @@ export class AppComponent implements OnInit, AfterViewInit {
     this.tabsService.setActiveTab(tab, true);
 
     // check that tinymce is broken after 100ms
-    setTimeout(() => {
-      let x = $('iframe:visible').contents().find('body').html();
-      if (typeof x === 'undefined') {
-        tinymce.EditorManager.execCommand('mceAddEditor', true, tab.url);
-      }
-      else if (!x.length) {
-        tinymce.EditorManager.execCommand('mceRemoveEditor', true, tab.url);
-        tinymce.EditorManager.execCommand('mceAddEditor', true, tab.url);
-      }
-    }, 100);
+    // setTimeout(() => {
+    //   let x = $('iframe:visible').contents().find('body').html();
+    //   if (typeof x === 'undefined') {
+    //     tinymce.EditorManager.execCommand('mceAddEditor', true, tab.url);
+    //   }
+    //   else if (!x.length) {
+    //     tinymce.EditorManager.execCommand('mceRemoveEditor', true, tab.url);
+    //     tinymce.EditorManager.execCommand('mceAddEditor', true, tab.url);
+    //   }
+    // }, 100);
   }
 
   fieldSelected(fieldData: any): void {

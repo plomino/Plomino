@@ -1,3 +1,4 @@
+import { TabsService } from './../../services/tabs.service';
 import { LogService } from './../../services/log.service';
 import { PlominoHTTPAPIService } from './../../services/http-api.service';
 import { 
@@ -52,6 +53,7 @@ export class DBSettingsComponent {
     constructor(private objService: ObjService,
       private changeDetector: ChangeDetectorRef,
       private http: PlominoHTTPAPIService,
+      private tabsService: TabsService,
       private log: LogService,
     ) {
       this.importExportDialog = <HTMLDialogElement> 
@@ -213,6 +215,15 @@ export class DBSettingsComponent {
       .subscribe((response: Response) => {
         updateACLContent(response.text());
       });
+    }
+
+    private designWorkflow() {
+      this.tabsService.openTab({
+        url: 'workflow',
+        label: 'Workflow',
+        editor: 'workflow',
+        path: []
+      }, true);
     }
 
     private showImportExport() {

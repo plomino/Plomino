@@ -1,8 +1,8 @@
 interface PlominoTab {
   url: string;
-  folder: boolean;
-  type: string;
-  children: any[];
+  folder?: boolean;
+  type?: string;
+  children?: any[];
   label: string;
   formUniqueId?: any;
   showAdd?: boolean;
@@ -10,6 +10,7 @@ interface PlominoTab {
   editor?: any;
   typeLabel?: string;
   typeNameUrl?: string;
+  path?: any;
 }
 
 interface HTMLDialogElement extends HTMLElement {

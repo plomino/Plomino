@@ -41,6 +41,7 @@ export class AddComponent implements OnInit, AfterViewInit {
     activeTab: PlominoTab;
     templates: PlominoFormGroupTemplate[] = [];
     addableComponents: Array<any> = [];
+    workflowComponents: Array<any> = [];
     mouseDownTemplateId: string;
     mouseDownTime: number;
 
@@ -48,6 +49,8 @@ export class AddComponent implements OnInit, AfterViewInit {
      * display block preloader
      */
     loading: boolean = false;
+
+    workflowMode: boolean = false;
 
     constructor(private elementService: ElementService,
                 private treeService: TreeService,
@@ -67,7 +70,43 @@ export class AddComponent implements OnInit, AfterViewInit {
       // const isFF = 'MozAppearance' in document.documentElement.style;
     }
 
+    isWorkflowMode() {
+      return this.workflowMode;
+      // return Boolean(
+      //   $('.nav-link.active span.tab-name:contains("workflow")')
+      //   .filter((i, e) => $(e).text() === 'workflow')
+      //   .length
+      // );
+    }
+
+    getAddableComponents() {
+      return this.isWorkflowMode() ? [] : this.addableComponents;
+    }
+
     ngOnInit() {
+      this.tabsService.workflowModeChanged$
+      .subscribe((value: boolean) => {
+        this.workflowMode = value;
+        console.log('workflow mode changed', this.workflowMode);
+        this.changeDetector.markForCheck();
+        this.changeDetector.detectChanges();
+      });
+      
+      this.workflowComponents = [
+        {
+          title: 'Task',
+          type: 'workflowTask'
+        },
+        {
+          title: 'Process',
+          type: 'workflowProcess'
+        },
+        {
+          title: 'Condition',
+          type: 'workflowCondition'
+        }
+      ];
+
         // Set up the addable components
         this.addableComponents = [
             {
@@ -437,6 +476,14 @@ export class AddComponent implements OnInit, AfterViewInit {
       this.mouseDownTemplateId = template ? template.id : null;
       this.mouseDownTime = (new Date).getTime();
       this.startDrag(eventData, type, template);
+    }
+
+    wfStartDrag() {
+
+    }
+
+    wfStopDrag() {
+      
     }
 
     // Refactor this code, put switch into separated fn

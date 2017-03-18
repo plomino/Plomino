@@ -88,9 +88,12 @@
                   <span class="tab-trigger" [class.tabunsaved]="tabz.isdirty">
                     <loading *ngIf="tabz.isloading"></loading>
                     <span *ngIf="tabz.isdirty">* </span>
-                    <span class="tab-type-image">
+                    <span *ngIf="tabz.editor !== 'workflow'" class="tab-type-image">
                       <img [src]="getTabTypeImage(tabz.editor)">
                     </span>
+                    <i style="position: relative; top: 4px;" 
+                      *ngIf="tabz.editor === 'workflow'"
+                      class="material-icons">work</i>
                     <span class="tab-name">{{tabz.url | extractName}}</span>
                   </span>
               </template>
@@ -102,6 +105,11 @@
                   (isDirty)="setTabzAsDirty(tabz, $event)"
                   (fieldSelected)="fieldSelected($event)">
               </plomino-tiny-mce>
+
+              <plomino-workflow-editor *ngIf="tabz.editor==='workflow'" 
+                  [id]="tabz.url"
+                  [item]="tabz">
+              </plomino-workflow-editor>
               
               <plomino-ace-editor *ngIf="tabz.editor==='code'" 
                   [url]="tabz.url" 

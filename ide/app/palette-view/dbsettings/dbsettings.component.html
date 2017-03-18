@@ -26,11 +26,19 @@
       </button>
       <button class="mdl-button mdl-js-button
         mdl-button--raised mdl-js-ripple-effect
-        mdl-color--purple-300"
+        mdl-button--accent mdl-color--purple-300"
         style="white-space: normal"
         [disabled]="!hasAuthPermissions()"
         (click)="showACL()">
         ACL
+      </button>
+      <button class="mdl-button mdl-js-button
+        mdl-button--raised mdl-js-ripple-effect
+        mdl-color--green-900"
+        style="white-space: normal"
+        [disabled]="!hasAuthPermissions()"
+        (click)="designWorkflow()">
+        Workflow
       </button>
   </div>
   <div class="scrolling-container scrolling-container--66" #dbform [innerHTML]="dbForm | safePloneHtml"></div>
