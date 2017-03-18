@@ -92,6 +92,26 @@ export class PlominoWorkflowComponent {
     }
     else if (dragData.type === 'workflowCondition') {
       previewItem.condition = 'Empty condition';
+
+      const truePreviewItem: PlominoWorkflowItem = {
+        id: -2,
+        process: 'true process',
+        dropping: true,
+        type: dragData.type,
+        children: []
+      };
+
+      const falsePreviewItem: PlominoWorkflowItem = {
+        id: -3,
+        process: 'false process',
+        dropping: true,
+        type: dragData.type,
+        children: []
+      };
+
+      previewItem.children = [
+        truePreviewItem, falsePreviewItem
+      ];
     }
 
     /* copy original tree to temporary sandbox-tree */
@@ -180,6 +200,20 @@ export class PlominoWorkflowComponent {
     const temporaryItem = this.findWFItemById(-1, sandboxTree);
     temporaryItem.dropping = false;
     temporaryItem.id = this.generateNewId();
+
+    if (temporaryItem.condition) {
+      const temporaryTrueProcessItem = this.findWFItemById(-2, sandboxTree);
+      if (temporaryTrueProcessItem) {
+        /* true process can be just branch continue */
+        temporaryTrueProcessItem.dropping = false;
+        temporaryTrueProcessItem.id = this.generateNewId();
+      }
+
+      const temporaryFalseProcessItem = this.findWFItemById(-3, sandboxTree);
+      temporaryFalseProcessItem.dropping = false;
+      temporaryFalseProcessItem.id = this.generateNewId();
+    }
+
     this.tree = sandboxTree;
     this.buildWFTree();
   }

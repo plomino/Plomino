@@ -31,10 +31,7 @@ export const treeBuilder = {
   parseWFItem(item: PlominoWorkflowItem): JQuery {
     return $(
       `<li class="plomino-workflow-editor__branch">
-          <div
-            dnd-draggable="true"
-            draggable="true"
-            class="workflow-node${
+          <div class="workflow-node${
               item.root ? ' workflow-node--root' : ''
             }${ item.dropping ? ' workflow-node--dropping' : '' }"
             ${ item.id ? ` data-node-id="${ item.id }"` : '' }>
