@@ -59,6 +59,14 @@ div.plominoLabelClass {
     outline-offset: 5px;
 }
 
+.checkbox-selectionfield input[type="checkbox"] {
+  margin-right: 5px;
+}
+
+.checkbox-selectionfield label {
+  margin-right: 10px;
+}
+
 .radio-selectionfield input[type="radio"] {
   margin-right: 5px;
 }
