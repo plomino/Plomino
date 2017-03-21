@@ -8,6 +8,7 @@ interface PlominoWorkflowItem {
   view?: string;
   goto?: string;
   type?: string;
+  selected?: boolean;
 
   /**
    * root means that this item is top element
@@ -20,4 +21,9 @@ interface PlominoWorkflowItem {
   dropping?: boolean;
 
   children: PlominoWorkflowItem[];
+}
+
+interface KVChangeEvent {
+  key: string;
+  value: string;
 }

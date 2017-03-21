@@ -6,6 +6,7 @@ body {
 $border-width: 1px;
 $line-color: #00a2e5;
 $highlight-color: rgb(63,81,181);
+$selected-color: #4a148c;
 $line-height: 4em;
 
 .plomino-workflow-editor {
@@ -15,6 +16,11 @@ $line-height: 4em;
     white-space: nowrap;
     margin: 0 auto;
     text-align: center;
+    
+    &--root {
+      padding-top: 2em;
+    }
+
     &::after {
       content: '';
       display: table;
@@ -86,15 +92,8 @@ $line-height: 4em;
       top: $border-width;
       user-select: none;
 
-      &--selected {
-        outline: solid 2px #4a148c;
-        outline-style: double;
-      }
-
-      &--dropping {
-        border-style: dashed;
-        opacity: 0.7;
-        border-color: lightgray;
+      &__text {
+        position: relative;
       }
 
       &__inner {
@@ -103,6 +102,90 @@ $line-height: 4em;
         min-width: 200px;
         padding: 6px 7px;
         line-height: 1.4;
+      }
+
+      &__shape-outside {
+        display: none;
+        position: absolute;
+        min-height: 100px;
+        top: 0;
+        background: black;
+      }
+
+      &__shape-inside {
+        display: none;
+        position: absolute;
+        top: 1px;
+        left: 1px;
+        right: 1px;
+        bottom: 1px;
+        background: white;
+      }
+
+      &--task {
+        .workflow-node__inner {
+          padding-top: 15px;
+        }
+
+        .workflow-node__shape-outside {
+          display: block;
+          min-width: 260px;
+          left: -30px;
+          clip-path: polygon(0 0, 100% 0, 90% 100%, 10% 100%);
+        }
+
+        .workflow-node__shape-inside {
+          display: block;
+          clip-path: polygon(0 0, 100% 0, 90% 100%, 10% 100%);
+        }
+      }
+
+      &--as-a-shape {
+        border: none;
+
+        &:hover {
+          color: #fff;
+
+          .workflow-node__shape-inside {
+            background: $highlight-color;
+          }
+
+          .workflow-node__shape-outside {
+            background: $highlight-color;
+          }
+        }
+
+        &.workflow-node--selected {
+          .workflow-node__shape-outside {
+            background: $selected-color !important;
+          }
+
+          .workflow-node__shape-inside {
+            top: 2px;
+            left: 2px;
+            right: 2px;
+            bottom: 2px;
+          }
+        }
+      }
+
+      &--root {
+        display: block;
+        width: 150px;
+        margin: 0 auto;
+        height: 50px;
+        border-radius: 100px;
+      }
+
+      &--selected:not(.workflow-node--as-a-shape) {
+        outline: solid 2px $selected-color;
+        outline-style: double;
+      }
+
+      &--dropping {
+        border-style: dashed;
+        opacity: 0.7;
+        border-color: lightgray;
       }
 
       &:not(.workflow-node--root)::before {
@@ -120,7 +203,7 @@ $line-height: 4em;
         width: 100%;
       }
 
-      &:hover {
+      &:not(.workflow-node--as-a-shape):hover {
         background: $highlight-color;
         color: #fff;
         border: $border-width solid $highlight-color;

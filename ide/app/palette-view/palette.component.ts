@@ -1,3 +1,4 @@
+import { PlominoWorkflowNodeSettingsComponent } from './workflow-node-settings/index';
 import { LogService } from './../services/log.service';
 import { 
     Component, 
@@ -44,7 +45,8 @@ import {FormsService} from "../services/forms.service";
         AddComponent,
         FieldSettingsComponent,
         FormSettingsComponent,
-        DBSettingsComponent
+        DBSettingsComponent,
+        PlominoWorkflowNodeSettingsComponent,
     ],
     changeDetection: ChangeDetectionStrategy.OnPush,
     providers: [ElementService]
@@ -92,11 +94,6 @@ export class PaletteComponent implements OnInit {
             
             this.formsService.changePaletteTab(0);
             $('.drop-zone').remove();
-            // don't track tiny-mce tab change event
-            // remove when be sure
-            // if (activeTab) {
-            //     this.tabs = this.updateTabs(activeTab.showAdd, this.tabs, activeTab.type);
-            // }
             this.changeDetector.markForCheck();
           }
         });

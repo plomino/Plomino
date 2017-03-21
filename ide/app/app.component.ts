@@ -1,3 +1,4 @@
+import { PlominoWorkflowChangesNotifyService } from './editors/workflow/workflow.changes.notify.service';
 import { LabelsRegistryService } from './editors/tiny-mce/services/labels-registry.service';
 import { 
   TinyMCEFormContentManagerService
@@ -25,7 +26,7 @@ import { DND_DIRECTIVES } from 'ng2-dnd';
 
 // Components
 import { TreeComponent } from './tree-view';
-import { PaletteComponent } from './palette-view';
+import { PaletteComponent, PlominoWorkflowNodeSettingsComponent } from './palette-view';
 
 import {
   TinyMCEComponent,
@@ -93,6 +94,7 @@ import { LoadingComponent } from "./editors/loading/loading.component";
     ResizeDividerComponent,
     PlominoBlockPreloaderComponent,
     PlominoWorkflowComponent,
+    PlominoWorkflowNodeSettingsComponent,
   ],
   providers: [
     LogService,
@@ -111,6 +113,7 @@ import { LoadingComponent } from "./editors/loading/loading.component";
     PlominoElementAdapterService,
     LabelsRegistryService,
     PlominoApplicationLoaderService,
+    PlominoWorkflowChangesNotifyService,
   ],
   pipes: [ExtractNamePipe],
   animations: [

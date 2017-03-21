@@ -1,0 +1,20 @@
+<div class="wfnode-settings">
+    <div class="wfnode-settings__field field">
+        <label for="wfnode-settings-description" class="horizontal">
+            Description
+        </label>
+        <textarea id="wfnode-settings-description"
+            [(ngModel)]="element.description"
+            (input)="propertyChanged('description', $event)"
+            class="text-widget asciiline-field"></textarea>
+    </div>
+    <div class="wfnode-settings__field field">
+        <label for="wfnode-settings-associated-form" class="horizontal">
+            Associated form
+        </label>
+        <select id="wfnode-settings-associated-form">
+            <option></option>
+            <option>New Form</option>
+        </select>
+    </div>
+</div>

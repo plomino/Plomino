@@ -4,6 +4,8 @@ import { Component, ElementRef, ViewChild, ViewEncapsulation } from '@angular/co
 import { PlominoBlockPreloaderComponent } from '../../utility';
 import { DND_DIRECTIVES } from 'ng2-dnd';
 import { treeBuilder } from './tree-builder';
+import { PlominoWorkflowNodeSettingsComponent } from "../../palette-view";
+import { PlominoWorkflowChangesNotifyService } from './workflow.changes.notify.service';
 
 @Component({
   selector: 'plomino-workflow-editor',
@@ -16,43 +18,61 @@ export class PlominoWorkflowComponent {
   @ViewChild('workflowEditorNode') workflowEditorNode: ElementRef;
   tree: PlominoWorkflowItem = { children: [] };
   latestTree: PlominoWorkflowItem = null;
+  selectedItemRef: any;
   lastId: number = 4;
 
   constructor(
     private log: LogService,
     private formsService: FormsService,
+    private workflowChanges: PlominoWorkflowChangesNotifyService,
   ) {
     this.tree = {
       id: 1,
-      task: 'Fill in reason to contact',
-      form: 'Contact Us',
-      user: 'Anon',
       root: true,
-      children: [
-        {
-          id: 2,
-          condition: 'View Complaints',
-          children: [
-            {
-              id: 3,
-              process: 'Delete',
-              user: 'Admin',
-              children: []
-            },
-            {
-              id: 4,
-              process: 'Reply to user',
-              user: 'Admin',
-              children: []
-            }
-          ]
-        }
-      ]
+      children: [{
+        id: 2,
+        task: 'Fill in reason to contact',
+        form: 'Contact Us',
+        user: 'Anon',
+        children: [
+          {
+            id: 3,
+            condition: 'View Complaints',
+            children: [
+              {
+                id: 4,
+                process: 'Delete',
+                user: 'Admin',
+                children: []
+              },
+              {
+                id: 5,
+                process: 'Reply to user',
+                user: 'Admin',
+                children: []
+              }
+            ]
+          }
+        ]
+      }],
     };
   }
 
   ngOnInit() {
     this.buildWFTree();
+
+    this.workflowChanges.onChangesDetect$
+    .subscribe((kvData) => {
+      /* update current task description */
+      const item = this.selectedItemRef;
+      if (item) {
+        if (kvData.key === 'description') {
+          item.task = kvData.value;
+          $('.workflow-node--selected .workflow-node__task')
+            .html(`Task: ${ item.task }`);
+        }
+      }
+    });
   }
 
   findWFItemById(itemId: number, tree = this.tree): PlominoWorkflowItem {
@@ -219,6 +239,17 @@ export class PlominoWorkflowComponent {
   }
 
   unselectAllWFItems() {
+    const _unselectAllWFItems = (wfItem: PlominoWorkflowItem): void => {
+      wfItem.selected = false;
+
+      if (wfItem.children) {
+        for (let subTree of wfItem.children) {
+          _unselectAllWFItems(subTree);
+        }
+      }
+    };
+
+    _unselectAllWFItems(this.tree);
     this.workflowEditorNode.nativeElement
       .querySelectorAll('.workflow-node--selected')
       .forEach((selectedNode: HTMLElement) => {
@@ -229,6 +260,8 @@ export class PlominoWorkflowComponent {
   onWFItemClicked($event: JQueryEventObject, $item: JQuery, item: PlominoWorkflowItem) {
     this.log.info($event, $item, item);
     this.unselectAllWFItems();
+    item.selected = true;
+    this.selectedItemRef = item;
     $item.find('.workflow-node:first').addClass('workflow-node--selected');
     $event.stopPropagation();
 
