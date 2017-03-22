@@ -21,8 +21,7 @@ export class PlominoElementAdapterService {
       /**
        * make labels editable
        */
-      // source = $source.removeClass('mceNonEditable')
-      //   .addClass('mceEditable').get(0).outerHTML;
+      source = $source.removeClass('mceNonEditable').get(0).outerHTML;
 
       /**
        * <span class="plominoLabelClass mceNonEditable" 
@@ -59,8 +58,9 @@ export class PlominoElementAdapterService {
       .find('.plominoLabelClass')
       .filter((i, element) => element !== $element.get(0))
       .removeClass('mceEditable')
-      .attr('contenteditable', 'false')
-      .addClass('mceNonEditable');
+      .removeAttr('contenteditable')
+      // .attr('contenteditable', 'false')
+      // .addClass('mceNonEditable');
   
     /**
      * if $element is label - make it listen to input event

@@ -62,7 +62,8 @@ export class TemplatesService {
       const $pLabel = $(pLabel);
       const $pLabelParent = $pLabel.parent();
 
-      $pLabelParent.attr('contenteditable', 'false');
+      // $pLabelParent.attr('contenteditable', 'false');
+      $pLabelParent.removeAttr('contenteditable');
 
       if ($pLabelParent.hasClass('mceEditable') && $pLabel.next().length
       && $pLabel.next().prop('tagName') === 'BR'
