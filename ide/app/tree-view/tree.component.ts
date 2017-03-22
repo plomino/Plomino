@@ -21,6 +21,7 @@ import {
 } from '../services';
 
 import { ExtractNamePipe } from '../pipes';
+import { Observable, Subscription } from "rxjs/Rx";
 
 @Component({
     selector: 'plomino-tree',
@@ -40,6 +41,8 @@ export class TreeComponent implements OnInit {
     searchResults: any;
     filtered: boolean = false;
     previousSelected: any;
+
+    private click2DragDelay: Subscription;
 
     constructor(private _elementService: ElementService,
                 private tabsService: TabsService,
@@ -76,9 +79,20 @@ export class TreeComponent implements OnInit {
       this.formsService.changePaletteTab(3);
     }
 
+    treeFormItemClick(
+      selected: boolean, mouseEvent: MouseEvent, 
+      typeLabel: string, typeNameUrl: string
+    ) {
+      this.click2DragDelay = Observable.timer(500, 1000).subscribe((t: number) => {
+        this.dragSubform(selected, mouseEvent, typeLabel, typeNameUrl);
+        this.click2DragDelay.unsubscribe();
+      });
+      return true;
+    }
+
     dragSubform(selected: boolean, mouseEvent: MouseEvent, 
     typeLabel: string, typeNameUrl: string) {
-      this.log.info(selected, mouseEvent, typeLabel, typeNameUrl);
+      this.log.info('drag subform', selected, mouseEvent, typeLabel, typeNameUrl);
       this.log.extra('tree.component.ts dragSubform');
       if (tinymce.activeEditor && selected && typeLabel === 'Forms' 
         && typeNameUrl !== tinymce.activeEditor.id) {
