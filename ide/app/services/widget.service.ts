@@ -507,7 +507,7 @@ export class WidgetService {
       
       if (response !== undefined) {
         content = `<${container} data-present-method="convertGroupFields_1"
-                  class="${$class} mceNonEditable" data-mce-resize="false"
+                  class="${$class}" data-mce-resize="false"
                   data-plominoid="${$id}">
                       ${response}
                    </${container}>`;
@@ -539,38 +539,43 @@ export class WidgetService {
     return Observable.of(this.wrapIntoEditable(content));
   }
 
-  private convertFormFields(base: string, element: any): Observable<string> {
-    let $class = element.attr('class');
-    let $type = $class.slice(7, -5).toLowerCase();
-    let $id = element.text();
-    let template: PlominoFormGroupContent = null;
+  private convertFormFields(base: string, $element: JQuery): Observable<string> {
+    let fieldClass = $element.attr('class');
+    const fieldType = fieldClass.slice(7, -5).toLowerCase();
+    const fieldId = $element.text();
+    const template: PlominoFormGroupContent = null;
 
     return (template 
-      ? this.getWidget(base, $type, $id, template) 
-      : this.getWidget(base, $type, $id)
+      ? this.getWidget(base, fieldType, fieldId, template) 
+      : this.getWidget(base, fieldType, fieldId)
       ).map((response) => {
-      let $response = $(response);
-      let container = 'span';
-      let content = '';
-      let $newId: any;
-
-      if ($response.find("div,table,p").length) {
-        container = "div";
-      }
-      
-      if (response != undefined) {
-        content = `<${container} data-present-method="convertFormFields_1" 
-                    class="${$class} mceNonEditable" data-mce-resize="false"
-                    contenteditable="false"
-                    data-plominoid="${$id}">
-                      ${response}
-                   </${container}>`;
-      } else {
-        content = `<span data-present-method="convertFormFields_2" class="${$class}">${$id}</span>`;
-      }
-
-      return content;
-    });
+        const $response = $(response);
+        let container = 'span';
+        let content = '';
+  
+        if ($response.find('div,table,p').length) {
+          container = 'div';
+        }
+        
+        if (response != undefined) {
+          const isInnerGroup = 
+            Boolean($element.closest('.plominoGroupClass').length)
+            || Boolean($element.closest('div[role="group"]').length);
+          if (!isInnerGroup) {
+            fieldClass += ' mceNonEditable';
+          }
+          content = `<${ container } data-present-method="convertFormFields_1" 
+                      class="${ fieldClass }" data-mce-resize="false"
+                      data-plominoid="${ fieldId }">
+                        ${response}
+                     </${ container }>`;
+        } else {
+          content = `<span data-present-method="convertFormFields_2"
+            class="${ fieldClass }">${ fieldId }</span>`;
+        }
+  
+        return content;
+      });
   }
 
   private convertFormHidewhens(base: string, element: any,
@@ -617,8 +622,12 @@ export class WidgetService {
     let $class = element.attr('class').split(' ')[0];
     let $type = $class.slice(7, -5).toLowerCase();
 
-    if (element.parent().attr('contenteditable') !== 'false') {
-      element.parent().attr('contenteditable', 'false');
+    // if (element.parent().attr('contenteditable') !== 'false') {
+    //   element.parent().attr('contenteditable', 'false');
+    // }
+
+    if (element.parent().attr('contenteditable') === 'false') {
+      element.parent().removeAttr('contenteditable');
     }
 
     let $id: string = null;
