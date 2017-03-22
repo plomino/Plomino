@@ -494,6 +494,13 @@ export class FieldSettingsComponent implements OnInit {
        */
       const $group = $(tinymce.activeEditor.getBody())
         .find(`.plominoGroupClass[data-groupid="${ this.field.id }"]`);
+
+      /* here I should update the ungrouped labels and fields to be mceNonEditable */
+      $group.find('.plominoLabelClass, span.plominoFieldClass')
+        .removeClass('mceEditable')
+        .addClass('mceNonEditable')
+        .attr('contenteditable', 'false');
+
       $group.replaceWith($group.html());
       this.field = null;
       this.formTemplate = null;

@@ -23,7 +23,7 @@ indent_style = space
 indent_size = 2
 
 # stylesheets 2 space indentation
-[*.{css,styl}]
+[*.{css,styl,scss,sass,less}]
 indent_style = space
 indent_size = 2
 
