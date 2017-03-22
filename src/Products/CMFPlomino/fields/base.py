@@ -93,11 +93,11 @@ class BaseField(object):
             if doc:
                 fieldValue = doc.getItem(fieldName)
 
-            if (not fieldValue) and self.context.formula:
+            if fieldValue is None and self.context.formula:
                 # This implies that if a falsy fieldValue is possible,
                 # Formula needs to take it into account, e.g. using hasItem
                 fieldValue = form.computeFieldValue(fieldName, target)
-            elif (not fieldValue) and request:
+            elif fieldValue is None and request:
                 # if no doc context and no default formula, we accept
                 # value passed in the REQUEST so we look for 'fieldName'
                 # but also for 'fieldName_querystring' which allows to

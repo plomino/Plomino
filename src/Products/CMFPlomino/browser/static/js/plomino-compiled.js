@@ -255,7 +255,10 @@ require([
             for(var j=0;j<self.rows.length;j++) {
                 var edit_url = self.form_url;
                 for(var k=0;k<self.col_number;k++) {
-                    var value = self.values[j][k] || '';
+                    var value = self.values[j][k];
+                    if(value === undefined || value == null) {
+                        value = '';
+                    }
                     value = value.datetime ? value.datetime : value;
                     edit_url += '&' + self.fields[k] + '=' + value;
                 }
