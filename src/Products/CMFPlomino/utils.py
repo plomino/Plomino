@@ -96,6 +96,7 @@ def StringToDate(str_d, format='%Y-%m-%d', db=None, guess=True, tozone=True):
             dt = parse(str_d)
     except ValueError as e:
         if guess:
+            #TODO: doesn't handle %z. parse does however.
             # XXX: Just let DateTime guess.
             dt = parse(DateTime(str_d).ISO())
             logger.info('StringToDate> %s, %s, %s, guessed: %s' % (
