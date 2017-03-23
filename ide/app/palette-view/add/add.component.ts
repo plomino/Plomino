@@ -155,6 +155,7 @@ export class AddComponent implements OnInit, AfterViewInit {
 
               this.draggingService.subformDragEvent$
               .subscribe((mouseEvent) => {
+                $('#drag-data-cursor').remove();
                 this.simulateDrag(mouseEvent, 'PlominoSubform');
               });
 

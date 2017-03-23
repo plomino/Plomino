@@ -156,7 +156,7 @@ export class FieldSettingsComponent implements OnInit {
          */
         setTimeout(() => {
           const pfc = '.plominoFieldClass';
-          const $frame = $('iframe:visible').contents();
+          const $frame = $(tinymce.activeEditor.getBody());
           this.log.info('id/title was changed',
             'newTitle', newTitle,
             'newId', newId,
@@ -295,11 +295,11 @@ export class FieldSettingsComponent implements OnInit {
       this.log.info('updateTemporaryTitle...', selectedId, temporaryTitle);
       this.labelsRegistry.update(
         `${tinymce.activeEditor.id}/${selectedId}`, 
-        temporaryTitle, 'temporary_title'
+        temporaryTitle, 'temporary_title', true
       );
       if (!this.labelAdvanced) {
         this.$selectedElement.html(temporaryTitle);
-        const $allTheSame = $('iframe:visible').contents()
+        const $allTheSame = $(tinymce.activeEditor.getBody())
           .find(`.plominoLabelClass[data-plominoid="${ selectedId }"]`)
           .filter((i, element) => element !== this.$selectedElement.get(0) 
             && !Boolean($(element).attr('data-advanced')));
@@ -513,7 +513,7 @@ export class FieldSettingsComponent implements OnInit {
         this.elementService.deleteElement(this.field.url)
         .subscribe(() => {
           this.labelsRegistry.remove(this.field.url);
-          $('iframe:visible').contents()
+          $(tinymce.activeEditor.getBody())
             .find(`[data-plominoid="${ this.field.id }"],[data-groupid="${ this.field.id }"]`)
             .remove();
           this.field = null;
@@ -574,7 +574,7 @@ export class FieldSettingsComponent implements OnInit {
                    * 2. reference to subform element - [ok]
                    * 3. current form url - [tinymce.activeEditor.id]
                    */
-                  let $founded = $('iframe:visible').contents()
+                  let $founded = $(tinymce.activeEditor.getBody())
                     .find('[data-mce-selected="1"]');
                   if (!$founded.hasClass('plominoSubformClass')) {
                     $founded = $founded.closest('.plominoSubformClass');

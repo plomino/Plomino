@@ -54,7 +54,7 @@ export class PlominoElementAdapterService {
     this.log.extra('element-adapter.service.ts select');
 
     /** blur */
-    $('iframe:visible').contents()
+    $(tinymce.activeEditor.getBody())
       .find('.plominoLabelClass')
       .filter((i, element) => element !== $element.get(0))
       .removeClass('mceEditable')
@@ -66,7 +66,7 @@ export class PlominoElementAdapterService {
      * if $element is label - make it listen to input event
      */
     if ($element.hasClass('plominoLabelClass')) {
-      $('iframe:visible').contents()
+      $(tinymce.activeEditor.getBody())
         .find('.plominoLabelClass').off('.adapter');
 
       $element
@@ -93,7 +93,7 @@ export class PlominoElementAdapterService {
             temporaryTitle, 'temporary_title'
           );
 
-          const $allTheSame = $('iframe:visible').contents()
+          const $allTheSame = $(tinymce.activeEditor.getBody())
             .find(`.plominoLabelClass[data-plominoid="${ selectedId }"]`)
             .filter((i, element) => element !== $element.get(0) 
               && !Boolean($(element).attr('data-advanced')));
