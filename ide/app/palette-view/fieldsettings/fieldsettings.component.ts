@@ -295,7 +295,7 @@ export class FieldSettingsComponent implements OnInit {
       this.log.info('updateTemporaryTitle...', selectedId, temporaryTitle);
       this.labelsRegistry.update(
         `${tinymce.activeEditor.id}/${selectedId}`, 
-        temporaryTitle, 'temporary_title'
+        temporaryTitle, 'temporary_title', true
       );
       if (!this.labelAdvanced) {
         this.$selectedElement.html(temporaryTitle);
