@@ -39,7 +39,7 @@ export class TabsService {
 
     if (fieldData && !fieldData.id && fieldData.type === 'subform') {
       setTimeout(() => {
-        const $selected = $('iframe:visible').contents()
+        const $selected = $(tinymce.activeEditor.getBody())
           .find('[data-mce-selected="1"]');
         this.log.info('hacked id', $selected.data('plominoid'));
         fieldData.id = $selected.data('plominoid');

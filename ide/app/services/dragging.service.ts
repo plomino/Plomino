@@ -245,7 +245,7 @@ export class DraggingService {
     .on('mousemove.drgs', this.drag.bind(this))
     .on('mouseup.drgs', this.stopDragging.bind(this));
 
-    $('iframe:visible').contents()
+    $(tinymce.activeEditor.getBody())
     .on('mousemove.drgs', ((e: any) => this.drag(e, true)).bind(this))
     .on('mouseup.drgs', ((e: any) => this.stopDragging(e, true)).bind(this));
 
@@ -253,8 +253,9 @@ export class DraggingService {
   }
 
   private drag(e: MouseEvent, iframe?: boolean) {
+    const $iframe = $(tinymce.activeEditor.getContainer().querySelector('iframe'));
     const pos = this.getMousePos(e);
-    const offset = $('iframe:visible').offset();
+    const offset = $iframe.offset();
   
     if (pos === null) {
         this.stopDragging(e);
@@ -262,7 +263,7 @@ export class DraggingService {
     }
 
     $('.drop-zone').remove();
-    $('iframe:visible').contents()
+    $iframe
       .find('body,html')
       .css('pointer-events', 'none !important');
 
@@ -286,7 +287,7 @@ export class DraggingService {
         this.moveMouseEventInIFrameCallback(e);
       }
       else {
-        $('iframe:visible').contents().find('.drag-autopreview').remove();
+        $iframe.find('.drag-autopreview').remove();
         this.moveMouseEventOutIFrameCallback(e);
       }
     }
@@ -301,17 +302,15 @@ export class DraggingService {
   }
 
   private stopDragging(eventData: MouseEvent, iframe?: boolean) {
+    const $iframe = $('iframe:visible');
     $(document).off('.drgs');
-    // $(document).off('.drgs').off('.cme');
-    // $('iframe:visible').contents().off('.drgs').off('.cme').off('.cmb');
-    $('iframe:visible').contents().off('.drgs');
-    // $('iframe:visible').contents().find('.plominoGroupClass').off('.cme');
+    $iframe.contents().off('.drgs');
     $('#drag-data-cursor').remove();
 
     this.log.info('stopDragging');
 
     const pos = this.getMousePos(eventData);
-    const offset = $('iframe:visible').offset();
+    const offset = $iframe.offset();
     const inIFrame = pos.x >= offset.left && pos.y >= offset.top;
 
     if (iframe || inIFrame) {
