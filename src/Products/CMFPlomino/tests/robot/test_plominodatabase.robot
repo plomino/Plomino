@@ -67,13 +67,6 @@ Scenario: As a site administrator I can open a form
    When I open a form "frm_test"
    Then I can see field "field_1" in the editor
 
-Scenario: I can add a field to a form
-  Given a logged-in test user
-    and I open the ide for "mydb"
-    and I open a form "frm_test"
-   When I add a "Text" field
-   Then I can see field "text" in the editor
-
 Scenario: As a site administrator I can add a form by click
   Given a logged-in test user
     and I open the ide for "mydb"
@@ -96,7 +89,7 @@ Scenario: I can rename a form
 Scenario: I can add a field to a form
   Given a logged-in test user
     and I open the ide for "mydb"
-    and I open the first form   #TODO   When I open a form "frm_test"
+    and I open a form "frm_test"
    When I add a "Text" field
    Then I can see field "text" in the editor
     and I select the field "text"  # probably should be selected automatically? or group should?
@@ -187,7 +180,7 @@ I submit the form
 
 I save the macro
   Click Button  css=.plominoSave
-  wait until page does not contain element  css=.plominoSave
+  wait until element is not visible  css=.plominoClose
 
 I save the settings
   Click link  link=SAVE
