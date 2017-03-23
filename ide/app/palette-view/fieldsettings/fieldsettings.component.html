@@ -154,10 +154,10 @@
             <span class="label" style="color: black">Advanced label</span>
           </label>
         </span>
-        <div class="formHelp">Use seperate title in errors and datagrids</div>
+        <div class="formHelp">Use separate title in errors and datagrids</div>
       </div>
       <div class="field" style="padding: 0 10px; margin: 15px 0;"
-        *ngIf="getSelectedRelatedField()">
+        *ngIf="getSelectedRelatedField() && !labelAdvanced">
         <label for="form-widgets-label-fieldtitle"
           class="horizontal" style="display: block">Field title</label>
 
