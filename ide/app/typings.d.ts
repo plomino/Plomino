@@ -194,6 +194,7 @@ interface TinyMceEditor extends TinyMceObservable {
   isDirty: () => boolean
   show: () => void
   getContent: (args?: Object) => string
+  getContainer: (args?: Object) => HTMLElement
   getBody: () => string
   getDoc: () => any
   setContent: (content: string, args?: Object) => string

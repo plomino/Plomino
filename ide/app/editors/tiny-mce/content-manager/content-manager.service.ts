@@ -71,7 +71,7 @@ export class TinyMCEFormContentManagerService {
         }
 
         if (this.rangeAccepted(range)) {
-          $('iframe:visible').contents().find('.drag-autopreview').remove();
+          $(tinymce.activeEditor.getBody()).find('.drag-autopreview').remove();
           range.insertNode($currentDragNode.get(0));
           dragging.targetRange = range;
           return;
@@ -102,7 +102,7 @@ export class TinyMCEFormContentManagerService {
       const dragging = event.draggingService;
 
       if (dragging.currentDraggingData) {
-        $('iframe:visible').contents().find('.drag-autopreview').remove();
+        $(tinymce.activeEditor.getBody()).find('.drag-autopreview').remove();
       }
     });
 
@@ -132,7 +132,7 @@ export class TinyMCEFormContentManagerService {
       dragging.targetSideBottom = true;
       
       dragging.target = $group;
-      $('iframe:visible').contents().find('.drag-autopreview').remove();
+      $(tinymce.activeEditor.getBody()).find('.drag-autopreview').remove();
 
       let $preview = $(dragging.currentDraggingTemplateCode);
       if (!hoverAtBottom) {
@@ -177,7 +177,7 @@ export class TinyMCEFormContentManagerService {
     .subscribe((event) => {
       const dragging = event.draggingService;
       if (dragging.currentDraggingData) {
-        $('iframe:visible').contents().find('.drag-autopreview').remove();
+        $(tinymce.activeEditor.getBody()).find('.drag-autopreview').remove();
       }
       
       dragging.target = null;
@@ -211,7 +211,7 @@ export class TinyMCEFormContentManagerService {
 
     const that = this;
 
-    $('iframe:visible').contents()
+    $(tinymce.activeEditor.getBody())
     .find('.plominoGroupClass').off('.cme')
     .on('mousemove.cme', function (evt) {
       if (dragging.currentDraggingData) {
@@ -229,7 +229,7 @@ export class TinyMCEFormContentManagerService {
       );
     });
 
-    $('iframe:visible').contents().off('.cmb')
+    $(tinymce.activeEditor.getBody()).off('.cmb')
     .on('mousemove.cmb', function (evt) {
       that.iframeMouseMoveEvents.next({
         originalEvent: <MouseEvent>evt.originalEvent,
@@ -279,7 +279,7 @@ export class TinyMCEFormContentManagerService {
   }
 
   insertContent(editorId: any, dragging: DraggingService, contentHTML: string, options?: any): void {
-    $('iframe:visible').contents().find('.drag-autopreview').remove(); // just in case
+    $(tinymce.activeEditor.getBody()).find('.drag-autopreview').remove(); // just in case
     let editor = tinymce.get(editorId);
 
     const INSERT_EVENT_UNIQUE = Math.random().toString();
@@ -318,7 +318,7 @@ export class TinyMCEFormContentManagerService {
         }
 
         /* just in case */
-        $('iframe:visible').contents()
+        $(tinymce.activeEditor.getBody())
           .find('.drag-autopreview').remove();
 
         $(spans[0]).insertBefore($target);
@@ -414,7 +414,7 @@ export class TinyMCEFormContentManagerService {
 
     if ($(contentHTML).html().indexOf('data-plominoid="defaultLabel"') !== -1) {
       /** if content is a label then click on it to show settings */
-      const $label = $('iframe:visible').contents()
+      const $label = $(tinymce.activeEditor.getBody())
         .find('.plominoLabelClass').filter(function () {
           return INSERT_EVENT_UNIQUE === $(this).parent().attr('data-event-unique');
         });

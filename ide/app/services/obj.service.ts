@@ -176,7 +176,7 @@ export class ObjService {
         this.labelsRegistry.update(`${ formUrl }/${ workingId }`, newTitle, 'title', true);
         this.labelsRegistry.update(`${ formUrl }/${ workingId }`, newTitle, 'temporary_title');
 
-        const $allTheSame = $('iframe:visible').contents()
+        const $allTheSame = $(tinymce.activeEditor.getBody())
           .find(`.plominoLabelClass[data-plominoid="${ workingId }"]`)
           .filter((i, element) => !Boolean($(element).attr('data-advanced')));
 

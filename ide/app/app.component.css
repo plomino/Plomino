@@ -80,6 +80,7 @@
 }
 /deep/#drag-data-cursor {
   z-index: 10000;
+  transform: translate3d(0, 0, 0);
 }
 /deep/#drag-data-cursor input[type="text"],
 /deep/#drag-data-cursor input[type="email"],
