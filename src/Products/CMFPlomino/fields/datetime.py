@@ -122,6 +122,8 @@ def _datetime_record(submitted_value, value_format):
     return result
 
 
+
+
 @implementer(IDatetimeField)
 class DatetimeField(BaseField):
     """Date time field"""
@@ -129,67 +131,64 @@ class DatetimeField(BaseField):
     read_template = PageTemplateFile('datetime_read.pt')
     edit_template = PageTemplateFile('datetime_edit.pt')
 
+    def _parseDatetime(self, submittedValue, format):
+        # Check for a record
+        # Only widget == 'COMBO', submittedValue is record
+        if isinstance(submittedValue, record):
+            return _datetime_record(submittedValue, format),[]
+
+
+        # submittedValue could be dict from tojson
+        # {u'<datetime>': True, u'datetime': u'2016-12-12T00:00:00'}
+        elif isinstance(
+                submittedValue, dict) and '<datetime>' in submittedValue:
+            return StringToDate(submittedValue['datetime'], format=None),[]
+        # on 'SERVER' widget, the datetime format must match
+        # the field or db format
+        elif self.context.field_mode == 'EDITABLE' and \
+                        self.context.widget == 'SERVER':
+            logger.debug('Method: datetime validate id {} value {}'.format(
+                self.context.id, submittedValue))
+            if not format:
+                return None,[
+                    "{} does not have date/time format".format(
+                        self.context.id)]
+            # it will raise ValueError, when guess is False
+            # it won't guess the format
+            # TODO if there is %z this won't work. Need to be more clever to parse tz
+            return StringToDate(submittedValue, format, guess=False),[]
+        # check if date only:
+        elif len(submittedValue) == 10:
+            return StringToDate(submittedValue, '%Y-%m-%d'),[]
+        else:
+            # calendar widget default format is '%Y-%m-%d %H:%M' and
+            # might use the AM/PM format
+            if submittedValue[-2:] in ['AM', 'PM']:
+                return StringToDate(submittedValue, '%Y-%m-%d %I:%M %p'),[]
+            else:
+                return StringToDate(submittedValue, '%Y-%m-%d %H:%M'), []
+
+
     def validate(self, submittedValue):
         """Validate date time value"""
         if type(submittedValue) is DateTime:
             return []
         errors = []
         field_title = self.context.title
+        format = self.context.format
+        if not format:
+            format = self.context.getParentDatabase().datetime_format
 
         # instead of checking not record, should check string type
         if isinstance(submittedValue, basestring):
             submittedValue = submittedValue.strip()
         try:
-            # Check for a record
-            # Only widget == 'COMBO', submittedValue is record
-            if isinstance(submittedValue, record):
-                input_format = self.context.format
-                if not input_format:
-                    input_format = self.context.getParentDatabase().datetime_format
-                _datetime_record(submittedValue, input_format)
-
-            # submittedValue could be dict from tojson
-            # {u'<datetime>': True, u'datetime': u'2016-12-12T00:00:00'}
-            elif isinstance(
-                    submittedValue, dict) and '<datetime>' in submittedValue:
-                StringToDate(submittedValue['datetime'], format=None)
-            # on 'SERVER' widget, the datetime format must match
-            # the field or db format
-            elif self.context.field_mode == 'EDITABLE' and \
-                            self.context.widget == 'SERVER':
-                logger.debug('Method: datetime validate id {} value {}'.format(
-                    self.context.id, submittedValue))
-                field_format = self.context.format
-                if not field_format:
-                    db = self.context.getParentDatabase()
-                    field_format = db.datetime_format
-                if not field_format:
-                    errors.append(
-                        "{} does not have date/time format".format(
-                            self.context.id))
-                    return errors
-                # it will raise ValueError, when guess is False
-                # it won't guess the format
-                StringToDate(submittedValue, field_format, guess=False)
-            # check if date only:
-            elif len(submittedValue) == 10:
-                StringToDate(submittedValue, '%Y-%m-%d')
-            else:
-                # calendar widget default format is '%Y-%m-%d %H:%M' and
-                # might use the AM/PM format
-                if submittedValue[-2:] in ['AM', 'PM']:
-                    StringToDate(submittedValue, '%Y-%m-%d %I:%M %p')
-                else:
-                    StringToDate(submittedValue, '%Y-%m-%d %H:%M')
+            _,errors = self._parseDatetime(submittedValue, format)
         except ValueError:
-            field_format = self.context.format
-            if not field_format:
-                db = self.context.getParentDatabase()
-                field_format = db.datetime_format
             errors.append(
                 "Field '{}': '{}' does not match the format '{}'".format(
-                field_title, submittedValue, DatetimeToJS(field_format)))
-        except (RecordException, Exception):
+                field_title, submittedValue, DatetimeToJS(format)))
+        except (RecordException):
             errors.append(
                 "Field '%s' must be a valid date/time (submitted value was: "
                 "%s)" % (
@@ -205,29 +204,7 @@ class DatetimeField(BaseField):
         if isinstance(submittedValue, basestring):
             submittedValue = submittedValue.strip()
         try:
-            # Check for a record
-            # Only widget == 'COMBO', submittedValue is record
-            if isinstance(submittedValue, record):
-                input_format = self.context.format
-                if not input_format:
-                    input_format = self.context.getParentDatabase().datetime_format
-                input_value = _datetime_record(submittedValue, input_format)
-
-            # submittedValue could be dict from tojson
-            # {u'<datetime>': True, u'datetime': u'2016-12-12T00:00:00'}
-            elif isinstance(
-                    submittedValue, dict) and '<datetime>' in submittedValue:
-                input_value = StringToDate(submittedValue['datetime'], format=None)
-            # check if date only:
-            elif len(submittedValue) == 10:
-                input_value = StringToDate(submittedValue, '%Y-%m-%d')
-            else:
-                # calendar widget default format is '%Y-%m-%d %H:%M' and
-                # might use the AM/PM format
-                if submittedValue[-2:] in ['AM', 'PM']:
-                    input_value = StringToDate(submittedValue, '%Y-%m-%d %I:%M %p')
-                else:
-                    input_value = StringToDate(submittedValue, '%Y-%m-%d %H:%M')
+            input_value, errors = self._parseDatetime(submittedValue, format)
             return input_value
         except RecordException:
             # We don't have a valid record, so we can't process anything

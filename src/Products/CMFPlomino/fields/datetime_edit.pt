@@ -19,7 +19,8 @@
                 ymd_fmt python:show_ymd and '%Y-%m-%d' or '';
                 hm_fmt python:show_hm and 'T%H:%M' or '';
                 sec_fmt python:show_sec and ':%S' or '';
-                inputvalue python:isinstance(v, basestring) and v or v.strftime(format.strip() if format else ''.join([ymd_fmt, hm_fmt, sec_fmt]).strip());">
+                format python:format.strip() if format else ''.join([ymd_fmt, hm_fmt, sec_fmt]).strip();
+                inputvalue python:isinstance(v, basestring) and v or v.asdatetime().strftime(format);">
                 <input class="datetime-single field-datetime" tal:attributes="
                     name field/id;
                     id field/id;
