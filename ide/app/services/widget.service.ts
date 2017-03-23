@@ -54,7 +54,7 @@ export class WidgetService {
   getGroupLayout(
     baseUrl: string, input: PlominoFormGroupTemplate, templateMode?: boolean
   ): Observable<string> {
-    // this.log.info('input', JSON.stringify(input));
+    this.log.info('getGroupLayout');
     // this.log.extra('widget.service.ts getGroupLayout');
     /**
      * decided to use the DOM
@@ -196,7 +196,7 @@ export class WidgetService {
   }
 
   getFormLayout(baseUrl: string) {
-    // this.log.info('getFormLayout called', baseUrl);
+    this.log.info('getFormLayout called', baseUrl);
     const $edIFrame = $(`iframe[id="${ baseUrl }_ifr"]`).contents();
     $edIFrame.css('opacity', 0);
     let $elements = $edIFrame.find('.plominoGroupClass, .plominoSubformClass, ' +
@@ -326,6 +326,7 @@ export class WidgetService {
   private convertFormGroups(
     base: string, element: any, groupId: any, labelsRegistry?: Map<string, Object>
   ): Observable<any> {
+    this.log.info('convertFormGroups');
     let $groupId = element.attr('data-groupid');
     let fields$: any[] = [];
 
@@ -482,6 +483,7 @@ export class WidgetService {
   private convertGroupFields(
     ids: PlominoFormGroupContent[], base: string, element: JQuery
   ): Observable<string> {
+    this.log.info('convertGroupFields', ids);
     let $class = element.attr('class');
     let $type = $class.slice(7, -5).toLowerCase();
 
@@ -501,9 +503,9 @@ export class WidgetService {
       let container = 'span';
       let content = '';
 
-      if ($response.find("div,table,p").length) {
-        container = "div";
-      }
+      if ($response.is('div,table,p') || $response.find('div,table,p').length) {
+          container = 'div';
+        }
       
       if (response !== undefined) {
         content = `<${container} data-present-method="convertGroupFields_1"
@@ -540,6 +542,7 @@ export class WidgetService {
   }
 
   private convertFormFields(base: string, $element: JQuery): Observable<string> {
+    this.log.info('convertFormFields');
     let fieldClass = $element.attr('class');
     const fieldType = fieldClass.slice(7, -5).toLowerCase();
     const fieldId = $element.text();
@@ -553,7 +556,7 @@ export class WidgetService {
         let container = 'span';
         let content = '';
   
-        if ($response.find('div,table,p').length) {
+        if ($response.is('div,table,p') || $response.find('div,table,p').length) {
           container = 'div';
         }
         
