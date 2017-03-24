@@ -1276,8 +1276,8 @@ class PlominoForm(Container):
                                               editmode="EDITABLE",
                                               target=self)
                 # it is possible html is empty string
-                if not html:
-                    return id
+                if not html or not html.strip():
+                    return '<EMPTY>'
                 # need to determine if the html will get wiped
                 field_pq = pq(html)
                 blocks = 'input,select,table,textarea,button,img,video'
