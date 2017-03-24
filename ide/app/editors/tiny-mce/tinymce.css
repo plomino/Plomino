@@ -52,6 +52,13 @@ div.plominoLabelClass {
     background-color: #1b6899;
 }
 
+.plominoFieldClass--selected,
+.plominoLabelClass--selected {
+  outline-style: dotted !important;
+  outline-width: 2px !important;
+  outline-color: #1b6899 !important;
+}
+
 .mce-content-body .plominoGroupClass[contentEditable=false][data-mce-selected],
 .mce-content-body .plominoGroupClass:hover {
     outline-style: dashed;
@@ -110,7 +117,8 @@ div.plominoLabelClass div.plominoLabelContent {
     padding: 0;
 }
 
-.mce-content-body .plominoLabelClass:hover {
+.mce-content-body .plominoLabelClass:not(.plominoLabelClass--selected):hover,
+.mce-content-body .plominoFieldClass:not(.plominoFieldClass--selected):hover {
     outline: 2px solid #7acaff;
 }
 

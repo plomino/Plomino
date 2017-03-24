@@ -6,6 +6,7 @@ import { Injectable } from '@angular/core';
 export class PlominoElementAdapterService {
   private $previousSelectedElement: JQuery;
   private $latestSelectedElement: JQuery;
+  private $latestSelectedElementPath: string;
   private $latestSelectedPosition: JQuery;
 
   /**
@@ -38,6 +39,34 @@ export class PlominoElementAdapterService {
     return source;
   }
 
+  getPathTo(element: HTMLElement): string {
+    if (element.id !== '') {
+      return 'id("' + element.id + '")';
+    }
+
+    if (element === document.body) {
+      return element.tagName;
+    }
+
+    let ix = 0;
+    const siblings = element.parentNode.childNodes;
+
+    for (let i = 0; i < siblings.length; i++) {
+      const sibling = siblings[i];
+
+      if (sibling === element) {
+        return this.getPathTo(<HTMLElement> element.parentNode) 
+          + '/' + element.tagName + '[' + (ix + 1) + ']';
+      }
+
+      if (sibling.nodeType === 1 
+        && (<HTMLElement> sibling).tagName === element.tagName
+      ) {
+        ix++;
+      }
+    }
+  }
+
   /**
    * difference with the select is that position not exactly selected element like field
    */
@@ -46,30 +75,46 @@ export class PlominoElementAdapterService {
   }
 
   select($element: JQuery) {
+    if ($element.is('p,input,img') && $element.closest('.plominoFieldClass').length) {
+      $element = $element.closest('.plominoFieldClass');
+    }
+
     this.$previousSelectedElement = this.$latestSelectedElement;
     this.$latestSelectedElement = $element;
+    this.$latestSelectedElementPath = this.getPathTo($element.get(0));
 
     this.log.info('selected', this.$latestSelectedElement);
     this.log.info('after', this.$previousSelectedElement);
     this.log.extra('element-adapter.service.ts select');
 
     /** blur */
-    $(tinymce.activeEditor.getBody())
-      .find('.plominoLabelClass')
+    const $editorBody = $(tinymce.activeEditor.getBody());
+
+    $editorBody.find('.plominoFieldClass')
+      .filter((i, element) => element !== $element.get(0))
+      .removeClass('plominoFieldClass--selected');
+    
+    $editorBody.find('.plominoLabelClass')
       .filter((i, element) => element !== $element.get(0))
       .removeClass('mceEditable')
       .removeAttr('contenteditable')
+      .removeClass('plominoLabelClass--selected');
       // .attr('contenteditable', 'false')
       // .addClass('mceNonEditable');
+
+    if ($element.hasClass('plominoFieldClass')) {
+      $element.addClass('plominoFieldClass--selected');
+    }
   
     /**
      * if $element is label - make it listen to input event
      */
     if ($element.hasClass('plominoLabelClass')) {
-      $(tinymce.activeEditor.getBody())
+      $editorBody
         .find('.plominoLabelClass').off('.adapter');
 
       $element
+        .addClass('plominoLabelClass--selected')
         .one('dblclick.adapter', () => {
           $element
             .removeClass('mceNonEditable')
@@ -122,6 +167,17 @@ export class PlominoElementAdapterService {
 
   getSelected() {
     return this.$latestSelectedElement;
+  }
+
+  getSelectedXPath() {
+    return this.$latestSelectedElementPath;
+  }
+
+  getSelectedJQueryPath() {
+    return this.getSelectedXPath()
+      .replace(/id\("(.+?)"\)/g, '#$1')
+      .replace(/\//g, ' > ')
+      .replace(/\[(\d+)\]/g, ':nth-child($1)');
   }
 
   getSelectedPosition() {

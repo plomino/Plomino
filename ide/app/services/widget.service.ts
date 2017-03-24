@@ -484,7 +484,8 @@ export class WidgetService {
     ids: PlominoFormGroupContent[], base: string, element: JQuery
   ): Observable<string> {
     this.log.info('convertGroupFields', ids);
-    let $class = element.attr('class');
+    const classList = element.get(0).classList;
+    let $class = classList.length ? classList[0] : '';
     let $type = $class.slice(7, -5).toLowerCase();
 
     const $idData = this.findId(ids, element.text());
@@ -524,7 +525,8 @@ export class WidgetService {
   private convertGroupHidewhens(
     ids: PlominoFormGroupContent[], base: string, element: JQuery,
     template?: PlominoFormGroupTemplate): Observable<string> {
-    let $class = element.attr('class');
+    const classList = element.get(0).classList;
+    let $class = classList.length ? classList[0] : '';
     let $type = $class.slice(7, -5).toLowerCase();
     let $position = element.text().split(':')[0];
     let $id = element.text().split(':')[1];
@@ -543,7 +545,8 @@ export class WidgetService {
 
   private convertFormFields(base: string, $element: JQuery): Observable<string> {
     this.log.info('convertFormFields');
-    let fieldClass = $element.attr('class');
+    const classList = $element.get(0).classList;
+    let fieldClass = classList.length ? classList[0] : '';
     const fieldType = fieldClass.slice(7, -5).toLowerCase();
     const fieldId = $element.text();
     const template: PlominoFormGroupContent = null;
@@ -583,7 +586,8 @@ export class WidgetService {
 
   private convertFormHidewhens(base: string, element: any,
   template?: PlominoFormGroupTemplate): Observable<string> {
-    let $class = element.attr('class');
+    const classList = element.get(0).classList;
+    let $class = classList.length ? classList[0] : '';
     let $position = element.text().split(':')[0];
     let $id = element.text().split(':')[1];
   
@@ -600,7 +604,8 @@ export class WidgetService {
   }
 
   private convertFormSubform(base: string, element: JQuery): Observable<string> {
-    let $class = element.attr('class');
+    const classList = element.get(0).classList;
+    let $class = classList.length ? classList[0] : '';
     let $id = element.text();
 
     return this.getWidget(
@@ -622,7 +627,8 @@ export class WidgetService {
     type: 'form' | 'group', ids: PlominoFormGroupContent[] = [],
     labelsRegistry?: Map<string, Object>
   ): Observable<string> {
-    let $class = element.attr('class').split(' ')[0];
+    const classList = element.get(0).classList;
+    let $class = classList.length ? classList[0] : '';
     let $type = $class.slice(7, -5).toLowerCase();
 
     // if (element.parent().attr('contenteditable') !== 'false') {
