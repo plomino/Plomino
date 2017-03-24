@@ -71,11 +71,6 @@ I add a form by dnd
   Set Selenium Timeout  10 seconds
   wait until page contains element  jquery=#PlominoForm
   wait until page contains element  jquery=div.main-app.panel
-#  drag and drop  jquery=#PlominoForm  jquery=plomino-app div.main-app.panel
-#  drag and drop  jquery=#PlominoForm  jquery=plomino-app div.main-app.panel
-#  drag and drop  jquery=#PlominoForm  jquery=plomino-app div.main-app.panel
-#  drag and drop  jquery=#PlominoForm  jquery=plomino-app div.main-app.panel
-#  drag and drop  jquery=#PlominoForm  jquery=plomino-app div.main-app.panel
   Chain Click And Hold  xpath=//div[@class="palette-wrapper"]//*[@title="Form"]
   Move By Offset  +300  0
   Chain Move To Element With Offset  css=div.main-app.panel  20  20
@@ -191,9 +186,9 @@ I can see field "${fieldid}" in the editor
   Wait until page contains  Insert
   wait until page contains element  css=.mce-edit-area
   select frame  css=.mce-edit-area iframe
-  Wait until page contains element  css=span.plominoFieldClass.mceNonEditable  #TODO change for test based on spinner
-  Page should contain element  css=span.plominoFieldClass.mceNonEditable
-  Page should contain element  xpath=//span[contains(@class,"plominoFieldClass")][@data-plominoid="${fieldid}"]
+  Wait until page contains element  css=.plominoFieldClass.mceNonEditable  #TODO change for test based on spinner
+  Page should contain element  css=.plominoFieldClass.mceNonEditable
+  Page should contain element  xpath=//*[contains(@class,"plominoFieldClass")][@data-plominoid="${fieldid}"]
   unselect frame
 
 I see "${value}" in "${field}" in "${tab}"
@@ -201,6 +196,9 @@ I see "${value}" in "${field}" in "${tab}"
   Click Link  ${tab}
   ${text} =  get value  xpath=//input[@id=//label[normalize-space(text())="${field}"]/@for]
   should be equal  ${text}  ${value}
+
+I will see the validation error "${error}" for field "${field}"
+  wait until page contains element  jquery=#validation_failed
 
 I will see the preview form saved
   page should contain button  Close
