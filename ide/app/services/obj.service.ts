@@ -164,6 +164,16 @@ export class ObjService {
           $(this).replaceWith(span);
         });
 
+        const $errLabels = $layout.find(
+          '.plominoLabelClass:contains(":") > .plominoLabelClass'
+        );
+  
+        $errLabels.each((i, errLabel) => {
+          const $errLabel = $(errLabel);
+          const id = $errLabel.html();
+          $errLabel.parent().html(id);
+        });
+
         formData.set('form.widgets.form_layout', $layout.html());
         $layout.remove();
       }

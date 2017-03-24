@@ -84,9 +84,18 @@ export class UpdateFieldService {
 
     let container = 'span';
     let content = '';
-    let $newId: any;
 
-    if ($response.find("div,table,p").length) {
+    // if ($response.is('.plominoLabelClass')) {
+    //   const $labelsInside = $response.find('.plominoLabelClass');
+
+    //   // if ($labelsInside.length 
+    //   //   && $labelsInside.attr('data-plominoid') === $response.attr('data-plominoid')) {
+    //   //   $response.replaceWith($labelsInside);
+    //   //   contentString = $response.get(0).outerHTML;
+    //   // }
+    // }
+
+    if ($response.is("div,table,p") || $response.find("div,table,p").length) {
       container = "div";
     }
     
