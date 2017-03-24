@@ -138,7 +138,8 @@ export class FormSettingsComponent implements OnInit {
           flatMapCallback(responseData))
         .map(this.parseTabs)
         .subscribe((responseHtml: string) => {
-
+          this.log.info('updateFormSettings');
+          this.log.extra('formsettings.component.ts');
           this.treeService.updateTree().then(() => {
               this.formSaving = false;
               this.formSettings = responseHtml;
@@ -299,6 +300,8 @@ export class FormSettingsComponent implements OnInit {
     }
 
     private getSettings() {
+      this.log.info('getSettings');
+      this.log.extra('formsettings.component.ts');
       this.tabsService.getActiveTab()
         .do((tab) => {
           this.log.info('tab', tab);

@@ -87,8 +87,7 @@ export class ObjService {
             $element.text(`${position}:${hwid}`);
           }
   
-          $element.removeClass('mceNonEditable')
-            .removeAttr('data-plominoid')
+          $element.removeAttr('data-plominoid')
             .removeAttr('data-present-method')
             .removeAttr('data-plomino-position');
   
@@ -137,8 +136,6 @@ export class ObjService {
   
           if (tag === 'SPAN') {
             $element
-            .removeClass('mceEditable')
-            .removeClass('mceNonEditable')
             .removeAttr('data-plominoid');
 
             $element.html(
@@ -173,6 +170,15 @@ export class ObjService {
           const id = $errLabel.html();
           $errLabel.parent().html(id);
         });
+
+        $layout.find(
+          '.mceNonEditable,.mceEditable,.plominoFieldClass--selected,' +
+          '.plominoLabelClass--selected'
+        )
+        .removeClass('mceNonEditable')
+        .removeClass('mceEditable')
+        .removeClass('plominoFieldClass--selected')
+        .removeClass('plominoLabelClass--selected');
 
         formData.set('form.widgets.form_layout', $layout.html());
         $layout.remove();
@@ -246,7 +252,8 @@ export class ObjService {
         }
         return data;
       })
-      .map(this.extractTextAndUrl);
+      .map((response: Response) => 
+        this.extractTextAndUrl(response));
     }
 
 
@@ -267,7 +274,7 @@ export class ObjService {
       ).map(this.extractText);
     }
 
-    private extractText(response: Response) {
+    extractText(response: Response) {
       if (response.text().indexOf(
         'You do not have sufficient privileges to view this page'
       ) !== -1) {
@@ -281,7 +288,7 @@ export class ObjService {
       return response.text();
     }
 
-    private extractTextAndUrl(response: Response) {
+    extractTextAndUrl(response: Response): {html: string, url: string} {
       return {
         html: response.text(),
         url: response.url.slice(0, response.url.indexOf('@') - 1)
