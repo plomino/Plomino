@@ -174,10 +174,12 @@ export class PlominoElementAdapterService {
   }
 
   getSelectedJQueryPath() {
-    return this.getSelectedXPath()
+    const xPath = this.getSelectedXPath();
+    return xPath ? xPath
       .replace(/id\("(.+?)"\)/g, '#$1')
       .replace(/\//g, ' > ')
-      .replace(/\[(\d+)\]/g, ':nth-child($1)');
+      .replace(/\[(\d+)\]/g, (match, p1) => `:nth-of-type(${ p1 })`)
+      : null;
   }
 
   getSelectedPosition() {

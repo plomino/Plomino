@@ -567,6 +567,14 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
           );
           this.loading = false;
           this.changeDetector.markForCheck();
+          const wasSelected = this.adapter.getSelectedJQueryPath();
+          if (wasSelected) {
+            const $wasSelected = $('iframe:visible').contents().find(wasSelected);
+
+            if ($wasSelected.length) {
+              this.adapter.select($wasSelected.first());
+            }
+          }
         });
       }
       else {
@@ -722,6 +730,15 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
 
         this.contentManager.selectContent(this.id, data.oldTemplate);
         this.contentManager.setSelectionContent(this.id, data.newTemplate);
+
+        const wasSelected = this.adapter.getSelectedJQueryPath();
+        if (wasSelected) {
+          const $wasSelected = $('iframe:visible').contents().find(wasSelected);
+
+          if ($wasSelected.length) {
+            this.adapter.select($wasSelected.first());
+          }
+        }
       });
     }
   }
