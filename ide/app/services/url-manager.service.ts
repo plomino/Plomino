@@ -12,9 +12,15 @@ export class URLManagerService {
 
   restoreTabsFromURL(): void {
     for (let urlItem of this.parseURLString()) {
-      $(`.tree-node--name:contains("${ urlItem }")`)
-        .filter((i, node: HTMLElement) => $(node).text().trim() === urlItem)
-        .click();
+      const $resource = $(`.tree-node--name:contains("${ urlItem }")`)
+        .filter((i, node: HTMLElement) => $(node).text().trim() === urlItem);
+
+      if ($resource.parent().hasClass('tree-node--is-view')) {
+        $resource.parent().get(0).dispatchEvent(new Event('mousedown'));
+      }
+      else {
+        $resource.click();
+      }
     }
   }
 
