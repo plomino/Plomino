@@ -229,7 +229,7 @@ export class AddComponent implements OnInit, AfterViewInit {
                     formUniqueId: response.formUniqueId,
                     editor: 'layout',
                     label: response.title,
-                    url: response['@id'] + response.id,
+                    url: response.parent['@id'] + '/' + response.id,
                     path: [{
                         name: response.title,
                         type: 'Forms'
@@ -250,7 +250,7 @@ export class AddComponent implements OnInit, AfterViewInit {
                   this.tabsService.openTab({
                     editor: 'code',
                     label: response.title,
-                    url: response['@id'] + response.id,
+                    url: response.parent['@id'] + '/' + response.id,
                     path: [{
                         name: response.title,
                         type: 'Views'

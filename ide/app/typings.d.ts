@@ -167,6 +167,7 @@ interface AddFieldResponse {
   '@id'?: string;
   id?: string;
   formUniqueId?: string;
+  parent?: { '@id': string }
 }
 
 interface PlominoIteratingLayoutElement {
