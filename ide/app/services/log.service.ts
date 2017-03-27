@@ -16,6 +16,13 @@ export class LogService {
     (<any>console).info(...args);
   }
 
+  warn(...args: any[]) {
+    if (!this.debugMode) { return; }
+    args.unshift('color: navy;font-weight: bold');
+    args.unshift(`%c${(new Date()).toLocaleTimeString()} debug warn:`);
+    (<any>console).info(...args);
+  }
+
   extra(info: string) {
     if (!this.debugMode) { return; }
     (<any>console).info(`%c---------------------> ${info}`, 'color: darkgreen');

@@ -81,17 +81,30 @@ export class TreeComponent implements OnInit {
 
     treeFormItemClick(
       selected: boolean, mouseEvent: MouseEvent, 
-      typeLabel: string, typeNameUrl: string
+      typeLabel: string, typeNameUrl: string,
+      typeNameLabel: string, formUniqueId: string
     ) {
-      this.click2DragDelay = Observable.timer(500, 1000).subscribe((t: number) => {
-        this.dragSubform(selected, mouseEvent, typeLabel, typeNameUrl);
-        this.click2DragDelay.unsubscribe();
-      });
+      if (typeLabel === 'Views') {
+        this.onEdit({
+          formUniqueId: formUniqueId,
+          label: typeNameLabel,
+          url: typeNameUrl,
+          editor: 'layout',
+          path: [{ name: typeNameLabel, type: typeLabel }]
+        });
+      }
+      else {
+        this.click2DragDelay = Observable.timer(500, 1000).subscribe((t: number) => {
+          this.dragSubform(selected, mouseEvent, typeLabel, typeNameUrl);
+          this.click2DragDelay.unsubscribe();
+        });
+      }
       return true;
     }
 
     dragSubform(selected: boolean, mouseEvent: MouseEvent, 
-    typeLabel: string, typeNameUrl: string) {
+      typeLabel: string, typeNameUrl: string
+    ) {
       this.log.info('drag subform', selected, mouseEvent, typeLabel, typeNameUrl);
       this.log.extra('tree.component.ts dragSubform');
       if (tinymce.activeEditor && selected && typeLabel === 'Forms' 
@@ -118,7 +131,8 @@ export class TreeComponent implements OnInit {
     }
 
     onEdit(event: any) {
-        this.openTab.emit(event);
+      this.log.warn('event', event, 'onEdit');
+      this.openTab.emit(event);
     }
     
     onAdd(event: any) {
