@@ -135,6 +135,36 @@ Scenario: I can add a validation rule to a field
     and I submit the form
    Then I will see the validation error "You can't say blah" for field "text"
 
+# View tests
+
+#Scenario: I can add a view
+#  Given I have a form and some data saved
+#   When I create a view
+#   Then I will see the view settings
+#    and I will see a view editor listing my data
+
+#Scenario: I can add a column to a view
+#  Given I have a form and some data saved
+#   When I create a view
+#    and I add a column "myfield"
+#   Then I will see column "myfield" in the view
+
+#Scenario: I can add an action to a view
+#  Given I have a form and some data saved
+#   When I create a view
+#    and I add a action "myaction"
+#   Then I will see column "myaction" in the view
+
+#Scenario: I can add filter a view
+#  Given I have a form and some data saved
+#   When I create a view
+#    and I see > 2 documents in the view
+#    and I add a macro the the "view settings" called "number range"
+#    and I set the range to <5
+#   Then I will see less than 2 documents in the view
+
+
+
 *** Keywords *****************************************************************
 
 Plone Test Teardown
