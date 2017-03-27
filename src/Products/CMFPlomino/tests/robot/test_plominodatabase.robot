@@ -142,9 +142,9 @@ Scenario: I can add a validation rule to a field
 Scenario: I can change to computed and select the date
   Given I have a form open
    When I add a "Date" field
-    and I select the field "date" 
-    and I change the fieldsettings tab to "Advanced" 
-    and I change the fieldmode to "COMPUTED" 
+    and I select the field "date"
+    and I change the fieldsettings tab to "Advanced"
+    and I change the fieldmode to "COMPUTED"
     and I save the fieldsettings
     and I save the form
    Then I select the field "date"
@@ -154,14 +154,14 @@ Scenario: I can change to computed and back and select the date
   Set Selenium Speed  .2 seconds
   Given I have a form open
    When I add a "Date" field
-    and I select the field "date" 
-    and I change the fieldsettings tab to "Advanced" 
-    and I change the fieldmode to "COMPUTED" 
+    and I select the field "date"
+    and I change the fieldsettings tab to "Advanced"
+    and I change the fieldmode to "COMPUTED"
     and I save the fieldsettings
     and I save the form
-    and I select the field "date" 
-    and I change the fieldsettings tab to "Advanced" 
-    and I change the fieldmode to "EDITABLE" 
+    and I select the field "date"
+    and I change the fieldsettings tab to "Advanced"
+    and I change the fieldmode to "EDITABLE"
     and I save the fieldsettings
     and I save the form
    Then I select the field "date"
