@@ -1,5 +1,6 @@
 import { Subject } from 'rxjs/Rx';
 import { FormsService } from './forms.service';
+import { URLManagerService } from './url-manager.service';
 import { PlominoElementAdapterService } from './element-adapter.service';
 import { LogService } from './log.service';
 import { 
@@ -12,9 +13,6 @@ import { Observable } from 'rxjs/Observable';
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 
 import { TreeService } from './tree.service';
-
-import 'lodash';
-declare let _:any;
 
 @Injectable()
 export class TabsService {
@@ -29,11 +27,14 @@ export class TabsService {
   workflowModeChange: Subject<boolean> = new Subject<boolean>();
   workflowModeChanged$ = this.workflowModeChange.asObservable();
 
-  constructor(private treeService: TreeService,
-  private adapter: PlominoElementAdapterService,
-  private changeDetector: ChangeDetectorRef,
-  private formsService: FormsService,
-  private log: LogService, private zone: NgZone) {
+  constructor(
+    private treeService: TreeService,
+    private adapter: PlominoElementAdapterService,
+    private changeDetector: ChangeDetectorRef,
+    private urlManager: URLManagerService,
+    private formsService: FormsService,
+    private log: LogService, private zone: NgZone
+  ) {
     this.treeService.getTree()
       .subscribe((tree) => {
         this.tree = tree;
@@ -104,7 +105,8 @@ export class TabsService {
       return;
     }
 
-    let tabs = this.tabs$.getValue().slice(0);
+    let tabs: PlominoTab[] = this.tabs$.getValue().slice(0);
+    this.urlManager.rebuildURL(tabs);
     let normalizedTab: any = Object.assign({}, this.retrieveTab(this.tree, tab), { showAdd: showAdd });
     let selectedTab: any = _.find(tabs, { url: tab.url, editor: tab.editor });
     
@@ -164,6 +166,7 @@ export class TabsService {
     this.tabs$.next(tabs);
     this.changeDetector.markForCheck();
     this.changeDetector.detectChanges();
+    this.urlManager.rebuildURL(tabs);
   }
 
   updateTabId(tab: any, newID: number): void {
@@ -177,7 +180,7 @@ export class TabsService {
      * update page hash
      */
     if (updateTab.active) {
-      window.location.hash = newID.toString() === 'workflow' ? '' : `#form=${ newID }`;
+      this.urlManager.rebuildURL(tabs);
     }
   }
 
