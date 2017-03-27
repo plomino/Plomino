@@ -1,3 +1,4 @@
+import { URLManagerService } from './url-manager.service';
 import { Injectable } from '@angular/core';
 
 @Injectable()
@@ -5,7 +6,7 @@ export class PlominoApplicationLoaderService {
 
   private shouldBeLoaded: string[] = ['app.component', 'material'];
 
-  constructor() {
+  constructor(private urlManager: URLManagerService) {
     window['materialPromise'].then(() => {
       this.markLoaded('material');
     });
@@ -22,15 +23,7 @@ export class PlominoApplicationLoaderService {
   private onLoad() {
     setTimeout(() => {
       $('#application-loader').remove();
-
-      const splitHash = window.location.hash.split('form=');
-      const formLink = splitHash.pop().trim();
-      
-      if (splitHash.length && formLink && formLink !== 'form=') {
-        $(`.tree-node--name:contains("${ formLink }")`)
-          .filter((i, node: HTMLElement) => $(node).text().trim() === formLink)
-          .click();
-      }
+      this.urlManager.restoreTabsFromURL();
     }, 300);
   }
 }

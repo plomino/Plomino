@@ -55,6 +55,7 @@ import {
   FormsService,
   PlominoFormsListService,
   PlominoApplicationLoaderService,
+  URLManagerService,
 } from './services';
 
 // Pipes 
@@ -109,6 +110,7 @@ import { LoadingComponent } from "./editors/loading/loading.component";
     PlominoElementAdapterService,
     LabelsRegistryService,
     PlominoApplicationLoaderService,
+    URLManagerService,
   ],
   pipes: [ExtractNamePipe],
   animations: [

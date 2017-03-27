@@ -1,3 +1,4 @@
+import { URLManagerService } from './url-manager.service';
 import { PlominoElementAdapterService } from './element-adapter.service';
 import { LogService } from './log.service';
 import { 
@@ -10,9 +11,6 @@ import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 
 import { TreeService } from './tree.service';
 
-import 'lodash';
-declare let _:any;
-
 @Injectable()
 export class TabsService {
 
@@ -23,9 +21,12 @@ export class TabsService {
   private tabs$: BehaviorSubject<any[]> = new BehaviorSubject([]);
   private tree: any;
 
-  constructor(private treeService: TreeService,
-  private adapter: PlominoElementAdapterService,
-  private log: LogService, private zone: NgZone) {
+  constructor(
+    private treeService: TreeService,
+    private adapter: PlominoElementAdapterService,
+    private urlManager: URLManagerService,
+    private log: LogService, private zone: NgZone
+  ) {
     this.treeService.getTree()
       .subscribe((tree) => {
         this.tree = tree;
@@ -96,9 +97,8 @@ export class TabsService {
       return;
     }
 
-    window.location.hash = `#form=${ tab.url.split('/').pop() }`;
-
-    let tabs = this.tabs$.getValue().slice(0);
+    let tabs: PlominoTab[] = this.tabs$.getValue().slice(0);
+    this.urlManager.rebuildURL(tabs);
     let normalizedTab: any = Object.assign({}, this.retrieveTab(this.tree, tab), { showAdd: showAdd });
     let selectedTab: any = _.find(tabs, { url: tab.url, editor: tab.editor });
     
@@ -137,6 +137,7 @@ export class TabsService {
     }
 
     this.tabs$.next(tabs);
+    this.urlManager.rebuildURL(tabs);
   }
 
   updateTabId(tab: any, newID: number): void {
@@ -150,7 +151,7 @@ export class TabsService {
      * update page hash
      */
     if (updateTab.active) {
-      window.location.hash = `#form=${ newID }`;
+      this.urlManager.rebuildURL(tabs);
     }
   }
 
