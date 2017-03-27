@@ -160,7 +160,12 @@ export class AddComponent implements OnInit, AfterViewInit {
           this.changeDetector.markForCheck();
           this.changeDetector.detectChanges();
 
-          if (tab && tab.url) {
+          if (tab && tab.type === 'PlominoView') {
+            this.loading = false;
+            this.changeDetector.markForCheck();
+            this.changeDetector.detectChanges();
+          }
+          else if (tab && tab.url) {
             this.log.info('tab && tab.url', tab, tab.url);
             this.templatesService.getTemplates(tab.url)
             .subscribe((templates: PlominoFormGroupTemplate[]) => {

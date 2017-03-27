@@ -46,8 +46,8 @@
             
             <li *ngFor="let typeName of data"
                 class="tree-node--collapsible click-cursor"
-                (mouseup)="click2DragDelay.unsubscribe()"
-                (mousedown)="treeFormItemClick(selected, $event, typeName.typeLabel, typeName.url)"
+                (mouseup)="click2DragDelay ? click2DragDelay.unsubscribe() : true"
+                (mousedown)="treeFormItemClick(selected, $event, typeName.typeLabel, typeName.url, typeName.label, typeName.formUniqueId)"
                 [class.closed]="getCollapseState(typeName.collapsed, selected && (typeName.url === selected.url))"
                 (click)="typeName.typeLabel !== 'Forms' || onEdit({formUniqueId: typeName.formUniqueId, label:typeName.label, url:typeName.url, editor:'layout',path:[{name:typeName.label,type:typeName.typeLabel}]})"
                 [class.hasChild]="typeName.children.length !== 0">
