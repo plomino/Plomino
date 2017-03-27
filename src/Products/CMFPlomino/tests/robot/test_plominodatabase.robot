@@ -139,7 +139,6 @@ Scenario: I can add a validation rule to a field
     and I submit the form
    Then I will see the validation error "You can't say blah" for field "field_1"
 
-
 Scenario: I can change to computed and select the date
   Given I have a form open
    When I add a "Date" field
