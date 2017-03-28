@@ -57,17 +57,23 @@ export class ACEEditorComponent {
                 .replace('Database', '') + this.type.replace('Plomino', '');
             this.name = this.url.replace(window.location.href
                 .replace("++resource++Products.CMFPlomino/ide/index.html",""), "");
-            this._elementService.getElementCode("../../code?" + this.fullType + "=" + this.name)
-                .subscribe((code: string) => {
-                    let parsed = JSON.parse(code);
-                    this.editor.setValue(parsed.code, -1);
-                    this.methodList = parsed.methods;
-                    this.editor.getSession().on('change', () => {
-                        this.isDirty.emit(true);
-                    });
-                    this.addMethodInfos();
-                    this.editor.getSession().setUndoManager(new ace.UndoManager());
+
+            const dbLink = this.getDBLink();
+            this.name = this.name.replace(dbLink + '/', '')
+              .replace(window.location.protocol + '//' + window.location.host, '');
+                
+            this._elementService
+              .getElementCode(`${ dbLink }/code?${ this.fullType }=${ this.name }`)
+              .subscribe((code: string) => {
+                let parsed = JSON.parse(code);
+                this.editor.setValue(parsed.code, -1);
+                this.methodList = parsed.methods;
+                this.editor.getSession().on('change', () => {
+                    this.isDirty.emit(true);
                 });
+                this.addMethodInfos();
+                this.editor.getSession().setUndoManager(new ace.UndoManager());
+              });
         })
     }
 
@@ -104,6 +110,14 @@ export class ACEEditorComponent {
                 this.save();
             }
         });
+    }
+
+    getDBLink() {
+      return `${ 
+        window.location.pathname
+        .replace('++resource++Products.CMFPlomino/ide/', '')
+        .replace('/index.html', '')
+      }`;
     }
 
     addMethod(id: string) {
