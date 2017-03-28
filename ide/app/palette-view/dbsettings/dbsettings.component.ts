@@ -98,6 +98,7 @@ export class DBSettingsComponent {
         let formData: FormData = new FormData(form);
         
         formData.append('form.buttons.save', 'Save');
+        this.loading = true;
         
         this.objService.submitDB(formData)
             .flatMap((responseHtml: string) => {
@@ -109,6 +110,17 @@ export class DBSettingsComponent {
             })
             .subscribe(responseHtml => {
                 this.dbForm = responseHtml;
+
+                setTimeout(() => {
+                  $('.db-settings-wrapper form').submit((submitEvent) => {
+                    submitEvent.preventDefault();
+                    this.submitForm();
+                    return false;
+                  });
+        
+                  this.loading = false;
+                  this.changeDetector.markForCheck();
+                }, 300);
                 this.changeDetector.markForCheck();
             }, err => { 
                 console.error(err) 
@@ -461,8 +473,20 @@ export class DBSettingsComponent {
     }
 
     private getDbSettings() {
+      this.loading = true;
       this.objService.getDB().subscribe((html) => { 
         this.dbForm = html;
+
+        setTimeout(() => {
+          $('.db-settings-wrapper form').submit((submitEvent) => {
+            submitEvent.preventDefault();
+            this.submitForm();
+            return false;
+          });
+
+          this.loading = false;
+          this.changeDetector.markForCheck();
+        }, 300);
         this.changeDetector.markForCheck();
       }, (err) => { 
         console.error(err);

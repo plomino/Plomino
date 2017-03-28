@@ -133,6 +133,7 @@ export class FormSettingsComponent implements OnInit {
         }
       }).bind(this);
 
+      this.loading = true;
       this.objService.updateFormSettings(this.tab.url, formData)
         .flatMap((responseData: {html: string, url: string}) => 
           flatMapCallback(responseData))
@@ -151,6 +152,13 @@ export class FormSettingsComponent implements OnInit {
     
                 setTimeout(() => {
                   componentHandler.upgradeDom();
+                  $('.form-settings-wrapper form').submit((submitEvent) => {
+                    submitEvent.preventDefault();
+                    this.submitForm();
+                    return false;
+                  });
+                  
+                  this.loading = false;
                 }, 400);
               });
 
@@ -334,6 +342,12 @@ export class FormSettingsComponent implements OnInit {
 
             setTimeout(() => {
               componentHandler.upgradeDom();
+
+              $('.form-settings-wrapper form').submit((submitEvent) => {
+                submitEvent.preventDefault();
+                this.submitForm();
+                return false;
+              });
             }, 400);
           });
         });
