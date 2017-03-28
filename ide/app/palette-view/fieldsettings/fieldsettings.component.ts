@@ -104,6 +104,7 @@ export class FieldSettingsComponent implements OnInit {
       formData.append('form.buttons.save', 'Save');
 
       this.formSaving = true;
+      this.loading = true;
       
       const oldId = this.field.url.split('/').pop();
 
@@ -144,6 +145,16 @@ export class FieldSettingsComponent implements OnInit {
       })
       .subscribe((responseHtml: string) => {
         this.formTemplate = responseHtml;
+
+        setTimeout(() => {
+          $('.field-settings-wrapper form').submit((submitEvent) => {
+            submitEvent.preventDefault();
+            this.submitForm();
+            return false;
+          });
+
+          this.loading = false;
+        }, 300);
 
         let newTitle: string = $(`<div>${responseHtml}</div>`)
           .find('#form-widgets-IBasic-title').val();
@@ -711,6 +722,14 @@ export class FieldSettingsComponent implements OnInit {
           }
 
           this.formTemplate = template;
+
+          setTimeout(() => {
+            $('.field-settings-wrapper form').submit((submitEvent) => {
+              submitEvent.preventDefault();
+              this.submitForm();
+              return false;
+            });
+          }, 300);
           
           this.updateMacroses();
           this.loading = false;
