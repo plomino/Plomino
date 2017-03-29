@@ -124,6 +124,10 @@ export class PlominoElementAdapterService {
 
       this.log.info('element input.adapter event attached', $element.get(0));
       $element.on('input.adapter', ($event) => {
+        if ($element.attr('data-plominoid') === 'defaultLabel') {
+          return true;
+        }
+
         this.log.info('input.adapter', $element.html());
         const labelAdvanced = Boolean($element.attr('data-advanced'));
 
