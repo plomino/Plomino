@@ -76,7 +76,7 @@ export class PlominoHTTPAPIService {
   getErrors(response: Response) {
     if (response.status === 500 || response.status === 404) {
       const tmp = response.json();
-      throw tmp.error_type || tmp.toString();
+      throw tmp.error_type || tmp.message || tmp.toString();
     }
     else if (response.status === 401) {
       const tmp = response.json();
@@ -88,6 +88,10 @@ export class PlominoHTTPAPIService {
   }
 
   throwError(error: any): any {
+    if (typeof error === 'object' && error instanceof Response) {
+      error = error.json();
+      error = error.error_type || error.message || error.toString();
+    }
     if (typeof error !== 'object' 
       && error.indexOf('404 Not Found') === -1
       && error.indexOf('NotFound') === -1

@@ -14,3 +14,4 @@ export {
 } from './settings';
 
 export { TinyMCEComponent } from './tiny-mce';
+export { PlominoViewEditorComponent } from './view-editor';

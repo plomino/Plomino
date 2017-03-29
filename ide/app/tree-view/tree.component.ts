@@ -89,7 +89,7 @@ export class TreeComponent implements OnInit {
           formUniqueId: formUniqueId,
           label: typeNameLabel,
           url: typeNameUrl,
-          editor: 'layout',
+          editor: 'view',
           path: [{ name: typeNameLabel, type: typeLabel }]
         });
       }
@@ -131,7 +131,6 @@ export class TreeComponent implements OnInit {
     }
 
     onEdit(event: any) {
-      this.log.warn('event', event, 'onEdit');
       this.openTab.emit(event);
     }
     

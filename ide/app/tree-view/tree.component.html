@@ -50,7 +50,7 @@
                 (mousedown)="treeFormItemClick(selected, $event, typeName.typeLabel, typeName.url, typeName.label, typeName.formUniqueId)"
                 [class.closed]="getCollapseState(typeName.collapsed, selected && (typeName.url === selected.url))"
                 [class.tree-node--is-view]="typeName.typeLabel === 'Views'"
-                (click)="typeName.typeLabel !== 'Forms' || onEdit({formUniqueId: typeName.formUniqueId, label:typeName.label, url:typeName.url, editor:'layout',path:[{name:typeName.label,type:typeName.typeLabel}]})"
+                (click)="typeName.typeLabel !== 'Forms' || onEdit({formUniqueId: typeName.formUniqueId, label:typeName.label, url:typeName.url, editor: typeName.typeLabel === 'Views' ? 'view' : 'layout', path:[{name:typeName.label,type:typeName.typeLabel}]})"
                 [class.hasChild]="typeName.children.length !== 0">
 
                 <span class="tree-node--name"

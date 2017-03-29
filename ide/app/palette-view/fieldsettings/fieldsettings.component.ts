@@ -166,6 +166,25 @@ export class FieldSettingsComponent implements OnInit {
          * should be rebuilded
          */
         setTimeout(() => {
+          if (!tinymce.activeEditor) {
+            if (this.field.type === 'PlominoAction') {
+              $(`input#${ oldId }:visible`)
+                .each((i, viewActionElement: HTMLInputElement) => {
+                  viewActionElement.id = newId;
+                  viewActionElement.name = newId;
+                  viewActionElement.value = newTitle;
+                });
+            }
+            else if (this.field.type === 'PlominoColumn') {
+              $(`.view-editor__column-header--selected:visible`)
+                .each((i, viewColumnElement: HTMLInputElement) => {
+                  viewColumnElement.dataset.column = newId;
+                  viewColumnElement.innerHTML = newTitle;
+                });
+            }
+
+            return false;
+          }
           const pfc = '.plominoFieldClass';
           const $frame = $(tinymce.activeEditor.getBody());
           this.log.info('id/title was changed',
@@ -523,10 +542,22 @@ export class FieldSettingsComponent implements OnInit {
       .then(() => {
         this.elementService.deleteElement(this.field.url)
         .subscribe(() => {
-          this.labelsRegistry.remove(this.field.url);
-          $(tinymce.activeEditor.getBody())
-            .find(`[data-plominoid="${ this.field.id }"],[data-groupid="${ this.field.id }"]`)
-            .remove();
+          if (tinymce.activeEditor) {
+            this.labelsRegistry.remove(this.field.url);
+            $(tinymce.activeEditor.getBody())
+              .find(`[data-plominoid="${ this.field.id }"],[data-groupid="${ this.field.id }"]`)
+              .remove();
+          }
+          else {
+            if (this.field.type === 'PlominoAction') {
+              $(`input#${ this.field.id.split('/').pop() }:visible`)
+                .remove();
+            }
+            else if (this.field.type === 'PlominoColumn') {
+              $(`.view-editor__column-header--selected:visible`)
+                .remove();
+            }
+          }
           this.field = null;
           this.formTemplate = null;
           this.changeDetector.detectChanges();

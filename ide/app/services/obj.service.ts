@@ -187,16 +187,18 @@ export class ObjService {
         /**
          * field settings saving
          */
-        const newTitle = formData.get('form.widgets.IBasic.title');
-        
-        this.labelsRegistry.update(`${ formUrl }/${ workingId }`, newTitle, 'title', true);
-        this.labelsRegistry.update(`${ formUrl }/${ workingId }`, newTitle, 'temporary_title');
-
-        const $allTheSame = $(tinymce.activeEditor.getBody())
-          .find(`.plominoLabelClass[data-plominoid="${ workingId }"]`)
-          .filter((i, element) => !Boolean($(element).attr('data-advanced')));
-
-        $allTheSame.html(newTitle);
+        if (tinymce.activeEditor) {
+          const newTitle = formData.get('form.widgets.IBasic.title');
+          
+          this.labelsRegistry.update(`${ formUrl }/${ workingId }`, newTitle, 'title', true);
+          this.labelsRegistry.update(`${ formUrl }/${ workingId }`, newTitle, 'temporary_title');
+  
+          const $allTheSame = $(tinymce.activeEditor.getBody())
+            .find(`.plominoLabelClass[data-plominoid="${ workingId }"]`)
+            .filter((i, element) => !Boolean($(element).attr('data-advanced')));
+  
+          $allTheSame.html(newTitle);
+        }
       }
       
       // throw formData.get('form.widgets.form_layout');
@@ -291,7 +293,9 @@ export class ObjService {
     extractTextAndUrl(response: Response): {html: string, url: string} {
       return {
         html: response.text(),
-        url: response.url.slice(0, response.url.indexOf('@') - 1)
+        url: response.url.indexOf('@') !== -1 
+          ? response.url.slice(0, response.url.indexOf('@') - 1)
+          : response.url
       }
     }
 }

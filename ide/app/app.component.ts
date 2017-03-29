@@ -39,6 +39,7 @@ import {
   ColumnsSettingsComponent,
   AgentsSettingsComponent,
   PlominoWorkflowComponent,
+  PlominoViewEditorComponent
 } from './editors';
 
 // Services
@@ -96,6 +97,7 @@ import { LoadingComponent } from "./editors/loading/loading.component";
     PlominoBlockPreloaderComponent,
     PlominoWorkflowComponent,
     PlominoWorkflowNodeSettingsComponent,
+    PlominoViewEditorComponent,
   ],
   providers: [
     LogService,
@@ -224,10 +226,10 @@ export class AppComponent implements OnInit, AfterViewInit {
 
       tabs.forEach((tab: any) => {
         if (tab.active && this.tabsService.closing) {
-          setTimeout(() => {
-            tinymce.EditorManager.execCommand('mceRemoveEditor', true, tab.url);
-            tinymce.EditorManager.execCommand('mceAddEditor', true, tab.url);
-          });
+          // setTimeout(() => {
+          //   tinymce.EditorManager.execCommand('mceRemoveEditor', true, tab.url);
+          //   tinymce.EditorManager.execCommand('mceAddEditor', true, tab.url);
+          // });
           this.tabsService.closing = false;
         }
       });
