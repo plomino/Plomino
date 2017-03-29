@@ -156,6 +156,7 @@ interface InsertFieldEvent {
   title: string;
   name?: string;
   action_type?: string;
+  displayed_field?: string;
   form_layout?: string;
   target?: HTMLElement;
   subformHTML?: string;

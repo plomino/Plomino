@@ -395,8 +395,64 @@ export class AddComponent implements OnInit, AfterViewInit {
                 })
               break;
           case 'column':
-              // Add the action to the view. Update the tree etc.
-              console.log('Adding a column');
+              field = {
+                  title: 'default-column',
+                  'displayed_field': '--NOVALUE--',
+                  '@type': 'PlominoColumn',
+              }
+              this.elementService.postElement(this.activeTab.url, field)
+              .subscribe((response: AddFieldResponse) => {
+                let extendedField = Object.assign({}, field, {
+                    name: response['@id']
+                });
+
+                this.fieldsService.viewColumnInserted.next(response);
+                 
+                // const url = this.activeTab.url;
+                // const newColumn = `<input class="context mdl-button
+                //   mdl-js-button mdl-button--primary mdl-button--raised"
+                //   type="button" id="${ response.id }" name="${ response.id }"
+                //   value="${ response.title }">`;
+                // $(`[data-url="${ url }"] .actionButtons`)
+                //   .append(newAction);
+
+                // componentHandler.upgradeDom();
+                // $(`[data-url="${ url }"] .actionButtons #${ response.id }`).click();
+
+                this.treeService.updateTree()
+                  .then(() => {
+                    this.fieldsService.insertField(extendedField);
+                  });
+                })
+              break;
+          case 'action':
+              field = {
+                  title: 'default-action',
+                  action_type: 'OPENFORM',
+                  '@type': 'PlominoAction',
+              }
+              this.elementService.postElement(this.activeTab.url, field)
+              .subscribe((response: AddFieldResponse) => {
+                let extendedField = Object.assign({}, field, {
+                    name: response['@id']
+                });
+                 
+                const url = this.activeTab.url;
+                const newAction = `<input class="context mdl-button
+                  mdl-js-button mdl-button--primary mdl-button--raised"
+                  type="button" id="${ response.id }" name="${ response.id }"
+                  value="${ response.title }">`;
+                $(`[data-url="${ url }"] .actionButtons`)
+                  .append(newAction);
+
+                componentHandler.upgradeDom();
+                $(`[data-url="${ url }"] .actionButtons #${ response.id }`).click();
+
+                this.treeService.updateTree()
+                  .then(() => {
+                    this.fieldsService.insertField(extendedField);
+                  });
+                })
               break;
           default:
               console.log(type + ' not handled yet')

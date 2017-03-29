@@ -308,17 +308,14 @@ export class FormSettingsComponent implements OnInit {
     }
 
     private getSettings() {
-      this.log.info('getSettings');
       this.log.extra('formsettings.component.ts');
       this.tabsService.getActiveTab()
         .do((tab) => {
-          this.log.info('tab', tab);
-          this.log.extra('formsettings.component.ts getSettings -> do');
           this.tab = tab;
         })
         .flatMap((tab: any) => {
-          this.log.info('tab', tab, tab && tab.url ? tab.url : null);
-          this.log.extra('formsettings.component.ts getSettings -> flatMap');
+          // this.log.info('tab', tab, tab && tab.url ? tab.url : null);
+          // this.log.extra('formsettings.component.ts getSettings -> flatMap');
           
           if (tab && tab.url) {
             this.formSettings = 

@@ -102,6 +102,12 @@
                   (isDirty)="setTabzAsDirty(tabz, $event)"
                   (fieldSelected)="fieldSelected($event)">
               </plomino-tiny-mce>
+
+              <plomino-view-editor *ngIf="tabz.editor==='view'" 
+                  [id]="tabz.url"
+                  [item]="tabz"
+                  (isLoading)="tabz.isloading=$event">
+              </plomino-view-editor>
               
               <plomino-ace-editor *ngIf="tabz.editor==='code'" 
                   [url]="tabz.url" 

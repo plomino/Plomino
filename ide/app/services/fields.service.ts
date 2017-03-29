@@ -8,12 +8,17 @@ import { Observable } from 'rxjs/Observable';
 
 @Injectable()
 export class FieldsService {
+  viewColumnInserted: Subject<AddFieldResponse> = new Subject<AddFieldResponse>();
   private insertionStream$: Subject<InsertFieldEvent> 
     = new Subject<InsertFieldEvent>();
   private updatesStream$: Subject<PlominoFieldUpdatesStreamEvent> 
     = new Subject<PlominoFieldUpdatesStreamEvent>();
   
   constructor(private http: PlominoHTTPAPIService, private log: LogService) { }
+
+  onNewColumn() {
+    return this.viewColumnInserted.asObservable();
+  }
   
   insertField(field: InsertFieldEvent) {
     this.log.info('insertField', field);
