@@ -524,6 +524,39 @@ export class FieldSettingsComponent implements OnInit {
       this.groupPrefix = this.field.id;
     }
 
+    private deleteGroup() {
+      if (!tinymce.activeEditor) {
+        return false;
+      }
+      this.elementService.awaitForConfirm()
+      .then(() => {
+        const $group = $(tinymce.activeEditor.getBody())
+          .find(`.plominoGroupClass[data-groupid="${ this.field.id }"]`);
+
+        const deleteJoins: Observable<any>[] = [];
+  
+        $group
+          .find('span.plominoFieldClass')
+          .each((i, groupFieldElement: HTMLElement) => {
+            // this.log.warn(this.field.url, groupFieldElement.dataset.plominoid);
+            this.labelsRegistry.remove(this.field.url);
+            deleteJoins.push(this.elementService.deleteElement(this.field.url));
+          });
+
+        this.loading = true;
+        Observable.forkJoin(deleteJoins)
+          .subscribe(() => {
+            this.treeService.updateTree().then(() => {});
+            $group.remove();
+            this.loading = false;
+            this.field = null;
+            this.formTemplate = null;
+            this.changeDetector.detectChanges();
+          });
+      })
+      .catch(() => null);
+    }
+
     private ungroup() {
       /**
        * ungroup: unwrap fields from plominoGroup and close
@@ -567,7 +600,7 @@ export class FieldSettingsComponent implements OnInit {
           this.field = null;
           this.formTemplate = null;
           this.changeDetector.detectChanges();
-          this.treeService.updateTree();
+          this.treeService.updateTree().then(() => {});
         });
       })
       .catch(() => null);

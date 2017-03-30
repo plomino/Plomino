@@ -17,6 +17,11 @@
       (click)="ungroup()">
       Ungroup
     </button>
+    <button class="mdl-button mdl-js-button mdl-button--raised
+      mdl-js-ripple-effect mdl-button--accent mdl-color--pink-500"
+      (click)="deleteGroup()">
+      Delete
+    </button>
   </div>
   <div class="fieldsettings--control-buttons" *ngIf="formTemplate && field && field.type !== 'subform' && field.type !== 'label' && field.type !== 'group'">
     <a class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent mdl-color--teal-700"
