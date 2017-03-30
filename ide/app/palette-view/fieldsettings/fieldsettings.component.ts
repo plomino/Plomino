@@ -174,6 +174,9 @@ export class FieldSettingsComponent implements OnInit {
                   viewActionElement.name = newId;
                   viewActionElement.value = newTitle;
                 });
+
+              this.loading = false;
+              this.changeDetector.detectChanges();
             }
             else if (this.field.type === 'PlominoColumn') {
               $(`.view-editor__column-header--selected:visible`)
@@ -181,6 +184,9 @@ export class FieldSettingsComponent implements OnInit {
                   viewColumnElement.dataset.column = newId;
                   viewColumnElement.innerHTML = newTitle;
                 });
+
+              this.loading = false;
+              this.changeDetector.detectChanges();
             }
 
             return false;

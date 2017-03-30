@@ -1,3 +1,4 @@
+import { ElementService } from './../../services/element.service';
 import { Observable } from 'rxjs/Rx';
 import { Headers, Response, RequestOptions } from '@angular/http';
 import { PlominoHTTPAPIService } from './../../services/http-api.service';
@@ -7,7 +8,8 @@ import { Injectable } from '@angular/core';
 export class PlominoViewsAPIService {
 
   constructor(
-    private http: PlominoHTTPAPIService
+    private http: PlominoHTTPAPIService,
+    private elementService: ElementService,
   ) { }
 
   fetchViewTableHTML(url: string): Observable<string> {
@@ -16,7 +18,35 @@ export class PlominoViewsAPIService {
       .map((response: Response) => response.text())
   }
 
-  addNewColumn(url: string, id = 'default-column'): Observable<boolean> {
+  fetchViewTableDataJSON(url: string): Observable<PlominoVocabularyViewData> {
+    let reqURL = '/Plone/@@getVocabulary?name=plone.app.vocabularies.Catalog';
+    reqURL += '&query={%22criteria%22:[{%22i%22:%22path%22,%22o%22:%22';
+    reqURL += 'plone.app.querystring.operation.string.path%22,%22v%22:%22/';
+    reqURL += url.split('/').slice(-2).join('/');
+    reqURL += '::1%22}],%22sort_on%22:%22getObjPositionInParent%22,';
+    reqURL += '%22sort_order%22:%22ascending%22}&batch={%22page%22:1,%22size%22:100}';
+    reqURL += '&attributes=[%22id%22,%22Type%22]';
+    return this.http
+      .get(reqURL)
+      .map((response: Response) => response.json())
+  }
+
+  fetchViewTable(url: string): Observable<[string, PlominoVocabularyViewData]> {
+    const html$ = this.fetchViewTableHTML(url);
+    const json$ = this.fetchViewTableDataJSON(url);
+    return <Observable<[string, PlominoVocabularyViewData]>> Observable.forkJoin(html$, json$);
+  }
+
+  addNewAction(url: string, id = 'default-action'): Observable<AddFieldResponse> {
+    const field = {
+      title: 'default-action',
+      action_type: 'OPENFORM',
+      '@type': 'PlominoAction',
+    }
+    return this.elementService.postElement(url, field);
+  }
+
+  addNewColumn(url: string, id = 'default-column'): Observable<string> {
     const token = this.getCSRFToken();
     const form = new FormData();
 
@@ -36,22 +66,18 @@ export class PlominoViewsAPIService {
     return this.http
       .postWithOptions(`${ url }/++add++PlominoColumn`, form, 
         new RequestOptions({}), 'views-api.service.ts addNewColumn')
-      .map((response: Response) => true);
+      .map((response: Response) => {
+        return response.url.replace('/view', '').split('/').pop();
+      });
   }
 
-  dragColumn(url: string, id: string, delta: number, subsetIds: string[]): Observable<any> {
+  reOrderItem(url: string, id: string, delta: number, subsetIds: string[]): Observable<any> {
     const token = this.getCSRFToken();
 
     const options = {
       delta, id, subsetIds,
       _authenticator: token
     };
-
-    // const formData = new FormData();
-
-    // for (let key in options) {
-    //     formData.append(key, options[key]);
-    // }
     
     return this.http
       .postWithOptions(`${ url }/fc-itemOrder`, $.param(options), new RequestOptions({

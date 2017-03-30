@@ -87,6 +87,10 @@ export class PaletteComponent implements OnInit {
         this.tabsService.getActiveTab().subscribe((activeTab) => {
           this.log.info('activeTab', activeTab);
           this.log.extra('palette.component.ts ngOnInit');
+
+          if (activeTab) {
+            this.tabs = this.updateTabs(activeTab.showAdd, this.tabs, activeTab.type);
+          }
           
           if (activeTab && this.selectedTab 
             && activeTab.formUniqueId !== this.selectedTab.formUniqueId) {
