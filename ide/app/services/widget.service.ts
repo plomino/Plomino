@@ -54,7 +54,7 @@ export class WidgetService {
   getGroupLayout(
     baseUrl: string, input: PlominoFormGroupTemplate, templateMode?: boolean
   ): Observable<string> {
-    this.log.info('getGroupLayout');
+    // this.log.info('getGroupLayout');
     // this.log.extra('widget.service.ts getGroupLayout');
     /**
      * decided to use the DOM
@@ -196,7 +196,7 @@ export class WidgetService {
   }
 
   getFormLayout(baseUrl: string) {
-    this.log.info('getFormLayout called', baseUrl);
+    // this.log.info('getFormLayout called', baseUrl);
     const $edIFrame = $(`iframe[id="${ baseUrl }_ifr"]`).contents();
     $edIFrame.css('opacity', 0);
     let $elements = $edIFrame.find('.plominoGroupClass, .plominoSubformClass, ' +
@@ -326,7 +326,7 @@ export class WidgetService {
   private convertFormGroups(
     base: string, element: any, groupId: any, labelsRegistry?: Map<string, Object>
   ): Observable<any> {
-    this.log.info('convertFormGroups');
+    // this.log.info('convertFormGroups');
     let $groupId = element.attr('data-groupid');
     let fields$: any[] = [];
 
@@ -483,7 +483,7 @@ export class WidgetService {
   private convertGroupFields(
     ids: PlominoFormGroupContent[], base: string, element: JQuery
   ): Observable<string> {
-    this.log.info('convertGroupFields', ids);
+    // this.log.info('convertGroupFields', ids);
     const classList = element.get(0).classList;
     let $class = classList.length ? classList[0] : '';
     let $type = $class.slice(7, -5).toLowerCase();
@@ -544,7 +544,7 @@ export class WidgetService {
   }
 
   private convertFormFields(base: string, $element: JQuery): Observable<string> {
-    this.log.info('convertFormFields');
+    // this.log.info('convertFormFields');
     const classList = $element.get(0).classList;
     let fieldClass = classList.length ? classList[0] : '';
     const fieldType = fieldClass.slice(7, -5).toLowerCase();
