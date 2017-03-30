@@ -159,6 +159,8 @@ export class FormSettingsComponent implements OnInit {
                   });
                   
                   this.loading = false;
+                  this.changeDetector.markForCheck();
+                  this.changeDetector.detectChanges();
                 }, 400);
               });
 
@@ -333,7 +335,9 @@ export class FormSettingsComponent implements OnInit {
           this.formSettings = template;
 
           this.updateMacroses();
+          this.loading = false;
           this.changeDetector.markForCheck();
+          this.changeDetector.detectChanges();
           window['materialPromise'].then(() => {
             componentHandler.upgradeDom();
 
