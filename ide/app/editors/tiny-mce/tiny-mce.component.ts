@@ -122,6 +122,9 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
       if (insertionParent === this.id) {
         this.addElement(dataToInsert);
         this.changeDetector.markForCheck();
+        /* form save automatically */
+        tinymce.activeEditor.setDirty(true);
+        $('#mceu_0 button:visible').click();
       }
     });
 
@@ -144,6 +147,9 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
         this.log.info('insertion template', insertion);
         this.insertGroup(insertion.group, insertion.target);
         this.changeDetector.markForCheck();
+        /* form save automatically */
+        tinymce.activeEditor.setDirty(true);
+        $('#mceu_0 button:visible').click();
       }
     });
     
@@ -188,8 +194,8 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
       let editor = tinymce.get(this.id) || 
         tinymce.get(this.idChanges && this.idChanges.oldId);
 
-      editor.buttons.save.onclick();
-
+      // editor.buttons.save.onclick();
+      editor.setDirty(false);
       this.saveFormLayout(data.cb);
     } );
 
@@ -603,7 +609,7 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
       tiny.isDirty.emit(false);
       editor.setDirty(false);
       this.changeDetector.markForCheck();
-      this.ngAfterViewInit();
+      // this.ngAfterViewInit();
     }
   }
 
