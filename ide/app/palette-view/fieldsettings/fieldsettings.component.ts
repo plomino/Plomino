@@ -267,7 +267,7 @@ export class FieldSettingsComponent implements OnInit {
 
           /* form save automatically */
           tinymce.activeEditor.setDirty(true);
-          $('#mceu_0 button').click();
+          $('#mceu_0 button:visible').click();
         }, 100);
         
         this.formSaving = false;
@@ -543,11 +543,13 @@ export class FieldSettingsComponent implements OnInit {
         const deleteJoins: Observable<any>[] = [];
   
         $group
-          .find('span.plominoFieldClass')
+          .find('.plominoFieldClass')
           .each((i, groupFieldElement: HTMLElement) => {
             // this.log.warn(this.field.url, groupFieldElement.dataset.plominoid);
-            this.labelsRegistry.remove(this.field.url);
-            deleteJoins.push(this.elementService.deleteElement(this.field.url));
+            if (this.labelsRegistry.get(this.field.url)) {
+              this.labelsRegistry.remove(this.field.url);
+              deleteJoins.push(this.elementService.deleteElement(this.field.url));
+            }
           });
 
         this.loading = true;
@@ -559,6 +561,10 @@ export class FieldSettingsComponent implements OnInit {
             this.field = null;
             this.formTemplate = null;
             this.changeDetector.detectChanges();
+
+            /* form save automatically */
+            tinymce.activeEditor.setDirty(true);
+            $('#mceu_0 button:visible').click();
           });
       })
       .catch(() => null);
@@ -572,7 +578,7 @@ export class FieldSettingsComponent implements OnInit {
         .find(`.plominoGroupClass[data-groupid="${ this.field.id }"]`);
 
       /* here I should update the ungrouped labels and fields to be mceNonEditable */
-      $group.find('.plominoLabelClass, span.plominoFieldClass')
+      $group.find('.plominoLabelClass, .plominoFieldClass')
         .removeClass('mceEditable')
         .addClass('mceNonEditable')
         .attr('contenteditable', 'false');
@@ -608,6 +614,9 @@ export class FieldSettingsComponent implements OnInit {
           this.formTemplate = null;
           this.changeDetector.detectChanges();
           this.treeService.updateTree().then(() => {});
+          /* form save automatically */
+          tinymce.activeEditor.setDirty(true);
+          $('#mceu_0 button:visible').click();
         });
       })
       .catch(() => null);
