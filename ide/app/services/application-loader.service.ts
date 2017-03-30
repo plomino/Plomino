@@ -5,6 +5,7 @@ import { Injectable } from '@angular/core';
 export class PlominoApplicationLoaderService {
 
   private shouldBeLoaded: string[] = ['app.component', 'material'];
+  private isLoaded: boolean = false;
 
   constructor(private urlManager: URLManagerService) {
     window['materialPromise'].then(() => {
@@ -13,14 +14,17 @@ export class PlominoApplicationLoaderService {
   }
 
   markLoaded(key: string) {
-    this.shouldBeLoaded = this.shouldBeLoaded.filter((e) => e !== key);
-
-    if (!this.shouldBeLoaded.length) {
-      this.onLoad();
+    if (!this.isLoaded) {
+      this.shouldBeLoaded = this.shouldBeLoaded.filter((e) => e !== key);
+  
+      if (!this.shouldBeLoaded.length) {
+        this.onLoad();
+      }
     }
   }
 
   private onLoad() {
+    this.isLoaded = true;
     setTimeout(() => {
       $('#application-loader').remove();
       this.urlManager.restoreTabsFromURL();

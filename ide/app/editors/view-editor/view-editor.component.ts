@@ -88,8 +88,8 @@ export class PlominoViewEditorComponent implements OnInit {
     this.reloadView();
 
     this.fieldsService.onNewColumn()
-      .subscribe((response: AddFieldResponse) => {
-        if (response.parent['@id'] === this.item.url) {
+      .subscribe((response: string) => {
+        if (response === this.item.url) {
           this.reloadView();
         }
       });

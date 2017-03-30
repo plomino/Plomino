@@ -8,7 +8,7 @@ import { Observable } from 'rxjs/Observable';
 
 @Injectable()
 export class FieldsService {
-  viewColumnInserted: Subject<AddFieldResponse> = new Subject<AddFieldResponse>();
+  viewColumnInserted: Subject<string> = new Subject<string>();
   private insertionStream$: Subject<InsertFieldEvent> 
     = new Subject<InsertFieldEvent>();
   private updatesStream$: Subject<PlominoFieldUpdatesStreamEvent> 

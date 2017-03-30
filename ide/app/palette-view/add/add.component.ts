@@ -1,3 +1,4 @@
+import { PlominoViewsAPIService } from './../../editors/view-editor/views-api.service';
 import { PlominoBlockPreloaderComponent } from './../../utility/block-preloader';
 import { Observable } from 'rxjs/Rx';
 import {
@@ -33,7 +34,7 @@ import {
     template: require('./add.component.html'),
     styles: [require('./add.component.css')],
     directives: [DND_DIRECTIVES, PlominoBlockPreloaderComponent],
-    providers: [ElementService],
+    providers: [ElementService, PlominoViewsAPIService],
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 
@@ -53,6 +54,7 @@ export class AddComponent implements OnInit, AfterViewInit {
                 private treeService: TreeService,
                 private tabsService: TabsService,
                 private log: LogService,
+                private viewsAPIService: PlominoViewsAPIService,
                 private labelsRegistry: LabelsRegistryService,
                 private fieldsService: FieldsService,
                 private draggingService: DraggingService,
@@ -395,33 +397,12 @@ export class AddComponent implements OnInit, AfterViewInit {
                 })
               break;
           case 'column':
-              field = {
-                  title: 'default-column',
-                  'displayed_field': '--NOVALUE--',
-                  '@type': 'PlominoColumn',
-              }
-              this.elementService.postElement(this.activeTab.url, field)
-              .subscribe((response: AddFieldResponse) => {
-                let extendedField = Object.assign({}, field, {
-                    name: response['@id']
-                });
-
-                this.fieldsService.viewColumnInserted.next(response);
-                 
-                // const url = this.activeTab.url;
-                // const newColumn = `<input class="context mdl-button
-                //   mdl-js-button mdl-button--primary mdl-button--raised"
-                //   type="button" id="${ response.id }" name="${ response.id }"
-                //   value="${ response.title }">`;
-                // $(`[data-url="${ url }"] .actionButtons`)
-                //   .append(newAction);
-
-                // componentHandler.upgradeDom();
-                // $(`[data-url="${ url }"] .actionButtons #${ response.id }`).click();
-
+              this.viewsAPIService.addNewColumn(this.activeTab.url)
+              .subscribe((response: boolean) => {
+                this.fieldsService.viewColumnInserted.next(this.activeTab.url);
                 this.treeService.updateTree()
                   .then(() => {
-                    this.fieldsService.insertField(extendedField);
+                    // this.fieldsService.insertField(extendedField);
                   });
                 })
               break;

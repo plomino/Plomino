@@ -135,7 +135,7 @@ export class TreeComponent implements OnInit {
     }
     
     onAdd(event: any) {
-        this.add.emit(event);
+      this.add.emit(event);
     }
 
     startDrag(data: any): void {
