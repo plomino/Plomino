@@ -16,9 +16,31 @@ export class PlominoViewsAPIService {
       .map((response: Response) => response.text())
   }
 
+  addNewColumn(url: string, id = 'default-column'): Observable<boolean> {
+    const token = this.getCSRFToken();
+    const form = new FormData();
+
+    form.set('form.widgets.IShortName.id', id);
+    form.set('form.widgets.IBasic.title', id);
+    form.set('form.widgets.displayed_field:list', '--NOVALUE--');
+    form.set('form.widgets.displayed_field-empty-marker', '1');
+    form.set('form.widgets.hidden_column-empty-marker', '1');
+    form.set('ajax_load', '');
+    form.set('ajax_include_head', '');
+    form.set('form.widgets.IHelpers.helpers:list', '');
+    form.set('form.widgets.formula', '');
+    form.set('form.widgets.IBasic.description', '');
+    form.set('form.buttons.save', 'Save');
+    form.set('_authenticator', token);
+
+    return this.http
+      .postWithOptions(`${ url }/++add++PlominoColumn`, form, 
+        new RequestOptions({}), 'views-api.service.ts addNewColumn')
+      .map((response: Response) => true);
+  }
+
   dragColumn(url: string, id: string, delta: number, subsetIds: string[]): Observable<any> {
-    const script = document.getElementById('protect-script');
-    const token = script.getAttribute('data-token');
+    const token = this.getCSRFToken();
 
     const options = {
       delta, id, subsetIds,
@@ -40,5 +62,12 @@ export class PlominoViewsAPIService {
         })
       }), 'views-api.service.ts dragColumn')
       .map((response: Response) => response.json())
+  }
+
+  getCSRFToken() {
+    const script = document.getElementById('protect-script');
+    const token = script.getAttribute('data-token');
+
+    return token;
   }
 }
