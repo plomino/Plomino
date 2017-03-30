@@ -70,6 +70,10 @@ export class PaletteComponent implements OnInit {
         this.tabsService.getActiveTab().subscribe((activeTab) => {
           this.log.info('activeTab', activeTab);
           this.log.extra('palette.component.ts ngOnInit');
+
+          if (activeTab) {
+            this.tabs = this.updateTabs(activeTab.showAdd, this.tabs, activeTab.type);
+          }
           
           if (activeTab && this.selectedTab 
             && activeTab.formUniqueId !== this.selectedTab.formUniqueId) {
@@ -77,6 +81,7 @@ export class PaletteComponent implements OnInit {
             
             this.formsService.changePaletteTab(0);
             $('.drop-zone').remove();
+
             // don't track tiny-mce tab change event
             // remove when be sure
             // if (activeTab) {

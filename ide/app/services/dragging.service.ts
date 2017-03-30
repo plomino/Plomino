@@ -22,10 +22,15 @@ export class DraggingService {
 
   subformDragEvent: Subject<MouseEvent> = new Subject<MouseEvent>();
   subformDragEvent$: Observable<MouseEvent> = this.subformDragEvent.asObservable();
+  dndType: any;
 
   constructor(private templateService: TemplatesService, 
   private log: LogService,
   private fieldsService: FieldsService) {}
+
+  followDNDType(dndType: any) {
+    this.dndType = dndType;
+  }
   
   setDragging(data?: any): void {
     this.log.info('setDragging', data);

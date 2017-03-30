@@ -90,8 +90,20 @@ export class AddComponent implements OnInit, AfterViewInit {
             {
                 title: 'View', 
                 components: [
-                    { title: 'Column', icon: 'stats', type: 'column', addable: true },
-                    { title: 'Action', icon: 'cog', type: 'action', addable: true },
+                    { 
+                      title: 'Column', 
+                      icon: 'stats', 
+                      type: 'column', 
+                      addable: true, 
+                      dragData: { type: 'column' } 
+                    },
+                    { 
+                      title: 'Action', 
+                      icon: 'cog', 
+                      type: 'action', 
+                      addable: true, 
+                      dragData: { type: 'action' } 
+                    },
                 ],
                 hidden: (tab: any) => {
                     if (!tab) return true;
@@ -398,7 +410,7 @@ export class AddComponent implements OnInit, AfterViewInit {
               break;
           case 'column':
               this.viewsAPIService.addNewColumn(this.activeTab.url)
-              .subscribe((response: boolean) => {
+              .subscribe(() => {
                 this.fieldsService.viewColumnInserted.next(this.activeTab.url);
                 this.treeService.updateTree()
                   .then(() => {
@@ -412,8 +424,9 @@ export class AddComponent implements OnInit, AfterViewInit {
                   action_type: 'OPENFORM',
                   '@type': 'PlominoAction',
               }
-              this.elementService.postElement(this.activeTab.url, field)
+              this.viewsAPIService.addNewAction(this.activeTab.url)
               .subscribe((response: AddFieldResponse) => {
+                this.fieldsService.viewColumnInserted.next(this.activeTab.url);
                 let extendedField = Object.assign({}, field, {
                     name: response['@id']
                 });
@@ -483,7 +496,10 @@ export class AddComponent implements OnInit, AfterViewInit {
     }
 
     // Refactor this code, put switch into separated fn
-    startDrag(eventData: MouseEvent, type: any, template?: PlominoFormGroupTemplate) {
+    startDrag(
+      eventData: MouseEvent, type: any, 
+      template?: PlominoFormGroupTemplate
+    ) {
         const draggingData: PlominoDraggingData = {
           '@type': type === 'template' ? 'PlominoTemplate' : type,
           resolver: () => {},
@@ -530,6 +546,10 @@ export class AddComponent implements OnInit, AfterViewInit {
         this.draggingService.currentDraggingData = draggingData;
         
         this.draggingService.setDragging(draggingData);
+
+        if (draggingData['@type']) {
+          this.draggingService.followDNDType(draggingData['@type']);
+        }
     }
 
     endDrag(): void {

@@ -1,0 +1,40 @@
+.view-editor {
+  position: relative;
+}
+
+.view-editor__inner {
+  overflow: auto;
+  position: absolute;
+  max-width: 95%;
+  padding-bottom: 20px;
+}
+
+.view-editor__actions {
+  margin-bottom: 15px;
+}
+
+.view-editor__column-header {
+  cursor: pointer;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.view-editor__column-header:hover,
+.view-editor__column-header--selected {
+  background: rgb(63,81,181);
+  color: white !important;
+}
+
+.view-editor__column-header--selected,
+.view-editor__column-header--drop-target,
+.view-editor__action--drop-target,
+.view-editor__action--selected {
+  outline: dotted 2px gray;
+}
+
+.view-editor__column-header--drop-preview,
+.view-editor__action--drop-preview {
+  opacity: 0.35;
+  /*outline: dashed 1px slategray;
+  outline-offset: -3px;*/
+}

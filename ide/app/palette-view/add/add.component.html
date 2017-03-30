@@ -26,6 +26,7 @@
                 id="{{comp.type}}"
                 dnd-draggable=""
                 [dragEnabled]="true"
+                [dragData]="comp.dragData"
                 (onDragStart)="startDrag($event, comp.type)"
                 (onDragEnd)="endDrag()"
                 [title]="comp.title"
