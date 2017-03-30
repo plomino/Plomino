@@ -261,6 +261,13 @@ export class FieldSettingsComponent implements OnInit {
           );
 
           componentHandler.upgradeDom();
+
+          this.loading = false;
+          this.changeDetector.detectChanges();
+
+          /* form save automatically */
+          tinymce.activeEditor.setDirty(true);
+          $('#mceu_0 button').click();
         }, 100);
         
         this.formSaving = false;
