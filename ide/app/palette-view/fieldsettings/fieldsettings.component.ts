@@ -821,6 +821,7 @@ export class FieldSettingsComponent implements OnInit {
             setTimeout(() => {
               this.changeDetector.detectChanges();
               this.changeDetector.markForCheck();
+              componentHandler.upgradeDom()
             }, 200);
             return;
           }
