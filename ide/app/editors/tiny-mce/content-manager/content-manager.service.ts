@@ -79,7 +79,8 @@ export class TinyMCEFormContentManagerService {
           dragging.targetRange = range;
           return;
         }
-        const $iframeContents = $('iframe:visible').contents();
+        const $iframeContents = $(this.activeEditorService.getActive()
+          .getContainer().querySelector('iframe')).contents();
         const $latestTarget = $(
           $.merge(
             $iframeContents.find('#tinymce *:first').toArray(),
@@ -198,12 +199,16 @@ export class TinyMCEFormContentManagerService {
   }
 
   setContent(editorId: any, contentHTML: string, dragging?: any): void {
-    // console.warn('setContent called');
+    // console.warn('setContent called', editorId);
     let editor = tinymce.get(editorId);
     
     if (!editor) {
-      editorId = $('iframe:visible').attr('id').replace('_ifr', '');
-      editor = tinymce.EditorManager.editors[editorId];
+      this.logService.warn('setContent', 'error: editor not found', editorId);
+      return;
+      // const $iframe = $(this.activeEditorService.getActive()
+      //     .getContainer().querySelector('iframe'));
+      // editorId = $iframe.attr('id').replace('_ifr', '');
+      // editor = tinymce.EditorManager.editors[editorId];
     }
 
     contentHTML = contentHTML.replace(/(<p>&nbsp;<\/p>(\s+)?)+?$/i, '');
@@ -216,8 +221,8 @@ export class TinyMCEFormContentManagerService {
     this.log('setContent contentHTML', contentHTML, 3);
 
     const that = this;
-    if (that.activeEditorService.getActive()) {
-      $(that.activeEditorService.getActive().getBody())
+    if (editor) {
+      $(editor.getBody())
       .find('.plominoGroupClass').off('.cme')
       .on('mousemove.cme', function (evt) {
         if (dragging.currentDraggingData) {
@@ -235,7 +240,7 @@ export class TinyMCEFormContentManagerService {
         );
       });
   
-      $(that.activeEditorService.getActive().getBody()).off('.cmb')
+      $(editor.getBody()).off('.cmb')
       .on('mousemove.cmb', function (evt) {
         that.iframeMouseMoveEvents.next({
           originalEvent: <MouseEvent>evt.originalEvent,
@@ -255,7 +260,9 @@ export class TinyMCEFormContentManagerService {
     let editor = tinymce.get(editorId);
 
     if (!editor) {
-      editorId = $('iframe:visible').attr('id').replace('_ifr', '');
+      const $iframe = $(editor
+          .getContainer().querySelector('iframe'));
+      editorId = $iframe.attr('id').replace('_ifr', '');
       editor = tinymce.EditorManager.editors[editorId];
     }
     const content = editor.getContent();
@@ -293,7 +300,9 @@ export class TinyMCEFormContentManagerService {
     const INSERT_EVENT_UNIQUE = Math.random().toString();
 
     if (!editor) {
-      editorId = $('iframe:visible').attr('id').replace('_ifr', '');
+      const $iframe = $(this.activeEditorService.getActive()
+          .getContainer().querySelector('iframe'));
+      editorId = $iframe.attr('id').replace('_ifr', '');
       editor = tinymce.EditorManager.editors[editorId];
     }
 
@@ -331,8 +340,11 @@ export class TinyMCEFormContentManagerService {
 
         $(spans[0]).insertBefore($target);
         $(spans[1]).insertAfter($target);
+
+        const $iframe = $(this.activeEditorService.getActive()
+          .getContainer().querySelector('iframe'));
         
-        $('iframe:visible').contents().click();
+        $iframe.contents().click();
         editor.setDirty(true);
         return;
       }
@@ -354,7 +366,8 @@ export class TinyMCEFormContentManagerService {
       // contentHTML = `<p contenteditable="false">${contentHTML}</p>`;
     }
 
-    const $iframeContents = $('iframe:visible').contents();
+    const $iframeContents = $(this.activeEditorService.getActive()
+          .getContainer().querySelector('iframe')).contents();
     const $latestTarget = $(
       $.merge(
         $iframeContents.find('#tinymce *:first').toArray(),
@@ -402,8 +415,11 @@ export class TinyMCEFormContentManagerService {
           $content[lastInsert && $first.get(0) === target ? 'insertBefore' :'insertAfter']($(target))
             .attr('data-event-unique', INSERT_EVENT_UNIQUE);
         }
+
+        const $iframe = $(this.activeEditorService.getActive()
+          .getContainer().querySelector('iframe'));
         
-        $('iframe:visible').contents().click();
+        $iframe.contents().click();
       }
       else {
         this.logService.info(

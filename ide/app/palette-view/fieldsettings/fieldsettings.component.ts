@@ -273,9 +273,9 @@ export class FieldSettingsComponent implements OnInit {
           this.changeDetector.detectChanges();
 
           /* form save automatically */
-          /** @todo: replace to activeEditorService */
           this.activeEditorService.getActive().setDirty(true);
-          $('#mceu_0 button:visible').click();
+          this.activeEditorService.getActive()
+            .getDoc().querySelector('#mceu_0 button').click();
         }, 100);
         
         this.formSaving = false;
@@ -574,7 +574,8 @@ export class FieldSettingsComponent implements OnInit {
 
             /* form save automatically */
             this.activeEditorService.getActive().setDirty(true);
-            $('#mceu_0 button:visible').click();
+            this.activeEditorService.getActive()
+              .getDoc().querySelector('#mceu_0 button').click();
           });
       })
       .catch(() => null);
@@ -626,7 +627,8 @@ export class FieldSettingsComponent implements OnInit {
           this.treeService.updateTree().then(() => {});
           /* form save automatically */
           this.activeEditorService.getActive().setDirty(true);
-          $('#mceu_0 button:visible').click();
+          this.activeEditorService.getActive()
+            .getDoc().querySelector('#mceu_0 button').click();
         });
       })
       .catch(() => null);

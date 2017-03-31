@@ -12,6 +12,7 @@ export class PlominoActiveEditorService {
     $('plomino-tiny-mce').css({
       position: 'fixed',
       top: 0, left: 0,
+      'pointer-events': 'none',
       'z-index': -111111 
     });
     if (editorURL !== null) {

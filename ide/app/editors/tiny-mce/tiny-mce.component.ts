@@ -1,3 +1,4 @@
+import { PlominoActiveEditorService } from './../../services/active-editor.service';
 import { TinyMCEFormContentManagerService } from './content-manager';
 import {
     Component, 
@@ -102,6 +103,7 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
     private labelsRegistry: LabelsRegistryService,
     private changeDetector: ChangeDetectorRef,
     private tabsService: TabsService,
+    private activeEditorService: PlominoActiveEditorService,
     private updateFieldService: UpdateFieldService,
     private contentManager: TinyMCEFormContentManagerService,
     private http: Http,
@@ -628,7 +630,8 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
       ? null : this.draggingService.target.get(0);
 
     if (!targetGroup) {
-      const $iframeContents = $('iframe:visible').contents();
+      const $iframeContents = $(this.activeEditorService.getActive()
+          .getContainer().querySelector('iframe')).contents();
       const $latestTarget = $(
         $.merge(
           $iframeContents.find('#tinymce *:first').toArray(),

@@ -218,6 +218,7 @@ export class ObjService {
       )
       .map((data: any) => {
         if (layout) {
+          // tinymce.editors.map(editor => [editor.id, editor.isDirty()])
           tinymce.editors.forEach((editor: TinyMceEditor) => {
             const formId = formUrl.split('/').pop();
 

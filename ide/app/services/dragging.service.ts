@@ -312,7 +312,8 @@ export class DraggingService {
   }
 
   private stopDragging(eventData: MouseEvent, iframe?: boolean) {
-    const $iframe = $('iframe:visible');
+    const $iframe = $(this.activeEditorService.getActive()
+          .getContainer().querySelector('iframe'));
     $(document).off('.drgs');
     $iframe.contents().off('.drgs');
     $('#drag-data-cursor').remove();
