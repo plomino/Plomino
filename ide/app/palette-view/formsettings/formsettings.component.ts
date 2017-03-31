@@ -1,3 +1,4 @@
+import { PlominoActiveEditorService } from './../../services/active-editor.service';
 import {
     Component,
     Input,
@@ -59,6 +60,7 @@ export class FormSettingsComponent implements OnInit {
                 private changeDetector: ChangeDetectorRef,
                 private tabsService: TabsService,
                 private treeService: TreeService,
+                private activeEditorService: PlominoActiveEditorService,
                 private zone: NgZone,
                 private elementService: ElementService,
                 private widgetService: WidgetService,

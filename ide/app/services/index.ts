@@ -13,3 +13,4 @@ export { FormsService } from './forms.service';
 export { PlominoFormsListService } from './forms-list.service';
 export { PlominoApplicationLoaderService } from './application-loader.service';
 export { URLManagerService } from './url-manager.service';
+export { PlominoActiveEditorService } from './active-editor.service';
