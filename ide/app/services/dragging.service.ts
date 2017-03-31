@@ -1,3 +1,4 @@
+import { PlominoActiveEditorService } from './active-editor.service';
 import { LogService } from './log.service';
 import { FieldsService } from './fields.service';
 import { TemplatesService } from './templates.service';
@@ -24,9 +25,12 @@ export class DraggingService {
   subformDragEvent$: Observable<MouseEvent> = this.subformDragEvent.asObservable();
   dndType: any;
 
-  constructor(private templateService: TemplatesService, 
-  private log: LogService,
-  private fieldsService: FieldsService) {}
+  constructor(
+    private templateService: TemplatesService, 
+    private log: LogService,
+    private activeEditorService: PlominoActiveEditorService,
+    private fieldsService: FieldsService
+  ) {}
 
   followDNDType(dndType: any) {
     this.dndType = dndType;
@@ -250,7 +254,7 @@ export class DraggingService {
     .on('mousemove.drgs', this.drag.bind(this))
     .on('mouseup.drgs', this.stopDragging.bind(this));
 
-    $(tinymce.activeEditor.getBody())
+    $(this.activeEditorService.getActive().getBody())
     .on('mousemove.drgs', ((e: any) => this.drag(e, true)).bind(this))
     .on('mouseup.drgs', ((e: any) => this.stopDragging(e, true)).bind(this));
 
@@ -258,7 +262,8 @@ export class DraggingService {
   }
 
   private drag(e: MouseEvent, iframe?: boolean) {
-    const $iframe = $(tinymce.activeEditor.getContainer().querySelector('iframe'));
+    const $iframe = $(this.activeEditorService.getActive()
+      .getContainer().querySelector('iframe'));
     const pos = this.getMousePos(e);
     const offset = $iframe.offset();
   

@@ -1,3 +1,4 @@
+import { PlominoActiveEditorService } from './active-editor.service';
 import { WidgetService } from './widget.service';
 import { ElementService } from './element.service';
 import { LabelsRegistryService } from './../editors/tiny-mce/services/labels-registry.service';
@@ -12,10 +13,12 @@ export class ObjService {
     // For handling the injection/fetching/submission of Plomino objects
 
     constructor(private http: PlominoHTTPAPIService, private log: LogService,
-    private elementService: ElementService,
-    private widgetService: WidgetService,
-    private changeDetector: ChangeDetectorRef,
-    private labelsRegistry: LabelsRegistryService) {}
+      private elementService: ElementService,
+      private widgetService: WidgetService,
+      private changeDetector: ChangeDetectorRef,
+      private labelsRegistry: LabelsRegistryService,
+      private activeEditorService: PlominoActiveEditorService,
+    ) {}
 
     getFieldSettings(fieldUrl: string): Observable<any> {
         return this.http.get(
@@ -187,13 +190,18 @@ export class ObjService {
         /**
          * field settings saving
          */
-        if (tinymce.activeEditor) {
+        if (this.activeEditorService.getActive()) {
           const newTitle = formData.get('form.widgets.IBasic.title');
           
-          this.labelsRegistry.update(`${ formUrl }/${ workingId }`, newTitle, 'title', true);
-          this.labelsRegistry.update(`${ formUrl }/${ workingId }`, newTitle, 'temporary_title');
+          this.labelsRegistry.update(
+            `${ formUrl }/${ workingId }`, newTitle, 'title', true
+          );
+          
+          this.labelsRegistry.update(
+            `${ formUrl }/${ workingId }`, newTitle, 'temporary_title'
+          );
   
-          const $allTheSame = $(tinymce.activeEditor.getBody())
+          const $allTheSame = $(this.activeEditorService.getActive().getBody())
             .find(`.plominoLabelClass[data-plominoid="${ workingId }"]`)
             .filter((i, element) => !Boolean($(element).attr('data-advanced')));
   

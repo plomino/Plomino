@@ -1,6 +1,7 @@
 import { LabelsRegistryService } from './../editors/tiny-mce/services/labels-registry.service';
 import { LogService } from './log.service';
 import { Injectable } from '@angular/core';
+import { PlominoActiveEditorService } from "./active-editor.service";
 
 @Injectable()
 export class PlominoElementAdapterService {
@@ -12,8 +13,11 @@ export class PlominoElementAdapterService {
   /**
    * this service is end-point for each element on the markup
    */
-  constructor(private log: LogService, 
-  private labelsRegistry: LabelsRegistryService) {}
+  constructor(
+    private log: LogService, 
+    private labelsRegistry: LabelsRegistryService,
+    private activeEditorService: PlominoActiveEditorService,
+  ) {}
 
   endPoint(type: string, source: string) {
     // this.log.info('endPoint', type, source);
@@ -88,7 +92,7 @@ export class PlominoElementAdapterService {
     this.log.extra('element-adapter.service.ts select');
 
     /** blur */
-    const $editorBody = $(tinymce.activeEditor.getBody());
+    const $editorBody = $(this.activeEditorService.getActive().getBody());
 
     $editorBody.find('.plominoFieldClass')
       .filter((i, element) => element !== $element.get(0))
@@ -138,11 +142,11 @@ export class PlominoElementAdapterService {
               .replace(/^(.+?)?<br>$/, '$1')
               .replace(/\s+/g, ' ').trim();
           this.labelsRegistry.update(
-            `${ tinymce.activeEditor.id }/${ selectedId }`,
+            `${ this.activeEditorService.getActive().id }/${ selectedId }`,
             temporaryTitle, 'temporary_title'
           );
 
-          const $allTheSame = $(tinymce.activeEditor.getBody())
+          const $allTheSame = $(this.activeEditorService.getActive().getBody())
             .find(`.plominoLabelClass[data-plominoid="${ selectedId }"]`)
             .filter((i, element) => element !== $element.get(0) 
               && !Boolean($(element).attr('data-advanced')));
@@ -159,7 +163,7 @@ export class PlominoElementAdapterService {
     // if ($before && $before.hasClass('plominoLabelClass')
     //   && !Boolean($before.attr('data-advanced'))
     // ) {
-    //   const fieldId = `${ tinymce.activeEditor.id }/${ $before.attr('data-plominoid') }`;
+    //   const fieldId = `${ this.activeEditorService.getActive().id }/${ $before.attr('data-plominoid') }`;
     //   const fieldTitle = this.labelsRegistry.get(fieldId) || 'Untitled';
     //   $before.html(fieldTitle);
     // }
