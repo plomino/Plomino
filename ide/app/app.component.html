@@ -1,4 +1,4 @@
-<div class="mdl-layout mdl-js-layout">
+<div class="mdl-layout mdl-js-layout mdl-layout--no-drawer-button">
   <header class="mdl-layout__header mdl-layout__header--scroll">
     <div class="mdl-layout__header-row">
       <!-- Title -->
@@ -7,7 +7,8 @@
       <div class="mdl-layout-spacer"></div>
       <!-- Navigation. We hide it in small screens. -->
       <nav class="mdl-navigation mdl-layout--large-screen-only">
-        <a class="mdl-navigation__link" [href]="getDBLink()">Close IDE</a>
+        <a class="mdl-navigation__link" href (click)="addNewForm($event)">Add New Form</a>
+        <a class="mdl-navigation__link" [href]="getPloneLink()">Close IDE</a>
         <a class="mdl-navigation__link" href="/Plone/logout">Logout</a>
       </nav>
     </div>
