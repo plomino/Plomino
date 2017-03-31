@@ -794,7 +794,7 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
         break;
 
       case 'PlominoPagebreak':
-        $(tinymce.activeEditor.getBody())
+        $(tinymce.get(this.id).getBody())
           .find('.drag-autopreview').remove(); // just in case
         this.contentManager.insertContent(
           this.id, this.draggingService,

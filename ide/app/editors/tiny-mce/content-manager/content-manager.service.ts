@@ -1,3 +1,4 @@
+import { PlominoActiveEditorService } from './../../../services/active-editor.service';
 import { PlominoElementAdapterService } from './../../../services/element-adapter.service';
 import { LogService } from './../../../services/log.service';
 import { Observable, Subject } from 'rxjs/Rx';
@@ -32,6 +33,7 @@ export class TinyMCEFormContentManagerService {
   constructor(private changeDetector: ChangeDetectorRef, 
   private logService: LogService,
   private adapter: PlominoElementAdapterService,
+  private activeEditorService: PlominoActiveEditorService,
   private tabsService: TabsService) {
     interface OneInTimeObservable<PlominoIFrameMouseMove> 
       extends Observable<PlominoIFrameMouseMove> {
@@ -71,7 +73,8 @@ export class TinyMCEFormContentManagerService {
         }
 
         if (this.rangeAccepted(range)) {
-          $(tinymce.activeEditor.getBody()).find('.drag-autopreview').remove();
+          $(this.activeEditorService.getActive().getBody())
+            .find('.drag-autopreview').remove();
           range.insertNode($currentDragNode.get(0));
           dragging.targetRange = range;
           return;
@@ -102,7 +105,8 @@ export class TinyMCEFormContentManagerService {
       const dragging = event.draggingService;
 
       if (dragging.currentDraggingData) {
-        $(tinymce.activeEditor.getBody()).find('.drag-autopreview').remove();
+        $(this.activeEditorService.getActive().getBody())
+          .find('.drag-autopreview').remove();
       }
     });
 
@@ -132,7 +136,8 @@ export class TinyMCEFormContentManagerService {
       dragging.targetSideBottom = true;
       
       dragging.target = $group;
-      $(tinymce.activeEditor.getBody()).find('.drag-autopreview').remove();
+      $(this.activeEditorService.getActive().getBody())
+        .find('.drag-autopreview').remove();
 
       let $preview = $(dragging.currentDraggingTemplateCode);
       if (!hoverAtBottom) {
@@ -177,7 +182,8 @@ export class TinyMCEFormContentManagerService {
     .subscribe((event) => {
       const dragging = event.draggingService;
       if (dragging.currentDraggingData) {
-        $(tinymce.activeEditor.getBody()).find('.drag-autopreview').remove();
+        $(this.activeEditorService.getActive().getBody())
+          .find('.drag-autopreview').remove();
       }
       
       dragging.target = null;
@@ -210,38 +216,39 @@ export class TinyMCEFormContentManagerService {
     this.log('setContent contentHTML', contentHTML, 3);
 
     const that = this;
-
-    $(tinymce.activeEditor.getBody())
-    .find('.plominoGroupClass').off('.cme')
-    .on('mousemove.cme', function (evt) {
-      if (dragging.currentDraggingData) {
-        that.iframeGroupMouseMoveEvents.next({
-          draggingService: dragging,
+    if (that.activeEditorService.getActive()) {
+      $(that.activeEditorService.getActive().getBody())
+      .find('.plominoGroupClass').off('.cme')
+      .on('mousemove.cme', function (evt) {
+        if (dragging.currentDraggingData) {
+          that.iframeGroupMouseMoveEvents.next({
+            draggingService: dragging,
+            originalEvent: <MouseEvent>evt.originalEvent,
+            $group: $(this),
+            editorId
+          });
+        }
+      })
+      .on('mouseleave.cme', function () {
+        that.iframeGroupMouseLeaveEvents.next(
+          { draggingService: dragging }
+        );
+      });
+  
+      $(that.activeEditorService.getActive().getBody()).off('.cmb')
+      .on('mousemove.cmb', function (evt) {
+        that.iframeMouseMoveEvents.next({
           originalEvent: <MouseEvent>evt.originalEvent,
-          $group: $(this),
+          draggingService: dragging,
           editorId
         });
-      }
-    })
-    .on('mouseleave.cme', function () {
-      that.iframeGroupMouseLeaveEvents.next(
-        { draggingService: dragging }
-      );
-    });
-
-    $(tinymce.activeEditor.getBody()).off('.cmb')
-    .on('mousemove.cmb', function (evt) {
-      that.iframeMouseMoveEvents.next({
-        originalEvent: <MouseEvent>evt.originalEvent,
-        draggingService: dragging,
-        editorId
+      })
+      .on('mouseleave.cmb', function () {
+        that.iframeMouseLeaveEvents.next({
+          draggingService: dragging
+        });
       });
-    })
-    .on('mouseleave.cmb', function () {
-      that.iframeMouseLeaveEvents.next({
-        draggingService: dragging
-      });
-    });
+    }
   }
 
   getContent(editorId: any): string {
@@ -279,7 +286,8 @@ export class TinyMCEFormContentManagerService {
   }
 
   insertContent(editorId: any, dragging: DraggingService, contentHTML: string, options?: any): void {
-    $(tinymce.activeEditor.getBody()).find('.drag-autopreview').remove(); // just in case
+    $(this.activeEditorService.getActive().getBody())
+      .find('.drag-autopreview').remove(); // just in case
     let editor = tinymce.get(editorId);
 
     const INSERT_EVENT_UNIQUE = Math.random().toString();
@@ -318,7 +326,7 @@ export class TinyMCEFormContentManagerService {
         }
 
         /* just in case */
-        $(tinymce.activeEditor.getBody())
+        $(this.activeEditorService.getActive().getBody())
           .find('.drag-autopreview').remove();
 
         $(spans[0]).insertBefore($target);
@@ -414,7 +422,7 @@ export class TinyMCEFormContentManagerService {
 
     if ($(contentHTML).html().indexOf('data-plominoid="defaultLabel"') !== -1) {
       /** if content is a label then click on it to show settings */
-      const $label = $(tinymce.activeEditor.getBody())
+      const $label = $(this.activeEditorService.getActive().getBody())
         .find('.plominoLabelClass').filter(function () {
           return INSERT_EVENT_UNIQUE === $(this).parent().attr('data-event-unique');
         });

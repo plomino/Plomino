@@ -57,6 +57,7 @@ import {
   PlominoFormsListService,
   PlominoApplicationLoaderService,
   URLManagerService,
+  PlominoActiveEditorService,
 } from './services';
 
 // Pipes 
@@ -113,6 +114,7 @@ import { LoadingComponent } from "./editors/loading/loading.component";
     LabelsRegistryService,
     PlominoApplicationLoaderService,
     URLManagerService,
+    PlominoActiveEditorService,
   ],
   pipes: [ExtractNamePipe],
   animations: [
@@ -161,6 +163,7 @@ export class AppComponent implements OnInit, AfterViewInit {
     private draggingService: DraggingService,
     private formsList: PlominoFormsListService,
     private appLoader: PlominoApplicationLoaderService,
+    private activeEditorService: PlominoActiveEditorService,
     private zone: NgZone,
     private changeDetector: ChangeDetectorRef) {
       window['jQuery'] = jQuery;
@@ -402,6 +405,7 @@ export class AppComponent implements OnInit, AfterViewInit {
   }
 
   closeTab(tab: any) {
+    this.activeEditorService.setActive(null);
     this.tabsService.closing = true;
     this.tabsService.closeTab(tab);
   }
@@ -425,6 +429,9 @@ export class AppComponent implements OnInit, AfterViewInit {
   }
 
   onTabSelect(tab: any) {
+    this.activeEditorService.setActive(
+      tab.path[0].type === 'Forms' ? tab.url : null
+    );
     this.tabsService.setActiveTab(tab, true);
 
     // check that tinymce is broken after 100ms

@@ -1,3 +1,4 @@
+import { PlominoActiveEditorService } from './../../services/active-editor.service';
 import { PlominoViewsAPIService } from './../../editors/view-editor/views-api.service';
 import { PlominoBlockPreloaderComponent } from './../../utility/block-preloader';
 import { Observable } from 'rxjs/Rx';
@@ -59,6 +60,7 @@ export class AddComponent implements OnInit, AfterViewInit {
                 private fieldsService: FieldsService,
                 private draggingService: DraggingService,
                 private elementRef: ElementRef,
+                private activeEditorService: PlominoActiveEditorService,
                 private changeDetector: ChangeDetectorRef,
                 private templatesService: TemplatesService,
                 private widgetService: WidgetService) { 
@@ -330,7 +332,7 @@ export class AddComponent implements OnInit, AfterViewInit {
 
             const getSubformLayout$ = (this.mouseDownTemplateId) 
               ? this.widgetService.getGroupLayout(
-                  tinymce.activeEditor.id,
+                  this.activeEditorService.getActive().id,
                   {
                     id: this.mouseDownTemplateId,
                     layout: $(this.draggingService.currentDraggingTemplateCode).html()

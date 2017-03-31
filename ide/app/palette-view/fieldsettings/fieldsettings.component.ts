@@ -1,3 +1,4 @@
+import { PlominoActiveEditorService } from './../../services/active-editor.service';
 import { PlominoElementAdapterService } from './../../services/element-adapter.service';
 import { LabelsRegistryService } from './../../editors/tiny-mce/services/labels-registry.service';
 import { DraggingService } from './../../services/dragging.service';
@@ -71,6 +72,7 @@ export class FieldSettingsComponent implements OnInit {
       private contentManager: TinyMCEFormContentManagerService,
       private labelsRegistry: LabelsRegistryService,
       private adapter: PlominoElementAdapterService,
+      private activeEditorService: PlominoActiveEditorService,
       private zone: NgZone,
       private http: PlominoHTTPAPIService,
       private draggingService: DraggingService,
@@ -171,8 +173,7 @@ export class FieldSettingsComponent implements OnInit {
          * should be rebuilded
          */
         setTimeout(() => {
-          /** @todo: replace to activeEditorService */
-          if (!tinymce.activeEditor) {
+          if (!this.activeEditorService.getActive()) {
             if (this.field.type === 'PlominoAction') {
               $(`input#${ oldId }:visible`)
                 .each((i, viewActionElement: HTMLInputElement) => {
@@ -198,8 +199,7 @@ export class FieldSettingsComponent implements OnInit {
             return false;
           }
           const pfc = '.plominoFieldClass';
-          /** @todo: replace to activeEditorService */
-          const $frame = $(tinymce.activeEditor.getBody());
+          const $frame = $(this.activeEditorService.getActive().getBody());
           this.log.info('id/title was changed',
             'newTitle', newTitle,
             'newId', newId,
@@ -261,10 +261,9 @@ export class FieldSettingsComponent implements OnInit {
           }
 
           /* fix tinymce selection plugin */
-          /** @todo: replace to activeEditorService */
           this.contentManager.setContent(
-            tinymce.activeEditor.id, 
-            this.contentManager.getContent(tinymce.activeEditor.id), 
+            this.activeEditorService.getActive().id, 
+            this.contentManager.getContent(this.activeEditorService.getActive().id), 
             this.draggingService
           );
 
@@ -275,7 +274,7 @@ export class FieldSettingsComponent implements OnInit {
 
           /* form save automatically */
           /** @todo: replace to activeEditorService */
-          tinymce.activeEditor.setDirty(true);
+          this.activeEditorService.getActive().setDirty(true);
           $('#mceu_0 button:visible').click();
         }, 100);
         
@@ -345,15 +344,13 @@ export class FieldSettingsComponent implements OnInit {
       const selectedId = $('#form-widgets-label-relation').val();
       const temporaryTitle = $('#form-widgets-label-fieldtitle').val();
       this.log.info('updateTemporaryTitle...', selectedId, temporaryTitle);
-      /** @todo: replace to activeEditorService */
       this.labelsRegistry.update(
-        `${tinymce.activeEditor.id}/${selectedId}`, 
+        `${this.activeEditorService.getActive().id}/${selectedId}`, 
         temporaryTitle, 'temporary_title', true
       );
       if (!this.labelAdvanced) {
         this.$selectedElement.html(temporaryTitle);
-        /** @todo: replace to activeEditorService */
-        const $allTheSame = $(tinymce.activeEditor.getBody())
+        const $allTheSame = $(this.activeEditorService.getActive().getBody())
           .find(`.plominoLabelClass[data-plominoid="${ selectedId }"]`)
           .filter((i, element) => element !== this.$selectedElement.get(0) 
             && !Boolean($(element).attr('data-advanced')));
@@ -361,8 +358,7 @@ export class FieldSettingsComponent implements OnInit {
         $allTheSame.html(temporaryTitle);
         this.changeDetector.detectChanges();
       }
-      /** @todo: replace to activeEditorService */
-      tinymce.activeEditor.setDirty(true);
+      this.activeEditorService.getActive().setDirty(true);
     }
 
     private updateMacroses() {
@@ -398,9 +394,8 @@ export class FieldSettingsComponent implements OnInit {
       const selectedId = $('#form-widgets-label-relation').val();
       if (selectedId) {
         this.labelSaving = true;
-        /** @todo: replace to activeEditorService */
         this.elementService.patchElement(
-          `${tinymce.activeEditor.id}/${selectedId}`, { title }
+          `${this.activeEditorService.getActive().id}/${selectedId}`, { title }
         );
         
         setTimeout(() => {
@@ -417,23 +412,21 @@ export class FieldSettingsComponent implements OnInit {
       this.$selectedElement.attr('data-plominoid', selectedId);
       
       if (!this.labelAdvanced) {
-        /** @todo: replace to activeEditorService */
         this.fieldTitle = this.labelsRegistry.get(
-          `${tinymce.activeEditor.id}/${selectedId}`
+          `${this.activeEditorService.getActive().id}/${selectedId}`
         );
 
         if (this.fieldTitle === null) {
-          /** @todo: replace to activeEditorService */
           this.elementService
-            .getElement(`${tinymce.activeEditor.id}/${selectedId}`)
+            .getElement(`${this.activeEditorService.getActive().id}/${selectedId}`)
             .catch((error: any) => {
               return Observable.of(null);
             })
             .subscribe((fieldData: PlominoFieldDataAPIResponse) => {
               if (fieldData) {
-                /** @todo: replace to activeEditorService */
                 this.labelsRegistry.update(
-                  `${tinymce.activeEditor.id}/${selectedId}`, fieldData.title
+                  `${this.activeEditorService.getActive().id}/${selectedId}`, 
+                  fieldData.title
                 );
                 this.fieldTitle = fieldData.title;
               }
@@ -488,7 +481,7 @@ export class FieldSettingsComponent implements OnInit {
       }
 
       this.changeDetector.detectChanges();
-      // tinymce.activeEditor.setDirty(true);
+      // this.activeEditorService.getActive().setDirty(true);
     }
 
     private getSelectedSubform() {
@@ -537,8 +530,7 @@ export class FieldSettingsComponent implements OnInit {
     }
 
     private saveGroupPrefix() {
-      /** @todo: replace to activeEditorService */
-      const $group = $(tinymce.activeEditor.getBody())
+      const $group = $(this.activeEditorService.getActive().getBody())
         .find(`.plominoGroupClass[data-groupid="${ this.field.id }"]`);
       $group.attr('data-groupid', this.groupPrefix);
       this.field.id = this.groupPrefix;
@@ -549,14 +541,13 @@ export class FieldSettingsComponent implements OnInit {
     }
 
     private deleteGroup() {
-      /** @todo: replace to activeEditorService */
-      if (!tinymce.activeEditor) {
+      if (!this.activeEditorService.getActive()) {
         return false;
       }
       this.elementService.awaitForConfirm()
       .then(() => {
         /** @todo: replace to activeEditorService */
-        const $group = $(tinymce.activeEditor.getBody())
+        const $group = $(this.activeEditorService.getActive().getBody())
           .find(`.plominoGroupClass[data-groupid="${ this.field.id }"]`);
 
         const deleteJoins: Observable<any>[] = [];
@@ -582,8 +573,7 @@ export class FieldSettingsComponent implements OnInit {
             this.changeDetector.detectChanges();
 
             /* form save automatically */
-            /** @todo: replace to activeEditorService */
-            tinymce.activeEditor.setDirty(true);
+            this.activeEditorService.getActive().setDirty(true);
             $('#mceu_0 button:visible').click();
           });
       })
@@ -594,8 +584,7 @@ export class FieldSettingsComponent implements OnInit {
       /**
        * ungroup: unwrap fields from plominoGroup and close
        */
-      /** @todo: replace to activeEditorService */
-      const $group = $(tinymce.activeEditor.getBody())
+      const $group = $(this.activeEditorService.getActive().getBody())
         .find(`.plominoGroupClass[data-groupid="${ this.field.id }"]`);
 
       /* here I should update the ungrouped labels and fields to be mceNonEditable */
@@ -615,11 +604,9 @@ export class FieldSettingsComponent implements OnInit {
       .then(() => {
         this.elementService.deleteElement(this.field.url)
         .subscribe(() => {
-          /** @todo: replace to activeEditorService */
-          if (tinymce.activeEditor) {
+          if (this.activeEditorService.getActive()) {
             this.labelsRegistry.remove(this.field.url);
-            /** @todo: replace to activeEditorService */
-            $(tinymce.activeEditor.getBody())
+            $(this.activeEditorService.getActive().getBody())
               .find(`[data-plominoid="${ this.field.id }"],[data-groupid="${ this.field.id }"]`)
               .remove();
           }
@@ -638,8 +625,7 @@ export class FieldSettingsComponent implements OnInit {
           this.changeDetector.detectChanges();
           this.treeService.updateTree().then(() => {});
           /* form save automatically */
-          /** @todo: replace to activeEditorService */
-          tinymce.activeEditor.setDirty(true);
+          this.activeEditorService.getActive().setDirty(true);
           $('#mceu_0 button:visible').click();
         });
       })
@@ -649,8 +635,7 @@ export class FieldSettingsComponent implements OnInit {
     private getCurrentRegistryKeys() {
       return Array.from(this.labelsRegistry.getRegistry().keys())
         .filter((key: string) => {
-          /** @todo: replace to activeEditorService */
-          const id = tinymce.activeEditor.id;
+          const id = this.activeEditorService.getActive().id;
           return key.indexOf(`${ id }/`) !== -1;
         });
     }
@@ -696,8 +681,7 @@ export class FieldSettingsComponent implements OnInit {
                    * 2. reference to subform element - [ok]
                    * 3. current form url - [tinymce.activeEditor.id]
                    */
-                  /** @todo: replace to activeEditorService */
-                  let $founded = $(tinymce.activeEditor.getBody())
+                  let $founded = $(this.activeEditorService.getActive().getBody())
                     .find('[data-mce-selected="1"]');
                   if (!$founded.hasClass('plominoSubformClass')) {
                     $founded = $founded.closest('.plominoSubformClass');
@@ -705,9 +689,8 @@ export class FieldSettingsComponent implements OnInit {
                   
                   $founded.attr('data-plominoid', $select2.val());
   
-                  /** @todo: replace to activeEditorService */
-                  if ($select2.val() && tinymce.activeEditor.id) {
-                    let url = tinymce.activeEditor.id;
+                  if ($select2.val() && this.activeEditorService.getActive().id) {
+                    let url = this.activeEditorService.getActive().id;
                     url += '/@@tinyform/example_widget?widget_type=subform&id=';
                     url += $select2.val();
   
@@ -715,7 +698,7 @@ export class FieldSettingsComponent implements OnInit {
                     .subscribe((response: any) => {
                       /** @todo: replace to activeEditorService */
                       this.widgetService.getGroupLayout(
-                        tinymce.activeEditor.id,
+                        this.activeEditorService.getActive().id,
                         { id: this.field.id, layout: response.json() }
                       )
                       .subscribe((result: string) => {
@@ -727,8 +710,7 @@ export class FieldSettingsComponent implements OnInit {
                           $result.find('div').removeAttr('data-groupid');
                           const subformHTML = $($result.html()).html();
                           $founded.html(subformHTML);
-                          /** @todo: replace to activeEditorService */
-                          tinymce.activeEditor.setDirty(true);
+                          this.activeEditorService.getActive().setDirty(true);
                         }
                         catch (e) {
                           $select2.val('').trigger('change');
