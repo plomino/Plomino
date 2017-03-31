@@ -16,7 +16,7 @@
       </a>
       <div class="mdl-tooltip mdl-tooltip--large"
         data-mdl-for="ide-formsettings__save-button">
-        Save current form
+        Save current {{ tab.type.replace('Plomino', '') }}
       </div>
       <a class="mdl-button mdl-js-button mdl-button--raised
         mdl-js-ripple-effect mdl-button--colored mdl-color--grey-300"
@@ -34,13 +34,13 @@
         mdl-js-ripple-effect mdl-button--colored mdl-color--green-900"
         id="ide-formsettings__preview-button"
         *ngIf="formSettings"
-        (click)="openFormPreview(tab.url)">
+        (click)="openFormPreview(tab.url, tab.type)">
           <span class="icon material-icons">slideshow</span>
           Preview
       </a>
       <div class="mdl-tooltip mdl-tooltip--large"
         data-mdl-for="ide-formsettings__preview-button">
-        Preview the form in a new tab
+        Preview the {{ tab.type.replace('Plomino', '') }} in a new tab
       </div>
       <a class="mdl-button mdl-js-button mdl-button--raised
         mdl-js-ripple-effect mdl-button--colored mdl-color--blue-700"
@@ -52,7 +52,7 @@
       </a>
       <div class="mdl-tooltip mdl-tooltip--large"
         data-mdl-for="ide-formsettings__code-button">
-        Show code of this form
+        Show code of this {{ tab.type.replace('Plomino', '') }}
       </div>
       <a class="mdl-button mdl-js-button mdl-button--raised
         mdl-js-ripple-effect mdl-button--colored mdl-color--pink-500"
@@ -64,12 +64,12 @@
       </a>
       <div class="mdl-tooltip mdl-tooltip--large"
         data-mdl-for="ide-formsettings__delete-button">
-        Delete the form
+        Delete the {{ tab.type.replace('Plomino', '') }}
       </div>
     </div>
     <div class="mdl-card mdl-shadow--2dp settings-alert-no-object"
       *ngIf="!formSettings">
-      <div class="mdl-card__supporting-text">Please select form</div>
+      <div class="mdl-card__supporting-text">Please select form or view</div>
     </div>
     <div class="scrolling-container scrolling-container--76" #formElem 
         [innerHTML]="formSettings | safePloneHtml">

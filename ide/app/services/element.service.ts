@@ -28,10 +28,10 @@ export class ElementService {
       document.querySelector('#confirm-dialog');
   }
 
-  awaitForConfirm(): Promise<boolean> {
+  awaitForConfirm(text = 'Do you agree to delete this object?'): Promise<boolean> {
     this.confirmDialog
       .querySelector('.mdl-dialog__content')
-      .innerHTML = 'Do you agree to delete this object?';
+      .innerHTML = text;
     this.confirmDialog.showModal();
     return new Promise((resolve, reject) => {
       $(this.confirmDialog)
@@ -47,7 +47,7 @@ export class ElementService {
           this.confirmDialog.close();
         });
       });
-    }
+  }
 
   getElement(id: string): Observable<PlominoFieldDataAPIResponse> {
     if (id.split('/').pop() === 'defaultLabel') {
