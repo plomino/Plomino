@@ -1,3 +1,4 @@
+import { PlominoActiveEditorService } from './../services/active-editor.service';
 import { 
     Component, 
     Input, 
@@ -44,11 +45,14 @@ export class TreeComponent implements OnInit {
 
     private click2DragDelay: Subscription;
 
-    constructor(private _elementService: ElementService,
-                private tabsService: TabsService,
-                private formsService: FormsService,
-                private log: LogService,
-                public draggingService: DraggingService) { }
+    constructor(
+      private _elementService: ElementService,
+      private tabsService: TabsService,
+      private formsService: FormsService,
+      private log: LogService,
+      private activeEditorService: PlominoActiveEditorService,
+      public draggingService: DraggingService
+    ) { }
     
     ngOnInit() {
       this.tabsService.getActiveTab()
@@ -107,8 +111,8 @@ export class TreeComponent implements OnInit {
     ) {
       this.log.info('drag subform', selected, mouseEvent, typeLabel, typeNameUrl);
       this.log.extra('tree.component.ts dragSubform');
-      if (tinymce.activeEditor && selected && typeLabel === 'Forms' 
-        && typeNameUrl !== tinymce.activeEditor.id) {
+      if (this.activeEditorService.getActive() && selected && typeLabel === 'Forms' 
+        && typeNameUrl !== this.activeEditorService.getActive().id) {
         this.draggingService.subformDragEvent.next(mouseEvent);
       }
     }
@@ -152,7 +156,7 @@ export class TreeComponent implements OnInit {
     }
 
     selectFirstOccurenceInCurrentEditor(fieldData: PlominoFieldTreeObject) {
-      const $body = $(tinymce.activeEditor.getBody());
+      const $body = $(this.activeEditorService.getActive().getBody());
       $body.find('[data-mce-selected]').removeAttr('data-mce-selected');
       
       const $results = $body

@@ -679,7 +679,7 @@ export class FieldSettingsComponent implements OnInit {
                    * receipt:
                    * 1. value of select2 - [ok]
                    * 2. reference to subform element - [ok]
-                   * 3. current form url - [tinymce.activeEditor.id]
+                   * 3. current form url - [this.activeEditorService.getActive().id]
                    */
                   let $founded = $(this.activeEditorService.getActive().getBody())
                     .find('[data-mce-selected="1"]');
