@@ -217,8 +217,31 @@ export class FormSettingsComponent implements OnInit {
         this.tabsService.openTab(eventData, true);
     }
 
-    openFormPreview(formUrl: string): void {
-        window.open(`${formUrl}/OpenForm`);
+    openFormPreview(formUrl: string, tabType: string): void {
+      if (tabType === 'PlominoForm') {
+        
+        ((): Promise<any> => {
+          const anyChanges = tinymce.get(formUrl).isDirty();
+
+          if (anyChanges) {
+            /**
+             * warn the user of any unsaved changes
+             */
+            return this.elementService.awaitForConfirm(
+              'The Form has unsaved changes, do you want to show preview anyway?'
+            );
+          }
+
+          return Promise.resolve();
+        })()
+        .then(() => {
+            window.open(`${formUrl}/OpenForm`);
+          })
+        .catch(() => null);
+      }
+      else {
+        window.open(`${formUrl}/view`);
+      }
     }
 
     private deleteForm(tabData: PlominoTab) {
