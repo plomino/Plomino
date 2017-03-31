@@ -441,7 +441,9 @@ export class AppComponent implements OnInit, AfterViewInit {
 
     // check that tinymce is broken after 100ms
     // setTimeout(() => {
-    //   let x = $('iframe:visible').contents().find('body').html();
+      // const $iframe = $(this.activeEditorService.getActive()
+      //     .getContainer().querySelector('iframe'));
+    //   let x = $iframe.find('body').html();
     //   if (typeof x === 'undefined') {
     //     tinymce.EditorManager.execCommand('mceAddEditor', true, tab.url);
     //   }
