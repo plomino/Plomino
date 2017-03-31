@@ -456,6 +456,35 @@ export class AppComponent implements OnInit, AfterViewInit {
     });
   }
 
+  private addNewForm(event: MouseEvent) {
+    event.preventDefault();
+    let formElement: InsertFieldEvent = {
+        '@type': 'PlominoForm',
+        'title': 'New Form'
+    };
+    this.elementService.postElement(this.getDBLink(), formElement)
+    .subscribe((response: AddFieldResponse) => {
+      this.treeService.updateTree().then(() => {
+        this.log.info('this.tabsService.openTab #app0009');
+        this.tabsService.openTab({
+          formUniqueId: response.formUniqueId,
+          editor: 'layout',
+          label: response.title,
+          url: response.parent['@id'] + '/' + response.id,
+          path: [{
+              name: response.title,
+              type: 'Forms'
+          }]
+        });
+      });
+    });
+  }
+
+  private getPloneLink() {
+    const dbLink = this.getDBLink();
+    return dbLink.split('/').slice(0, -1).join('/')
+  }
+
   private getDBLink() {
     return `${ 
       window.location.pathname
