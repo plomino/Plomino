@@ -1,5 +1,6 @@
 import { Subject } from 'rxjs/Rx';
 import { FormsService } from './forms.service';
+import { PlominoActiveEditorService } from './active-editor.service';
 import { URLManagerService } from './url-manager.service';
 import { PlominoElementAdapterService } from './element-adapter.service';
 import { LogService } from './log.service';
@@ -33,6 +34,7 @@ export class TabsService {
     private changeDetector: ChangeDetectorRef,
     private urlManager: URLManagerService,
     private formsService: FormsService,
+    private activeEditorService: PlominoActiveEditorService,
     private log: LogService, private zone: NgZone
   ) {
     this.treeService.getTree()
@@ -48,7 +50,7 @@ export class TabsService {
 
     if (fieldData && !fieldData.id && fieldData.type === 'subform') {
       setTimeout(() => {
-        const $selected = $(tinymce.activeEditor.getBody())
+        const $selected = $(this.activeEditorService.getActive().getBody())
           .find('[data-mce-selected="1"]');
         this.log.info('hacked id', $selected.data('plominoid'));
         fieldData.id = $selected.data('plominoid');
@@ -123,11 +125,20 @@ export class TabsService {
     this.tabs$.next(tabs);
   }
 
-  openTab(tab: PlominoTab, showAdd = true): void {
-    // console.warn('OPEN TAB', tab);
-    let tabs: PlominoTab[] = this.tabs$.getValue();
-    let tabIsOpen: PlominoTab = _.find(tabs, { url: tab.url, editor: tab.editor });
+  openTab(tab: any, showAdd = true): void {
+    let tabs: any[] = this.tabs$.getValue();
+    let tabIsOpen = _.find(tabs, { url: tab.url, editor: tab.editor });
+
+    const isFormTab = tab.path && Array.isArray(tab.path) 
+      && tab.path.length && tab.path[0].type === 'Forms';
+
+    const isActiveForm = isFormTab && this.activeEditorService.getActive()
+      && this.activeEditorService.getActive().id === tab.url;
     
+    if (isActiveForm) {
+      return;
+    }
+
     if (tabIsOpen) {
       if (tabIsOpen.url !== 'workflow') {
         this.setActiveTab(tab, false);
