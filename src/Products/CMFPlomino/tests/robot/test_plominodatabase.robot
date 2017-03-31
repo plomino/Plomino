@@ -60,7 +60,7 @@ Scenario: As a site administrator I can view a PlominoDatabase
    Then I can see the plominodatabase title 'My PlominoDatabase'
 
 Scenario: As a site administrator I can open a form
-  Set Selenium Speed  .3 seconds
+  # Set Selenium Speed  .3 seconds
   Set selenium timeout  100
   Given a logged-in test user
     and I open the ide for "mydb"
@@ -131,7 +131,7 @@ Scenario: I can add a validation rule to a field
     and I enter "You can't say blah" in "Invalid message" in the form
     and I save the macro
     and I save the fieldsettings
-    and I save the form
+    # and I save the form // no need to save the form now
     and I preview "frm_test"
     # if you want to enter blah in the Untitled - select field Untitled in the macro modal
 #    and I enter "blah" in "field_1" in the form
@@ -151,7 +151,7 @@ Scenario: I can change to computed and select the date
     and I see "date" in "Id" in "Field Settings"
 
 Scenario: I can change to computed and back and select the date
-  Set Selenium Speed  .2 seconds
+  # Set Selenium Speed  .2 seconds
   Given I have a form open
    When I add a "Date" field
     and I select the field "date"
@@ -166,3 +166,35 @@ Scenario: I can change to computed and back and select the date
     and I save the form
    Then I select the field "date"
     and I see "date" in "Id" in "Field Settings"
+
+
+# View tests
+
+# Scenario: I can add a view
+#  Given I have a form and some data saved
+#   When I create a view
+#   Then I will see the view settings
+#    and I will see a view editor listing my data
+
+#Scenario: I can add a column to a view
+#  Given I have a form and some data saved
+#   When I create a view
+#    and I add a column "myfield"
+#   Then I will see column "myfield" in the view
+
+#Scenario: I can add an action to a view
+#  Given I have a form and some data saved
+#   When I create a view
+#    and I add a action "myaction"
+#   Then I will see column "myaction" in the view
+
+#Scenario: I can add filter a view
+#  Given I have a form and some data saved
+#   When I create a view
+#    and I see > 2 documents in the view
+#    and I add a macro the the "view settings" called "number range"
+#    and I set the range to <5
+#   Then I will see less than 2 documents in the view
+
+
+

@@ -43,6 +43,7 @@ I submit the form
 
 I save the macro
   Wait until page contains element  css=.plominoSave
+  wait until page does not contain element  jquery=.plomino-block-preloader
   Click Button  css=.plominoSave
   wait until page does not contain element  jquery=.plominoSave:visible
 
@@ -50,12 +51,14 @@ I save the settings
   Click link  link=SAVE
 
 I save the fieldsettings
+  wait until page does not contain element  jquery=.plomino-block-preloader
   Wait until page contains element  jquery=.fieldsettings--control-buttons a:contains("Save")
   Click Element  jquery=.fieldsettings--control-buttons a:contains("Save")
   wait until page contains element  jquery=.portalMessage:visible:contains("Changes saved")
 
 I save the form
   Wait until page contains element  jquery=#mceu_0 button:contains("Save")
+  wait until page does not contain element  jquery=.plomino-block-preloader
   Click Element  jquery=#mceu_0 button:contains("Save")
 
 I go to the plominodatabase view
@@ -163,8 +166,11 @@ I add a macro "${macro}" to "${tab}"
 I preview "${formid}"
   Click Link  Form Settings
   wait until page contains element  jquery=.mdl-button:visible:contains("Preview")
-  wait until page does not contain element  jquery=.plomino-block-preloader:visible
+  wait until page does not contain element  jquery=.plomino-block-preloader
   Click Element  jquery=.mdl-button:visible:contains("Preview")
+  # Run keyword if  page contains element  jquery=.mdl-button.agree:visible
+  Click Element  jquery=.mdl-button.agree:visible
+  Sleep  2s
   select window  url=${PLONE_URL}/mydb/${formid}/OpenForm
 
 # --- THEN -------------------------------------------------------------------
@@ -198,6 +204,7 @@ I can see field "${fieldid}" in the editor
 I see "${value}" in "${field}" in "${tab}"
   capture page screenshot
   Click Link  ${tab}
+  wait until page does not contain element  jquery=.plomino-block-preloader:visible
   ${text} =  get value  xpath=//input[@id=//label[normalize-space(text())="${field}"]/@for]
   should be equal  ${text}  ${value}
 
