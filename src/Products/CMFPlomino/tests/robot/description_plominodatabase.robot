@@ -42,6 +42,7 @@ I submit the form
   Click Button  Save
 
 I save the macro
+  Wait until page contains element  css=.plominoSave
   Click Button  css=.plominoSave
   wait until page does not contain element  jquery=.plominoSave:visible
 
@@ -49,11 +50,13 @@ I save the settings
   Click link  link=SAVE
 
 I save the fieldsettings
+  Wait until page contains element  jquery=.fieldsettings--control-buttons a:contains("Save")
   Click Element  jquery=.fieldsettings--control-buttons a:contains("Save")
   wait until page contains element  jquery=.portalMessage:visible:contains("Changes saved")
 
 I save the form
-  Click Element  jquery=.mce-widget button:contains("Save")
+  Wait until page contains element  jquery=#mceu_0 button:contains("Save")
+  Click Element  jquery=#mceu_0 button:contains("Save")
 
 I go to the plominodatabase view
   Go To  ${PLONE_URL}/my-plominodatabase
@@ -119,8 +122,8 @@ I enter "${value}" in "${field}" in "${tab}"
   Click Link  ${tab}
   wait until page contains element  xpath=//input[@id=//label[normalize-space(text())="${field}"]/@for]
   Input Text  xpath=//input[@id=//label[normalize-space(text())="${field}"]/@for]  ${value}
-  Click Link  link=SAVE
-  wait until page contains element  link=SAVE
+  Click Element  jquery=.mdl-button:visible:contains("Save")
+  wait until page contains element  jquery=.mdl-button:visible:contains("Save")
 
 I enter "${value}" in "${field}" in the form
   wait until page contains element  xpath=//input[@id=//label[normalize-space(text())="${field}"]/@for]
@@ -159,8 +162,9 @@ I add a macro "${macro}" to "${tab}"
 
 I preview "${formid}"
   Click Link  Form Settings
-  wait until page contains element  link=PREVIEW
-  Click link  link=PREVIEW
+  wait until page contains element  jquery=.mdl-button:visible:contains("Preview")
+  wait until page does not contain element  jquery=.plomino-block-preloader:visible
+  Click Element  jquery=.mdl-button:visible:contains("Preview")
   select window  url=${PLONE_URL}/mydb/${formid}/OpenForm
 
 # --- THEN -------------------------------------------------------------------
