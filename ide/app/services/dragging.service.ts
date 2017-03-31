@@ -262,10 +262,16 @@ export class DraggingService {
   }
 
   private drag(e: MouseEvent, iframe?: boolean) {
+
     const $iframe = $(this.activeEditorService.getActive()
       .getContainer().querySelector('iframe'));
     const pos = this.getMousePos(e);
     const offset = $iframe.offset();
+
+    if (this.currentDraggingData === null) {
+      this.stopDragging(e);
+      return;
+    }
   
     if (pos === null) {
         this.stopDragging(e);
@@ -316,6 +322,7 @@ export class DraggingService {
           .getContainer().querySelector('iframe'));
     $(document).off('.drgs');
     $iframe.contents().off('.drgs');
+    $(this.activeEditorService.getActive().getBody()).off('.drgs');
     $('#drag-data-cursor').remove();
 
     this.log.info('stopDragging');
