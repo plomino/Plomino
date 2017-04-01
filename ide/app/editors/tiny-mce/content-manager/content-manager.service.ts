@@ -75,6 +75,7 @@ export class TinyMCEFormContentManagerService {
         if (this.rangeAccepted(range)) {
           $(this.activeEditorService.getActive().getBody())
             .find('.drag-autopreview').remove();
+          // console.log('insert A!3');
           range.insertNode($currentDragNode.get(0));
           dragging.targetRange = range;
           return;
@@ -141,12 +142,12 @@ export class TinyMCEFormContentManagerService {
         .find('.drag-autopreview').remove();
 
       let $preview = $(dragging.currentDraggingTemplateCode);
-      if (!hoverAtBottom) {
-        $preview.css({
-          top: `-${ groupHeight * 2 + 25 }px`,
-          position: 'relative'
-        });
-      }
+      // if (!hoverAtBottom) {
+      //   $preview.css({
+      //     top: `-${ groupHeight * 2 + 25 }px`,
+      //     position: 'relative'
+      //   });
+      // }
       
       if (/hidewhenclass/ig.test($preview.get(0).outerHTML)) {
         const $templateA = $(`
@@ -161,12 +162,14 @@ export class TinyMCEFormContentManagerService {
         `);
 
         $templateA.insertBefore(dragging.target);
+        // console.log('insert B!2');
         $templateB.insertAfter(dragging.target);
       }
       else {
         if (!$preview.hasClass('drag-autopreview')) {
           $preview.addClass('drag-autopreview');
         }
+        // console.log('insert B!1', dragging.target);
         $preview.insertAfter(dragging.target);
       }
     });
@@ -242,16 +245,31 @@ export class TinyMCEFormContentManagerService {
   
       $(editor.getBody()).off('.cmb')
       .on('mousemove.cmb', function (evt) {
-        that.iframeMouseMoveEvents.next({
-          originalEvent: <MouseEvent>evt.originalEvent,
-          draggingService: dragging,
-          editorId
-        });
+        if (
+          $(evt.target).closest('.plominoGroupClass:not(.drag-autopreview)').length
+          && dragging.currentDraggingData
+        ) {
+          evt.preventDefault();
+        }
+        else {
+          that.iframeMouseMoveEvents.next({
+            originalEvent: <MouseEvent>evt.originalEvent,
+            draggingService: dragging,
+            editorId
+          });
+        }
       })
-      .on('mouseleave.cmb', function () {
-        that.iframeMouseLeaveEvents.next({
-          draggingService: dragging
-        });
+      .on('mouseleave.cmb', function (evt) {
+        if (
+          $(evt.target).closest('.plominoGroupClass:not(.drag-autopreview)').length
+        ) {
+          evt.preventDefault();
+        }
+        else {
+          that.iframeMouseLeaveEvents.next({
+            draggingService: dragging
+          });
+        }
       });
     }
   }
@@ -339,6 +357,7 @@ export class TinyMCEFormContentManagerService {
           .find('.drag-autopreview').remove();
 
         $(spans[0]).insertBefore($target);
+        // console.log('insert B!3');
         $(spans[1]).insertAfter($target);
 
         const $iframe = $(this.activeEditorService.getActive()
@@ -408,11 +427,15 @@ export class TinyMCEFormContentManagerService {
           'lastInsert', lastInsert);
         if (this.rangeAccepted(range)) {
           $content.attr('data-event-unique', INSERT_EVENT_UNIQUE)
+          // console.log('insert A!2');
           range.insertNode($content.get(0));
         }
         else {
           const $first = $iframeContents.find('#tinymce *:first');
-          $content[lastInsert && $first.get(0) === target ? 'insertBefore' :'insertAfter']($(target))
+          // $content[lastInsert && $first.get(0) === target ? 'insertBefore' :'insertAfter']($(target))
+          //   .attr('data-event-unique', INSERT_EVENT_UNIQUE);
+          // console.log('insert B!5');
+          $content.insertAfter($(target))
             .attr('data-event-unique', INSERT_EVENT_UNIQUE);
         }
 
