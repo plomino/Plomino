@@ -125,8 +125,8 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
         this.addElement(dataToInsert);
         this.changeDetector.markForCheck();
         /* form save automatically */
-        this.formsService.saveForm(this.item.formUniqueId, false);
-        this.changeDetector.markForCheck();
+        // this.formsService.saveForm(this.item.formUniqueId, false);
+        // this.changeDetector.markForCheck();
       }
     });
 
@@ -150,8 +150,8 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
         this.insertGroup(insertion.group, insertion.target);
         this.changeDetector.markForCheck();
         /* form save automatically */
-        this.formsService.saveForm(this.item.formUniqueId, false);
-        this.changeDetector.markForCheck();
+        // this.formsService.saveForm(this.item.formUniqueId, false);
+        // this.changeDetector.markForCheck();
       }
     });
     
@@ -603,7 +603,7 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
       tiny.isDirty.emit(false);
       editor.setDirty(false);
       this.changeDetector.markForCheck();
-      // this.ngAfterViewInit();
+      this.ngAfterViewInit();
     }
   }
 
