@@ -260,22 +260,30 @@ export class FieldSettingsComponent implements OnInit {
             });
           }
 
-          /* fix tinymce selection plugin */
-          this.contentManager.setContent(
-            this.activeEditorService.getActive().id, 
-            this.contentManager.getContent(this.activeEditorService.getActive().id), 
-            this.draggingService
-          );
+          if (this.activeEditorService.getActive()) {
+            /* fix tinymce selection plugin */
+            this.contentManager.setContent(
+              this.activeEditorService.getActive().id, 
+              this.contentManager.getContent(this.activeEditorService.getActive().id), 
+              this.draggingService
+            );
+          }
 
-          componentHandler.upgradeDom();
+          window['materialPromise'].then(() => {
+            componentHandler.upgradeDom();
+          });
 
           this.loading = false;
           this.changeDetector.detectChanges();
 
           /* form save automatically */
-          this.activeEditorService.getActive().setDirty(true);
-          this.activeEditorService.getActive()
-            .getDoc().querySelector('#mceu_0 button').click();
+          if (this.activeEditorService.getActive()) {
+            this.activeEditorService.getActive().setDirty(true);
+            try {
+              this.activeEditorService.getActive()
+                .getDoc().querySelector('#mceu_0 button').click();
+            } catch (e) {}
+          }
         }, 100);
         
         this.formSaving = false;
@@ -341,24 +349,26 @@ export class FieldSettingsComponent implements OnInit {
     }
 
     private updateTemporaryTitle() {
-      const selectedId = $('#form-widgets-label-relation').val();
-      const temporaryTitle = $('#form-widgets-label-fieldtitle').val();
-      this.log.info('updateTemporaryTitle...', selectedId, temporaryTitle);
-      this.labelsRegistry.update(
-        `${this.activeEditorService.getActive().id}/${selectedId}`, 
-        temporaryTitle, 'temporary_title', true
-      );
-      if (!this.labelAdvanced) {
-        this.$selectedElement.html(temporaryTitle);
-        const $allTheSame = $(this.activeEditorService.getActive().getBody())
-          .find(`.plominoLabelClass[data-plominoid="${ selectedId }"]`)
-          .filter((i, element) => element !== this.$selectedElement.get(0) 
-            && !Boolean($(element).attr('data-advanced')));
-
-        $allTheSame.html(temporaryTitle);
-        this.changeDetector.detectChanges();
+      if (this.activeEditorService.getActive()) {
+        const selectedId = $('#form-widgets-label-relation').val();
+        const temporaryTitle = $('#form-widgets-label-fieldtitle').val();
+        this.log.info('updateTemporaryTitle...', selectedId, temporaryTitle);
+        this.labelsRegistry.update(
+          `${this.activeEditorService.getActive().id}/${selectedId}`, 
+          temporaryTitle, 'temporary_title', true
+        );
+        if (!this.labelAdvanced) {
+          this.$selectedElement.html(temporaryTitle);
+          const $allTheSame = $(this.activeEditorService.getActive().getBody())
+            .find(`.plominoLabelClass[data-plominoid="${ selectedId }"]`)
+            .filter((i, element) => element !== this.$selectedElement.get(0) 
+              && !Boolean($(element).attr('data-advanced')));
+  
+          $allTheSame.html(temporaryTitle);
+          this.changeDetector.detectChanges();
+        }
+        this.activeEditorService.getActive().setDirty(true);
       }
-      this.activeEditorService.getActive().setDirty(true);
     }
 
     private updateMacroses() {
@@ -390,25 +400,30 @@ export class FieldSettingsComponent implements OnInit {
     }
 
     private saveLabelTitle() {
-      const title = this.fieldTitle;
-      const selectedId = $('#form-widgets-label-relation').val();
-      if (selectedId) {
-        this.labelSaving = true;
-        this.elementService.patchElement(
-          `${this.activeEditorService.getActive().id}/${selectedId}`, { title }
-        );
-        
-        setTimeout(() => {
-          this.labelSaving = false;
-          this.$selectedElement.html(title);
-          this.changeDetector.detectChanges();
-        }, 200);
+      if (this.activeEditorService.getActive()) {
+        const title = this.fieldTitle;
+        const selectedId = $('#form-widgets-label-relation').val();
+        if (selectedId) {
+          this.labelSaving = true;
+          this.elementService.patchElement(
+            `${this.activeEditorService.getActive().id}/${selectedId}`, { title }
+          );
+          
+          setTimeout(() => {
+            this.labelSaving = false;
+            this.$selectedElement.html(title);
+            this.changeDetector.detectChanges();
+          }, 200);
+        }
       }
     }
 
     private labelRelationSelected(eventData: Event) {
-      const selectedId = $(eventData.target).val();
+      if (!this.activeEditorService.getActive()) {
+        return;
+      }
 
+      const selectedId = $(eventData.target).val();
       this.$selectedElement.attr('data-plominoid', selectedId);
       
       if (!this.labelAdvanced) {
@@ -573,9 +588,13 @@ export class FieldSettingsComponent implements OnInit {
             this.changeDetector.detectChanges();
 
             /* form save automatically */
-            this.activeEditorService.getActive().setDirty(true);
-            this.activeEditorService.getActive()
-              .getDoc().querySelector('#mceu_0 button').click();
+            if (this.activeEditorService.getActive()) {
+              this.activeEditorService.getActive().setDirty(true);
+              try {
+                this.activeEditorService.getActive()
+                  .getDoc().querySelector('#mceu_0 button').click();
+              } catch (e) {}
+            }
           });
       })
       .catch(() => null);
@@ -626,20 +645,26 @@ export class FieldSettingsComponent implements OnInit {
           this.changeDetector.detectChanges();
           this.treeService.updateTree().then(() => {});
           /* form save automatically */
-          this.activeEditorService.getActive().setDirty(true);
-          this.activeEditorService.getActive()
-            .getDoc().querySelector('#mceu_0 button').click();
+          if (this.activeEditorService.getActive()) {
+            this.activeEditorService.getActive().setDirty(true);
+            try {
+              this.activeEditorService.getActive()
+                .getDoc().querySelector('#mceu_0 button').click();
+            } catch (e) {}
+          }
         });
       })
       .catch(() => null);
     }
 
     private getCurrentRegistryKeys() {
-      return Array.from(this.labelsRegistry.getRegistry().keys())
-        .filter((key: string) => {
-          const id = this.activeEditorService.getActive().id;
-          return key.indexOf(`${ id }/`) !== -1;
-        });
+      if (this.activeEditorService.getActive()) {
+        return Array.from(this.labelsRegistry.getRegistry().keys())
+          .filter((key: string) => {
+            const id = this.activeEditorService.getActive().id;
+            return key.indexOf(`${ id }/`) !== -1;
+          });
+      }
     }
 
     private loadSettings() {
@@ -805,7 +830,9 @@ export class FieldSettingsComponent implements OnInit {
             setTimeout(() => {
               this.changeDetector.detectChanges();
               this.changeDetector.markForCheck();
-              componentHandler.upgradeDom()
+              window['materialPromise'].then(() => {
+                componentHandler.upgradeDom();
+              });
             }, 200);
             return;
           }

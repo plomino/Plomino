@@ -29,6 +29,9 @@ export class PlominoViewsAPIService {
     return this.http
       .get(reqURL)
       .map((response: Response) => response.json())
+      .catch((err: any) => {
+        return Observable.of({ results: [], total: 0 });
+      })
   }
 
   fetchViewTable(url: string): Observable<[string, PlominoVocabularyViewData]> {

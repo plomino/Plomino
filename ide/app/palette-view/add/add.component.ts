@@ -269,7 +269,7 @@ export class AddComponent implements OnInit, AfterViewInit {
                 this.treeService.updateTree().then(() => {
                   this.log.info('this.tabsService.openTab #a002');
                   this.tabsService.openTab({
-                    editor: 'code',
+                    editor: 'view',
                     label: response.title,
                     url: response.parent['@id'] + '/' + response.id,
                     path: [{

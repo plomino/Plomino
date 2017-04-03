@@ -32,6 +32,20 @@ I have a form open
     and I open the ide for "mydb"
     and I open the first form   #TODO   When I open a form "frm_test"
 
+I have a form and some data saved
+  Given a logged-in test user
+    and I open the ide for "mydb"
+    and I open the first form
+    sleep  1s
+    and I add a "Text" field
+    and I edit the label "text" to "First name"
+    Click Link  Add
+    and I add a "Text" field
+    and I edit the label "text_1" to "Last name"
+    Click Link  Add
+    and I add a "Date" field
+    and I save the form
+
 
 # --- WHEN -------------------------------------------------------------------
 
@@ -72,6 +86,13 @@ I add a form by click
    Click Element  xpath=//div[@class="palette-wrapper"]//*[@title="Form"]
   wait until page contains  new-form
   wait until page contains element  css=div.mce-tinymce
+
+
+I create a view
+  wait until page contains element  jquery=#PlominoView
+  wait until page contains element  jquery=div.main-app.panel
+  Click Element  xpath=//div[@class="palette-wrapper"]//*[@title="View"]
+  wait until page contains  new-view
 
 I add a form by dnd
   Set Selenium Timeout  10 seconds
@@ -171,6 +192,38 @@ I add a macro "${macro}" to "${tab}"
 I input the text "${text}" inside the field with id "${fieldid}"
   Input Text  jquery=#${fieldid}  ${text}
 
+I add an action "${actionid}"
+  Click Link  Add
+  wait until page contains element  jquery=#action
+  wait until page contains element  jquery=div.main-app.panel
+  Click Element  jquery=#action
+  wait until page contains element  jquery=.plomino-block-preloader
+  wait until page does not contain element  jquery=.plomino-block-preloader
+  Click Element  jquery=.actionButtons input[type="button"]:last
+  wait until page contains element  jquery=.actionButtons input[type="button"].view-editor__action--selected
+  wait until page does not contain element  jquery=.plomino-block-preloader
+  Input Text  jquery=#form-widgets-IShortName-id  ${actionid}
+  Input Text  jquery=#form-widgets-IBasic-title  ${actionid}
+  Wait until page contains element  jquery=.fieldsettings--control-buttons a:contains("Save")
+  Click Element  jquery=.fieldsettings--control-buttons a:contains("Save")
+  wait until page does not contain element  jquery=.plomino-block-preloader
+
+I add a column "${myfield}"
+  Click Link  Add
+  Click Element  xpath=//div[@class="palette-wrapper"]//*[@title="Column"]
+  wait until page contains element  jquery=.plomino-block-preloader
+  wait until page does not contain element  jquery=.plomino-block-preloader
+  Click Element  jquery=.view-editor__column-header:last
+  wait until page contains element  jquery=.view-editor__column-header.view-editor__column-header--selected
+  wait until page does not contain element  jquery=.plomino-block-preloader
+  Input Text  jquery=#form-widgets-IShortName-id  ${myfield}
+  Select From List By Value  jquery=#form-widgets-displayed_field  frm_test/${myfield}
+  # TODO: fix "If you don't specify a column formula, you need to select a field."
+  # sleep  2s
+  # Wait until page contains element  jquery=.fieldsettings--control-buttons a:contains("Save")
+  # Click Element  jquery=.fieldsettings--control-buttons a:contains("Save")
+  # wait until page does not contain element  jquery=.plomino-block-preloader
+
 I preview "${formid}"
   Click Link  Form Settings
   wait until page contains element  jquery=.mdl-button:visible:contains("Preview")
@@ -199,6 +252,17 @@ I can see "${formid}" is open
   page should contain   ${formid}
   page should contain element  css=div.mce-edit-area
 
+I can see a view editor listing my data
+  Wait until page contains element  jquery=.view-editor:contains("New View")
+  Page should contain element  jquery=.view-editor:contains("New View")
+
+I will see column "${columnid}" in the view
+  Wait until page contains element  jquery=.view-editor .view-editor__column-header[data-column="${columnid}"]
+  Page should contain element  jquery=.view-editor .view-editor__column-header[data-column="${columnid}"]
+
+I will see action "${actionid}" in the view
+  Wait until page contains element  jquery=.view-editor .actionButtons input[id="${actionid}"]
+  Page should contain element  jquery=.view-editor .actionButtons input[id="${actionid}"]
 
 I can see field "${fieldid}" in the editor
   Wait until page contains  Insert

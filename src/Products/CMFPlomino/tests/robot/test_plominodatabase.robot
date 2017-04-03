@@ -37,7 +37,7 @@ Library  Remote  ${PLONE_URL}/RobotRemote
 Library           ${CURDIR}/../../../../robotframework-selenium2library-extensions/src/Selenium2LibraryExtensions    WITH NAME    Selenium2LibraryExtensions
 
 Test Setup  Open test browser
-Test Teardown  description_plominodatabase.Plone Test Teardown
+# Test Teardown  description_plominodatabase.Plone Test Teardown
 
 
 *** Variables ****************************************************************
@@ -171,23 +171,29 @@ Scenario: I can change to computed and back and select the date
 
 # View tests
 
-# Scenario: I can add a view
-#  Given I have a form and some data saved
-#   When I create a view
-#   Then I will see the view settings
-#    and I will see a view editor listing my data
+Scenario: I can add a view
+  Given I have a form and some data saved
+   When I create a view
+   Then I can see "new-view" is open
+    and I can see a view editor listing my data
 
-#Scenario: I can add a column to a view
-#  Given I have a form and some data saved
-#   When I create a view
-#    and I add a column "myfield"
-#   Then I will see column "myfield" in the view
+Scenario: I can add a column to a view
+  Given I have a form and some data saved
+   When I create a view
+    and I can see "new-view" is open
+    and I can see a view editor listing my data
+    and I add a column "text"
+    and I add a column "text_1"
+  Then I will see column "text" in the view
+    and I will see column "text_1" in the view
 
-#Scenario: I can add an action to a view
-#  Given I have a form and some data saved
-#   When I create a view
-#    and I add a action "myaction"
-#   Then I will see column "myaction" in the view
+Scenario: I can add an action to a view
+  Given I have a form and some data saved
+   When I create a view
+    and I can see "new-view" is open
+    and I can see a view editor listing my data
+    and I add an action "my action"
+   Then I will see action "my-action" in the view
 
 #Scenario: I can add filter a view
 #  Given I have a form and some data saved

@@ -15,8 +15,8 @@ export class PlominoActiveEditorService {
       'pointer-events': 'none',
       'z-index': -111111 
     });
+    this.editorURL = editorURL;
     if (editorURL !== null) {
-      this.editorURL = editorURL;
       $(`plomino-tiny-mce:has(textarea[id="${ editorURL }"])`)
         .removeAttr('style');
     }
