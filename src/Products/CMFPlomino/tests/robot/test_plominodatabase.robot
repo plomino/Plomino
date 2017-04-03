@@ -106,6 +106,7 @@ Scenario: I can add a field to a form by dnd
     and I see "text" in "Id" in "Field Settings"
 
 Scenario: I can change the label and title at the same time
+  # Set Selenium Speed  1 seconds
   Given I have a form open
    When I add a "Text" field
     and I edit the label "text" to "My text question"
@@ -131,11 +132,10 @@ Scenario: I can add a validation rule to a field
     and I enter "You can't say blah" in "Invalid message" in the form
     and I save the macro
     and I save the fieldsettings
-    # and I save the form // no need to save the form now
+    and I save the form
     and I preview "frm_test"
     # if you want to enter blah in the Untitled - select field Untitled in the macro modal
-#    and I enter "blah" in "field_1" in the form
-    and Input Text  jquery=#field_1  blah
+    and I input the text "blah" inside the field with id "field_1"
     and I submit the form
    Then I will see the validation error "You can't say blah" for field "field_1"
 

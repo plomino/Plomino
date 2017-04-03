@@ -133,15 +133,20 @@ I enter "${value}" in "${field}" in the form
   Input Text  xpath=//input[@id=//label[normalize-space(text())="${field}"]/@for]  ${value}
 
 
+Double Click On Label "${plominoid}"
+  Execute Javascript  window.top.jQuery('iframe:visible').contents().find('.plominoLabelClass[data-plominoid="${plominoid}"]:visible').filter((i, e) => !window.top.jQuery(e).closest('.mce-offscreen-selection').length).removeClass('mceNonEditable').attr('contenteditable', 'true').addClass('plominoLabelClass--selected').addClass('mceEditable')
+
+
 I edit the label "${fieldid}" to "${text}"
   select frame  css=.mce-edit-area iframe
-  ${label} =  set variable  xpath=//span[contains(@class,"plominoLabelClass")][@data-plominoid="${fieldid}"]
+  ${label} =  set variable  xpath=//*[contains(@class,"plominoLabelClass")][@data-plominoid="${fieldid}"]
   wait until page contains element  ${label}
-  double click element  ${label}
-  #Press Key    ${label}   \\1       #Ctrl-A
-  #Press Key    ${label}   \\127     #DELETE
+  click element  ${label}
+  Double Click On Label "${fieldid}"
+  # Execute Javascript  window.top.jQuery('iframe:visible').contents().find('.plominoLabelClass[data-plominoid="${fieldid}"]:visible').filter((i, e) => !window.top.jQuery(e).closest('.mce-offscreen-selection').length).removeClass('mceNonEditable').attr('contenteditable', 'true').addClass('plominoLabelClass--selected').addClass('mceEditable')
+  click element  ${label}
   clear element text  ${label}
-  press key  ${label}  ${text}
+  Input Text  ${label}  ${text}
   unselect frame
 
 I select the field "${fieldid}"
@@ -163,13 +168,16 @@ I add a macro "${macro}" to "${tab}"
   Click element  xpath=//*[contains(@class,"select2-result")][normalize-space(text())="${macro}"]
   wait until page contains element  css=.plominoSave
 
+I input the text "${text}" inside the field with id "${fieldid}"
+  Input Text  jquery=#${fieldid}  ${text}
+
 I preview "${formid}"
   Click Link  Form Settings
   wait until page contains element  jquery=.mdl-button:visible:contains("Preview")
   wait until page does not contain element  jquery=.plomino-block-preloader
   Click Element  jquery=.mdl-button:visible:contains("Preview")
   # Run keyword if  page contains element  jquery=.mdl-button.agree:visible
-  Click Element  jquery=.mdl-button.agree:visible
+  #   Click Element  jquery=.mdl-button.agree:visible
   Sleep  2s
   select window  url=${PLONE_URL}/mydb/${formid}/OpenForm
 
