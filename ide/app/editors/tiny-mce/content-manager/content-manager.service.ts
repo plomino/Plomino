@@ -324,7 +324,7 @@ export class TinyMCEFormContentManagerService {
       editor = tinymce.EditorManager.editors[editorId];
     }
 
-    let target: any = null;
+    let target: HTMLElement = null;
     
     if (options.target) {
       target = options.target;
@@ -398,8 +398,13 @@ export class TinyMCEFormContentManagerService {
           }).toArray()
       )
     ).last();
+    
     if (typeof target === 'boolean' || target === null) {
       target = $latestTarget.get(0);
+    }
+
+    if (target && $(target).closest('.plominoGroupClass').length) {
+      target = $(target).closest('.plominoGroupClass').get(0);
     }
     
     if (options && !options.target && !target) {

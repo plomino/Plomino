@@ -434,9 +434,12 @@ export class AppComponent implements OnInit, AfterViewInit {
   }
 
   onTabSelect(tab: any) {
+    // this.log.warn('onTabSelect', tab);
     this.activeEditorService.setActive(
       tab.path[0].type === 'Forms' ? tab.url : null
     );
+    // this.log.warn('onTabSelect setActive', tab.path[0].type === 'Forms' ? tab.url : null);
+    // this.log.warn('onTabSelect getActive', this.activeEditorService.editorURL, this.activeEditorService.getActive());
     this.tabsService.setActiveTab(tab, true);
 
     // check that tinymce is broken after 100ms

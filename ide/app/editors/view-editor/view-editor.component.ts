@@ -60,6 +60,7 @@ export class PlominoViewEditorComponent implements OnInit {
 
     this.fieldsService.onNewColumn()
       .subscribe((response: string) => {
+        // this.log.warn('onNewColumn, response', response);
         if (response === this.item.url) {
           this.reloadView();
         }
@@ -106,8 +107,13 @@ export class PlominoViewEditorComponent implements OnInit {
 
         this.viewSourceTable = this.sanitizer
           .bypassSecurityTrustHtml($html.html());
+
+        this.changeDetector.markForCheck();
+        this.changeDetector.detectChanges();
         
         setTimeout(() => {
+
+          // this.log.warn('new html received', $html.html());
 
           /* attach indexes */
           json.results.forEach((result, index) => {

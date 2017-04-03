@@ -677,7 +677,7 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
     let originalTitle = this.labelsRegistry.get(updateData.fieldData.url);
     const editor = tinymce.get(this.id);
     const dataToUpdate = $(editor.getBody())
-      .find(`*[data-plominoid=${updateData.fieldData.id}]`)
+      .find(`*[data-plominoid=${updateData.fieldData.id.split('/').pop()}]`)
       .filter(function () {
         const $plominoElement = $(this);
         if (originalTitle === null && $plominoElement.hasClass('plominoLabelClass')) {
