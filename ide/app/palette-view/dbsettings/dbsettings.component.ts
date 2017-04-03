@@ -66,15 +66,21 @@ export class DBSettingsComponent {
         document.querySelector('#confirm-dialog');
 
       if (!this.importExportDialog.showModal) {
-        dialogPolyfill.registerDialog(this.importExportDialog);
+        window['materialPromise'].then(() => {
+          dialogPolyfill.registerDialog(this.importExportDialog);
+        });
       }
 
       if (!this.aclDialog.showModal) {
-        dialogPolyfill.registerDialog(this.aclDialog);
+        window['materialPromise'].then(() => {
+          dialogPolyfill.registerDialog(this.aclDialog);
+        });
       }
 
       if (!this.confirmDialog.showModal) {
-        dialogPolyfill.registerDialog(this.confirmDialog);
+        window['materialPromise'].then(() => {
+          dialogPolyfill.registerDialog(this.confirmDialog);
+        });
       }
 
       this.importExportDialog.querySelector('.mdl-dialog__actions button')

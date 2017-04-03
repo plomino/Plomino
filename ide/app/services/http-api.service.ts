@@ -16,7 +16,9 @@ export class PlominoHTTPAPIService {
         document.querySelector('#ok-dialog');
 
     if (!this.okDialog.showModal) {
-      dialogPolyfill.registerDialog(this.okDialog);
+      window['materialPromise'].then(() => {
+        dialogPolyfill.registerDialog(this.okDialog);
+      });
     }
 
     this.okDialog.querySelector('.mdl-dialog__actions button')
