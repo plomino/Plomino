@@ -27,6 +27,12 @@ I open the ide for "${db}"
   Wait Until page does not contain element  id=application-loader
   wait until page contains  ${db}
 
+I have an empty form open
+  Given a logged-in test user
+   and I open the ide for "mydb"
+   and I add a form by click
+   and I can see "new-form" is open
+
 I have a form open
   Given a logged-in test user
     and I open the ide for "mydb"
@@ -86,6 +92,10 @@ I add a form by click
    Click Element  xpath=//div[@class="palette-wrapper"]//*[@title="Form"]
   wait until page contains  new-form
   wait until page contains element  css=div.mce-tinymce
+
+I add a hidewhen by click
+   Wait until page contains  Hide When
+   Click Element  xpath=//div[@class="palette-wrapper"]//*[@title="Hide When"]
 
 
 I create a view
@@ -271,6 +281,13 @@ I can see field "${fieldid}" in the editor
   Wait until page contains element  css=.plominoFieldClass.mceNonEditable  #TODO change for test based on spinner
   Page should contain element  css=.plominoFieldClass.mceNonEditable
   Page should contain element  xpath=//*[contains(@class,"plominoFieldClass")][@data-plominoid="${fieldid}"]
+  unselect frame
+
+I will see the "${position}" hidewhen on the path "${xpath}"
+  wait until page contains element  css=.mce-edit-area
+  select frame  css=.mce-edit-area iframe
+  Wait until page contains element  css=.plominoHidewhenClass.mceNonEditable  #TODO change for test based on spinner
+  Page should contain element  xpath=//*[@id="tinymce"]${xpath}[contains(@class,"plominoHidewhenClass")][@data-plomino-position="${position}"]
   unselect frame
 
 I see "${value}" in "${field}" in "${tab}"
