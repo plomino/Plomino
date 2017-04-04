@@ -182,6 +182,22 @@ export class AppComponent implements OnInit, AfterViewInit {
   }
 
   ngOnInit() {
+    $('#add-new-form-tab').remove();
+    const addNewFormBtn = `<li class="add-new-form-tab" id="add-new-form-tab">
+      <a href class="nav-link"><span class="icon material-icons">add</span></a>
+      <div class="mdl-tooltip mdl-tooltip--large" for="add-new-form-tab">
+      Click to add a new form
+      </div>
+    </li>`;
+
+    $('div.main-app.panel > tabset > ul').append(addNewFormBtn);
+    $('#add-new-form-tab').click((evt) => {
+      $('#add-new-form-tab .mdl-tooltip').removeClass('is-active');
+      this.addNewForm(<MouseEvent> evt.originalEvent);
+      evt.preventDefault();
+      return false;
+    });
+
     this.treeService
     .getTree()
     .subscribe((tree) => {
