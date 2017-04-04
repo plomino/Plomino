@@ -605,7 +605,7 @@ class MacroTemplateView(BrowserView):
         if form is None:
             raise NotFound #("No template found for %s"%templateid)
         res = self._renameGroup(form,
-                                newgroupid=remove_prefix(templateid,'template_'),
+                                groupid=remove_prefix(templateid,'template_'),
                                 ids=form.objectIds())
         res['layout'] = form.form_layout
         return json.dumps(res)
@@ -623,20 +623,21 @@ class MacroTemplateView(BrowserView):
         group_contents = self.request.group_contents
         return json.dumps(self._renameGroup(self.form, newid, group_contents))
 
-    def _renameGroup(self, form, newgroupid, ids):
+    def _renameGroup(self, form, groupid, ids):
         # if form is None it's a rename
 
         context_ids = set(self.form.objectIds())
-        def new_id(gid, id, newgroupid=newgroupid):
+        def new_id(gid, id, oldgroupid=groupid):
             # if the id is 'text' and the newgroupid is 'text' and then the new id should be
             # 'text_1' etc, not 'text_1_text'
-            id = remove_prefix(id, newgroupid+'_') if id.startswith(newgroupid+'_') else remove_prefix(id, newgroupid)
+            id = remove_prefix(id, oldgroupid+'_') if id.startswith(oldgroupid+'_') else remove_prefix(id, oldgroupid)
             return (gid+'_'+id).rstrip('_')
 
         # find a prefix for all the subitems that is unique
+        newgroupid = groupid
         i = 1
         while any(new_id(newgroupid,id) in context_ids for id in ids ):
-            newgroupid = "%s_%i" % (newgroupid, i)
+            newgroupid = "%s_%i" % (groupid, i)
             i += 1
 
         # now we have a unique prefix. Copy or move all the items
