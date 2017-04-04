@@ -216,11 +216,31 @@ export class ObjService {
         `${formUrl}/@@edit`, formData, {},
         'obj.service.ts updateFormSettings'
       )
-      .map((data: any) => {
+      .map((data: Response) => {
         if (layout) {
+          this.activeEditorService.setActive(newFormUrl);
+
+          if (tinymce.get(formUrl)) {
+            tinymce.get(formUrl).setDirty(false);
+          }
+
+          if (tinymce.get(newFormUrl)) {
+            tinymce.get(newFormUrl).setDirty(false);
+          }
+
+          setTimeout(() => {
+            if (tinymce.get(formUrl)) {
+              tinymce.get(formUrl).setDirty(false);
+            }
+  
+            if (tinymce.get(newFormUrl)) {
+              tinymce.get(newFormUrl).setDirty(false);
+            }
+          }, 400);
+
           // tinymce.editors.map(editor => [editor.id, editor.isDirty()])
           tinymce.editors.forEach((editor: TinyMceEditor) => {
-            const formId = formUrl.split('/').pop();
+            const formId = newFormUrl.split('/').pop();
 
             /**
              * update all subforms while parent form changed

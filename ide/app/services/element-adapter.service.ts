@@ -124,35 +124,42 @@ export class PlominoElementAdapterService {
             .removeClass('mceNonEditable')
             .attr('contenteditable', 'true')
             .addClass('mceEditable');
+
+          // const ed = this.activeEditorService.getActive();
+          // const rng = ed.selection.getRng();
+          // rng.setStart(rng.startContainer, 0);
+          // ed.selection.setRng(rng);
         });
 
       this.log.info('element input.adapter event attached', $element.get(0));
       $element.on('input.adapter', ($event) => {
-        if ($element.attr('data-plominoid') === 'defaultLabel') {
-          return true;
-        }
-
-        this.log.info('input.adapter', $element.html());
-        const labelAdvanced = Boolean($element.attr('data-advanced'));
-
-        if (!labelAdvanced) {
-          const selectedId = $element.attr('data-plominoid');
-          const temporaryTitle = 
-            $element.html().replace(/&nbsp;/g, ' ')
-              .replace(/^(.+?)?<br>$/, '$1')
-              .replace(/\s+/g, ' ').trim();
-          this.labelsRegistry.update(
-            `${ this.activeEditorService.getActive().id }/${ selectedId }`,
-            temporaryTitle, 'temporary_title'
-          );
-
-          const $allTheSame = $(this.activeEditorService.getActive().getBody())
-            .find(`.plominoLabelClass[data-plominoid="${ selectedId }"]`)
-            .filter((i, element) => element !== $element.get(0) 
-              && !Boolean($(element).attr('data-advanced')));
-
-          $allTheSame.html(temporaryTitle);
-        }
+        setTimeout(() => {
+          if ($element.attr('data-plominoid') === 'defaultLabel') {
+            return true;
+          }
+  
+          this.log.info('input.adapter', $element.html());
+          const labelAdvanced = Boolean($element.attr('data-advanced'));
+  
+          if (!labelAdvanced) {
+            const selectedId = $element.attr('data-plominoid');
+            const temporaryTitle = 
+              $element.html().replace(/&nbsp;/g, ' ')
+                .replace(/^(.+?)?<br>$/, '$1')
+                .replace(/\s+/g, ' ').trim();
+            this.labelsRegistry.update(
+              `${ this.activeEditorService.getActive().id }/${ selectedId }`,
+              temporaryTitle, 'temporary_title'
+            );
+  
+            const $allTheSame = $(this.activeEditorService.getActive().getBody())
+              .find(`.plominoLabelClass[data-plominoid="${ selectedId }"]`)
+              .filter((i, element) => element !== $element.get(0) 
+                && !Boolean($(element).attr('data-advanced')));
+  
+            $allTheSame.html(temporaryTitle);
+          }
+        }, 1);
       });
     }
 

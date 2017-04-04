@@ -436,12 +436,17 @@ export class TinyMCEFormContentManagerService {
           range.insertNode($content.get(0));
         }
         else {
-          const $first = $iframeContents.find('#tinymce *:first');
+          // const $first = $iframeContents.find('#tinymce *:first');
           // $content[lastInsert && $first.get(0) === target ? 'insertBefore' :'insertAfter']($(target))
           //   .attr('data-event-unique', INSERT_EVENT_UNIQUE);
           // console.log('insert B!5');
           $content.insertAfter($(target))
             .attr('data-event-unique', INSERT_EVENT_UNIQUE);
+
+          if (!$content.parent().length) {
+            $content.insertAfter($latestTarget)
+              .attr('data-event-unique', INSERT_EVENT_UNIQUE);
+          }
         }
 
         const $iframe = $(this.activeEditorService.getActive()
