@@ -175,6 +175,14 @@ Scenario: I can add hidewhen on empty form by click
    Then I will see the "start" hidewhen on the path "/p[2]/span[1]"
     and I will see the "end" hidewhen on the path "/p[2]/span[2]"
 
+Scenario: I can add hidewhen on email form by click
+  Given I have an empty form open
+   When I add a "Email" field
+    and add a hidewhen by click
+    and sleep  0.5s
+    and I save the form
+   Then I will see the "start" hidewhen on the path "/p[2]/span[1]"
+    and I will see the "end" hidewhen on the path "/p[2]/span[2]"
 
 # View tests
 
