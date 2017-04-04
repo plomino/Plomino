@@ -16,6 +16,11 @@ class IPlominoColumn(model.Schema):
     """ Plomino view schema
     """
 
+    hidden_column = schema.Bool(
+        title=_('CMFPlomino_label_HiddenColumn', default="Hidden column"),
+        default=False,
+    )
+
     displayed_field = schema.Choice(
         source=get_fields,
         title=_('CMFPlomino_label_DisplayedField', default="Displayed field"),
@@ -33,19 +38,15 @@ class IPlominoColumn(model.Schema):
         required=False,
     )
 
-    hidden_column = schema.Bool(
-        title=_('CMFPlomino_label_HiddenColumn', default="Hidden column"),
-        default=False,
-    )
-
     # ADVANCED
-    supermodel_directives.fieldset(
-        'advanced',
-        label=_(u'Advanced'),
-        fields=(
-            'formula',
-        ),
-    )
+    # TODO: for now the invariant below doesn't work across groups so we won't have advanced. Need to fix
+    # supermodel_directives.fieldset(
+    #     'advanced',
+    #     label=_(u'Advanced'),
+    #     fields=(
+    #         'formula',
+    #     ),
+    # )
 
     @invariant
     def formulaInvariant(data):
