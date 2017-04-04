@@ -707,7 +707,10 @@ class PlominoForm(Container):
                     if field_node and field_node.text().strip() == field_id:
                         # found our field
                         found_in_sibling = True
-                        to_find.remove(field)
+                        if field in to_find:
+                            to_find.remove(field)
+                        # if not in to_find then we have multiple fields with same name
+                        # TODO: not sure if we should handle this
                     elif field_node and togroup:
                         # found a field in our group thats not ours
                         # If it's a dynamic field we want this in our groping
