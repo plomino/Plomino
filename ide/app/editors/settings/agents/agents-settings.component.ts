@@ -29,14 +29,14 @@ export class AgentsSettingsComponent {
     }
 
     getElement() {
-        this._elementService.getElement(this.id)
-            .subscribe(
-                data => {
-                    this.data = data;
-                    this.isDirty.emit(false);
-                },
-                err => console.log(err)
-            );
+        // this._elementService.getElement(this.id)
+        //     .subscribe(
+        //         data => {
+        //             this.data = data;
+        //             this.isDirty.emit(false);
+        //         },
+        //         err => console.log(err)
+        //     );
     }
 
     onSubmit(id: string, title: string, description: string, run_as: string) {

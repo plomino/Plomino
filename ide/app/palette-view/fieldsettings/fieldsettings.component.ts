@@ -476,6 +476,7 @@ export class FieldSettingsComponent implements OnInit {
       this.fieldTitle = this.labelsRegistry.get(field.url);
       if (this.fieldTitle === null
         && tmpId !== 'defaultLabel') {
+          debugger;
         this.elementService
           .getElement(field.url)
           .catch((error: any) => {
@@ -763,8 +764,26 @@ export class FieldSettingsComponent implements OnInit {
             this.labelAdvanced = Boolean(this.$selectedElement.attr('data-advanced'));
             this.updateFieldTitle(field);
 
+            // const $select = $('#form-widgets-label-relation');
+
+            // if ($select.length) {
+            //   $select.off('change.lsevents').on('change.lsevents', ($event) => {
+            //     this.labelRelationSelected($event);
+            //   });
+
+            //   if (!this.field.id) {
+            //     $select.select2().val('').trigger('change');
+            //   }
+            //   else {
+            //     this.zone.runOutsideAngular(() => {
+            //       $select.select2().val(this.field.id).trigger('change');
+            //     });
+            //   }
+            // }
+
             setTimeout(() => {
               const $select = $('#form-widgets-label-relation');
+              console.log($select, $select.select2());
               if ($select.length) {
                 const $select2 = (<any>$select).select2({
                   placeholder: ''
@@ -786,6 +805,8 @@ export class FieldSettingsComponent implements OnInit {
                 });
               }
             }, 100);
+
+            // this.loading = false;
 
             this.labelsRegistry.onUpdated()
             .subscribe(() => {

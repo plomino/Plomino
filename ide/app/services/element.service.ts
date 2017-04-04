@@ -50,13 +50,18 @@ export class ElementService {
   }
 
   getElement(id: string): Observable<PlominoFieldDataAPIResponse> {
+    console.warn(console.trace());
     if (id.split('/').pop() === 'defaultLabel') {
       return Observable.of(null);
     }
     return this.http.getWithOptions(
       id, { headers: this.headers },
       'element.service.ts getElement'
-    ).map((res: Response) => res.json());
+    )
+    .map((res: Response) => res.json())
+    .catch((err: any) => {
+      return Observable.of(null);
+    });
   }
 
   // Had some issues with TinyMCEComponent, had to do this instead of using getElement() method

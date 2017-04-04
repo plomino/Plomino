@@ -110,8 +110,7 @@ export class FormSettingsComponent implements OnInit {
       formData.set('form.widgets.form_layout', formLayout);
     
       const flatMapCallback = ((responseData: {html: string, url: string}) => {
-        // debugger;
-        if (responseData.html.indexOf('dl.error') > -1) {
+        if (responseData.html !== "<div id='ajax_success'/>") {
             return Observable.of(responseData.html);
         } else {
             $formId = responseData.url.slice(responseData.url.lastIndexOf('/') + 1);
