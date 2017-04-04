@@ -159,6 +159,7 @@ export class AppComponent implements OnInit, AfterViewInit {
   DIRECTION_LEFT = 'left';
   DIRECTION_RIGHT = 'right';
   wrapperWidth: number = 464;
+  addDialog: HTMLDialogElement;
 
   constructor(private treeService: TreeService,     
     private elementService: ElementService, 
@@ -172,6 +173,31 @@ export class AppComponent implements OnInit, AfterViewInit {
     private zone: NgZone,
     private changeDetector: ChangeDetectorRef) {
       window['jQuery'] = jQuery;
+
+      this.addDialog = <HTMLDialogElement> 
+        document.querySelector('#modal-tab-plus');
+
+      if (!this.addDialog.showModal) {
+        window['materialPromise'].then(() => {
+          dialogPolyfill.registerDialog(this.addDialog);
+        });
+      }
+
+      Array.from(
+        this.addDialog
+          .querySelectorAll('.mdl-dialog__actions button')
+      )
+      .forEach((btn: HTMLElement) => {
+        btn.addEventListener('click', (evt) => {
+          if (btn.dataset.create === 'form') {
+            this.addNewForm(evt);
+          }
+          else if (btn.dataset.create === 'view') {
+            this.addNewView(evt);
+          }
+          this.addDialog.close();
+        });
+      })
     }
 
   collapseTreeElements(data:any, oldData:any) {
@@ -191,14 +217,14 @@ export class AppComponent implements OnInit, AfterViewInit {
     const addNewFormBtn = `<li class="add-new-form-tab" id="add-new-form-tab">
       <a href class="nav-link"><span class="icon material-icons">add</span></a>
       <div class="mdl-tooltip mdl-tooltip--large" for="add-new-form-tab">
-      Click to add a new form
+      Click to add a new form or view
       </div>
     </li>`;
 
     $('div.main-app.panel > tabset > ul').append(addNewFormBtn);
     $('#add-new-form-tab').click((evt) => {
       $('#add-new-form-tab .mdl-tooltip').removeClass('is-active');
-      this.addNewForm(<MouseEvent> evt.originalEvent);
+      this.addDialog.showModal();
       evt.preventDefault();
       return false;
     });
@@ -486,6 +512,29 @@ export class AppComponent implements OnInit, AfterViewInit {
       if (tabz.isdirty && !window['reloadAccepted']) {
         return confirm('Do you want to close window. The form is unsaved.');
       }
+    });
+  }
+
+  private addNewView(event: MouseEvent) {
+    event.preventDefault();
+    let viewElement: InsertFieldEvent = {
+      '@type': 'PlominoView',
+      'title': 'New View'
+    };
+    this.elementService.postElement(this.getDBLink(), viewElement)
+    .subscribe((response: AddFieldResponse) => {
+      this.treeService.updateTree().then(() => {
+        this.log.info('this.tabsService.openTab #app0009');
+        this.tabsService.openTab({
+          editor: 'view',
+          label: response.title,
+          url: response.parent['@id'] + '/' + response.id,
+          path: [{
+              name: response.title,
+              type: 'Views'
+          }]
+        });
+      });
     });
   }
 
