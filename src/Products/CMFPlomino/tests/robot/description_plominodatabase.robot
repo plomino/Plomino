@@ -64,7 +64,9 @@ I submit the form
 I save the macro
   Wait until page contains element  css=.plominoSave
   wait until page does not contain element  jquery=.plomino-block-preloader
-  Click Button  css=.plominoSave
+  sleep  0.5s
+  Click Button  jquery=.plominoSave:visible
+  sleep  0.5s
   wait until page does not contain element  jquery=.plominoSave:visible
 
 I save the settings
