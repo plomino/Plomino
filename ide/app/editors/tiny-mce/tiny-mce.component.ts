@@ -680,6 +680,10 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
 
     let originalTitle = this.labelsRegistry.get(updateData.fieldData.url);
     const editor = tinymce.get(this.id);
+    if (!editor) {
+      this.log.error('editor did not appear', this.id);
+      return;
+    }
     const dataToUpdate = $(editor.getBody())
       .find(`*[data-plominoid=${updateData.fieldData.id.split('/').pop()}]`)
       .filter(function () {
