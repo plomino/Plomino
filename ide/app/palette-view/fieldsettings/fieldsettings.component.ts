@@ -1,3 +1,4 @@
+import { PlominoViewsAPIService } from './../../editors/view-editor/views-api.service';
 import { PlominoActiveEditorService } from './../../services/active-editor.service';
 import { PlominoElementAdapterService } from './../../services/element-adapter.service';
 import { LabelsRegistryService } from './../../editors/tiny-mce/services/labels-registry.service';
@@ -40,7 +41,7 @@ import { PlominoBlockPreloaderComponent } from "../../utility";
     selector: 'plomino-palette-fieldsettings',
     template: require('./fieldsettings.component.html'),
     styles: [require('./fieldsettings.component.css')],
-    providers: [],
+    providers: [PlominoViewsAPIService],
     directives: [PlominoBlockPreloaderComponent],
     pipes: [PloneHtmlPipe],
     // changeDetection: ChangeDetectionStrategy.OnPush
@@ -77,6 +78,7 @@ export class FieldSettingsComponent implements OnInit {
       private http: PlominoHTTPAPIService,
       private draggingService: DraggingService,
       private elementService: ElementService,
+      private viewsAPI: PlominoViewsAPIService,
       private formsService: FormsService,
       private widgetService: WidgetService,
       private formsList: PlominoFormsListService,
@@ -203,6 +205,23 @@ export class FieldSettingsComponent implements OnInit {
                       .remove('view-editor__column-header--virtual');
                     viewColumnElement.dataset.column = newId;
                     viewColumnElement.innerHTML = newTitle;
+
+                    if (viewColumnElement.dataset.unsortedDelta) {
+                      const delta = 
+                        parseInt(viewColumnElement.dataset.unsortedDelta, 10);
+                      const subsetIds = 
+                        JSON.parse(viewColumnElement.dataset.unsortedSubset);
+                      const viewURL = window.location.href
+                        .replace(
+                          this.field.url.split('/').slice(0, 2).join('/'), this.field.url)
+                        .split('/').slice(0, 6).join('/');
+                      subsetIds.push(newId);
+                      this.viewsAPI.reOrderItem(viewURL, newId, delta - 1, subsetIds)
+                        .subscribe(() => {
+                          this.fieldsService.viewActionInserted.next(viewURL);
+                          // this.reloadView();
+                        });
+                    }
                   }
                 });
 
