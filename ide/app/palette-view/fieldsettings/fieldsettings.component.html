@@ -83,7 +83,7 @@
       </div>
     <a class="mdl-button mdl-js-button
       mdl-button--raised mdl-button--colored mdl-color--blue-700 mdl-button--accent"
-      *ngIf="formTemplate"
+      *ngIf="formTemplate && field.id.indexOf('++add++PlominoColumn') === -1"
       id="ide-fieldsettings__code-button"
       (click)="openFieldCode()">
         <span class="icon material-icons">code</span>
@@ -95,7 +95,7 @@
       </div>
     <a class="mdl-button mdl-js-button mdl-button--raised
       mdl-button--colored mdl-color--pink-500"
-      *ngIf="formTemplate"
+      *ngIf="formTemplate && field.id.indexOf('++add++PlominoColumn') === -1"
       id="ide-fieldsettings__delete-button"
       (click)="deleteField()">
         <span class="icon material-icons">delete</span>

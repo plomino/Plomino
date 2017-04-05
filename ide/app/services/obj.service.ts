@@ -21,17 +21,21 @@ export class ObjService {
     ) {}
 
     getFieldSettings(fieldUrl: string): Observable<any> {
-        return this.http.get(
-          `${fieldUrl}/@@edit?ajax_load=1&ajax_include_head=1`,
-          'obj.service.ts getFieldSettings'
-        ).map(this.extractText);
+      const addNew = fieldUrl.indexOf('++add++PlominoColumn') !== -1;
+      
+      return this.http.get(
+        `${fieldUrl}/${ addNew ? '' : '@@edit' }?ajax_load=1&ajax_include_head=1`,
+        'obj.service.ts getFieldSettings'
+      ).map(this.extractText);
     }
 
     updateFieldSettings(fieldUrl: string, formData: FormData): Observable<any> {
-        return this.http.postWithOptions(
-          `${fieldUrl}/@@edit`, formData, {},
-          'obj.service.ts updateFieldSettings'
-        ).map(this.extractTextAndUrl);
+      const addNew = fieldUrl.indexOf('++add++PlominoColumn') !== -1;
+
+      return this.http.postWithOptions(
+        `${fieldUrl}/${ addNew ? '' : '@@edit' }`, formData, {},
+        'obj.service.ts updateFieldSettings'
+      ).map(this.extractTextAndUrl);
     }
     
     getFormSettings(formUrl: string): Observable<any> {
@@ -57,6 +61,7 @@ export class ObjService {
     updateFormSettings(
       formUrl: string, formData: any
     ): Observable<{html: string, url: string}> {
+      const addNew = formUrl.indexOf('++add++PlominoColumn') !== -1;
       let layout = formData.get('form.widgets.form_layout');
       const workingId = formData.get('form.widgets.IShortName.id');
       const context = this;
@@ -67,12 +72,11 @@ export class ObjService {
       const newFormUrl = oldFormId !== workingId
         ? formUrl.replace(oldFormId, workingId)
         : formUrl;
-
-      if (oldFormId !== workingId) {
-        this.http.recentlyChangedFormURL = [formUrl, newFormUrl];
-      }
       
       if (layout) {
+        if (oldFormId !== workingId) {
+          this.http.recentlyChangedFormURL = [formUrl, newFormUrl];
+        }
         /**
          * this code will be running only while form saving
          */
@@ -213,7 +217,7 @@ export class ObjService {
       // console.warn(formData.get('form.widgets.form_layout'));
       
       return this.http.postWithOptions(
-        `${formUrl}/@@edit`, formData, {},
+        `${formUrl}/${ addNew ? '' : '@@edit' }`, formData, {},
         'obj.service.ts updateFormSettings'
       )
       .map((data: Response) => {
