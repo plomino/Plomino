@@ -450,6 +450,37 @@ export class AppComponent implements OnInit, AfterViewInit {
     this.activeEditorService.setActive(null);
     this.tabsService.closing = true;
     this.tabsService.closeTab(tab);
+
+    setTimeout(() => {
+      // debugger;
+      /* detect wrong case */
+      const $activeTrigger = $('.tab-trigger[data-active="true"]');
+      if ($activeTrigger.length) {
+        const url = $activeTrigger.attr('data-url');
+        const editor = $activeTrigger.attr('data-editor');
+
+        if (editor === 'layout') {
+          this.activeEditorService.setActive(url);
+        }
+        
+        // check that tinymce is broken after 100ms
+        if (this.activeEditorService.getActive()) {
+          const $iframe = $(this.activeEditorService.getActive()
+              .getContainer().querySelector('iframe'));
+          let x = $iframe.find('body').html();
+          if (typeof x === 'undefined') {
+            tinymce.EditorManager.execCommand('mceRemoveEditor', true, url);
+            tinymce.EditorManager.execCommand('mceAddEditor', true, url);
+            tinymce.EditorManager.execCommand('mceAddEditor', true, url);
+          }
+          else if (!x.length) {
+            tinymce.EditorManager.execCommand('mceRemoveEditor', true, url);
+            tinymce.EditorManager.execCommand('mceAddEditor', true, url);
+            tinymce.EditorManager.execCommand('mceAddEditor', true, url);
+          }
+        }
+      }
+    }, 100);
   }
 
   onModalClose(event: any) {
@@ -478,20 +509,6 @@ export class AppComponent implements OnInit, AfterViewInit {
     this.log.warn('onTabSelect setActive', tab.path[0].type === 'Forms' ? tab.url : null);
     this.log.warn('onTabSelect getActive', this.activeEditorService.editorURL, this.activeEditorService.getActive());
     this.tabsService.setActiveTab(tab, true);
-
-    // check that tinymce is broken after 100ms
-    // setTimeout(() => {
-      // const $iframe = $(this.activeEditorService.getActive()
-      //     .getContainer().querySelector('iframe'));
-    //   let x = $iframe.find('body').html();
-    //   if (typeof x === 'undefined') {
-    //     tinymce.EditorManager.execCommand('mceAddEditor', true, tab.url);
-    //   }
-    //   else if (!x.length) {
-    //     tinymce.EditorManager.execCommand('mceRemoveEditor', true, tab.url);
-    //     tinymce.EditorManager.execCommand('mceAddEditor', true, tab.url);
-    //   }
-    // }, 100);
   }
 
   fieldSelected(fieldData: any): void {
