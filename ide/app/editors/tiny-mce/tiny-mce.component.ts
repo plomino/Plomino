@@ -167,13 +167,17 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
       if (fieldData && fieldData.type === 'PlominoField'
         && fieldData.id && fieldData.url.replace(`/${ fieldData.id }`, '') === this.id
       ) {
-        const $body = $(tinymce.get(this.id).getBody());
-        let $element = $body.find(`.plominoFieldClass[data-plominoid="${ fieldData.id }"]`);
-        if ($element.length) {
-          if ($element.closest('.plominoGroupClass').length) {
-            $element = $element.closest('.plominoGroupClass');
+        if (tinymce.get(this.id)) {
+          const $body = $(tinymce.get(this.id).getBody());
+          let $element = $body
+            .find(`.plominoFieldClass[data-plominoid="${ fieldData.id }"]`);
+          if ($element.length) {
+            if ($element.closest('.plominoGroupClass').length) {
+              $element = $element.closest('.plominoGroupClass');
+            }
+            $body.animate({ scrollTop: $element.offset().top },
+              { duration: 'medium', easing: 'swing' });
           }
-          $body.animate({ scrollTop: $element.offset().top }, { duration: 'medium', easing: 'swing' });
         }
       }
     });

@@ -86,7 +86,9 @@
                 (select)="onTabSelect(tabz)">
               
               <template tabHeading>
-                  <span class="tab-trigger" [class.tabunsaved]="tabz.isdirty">
+                  <span class="tab-trigger" [class.tabunsaved]="tabz.isdirty"
+                    [attr.data-editor]="tabz.editor"
+                    [attr.data-url]="tabz.url" [attr.data-active]="tabz.active">
                     <loading *ngIf="tabz.isloading"></loading>
                     <span *ngIf="tabz.isdirty">* </span>
                     <span *ngIf="tabz.editor !== 'workflow'" class="tab-type-image">

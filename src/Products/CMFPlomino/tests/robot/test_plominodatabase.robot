@@ -192,16 +192,15 @@ Scenario: I can add a view
    Then I can see "new-view" is open
     and I can see a view editor listing my data
 
-# TODO: FIX
-# Scenario: I can add a column to a view
-#   Given I have a form and some data saved
-#    When I create a view
-#     and I can see "new-view" is open
-#     and I can see a view editor listing my data
-#     and I add a column "text"
-#     and I add a column "text_1"
-#   Then I will see column "text" in the view
-#     and I will see column "text_1" in the view
+Scenario: I can add a column to a view
+  Given I have a form and some data saved
+   When I create a view
+    and I can see "new-view" is open
+    and I can see a view editor listing my data
+    and I add a column "text"
+    and I add a column "text_1"
+  Then I will see column "text" in the view
+    and I will see column "text_1" in the view
 
 Scenario: I can add an action to a view
   Given I have a form and some data saved

@@ -96,6 +96,7 @@ export class PlominoHTTPAPIService {
     }
     if (typeof error !== 'object' 
       && error.indexOf('404 Not Found') === -1
+      && error.indexOf('not found') === -1
       && error.indexOf('NotFound') === -1
     ) {
       const okDialog = <HTMLDialogElement> document.querySelector('#ok-dialog');

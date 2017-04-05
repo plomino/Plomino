@@ -373,6 +373,12 @@ export class DBSettingsComponent {
             let targetFiletype: string = null;
             let targetFiletypeMime: string = null;
 
+            // this.log.warn('!!!', form.innerHTML); // submit_import Import
+
+            if (form.innerHTML.indexOf('value="Import" name="submit_import">') !== -1) {
+              formData.set('submit_import', 'Import');
+            }
+
             const importDesignFormSubmitted = form.name === 'ImportDesign';
             
             if (form.action.indexOf('exportDesign') !== -1) {
