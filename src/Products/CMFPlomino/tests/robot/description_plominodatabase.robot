@@ -33,10 +33,17 @@ I have an empty form open
    and I add a form by click
    and I can see "new-form" is open
 
+I have an additional empty form open
+  Given I add a form by click
+   and I can see "new-form" is open
+
 I have a form open
   Given a logged-in test user
     and I open the ide for "mydb"
-    and I open the first form   #TODO   When I open a form "frm_test"
+    and I open the first form
+
+I have an additional form open
+  Given I open the first form   #TODO   When I open a form "frm_test"
 
 I have a form and some data saved
   Given a logged-in test user
@@ -129,7 +136,7 @@ I add a "${field}" field by dnd
 
 
 I open a form "${formid}"
-  Capture Page Screenshot
+  # Capture Page Screenshot
   wait until page contains  ${formid}
   Click Element  jquery=plomino-tree > div > ul > li > ul > li > span:contains("${formid}"):first
   #Click Element  xpath=//span[contains(@class,"tree-node--name")][normalize-space(text())="${formid}"]
@@ -222,7 +229,7 @@ I add an action "${actionid}"
 
 I add a column "${myfield}"
   Click Link  Add
-  Click Element  xpath=//div[@class="palette-wrapper"]//*[@title="Column"]
+  Click Element  jquery=#column
   wait until page contains element  jquery=.plomino-block-preloader
   wait until page does not contain element  jquery=.plomino-block-preloader
   Click Element  jquery=.view-editor__column-header:last
@@ -230,11 +237,10 @@ I add a column "${myfield}"
   wait until page does not contain element  jquery=.plomino-block-preloader
   Input Text  jquery=#form-widgets-IShortName-id  ${myfield}
   Select From List By Value  jquery=#form-widgets-displayed_field  frm_test/${myfield}
-  # TODO: fix "If you don't specify a column formula, you need to select a field."
-  # sleep  2s
-  # Wait until page contains element  jquery=.fieldsettings--control-buttons a:contains("Save")
-  # Click Element  jquery=.fieldsettings--control-buttons a:contains("Save")
-  # wait until page does not contain element  jquery=.plomino-block-preloader
+  sleep  2s
+  Wait until page contains element  jquery=.fieldsettings--control-buttons a:contains("Save")
+  Click Element  jquery=.fieldsettings--control-buttons a:contains("Save")
+  wait until page does not contain element  jquery=.plomino-block-preloader
 
 I preview "${formid}"
   Click Link  Form Settings
@@ -259,7 +265,7 @@ I can see the plominodatabase title '${title}'
 
 I can see "${formid}" is open
   Set Selenium Timeout  10 seconds
-  Capture Page Screenshot
+  # Capture Page Screenshot
   wait until page contains element  css=div.mce-edit-area
   page should contain   ${formid}
   page should contain element  css=div.mce-edit-area
@@ -293,7 +299,7 @@ I will see the "${position}" hidewhen on the path "${xpath}"
   unselect frame
 
 I see "${value}" in "${field}" in "${tab}"
-  capture page screenshot
+  # capture page screenshot
   Click Link  ${tab}
   wait until page does not contain element  jquery=.plomino-block-preloader:visible
   ${text} =  get value  xpath=//input[@id=//label[normalize-space(text())="${field}"]/@for]
