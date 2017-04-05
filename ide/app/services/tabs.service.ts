@@ -86,6 +86,17 @@ export class TabsService {
     }
   }
 
+  selectNonExistingField(fieldData: { url: string, type: string, parent: string }): void {
+    let field: any = null;
+    
+    field = Object.assign({}, {  
+      id: `${fieldData.parent}/${ fieldData.url }`, 
+      type: fieldData.type 
+    });
+
+    this.activeField$.next(field);
+  }
+
   getActiveField(): Observable<PlominoFieldRepresentationObject> {
     return this.activeField$.asObservable().share();
   }

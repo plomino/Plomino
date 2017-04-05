@@ -62,6 +62,22 @@ export class PlominoViewEditorComponent implements OnInit {
       .subscribe((response: string) => {
         // this.log.warn('onNewColumn, response', response);
         if (response === this.item.url) {
+          /* here you can add new virtual, use replace of virtual for dnd */
+          const $column = $(
+            `<th data-column="++add++PlominoColumn"
+              class="view-editor__column-header view-editor__column-header--virtual">
+              new column
+            </th>`);
+          $(`[data-url="${ this.item.url }"] th[data-column]:first`).before($column);
+          $column.click();
+          // this.reloadView();
+        }
+      });
+
+    this.fieldsService.onNewAction()
+      .subscribe((response: string) => {
+        // this.log.warn('onNewColumn, response', response);
+        if (response === this.item.url) {
           this.reloadView();
         }
       });
@@ -290,15 +306,34 @@ export class PlominoViewEditorComponent implements OnInit {
               const currentIndex = parseInt(columnElement.dataset.index, 10);
               const delta = (this.subsetIds.length + 1 - currentIndex) * -1;
               
-              this.loading = true;
-              this.api.addNewColumn(this.item.url)
-                .subscribe((newId: string) => {
-                  this.subsetIds.push(newId);
-                  this.api.reOrderItem(this.item.url, newId, delta, this.subsetIds)
-                    .subscribe(() => {
-                      this.reloadView();
-                    });
-                })
+              // this.loading = true;
+
+              const droppedColumn = <HTMLElement> columnElement.nextElementSibling;
+
+              droppedColumn.classList
+                .remove('view-editor__column-header--drop-preview');
+              droppedColumn.classList
+                .add('view-editor__column-header');
+              droppedColumn.classList
+                .add('view-editor__column-header--virtual');
+              droppedColumn.classList
+                .add('view-editor__column-header--selected');
+              droppedColumn.dataset.column = '++add++PlominoColumn';
+
+              columnElement.classList
+                .remove('view-editor__column-header--selected');
+              columnElement.classList
+                .remove('view-editor__column-header--drop-target');
+
+              droppedColumn.click();
+
+              // this.loading = false;
+              
+              // this.subsetIds.push(newId);
+              // this.api.reOrderItem(this.item.url, newId, delta, this.subsetIds)
+              //   .subscribe(() => {
+              //     this.reloadView();
+              //   });
             }
             const transfer = ev.dataTransfer.getData('text');
 
@@ -331,9 +366,9 @@ export class PlominoViewEditorComponent implements OnInit {
               /* insert shadow column after this td */
               const $td = $(ev.target);
               $td.after(
-                `<td class="view-editor__column-header--drop-preview">
-                  default-column
-                </td>`
+                `<th class="view-editor__column-header--drop-preview">
+                  new column
+                </th>`
               );
             }
             $('.view-editor__column-header--drop-target')

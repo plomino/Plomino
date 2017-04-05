@@ -450,14 +450,7 @@ export class AddComponent implements OnInit, AfterViewInit {
                 })
               break;
           case 'column':
-              this.viewsAPIService.addNewColumn(this.activeTab.url)
-              .subscribe(() => {
-                this.fieldsService.viewColumnInserted.next(this.activeTab.url);
-                this.treeService.updateTree()
-                  .then(() => {
-                    // this.fieldsService.insertField(extendedField);
-                  });
-                })
+              this.fieldsService.viewColumnInserted.next(this.activeTab.url);
               break;
           case 'action':
               field = {
@@ -467,7 +460,7 @@ export class AddComponent implements OnInit, AfterViewInit {
               }
               this.viewsAPIService.addNewAction(this.activeTab.url)
               .subscribe((response: AddFieldResponse) => {
-                this.fieldsService.viewColumnInserted.next(this.activeTab.url);
+                this.fieldsService.viewActionInserted.next(this.activeTab.url);
                 let extendedField = Object.assign({}, field, {
                     name: response['@id']
                 });

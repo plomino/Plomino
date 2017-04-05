@@ -33,6 +33,7 @@
 }
 
 .view-editor__column-header--drop-preview,
+.view-editor__column-header--virtual,
 .view-editor__action--drop-preview {
   opacity: 0.35;
   /*outline: dashed 1px slategray;

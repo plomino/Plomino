@@ -119,9 +119,16 @@ export class FieldSettingsComponent implements OnInit {
       this.objService.updateFormSettings(this.field.url, formData)
       .flatMap((extractedTextAndURL: { html: string, url: string }) => {
         this.log.info('another changed element...', extractedTextAndURL);
-        if (extractedTextAndURL.html.indexOf('dl.error') > -1) {
+        if (
+          extractedTextAndURL.html.indexOf('ajax_success') === -1
+          && extractedTextAndURL.html.indexOf('There were some errors') !== -1
+        ) {
           return Observable.of(extractedTextAndURL.html);
         } else {
+          if (/^.+?\/view$/.test(extractedTextAndURL.url)) {
+            extractedTextAndURL.url = extractedTextAndURL.url
+              .replace('/view', '');
+          }
           let $fieldId = extractedTextAndURL.url
             .slice(extractedTextAndURL.url.lastIndexOf('/') + 1);
           // todo: newUrl - WTF?
@@ -188,8 +195,15 @@ export class FieldSettingsComponent implements OnInit {
             else if (this.field.type === 'PlominoColumn') {
               $(`.view-editor__column-header--selected:visible`)
                 .each((i, viewColumnElement: HTMLInputElement) => {
-                  viewColumnElement.dataset.column = newId;
-                  viewColumnElement.innerHTML = newTitle;
+                  if (!(
+                    responseHtml.indexOf('ajax_success') === -1
+                    && responseHtml.indexOf('There were some errors') !== -1
+                  )) {
+                    viewColumnElement.classList
+                      .remove('view-editor__column-header--virtual');
+                    viewColumnElement.dataset.column = newId;
+                    viewColumnElement.innerHTML = newTitle;
+                  }
                 });
 
               this.loading = false;
@@ -476,7 +490,6 @@ export class FieldSettingsComponent implements OnInit {
       this.fieldTitle = this.labelsRegistry.get(field.url);
       if (this.fieldTitle === null
         && tmpId !== 'defaultLabel') {
-          debugger;
         this.elementService
           .getElement(field.url)
           .catch((error: any) => {

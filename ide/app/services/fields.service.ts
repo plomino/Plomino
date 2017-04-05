@@ -9,6 +9,7 @@ import { Observable } from 'rxjs/Observable';
 @Injectable()
 export class FieldsService {
   viewColumnInserted: Subject<string> = new Subject<string>();
+  viewActionInserted: Subject<string> = new Subject<string>();
   private insertionStream$: Subject<InsertFieldEvent> 
     = new Subject<InsertFieldEvent>();
   private updatesStream$: Subject<PlominoFieldUpdatesStreamEvent> 
@@ -18,6 +19,10 @@ export class FieldsService {
 
   onNewColumn() {
     return this.viewColumnInserted.asObservable();
+  }
+
+  onNewAction() {
+    return this.viewActionInserted.asObservable();
   }
   
   insertField(field: InsertFieldEvent) {
