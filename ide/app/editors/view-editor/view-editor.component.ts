@@ -62,6 +62,12 @@ export class PlominoViewEditorComponent implements OnInit {
       .subscribe((response: string) => {
         // this.log.warn('onNewColumn, response', response);
         if (response === this.item.url) {
+          if (
+            $(`[data-url="${ this.item.url }"] [data-column="++add++PlominoColumn"]`)
+            .length
+          ) {
+            return;
+          }
           /* here you can add new virtual, use replace of virtual for dnd */
           const $column = $(
             `<th data-column="++add++PlominoColumn"
@@ -302,6 +308,14 @@ export class PlominoViewEditorComponent implements OnInit {
               return true;
             }
             if (dndType === 'column') {
+
+              const $_ = 
+                $(`[data-url="${ this.item.url }"] [data-column="++add++PlominoColumn"]`);
+              if ($_.length) {
+                $_.remove(); // todo remove tdis
+                this.tabsService.selectField(null);
+              }
+
               /* insert column and do some math */
               const currentIndex = parseInt(columnElement.dataset.index, 10);
               const delta = (this.subsetIds.length + 1 - currentIndex) * -1;
@@ -319,6 +333,8 @@ export class PlominoViewEditorComponent implements OnInit {
               droppedColumn.classList
                 .add('view-editor__column-header--selected');
               droppedColumn.dataset.column = '++add++PlominoColumn';
+              droppedColumn.dataset.unsortedDelta = delta.toString();
+              droppedColumn.dataset.unsortedSubset = JSON.stringify(this.subsetIds);
 
               columnElement.classList
                 .remove('view-editor__column-header--selected');
