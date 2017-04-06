@@ -1,3 +1,4 @@
+import { TabsService } from './tabs.service';
 import { PlominoActiveEditorService } from './active-editor.service';
 import { WidgetService } from './widget.service';
 import { ElementService } from './element.service';
@@ -15,6 +16,7 @@ export class ObjService {
     constructor(private http: PlominoHTTPAPIService, private log: LogService,
       private elementService: ElementService,
       private widgetService: WidgetService,
+      private tabsService: TabsService,
       private changeDetector: ChangeDetectorRef,
       private labelsRegistry: LabelsRegistryService,
       private activeEditorService: PlominoActiveEditorService,
@@ -61,6 +63,7 @@ export class ObjService {
     updateFormSettings(
       formUrl: string, formData: any
     ): Observable<{html: string, url: string}> {
+      this.log.info('T0 obj.service.ts', this.tabsService.ping());
       const addNew = formUrl.indexOf('++add++PlominoColumn') !== -1;
       let layout = formData.get('form.widgets.form_layout');
       const workingId = formData.get('form.widgets.IShortName.id');
@@ -212,6 +215,8 @@ export class ObjService {
           $allTheSame.html(newTitle);
         }
       }
+
+      this.log.info('T1 obj.service.ts', this.tabsService.ping());
       
       // throw formData.get('form.widgets.form_layout');
       // console.warn(formData.get('form.widgets.form_layout'));
@@ -224,23 +229,33 @@ export class ObjService {
         if (layout) {
           this.activeEditorService.setActive(newFormUrl);
 
+          this.log.info('T2 obj.service.ts', this.tabsService.ping());
+
           if (tinymce.get(formUrl)) {
             tinymce.get(formUrl).setDirty(false);
+            this.tabsService.setActiveTabDirty(false);
+            // this.log.info('i am going to set dirty false', formUrl);
           }
 
           if (tinymce.get(newFormUrl)) {
             tinymce.get(newFormUrl).setDirty(false);
+            this.tabsService.setActiveTabDirty(false);
+            // this.log.info('i am going to set dirty false', newFormUrl);
           }
 
-          setTimeout(() => {
-            if (tinymce.get(formUrl)) {
-              tinymce.get(formUrl).setDirty(false);
-            }
+          // setTimeout(() => {
+          //   if (tinymce.get(formUrl)) {
+          //     tinymce.get(formUrl).setDirty(false);
+          //     this.tabsService.setActiveTabDirty(false);
+          //     // this.log.info('i am going to set dirty false', formUrl);
+          //   }
   
-            if (tinymce.get(newFormUrl)) {
-              tinymce.get(newFormUrl).setDirty(false);
-            }
-          }, 400);
+          //   if (tinymce.get(newFormUrl)) {
+          //     tinymce.get(newFormUrl).setDirty(false);
+          //     this.tabsService.setActiveTabDirty(false);
+          //     // this.log.info('i am going to set dirty false', newFormUrl);
+          //   }
+          // }, 400);
 
           // tinymce.editors.map(editor => [editor.id, editor.isDirty()])
           tinymce.editors.forEach((editor: TinyMceEditor) => {

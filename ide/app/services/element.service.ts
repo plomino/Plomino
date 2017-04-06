@@ -50,7 +50,7 @@ export class ElementService {
   }
 
   getElement(id: string): Observable<PlominoFieldDataAPIResponse> {
-    console.warn(console.trace());
+    // console.warn(console.trace());
     if (id.split('/').pop() === 'defaultLabel') {
       return Observable.of(null);
     }

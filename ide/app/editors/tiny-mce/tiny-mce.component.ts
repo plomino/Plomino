@@ -206,6 +206,7 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
     } );
 
     this.formsService.getFormContentBeforeSave$.subscribe((data:{id:any}) => {
+      this.log.info('T-4 tiny-mce.component.ts', this.id, this.tabsService.ping());
       if (typeof this.item.formUniqueId === 'undefined') {
         this.item.formUniqueId = data.id;
       }
@@ -284,6 +285,7 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
       // 'plonelink unlink ploneimage',
 
       save_onsavecallback: () => {
+        this.log.info('T-200 tiny-mce.component.ts', this.tabsService.ping());
         this.formsService.saveForm(this.item.formUniqueId, false);
         this.changeDetector.markForCheck();
       },
@@ -313,7 +315,11 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
         setTimeout(() => this.editorInstance.show());
 
         editor.on('change', (e: any) => {
-          tiny.isDirty.emit(true);
+          if (this.activeEditorService.editorURL === this.id) {
+            /* TinyMCE BUG: change one editor throws other */
+            this.log.info('onchange dirty', this.id);
+            tiny.isDirty.emit(true);
+          }
         });
 
         editor.on('NodeChange', (nodeChangeEvent: any) => {
@@ -612,6 +618,7 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
     if (editor !== null) {
       tiny.isLoading.emit(false);
       if (cb) cb();
+      this.log.info('onchange not dirty', this.id);
       tiny.isDirty.emit(false);
       editor.setDirty(false);
       this.changeDetector.markForCheck();
