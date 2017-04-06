@@ -72,6 +72,7 @@ export class FormSettingsComponent implements OnInit {
         let onSaveFinishCb: any = null;
 
         this.formsService.formSettingsSave$.subscribe((data) => {
+          this.log.info('T-5 formsettings.component.ts', this.tabsService.ping());
             if (typeof data.formUniqueId === 'undefined') {
                 data.formUniqueId = this.tab.formUniqueId;
             }
@@ -86,6 +87,7 @@ export class FormSettingsComponent implements OnInit {
 
         this.formsService.onFormContentBeforeSave$
           .subscribe((data:{id:any, content:any}) => {
+            this.log.info('T-3 formsettings.component.ts', data.id, this.tabsService.ping());
             if (this.tab.formUniqueId !== data.id)
                 return;
 
@@ -103,7 +105,7 @@ export class FormSettingsComponent implements OnInit {
     }
 
     saveFormSettings(formData: FormData, formLayout: any, cb: any) {
-      // debugger;
+      this.log.info('T-1 formsettings.component.ts', this.tabsService.ping());
       this.formSaving = true;
       let $formId: any = '';
     
@@ -185,21 +187,23 @@ export class FormSettingsComponent implements OnInit {
     }
 
     submitForm() {
-        this.formsService.saveForm(this.tab.formUniqueId);
-        this.changeDetector.markForCheck();
+      this.log.info('T-200-b formsettings.compmonent.ts', this.tabsService.ping());
+      this.formsService.saveForm(this.tab.formUniqueId);
+      this.changeDetector.markForCheck();
     }
 
     saveForm(data:{content:any,cb:any}) {
+      this.log.info('T-2 formsettings.component.ts', this.tabsService.ping());
       this.log.info('saveForm CALLED!');
-        let $form: any = $(this.formElem.nativeElement);
-        let form: HTMLFormElement = $form.find('form').get(0);
-        let formData: any = new FormData(form);
+      let $form: any = $(this.formElem.nativeElement);
+      let form: HTMLFormElement = $form.find('form').get(0);
+      let formData: any = new FormData(form);
 
-        // this.treeService.updateTree();
+      // this.treeService.updateTree();
 
-        formData.append('form.buttons.save', 'Save');
+      formData.append('form.buttons.save', 'Save');
 
-        this.saveFormSettings(formData, data.content, data.cb);
+      this.saveFormSettings(formData, data.content, data.cb);
     }
 
     cancelForm() {

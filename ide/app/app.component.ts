@@ -502,12 +502,12 @@ export class AppComponent implements OnInit, AfterViewInit {
   }
 
   onTabSelect(tab: any) {
-    this.log.warn('onTabSelect', tab);
+    this.log.info('onTabSelect', tab);
     this.activeEditorService.setActive(
       tab.path[0].type === 'Forms' ? tab.url : null
     );
-    this.log.warn('onTabSelect setActive', tab.path[0].type === 'Forms' ? tab.url : null);
-    this.log.warn('onTabSelect getActive', this.activeEditorService.editorURL, this.activeEditorService.getActive());
+    this.log.info('onTabSelect setActive', tab.path[0].type === 'Forms' ? tab.url : null);
+    this.log.info('onTabSelect getActive', this.activeEditorService.editorURL, this.activeEditorService.getActive());
     this.tabsService.setActiveTab(tab, true);
   }
 
@@ -516,6 +516,7 @@ export class AppComponent implements OnInit, AfterViewInit {
   }
 
   setTabzAsDirty(tabz: any, dirty: boolean) {
+    this.log.info('setTabzAsDirty', tabz.url, dirty);
     tabz.isdirty = dirty;
 
     $(window)

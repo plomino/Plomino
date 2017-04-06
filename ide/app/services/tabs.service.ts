@@ -93,11 +93,17 @@ export class TabsService {
     return this.activeField$.asObservable().share();
   }
 
-  setActiveTabDirty() {
+  ping() {
+    let tabs = this.tabs$.getValue().slice(0);
+    return tabs.map((tab) => tab.isdirty);
+  }
+
+  setActiveTabDirty(dirty = true) {
     let tabs = this.tabs$.getValue().slice(0);
     tabs.forEach((tab) => {
       if (tab.active) {
-        tab.isdirty = true;
+        this.log.info('setActiveTabDirty dirty', tab.url);
+        tab.isdirty = dirty;
       }
     });
   }

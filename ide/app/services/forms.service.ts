@@ -48,20 +48,21 @@ export class FormsService {
     }
 
     saveForm(id: any, changeTab = true) {
-        this.log.info('saveForm called, this.formSaving', this.formSaving);
-        
-        if (this.formSaving) return;
-        this.formSaving = true;
+      this.log.info('T-100 forms.service.ts', id);
+      this.log.info('saveForm called, this.formSaving', this.formSaving);
+      
+      if (this.formSaving) return;
+      this.formSaving = true;
 
-        if (changeTab) {
-            this.changePaletteTab(this.FORM_SETTINGS_TAB_INDEX);
-        }
+      if (changeTab) {
+          this.changePaletteTab(this.FORM_SETTINGS_TAB_INDEX);
+      }
 
-        this.saveFormSettings(id, () => {
-            this.saveFormContent(id, () => {
-                this.formSaving = false;
-            });
-        });
+      this.saveFormSettings(id, () => {
+          this.saveFormContent(id, () => {
+              this.formSaving = false;
+          });
+      });
     }
 
     saveFormSettings(id:any, cb: any) {
