@@ -679,7 +679,8 @@ export class WidgetService {
     ).map((response) => {
       const $response = $(response);
       const result = (type === 'group') ? $response.get(0).outerHTML : `${response}`;
-      return this.adapter.endPoint('label', result);
+      const endPoint = this.adapter.endPoint('label', result);
+      return endPoint;
     });
   }
 

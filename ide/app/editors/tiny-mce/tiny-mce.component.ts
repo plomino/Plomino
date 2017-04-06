@@ -285,7 +285,7 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
       // 'plonelink unlink ploneimage',
 
       save_onsavecallback: () => {
-        debugger;
+        // debugger;
         this.log.info('T-200 tiny-mce.component.ts', this.tabsService.ping());
         this.formsService.saveForm(this.item.formUniqueId, false);
         this.changeDetector.markForCheck();
