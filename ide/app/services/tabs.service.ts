@@ -125,6 +125,18 @@ export class TabsService {
     }
 
     let tabs: PlominoTab[] = this.tabs$.getValue().slice(0);
+
+    // const activeTab = <any> this.activeTab$.getValue();
+    // if (activeTab && !activeTab.isdirty) {
+    //   setTimeout(() => {
+    //     activeTab.isdirty = false;
+    //     const ed = tinymce.get(activeTab.url);
+    //     if (ed) {
+    //       ed.setDirty(false);
+    //     }
+    //   }, 200);
+    // }
+
     this.urlManager.rebuildURL(tabs);
     let normalizedTab: any = Object.assign({}, this.retrieveTab(this.tree, tab), { showAdd: showAdd });
     let selectedTab: any = _.find(tabs, { url: tab.url, editor: tab.editor });
