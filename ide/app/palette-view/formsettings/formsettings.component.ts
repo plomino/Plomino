@@ -72,7 +72,7 @@ export class FormSettingsComponent implements OnInit {
         let onSaveFinishCb: any = null;
 
         this.formsService.formSettingsSave$.subscribe((data) => {
-          debugger;
+          // debugger;
           this.log.info('T-5 formsettings.component.ts', this.tabsService.ping());
             if (typeof data.formUniqueId === 'undefined') {
                 data.formUniqueId = this.tab.formUniqueId;

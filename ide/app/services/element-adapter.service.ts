@@ -37,7 +37,8 @@ export class PlominoElementAdapterService {
         </span>
        */
       if ($source.find('.plominoLabelClass').length) {
-        // do something
+        /* monkey patch */
+        source = $source.html($source.find('.plominoLabelClass').html()).get(0).outerHTML;
       }
     }
     return source;
