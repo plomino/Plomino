@@ -285,6 +285,7 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
       // 'plonelink unlink ploneimage',
 
       save_onsavecallback: () => {
+        debugger;
         this.log.info('T-200 tiny-mce.component.ts', this.tabsService.ping());
         this.formsService.saveForm(this.item.formUniqueId, false);
         this.changeDetector.markForCheck();
@@ -296,6 +297,11 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
         } else {
           // this.getFormLayout();
         }
+
+        editor.onSaveContent.add(function(ed: any, o: any) {
+          // Output the element name
+          console.debug('onSaveContent', o.element.nodeName);
+        });
 
         editor.addMenuItem('PreviewButton', {
           text: 'Open form in new tab',

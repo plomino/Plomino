@@ -430,6 +430,7 @@ export class TinyMCEFormContentManagerService {
           'this.rangeAccepted(range)', this.rangeAccepted(range),
           'target', target,
           'lastInsert', lastInsert);
+
         if (this.rangeAccepted(range)) {
           $content.attr('data-event-unique', INSERT_EVENT_UNIQUE)
           // console.log('insert A!2');
@@ -440,10 +441,11 @@ export class TinyMCEFormContentManagerService {
           // $content[lastInsert && $first.get(0) === target ? 'insertBefore' :'insertAfter']($(target))
           //   .attr('data-event-unique', INSERT_EVENT_UNIQUE);
           // console.log('insert B!5');
+          
           $content.insertAfter($(target))
             .attr('data-event-unique', INSERT_EVENT_UNIQUE);
 
-          if (!$content.parent().length) {
+          if (!$content.is(':visible')) {
             $content.insertAfter($latestTarget)
               .attr('data-event-unique', INSERT_EVENT_UNIQUE);
           }
