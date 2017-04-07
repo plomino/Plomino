@@ -74,10 +74,21 @@ export class PlominoViewEditorComponent implements OnInit {
               class="view-editor__column-header view-editor__column-header--virtual">
               new column
             </th>`);
-          $(`[data-url="${ this.item.url }"] th[data-column]:first`).before($column);
+          const $firstColumn = $(`[data-url="${ this.item.url }"] th[data-column]:last`);
+          if ($firstColumn.length) {
+            $firstColumn.after($column);
+          }
+          else {
+            $(`[data-url="${ this.item.url }"] thead tr`).append($column);
+          }
           $column.click();
-          // this.reloadView();
+          this.afterLoad();
         }
+      });
+
+    this.fieldsService.onReIndexItems()
+      .subscribe(() => {
+        this.reIndexItems();
       });
 
     this.fieldsService.onNewAction()
@@ -182,6 +193,29 @@ export class PlominoViewEditorComponent implements OnInit {
         }, 200);
 
         setTimeout(() => this.afterLoad(), 300);
+      });
+  }
+
+  reIndexItems() {
+    this.api.fetchViewTableDataJSON(this.item.url)
+      .subscribe((json) => {
+        this.subsetIds = json.results.map(r => r.id);
+
+        json.results.forEach((result, index) => {
+          (() => {
+            if (result.Type === 'PlominoColumn') {
+              return $(
+                `[data-url="${ this.item.url }"] th[data-column="${ result.id }"]`
+              );
+            }
+            else if (result.Type === 'PlominoAction') {
+              return $(
+                `[data-url="${ this.item.url }"] input#${ result.id }`
+              );
+            }
+          })()
+          .get(0).dataset.index = (index + 1).toString();
+        });
       });
   }
 
