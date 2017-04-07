@@ -32,6 +32,7 @@ I have an empty form open
    and I open the ide for "mydb"
    and I add a form by click
    and I can see "new-form" is open
+   and sleep  0.5s
 
 I have an additional empty form open
   Given I add a form by click
@@ -103,9 +104,23 @@ I add a form by click
   wait until page contains element  css=div.mce-tinymce
 
 I add a hidewhen by click
-   Wait until page contains  Hide When
-   Click Element  xpath=//div[@class="palette-wrapper"]//*[@title="Hide When"]
+  I add a "Hide When" field
+   # Wait until page contains  Hide When
+   # Click Element  xpath=//div[@class="palette-wrapper"]//*[@title="Hide When"]
 
+I add a "${field}" field
+  Click Element  xpath=//div[@class="palette-wrapper"]//*[@title="${field}"]
+  wait until page contains element  css=.plomino-block-preloader
+  sleep  0.3s
+  wait until page does not contain element  jquery=.plomino-block-preloader
+
+I add a "${field}" field by dnd
+  sleep  0.3s
+  wait until page does not contain element  jquery=.plomino-block-preloader
+  Selenium2Library.drag and drop  xpath=//div[@class="palette-wrapper"]//*[@title="${field}"]  css=.mce-edit-area iframe
+  wait until page contains element  css=.plomino-block-preloader
+  sleep  0.3s
+  wait until page does not contain element  jquery=.plomino-block-preloader
 
 I create a view
   wait until page contains element  jquery=#PlominoView
@@ -125,15 +140,6 @@ I add a form by dnd
   Chains Perform Now
   wait until page contains element  jquery=plomino-tree > div > ul > li > ul > li > span:contains("new-form")
   wait until page contains element  jquery=div.mce-edit-area
-
-
-
-I add a "${field}" field
-  Click Element  xpath=//div[@class="palette-wrapper"]//*[@title="${field}"]
-
-I add a "${field}" field by dnd
-  Selenium2Library.drag and drop  xpath=//div[@class="palette-wrapper"]//*[@title="${field}"]  css=.mce-edit-area iframe
-
 
 I open a form "${formid}"
   # Capture Page Screenshot
@@ -156,9 +162,10 @@ I change the fieldmode to "${mode}" 
 
 wait until form is loaded
   wait until page contains element   xpath=//div[@class="palette-wrapper"]//*[@title="Field"]
-  wait until page contains element   css=.mce-edit-area iframe
-  select frame  css=.mce-edit-area iframe
+  wait until page contains element   jquery=.mce-edit-area iframe:visible
+  select frame  jquery=.mce-edit-area iframe:visible
   wait until page contains element   css=.mce-content-body
+  wait until page does not contain  css=.plomino-block-preloader
   unselect frame
 
 I enter "${value}" in "${field}" in "${tab}"
@@ -178,22 +185,21 @@ Double Click On Label "${plominoid}"
 
 
 I edit the label "${fieldid}" to "${text}"
-  select frame  css=.mce-edit-area iframe
-  ${label} =  set variable  xpath=//*[contains(@class,"plominoLabelClass")][@data-plominoid="${fieldid}"]
-  wait until page contains element  ${label}
-  click element  ${label}
+  sleep  0.5s
+  wait until page does not contain element  css=.plomino-block-preloader
+  select frame  jquery=.mce-edit-area iframe:visible
+  wait until page contains element  css=.plominoLabelClass[data-plominoid="${fieldid}"]
+  click element  css=.plominoLabelClass[data-plominoid="${fieldid}"]
   Double Click On Label "${fieldid}"
-  # Execute Javascript  window.top.jQuery('iframe:visible').contents().find('.plominoLabelClass[data-plominoid="${fieldid}"]:visible').filter((i, e) => !window.top.jQuery(e).closest('.mce-offscreen-selection').length).removeClass('mceNonEditable').attr('contenteditable', 'true').addClass('plominoLabelClass--selected').addClass('mceEditable')
-  click element  ${label}
-  clear element text  ${label}
-  Input Text  ${label}  ${text}
+  click element  css=.plominoLabelClass[data-plominoid="${fieldid}"]
+  clear element text  css=.plominoLabelClass[data-plominoid="${fieldid}"]
+  Input Text  css=.plominoLabelClass[data-plominoid="${fieldid}"]  ${text}
   unselect frame
 
 I select the field "${fieldid}"
-  select frame  css=.mce-edit-area iframe
-  ${label} =  set variable  xpath=//*[contains(@class,"plominoFieldClass")][@data-plominoid="${fieldid}"]
-  wait until page contains element  ${label}
-  click element  ${label}
+  select frame  jquery=.mce-edit-area iframe:visible
+  wait until page contains element  css=.plominoFieldClass[data-plominoid="${fieldid}"]
+  click element  css=.plominoFieldClass[data-plominoid="${fieldid}"]
   unselect frame
   wait until page contains  Field Settings
 
@@ -285,16 +291,16 @@ I will see action "${actionid}" in the view
 
 I can see field "${fieldid}" in the editor
   Wait until page contains  Insert
-  wait until page contains element  css=.mce-edit-area
-  select frame  css=.mce-edit-area iframe
+  wait until page contains element  jquery=.mce-edit-area iframe:visible
+  select frame  jquery=.mce-edit-area iframe:visible
   Wait until page contains element  css=.plominoFieldClass.mceNonEditable  #TODO change for test based on spinner
   Page should contain element  css=.plominoFieldClass.mceNonEditable
   Page should contain element  xpath=//*[contains(@class,"plominoFieldClass")][@data-plominoid="${fieldid}"]
   unselect frame
 
 I will see the "${position}" hidewhen on the path "${xpath}"
-  wait until page contains element  css=.mce-edit-area
-  select frame  css=.mce-edit-area iframe
+  wait until page contains element  jquery=.mce-edit-area iframe:visible
+  select frame  jquery=.mce-edit-area iframe:visible
   Wait until page contains element  css=.plominoHidewhenClass.mceNonEditable  #TODO change for test based on spinner
   Page should contain element  xpath=//*[@id="tinymce"]${xpath}[contains(@class,"plominoHidewhenClass")][@data-plomino-position="${position}"]
   unselect frame

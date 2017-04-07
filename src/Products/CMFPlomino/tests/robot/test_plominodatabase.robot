@@ -70,7 +70,7 @@ Scenario: As a site administrator I can open a form
 
 Scenario: As a site administrator I can open a form (2 tabs)
   # Set Selenium Speed  .3 seconds
-  Set selenium timeout  100
+  Set selenium timeout  200
   Given I have an empty form open
    When I open a form "frm_test"
    Then I can see field "field_1" in the editor
@@ -260,7 +260,7 @@ Scenario: I can change to computed and back and select the date (2 tabs)
 Scenario: I can add hidewhen on empty form by click
   Given I have an empty form open
    When I add a hidewhen by click
-    and sleep  0.5s
+    # and sleep  0.5s
    Then I will see the "start" hidewhen on the path "/p[2]/span[1]"
     and I will see the "end" hidewhen on the path "/p[2]/span[2]"
 
@@ -320,6 +320,7 @@ Scenario: I can add an action to a view
   Given I have a form and some data saved
    When I create a view
     and I can see "new-view" is open
+    and sleep  1s
     and I can see a view editor listing my data
     and I add an action "my action"
    Then I will see action "my-action" in the view
