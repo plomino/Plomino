@@ -236,6 +236,7 @@ I add a column "${myfield}"
   wait until page contains element  jquery=.view-editor__column-header.view-editor__column-header--selected
   wait until page does not contain element  jquery=.plomino-block-preloader
   Input Text  jquery=#form-widgets-IShortName-id  ${myfield}
+  Input Text  jquery=#form-widgets-IBasic-title  ${myfield}
   Select From List By Value  jquery=#form-widgets-displayed_field  frm_test/${myfield}
   sleep  2s
   Wait until page contains element  jquery=.fieldsettings--control-buttons a:contains("Save")

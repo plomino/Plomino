@@ -698,7 +698,7 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
       return;
     }
     const dataToUpdate = $(editor.getBody())
-      .find(`*[data-plominoid=${updateData.fieldData.id.split('/').pop()}]`)
+      .find(`*[data-plominoid="${updateData.fieldData.id.split('/').pop()}"]`)
       .filter(function () {
         const $plominoElement = $(this);
         if (originalTitle === null && $plominoElement.hasClass('plominoLabelClass')) {
