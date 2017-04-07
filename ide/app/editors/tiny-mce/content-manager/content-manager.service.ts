@@ -278,8 +278,10 @@ export class TinyMCEFormContentManagerService {
     let editor = tinymce.get(editorId);
 
     if (!editor) {
-      const $iframe = $(editor
-          .getContainer().querySelector('iframe'));
+      const $iframe = this.activeEditorService.getActive()
+        ? $(this.activeEditorService.getActive()
+          .getContainer().querySelector('iframe'))
+        : $('iframe:visible');
       editorId = $iframe.attr('id').replace('_ifr', '');
       editor = tinymce.EditorManager.editors[editorId];
     }

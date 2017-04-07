@@ -125,7 +125,7 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
         this.addElement(dataToInsert);
         
         /* form save automatically */
-        this.formsService.saveForm(this.item.formUniqueId, false);
+        // this.formsService.saveForm(this.item.formUniqueId, false);
         this.changeDetector.markForCheck();
       }
     });
@@ -150,7 +150,9 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
         this.insertGroup(insertion.group, insertion.target);
 
         /* form save automatically */
-        this.formsService.saveForm(this.item.formUniqueId, false);
+        this.loading = true;
+        this.log.info('tiny-mce loading', true, this.id);
+        this.formsService.saveForm(this.item.formUniqueId, false, this.loading);
         this.changeDetector.markForCheck();
       }
     });
@@ -195,7 +197,11 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
     this.formsService.formContentSave$.subscribe((data) => {
       this.changeDetector.detectChanges();
 
-      if(data.formUniqueId !== this.item.formUniqueId)
+      if (data.formUniqueId >= 1e10) {
+        data.formUniqueId = this.item.formUniqueId;
+      }
+
+      if (data.formUniqueId !== this.item.formUniqueId)
         return;
 
       this.isLoading.emit(true);
@@ -210,7 +216,8 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
 
     this.formsService.getFormContentBeforeSave$.subscribe((data:{id:any}) => {
       this.log.info('T-4 tiny-mce.component.ts', this.id, this.tabsService.ping());
-      if (typeof this.item.formUniqueId === 'undefined') {
+      if (typeof this.item.formUniqueId === 'undefined'
+        || this.item.formUniqueId >= 1e10) {
         this.item.formUniqueId = data.id;
       }
       
@@ -228,7 +235,7 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
     this.draggingSubscription.unsubscribe();
     this.insertionSubscription.unsubscribe();
     this.templatesSubscription.unsubscribe();
-    tinymce.EditorManager.execCommand('mceRemoveEditor',true, this.id);
+    tinymce.EditorManager.execCommand('mceRemoveEditor', true, this.id);
   }
 
   ngAfterViewInit(): void {
@@ -324,6 +331,8 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
         setTimeout(() => this.editorInstance.show());
 
         editor.on('change', (e: any) => {
+          this.log.info('change event received', e, 
+            this.activeEditorService.editorURL, this.id);
           if (this.activeEditorService.editorURL === this.id) {
             /* TinyMCE BUG: change one editor throws other */
             this.log.info('onchange dirty', this.id);
@@ -593,6 +602,7 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
             this.id, $content.html(), this.draggingService
           );
           this.loading = false;
+          this.log.info('tiny-mce loading', false, this.id);
           this.changeDetector.markForCheck();
           const wasSelected = this.adapter.getSelectedJQueryPath();
           if (wasSelected) {
@@ -610,11 +620,13 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
         );
         this.autoSavedContent = newData;
         this.loading = false;
+        this.log.info('tiny-mce loading', false, this.id);
         this.changeDetector.markForCheck();
       }
 
     }, (err) => {
       this.log.error(err);
+      this.log.info('tiny-mce loading', false, this.id);
       this.loading = false;
       this.changeDetector.markForCheck();
     });
@@ -630,7 +642,11 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
       this.log.info('onchange not dirty', this.id);
       tiny.isDirty.emit(false);
       editor.setDirty(false);
+      this.loading = false;
+      this.log.info('tiny-mce loading', false, this.id);
       this.changeDetector.markForCheck();
+      this.changeDetector.detectChanges();
+      $('plomino-tiny-mce plomino-block-preloader').remove();
       this.ngAfterViewInit();
     }
   }
