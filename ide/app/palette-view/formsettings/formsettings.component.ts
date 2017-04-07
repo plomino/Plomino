@@ -74,7 +74,9 @@ export class FormSettingsComponent implements OnInit {
         this.formsService.formSettingsSave$.subscribe((data) => {
           // debugger;
           this.log.info('T-5 formsettings.component.ts', this.tabsService.ping());
-            if (typeof data.formUniqueId === 'undefined') {
+          // debugger;
+            if (typeof data.formUniqueId === 'undefined'
+              || data.formUniqueId >= 1e10) {
                 data.formUniqueId = this.tab.formUniqueId;
             }
             
@@ -149,6 +151,7 @@ export class FormSettingsComponent implements OnInit {
               this.formSaving = false;
               this.formSettings = responseHtml;
               this.updateMacroses();
+              this.loading = false;
               this.changeDetector.markForCheck();
               
               window['materialPromise'].then(() => {

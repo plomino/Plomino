@@ -90,7 +90,7 @@
                     [attr.data-editor]="tabz.editor"
                     [attr.data-url]="tabz.url" [attr.data-active]="tabz.active">
                     <loading *ngIf="tabz.isloading"></loading>
-                    <span *ngIf="tabz.isdirty">* </span>
+                    <span *ngIf="tabz.isdirty === false">* </span>
                     <span class="tab-type-image">
                       <img [src]="getTabTypeImage(tabz.editor)">
                     </span>

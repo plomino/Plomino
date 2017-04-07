@@ -123,7 +123,7 @@ export class PlominoElementAdapterService {
 
       $element
         .addClass('plominoLabelClass--selected')
-        .one('dblclick.adapter', () => {
+        .one('click.adapter', () => {
           $element
             .removeClass('mceNonEditable')
             .attr('contenteditable', 'true')

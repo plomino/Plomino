@@ -47,9 +47,10 @@ export class FormsService {
         this.paletteTabChangeEventSource.next(tabIndex);
     }
 
-    saveForm(id: any, changeTab = true) {
+    saveForm(id: any, changeTab = true, loadingSignal: boolean = null) {
       this.log.info('T-100 forms.service.ts', id);
       this.log.info('saveForm called, this.formSaving', this.formSaving);
+      // debugger;
       
       if (this.formSaving) return;
       this.formSaving = true;
@@ -59,8 +60,10 @@ export class FormsService {
       }
 
       this.saveFormSettings(id, () => {
+        // debugger;
           this.saveFormContent(id, () => {
               this.formSaving = false;
+              loadingSignal = false;
           });
       });
     }
