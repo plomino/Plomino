@@ -275,13 +275,22 @@ export class FormSettingsComponent implements OnInit {
             clearTimeout(this.macrosWidgetTimer);
           }
 
-          this.log.info('!! select2', $('.field-settings-wrapper .select2-choices').length);
-          
           this.macrosWidgetTimer = setTimeout(() => { // for exclude bugs
             let $el = $('.form-settings-wrapper ' + 
             '#formfield-form-widgets-IHelpers-helpers > ul.plomino-macros');
             if ($el.length) {
-              this.zone.runOutsideAngular(() => { new MacroWidget($el); });
+              this.zone.runOutsideAngular(() => {
+                try {
+                  new MacroWidget($el);
+                }
+                catch (e) {
+                  setTimeout(() => {
+                    let $el = $('.form-settings-wrapper ' + 
+                      '#formfield-form-widgets-IHelpers-helpers > ul.plomino-macros');
+                    new MacroWidget($el);
+                  }, 100);
+                }
+              });
             }
           }, 200);
         });
