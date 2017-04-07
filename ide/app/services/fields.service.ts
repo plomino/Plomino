@@ -10,12 +10,18 @@ import { Observable } from 'rxjs/Observable';
 export class FieldsService {
   viewColumnInserted: Subject<string> = new Subject<string>();
   viewActionInserted: Subject<string> = new Subject<string>();
+  viewReIndex: Subject<any> = new Subject<any>();
+  
   private insertionStream$: Subject<InsertFieldEvent> 
     = new Subject<InsertFieldEvent>();
   private updatesStream$: Subject<PlominoFieldUpdatesStreamEvent> 
     = new Subject<PlominoFieldUpdatesStreamEvent>();
   
   constructor(private http: PlominoHTTPAPIService, private log: LogService) { }
+
+  onReIndexItems() {
+    return this.viewReIndex.asObservable();
+  }
 
   onNewColumn() {
     return this.viewColumnInserted.asObservable();

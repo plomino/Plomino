@@ -205,6 +205,7 @@ export class FieldSettingsComponent implements OnInit {
                       .remove('view-editor__column-header--virtual');
                     viewColumnElement.dataset.column = newId;
                     viewColumnElement.innerHTML = newTitle;
+                    viewColumnElement.draggable = true;
 
                     if (viewColumnElement.dataset.unsortedDelta) {
                       const delta = 
@@ -218,9 +219,13 @@ export class FieldSettingsComponent implements OnInit {
                       subsetIds.push(newId);
                       this.viewsAPI.reOrderItem(viewURL, newId, delta - 1, subsetIds)
                         .subscribe(() => {
-                          this.fieldsService.viewActionInserted.next(viewURL);
+                          this.fieldsService.viewReIndex.next(true);
+                          // this.fieldsService.viewActionInserted.next(viewURL);
                           // this.reloadView();
                         });
+                    }
+                    else {
+                      this.fieldsService.viewReIndex.next(true);
                     }
                   }
                 });

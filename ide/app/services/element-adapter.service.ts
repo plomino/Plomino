@@ -93,6 +93,9 @@ export class PlominoElementAdapterService {
     this.log.extra('element-adapter.service.ts select');
 
     /** blur */
+    if (!this.activeEditorService.getActive()) {
+      return;
+    }
     const $editorBody = $(this.activeEditorService.getActive().getBody());
 
     $editorBody.find('.plominoFieldClass')
