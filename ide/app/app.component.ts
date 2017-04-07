@@ -166,6 +166,7 @@ export class AppComponent implements OnInit, AfterViewInit {
     private objService: ObjService,
     private tabsService: TabsService,
     private log: LogService,
+    private contentManager: TinyMCEFormContentManagerService,
     private draggingService: DraggingService,
     private formsList: PlominoFormsListService,
     private appLoader: PlominoApplicationLoaderService,
@@ -473,15 +474,21 @@ export class AppComponent implements OnInit, AfterViewInit {
           const $iframe = $(this.activeEditorService.getActive()
               .getContainer().querySelector('iframe'));
           let x = $iframe.find('body').html();
-          if (typeof x === 'undefined') {
+          if (typeof x === 'undefined' || !x.length) {
             tinymce.EditorManager.execCommand('mceRemoveEditor', true, url);
             tinymce.EditorManager.execCommand('mceAddEditor', true, url);
             tinymce.EditorManager.execCommand('mceAddEditor', true, url);
-          }
-          else if (!x.length) {
-            tinymce.EditorManager.execCommand('mceRemoveEditor', true, url);
-            tinymce.EditorManager.execCommand('mceAddEditor', true, url);
-            tinymce.EditorManager.execCommand('mceAddEditor', true, url);
+
+            /* reset content hooks */
+            setTimeout(() => {
+              const x = this.contentManager.getContent(
+                this.activeEditorService.editorURL
+              );
+              this.contentManager.setContent(
+                this.activeEditorService.editorURL, x,
+                this.draggingService
+              );
+            }, 100);
           }
         }
       }

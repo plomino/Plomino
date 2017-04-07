@@ -123,10 +123,10 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
       this.log.info('insertionSubscription', dataToInsert);
       if (insertionParent === this.id) {
         this.addElement(dataToInsert);
-        this.changeDetector.markForCheck();
+        
         /* form save automatically */
-        // this.formsService.saveForm(this.item.formUniqueId, false);
-        // this.changeDetector.markForCheck();
+        this.formsService.saveForm(this.item.formUniqueId, false);
+        this.changeDetector.markForCheck();
       }
     });
 
@@ -148,10 +148,10 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
         }
         this.log.info('insertion template', insertion);
         this.insertGroup(insertion.group, insertion.target);
-        this.changeDetector.markForCheck();
+
         /* form save automatically */
-        // this.formsService.saveForm(this.item.formUniqueId, false);
-        // this.changeDetector.markForCheck();
+        this.formsService.saveForm(this.item.formUniqueId, false);
+        this.changeDetector.markForCheck();
       }
     });
     
@@ -187,6 +187,9 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
 
     this.formsService.formIdChanged$.subscribe((data) => {
       this.idChanges = Object.assign({}, data);
+      if (this.activeEditorService.editorURL === data.oldId) {
+        this.activeEditorService.setActive(data.newId);
+      }
     });
 
     this.formsService.formContentSave$.subscribe((data) => {
