@@ -724,7 +724,7 @@ export class FieldSettingsComponent implements OnInit {
             setTimeout(() => {
               const $select = $('#form-widgets-subform-id');
               if ($select.length) {
-                const $select2 = (<any>$select).select2({
+                const $select2 = (<any>$select).select2('destroy').select2({
                   placeholder: 'Select the form'
                 });
   
@@ -820,9 +820,8 @@ export class FieldSettingsComponent implements OnInit {
 
             setTimeout(() => {
               const $select = $('#form-widgets-label-relation');
-              console.log($select, $select.select2());
               if ($select.length) {
-                const $select2 = (<any>$select).select2({
+                const $select2 = (<any>$select).select2('destroy').select2({
                   placeholder: ''
                 });
     
