@@ -88,6 +88,7 @@
               <template tabHeading>
                   <span class="tab-trigger" [class.tabunsaved]="tabz.isdirty"
                     [attr.data-editor]="tabz.editor"
+                    [attr.id]="'tab_' + tabz.url"
                     [attr.data-url]="tabz.url" [attr.data-active]="tabz.active">
                     <loading *ngIf="tabz.isloading"></loading>
                     <span *ngIf="tabz.isdirty === false">* </span>
@@ -99,6 +100,10 @@
                       class="material-icons">work</i>
                     <span class="tab-name">{{tabz.url | extractName}}</span>
                   </span>
+                  <div class="mdl-tooltip mdl-tooltip--large"
+                    [attr.data-mdl-for]="'tab_' + tabz.url">
+                    {{ tabz.title }}
+                  </div>
               </template>
               
               <plomino-tiny-mce *ngIf="tabz.editor==='layout'" 

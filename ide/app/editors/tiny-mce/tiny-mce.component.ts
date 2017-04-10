@@ -267,6 +267,13 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
 
     const LinkModal = window['LinkModal'];
 
+    // this.http.post('/Plone/mydb/rename-group', {
+
+    // })
+    // .subscribe((r: any) => {
+    //   console.log(r);
+    // });
+
     tinymce.init({
       cleanup : false,
       selector:'.tinymce-wrap',
