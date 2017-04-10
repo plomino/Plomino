@@ -194,7 +194,12 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
     });
 
     this.formsService.formContentSave$.subscribe((data) => {
-      this.changeDetector.detectChanges();
+      try {
+        this.changeDetector.detectChanges();
+      }
+      catch (e) {
+        this.log.error(e);
+      }
 
       if (this.theFormIsSavingNow && data.formUniqueId >= 1e10) {
         data.formUniqueId = this.item.formUniqueId;
@@ -226,8 +231,13 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
 
       this.theFormIsSavingNow = true;
       this.loading = true;
-      this.changeDetector.markForCheck();
-      this.changeDetector.detectChanges();
+      try {
+        this.changeDetector.markForCheck();
+        this.changeDetector.detectChanges();
+      }
+      catch (e) {
+        this.log.error(e);
+      }
 
       this.formsService.onFormContentBeforeSave({
         id: data.id,
@@ -617,14 +627,11 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
           );
           this.loading = false;
           this.log.info('tiny-mce loading', false, this.id);
-          this.changeDetector.markForCheck();
-          const wasSelected = this.adapter.getSelectedJQueryPath();
-          if (wasSelected) {
-            const $wasSelected = $('iframe:visible').contents().find(wasSelected);
-
-            if ($wasSelected.length) {
-              this.adapter.select($wasSelected.first());
-            }
+          try {
+            this.changeDetector.markForCheck();
+          }
+          catch (e) {
+            this.log.error(e);
           }
         });
       }
@@ -660,8 +667,13 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
       this.loading = false;
       this.theFormIsSavingNow = false;
       this.log.info('tiny-mce loading', false, this.id);
-      this.changeDetector.markForCheck();
-      this.changeDetector.detectChanges();
+      try {
+        this.changeDetector.markForCheck();
+        this.changeDetector.detectChanges();
+      }
+      catch (e) {
+        this.log.error(e);
+      }
       $('plomino-tiny-mce plomino-block-preloader').remove();
       this.ngAfterViewInit();
     }

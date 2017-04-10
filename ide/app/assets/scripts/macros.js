@@ -180,6 +180,16 @@ require([
                 '<i class="icon-pencil"></i></span>';
         },
         edit_macro: function(macro_select, formid, text, data, index) {
+          var uniqueId = data._macro_id_;
+          if (window[`macrojs_edit_macro_hold_${uniqueId}`]) {
+            return;
+          }
+          else {
+            window[`macrojs_edit_macro_hold_${uniqueId}`] = true;
+            setTimeout(() => {
+              delete window[`macrojs_edit_macro_hold_${uniqueId}`];
+            }, 300);
+          }
             var self = this.widget;
 
             // find the url for formid
