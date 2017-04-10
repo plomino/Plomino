@@ -45,7 +45,7 @@
         <ul [collapse]="false">
             
             <li *ngFor="let typeName of data"
-                class="tree-node--collapsible click-cursor"
+                class="tree-node--collapsible"
                 (mouseup)="click2DragDelay ? click2DragDelay.unsubscribe() : true"
                 (mousedown)="treeFormItemClick(selected, $event, typeName.typeLabel, typeName.url, typeName.label, typeName.formUniqueId)"
                 [class.closed]="getCollapseState(typeName.collapsed, selected && (typeName.url === selected.url))"
@@ -53,8 +53,9 @@
                 (click)="typeName.typeLabel !== 'Forms' || onEdit({formUniqueId: typeName.formUniqueId, label:typeName.label, url:typeName.url, editor: typeName.typeLabel === 'Views' ? 'view' : 'layout', path:[{name:typeName.label,type:typeName.typeLabel}]})"
                 [class.hasChild]="typeName.children.length !== 0">
 
-                <span class="tree-node--name"
+                <span class="tree-node--name click-cursor"
                     #selectable
+                    [attr.id]="typeName.url"
                     [class.selected]="selected && (typeName.url === selected.url)" 
                     (click)="typeName.collapsed = !getCollapseState(typeName.collapsed, selected && (typeName.url === selected.url))">
                     
@@ -64,6 +65,11 @@
                     
                     {{ typeName.url | extractName }}
                 </span>
+
+                <div class="mdl-tooltip mdl-tooltip--right"
+                    [attr.data-mdl-for]="typeName.url">
+                    {{ typeName.label }}
+                </div>
                 
                 <ul [collapse]="getCollapseState(typeName.collapsed, selected && (typeName.url === selected.url))" *ngIf="typeName.children.length">
                     <li *ngFor="let childName of typeName.children">
@@ -95,8 +101,8 @@
                     </li>
                 </ul>
             </li>
-            </ul>
-        </li>
+        </ul>
+    </li>
 
     </ul>
 </div>

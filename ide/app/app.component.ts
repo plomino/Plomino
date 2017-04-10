@@ -258,6 +258,11 @@ export class AppComponent implements OnInit, AfterViewInit {
       this.data = topFormsViewsList;
       this.formsList.setForms(topFormsViewsList);
       this.appLoader.markLoaded('app.component');
+      
+      /* fix the tooltips */
+      topFormsViewsList.forEach((x: any) => {
+        $(`[data-mdl-for="tab_${ x.url }"]`).html(x.label);
+      });
     });
     
     this.tabsService
