@@ -257,6 +257,7 @@ I preview "${formid}"
   Click Link  Form Settings
   wait until page contains element  jquery=.mdl-button:visible:contains("Preview")
   wait until page does not contain element  jquery=.plomino-block-preloader
+  wait until page does not contain element  jquery=.plomino-block-preloader
   Click Element  jquery=.mdl-button:visible:contains("Preview")
   # Run keyword if  page contains element  jquery=.mdl-button.agree:visible
   #   Click Element  jquery=.mdl-button.agree:visible
