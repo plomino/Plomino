@@ -87,6 +87,8 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
   autoSaveTimer: any = null;
   autoSavedContent: string = null;
 
+  theFormIsSavingNow: boolean = false;
+
   /**
    * display block preloader
    */
@@ -150,10 +152,7 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
         this.insertGroup(insertion.group, insertion.target);
 
         /* form save automatically */
-        this.loading = true;
-        this.log.info('tiny-mce loading', true, this.id);
-        this.formsService.saveForm(this.item.formUniqueId, false, this.loading);
-        this.changeDetector.markForCheck();
+        this.saveTheForm();
       }
     });
     
@@ -197,7 +196,7 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
     this.formsService.formContentSave$.subscribe((data) => {
       this.changeDetector.detectChanges();
 
-      if (data.formUniqueId >= 1e10) {
+      if (this.theFormIsSavingNow && data.formUniqueId >= 1e10) {
         data.formUniqueId = this.item.formUniqueId;
       }
 
@@ -211,6 +210,7 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
 
       // editor.buttons.save.onclick();
       editor.setDirty(false);
+      this.log.info('i am', this.id, 'and I doing call saveFormLayout');
       this.saveFormLayout(data.cb);
     } );
 
@@ -236,6 +236,15 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
     this.insertionSubscription.unsubscribe();
     this.templatesSubscription.unsubscribe();
     tinymce.EditorManager.execCommand('mceRemoveEditor', true, this.id);
+  }
+
+  saveTheForm() {
+    this.loading = true;
+    this.theFormIsSavingNow = true;
+    this.formsService.saveForm(this.item.formUniqueId, false, this.loading);
+    tinymce.get(this.id).setDirty(false);
+    this.isDirty.emit(false);
+    this.changeDetector.markForCheck();
   }
 
   ngAfterViewInit(): void {
@@ -295,10 +304,8 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
       // 'plonelink unlink ploneimage',
 
       save_onsavecallback: () => {
-        // debugger;
         this.log.info('T-200 tiny-mce.component.ts', this.tabsService.ping());
-        this.formsService.saveForm(this.item.formUniqueId, false);
-        this.changeDetector.markForCheck();
+        this.saveTheForm();
       },
 
       setup : (editor: any) => {
@@ -333,9 +340,10 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
         editor.on('change', (e: any) => {
           this.log.info('change event received', e, 
             this.activeEditorService.editorURL, this.id);
-          if (this.activeEditorService.editorURL === this.id) {
+          if (this.activeEditorService.editorURL === this.id 
+            && !this.theFormIsSavingNow) {
             /* TinyMCE BUG: change one editor throws other */
-            this.log.info('onchange dirty', this.id);
+            this.log.info('onchange dirty', this.formsService.formSaving, this.id);
             tiny.isDirty.emit(true);
           }
         });
@@ -505,7 +513,7 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
         'theme/barceloneta-compiled.css', 'theme/++plone++static/plone-compiled.css'
       ],
       content_style: require('./tinymce.css'),
-      menubar: "file edit insert view format table tools",
+      menubar: "edit insert view format table tools",
       height : "780",
       resize: false
     });
@@ -625,6 +633,7 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
   }
 
   saveFormLayout(cb:any) {
+    this.log.info('calling saveFormLayout', cb.toString(), this.id);
     let tiny = this;
     let editor = tinymce.get(this.id) || tinymce.get(this.idChanges.oldId);
 
@@ -635,6 +644,7 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
       tiny.isDirty.emit(false);
       editor.setDirty(false);
       this.loading = false;
+      this.theFormIsSavingNow = false;
       this.log.info('tiny-mce loading', false, this.id);
       this.changeDetector.markForCheck();
       this.changeDetector.detectChanges();

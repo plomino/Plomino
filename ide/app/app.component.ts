@@ -523,8 +523,15 @@ export class AppComponent implements OnInit, AfterViewInit {
   }
 
   setTabzAsDirty(tabz: any, dirty: boolean) {
-    this.log.info('setTabzAsDirty', tabz.url, dirty);
+    this.log.info('setTabzAsDirty', tabz, tabz.url, dirty);
     tabz.isdirty = dirty;
+
+    if (!dirty) {
+      $(`span[data-url="${ tabz.url }"] > span:contains("* ")`).remove();
+      if (tinymce.get(tabz.url)) {
+        tinymce.get(tabz.url).setDirty(false);
+      }
+    }
 
     $(window)
     .unbind('beforeunload')
