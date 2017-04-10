@@ -224,6 +224,11 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
       if (data.id !== this.item.formUniqueId)
         return;
 
+      this.theFormIsSavingNow = true;
+      this.loading = true;
+      this.changeDetector.markForCheck();
+      this.changeDetector.detectChanges();
+
       this.formsService.onFormContentBeforeSave({
         id: data.id,
         content: this.contentManager.getContent(this.id)
@@ -305,6 +310,7 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
 
       save_onsavecallback: () => {
         this.log.info('T-200 tiny-mce.component.ts', this.tabsService.ping());
+        this.loading = true;
         this.saveTheForm();
       },
 
