@@ -34,6 +34,9 @@ I have an empty form open
    and I can see "new-form" is open
    and sleep  0.5s
 
+I waiting a little bit
+  sleep  0.5s
+
 I have an additional empty form open
   Given I add a form by click
    and I can see "new-form" is open
@@ -118,9 +121,10 @@ I add a "${field}" field by dnd
   sleep  0.3s
   wait until page does not contain element  jquery=.plomino-block-preloader
   Selenium2Library.drag and drop  xpath=//div[@class="palette-wrapper"]//*[@title="${field}"]  css=.mce-edit-area iframe
-  wait until page contains element  css=.plomino-block-preloader
+  # wait until page contains element  css=.plomino-block-preloader
   sleep  0.3s
   wait until page does not contain element  jquery=.plomino-block-preloader
+  sleep  0.3s
 
 I create a view
   wait until page contains element  jquery=#PlominoView
@@ -269,6 +273,10 @@ a plominodatabase with the title '${title}' has been created
 I can see the plominodatabase title '${title}'
   Wait until page contains  Site Map
   Page should contain  ${title}
+
+I will see that hidewhen is present
+  Then I will see the "start" hidewhen on the path "/p[2]/span[1]"
+   and I will see the "end" hidewhen on the path "/p[2]/span[2]"
 
 I can see "${formid}" is open
   Set Selenium Timeout  10 seconds
