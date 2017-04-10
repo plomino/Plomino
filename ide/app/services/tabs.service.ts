@@ -138,8 +138,17 @@ export class TabsService {
     // }
 
     this.urlManager.rebuildURL(tabs);
-    let normalizedTab: any = Object.assign({}, this.retrieveTab(this.tree, tab), { showAdd: showAdd });
-    let selectedTab: any = _.find(tabs, { url: tab.url, editor: tab.editor });
+    const normalizedTab: any = Object.assign({}, this.retrieveTab(this.tree, tab), { showAdd: showAdd });
+
+    if (normalizedTab && tab.editor && tab.editor === 'code') {
+      normalizedTab.editor = 'code'; // I don't know why the editor field reduced
+
+      if (tab.path && tab.path.length > 1 && tab.path[1].type === 'Fields') {
+        normalizedTab.isField = true;
+      }
+    }
+
+    const selectedTab: any = _.find(tabs, { url: tab.url, editor: tab.editor });
     
     tabs.forEach(tab => { tab.active = (tab.url === selectedTab.url) });
 
@@ -158,12 +167,12 @@ export class TabsService {
     let tabs: any[] = this.tabs$.getValue();
     let tabIsOpen = _.find(tabs, { url: tab.url, editor: tab.editor });
 
-    const isFormTab = tab.path && Array.isArray(tab.path) 
+    const isFormTab = tab.editor !== 'code' && tab.path && Array.isArray(tab.path) 
       && tab.path.length && tab.path[0].type === 'Forms';
 
     const isActiveForm = isFormTab && this.activeEditorService.getActive()
       && this.activeEditorService.getActive().id === tab.url;
-    
+
     if (isActiveForm) {
       return;
     }

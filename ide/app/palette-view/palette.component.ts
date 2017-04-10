@@ -100,6 +100,11 @@ export class PaletteComponent implements OnInit {
             $('.drop-zone').remove();
             this.changeDetector.markForCheck();
           }
+
+          if (activeTab && activeTab.editor === 'code') {
+            this.formsService.changePaletteTab(activeTab.isField ? 1 : 2);
+            this.changeDetector.markForCheck();
+          }
         });
 
         this.tabsService.getActiveField().subscribe((activeField) => {

@@ -8,9 +8,10 @@ interface PlominoTab {
   showAdd?: boolean;
   active?: boolean;
   editor?: any;
+  path?: any[];
   typeLabel?: string;
   typeNameUrl?: string;
-  path?: any;
+  isField?: boolean;
 }
 
 interface HTMLDialogElement extends HTMLElement {
