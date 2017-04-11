@@ -775,7 +775,6 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
       // catch (e) {
       //   this.log.error(e);
       // }
-      $('plomino-tiny-mce plomino-block-preloader').remove();
       this.ngAfterViewInit();
     }
   }

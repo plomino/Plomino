@@ -367,6 +367,7 @@ export class TinyMCEFormContentManagerService {
         
         $iframe.contents().click();
         editor.setDirty(true);
+        this.activeEditorService.turnActiveEditorToLoadingState(false);
         return;
       }
       else {
@@ -375,6 +376,7 @@ export class TinyMCEFormContentManagerService {
         '$(target).hasClass(\'plominoGroupClass\')',
         $(target).hasClass('plominoGroupClass'));
         contentHTML = `<p>${contentHTML}</p>`;
+        this.activeEditorService.turnActiveEditorToLoadingState(false);
       }
     }
 
