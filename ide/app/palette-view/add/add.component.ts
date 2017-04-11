@@ -78,10 +78,10 @@ export class AddComponent implements OnInit, AfterViewInit {
                 private changeDetector: ChangeDetectorRef,
                 private templatesService: TemplatesService,
                 private widgetService: WidgetService) { 
-      this.tClickFlow$.debounceTime(500).subscribe((t: TemplateClickEvent) => {
+      this.tClickFlow$.debounceTime(200).subscribe((t: TemplateClickEvent) => {
         this.addTemplate(t.eventData, t.target, t.templateId);
       });
-      this.aClickFlow$.debounceTime(500).subscribe((x: string) => {
+      this.aClickFlow$.debounceTime(200).subscribe((x: string) => {
         this.add(x, true);
       });
     }
@@ -487,10 +487,12 @@ export class AddComponent implements OnInit, AfterViewInit {
     }
 
     runAddTemplate(eventData: MouseEvent, target: any, templateId: string) {
+      this.activeEditorService.turnActiveEditorToLoadingState();
       this.tClickSubject.next({eventData, target, templateId});
     }
 
     runAdd(comp: string) {
+      this.activeEditorService.turnActiveEditorToLoadingState();
       this.aClickSubject.next(comp);
     }
 
