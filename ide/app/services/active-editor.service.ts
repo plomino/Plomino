@@ -31,8 +31,8 @@ export class PlominoActiveEditorService {
     }
   }
 
-  turnActiveEditorToLoadingState() {
-    this.editorLoadingPushSubject.next(true);
+  turnActiveEditorToLoadingState(state = true) {
+    this.editorLoadingPushSubject.next(state);
   }
 
   turnActiveEditorToSavedState() {

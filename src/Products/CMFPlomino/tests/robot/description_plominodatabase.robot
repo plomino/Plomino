@@ -74,7 +74,7 @@ I submit the form
 
 I save the macro
   Wait until page contains element  css=.plominoSave
-  wait until page does not contain element  jquery=.plomino-block-preloader
+  wait until page does not contain element  jquery=.plomino-block-preloader:visible
   sleep  0.5s
   Click Button  jquery=.plominoSave:visible
   sleep  0.5s
@@ -84,14 +84,14 @@ I save the settings
   Click link  link=SAVE
 
 I save the fieldsettings
-  wait until page does not contain element  jquery=.plomino-block-preloader
+  wait until page does not contain element  jquery=.plomino-block-preloader:visible
   Wait until page contains element  jquery=.fieldsettings--control-buttons a:contains("Save")
   Click Element  jquery=.fieldsettings--control-buttons a:contains("Save")
   wait until page contains element  jquery=.portalMessage:visible:contains("Changes saved")
 
 I save the form
   Wait until page contains element  jquery=#mceu_0 button:contains("Save")
-  wait until page does not contain element  jquery=.plomino-block-preloader
+  wait until page does not contain element  jquery=.plomino-block-preloader:visible
   Click Element  jquery=#mceu_0 button:contains("Save")
 
 I go to the plominodatabase view
@@ -113,17 +113,17 @@ I add a hidewhen by click
 
 I add a "${field}" field
   Click Element  xpath=//div[@class="palette-wrapper"]//*[@title="${field}"]
-  wait until page contains element  css=.plomino-block-preloader
+  wait until page contains element  jquery=.plomino-block-preloader:visible
   sleep  0.3s
-  wait until page does not contain element  jquery=.plomino-block-preloader
+  wait until page does not contain element  jquery=.plomino-block-preloader:visible
 
 I add a "${field}" field by dnd
   sleep  0.3s
-  wait until page does not contain element  jquery=.plomino-block-preloader
+  wait until page does not contain element  jquery=.plomino-block-preloader:visible
   Selenium2Library.drag and drop  xpath=//div[@class="palette-wrapper"]//*[@title="${field}"]  css=.mce-edit-area iframe
   # wait until page contains element  css=.plomino-block-preloader
   sleep  0.3s
-  wait until page does not contain element  jquery=.plomino-block-preloader
+  wait until page does not contain element  jquery=.plomino-block-preloader:visible
   sleep  0.3s
 
 I create a view
@@ -169,8 +169,8 @@ wait until form is loaded
   wait until page contains element   jquery=.mce-edit-area iframe:visible
   select frame  jquery=.mce-edit-area iframe:visible
   wait until page contains element   css=.mce-content-body
-  wait until page does not contain  css=.plomino-block-preloader
   unselect frame
+  wait until page does not contain element  jquery=.plomino-block-preloader:visible
 
 I enter "${value}" in "${field}" in "${tab}"
   Click Link  ${tab}
@@ -190,7 +190,7 @@ Double Click On Label "${plominoid}"
 
 I edit the label "${fieldid}" to "${text}"
   sleep  0.5s
-  wait until page does not contain element  css=.plomino-block-preloader
+  wait until page does not contain element  jquery=.plomino-block-preloader:visible
   select frame  jquery=.mce-edit-area iframe:visible
   wait until page contains element  css=.plominoLabelClass[data-plominoid="${fieldid}"]
   click element  css=.plominoLabelClass[data-plominoid="${fieldid}"]
@@ -201,6 +201,7 @@ I edit the label "${fieldid}" to "${text}"
   unselect frame
 
 I select the field "${fieldid}"
+  wait until page does not contain element  jquery=.plomino-block-preloader:visible
   select frame  jquery=.mce-edit-area iframe:visible
   wait until page contains element  css=.plominoFieldClass[data-plominoid="${fieldid}"]
   click element  css=.plominoFieldClass[data-plominoid="${fieldid}"]
@@ -226,38 +227,38 @@ I add an action "${actionid}"
   wait until page contains element  jquery=#action
   wait until page contains element  jquery=div.main-app.panel
   Click Element  jquery=#action
-  wait until page contains element  jquery=.plomino-block-preloader
-  wait until page does not contain element  jquery=.plomino-block-preloader
+  wait until page contains element  jquery=.plomino-block-preloader:visible
+  wait until page does not contain element  jquery=.plomino-block-preloader:visible
   Click Element  jquery=.actionButtons input[type="button"]:last
   wait until page contains element  jquery=.actionButtons input[type="button"].view-editor__action--selected
-  wait until page does not contain element  jquery=.plomino-block-preloader
+  wait until page does not contain element  jquery=.plomino-block-preloader:visible
   Input Text  jquery=#form-widgets-IShortName-id  ${actionid}
   Input Text  jquery=#form-widgets-IBasic-title  ${actionid}
   Wait until page contains element  jquery=.fieldsettings--control-buttons a:contains("Save")
   Click Element  jquery=.fieldsettings--control-buttons a:contains("Save")
-  wait until page does not contain element  jquery=.plomino-block-preloader
+  wait until page does not contain element  jquery=.plomino-block-preloader:visible
 
 I add a column "${myfield}"
   Click Link  Add
   Click Element  jquery=#column
-  wait until page contains element  jquery=.plomino-block-preloader
-  wait until page does not contain element  jquery=.plomino-block-preloader
+  wait until page contains element  jquery=.plomino-block-preloader:visible
+  wait until page does not contain element  jquery=.plomino-block-preloader:visible
   Click Element  jquery=.view-editor__column-header:last
   wait until page contains element  jquery=.view-editor__column-header.view-editor__column-header--selected
-  wait until page does not contain element  jquery=.plomino-block-preloader
+  wait until page does not contain element  jquery=.plomino-block-preloader:visible
   Input Text  jquery=#form-widgets-IShortName-id  ${myfield}
   Input Text  jquery=#form-widgets-IBasic-title  ${myfield}
   Select From List By Value  jquery=#form-widgets-displayed_field  frm_test/${myfield}
   sleep  2s
   Wait until page contains element  jquery=.fieldsettings--control-buttons a:contains("Save")
   Click Element  jquery=.fieldsettings--control-buttons a:contains("Save")
-  wait until page does not contain element  jquery=.plomino-block-preloader
+  wait until page does not contain element  jquery=.plomino-block-preloader:visible
 
 I preview "${formid}"
   Click Link  Form Settings
   wait until page contains element  jquery=.mdl-button:visible:contains("Preview")
-  wait until page does not contain element  jquery=.plomino-block-preloader
-  wait until page does not contain element  jquery=.plomino-block-preloader
+  wait until page does not contain element  jquery=.plomino-block-preloader:visible
+  wait until page does not contain element  jquery=.plomino-block-preloader:visible
   Click Element  jquery=.mdl-button:visible:contains("Preview")
   # Run keyword if  page contains element  jquery=.mdl-button.agree:visible
   #   Click Element  jquery=.mdl-button.agree:visible
