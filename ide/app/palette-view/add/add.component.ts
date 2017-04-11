@@ -1,7 +1,7 @@
+import { Subscription, Observable, Subject } from 'rxjs/Rx';
 import { PlominoActiveEditorService } from './../../services/active-editor.service';
 import { PlominoViewsAPIService } from './../../editors/view-editor/views-api.service';
 import { PlominoBlockPreloaderComponent } from './../../utility/block-preloader';
-import { Observable } from 'rxjs/Rx';
 import {
   LabelsRegistryService
 } from './../../editors/tiny-mce/services/labels-registry.service';
@@ -30,6 +30,12 @@ import {
     WidgetService
 } from '../../services';
 
+interface TemplateClickEvent {
+  eventData: MouseEvent;
+  target: any;
+  templateId: string;
+}
+
 @Component({
     selector: 'plomino-palette-add',
     template: require('./add.component.html'),
@@ -46,6 +52,11 @@ export class AddComponent implements OnInit, AfterViewInit {
     workflowComponents: Array<any> = [];
     mouseDownTemplateId: string;
     mouseDownTime: number;
+
+    private tClickSubject: Subject<TemplateClickEvent> = new Subject<TemplateClickEvent>();
+    public tClickFlow$: Observable<TemplateClickEvent> = this.tClickSubject.asObservable();
+    private aClickSubject: Subject<string> = new Subject<string>();
+    public aClickFlow$: Observable<string> = this.aClickSubject.asObservable();
 
     /**
      * display block preloader
@@ -67,7 +78,12 @@ export class AddComponent implements OnInit, AfterViewInit {
                 private changeDetector: ChangeDetectorRef,
                 private templatesService: TemplatesService,
                 private widgetService: WidgetService) { 
-
+      this.tClickFlow$.debounceTime(500).subscribe((t: TemplateClickEvent) => {
+        this.addTemplate(t.eventData, t.target, t.templateId);
+      });
+      this.aClickFlow$.debounceTime(500).subscribe((x: string) => {
+        this.add(x, true);
+      });
     }
 
     ngAfterViewInit() {
@@ -231,25 +247,7 @@ export class AddComponent implements OnInit, AfterViewInit {
         });
     }
 
-    // When a Form or View is selected, adjust the addable state of the
-    // relevant buttons. How do we do this? Do we need a service that stores
-    // the currently selected object?
-
-    // XXX: temp. For toggling state of Form/View buttons until hooked up to
-    // event that handles currently selected item in main view
-    // toggle(type: string) {
-    //     if (type == 'form') {
-    //         for (let component of this.addableComponents[0]['components']) {
-    //             component.addable = !component.addable;
-    //         }
-    //     } else if (type == 'view') {
-    //         for (let component of this.addableComponents[1]['components']) {
-    //             component.addable = !component.addable;
-    //         }
-    //     }
-    // }
-
-    add(type: string, target?: HTMLElement, treeSubform?: boolean) {
+    add(type: string, target?: HTMLElement|true, treeSubform?: boolean) {
       const clickTime = (new Date).getTime();
 
       //todo: detect click
@@ -488,6 +486,13 @@ export class AddComponent implements OnInit, AfterViewInit {
       }
     }
 
+    runAddTemplate(eventData: MouseEvent, target: any, templateId: string) {
+      this.tClickSubject.next({eventData, target, templateId});
+    }
+
+    runAdd(comp: string) {
+      this.aClickSubject.next(comp);
+    }
 
     addTemplate(eventData: MouseEvent, target: any, templateId: string) {
 
