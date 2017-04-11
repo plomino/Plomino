@@ -205,7 +205,17 @@ export class TabsService {
 
   closeTab(tab: any): void {
     let tabs: any[] = this.tabs$.getValue();
-    tabs.splice(tabs.indexOf(tab), 1);
+    let tabIndex = 0;
+    
+    tabs.forEach((value, index) => {
+      const accepted = value.url === tab.url/* && value.editor === tab.editor*/;
+      if (accepted) {
+        tabIndex = index;
+        return false;
+      }
+    });
+
+    tabs.splice(tabIndex, 1);
     
     if (tabs.length === 0) {
       this.activeTab$.next(null);

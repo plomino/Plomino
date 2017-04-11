@@ -156,17 +156,20 @@ export class TreeComponent implements OnInit {
     }
 
     selectFirstOccurenceInCurrentEditor(fieldData: PlominoFieldTreeObject) {
-      const $body = $(this.activeEditorService.getActive().getBody());
-      $body.find('[data-mce-selected]').removeAttr('data-mce-selected');
-      
-      const $results = $body
-        .find(
-          `.plominoFieldClass[data-plominoid="${ fieldData.name.split('/').pop() }"]`
-        );
-
-      if ($results.length) {
-        const $first = $results.first();
-        $first.attr('data-mce-selected', '1');
+      const editor = this.activeEditorService.getActive();
+      if (editor) {
+        const $body = $(this.activeEditorService.getActive().getBody());
+        $body.find('[data-mce-selected]').removeAttr('data-mce-selected');
+        
+        const $results = $body
+          .find(
+            `.plominoFieldClass[data-plominoid="${ fieldData.name.split('/').pop() }"]`
+          );
+  
+        if ($results.length) {
+          const $first = $results.first();
+          $first.attr('data-mce-selected', '1');
+        }
       }
     }
 
