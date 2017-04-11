@@ -84,6 +84,9 @@ export class PlominoHTTPAPIService {
       const tmp = response.json();
       throw tmp.message || tmp.toString();
     }
+    else if (response.status === 0) {
+      throw 'The server does not respond';
+    }
     else {
       return response;
     }
@@ -92,7 +95,16 @@ export class PlominoHTTPAPIService {
   throwError(error: any): any {
     if (typeof error === 'object' && error instanceof Response) {
       error = error.json();
-      error = error.error_type || error.message || error.toString();
+      if (
+        error.type && error.type === 'error' 
+        && error.total === 0 && error.target 
+        && error.target.status === 0
+      ) {
+        error = 'The server does not respond';
+      }
+      else {
+        error = error.error_type || error.message || error.toString();
+      }
     }
     if (typeof error !== 'object' 
       && error.indexOf('404 Not Found') === -1
