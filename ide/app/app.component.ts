@@ -272,10 +272,6 @@ export class AppComponent implements OnInit, AfterViewInit {
 
       tabs.forEach((tab: any) => {
         if (tab.active && this.tabsService.closing) {
-          // setTimeout(() => {
-          //   tinymce.EditorManager.execCommand('mceRemoveEditor', true, tab.url);
-          //   tinymce.EditorManager.execCommand('mceAddEditor', true, tab.url);
-          // });
           this.tabsService.closing = false;
         }
       });
@@ -473,8 +469,15 @@ export class AppComponent implements OnInit, AfterViewInit {
         if (this.activeEditorService.getActive()) {
           const $iframe = $(this.activeEditorService.getActive()
               .getContainer().querySelector('iframe'));
-          let x = $iframe.find('body').html();
-          if (typeof x === 'undefined' || !x.length) {
+          let x = $iframe.contents().find('body').html();
+          if (
+            /* x === '' in case when <p> are missing, why? */
+            typeof x === 'undefined' || !x.length
+            // typeof x === 'undefined' || (!x.length 
+            //   && !$iframe.contents().find('body').length
+            // )
+          ) {
+            // const $tinyTextarea = $iframe.closest('form').find('>textarea');
             tinymce.EditorManager.execCommand('mceRemoveEditor', true, url);
             tinymce.EditorManager.execCommand('mceAddEditor', true, url);
             tinymce.EditorManager.execCommand('mceAddEditor', true, url);
