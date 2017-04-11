@@ -231,6 +231,7 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
 
       this.theFormIsSavingNow = true;
       this.fallLoading();
+      this.log.info('fallLoading from getFormContentBeforeSave$');
       // this.loading = true;
       // try {
       //   this.changeDetector.markForCheck();
@@ -257,6 +258,7 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
   saveTheForm() {
     // this.loading = true;
     this.fallLoading();
+    this.log.info('fallLoading from saveTheForm');
     this.theFormIsSavingNow = true;
     this.formsService.saveForm(this.item.formUniqueId, false);
     tinymce.get(this.id).setDirty(false);
@@ -331,6 +333,7 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
         this.log.info('T-200 tiny-mce.component.ts', this.tabsService.ping());
         // this.loading = true;
         this.fallLoading();
+        this.log.info('fallLoading from save_onsavecallback');
         this.saveTheForm();
       },
 
@@ -608,6 +611,7 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
     .subscribe((state: boolean) => {
       if (this.activeEditorService.editorURL === this.id) {
         this.fallLoading(state);
+        this.log.info('fallLoading from onLoadingPush with state', state);
         // this.loading = state;
         // try {
         //   this.changeDetector.markForCheck();
@@ -645,10 +649,24 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
    */
   fallLoading(state = true) {
     const editor = tinymce.get(this.id);
-    const preloader = editor.getContainer()
-      .parentElement.querySelector('plomino-block-preloader');
-    (<HTMLElement> preloader.querySelector('.plomino-block-preloader'))
-      .style.display = state ? 'flex' : 'none';
+    if (editor) {
+      const preloader = editor.getContainer()
+        .parentElement.querySelector('plomino-block-preloader');
+      (<HTMLElement> preloader.querySelector('.plomino-block-preloader'))
+        .style.display = state ? 'flex' : 'none';
+    }
+  }
+
+  isLoadingNow(): boolean {
+    const editor = tinymce.get(this.id);
+    if (editor) {
+      const preloader = editor.getContainer()
+        .parentElement.querySelector('plomino-block-preloader');
+      return (<HTMLElement> preloader.querySelector('.plomino-block-preloader'))
+        .style.display === 'flex';
+    } else {
+      return false
+    }
   }
 
   /**
@@ -656,6 +674,13 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
    */
   getFormLayout() {
     this.fallLoading();
+    this.log.info('fallLoading from getFormLayout');
+    // setTimeout(() => {
+    //   if (this.isLoadingNow()) {
+    //     this.fallLoading(false);
+    //     this.log.warn('the preloader did produce some bug and we removed it');
+    //   }
+    // }, 2000);
     // this.loading = true;
     // try {
     //   this.changeDetector.markForCheck();

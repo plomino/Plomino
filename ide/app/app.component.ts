@@ -521,6 +521,7 @@ export class AppComponent implements OnInit, AfterViewInit {
     this.activeEditorService.setActive(
       tab.path[0].type === 'Forms' ? tab.url : null
     );
+    this.activeEditorService.turnActiveEditorToLoadingState(false);
     this.log.info('onTabSelect setActive', tab.path[0].type === 'Forms' ? tab.url : null);
     this.log.info('onTabSelect getActive', this.activeEditorService.editorURL, this.activeEditorService.getActive());
     this.tabsService.setActiveTab(tab, true);

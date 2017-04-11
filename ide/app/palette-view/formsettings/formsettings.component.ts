@@ -254,12 +254,13 @@ export class FormSettingsComponent implements OnInit {
     }
 
     private deleteForm(tabData: PlominoTab) {
+      const tab = this.tab;
       this.elementService.awaitForConfirm()
       .then(() => {
         this.elementService
           .deleteElement(tabData.url)
           .subscribe(() => {
-            this.tabsService.closeTab(this.tab);
+            this.tabsService.closeTab(tab);
             this.tab = null;
             this.formSettings = '';
             this.formLayout = '';
