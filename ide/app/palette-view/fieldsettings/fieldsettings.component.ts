@@ -125,6 +125,9 @@ export class FieldSettingsComponent implements OnInit {
           extractedTextAndURL.html.indexOf('ajax_success') === -1
           && extractedTextAndURL.html.indexOf('There were some errors') !== -1
         ) {
+          setTimeout(() => {
+            componentHandler.upgradeDom();
+          }, 200);
           return Observable.of(extractedTextAndURL.html);
         } else {
           if (/^.+?\/view$/.test(extractedTextAndURL.url)) {
@@ -232,6 +235,7 @@ export class FieldSettingsComponent implements OnInit {
 
               this.loading = false;
               this.changeDetector.detectChanges();
+              componentHandler.upgradeDom();
             }
 
             return false;
