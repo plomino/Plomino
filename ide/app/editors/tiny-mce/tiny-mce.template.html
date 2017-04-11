@@ -2,7 +2,8 @@
     <code>{{ theFormIsSavingNow }}</code></pre>-->
 <form #theEditor 
     class="tiny-editor">
-    <plomino-block-preloader [loading]="loading" [palette]="false"></plomino-block-preloader>
+    <plomino-block-preloader [id]="'preloader_' + id"
+        [loading]="true" [palette]="false"></plomino-block-preloader>
     <textarea class="tinymce-wrap" 
             [id]="id">
     </textarea>

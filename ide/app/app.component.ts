@@ -535,9 +535,9 @@ export class AppComponent implements OnInit, AfterViewInit {
     tabz.isdirty = dirty;
 
     if (!dirty) {
-      $(`span[data-url="${ tabz.url }"] > span:contains("* ")`).remove();
       if (tinymce.get(tabz.url)) {
         tinymce.get(tabz.url).setDirty(false);
+        this.activeEditorService.turnActiveEditorToSavedState();
       }
     }
 

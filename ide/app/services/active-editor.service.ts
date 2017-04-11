@@ -1,9 +1,14 @@
+import { Subject, Observable } from 'rxjs/Rx';
 import { Injectable } from '@angular/core';
 
 @Injectable()
 export class PlominoActiveEditorService {
 
   editorURL: string = null;
+  private editorLoadingPushSubject: Subject<boolean> = new Subject<boolean>();
+  private editorLoadingPush$ = this.editorLoadingPushSubject.asObservable();
+  private editorSavedPushSubject: Subject<boolean> = new Subject<boolean>();
+  private editorSavedPush$ = this.editorSavedPushSubject.asObservable();
 
   constructor() { }
 
@@ -24,6 +29,22 @@ export class PlominoActiveEditorService {
           .removeAttr('style');
       }
     }
+  }
+
+  turnActiveEditorToLoadingState() {
+    this.editorLoadingPushSubject.next(true);
+  }
+
+  turnActiveEditorToSavedState() {
+    this.editorSavedPushSubject.next(true);
+  }
+
+  onLoadingPush() {
+    return this.editorLoadingPush$;
+  }
+
+  onSavedPush() {
+    return this.editorSavedPush$;
   }
 
   getActive(): TinyMceEditor {

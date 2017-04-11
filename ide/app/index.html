@@ -145,8 +145,13 @@
       text-decoration: none;
     }
 
-    .tab-name:focus {
+    .tab-name:focus, .tab-trigger:focus {
       outline: none;
+      user-select: none;
+    }
+
+    plomino-tiny-mce .plomino-block-preloader {
+      opacity: 0.85;
     }
 
     .plone-modal-body .plominoFieldGroup p {

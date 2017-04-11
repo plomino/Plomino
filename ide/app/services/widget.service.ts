@@ -195,9 +195,9 @@ export class WidgetService {
     return this.getGroupLayout(baseUrl, template, true);
   }
 
-  getFormLayout(baseUrl: string) {
+  getFormLayout(baseUrl: string, $edIFrame: JQuery) {
     // this.log.info('getFormLayout called', baseUrl);
-    const $edIFrame = $(`iframe[id="${ baseUrl }_ifr"]`).contents();
+    // const $edIFrame = $(`iframe[id="${ baseUrl }_ifr"]`).contents();
     $edIFrame.css('opacity', 0);
     let $elements = $edIFrame.find('.plominoGroupClass, .plominoSubformClass, ' +
       '.plominoFieldClass:not(.plominoGroupClass .plominoFieldClass), ' +

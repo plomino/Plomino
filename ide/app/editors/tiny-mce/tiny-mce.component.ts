@@ -230,14 +230,15 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
         return;
 
       this.theFormIsSavingNow = true;
-      this.loading = true;
-      try {
-        this.changeDetector.markForCheck();
-        this.changeDetector.detectChanges();
-      }
-      catch (e) {
-        this.log.error(e);
-      }
+      this.fallLoading();
+      // this.loading = true;
+      // try {
+      //   this.changeDetector.markForCheck();
+      //   this.changeDetector.detectChanges();
+      // }
+      // catch (e) {
+      //   this.log.error(e);
+      // }
 
       this.formsService.onFormContentBeforeSave({
         id: data.id,
@@ -254,9 +255,10 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
   }
 
   saveTheForm() {
-    this.loading = true;
+    // this.loading = true;
+    this.fallLoading();
     this.theFormIsSavingNow = true;
-    this.formsService.saveForm(this.item.formUniqueId, false, this.loading);
+    this.formsService.saveForm(this.item.formUniqueId, false);
     tinymce.get(this.id).setDirty(false);
     this.isDirty.emit(false);
     this.changeDetector.markForCheck();
@@ -327,31 +329,27 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
 
       save_onsavecallback: () => {
         this.log.info('T-200 tiny-mce.component.ts', this.tabsService.ping());
-        this.loading = true;
+        // this.loading = true;
+        this.fallLoading();
         this.saveTheForm();
       },
 
-      setup : (editor: any) => {
+      setup : (editor: TinyMceEditor) => {
         if(this.editorInstance) {
           this.editorInstance.remove();
         } else {
           // this.getFormLayout();
         }
 
-        editor.onSaveContent.add(function(ed: any, o: any) {
-          // Output the element name
-          console.debug('onSaveContent', o.element.nodeName);
-        });
-
         editor.addMenuItem('PreviewButton', {
           text: 'Open form in new tab',
           context: 'view',
           onclick: () => {
-            this.formsService.saveForm(this.item.formUniqueId, false);
-            this.changeDetector.markForCheck();
-            setTimeout(() => {
+            // this.formsService.saveForm(this.item.formUniqueId, false);
+            // this.changeDetector.markForCheck();
+            // setTimeout(() => {
               window.open(`${ this.item.url }/OpenForm`);
-            }, 200);
+            // }, 200);
             return;
           }
         });
@@ -381,10 +379,10 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
           }
         });
 
-        editor.on('activate', (e: any) => {
-          let $editorFrame = $(this.editorElement.nativeElement)
-            .find('iframe[id*=mce_]');
-        });
+        // editor.on('activate', (e: any) => {
+        //   let $editorFrame = $(this.editorElement.nativeElement)
+        //     .find('iframe[id*=mce_]');
+        // });
 
         editor.on('mousedown', (ev: MouseEvent) => {
           let $element = $(ev.target);
@@ -531,6 +529,15 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
             }
           });
         });
+
+        editor.setDirty(false);
+        const $edContainer = $(editor.getContainer());
+        if ($edContainer.length) {
+          const $saveDiv = $edContainer
+            .find('.mce-toolbar-grp div.mce-widget.mce-btn:contains("Save")');
+          $saveDiv.attr('aria-disabled', 'true');
+          $saveDiv.addClass('mce-disabled');
+        }
       },
       content_css: [
         'theme/barceloneta-compiled.css', 'theme/++plone++static/plone-compiled.css'
@@ -596,12 +603,67 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
         }
       }
     });
+
+    this.activeEditorService.onLoadingPush()
+    .subscribe((state: boolean) => {
+      if (this.activeEditorService.editorURL === this.id) {
+        this.fallLoading(state);
+        // this.loading = state;
+        // try {
+        //   this.changeDetector.markForCheck();
+        //   this.changeDetector.detectChanges();
+        // }
+        // catch (e) {
+        //   this.log.error(e);
+        // }
+      }
+    });
+
+    this.activeEditorService.onSavedPush()
+    .subscribe((state: boolean) => {
+      if (this.activeEditorService.editorURL === this.id) {
+        const editor = tinymce.get(this.id);
+        const isDirty = editor.isDirty();
+
+        if (!isDirty) {
+          const $edContainer = $(editor.getContainer());
+          if ($edContainer.length) {
+            const $saveDiv = $edContainer
+              .find('.mce-toolbar-grp div.mce-widget.mce-btn:contains("Save")');
+            $saveDiv.attr('aria-disabled', 'true');
+            $saveDiv.addClass('mce-disabled');
+            $(`span[data-url="${ this.id }"] > span:contains("* ")`).remove();
+            $(`span[data-url="${ this.id }"] > .tabunsaved`).removeClass('tabunsaved');
+          }
+        }
+      }
+    });
+  }
+
+  /**
+   * because the native angular2 changeDetector is buggable here
+   */
+  fallLoading(state = true) {
+    const editor = tinymce.get(this.id);
+    const preloader = editor.getContainer()
+      .parentElement.querySelector('plomino-block-preloader');
+    (<HTMLElement> preloader.querySelector('.plomino-block-preloader'))
+      .style.display = state ? 'flex' : 'none';
   }
 
   /**
    * calling REST-API and receiving form data
    */
   getFormLayout() {
+    this.fallLoading();
+    // this.loading = true;
+    // try {
+    //   this.changeDetector.markForCheck();
+    //   this.changeDetector.detectChanges();
+    // }
+    // catch (e) {
+    //   this.log.error(e);
+    // }
     this.elementService.getElementFormLayout(this.id)
     .subscribe((form: PlominoFormDataAPIResponse) => {
       for (let item of form.items) {
@@ -611,16 +673,21 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
       let newData = '';
       
       if (data && data.length) {
-        this.contentManager.setContent(
-          this.id, data, this.draggingService
-        );
-        const $inner = $(`iframe[id="${ this.id }_ifr"]`).contents().find('#tinymce');
-        $inner.css('opacity', '0');
+        /* here I will replace the tinymce storage to virtual */
+        // this.contentManager.setContent(
+        //   this.id, data, this.draggingService
+        // );
+        this.log.info('first content installed ok');
+        // const $inner = $(`iframe[id="${ this.id }_ifr"]`).contents().find('#tinymce');
+        // $inner.css('opacity', '0');
         this.autoSavedContent = data;
-        const loadingElements = this.widgetService.getFormLayout(this.id);
+        const $edIframeFake = $(`<div>${ data }</div>`);
+        const loadingElements = this.widgetService.getFormLayout(this.id, $edIframeFake);
         Promise.all(loadingElements).then(() => {
-          $inner.css('opacity', '');
-          const $content = $(`<div>${this.contentManager.getContent(this.id)}</div>`);
+          this.log.info('loading content finished');
+          // $inner.css('opacity', '');
+          // const $content = $(`<div>${this.contentManager.getContent(this.id)}</div>`);
+          const $content = $edIframeFake;
           $content.find('div.plominoLabelClass').each((i, element) => {
             const $element = $(element);
             if ($element.next().length && $element.next().prop('tagName') === 'BR'
@@ -632,14 +699,31 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
           this.contentManager.setContent(
             this.id, $content.html(), this.draggingService
           );
-          this.loading = false;
-          this.log.info('tiny-mce loading', false, this.id);
-          try {
-            this.changeDetector.markForCheck();
+          
+          this.fallLoading(false);
+          // this.loading = false;
+          // this.log.info('tiny-mce loading', false, this.id);
+          // try {
+          //   this.changeDetector.markForCheck();
+          //   this.changeDetector.detectChanges();
+          // }
+          // catch (e) {
+          //   this.log.error(e);
+          // }
+
+          const editor = tinymce.get(this.id);
+          const isDirty = editor.isDirty();
+
+          if (!isDirty) {
+            const $edContainer = $(editor.getContainer());
+            if ($edContainer.length) {
+              const $saveDiv = $edContainer
+                .find('.mce-toolbar-grp div.mce-widget.mce-btn:contains("Save")');
+              $saveDiv.attr('aria-disabled', 'true');
+              $saveDiv.addClass('mce-disabled');
+            }
           }
-          catch (e) {
-            this.log.error(e);
-          }
+          
         });
       }
       else {
@@ -647,16 +731,25 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
           this.id, newData, this.draggingService
         );
         this.autoSavedContent = newData;
-        this.loading = false;
-        this.log.info('tiny-mce loading', false, this.id);
-        this.changeDetector.markForCheck();
+        this.fallLoading(false);
+        
+        // this.loading = false;
+        // this.log.info('tiny-mce loading', false, this.id);
+        // try {
+        //   this.changeDetector.markForCheck();
+        //   this.changeDetector.detectChanges();
+        // }
+        // catch (e) {
+        //   this.log.error(e);
+        // }
       }
 
     }, (err) => {
       this.log.error(err);
-      this.log.info('tiny-mce loading', false, this.id);
-      this.loading = false;
-      this.changeDetector.markForCheck();
+      this.fallLoading(false);
+      // this.log.info('tiny-mce loading', false, this.id);
+      // this.loading = false;
+      // this.changeDetector.markForCheck();
     });
   }
 
@@ -671,16 +764,17 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
       this.log.info('onchange not dirty', this.id);
       tiny.isDirty.emit(false);
       editor.setDirty(false);
-      this.loading = false;
+      // this.loading = false;
       this.theFormIsSavingNow = false;
       this.log.info('tiny-mce loading', false, this.id);
-      try {
-        this.changeDetector.markForCheck();
-        this.changeDetector.detectChanges();
-      }
-      catch (e) {
-        this.log.error(e);
-      }
+      this.fallLoading(false);
+      // try {
+      //   this.changeDetector.markForCheck();
+      //   this.changeDetector.detectChanges();
+      // }
+      // catch (e) {
+      //   this.log.error(e);
+      // }
       $('plomino-tiny-mce plomino-block-preloader').remove();
       this.ngAfterViewInit();
     }

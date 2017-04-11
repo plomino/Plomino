@@ -201,6 +201,8 @@ interface TinyMceEditor extends TinyMceObservable {
   getBody: () => string
   getDoc: () => any
   setContent: (content: string, args?: Object) => string
+  onSaveContent: any
+  addMenuItem: any
   focus: (skip_focus?: boolean) => void
   undoManager: TinyMceUndoManager
   settings: Object
