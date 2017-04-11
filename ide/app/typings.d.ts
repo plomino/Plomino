@@ -160,7 +160,7 @@ interface InsertFieldEvent {
   action_type?: string;
   displayed_field?: string;
   form_layout?: string;
-  target?: HTMLElement;
+  target?: HTMLElement | true;
   subformHTML?: string;
 }
 
