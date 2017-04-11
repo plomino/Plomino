@@ -55,7 +55,7 @@
 
                 <span class="tree-node--name click-cursor"
                     #selectable
-                    [attr.id]="typeName.url"
+                    [attr.id]="'tree_' + typeName.url"
                     [class.selected]="selected && (typeName.url === selected.url)" 
                     (click)="typeName.collapsed = !getCollapseState(typeName.collapsed, selected && (typeName.url === selected.url))">
                     
@@ -67,7 +67,7 @@
                 </span>
 
                 <div class="mdl-tooltip mdl-tooltip--right"
-                    [attr.data-mdl-for]="typeName.url">
+                    [attr.data-mdl-for]="'tree_' + typeName.url">
                     {{ typeName.label }}
                 </div>
                 
