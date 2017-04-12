@@ -75,10 +75,10 @@ export class FormSettingsComponent implements OnInit {
           // debugger;
           this.log.info('T-5 formsettings.component.ts', this.tabsService.ping());
           // debugger;
-            if (typeof data.formUniqueId === 'undefined'
-              || data.formUniqueId >= 1e10) {
-                data.formUniqueId = this.tab.formUniqueId;
-            }
+            // if (typeof data.formUniqueId === 'undefined'
+            //   || data.formUniqueId >= 1e10) {
+            //     data.formUniqueId = this.tab.formUniqueId;
+            // }
             
             if (this.tab.formUniqueId !== data.formUniqueId)
                 return;

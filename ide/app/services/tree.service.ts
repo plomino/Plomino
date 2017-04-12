@@ -6,6 +6,7 @@ import { Observable } from 'rxjs/Observable';
 
 @Injectable()
 export class TreeService {
+    latestId: number = 1;
     private tree$: BehaviorSubject<any> = new BehaviorSubject(null);
 
     constructor(private http: PlominoHTTPAPIService) { 
@@ -24,6 +25,7 @@ export class TreeService {
 
         data[0].children.forEach((item:any) => {
             item.formUniqueId = id++;
+            this.latestId = id;
         });
 
         return data;
