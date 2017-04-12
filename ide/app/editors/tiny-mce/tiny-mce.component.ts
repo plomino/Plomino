@@ -201,9 +201,9 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
         this.log.error(e);
       }
 
-      if (this.theFormIsSavingNow && data.formUniqueId >= 1e10) {
-        data.formUniqueId = this.item.formUniqueId;
-      }
+      // if (this.theFormIsSavingNow && data.formUniqueId >= 1e10) {
+      //   data.formUniqueId = this.item.formUniqueId;
+      // }
 
       if (data.formUniqueId !== this.item.formUniqueId)
         return;
@@ -221,10 +221,10 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
 
     this.formsService.getFormContentBeforeSave$.subscribe((data:{id:any}) => {
       this.log.info('T-4 tiny-mce.component.ts', this.id, this.tabsService.ping());
-      if (typeof this.item.formUniqueId === 'undefined'
-        || this.item.formUniqueId >= 1e10) {
-        this.item.formUniqueId = data.id;
-      }
+      // if (typeof this.item.formUniqueId === 'undefined'
+      //   || this.item.formUniqueId >= 1e10) {
+      //   this.item.formUniqueId = data.id;
+      // }
       
       if (data.id !== this.item.formUniqueId)
         return;
@@ -258,7 +258,7 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
   saveTheForm() {
     // this.loading = true;
     this.fallLoading();
-    this.log.info('fallLoading from saveTheForm');
+    this.log.info('fallLoading from saveTheForm', this.item.formUniqueId, this.id);
     this.theFormIsSavingNow = true;
     this.formsService.saveForm(this.item.formUniqueId, false);
     tinymce.get(this.id).setDirty(false);
@@ -563,6 +563,15 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
       this.contentManager.selectAndRemoveElementById(this.id, 'drag-autopreview');
       this.dropped({ mouseEvent: eventData });
     });
+
+    this.tabsService.getActiveTab()
+      .subscribe((tab) => {
+        if (this.item && typeof this.item.formUniqueId === 'undefined') {
+          this.item = tab;
+          this.changeDetector.markForCheck();
+          this.changeDetector.detectChanges();
+        }
+      });
 
     this.labelMarkupEvent.asObservable()
     .subscribe(($element: JQuery) => {
