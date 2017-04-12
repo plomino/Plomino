@@ -6,7 +6,7 @@ import { Observable } from 'rxjs/Observable';
 
 @Injectable()
 export class TreeService {
-    latestId: number = 1;
+    // latestId: number = 1;
     private tree$: BehaviorSubject<any> = new BehaviorSubject(null);
 
     constructor(private http: PlominoHTTPAPIService) { 
@@ -21,11 +21,14 @@ export class TreeService {
         if(!Array.isArray(data) || !data[0])
             return data;
 
-        let id = 1;
+        // let id = 1;
 
         data[0].children.forEach((item:any) => {
-            item.formUniqueId = id++;
-            this.latestId = id;
+          item.formUniqueId = this.generateHash(
+            item.url + item.type
+          );
+            // item.formUniqueId = id++;
+            // this.latestId = id;
         });
 
         return data;
@@ -48,5 +51,16 @@ export class TreeService {
       .forEach((response: any) => {
         this.tree$.next(this.addUniqueIdsForForms(response));
       });
+    }
+
+    private generateHash(str: string): number {
+      var hash = 0, i, chr;
+      if (str.length === 0) return hash;
+      for (i = 0; i < str.length; i++) {
+        chr   = str.charCodeAt(i);
+        hash  = ((hash << 5) - hash) + chr;
+        hash |= 0; // Convert to 32bit integer
+      }
+      return hash;
     }
 }

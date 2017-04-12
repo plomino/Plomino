@@ -205,7 +205,7 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
       //   data.formUniqueId = this.item.formUniqueId;
       // }
 
-      if (data.formUniqueId !== this.item.formUniqueId)
+      if (data.url !== this.item.url)
         return;
 
       this.isLoading.emit(true);
@@ -226,7 +226,7 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
       //   this.item.formUniqueId = data.id;
       // }
       
-      if (data.id !== this.item.formUniqueId)
+      if (data.id !== this.item.url)
         return;
 
       this.theFormIsSavingNow = true;
@@ -260,7 +260,7 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
     this.fallLoading();
     this.log.info('fallLoading from saveTheForm', this.item.formUniqueId, this.id);
     this.theFormIsSavingNow = true;
-    this.formsService.saveForm(this.item.formUniqueId, false);
+    this.formsService.saveForm(this.item.url, false);
     tinymce.get(this.id).setDirty(false);
     this.isDirty.emit(false);
     this.changeDetector.markForCheck();
@@ -618,6 +618,9 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
 
     this.activeEditorService.onLoadingPush()
     .subscribe((state: boolean) => {
+      // debugger;
+      this.log.info('onLoadingPush i am', this.id, 
+        'this msg to', this.activeEditorService.editorURL);
       if (this.activeEditorService.editorURL === this.id) {
         this.fallLoading(state);
         this.log.info('fallLoading from onLoadingPush with state', state);
@@ -629,6 +632,16 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
         // catch (e) {
         //   this.log.error(e);
         // }
+      }
+      else if (this.activeEditorService.getActive() === null && this.id) {
+        tinymce.editors.forEach((editor: any) => {
+          if (editor.targetElm && editor.targetElm.id 
+            && editor.targetElm.id === this.id
+          ) {
+            this.fallLoading(state);
+            this.log.info('RESTORED fallLoading from onLoadingPush with state', state);
+          }
+        });
       }
     });
 
@@ -657,12 +670,32 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
    * because the native angular2 changeDetector is buggable here
    */
   fallLoading(state = true) {
+    // debugger;
     const editor = tinymce.get(this.id);
     if (editor) {
       const preloader = editor.getContainer()
         .parentElement.querySelector('plomino-block-preloader');
       (<HTMLElement> preloader.querySelector('.plomino-block-preloader'))
         .style.display = state ? 'flex' : 'none';
+    }
+    else if (this.id && this.activeEditorService.getActive() === null) {
+      /* id is present but no editor here, lets try to find it */
+      tinymce.editors.forEach((editor: any) => {
+        if (editor.targetElm && editor.targetElm.id 
+          && editor.targetElm.id === this.id
+        ) {
+          /* remove tinymce editor and add it again */
+          const preloader = editor.getContainer()
+            .parentElement.querySelector('plomino-block-preloader');
+          (<HTMLElement> preloader.querySelector('.plomino-block-preloader'))
+            .style.display = state ? 'flex' : 'none';
+          // editor.remove();
+          // tinymce.EditorManager.execCommand('mceAddEditor', true, this.id);
+          // tinymce.EditorManager.execCommand('mceAddEditor', true, this.id);
+
+          this.ngAfterViewInit();
+        }
+      });
     }
   }
 

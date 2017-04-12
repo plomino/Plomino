@@ -41,15 +41,15 @@ export class ObjService {
     }
     
     getFormSettings(formUrl: string): Observable<any> {
-      if (this.http.recentlyChangedFormURL !== null
-        && this.http.recentlyChangedFormURL[0] === formUrl
-        && $('.tab-name').toArray().map((e) => e.innerText)
-        .indexOf(formUrl.split('/').pop()) === -1
-      ) {
-        formUrl = this.http.recentlyChangedFormURL[1];
-        this.log.info('patched formUrl!', this.http.recentlyChangedFormURL);
-        this.log.extra('obj.service.ts getFormSettings');
-      }
+      // if (this.http.recentlyChangedFormURL !== null
+      //   && this.http.recentlyChangedFormURL[0] === formUrl
+      //   && $('.tab-name').toArray().map((e) => e.innerText)
+      //   .indexOf(formUrl.split('/').pop()) === -1
+      // ) {
+      //   formUrl = this.http.recentlyChangedFormURL[1];
+      //   this.log.info('patched formUrl!', this.http.recentlyChangedFormURL);
+      //   this.log.extra('obj.service.ts getFormSettings');
+      // }
       return this.http.get(
         `${formUrl}/@@edit?ajax_load=1&ajax_include_head=1`,
         'obj.service.ts getFormSettings'

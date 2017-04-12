@@ -80,19 +80,23 @@ export class FormSettingsComponent implements OnInit {
             //     data.formUniqueId = this.tab.formUniqueId;
             // }
             
-            if (this.tab.formUniqueId !== data.formUniqueId)
+            // if (this.tab.formUniqueId !== data.formUniqueId)
+            //     return;
+            if (this.tab.url !== data.url)
                 return;
 
             onSaveFinishCb = data.cb;
 
-            this.formsService.getFormContentBeforeSave(data.formUniqueId);
+            this.formsService.getFormContentBeforeSave(data.url);
         });
 
         this.formsService.onFormContentBeforeSave$
           .subscribe((data:{id:any, content:any}) => {
             this.log.info('T-3 formsettings.component.ts', data.id, this.tabsService.ping());
-            if (this.tab.formUniqueId !== data.id)
+            if (this.tab.url !== data.id)
                 return;
+            // if (this.tab.formUniqueId !== data.id)
+            //     return;
 
             this.saveForm({
                 cb: onSaveFinishCb,
@@ -148,10 +152,12 @@ export class FormSettingsComponent implements OnInit {
           this.log.info('updateFormSettings');
           this.log.extra('formsettings.component.ts');
           this.treeService.updateTree().then(() => {
+            this.log.info('updateTree() figured out');
               this.formSaving = false;
               this.formSettings = responseHtml;
               this.updateMacroses();
               this.loading = false;
+              this.activeEditorService.turnActiveEditorToLoadingState(false);
               this.changeDetector.markForCheck();
               
               window['materialPromise'].then(() => {
@@ -166,6 +172,7 @@ export class FormSettingsComponent implements OnInit {
                   });
                   
                   this.loading = false;
+                  // debugger;
                   this.changeDetector.markForCheck();
                   this.changeDetector.detectChanges();
                 }, 400);
@@ -192,7 +199,7 @@ export class FormSettingsComponent implements OnInit {
 
     submitForm() {
       this.log.info('T-200-b formsettings.compmonent.ts', this.tabsService.ping());
-      this.formsService.saveForm(this.tab.formUniqueId);
+      this.formsService.saveForm(this.tab.url);
       this.changeDetector.markForCheck();
     }
 

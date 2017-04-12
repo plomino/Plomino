@@ -76,7 +76,7 @@ export class PaletteComponent implements OnInit {
           }
           
           if (activeTab && this.selectedTab 
-            && activeTab.formUniqueId !== this.selectedTab.formUniqueId) {
+            && activeTab.url !== this.selectedTab.url) {
             this.selectedTab = activeTab;
             
             this.formsService.changePaletteTab(0);

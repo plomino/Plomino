@@ -67,15 +67,15 @@ export class ElementService {
   // Had some issues with TinyMCEComponent, had to do this instead of using getElement() method
   // XXX: This should really call the getForm_layout method on the Form object?
   getElementFormLayout(formUrl: string): Observable<PlominoFormDataAPIResponse> {
-    if (this.http.recentlyChangedFormURL !== null
-      && this.http.recentlyChangedFormURL[0] === formUrl
-      && $('.tab-name').toArray().map((e) => e.innerText)
-      .indexOf(formUrl.split('/').pop()) === -1
-    ) {
-      formUrl = this.http.recentlyChangedFormURL[1];
-      this.log.info('patched formUrl!', this.http.recentlyChangedFormURL);
-      this.log.extra('element.service.ts getElementFormLayout');
-    }
+    // if (this.http.recentlyChangedFormURL !== null
+    //   && this.http.recentlyChangedFormURL[0] === formUrl
+    //   && $('.tab-name').toArray().map((e) => e.innerText)
+    //   .indexOf(formUrl.split('/').pop()) === -1
+    // ) {
+    //   formUrl = this.http.recentlyChangedFormURL[1];
+    //   this.log.info('patched formUrl!', this.http.recentlyChangedFormURL);
+    //   this.log.extra('element.service.ts getElementFormLayout');
+    // }
     return this.http.getWithOptions(
       formUrl, { headers: this.headers },
       'element.service.ts getElementFormLayout'

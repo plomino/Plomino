@@ -70,14 +70,14 @@ export class FormsService {
 
     saveFormSettings(id:any, cb: any) {
         this.formSettingsSaveEventSource.next({
-            formUniqueId: id,
+            url: id,
             cb: cb
         });
     }
 
     saveFormContent(id:any, cb: any) {
         this.formContentSaveEventSource.next({
-            formUniqueId: id,
+            url: id,
             cb: cb
         });
     }
