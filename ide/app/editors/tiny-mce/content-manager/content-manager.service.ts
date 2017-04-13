@@ -383,10 +383,12 @@ export class TinyMCEFormContentManagerService {
     if ($(contentHTML).hasClass('plominoActionClass')
       || $(contentHTML).hasClass('plominoFieldClass')) {
       contentHTML = `<p>${contentHTML}</p>`;
+      this.activeEditorService.turnActiveEditorToLoadingState(false);
     }
     else if ($(contentHTML).hasClass('plominoLabelClass')) {
       contentHTML = `<span class="mceNonEditable">${contentHTML}</span>`;
       // contentHTML = `<p contenteditable="false">${contentHTML}</p>`;
+      this.activeEditorService.turnActiveEditorToLoadingState(false);
     }
 
     const $iframeContents = $(this.activeEditorService.getActive()
