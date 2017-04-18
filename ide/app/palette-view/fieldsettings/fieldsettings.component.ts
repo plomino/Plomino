@@ -204,32 +204,10 @@ export class FieldSettingsComponent implements OnInit {
                     responseHtml.indexOf('ajax_success') === -1
                     && responseHtml.indexOf('There were some errors') !== -1
                   )) {
-                    viewColumnElement.classList
-                      .remove('view-editor__column-header--virtual');
-                    viewColumnElement.dataset.column = newId;
-                    viewColumnElement.innerHTML = newTitle;
-                    viewColumnElement.draggable = true;
-
-                    if (viewColumnElement.dataset.unsortedDelta) {
-                      const delta = 
-                        parseInt(viewColumnElement.dataset.unsortedDelta, 10);
-                      const subsetIds = 
-                        JSON.parse(viewColumnElement.dataset.unsortedSubset);
-                      const viewURL = window.location.href
-                        .replace(
-                          this.field.url.split('/').slice(0, 2).join('/'), this.field.url)
-                        .split('/').slice(0, 6).join('/');
-                      subsetIds.push(newId);
-                      this.viewsAPI.reOrderItem(viewURL, newId, delta - 1, subsetIds)
-                        .subscribe(() => {
-                          this.fieldsService.viewReIndex.next(true);
-                          // this.fieldsService.viewActionInserted.next(viewURL);
-                          // this.reloadView();
-                        });
-                    }
-                    else {
-                      this.fieldsService.viewReIndex.next(true);
-                    }
+                    this.fieldsService.viewColumnCreated.next({
+                      newId, newTitle, viewColumnElement,
+                      fieldURL: this.field.url
+                    })
                   }
                 });
 

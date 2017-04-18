@@ -6,13 +6,14 @@ import { DomSanitizationService, SafeHtml } from '@angular/platform-browser';
 import { LogService } from './../../services/log.service';
 import { Component, Input, ViewEncapsulation, OnInit, NgZone, ChangeDetectorRef } from '@angular/core';
 import { PlominoViewsAPIService } from './views-api.service';
+import {DND_DIRECTIVES} from 'ng2-dnd';
 
 @Component({
   selector: 'plomino-view-editor',
   template: require('./plomino-view-editor.component.html'),
   styles: [require('./plomino-view-editor.css')],
   providers: [PlominoViewsAPIService],
-  directives: [PlominoBlockPreloaderComponent],
+  directives: [PlominoBlockPreloaderComponent, DND_DIRECTIVES],
   encapsulation: ViewEncapsulation.None,
 })
 export class PlominoViewEditorComponent implements OnInit {
@@ -20,6 +21,7 @@ export class PlominoViewEditorComponent implements OnInit {
   viewSourceTable: SafeHtml;
   loading: boolean = true;
   subsetIds: string[] = [];
+  columns: HTMLElement[] = [];
   
   constructor(
     private api: PlominoViewsAPIService,
@@ -57,6 +59,45 @@ export class PlominoViewEditorComponent implements OnInit {
       });
 
     this.reloadView();
+
+    this.fieldsService.onColumnCreated()
+      .subscribe((response: {
+          viewColumnElement: HTMLElement, newId: string,
+          newTitle: string, fieldURL: string
+      }) => {
+        const viewColumnElement = response.viewColumnElement;
+        const newId = response.newId;
+        const newTitle = response.newTitle;
+        const fieldURL = response.fieldURL;
+
+        viewColumnElement.classList
+          .remove('view-editor__column-header--virtual');
+        viewColumnElement.dataset.column = newId;
+        viewColumnElement.innerHTML = newTitle;
+        viewColumnElement.draggable = true;
+
+        this.columns.push(viewColumnElement);
+
+        if (viewColumnElement.dataset.unsortedDelta) {
+          const delta = 
+            parseInt(viewColumnElement.dataset.unsortedDelta, 10);
+          const subsetIds = 
+            JSON.parse(viewColumnElement.dataset.unsortedSubset);
+          const viewURL = window.location.href
+            .replace(fieldURL.split('/').slice(0, 2).join('/'), fieldURL)
+            .split('/').slice(0, 6).join('/');
+          subsetIds.push(newId);
+          this.api.reOrderItem(viewURL, newId, delta - 1, subsetIds)
+            .subscribe(() => {
+              this.fieldsService.viewReIndex.next(true);
+              // this.fieldsService.viewActionInserted.next(viewURL);
+              // this.reloadView();
+            });
+        }
+        else {
+          this.fieldsService.viewReIndex.next(true);
+        }
+      })
 
     this.fieldsService.onNewColumn()
       .subscribe((response: string) => {
@@ -208,110 +249,7 @@ export class PlominoViewEditorComponent implements OnInit {
     var index = $x.index();
     $(`[data-url="${ this.item.url }"] table tr`)
       .find('th:eq(' + index + '),td:eq(' + index + ')' ).remove();
-    this.reCheckCellsState();
-  }
-
-  reCheckCellsState() {
-    const $tableCells = $(
-      `[data-url="${ this.item.url }"] .mdl-data-table th, [data-url="${ this.item.url }"] .mdl-data-table td`
-    );
-
-    if ($tableCells.length <= 1) {
-      // if ($tableCells.length === 1) {
-      //   $tableCells.get(0).remove();
-      // }
-      const tableObject = $(`[data-url="${ this.item.url }"] .mdl-data-table`).get(0);
-      // debugger;
-      if (!tableObject) {
-        this.log.info('no tableObject');
-        return;
-      }
-      /* turn on dnd behaviour on cell */
-      // tableObject.ondrop = (ev: DragEvent) => {
-      //   const dndType = this.dragService.dndType;
-      //   if (dndType !== 'column' && dndType !== 'existing-column') {
-      //     return true;
-      //   }
-      //   if (dndType === 'column') {
-
-      //     const $_ = 
-      //       $(`[data-url="${ this.item.url }"] [data-column="++add++PlominoColumn"]`);
-      //     if ($_.length) {
-      //       $_.remove(); // todo remove tdis
-      //       this.tabsService.selectField(null);
-      //     }
-          
-      //     // this.loading = true;
-
-      //     const droppedColumn = <HTMLElement> $(tableObject).find('thead tr:first').get(0);
-
-      //     droppedColumn.classList
-      //       .remove('view-editor__column-header--drop-preview');
-      //     droppedColumn.classList
-      //       .add('view-editor__column-header');
-      //     droppedColumn.classList
-      //       .add('view-editor__column-header--virtual');
-      //     droppedColumn.classList
-      //       .add('view-editor__column-header--selected');
-      //     droppedColumn.dataset.column = '++add++PlominoColumn';
-
-      //     tableObject.classList
-      //       .remove('view-editor__column-header--selected');
-      //     tableObject.classList
-      //       .remove('view-editor__column-header--drop-target');
-
-      //     droppedColumn.click();
-      //   }
-      //   const transfer = ev.dataTransfer.getData('text');
-      //   return true;
-      // };
-
-      // tableObject.ondragover = (ev: DragEvent) => {
-      //   ev.preventDefault();
-      // };
-
-      // tableObject.ondragenter = (ev: DragEvent) => {
-      //   const dndType = this.dragService.dndType;
-      //   if (dndType !== 'column' && dndType !== 'existing-column') {
-      //     return true;
-      //   }
-      //   if (dndType === 'column') {
-      //     /* insert shadow column */
-      //     $(tableObject).find('thead').append(
-      //       `<th class="view-editor__column-header--drop-preview">
-      //         new column
-      //       </th>`
-      //     );
-      //   }
-      //   $('.view-editor__column-header--drop-target')
-      //     .removeClass('view-editor__column-header--drop-target');
-      //   tableObject.classList.add('view-editor__column-header--drop-target');
-      //   return true;
-      // };
-
-      // tableObject.ondragleave = (ev: DragEvent) => {
-      //   const dndType = this.dragService.dndType;
-      //   if (dndType !== 'column' && dndType !== 'existing-column') {
-      //     return true;
-      //   }
-      //   if (dndType === 'column') {
-      //     /* remove shadow column after this td */
-      //     $(tableObject).find('th,td').remove();
-      //   }
-      //   tableObject.classList.remove('view-editor__column-header--drop-target');
-      //   return true;
-      // };
-    } else {
-      /* turn off dnd behaviour on cell */
-      // const tableObject = $tableCells.first().closest('table').get(0);
-
-      // if (tableObject) {
-      //   tableObject.ondragenter = null;
-      //   tableObject.ondragleave = null;
-      //   tableObject.ondragover = null;
-      //   tableObject.ondrop = null;
-      // }
-    }
+    this.afterLoad();
   }
 
   reIndexItems() {
@@ -334,12 +272,61 @@ export class PlominoViewEditorComponent implements OnInit {
           })()
           .get(0).dataset.index = (index + 1).toString();
         });
+
+        this.afterLoad();
       });
+  }
+
+  onDragEnter(dropData: {dragData: { type: string }, mouseEvent: DragEvent}) {
+    if (dropData.dragData.type && dropData.dragData.type === 'column') {
+      $('.view-editor__column-header--virtual').remove();
+      this.tabsService.selectField(null);
+
+      const $tr = $(`[data-url="${ this.item.url }"] table thead tr`);
+      $tr.append(
+        `<th class="view-editor__column-header--drop-preview">
+          new column
+        </th>`
+      );
+      return true;
+    }
+  }
+
+  onDragLeave(dropData: {dragData: { type: string }, mouseEvent: DragEvent}) {
+    if (dropData.dragData.type && dropData.dragData.type === 'column') {
+      const $tr = $(`[data-url="${ this.item.url }"] table thead tr th`);
+      $tr.remove();
+      return true;
+    }
+  }
+
+  dropped(dropData: {dragData: { type: string }, mouseEvent: DragEvent}) {
+    if (dropData.dragData.type && dropData.dragData.type === 'column') {
+      const $_ = 
+        $(`[data-url="${ this.item.url }"] [data-column="++add++PlominoColumn"]`);
+      if ($_.length) {
+        $_.remove(); // todo remove tdis
+        this.tabsService.selectField(null);
+      }
+
+      const droppedColumn = $('.view-editor__column-header--drop-preview').get(0);
+      droppedColumn.classList
+        .remove('view-editor__column-header--drop-preview');
+      droppedColumn.classList
+        .add('view-editor__column-header');
+      droppedColumn.classList
+        .add('view-editor__column-header--virtual');
+      droppedColumn.classList
+        .add('view-editor__column-header--selected');
+      droppedColumn.dataset.column = '++add++PlominoColumn';
+
+      droppedColumn.click();
+    }
   }
 
   afterLoad() {
     let draggable: HTMLElement = null;
-    this.reCheckCellsState();
+    this.columns = [];
 
     $(`[data-url="${ this.item.url }"] .view-editor__column-header`
         + `, [data-url="${ this.item.url }"] ` 
@@ -439,9 +426,11 @@ export class PlominoViewEditorComponent implements OnInit {
             return true;
           };
         }
-        else {
+        else if (element.tagName === 'TH') {
           /* view column */
           const columnElement = element;
+
+          this.columns.push(columnElement);
           
           columnElement.ondragstart = (ev: DragEvent) => {
             $('.view-editor__column-header--drop-target')
@@ -582,10 +571,17 @@ export class PlominoViewEditorComponent implements OnInit {
   }
 
   onColumnClick(columnElement: HTMLElement) {
+    $('.view-editor__column-header--virtual')
+      .filter((i, column) => {
+        return column !== columnElement
+      })
+      .remove();
+
     $('.view-editor__column-header--selected')
       .removeClass('view-editor__column-header--selected');
     $('.view-editor__action--selected')
       .removeClass('view-editor__action--selected');
+    
     columnElement.classList.add('view-editor__column-header--selected');
     this.log.info('view column selected', columnElement);
     this.tabsService.selectField({
