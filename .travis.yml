@@ -7,7 +7,8 @@ python:
   - 2.7
 install:
   - mkdir -p buildout-cache/{eggs,downloads}
-  - pip install -r requirements.txt
+  - virtualenv .
+  - bin/pip install -r requirements.txt
   - bin/buildout -Nc travis.cfg
 script:
   - bin/test
