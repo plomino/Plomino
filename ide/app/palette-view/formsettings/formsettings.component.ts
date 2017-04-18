@@ -239,6 +239,8 @@ export class FormSettingsComponent implements OnInit {
         ((): Promise<any> => {
           const anyChanges = tinymce.get(formUrl).isDirty();
 
+          /* TODO: control sum to check the change is real */
+
           if (anyChanges) {
             /**
              * warn the user of any unsaved changes

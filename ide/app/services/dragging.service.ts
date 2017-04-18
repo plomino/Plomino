@@ -263,8 +263,14 @@ export class DraggingService {
 
   private drag(e: MouseEvent, iframe?: boolean) {
 
-    const $iframe = $(this.activeEditorService.getActive()
-      .getContainer().querySelector('iframe'));
+    const activeEditor = this.activeEditorService.getActive();
+
+    if (!activeEditor) {
+      this.stopDragging(e);
+      return;
+    }
+
+    const $iframe = $(activeEditor.getContainer().querySelector('iframe'));
     const pos = this.getMousePos(e);
     const offset = $iframe.offset();
 
@@ -318,11 +324,20 @@ export class DraggingService {
   }
 
   private stopDragging(eventData: MouseEvent, iframe?: boolean) {
-    const $iframe = $(this.activeEditorService.getActive()
-          .getContainer().querySelector('iframe'));
+    const activeEditor = this.activeEditorService.getActive();
+
+    if (!activeEditor) {
+      $(document).off('.drgs');
+      $('#drag-data-cursor').remove();
+      this.currentDraggingData = null;
+      this.customPaletteDragEventCancel$.next(eventData);
+      return;
+    }
+
+    const $iframe = $(activeEditor.getContainer().querySelector('iframe'));
     $(document).off('.drgs');
     $iframe.contents().off('.drgs');
-    $(this.activeEditorService.getActive().getBody()).off('.drgs');
+    $(activeEditor.getBody()).off('.drgs');
     $('#drag-data-cursor').remove();
 
     this.log.info('stopDragging');

@@ -678,8 +678,8 @@ export class FieldSettingsComponent implements OnInit {
                 .remove();
             }
             else if (this.field.type === 'PlominoColumn') {
-              $(`.view-editor__column-header--selected:visible`)
-                .remove();
+              const viewURL = this.field.url.split('/').slice(0, -1).join('/');
+              this.fieldsService.deleteSelectedColumn.next(viewURL);
             }
           }
           this.field = null;

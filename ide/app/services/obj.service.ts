@@ -72,7 +72,7 @@ export class ObjService {
       this.http.recentlyChangedFormURL = null;
 
       const oldFormId = formUrl.split('/').pop();
-      const newFormUrl = oldFormId !== workingId
+      let newFormUrl = oldFormId !== workingId
         ? formUrl.replace(oldFormId, workingId)
         : formUrl;
       
@@ -134,6 +134,7 @@ export class ObjService {
             if (relatedFieldTemporaryTitle !== relatedFieldTitle) {
               /**
                * save the field title
+               * @WARN: waiting for?
                */
               context.elementService.patchElement(
                 `${formUrl}/${id}`, { title: relatedFieldTemporaryTitle }
@@ -226,6 +227,8 @@ export class ObjService {
         'obj.service.ts updateFormSettings'
       )
       .map((data: Response) => {
+        newFormUrl = data.url.split('/').slice(0, -2).join('/');
+
         if (layout) {
           this.activeEditorService.setActive(newFormUrl);
 
@@ -243,19 +246,26 @@ export class ObjService {
             // this.log.info('i am going to set dirty false', newFormUrl);
           }
 
-          // setTimeout(() => {
-          //   if (tinymce.get(formUrl)) {
-          //     tinymce.get(formUrl).setDirty(false);
-          //     this.tabsService.setActiveTabDirty(false);
-          //     // this.log.info('i am going to set dirty false', formUrl);
-          //   }
+          this.changeDetector.detectChanges();
+
+          setTimeout(() => {
+            if (tinymce.get(formUrl)) {
+              tinymce.get(formUrl).setDirty(false);
+              this.tabsService.setActiveTabDirty(false);
+              // this.log.info('i am going to set dirty false', formUrl);
+            }
   
-          //   if (tinymce.get(newFormUrl)) {
-          //     tinymce.get(newFormUrl).setDirty(false);
-          //     this.tabsService.setActiveTabDirty(false);
-          //     // this.log.info('i am going to set dirty false', newFormUrl);
-          //   }
-          // }, 400);
+            if (tinymce.get(newFormUrl)) {
+              tinymce.get(newFormUrl).setDirty(false);
+              this.tabsService.setActiveTabDirty(false);
+              // this.log.info('i am going to set dirty false', newFormUrl);
+            }
+
+            $('span[id="tab_' + newFormUrl + '"]')
+              .find('span:contains("* ")').remove();
+
+            this.changeDetector.detectChanges();
+          }, 400);
 
           // tinymce.editors.map(editor => [editor.id, editor.isDirty()])
           tinymce.editors.forEach((editor: TinyMceEditor) => {
@@ -302,8 +312,9 @@ export class ObjService {
         }
         return data;
       })
-      .map((response: Response) => 
-        this.extractTextAndUrl(response));
+      .map((response: Response) => {
+        return this.extractTextAndUrl(response);
+      })
     }
 
 
