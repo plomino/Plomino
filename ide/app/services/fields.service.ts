@@ -11,6 +11,8 @@ export class FieldsService {
   viewColumnInserted: Subject<string> = new Subject<string>();
   viewActionInserted: Subject<string> = new Subject<string>();
   viewReIndex: Subject<any> = new Subject<any>();
+
+  deleteSelectedColumn: Subject<string> = new Subject<string>();
   
   private insertionStream$: Subject<InsertFieldEvent> 
     = new Subject<InsertFieldEvent>();
@@ -21,6 +23,10 @@ export class FieldsService {
 
   onReIndexItems() {
     return this.viewReIndex.asObservable();
+  }
+
+  onDeleteSelectedViewColumn(): Observable<string> {
+    return this.deleteSelectedColumn.asObservable();
   }
 
   onNewColumn() {

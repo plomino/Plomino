@@ -98,6 +98,13 @@ export class PlominoViewEditorComponent implements OnInit {
           this.reloadView();
         }
       });
+
+    this.fieldsService.onDeleteSelectedViewColumn()
+      .subscribe((url: string) => {
+        if (this.item.url.indexOf(url) !== -1) {
+          this.deleteSelectedColumn();
+        }
+      });
   }
 
   reloadView() {
@@ -196,6 +203,117 @@ export class PlominoViewEditorComponent implements OnInit {
       });
   }
 
+  deleteSelectedColumn() {
+    const $x = $(`[data-url="${ this.item.url }"] .view-editor__column-header--selected`);
+    var index = $x.index();
+    $(`[data-url="${ this.item.url }"] table tr`)
+      .find('th:eq(' + index + '),td:eq(' + index + ')' ).remove();
+    this.reCheckCellsState();
+  }
+
+  reCheckCellsState() {
+    const $tableCells = $(
+      `[data-url="${ this.item.url }"] .mdl-data-table th, [data-url="${ this.item.url }"] .mdl-data-table td`
+    );
+
+    if ($tableCells.length <= 1) {
+      // if ($tableCells.length === 1) {
+      //   $tableCells.get(0).remove();
+      // }
+      const tableObject = $(`[data-url="${ this.item.url }"] .mdl-data-table`).get(0);
+      // debugger;
+      if (!tableObject) {
+        this.log.info('no tableObject');
+        return;
+      }
+      /* turn on dnd behaviour on cell */
+      // tableObject.ondrop = (ev: DragEvent) => {
+      //   const dndType = this.dragService.dndType;
+      //   if (dndType !== 'column' && dndType !== 'existing-column') {
+      //     return true;
+      //   }
+      //   if (dndType === 'column') {
+
+      //     const $_ = 
+      //       $(`[data-url="${ this.item.url }"] [data-column="++add++PlominoColumn"]`);
+      //     if ($_.length) {
+      //       $_.remove(); // todo remove tdis
+      //       this.tabsService.selectField(null);
+      //     }
+          
+      //     // this.loading = true;
+
+      //     const droppedColumn = <HTMLElement> $(tableObject).find('thead tr:first').get(0);
+
+      //     droppedColumn.classList
+      //       .remove('view-editor__column-header--drop-preview');
+      //     droppedColumn.classList
+      //       .add('view-editor__column-header');
+      //     droppedColumn.classList
+      //       .add('view-editor__column-header--virtual');
+      //     droppedColumn.classList
+      //       .add('view-editor__column-header--selected');
+      //     droppedColumn.dataset.column = '++add++PlominoColumn';
+
+      //     tableObject.classList
+      //       .remove('view-editor__column-header--selected');
+      //     tableObject.classList
+      //       .remove('view-editor__column-header--drop-target');
+
+      //     droppedColumn.click();
+      //   }
+      //   const transfer = ev.dataTransfer.getData('text');
+      //   return true;
+      // };
+
+      // tableObject.ondragover = (ev: DragEvent) => {
+      //   ev.preventDefault();
+      // };
+
+      // tableObject.ondragenter = (ev: DragEvent) => {
+      //   const dndType = this.dragService.dndType;
+      //   if (dndType !== 'column' && dndType !== 'existing-column') {
+      //     return true;
+      //   }
+      //   if (dndType === 'column') {
+      //     /* insert shadow column */
+      //     $(tableObject).find('thead').append(
+      //       `<th class="view-editor__column-header--drop-preview">
+      //         new column
+      //       </th>`
+      //     );
+      //   }
+      //   $('.view-editor__column-header--drop-target')
+      //     .removeClass('view-editor__column-header--drop-target');
+      //   tableObject.classList.add('view-editor__column-header--drop-target');
+      //   return true;
+      // };
+
+      // tableObject.ondragleave = (ev: DragEvent) => {
+      //   const dndType = this.dragService.dndType;
+      //   if (dndType !== 'column' && dndType !== 'existing-column') {
+      //     return true;
+      //   }
+      //   if (dndType === 'column') {
+      //     /* remove shadow column after this td */
+      //     $(tableObject).find('th,td').remove();
+      //   }
+      //   tableObject.classList.remove('view-editor__column-header--drop-target');
+      //   return true;
+      // };
+    } else {
+      /* turn off dnd behaviour on cell */
+      // const tableObject = $tableCells.first().closest('table').get(0);
+
+      // if (tableObject) {
+      //   tableObject.ondragenter = null;
+      //   tableObject.ondragleave = null;
+      //   tableObject.ondragover = null;
+      //   tableObject.ondrop = null;
+      // }
+    }
+  }
+
   reIndexItems() {
     this.api.fetchViewTableDataJSON(this.item.url)
       .subscribe((json) => {
@@ -221,6 +339,7 @@ export class PlominoViewEditorComponent implements OnInit {
 
   afterLoad() {
     let draggable: HTMLElement = null;
+    this.reCheckCellsState();
 
     $(`[data-url="${ this.item.url }"] .view-editor__column-header`
         + `, [data-url="${ this.item.url }"] ` 
