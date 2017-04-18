@@ -76,7 +76,7 @@
         name="DatabaseReplication"
         class=".database.DatabaseView"
         attribute="replication"
-        permission="zope.Public"
+        permission="zope2.View"
         />
 
     <browser:page
@@ -84,7 +84,7 @@
         name="OpenForm"
         class=".form.FormView"
         attribute="openform"
-        permission="zope.Public"
+        permission="zope2.View"
         />
 
     <browser:page
@@ -92,7 +92,7 @@
         name="OpenBareForm"
         class=".form.FormView"
         attribute="openbareform"
-        permission="zope.Public"
+        permission="zope2.View"
         />
 
     <browser:page
@@ -106,7 +106,7 @@
     <browser:page
         for="Products.CMFPlomino.interfaces.IPlominoContext"
         name="document"
-        permission="zope.Public"
+        permission="zope2.View"
         class=".document.DocumentView"
         />
 
@@ -115,7 +115,7 @@
         name="OpenView"
         class=".view.ViewView"
         attribute="openview"
-        permission="zope.Public"
+        permission="zope2.View"
         />
 
     <browser:page
@@ -123,21 +123,21 @@
         name="tojson"
         class=".view.ViewView"
         attribute="json"
-        permission="zope.Public"
+        permission="zope2.View"
         />
 
     <browser:page
         for="Products.CMFPlomino.interfaces.IPlominoContext"
         name="plomino_errors"
         class=".errors.ErrorMessages"
-        permission="zope.Public"
+        permission="zope2.View"
         />
 
     <browser:page
         for="Products.CMFPlomino.interfaces.IPlominoContext"
         name="plomino_actions"
         class=".actions.Actions"
-        permission="zope.Public"
+        permission="zope2.View"
         />
 
     <browser:page
@@ -145,7 +145,7 @@
         name="filterusers"
         class=".field.FieldView"
         attribute="filterusers"
-        permission="zope.Public"
+        permission="zope2.View"
         />
 
     <!-- TinyMCE -->
@@ -163,7 +163,7 @@
         name="tinyform"
         for="Products.CMFPlomino.contents.form.IPlominoForm"
         class=".tinymce.PlominoForm"
-        permission="zope.Public"
+        permission="zope2.View"
         allowed_attributes="getField addField addLabel addAction addHidewhen addCache addSubForm action_template"
         />
 
@@ -171,7 +171,7 @@
         name="tinyfield"
         for="Products.CMFPlomino.contents.field.IPlominoField"
         class=".tinymce.PlominoField"
-        permission="zope.Public"
+        permission="zope2.View"
         allowed_attributes="setFieldProperties"
         />
 
@@ -179,7 +179,7 @@
         name="tinyhidewhen"
         for="Products.CMFPlomino.contents.hidewhen.IPlominoHidewhen"
         class=".tinymce.PlominoHidewhen"
-        permission="zope.Public"
+        permission="zope2.View"
         allowed_attributes="setHidewhenProperties"
         />
 
@@ -187,7 +187,7 @@
         name="tinyaction"
         for="Products.CMFPlomino.contents.action.IPlominoAction"
         class=".tinymce.PlominoAction"
-        permission="zope.Public"
+        permission="zope2.View"
         allowed_attributes="setActionProperties"
         />
 
@@ -196,7 +196,7 @@
         name="tinyhidewhen"
         for="Products.CMFPlomino.contents..IPlominoHidewhen"
         class=".hidewhen.PlominoHidewhen"
-        permission="zope.Public"
+        permission="zope2.View"
         allowed_attributes="setHidewhenProperties"
         />
 
@@ -204,7 +204,7 @@
         name="tinycache"
         for="Products.CMFPlomino.contents..IPlominoCache"
         class=".cache.PlominoCache"
-        permission="zope.Public"
+        permission="zope2.View"
         allowed_attributes="setCacheProperties"
         />
     -->
