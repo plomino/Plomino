@@ -11,6 +11,7 @@ export class FieldsService {
   viewColumnInserted: Subject<string> = new Subject<string>();
   viewActionInserted: Subject<string> = new Subject<string>();
   viewReIndex: Subject<any> = new Subject<any>();
+  viewColumnCreated: Subject<any> = new Subject<any>();
 
   deleteSelectedColumn: Subject<string> = new Subject<string>();
   
@@ -23,6 +24,13 @@ export class FieldsService {
 
   onReIndexItems() {
     return this.viewReIndex.asObservable();
+  }
+
+  /**
+   * happens when you save new column in field settings
+   */
+  onColumnCreated() {
+    return this.viewColumnCreated.asObservable();
   }
 
   onDeleteSelectedViewColumn(): Observable<string> {
