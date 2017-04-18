@@ -14,6 +14,7 @@ export class FieldsService {
   viewColumnCreated: Subject<any> = new Subject<any>();
 
   deleteSelectedColumn: Subject<string> = new Subject<string>();
+  deleteSelectedAction: Subject<string> = new Subject<string>();
   
   private insertionStream$: Subject<InsertFieldEvent> 
     = new Subject<InsertFieldEvent>();
@@ -35,6 +36,10 @@ export class FieldsService {
 
   onDeleteSelectedViewColumn(): Observable<string> {
     return this.deleteSelectedColumn.asObservable();
+  }
+
+  onDeleteSelectedViewAction(): Observable<string> {
+    return this.deleteSelectedAction.asObservable();
   }
 
   onNewColumn() {

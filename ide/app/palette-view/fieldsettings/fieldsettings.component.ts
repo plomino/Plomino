@@ -652,8 +652,8 @@ export class FieldSettingsComponent implements OnInit {
           }
           else {
             if (this.field.type === 'PlominoAction') {
-              $(`input#${ this.field.id.split('/').pop() }:visible`)
-                .remove();
+              const viewURL = this.field.url.split('/').slice(0, -1).join('/');
+              this.fieldsService.deleteSelectedAction.next(viewURL);
             }
             else if (this.field.type === 'PlominoColumn') {
               const viewURL = this.field.url.split('/').slice(0, -1).join('/');
