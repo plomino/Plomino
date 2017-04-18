@@ -204,7 +204,7 @@
 
 .palette-wrapper /deep/ .mdl-tabs__panel:not(.default) {
   overflow-y: auto;
-  height: 300px;
+  min-height: 300px;
 }
 
 .palette-wrapper /deep/ .mdl-tabs__tab fieldset {
