@@ -1,3 +1,4 @@
+import { LabelsRegistryService } from './../../editors/tiny-mce/services/labels-registry.service';
 import { PlominoActiveEditorService } from './../../services/active-editor.service';
 import {
     Component,
@@ -60,6 +61,7 @@ export class FormSettingsComponent implements OnInit {
                 private changeDetector: ChangeDetectorRef,
                 private tabsService: TabsService,
                 private treeService: TreeService,
+                private labelsRegistry: LabelsRegistryService,
                 private activeEditorService: PlominoActiveEditorService,
                 private zone: NgZone,
                 private elementService: ElementService,
@@ -273,6 +275,14 @@ export class FormSettingsComponent implements OnInit {
             this.tab = null;
             this.formSettings = '';
             this.formLayout = '';
+            /* remove all cache */
+            if (
+              this.activeEditorService.editorURL
+              && this.activeEditorService.editorURL === tabData.url
+            ) {
+              this.activeEditorService.editorURL = null;
+            }
+            this.labelsRegistry.removeForm(tabData.url);
             this.changeDetector.detectChanges();
             this.treeService.updateTree();
             this.changeDetector.markForCheck();
