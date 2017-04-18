@@ -19,11 +19,20 @@
   -webkit-user-select: none;
 }
 
-.view-editor__empty-drop-place {
+.view-editor__empty-columns-drop-place {
   width: 100%;
   height: 100vh;
   position: absolute;
   top: 130px;
+  left: 0;
+}
+
+.view-editor__empty-actions-drop-place {
+  width: 100%;
+  height: 129px;
+  position: absolute;
+  top: 0;
+  left: 0;
 }
 
 .view-editor__column-header:hover,

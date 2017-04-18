@@ -22,6 +22,7 @@ export class PlominoViewEditorComponent implements OnInit {
   loading: boolean = true;
   subsetIds: string[] = [];
   columns: HTMLElement[] = [];
+  actions: HTMLElement[] = [];
   
   constructor(
     private api: PlominoViewsAPIService,
@@ -146,6 +147,13 @@ export class PlominoViewEditorComponent implements OnInit {
           this.deleteSelectedColumn();
         }
       });
+
+    this.fieldsService.onDeleteSelectedViewAction()
+      .subscribe((url: string) => {
+        if (this.item.url.indexOf(url) !== -1) {
+          this.deleteSelectedAction();
+        }
+      });
   }
 
   reloadView() {
@@ -252,6 +260,12 @@ export class PlominoViewEditorComponent implements OnInit {
     this.afterLoad();
   }
 
+  deleteSelectedAction() {
+    const $x = $(`[data-url="${ this.item.url }"] .view-editor__action--selected`);
+    $x.remove();
+    this.afterLoad();
+  }
+
   reIndexItems() {
     this.api.fetchViewTableDataJSON(this.item.url)
       .subscribe((json) => {
@@ -290,6 +304,20 @@ export class PlominoViewEditorComponent implements OnInit {
       );
       return true;
     }
+    else if (dropData.dragData.type && dropData.dragData.type === 'action') {
+      $('.view-editor__action--drop-preview').remove();
+      this.tabsService.selectField(null);
+
+      const $x = $(`[data-url="${ this.item.url }"] .view-editor__actions .actionButtons`);
+      $x.append(
+        ` <input class="context mdl-button mdl-js-button
+          view-editor__action--drop-preview
+          mdl-button--primary mdl-button--raised"
+          value="default-action"
+          type="button">`
+      );
+      return true;
+    }
   }
 
   onDragLeave(dropData: {dragData: { type: string }, mouseEvent: DragEvent}) {
@@ -298,9 +326,14 @@ export class PlominoViewEditorComponent implements OnInit {
       $tr.remove();
       return true;
     }
+    else if (dropData.dragData.type && dropData.dragData.type === 'action') {
+      const $x = $(`[data-url="${ this.item.url }"] .view-editor__action--drop-preview`);
+      $x.remove();
+      return true;
+    }
   }
 
-  dropped(dropData: {dragData: { type: string }, mouseEvent: DragEvent}) {
+  onDropSuccess(dropData: {dragData: { type: string }, mouseEvent: DragEvent}) {
     if (dropData.dragData.type && dropData.dragData.type === 'column') {
       const $_ = 
         $(`[data-url="${ this.item.url }"] [data-column="++add++PlominoColumn"]`);
@@ -322,11 +355,20 @@ export class PlominoViewEditorComponent implements OnInit {
 
       droppedColumn.click();
     }
+    else if (dropData.dragData.type && dropData.dragData.type === 'action') {
+      this.loading = true;
+      this.api.addNewAction(this.item.url)
+        .subscribe((response) => {
+          this.subsetIds.push(response.id);
+          this.reloadView();
+        });
+    }
   }
 
   afterLoad() {
     let draggable: HTMLElement = null;
     this.columns = [];
+    this.actions = [];
 
     $(`[data-url="${ this.item.url }"] .view-editor__column-header`
         + `, [data-url="${ this.item.url }"] ` 
@@ -335,6 +377,8 @@ export class PlominoViewEditorComponent implements OnInit {
         if (element.tagName === 'INPUT' && element.id) {
           /* action button */
           const actionElement = <HTMLInputElement> element;
+
+          this.actions.push(actionElement);
           
           actionElement.ondragstart = (ev: DragEvent) => {
             $('.view-editor__action--drop-target')
