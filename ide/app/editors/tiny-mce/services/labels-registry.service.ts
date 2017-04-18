@@ -27,6 +27,14 @@ export class LabelsRegistryService {
     this.labelsRegistry.delete(id);
   }
 
+  removeForm(url: string) {
+    this.labelsRegistry.forEach((value, key) => {
+      if (key.indexOf(url) !== -1) {
+        this.labelsRegistry.delete(key);
+      }
+    })
+  }
+
   onUpdated() {
     return this.updated.asObservable();
   }
