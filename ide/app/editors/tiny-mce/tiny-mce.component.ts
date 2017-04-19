@@ -30,15 +30,16 @@ import {
 } from 'rxjs/Rx';
 
 import {
-    ElementService,
-    FieldsService,
-    DraggingService,
-    TemplatesService,
-    LogService,
-    PlominoElementAdapterService,
-    WidgetService,
-    TabsService,
-    FormsService
+  ElementService,
+  FieldsService,
+  DraggingService,
+  TemplatesService,
+  LogService,
+  PlominoElementAdapterService,
+  WidgetService,
+  TabsService,
+  FormsService,
+  PlominoSaveManagerService
 } from '../../services';
 
 import { UpdateFieldService, LabelsRegistryService } from './services';
@@ -108,6 +109,7 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
     private activeEditorService: PlominoActiveEditorService,
     private updateFieldService: UpdateFieldService,
     private contentManager: TinyMCEFormContentManagerService,
+    private saveManager: PlominoSaveManagerService,
     private http: Http,
     private zone: NgZone) {
     
@@ -261,9 +263,10 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
     this.log.info('fallLoading from saveTheForm', this.item.formUniqueId, this.id);
     this.theFormIsSavingNow = true;
     this.formsService.saveForm(this.item.url, false);
-    tinymce.get(this.id).setDirty(false);
-    this.isDirty.emit(false);
-    this.changeDetector.markForCheck();
+    // tinymce.get(this.id).setDirty(false);
+    // this.isDirty.emit(false);
+    // this.saveManager.nextEditorSavedState(this.id, );
+    // this.changeDetector.markForCheck();
   }
 
   ngAfterViewInit(): void {
@@ -763,8 +766,12 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
               $element.next().next().remove();
             }
           });
-          this.contentManager.setContent(
-            this.id, $content.html(), this.draggingService
+
+          const htmlContent = $content.html();
+          this.contentManager.setContent(this.id, htmlContent, this.draggingService);
+
+          this.saveManager.nextEditorSavedState(
+            this.id, this.contentManager.getContent(this.id)
           );
           
           this.fallLoading(false);

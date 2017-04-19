@@ -1,3 +1,4 @@
+import { PlominoSaveManagerService } from './../../services/save-manager/save-manager.service';
 import { LabelsRegistryService } from './../../editors/tiny-mce/services/labels-registry.service';
 import { PlominoActiveEditorService } from './../../services/active-editor.service';
 import {
@@ -63,6 +64,7 @@ export class FormSettingsComponent implements OnInit {
                 private treeService: TreeService,
                 private labelsRegistry: LabelsRegistryService,
                 private activeEditorService: PlominoActiveEditorService,
+                private saveManager: PlominoSaveManagerService,
                 private zone: NgZone,
                 private elementService: ElementService,
                 private widgetService: WidgetService,
@@ -239,7 +241,8 @@ export class FormSettingsComponent implements OnInit {
       if (tabType === 'PlominoForm') {
         
         ((): Promise<any> => {
-          const anyChanges = tinymce.get(formUrl).isDirty();
+          // const anyChanges = tinymce.get(formUrl).isDirty();
+          const anyChanges = this.saveManager.isEditorUnsaved(formUrl);
 
           /* TODO: control sum to check the change is real */
 

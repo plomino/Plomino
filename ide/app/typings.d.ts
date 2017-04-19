@@ -232,7 +232,7 @@ interface TinyMceStatic extends TinyMceObservable {
    */
   execCommand: (command: string, user_interface: boolean, value: string) => boolean;
   activeEditor: TinyMceEditor;
-  get: (id: string) => TinyMceEditor;
+  get: (id: string|number) => TinyMceEditor;
   editors: TinyMceEditor[];
   EditorManager: any;
   DOM: any;
