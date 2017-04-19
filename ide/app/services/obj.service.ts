@@ -1,3 +1,4 @@
+import { Observable } from 'rxjs/Rx';
 import { TabsService } from './tabs.service';
 import { PlominoActiveEditorService } from './active-editor.service';
 import { WidgetService } from './widget.service';
@@ -7,7 +8,6 @@ import { LogService } from './log.service';
 import { Response } from '@angular/http';
 import { PlominoHTTPAPIService } from './http-api.service';
 import { Injectable, ChangeDetectorRef } from '@angular/core';
-import { Observable } from 'rxjs/Observable';
 
 @Injectable()
 export class ObjService {
@@ -56,26 +56,27 @@ export class ObjService {
       ).map(this.extractText);
     }
 
-    /**
-     * this code calling on the form saving.
-     * this code calling on the field-settings saving.
-     */
-    updateFormSettings(
-      formUrl: string, formData: any
-    ): Observable<{html: string, url: string}> {
-      this.log.info('T0 obj.service.ts', this.tabsService.ping());
-      const addNew = formUrl.indexOf('++add++PlominoColumn') !== -1;
-      let layout = formData.get('form.widgets.form_layout');
-      const workingId = formData.get('form.widgets.IShortName.id');
-      const context = this;
+  /**
+   * this code calling on the form saving.
+   * this code calling on the field-settings saving.
+   */
+  updateFormSettings(
+    formUrl: string, formData: any
+  ): Observable<{html: string, url: string}> {
+    this.log.info('T0 obj.service.ts', this.tabsService.ping());
+    const addNew = formUrl.indexOf('++add++PlominoColumn') !== -1;
+    let layout = formData.get('form.widgets.form_layout');
+    const workingId = formData.get('form.widgets.IShortName.id');
+    const context = this;
 
-      this.http.recentlyChangedFormURL = null;
+    this.http.recentlyChangedFormURL = null;
 
-      const oldFormId = formUrl.split('/').pop();
-      let newFormUrl = oldFormId !== workingId
-        ? formUrl.replace(oldFormId, workingId)
-        : formUrl;
-      
+    const oldFormId = formUrl.split('/').pop();
+    let newFormUrl = oldFormId !== workingId
+      ? formUrl.replace(oldFormId, workingId)
+      : formUrl;
+
+    return Observable.of(true).flatMap(() => {
       if (layout) {
         if (oldFormId !== workingId) {
           this.http.recentlyChangedFormURL = [formUrl, newFormUrl];
@@ -114,6 +115,8 @@ export class ObjService {
             $mceEditable.replaceWith(`<p>${$mceEditable.html()}</p>`);
           }
         });
+
+        const labels$: Observable<any>[] = [];
   
         $layout.find('.plominoLabelClass').each(function () {
           const $element = $(this);
@@ -134,11 +137,12 @@ export class ObjService {
             if (relatedFieldTemporaryTitle !== relatedFieldTitle) {
               /**
                * save the field title
-               * @WARN: waiting for?
                */
-              context.elementService.patchElement(
-                `${formUrl}/${id}`, { title: relatedFieldTemporaryTitle }
-              ).subscribe(() => {});
+              labels$.push(
+                context.elementService.patchElement(
+                  `${formUrl}/${id}`, { title: relatedFieldTemporaryTitle }
+                )
+              );
               
               $element.html(relatedFieldTemporaryTitle);
               context.changeDetector.detectChanges();
@@ -163,6 +167,9 @@ export class ObjService {
             $(this).replaceWith(span);
           }
         });
+
+        const labels$$ = (labels$.length) 
+          ? Observable.forkJoin(labels$) : Observable.of('');
   
         $layout.find('*[data-plominoid]').each(function () {
           let $element = $(this);
@@ -193,6 +200,8 @@ export class ObjService {
 
         formData.set('form.widgets.form_layout', $layout.html());
         $layout.remove();
+
+        return labels$$;
       }
       else {
         /**
@@ -215,12 +224,15 @@ export class ObjService {
   
           $allTheSame.html(newTitle);
         }
-      }
 
-      this.log.info('T1 obj.service.ts', this.tabsService.ping());
+        return Observable.of('');
+      }
       
       // throw formData.get('form.widgets.form_layout');
       // console.warn(formData.get('form.widgets.form_layout'));
+    })
+    .flatMap(() => {
+      this.log.info('T1 obj.service.ts', this.tabsService.ping());
       
       return this.http.postWithOptions(
         `${formUrl}/${ addNew ? '' : '@@edit' }`, formData, {},
@@ -228,26 +240,26 @@ export class ObjService {
       )
       .map((data: Response) => {
         newFormUrl = data.url.split('/').slice(0, -2).join('/');
-
+  
         if (layout) {
           this.activeEditorService.setActive(newFormUrl);
-
+  
           this.log.info('T2 obj.service.ts', this.tabsService.ping());
-
+  
           if (tinymce.get(formUrl)) {
             tinymce.get(formUrl).setDirty(false);
             this.tabsService.setActiveTabDirty(false);
             // this.log.info('i am going to set dirty false', formUrl);
           }
-
+  
           if (tinymce.get(newFormUrl)) {
             tinymce.get(newFormUrl).setDirty(false);
             this.tabsService.setActiveTabDirty(false);
             // this.log.info('i am going to set dirty false', newFormUrl);
           }
-
+  
           this.changeDetector.detectChanges();
-
+  
           setTimeout(() => {
             if (tinymce.get(formUrl)) {
               tinymce.get(formUrl).setDirty(false);
@@ -260,17 +272,17 @@ export class ObjService {
               this.tabsService.setActiveTabDirty(false);
               // this.log.info('i am going to set dirty false', newFormUrl);
             }
-
+  
             $('span[id="tab_' + newFormUrl + '"]')
               .find('span:contains("* ")').remove();
-
+  
             this.changeDetector.detectChanges();
           }, 400);
-
+  
           // tinymce.editors.map(editor => [editor.id, editor.isDirty()])
           tinymce.editors.forEach((editor: TinyMceEditor) => {
             const formId = newFormUrl.split('/').pop();
-
+  
             /**
              * update all subforms while parent form changed
              */
@@ -281,7 +293,7 @@ export class ObjService {
               let url = editor.id;
               url += '/@@tinyform/example_widget?widget_type=subform&id=';
               url += workingId;
-
+  
               this.http.get(url, 'obj.service.ts refresh subforms')
                 .subscribe((response: Response) => {
                   this.widgetService.getGroupLayout(
@@ -310,12 +322,11 @@ export class ObjService {
             })
           });
         }
-        return data;
-      })
-      .map((response: Response) => {
-        return this.extractTextAndUrl(response);
-      })
-    }
+        
+        return this.extractTextAndUrl(data);
+      });
+    });
+  }
 
 
 
