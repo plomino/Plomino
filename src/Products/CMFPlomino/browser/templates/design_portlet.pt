@@ -3,7 +3,9 @@
     tal:define="db python:view.parentdatabase();
                 db_url python:db.absolute_url();
                 type python:view.currenttype();
-                url python:view.context.absolute_url();">
+                url python:view.context.absolute_url();
+                rurl python:view.request.URL0"
+    tal:condition="python:type=='PlominoDatabase' or '@@edit' in rurl or '/edit' in rurl">
     <dt class="portletHeader"><a tal:attributes="href string:${db_url}/DatabaseDesign"
         i18n:translate="Design">Design</a></dt>
     <dd class="portletItem">
