@@ -1,21 +1,6 @@
-# ArchGenXML generated POT File
-# [Eric BREHAULT] <[ebrehault@gmail.com]>, 2006.
 msgid ""
-msgstr ""
-"Project-Id-Version: CMFPlomino\n"
-"POT-Creation-Date: Thu Sep 28 15:52:32 2006\n"
-"PO-Revision-Date: 2013-07-24 13:50+0700\n"
-"Last-Translator: [Eric BREHAULT] <[ebrehault@gmail.com]>\n"
-"Language-Team: [Eric BREHAULT] <[ebrehault@gmail.com]>\n"
-"MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=UTF-8\n"
-"Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=1; plural=0\n"
-"Language-Code: fr\n"
-"Language-Name: French\n"
-"X-Is-Fallback-For: fr-be fr-ca fr-lu fr-mc fr-ch fr-fr\n"
-"Preferred-Encodings: latin1 utf-8\n"
-"Domain: plone\n"
+msgstr
+"Content-Type: text/plain; charset=utf-8\n"
 
 msgid "PlominoAction"
 msgstr "Plomino: Action"

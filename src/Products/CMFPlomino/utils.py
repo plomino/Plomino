@@ -318,7 +318,7 @@ def userInfo(db, userid):
     return getToolByName(db, 'portal_membership').getMemberById(userid)
 
 
-def PlominoTranslate(msgid, context, domain='CMFPlomino'):
+def PlominoTranslate(msgid, context, domain='Products.CMFPlomino'):
     """Look up the translation for ``msgid`` in the current language."""
     translation_service = getToolByName(context, 'translation_service')
     # When will message be an exception?
