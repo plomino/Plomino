@@ -271,6 +271,10 @@ export class FormSettingsComponent implements OnInit {
       const tab = this.tab;
       this.elementService.awaitForConfirm()
       .then(() => {
+        const editor = tinymce.get(tabData.url);
+        if (editor && editor.selection) {
+          editor.selection.collapse();
+        }
         this.elementService
           .deleteElement(tabData.url)
           .subscribe(() => {
