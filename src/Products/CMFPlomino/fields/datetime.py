@@ -188,7 +188,7 @@ class DatetimeField(BaseField):
                 field_format = db.datetime_format
             errors.append(
                 "Field '{}': '{}' does not match the format '{}'".format(
-                field_title, submittedValue, field_format))
+                field_title, submittedValue, DatetimeToJS(field_format)))
         except (RecordException, Exception):
             errors.append(
                 "Field '%s' must be a valid date/time (submitted value was: "
