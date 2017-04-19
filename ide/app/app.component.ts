@@ -60,6 +60,7 @@ import {
   PlominoApplicationLoaderService,
   URLManagerService,
   PlominoActiveEditorService,
+  PlominoSaveManagerService,
 } from './services';
 
 // Pipes 
@@ -120,6 +121,7 @@ import { LoadingComponent } from "./editors/loading/loading.component";
     PlominoWorkflowChangesNotifyService,
     URLManagerService,
     PlominoActiveEditorService,
+    PlominoSaveManagerService,
   ],
   pipes: [ExtractNamePipe],
   animations: [
