@@ -63,10 +63,10 @@ export class PlominoViewEditorComponent implements OnInit {
 
     this.fieldsService.onColumnCreated()
       .subscribe((response: {
-          viewColumnElement: HTMLElement, newId: string,
+          oldId: string, newId: string,
           newTitle: string, fieldURL: string
       }) => {
-        const viewColumnElement = response.viewColumnElement;
+        const viewColumnElement = $(`[data-url="${ this.item.url }"] [data-column="${ response.oldId }"]`).get(0);
         const newId = response.newId;
         const newTitle = response.newTitle;
         const fieldURL = response.fieldURL;
@@ -90,13 +90,13 @@ export class PlominoViewEditorComponent implements OnInit {
           subsetIds.push(newId);
           this.api.reOrderItem(viewURL, newId, delta - 1, subsetIds)
             .subscribe(() => {
-              this.fieldsService.viewReIndex.next(true);
+              this.fieldsService.viewReIndex.next(this.item.url);
               // this.fieldsService.viewActionInserted.next(viewURL);
               // this.reloadView();
             });
         }
         else {
-          this.fieldsService.viewReIndex.next(true);
+          this.fieldsService.viewReIndex.next(this.item.url);
         }
       })
 
@@ -129,11 +129,22 @@ export class PlominoViewEditorComponent implements OnInit {
       });
 
     this.fieldsService.onReIndexItems()
-      .subscribe(() => {
-        this.reIndexItems();
+      .subscribe((response: string) => {
+        // this.reIndexItems();
+        if (response === this.item.url) {
+          this.reloadView();
+        }
       });
 
     this.fieldsService.onNewAction()
+      .subscribe((response: string) => {
+        // this.log.warn('onNewColumn, response', response);
+        if (response === this.item.url) {
+          this.reloadView();
+        }
+      });
+
+    this.fieldsService.onColumnUpdated()
       .subscribe((response: string) => {
         // this.log.warn('onNewColumn, response', response);
         if (response === this.item.url) {
@@ -161,11 +172,12 @@ export class PlominoViewEditorComponent implements OnInit {
     this.loading = true;
 
     this.api.fetchViewTable(this.item.url)
-      .subscribe((fetchResult: [string, PlominoVocabularyViewData]) => {
+      .subscribe((fetchResult: [string, PlominoVocabularyViewData, PlominoViewData]) => {
         const html = fetchResult[0];
-        const json = fetchResult[1];
+        const columns = fetchResult[1];
+        const rows = fetchResult[2];
 
-        this.subsetIds = json.results.map(r => r.id);
+        this.subsetIds = columns.results.map(r => r.id);
 
         let $html = $(html);
         $html = $html.find('article');
@@ -205,7 +217,7 @@ export class PlominoViewEditorComponent implements OnInit {
           // this.log.warn('new html received', $html.html());
 
           /* attach indexes */
-          json.results.forEach((result, index) => {
+          columns.results.forEach((result, index) => {
             (() => {
               if (result.Type === 'PlominoColumn') {
                 return $(
@@ -226,6 +238,56 @@ export class PlominoViewEditorComponent implements OnInit {
           const totalColumns = $headRow.find('th').length;
 
           $headRow.appendTo($thead);
+
+          rows.rows.forEach((row, rowIndex) => {
+            if (!row.length) {
+              return;
+            }
+
+            const writeId = row[0];
+            
+            if (row.length === 1) {
+              /* should be empty row here? */
+              return;
+            }
+
+            row.slice(1).forEach((cellData, columnIndex) => {
+              let $cell = $(`[data-url="${ this.item.url }"] tbody tr:eq(${ rowIndex }) td:eq(${ columnIndex })`);
+              
+              if (!$cell.length) {
+                /* create new cell */
+                const $column = $(`[data-url="${ this.item.url }"] th:eq(${ columnIndex })`);
+  
+                if (!$column.length) {
+                  /* something wrong here */
+                  return;
+                }
+  
+                const $row = $(`[data-url="${ this.item.url }"] tbody tr:eq(${ rowIndex })`);
+  
+                if (!$row.length) {
+                  /* create new row here */
+                  $(`[data-url="${ this.item.url }"] tbody`)
+                    .append('<tr class="header-row count"><td></td></tr>');
+                }
+  
+                $cell = $(`[data-url="${ this.item.url }"] tbody tr:eq(${ rowIndex }) td:eq(${ columnIndex })`);
+  
+                if (!$cell.length) {
+                  $row.append('<td></td>');
+                  $cell = $(`[data-url="${ this.item.url }"] tbody tr:eq(${ rowIndex }) td:eq(${ columnIndex })`);
+                }
+              }
+
+              if (columnIndex === 0) {
+                const href = `${ this.getDBLink() }/document/${ writeId }`;
+                cellData = `<a href="${ href }" target="_blank">${ cellData }</a>`;
+              }
+
+              /* write the data to the cell */
+              $cell.html(cellData);
+            });
+          });
 
           $(`[data-url="${ this.item.url }"] table tbody tr`).each((t, trElement) => {
             const missed = totalColumns - $(trElement).find('td').length;
@@ -267,7 +329,7 @@ export class PlominoViewEditorComponent implements OnInit {
   }
 
   reIndexItems() {
-    this.api.fetchViewTableDataJSON(this.item.url)
+    this.api.fetchViewTableColumnsJSON(this.item.url)
       .subscribe((json) => {
         this.subsetIds = json.results.map(r => r.id);
 
@@ -415,7 +477,19 @@ export class PlominoViewEditorComponent implements OnInit {
             const transfer = ev.dataTransfer.getData('text');
 
             if (transfer.indexOf('a:') !== -1) {
-              this.loading = true;
+              // this.loading = false;
+
+              const $from = $(draggable);
+              const $to = $(actionElement);
+              
+              const $swapFrom = $from.clone();
+              const $swapTo = $to.clone();
+              
+              $from.replaceWith($swapTo);
+              $to.replaceWith($swapFrom);
+
+              $(`.view-editor__action--drop-target`)
+                .removeClass('view-editor__action--drop-target');
               
               this.api.reOrderItem(this.item.url,
                 draggable.id, 
@@ -423,7 +497,7 @@ export class PlominoViewEditorComponent implements OnInit {
                 parseInt(draggable.dataset.index, 10),
                 this.subsetIds
               ).subscribe(() => {
-                this.reloadView();
+                this.reIndexItems();
               });
             }
 

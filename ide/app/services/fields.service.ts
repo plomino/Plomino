@@ -12,6 +12,7 @@ export class FieldsService {
   viewActionInserted: Subject<string> = new Subject<string>();
   viewReIndex: Subject<any> = new Subject<any>();
   viewColumnCreated: Subject<any> = new Subject<any>();
+  viewColumnUpdated: Subject<any> = new Subject<any>();
 
   deleteSelectedColumn: Subject<string> = new Subject<string>();
   deleteSelectedAction: Subject<string> = new Subject<string>();
@@ -32,6 +33,13 @@ export class FieldsService {
    */
   onColumnCreated() {
     return this.viewColumnCreated.asObservable();
+  }
+
+  /**
+   * happens when you save existing column in field settings
+   */
+  onColumnUpdated() {
+    return this.viewColumnUpdated.asObservable();
   }
 
   onDeleteSelectedViewColumn(): Observable<string> {
