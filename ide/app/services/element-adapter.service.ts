@@ -80,6 +80,13 @@ export class PlominoElementAdapterService {
   }
 
   select($element: JQuery) {
+    if ($element === null) {
+      this.$previousSelectedElement = this.$latestSelectedElement;
+      this.$latestSelectedElement = null;
+      this.$latestSelectedElementPath = null;
+      return;
+    }
+
     if ($element.is('p,input,img') && $element.closest('.plominoFieldClass').length) {
       $element = $element.closest('.plominoFieldClass');
     }
