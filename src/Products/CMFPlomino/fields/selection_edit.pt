@@ -2,7 +2,7 @@
     fieldvalue python:options['fieldvalue'];
     widget python:field.widget;
     selection python:options['selection'];" 
-    tal:attributes="class python:field.id + '-' + 'selectionfield'">
+    tal:attributes="class string:${widget/lower}-widget-selectionfield ${field/id}-selectionfield">
     <tal:widget tal:condition="python:widget=='SELECT'">
         <select class="pat-select2" tal:attributes="id field/id; name field/id"><tal:loop tal:repeat="v selection">
             <option tal:define="current fieldvalue;l python:v.split('|')"
