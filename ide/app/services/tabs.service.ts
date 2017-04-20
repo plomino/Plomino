@@ -43,12 +43,13 @@ export class TabsService {
       });
   }
 
-  selectField(fieldData: { id: string, type: string, parent: string }): void {
+  selectField(fieldData: any): void {
     let field: any = null;
 
     this.log.info('selectField', fieldData, this.adapter.getSelectedBefore());
 
-    if (fieldData && !fieldData.id && fieldData.type === 'subform') {
+    if (fieldData && fieldData !== 'none' 
+      && !fieldData.id && fieldData.type === 'subform') {
       setTimeout(() => {
         const $selected = $(this.activeEditorService.getActive().getBody())
           .find('[data-mce-selected="1"]');
@@ -60,7 +61,7 @@ export class TabsService {
           fieldData.id = 'Subform';
         }
 
-        if (fieldData && fieldData.id) {
+        if (fieldData && fieldData !== 'none' && fieldData.id) {
         
           field = Object.assign({}, { 
             id: fieldData.id, 
@@ -73,7 +74,7 @@ export class TabsService {
       }, 100);
     }
     else {
-      if (fieldData && fieldData.id) {
+      if (fieldData && fieldData !== 'none' && fieldData.id) {
         
         field = Object.assign({}, { 
           id: fieldData.id, 

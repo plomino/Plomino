@@ -22,7 +22,8 @@ import {
     TabsService,
     TreeService,
     LogService,
-    FormsService
+    FormsService,
+    PlominoElementAdapterService
 } from '../../services';
 import { PloneHtmlPipe } from '../../pipes';
 import {ElementService} from "../../services/element.service";
@@ -62,6 +63,7 @@ export class FormSettingsComponent implements OnInit {
                 private changeDetector: ChangeDetectorRef,
                 private tabsService: TabsService,
                 private treeService: TreeService,
+                private adapter: PlominoElementAdapterService,
                 private labelsRegistry: LabelsRegistryService,
                 private activeEditorService: PlominoActiveEditorService,
                 private saveManager: PlominoSaveManagerService,
@@ -226,15 +228,17 @@ export class FormSettingsComponent implements OnInit {
     }
 
     openFormCode(tab: any): void {
-        const eventData = {
-            formUniqueId: tab.formUniqueId,
-            editor: 'code',
-            label: tab.label,
-            path: [{ name: tab.label, type: 'Forms' }],
-            url: tab.url
-        };
-        this.log.info('this.tabsService.openTab #frs0001 with showAdd');
-        this.tabsService.openTab(eventData, true);
+      const eventData = {
+          formUniqueId: tab.formUniqueId,
+          editor: 'code',
+          label: tab.label,
+          path: [{ name: tab.label, type: 'Forms' }],
+          url: tab.url
+      };
+      this.log.info('this.tabsService.openTab #frs0001 with showAdd');
+      this.tabsService.selectField('none');
+      this.adapter.select(null);
+      this.tabsService.openTab(eventData, true);
     }
 
     openFormPreview(formUrl: string, tabType: string): void {

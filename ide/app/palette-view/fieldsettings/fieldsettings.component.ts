@@ -336,6 +336,10 @@ export class FieldSettingsComponent implements OnInit {
         };
         this.log.info('this.tabsService.openTab #fs0001');
         this.tabsService.openTab(eventData, true);
+        this.field = null;
+        this.formTemplate = null;
+        this.changeDetector.detectChanges();
+        this.adapter.select(null);
     }
 
     private getDBOptionsLink(link: string) {
@@ -691,7 +695,10 @@ export class FieldSettingsComponent implements OnInit {
       this.tabsService.getActiveField()
         .do((field: PlominoFieldRepresentationObject) => {
             if (field === null) {
-                this.clickAddLink();
+              this.field = null;
+              this.formTemplate = null;
+              this.changeDetector.detectChanges();
+              this.clickAddLink();
             }
 
             this.field = field;
