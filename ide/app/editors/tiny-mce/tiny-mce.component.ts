@@ -375,6 +375,18 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
           }
         });
 
+        editor.on('KeyUp', (e: any) => {
+          /* check current selected element is there */
+          const $selected = this.adapter.getSelected();
+          const editor = tinymce.get(this.id);
+          if (!editor) { return; }
+
+          if (!$(editor.getBody()).has(<any> $selected).length) {
+            this.tabsService.selectField('none');
+            this.adapter.select(null);
+          }
+        })
+
         editor.on('NodeChange', (nodeChangeEvent: any) => {
           if (nodeChangeEvent.selectionChange === true) {
             const $label = $(nodeChangeEvent.element).closest('.plominoLabelClass');
