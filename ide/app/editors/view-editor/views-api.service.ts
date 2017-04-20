@@ -15,11 +15,20 @@ export class PlominoViewsAPIService {
 
   fetchViewTableHTML(url: string): Observable<string> {
     return this.http
-      .get(`${ url }/view?ajax_load=1&ajax_include_header=1`)
+      .get(`${ url }/view`)
       .map((response: Response) => response.text())
   }
 
-  fetchViewTableDataJSON(url: string): Observable<PlominoVocabularyViewData> {
+  fetchViewTableDataJSON(url: string): Observable<PlominoViewData> {
+    return this.http
+      .get(`${ url }/tojson`)
+      .map((response: Response) => response.json())
+      .catch((err: any) => {
+        return Observable.of({ rows: [], total: 0, displayed: 0 });
+      })
+  }
+
+  fetchViewTableColumnsJSON(url: string): Observable<PlominoVocabularyViewData> {
     let reqURL = '/Plone/@@getVocabulary?name=plone.app.vocabularies.Catalog';
     reqURL += '&query={%22criteria%22:[{%22i%22:%22path%22,%22o%22:%22';
     reqURL += 'plone.app.querystring.operation.string.path%22,%22v%22:%22/';
@@ -35,10 +44,14 @@ export class PlominoViewsAPIService {
       })
   }
 
-  fetchViewTable(url: string): Observable<[string, PlominoVocabularyViewData]> {
+  fetchViewTable(url: string): Observable<[
+    string, PlominoVocabularyViewData, PlominoViewData
+  ]> {
     const html$ = this.fetchViewTableHTML(url);
-    const json$ = this.fetchViewTableDataJSON(url);
-    return <Observable<[string, PlominoVocabularyViewData]>> Observable.forkJoin(html$, json$);
+    const json$ = this.fetchViewTableColumnsJSON(url);
+    const jsonData$ = this.fetchViewTableDataJSON(url);
+    return <Observable<[string, PlominoVocabularyViewData, PlominoViewData]>>
+      Observable.forkJoin(html$, json$, jsonData$);
   }
 
   addNewAction(url: string, id = 'default-action'): Observable<AddFieldResponse> {

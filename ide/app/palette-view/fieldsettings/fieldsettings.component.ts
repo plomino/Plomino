@@ -198,18 +198,18 @@ export class FieldSettingsComponent implements OnInit {
               this.changeDetector.detectChanges();
             }
             else if (this.field.type === 'PlominoColumn') {
-              $(`.view-editor__column-header--selected:visible`)
-                .each((i, viewColumnElement: HTMLInputElement) => {
-                  if (!(
-                    responseHtml.indexOf('ajax_success') === -1
-                    && responseHtml.indexOf('There were some errors') !== -1
-                  )) {
-                    this.fieldsService.viewColumnCreated.next({
-                      newId, newTitle, viewColumnElement,
-                      fieldURL: this.field.url
-                    })
-                  }
-                });
+              if (!(
+                responseHtml.indexOf('ajax_success') === -1
+                && responseHtml.indexOf('There were some errors') !== -1
+              )) {
+                this.fieldsService.viewColumnCreated.next({
+                  newId, newTitle, oldId,
+                  fieldURL: this.field.url
+                })
+              }
+
+              this.field = null;
+              this.formTemplate = null;
 
               this.loading = false;
               this.changeDetector.detectChanges();
