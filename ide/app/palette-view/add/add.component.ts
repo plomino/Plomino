@@ -279,49 +279,55 @@ export class AddComponent implements OnInit, AfterViewInit {
                   '@type': 'PlominoForm',
                   'title': 'New Form'
               };
+              this.log.startTimer('create_new_form_hold');
               this.elementService.postElement(this.getDBOptionsLink(''), formElement)
               .subscribe((response: AddFieldResponse) => {
-                this.treeService.updateTree().then(() => {
-                  this.log.info('this.tabsService.openTab #a001');
-                  // this.treeService.latestId++;
-                  this.tabsService.openTab({
-                    formUniqueId: undefined,
-                    editor: 'layout',
-                    label: response.title,
-                    url: response.parent['@id'] + '/' + response.id,
-                    path: [{
-                        name: response.title,
-                        type: 'Forms'
-                    }]
-                  });
+
+                this.log.info('this.tabsService.openTab #a001');
+                // this.treeService.latestId++;
+                this.tabsService.openTab({
+                  formUniqueId: undefined,
+                  editor: 'layout',
+                  label: response.title,
+                  url: response.parent['@id'] + '/' + response.id,
+                  path: [{
+                      name: response.title,
+                      type: 'Forms'
+                  }]
                 });
+                this.log.stopTimer('create_new_form_hold');
+
+                this.treeService.updateTree().then(() => {});
               });
               break;
           case 'PlominoView':
+            this.log.startTimer('create_new_view_hold');
               let viewElement: InsertFieldEvent = {
                 '@type': 'PlominoView',
                 'title': 'New View'
               };
               this.elementService.postElement(this.getDBOptionsLink(''), viewElement)
               .subscribe((response: AddFieldResponse) => {
-                this.treeService.updateTree().then(() => {
-                  this.log.info('this.tabsService.openTab #a002');
-                  this.tabsService.openTab({
-                    editor: 'view',
-                    label: response.title,
-                    url: response.parent['@id'] + '/' + response.id,
-                    path: [{
-                        name: response.title,
-                        type: 'Views'
-                    }]
-                  });
+                this.log.info('this.tabsService.openTab #a002');
+                this.tabsService.openTab({
+                  editor: 'view',
+                  label: response.title,
+                  url: response.parent['@id'] + '/' + response.id,
+                  path: [{
+                      name: response.title,
+                      type: 'Views'
+                  }]
                 });
+                this.log.stopTimer('create_new_view_hold');
+
+                this.treeService.updateTree().then(() => {});
               });
               // Get the ID of the new element back in the response.
               // Update the Tree
               // Open the View in the editor
               break;
           case 'PlominoLabel':
+            this.log.startTimer('create_new_label_hold');
               let field: InsertFieldEvent = {
                 '@type': 'PlominoLabel',
                 title: 'defaultLabel',
@@ -329,8 +335,10 @@ export class AddComponent implements OnInit, AfterViewInit {
                 target
               };
               this.fieldsService.insertField(field);
+              this.log.stopTimer('create_new_label_hold');
               break;
           case 'PlominoField':
+            this.log.startTimer('create_new_field_hold');
               field = {
                   title: 'defaultField',
                   '@type': 'PlominoField',
@@ -346,10 +354,10 @@ export class AddComponent implements OnInit, AfterViewInit {
                   `${ this.activeTab.url }/${ response.created }`, field.title, 'title'
                 );
 
-                this.treeService.updateTree()
-                .then(() => {
-                  this.fieldsService.insertField(extendedField);
-                });
+                this.fieldsService.insertField(extendedField);
+                this.log.stopTimer('create_new_field_hold');
+
+                this.treeService.updateTree().then(() => {});
               })
               break;
           case 'PlominoPagebreak':
@@ -423,11 +431,10 @@ export class AddComponent implements OnInit, AfterViewInit {
                   target
                 });
 
-                this.treeService.updateTree()
-                .then(() => {
-                  this.log.info('extendedField', extendedField);
-                  this.fieldsService.insertField(extendedField);
-                });
+                this.log.info('extendedField', extendedField);
+                this.fieldsService.insertField(extendedField);
+
+                this.treeService.updateTree().then(() => {});
               });
               break;
           case 'PlominoAction':
@@ -442,10 +449,8 @@ export class AddComponent implements OnInit, AfterViewInit {
                 let extendedField = Object.assign({}, field, {
                     name: response['@id']
                 });
-                this.treeService.updateTree()
-                  .then(() => {
-                      this.fieldsService.insertField(extendedField);
-                  });
+                this.fieldsService.insertField(extendedField);
+                this.treeService.updateTree().then(() => {});
                 })
               break;
           case 'column':
@@ -475,11 +480,9 @@ export class AddComponent implements OnInit, AfterViewInit {
                 componentHandler.upgradeDom();
                 $(`[data-url="${ url }"] .actionButtons #${ response.id }`).click();
 
-                this.treeService.updateTree()
-                  .then(() => {
-                    this.fieldsService.insertField(extendedField);
-                  });
-                })
+                this.fieldsService.insertField(extendedField);
+                this.treeService.updateTree().then(() => {});
+              })
               break;
           default:
               console.log(type + ' not handled yet')
@@ -497,6 +500,8 @@ export class AddComponent implements OnInit, AfterViewInit {
     }
 
     addTemplate(eventData: MouseEvent, target: any, templateId: string) {
+
+      this.log.startTimer('create_new_template_hold');
 
       const a = $(eventData.currentTarget).data('templateId');
       const b = templateId;
@@ -519,14 +524,18 @@ export class AddComponent implements OnInit, AfterViewInit {
         this.widgetService.getGroupLayout(this.activeTab.url, response)
         .subscribe((layout: string) => {
           layout = this.templatesService.fixBuildedTemplate(layout);
-          this.treeService.updateTree().then(() => {
-            this.templatesService.insertTemplate(
-              <InsertTemplateEvent> Object.assign({}, response, {
-              parent: this.activeTab.url,
-              target: target,
-              group: layout
-            }));
-          });
+
+          this.templatesService.insertTemplate(
+            <InsertTemplateEvent> Object.assign({}, response, {
+            parent: this.activeTab.url,
+            target: target,
+            group: layout
+          }));
+
+          this.log.stopTimer('create_new_template_hold');
+
+          // this.treeService.updateTree().then(() => {});
+          // turned off because autosave
         });    
       });
     }

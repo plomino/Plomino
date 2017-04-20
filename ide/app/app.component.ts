@@ -566,18 +566,17 @@ export class AppComponent implements OnInit, AfterViewInit {
     };
     this.elementService.postElement(this.getDBLink(), viewElement)
     .subscribe((response: AddFieldResponse) => {
-      this.treeService.updateTree().then(() => {
-        this.log.info('this.tabsService.openTab #app0009');
-        this.tabsService.openTab({
-          editor: 'view',
-          label: response.title,
-          url: response.parent['@id'] + '/' + response.id,
-          path: [{
-              name: response.title,
-              type: 'Views'
-          }]
-        });
+      this.log.info('this.tabsService.openTab #app0009');
+      this.tabsService.openTab({
+        editor: 'view',
+        label: response.title,
+        url: response.parent['@id'] + '/' + response.id,
+        path: [{
+            name: response.title,
+            type: 'Views'
+        }]
       });
+      this.treeService.updateTree().then(() => {});
     });
   }
 
@@ -589,21 +588,20 @@ export class AppComponent implements OnInit, AfterViewInit {
     };
     this.elementService.postElement(this.getDBLink(), formElement)
     .subscribe((response: AddFieldResponse) => {
-      this.treeService.updateTree().then(() => {
-        // const randomId = Math.floor(Math.random() * 1e10 + 1e10);
-        this.log.info('this.tabsService.openTab #app0009');
-        // this.treeService.latestId++;
-        this.tabsService.openTab({
-          formUniqueId: undefined,
-          editor: 'layout',
-          label: response.title,
-          url: response.parent['@id'] + '/' + response.id,
-          path: [{
-              name: response.title,
-              type: 'Forms'
-          }]
-        });
+      // const randomId = Math.floor(Math.random() * 1e10 + 1e10);
+      this.log.info('this.tabsService.openTab #app0009');
+      // this.treeService.latestId++;
+      this.tabsService.openTab({
+        formUniqueId: undefined,
+        editor: 'layout',
+        label: response.title,
+        url: response.parent['@id'] + '/' + response.id,
+        path: [{
+            name: response.title,
+            type: 'Forms'
+        }]
       });
+      this.treeService.updateTree().then(() => {});
     });
   }
 

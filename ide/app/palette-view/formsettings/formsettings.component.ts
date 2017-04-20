@@ -120,6 +120,7 @@ export class FormSettingsComponent implements OnInit {
     saveFormSettings(formData: FormData, formLayout: any, cb: any) {
       this.log.info('T-1 formsettings.component.ts', this.tabsService.ping());
       this.formSaving = true;
+      this.log.startTimer('save_form_hold');
       let $formId: any = '';
     
       formData.set('form.widgets.form_layout', formLayout);
@@ -157,46 +158,49 @@ export class FormSettingsComponent implements OnInit {
         .subscribe((responseHtml: string) => {
           this.log.info('updateFormSettings');
           this.log.extra('formsettings.component.ts');
+
+          this.formSaving = false;
+          this.formSettings = responseHtml;
+          this.updateMacroses();
+          this.loading = false;
+          this.log.stopTimer('save_form_hold');
+          this.activeEditorService.turnActiveEditorToLoadingState(false);
+          this.changeDetector.markForCheck();
+          
+          window['materialPromise'].then(() => {
+            componentHandler.upgradeDom();
+
+            setTimeout(() => {
+              componentHandler.upgradeDom();
+              $('.form-settings-wrapper form').submit((submitEvent) => {
+                submitEvent.preventDefault();
+                this.submitForm();
+                return false;
+              });
+              
+              this.loading = false;
+              // debugger;
+              this.changeDetector.markForCheck();
+              this.changeDetector.detectChanges();
+            }, 400);
+          });
+
+          if (cb) {
+            cb();
+          }
+          else {
+            /* reinitialize tinymce */
+            // Object.keys(tinymce.EditorManager.editors)
+            // .forEach((key: string) => {
+            //   if (isNaN(parseInt(key, 10))) {
+            //     tinymce.EditorManager.execCommand('mceRemoveEditor', true, key);
+            //     tinymce.EditorManager.execCommand('mceAddEditor', true, key);
+            //   }
+            // });
+          }
+
           this.treeService.updateTree().then(() => {
             this.log.info('updateTree() figured out');
-              this.formSaving = false;
-              this.formSettings = responseHtml;
-              this.updateMacroses();
-              this.loading = false;
-              this.activeEditorService.turnActiveEditorToLoadingState(false);
-              this.changeDetector.markForCheck();
-              
-              window['materialPromise'].then(() => {
-                componentHandler.upgradeDom();
-    
-                setTimeout(() => {
-                  componentHandler.upgradeDom();
-                  $('.form-settings-wrapper form').submit((submitEvent) => {
-                    submitEvent.preventDefault();
-                    this.submitForm();
-                    return false;
-                  });
-                  
-                  this.loading = false;
-                  // debugger;
-                  this.changeDetector.markForCheck();
-                  this.changeDetector.detectChanges();
-                }, 400);
-              });
-
-              if (cb) {
-                cb();
-              }
-              else {
-                /* reinitialize tinymce */
-                // Object.keys(tinymce.EditorManager.editors)
-                // .forEach((key: string) => {
-                //   if (isNaN(parseInt(key, 10))) {
-                //     tinymce.EditorManager.execCommand('mceRemoveEditor', true, key);
-                //     tinymce.EditorManager.execCommand('mceAddEditor', true, key);
-                //   }
-                // });
-              }
           });
         }, err => {
             console.error(err)

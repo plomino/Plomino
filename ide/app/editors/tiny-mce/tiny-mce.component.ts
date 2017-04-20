@@ -1,3 +1,4 @@
+import { PlominoHTTPAPIService } from './../../services/http-api.service';
 import { PlominoActiveEditorService } from './../../services/active-editor.service';
 import { TinyMCEFormContentManagerService } from './content-manager';
 import {
@@ -18,7 +19,8 @@ import {
 
 import { 
     Http,
-    Response
+    Response,
+    RequestOptions
 } from '@angular/http';
 
 import {DND_DIRECTIVES} from 'ng2-dnd';
@@ -110,7 +112,7 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
     private updateFieldService: UpdateFieldService,
     private contentManager: TinyMCEFormContentManagerService,
     private saveManager: PlominoSaveManagerService,
-    private http: Http,
+    private http: PlominoHTTPAPIService,
     private zone: NgZone) {
     
     /**
@@ -273,13 +275,6 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
     let tiny = this;
 
     const LinkModal = window['LinkModal'];
-
-    // this.http.post('/Plone/mydb/rename-group', {
-
-    // })
-    // .subscribe((r: any) => {
-    //   console.log(r);
-    // });
 
     tinymce.init({
       cleanup : false,
