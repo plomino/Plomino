@@ -429,7 +429,11 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
             this.log.info($element, $parent, $grandParent, $grandGrandParent, $closest);
             this.log.extra('tiny-mce.component.ts editor.on(\'mousedown\', ...)');
 
-            this.adapter.select($closestLabel.length ? $closestLabel : $element);
+            const $s = $closestLabel.length ? $closestLabel : $element;
+            if ($s.is(this.adapter.getSelected())) {
+              return;
+            }
+            this.adapter.select($s);
 
             if (!elementIsSubform && (parentIsSubform || closestIsSubform)) {
               elementIsSubform = true;
