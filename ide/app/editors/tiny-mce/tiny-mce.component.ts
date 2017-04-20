@@ -547,13 +547,15 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
           });
         });
 
-        editor.setDirty(false);
-        const $edContainer = $(editor.getContainer());
-        if ($edContainer.length) {
-          const $saveDiv = $edContainer
-            .find('.mce-toolbar-grp div.mce-widget.mce-btn:contains("Save")');
-          $saveDiv.attr('aria-disabled', 'true');
-          $saveDiv.addClass('mce-disabled');
+        if (editor) {
+          editor.setDirty(false);
+          const $edContainer = $(editor.getContainer());
+          if ($edContainer.length) {
+            const $saveDiv = $edContainer
+              .find('.mce-toolbar-grp div.mce-widget.mce-btn:contains("Save")');
+            $saveDiv.attr('aria-disabled', 'true');
+            $saveDiv.addClass('mce-disabled');
+          }
         }
       },
       content_css: [
