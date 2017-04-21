@@ -520,25 +520,26 @@ export class AddComponent implements OnInit, AfterViewInit {
       }
       
       this.templatesService.addTemplate(this.activeTab.url, templateId)
-      .subscribe((response: PlominoFormGroupTemplate) => {
-        response = this.templatesService.fixCustomTemplate(response);
-        this.widgetService.getGroupLayout(this.activeTab.url, response)
-        .subscribe((layout: string) => {
-          layout = this.templatesService.fixBuildedTemplate(layout);
-
-          this.templatesService.insertTemplate(
-            <InsertTemplateEvent> Object.assign({}, response, {
-            parent: this.activeTab.url,
-            target: target,
-            group: layout
-          }));
-
-          this.log.stopTimer('create_new_template_hold');
-
-          // this.treeService.updateTree().then(() => {});
-          // turned off because autosave
-        });    
-      });
+        .subscribe((response: PlominoFormGroupTemplate) => {
+          response = this.templatesService.fixCustomTemplate(response);
+          this.widgetService.getGroupLayout(this.activeTab.url, response)
+          .subscribe((layout: string) => {
+            layout = this.templatesService.fixBuildedTemplate(layout);
+  
+            this.templatesService.insertTemplate(
+              <InsertTemplateEvent> Object.assign({}, response, {
+              parent: this.activeTab.url,
+              target: target,
+              group: layout
+            }));
+  
+            this.log.stopTimer('create_new_template_hold');
+            this.activeEditorService.turnActiveEditorToLoadingState(false);
+  
+            // this.treeService.updateTree().then(() => {});
+            // turned off because autosave
+          });    
+        });
     }
 
     simulateDrag(eventData: MouseEvent, type: any, template?: PlominoFormGroupTemplate) {
