@@ -1,3 +1,4 @@
+import { Observable, Subject } from 'rxjs/Rx';
 import { PlominoFormSaveProcess } from './save-process';
 import { TinyMCEFormContentManagerService } from './../../editors/tiny-mce/content-manager/content-manager.service';
 import { Injectable } from '@angular/core';
@@ -9,6 +10,8 @@ import { LabelsRegistryService } from '../../editors/tiny-mce/services';
 export class PlominoSaveManagerService {
 
   private savedStates: Map<string, string> = new Map<string, string>();
+  private saveStack: Array<Observable<any>> = [];
+  private saveNotifier: Subject<string> = new Subject<string>();
 
   constructor(
     private contentManager: TinyMCEFormContentManagerService,
@@ -17,7 +20,21 @@ export class PlominoSaveManagerService {
     private widgetService: WidgetService,
     private labelsRegistry: LabelsRegistryService,
     private activeEditorService: PlominoActiveEditorService,
-  ) { }
+  ) {
+    Observable
+      .interval(500)
+      .flatMap(() => this.saveStack.length 
+        ? this.saveStack.pop() : Observable.of(null))
+      .subscribe((data) => {
+        if (data) {
+          this.saveNotifier.next(data.url);
+        }
+      });
+  }
+
+  onBackgroundSaveProcessComplete() {
+    return this.saveNotifier.asObservable();
+  }
 
   nextEditorSavedState(editorId: string, state: string = null): void {
     this.savedStates.set(editorId, state || this.contentManager.getContent(editorId));
@@ -59,9 +76,8 @@ export class PlominoSaveManagerService {
     return process;
   }
 
-  enqueueNewFormSaveProcess(immediately = false) {
-    // const process = new PlominoFormSaveProcess({
-    //   immediately
-    // });
+  enqueueNewFormSaveProcess(formURL: string) {
+    const process = this.createFormSaveProcess(formURL);
+    this.saveStack.unshift(process.start());
   }
 }

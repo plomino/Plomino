@@ -156,7 +156,8 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
         this.insertGroup(insertion.group, insertion.target);
 
         /* form save automatically */
-        this.saveTheForm();
+        // this.saveTheForm(); // was before
+        this.saveManager.enqueueNewFormSaveProcess(this.item.url); // now async
       }
     });
     
@@ -233,6 +234,13 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
         content: this.contentManager.getContent(this.id)
       });
     });
+
+    this.saveManager.onBackgroundSaveProcessComplete()
+      .subscribe((formURL: string) => {
+        if (formURL === this.id) {
+          this.bitDirtyStateAfterSave();
+        }
+      });
   }
 
   ngOnDestroy() {
@@ -240,6 +248,15 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
     this.insertionSubscription.unsubscribe();
     this.templatesSubscription.unsubscribe();
     tinymce.EditorManager.execCommand('mceRemoveEditor', true, this.id);
+  }
+
+  bitDirtyStateAfterSave() {
+    this.theFormIsSavingNow = false;
+    tinymce.get(this.id).setDirty(false);
+    this.isDirty.emit(false);
+    this.tabsService.setActiveTabDirty(false);
+    this.saveManager.nextEditorSavedState(this.id);
+    this.changeDetector.markForCheck();
   }
 
   saveTheForm() {
@@ -252,22 +269,8 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
       .start()
       .subscribe(() => {
         this.fallLoading(false);
-
-        this.theFormIsSavingNow = false;
-        tinymce.get(this.id).setDirty(false);
-        this.isDirty.emit(false);
-        this.tabsService.setActiveTabDirty(false);
-
-        this.saveManager.nextEditorSavedState(this.id);
-        this.changeDetector.markForCheck();
+        this.bitDirtyStateAfterSave();
       });
-
-    // this.formsService.saveForm(this.item.url, false); // was before
-
-    // tinymce.get(this.id).setDirty(false);
-    // this.isDirty.emit(false);
-    // this.saveManager.nextEditorSavedState(this.id, );
-    // this.changeDetector.markForCheck();
   }
 
   ngAfterViewInit(): void {
