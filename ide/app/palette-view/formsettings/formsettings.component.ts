@@ -1,3 +1,5 @@
+import { PlominoHTTPAPIService } from './../../services/http-api.service';
+import { PlominoFormSaveProcess } from './../../services/save-manager/save-process';
 import { PlominoSaveManagerService } from './../../services/save-manager/save-manager.service';
 import { LabelsRegistryService } from './../../editors/tiny-mce/services/labels-registry.service';
 import { PlominoActiveEditorService } from './../../services/active-editor.service';
@@ -44,7 +46,6 @@ export class FormSettingsComponent implements OnInit {
     @ViewChild('formElem') formElem: ElementRef;
 
     tab: PlominoTab;
-    formSaving: boolean = false;
     macrosWidgetTimer: number = null;
 
     // This needs to handle both views and forms
@@ -99,15 +100,11 @@ export class FormSettingsComponent implements OnInit {
         this.formsService.onFormContentBeforeSave$
           .subscribe((data:{id:any, content:any}) => {
             this.log.info('T-3 formsettings.component.ts', data.id, this.tabsService.ping());
+            
             if (this.tab.url !== data.id)
                 return;
-            // if (this.tab.formUniqueId !== data.id)
-            //     return;
 
-            this.saveForm({
-                cb: onSaveFinishCb,
-                content: data.content
-            });
+            this.saveFormSettings(onSaveFinishCb);
         });
     }
 
@@ -117,22 +114,18 @@ export class FormSettingsComponent implements OnInit {
       ) !== -1);
     }
 
-    saveFormSettings(formData: FormData, formLayout: any, cb: any) {
+    saveFormSettings(cb: any) {
       this.log.info('T-1 formsettings.component.ts', this.tabsService.ping());
-      this.formSaving = true;
       this.log.startTimer('save_form_hold');
-      let $formId: any = '';
-    
-      formData.set('form.widgets.form_layout', formLayout);
     
       const flatMapCallback = ((responseData: {html: string, url: string}) => {
         if (responseData.html !== "<div id='ajax_success'/>") {
             return Observable.of(responseData.html);
         } else {
-            $formId = responseData.url.slice(responseData.url.lastIndexOf('/') + 1);
-            let newUrl = this.tab.url
+            const $formId = responseData.url.slice(responseData.url.lastIndexOf('/') + 1);
+            const newUrl = this.tab.url
               .slice(0, this.tab.url.lastIndexOf('/') + 1) + $formId;
-            let oldUrl = this.tab.url;
+            const oldUrl = this.tab.url;
 
             if (newUrl && oldUrl && newUrl !== oldUrl) {
                 this.formsService.changeFormId({
@@ -151,15 +144,16 @@ export class FormSettingsComponent implements OnInit {
       }).bind(this);
 
       this.loading = true;
-      this.objService.updateFormSettings(this.tab.url, formData)
+      const process = this.saveManager.createFormSaveProcess(this.tab.url);
+      
+      process.start()
         .flatMap((responseData: {html: string, url: string}) => 
           flatMapCallback(responseData))
         .map(this.parseTabs)
         .subscribe((responseHtml: string) => {
-          this.log.info('updateFormSettings');
+          this.log.info('saveFormSettings');
           this.log.extra('formsettings.component.ts');
 
-          this.formSaving = false;
           this.formSettings = responseHtml;
           this.updateMacroses();
           this.loading = false;
@@ -188,16 +182,6 @@ export class FormSettingsComponent implements OnInit {
           if (cb) {
             cb();
           }
-          else {
-            /* reinitialize tinymce */
-            // Object.keys(tinymce.EditorManager.editors)
-            // .forEach((key: string) => {
-            //   if (isNaN(parseInt(key, 10))) {
-            //     tinymce.EditorManager.execCommand('mceRemoveEditor', true, key);
-            //     tinymce.EditorManager.execCommand('mceAddEditor', true, key);
-            //   }
-            // });
-          }
 
           this.treeService.updateTree().then(() => {
             this.log.info('updateTree() figured out');
@@ -216,15 +200,15 @@ export class FormSettingsComponent implements OnInit {
     saveForm(data:{content:any,cb:any}) {
       this.log.info('T-2 formsettings.component.ts', this.tabsService.ping());
       this.log.info('saveForm CALLED!');
-      let $form: any = $(this.formElem.nativeElement);
-      let form: HTMLFormElement = $form.find('form').get(0);
-      let formData: any = new FormData(form);
+      // let $form: any = $(this.formElem.nativeElement);
+      // let form: HTMLFormElement = $form.find('form').get(0);
+      // let formData: any = new FormData(form);
 
       // this.treeService.updateTree();
 
-      formData.append('form.buttons.save', 'Save');
+      // formData.append('form.buttons.save', 'Save');
 
-      this.saveFormSettings(formData, data.content, data.cb);
+      this.saveFormSettings(data.cb);
     }
 
     cancelForm() {

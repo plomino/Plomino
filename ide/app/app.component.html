@@ -91,7 +91,7 @@
                     [attr.id]="'tab_' + tabz.url"
                     [attr.data-url]="tabz.url" [attr.data-active]="tabz.active">
                     <loading *ngIf="tabz.isloading"></loading>
-                    <span *ngIf="tabz.isdirty === false">* </span>
+                    <span *ngIf="tabz.isdirty === true">* </span>
                     <span *ngIf="tabz.editor !== 'workflow'" class="tab-type-image">
                       <img [src]="getTabTypeImage(tabz.editor)">
                     </span>

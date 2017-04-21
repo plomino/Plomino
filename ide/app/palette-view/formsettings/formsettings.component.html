@@ -12,10 +12,10 @@
         id="ide-formsettings__save-button"
         *ngIf="formSettings"
         (click)="submitForm()">
-          <span *ngIf="formSaving">
+          <span *ngIf="loading">
             <loading class="white"></loading>
           </span>
-          <span *ngIf="!formSaving">
+          <span *ngIf="!loading">
             <span class="icon material-icons">save</span>
             Save
           </span>

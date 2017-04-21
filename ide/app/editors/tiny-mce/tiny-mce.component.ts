@@ -205,10 +205,6 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
         this.log.error(e);
       }
 
-      // if (this.theFormIsSavingNow && data.formUniqueId >= 1e10) {
-      //   data.formUniqueId = this.item.formUniqueId;
-      // }
-
       if (data.url !== this.item.url)
         return;
 
@@ -217,7 +213,6 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
       let editor = tinymce.get(this.id) || 
         tinymce.get(this.idChanges && this.idChanges.oldId);
 
-      // editor.buttons.save.onclick();
       editor.setDirty(false);
       this.log.info('i am', this.id, 'and I doing call saveFormLayout');
       this.saveFormLayout(data.cb);
@@ -225,10 +220,6 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
 
     this.formsService.getFormContentBeforeSave$.subscribe((data:{id:any}) => {
       this.log.info('T-4 tiny-mce.component.ts', this.id, this.tabsService.ping());
-      // if (typeof this.item.formUniqueId === 'undefined'
-      //   || this.item.formUniqueId >= 1e10) {
-      //   this.item.formUniqueId = data.id;
-      // }
       
       if (data.id !== this.item.url)
         return;
@@ -236,14 +227,6 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
       this.theFormIsSavingNow = true;
       this.fallLoading();
       this.log.info('fallLoading from getFormContentBeforeSave$');
-      // this.loading = true;
-      // try {
-      //   this.changeDetector.markForCheck();
-      //   this.changeDetector.detectChanges();
-      // }
-      // catch (e) {
-      //   this.log.error(e);
-      // }
 
       this.formsService.onFormContentBeforeSave({
         id: data.id,
@@ -260,11 +243,27 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
   }
 
   saveTheForm() {
-    // this.loading = true;
     this.fallLoading();
     this.log.info('fallLoading from saveTheForm', this.item.formUniqueId, this.id);
     this.theFormIsSavingNow = true;
-    this.formsService.saveForm(this.item.url, false);
+
+    this.saveManager
+      .createFormSaveProcess(this.item.url)
+      .start()
+      .subscribe(() => {
+        this.fallLoading(false);
+
+        this.theFormIsSavingNow = false;
+        tinymce.get(this.id).setDirty(false);
+        this.isDirty.emit(false);
+        this.tabsService.setActiveTabDirty(false);
+
+        this.saveManager.nextEditorSavedState(this.id);
+        this.changeDetector.markForCheck();
+      });
+
+    // this.formsService.saveForm(this.item.url, false); // was before
+
     // tinymce.get(this.id).setDirty(false);
     // this.isDirty.emit(false);
     // this.saveManager.nextEditorSavedState(this.id, );

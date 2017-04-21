@@ -229,7 +229,7 @@ export class TabsService {
     this.urlManager.rebuildURL(tabs);
   }
 
-  updateTabId(tab: any, newID: number): void {
+  updateTabId(tab: any, newID: number|string): void {
     // console.warn('UPDATE TAB ID', 'tab', tab, 'newID', newID);
     let tabs = this.tabs$.getValue();
     let updateTab: PlominoTab = _.find(tabs, (item:any) => item.url === tab.url);
