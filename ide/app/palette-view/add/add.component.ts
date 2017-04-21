@@ -282,22 +282,21 @@ export class AddComponent implements OnInit, AfterViewInit {
               this.log.startTimer('create_new_form_hold');
               this.elementService.postElement(this.getDBOptionsLink(''), formElement)
               .subscribe((response: AddFieldResponse) => {
-
-                this.log.info('this.tabsService.openTab #a001');
-                // this.treeService.latestId++;
-                this.tabsService.openTab({
-                  formUniqueId: undefined,
-                  editor: 'layout',
-                  label: response.title,
-                  url: response.parent['@id'] + '/' + response.id,
-                  path: [{
-                      name: response.title,
-                      type: 'Forms'
-                  }]
+                this.treeService.updateTree().then(() => {
+                  this.log.info('this.tabsService.openTab #a001');
+                  // this.treeService.latestId++;
+                  this.tabsService.openTab({
+                    formUniqueId: undefined,
+                    editor: 'layout',
+                    label: response.title,
+                    url: response.parent['@id'] + '/' + response.id,
+                    path: [{
+                        name: response.title,
+                        type: 'Forms'
+                    }]
+                  });
+                  this.log.stopTimer('create_new_form_hold');
                 });
-                this.log.stopTimer('create_new_form_hold');
-
-                this.treeService.updateTree().then(() => {});
               });
               break;
           case 'PlominoView':
@@ -309,18 +308,20 @@ export class AddComponent implements OnInit, AfterViewInit {
               this.elementService.postElement(this.getDBOptionsLink(''), viewElement)
               .subscribe((response: AddFieldResponse) => {
                 this.log.info('this.tabsService.openTab #a002');
-                this.tabsService.openTab({
-                  editor: 'view',
-                  label: response.title,
-                  url: response.parent['@id'] + '/' + response.id,
-                  path: [{
-                      name: response.title,
-                      type: 'Views'
-                  }]
-                });
-                this.log.stopTimer('create_new_view_hold');
+                
+                this.treeService.updateTree().then(() => {
+                  this.tabsService.openTab({
+                    editor: 'view',
+                    label: response.title,
+                    url: response.parent['@id'] + '/' + response.id,
+                    path: [{
+                        name: response.title,
+                        type: 'Views'
+                    }]
+                  });
 
-                this.treeService.updateTree().then(() => {});
+                  this.log.stopTimer('create_new_view_hold');
+                });
               });
               // Get the ID of the new element back in the response.
               // Update the Tree
