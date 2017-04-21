@@ -496,9 +496,7 @@ export class AddComponent implements OnInit, AfterViewInit {
   
             this.log.stopTimer('create_new_template_hold');
             this.activeEditorService.turnActiveEditorToLoadingState(false);
-  
-            // this.treeService.updateTree().then(() => {});
-            // turned off because autosave
+            this.treeService.updateTree().then(() => {});
           });    
         });
     }
