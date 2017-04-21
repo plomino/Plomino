@@ -74,6 +74,17 @@ Support
 You can find support on the freenode IRC channel #plomino or using the 
 `GitHub issue tracker <https://github.com/plomino/Plomino/issues>`_
 
+Development
+===========
+
+::
+
+    git clone https://github.com/plomino/Plomino.git
+    cd Plomino
+    virtualenv -p python2.7 .
+    ./bin/pip install -r requirements.txt
+    ./bin/buildout
+
 Tests
 =====
 
