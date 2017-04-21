@@ -117,8 +117,8 @@ export class FieldSettingsComponent implements OnInit {
       
       const oldId = this.field.url.split('/').pop();
 
-      this.log.info('calling objService.updateFormSettings...');
-      this.objService.updateFormSettings(this.field.url, formData)
+      this.log.info('calling objService.updateFieldSettings...');
+      this.objService.updateFieldSettings(this.field.url, formData)
       .flatMap((extractedTextAndURL: { html: string, url: string }) => {
         this.log.info('another changed element...', extractedTextAndURL);
         if (

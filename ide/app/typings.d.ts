@@ -1,3 +1,13 @@
+interface PlominoFormSaveProcessOptions {
+  immediately: boolean;
+  formURL: string;
+  formData: FormData;
+  labelsRegistryLink: any;
+  httpServiceLink: any;
+  activeEditorServiceLink: any;
+  widgetServiceLink: any;
+}
+
 interface PlominoTab {
   url: string;
   folder: boolean;
