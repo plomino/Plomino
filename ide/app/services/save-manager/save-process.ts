@@ -285,11 +285,12 @@ export class PlominoFormSaveProcess {
       
       this.$layout.find(
         '.mceNonEditable,.mceEditable,.plominoFieldClass--selected,' +
-        '.plominoLabelClass--selected'
+        '.plominoLabelClass--selected, [data-event-unique]'
       )
       .removeClass('mceNonEditable')
       .removeClass('mceEditable')
       .removeClass('plominoFieldClass--selected')
+      .removeAttr('data-event-unique')
       .removeClass('plominoLabelClass--selected');
 
       observer.next(true);
@@ -320,6 +321,9 @@ export class PlominoFormSaveProcess {
             }
           })
       })
-      .flatMap((saveResult$) => saveResult$)
+      .flatMap((saveResult$) => {
+        this.broadcastFinish();
+        return saveResult$;
+      });
   }
 }
