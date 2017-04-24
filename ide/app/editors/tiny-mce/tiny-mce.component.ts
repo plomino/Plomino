@@ -183,6 +183,21 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
             }
             $body.animate({ scrollTop: $element.offset().top },
               { duration: 'medium', easing: 'swing' });
+            
+            /* if the $element is not selected - click on it */
+            if ($element.hasClass('plominoGroupClass')) {
+              const $field = $element.find('.plominoFieldClass');
+              if ($field.length) {
+                $body.find('.plominoFieldClass--selected')
+                  .removeClass('plominoFieldClass--selected');
+                $field.addClass('plominoFieldClass--selected');
+              }
+            }
+            else if ($element.hasClass('plominoFieldClass')) {
+              $body.find('.plominoFieldClass--selected')
+                .removeClass('plominoFieldClass--selected');
+              $element.addClass('plominoFieldClass--selected');
+            }
           }
         }
       }
