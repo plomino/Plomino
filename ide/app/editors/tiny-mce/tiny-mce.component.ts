@@ -209,6 +209,8 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
     this.formsService.formIdChanged$.subscribe((data) => {
       this.idChanges = Object.assign({}, data);
       if (this.activeEditorService.editorURL === data.oldId) {
+        this.log.info('set active url', data.newId);
+        this.log.extra('tiny-mce.component.ts');
         this.activeEditorService.setActive(data.newId);
       }
     });

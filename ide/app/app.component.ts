@@ -464,6 +464,8 @@ export class AppComponent implements OnInit, AfterViewInit {
         const editor = $activeTrigger.attr('data-editor');
 
         if (editor === 'layout') {
+          this.log.info('set active url', url);
+          this.log.extra('app.component.ts');
           this.activeEditorService.setActive(url);
         }
         

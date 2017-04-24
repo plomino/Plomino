@@ -21,8 +21,8 @@ export class FakeFormData {
   }
 
   set(key: string, value: any) {
-    const element = this.form.querySelector(`[name="${ key }"]`);
-    if (element === null) {
+    const element: HTMLInputElement = <HTMLInputElement> this.form.querySelector(`[name="${ key }"]`);
+    if (element === null || (element && element.tagName === 'INPUT' && element.type === 'submit')) {
       $(this.form).append(`<input type="hidden" name="${ key }" value="${ value }">`);
     }
     else {
