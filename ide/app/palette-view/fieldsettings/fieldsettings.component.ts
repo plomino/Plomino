@@ -1,3 +1,4 @@
+import { FakeFormData } from './../../utility/fd-helper/fd-helper';
 import { PlominoViewsAPIService } from './../../editors/view-editor/views-api.service';
 import { PlominoActiveEditorService } from './../../services/active-editor.service';
 import { PlominoElementAdapterService } from './../../services/element-adapter.service';
@@ -106,15 +107,15 @@ export class FieldSettingsComponent implements OnInit {
 
     submitForm(refresh = false) {
       this.log.info('changing field settings...', this.field);
-      let $form: JQuery = $(this.fieldForm.nativeElement);
-      let form: HTMLFormElement = <HTMLFormElement> $form.find('form').get(0);
-      let formData: FormData = new FormData(form);
+      const $form: JQuery = $(this.fieldForm.nativeElement);
+      const form: HTMLFormElement = <HTMLFormElement> $form.find('form').get(0);
+      const formData: FakeFormData = new FakeFormData(form);
 
       if (!refresh) {
-        formData.append('form.buttons.save', 'Save');
+        formData.set('form.buttons.save', 'Save');
       }
       else {
-        formData.append('update.field.type', '1');
+        formData.set('update.field.type', '1');
       }
 
       this.formSaving = true;
@@ -343,9 +344,9 @@ export class FieldSettingsComponent implements OnInit {
     }
 
     openFieldCode(): void {
-        let $form: JQuery = $(this.fieldForm.nativeElement);
-        let form: HTMLFormElement = <HTMLFormElement> $form.find('form').get(0);
-        let formData: any = new FormData(form);
+        const $form: JQuery = $(this.fieldForm.nativeElement);
+        const form: HTMLFormElement = <HTMLFormElement> $form.find('form').get(0);
+        const formData: FakeFormData = new FakeFormData(form);
         const label = formData.get('form.widgets.IBasic.title');
         const urlData = this.field.url.split('/');
         const eventData = {
@@ -425,7 +426,7 @@ export class FieldSettingsComponent implements OnInit {
           if (this.macrosWidgetTimer !== null) {
             clearTimeout(this.macrosWidgetTimer);
           }
-          this.macrosWidgetTimer = setTimeout(() => { // for exclude bugs
+          this.macrosWidgetTimer = <any> setTimeout(() => { // for exclude bugs
             let $el = $('.field-settings-wrapper ' + 
             '#formfield-form-widgets-IHelpers-helpers > ul.plomino-macros');
             if ($el.length) {
@@ -593,10 +594,25 @@ export class FieldSettingsComponent implements OnInit {
     }
 
     private saveGroupPrefix() {
+      /* to call group-rename api */
+      const formURL = this.field.url.split('/').slice(0, -1).join('/');
       const $group = $(this.activeEditorService.getActive().getBody())
-        .find(`.plominoGroupClass[data-groupid="${ this.field.id }"]`);
-      $group.attr('data-groupid', this.groupPrefix);
-      this.field.id = this.groupPrefix;
+        .find(`.plominoGroupClass[data-groupid="${ this.field.id }"]`)
+        .filter((i, e) => !$(e).closest('.mce-offscreen-selection').length);
+      if ($group.length) {
+        this.loading = true;
+        const $subElements = $group.find('[data-plominoid]');
+        if ($subElements.length) {
+          const idsUnique: any = new Set($subElements.toArray().map((e) => e.dataset.plominoid));
+          const groupContents: string[] = <string[]> Array.from(idsUnique);
+          this.elementService.renameGroup(formURL, this.field.id, this.groupPrefix, groupContents)
+            .subscribe((result: any) => {
+              debugger;
+              $group.attr('data-groupid', this.groupPrefix);
+              this.field.id = this.groupPrefix;
+            });
+        }
+      }
     }
 
     private cancelGroupPrefixChanges() {

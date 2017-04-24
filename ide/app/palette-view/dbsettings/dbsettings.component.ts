@@ -1,3 +1,4 @@
+import { FakeFormData } from './../../utility/fd-helper/fd-helper';
 import { LogService } from './../../services/log.service';
 import { PlominoHTTPAPIService } from './../../services/http-api.service';
 import { 
@@ -287,7 +288,7 @@ export class DBSettingsComponent {
           submitEvent.stopPropagation();
 
           const form = <HTMLFormElement> submitEvent.currentTarget;
-          const formData = new FormData(form);
+          const formData = new FakeFormData(form);
 
           if (/^.+?manage_importation$/.test(form.action)) {
             formData.set('actionType', 'import');
@@ -295,7 +296,7 @@ export class DBSettingsComponent {
 
           this.http.postWithOptions(
             form.action.replace('++resource++Products.CMFPlomino/ide/', ''),
-            formData, new RequestOptions({
+            formData.build(), new RequestOptions({
               headers: new Headers({})
             })
           )
@@ -358,7 +359,7 @@ export class DBSettingsComponent {
             '#design-manage form, #design-import-export form'
           ).submit((submitEvent: Event) => {
             const form = <HTMLFormElement> submitEvent.currentTarget;
-            const formData = new FormData(form);
+            const formData = new FakeFormData(form);
             let targetFiletype: string = null;
             let targetFiletypeMime: string = null;
 
@@ -406,7 +407,7 @@ export class DBSettingsComponent {
             .then(() => {
               this.http.postWithOptions(
                 form.action.replace('++resource++Products.CMFPlomino/ide/', ''),
-                formData, new RequestOptions({
+                formData.build(), new RequestOptions({
                   headers: new Headers({})
                 })
               )

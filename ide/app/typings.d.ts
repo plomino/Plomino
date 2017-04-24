@@ -1,7 +1,7 @@
 interface PlominoFormSaveProcessOptions {
   immediately: boolean;
   formURL: string;
-  formData: FormData;
+  formData: any;
   labelsRegistryLink: any;
   httpServiceLink: any;
   activeEditorServiceLink: any;

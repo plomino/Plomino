@@ -1,6 +1,7 @@
+import 'babel-polyfill';
 import 'jquery/dist/jquery';
 import 'lodash';
-import 'es6-shim/es6-shim';
+// import 'es6-shim/es6-shim';
 import 'reflect-metadata';
 import 'zone.js/dist/zone';
 import '@angular/platform-browser';

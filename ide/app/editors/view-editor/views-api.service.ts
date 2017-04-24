@@ -67,18 +67,18 @@ export class PlominoViewsAPIService {
     const token = this.getCSRFToken();
     const form = new FormData();
 
-    form.set('form.widgets.IShortName.id', id);
-    form.set('form.widgets.IBasic.title', id);
-    form.set('form.widgets.displayed_field:list', '--NOVALUE--');
-    form.set('form.widgets.displayed_field-empty-marker', '1');
-    form.set('form.widgets.hidden_column-empty-marker', '1');
-    form.set('ajax_load', '');
-    form.set('ajax_include_head', '');
-    form.set('form.widgets.IHelpers.helpers:list', '');
-    form.set('form.widgets.formula', '');
-    form.set('form.widgets.IBasic.description', '');
-    form.set('form.buttons.save', 'Save');
-    form.set('_authenticator', token);
+    form.append('form.widgets.IShortName.id', id);
+    form.append('form.widgets.IBasic.title', id);
+    form.append('form.widgets.displayed_field:list', '--NOVALUE--');
+    form.append('form.widgets.displayed_field-empty-marker', '1');
+    form.append('form.widgets.hidden_column-empty-marker', '1');
+    form.append('ajax_load', '');
+    form.append('ajax_include_head', '');
+    form.append('form.widgets.IHelpers.helpers:list', '');
+    form.append('form.widgets.formula', '');
+    form.append('form.widgets.IBasic.description', '');
+    form.append('form.buttons.save', 'Save');
+    form.append('_authenticator', token);
 
     return this.http
       .postWithOptions(`${ url }/++add++PlominoColumn`, form, 

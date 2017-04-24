@@ -28,8 +28,9 @@ module.exports = merge(require('./webpack.patterns'), {
       ]
     },
     {
-        test: /\.ts$/,
-        loader: 'ts-loader'
+      test: /\.ts$/,
+      loaders: ['babel-loader', 'ts-loader'],
+      // exclude: /node_modules/
     },
     {
       test: /\.html$/,
