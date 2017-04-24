@@ -5,6 +5,7 @@ var path = require('path');
 var merge = require('webpack-merge');
 
 module.exports = merge(require('./webpack.patterns'), {
+  devtool: 'none',
   entry: {
     vendor: './app/vendor',
     main: './app/main'

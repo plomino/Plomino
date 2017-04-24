@@ -605,12 +605,12 @@ export class FieldSettingsComponent implements OnInit {
         if ($subElements.length) {
           const idsUnique: any = new Set($subElements.toArray().map((e) => e.dataset.plominoid));
           const groupContents: string[] = <string[]> Array.from(idsUnique);
-          this.elementService.renameGroup(formURL, this.field.id, this.groupPrefix, groupContents)
-            .subscribe((result: any) => {
-              debugger;
-              $group.attr('data-groupid', this.groupPrefix);
-              this.field.id = this.groupPrefix;
-            });
+          // debugger;
+          // this.elementService.renameGroup(formURL, this.field.id, this.groupPrefix, groupContents)
+          //   .subscribe((result: any) => {
+          //     $group.attr('data-groupid', this.groupPrefix);
+          //     this.field.id = this.groupPrefix;
+          //   });
         }
       }
     }
