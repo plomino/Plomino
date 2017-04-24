@@ -104,13 +104,18 @@ export class FieldSettingsComponent implements OnInit {
       return url.replace(/^https?:\/\/.+?\//, '').split('/').slice(0, 3).join('/');
     }
 
-    submitForm() {
+    submitForm(refresh = false) {
       this.log.info('changing field settings...', this.field);
       let $form: JQuery = $(this.fieldForm.nativeElement);
       let form: HTMLFormElement = <HTMLFormElement> $form.find('form').get(0);
       let formData: FormData = new FormData(form);
 
-      formData.append('form.buttons.save', 'Save');
+      if (!refresh) {
+        formData.append('form.buttons.save', 'Save');
+      }
+      else {
+        formData.append('update.field.type', '1');
+      }
 
       this.formSaving = true;
       this.loading = true;
@@ -122,8 +127,9 @@ export class FieldSettingsComponent implements OnInit {
       .flatMap((extractedTextAndURL: { html: string, url: string }) => {
         this.log.info('another changed element...', extractedTextAndURL);
         if (
-          extractedTextAndURL.html.indexOf('ajax_success') === -1
-          && extractedTextAndURL.html.indexOf('There were some errors') !== -1
+          (extractedTextAndURL.html.indexOf('ajax_success') === -1
+          && extractedTextAndURL.html.indexOf('There were some errors') !== -1)
+          || extractedTextAndURL.html.indexOf('Edit PlominoField') !== -1
         ) {
           setTimeout(() => {
             componentHandler.upgradeDom();
@@ -173,7 +179,7 @@ export class FieldSettingsComponent implements OnInit {
           }
           else {
             $fieldType.change(() => {
-              this.submitForm();
+              this.submitForm(true);
             });
           }
 
@@ -921,8 +927,8 @@ export class FieldSettingsComponent implements OnInit {
               this.log.warn('didnt find the field type field');
             }
             else {
-              $fieldType.change(() => {
-                this.submitForm();
+              $fieldType.change(() => {           
+                this.submitForm(true);
               });
             }
   
