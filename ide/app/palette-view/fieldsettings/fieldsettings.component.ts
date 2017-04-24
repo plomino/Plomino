@@ -166,14 +166,32 @@ export class FieldSettingsComponent implements OnInit {
         this.formTemplate = responseHtml;
 
         setTimeout(() => {
-          $('.field-settings-wrapper form').submit((submitEvent) => {
-            submitEvent.preventDefault();
-            this.submitForm();
-            return false;
-          });
+          const $fieldType = $('.field-settings-wrapper form #form-widgets-field_type');
+
+          if (!$fieldType.length) {
+            this.log.warn('didnt find the field type field');
+          }
+          else {
+            $fieldType.change(() => {
+              this.submitForm();
+            });
+          }
+
+          const $fieldSettingsForm = $('.field-settings-wrapper form');
+
+          if (!$fieldSettingsForm.length) {
+            this.log.warn('didnt find the field settings form');
+          }
+          else {
+            $fieldSettingsForm.submit((submitEvent) => {
+              submitEvent.preventDefault();
+              this.submitForm();
+              return false;
+            });
+          }
 
           this.loading = false;
-        }, 300);
+        }, 400);
 
         let newTitle: string = $(`<div>${responseHtml}</div>`)
           .find('#form-widgets-IBasic-title').val();
@@ -897,12 +915,30 @@ export class FieldSettingsComponent implements OnInit {
           this.formTemplate = template;
 
           setTimeout(() => {
-            $('.field-settings-wrapper form').submit((submitEvent) => {
-              submitEvent.preventDefault();
-              this.submitForm();
-              return false;
-            });
-          }, 300);
+            const $fieldType = $('.field-settings-wrapper form #form-widgets-field_type');
+
+            if (!$fieldType.length) {
+              this.log.warn('didnt find the field type field');
+            }
+            else {
+              $fieldType.change(() => {
+                this.submitForm();
+              });
+            }
+  
+            const $fieldSettingsForm = $('.field-settings-wrapper form');
+  
+            if (!$fieldSettingsForm.length) {
+              this.log.warn('didnt find the field settings form');
+            }
+            else {
+              $fieldSettingsForm.submit((submitEvent) => {
+                submitEvent.preventDefault();
+                this.submitForm();
+                return false;
+              });
+            }
+          }, 400);
           
           this.updateMacroses();
           this.loading = false;

@@ -166,6 +166,7 @@ export class FormSettingsComponent implements OnInit {
 
             setTimeout(() => {
               componentHandler.upgradeDom();
+
               $('.form-settings-wrapper form').submit((submitEvent) => {
                 submitEvent.preventDefault();
                 this.submitForm();
