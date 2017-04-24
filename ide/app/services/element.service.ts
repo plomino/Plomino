@@ -93,7 +93,7 @@ export class ElementService {
     const f = new FormData();
     f.append('id', id);
     f.append('newid', newId);
-    f.append('group_contents', groupContents);
+    f.append('group_contents', JSON.stringify(groupContents));
     
     return this.http.postWithOptions(
       `${ formURL }/rename-group`, f,
