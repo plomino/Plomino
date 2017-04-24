@@ -186,7 +186,7 @@ require([
           }
           else {
             window['macrojs_edit_macro_hold_' + uniqueId] = true;
-            setTimeout(() => {
+            setTimeout(function() {
               delete window['macrojs_edit_macro_hold_' + uniqueId];
             }, 300);
           }
