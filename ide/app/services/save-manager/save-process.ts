@@ -1,3 +1,4 @@
+import { FakeFormData } from './../../utility/fd-helper/fd-helper';
 import { WidgetService } from './../widget.service';
 import { PlominoActiveEditorService } from './../active-editor.service';
 import { PlominoHTTPAPIService } from './../http-api.service';
@@ -32,7 +33,7 @@ export class PlominoFormSaveProcess {
   /**
    * the FormData js-object from form-settings html form
    */
-  private savingFormData: FormData;
+  private savingFormData: FakeFormData;
 
   /**
    * the form layout
@@ -302,7 +303,7 @@ export class PlominoFormSaveProcess {
     const url = `${ this.originalFormURL }/@@edit`;
     this.savingFormData.set('form.widgets.form_layout', this.$layout.html());
     this.$layout.remove(); // flush memory
-    return this.http.postWithOptions(url, this.savingFormData, {})
+    return this.http.postWithOptions(url, this.savingFormData.build(), {})
       .map((data: Response) => {
         this.nextFormURL = data.url.split('/').slice(0, -2).join('/');
         this.nextFormID = this.nextFormURL.split('/').pop();

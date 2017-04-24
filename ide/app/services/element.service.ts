@@ -5,7 +5,8 @@ import { Injectable } from '@angular/core';
 
 import { 
     Headers, 
-    Response
+    Response,
+    RequestOptions
 } from '@angular/http';
 
 import { Observable } from 'rxjs/Rx';
@@ -86,6 +87,20 @@ export class ElementService {
     return this.http.get(
       url, 'element.service.ts getElementCode'
     ).map((res: Response) => res.text());
+  }
+
+  renameGroup(formURL: string, id: string, newId: string, groupContents: string[]) {
+    const f = new FormData();
+    f.append('id', id);
+    f.append('newid', newId);
+    f.append('group_contents', groupContents);
+    
+    return this.http.postWithOptions(
+      `${ formURL }/rename-group`, f,
+      new RequestOptions({}),
+      'element.service.ts renameGroup'
+    )
+    .map((res: Response) => res.json());
   }
 
   postElementCode(url: string, type: string, id: string, code: string) {

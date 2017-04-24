@@ -1,3 +1,4 @@
+import { FakeFormData } from './../../utility/fd-helper/fd-helper';
 import { Observable, Subject } from 'rxjs/Rx';
 import { PlominoFormSaveProcess } from './save-process';
 import { TinyMCEFormContentManagerService } from './../../editors/tiny-mce/content-manager/content-manager.service';
@@ -50,7 +51,7 @@ export class PlominoSaveManagerService {
     }
   }
 
-  createFormSaveProcess(formURL: string, formData: FormData = null) {
+  createFormSaveProcess(formURL: string, formData: FakeFormData = null) {
     if (formData === null) {
       const $form = $('form[action="' + formURL + '/@@edit"]');
       
@@ -58,8 +59,8 @@ export class PlominoSaveManagerService {
         return null;
       }
 
-      formData = new FormData(<HTMLFormElement> $form.get(0));
-      formData.append('form.buttons.save', 'Save');
+      formData = new FakeFormData(<HTMLFormElement> $form.get(0));
+      formData.set('form.buttons.save', 'Save');
       formData.set('form.widgets.form_layout', this.contentManager.getContent(formURL));
     }
 

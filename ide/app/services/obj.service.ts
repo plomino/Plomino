@@ -1,3 +1,4 @@
+import { FakeFormData } from './../utility/fd-helper/fd-helper';
 import { Observable } from 'rxjs/Rx';
 import { TabsService } from './tabs.service';
 import { PlominoActiveEditorService } from './active-editor.service';
@@ -61,7 +62,7 @@ export class ObjService {
    * this code calling on the field-settings saving.
    */
   updateFieldSettings(
-    formUrl: string, formData: any
+    formUrl: string, formData: FakeFormData
   ): Observable<{html: string, url: string}> {
     this.log.info('T0 obj.service.ts', this.tabsService.ping());
     const addNew = formUrl.indexOf('++add++PlominoColumn') !== -1;
@@ -235,7 +236,7 @@ export class ObjService {
       this.log.info('T1 obj.service.ts', this.tabsService.ping());
       
       return this.http.postWithOptions(
-        `${formUrl}/${ addNew ? '' : '@@edit' }`, formData, {},
+        `${formUrl}/${ addNew ? '' : '@@edit' }`, formData.build(), {},
         'obj.service.ts updateFieldSettings'
       )
       .map((data: Response) => {
