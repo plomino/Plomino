@@ -1,3 +1,4 @@
+import { PlominoSaveManagerService } from './../../services/save-manager/save-manager.service';
 import { FakeFormData } from './../../utility/fd-helper/fd-helper';
 import { PlominoViewsAPIService } from './../../editors/view-editor/views-api.service';
 import { PlominoActiveEditorService } from './../../services/active-editor.service';
@@ -85,7 +86,8 @@ export class FieldSettingsComponent implements OnInit {
       private formsList: PlominoFormsListService,
       private fieldsService: FieldsService,
       private changeDetector: ChangeDetectorRef,
-      private treeService: TreeService
+      private treeService: TreeService,
+      private saveManager: PlominoSaveManagerService,
     ) {}
 
     ngOnInit() {
@@ -198,6 +200,11 @@ export class FieldSettingsComponent implements OnInit {
           }
 
           this.loading = false;
+
+          /* autosave the form layout */
+          this.saveManager.enqueueNewFormSaveProcess(
+            this.field.url.slice(0, this.field.url.lastIndexOf('/') + 1)
+          );
         }, 400);
 
         let newTitle: string = $(`<div>${responseHtml}</div>`)
@@ -334,6 +341,7 @@ export class FieldSettingsComponent implements OnInit {
         this.formSaving = false;
         this.updateMacroses();
         this.changeDetector.markForCheck();
+
       }, (err: any) => { 
         console.error(err) 
       });
