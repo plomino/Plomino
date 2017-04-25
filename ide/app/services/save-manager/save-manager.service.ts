@@ -52,6 +52,8 @@ export class PlominoSaveManagerService {
   }
 
   createFormSaveProcess(formURL: string, formData: FakeFormData = null) {
+    formURL = formURL.replace(/^(.+?)\/?$/, '$1');
+
     if (formData === null) {
       const $form = $('form[action="' + formURL + '/@@edit"]');
       
