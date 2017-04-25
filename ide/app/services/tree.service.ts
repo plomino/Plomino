@@ -1,15 +1,21 @@
+import { Subject } from 'rxjs/Rx';
+import { LogService } from './log.service';
 import { PlominoHTTPAPIService } from './http-api.service';
 import { Injectable } from '@angular/core';
 import { Response } from '@angular/http';
-import { BehaviorSubject } from 'rxjs/BehaviorSubject';
+// import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 import { Observable } from 'rxjs/Observable';
 
 @Injectable()
 export class TreeService {
     // latestId: number = 1;
-    private tree$: BehaviorSubject<any> = new BehaviorSubject(null);
+    // private tree$: BehaviorSubject<any> = new BehaviorSubject(null);
+    private tree$: Subject<any> = new Subject();
 
-    constructor(private http: PlominoHTTPAPIService) { 
+    constructor(
+      private http: PlominoHTTPAPIService,
+      private log: LogService,
+    ) { 
         this.updateTree();
     }
     
@@ -34,22 +40,37 @@ export class TreeService {
         return data;
     }
 
-    updateTree() {
-      return this.http
-      .get("../../@@designtree")
-      .map((res: Response) => {
+    updateTree(): Promise<any> {
+      this.log.info('calling designtree...');
+
+      const call$ = this.http.get("../../@@designtree").map((res: Response) => {
+        this.log.info('http response from designtree received', res);
         if (res.url && res.url.indexOf('came_from=') !== -1) {
           /**
            * the user is not authorised
            * redirect to auth
            */
           let redirectURL = res.url.replace(/(came_from=).+?$/, '$1');
-          window.location.href = `${ redirectURL }${ encodeURIComponent(window.location.href) }`;
+          redirectURL = `${ redirectURL }${ encodeURIComponent(window.location.href) }`; 
+          this.log.info('redirect to', redirectURL);
+          window.location.href = redirectURL;
         }
         return res.json();
-      })
-      .forEach((response: any) => {
-        this.tree$.next(this.addUniqueIdsForForms(response));
+      });
+
+      return new Promise((resolve, reject) => {
+        call$.catch((err: any) => {
+          this.log.warn('REJECTED PROMISE', err);
+          reject(err);
+          throw err;
+        })
+        .subscribe((response: any) => {
+          this.log.info('work with prepared http response from designtree', response);
+          const ids = this.addUniqueIdsForForms(response);
+          this.log.info('sending to subscribers unique ids', ids);
+          this.tree$.next(ids);
+          resolve(ids);
+        });
       });
     }
 

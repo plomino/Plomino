@@ -69,7 +69,7 @@ import { IField } from './interfaces';
 
 // Utility Components
 import {
-  PlominoModalComponent, ResizeDividerComponent, PlominoBlockPreloaderComponent
+  ResizeDividerComponent, PlominoBlockPreloaderComponent
 } from './utility';
 import { LoadingComponent } from "./editors/loading/loading.component";
 
@@ -84,7 +84,7 @@ import { LoadingComponent } from "./editors/loading/loading.component";
     DND_DIRECTIVES,
     TinyMCEComponent,
     ACEEditorComponent,
-    PlominoModalComponent,
+    // PlominoModalComponent,
     FormsSettingsComponent,
     FieldsSettingsComponent,
     ActionsSettingsComponent,
@@ -199,8 +199,12 @@ export class AppComponent implements OnInit, AfterViewInit {
     }
 
   collapseTreeElements(data:any, oldData:any) {
-    if(!Array.isArray(data) || Array.isArray(oldData))
+    this.log.info('calling collapseTreeElements with data', data, 'and oldData', oldData);
+    if (!Array.isArray(data) || Array.isArray(oldData)) {
+      this.log.info('!Array.isArray(data)', !Array.isArray(data), 
+        'or', 'Array.isArray(oldData)', Array.isArray(oldData));
       return data;
+    }
 
     data.forEach((item: any) => {
       item.collapsed = !(item.label === 'Forms' && item.type === 'PlominoForm');
@@ -227,11 +231,23 @@ export class AppComponent implements OnInit, AfterViewInit {
       return false;
     });
 
+    // setTimeout(() => {
+    //   this.treeService.updateTree2()
+    //   .subscribe((response) => {
+    //     console.log('RESPONSE RECEIVED', response);
+    //   });
+    // }, 2000);
+
+    this.log.info('waiting designtree event from treeService...');
     this.treeService
     .getTree()
     .subscribe((tree) => {
+      this.log.info('designtree event received:', tree);
       let data = this.collapseTreeElements(tree, this.data);
-      if (!data) { return; }
+      if (!data) {
+        this.log.warn('NO DATA', data);
+        return;
+      }
 
       /* little callback hell */
       data = data.filter((dataItem: any) => dataItem.type !== 'PlominoAgent');

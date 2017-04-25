@@ -38,7 +38,7 @@ export class TreeComponent implements OnInit {
     @Output() add = new EventEmitter();
     @ViewChildren('selectable') element: any;
     
-    selected: any;
+    @Input() selected: any;
     searchResults: any;
     filtered: boolean = false;
     previousSelected: any;

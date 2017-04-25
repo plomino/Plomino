@@ -743,7 +743,7 @@ export class FieldSettingsComponent implements OnInit {
 
             this.field = field;
         })
-        .flatMap<any>((field: PlominoFieldRepresentationObject) => {
+        .flatMap((field: PlominoFieldRepresentationObject): Observable<any> => {
 
           this.loading = true;
           this.$selectedElement = this.adapter.getSelected();
@@ -790,7 +790,6 @@ export class FieldSettingsComponent implements OnInit {
   
                     this.http.get(url, 'fieldsettings.component.ts loadSettings')
                     .subscribe((response: any) => {
-                      /** @todo: replace to activeEditorService */
                       this.widgetService.getGroupLayout(
                         this.activeEditorService.getActive().id,
                         { id: this.field.id, layout: response.json() }
@@ -829,23 +828,6 @@ export class FieldSettingsComponent implements OnInit {
 
             this.labelAdvanced = Boolean(this.$selectedElement.attr('data-advanced'));
             this.updateFieldTitle(field);
-
-            // const $select = $('#form-widgets-label-relation');
-
-            // if ($select.length) {
-            //   $select.off('change.lsevents').on('change.lsevents', ($event) => {
-            //     this.labelRelationSelected($event);
-            //   });
-
-            //   if (!this.field.id) {
-            //     $select.select2().val('').trigger('change');
-            //   }
-            //   else {
-            //     this.zone.runOutsideAngular(() => {
-            //       $select.select2().val(this.field.id).trigger('change');
-            //     });
-            //   }
-            // }
 
             setTimeout(() => {
               const $select = $('#form-widgets-label-relation');
