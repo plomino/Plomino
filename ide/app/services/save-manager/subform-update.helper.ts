@@ -3,7 +3,7 @@ import { Observable } from 'rxjs/Rx';
 export function updateRelatedSubformsAfterFormSave(saveProcess: any) {
   if (!saveProcess.isWorking()) { return Observable.of(true); }
   return Observable.of(true).flatMap(() => {
-    const updates$: Observable<any>[] = [];
+    const updates$: Observable<boolean>[] = [];
 
     tinymce.editors.forEach((editor: TinyMceEditor) => {
       /**
@@ -45,7 +45,7 @@ export function updateRelatedSubformsAfterFormSave(saveProcess: any) {
       });
     });
 
-    return updates$.length ? Observable.forkJoin(updates$) : Observable.of('');
+    return updates$.length ? Observable.forkJoin(updates$) : Observable.of([true]);
   })
   .map(() => true);
 }

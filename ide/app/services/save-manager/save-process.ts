@@ -200,7 +200,7 @@ export class PlominoFormSaveProcess {
         }
       });
   
-      const labels$: Observable<any>[] = [];
+      const labels$: Observable<string>[] = [];
       const context = this;
   
       this.$layout.find('.plominoLabelClass').each(function () {
@@ -242,7 +242,7 @@ export class PlominoFormSaveProcess {
         }
       });
 
-      return labels$.length ? Observable.forkJoin(labels$) : Observable.of('');
+      return labels$.length ? Observable.forkJoin(labels$) : Observable.of(['']);
     })
     .map(() => true);
   }

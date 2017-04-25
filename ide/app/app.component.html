@@ -132,7 +132,7 @@
                   (isDirty)="tabz.isdirty=$event">
               </plomino-ace-editor>
               
-              <plomino-forms-settings *ngIf="tabz.editor === 'settings' && 
+              <!--<plomino-forms-settings *ngIf="tabz.editor === 'settings' && 
                                             tabz.path[0].type === 'Forms' && 
                                             tabz.path.length < 2" 
                   [id]='tabz.url' 
@@ -190,11 +190,14 @@
                     (elementDeleted)='tabs.splice(tabs.indexOf(tabz),1); getTree()' 
                     (titleChanged)='tabz.title=$event; getTree()'
                     (isDirty)="tabz.isdirty=$event">
-              </plomino-agents-settings>
+              </plomino-agents-settings>-->
             </tab>
           </tabset>
         </div>
-        <modal *ngIf="isModalOpen" [data]="modalData" (modalClosed)="onModalClose($event)" (modalDismissed)="isModalOpen = false"></modal>
+        <!--<pmodal *ngIf="isModalOpen"
+          [data]="modalData"
+          (modalClosed)="onModalClose($event)"
+          (modalDismissed)="isModalOpen = false"></pmodal>-->
       </div>
 
     </div>

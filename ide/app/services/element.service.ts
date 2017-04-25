@@ -80,7 +80,11 @@ export class ElementService {
     return this.http.getWithOptions(
       formUrl, { headers: this.headers },
       'element.service.ts getElementFormLayout'
-    ).map((res: Response) => res.json());
+    )
+    .map((res: Response) => {
+      this.log.info('response from getElementFormLayout received');
+      return res.json();
+    });
   }
 
   getElementCode(url: string) {
