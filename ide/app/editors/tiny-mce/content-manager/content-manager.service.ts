@@ -419,6 +419,7 @@ export class TinyMCEFormContentManagerService {
       editor.selection.select((<any>editor).getBody(), true);
       editor.selection.collapse(false);
       editor.execCommand('mceInsertContent', false, contentHTML, options);
+      this.activeEditorService.turnActiveEditorToLoadingState(false);
       
       setTimeout(() => {
         if (a === editor.getContent().length) {
@@ -461,11 +462,13 @@ export class TinyMCEFormContentManagerService {
           .getContainer().querySelector('iframe'));
         
         $iframe.contents().click();
+        this.activeEditorService.turnActiveEditorToLoadingState(false);
       }
       else {
         this.logService.info(
           '!target && !options, dragging.targetRange', dragging.targetRange);
         editor.execCommand('mceInsertContent', false, contentHTML);
+        this.activeEditorService.turnActiveEditorToLoadingState(false);
       }
     }
 
