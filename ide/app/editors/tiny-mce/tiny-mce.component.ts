@@ -132,7 +132,7 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
         
         /* form save automatically */
         // this.formsService.saveForm(this.item.formUniqueId, false);
-        this.changeDetector.markForCheck();
+        this.saveManager.enqueueNewFormSaveProcess(this.item.url);
       }
     });
 
