@@ -30,6 +30,16 @@ class IPlominoHidewhen(model.Schema):
         default=False,
     )
 
+    isResetOnHide = schema.Bool(
+        title=_('CMFPlomino_label_isResetOnHide',
+            default="Reset Data on Hide"),
+        description=_('CMFPlomino_help_isResetOnHide',
+            default="All fields are reset to defaults when the hidewhen is closed"
+            ),
+        required=True,
+        default=False,
+    )
+
     # ADVANCED
     supermodel_directives.fieldset(
         'advanced',
