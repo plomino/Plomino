@@ -18,22 +18,22 @@ export class PlominoFormSaveProcess {
   /**
    * the process id
    */
-  private id: number;
+  protected id: number;
 
   /**
    * is the process started
    */
-  private started: boolean = false;
+  protected started: boolean = false;
 
   /**
    * is the process prevented
    */
-  private prevented: boolean = false;
+  protected prevented: boolean = false;
 
   /**
    * the FormData js-object from form-settings html form
    */
-  private savingFormData: FakeFormData;
+  protected savingFormData: FakeFormData;
 
   /**
    * the form layout
@@ -43,51 +43,55 @@ export class PlominoFormSaveProcess {
   /**
    * the form url before save
    */
-  private originalFormURL: string;
+  protected originalFormURL: string;
 
   /**
    * the form url after save
    */
-  private nextFormURL: string;
+  protected nextFormURL: string;
 
   /**
    * the form id before save
    */
-  private originalFormID: string;
+  protected originalFormID: string;
 
   /**
    * the form id after save
    */
-  private nextFormID: string;
+  protected nextFormID: string;
 
   /** 
    * the promise object of the process 
    */
-  private finishPromise: Promise<any>;
-  private broadcastFinish: (value?: {} | PromiseLike<{}>) => void;
-  private broadcastReject: (reason: any) => void;
+  protected finishPromise: Promise<any>;
+  protected broadcastFinish: (value?: {} | PromiseLike<{}>) => void;
+  protected broadcastReject: (reason: any) => void;
 
   /**
    * link to LabelsRegistryService instance
    */
-  private labelsRegistry: LabelsRegistryService;
+  protected labelsRegistry: LabelsRegistryService;
   
   /**
    * link to PlominoHTTPAPIService instance
    */
-  private http: PlominoHTTPAPIService;
+  protected http: PlominoHTTPAPIService;
 
   /**
    * link to PlominoActiveEditorService instance
    */
-  private activeEditorService: PlominoActiveEditorService;
+  protected activeEditorService: PlominoActiveEditorService;
 
   /**
    * link to WidgetService instance
    */
-  private widgetService: WidgetService;
+  protected widgetService: WidgetService;
 
   constructor(options: PlominoFormSaveProcessOptions) {
+    this.setup(options);
+  }
+
+  protected setup(options: PlominoFormSaveProcessOptions) {
     this.savingFormData = options.formData;
     this.originalFormURL = options.formURL;
     this.labelsRegistry = options.labelsRegistryLink;
@@ -145,6 +149,12 @@ export class PlominoFormSaveProcess {
     return this.started && !this.prevented;
   }
 
+  protected detectPrevention(observer: Observer<any>) {
+    if (!this.isWorking()) {
+      observer.error('prevented');
+    }
+  }
+
   private buildLayout() {
     if (!this.isWorking()) { return; }
 
@@ -153,12 +163,6 @@ export class PlominoFormSaveProcess {
       .flatMap(() => this.buildOtherPlominoElementsOnLayout())
       .flatMap(() => this.fixBrokenLabelsOnLayout())
       .flatMap(() => this.removeGarbageOnLayout());
-  }
-
-  private detectPrevention(observer: Observer<any>) {
-    if (!this.isWorking()) {
-      observer.error('prevented');
-    }
   }
 
   private buildHideWhensAndCachesOnLayout(): Observable<boolean> {
@@ -299,7 +303,7 @@ export class PlominoFormSaveProcess {
     });
   }
 
-  private submitFormData() {
+  protected submitFormData() {
     const url = `${ this.originalFormURL }/@@edit`;
     this.savingFormData.set('form.widgets.form_layout', this.$layout.html());
     this.$layout.remove(); // flush memory

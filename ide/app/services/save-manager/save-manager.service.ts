@@ -1,6 +1,7 @@
+import { PlominoViewSaveProcess } from './view-save-process';
 import { FakeFormData } from './../../utility/fd-helper/fd-helper';
 import { Observable, Subject } from 'rxjs/Rx';
-import { PlominoFormSaveProcess } from './save-process';
+import { PlominoFormSaveProcess } from './form-save-process';
 import { TinyMCEFormContentManagerService } from './../../editors/tiny-mce/content-manager/content-manager.service';
 import { Injectable } from '@angular/core';
 import { PlominoHTTPAPIService, ElementService, 
@@ -49,6 +50,34 @@ export class PlominoSaveManagerService {
     else {
       return true;
     }
+  }
+
+  createViewSaveProcess(viewURL: string, formData: FakeFormData = null) {
+    viewURL = viewURL.replace(/^(.+?)\/?$/, '$1');
+
+    if (formData === null) {
+      const $form = $('form[action="' + viewURL + '/@@edit"]');
+      
+      if (!$form.length) {
+        debugger;
+        return null;
+      }
+
+      formData = new FakeFormData(<HTMLFormElement> $form.get(0));
+      formData.set('form.buttons.save', 'Save');
+    }
+
+    const process = new PlominoViewSaveProcess({
+      immediately: false,
+      formURL: viewURL,
+      formData: formData,
+      labelsRegistryLink: this.labelsRegistry,
+      httpServiceLink: this.http,
+      activeEditorServiceLink: this.activeEditorService,
+      widgetServiceLink: this.widgetService
+    });
+
+    return process;
   }
 
   createFormSaveProcess(formURL: string, formData: FakeFormData = null) {
