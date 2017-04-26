@@ -14,6 +14,10 @@ require([
             this.$el.find(':input').change(function(e) {
                 self.refresh(e.target);
             });
+            self.hidewhen_html = {};
+            self.$el.find('.plomino-hidewhen').each(function(i, el) {
+                self.hidewhen_html[$(el).attr('data-hidewhen')] = $(el).html();
+            });
         },
         refresh: function(field) {
             var self = this;
@@ -68,9 +72,17 @@ require([
             for(var i=0; i<hidewhens.length; i++) {
                 var hwid = hidewhens[i][0];
                 var status = hidewhens[i][1];
+                var resetOnHide = hidewhens[i][2];
                 var area = self.$el.find('.plomino-hidewhen[data-hidewhen="'+hwid+'"]');
                 if(status) {
                     area.hide();
+                    if (resetOnHide) {
+                        area.html(self.hidewhen_html[hwid]);
+                        //need to reinit this html
+                        area.find(':input').change(function(e) {
+                            self.refresh(e.target);
+                        });
+                    }
                 } else {
                     area.show();
                 }

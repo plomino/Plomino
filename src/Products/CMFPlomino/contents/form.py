@@ -1598,7 +1598,7 @@ class PlominoForm(Container):
                         '%s hide-when formula failed' % hwid)
                     # if error, we hide anyway
                     isHidden = True
-                hidewhens_results.append(["%s/%s" % (formid, hwid), isHidden])
+                hidewhens_results.append(["%s/%s" % (formid, hwid), isHidden, hidewhen.isResetOnHide])
         else:
             hidewhens = self.getHidewhenFormulas()
             if doc is None:
