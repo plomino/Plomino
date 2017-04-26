@@ -157,9 +157,16 @@ export class PaletteComponent implements OnInit {
         let group = _.find(clonnedTabs, { id: 'group' });
         let field = _.find(clonnedTabs, { id: 'item' });
 
-        // console.warn('activeTabType', activeTabType, 'activeFieldType', activeFieldType);
-        group.title = !activeTabType || activeTabType === 'PlominoForm' 
-          ? 'Form Settings' : 'View Settings';
+        if (!activeTabType && group.title === 'View Settings' 
+          && (activeFieldType === 'PlominoColumn'
+          || activeFieldType === 'PlominoAction')
+        ) {
+          group.title = 'View Settings';
+        }
+        else {
+          group.title = !activeTabType || activeTabType === 'PlominoForm' 
+            ? 'Form Settings' : 'View Settings';
+        }
 
         if (activeFieldType) {
           let title: string;
@@ -195,6 +202,7 @@ export class PaletteComponent implements OnInit {
                 clonnedTabs[0].active = true;
             }
         }
+
         return clonnedTabs;
     }
 }

@@ -204,10 +204,10 @@ export class AppComponent implements OnInit, AfterViewInit {
     }
 
   collapseTreeElements(data:any, oldData:any) {
-    this.log.info('calling collapseTreeElements with data', data, 'and oldData', oldData);
+    // this.log.info('calling collapseTreeElements with data', data, 'and oldData', oldData);
     if (!Array.isArray(data) || Array.isArray(oldData)) {
-      this.log.info('!Array.isArray(data)', !Array.isArray(data), 
-        'or', 'Array.isArray(oldData)', Array.isArray(oldData));
+      // this.log.info('!Array.isArray(data)', !Array.isArray(data), 
+      //   'or', 'Array.isArray(oldData)', Array.isArray(oldData));
       return data;
     }
 

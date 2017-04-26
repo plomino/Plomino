@@ -79,22 +79,20 @@ export class FormSettingsComponent implements OnInit {
         let onSaveFinishCb: any = null;
 
         this.formsService.formSettingsSave$.subscribe((data) => {
-          // debugger;
-          this.log.info('T-5 formsettings.component.ts', this.tabsService.ping());
-          // debugger;
-            // if (typeof data.formUniqueId === 'undefined'
-            //   || data.formUniqueId >= 1e10) {
-            //     data.formUniqueId = this.tab.formUniqueId;
-            // }
-            
-            // if (this.tab.formUniqueId !== data.formUniqueId)
-            //     return;
-            if (this.tab.url !== data.url)
-                return;
+          this.log.info('T-5 formsettings.component.ts', this.tab.url === data.url);
 
-            onSaveFinishCb = data.cb;
+          if (this.tab.url !== data.url) {
+              return;
+          }
 
+          onSaveFinishCb = data.cb;
+
+          if (this.tab.url === data.url && this.tab.typeLabel === 'Views') {
+            this.saveFormSettings(onSaveFinishCb);
+          }
+          else {
             this.formsService.getFormContentBeforeSave(data.url);
+          }
         });
 
         this.formsService.onFormContentBeforeSave$
@@ -115,8 +113,9 @@ export class FormSettingsComponent implements OnInit {
     }
 
     saveFormSettings(cb: any) {
+      const isViewURL = this.tab.typeLabel === 'Views';
       this.log.info('T-1 formsettings.component.ts', this.tabsService.ping());
-      this.log.startTimer('save_form_hold');
+      this.log.startTimer('save_' + isViewURL ? 'view' : 'form' + '_hold');
     
       const flatMapCallback = ((responseData: {html: string, url: string}) => {
         if (responseData.html !== "<div id='ajax_success'/>") {
@@ -143,8 +142,12 @@ export class FormSettingsComponent implements OnInit {
         }
       }).bind(this);
 
+
+      const process = isViewURL 
+        ? this.saveManager.createViewSaveProcess(this.tab.url) 
+        : this.saveManager.createFormSaveProcess(this.tab.url);
+      
       this.loading = true;
-      const process = this.saveManager.createFormSaveProcess(this.tab.url);
       
       process.start()
         .flatMap((responseData: {html: string, url: string}) => 
@@ -157,7 +160,7 @@ export class FormSettingsComponent implements OnInit {
           this.formSettings = responseHtml;
           this.updateMacroses();
           this.loading = false;
-          this.log.stopTimer('save_form_hold');
+          this.log.stopTimer('save_' + isViewURL ? 'view' : 'form' + '_hold');
           this.activeEditorService.turnActiveEditorToLoadingState(false);
           this.changeDetector.markForCheck();
           
@@ -298,7 +301,7 @@ export class FormSettingsComponent implements OnInit {
             clearTimeout(this.macrosWidgetTimer);
           }
 
-          this.macrosWidgetTimer = setTimeout(() => { // for exclude bugs
+          this.macrosWidgetTimer = <any> setTimeout(() => { // for exclude bugs
             let $el = $('.form-settings-wrapper ' + 
             '#formfield-form-widgets-IHelpers-helpers > ul.plomino-macros');
             if ($el.length) {
@@ -393,6 +396,11 @@ export class FormSettingsComponent implements OnInit {
           }
         })
         .subscribe((template) => {
+          if (this.tab && template.indexOf(`action="${ this.tab.url }/@@edit"`) === -1) {
+            this.log.warn('form settings apply cancelled (bug prevented)');
+            return;
+          }
+
           this.formSettings = template;
 
           this.updateMacroses();
