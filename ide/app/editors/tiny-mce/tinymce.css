@@ -70,15 +70,15 @@ input[type="checkbox"] {
   margin-right: 6px !important;
 }
 
-.checkbox-selectionfield label {
+[class$="-selectionfield"] label {
   margin-right: 10px;
 }
 
-.radio-selectionfield input[type="radio"] {
+[class$="-selectionfield"] input[type="radio"] {
   margin-right: 6px !important;
 }
 
-.radio-selectionfield label {
+[class$="-selectionfield"] label {
   margin-right: 10px;
 }
 
