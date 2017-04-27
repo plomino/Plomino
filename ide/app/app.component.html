@@ -54,12 +54,7 @@
           (move)="resizeColumns($event)"></plomino-resize-divider>
         
         <div class="main-app panel">
-          <div class="drop-zone-container"
-            @dropZoneState="isDragging && 
-                  dragData !== null &&
-                  (dragData['@type'] === 'PlominoForm' || 
-                    dragData['@type'] === 'PlominoView')"
-                    
+          <div class="drop-zone-container"        
             *ngIf="isDragging && 
                   dragData !== null &&
                   (dragData['@type'] === 'PlominoForm' || 
