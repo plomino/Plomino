@@ -124,22 +124,22 @@ import { LoadingComponent } from "./editors/loading/loading.component";
     PlominoSaveManagerService,
   ],
   pipes: [ExtractNamePipe],
-  animations: [
-    trigger('dropZoneState', [
-      state('*', style({
-        opacity: 1
-      })),
-      transition('void => *', [
-        style({
-            opacity: 0
-        }),
-        animate(300)
-      ]),
-      transition('* => void', animate(300, style({
-        opacity: 0
-      })))
-    ])
-  ]
+  // animations: [
+  //   trigger('dropZoneState', [
+  //     state('*', style({
+  //       opacity: 1
+  //     })),
+  //     transition('void => *', [
+  //       style({
+  //           opacity: 0
+  //       }),
+  //       animate(300)
+  //     ]),
+  //     transition('* => void', animate(300, style({
+  //       opacity: 0
+  //     })))
+  //   ])
+  // ]
 })
 export class AppComponent implements OnInit, AfterViewInit {
 
