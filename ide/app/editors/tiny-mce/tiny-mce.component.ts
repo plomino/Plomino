@@ -376,7 +376,10 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
 
         this.editorInstance = editor;
 
-        setTimeout(() => this.editorInstance.show());
+        setTimeout(() => {
+          this.editorInstance.show();
+          this.bitDirtyStateAfterSave();
+        });
 
         editor.on('change', (e: any) => {
           this.log.info('change event received', e, 

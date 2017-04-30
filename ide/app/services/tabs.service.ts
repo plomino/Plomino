@@ -195,7 +195,6 @@ export class TabsService {
         this.workflowModeChange.next(true);
       }
     }
-    
   }
 
   closeTab(tab: any): void {

@@ -77,7 +77,7 @@
                 [heading]="" 
                 [removable]="true" 
                 [active]="tabz.active"
-                (removed)="closeTab(tabz)"
+                (removed)="closeTab($event, tabz)"
                 (select)="onTabSelect(tabz)">
               
               <template tabHeading>
