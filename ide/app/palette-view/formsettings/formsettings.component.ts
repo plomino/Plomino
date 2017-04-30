@@ -377,7 +377,13 @@ export class FormSettingsComponent implements OnInit {
       this.log.extra('formsettings.component.ts');
       this.tabsService.getActiveTab()
         .do((tab) => {
-          this.tab = tab;
+          if (!(this.tab && tab && !tab.url)) {
+            this.tab = tab;
+            this.log.info('formsettings -> set tab allowed to', tab);
+          }
+          else {
+            this.log.info('formsettings -> set tab prohibited to', tab);
+          }
         })
         .flatMap((tab: any) => {
           // this.log.info('tab', tab, tab && tab.url ? tab.url : null);
