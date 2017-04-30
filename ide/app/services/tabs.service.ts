@@ -168,7 +168,6 @@ export class TabsService {
       this.tabs$.next(tabs);
       this.setActiveTab(tab, showAdd);
     }
-    
   }
 
   closeTab(tab: any): void {
