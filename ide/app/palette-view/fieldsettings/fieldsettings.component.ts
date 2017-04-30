@@ -174,6 +174,8 @@ export class FieldSettingsComponent implements OnInit {
       .subscribe((responseHtml: string) => {
         this.formTemplate = responseHtml;
 
+        this.tabsService.refreshCodeTab.next(this.field.url);
+
         setTimeout(() => {
           const $fieldType = $('.field-settings-wrapper form #form-widgets-field_type');
 
@@ -200,6 +202,7 @@ export class FieldSettingsComponent implements OnInit {
           }
 
           this.loading = false;
+          this.changeDetector.detectChanges();
 
           /* autosave the form layout */
           this.saveManager.enqueueNewFormSaveProcess(
@@ -348,7 +351,7 @@ export class FieldSettingsComponent implements OnInit {
     }
 
     cancelForm() {
-        this.loadSettings();
+      this.loadSettings();
     }
 
     openFieldCode(): void {
@@ -369,10 +372,10 @@ export class FieldSettingsComponent implements OnInit {
         };
         this.log.info('this.tabsService.openTab #fs0001');
         this.tabsService.openTab(eventData, true);
-        this.field = null;
-        this.formTemplate = null;
-        this.changeDetector.detectChanges();
-        this.adapter.select(null);
+        // this.field = null;
+        // this.formTemplate = null;
+        // this.changeDetector.detectChanges();
+        // this.adapter.select(null);
     }
 
     private getDBOptionsLink(link: string) {
