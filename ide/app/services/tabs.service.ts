@@ -1,21 +1,17 @@
+import { Subject, Observable, BehaviorSubject } from 'rxjs/Rx';
 import { PlominoActiveEditorService } from './active-editor.service';
 import { URLManagerService } from './url-manager.service';
 import { PlominoElementAdapterService } from './element-adapter.service';
 import { LogService } from './log.service';
-import { 
-  Injectable,
-  NgZone 
-} from '@angular/core';
-
-import { Observable } from 'rxjs/Observable';
-import { BehaviorSubject } from 'rxjs/BehaviorSubject';
-
+import { Injectable, NgZone } from '@angular/core';
 import { TreeService } from './tree.service';
 
 @Injectable()
 export class TabsService {
 
   public closing: boolean = false;
+  public refreshCodeTab: Subject<string> = new Subject<string>();
+  public onRefreshCodeTab$ = this.refreshCodeTab.asObservable();
 
   private activeTab$: BehaviorSubject<PlominoTab> = new BehaviorSubject(null);
   private activeField$: BehaviorSubject<any> = new BehaviorSubject(null);
@@ -172,7 +168,6 @@ export class TabsService {
       this.tabs$.next(tabs);
       this.setActiveTab(tab, showAdd);
     }
-    
   }
 
   closeTab(tab: any): void {

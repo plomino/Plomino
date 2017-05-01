@@ -119,22 +119,22 @@ import { LoadingComponent } from "./editors/loading/loading.component";
     PlominoSaveManagerService,
   ],
   pipes: [ExtractNamePipe],
-  animations: [
-    trigger('dropZoneState', [
-      state('*', style({
-        opacity: 1
-      })),
-      transition('void => *', [
-        style({
-            opacity: 0
-        }),
-        animate(300)
-      ]),
-      transition('* => void', animate(300, style({
-        opacity: 0
-      })))
-    ])
-  ]
+  // animations: [
+  //   trigger('dropZoneState', [
+  //     state('*', style({
+  //       opacity: 1
+  //     })),
+  //     transition('void => *', [
+  //       style({
+  //           opacity: 0
+  //       }),
+  //       animate(300)
+  //     ]),
+  //     transition('* => void', animate(300, style({
+  //       opacity: 0
+  //     })))
+  //   ])
+  // ]
 })
 export class AppComponent implements OnInit, AfterViewInit {
 
@@ -169,6 +169,7 @@ export class AppComponent implements OnInit, AfterViewInit {
     private appLoader: PlominoApplicationLoaderService,
     private activeEditorService: PlominoActiveEditorService,
     private zone: NgZone,
+    private saveManager: PlominoSaveManagerService,
     private changeDetector: ChangeDetectorRef) {
       window['jQuery'] = jQuery;
 
@@ -466,56 +467,73 @@ export class AppComponent implements OnInit, AfterViewInit {
     this.tabsService.openTab(tab, true);
   }
 
-  closeTab(tab: any) {
-    this.activeEditorService.setActive(null);
-    this.tabsService.closing = true;
-    this.tabsService.closeTab(tab);
-
-    setTimeout(() => {
-      // debugger;
-      /* detect wrong case */
-      const $activeTrigger = $('.tab-trigger[data-active="true"]');
-      if ($activeTrigger.length) {
-        const url = $activeTrigger.attr('data-url');
-        const editor = $activeTrigger.attr('data-editor');
-
-        if (editor === 'layout') {
-          this.log.info('set active url', url);
-          this.log.extra('app.component.ts');
-          this.activeEditorService.setActive(url);
-        }
-        
-        // check that tinymce is broken after 100ms
-        if (this.activeEditorService.getActive()) {
-          const $iframe = $(this.activeEditorService.getActive()
-              .getContainer().querySelector('iframe'));
-          let x = $iframe.contents().find('body').html();
-          if (
-            /* x === '' in case when <p> are missing, why? */
-            typeof x === 'undefined' || !x.length
-            // typeof x === 'undefined' || (!x.length 
-            //   && !$iframe.contents().find('body').length
-            // )
-          ) {
-            // const $tinyTextarea = $iframe.closest('form').find('>textarea');
-            tinymce.EditorManager.execCommand('mceRemoveEditor', true, url);
-            tinymce.EditorManager.execCommand('mceAddEditor', true, url);
-            tinymce.EditorManager.execCommand('mceAddEditor', true, url);
-
-            /* reset content hooks */
-            setTimeout(() => {
-              const x = this.contentManager.getContent(
-                this.activeEditorService.editorURL
-              );
-              this.contentManager.setContent(
-                this.activeEditorService.editorURL, x,
-                this.draggingService
-              );
-            }, 100);
+  closeTab(event: any, tab: any) {
+    // const tabUnsaved = this.saveManager.isEditorUnsaved(tab.url);
+    
+    // ((): Promise<any> => {
+    //   if (tabUnsaved) {
+    //     /**
+    //      * warn the user of any unsaved changes
+    //      */
+    //     return this.elementService.awaitForConfirm(
+    //       'Do you which to save?'
+    //     );
+    //   } else {
+    //     return Promise.resolve();
+    //   }
+    // })()
+    Promise.resolve().then(() => {
+      this.activeEditorService.setActive(null);
+      this.tabsService.closing = true;
+      this.tabsService.closeTab(tab);
+  
+      setTimeout(() => {
+        // debugger;
+        /* detect wrong case */
+        const $activeTrigger = $('.tab-trigger[data-active="true"]');
+        if ($activeTrigger.length) {
+          const url = $activeTrigger.attr('data-url');
+          const editor = $activeTrigger.attr('data-editor');
+  
+          if (editor === 'layout') {
+            this.log.info('set active url', url);
+            this.log.extra('app.component.ts');
+            this.activeEditorService.setActive(url);
+          }
+          
+          // check that tinymce is broken after 100ms
+          if (this.activeEditorService.getActive()) {
+            const $iframe = $(this.activeEditorService.getActive()
+                .getContainer().querySelector('iframe'));
+            let x = $iframe.contents().find('body').html();
+            if (
+              /* x === '' in case when <p> are missing, why? */
+              typeof x === 'undefined' || !x.length
+              // typeof x === 'undefined' || (!x.length 
+              //   && !$iframe.contents().find('body').length
+              // )
+            ) {
+              // const $tinyTextarea = $iframe.closest('form').find('>textarea');
+              tinymce.EditorManager.execCommand('mceRemoveEditor', true, url);
+              tinymce.EditorManager.execCommand('mceAddEditor', true, url);
+              tinymce.EditorManager.execCommand('mceAddEditor', true, url);
+  
+              /* reset content hooks */
+              setTimeout(() => {
+                const x = this.contentManager.getContent(
+                  this.activeEditorService.editorURL
+                );
+                this.contentManager.setContent(
+                  this.activeEditorService.editorURL, x,
+                  this.draggingService
+                );
+              }, 100);
+            }
           }
         }
-      }
-    }, 100);
+      }, 100);
+    })
+    .catch(() => null);
   }
 
   onModalClose(event: any) {

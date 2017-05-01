@@ -1,6 +1,6 @@
 import {Component, OnInit, AfterViewInit, Input, Output, EventEmitter} from '@angular/core';
 import {PopoverComponent} from '../popover';
-import {ElementService} from '../../services';
+import {ElementService, TabsService} from '../../services';
 import {DROPDOWN_DIRECTIVES} from 'ng2-bootstrap/ng2-bootstrap';
 
 declare var ace: any;
@@ -46,10 +46,33 @@ export class ACEEditorComponent {
     editor: any;
     id: string;
 
-    constructor(private _elementService: ElementService) { }
+    constructor(
+      private _elementService: ElementService,
+      private tabsService: TabsService
+    ) {
+      this.tabsService.onRefreshCodeTab$
+        .subscribe((fieldURL: string) => {
+          if (this.url === fieldURL) {
+            this.ngOnInit();
+            this.ngAfterViewInit();
+            this.tabsService.setActiveTabDirty(false);
+          }
+        });
+    }
+
+    private generateHash(str: string): number {
+      var hash = 0, i, chr;
+      if (str.length === 0) return hash;
+      for (i = 0; i < str.length; i++) {
+        chr   = str.charCodeAt(i);
+        hash  = ((hash << 5) - hash) + chr;
+        hash |= 0; // Convert to 32bit integer
+      }
+      return hash;
+    }
 
     ngOnInit() {
-        this.id = 'editor' + this.aceNumber;
+        this.id = 'editor' + this.generateHash(this.url);
         this._elementService.getElement(this.url).subscribe((data) => {
             this.type = data['@type'];
             this.fullType = data.parent['@type']
@@ -78,7 +101,7 @@ export class ACEEditorComponent {
     }
 
     ngAfterViewInit() {
-        this.editor = ace.edit(this.id);
+        this.editor = ace.edit('editor' + this.generateHash(this.url));
         this.editor.setTheme("ace/theme/xcode");
         this.editor.getSession().setMode("ace/mode/python");
         this.editor.setOptions({
