@@ -7,8 +7,10 @@
   <!-- Imports -->
   <link href="bootstrap/css/bootstrap.min.css" rel="stylesheet">
   <link async href="theme/select2.css" rel="stylesheet">
-  <link rel="stylesheet" href="theme/barceloneta-compiled.css">
-  <link rel="stylesheet" href="theme/++plone++static/plone-compiled.css">
+  <link async rel="stylesheet" href="theme/barceloneta-compiled.css">
+  <link async rel="stylesheet" href="theme/++plone++static/plone-compiled.css">
+  <link async rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/dialog-polyfill/0.4.2/dialog-polyfill.min.css">
   <style>
     /* Plone Form styles */    
     div.outer-wrapper div.container {
@@ -52,17 +54,268 @@
           transform: rotate(360deg);
         }
     }
+
+    #application-loader {
+      position: fixed;
+      z-index: 1000;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: white;
+      width: 100%;
+      height: 100%;
+
+      display: -webkit-box;
+      display: -ms-flexbox;
+      display: flex;
+      -webkit-box-align: center;
+          -ms-flex-align: center;
+              align-items: center;
+      -webkit-box-pack: center;
+          -ms-flex-pack: center;
+              justify-content: center;
+    }
+
+    .sk-cube-grid {
+      width: 100px;
+      height: 100px;
+    }
+
+    .sk-cube-grid .sk-cube {
+      width: 33%;
+      height: 33%;
+      background-color: #1f94ed;
+      float: left;
+      -webkit-animation: sk-cubeGridScaleDelay 1.3s infinite ease-in-out;
+              animation: sk-cubeGridScaleDelay 1.3s infinite ease-in-out; 
+    }
+    .sk-cube-grid .sk-cube1 {
+      -webkit-animation-delay: 0.2s;
+              animation-delay: 0.2s; }
+    .sk-cube-grid .sk-cube2 {
+      -webkit-animation-delay: 0.3s;
+              animation-delay: 0.3s; }
+    .sk-cube-grid .sk-cube3 {
+      -webkit-animation-delay: 0.4s;
+              animation-delay: 0.4s; }
+    .sk-cube-grid .sk-cube4 {
+      -webkit-animation-delay: 0.1s;
+              animation-delay: 0.1s; }
+    .sk-cube-grid .sk-cube5 {
+      -webkit-animation-delay: 0.2s;
+              animation-delay: 0.2s; }
+    .sk-cube-grid .sk-cube6 {
+      -webkit-animation-delay: 0.3s;
+              animation-delay: 0.3s; }
+    .sk-cube-grid .sk-cube7 {
+      -webkit-animation-delay: 0s;
+              animation-delay: 0s; }
+    .sk-cube-grid .sk-cube8 {
+      -webkit-animation-delay: 0.1s;
+              animation-delay: 0.1s; }
+    .sk-cube-grid .sk-cube9 {
+      -webkit-animation-delay: 0.2s;
+              animation-delay: 0.2s; }
+
+    @-webkit-keyframes sk-cubeGridScaleDelay {
+      0%, 70%, 100% {
+        -webkit-transform: scale3D(1, 1, 1);
+                transform: scale3D(1, 1, 1);
+      } 35% {
+        -webkit-transform: scale3D(0, 0, 1);
+                transform: scale3D(0, 0, 1); 
+      }
+    }
+
+    @keyframes sk-cubeGridScaleDelay {
+      0%, 70%, 100% {
+        -webkit-transform: scale3D(1, 1, 1);
+                transform: scale3D(1, 1, 1);
+      } 35% {
+        -webkit-transform: scale3D(0, 0, 1);
+                transform: scale3D(0, 0, 1);
+      } 
+    }
+
+
+    .mdl-tabs__tab, .mdl-tabs__tab:hover, .mdl-tabs__tab:focus,
+    .mdl-tabs__tab:active, .mdl-tabs__tab:visited {
+      outline: none;
+      text-decoration: none;
+    }
+
+    .tab-name:focus, .tab-trigger:focus {
+      outline: none;
+      user-select: none;
+    }
+
+    plomino-tiny-mce .plomino-block-preloader {
+      opacity: 0.85;
+    }
+
+    .plone-modal-body .plominoFieldGroup p {
+      margin: 0 0 5px !important;
+    }
+
+    .mdl-button, .mdl-button:hover,
+    .mdl-button:focus, .mdl-button:active, .mdl-button:visited {
+      text-decoration: none;
+      text-shadow: none !important;
+      padding: 0 16px !important;
+    }
+
+    #design-manage ul {
+      list-style: none;
+      margin-left: 0;
+      padding-left: 0;
+    }
+
+    .mdl-layout__drawer-button {
+      display: none !important;
+    }
   </style>
 </head>
 
 <!-- Display the application -->
 
 <body class="template-edit portaltype-plominoform">
+
+  <div id="application-loader">
+    <div class="sk-cube-grid">
+      <div class="sk-cube sk-cube1"></div>
+      <div class="sk-cube sk-cube2"></div>
+      <div class="sk-cube sk-cube3"></div>
+      <div class="sk-cube sk-cube4"></div>
+      <div class="sk-cube sk-cube5"></div>
+      <div class="sk-cube sk-cube6"></div>
+      <div class="sk-cube sk-cube7"></div>
+      <div class="sk-cube sk-cube8"></div>
+      <div class="sk-cube sk-cube9"></div>
+    </div>
+  </div>
+
   <plomino-app>
     <!-- thx to http://codepen.io/kittylion/npgAE -->
     <div class="frontpage-spinner"></div>
   </plomino-app>
-  <script defer src="https://code.getmdl.io/1.3.0/material.min.js"></script>
+  
+  <dialog id="db-import-export-dialog" class="mdl-dialog" style="width: 860px;">
+    <h4 class="mdl-dialog__title">Import / Export Replication</h4>
+    <div class="mdl-dialog__content">
+        <div class="mdl-tabs mdl-js-tabs mdl-js-ripple-effect">
+          <div class="mdl-tabs__tab-bar"
+            style="-webkit-box-pack: start;
+              -ms-flex-pack: start; justify-content: flex-start;">
+              <a href="#csv-importation" 
+                class="mdl-tabs__tab is-active">CSV Importation</a>
+              <a href="#json-import-export" 
+                class="mdl-tabs__tab">JSON import/export</a>
+              <a href="#design-manage" 
+                class="mdl-tabs__tab">Design manage</a>
+              <a href="#design-import-export" 
+                class="mdl-tabs__tab">Design import/export</a>
+          </div>
+          <div class="mdl-tabs__panel is-active" id="csv-importation">
+            <p><div class="mdl-spinner mdl-js-spinner is-active"></div></p>
+          </div>
+          <div class="mdl-tabs__panel" id="json-import-export">
+            <p><div class="mdl-spinner mdl-js-spinner is-active"></div></p>
+          </div>
+          <div class="mdl-tabs__panel" id="design-manage">
+            <p><div class="mdl-spinner mdl-js-spinner is-active"></div></p>
+          </div>
+          <div class="mdl-tabs__panel" id="design-import-export">
+            <p><div class="mdl-spinner mdl-js-spinner is-active"></div></p>
+          </div>
+        </div>
+    </div>
+    <div class="mdl-dialog__actions">
+      <button type="button"
+        class="mdl-button mdl-button--raised mdl-button--accent">
+        Close modal window
+      </button>
+    </div>
+  </dialog>
+
+  <dialog id="ok-dialog" class="mdl-dialog">
+    <h4 class="mdl-dialog__title">Status</h4>
+    <div class="mdl-dialog__content">
+      Complete
+    </div>
+    <div class="mdl-dialog__actions">
+      <button type="button"
+      class="mdl-button mdl-button--raised mdl-button--colored">
+        Close
+      </button>
+    </div>
+  </dialog>
+
+  <dialog id="confirm-dialog" class="mdl-dialog">
+    <h4 class="mdl-dialog__title">Confirm</h4>
+    <div class="mdl-dialog__content">
+      Do you agree to delete this object?
+    </div>
+    <div class="mdl-dialog__actions">
+      <button type="button"
+        class="mdl-button close">
+        Disagree
+      </button>
+      <button type="button"
+        class="mdl-button agree">
+        Agree
+      </button>
+    </div>
+  </dialog>
+
+  <dialog id="db-acl-dialog" class="mdl-dialog" style="width: 800px;">
+    <h4 class="mdl-dialog__title">Access Control</h4>
+    <div class="mdl-dialog__content">
+        <div class="mdl-tabs mdl-js-tabs mdl-js-ripple-effect">
+          <div class="mdl-tabs__tab-bar"
+            style="-webkit-box-pack: start;
+              -ms-flex-pack: start; justify-content: flex-start;">
+              <a href="#acl-access-rights" 
+                class="mdl-tabs__tab is-active">Access rights</a>
+              <a href="#acl-user-roles" 
+                class="mdl-tabs__tab">User roles</a>
+              <a href="#acl-spc-action-rights" 
+                class="mdl-tabs__tab">Specific action rights</a>
+          </div>
+          <div class="mdl-tabs__panel is-active" id="acl-access-rights">
+            <p><div class="mdl-spinner mdl-js-spinner is-active"></div></p>
+          </div>
+          <div class="mdl-tabs__panel" id="acl-user-roles">
+            <p><div class="mdl-spinner mdl-js-spinner is-active"></div></p>
+          </div>
+          <div class="mdl-tabs__panel" id="acl-spc-action-rights">
+            <p><div class="mdl-spinner mdl-js-spinner is-active"></div></p>
+          </div>
+        </div>
+    </div>
+    <div class="mdl-dialog__actions">
+      <button type="button"
+        class="mdl-button mdl-button--raised mdl-button--accent">
+        Close modal window
+      </button>
+    </div>
+  </dialog>
+
+  <dialog class="mdl-dialog" id="modal-tab-plus">
+      <!--<h4 class="mdl-dialog__title">What you want to add?</h4>-->
+      <div class="mdl-dialog__actions mdl-dialog__actions--full-width">
+          <button type="button" class="mdl-button" data-create="form">Add new form</button>
+          <button type="button" class="mdl-button" data-create="view">Add new view</button>
+          <button type="button" class="mdl-button">Cancel</button>
+      </div>
+  </dialog>
+
+  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/dialog-polyfill/0.4.7/dialog-polyfill.min.js"
+    integrity="sha256-HSjn+BtEjYhbskZXdsYdbwH9mRZK1Rf4iHmltSDDguU="
+    crossorigin="anonymous"></script>
+  <script defer src="https://code.getmdl.io/1.3.0/material.min.js"
+    onload="window.materialPromiseResolve()"
+    onerror="window.materialPromiseReject()"></script>
 <script type="text/javascript" src="vendor.js"></script><script type="text/javascript" src="main.js"></script></body>
 
 </html>
