@@ -29,7 +29,7 @@
 *** Settings *****************************************************************
 
 Resource  plone/app/robotframework/saucelabs.robot
-Resource  plone/app/robotframework/selenium.robot
+#Resource  plone/app/robotframework/selenium.robot
 Resource  plone/app/robotframework/keywords.robot
 Resource  description_plominodatabase.robot
 
