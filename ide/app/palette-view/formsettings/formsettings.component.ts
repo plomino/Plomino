@@ -1,3 +1,4 @@
+import { PlominoPaletteManagerService } from './../../services/palette-manager/palette-manager';
 import { PlominoHTTPAPIService } from './../../services/http-api.service';
 import { PlominoFormSaveProcess } from './../../services/save-manager/form-save-process';
 import { PlominoSaveManagerService } from './../../services/save-manager/save-manager.service';
@@ -59,19 +60,22 @@ export class FormSettingsComponent implements OnInit {
     
     private formLayout: string = '';
 
-    constructor(private objService: ObjService,
-                private log: LogService,
-                private changeDetector: ChangeDetectorRef,
-                private tabsService: TabsService,
-                private treeService: TreeService,
-                private adapter: PlominoElementAdapterService,
-                private labelsRegistry: LabelsRegistryService,
-                private activeEditorService: PlominoActiveEditorService,
-                private saveManager: PlominoSaveManagerService,
-                private zone: NgZone,
-                private elementService: ElementService,
-                private widgetService: WidgetService,
-                private formsService: FormsService) {}
+    constructor(
+      private objService: ObjService,
+      private log: LogService,
+      private changeDetector: ChangeDetectorRef,
+      private tabsService: TabsService,
+      private treeService: TreeService,
+      private adapter: PlominoElementAdapterService,
+      private labelsRegistry: LabelsRegistryService,
+      private activeEditorService: PlominoActiveEditorService,
+      private saveManager: PlominoSaveManagerService,
+      private zone: NgZone,
+      private elementService: ElementService,
+      private widgetService: WidgetService,
+      private formsService: FormsService,
+      private paletteManager: PlominoPaletteManagerService,
+    ) {}
 
     ngOnInit() {
         this.getSettings();
@@ -415,6 +419,7 @@ export class FormSettingsComponent implements OnInit {
           this.changeDetector.detectChanges();
           window['materialPromise'].then(() => {
             componentHandler.upgradeDom();
+            this.paletteManager.resizeInnerScrollingContainers();
 
             setTimeout(() => {
               componentHandler.upgradeDom();
