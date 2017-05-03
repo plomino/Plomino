@@ -2,6 +2,7 @@
 
 Plone Test Teardown
     Run Keyword If Test Failed  ${SELENIUM_RUN_ON_FAILURE}
+    Report test status
     Close all browsers
 
 
