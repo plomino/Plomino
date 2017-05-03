@@ -26,9 +26,9 @@
 
 
 
-
 *** Settings *****************************************************************
 
+Resource  plone/app/robotframework/saucelabs.robot
 Resource  plone/app/robotframework/selenium.robot
 Resource  plone/app/robotframework/keywords.robot
 Resource  description_plominodatabase.robot
@@ -36,8 +36,9 @@ Resource  description_plominodatabase.robot
 Library  Remote  ${PLONE_URL}/RobotRemote
 Library           ${CURDIR}/../../../../robotframework-selenium2library-extensions/src/Selenium2LibraryExtensions    WITH NAME    Selenium2LibraryExtensions
 
-Test Setup  Open test browser
+Test Setup   Open SauceLabs test browser
 Test Teardown  description_plominodatabase.Plone Test Teardown
+
 
 
 *** Variables ****************************************************************
