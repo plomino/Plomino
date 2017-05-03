@@ -2,6 +2,7 @@ from plone.autoform import directives
 from plone.dexterity.content import Item
 from plone.supermodel import directives as supermodel_directives
 from plone.supermodel import model
+from z3c.form.interfaces import NOT_CHANGED
 from zope import schema
 from zope.interface import implements
 
@@ -18,6 +19,7 @@ class IPlominoHidewhen(model.Schema):
         description=_('CMFPlomino_help_HidewhenFormula',
             default='If returning True, the block will be hidden.'),
         required=False,
+        missing_value=NOT_CHANGED, # So settings won't nuke formulas in IDE
     )
 
     isDynamicHidewhen = schema.Bool(

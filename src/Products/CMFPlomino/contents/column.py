@@ -4,6 +4,7 @@ from plone.autoform import directives
 from plone.dexterity.content import Item
 from plone.supermodel import model
 from plone.supermodel import directives as supermodel_directives
+from z3c.form.interfaces import NOT_CHANGED
 from zope import schema
 from zope.interface import implements, invariant, Invalid
 
@@ -36,6 +37,7 @@ class IPlominoColumn(model.Schema):
         description=_('CMFPlomino_help_ColumnFormula', default='Python code '
             'returning the column value.'),
         required=False,
+        missing_value=NOT_CHANGED, # So settings won't nuke formulas in IDE
     )
 
     # ADVANCED

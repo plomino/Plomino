@@ -3,6 +3,7 @@ from plone.autoform import directives
 from plone.dexterity.content import Item
 from plone.supermodel import directives as supermodel_directives
 from plone.supermodel import model
+from z3c.form.interfaces import NOT_CHANGED
 from zope import component
 from zope import schema
 from zope.interface import directlyProvides, implements
@@ -107,6 +108,7 @@ class IPlominoField(model.Schema):
         description=_('CMFPlomino_help_FieldValidation',
             default='Evaluate the input validation'),
         required=False,
+        missing_value=NOT_CHANGED, # So settings won't nuke formulas in IDE
     )
 
     field_mode = schema.Choice(
@@ -115,6 +117,7 @@ class IPlominoField(model.Schema):
         required=True,
         default='EDITABLE',
         vocabulary=field_modes,
+        missing_value=NOT_CHANGED, # So settings won't nuke formulas in IDE
     )
 
     isDynamicField = schema.Bool(
@@ -125,6 +128,7 @@ class IPlominoField(model.Schema):
                     "when the user enters information"),
         required=False,
         default=False,
+        missing_value=NOT_CHANGED, # So settings won't nuke formulas in IDE
     )
 
     directives.widget('formula', klass='plomino-formula')
@@ -133,6 +137,7 @@ class IPlominoField(model.Schema):
         description=_('CMFPlomino_help_FieldFormula',
             default='How to calculate field content'),
         required=False,
+        missing_value=NOT_CHANGED, # So settings won't nuke formulas in IDE
     )
 
     to_be_indexed = schema.Bool(
@@ -159,6 +164,7 @@ class IPlominoField(model.Schema):
         description=_('CMFPlomino_help_HTMLAttributesFormula',
             default='Inject DOM attributes in the field tag'),
         required=False,
+        missing_value=NOT_CHANGED, # So settings won't nuke formulas in IDE
     )
 
     read_template = schema.TextLine(
