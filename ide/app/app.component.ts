@@ -1,3 +1,4 @@
+import { PlominoPaletteManagerService } from './services/palette-manager/palette-manager';
 import { LabelsRegistryService } from './editors/tiny-mce/services/labels-registry.service';
 import { 
   TinyMCEFormContentManagerService
@@ -117,6 +118,7 @@ import { LoadingComponent } from "./editors/loading/loading.component";
     URLManagerService,
     PlominoActiveEditorService,
     PlominoSaveManagerService,
+    PlominoPaletteManagerService,
   ],
   pipes: [ExtractNamePipe],
   // animations: [
@@ -169,6 +171,7 @@ export class AppComponent implements OnInit, AfterViewInit {
     private appLoader: PlominoApplicationLoaderService,
     private activeEditorService: PlominoActiveEditorService,
     private zone: NgZone,
+    private paletteManager: PlominoPaletteManagerService,
     private saveManager: PlominoSaveManagerService,
     private changeDetector: ChangeDetectorRef) {
       window['jQuery'] = jQuery;
@@ -307,7 +310,7 @@ export class AppComponent implements OnInit, AfterViewInit {
       $('.palette-wrapper .mdl-tabs__panel')
       .css('height', `${ window.innerHeight / 2 }px`);
 
-      this.resizeInnerScrollingContainers();
+      this.paletteManager.resizeInnerScrollingContainers();
 
       window['Modal'] = require('mockup-patterns-modal');
       window['TineMCE'] = require('mockup-patterns-tinymce');
@@ -360,17 +363,6 @@ export class AppComponent implements OnInit, AfterViewInit {
     $wrapper.css(attribute, `${ width }px`);
   }
 
-  resizeInnerScrollingContainers() {
-    const $wrapper = $('.palette-wrapper .mdl-tabs__panel');
-    const $containers76 = $('.scrolling-container--76');
-    const $containers66 = $('.scrolling-container--66');
-    const $containers0 = $('.scrolling-container--0');
-    const height = parseInt($wrapper.css('height').replace('px', ''), 10);
-    $containers76.css('height', `${ height - 76 }px`);
-    $containers66.css('height', `${ height - 66 }px`);
-    $containers0.css('height', `${ height }px`);
-  }
-
   resizeTree(event: { directions: string[], difference: {x: number, y: number} }) {
     const directions = event.directions;
     const difference = event.difference;
@@ -392,7 +384,7 @@ export class AppComponent implements OnInit, AfterViewInit {
     }
 
     $wrapper.css('height', `${ height }px`);
-    this.resizeInnerScrollingContainers();
+    this.paletteManager.resizeInnerScrollingContainers();
   }
 
   indexOf(type: any) {
