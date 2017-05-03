@@ -37,7 +37,7 @@ class IPlominoColumn(model.Schema):
         description=_('CMFPlomino_help_ColumnFormula', default='Python code '
             'returning the column value.'),
         required=False,
-        missing_value=NOT_CHANGED, # So settings won't nuke formulas in IDE
+        #missing_value=NOT_CHANGED, # So settings won't nuke formulas in IDE
     )
 
     # ADVANCED
