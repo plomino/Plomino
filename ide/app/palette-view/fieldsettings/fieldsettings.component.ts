@@ -1,3 +1,4 @@
+import { PlominoPaletteManagerService } from './../../services/palette-manager/palette-manager';
 import { PlominoSaveManagerService } from './../../services/save-manager/save-manager.service';
 import { FakeFormData } from './../../utility/fd-helper/fd-helper';
 import { PlominoViewsAPIService } from './../../editors/view-editor/views-api.service';
@@ -77,6 +78,7 @@ export class FieldSettingsComponent implements OnInit {
       private adapter: PlominoElementAdapterService,
       private activeEditorService: PlominoActiveEditorService,
       private zone: NgZone,
+      private paletteManager: PlominoPaletteManagerService,
       private http: PlominoHTTPAPIService,
       private draggingService: DraggingService,
       private elementService: ElementService,
@@ -186,6 +188,11 @@ export class FieldSettingsComponent implements OnInit {
             $fieldType.change(() => {
               this.submitForm(true);
             });
+
+            /* autosave the form layout */
+            this.saveManager.enqueueNewFormSaveProcess(
+              this.field.url.slice(0, this.field.url.lastIndexOf('/') + 1)
+            );
           }
 
           const $fieldSettingsForm = $('.field-settings-wrapper form');
@@ -203,11 +210,6 @@ export class FieldSettingsComponent implements OnInit {
 
           this.loading = false;
           this.changeDetector.detectChanges();
-
-          /* autosave the form layout */
-          this.saveManager.enqueueNewFormSaveProcess(
-            this.field.url.slice(0, this.field.url.lastIndexOf('/') + 1)
-          );
         }, 400);
 
         let newTitle: string = $(`<div>${responseHtml}</div>`)
@@ -240,11 +242,11 @@ export class FieldSettingsComponent implements OnInit {
                 this.fieldsService.viewColumnCreated.next({
                   newId, newTitle, oldId,
                   fieldURL: this.field.url
-                })
-              }
+                });
 
-              this.field = null;
-              this.formTemplate = null;
+                this.field = null;
+                this.formTemplate = null;
+              }
 
               this.loading = false;
               this.changeDetector.detectChanges();
@@ -960,6 +962,7 @@ export class FieldSettingsComponent implements OnInit {
           this.changeDetector.detectChanges();
 
           componentHandler.upgradeDom();
+          this.paletteManager.resizeInnerScrollingContainers();
         }); 
     }
 
