@@ -19,9 +19,7 @@ env:
     - ROBOT_DESIRED_CAPABILITIES=tunnel-identifier:$TRAVIS_JOB_ID
     - CXX=g++-4.8
 addons:
-  sauce_connect:
-    - username: $SAUCE_USERNAME
-    - access_key: $SAUCE_ACCESS_KEY
+  sauce_connect: true
   firefox: "50.0"
   apt:
     sources:
