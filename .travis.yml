@@ -12,6 +12,8 @@ node_js:
   - "6.1"
 env:
   global:
+    - secure: ORM7W1gV9PWYLRgWvMK8R6sBKNTmQj7VFE7F5kw4bEslztvbIQY1a+SgPB0TtILV9qPumTq16fQhVuv5+5eYdXqqgkyP4P7N7q1X5R8bz8sQu8iMCWf1YznirT19wGAVm7B8xJwcuffc8R4XZgIi8EBvcruAzMcBphvh9NUj/pA=
+    - secure: HPvtfxZKN4ZWsaKdP+5WdBGte1x96ksR9+Go1z7kpJeYo70XV/LAWYc6ORD8r7lP3tkrTBEoXu1wiX2aUHaYU7EBWkPsMv4+fMwEdy92koH1orw2ldYyTxm+tcOPFAMwPou9tGEJkLG/TOEELpoX+Nr1o/t86ZNkgMkScZhRib4=
     - ROBOT_BUILD_NUMBER=travis-$TRAVIS_BUILD_NUMBER
     - ROBOT_REMOTE_URL=http://$SAUCE_USERNAME:$SAUCE_ACCESS_KEY@ondemand.saucelabs.com:80/wd/hub
     - ROBOT_DESIRED_CAPABILITIES=tunnel-identifier:$TRAVIS_JOB_ID
