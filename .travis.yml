@@ -12,18 +12,10 @@ node_js:
   - "6.1"
 env:
   global:
-    - CXX=g++-4.8
-    - secure: |-
-        HPvtfxZKN4ZWsaKdP+5WdBGte1x96ksR9+Go1z7kpJeYo70XV/LAWYc6ORD8
-        r7lP3tkrTBEoXu1wiX2aUHaYU7EBWkPsMv4+fMwEdy92koH1orw2ldYyTxm+
-        tcOPFAMwPou9tGEJkLG/TOEELpoX+Nr1o/t86ZNkgMkScZhRib4=
-    - secure: |-
-        ORM7W1gV9PWYLRgWvMK8R6sBKNTmQj7VFE7F5kw4bEslztvbIQY1a+SgPB0T
-        tILV9qPumTq16fQhVuv5+5eYdXqqgkyP4P7N7q1X5R8bz8sQu8iMCWf1Yzni
-        rT19wGAVm7B8xJwcuffc8R4XZgIi8EBvcruAzMcBphvh9NUj/pA=
     - ROBOT_BUILD_NUMBER=travis-$TRAVIS_BUILD_NUMBER
     - ROBOT_REMOTE_URL=http://$SAUCE_USERNAME:$SAUCE_ACCESS_KEY@ondemand.saucelabs.com:80/wd/hub
     - ROBOT_DESIRED_CAPABILITIES=tunnel-identifier:$TRAVIS_JOB_ID
+    - CXX=g++-4.8
 addons:
   sauce_connect:
     - username: $SAUCE_USERNAME
@@ -57,11 +49,6 @@ before_install:
   - export PATH=$PATH:$PWD/geckodriver
   - sudo apt-get install chromium-chromedriver
   - export PATH=$PATH:/usr/lib/chromium-browser/
-# Saucelabs stuff
-#  - curl -O http://saucelabs.com/downloads/Sauce-Connect-latest.zip
-#  - unzip Sauce-Connect-latest.zip
-#  - java -jar Sauce-Connect.jar $SAUCE_USERNAME $SAUCE_ACCESS_KEY -i $TRAVIS_JOB_ID -f CONNECTED &
-#  - JAVA_PID=$!
 install:
   - npm --version
   - node --version
