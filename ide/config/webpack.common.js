@@ -68,7 +68,8 @@ module.exports = merge(require('./webpack.patterns'), {
       jQuery: "jquery"
     }),
     new htmlWebpackPlugin({
-      template: 'app/index.html'
+      template: 'app/index.html',
+      hash: true
     })
   ],
   node: {
