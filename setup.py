@@ -47,7 +47,7 @@ setup(
         'jsonutil',
         'collective.instancebehavior',
         'pyquery',
-        'plone.restapi',
+        'plone.restapi>=1.0a11',
     ],
     extras_require={
         'test': [

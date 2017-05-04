@@ -202,7 +202,8 @@ class IPlominoForm(model.Schema):
         description=_('CMFPlomino_help_onDisplay',
             default="Action to take when the form is displayed"),
         required=False,
-        #missing_value=NOT_CHANGED, # So settings won't nuke formulas in IDE
+        missing_value=NOT_CHANGED, # So settings won't nuke formulas in IDE
+        default=u'',
     )
 
     form.widget('onCreateDocument', klass='plomino-formula')
@@ -212,7 +213,8 @@ class IPlominoForm(model.Schema):
         description=_('CMFPlomino_help_onCreateDocument',
             default="Action to take when the document is created"),
         required=False,
-        #missing_value=NOT_CHANGED, # So settings won't nuke formulas in IDE
+        missing_value=NOT_CHANGED, # So settings won't nuke formulas in IDE
+        default=u'',
     )
 
     form.widget('onOpenDocument', klass='plomino-formula')
@@ -221,7 +223,8 @@ class IPlominoForm(model.Schema):
         description=_('CMFPlomino_help_onOpenDocument',
             default="Action to take when the document is opened"),
         required=False,
-        #missing_value=NOT_CHANGED, # So settings won't nuke formulas in IDE
+        missing_value=NOT_CHANGED, # So settings won't nuke formulas in IDE
+        default=u'',
     )
 
     form.widget('beforeSaveDocument', klass='plomino-formula')
@@ -232,7 +235,8 @@ class IPlominoForm(model.Schema):
             default="Action to take before submitted values are saved into "
             "the document (submitted values are in context.REQUEST)"),
         required=False,
-        #missing_value=NOT_CHANGED, # So settings won't nuke formulas in IDE
+        missing_value=NOT_CHANGED, # So settings won't nuke formulas in IDE
+        default=u'',
     )
 
     form.widget('onSaveDocument', klass='plomino-formula')
@@ -241,7 +245,8 @@ class IPlominoForm(model.Schema):
         description=_('CMFPlomino_help_onSaveDocument',
             default="Action to take when saving the document"),
         required=False,
-        #missing_value=NOT_CHANGED, # So settings won't nuke formulas in IDE
+        missing_value=NOT_CHANGED, # So settings won't nuke formulas in IDE
+        default=u'',
     )
 
     form.widget('onDeleteDocument', klass='plomino-formula')
@@ -251,7 +256,9 @@ class IPlominoForm(model.Schema):
         description=_('CMFPlomino_help_onDeleteDocument',
             default="Action to take before deleting the document"),
         required=False,
-        #missing_value=NOT_CHANGED, # So settings won't nuke formulas in IDE
+        missing_value=NOT_CHANGED, # So settings won't nuke formulas in IDE
+        default=u'',
+
     )
 
     form.widget('onSearch', klass='plomino-formula')
@@ -261,7 +268,8 @@ class IPlominoForm(model.Schema):
         description=_('CMFPlomino_help_onSearch',
             default="Action to take when submitting a search"),
         required=False,
-        #missing_value=NOT_CHANGED, # So settings won't nuke formulas in IDE
+        missing_value=NOT_CHANGED, # So settings won't nuke formulas in IDE
+        default=u'',
     )
 
     form.widget('beforeCreateDocument', klass='plomino-formula')
@@ -271,7 +279,8 @@ class IPlominoForm(model.Schema):
         description=_('CMFPlomino_help_beforeCreateDocument',
             default="Action to take when opening a blank form"),
         required=False,
-        #missing_value=NOT_CHANGED, # So settings won't nuke formulas in IDE
+        missing_value=NOT_CHANGED, # So settings won't nuke formulas in IDE
+        default=u'',
     )
 
 

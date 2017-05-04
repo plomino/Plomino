@@ -108,7 +108,8 @@ class IPlominoField(model.Schema):
         description=_('CMFPlomino_help_FieldValidation',
             default='Evaluate the input validation'),
         required=False,
-        #missing_value=NOT_CHANGED, # So settings won't nuke formulas in IDE
+        missing_value=NOT_CHANGED, # So settings won't nuke formulas in IDE
+        default=u'',
     )
 
     field_mode = schema.Choice(
@@ -117,7 +118,6 @@ class IPlominoField(model.Schema):
         required=True,
         default='EDITABLE',
         vocabulary=field_modes,
-        #missing_value=NOT_CHANGED, # So settings won't nuke formulas in IDE
     )
 
     isDynamicField = schema.Bool(
@@ -128,7 +128,6 @@ class IPlominoField(model.Schema):
                     "when the user enters information"),
         required=False,
         default=False,
-        #missing_value=NOT_CHANGED, # So settings won't nuke formulas in IDE
     )
 
     directives.widget('formula', klass='plomino-formula')
@@ -137,7 +136,8 @@ class IPlominoField(model.Schema):
         description=_('CMFPlomino_help_FieldFormula',
             default='How to calculate field content'),
         required=False,
-        #missing_value=NOT_CHANGED, # So settings won't nuke formulas in IDE
+        missing_value=NOT_CHANGED, # So settings won't nuke formulas in IDE
+        default=u'',
     )
 
     to_be_indexed = schema.Bool(
@@ -164,7 +164,8 @@ class IPlominoField(model.Schema):
         description=_('CMFPlomino_help_HTMLAttributesFormula',
             default='Inject DOM attributes in the field tag'),
         required=False,
-        #missing_value=NOT_CHANGED, # So settings won't nuke formulas in IDE
+        missing_value=NOT_CHANGED, # So settings won't nuke formulas in IDE
+        default=u'',
     )
 
     read_template = schema.TextLine(

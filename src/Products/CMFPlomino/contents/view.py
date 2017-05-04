@@ -63,7 +63,8 @@ class IPlominoView(model.Schema):
             """'plominoDocument' is a reserved name in formulae: it returns """
             """the current Plomino document."""),
         required=False,
-        #missing_value=NOT_CHANGED, # So settings won't nuke formulas in IDE
+        missing_value=NOT_CHANGED, # So settings won't nuke formulas in IDE
+        default=u'',
     )
 
     directives.widget('form_formula', klass='plomino-formula')
@@ -73,7 +74,8 @@ class IPlominoView(model.Schema):
             default='Documents open from the view will use the form defined '
             'by the following formula(they use their own form if empty)'),
         required=False,
-        #missing_value=NOT_CHANGED, # So settings won't nuke formulas in IDE
+        missing_value=NOT_CHANGED, # So settings won't nuke formulas in IDE
+        default=u'',
     )
 
     hide_default_actions = schema.Bool(
@@ -93,7 +95,8 @@ class IPlominoView(model.Schema):
             "returned, it is considered an error message, and the opening is "
             "not allowed."),
         required=False,
-        #missing_value=NOT_CHANGED, # So settings won't nuke formulas in IDE
+        missing_value=NOT_CHANGED, # So settings won't nuke formulas in IDE
+        default=u'',
     )
 
     sort_column = schema.TextLine(
