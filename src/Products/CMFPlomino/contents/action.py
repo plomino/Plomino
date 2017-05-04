@@ -53,7 +53,8 @@ class IPlominoAction(model.Schema):
         description=_('CMFPlomino_help_ActionContent',
             default='Code or parameter depending on the action type'),
         required=False,
-        #missing_value=NOT_CHANGED, # So settings won't nuke formulas in IDE
+        missing_value=NOT_CHANGED, # So settings won't nuke formulas in IDE
+        default=u'',
     )
 
     directives.widget('hidewhen', klass='plomino-formula')
@@ -63,7 +64,8 @@ class IPlominoAction(model.Schema):
         description=_('CMFPlomino_help_ActionHidewhen',
             default='Action is hidden if formula returns True'),
         required=False,
-        #missing_value=NOT_CHANGED, # So settings won't nuke formulas in IDE
+        missing_value=NOT_CHANGED, # So settings won't nuke formulas in IDE
+        default=u'',
     )
 
     in_action_bar = schema.Bool(
