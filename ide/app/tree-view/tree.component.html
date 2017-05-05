@@ -57,7 +57,7 @@
                     #selectable
                     [attr.id]="'tree_' + typeName.url"
                     [class.selected]="selected && (typeName.url === selected.url)" 
-                    (click)="typeName.collapsed = !getCollapseState(typeName.collapsed, selected && (typeName.url === selected.url))">
+                    (click)="treeArrowClick($event, typeName)">
                     
                     <span class="tree-node__child-type-image">
                       <img [src]="getTypeImage(typeName)">
