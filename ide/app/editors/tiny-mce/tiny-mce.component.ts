@@ -91,6 +91,7 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
   autoSavedContent: string = null;
 
   theFormIsSavingNow: boolean = false;
+  loadedFirstTime: boolean = null;
 
   /**
    * display block preloader
@@ -355,7 +356,11 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
       },
 
       setup : (editor: TinyMceEditor) => {
-        if(this.editorInstance) {
+        /* when loading a long form, should be scrolled to the top.
+          seems in the middle now */
+        const edExists = Boolean(this.editorInstance);
+
+        if (this.editorInstance) {
           this.editorInstance.remove();
         } else {
           // this.getFormLayout();
@@ -420,152 +425,142 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
         // });
 
         editor.on('mousedown', (ev: MouseEvent) => {
-          let $element = $(ev.target);
-          this.adapter.selectPosition($element);
+          const eventCustomCheck = this.saveManager.detectNewIFrameInnerClick(ev);
 
-          this.zone.run(() => {
-            let $element =  $(ev.target);
-            let eventTarget = <any> ev.target;
-
-            if (eventTarget.control ||
-              (['radio', 'select-one'].indexOf(eventTarget.type) !== -1)) {
-              $element = $element.parent();
-            }
-            else if (eventTarget.tagName === 'OPTION' ||
-              eventTarget.nodeName === 'OPTION') {
-              $element = $element.parent().parent();
-            }
-            
-            let $parent = $element.parent();
-            let $grandParent = $parent.parent();
-            let $grandGrandParent = $grandParent.parent();
-            let $closest = $element.closest('[data-mce-selected]');
-            let $elementIsGroup = $element.hasClass('plominoGroupClass');
-            let elementIsLabel = $element.hasClass('plominoLabelClass');
-            let elementIsSubform = $element.hasClass('plominoSubformClass');
-            let parentIsSubform = $parent.hasClass('plominoSubformClass')
-              || $grandParent.hasClass('plominoSubformClass')
-              || $grandGrandParent.hasClass('plominoSubformClass');
-            let closestIsSubform = $closest.hasClass('plominoSubformClass')
-              || ($parent.hasClass('plominoFieldGroup') && 
-              $parent.closest('[data-mce-selected]').hasClass('plominoSubformClass'));
-            let parentIsLabel = $parent.hasClass('plominoLabelClass');
-
-            let $elementId = $element.attr('data-plominoid');
-            let $parentId = $parent.attr('data-plominoid');
-            let $closestLabel = $element.closest('.plominoLabelClass');
-
-            this.log.info($element, $parent, $grandParent, $grandGrandParent, $closest);
-            this.log.extra('tiny-mce.component.ts editor.on(\'mousedown\', ...)');
-
-            const $s = $closestLabel.length ? $closestLabel : $element;
-            if ($s.is(this.adapter.getSelected())) {
-              return;
-            }
-            this.adapter.select($s);
-
-            if (!elementIsSubform && (parentIsSubform || closestIsSubform)) {
-              elementIsSubform = true;
-            }
-
-            if (!elementIsSubform && $elementIsGroup) {
-              this.fieldSelected.emit({
-                id: $element.attr('data-groupid'),
-                type: 'group',
-                parent: this.id
-              });
-
-              // let groupChildrenQuery = 
-              //   '.plominoFieldClass, .plominoHidewhenClass, .plominoActionClass';
-              // let $groupChildren = $element.find(groupChildrenQuery);
-              // if ($groupChildren.length > 1) {
-              //   this.log.info('field selected #a');
-              //   this.fieldSelected.emit(null);
-              //   return;
-              // }
-              // else {
-              //   let $child = $groupChildren;
-              //   let $childId = $child.data('plominoid');
-              //   let $childType = this.extractClass($child.attr('class'));
-              //   this.log.info('field selected #b');
-              //   this.fieldSelected.emit({
-              //     id: $childId,
-              //     type: $childType,
-              //     parent: this.id
-              //   });
-              //   return;
-              // }
-            }
-            else if (!elementIsSubform && (elementIsLabel || parentIsLabel || $closestLabel.length)) {
-              if (!$elementId) {
-                $elementId = $closestLabel.attr('data-plominoid');
+          eventCustomCheck
+          .then(() => {
+            /* #region: custom check */
+            let $element = $(ev.target);
+            this.adapter.selectPosition($element);
+  
+            this.zone.run(() => {
+              let $element =  $(ev.target);
+              let eventTarget = <any> ev.target;
+  
+              if (eventTarget.control ||
+                (['radio', 'select-one'].indexOf(eventTarget.type) !== -1)) {
+                $element = $element.parent();
               }
-              this.log.info('field selected #-d', $elementId, $element.get(0), $closestLabel.get(0));
-              this.fieldSelected.emit({
-                id: $elementId,
-                type: 'label',
-                parent: this.id
-              });
-            } 
-            else if (elementIsSubform) {
-              /**
-               * subform clicked
-               */
-              let id = $elementId || $parentId;
-              if (!id) {
+              else if (eventTarget.tagName === 'OPTION' ||
+                eventTarget.nodeName === 'OPTION') {
+                $element = $element.parent().parent();
+              }
+              
+              let $parent = $element.parent();
+              let $grandParent = $parent.parent();
+              let $grandGrandParent = $grandParent.parent();
+              let $closest = $element.closest('[data-mce-selected]');
+              let $elementIsGroup = $element.hasClass('plominoGroupClass');
+              let elementIsLabel = $element.hasClass('plominoLabelClass');
+              let elementIsSubform = $element.hasClass('plominoSubformClass');
+              let parentIsSubform = $parent.hasClass('plominoSubformClass')
+                || $grandParent.hasClass('plominoSubformClass')
+                || $grandGrandParent.hasClass('plominoSubformClass');
+              let closestIsSubform = $closest.hasClass('plominoSubformClass')
+                || ($parent.hasClass('plominoFieldGroup') && 
+                $parent.closest('[data-mce-selected]').hasClass('plominoSubformClass'));
+              let parentIsLabel = $parent.hasClass('plominoLabelClass');
+  
+              let $elementId = $element.attr('data-plominoid');
+              let $parentId = $parent.attr('data-plominoid');
+              let $closestLabel = $element.closest('.plominoLabelClass');
+  
+              this.log.info($element, $parent, $grandParent, $grandGrandParent, $closest);
+              this.log.extra('tiny-mce.component.ts editor.on(\'mousedown\', ...)');
+  
+              const $s = $closestLabel.length ? $closestLabel : $element;
+              if ($s.is(this.adapter.getSelected())) {
+                return;
+              }
+              this.adapter.select($s);
+  
+              if (!elementIsSubform && (parentIsSubform || closestIsSubform)) {
+                elementIsSubform = true;
+              }
+  
+              if (!elementIsSubform && $elementIsGroup) {
+                this.fieldSelected.emit({
+                  id: $element.attr('data-groupid'),
+                  type: 'group',
+                  parent: this.id
+                });
+              }
+              else if (!elementIsSubform && (elementIsLabel || parentIsLabel || $closestLabel.length)) {
+                if (!$elementId) {
+                  $elementId = $closestLabel.attr('data-plominoid');
+                }
+                this.log.info('field selected #-d', $elementId, $element.get(0), $closestLabel.get(0));
+                this.fieldSelected.emit({
+                  id: $elementId,
+                  type: 'label',
+                  parent: this.id
+                });
+              } 
+              else if (elementIsSubform) {
+                /**
+                 * subform clicked
+                 */
+                let id = $elementId || $parentId;
+                if (!id) {
+                  $element = $element.closest('.plominoSubformClass');
+                  id = $element.attr('data-plominoid');
+                }
+                this.log.info('field selected #d');
+                this.fieldSelected.emit({ id: id, type: 'subform', parent: this.id });
+              }
+              else if ($elementId || $parentId) {
+                let id = $elementId || $parentId;
+                    
+                let $elementType = $element.data('plominoid')
+                  ? this.extractClass($element.attr('class')) : null;
+  
+                let $parentType = $parent.data('plominoid') 
+                  ? this.extractClass($parent.attr('class')) : null;
+  
+                let type = $elementType || $parentType;
+  
+                this.log.info('field selected #e');
+                this.fieldSelected.emit({ id: id, type: type, parent: this.id });
+              } else if ($element.children().length
+                && $element.children().first().hasClass('plominoLabelClass')
+              ) {
+                $element = $element.children().first();
+                $elementId = $element.attr('data-plominoid');
+                this.log.info('field selected #e2', $elementId, $element.get(0));
+                this.fieldSelected.emit({
+                  id: $elementId,
+                  type: 'label',
+                  parent: this.id
+                });
+              } else if ($element.closest('.plominoGroupClass').length) {
+                $element = $element.closest('.plominoGroupClass');
+                $elementId = $element.attr('data-groupid');
+                this.log.info('field selected #e2', $elementId, $element.get(0));
+                this.fieldSelected.emit({
+                  id: $elementId,
+                  type: 'group',
+                  parent: this.id
+                });
+              }
+              else if ($element.closest('.plominoSubformClass').length) {
                 $element = $element.closest('.plominoSubformClass');
-                id = $element.attr('data-plominoid');
+                $elementId = $element.attr('data-plominoid');
+                this.log.info('field selected #-f2', $elementId, $element.get(0));
+                this.fieldSelected.emit({
+                  id: $elementId,
+                  type: 'subform',
+                  parent: this.id
+                });
+              } else {
+                this.log.info('field selected #f');
+                this.fieldSelected.emit(null);
               }
-              this.log.info('field selected #d');
-              this.fieldSelected.emit({ id: id, type: 'subform', parent: this.id });
-            }
-            else if ($elementId || $parentId) {
-              let id = $elementId || $parentId;
-                  
-              let $elementType = $element.data('plominoid')
-                ? this.extractClass($element.attr('class')) : null;
-
-              let $parentType = $parent.data('plominoid') 
-                ? this.extractClass($parent.attr('class')) : null;
-
-              let type = $elementType || $parentType;
-
-              this.log.info('field selected #e');
-              this.fieldSelected.emit({ id: id, type: type, parent: this.id });
-            } else if ($element.children().length
-              && $element.children().first().hasClass('plominoLabelClass')
-            ) {
-              $element = $element.children().first();
-              $elementId = $element.attr('data-plominoid');
-              this.log.info('field selected #e2', $elementId, $element.get(0));
-              this.fieldSelected.emit({
-                id: $elementId,
-                type: 'label',
-                parent: this.id
-              });
-            } else if ($element.closest('.plominoGroupClass').length) {
-              $element = $element.closest('.plominoGroupClass');
-              $elementId = $element.attr('data-groupid');
-              this.log.info('field selected #e2', $elementId, $element.get(0));
-              this.fieldSelected.emit({
-                id: $elementId,
-                type: 'group',
-                parent: this.id
-              });
-            }
-            else if ($element.closest('.plominoSubformClass').length) {
-              $element = $element.closest('.plominoSubformClass');
-              $elementId = $element.attr('data-plominoid');
-              this.log.info('field selected #-f2', $elementId, $element.get(0));
-              this.fieldSelected.emit({
-                id: $elementId,
-                type: 'subform',
-                parent: this.id
-              });
-            } else {
-              this.log.info('field selected #f');
-              this.fieldSelected.emit(null);
-            }
+            });
+            /* #endregion */
+          })
+          .catch(() => {
+            ev.preventDefault();
+            this.log.warn('prevented');
           });
         });
 
@@ -708,7 +703,9 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
    * because the native angular2 changeDetector is buggable here
    */
   fallLoading(state = true) {
-    // debugger;
+    if (state === false) {
+      this.loadedFirstTime = this.loadedFirstTime === null;
+    }
     const editor = tinymce.get(this.id);
     if (editor) {
       const preloader = editor.getContainer()
@@ -755,20 +752,7 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
   getFormLayout() {
     this.fallLoading();
     this.log.info('fallLoading from getFormLayout');
-    // setTimeout(() => {
-    //   if (this.isLoadingNow()) {
-    //     this.fallLoading(false);
-    //     this.log.warn('the preloader did produce some bug and we removed it');
-    //   }
-    // }, 2000);
-    // this.loading = true;
-    // try {
-    //   this.changeDetector.markForCheck();
-    //   this.changeDetector.detectChanges();
-    // }
-    // catch (e) {
-    //   this.log.error(e);
-    // }
+    
     this.elementService.getElementFormLayout(this.id)
     .subscribe((form: PlominoFormDataAPIResponse) => {
       for (let item of form.items) {
@@ -810,18 +794,18 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
           );
           
           this.fallLoading(false);
-          // this.loading = false;
-          // this.log.info('tiny-mce loading', false, this.id);
-          // try {
-          //   this.changeDetector.markForCheck();
-          //   this.changeDetector.detectChanges();
-          // }
-          // catch (e) {
-          //   this.log.error(e);
-          // }
-
           const editor = tinymce.get(this.id);
           const isDirty = editor.isDirty();
+
+          if (editor && this.loadedFirstTime) {
+            setTimeout(() => {
+              $(editor.getBody())
+              .animate(
+                { scrollTop: 0 },
+                { duration: 'medium', easing: 'swing' }
+              );
+            }, 100);
+          }
 
           if (!isDirty) {
             const $edContainer = $(editor.getContainer());
@@ -841,24 +825,11 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
         );
         this.autoSavedContent = newData;
         this.fallLoading(false);
-        
-        // this.loading = false;
-        // this.log.info('tiny-mce loading', false, this.id);
-        // try {
-        //   this.changeDetector.markForCheck();
-        //   this.changeDetector.detectChanges();
-        // }
-        // catch (e) {
-        //   this.log.error(e);
-        // }
       }
 
     }, (err) => {
       this.log.error(err);
       this.fallLoading(false);
-      // this.log.info('tiny-mce loading', false, this.id);
-      // this.loading = false;
-      // this.changeDetector.markForCheck();
     });
   }
 

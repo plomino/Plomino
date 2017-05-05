@@ -60,7 +60,7 @@ export class PaletteComponent implements OnInit {
         { title: 'Add', id: 'add', active: true },
         { title: 'Field Settings', id: 'item' },
         { title: 'Form Settings', id: 'group' },
-        { title: 'DB Settings', id: 'db' },
+        { title: 'Service', id: 'db' },
         { title: 'Workflow Node', id: 'wfnode', hidden: true },
     ];
 
@@ -148,8 +148,8 @@ export class PaletteComponent implements OnInit {
       $containers0.css('height', `${ height }px`);
     }
 
-    setActiveTab(tabIndex: number):void {
-        this.formsService.changePaletteTab(tabIndex);
+    setActiveTab(ev: MouseEvent, tabIndex: number) {
+      this.formsService.changePaletteTab(tabIndex);
     };
 
     private updateTabs(showAddTab: boolean, tabs: any[], activeTabType: string, activeFieldType?: string): any[] {

@@ -203,6 +203,7 @@ export class FormSettingsComponent implements OnInit {
       this.log.info('T-200-b formsettings.compmonent.ts', this.tabsService.ping());
       this.formsService.saveForm(this.tab.url);
       this.changeDetector.markForCheck();
+      this.saveManager.detectNewFormSave();
     }
 
     saveForm(data:{content:any,cb:any}) {

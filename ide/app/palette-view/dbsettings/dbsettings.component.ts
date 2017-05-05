@@ -1,4 +1,5 @@
 import { TabsService } from './../../services/tabs.service';
+import { PlominoSaveManagerService } from './../../services/save-manager/save-manager.service';
 import { FakeFormData } from './../../utility/fd-helper/fd-helper';
 import { LogService } from './../../services/log.service';
 import { PlominoHTTPAPIService } from './../../services/http-api.service';
@@ -52,6 +53,7 @@ export class DBSettingsComponent {
     loading: boolean = false;
 
     constructor(private objService: ObjService,
+      private saveManager: PlominoSaveManagerService,
       private changeDetector: ChangeDetectorRef,
       private http: PlominoHTTPAPIService,
       private tabsService: TabsService,
@@ -106,6 +108,7 @@ export class DBSettingsComponent {
         
         formData.append('form.buttons.save', 'Save');
         this.loading = true;
+        this.saveManager.detectNewFormSave();
         
         this.objService.submitDB(formData)
             .flatMap((responseHtml: string) => {

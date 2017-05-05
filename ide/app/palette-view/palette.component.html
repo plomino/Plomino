@@ -3,35 +3,35 @@
     <a [href]="'#palette-tab-0-panel'"
       [hidden]="tabs[0].hidden"
       [class.is-active]="tabs[0].active"
-      (click)="setActiveTab(0)"
+      (click)="setActiveTab($event, 0)"
       class="mdl-tabs__tab">
       {{ tabs[0].title }}
     </a>
     <a [href]="'#palette-tab-1-panel'"
       [hidden]="tabs[1].hidden"
       [class.is-active]="tabs[1].active"
-      (click)="setActiveTab(1)"
+      (click)="setActiveTab($event, 1)"
       class="mdl-tabs__tab">
       {{ tabs[1].title }}
     </a>
     <a [href]="'#palette-tab-4-panel'"
       [hidden]="tabs[4].hidden"
       [class.is-active]="tabs[4].active"
-      (click)="setActiveTab(4)"
+      (click)="setActiveTab($event, 4)"
       class="mdl-tabs__tab">
       {{ tabs[4].title }}
     </a>
     <a [href]="'#palette-tab-2-panel'"
       [hidden]="tabs[2].hidden"
       [class.is-active]="tabs[2].active"
-      (click)="setActiveTab(2)"
+      (click)="setActiveTab($event, 2)"
       class="mdl-tabs__tab">
       {{ tabs[2].title }}
     </a>
     <a [href]="'#palette-tab-3-panel'"
       [hidden]="tabs[3].hidden"
       [class.is-active]="tabs[3].active"
-      (click)="setActiveTab(3)"
+      (click)="setActiveTab($event, 3)"
       class="mdl-tabs__tab">
       {{ tabs[3].title }}
     </a>
