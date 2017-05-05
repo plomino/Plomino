@@ -88,7 +88,8 @@ I save the fieldsettings
   wait until page does not contain element  jquery=.plomino-block-preloader:visible
   Wait until page contains element  jquery=.fieldsettings--control-buttons a:contains("Save")
   Click Element  jquery=.fieldsettings--control-buttons a:contains("Save")
-  wait until page contains element  jquery=.portalMessage:visible:contains("Changes saved")
+  sleep  0.5s
+  wait until page does not contain element  jquery=.plomino-block-preloader:visible
 
 I save the form
   Wait until page contains element  jquery=#mceu_0 button:contains("Save")
@@ -102,6 +103,7 @@ I go to the plominodatabase view
 
 I add a form by click
    wait until page contains  Form
+   Click Element  jquery=[href="#palette-tab-0-panel"]
 #  Click Element  css=button[title="Form"]
    Click Element  xpath=//div[@class="palette-wrapper"]//*[@title="Form"]
   wait until page contains  new-form
@@ -148,7 +150,8 @@ I add a form by dnd
 
 I open a form "${formid}"
   # Capture Page Screenshot
-  wait until page contains  ${formid}
+  wait until page does not contain element  jquery=.plomino-block-preloader:visible
+  wait until page contains element  jquery=plomino-tree > div > ul > li > ul > li > span:contains("${formid}"):first
   Click Element  jquery=plomino-tree > div > ul > li > ul > li > span:contains("${formid}"):first
   #Click Element  xpath=//span[contains(@class,"tree-node--name")][normalize-space(text())="${formid}"]
   wait until form is loaded
