@@ -148,7 +148,7 @@ export class TabsService {
     tabs.forEach(tab => { tab.active = (tab.url === selectedTab.url) });
 
     if (!isWorkflowTab) {
-      window.location.hash = `#form=${ tab.url.split('/').pop() }`;
+      // window.location.hash = `#t=${ tab.url.split('/').pop() }`;
       this.activeTab$.next(normalizedTab);
       this.workflowModeChange.next(false);
     }
