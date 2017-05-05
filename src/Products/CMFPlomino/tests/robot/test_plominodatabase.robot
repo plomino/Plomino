@@ -170,6 +170,7 @@ Scenario: I can add a validation rule to a field
     and I add a macro "Field contains text" to "Field Settings"
     and I enter "blah" in "Field value" in the form
     and I save the macro
+    # and I save the fieldsettings
     and I add a macro "Invalid" to "Field Settings"
     and I enter "You can't say blah" in "Invalid message" in the form
     and I save the macro

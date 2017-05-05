@@ -68,7 +68,7 @@ export class TreeComponent implements OnInit {
         typeName.collapsed, this.selected && (typeName.url === this.selected.url)
       );
       
-      if (ev.screenX && ev.screenX <= 45) {
+      if (ev.screenX && ev.screenX <= 45 && ev.screenX > 31) {
         ev.preventDefault();
         ev.stopPropagation();
       }

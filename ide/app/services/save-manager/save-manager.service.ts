@@ -138,11 +138,11 @@ export class PlominoSaveManagerService {
   }
 
   private listenFormInnerChangeProcesses() {
-    $('body').delegate('form', 'keydown input change paste', ($event) => {
+    $('body').delegate('form[id!="plomino_form"]', 'keydown input change paste', ($event) => {
       const isFormInnerEvent = $($event.currentTarget)
         .is('form:visible[data-pat-autotoc]');
       $event.stopPropagation();
-      if (isFormInnerEvent) {
+      if (isFormInnerEvent && !($event.type === 'keydown' && $event.keyCode === 9)) {
         if (!this.currentFormIsUnsaved) {
           this.currentFormIsUnsaved = true;
           this.hackOutsideArea();
