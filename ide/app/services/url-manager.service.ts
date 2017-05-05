@@ -15,13 +15,13 @@ export class URLManagerService {
     const urlItems = this.parseURLString();
 
     if (!urlItems.length) {
-      /* on start, if not tabs to open, then start on DB settings */
-      try { $('a.mdl-tabs__tab:contains("DB Settings")').get(0).click(); }
+      /* on start, if not tabs to open, then start on Service */
+      try { $('a.mdl-tabs__tab:contains("Service")').get(0).click(); }
       catch (e) {}
       window['materialPromise']
         .then(() => {
           setTimeout(() => {
-            $('a.mdl-tabs__tab:contains("DB Settings")').get(0).click();
+            $('a.mdl-tabs__tab:contains("Service")').get(0).click();
           }, 100);
         });
     }

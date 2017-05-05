@@ -117,6 +117,7 @@ export class FieldSettingsComponent implements OnInit {
 
       if (!refresh) {
         formData.set('form.buttons.save', 'Save');
+        this.saveManager.detectNewFormSave();
       }
       else {
         formData.set('update.field.type', '1');

@@ -3,7 +3,7 @@
       <a [href]="'#palette-tab-' + i + '-panel'"
         *ngFor="let tabz of tabs, let i = index"
         [class.is-active]="tabz.active"
-        (click)="setActiveTab(i)"
+        (click)="setActiveTab($event, i)"
         class="mdl-tabs__tab">
         {{ tabz.title }}
       </a>
