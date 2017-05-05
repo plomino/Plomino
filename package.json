@@ -1,0 +1,19 @@
+{
+  "name": "plomino_root",
+  "version": "1.0.0",
+  "description": "this file is only for development",
+  "main": "index.js",
+  "directories": {
+    "doc": "docs"
+  },
+  "scripts": {
+    "test-server": "bin/robot-server --reload-path src Products.CMFPlomino.testing.PRODUCTS_CMFPLOMINO_ACCEPTANCE_TESTING",
+    "test": "bin/robot  src/Products/CMFPlomino/tests/robot/test_plominodatabase.robot"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/plomino/Plomino.git"
+  },
+  "author": "",
+  "license": "ISC"
+}
