@@ -63,6 +63,17 @@ export class TreeComponent implements OnInit {
         });
     }
 
+    treeArrowClick(ev: MouseEvent, typeName: any) {
+      typeName.collapsed = !this.getCollapseState(
+        typeName.collapsed, this.selected && (typeName.url === this.selected.url)
+      );
+      
+      if (ev.screenX && ev.screenX <= 45) {
+        ev.preventDefault();
+        ev.stopPropagation();
+      }
+    }
+
     getCollapseState(collapseVar: any, selected: boolean) {
       return typeof collapseVar === 'undefined' && !selected 
         ? true : (collapseVar === null ? false : (collapseVar === true));
