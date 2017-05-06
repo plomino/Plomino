@@ -200,19 +200,23 @@ class DatetimeField(BaseField):
         """Process date time value input"""
         if type(submittedValue) is DateTime:
             return submittedValue
+        format = self.context.format
+        if not format:
+            format = self.context.getParentDatabase().datetime_format
         # instead of checking not record, should check string type
         if isinstance(submittedValue, basestring):
             submittedValue = submittedValue.strip()
         try:
             input_value, errors = self._parseDatetime(submittedValue, format)
-            return input_value
+            return input_value if not errors else None
         except RecordException:
             # We don't have a valid record, so we can't process anything
             return None
-        except Exception:
-            # with datagrid, we might get dates formatted differently than
-            # using calendar widget default format
-            return StringToDate(submittedValue[:16], '%Y-%m-%dT%H:%M')
+        #TODO: using a generic Exception masks other errors. Work out to handle below case better. have test
+        # except Exception:
+        #     # with datagrid, we might get dates formatted differently than
+        #     # using calendar widget default format
+        #     return StringToDate(submittedValue[:16], '%Y-%m-%dT%H:%M')
 
     def getFieldValue(self, form, doc=None, editmode_obsolete=False,
                       creation=False, request=None):
