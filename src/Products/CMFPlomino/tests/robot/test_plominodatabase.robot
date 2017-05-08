@@ -165,8 +165,7 @@ Scenario: I can preview (2 tabs)
 
 Scenario: I can add a validation rule to a field
   Given I have a form open
-   When I add a "Text" field
-    and I select the field "text"
+   When I select the field "field_1"
     and I add a macro "Field contains text" to "Field Settings"
     and I enter "blah" in "Field value" in the form
     and I save the macro
