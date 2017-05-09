@@ -258,6 +258,13 @@ export class DraggingService {
     .on('mousemove.drgs', ((e: any) => this.drag(e, true)).bind(this))
     .on('mouseup.drgs', ((e: any) => this.stopDragging(e, true)).bind(this));
 
+    $(document)
+    .on('keydown.drgs', (se: any) => {
+      if (se.keyCode === 27) {
+        this.stopDragging(e);
+      }
+    });
+
     this.drag(e);
   }
 
