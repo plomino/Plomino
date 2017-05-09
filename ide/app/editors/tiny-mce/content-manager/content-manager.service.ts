@@ -62,8 +62,13 @@ export class TinyMCEFormContentManagerService {
         const range = 
           this.getCaretRangeFromMouseEvent(editorId, originalEvent);
           
-        this.logService.info('range', range.startContainer, range.startOffset,
-          range.commonAncestorContainer);
+        if (range) {
+          this.logService.info('range', range.startContainer, range.startOffset,
+            range.commonAncestorContainer);
+        }
+        else {
+          this.logService.warn('there is no range');
+        }
 
         const currentDragCode = dragging.currentDraggingTemplateCode;
         const $currentDragNode = $(currentDragCode);
@@ -72,7 +77,7 @@ export class TinyMCEFormContentManagerService {
           $currentDragNode.addClass('drag-autopreview');
         }
 
-        if (this.rangeAccepted(range)) {
+        if (range && this.rangeAccepted(range)) {
           $(this.activeEditorService.getActive().getBody())
             .find('.drag-autopreview').remove();
           // console.log('insert A!3');

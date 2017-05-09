@@ -1,3 +1,5 @@
+declare function require(arg:string): any;
+
 interface PlominoFormSaveProcessOptions {
   immediately: boolean;
   formURL: string;
