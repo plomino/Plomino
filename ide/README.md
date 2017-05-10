@@ -41,6 +41,16 @@ $ bin/instance fg
 
 Further npm rebuilds don't require a plone restart so you can use ```npm run watch``` during development
 
+# Build from the latest code
+
+If you are not at 'ide' folder
+$ cd ./ide
+
+
+$ git pull origin advanced_ide
+$ typings install
+$ npm run build
+
 # Release
 
 To build a production release of the IDE, run ```npm run build``` and commit any changes in the ```../src/Products/CMFPlomino/browser/static/ide``` directory.

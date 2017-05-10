@@ -34,6 +34,7 @@ from webdav.Lockable import wl_isLocked
 from zipfile import ZipFile, ZIP_DEFLATED
 from zope import component
 from zope.interface import alsoProvides
+from zope.lifecycleevent import modified
 from zope.schema import getFieldsInOrder
 from ZPublisher.HTTPRequest import FileUpload
 from ZPublisher.HTTPRequest import HTTPRequest
@@ -292,6 +293,29 @@ class DesignManager:
             "%d errors(s)" % (total, errors))
         logger.info(msg)
         self.setStatus("Ready")
+        if REQUEST:
+            self.writeMessageOnPage(msg, REQUEST, False)
+            REQUEST.RESPONSE.redirect(self.absolute_url() + "/DatabaseDesign")
+
+    security.declareProtected(DESIGN_PERMISSION, 'manage_refreshMacros')
+
+    @postonly
+    def manage_refreshMacros(self, REQUEST=None):
+        macros=0
+        forms = self.getForms()
+        for form in forms:
+            fields = form.getFormFields()
+
+            for field in fields:
+                helpers = field.helpers
+
+                for helper in helpers:
+                    for subhelper in helper:
+                        if subhelper['Form'] == 'macro_field_text_template':
+                            modified(field)
+                            macros += 1
+                            logger.info('updated macro template on field: %s' % field.id)
+        msg = '%i fields updated' % macros
         if REQUEST:
             self.writeMessageOnPage(msg, REQUEST, False)
             REQUEST.RESPONSE.redirect(self.absolute_url() + "/DatabaseDesign")
