@@ -650,7 +650,7 @@ class MacroTemplateView(BrowserView):
             item = form[id]
             newid = new_id(newgroupid,item.id)
             action(item, self.form, id=newid if newid != id else None)
-            example = form.example_widget(id=id)
+            example = form.example_widget(id=newid)
             new_contents.append({'id':newid, 'old_id':id, 'title':item.title,
                                  'layout':example})
 
