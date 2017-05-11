@@ -140,7 +140,7 @@ export class FieldSettingsComponent implements OnInit {
           setTimeout(() => {
             componentHandler.upgradeDom();
           }, 200);
-          return Observable.of(extractedTextAndURL.html);
+          return Observable.of(extractedTextAndURL.html).map(this.parseTabs);
         } else {
           if (/^.+?\/view$/.test(extractedTextAndURL.url)) {
             extractedTextAndURL.url = extractedTextAndURL.url
