@@ -639,7 +639,6 @@ export class FieldSettingsComponent implements OnInit {
       }
       this.elementService.awaitForConfirm()
       .then(() => {
-        /** @todo: replace to activeEditorService */
         const $group = $(this.activeEditorService.getActive().getBody())
           .find(`.plominoGroupClass[data-groupid="${ this.field.id }"]`);
 
@@ -648,31 +647,33 @@ export class FieldSettingsComponent implements OnInit {
         $group
           .find('.plominoFieldClass')
           .each((i, groupFieldElement: HTMLElement) => {
-            // this.log.warn(this.field.url, groupFieldElement.dataset.plominoid);
             if (this.labelsRegistry.get(this.field.url)) {
               this.labelsRegistry.remove(this.field.url);
-              deleteJoins.push(this.elementService.deleteElement(this.field.url));
             }
           });
+
+        deleteJoins.push(
+          this.elementService.deleteElement(this.field.url)
+        );
 
         this.loading = true;
         Observable.forkJoin(deleteJoins)
           .subscribe(() => {
-            this.treeService.updateTree().then(() => {});
             $group.remove();
-            this.loading = false;
-            this.field = null;
-            this.formTemplate = null;
-            this.changeDetector.detectChanges();
-
-            /* form save automatically */
-            if (this.activeEditorService.getActive()) {
-              this.activeEditorService.getActive().setDirty(true);
-              try {
-                this.activeEditorService.getActive()
-                  .getDoc().querySelector('#mceu_0 button').click();
-              } catch (e) {}
-            }
+            this.treeService.updateTree().then(() => {
+              this.loading = false;
+              this.field = null;
+              this.formTemplate = null;
+              this.changeDetector.detectChanges();
+  
+              /* form save automatically */
+              if (this.activeEditorService.getActive()) {
+                this.saveManager
+                .enqueueNewFormSaveProcess(
+                  this.activeEditorService.editorURL
+                );
+              }
+            });
           });
       })
       .catch(() => null);
@@ -835,7 +836,7 @@ export class FieldSettingsComponent implements OnInit {
             }, 100);
             return Observable.of(false);
           }
-          else if (field && field.type === 'label') {
+          else if (field && field.type === 'label' && this.$selectedElement) {
             this.log.info('field', field, 'labelsRegistry', 
               this.labelsRegistry.getRegistry());
             this.log.extra('fieldsettings.component.ts label');
@@ -871,8 +872,10 @@ export class FieldSettingsComponent implements OnInit {
 
             this.labelsRegistry.onUpdated()
             .subscribe(() => {
-              this.labelAdvanced = Boolean(this.$selectedElement.attr('data-advanced'));
-              this.updateFieldTitle(field);
+              if (this.$selectedElement) {
+                this.labelAdvanced = Boolean(this.$selectedElement.attr('data-advanced'));
+                this.updateFieldTitle(field);
+              }
             });
 
             return Observable.of(false);
