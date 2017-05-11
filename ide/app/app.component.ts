@@ -474,38 +474,37 @@ export class AppComponent implements OnInit, AfterViewInit {
     //     return Promise.resolve();
     //   }
     // })()
-    Promise.resolve().then(() => {
-      this.activeEditorService.setActive(null);
-      this.tabsService.closing = true;
-      this.tabsService.closeTab(tab);
-  
-      setTimeout(() => {
-        // debugger;
-        /* detect wrong case */
-        const $activeTrigger = $('.tab-trigger[data-active="true"]');
-        if ($activeTrigger.length) {
-          const url = $activeTrigger.attr('data-url');
-          const editor = $activeTrigger.attr('data-editor');
-  
-          if (editor === 'layout') {
-            this.log.info('set active url', url);
-            this.log.extra('app.component.ts');
-            this.activeEditorService.setActive(url);
-          }
-          
-          // check that tinymce is broken after 100ms
-          if (this.activeEditorService.getActive()) {
-            const $iframe = $(this.activeEditorService.getActive()
-                .getContainer().querySelector('iframe'));
-            let x = $iframe.contents().find('body').html();
-            if (
-              /* x === '' in case when <p> are missing, why? */
-              typeof x === 'undefined' || !x.length
-              // typeof x === 'undefined' || (!x.length 
-              //   && !$iframe.contents().find('body').length
-              // )
-            ) {
-              // const $tinyTextarea = $iframe.closest('form').find('>textarea');
+    this.activeEditorService.setActive(null);
+    this.tabsService.closing = true;
+    this.tabsService.closeTab(tab);
+
+    setTimeout(() => {
+      /* detect wrong case */
+      const $activeTrigger = $('.tab-trigger[data-active="true"]');
+      if ($activeTrigger.length) {
+        const url = $activeTrigger.attr('data-url');
+        const editor = $activeTrigger.attr('data-editor');
+
+        if (editor === 'layout') {
+          this.log.info('set active url', url);
+          this.log.extra('app.component.ts');
+          this.activeEditorService.setActive(url);
+        }
+        
+        // check that tinymce is broken after 100ms
+        if (this.activeEditorService.getActive()) {
+          const $iframe = $(this.activeEditorService.getActive()
+              .getContainer().querySelector('iframe'));
+          let x = $iframe.contents().find('body').html();
+          if (
+            /* x === '' in case when <p> are missing, why? */
+            typeof x === 'undefined' || !x.length
+            // typeof x === 'undefined' || (!x.length 
+            //   && !$iframe.contents().find('body').length
+            // )
+          ) {
+            // const $tinyTextarea = $iframe.closest('form').find('>textarea');
+            try {
               tinymce.EditorManager.execCommand('mceRemoveEditor', true, url);
               tinymce.EditorManager.execCommand('mceAddEditor', true, url);
               tinymce.EditorManager.execCommand('mceAddEditor', true, url);
@@ -521,11 +520,11 @@ export class AppComponent implements OnInit, AfterViewInit {
                 );
               }, 100);
             }
+            catch (e) {}
           }
         }
-      }, 100);
-    })
-    .catch(() => null);
+      }
+    }, 100);
   }
 
   onModalClose(event: any) {
