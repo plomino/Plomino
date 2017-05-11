@@ -290,11 +290,12 @@ export class PlominoFormSaveProcess {
       
       this.$layout.find(
         '.mceNonEditable,.mceEditable,.plominoFieldClass--selected,' +
-        '.plominoLabelClass--selected, [data-event-unique]'
+        '.plominoLabelClass--selected, [data-event-unique], .drag-autopreview'
       )
       .removeClass('mceNonEditable')
       .removeClass('mceEditable')
       .removeClass('plominoFieldClass--selected')
+      .removeClass('drag-autopreview')
       .removeAttr('data-event-unique')
       .removeClass('plominoLabelClass--selected');
 
