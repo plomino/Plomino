@@ -145,7 +145,9 @@ export class TabsService {
 
     const selectedTab: any = _.find(tabs, { url: tab.url, editor: tab.editor });
     
-    tabs.forEach(tab => { tab.active = (tab.url === selectedTab.url) });
+    tabs.forEach(tab => {
+      tab.active = (tab.url === selectedTab.url && selectedTab.editor === tab.editor);
+    });
 
     if (!isWorkflowTab) {
       // window.location.hash = `#t=${ tab.url.split('/').pop() }`;
