@@ -149,7 +149,7 @@ class DatabaseView(BrowserView):
             element = self.getElementByType(type,id)
 
             for formula in methodList:
-                setattr(element,formula,'')
+                setattr(element,formula,u'')
 
             for formula in contents:
                 setattr(element,formula['name'],formula['code'].rstrip())

@@ -511,11 +511,12 @@ def update_helpers(obj, event):
                 "",
                 code)
 
-        logger.info(
-            'Macro code with id: %s is inserted in %s obj. Code: %s...' %
-            (id, obj.id, code[:50]))
         # TODO: should not insert code that not changed or don't use macro
-        dm.set(code)
+        if dm.get() != code:
+            logger.info(
+                'Macro code with id: %s is inserted in %s obj. Code: %s..., old: %s...' %
+                (id, obj.id, code[:50], dm.get()[:50] if dm.get() else dm.get()))
+            dm.set(code)
         obj.helpers = helpers
 
 ######################################
