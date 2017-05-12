@@ -1328,7 +1328,7 @@ class PlominoForm(Container):
             rendering = subform.displayDocument(
                 doc, editmode=True, creation=True, parent_form_id=self.id,
             )
-            return rendering
+            return rendering.strip()
 
         elif widget_type == 'action':
             if id is None:
@@ -1342,7 +1342,7 @@ class PlominoForm(Container):
                 plominoaction=action,
                 plominotarget=self,
                 plomino_parent_id=self.id)
-            return action_render
+            return action_render.strip()
 
         elif widget_type == 'label':
             if id is None:
