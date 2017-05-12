@@ -133,7 +133,7 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
         
         /* form save automatically */
         // this.formsService.saveForm(this.item.formUniqueId, false);
-        this.saveManager.enqueueNewFormSaveProcess(this.item.url);
+        // this.saveManager.enqueueNewFormSaveProcess(this.item.url);
       }
     });
 
@@ -1060,6 +1060,7 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
           '<hr class="plominoPagebreakClass">',
           { target: element.target }
         );
+        this.saveManager.enqueueNewFormSaveProcess(this.item.url);
         return;
 
       default: return;
@@ -1108,6 +1109,7 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
           this.id, this.draggingService,
           `${widgetTemplate}`, { skip_undo: 1, target }
         );
+        this.saveManager.enqueueNewFormSaveProcess(this.item.url);
       });
     }
     else if (type == 'subform') {
@@ -1116,7 +1118,7 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
           return Observable.of(option);
         }
         else {
-          return this.elementService.getWidget(baseUrl, type, null)
+          return this.elementService.getWidget(baseUrl, type, null);
         }
       })()
       .subscribe((widgetTemplate: any) => {
@@ -1126,6 +1128,7 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
           ${ (value !== 'defaultSubform') ? ` data-plominoid="${ value }"` : '' }
           >${widgetTemplate}</div>`, { skip_undo: 1, target }
         );
+        this.saveManager.enqueueNewFormSaveProcess(this.item.url);
       });
     }
     else if (plominoClass !== undefined) {
@@ -1152,6 +1155,8 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
         this.contentManager.insertContent(
           this.id, this.draggingService, content, { skip_undo: 1, target }
         );
+
+        this.saveManager.enqueueNewFormSaveProcess(this.item.url);
 
         this.tabsService.selectField({
           id: value,
@@ -1218,6 +1223,8 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
           this.id, this.draggingService, zone, { skip_undo: 1, target }
         );
 			}
+
+      this.saveManager.enqueueNewFormSaveProcess(this.item.url);
       
       this.tabsService.selectField({
         id: value,
