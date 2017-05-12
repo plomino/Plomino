@@ -1318,10 +1318,11 @@ class PlominoForm(Container):
 
         elif widget_type == "subform":
             if id is None:
+                subform = None
+            else:
+                subform = getattr(self, id, None)
+            if subform is None or not isinstance(subform, PlominoForm):
                 return "<h2>Subform</h2><input value='...'/>"
-            subform = getattr(self, id, None)
-            if not isinstance(subform, PlominoForm):
-                return
             doc = getTemporaryDocument(db, form=subform,
                                        REQUEST={}).__of__(db)
             rendering = subform.displayDocument(
@@ -1331,7 +1332,7 @@ class PlominoForm(Container):
 
         elif widget_type == 'action':
             if id is None:
-                return "<input type='submit' value='...'/>"
+                return "<input type='button' class='context' id='defaultAction' value='defaultAction' name='defaultAction' />"
             action = getattr(self, id, None)
             if not isinstance(action, PlominoAction):
                 return
