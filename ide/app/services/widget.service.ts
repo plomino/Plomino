@@ -606,7 +606,7 @@ export class WidgetService {
   private convertFormSubform(base: string, element: JQuery): Observable<string> {
     const classList = element.get(0).classList;
     let $class = classList.length ? classList[0] : '';
-    let $id = element.text();
+    let $id = element.text().trim();
 
     return this.getWidget(
       base, 'subform',
@@ -617,8 +617,11 @@ export class WidgetService {
       if ($response.length > 1) {
         $response = $(`<div>${response}</div>`);
       }
-      return $response.addClass('mceNonEditable')
-        .addClass($class).attr('data-plominoid', $id).get(0).outerHTML;
+      const result = $response.addClass('mceNonEditable')
+        .addClass($class).attr('data-plominoid', $id).get(0);
+      return result ? result.outerHTML 
+        : '<div class="mceNonEditable" data-plominoid="' + $id 
+          + '"><h2>Subform</h2><input value="..."/></div>';
     });
   }
 
