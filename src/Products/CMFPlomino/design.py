@@ -306,6 +306,8 @@ class DesignManager:
         for form in forms:
             fields = form.getFormFields()
 
+            #TODO: more things than fields have macros on them
+            #TODO: modified events might have other consequences?
             for field in fields:
                 helpers = field.helpers
 

@@ -5,6 +5,7 @@ from Products.Five import BrowserView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from zope.interface import alsoProvides
 import plone.protect.interfaces
+from zope.lifecycleevent import modified
 
 from ..config import READ_PERMISSION
 
@@ -153,6 +154,9 @@ class DatabaseView(BrowserView):
 
             for formula in contents:
                 setattr(element,formula['name'],formula['code'].rstrip())
+
+            # have to ensure pythons scripts get cleared
+            modified(element)
 
             return json.dumps({
                 "type": "OK"
