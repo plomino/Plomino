@@ -5,6 +5,9 @@
 ```
 $ cd ./ide
 $ npm install
+$ npm i -g typescript@2.3.2
+$ npm i -g typings@2.1.1
+$ typings install
 $ npm run build
 ```
 

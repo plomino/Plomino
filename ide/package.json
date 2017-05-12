@@ -66,8 +66,8 @@
     "raw-loader": "^0.5.1",
     "text-loader": "0.0.1",
     "ts-loader": "^0.8.2",
-    "typescript": "^2.2.1",
-    "typings": "^2.1.0",
+    "typescript": "2.3.2",
+    "typings": "2.1.1",
     "webpack": "^1.14.0",
     "webpack-merge": "^0.12.0"
   }
