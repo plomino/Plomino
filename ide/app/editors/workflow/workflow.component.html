@@ -3,6 +3,7 @@
     dnd-droppable
     (onDragEnter)="onDragEnter($event)"
     (onDragLeave)="onDragLeave($event)"
+    [allowDrop]="allowDrop()"
     (onDropSuccess)="onDrop($event)"
     >
 </div>

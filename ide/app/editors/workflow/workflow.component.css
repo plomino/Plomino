@@ -36,6 +36,13 @@ body {
   padding: 4em 0.5em 0 0.5em;
   cursor: pointer;
 }
+.plomino-workflow-editor__branch-plus-btn {
+  position: absolute;
+  right: 40px;
+  outline: none !important;
+  top: 28px;
+  cursor: pointer;
+}
 .plomino-workflow-editor__branch::before, .plomino-workflow-editor__branch::after {
   content: '';
   position: absolute;
@@ -120,6 +127,44 @@ body {
   display: block;
   -webkit-clip-path: polygon(0 0, 100% 0, 90% 100%, 10% 100%);
           clip-path: polygon(0 0, 100% 0, 90% 100%, 10% 100%);
+}
+.plomino-workflow-editor__branch .workflow-node--condition .workflow-node__inner {
+  padding-top: 15px;
+}
+.plomino-workflow-editor__branch .workflow-node--condition .workflow-node__text--condition {
+  padding-top: 25px;
+  text-align: center;
+}
+.plomino-workflow-editor__branch .workflow-node--condition .workflow-node__shape-outside {
+  display: block;
+  min-width: 260px;
+  left: -30px;
+  -webkit-clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
+          clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
+}
+.plomino-workflow-editor__branch .workflow-node--condition .workflow-node__shape-inside {
+  display: block;
+  -webkit-clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
+          clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
+}
+.plomino-workflow-editor__branch .workflow-node--goto .workflow-node__inner {
+  padding-top: 15px;
+}
+.plomino-workflow-editor__branch .workflow-node--goto .workflow-node__text--goto {
+  padding-top: 25px;
+  text-align: center;
+}
+.plomino-workflow-editor__branch .workflow-node--goto .workflow-node__shape-outside {
+  display: block;
+  min-width: 160px;
+  left: 20px;
+  -webkit-clip-path: polygon(100% 0, 100% 80%, 50% 100%, 50% 100%, 0% 80%, 0 0);
+          clip-path: polygon(100% 0, 100% 80%, 50% 100%, 50% 100%, 0% 80%, 0 0);
+}
+.plomino-workflow-editor__branch .workflow-node--goto .workflow-node__shape-inside {
+  display: block;
+  -webkit-clip-path: polygon(100% 0, 100% 80%, 50% 100%, 50% 100%, 0% 80%, 0 0);
+          clip-path: polygon(100% 0, 100% 80%, 50% 100%, 50% 100%, 0% 80%, 0 0);
 }
 .plomino-workflow-editor__branch .workflow-node--as-a-shape {
   border: none;

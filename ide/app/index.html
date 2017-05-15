@@ -173,6 +173,15 @@
     .mdl-layout__drawer-button {
       display: none !important;
     }
+
+    .mdl-dialog__content-form-group {
+      margin-bottom: 15px;
+    }
+
+    .mdl-dialog__content-form-group select {
+      width: 100% !important;
+      display: block !important;
+    }
   </style>
 </head>
 
@@ -307,6 +316,49 @@
           <button type="button" class="mdl-button" data-create="view">Add new view</button>
           <button type="button" class="mdl-button">Cancel</button>
       </div>
+  </dialog>
+
+  <dialog id="wf-item-settings-dialog" class="mdl-dialog" style="width: 500px">
+    <h4 data-typefor="workflowFormTask" class="mdl-dialog__title">Form Task</h4>
+    <h4 data-typefor="workflowViewTask" class="mdl-dialog__title">View Task</h4>
+    <h4 data-typefor="workflowExternalTask" class="mdl-dialog__title">External Task</h4>
+    <h4 data-typefor="workflowProcess" class="mdl-dialog__title">Process</h4>
+    <h4 data-typefor="workflowCondition" class="mdl-dialog__title">Condition</h4>
+    <h4 data-typefor="workflowGoto" class="mdl-dialog__title">Goto</h4>
+    <div class="mdl-dialog__content">
+      <div data-typefor="workflowFormTask workflowViewTask workflowExternalTask workflowProcess" 
+        class="mdl-dialog__content-form-group">
+        <label for="wf-item-settings-dialog__title">Title</label>
+        <input type="text" id="wf-item-settings-dialog__title" data-key="title">
+      </div>
+      <div data-typefor="workflowFormTask" class="mdl-dialog__content-form-group">
+        <label for="wf-item-settings-dialog__form">Form</label>
+        <select id="wf-item-settings-dialog__form" data-key="form"></select>
+      </div>
+      <div data-typefor="workflowGoto" class="mdl-dialog__content-form-group">
+        <label for="wf-item-settings-dialog__node">Node</label>
+        <select id="wf-item-settings-dialog__node" data-key="goto"></select>
+      </div>
+      <div data-typefor="workflowViewTask" class="mdl-dialog__content-form-group">
+        <label for="wf-item-settings-dialog__view">View</label>
+        <input type="text" id="wf-item-settings-dialog__view" data-key="view">
+      </div>
+      <div data-typefor="workflowCondition" class="mdl-dialog__content-form-group">
+        <label for="wf-item-settings-dialog__condition">Condition</label>
+        <input type="text" id="wf-item-settings-dialog__condition" data-key="condition">
+      </div>
+    </div>
+    <div class="mdl-dialog__actions">
+      <button type="button"
+        class="mdl-button mdl-button--raised mdl-button--accent">
+        Cancel
+      </button>
+      <button type="button"
+        class="mdl-button mdl-button--raised mdl-button--accent 
+        wf-item-settings-dialog__apply-btn mdl-color--green-500">
+        Apply
+      </button>
+    </div>
   </dialog>
 
   <script defer src="theme/dialog-polyfill.js"></script>

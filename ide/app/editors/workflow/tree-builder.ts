@@ -1,9 +1,26 @@
+export const WF_ITEM_TYPE = {
+  FORM_TASK: 'workflowFormTask',
+  VIEW_TASK: 'workflowViewTask',
+  EXT_TASK: 'workflowExternalTask',
+  PROCESS: 'workflowProcess',
+  CONDITION: 'workflowCondition',
+  GOTO: 'workflowGoto',
+};
+
 export const treeBuilder = {
   getBuildedTree(
-    tree: PlominoWorkflowItem, 
-    onItemClick: (
-      $event: JQueryEventObject, $item: JQuery, item: PlominoWorkflowItem
-    ) => any
+    configuration: {
+      workingTree: PlominoWorkflowItem, 
+      onItemClick: (
+        $event: JQueryEventObject, $item: JQuery, item: PlominoWorkflowItem
+      ) => any,
+      onItemDblClick: (
+        $event: JQueryEventObject, $item: JQuery, item: PlominoWorkflowItem
+      ) => any,
+      onMacroClick?: (
+        $event: JQueryEventObject, $item: JQuery, item: PlominoWorkflowItem
+      ) => any,
+    }
   ): JQuery {
     const workWithItemRecursive = (item: PlominoWorkflowItem): JQuery => {
       const $item: JQuery = this.parseWFItem(item);
@@ -17,7 +34,10 @@ export const treeBuilder = {
       }
 
       if (!item.root) {
-        $item.click(($event) => onItemClick($event, $item, item));
+        $item.find('.workflow-node__text--macro a')
+          .click(($event) => configuration.onMacroClick($event, $item, item));
+        $item.click(($event) => configuration.onItemClick($event, $item, item));
+        $item.dblclick(($event) => configuration.onItemDblClick($event, $item, item));
       }
 
       return $item;
@@ -27,8 +47,14 @@ export const treeBuilder = {
       `<ul class="plomino-workflow-editor__branches
         plomino-workflow-editor__branches--root"></ul>`
     );
-    $root.append(workWithItemRecursive(tree));
+    $root.append(workWithItemRecursive(configuration.workingTree));
     return $root;
+  },
+
+  eventTypeIsTask(eventType: string) {
+    return [
+      WF_ITEM_TYPE.FORM_TASK, WF_ITEM_TYPE.VIEW_TASK, WF_ITEM_TYPE.EXT_TASK
+    ].indexOf(eventType) !== -1;
   },
 
   /**
@@ -37,19 +63,30 @@ export const treeBuilder = {
    */
   parseWFItem(item: PlominoWorkflowItem): JQuery {
     return $(
-      `<li class="plomino-workflow-editor__branch"><!--
-          --><div class="workflow-node
+      `<li class="plomino-workflow-editor__branch"><!--${
+           item.type === WF_ITEM_TYPE.CONDITION 
+           ? `--><button class="plomino-workflow-editor__branch-plus-btn
+             mdl-button mdl-js-button 
+             mdl-button--fab mdl-button--mini-fab">
+              <i class="material-icons">add</i>
+            </button><!--` : ''
+          }--><div class="workflow-node
             ${ item.root ? ' workflow-node--root' : ''}
             ${ item.dropping ? ' workflow-node--dropping' : '' }
-            ${ item.task ? ' workflow-node--as-a-shape workflow-node--task' : '' }"
+            ${ item.type === WF_ITEM_TYPE.CONDITION ? 
+              ' workflow-node--as-a-shape workflow-node--condition' : '' }
+            ${ item.type === WF_ITEM_TYPE.GOTO ? 
+              ' workflow-node--as-a-shape workflow-node--goto' : '' }
+            ${ this.eventTypeIsTask(item.type) ? 
+              ' workflow-node--as-a-shape workflow-node--task' : '' }"
             ${ item.id ? ` data-node-id="${ item.id }"` : '' }>
               <div class="workflow-node__inner"><!--
                 --><div class="workflow-node__shape-outside"><!--
                 --><div class="workflow-node__shape-inside"></div><!--
                 --></div><!--
-                -->${ item.task ? 
+                -->${ this.eventTypeIsTask(item.type) ? 
                   `<div class="workflow-node__text workflow-node__text--task">
-                      Task: ${ item.task }
+                      Task: ${ item.title }
                   </div>` : ''
                 }<!--
                 -->${ item.form ? 
@@ -57,14 +94,24 @@ export const treeBuilder = {
                       Form: ${ item.form }
                   </div>` : ''
                 }<!--
-                -->${ item.process ? 
-                  `<div class="workflow-node__text workflow-node__text--process">
-                      Process: ${ item.process }
+                -->${ item.view ? 
+                  `<div class="workflow-node__text workflow-node__text--view">
+                      View: ${ item.view }
                   </div>` : ''
                 }<!--
-                -->${ item.condition ? 
+                -->${ item.type === WF_ITEM_TYPE.PROCESS ? 
+                  `<div class="workflow-node__text workflow-node__text--process">
+                      Process: ${ item.title }
+                  </div>` : ''
+                }<!--
+                -->${ item.type === WF_ITEM_TYPE.PROCESS ? 
+                  `<div class="workflow-node__text workflow-node__text--macro">
+                      Macro: <a href onclick="return false">edit macros</a>
+                  </div>` : ''
+                }<!--
+                -->${ item.type === WF_ITEM_TYPE.CONDITION ? 
                   `<div class="workflow-node__text workflow-node__text--condition">
-                      Condition: ${ item.condition }
+                      ${ item.condition || '&nbsp;' }
                   </div>` : ''
                 }<!--
                 -->${ item.user ? 

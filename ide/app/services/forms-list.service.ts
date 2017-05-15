@@ -16,7 +16,9 @@ export class PlominoFormsListService {
   }
 
   getFiltered() {
-    return this.getForms().filter((form) => 
-      this.activeEditorService.getActive().id !== form.url);
+    const active = this.activeEditorService.getActive();
+    return this.getForms().filter((form) => {
+      return !active || active.id !== form.url;
+    });
   }
 }

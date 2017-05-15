@@ -47,6 +47,14 @@ $line-height: 4em;
     padding: $line-height .5em 0 .5em;
     cursor: pointer;
 
+    &-plus-btn {
+      position: absolute;
+      right: 40px;
+      outline: none !important;
+      top: 28px;
+      cursor: pointer;
+    }
+
     &::before,
     &::after {
       content: '';
@@ -137,6 +145,53 @@ $line-height: 4em;
         .workflow-node__shape-inside {
           display: block;
           clip-path: polygon(0 0, 100% 0, 90% 100%, 10% 100%);
+        }
+      }
+
+      &--condition {
+        .workflow-node__inner {
+          padding-top: 15px;
+        }
+
+        .workflow-node__text--condition {
+          padding-top: 25px;
+          text-align: center;
+        }
+
+        .workflow-node__shape-outside {
+          display: block;
+          min-width: 260px;
+          left: -30px;
+          clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
+        }
+
+        .workflow-node__shape-inside {
+          display: block;
+          clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
+        }
+      }
+
+      &--goto {
+        .workflow-node__inner {
+          padding-top: 15px;
+        }
+
+        .workflow-node__text--goto {
+          padding-top: 25px;
+          text-align: center;
+        }
+
+        .workflow-node__shape-outside {
+          display: block;
+          min-width: 160px;
+          // min-height: 50px !important;
+          left: 20px;
+          clip-path: polygon(100% 0, 100% 80%, 50% 100%, 50% 100%, 0% 80%, 0 0);
+        }
+
+        .workflow-node__shape-inside {
+          display: block;
+          clip-path: polygon(100% 0, 100% 80%, 50% 100%, 50% 100%, 0% 80%, 0 0);
         }
       }
 

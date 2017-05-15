@@ -111,19 +111,40 @@ export class AddComponent implements OnInit, AfterViewInit {
         this.changeDetector.markForCheck();
         this.changeDetector.detectChanges();
       });
+
+      const WF_ITEM_TYPE = {
+        FORM_TASK: 'workflowFormTask',
+        VIEW_TASK: 'workflowViewTask',
+        EXT_TASK: 'workflowExternalTask',
+        PROCESS: 'workflowProcess',
+        CONDITION: 'workflowCondition',
+        GOTO: 'workflowGoto',
+      };
       
       this.workflowComponents = [
         {
-          title: 'Task',
-          type: 'workflowTask'
+          title: 'Form',
+          type: WF_ITEM_TYPE.FORM_TASK
+        },
+        {
+          title: 'View',
+          type: WF_ITEM_TYPE.VIEW_TASK
+        },
+        {
+          title: 'External Task',
+          type: WF_ITEM_TYPE.EXT_TASK
         },
         {
           title: 'Process',
-          type: 'workflowProcess'
+          type: WF_ITEM_TYPE.PROCESS
         },
         {
           title: 'Condition',
-          type: 'workflowCondition'
+          type: WF_ITEM_TYPE.CONDITION
+        },
+        {
+          title: 'Goto',
+          type: WF_ITEM_TYPE.GOTO
         }
       ];
 

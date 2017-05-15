@@ -1,6 +1,6 @@
 interface PlominoWorkflowItem {
   id?: number;
-  task?: string;
+  title?: string;
   form?: string;
   user?: string;
   process?: string;

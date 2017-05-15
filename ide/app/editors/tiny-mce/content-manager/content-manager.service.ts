@@ -287,8 +287,13 @@ export class TinyMCEFormContentManagerService {
         ? $(this.activeEditorService.getActive()
           .getContainer().querySelector('iframe'))
         : $('iframe:visible');
-      editorId = $iframe.attr('id').replace('_ifr', '');
-      editor = tinymce.EditorManager.editors[editorId];
+      if ($iframe.attr('id')) {
+        editorId = $iframe.attr('id').replace('_ifr', '');
+        editor = tinymce.EditorManager.editors[editorId];
+      }
+      else {
+        return null;
+      }
     }
     const content = editor.getContent();
     return content.replace(/(<p>&nbsp;<\/p>(\s+)?)+?$/i, '');
