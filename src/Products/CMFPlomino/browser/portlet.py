@@ -186,7 +186,7 @@ class ElementPortletRenderer(base.Renderer):
         db = self.context.restrictedTraverse(
             self.data.db_path.encode(),
             None)
-        i18n_domain = db.getI18n()
+        i18n_domain = db.i18n
         if i18n_domain:
             header = PlominoTranslate(header, db, domain=i18n_domain)
         # TODO: why not the following?

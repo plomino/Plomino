@@ -303,21 +303,28 @@ class DesignManager:
     def refreshMacros(self, REQUEST=None):
         macros=0
         forms = self.getForms()
-        for form in forms:
-            fields = form.getFormFields()
+        views = self.getViews()
+        for form in forms + views:
+            items = form.objectValues()
 
             #TODO: more things than fields have macros on them
             #TODO: modified events might have other consequences?
-            for field in fields:
-                helpers = field.helpers
+            for item in list(items) + [form]:
+                helpers = getattr(item, 'helpers', []) #TODO should use a DM
 
+                changed = False
                 for helper in helpers:
                     for subhelper in helper:
-                        if subhelper['Form'] == 'macro_field_text_template':
-                            modified(field)
-                            macros += 1
-                            logger.info('updated macro template on field: %s' % field.id)
-        msg = '%i fields updated' % macros
+                        #TODO: is subhelper['Form'].modified > item.modified?
+                        changed = True
+
+                        #if self.getForm(subhelper['Form']).modified > :
+                        macros += 1
+                if changed:
+                    logger.debug('updated macro template on field: %s' % item.id)
+                    modified(item)
+
+        msg = '%i macros updated' % macros
         if REQUEST:
             self.writeMessageOnPage(msg, REQUEST, False)
             REQUEST.RESPONSE.redirect(self.absolute_url() + "/DatabaseDesign")
