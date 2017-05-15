@@ -73,10 +73,10 @@ class DesignManager:
 
     security = ClassSecurityInfo()
 
-    security.declarePublic('manage_refreshDB')
+    security.declareProtected(DESIGN_PERMISSION, 'doRefreshDB')
 
     @postonly
-    def manage_refreshDB(self, REQUEST):
+    def doRefreshDB(self, REQUEST):
         """ Launch refreshDB
         """
         report = self.refreshDB()
@@ -297,10 +297,10 @@ class DesignManager:
             self.writeMessageOnPage(msg, REQUEST, False)
             REQUEST.RESPONSE.redirect(self.absolute_url() + "/DatabaseDesign")
 
-    security.declareProtected(DESIGN_PERMISSION, 'manage_refreshMacros')
+    security.declareProtected(DESIGN_PERMISSION, 'refreshMacros')
 
     @postonly
-    def manage_refreshMacros(self, REQUEST=None):
+    def refreshMacros(self, REQUEST=None):
         macros=0
         forms = self.getForms()
         for form in forms:
