@@ -109,6 +109,27 @@ export class PlominoWorkflowComponent {
         }
       }
     });
+
+    $(document).keydown((eventData) => {
+      if (this.selectedItemRef && (eventData.keyCode === 8 || eventData.keyCode === 46)) {
+        /* delete the node */
+        const workWithItemRecursive = (item: PlominoWorkflowItem) => {
+          if (item.children.length) {
+            item.children.forEach((child, index) => {
+              if (child.id === this.selectedItemRef.id) {
+                item.children.splice(index, 1);
+              }
+              else {
+                workWithItemRecursive(child);
+              }
+            });
+          }
+        };
+    
+        workWithItemRecursive(this.tree);
+        this.buildWFTree();
+      }
+    });
   }
 
   findWFItemById(itemId: number, tree = this.tree): PlominoWorkflowItem {
