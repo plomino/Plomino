@@ -205,12 +205,18 @@ class DatabaseView(BrowserView):
         return methodList
 
     def getMethods(self,type):
+        """ type comes in the form of ViewAction, FormAction etc
+        """
+
+        if type != 'Form' and type != 'View':
+            type = type.replace('Form','').replace('View','')
 
         db = self.context.getParentDatabase()
         i18n_domain = db.i18n
         schema = component.getUtility(IDexterityFTI, name='Plomino'+type).lookupSchema()
         widgets = schema.getTaggedValue(u'plone.autoform.widgets')
         methods = []
+        # TODO: need to return this in order
         for name, desc in schema.namesAndDescriptions():
             field = schema.get(name)
             widget = widgets.get(name, None)
