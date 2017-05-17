@@ -17,9 +17,21 @@ export const treeBuilder = {
       onItemDblClick: (
         $event: JQueryEventObject, $item: JQuery, item: PlominoWorkflowItem
       ) => any,
-      onMacroClick?: (
+      onMacroClick: (
         $event: JQueryEventObject, $item: JQuery, item: PlominoWorkflowItem
       ) => any,
+      onDragStart: (
+        eventData: DragEvent, $item: JQuery, item: PlominoWorkflowItem
+      ) => true,
+      onDragEnter: (
+        eventData: DragEvent, $item: JQuery, item: PlominoWorkflowItem
+      ) => true,
+      onDragLeave: (
+        eventData: DragEvent, $item: JQuery, item: PlominoWorkflowItem
+      ) => true,
+      onDrop: (
+        eventData: DragEvent, $item: JQuery, item: PlominoWorkflowItem
+      ) => true,
     }
   ): JQuery {
     const workWithItemRecursive = (item: PlominoWorkflowItem): JQuery => {
@@ -38,6 +50,27 @@ export const treeBuilder = {
           .click(($event) => configuration.onMacroClick($event, $item, item));
         $item.click(($event) => configuration.onItemClick($event, $item, item));
         $item.dblclick(($event) => configuration.onItemDblClick($event, $item, item));
+
+        $item[0].ondragstart = (eventData: DragEvent) => {
+          console.log('dragstart', eventData);'q:' + item.id.toString());
+          return configuration.onDragStart(eventData, $item, item);
+        };
+
+        $item[0].ondrop = (eventData: DragEvent) => {
+          return configuration.onDrop(eventData, $item, item);
+        }
+
+        $item[0].ondragenter = (eventData: DragEvent) => {
+          return configuration.onDragEnter(eventData, $item, item);
+        }
+
+        $item[0].ondragleave = (eventData: DragEvent) => {
+          return configuration.onDragLeave(eventData, $item, item);
+        }
+
+        $item.on('dragover', ($event) => {
+          $event.preventDefault();
+        });
       }
 
       return $item;
@@ -63,7 +96,7 @@ export const treeBuilder = {
    */
   parseWFItem(item: PlominoWorkflowItem): JQuery {
     return $(
-      `<li class="plomino-workflow-editor__branch"><!--${
+      `<li class="plomino-workflow-editor__branch" draggable="true"><!--${
            item.type === WF_ITEM_TYPE.CONDITION 
            ? `--><button class="plomino-workflow-editor__branch-plus-btn
              mdl-button mdl-js-button 

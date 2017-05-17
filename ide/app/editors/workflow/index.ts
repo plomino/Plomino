@@ -4,7 +4,8 @@ import { DND_DIRECTIVES } from 'ng2-dnd';
 import { treeBuilder, WF_ITEM_TYPE } from './tree-builder';
 import { PlominoWorkflowNodeSettingsComponent } from "../../palette-view";
 import { PlominoWorkflowChangesNotifyService } from './workflow.changes.notify.service';
-import { PlominoFormsListService, LogService, FormsService } from "../../services";
+import { PlominoFormsListService, LogService, 
+  FormsService, DraggingService } from "../../services";
 
 @Component({
   selector: 'plomino-workflow-editor',
@@ -27,6 +28,7 @@ export class PlominoWorkflowComponent {
     private formsService: FormsService,
     private workflowChanges: PlominoWorkflowChangesNotifyService,
     private formsList: PlominoFormsListService,
+    private dragService: DraggingService,
   ) {
     this.itemSettingsDialog = <HTMLDialogElement> 
       document.querySelector('#wf-item-settings-dialog');
@@ -62,36 +64,6 @@ export class PlominoWorkflowComponent {
         this.itemSettingsDialog.close();
       });
     })
-    // this.tree = {
-    //   id: 1,
-    //   root: true,
-    //   children: [{
-    //     id: 2,
-    //     task: 'Fill in reason to contact',
-    //     form: 'Contact Us',
-    //     user: 'Anon',
-    //     children: [
-    //       {
-    //         id: 3,
-    //         condition: 'View Complaints',
-    //         children: [
-    //           {
-    //             id: 4,
-    //             process: 'Delete',
-    //             user: 'Admin',
-    //             children: []
-    //           },
-    //           {
-    //             id: 5,
-    //             process: 'Reply to user',
-    //             user: 'Admin',
-    //             children: []
-    //           }
-    //         ]
-    //       }
-    //     ]
-    //   }],
-    // };
   }
 
   ngOnInit() {
@@ -261,18 +233,23 @@ export class PlominoWorkflowComponent {
      * 3. ul.plomino-workflow-editor__branches - find .workflow-node:first ?
      */
 
+    this.log.info('$target', $target);
+
     if (
       $target.hasClass('plomino-workflow-editor__branch')
       || $target.hasClass('plomino-workflow-editor__branches')
     ) {
-      $relatedItem = $target.find('.workflow-node:first');
+      $relatedItem = $target.find('.workflow-node:last');
+      // this.log.info('first condition', $relatedItem);
     }
     else if ($target.closest('.workflow-node').length) {
       $relatedItem = $target.closest('.workflow-node');
+      // this.log.info('second condition', $relatedItem);
     }
     else {
       $relatedItem = $(this.workflowEditorNode.nativeElement)
         .find('.workflow-node:last');
+      // this.log.info('third condition', $relatedItem);
     }
 
     return $relatedItem;
@@ -309,19 +286,9 @@ export class PlominoWorkflowComponent {
     ) {
       allowedDrag = false;
     }
-    // else if (
-    //   !$wfItemClosest.hasClass('workflow-node--root') 
-    //   && dragData.type === WF_ITEM_TYPE.CONDITION
-    // ) {
-    //   /** @todo: allowed drag related to bottom children element */
-    //   allowedDrag = Boolean(
-    //     $wfItemClosest.length 
-    //     && $wfItemClosest.hasClass('workflow-node--task')
-    //   );
-    // }
     else if (
       !$wfItemClosest.hasClass('workflow-node--root') 
-      && [WF_ITEM_TYPE.PROCESS,  WF_ITEM_TYPE.CONDITION].indexOf(dragData.type) !== -1
+      && [WF_ITEM_TYPE.PROCESS, WF_ITEM_TYPE.CONDITION].indexOf(dragData.type) !== -1
     ) {
       /** @todo: allowed drag related to bottom children element */
       allowedDrag = Boolean(
@@ -430,6 +397,12 @@ export class PlominoWorkflowComponent {
     this.itemSettingsDialog
       .querySelector('#wf-item-settings-dialog__form')
       .innerHTML = this.formsList.getFiltered()
+        .map((f: any) => `<option>${ f.url.split('/').pop() }</option>`)
+        .join('');
+
+    this.itemSettingsDialog
+      .querySelector('#wf-item-settings-dialog__view')
+      .innerHTML = this.formsList.getViews()
         .map((f: any) => `<option>${ f.url.split('/').pop() }</option>`)
         .join('');
 
@@ -557,6 +530,51 @@ export class PlominoWorkflowComponent {
     return stackMap;
   }
 
+  onItemDragStart(eventData: DragEvent, $item: JQuery, item: PlominoWorkflowItem) {
+    this.dragService.followDNDType('existing-wf-item');
+    this.selectedItemRef = item;
+    // const workWithItemRecursive = (item: PlominoWorkflowItem) => {
+    //   if (item.children.length) {
+    //     item.children.forEach((child, index) => {
+    //       if (child.id === this.selectedItemRef.id) {
+    //         item.children.splice(index, 1);
+    //       }
+    //       else {
+    //         workWithItemRecursive(child);
+    //       }
+    //     });
+    //   }
+    // };
+
+    // workWithItemRecursive(this.tree);
+    // this.buildWFTree();
+    return true;
+  }
+
+  onItemDragEnter(eventData: DragEvent, $item: JQuery, item: PlominoWorkflowItem) {
+    const dndType = this.dragService.dndType;
+    if (dndType === 'existing-wf-item') {
+      console.log('onItemDragEnter');
+    }
+    return true;
+  }
+
+  onItemDragLeave(eventData: DragEvent, $item: JQuery, item: PlominoWorkflowItem) {
+    const dndType = this.dragService.dndType;
+    if (dndType === 'existing-wf-item') {
+      console.log('onItemDragLeave');
+    }
+    return true;
+  }
+
+  onItemDrop(eventData: DragEvent, $item: JQuery, item: PlominoWorkflowItem) {
+    const dndType = this.dragService.dndType;
+    if (dndType === 'existing-wf-item') {
+      console.log('onItemDrop');
+    }
+    return true;
+  }
+
   buildWFTree(tree = this.tree) {
     this.latestTree = tree;
 
@@ -569,6 +587,10 @@ export class PlominoWorkflowComponent {
         onItemClick: this.onWFItemClicked.bind(this),
         onItemDblClick: this.onWFItemDblClicked.bind(this),
         onMacroClick: this.onWFItemMacroClicked.bind(this),
+        onDragStart: this.onItemDragStart.bind(this),
+        onDragEnter: this.onItemDragEnter.bind(this),
+        onDragLeave: this.onItemDragLeave.bind(this),
+        onDrop: this.onItemDrop.bind(this),
       })
     );
 

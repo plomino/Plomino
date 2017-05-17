@@ -46,6 +46,7 @@ $line-height: 4em;
     position: relative;
     padding: $line-height .5em 0 .5em;
     cursor: pointer;
+    draggable: true;
 
     &-plus-btn {
       position: absolute;

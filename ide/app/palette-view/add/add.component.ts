@@ -567,8 +567,8 @@ export class AddComponent implements OnInit, AfterViewInit {
       this.startDrag(eventData, type, template);
     }
 
-    wfStartDrag() {
-
+    wfStartDrag(eventData: MouseEvent, type: any) {
+      this.draggingService.followDNDType(type);
     }
 
     wfStopDrag() {
