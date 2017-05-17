@@ -1,7 +1,9 @@
 from AccessControl import Unauthorized
 from jsonutil import jsonutil as json
+from plone.behavior.interfaces import IBehaviorAssignable
 from plone.dexterity.interfaces import IDexterityFTI
 from zope import component
+from zope.schema import getFieldsInOrder
 from Products.CMFPlomino.utils import PlominoTranslate
 import re
 from Products.Five import BrowserView
@@ -61,9 +63,10 @@ class DatabaseView(BrowserView):
                 return json.dumps({"code" : element.content, "methods" : []})
 
             if type == "FormHidewhen":
+                #TODO: Not sure this is a good idea. Bad UX to be inconsistent
                 return json.dumps({"code" : element.formula, "methods" : []})
 
-            methods = self.getMethods(type)
+            methods = self.getMethods(element=element)
             code = ""
 
             for method in self.getMethodsId(type):
@@ -99,7 +102,8 @@ class DatabaseView(BrowserView):
                     "type": "OK"
                 })
 
-            methodList = self.getMethodsId(type)
+            element = self.getElementByType(type,id)
+            methodList = self.getMethodsId(element=element)
 
             content = ""
             contents = []
@@ -150,7 +154,6 @@ class DatabaseView(BrowserView):
                         "line": lineNumber+1
                     })
 
-            element = self.getElementByType(type,id)
 
             for formula in methodList:
                 setattr(element,formula,u'')
@@ -198,37 +201,43 @@ class DatabaseView(BrowserView):
         return
 
 
-    def getMethodsId(self,type):
+    def getMethodsId(self,type=None, element=None):
         methodList = []
-        for method in self.getMethods(type):
+        for method in self.getMethods(type=type,element=element):
             methodList.append(method['id'])
         return methodList
 
-    def getMethods(self,type):
+    def getMethods(self,type=None, element=None):
         """ type comes in the form of ViewAction, FormAction etc
         """
 
-        if type != 'Form' and type != 'View':
-            type = type.replace('Form','').replace('View','')
-
         db = self.context.getParentDatabase()
         i18n_domain = db.i18n
-        schema = component.getUtility(IDexterityFTI, name='Plomino'+type).lookupSchema()
-        widgets = schema.getTaggedValue(u'plone.autoform.widgets')
+
+        if type is not None:
+            if type != 'Form' and type != 'View':
+                type = type.replace('Form','').replace('View','')
+            schema = component.getUtility(IDexterityFTI, name='Plomino'+type).lookupSchema()
+            schemas = [schema]
+        else:
+            schema = element.getTypeInfo().lookupSchema()
+            assignable = IBehaviorAssignable(element)
+            schemas = [schema] + [behaviour.interface for behaviour in assignable.enumerateBehaviors()]
         methods = []
-        # TODO: need to return this in order
-        for name, desc in schema.namesAndDescriptions():
-            field = schema.get(name)
-            widget = widgets.get(name, None)
-            if widget is None:
-                continue
-            # bit of a HACK
-            if widget.params.get('klass') == 'plomino-formula':
-                methods.append(dict(
-                    id=name,
-                    name=PlominoTranslate(field.title, db, domain=i18n_domain),
-                    desc=PlominoTranslate(field.description, db, domain=i18n_domain),
-                ))
+        for schema in schemas:
+            widgets = schema.queryTaggedValue(u'plone.autoform.widgets', {})
+            for name,field in getFieldsInOrder(schema):
+                #field = schema.get(name)
+                widget = widgets.get(name, None)
+                if widget is None:
+                    continue
+                # bit of a HACK
+                if widget.params.get('klass') == 'plomino-formula':
+                    methods.append(dict(
+                        id=name,
+                        name=PlominoTranslate(field.title, db, domain=i18n_domain),
+                        desc=PlominoTranslate(field.description, db, domain=i18n_domain),
+                    ))
         return methods
 
 
