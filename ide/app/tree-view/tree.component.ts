@@ -7,7 +7,8 @@ import {
     ViewChildren,
     OnInit,
     OnChanges, 
-    ContentChild 
+    ContentChild, 
+    ChangeDetectorRef
 } from '@angular/core';
 
 import { CollapseDirective } from 'ng2-bootstrap/ng2-bootstrap';
@@ -41,6 +42,7 @@ export class TreeComponent implements OnInit {
     @Input() selected: any;
     searchResults: any;
     filtered: boolean = false;
+    workflowMode: boolean = false;
     previousSelected: any;
 
     private click2DragDelay: Subscription;
@@ -51,6 +53,7 @@ export class TreeComponent implements OnInit {
       private formsService: FormsService,
       private log: LogService,
       private activeEditorService: PlominoActiveEditorService,
+      private changeDetector: ChangeDetectorRef,
       public draggingService: DraggingService
     ) { }
     
@@ -61,6 +64,11 @@ export class TreeComponent implements OnInit {
           this.log.extra('tree.component.ts ngOnInit');
           this.selected = activeTab;
         });
+
+      this.tabsService.workflowModeChanged$
+      .subscribe((value: boolean) => {
+        this.workflowMode = value;
+      });
     }
 
     treeArrowClick(ev: MouseEvent, typeName: any) {
@@ -88,6 +96,11 @@ export class TreeComponent implements OnInit {
             return true;
         }
         else { return false; }
+    }
+
+    dragSubformToWorkflow(dragEvent: DragEvent, formURL: string, formLabel: string) {
+      this.draggingService.followDNDType('existing-subform::' + formURL + '::' + formLabel);
+      dragEvent.dataTransfer.setData('text', formURL);
     }
 
     selectDBSettingsTab() {
@@ -123,8 +136,10 @@ export class TreeComponent implements OnInit {
       this.log.info('drag subform', selected, mouseEvent, typeLabel, typeNameUrl);
       this.log.extra('tree.component.ts dragSubform');
       if (this.activeEditorService.getActive() && selected && typeLabel === 'Forms' 
-        && typeNameUrl !== this.activeEditorService.getActive().id) {
+        && typeNameUrl !== this.activeEditorService.getActive().id
+      ) {
         this.draggingService.subformDragEvent.next(mouseEvent);
+        this.draggingService.followDNDType('subform');
       }
     }
 

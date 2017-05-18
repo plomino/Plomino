@@ -52,19 +52,22 @@ export const treeBuilder = {
         $item.dblclick(($event) => configuration.onItemDblClick($event, $item, item));
 
         $item[0].ondragstart = (eventData: DragEvent) => {
-          console.log('dragstart', eventData);'q:' + item.id.toString());
+          eventData.dataTransfer.setData('text', 'q:' + item.id.toString());
           return configuration.onDragStart(eventData, $item, item);
         };
 
         $item[0].ondrop = (eventData: DragEvent) => {
+          // console.log('drop', eventData.dataTransfer.getData('text'));
           return configuration.onDrop(eventData, $item, item);
         }
 
         $item[0].ondragenter = (eventData: DragEvent) => {
+          // console.log('dragenter', eventData.dataTransfer.getData('text'));
           return configuration.onDragEnter(eventData, $item, item);
         }
 
         $item[0].ondragleave = (eventData: DragEvent) => {
+          // console.log('dragleave', eventData.dataTransfer.getData('text'));
           return configuration.onDragLeave(eventData, $item, item);
         }
 

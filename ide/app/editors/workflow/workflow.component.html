@@ -3,6 +3,9 @@
     dnd-droppable
     (onDragEnter)="onDragEnter($event)"
     (onDragLeave)="onDragLeave($event)"
+    (dragenter)="wfDragEnterNativeEvent($event)"
+    (dragleave)="wfDragLeaveNativeEvent($event)"
+    (drop)="wfDropNativeEvent($event)"
     [allowDrop]="allowDrop()"
     (onDropSuccess)="onDrop($event)"
     >

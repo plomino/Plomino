@@ -173,6 +173,12 @@ export class PlominoWorkflowComponent {
       ];
     }
 
+    if (this.dragService.dndType.slice(0, 16) === 'existing-subform') {
+      const dragFormData = this.dragService.dndType.slice(17).split('::');
+      previewItem.title = dragFormData.pop();
+      previewItem.form = dragFormData.pop().split('/').pop();
+    }
+
     /* copy original tree to temporary sandbox-tree */
     const sandboxTree = jQuery.extend(true, {}, this.tree);
 
@@ -232,8 +238,6 @@ export class PlominoWorkflowComponent {
      * 2. li.plomino-workflow-editor__branch - find .workflow-node:first
      * 3. ul.plomino-workflow-editor__branches - find .workflow-node:first ?
      */
-
-    this.log.info('$target', $target);
 
     if (
       $target.hasClass('plomino-workflow-editor__branch')
@@ -304,6 +308,30 @@ export class PlominoWorkflowComponent {
     }
   }
 
+  wfDragEnterNativeEvent(eventData: DragEvent) {
+    if (this.dragService.dndType.slice(0, 16) === 'existing-subform') {
+      this.onDragEnter({
+        dragData: { title: '', type: WF_ITEM_TYPE.FORM_TASK },
+        mouseEvent: eventData
+      });
+    }
+  }
+
+  wfDragLeaveNativeEvent(eventData: DragEvent) {
+    if (this.dragService.dndType.slice(0, 16) === 'existing-subform') {
+      this.onDragLeave({
+        dragData: { title: '', type: WF_ITEM_TYPE.FORM_TASK },
+        mouseEvent: eventData
+      });
+    }
+  }
+
+  wfDropNativeEvent(eventData: DragEvent) {
+    if (this.dragService.dndType.slice(0, 16) === 'existing-subform') {
+      this.onDrop();
+    }
+  }
+
   allowDrop() {
     return ((dragData: any) => {
       if (this.isEmptySpace()) {
@@ -314,7 +342,7 @@ export class PlominoWorkflowComponent {
     }).bind(this);
   }
 
-  onDrop(dropEvent: any) {
+  onDrop() {
     const sandboxTree = this.latestTree;
     const temporaryItem = this.findWFItemById(-1, sandboxTree);
 
@@ -533,28 +561,25 @@ export class PlominoWorkflowComponent {
   onItemDragStart(eventData: DragEvent, $item: JQuery, item: PlominoWorkflowItem) {
     this.dragService.followDNDType('existing-wf-item');
     this.selectedItemRef = item;
-    // const workWithItemRecursive = (item: PlominoWorkflowItem) => {
-    //   if (item.children.length) {
-    //     item.children.forEach((child, index) => {
-    //       if (child.id === this.selectedItemRef.id) {
-    //         item.children.splice(index, 1);
-    //       }
-    //       else {
-    //         workWithItemRecursive(child);
-    //       }
-    //     });
-    //   }
-    // };
-
-    // workWithItemRecursive(this.tree);
-    // this.buildWFTree();
     return true;
   }
 
   onItemDragEnter(eventData: DragEvent, $item: JQuery, item: PlominoWorkflowItem) {
     const dndType = this.dragService.dndType;
+    
     if (dndType === 'existing-wf-item') {
       console.log('onItemDragEnter');
+    }
+    else if (dndType.slice(0, 16) === 'existing-subform') {
+      const dragEvent = {
+        dragData: {
+          title: dndType.slice(17),
+          type: WF_ITEM_TYPE.FORM_TASK
+        },
+        mouseEvent: eventData,
+      };
+      const $wfItemClosest = this.getClosestWFItemToDragEvent(dragEvent);
+      this.dragInsertPreview($wfItemClosest, dragEvent.dragData);
     }
     return true;
   }
@@ -562,7 +587,14 @@ export class PlominoWorkflowComponent {
   onItemDragLeave(eventData: DragEvent, $item: JQuery, item: PlominoWorkflowItem) {
     const dndType = this.dragService.dndType;
     if (dndType === 'existing-wf-item') {
-      console.log('onItemDragLeave');
+      console.log('onItemDragLeave', eventData);
+    }
+    else if (dndType.slice(0, 16) === 'existing-subform') {
+      const $offset = $item.offset();
+  
+      if (eventData.clientX < $offset.left || eventData.clientY < $offset.top) {
+        this.buildWFTree();
+      }
     }
     return true;
   }
@@ -571,6 +603,9 @@ export class PlominoWorkflowComponent {
     const dndType = this.dragService.dndType;
     if (dndType === 'existing-wf-item') {
       console.log('onItemDrop');
+    }
+    else if (dndType.slice(0, 16) === 'existing-subform') {
+      return this.onDrop();
     }
     return true;
   }
