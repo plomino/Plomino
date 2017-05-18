@@ -98,8 +98,13 @@ export class TreeComponent implements OnInit {
         else { return false; }
     }
 
-    dragSubformToWorkflow(dragEvent: DragEvent, formURL: string, formLabel: string) {
-      this.draggingService.followDNDType('existing-subform::' + formURL + '::' + formLabel);
+    dragSubformToWorkflow(
+      dragEvent: DragEvent, formURL: string, formLabel: string,
+      typeLabel: string
+    ) {
+      this.draggingService.followDNDType(
+        'existing-subform::' + formURL + '::' + formLabel + '::' + typeLabel
+      );
       dragEvent.dataTransfer.setData('text', formURL);
     }
 
@@ -112,21 +117,13 @@ export class TreeComponent implements OnInit {
       typeLabel: string, typeNameUrl: string,
       typeNameLabel: string, formUniqueId: string
     ) {
-      if (typeLabel === 'Views') {
-        this.onEdit({
-          formUniqueId: formUniqueId,
-          label: typeNameLabel,
-          url: typeNameUrl,
-          editor: 'view',
-          path: [{ name: typeNameLabel, type: typeLabel }]
-        });
-      }
-      else {
-        this.click2DragDelay = Observable.timer(500, 1000).subscribe((t: number) => {
+      this.click2DragDelay = Observable.timer(500, 1000).subscribe((t: number) => {
+        if (typeLabel !== 'Views') {
           this.dragSubform(selected, mouseEvent, typeLabel, typeNameUrl);
-          this.click2DragDelay.unsubscribe();
-        });
-      }
+        }
+        this.click2DragDelay.unsubscribe();
+      });
+      
       return true;
     }
 

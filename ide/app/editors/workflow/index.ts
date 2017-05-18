@@ -174,9 +174,11 @@ export class PlominoWorkflowComponent {
     }
 
     if (this.dragService.dndType.slice(0, 16) === 'existing-subform') {
-      const dragFormData = this.dragService.dndType.slice(17).split('::');
+      const dragFormData = this.dragService.dndType.slice(18).split('::');
+      dragFormData.pop();
       previewItem.title = dragFormData.pop();
-      previewItem.form = dragFormData.pop().split('/').pop();
+      previewItem[previewItem.type === WF_ITEM_TYPE.FORM_TASK 
+        ? 'form' : 'view'] = dragFormData.pop().split('/').pop();
     }
 
     /* copy original tree to temporary sandbox-tree */
@@ -310,8 +312,13 @@ export class PlominoWorkflowComponent {
 
   wfDragEnterNativeEvent(eventData: DragEvent) {
     if (this.dragService.dndType.slice(0, 16) === 'existing-subform') {
+      const dragFormData = this.dragService.dndType.slice(18).split('::');
       this.onDragEnter({
-        dragData: { title: '', type: WF_ITEM_TYPE.FORM_TASK },
+        dragData: {
+          title: '',
+          type: dragFormData.pop() === 'Views'
+            ? WF_ITEM_TYPE.VIEW_TASK : WF_ITEM_TYPE.FORM_TASK
+        },
         mouseEvent: eventData
       });
     }
@@ -319,8 +326,13 @@ export class PlominoWorkflowComponent {
 
   wfDragLeaveNativeEvent(eventData: DragEvent) {
     if (this.dragService.dndType.slice(0, 16) === 'existing-subform') {
+      const dragFormData = this.dragService.dndType.slice(18).split('::');
       this.onDragLeave({
-        dragData: { title: '', type: WF_ITEM_TYPE.FORM_TASK },
+        dragData: {
+          title: '',
+          type: dragFormData.pop() === 'Views'
+            ? WF_ITEM_TYPE.VIEW_TASK : WF_ITEM_TYPE.FORM_TASK
+        },
         mouseEvent: eventData
       });
     }
@@ -573,8 +585,9 @@ export class PlominoWorkflowComponent {
     else if (dndType.slice(0, 16) === 'existing-subform') {
       const dragEvent = {
         dragData: {
-          title: dndType.slice(17),
-          type: WF_ITEM_TYPE.FORM_TASK
+          title: '',
+          type: dndType.slice(18).split('::').pop() === 'Views' 
+            ? WF_ITEM_TYPE.VIEW_TASK : WF_ITEM_TYPE.FORM_TASK
         },
         mouseEvent: eventData,
       };
