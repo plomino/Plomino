@@ -35,6 +35,7 @@ body {
   position: relative;
   padding: 4em 0.5em 0 0.5em;
   cursor: pointer;
+  draggable: true;
 }
 .plomino-workflow-editor__branch-plus-btn {
   position: absolute;
@@ -216,6 +217,12 @@ body {
   top: -15px;
   left: 0;
   width: 100%;
+}
+.plomino-workflow-editor__branch .workflow-node--dragging {
+  opacity: 0.7;
+}
+.plomino-workflow-editor__branch .workflow-node--dragging::before {
+  visibility: hidden;
 }
 .plomino-workflow-editor__branch .workflow-node:not(.workflow-node--as-a-shape):hover {
   background: #3f51b5;

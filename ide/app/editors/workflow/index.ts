@@ -119,6 +119,21 @@ export class PlominoWorkflowComponent {
     return null;
   }
 
+  findWFItemParentById(itemId: number, tree = this.tree): PlominoWorkflowItem {
+    if (tree.children) {
+      if (tree.children.filter((x: any) => x.id === itemId).length) {
+        return tree;
+      }
+      for (let subTree of tree.children) {
+        let result = this.findWFItemParentById(itemId, subTree);
+        if (result) {
+          return result;
+        }
+      }
+    }
+    return null;
+  }
+
   /**
    * @param {JQuery} parentItem - closest .workflow-node to the mouse cursor
    */
@@ -126,59 +141,62 @@ export class PlominoWorkflowComponent {
     if ($parentItem.hasClass('workflow-node--dropping')) {
       return false; // do nothing
     }
+
     const previewItem: PlominoWorkflowItem = {
       id: -1,
       dropping: true,
       type: dragData.type,
-      children: []
+      children: (<any> dragData).children || []
     };
 
-    if (this.eventTypeIsTask(dragData.type)) {
-      previewItem.title = 'Empty task';
-
-      if (dragData.type === WF_ITEM_TYPE.FORM_TASK) {
-        previewItem.form = '';
+    if (this.dragService.dndType !== 'existing-wf-item') {
+      if (this.eventTypeIsTask(dragData.type)) {
+        previewItem.title = 'Empty task';
+  
+        if (dragData.type === WF_ITEM_TYPE.FORM_TASK) {
+          previewItem.form = '';
+        }
+        else if (dragData.type === WF_ITEM_TYPE.VIEW_TASK) {
+          previewItem.view = '';
+        }
       }
-      else if (dragData.type === WF_ITEM_TYPE.VIEW_TASK) {
-        previewItem.view = '';
+      else if (dragData.type === WF_ITEM_TYPE.PROCESS) {
+        previewItem.title = 'Empty process';
       }
-    }
-    else if (dragData.type === WF_ITEM_TYPE.PROCESS) {
-      previewItem.title = 'Empty process';
-    }
-    else if (dragData.type === WF_ITEM_TYPE.GOTO) {
-      previewItem.goto = 'nothing';
-    }
-    else if (dragData.type === WF_ITEM_TYPE.CONDITION) {
-      previewItem.condition = '';
-
-      const truePreviewItem: PlominoWorkflowItem = {
-        id: -2,
-        title: 'true process',
-        dropping: true,
-        type: WF_ITEM_TYPE.PROCESS,
-        children: []
-      };
-
-      const falsePreviewItem: PlominoWorkflowItem = {
-        id: -3,
-        title: 'false process',
-        dropping: true,
-        type: WF_ITEM_TYPE.PROCESS,
-        children: []
-      };
-
-      previewItem.children = [
-        truePreviewItem, falsePreviewItem
-      ];
-    }
-
-    if (this.dragService.dndType.slice(0, 16) === 'existing-subform') {
-      const dragFormData = this.dragService.dndType.slice(18).split('::');
-      dragFormData.pop();
-      previewItem.title = dragFormData.pop();
-      previewItem[previewItem.type === WF_ITEM_TYPE.FORM_TASK 
-        ? 'form' : 'view'] = dragFormData.pop().split('/').pop();
+      else if (dragData.type === WF_ITEM_TYPE.GOTO) {
+        previewItem.goto = 'nothing';
+      }
+      else if (dragData.type === WF_ITEM_TYPE.CONDITION) {
+        previewItem.condition = '';
+  
+        const truePreviewItem: PlominoWorkflowItem = {
+          id: -2,
+          title: 'true process',
+          dropping: true,
+          type: WF_ITEM_TYPE.PROCESS,
+          children: []
+        };
+  
+        const falsePreviewItem: PlominoWorkflowItem = {
+          id: -3,
+          title: 'false process',
+          dropping: true,
+          type: WF_ITEM_TYPE.PROCESS,
+          children: []
+        };
+  
+        previewItem.children = [
+          truePreviewItem, falsePreviewItem
+        ];
+      }
+  
+      if (this.dragService.dndType.slice(0, 16) === 'existing-subform') {
+        const dragFormData = this.dragService.dndType.slice(18).split('::');
+        dragFormData.pop();
+        previewItem.title = dragFormData.pop();
+        previewItem[previewItem.type === WF_ITEM_TYPE.FORM_TASK 
+          ? 'form' : 'view'] = dragFormData.pop().split('/').pop();
+      }
     }
 
     /* copy original tree to temporary sandbox-tree */
@@ -311,6 +329,7 @@ export class PlominoWorkflowComponent {
   }
 
   wfDragEnterNativeEvent(eventData: DragEvent) {
+    console.log('wfDragEnterNativeEvent');
     if (this.dragService.dndType.slice(0, 16) === 'existing-subform') {
       const dragFormData = this.dragService.dndType.slice(18).split('::');
       this.onDragEnter({
@@ -325,6 +344,7 @@ export class PlominoWorkflowComponent {
   }
 
   wfDragLeaveNativeEvent(eventData: DragEvent) {
+    console.log('wfDragLeaveNativeEvent');
     if (this.dragService.dndType.slice(0, 16) === 'existing-subform') {
       const dragFormData = this.dragService.dndType.slice(18).split('::');
       this.onDragLeave({
@@ -400,7 +420,7 @@ export class PlominoWorkflowComponent {
   }
 
   onWFItemClicked($event: JQueryEventObject, $item: JQuery, item: PlominoWorkflowItem) {
-    this.log.info($event, $item, item);
+    // this.log.info($event, $item, item);
 
     if (!item.selected) {
       this.unselectAllWFItems();
@@ -573,14 +593,38 @@ export class PlominoWorkflowComponent {
   onItemDragStart(eventData: DragEvent, $item: JQuery, item: PlominoWorkflowItem) {
     this.dragService.followDNDType('existing-wf-item');
     this.selectedItemRef = item;
+    $item.addClass('workflow-node--dragging');
+    eventData.stopImmediatePropagation();
     return true;
   }
 
   onItemDragEnter(eventData: DragEvent, $item: JQuery, item: PlominoWorkflowItem) {
     const dndType = this.dragService.dndType;
+    eventData.stopImmediatePropagation();
     
-    if (dndType === 'existing-wf-item') {
-      console.log('onItemDragEnter');
+    if (dndType === 'existing-wf-item' 
+      && this.selectedItemRef.id !== item.id
+    ) {
+      const dragEvent = <any> {
+        dragData: item,
+        mouseEvent: eventData,
+      };
+      // eventData.preventDefault();
+      /**
+       * step 1: temporary variable for item
+       * step 2: assign selected attributes to item
+       */
+      // const itemParent = this.findWFItemParentById(item.id);
+      const selectedParent = this.findWFItemParentById(this.selectedItemRef.id);
+      if (selectedParent.children.filter((x: any) => x.id === item.id).length) {
+        /* swap */
+        const $wfItemClosest = this.getClosestWFItemToDragEvent(dragEvent);
+        $('.workflow-node--dropping').removeClass('workflow-node--dropping');
+        $wfItemClosest.addClass('workflow-node--dropping');
+        console.log('onItemDragEnter', item, $wfItemClosest.get(0));
+      }
+      
+      return true;
     }
     else if (dndType.slice(0, 16) === 'existing-subform') {
       const dragEvent = {
@@ -599,8 +643,10 @@ export class PlominoWorkflowComponent {
 
   onItemDragLeave(eventData: DragEvent, $item: JQuery, item: PlominoWorkflowItem) {
     const dndType = this.dragService.dndType;
-    if (dndType === 'existing-wf-item') {
-      console.log('onItemDragLeave', eventData);
+    if (dndType === 'existing-wf-item'
+      && this.selectedItemRef.id !== item.id) {
+      console.log('onItemDragLeave', item, $item);
+      eventData.stopImmediatePropagation();
     }
     else if (dndType.slice(0, 16) === 'existing-subform') {
       const $offset = $item.offset();
@@ -612,10 +658,48 @@ export class PlominoWorkflowComponent {
     return true;
   }
 
+  onItemDragEnd(eventData: DragEvent, $item: JQuery, item: PlominoWorkflowItem) {
+    const dndType = this.dragService.dndType;
+    if (dndType === 'existing-wf-item') {
+      console.log('onItemDragEnd', item);
+      $item.removeClass('workflow-node--dragging');
+      $('.workflow-node--dropping').removeClass('workflow-node--dropping');
+      eventData.stopImmediatePropagation();
+    }
+    return true;
+  }
+
   onItemDrop(eventData: DragEvent, $item: JQuery, item: PlominoWorkflowItem) {
     const dndType = this.dragService.dndType;
     if (dndType === 'existing-wf-item') {
-      console.log('onItemDrop');
+      console.log('onItemDrop', item);
+      $('.workflow-node--dropping').removeClass('workflow-node--dropping');
+      eventData.stopImmediatePropagation();
+
+      const selectedParent = this.findWFItemParentById(this.selectedItemRef.id);
+      if (selectedParent.children.filter((x: any) => x.id === item.id).length) {
+        const tmp = jQuery.extend(true, {}, item);
+        for (let key of Object.keys(item)) {
+          if (!this.selectedItemRef.hasOwnProperty(key)) {
+            delete item[key];
+          }
+        }
+        for (let key of Object.keys(this.selectedItemRef)) {
+          if (key !== 'children') {
+            item[key] = this.selectedItemRef[key];
+            if (!tmp.hasOwnProperty(key)) {
+              delete this.selectedItemRef[key];
+            }
+          }
+        }
+        for (let key of Object.keys(tmp)) {
+          if (key !== 'children') {
+            this.selectedItemRef[key] = tmp[key];
+          }
+        }
+  
+        this.buildWFTree();
+      }
     }
     else if (dndType.slice(0, 16) === 'existing-subform') {
       return this.onDrop();
@@ -638,6 +722,7 @@ export class PlominoWorkflowComponent {
         onDragStart: this.onItemDragStart.bind(this),
         onDragEnter: this.onItemDragEnter.bind(this),
         onDragLeave: this.onItemDragLeave.bind(this),
+        onDragEnd: this.onItemDragEnd.bind(this),
         onDrop: this.onItemDrop.bind(this),
       })
     );

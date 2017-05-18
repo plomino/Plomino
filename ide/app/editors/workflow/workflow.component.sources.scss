@@ -259,6 +259,13 @@ $line-height: 4em;
         width: 100%;
       }
 
+      &--dragging {
+        opacity: 0.7;
+        &::before {
+          visibility: hidden;
+        }
+      }
+
       &:not(.workflow-node--as-a-shape):hover {
         background: $highlight-color;
         color: #fff;

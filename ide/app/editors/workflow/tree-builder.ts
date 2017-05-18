@@ -29,6 +29,9 @@ export const treeBuilder = {
       onDragLeave: (
         eventData: DragEvent, $item: JQuery, item: PlominoWorkflowItem
       ) => true,
+      onDragEnd: (
+        eventData: DragEvent, $item: JQuery, item: PlominoWorkflowItem
+      ) => true,
       onDrop: (
         eventData: DragEvent, $item: JQuery, item: PlominoWorkflowItem
       ) => true,
@@ -54,6 +57,10 @@ export const treeBuilder = {
         $item[0].ondragstart = (eventData: DragEvent) => {
           eventData.dataTransfer.setData('text', 'q:' + item.id.toString());
           return configuration.onDragStart(eventData, $item, item);
+        };
+
+        $item[0].ondragend = (eventData: DragEvent) => {
+          return configuration.onDragEnd(eventData, $item, item);
         };
 
         $item[0].ondrop = (eventData: DragEvent) => {
@@ -99,7 +106,8 @@ export const treeBuilder = {
    */
   parseWFItem(item: PlominoWorkflowItem): JQuery {
     return $(
-      `<li class="plomino-workflow-editor__branch" draggable="true"><!--${
+      `<li class="plomino-workflow-editor__branch" 
+           ${ !item.root ? ' draggable="true"' : ''}><!--${
            item.type === WF_ITEM_TYPE.CONDITION 
            ? `--><button class="plomino-workflow-editor__branch-plus-btn
              mdl-button mdl-js-button 
