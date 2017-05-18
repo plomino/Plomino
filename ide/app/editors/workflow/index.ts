@@ -685,17 +685,17 @@ export class PlominoWorkflowComponent {
           }
         }
         for (let key of Object.keys(this.selectedItemRef)) {
-          if (key !== 'children') {
+          // if (key !== 'children') {
             item[key] = this.selectedItemRef[key];
             if (!tmp.hasOwnProperty(key)) {
               delete this.selectedItemRef[key];
             }
-          }
+          // }
         }
         for (let key of Object.keys(tmp)) {
-          if (key !== 'children') {
+          // if (key !== 'children') {
             this.selectedItemRef[key] = tmp[key];
-          }
+          // }
         }
   
         this.buildWFTree();
