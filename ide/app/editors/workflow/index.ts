@@ -1,3 +1,5 @@
+import { FakeFormData } from './../../utility/fd-helper/fd-helper';
+import { PlominoHTTPAPIService } from './../../services/http-api.service';
 import { Component, ElementRef, ViewChild, ViewEncapsulation } from '@angular/core';
 import { PlominoBlockPreloaderComponent } from '../../utility';
 import { DND_DIRECTIVES } from 'ng2-dnd';
@@ -29,6 +31,7 @@ export class PlominoWorkflowComponent {
     private workflowChanges: PlominoWorkflowChangesNotifyService,
     private formsList: PlominoFormsListService,
     private dragService: DraggingService,
+    private api: PlominoHTTPAPIService,
   ) {
     this.itemSettingsDialog = <HTMLDialogElement> 
       document.querySelector('#wf-item-settings-dialog');
@@ -67,19 +70,27 @@ export class PlominoWorkflowComponent {
   }
 
   ngOnInit() {
-    // this.tree = {
-    //   id: 1, root: true, children: [
-    //     {
-    //       id: 2,
-    //       type: WF_ITEM_TYPE.FORM_TASK, 
-    //       title: 'New Form', 
-    //       form: 'new-form', 
-    //       children: []
-    //     }
-    //   ]
-    // };
 
-    this.buildWFTree();
+    try {
+      const dbLink = `${ 
+        window.location.pathname
+        .replace('++resource++Products.CMFPlomino/ide/', '')
+        .replace('/index.html', '')
+      }`;
+  
+      const fd = new FakeFormData(<any> $(`form[action*="${ dbLink }"]`).get(0));
+      this.tree = JSON.parse(fd.get('form.widgets.IBasic.description'));
+
+      if (!fd.get('form.widgets.IBasic.description') || !this.tree) {
+        this.tree = { id: 1, root: true, children: [] };
+      }
+  
+      this.buildWFTree();
+    }
+    catch(e) {
+      this.tree = { id: 1, root: true, children: [] };
+      this.buildWFTree();
+    }
 
     this.workflowChanges.onChangesDetect$
     .subscribe((kvData) => {
@@ -778,6 +789,20 @@ export class PlominoWorkflowComponent {
         onDrop: this.onItemDrop.bind(this),
       })
     );
+
+    const dbLink = `${ 
+      window.location.pathname
+      .replace('++resource++Products.CMFPlomino/ide/', '')
+      .replace('/index.html', '')
+    }`;
+
+    const fd = new FakeFormData(<any> $(`form[action*="${ dbLink }"]`).get(0));
+    fd.set('form.widgets.IBasic.description', JSON.stringify(this.tree));
+    fd.set('form.buttons.save', 'Save');
+
+    this.api
+      .postWithOptions(`${ dbLink }/@@edit`, fd.build(), {})
+      .subscribe((response) => {});
 
     return true;
   }

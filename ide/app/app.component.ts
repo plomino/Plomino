@@ -290,15 +290,6 @@ export class AppComponent implements OnInit, AfterViewInit {
       topFormsViewsList.forEach((x: any) => {
         $(`[data-mdl-for="tab_${ x.url }"]`).html(x.label);
       });
-
-      // setTimeout(() => {
-      //   this.tabsService.openTab({
-      //     url: 'workflow',
-      //     label: 'Workflow',
-      //     editor: 'workflow',
-      //     path: []
-      //   }, true);
-      // }, 400);
     });
     
     this.tabsService
