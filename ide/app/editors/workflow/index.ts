@@ -67,17 +67,18 @@ export class PlominoWorkflowComponent {
   }
 
   ngOnInit() {
-    this.tree = {
-      id: 1, root: true, children: [
-        {
-          id: 2,
-          type: WF_ITEM_TYPE.FORM_TASK, 
-          title: 'New Form', 
-          form: 'new-form', 
-          children: []
-        }
-      ]
-    };
+    // this.tree = {
+    //   id: 1, root: true, children: [
+    //     {
+    //       id: 2,
+    //       type: WF_ITEM_TYPE.FORM_TASK, 
+    //       title: 'New Form', 
+    //       form: 'new-form', 
+    //       children: []
+    //     }
+    //   ]
+    // };
+
     this.buildWFTree();
 
     this.workflowChanges.onChangesDetect$

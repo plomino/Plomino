@@ -107,7 +107,10 @@ export class AddComponent implements OnInit, AfterViewInit {
       this.tabsService.workflowModeChanged$
       .subscribe((value: boolean) => {
         this.workflowMode = value;
-        console.log('workflow mode changed', this.workflowMode);
+        setTimeout(() => {
+          $('.nav-item:has(#tab_workflow)')
+          .css({ height: '42px', display: 'flex', 'align-items': 'flex-end' });
+        }, 200);
         this.changeDetector.markForCheck();
         this.changeDetector.detectChanges();
       });

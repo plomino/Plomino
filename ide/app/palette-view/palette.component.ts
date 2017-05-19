@@ -77,11 +77,13 @@ export class PaletteComponent implements OnInit {
           this.formsService.changePaletteTab(0);
         }
         this.workflowMode = value;
-        this.tabs[1].hidden = value;
-        this.tabs[4].hidden = !value;
+        // this.tabs[1].hidden = value;
+        // this.tabs[4].hidden = !value;
         this.changeDetector.markForCheck();
         this.changeDetector.detectChanges();
         componentHandler.upgradeDom();
+        $('.nav-item:has(#tab_workflow)')
+          .css({ height: '42px', display: 'flex', 'align-items': 'flex-end' });
       });
 
         this.tabsService.getActiveTab().subscribe((activeTab) => {
