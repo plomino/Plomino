@@ -43,15 +43,7 @@ export class URLManagerService {
       else {
         const $resource = $(`.tree-node--name:contains("${ urlItem }")`)
           .filter((i, node: HTMLElement) => $(node).text().trim() === urlItem);
-  
-        if ($resource.parent().hasClass('tree-node--is-view')) {
-          $resource.parent().get(0).dispatchEvent(new Event('mousedown'));
-          this.log.info('opening view...', urlItem);
-        }
-        else {
-          $resource.click();
-          this.log.info('opening form...', urlItem);
-        }
+        $resource.click();
       }
     }
   }
