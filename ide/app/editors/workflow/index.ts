@@ -70,6 +70,9 @@ export class PlominoWorkflowComponent {
         if (btn.classList.contains('wf-item-settings-dialog__apply-btn')) {
           this.apply2selected();
         }
+        else if (btn.classList.contains('wf-item-settings-dialog__macro-btn')) {
+          this.editMacro(this.selectedItemRef);
+        }
         else if (btn.classList.contains('wf-item-settings-dialog__create-btn--form')) {
           this.saveManager.createNewForm((url, label) => {
             this.selectedItemRef.title = label;
@@ -663,11 +666,7 @@ export class PlominoWorkflowComponent {
     return null;
   }
 
-  onWFItemMacroClicked($event: JQueryEventObject, $item: JQuery, item: PlominoWorkflowItem) {
-    this.log.info('onWFItemMacroClicked', $event, item);
-    $event.stopImmediatePropagation();
-    $event.preventDefault();
-
+  editMacro(item: PlominoWorkflowItem) {
     this.tmpOnTopFormItem = null;
     this.findWFFormItemOnTop(item.id);
 
@@ -682,6 +681,14 @@ export class PlominoWorkflowComponent {
         this.formsService.changePaletteTab(2);
       }, 100);
     }
+  }
+
+  onWFItemMacroClicked($event: JQueryEventObject, $item: JQuery, item: PlominoWorkflowItem) {
+    this.log.info('onWFItemMacroClicked', $event, item);
+    $event.stopImmediatePropagation();
+    $event.preventDefault();
+
+    this.editMacro(item);
     return false;
   }
 
