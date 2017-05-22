@@ -317,7 +317,7 @@ export class PlominoWorkflowComponent {
 
       const dMap = new Map();
       const dList: number[] = [];
-      const $nodes = $('.workflow-node');
+      const $nodes = $('.workflow-node:not(.workflow-node--virtual)');
       if ($nodes.length) {
         $nodes.each(function () {
           const distance = calculateDistance($(this));
@@ -343,17 +343,17 @@ export class PlominoWorkflowComponent {
       $target.hasClass('plomino-workflow-editor__branch')
       || $target.hasClass('plomino-workflow-editor__branches')
     ) {
-      $relatedItem = $target.find('.workflow-node:last');
-      this.log.info('first condition', $relatedItem);
+      $relatedItem = $target.find('.workflow-node:not(.workflow-node--virtual):last');
+      // this.log.info('first condition', $relatedItem);
     }
-    else if ($target.closest('.workflow-node').length) {
-      $relatedItem = $target.closest('.workflow-node');
-      this.log.info('second condition', $relatedItem);
+    else if ($target.closest('.workflow-node:not(.workflow-node--virtual)').length) {
+      $relatedItem = $target.closest('.workflow-node:not(.workflow-node--virtual)');
+      // this.log.info('second condition', $relatedItem);
     }
     else {
       $relatedItem = $(this.workflowEditorNode.nativeElement)
-        .find('.workflow-node:last');
-      this.log.info('third condition', $relatedItem);
+        .find('.workflow-node:not(.workflow-node--virtual):last');
+      // this.log.info('third condition', $relatedItem);
     }
 
     return $relatedItem;
@@ -381,7 +381,10 @@ export class PlominoWorkflowComponent {
     // dragEvent.mouseEvent.stopImmediatePropagation();
     let allowedDrag = true;
 
-    if (
+    if ($wfItemClosest.hasClass('workflow-node--goto')) {
+      allowedDrag = false;
+    }
+    else if (
       ($wfItemClosest.hasClass('workflow-node--root')
         // || (<any>dragEvent.mouseEvent.target)
         // .classList.contains('plomino-workflow-editor__branches--root')
@@ -407,6 +410,10 @@ export class PlominoWorkflowComponent {
           .find('>.workflow-node__inner>.workflow-node__text--form')
           .length
       );
+    }
+    if (allowedDrag && dragData.type === WF_ITEM_TYPE.GOTO) {
+      const lvl = +$wfItemClosest.attr('data-node-level');
+      allowedDrag = !Boolean($('[data-node-level="' + (lvl + 1) + '"]').length);
     }
     
     if (allowedDrag) {

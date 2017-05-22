@@ -160,7 +160,7 @@ export const treeBuilder = {
                     ${ item.title.match(/(.\s?){1,22}/g).join('<br>')
                    }</div>` : '' }` : ''
                 }<!--
-                -->${ item.form ? 
+                -->${ item.type === WF_ITEM_TYPE.FORM_TASK ? 
                   `<div class="workflow-node__text workflow-node__text--form"
                     id="workflow-node__text--form-${ item.id }">
                       Form: ${ cutString(item.form) }
@@ -170,7 +170,7 @@ export const treeBuilder = {
                     ${ item.form.match(/(.\s?){1,22}/g).join('<br>')
                    }</div>` : '' }` : ''
                 }<!--
-                -->${ item.view ? 
+                -->${ item.type === WF_ITEM_TYPE.VIEW_TASK ? 
                   `<div class="workflow-node__text workflow-node__text--view"
                     id="workflow-node__text--view-${ item.id }">
                       View: ${ cutString(item.view) }
@@ -209,12 +209,12 @@ export const treeBuilder = {
                     ${ item.condition.match(/(.\s?){1,22}/g).join('<br>')
                    }</div>` : '' }` : ''
                 }<!--
-                -->${ item.goto ? 
+                -->${ item.type === WF_ITEM_TYPE.GOTO ? 
                   `<div class="workflow-node__text workflow-node__text--goto">
                       <a href onclick="return false"
                         id="workflow-node__text--goto-${ item.id }"
                         class="workflow-node__text-modal-link"
-                      >Goto: ${ cutString(item.goto) }</a>
+                      >Goto: ${ cutString(item.goto) || '&nbsp;' }</a>
                   </div>${ item.goto.length > allowedLength 
                     ? `<div class="mdl-tooltip mdl-tooltip--top" 
                     data-mdl-for="workflow-node__text--goto-${ item.id }">
