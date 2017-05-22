@@ -163,7 +163,7 @@ export const treeBuilder = {
                 -->${ item.type === WF_ITEM_TYPE.FORM_TASK ? 
                   `<div class="workflow-node__text workflow-node__text--form"
                     id="workflow-node__text--form-${ item.id }">
-                      Form: ${ cutString(item.form) }
+                      ${ item.form ? 'Form: ' : '' }${ cutString(item.form) }
                   </div>${ item.form.length > allowedLength 
                     ? `<div class="mdl-tooltip mdl-tooltip--top" 
                     data-mdl-for="workflow-node__text--form-${ item.id }">
@@ -173,7 +173,7 @@ export const treeBuilder = {
                 -->${ item.type === WF_ITEM_TYPE.VIEW_TASK ? 
                   `<div class="workflow-node__text workflow-node__text--view"
                     id="workflow-node__text--view-${ item.id }">
-                      View: ${ cutString(item.view) }
+                      ${ item.view ? 'View: ' : '' }${ cutString(item.view) }
                   </div>${ item.view.length > allowedLength 
                     ? `<div class="mdl-tooltip mdl-tooltip--top" 
                     data-mdl-for="workflow-node__text--view-${ item.id }">
@@ -214,7 +214,7 @@ export const treeBuilder = {
                       <a href onclick="return false"
                         id="workflow-node__text--goto-${ item.id }"
                         class="workflow-node__text-modal-link"
-                      >Goto: ${ cutString(item.goto) || '&nbsp;' }</a>
+                      >${ item.goto ? 'Goto: ' : '' }${ cutString(item.goto) || '&nbsp;' }</a>
                   </div>${ item.goto.length > allowedLength 
                     ? `<div class="mdl-tooltip mdl-tooltip--top" 
                     data-mdl-for="workflow-node__text--goto-${ item.id }">

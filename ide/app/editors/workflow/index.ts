@@ -574,6 +574,10 @@ export class PlominoWorkflowComponent {
   }
 
   showModal(item: PlominoWorkflowItem) {
+    if (!this.selectedItemRef) {
+      this.log.error('nothing selected');
+      return false;
+    }
     this.itemSettingsDialog
       .querySelector('#wf-item-settings-dialog__form')
       .innerHTML = this.formsList.getFiltered()
@@ -637,6 +641,7 @@ export class PlominoWorkflowComponent {
       return false;
     }
     
+    this.selectedItemRef = item;
     this.showModal(item);
     $event.stopImmediatePropagation();
   }
@@ -653,7 +658,9 @@ export class PlominoWorkflowComponent {
     Array.from(this.itemSettingsDialog
       .querySelectorAll('[data-key]'))
       .forEach((input: HTMLInputElement) => {
-        if (item.hasOwnProperty(input.dataset.key)) {
+        if (item.hasOwnProperty(input.dataset.key)
+          || (this.eventTypeIsTask(item.type) && input.dataset.key === 'title')
+        ) {
           item[input.dataset.key] = $(input).val();
         }
       });
