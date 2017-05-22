@@ -155,27 +155,30 @@ export const treeBuilder = {
                         class="workflow-node__text-modal-link"
                       >${ cutString(item.title) || '&nbsp;' }</a>
                   </div>${ item.title.length > allowedLength 
-                    ? `<div class="mdl-tooltip" style="z-index: 99999" 
+                    ? `<div class="mdl-tooltip mdl-tooltip--top" 
                     data-mdl-for="workflow-node__text--task-${ item.id }">
-                    ${ item.title }</div>` : '' }` : ''
+                    ${ item.title.match(/(.\s?){1,22}/g).join('<br>')
+                   }</div>` : '' }` : ''
                 }<!--
                 -->${ item.form ? 
                   `<div class="workflow-node__text workflow-node__text--form"
                     id="workflow-node__text--form-${ item.id }">
                       Form: ${ cutString(item.form) }
                   </div>${ item.form.length > allowedLength 
-                    ? `<div class="mdl-tooltip" 
+                    ? `<div class="mdl-tooltip mdl-tooltip--top" 
                     data-mdl-for="workflow-node__text--form-${ item.id }">
-                    ${ item.form }</div>` : '' }` : ''
+                    ${ item.form.match(/(.\s?){1,22}/g).join('<br>')
+                   }</div>` : '' }` : ''
                 }<!--
                 -->${ item.view ? 
                   `<div class="workflow-node__text workflow-node__text--view"
                     id="workflow-node__text--view-${ item.id }">
                       View: ${ cutString(item.view) }
                   </div>${ item.view.length > allowedLength 
-                    ? `<div class="mdl-tooltip" 
+                    ? `<div class="mdl-tooltip mdl-tooltip--top" 
                     data-mdl-for="workflow-node__text--view-${ item.id }">
-                    ${ item.view }</div>` : '' }` : ''
+                    ${ item.view.match(/(.\s?){1,22}/g).join('<br>')
+                   }</div>` : '' }` : ''
                 }<!--
                 -->${ item.type === WF_ITEM_TYPE.PROCESS ? 
                   `<div class="workflow-node__text workflow-node__text--process"
@@ -184,9 +187,10 @@ export const treeBuilder = {
                         class="workflow-node__text-modal-link"
                       ${ cutString(item.title) }</a>
                   </div>${ item.title.length > allowedLength 
-                    ? `<div class="mdl-tooltip" 
+                    ? `<div class="mdl-tooltip mdl-tooltip--top" 
                     data-mdl-for="workflow-node__text--process-${ item.id }">
-                    ${ item.title }</div>` : '' }` : ''
+                    ${ item.title.match(/(.\s?){1,22}/g).join('<br>')
+                   }</div>` : '' }` : ''
                 }<!--
                 -->${ item.type === WF_ITEM_TYPE.PROCESS ? 
                   `<div class="workflow-node__text workflow-node__text--macro">
@@ -200,9 +204,10 @@ export const treeBuilder = {
                         class="workflow-node__text-modal-link"
                       ${ cutString(item.condition) || '&nbsp;' }</a>
                   </div>${ item.condition.length > allowedLength 
-                    ? `<div class="mdl-tooltip" 
+                    ? `<div class="mdl-tooltip mdl-tooltip--top" 
                     data-mdl-for="workflow-node__text--condition-${ item.id }">
-                    ${ item.condition }</div>` : '' }` : ''
+                    ${ item.condition.match(/(.\s?){1,22}/g).join('<br>')
+                   }</div>` : '' }` : ''
                 }<!--
                 -->${ item.goto ? 
                   `<div class="workflow-node__text workflow-node__text--goto">
@@ -211,9 +216,10 @@ export const treeBuilder = {
                         class="workflow-node__text-modal-link"
                       Goto: ${ cutString(item.goto) }</a>
                   </div>${ item.goto.length > allowedLength 
-                    ? `<div class="mdl-tooltip" 
+                    ? `<div class="mdl-tooltip mdl-tooltip--top" 
                     data-mdl-for="workflow-node__text--goto-${ item.id }">
-                    ${ item.goto }</div>` : '' }` : ''
+                    ${ item.goto.match(/(.\s?){1,22}/g).join('<br>')
+                   }</div>` : '' }` : ''
                 }<!--
               --></div><!--
           --></div><!--
