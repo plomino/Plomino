@@ -185,7 +185,7 @@ export const treeBuilder = {
                     id="workflow-node__text--process-${ item.id }">
                       <a href onclick="return false"
                         class="workflow-node__text-modal-link"
-                      ${ cutString(item.title) }</a>
+                      >${ cutString(item.title) }</a>
                   </div>${ item.title.length > allowedLength 
                     ? `<div class="mdl-tooltip mdl-tooltip--top" 
                     data-mdl-for="workflow-node__text--process-${ item.id }">
@@ -202,7 +202,7 @@ export const treeBuilder = {
                       <a href onclick="return false"
                         id="workflow-node__text--condition-${ item.id }"
                         class="workflow-node__text-modal-link"
-                      ${ cutString(item.condition) || '&nbsp;' }</a>
+                      >${ cutString(item.condition) || '&nbsp;' }</a>
                   </div>${ item.condition.length > allowedLength 
                     ? `<div class="mdl-tooltip mdl-tooltip--top" 
                     data-mdl-for="workflow-node__text--condition-${ item.id }">
@@ -214,7 +214,7 @@ export const treeBuilder = {
                       <a href onclick="return false"
                         id="workflow-node__text--goto-${ item.id }"
                         class="workflow-node__text-modal-link"
-                      Goto: ${ cutString(item.goto) }</a>
+                      >Goto: ${ cutString(item.goto) }</a>
                   </div>${ item.goto.length > allowedLength 
                     ? `<div class="mdl-tooltip mdl-tooltip--top" 
                     data-mdl-for="workflow-node__text--goto-${ item.id }">
