@@ -56,6 +56,9 @@ export const treeBuilder = {
         $item.click(($event) => configuration.onItemClick($event, $item, item));
         $item.dblclick(($event) => configuration.onItemDblClick($event, $item, item));
 
+        $item.find('.workflow-node__text-modal-link')
+          .click(($event) => configuration.onItemDblClick($event, $item, item));
+
         $item[0].ondragstart = (eventData: DragEvent) => {
           eventData.dataTransfer.setData('text', 'q:' + item.id.toString());
           return configuration.onDragStart(eventData, $item, item);
@@ -136,7 +139,9 @@ export const treeBuilder = {
                 --></div><!--
                 -->${ this.eventTypeIsTask(item.type) ? 
                   `<div class="workflow-node__text workflow-node__text--task">
-                      ${ item.title || '&nbsp;' }
+                      <a href onclick="return false"
+                        class="workflow-node__text-modal-link"
+                      >${ item.title || '&nbsp;' }</a>
                   </div>` : ''
                 }<!--
                 -->${ item.form ? 
@@ -151,7 +156,9 @@ export const treeBuilder = {
                 }<!--
                 -->${ item.type === WF_ITEM_TYPE.PROCESS ? 
                   `<div class="workflow-node__text workflow-node__text--process">
-                      ${ item.title }
+                      <a href onclick="return false"
+                        class="workflow-node__text-modal-link"
+                      ${ item.title }</a>
                   </div>` : ''
                 }<!--
                 -->${ item.type === WF_ITEM_TYPE.PROCESS ? 
@@ -161,17 +168,16 @@ export const treeBuilder = {
                 }<!--
                 -->${ item.type === WF_ITEM_TYPE.CONDITION ? 
                   `<div class="workflow-node__text workflow-node__text--condition">
-                      ${ item.condition || '&nbsp;' }
-                  </div>` : ''
-                }<!--
-                -->${ item.user ? 
-                  `<div class="workflow-node__text workflow-node__text--user">
-                      User: ${ item.user }
+                      <a href onclick="return false"
+                        class="workflow-node__text-modal-link"
+                      ${ item.condition || '&nbsp;' }</a>
                   </div>` : ''
                 }<!--
                 -->${ item.goto ? 
                   `<div class="workflow-node__text workflow-node__text--goto">
-                      Goto: ${ item.goto }
+                      <a href onclick="return false"
+                        class="workflow-node__text-modal-link"
+                      Goto: ${ item.goto }</a>
                   </div>` : ''
                 }<!--
               --></div><!--
