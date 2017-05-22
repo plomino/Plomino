@@ -133,7 +133,7 @@ export const treeBuilder = {
                 --></div><!--
                 -->${ this.eventTypeIsTask(item.type) ? 
                   `<div class="workflow-node__text workflow-node__text--task">
-                      ${ item.title }
+                      ${ item.title || '&nbsp;' }
                   </div>` : ''
                 }<!--
                 -->${ item.form ? 
@@ -148,7 +148,7 @@ export const treeBuilder = {
                 }<!--
                 -->${ item.type === WF_ITEM_TYPE.PROCESS ? 
                   `<div class="workflow-node__text workflow-node__text--process">
-                      ${ item.title }
+                      ${ item.title || '&nbsp;' }
                   </div>` : ''
                 }<!--
                 -->${ item.type === WF_ITEM_TYPE.PROCESS ? 
@@ -173,8 +173,7 @@ export const treeBuilder = {
                 }<!--
               --></div><!--
           --></div><!--
-          -->${ this.nodeIsLast(item) ? `
-          <ul class="plomino-workflow-editor__branches 
+          ${ this.nodeIsLast(item) ? `--><ul class="plomino-workflow-editor__branches 
             plomino-workflow-editor__branches--virtual"><!--
           --><li class="plomino-workflow-editor__branch
             plomino-workflow-editor__branch--virtual"><!--
@@ -218,7 +217,7 @@ export const treeBuilder = {
                 Goto
               </li>
             </ul><!--
-          --></li></ul>` : '' }<!--
+          --></li></ul>` : '-->' }<!--
       --></li>`);
   }
 };
