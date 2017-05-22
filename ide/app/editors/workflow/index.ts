@@ -70,6 +70,10 @@ export class PlominoWorkflowComponent {
         if (btn.classList.contains('wf-item-settings-dialog__apply-btn')) {
           this.apply2selected();
         }
+        else if (btn.classList.contains('wf-item-settings-dialog__edit-btn')) {
+          this.apply2selected();
+          this.openResourceTab(this.selectedItemRef);
+        }
         else if (btn.classList.contains('wf-item-settings-dialog__macro-btn')) {
           this.editMacro(this.selectedItemRef);
         }
@@ -596,9 +600,12 @@ export class PlominoWorkflowComponent {
         ) {
           $('.wf-item-settings-dialog__create-btn')
             .css('visibility', Boolean(item[input.dataset.key]) ? 'hidden' : 'visible');
+          $('.wf-item-settings-dialog__edit-btn')
+            .css('visibility', Boolean(!item[input.dataset.key]) ? 'hidden' : 'visible');
           if (!Boolean(item[input.dataset.key])) {
             $(input).change((eventData) => {
-              $('.wf-item-settings-dialog__create-btn').fadeOut(100);
+              $('.wf-item-settings-dialog__create-btn').css('visibility', 'hidden');
+              $('.wf-item-settings-dialog__edit-btn').css('visibility', 'visible');
             });
           }
         }
@@ -666,17 +673,22 @@ export class PlominoWorkflowComponent {
     return null;
   }
 
+  openResourceTab(item: PlominoWorkflowItem) {
+    const key = item.type === WF_ITEM_TYPE.VIEW_TASK ? 'view' : 'form';
+    const $resource = 
+      $(`.tree-node--name:contains("${ item[key] }")`)
+        .filter((i, node: HTMLElement) => 
+          $(node).text().trim() === item[key]);
+  
+    $resource.click();
+  }
+
   editMacro(item: PlominoWorkflowItem) {
     this.tmpOnTopFormItem = null;
     this.findWFFormItemOnTop(item.id);
 
     if (this.tmpOnTopFormItem) {
-      const $resource = 
-        $(`.tree-node--name:contains("${ this.tmpOnTopFormItem.form }")`)
-          .filter((i, node: HTMLElement) => 
-            $(node).text().trim() === this.tmpOnTopFormItem.form);
-
-      $resource.click();
+      this.openResourceTab(this.tmpOnTopFormItem);
       setTimeout(() => {
         this.formsService.changePaletteTab(2);
       }, 100);
