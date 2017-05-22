@@ -478,7 +478,7 @@ export class AppComponent implements OnInit, AfterViewInit {
     //   } else {
     //     return Promise.resolve();
     //   }
-    // })()
+    // })()/
     this.activeEditorService.setActive(null);
     this.tabsService.closing = true;
     this.tabsService.closeTab(tab);

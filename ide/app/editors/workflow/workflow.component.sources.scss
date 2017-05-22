@@ -126,6 +126,26 @@ $wfpad-right-left: 7px;
         color: whitesmoke;
       }
 
+      &__hover-plus-btn {
+        opacity: 0;
+        position: absolute;
+        right: -50px;
+        transition: all 100ms ease-in-out;
+        z-index: 9999;
+        background: transparent;
+        width: 80px;
+        height: 80px;
+        text-align: right;
+
+        button:focus {
+          outline: none;
+        }
+      }
+
+      &:hover > .workflow-node__hover-plus-btn {
+        opacity: 1;
+      }
+
       &__text {
         position: relative;
       }
@@ -314,6 +334,29 @@ $wfpad-right-left: 7px;
         color: #fff;
         border: $border-width solid $highlight-color;
       }
+
+      &--virtual {
+        border: none !important;
+        background: transparent !important;
+
+        &:hover {
+          border: none !important;
+          background: transparent !important;
+        }
+        
+        button:focus {
+          outline: none !important;
+        }
+      }
+    }
+
+    & > .plomino-workflow-editor__branches--virtual {
+      opacity: 0;
+      transition: all 100ms ease-in-out;
+    }
+
+    &:hover > .plomino-workflow-editor__branches--virtual {
+      opacity: 1;
     }
   }
 }

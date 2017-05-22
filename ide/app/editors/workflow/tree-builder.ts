@@ -100,6 +100,10 @@ export const treeBuilder = {
     ].indexOf(eventType) !== -1;
   },
 
+  nodeIsLast(node: PlominoWorkflowItem) {
+    return !node.children.length;
+  },
+
   /**
    * parse PlominoWorkflowItem and convert it to jQuery Object
    * @param {PlominoWorkflowItem} item PlominoWorkflowItem
@@ -107,14 +111,8 @@ export const treeBuilder = {
   parseWFItem(item: PlominoWorkflowItem): JQuery {
     return $(
       `<li class="plomino-workflow-editor__branch" 
-           ${ !item.root ? ' draggable="true"' : ''}><!--${
-           item.type === WF_ITEM_TYPE.CONDITION 
-           ? `--><button class="plomino-workflow-editor__branch-plus-btn
-             mdl-button mdl-js-button 
-             mdl-button--fab mdl-button--mini-fab">
-              <i class="material-icons">add</i>
-            </button><!--` : ''
-          }--><div class="workflow-node
+           ${ !item.root ? ' draggable="true"' : ''}><!--
+           --><div class="workflow-node
             ${ item.root ? ' workflow-node--root' : ''}
             ${ item.dropping ? ' workflow-node--dropping' : '' }
             ${ item.type === WF_ITEM_TYPE.CONDITION ? 
@@ -123,14 +121,19 @@ export const treeBuilder = {
               ' workflow-node--as-a-shape workflow-node--goto' : '' }
             ${ this.eventTypeIsTask(item.type) ? 
               ' workflow-node--as-a-shape workflow-node--task' : '' }"
-            ${ item.id ? ` data-node-id="${ item.id }"` : '' }>
-              <div class="workflow-node__inner"><!--
+            ${ item.id ? ` data-node-id="${ item.id }"` : '' }><!--
+              -->${ item.type === WF_ITEM_TYPE.CONDITION 
+              ? `<div class="workflow-node__hover-plus-btn"><!--
+              --><button class="mdl-button mdl-js-button mdl-js-ripple-effect
+              mdl-button--fab mdl-button--mini-fab mdl-button--colored 
+              mdl-color--blue-900"><i class="material-icons">add</i>
+              </button></div>` : '' }<div class="workflow-node__inner"><!--
                 --><div class="workflow-node__shape-outside"><!--
                 --><div class="workflow-node__shape-inside"></div><!--
                 --></div><!--
                 -->${ this.eventTypeIsTask(item.type) ? 
                   `<div class="workflow-node__text workflow-node__text--task">
-                      Task: ${ item.title }
+                      ${ item.title }
                   </div>` : ''
                 }<!--
                 -->${ item.form ? 
@@ -145,12 +148,12 @@ export const treeBuilder = {
                 }<!--
                 -->${ item.type === WF_ITEM_TYPE.PROCESS ? 
                   `<div class="workflow-node__text workflow-node__text--process">
-                      Process: ${ item.title }
+                      ${ item.title }
                   </div>` : ''
                 }<!--
                 -->${ item.type === WF_ITEM_TYPE.PROCESS ? 
                   `<div class="workflow-node__text workflow-node__text--macro">
-                      Macro: <a href onclick="return false">edit macros</a>
+                      Macro: <a href onclick="return false">add rules</a>
                   </div>` : ''
                 }<!--
                 -->${ item.type === WF_ITEM_TYPE.CONDITION ? 
@@ -169,7 +172,53 @@ export const treeBuilder = {
                   </div>` : ''
                 }<!--
               --></div><!--
-          --></div>
-      </li>`);
+          --></div><!--
+          -->${ this.nodeIsLast(item) ? `
+          <ul class="plomino-workflow-editor__branches 
+            plomino-workflow-editor__branches--virtual"><!--
+          --><li class="plomino-workflow-editor__branch
+            plomino-workflow-editor__branch--virtual"><!--
+          --><div class="workflow-node workflow-node--virtual"><div><!--
+            --><button id="wf-vrt-btn-${ item.id }" 
+            class="mdl-button mdl-js-button mdl-js-ripple-effect
+            mdl-button--fab mdl-button--mini-fab mdl-button--colored 
+            mdl-color--grey-800"><i class="material-icons">add</i>
+            </button></div></div><!--
+            --><ul class="mdl-menu mdl-menu--top-left mdl-js-menu 
+                mdl-js-ripple-effect"
+                for="wf-vrt-btn-${ item.id }">
+              <li class="mdl-menu__item" 
+                data-target="${ item.id }"
+                data-create="${ WF_ITEM_TYPE.FORM_TASK }">
+                Form task
+              </li>
+              <li class="mdl-menu__item"
+                data-target="${ item.id }"
+                data-create="${ WF_ITEM_TYPE.VIEW_TASK }">
+                View task
+              </li>
+              <li class="mdl-menu__item mdl-menu__item--full-bleed-divider"
+                data-target="${ item.id }"
+                data-create="${ WF_ITEM_TYPE.EXT_TASK }">
+                Ext. task
+              </li>
+              <li class="mdl-menu__item"
+                data-target="${ item.id }"
+                data-create="${ WF_ITEM_TYPE.PROCESS }">
+                Process
+              </li>
+              <li class="mdl-menu__item"
+                data-target="${ item.id }"
+                data-create="${ WF_ITEM_TYPE.CONDITION }">
+                Condition
+              </li>
+              <li class="mdl-menu__item"
+                data-target="${ item.id }"
+                data-create="${ WF_ITEM_TYPE.GOTO }">
+                Goto
+              </li>
+            </ul><!--
+          --></li></ul>` : '' }<!--
+      --></li>`);
   }
 };
