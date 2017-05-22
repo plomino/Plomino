@@ -114,6 +114,17 @@ export const treeBuilder = {
    * @param {PlominoWorkflowItem} item PlominoWorkflowItem
    */
   parseWFItem(item: PlominoWorkflowItem, level = 0): JQuery {
+
+    const allowedLength = 16;
+
+    const cutString = ((str: string) => {
+      if (str.length > allowedLength) {
+        str = str.substr(0, allowedLength) + '...';
+      }
+
+      return str;
+    });
+
     return $(
       `<li class="plomino-workflow-editor__branch" 
            ${ !item.root ? ' draggable="true"' : ''}><!--
@@ -138,28 +149,44 @@ export const treeBuilder = {
                 --><div class="workflow-node__shape-inside"></div><!--
                 --></div><!--
                 -->${ this.eventTypeIsTask(item.type) ? 
-                  `<div class="workflow-node__text workflow-node__text--task">
+                  `<div class="workflow-node__text workflow-node__text--task"
+                    id="workflow-node__text--task-${ item.id }">
                       <a href onclick="return false"
                         class="workflow-node__text-modal-link"
-                      >${ item.title || '&nbsp;' }</a>
-                  </div>` : ''
+                      >${ cutString(item.title) || '&nbsp;' }</a>
+                  </div>${ item.title.length > allowedLength 
+                    ? `<div class="mdl-tooltip" style="z-index: 99999" 
+                    data-mdl-for="workflow-node__text--task-${ item.id }">
+                    ${ item.title }</div>` : '' }` : ''
                 }<!--
                 -->${ item.form ? 
-                  `<div class="workflow-node__text workflow-node__text--form">
-                      Form: ${ item.form }
-                  </div>` : ''
+                  `<div class="workflow-node__text workflow-node__text--form"
+                    id="workflow-node__text--form-${ item.id }">
+                      Form: ${ cutString(item.form) }
+                  </div>${ item.form.length > allowedLength 
+                    ? `<div class="mdl-tooltip" 
+                    data-mdl-for="workflow-node__text--form-${ item.id }">
+                    ${ item.form }</div>` : '' }` : ''
                 }<!--
                 -->${ item.view ? 
-                  `<div class="workflow-node__text workflow-node__text--view">
-                      View: ${ item.view }
-                  </div>` : ''
+                  `<div class="workflow-node__text workflow-node__text--view"
+                    id="workflow-node__text--view-${ item.id }">
+                      View: ${ cutString(item.view) }
+                  </div>${ item.view.length > allowedLength 
+                    ? `<div class="mdl-tooltip" 
+                    data-mdl-for="workflow-node__text--view-${ item.id }">
+                    ${ item.view }</div>` : '' }` : ''
                 }<!--
                 -->${ item.type === WF_ITEM_TYPE.PROCESS ? 
-                  `<div class="workflow-node__text workflow-node__text--process">
+                  `<div class="workflow-node__text workflow-node__text--process"
+                    id="workflow-node__text--process-${ item.id }">
                       <a href onclick="return false"
                         class="workflow-node__text-modal-link"
-                      ${ item.title }</a>
-                  </div>` : ''
+                      ${ cutString(item.title) }</a>
+                  </div>${ item.title.length > allowedLength 
+                    ? `<div class="mdl-tooltip" 
+                    data-mdl-for="workflow-node__text--process-${ item.id }">
+                    ${ item.title }</div>` : '' }` : ''
                 }<!--
                 -->${ item.type === WF_ITEM_TYPE.PROCESS ? 
                   `<div class="workflow-node__text workflow-node__text--macro">
@@ -169,16 +196,24 @@ export const treeBuilder = {
                 -->${ item.type === WF_ITEM_TYPE.CONDITION ? 
                   `<div class="workflow-node__text workflow-node__text--condition">
                       <a href onclick="return false"
+                        id="workflow-node__text--condition-${ item.id }"
                         class="workflow-node__text-modal-link"
-                      ${ item.condition || '&nbsp;' }</a>
-                  </div>` : ''
+                      ${ cutString(item.condition) || '&nbsp;' }</a>
+                  </div>${ item.condition.length > allowedLength 
+                    ? `<div class="mdl-tooltip" 
+                    data-mdl-for="workflow-node__text--condition-${ item.id }">
+                    ${ item.condition }</div>` : '' }` : ''
                 }<!--
                 -->${ item.goto ? 
                   `<div class="workflow-node__text workflow-node__text--goto">
                       <a href onclick="return false"
+                        id="workflow-node__text--goto-${ item.id }"
                         class="workflow-node__text-modal-link"
-                      Goto: ${ item.goto }</a>
-                  </div>` : ''
+                      Goto: ${ cutString(item.goto) }</a>
+                  </div>${ item.goto.length > allowedLength 
+                    ? `<div class="mdl-tooltip" 
+                    data-mdl-for="workflow-node__text--goto-${ item.id }">
+                    ${ item.goto }</div>` : '' }` : ''
                 }<!--
               --></div><!--
           --></div><!--
