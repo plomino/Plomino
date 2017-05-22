@@ -148,7 +148,7 @@ export const treeBuilder = {
                 }<!--
                 -->${ item.type === WF_ITEM_TYPE.PROCESS ? 
                   `<div class="workflow-node__text workflow-node__text--process">
-                      ${ item.title || '&nbsp;' }
+                      ${ item.title }
                   </div>` : ''
                 }<!--
                 -->${ item.type === WF_ITEM_TYPE.PROCESS ? 
