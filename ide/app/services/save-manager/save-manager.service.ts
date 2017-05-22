@@ -1,3 +1,5 @@
+import { TabsService } from './../tabs.service';
+import { TreeService } from './../tree.service';
 import { PlominoViewSaveProcess } from './view-save-process';
 import { FakeFormData } from './../../utility/fd-helper/fd-helper';
 import { Observable, Subject } from 'rxjs/Rx';
@@ -20,7 +22,9 @@ export class PlominoSaveManagerService {
     private contentManager: TinyMCEFormContentManagerService,
     private http: PlominoHTTPAPIService,
     private elementService: ElementService,
+    private treeService: TreeService,
     private widgetService: WidgetService,
+    private tabsService: TabsService,
     private labelsRegistry: LabelsRegistryService,
     private activeEditorService: PlominoActiveEditorService,
   ) {
@@ -54,6 +58,61 @@ export class PlominoSaveManagerService {
     else {
       return true;
     }
+  }
+
+  createNewForm(callback: (url: string, label: string) => void = null) {
+    let formElement: InsertFieldEvent = {
+        '@type': 'PlominoForm',
+        'title': 'New Form'
+    };
+    this.elementService.postElement(this.getDBLink(), formElement)
+    .subscribe((response: AddFieldResponse) => {
+      this.treeService.updateTree().then(() => {
+        this.tabsService.openTab({
+          formUniqueId: undefined,
+          editor: 'layout',
+          label: response.title,
+          url: response.parent['@id'] + '/' + response.id,
+          path: [{
+              name: response.title,
+              type: 'Forms'
+          }]
+        });
+  
+        if (callback !== null) {
+          setTimeout(() => callback(
+            response.parent['@id'] + '/' + response.id, response.title
+          ), 100);
+        }
+      });
+    });
+  }
+
+  createNewView(callback: (url: string, label: string) => void = null) {
+    let viewElement: InsertFieldEvent = {
+      '@type': 'PlominoView',
+      'title': 'New View'
+    };
+    this.elementService.postElement(this.getDBLink(), viewElement)
+    .subscribe((response: AddFieldResponse) => {
+      this.treeService.updateTree().then(() => {
+        this.tabsService.openTab({
+          editor: 'view',
+          label: response.title,
+          url: response.parent['@id'] + '/' + response.id,
+          path: [{
+              name: response.title,
+              type: 'Views'
+          }]
+        });
+
+        if (callback !== null) {
+          setTimeout(() => callback(
+            response.parent['@id'] + '/' + response.id, response.title
+          ), 100);
+        }
+      });
+    });
   }
 
   createViewSaveProcess(viewURL: string, formData: FakeFormData = null) {
@@ -124,6 +183,14 @@ export class PlominoSaveManagerService {
   detectNewFormSave() {
     this.currentFormIsUnsaved = false;
     this.cleanOutsideArea();
+  }
+
+  private getDBLink() {
+    return `${ 
+      window.location.pathname
+      .replace('++resource++Products.CMFPlomino/ide/', '')
+      .replace('/index.html', '')
+    }`;
   }
 
   private listenDocumentClicks() {

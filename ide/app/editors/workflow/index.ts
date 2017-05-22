@@ -1,3 +1,4 @@
+import { PlominoSaveManagerService } from './../../services/save-manager/save-manager.service';
 import { FakeFormData } from './../../utility/fd-helper/fd-helper';
 import { PlominoHTTPAPIService } from './../../services/http-api.service';
 import { Component, ElementRef, ViewChild, ViewEncapsulation } from '@angular/core';
@@ -32,6 +33,7 @@ export class PlominoWorkflowComponent {
     private formsList: PlominoFormsListService,
     private dragService: DraggingService,
     private api: PlominoHTTPAPIService,
+    private saveManager: PlominoSaveManagerService,
   ) {
     if (!this.dragService.dndType) {
       this.dragService.followDNDType('nothing');
@@ -67,6 +69,20 @@ export class PlominoWorkflowComponent {
       btn.addEventListener('click', (evt) => {
         if (btn.classList.contains('wf-item-settings-dialog__apply-btn')) {
           this.apply2selected();
+        }
+        else if (btn.classList.contains('wf-item-settings-dialog__create-btn--form')) {
+          this.saveManager.createNewForm((url, label) => {
+            this.selectedItemRef.title = label;
+            this.selectedItemRef.form = url.split('/').pop();
+            this.buildWFTree();
+          });
+        }
+        else if (btn.classList.contains('wf-item-settings-dialog__create-btn--view')) {
+          this.saveManager.createNewView((url, label) => {
+            this.selectedItemRef.title = label;
+            this.selectedItemRef.view = url.split('/').pop();
+            this.buildWFTree();
+          });
         }
         this.itemSettingsDialog.close();
       });
@@ -543,11 +559,7 @@ export class PlominoWorkflowComponent {
     return true;
   }
 
-  onWFItemDblClicked($event: JQueryEventObject, $item: JQuery, item: PlominoWorkflowItem) {
-    if (this.targetIsHoverPlus($event.target) || this.targetIsVirtual($event.target)) {
-      return false;
-    }
-    
+  showModal(item: PlominoWorkflowItem) {
     this.itemSettingsDialog
       .querySelector('#wf-item-settings-dialog__form')
       .innerHTML = this.formsList.getFiltered()
@@ -575,6 +587,18 @@ export class PlominoWorkflowComponent {
       .querySelectorAll('[data-key]'))
       .forEach((input: HTMLInputElement) => {
         $(input).val(item[input.dataset.key] || '');
+
+        if ((input.dataset.key === 'form' && item.type === WF_ITEM_TYPE.FORM_TASK) 
+          || (input.dataset.key === 'view' && item.type === WF_ITEM_TYPE.VIEW_TASK)
+        ) {
+          $('.wf-item-settings-dialog__create-btn')
+            .css('visibility', Boolean(item[input.dataset.key]) ? 'hidden' : 'visible');
+          if (!Boolean(item[input.dataset.key])) {
+            $(input).change((eventData) => {
+              $('.wf-item-settings-dialog__create-btn').fadeOut(100);
+            });
+          }
+        }
       });
     
     Array.from(this.itemSettingsDialog
@@ -589,6 +613,14 @@ export class PlominoWorkflowComponent {
       });
     
     this.itemSettingsDialog.showModal();
+  }
+
+  onWFItemDblClicked($event: JQueryEventObject, $item: JQuery, item: PlominoWorkflowItem) {
+    if (this.targetIsHoverPlus($event.target) || this.targetIsVirtual($event.target)) {
+      return false;
+    }
+    
+    this.showModal(item);
     $event.stopImmediatePropagation();
   }
 

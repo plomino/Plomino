@@ -37,13 +37,15 @@ export const treeBuilder = {
       ) => true,
     }
   ): JQuery {
+    let level = 1;
     const workWithItemRecursive = (item: PlominoWorkflowItem): JQuery => {
-      const $item: JQuery = this.parseWFItem(item);
+      const $item: JQuery = this.parseWFItem(item, level++);
       
       if (item.children.length) {
         const $childrenTree = $(`<ul class="plomino-workflow-editor__branches"></ul>`);
         for (let child of item.children) {
           $childrenTree.append(workWithItemRecursive(child));
+          level--;
         }
         $item.append($childrenTree);
       }
@@ -108,7 +110,7 @@ export const treeBuilder = {
    * parse PlominoWorkflowItem and convert it to jQuery Object
    * @param {PlominoWorkflowItem} item PlominoWorkflowItem
    */
-  parseWFItem(item: PlominoWorkflowItem): JQuery {
+  parseWFItem(item: PlominoWorkflowItem, level = 0): JQuery {
     return $(
       `<li class="plomino-workflow-editor__branch" 
            ${ !item.root ? ' draggable="true"' : ''}><!--
@@ -121,6 +123,7 @@ export const treeBuilder = {
               ' workflow-node--as-a-shape workflow-node--goto' : '' }
             ${ this.eventTypeIsTask(item.type) ? 
               ' workflow-node--as-a-shape workflow-node--task' : '' }"
+            ${ level ? ` data-node-level="${ level }"` : '' }
             ${ item.id ? ` data-node-id="${ item.id }"` : '' }><!--
               -->${ item.type === WF_ITEM_TYPE.CONDITION 
               ? `<div class="workflow-node__hover-plus-btn"><!--
@@ -183,7 +186,8 @@ export const treeBuilder = {
             mdl-button--fab mdl-button--mini-fab mdl-button--colored 
             mdl-color--grey-800"><i class="material-icons">add</i>
             </button></div></div><!--
-            --><ul class="mdl-menu mdl-menu--top-left mdl-js-menu 
+            --><ul class="mdl-menu ${ level > 3 
+              ? 'mdl-menu--top-left' : 'mdl-menu--bottom-left' } mdl-js-menu 
                 mdl-js-ripple-effect"
                 for="wf-vrt-btn-${ item.id }">
               <li class="mdl-menu__item" 

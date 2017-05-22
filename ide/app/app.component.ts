@@ -589,51 +589,12 @@ export class AppComponent implements OnInit, AfterViewInit {
 
   private addNewView(event: MouseEvent) {
     event.preventDefault();
-    let viewElement: InsertFieldEvent = {
-      '@type': 'PlominoView',
-      'title': 'New View'
-    };
-    this.elementService.postElement(this.getDBLink(), viewElement)
-    .subscribe((response: AddFieldResponse) => {
-      this.log.info('this.tabsService.openTab #app0009');
-      this.treeService.updateTree().then(() => {
-        this.tabsService.openTab({
-          editor: 'view',
-          label: response.title,
-          url: response.parent['@id'] + '/' + response.id,
-          path: [{
-              name: response.title,
-              type: 'Views'
-          }]
-        });
-      });
-    });
+    this.saveManager.createNewView();
   }
 
   private addNewForm(event: MouseEvent) {
     event.preventDefault();
-    let formElement: InsertFieldEvent = {
-        '@type': 'PlominoForm',
-        'title': 'New Form'
-    };
-    this.elementService.postElement(this.getDBLink(), formElement)
-    .subscribe((response: AddFieldResponse) => {
-      this.treeService.updateTree().then(() => {
-        // const randomId = Math.floor(Math.random() * 1e10 + 1e10);
-        this.log.info('this.tabsService.openTab #app0009');
-        // this.treeService.latestId++;
-        this.tabsService.openTab({
-          formUniqueId: undefined,
-          editor: 'layout',
-          label: response.title,
-          url: response.parent['@id'] + '/' + response.id,
-          path: [{
-              name: response.title,
-              type: 'Forms'
-          }]
-        });
-      });
-    });
+    this.saveManager.createNewForm();
   }
 
   private getPloneLink() {
