@@ -38,22 +38,26 @@ export const treeBuilder = {
     }
   ): JQuery {
     let level = 1;
-    const workWithItemRecursive = (item: PlominoWorkflowItem): JQuery => {
-      const $item: JQuery = this.parseWFItem(item, level++);
+    const workWithItemRecursive = (
+        item: PlominoWorkflowItem, parent: PlominoWorkflowItem = null
+    ): JQuery => {
+      const $item: JQuery = this.parseWFItem(item, parent, level++);
       
       if (item.children.length) {
         const $childrenTree = $(`<ul class="plomino-workflow-editor__branches"></ul>`);
         for (let child of item.children) {
-          $childrenTree.append(workWithItemRecursive(child));
+          $childrenTree.append(workWithItemRecursive(child, item));
           level--;
         }
         $item.append($childrenTree);
       }
 
+      $item.click(($event) => configuration.onItemClick($event, $item, item));
+
       if (!item.root) {
         $item.find('.workflow-node__text--macro a')
           .click(($event) => configuration.onMacroClick($event, $item, item));
-        $item.click(($event) => configuration.onItemClick($event, $item, item));
+        
         $item.dblclick(($event) => configuration.onItemDblClick($event, $item, item));
 
         $item.find('.workflow-node__text-modal-link')
@@ -112,8 +116,12 @@ export const treeBuilder = {
   /**
    * parse PlominoWorkflowItem and convert it to jQuery Object
    * @param {PlominoWorkflowItem} item PlominoWorkflowItem
+   * @param {PlominoWorkflowItem} parent PlominoWorkflowItem
+   * @param {number} level
    */
-  parseWFItem(item: PlominoWorkflowItem, level = 0): JQuery {
+  parseWFItem(
+    item: PlominoWorkflowItem, parent: PlominoWorkflowItem = null, level = 0
+  ): JQuery {
 
     const allowedLength = 16;
 
@@ -125,9 +133,10 @@ export const treeBuilder = {
       return str;
     });
 
-    return $(
-      `<li class="plomino-workflow-editor__branch" 
-           ${ !item.root ? ' draggable="true"' : ''}><!--
+    const $buildJQItem = (spec: string = null) => {
+      return $(
+      `${ !spec ? `<li class="plomino-workflow-editor__branch" 
+           ${ !item.root ? ' draggable="true"' : ''}>` : '' }<!--
            --><div class="workflow-node
             ${ item.root ? ' workflow-node--root' : ''}
             ${ item.dropping ? ' workflow-node--dropping' : '' }
@@ -135,6 +144,14 @@ export const treeBuilder = {
               ' workflow-node--as-a-shape workflow-node--condition' : '' }
             ${ item.type === WF_ITEM_TYPE.GOTO ? 
               ' workflow-node--as-a-shape workflow-node--goto' : '' }
+            ${ item.type === WF_ITEM_TYPE.FORM_TASK ? 
+              ' workflow-node--as-a-shape workflow-node--form-task' : '' }
+            ${ item.type === WF_ITEM_TYPE.VIEW_TASK ? 
+              ' workflow-node--as-a-shape workflow-node--view-task' : '' }
+            ${ spec && spec === 'shadow-view' ? 
+              ' workflow-node--shadow-view-task' : '' }
+            ${ item.type === WF_ITEM_TYPE.EXT_TASK ? 
+              ' workflow-node--as-a-shape workflow-node--ext-task' : '' }
             ${ this.eventTypeIsTask(item.type) ? 
               ' workflow-node--as-a-shape workflow-node--task' : '' }"
             ${ level ? ` data-node-level="${ level }"` : '' }
@@ -144,7 +161,14 @@ export const treeBuilder = {
               --><button class="mdl-button mdl-js-button mdl-js-ripple-effect
               mdl-button--fab mdl-button--mini-fab mdl-button--colored 
               mdl-color--blue-900"><i class="material-icons">add</i>
-              </button></div>` : '' }<div class="workflow-node__inner"><!--
+              </button></div>` : '' }${ 
+                  item.root ? '<div class="workflow-node__start-text">START</div>' : ''
+                }<div class="workflow-node__inner">${ item.type === WF_ITEM_TYPE.VIEW_TASK 
+                  ? `<div class="workflow-node__shadow-shape-1"></div><!--
+                  --><div class="workflow-node__shadow-shape-2"></div><!--
+                  --><div class="workflow-node__round-1"></div><!--
+                   --><div class="workflow-node__round-2"></div><!--
+                -->` : '' }<!--
                 --><div class="workflow-node__shape-outside"><!--
                 --><div class="workflow-node__shape-inside"></div><!--
                 --></div><!--
@@ -153,7 +177,7 @@ export const treeBuilder = {
                     id="workflow-node__text--task-${ item.id }">
                       <a href onclick="return false"
                         class="workflow-node__text-modal-link"
-                      >${ cutString(item.title) || '&nbsp;' }</a>
+                      >${ cutString(item.title) || '...' }</a>
                   </div>${ item.title.length > allowedLength 
                     ? `<div class="mdl-tooltip mdl-tooltip--top" 
                     data-mdl-for="workflow-node__text--task-${ item.id }">
@@ -173,7 +197,7 @@ export const treeBuilder = {
                 -->${ item.type === WF_ITEM_TYPE.VIEW_TASK ? 
                   `<div class="workflow-node__text workflow-node__text--view"
                     id="workflow-node__text--view-${ item.id }">
-                      ${ item.view ? 'View: ' : '' }${ cutString(item.view) }
+                    ${ item.view ? 'View: ' : '' }${ cutString(item.view) }
                   </div>${ item.view.length > allowedLength 
                     ? `<div class="mdl-tooltip mdl-tooltip--top" 
                     data-mdl-for="workflow-node__text--view-${ item.id }">
@@ -185,7 +209,7 @@ export const treeBuilder = {
                     id="workflow-node__text--process-${ item.id }">
                       <a href onclick="return false"
                         class="workflow-node__text-modal-link"
-                      >${ cutString(item.title) }</a>
+                      >${ cutString(item.title) || '...' }</a>
                   </div>${ item.title.length > allowedLength 
                     ? `<div class="mdl-tooltip mdl-tooltip--top" 
                     data-mdl-for="workflow-node__text--process-${ item.id }">
@@ -202,7 +226,7 @@ export const treeBuilder = {
                       <a href onclick="return false"
                         id="workflow-node__text--condition-${ item.id }"
                         class="workflow-node__text-modal-link"
-                      >${ cutString(item.condition) || '&nbsp;' }</a>
+                      >${ cutString(item.condition) || '...' }</a>
                   </div>${ item.condition.length > allowedLength 
                     ? `<div class="mdl-tooltip mdl-tooltip--top" 
                     data-mdl-for="workflow-node__text--condition-${ item.id }">
@@ -214,7 +238,7 @@ export const treeBuilder = {
                       <a href onclick="return false"
                         id="workflow-node__text--goto-${ item.id }"
                         class="workflow-node__text-modal-link"
-                      >${ item.goto ? 'Goto: ' : '' }${ cutString(item.goto) || '&nbsp;' }</a>
+                      >Goto: ${ cutString(item.goto) || '...' }</a>
                   </div>${ item.goto.length > allowedLength 
                     ? `<div class="mdl-tooltip mdl-tooltip--top" 
                     data-mdl-for="workflow-node__text--goto-${ item.id }">
@@ -223,7 +247,8 @@ export const treeBuilder = {
                 }<!--
               --></div><!--
           --></div><!--
-          ${ this.nodeIsLast(item) ? `--><ul class="plomino-workflow-editor__branches 
+          ${ !spec && this.nodeIsLast(item) && item.type !== WF_ITEM_TYPE.GOTO 
+            ? `--><ul class="plomino-workflow-editor__branches 
             plomino-workflow-editor__branches--virtual"><!--
           --><li class="plomino-workflow-editor__branch
             plomino-workflow-editor__branch--virtual"><!--
@@ -237,7 +262,8 @@ export const treeBuilder = {
               ? 'mdl-menu--top-left' : 'mdl-menu--bottom-left' } mdl-js-menu 
                 mdl-js-ripple-effect"
                 for="wf-vrt-btn-${ item.id }">
-              <li class="mdl-menu__item" 
+              ${ !this.eventTypeIsTask(item.type)
+                ? `<li class="mdl-menu__item" 
                 data-target="${ item.id }"
                 data-create="${ WF_ITEM_TYPE.FORM_TASK }">
                 Form task
@@ -247,12 +273,13 @@ export const treeBuilder = {
                 data-create="${ WF_ITEM_TYPE.VIEW_TASK }">
                 View task
               </li>
-              <li class="mdl-menu__item mdl-menu__item--full-bleed-divider"
+              <li class="mdl-menu__item${ 
+                parent ? ' mdl-menu__item--full-bleed-divider' : '' }"
                 data-target="${ item.id }"
                 data-create="${ WF_ITEM_TYPE.EXT_TASK }">
                 Ext. task
-              </li>
-              <li class="mdl-menu__item"
+              </li>` : '' }
+              ${ parent ? `<li class="mdl-menu__item"
                 data-target="${ item.id }"
                 data-create="${ WF_ITEM_TYPE.PROCESS }">
                 Process
@@ -266,9 +293,12 @@ export const treeBuilder = {
                 data-target="${ item.id }"
                 data-create="${ WF_ITEM_TYPE.GOTO }">
                 Goto
-              </li>
+              </li>` : '' }
             </ul><!--
           --></li></ul>` : '-->' }<!--
-      --></li>`);
+      -->${ !spec ? `</li>` : '' }`);
+    }
+
+    return $buildJQItem();
   }
 };

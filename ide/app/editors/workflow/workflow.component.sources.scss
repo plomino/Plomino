@@ -53,6 +53,7 @@ $wfpad-right-left: 7px;
       border-left: $border-width solid $line-color;
       width: 0; 
       height: calc(3em + 1px);
+      z-index: 1;
     }
   }
 
@@ -121,6 +122,23 @@ $wfpad-right-left: 7px;
       user-select: none;
       background: #4A148C;
       border-radius: 4px;
+
+      &:hover .workflow-node__round-1 {
+        background: #3f51b5 !important;
+      }
+
+      &__start-text {
+        color: black;
+        padding-top: 2pt;
+        text-transform: uppercase;
+        font-weight: 500;
+      }
+
+      &:hover {
+        .workflow-node__start-text {
+          color: white;
+        }
+      }
 
       a {
         color: whitesmoke;
@@ -202,6 +220,81 @@ $wfpad-right-left: 7px;
         }
       }
 
+      &--form-task {
+        background: transparent;
+        border-radius: 0;
+
+        .workflow-node__shape-outside {
+          border-radius: 0;
+          clip-path: polygon(0 11%, 100% 0, 100% 100%, 0% 100%);
+        }
+        .workflow-node__shape-inside {
+          clip-path: polygon(0 11%, 100% 0, 100% 100%, 0% 100%);
+        }
+      }
+
+      &--view-task {
+        background: transparent;
+        border-radius: 0;
+        border-left: solid 1px transparent;
+
+        .workflow-node__shape-outside {
+          border-radius: 0;
+          background: #C51162;
+          clip-path: polygon(20% 0%, 80% 0%, 100% 0, 100% 100%, 74% 89%, 25% 89%, 0 76%, 0 0)
+        }
+
+        .workflow-node__shape-inside {
+          background: #C51162;
+          clip-path: polygon(20% 0%, 80% 0%, 100% 0, 100% 100%, 74% 89%, 25% 89%, 0 76%, 0 0)
+        }
+
+        .workflow-node__round-1 {
+          display: block;
+          border-radius: 100%;
+          width: 100px;
+          height: 50px;
+          background: #C51162;
+          position: absolute;
+          left: 1px;
+          bottom: -7px;
+        }
+
+        .workflow-node__round-2 {
+          display: block;
+          border-radius: 100%;
+          width: 93px;
+          height: 50px;
+          background: #fafafa;
+          position: absolute;
+          right: -8px;
+          bottom: -25px;
+          z-index: 10;
+        }
+
+        .workflow-node__shadow-shape-1 {
+          background: #FF4081;
+          display: block;
+          position: absolute;
+          height: 74px;
+          width: 180px;
+          right: -11px;
+          top: -11px;
+          clip-path: polygon(100% 0, 100% 100%, 89% 78%, 0 100%, 0 0);
+        }
+
+        .workflow-node__shadow-shape-2 {    
+          background: #F50057;
+          display: block;
+          position: absolute;
+          height: 72px;
+          width: 180px;
+          right: -6px;
+          top: -6px;
+          clip-path: polygon(100% 0, 100% 100%, 89% 78%, 0 100%, 0 0);
+        }
+      }
+
       &--condition {
         background: transparent;
 
@@ -272,7 +365,11 @@ $wfpad-right-left: 7px;
           }
         }
 
-        &.workflow-node--selected {
+        // &.workflow-node--selected.workflow-node--view-task {
+
+        // }
+
+        &.workflow-node--selected:not(.workflow-node--view-task) {
           .workflow-node__shape-outside {
             background: $selected-color !important;
           }
@@ -320,6 +417,7 @@ $wfpad-right-left: 7px;
         top: -15px;
         left: 1px;
         width: 100%;
+        z-index: 1;
       }
 
       &--dragging {

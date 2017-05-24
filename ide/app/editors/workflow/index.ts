@@ -120,6 +120,8 @@ export class PlominoWorkflowComponent {
       this.buildWFTree();
     }
 
+    setTimeout(() => $('tabset tab.active.tab-pane').css('background', '#fafafa'), 1);
+
     // this.workflowChanges.onChangesDetect$
     // .subscribe((kvData) => {
     //   /* update current task description */
@@ -399,8 +401,6 @@ export class PlominoWorkflowComponent {
     }
     else if (
       !$wfItemClosest.hasClass('workflow-node--root') 
-      // && !(<any>dragEvent.mouseEvent.target)
-      //   .classList.contains('plomino-workflow-editor__branches--root') 
       && [WF_ITEM_TYPE.PROCESS, WF_ITEM_TYPE.CONDITION].indexOf(dragData.type) !== -1
     ) {
       /** @todo: allowed drag related to bottom children element */
@@ -410,6 +410,22 @@ export class PlominoWorkflowComponent {
           .find('>.workflow-node__inner>.workflow-node__text--form')
           .length
       );
+    }
+    else if (
+      !$wfItemClosest.hasClass('workflow-node--root') 
+      && this.eventTypeIsTask(dragData.type)
+    ) {
+      allowedDrag = !Boolean($wfItemClosest.length 
+        && $wfItemClosest.hasClass('workflow-node--task'));
+
+      if (allowedDrag && $wfItemClosest.length) {
+        /* if below is task - forbid */
+        const $child = $wfItemClosest.parent()
+          .find('>.plomino-workflow-editor__branches>.plomino-workflow-editor__branch')
+          .first();
+        allowedDrag = !Boolean($child.length && $child.find('>.workflow-node').length
+          && $child.find('>.workflow-node').hasClass('workflow-node--task'));
+      }
     }
     if (allowedDrag && dragData.type === WF_ITEM_TYPE.GOTO) {
       const lvl = +$wfItemClosest.attr('data-node-level');
@@ -537,11 +553,12 @@ export class PlominoWorkflowComponent {
         .classList.contains('workflow-node--virtual');
   }
 
-  onWFItemClicked($event: JQueryEventObject, $item: JQuery, item: PlominoWorkflowItem) {
-    this.log.info($event, $item, item);
+  onWFItemClicked($event: JQueryEventObject, 
+    $item: JQuery, item: PlominoWorkflowItem, isRoot = false) {
+    this.log.info($event, $item, item, isRoot);
     $event.stopImmediatePropagation();
 
-    if (!item.selected) {
+    if (!isRoot && !item.selected) {
       this.unselectAllWFItems();
       item.selected = true;
       this.selectedItemRef = item;
@@ -549,7 +566,7 @@ export class PlominoWorkflowComponent {
         .addClass('workflow-node--selected');
     }
 
-    if (this.targetIsHoverPlus($event.target)) {
+    if (!isRoot && this.targetIsHoverPlus($event.target)) {
       return this.onHoverPlusClicked($event, $item, item);
     }
     else if ((<HTMLElement> $event.target).dataset.create) {
