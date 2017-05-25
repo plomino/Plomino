@@ -152,6 +152,48 @@ body {
 .plomino-workflow-editor__branch .workflow-node__text {
   position: relative;
 }
+.plomino-workflow-editor__branch .workflow-node__text--task {
+  display: block;
+  word-break: break-word;
+  word-wrap: break-word;
+  white-space: normal;
+  -webkit-hyphens: auto;
+     -moz-hyphens: auto;
+      -ms-hyphens: auto;
+          hyphens: auto;
+  width: 166px;
+  height: auto;
+  max-height: 40px;
+  overflow-wrap: break-word;
+}
+.plomino-workflow-editor__branch .workflow-node__text--process {
+  display: block;
+  word-break: break-word;
+  word-wrap: break-word;
+  white-space: normal;
+  -webkit-hyphens: auto;
+     -moz-hyphens: auto;
+      -ms-hyphens: auto;
+          hyphens: auto;
+  width: 166px;
+  height: auto;
+  max-height: 40px;
+  overflow-wrap: break-word;
+}
+.plomino-workflow-editor__branch .workflow-node__text--goto {
+  display: block;
+  word-break: break-word;
+  word-wrap: break-word;
+  white-space: normal;
+  -webkit-hyphens: auto;
+     -moz-hyphens: auto;
+      -ms-hyphens: auto;
+          hyphens: auto;
+  width: 166px;
+  height: auto;
+  max-height: 40px;
+  overflow-wrap: break-word;
+}
 .plomino-workflow-editor__branch .workflow-node__inner {
   text-align: center;
   min-height: 80px;

@@ -174,6 +174,42 @@ $wfpad-right-left: 7px;
 
       &__text {
         position: relative;
+
+        &--task {
+          display: block;
+          word-break: break-word;
+          word-wrap: break-word;
+          white-space: normal;
+          hyphens: auto;
+          width: $wfw - $wfpad-right-left * 2;
+          height: auto;
+          max-height: 40px;
+          overflow-wrap: break-word;
+        }
+
+        &--process {
+          display: block;
+          word-break: break-word;
+          word-wrap: break-word;
+          white-space: normal;
+          hyphens: auto;
+          width: $wfw - $wfpad-right-left * 2;
+          height: auto;
+          max-height: 40px;
+          overflow-wrap: break-word;
+        }
+
+        &--goto {
+          display: block;
+          word-break: break-word;
+          word-wrap: break-word;
+          white-space: normal;
+          hyphens: auto;
+          width: $wfw - $wfpad-right-left * 2;
+          height: auto;
+          max-height: 40px;
+          overflow-wrap: break-word;
+        }
       }
 
       &__inner {
@@ -285,7 +321,7 @@ $wfpad-right-left: 7px;
           display: block;
           position: absolute;
           height: 74px;
-          width: 180px;
+          width: $wfw;
           right: -11px;
           top: -11px;
           clip-path: polygon(100% 0, 100% 100%, 89% 78%, 0 100%, 0 0);
@@ -296,7 +332,7 @@ $wfpad-right-left: 7px;
           display: block;
           position: absolute;
           height: 72px;
-          width: 180px;
+          width: $wfw;
           right: -6px;
           top: -6px;
           clip-path: polygon(100% 0, 100% 100%, 89% 78%, 0 100%, 0 0);

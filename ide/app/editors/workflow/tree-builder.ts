@@ -124,16 +124,22 @@ export const treeBuilder = {
   ): JQuery {
 
     const allowedLength = 16;
+    const allowedLengthWide = 38;
 
-    const cutString = ((str: string) => {
-      if (str && str.length > allowedLength) {
-        str = str.substr(0, allowedLength) + '...';
+    const cutString = ((str: string, l = allowedLength) => {
+      if (str && str.length > l) {
+        str = str.substr(0, l) + '...';
       }
-
-      return str;
+      return str || '';
     });
 
+    const autoBR = (result: string) => {
+      if (!result) { return ''; }
+      return result.match(/(.\s?){1,22}/g).join('<br>');
+    }
+
     const $buildJQItem = (spec: string = null) => {
+      const hashId = item.id !== -1 ? '#' + item.id : '';
       return $(
       `${ !spec ? `<li class="plomino-workflow-editor__branch" 
            ${ !item.root ? ' draggable="true"' : ''}>` : '' }<!--
@@ -177,44 +183,42 @@ export const treeBuilder = {
                     id="workflow-node__text--task-${ item.id }">
                       <a href onclick="return false"
                         class="workflow-node__text-modal-link"
-                      >#${ item.id } ${ cutString(item.title) || '...' }</a>
+                      >${ hashId } ${ cutString(item.title, 
+                        item.type !== WF_ITEM_TYPE.VIEW_TASK 
+                        ? allowedLengthWide : allowedLength) || '...' }</a>
                   </div>${ item.title && item.title.length > allowedLength 
                     ? `<div class="mdl-tooltip mdl-tooltip--top" 
                     data-mdl-for="workflow-node__text--task-${ item.id }">
-                    ${ item.title && item.title.match(/(.\s?){1,22}/g).join('<br>')
-                   }</div>` : '' }` : ''
+                    ${ autoBR(item.title) }</div>` : '' }` : ''
                 }<!--
                 -->${ item.type === WF_ITEM_TYPE.FORM_TASK ? 
                   `<div class="workflow-node__text workflow-node__text--form"
                     id="workflow-node__text--form-${ item.id }">
-                      ${ item.form ? 'Form: ' : '' }${ cutString(item.form) }
+                      Form: ${ cutString(item.form) || 'not selected' }
                   </div>${ item.form && item.form.length > allowedLength 
                     ? `<div class="mdl-tooltip mdl-tooltip--top" 
                     data-mdl-for="workflow-node__text--form-${ item.id }">
-                    ${ item.form && item.form.match(/(.\s?){1,22}/g).join('<br>')
-                   }</div>` : '' }` : ''
+                    ${ autoBR(item.form) }</div>` : '' }` : ''
                 }<!--
                 -->${ item.type === WF_ITEM_TYPE.VIEW_TASK ? 
                   `<div class="workflow-node__text workflow-node__text--view"
                     id="workflow-node__text--view-${ item.id }">
-                    ${ item.view ? 'View: ' : '' }${ cutString(item.view) }
+                    View: ${ cutString(item.view) || 'not selected' }
                   </div>${ item.view && item.view.length > allowedLength 
                     ? `<div class="mdl-tooltip mdl-tooltip--top" 
                     data-mdl-for="workflow-node__text--view-${ item.id }">
-                    ${ item.view && item.view.match(/(.\s?){1,22}/g).join('<br>')
-                   }</div>` : '' }` : ''
+                    ${ autoBR(item.view) }</div>` : '' }` : ''
                 }<!--
                 -->${ item.type === WF_ITEM_TYPE.PROCESS ? 
                   `<div class="workflow-node__text workflow-node__text--process"
                     id="workflow-node__text--process-${ item.id }">
                       <a href onclick="return false"
                         class="workflow-node__text-modal-link"
-                      >#${ item.id } ${ cutString(item.title) || '...' }</a>
-                  </div>${ item.title && item.title.length > allowedLength 
+                      >${ hashId } ${ cutString(item.title, allowedLengthWide) || '...' }</a>
+                  </div>${ item.title && item.title.length > allowedLengthWide 
                     ? `<div class="mdl-tooltip mdl-tooltip--top" 
                     data-mdl-for="workflow-node__text--process-${ item.id }">
-                    ${ item.title && item.title.match(/(.\s?){1,22}/g).join('<br>')
-                   }</div>` : '' }` : ''
+                    ${ autoBR(item.title) }</div>` : '' }` : ''
                 }<!--
                 -->${ item.type === WF_ITEM_TYPE.PROCESS ? 
                   `<div class="workflow-node__text workflow-node__text--macro">
@@ -226,24 +230,22 @@ export const treeBuilder = {
                       <a href onclick="return false"
                         id="workflow-node__text--condition-${ item.id }"
                         class="workflow-node__text-modal-link"
-                      >#${ item.id } ${ cutString(item.condition) || '...' }</a>
+                      >${ hashId } ${ cutString(item.condition) || '...' }</a>
                   </div>${ item.condition && item.condition.length > allowedLength 
                     ? `<div class="mdl-tooltip mdl-tooltip--top" 
                     data-mdl-for="workflow-node__text--condition-${ item.id }">
-                    ${ item.condition && item.condition.match(/(.\s?){1,22}/g).join('<br>')
-                   }</div>` : '' }` : ''
+                    ${ autoBR(item.condition) }</div>` : '' }` : ''
                 }<!--
                 -->${ item.type === WF_ITEM_TYPE.GOTO ? 
                   `<div class="workflow-node__text workflow-node__text--goto">
                       <a href onclick="return false"
                         id="workflow-node__text--goto-${ item.id }"
                         class="workflow-node__text-modal-link"
-                      >Goto: ${ '#' + cutString(item.goto) || '...' }</a>
-                  </div>${ item.goto && item.goto.length > allowedLength 
+                      >Goto: ${ '#' + cutString(item.goto, allowedLengthWide) || '...' }</a>
+                  </div>${ item.goto && item.goto.length > allowedLengthWide 
                     ? `<div class="mdl-tooltip mdl-tooltip--top" 
                     data-mdl-for="workflow-node__text--goto-${ item.id }">
-                    ${ item.goto && item.goto.match(/(.\s?){1,22}/g).join('<br>')
-                   }</div>` : '' }` : ''
+                    ${ autoBR(item.goto) }</div>` : '' }` : ''
                 }<!--
               --></div><!--
           --></div><!--
