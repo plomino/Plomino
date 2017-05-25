@@ -125,6 +125,7 @@ export class FormSettingsComponent implements OnInit {
         if (responseData.html !== "<div id='ajax_success'/>") {
             return Observable.of(responseData.html);
         } else {
+            // const $oldFormId = this.tab.url.slice(responseData.url.lastIndexOf('/') + 1);
             const $formId = responseData.url.slice(responseData.url.lastIndexOf('/') + 1);
             const newUrl = this.tab.url
               .slice(0, this.tab.url.lastIndexOf('/') + 1) + $formId;

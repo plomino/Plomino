@@ -179,9 +179,7 @@ export class TabsService {
         this.setActiveTab(tab, false);
       }
       else {
-        // let tabs = this.tabs$.getValue().slice(0);
-        // tabs.forEach(tab => { tab.active = (tab.url === tabIsOpen.url) });
-        // this.formsService.changePaletteTab(0);
+        this.urlManager.rebuildURL(this.tabs$.getValue().slice(0));
       }
     } else {
       let builtedTab: PlominoTab = this.buildTab(tab, showAdd);
@@ -193,6 +191,7 @@ export class TabsService {
         this.workflowModeChange.next(false);
       }
       else {
+        this.urlManager.rebuildURL(this.tabs$.getValue().slice(0));
         this.formsService.changePaletteTab(0);
         this.workflowModeChange.next(true);
       }

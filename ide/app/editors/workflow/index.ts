@@ -1,7 +1,7 @@
 import { PlominoSaveManagerService } from './../../services/save-manager/save-manager.service';
 import { FakeFormData } from './../../utility/fd-helper/fd-helper';
 import { PlominoHTTPAPIService } from './../../services/http-api.service';
-import { Component, ElementRef, ViewChild, ViewEncapsulation } from '@angular/core';
+import { Component, ElementRef, ViewChild, ViewEncapsulation, NgZone } from '@angular/core';
 import { PlominoBlockPreloaderComponent } from '../../utility';
 import { DND_DIRECTIVES } from 'ng2-dnd';
 import { treeBuilder, WF_ITEM_TYPE } from './tree-builder';
@@ -41,6 +41,7 @@ export class PlominoWorkflowComponent {
     private dragService: DraggingService,
     private api: PlominoHTTPAPIService,
     private saveManager: PlominoSaveManagerService,
+    private zone: NgZone,
   ) {
     if (!this.dragService.dndType) {
       this.dragService.followDNDType('nothing');
@@ -100,7 +101,21 @@ export class PlominoWorkflowComponent {
         }
         this.itemSettingsDialog.close();
       });
-    })
+    });
+
+    this.formsService.formIdChanged$
+      .subscribe((data) => {
+        const item = this.findWFItemByFormOrViewId(data.oldId.split('/').pop());
+        if (item !== null) {
+          item[
+            item.type === WF_ITEM_TYPE.FORM_TASK ? 'form' : 'view'
+            ] = data.newId.split('/').pop();
+          this.buildWFTree();
+        }
+      })
+
+    // const $macros = $(this.itemSettingsDialog.querySelector('ul.plomino-macros'));
+
   }
 
   ngOnInit() {
@@ -154,6 +169,21 @@ export class PlominoWorkflowComponent {
 
       eventData.stopImmediatePropagation();
     });
+  }
+
+  findWFItemByFormOrViewId(fvId: string, tree = this.tree): PlominoWorkflowItem {
+    if (tree.form === fvId || tree.view === fvId) {
+      return tree;
+    }
+    if (tree.children) {
+      for (let subTree of tree.children) {
+        let result = this.findWFItemByFormOrViewId(fvId, subTree);
+        if (result) {
+          return result;
+        }
+      }
+    }
+    return null;
   }
 
   findWFItemById(itemId: number, tree = this.tree): PlominoWorkflowItem {
