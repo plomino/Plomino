@@ -144,6 +144,14 @@ $wfpad-right-left: 7px;
         color: whitesmoke;
       }
 
+      &.workflow-node--condition a {
+        color: black;
+
+        &:hover {
+          color: white;
+        }
+      }
+
       &__hover-plus-btn {
         opacity: 0;
         position: absolute;

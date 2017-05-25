@@ -10,6 +10,13 @@ import { PlominoWorkflowChangesNotifyService } from './workflow.changes.notify.s
 import { PlominoFormsListService, LogService, 
   FormsService, DraggingService } from "../../services";
 
+interface WFDragEvent {
+  dragData: { title: string, type: string },
+  mouseEvent: DragEvent
+}
+
+const FORM_OR_VIEW_FROM_TREE = 'existing-subform';
+
 @Component({
   selector: 'plomino-workflow-editor',
   template: require('./workflow.component.html'),
@@ -121,19 +128,6 @@ export class PlominoWorkflowComponent {
     }
 
     setTimeout(() => $('tabset tab.active.tab-pane').css('background', '#fafafa'), 1);
-
-    // this.workflowChanges.onChangesDetect$
-    // .subscribe((kvData) => {
-    //   /* update current task description */
-    //   const item = this.selectedItemRef;
-    //   if (item) {
-    //     if (kvData.key === 'description') {
-    //       item.title = kvData.value;
-    //       $('.workflow-node--selected .workflow-node__task')
-    //         .html(`Task: ${ item.title }`);
-    //     }
-    //   }
-    // });
 
     $(document).keydown((eventData) => {
       if (this.selectedItemRef && (eventData.keyCode === 8 || eventData.keyCode === 46)
@@ -248,7 +242,7 @@ export class PlominoWorkflowComponent {
         ];
       }
   
-      if (this.dragService.dndType.slice(0, 16) === 'existing-subform') {
+      if (this.dragService.dndType.slice(0, 16) === FORM_OR_VIEW_FROM_TREE) {
         const dragFormData = this.dragService.dndType.slice(18).split('::');
         dragFormData.pop();
         previewItem.title = dragFormData.pop();
@@ -288,7 +282,7 @@ export class PlominoWorkflowComponent {
     // this.log.info($parentItem, parentItem);
   }
 
-  onDragLeave(dragEvent: { dragData: any, mouseEvent: DragEvent }) {
+  onDragLeave(dragEvent: WFDragEvent) {
     const event: DragEvent = dragEvent.mouseEvent;
     const $offset = $(this.workflowEditorNode.nativeElement).offset();
 
@@ -297,12 +291,7 @@ export class PlominoWorkflowComponent {
     }
   }
 
-  getClosestWFItemToDragEvent(
-    dragEvent: {
-      dragData: { title: string, type: string },
-      mouseEvent: DragEvent
-    }
-  ): JQuery {
+  getClosestWFItemToDragEvent(dragEvent: WFDragEvent): JQuery {
     /* at first we need to detect closest node */
     let $target = $(dragEvent.mouseEvent 
       ? dragEvent.mouseEvent.target : (<any> dragEvent).target);
@@ -376,69 +365,131 @@ export class PlominoWorkflowComponent {
     ].indexOf(eventType) !== -1;
   }
 
-  onDragEnter(dragEvent: { dragData: any, mouseEvent: DragEvent }) {
-    const dragData = dragEvent.dragData;
+  /**
+   * Is the eventType is PROCESS or CONDITION
+   * @param eventType 
+   */
+  eTypeIsProcCond(eventType: string) {
+    return [
+      WF_ITEM_TYPE.PROCESS, WF_ITEM_TYPE.CONDITION
+    ].indexOf(eventType) !== -1;
+  }
 
-    const $wfItemClosest = this.getClosestWFItemToDragEvent(dragEvent);
-    // dragEvent.mouseEvent.stopImmediatePropagation();
+  isDragAllowed($wfItemClosest: JQuery, dType: string): Boolean {
     let allowedDrag = true;
+    const closestExists = Boolean($wfItemClosest.length);
+    const onGoto = closestExists && $wfItemClosest.hasClass('workflow-node--goto');
+    const onCond = closestExists && $wfItemClosest.hasClass('workflow-node--condition');
+    const onRoot = closestExists && $wfItemClosest.hasClass('workflow-node--root');
+    const pathIsForm = '>.workflow-node__inner>.workflow-node__text--form';
+    const onForm = closestExists && $wfItemClosest.find(pathIsForm).length;
+    const onTask = closestExists && $wfItemClosest.hasClass('workflow-node--task');
+    const cp = '>.plomino-workflow-editor__branches>.plomino-workflow-editor__branch';
+    const $childBranch = closestExists ? $wfItemClosest.parent().find(cp).first() : $();
+    const chBranchExists = $childBranch.length;
+    const $childNode = $childBranch.find('>.workflow-node');
+    const belowIsThere = chBranchExists && $childNode.length;
+    const belowIsTask = belowIsThere && $childNode.hasClass('workflow-node--task');
+    const belowIsProc = belowIsThere && $childNode.hasClass('workflow-node--process');
+    const belowIsCond = belowIsThere && $childNode.hasClass('workflow-node--condition');
+    const belowIsProcOrCond = belowIsProc || belowIsCond;
+    const isProcOrCondDrag = this.eTypeIsProcCond(dType);
+    const isGotoDrag = dType === WF_ITEM_TYPE.GOTO;
+    const isTaskDrag = this.eventTypeIsTask(dType);
+    const lvl = closestExists ? +$wfItemClosest.attr('data-node-level') : 0;
 
-    if ($wfItemClosest.hasClass('workflow-node--goto')) {
+    if (onCond || onGoto || (onRoot && (isProcOrCondDrag || isGotoDrag))) {
       allowedDrag = false;
     }
-    else if (
-      ($wfItemClosest.hasClass('workflow-node--root')
-        // || (<any>dragEvent.mouseEvent.target)
-        // .classList.contains('plomino-workflow-editor__branches--root')
-      ) 
-      && (
-        dragData.type === WF_ITEM_TYPE.PROCESS
-        || dragData.type === WF_ITEM_TYPE.CONDITION
-        || dragData.type === WF_ITEM_TYPE.GOTO
-      )
-    ) {
-      allowedDrag = false;
-    }
-    else if (
-      !$wfItemClosest.hasClass('workflow-node--root') 
-      && [WF_ITEM_TYPE.PROCESS, WF_ITEM_TYPE.CONDITION].indexOf(dragData.type) !== -1
-    ) {
+    else if (!onRoot && isProcOrCondDrag) {
       /** @todo: allowed drag related to bottom children element */
-      allowedDrag = Boolean(
-        $wfItemClosest.length 
-        && $wfItemClosest
-          .find('>.workflow-node__inner>.workflow-node__text--form')
-          .length
-      );
+      allowedDrag = onForm && !belowIsProcOrCond;
     }
-    else if (
-      !$wfItemClosest.hasClass('workflow-node--root') 
-      && this.eventTypeIsTask(dragData.type)
-    ) {
-      allowedDrag = !Boolean($wfItemClosest.length 
-        && $wfItemClosest.hasClass('workflow-node--task'));
-
-      if (allowedDrag && $wfItemClosest.length) {
-        /* if below is task - forbid */
-        const $child = $wfItemClosest.parent()
-          .find('>.plomino-workflow-editor__branches>.plomino-workflow-editor__branch')
-          .first();
-        allowedDrag = !Boolean($child.length && $child.find('>.workflow-node').length
-          && $child.find('>.workflow-node').hasClass('workflow-node--task'));
-      }
+    else if (!onRoot && isTaskDrag) {
+      allowedDrag = !onTask && !belowIsTask;
     }
-    if (allowedDrag && dragData.type === WF_ITEM_TYPE.GOTO) {
-      const lvl = +$wfItemClosest.attr('data-node-level');
+    if (allowedDrag && isGotoDrag) {
       allowedDrag = !Boolean($('[data-node-level="' + (lvl + 1) + '"]').length);
     }
-    
-    if (allowedDrag) {
-      this.dragInsertPreview($wfItemClosest, dragData);
+
+    return allowedDrag;
+  }
+
+  /**
+   * ng2-dnd event callback
+   * @param dragEvent 
+   */
+  onDragEnter(dragEvent: WFDragEvent) {
+    /**
+     * closest to mouse cursor worfklow item
+     * parent item to drag preview
+     */
+    const $wfItemClosest = this.getClosestWFItemToDragEvent(dragEvent);
+    if (this.isDragAllowed($wfItemClosest, dragEvent.dragData.type)) {
+      this.dragInsertPreview($wfItemClosest, dragEvent.dragData);
     }
   }
 
+  /**
+   * When the user drags existing f/v onto wf-editor's item or drags existing wf-items
+   * @param eventData 
+   * @param item 
+   * @param item 
+   */
+  onItemDragEnter(eventData: DragEvent, $item: JQuery, item: PlominoWorkflowItem) {
+    const dndType = this.dragService.dndType;
+    
+    if (dndType === 'existing-wf-item' 
+      && this.selectedItemRef.id !== item.id
+    ) {
+      eventData.stopImmediatePropagation();
+      const dragEvent = <any> {
+        dragData: item,
+        mouseEvent: eventData,
+      };
+      // eventData.preventDefault();
+      /**
+       * step 1: temporary variable for item
+       * step 2: assign selected attributes to item
+       */
+      // const itemParent = this.findWFItemParentById(item.id);
+      const selectedParent = this.findWFItemParentById(this.selectedItemRef.id);
+      if (selectedParent.children.filter((x: any) => x.id === item.id).length) {
+        /* swap */
+        const $wfItemClosest = this.getClosestWFItemToDragEvent(dragEvent);
+        $('.workflow-node--dropping').removeClass('workflow-node--dropping');
+        $wfItemClosest.addClass('workflow-node--dropping');
+      }
+      
+      return true;
+    }
+    else if (dndType.slice(0, 16) === FORM_OR_VIEW_FROM_TREE) {
+      eventData.stopImmediatePropagation();
+
+      const dragEvent = {
+        dragData: {
+          title: '',
+          type: dndType.slice(18).split('::').pop() === 'Views' 
+            ? WF_ITEM_TYPE.VIEW_TASK : WF_ITEM_TYPE.FORM_TASK
+        },
+        mouseEvent: eventData,
+      };
+      const $wfItemClosest = this.getClosestWFItemToDragEvent(dragEvent);
+      if (this.isDragAllowed($wfItemClosest, dragEvent.dragData.type)) {
+        this.dragInsertPreview($wfItemClosest, dragEvent.dragData);
+      }
+    }
+    return true;
+  }
+
+  /**
+   * fires when the user drags something on workflow-editor div
+   * native html5 event
+   * special for existing forms/views from tree
+   * @param eventData 
+   */
   wfDragEnterNativeEvent(eventData: DragEvent) {
-    if (this.dragService.dndType.slice(0, 16) === 'existing-subform') {
+    if (this.dragService.dndType.slice(0, 16) === FORM_OR_VIEW_FROM_TREE) {
       const dragFormData = this.dragService.dndType.slice(18).split('::');
       this.onDragEnter({
         dragData: {
@@ -452,7 +503,7 @@ export class PlominoWorkflowComponent {
   }
 
   wfDragLeaveNativeEvent(eventData: DragEvent) {
-    if (this.dragService.dndType.slice(0, 16) === 'existing-subform') {
+    if (this.dragService.dndType.slice(0, 16) === FORM_OR_VIEW_FROM_TREE) {
       const dragFormData = this.dragService.dndType.slice(18).split('::');
       this.onDragLeave({
         dragData: {
@@ -466,7 +517,7 @@ export class PlominoWorkflowComponent {
   }
 
   wfDropNativeEvent(eventData: DragEvent) {
-    if (this.dragService.dndType.slice(0, 16) === 'existing-subform') {
+    if (this.dragService.dndType.slice(0, 16) === FORM_OR_VIEW_FROM_TREE) {
       this.onDrop();
     }
   }
@@ -484,13 +535,6 @@ export class PlominoWorkflowComponent {
   onDrop() {
     const sandboxTree = this.latestTree;
     const temporaryItem = this.findWFItemById(-1, sandboxTree);
-
-    // if (temporaryItem.type === WF_ITEM_TYPE.PROCESS) {
-    //   delete temporaryItem.view;
-    //   delete temporaryItem.form;
-    //   delete temporaryItem.condition;
-    //   delete temporaryItem.title;
-    // }
 
     if (temporaryItem) {
       temporaryItem.dropping = false;
@@ -553,25 +597,24 @@ export class PlominoWorkflowComponent {
         .classList.contains('workflow-node--virtual');
   }
 
-  onWFItemClicked($event: JQueryEventObject, 
-    $item: JQuery, item: PlominoWorkflowItem, isRoot = false) {
-    this.log.info($event, $item, item, isRoot);
-    $event.stopImmediatePropagation();
+  onWFItemClicked($e: JQueryEventObject, $i: JQuery, itm: PlominoWorkflowItem, r = false) {
+    this.log.info($e, $i, itm, r);
+    $e.stopImmediatePropagation();
 
-    if (!isRoot && !item.selected) {
+    if (!r && !itm.selected) {
       this.unselectAllWFItems();
-      item.selected = true;
-      this.selectedItemRef = item;
-      $item.find('.workflow-node:first')
+      itm.selected = true;
+      this.selectedItemRef = itm;
+      $i.find('.workflow-node:first')
         .addClass('workflow-node--selected');
     }
 
-    if (!isRoot && this.targetIsHoverPlus($event.target)) {
-      return this.onHoverPlusClicked($event, $item, item);
+    if (!r && this.targetIsHoverPlus($e.target)) {
+      return this.onHoverPlusClicked($e, $i, itm);
     }
-    else if ((<HTMLElement> $event.target).dataset.create) {
+    else if ((<HTMLElement> $e.target).dataset.create) {
       this.log.info('go create from menu');
-      const _target = (<HTMLElement> $event.target);
+      const _target = (<HTMLElement> $e.target);
       const creatingType = _target.dataset.create;
       const $wfItemClosest = $(
         `.workflow-node[data-node-id="${ _target.dataset.target }"]`
@@ -580,13 +623,7 @@ export class PlominoWorkflowComponent {
       this.dragInsertPreview($wfItemClosest, { title: '', type: creatingType });
       this.onDrop();
     }
-    // else if (this.targetIsVirtual($event.target)) {
-    //   $event.stopImmediatePropagation();
-    //   // return this.onVirtualClicked($event, $item, item);
-    // }
 
-    
-    // this.formsService.changePaletteTab(4);
     return true;
   }
 
@@ -653,7 +690,7 @@ export class PlominoWorkflowComponent {
     this.itemSettingsDialog.showModal();
   }
 
-  onWFItemDblClicked($event: JQueryEventObject, $item: JQuery, item: PlominoWorkflowItem) {
+  onWFItemDblClicked($event: JQueryEventObject, $i: JQuery, item: PlominoWorkflowItem) {
     if (this.targetIsHoverPlus($event.target) || this.targetIsVirtual($event.target)) {
       return false;
     }
@@ -661,12 +698,6 @@ export class PlominoWorkflowComponent {
     this.selectedItemRef = item;
     this.showModal(item);
     $event.stopImmediatePropagation();
-  }
-
-  onVirtualClicked($event: JQueryEventObject, $item: JQuery, item: PlominoWorkflowItem) {
-    this.log.info('virtual clicked');
-    $event.stopImmediatePropagation();
-    return true;
   }
 
   apply2selected() {
@@ -726,20 +757,18 @@ export class PlominoWorkflowComponent {
     }
   }
 
-  onWFItemMacroClicked($event: JQueryEventObject, $item: JQuery, item: PlominoWorkflowItem) {
-    this.log.info('onWFItemMacroClicked', $event, item);
-    $event.stopImmediatePropagation();
-    $event.preventDefault();
+  onWFItemMacroClicked($e: JQueryEventObject, $i: JQuery, item: PlominoWorkflowItem) {
+    this.log.info('onWFItemMacroClicked', $e, item);
+    $e.stopImmediatePropagation();
+    $e.preventDefault();
 
     this.editMacro(item);
     return false;
   }
 
-  onHoverPlusClicked(
-    $event: JQueryEventObject, $item: JQuery, item: PlominoWorkflowItem
-  ) {
+  onHoverPlusClicked($e: JQueryEventObject, $i: JQuery, item: PlominoWorkflowItem) {
     this.log.info('hover plus');
-    $event.stopImmediatePropagation();
+    $e.stopImmediatePropagation();
 
     const newLogicItem: PlominoWorkflowItem = {
       id: this.generateNewId(),
@@ -753,6 +782,10 @@ export class PlominoWorkflowComponent {
     this.buildWFTree();
   }
 
+  /**
+   * Can be cached on built?
+   * @param tree 
+   */
   getTreeNodesMap(tree = this.tree): Map<number, PlominoWorkflowItem> {
     const stackMap: Map<number, PlominoWorkflowItem> = new Map();
     
@@ -780,59 +813,13 @@ export class PlominoWorkflowComponent {
     return true;
   }
 
-  onItemDragEnter(eventData: DragEvent, $item: JQuery, item: PlominoWorkflowItem) {
-    const dndType = this.dragService.dndType;
-    
-    if (dndType === 'existing-wf-item' 
-      && this.selectedItemRef.id !== item.id
-    ) {
-      eventData.stopImmediatePropagation();
-      const dragEvent = <any> {
-        dragData: item,
-        mouseEvent: eventData,
-      };
-      // eventData.preventDefault();
-      /**
-       * step 1: temporary variable for item
-       * step 2: assign selected attributes to item
-       */
-      // const itemParent = this.findWFItemParentById(item.id);
-      const selectedParent = this.findWFItemParentById(this.selectedItemRef.id);
-      if (selectedParent.children.filter((x: any) => x.id === item.id).length) {
-        /* swap */
-        const $wfItemClosest = this.getClosestWFItemToDragEvent(dragEvent);
-        $('.workflow-node--dropping').removeClass('workflow-node--dropping');
-        $wfItemClosest.addClass('workflow-node--dropping');
-        // console.log('onItemDragEnter', item, $wfItemClosest.get(0));
-      }
-      
-      return true;
-    }
-    else if (dndType.slice(0, 16) === 'existing-subform') {
-      eventData.stopImmediatePropagation();
-
-      const dragEvent = {
-        dragData: {
-          title: '',
-          type: dndType.slice(18).split('::').pop() === 'Views' 
-            ? WF_ITEM_TYPE.VIEW_TASK : WF_ITEM_TYPE.FORM_TASK
-        },
-        mouseEvent: eventData,
-      };
-      const $wfItemClosest = this.getClosestWFItemToDragEvent(dragEvent);
-      this.dragInsertPreview($wfItemClosest, dragEvent.dragData);
-    }
-    return true;
-  }
-
   onItemDragLeave(eventData: DragEvent, $item: JQuery, item: PlominoWorkflowItem) {
     const dndType = this.dragService.dndType;
     if (dndType === 'existing-wf-item'
       && this.selectedItemRef.id !== item.id) {
-      // console.log('onItemDragLeave', item, $item);
       eventData.stopImmediatePropagation();
     }
-    else if (dndType.slice(0, 16) === 'existing-subform') {
+    else if (dndType.slice(0, 16) === FORM_OR_VIEW_FROM_TREE) {
       const $offset = $item.offset();
   
       if (eventData.clientX < $offset.left || eventData.clientY < $offset.top) {
@@ -856,7 +843,6 @@ export class PlominoWorkflowComponent {
   onItemDrop(eventData: DragEvent, $item: JQuery, item: PlominoWorkflowItem) {
     const dndType = this.dragService.dndType;
     if (dndType === 'existing-wf-item') {
-      // .log('onItemDrop', item);
       $('.workflow-node--dropping').removeClass('workflow-node--dropping');
       eventData.stopImmediatePropagation();
 
@@ -869,23 +855,19 @@ export class PlominoWorkflowComponent {
           }
         }
         for (let key of Object.keys(this.selectedItemRef)) {
-          // if (key !== 'children') {
             item[key] = this.selectedItemRef[key];
             if (!tmp.hasOwnProperty(key)) {
               delete this.selectedItemRef[key];
             }
-          // }
         }
         for (let key of Object.keys(tmp)) {
-          // if (key !== 'children') {
             this.selectedItemRef[key] = tmp[key];
-          // }
         }
   
         this.buildWFTree();
       }
     }
-    else if (dndType.slice(0, 16) === 'existing-subform') {
+    else if (dndType.slice(0, 16) === FORM_OR_VIEW_FROM_TREE) {
       return this.onDrop();
     }
     return true;
@@ -922,7 +904,8 @@ export class PlominoWorkflowComponent {
       }`;
   
       const fd = new FakeFormData(<any> $(`form[action*="${ dbLink }"]`).get(0));
-      fd.set('form.widgets.IBasic.description', JSON.stringify(this.tree));
+      fd.set('form.widgets.IBasic.description', JSON.stringify(this.tree)
+        .replace(/,"(selected|dropping)":(false|true)/g, ''));
       fd.set('form.buttons.save', 'Save');
   
       this.api

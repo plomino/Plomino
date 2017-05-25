@@ -125,6 +125,12 @@ body {
 .plomino-workflow-editor__branch .workflow-node a {
   color: whitesmoke;
 }
+.plomino-workflow-editor__branch .workflow-node.workflow-node--condition a {
+  color: black;
+}
+.plomino-workflow-editor__branch .workflow-node.workflow-node--condition a:hover {
+  color: white;
+}
 .plomino-workflow-editor__branch .workflow-node__hover-plus-btn {
   opacity: 0;
   position: absolute;
