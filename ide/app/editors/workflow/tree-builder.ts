@@ -222,7 +222,9 @@ export const treeBuilder = {
                 }<!--
                 -->${ item.type === WF_ITEM_TYPE.PROCESS ? 
                   `<div class="workflow-node__text workflow-node__text--macro">
-                      Macro: <a href onclick="return false">add rules</a>
+                      Macro: <a href onclick="return false">${ 
+                        item.macroText || 'add rules' 
+                      }</a>
                   </div>` : ''
                 }<!--
                 -->${ item.type === WF_ITEM_TYPE.CONDITION ? 

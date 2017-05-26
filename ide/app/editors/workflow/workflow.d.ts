@@ -9,6 +9,8 @@ interface PlominoWorkflowItem {
   goto?: string;
   type?: string;
   selected?: boolean;
+  macroId?: number;
+  macroText?: string;
 
   /**
    * root means that this item is top element
@@ -21,6 +23,11 @@ interface PlominoWorkflowItem {
   dropping?: boolean;
 
   children: PlominoWorkflowItem[];
+}
+
+interface WFDragEvent {
+  dragData: { title: string, type: string },
+  mouseEvent: DragEvent
 }
 
 interface KVChangeEvent {

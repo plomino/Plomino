@@ -45,6 +45,11 @@ require([
                 formatSelection: self.formatMacro
             };
 
+            if (self.$el.closest('dialog').length) {
+              self.select2_args.dropdownParent = self.$el
+                .closest('dialog').find('.mdl-dialog__content');
+            }
+
             var html = '';
             self.item = self.$el.find('li').last()[0].outerHTML;
 //            self.rules.map(function(rule) {
@@ -96,6 +101,11 @@ require([
             var select = $(el);
             select.select2('data', rule);
 
+            if ($(el).prop('disabled')) {
+              select.enable(false);
+              self.disabled = true;
+            }
+
             select.change(function(evt) {
                 var macro_select = $(evt.target);
                 if (evt.added != undefined) {
@@ -130,18 +140,20 @@ require([
                 else {
                     // find the exisitng tags and make them editable
                     //TODO: should only do once
-                    $(el).find('.select2-search-choice').each(function(i, el) {
-                        $(el).on("click", function(evt) {
-                            evt.preventDefault();
-                            //TODO: how to get the value for this rendered one?
-                            var value = values[i];
-                            var macro = JSON.parse(value.id);
-                            var edit_url = null;
-                            var formid = macro['Form'];
+                    if (!self.disabled) {
+                      $(el).find('.select2-search-choice').each(function(i, el) {
+                          $(el).on("click", function(evt) {
+                              evt.preventDefault();
+                              //TODO: how to get the value for this rendered one?
+                              var value = values[i];
+                              var macro = JSON.parse(value.id);
+                              var edit_url = null;
+                              var formid = macro['Form'];
 
-                            self.edit_macro.bind({widget:self})(select, formid, macro.title, macro, i);
-                        });
-                    });
+                              self.edit_macro.bind({widget:self})(select, formid, macro.title, macro, i);
+                          });
+                      });
+                    }
                     new Sortable($(el).find(".select2-choices"), {
                         selector:'.select2-search-choice',
                         drop: function() {

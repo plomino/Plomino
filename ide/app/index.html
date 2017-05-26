@@ -322,14 +322,20 @@
       </div>
   </dialog>
 
-  <dialog id="wf-item-settings-dialog" class="mdl-dialog" style="width: 500px">
-    <h4 data-typefor="workflowFormTask" class="mdl-dialog__title">Form Task</h4>
-    <h4 data-typefor="workflowViewTask" class="mdl-dialog__title">View Task</h4>
-    <h4 data-typefor="workflowExternalTask" class="mdl-dialog__title">External Task</h4>
-    <h4 data-typefor="workflowProcess" class="mdl-dialog__title">Process</h4>
-    <h4 data-typefor="workflowCondition" class="mdl-dialog__title">Condition</h4>
-    <h4 data-typefor="workflowGoto" class="mdl-dialog__title">Goto</h4>
-    <div class="mdl-dialog__content">
+  <div id="wf-item-settings-dialog" class="modal fade" tabindex="-1" role="dialog" style="z-index: 1005">
+    <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" 
+          aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" data-typefor="workflowFormTask">Form Task</h4>
+        <h4 class="modal-title" data-typefor="workflowViewTask">View Task</h4>
+        <h4 class="modal-title" data-typefor="workflowExternalTask">External Task</h4>
+        <h4 class="modal-title" data-typefor="workflowProcess">Process</h4>
+        <h4 class="modal-title" data-typefor="workflowCondition">Condition</h4>
+        <h4 class="modal-title" data-typefor="workflowGoto">Goto</h4>
+      </div>
+    <div class="modal-body">
       <div data-typefor="workflowFormTask workflowViewTask workflowExternalTask workflowProcess" 
         class="mdl-dialog__content-form-group">
         <label for="wf-item-settings-dialog__title">Title</label>
@@ -351,6 +357,7 @@
         <label for="wf-item-settings-dialog__condition">Condition</label>
         <input type="text" id="wf-item-settings-dialog__condition" data-key="condition">
       </div>
+      <div id="wf-item-settings-dialog__wd"></div>
     </div>
     <div class="mdl-dialog__actions">
       <button type="button"
@@ -402,7 +409,9 @@
         Macros: add rule
       </button>
     </div>
-  </dialog>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+  </div><!-- /.modal -->
 
   <script defer src="theme/dialog-polyfill.js"></script>
   <script defer src="theme/material.min.js"

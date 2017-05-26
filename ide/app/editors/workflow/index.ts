@@ -1,3 +1,4 @@
+import { ObjService } from './../../services/obj.service';
 import { PlominoSaveManagerService } from './../../services/save-manager/save-manager.service';
 import { FakeFormData } from './../../utility/fd-helper/fd-helper';
 import { PlominoHTTPAPIService } from './../../services/http-api.service';
@@ -9,11 +10,6 @@ import { PlominoWorkflowNodeSettingsComponent } from "../../palette-view";
 import { PlominoWorkflowChangesNotifyService } from './workflow.changes.notify.service';
 import { PlominoFormsListService, LogService, 
   FormsService, DraggingService } from "../../services";
-
-interface WFDragEvent {
-  dragData: { title: string, type: string },
-  mouseEvent: DragEvent
-}
 
 const FORM_OR_VIEW_FROM_TREE = 'existing-subform';
 
@@ -32,6 +28,7 @@ export class PlominoWorkflowComponent {
   selectedItemRef: any;
   lastId: number = 4;
   itemSettingsDialog: HTMLDialogElement;
+  $itemSettingsDialog: JQuery;
 
   constructor(
     private log: LogService,
@@ -42,6 +39,7 @@ export class PlominoWorkflowComponent {
     private api: PlominoHTTPAPIService,
     private saveManager: PlominoSaveManagerService,
     private zone: NgZone,
+    private objService: ObjService,
   ) {
     if (!this.dragService.dndType) {
       this.dragService.followDNDType('nothing');
@@ -50,11 +48,7 @@ export class PlominoWorkflowComponent {
     this.itemSettingsDialog = <HTMLDialogElement> 
       document.querySelector('#wf-item-settings-dialog');
 
-    if (!this.itemSettingsDialog.showModal) {
-      window['materialPromise'].then(() => {
-        dialogPolyfill.registerDialog(this.itemSettingsDialog);
-      });
-    }
+    this.$itemSettingsDialog = $(this.itemSettingsDialog);
 
     Array.from(
       this.itemSettingsDialog
@@ -64,7 +58,7 @@ export class PlominoWorkflowComponent {
       $(input).keyup((evd) => {
         if (evd.keyCode === 13) {
           this.apply2selected();
-          this.itemSettingsDialog.close();
+          this.$itemSettingsDialog.modal('hide');
         }
       });
     });
@@ -99,7 +93,7 @@ export class PlominoWorkflowComponent {
             this.buildWFTree();
           });
         }
-        this.itemSettingsDialog.close();
+        this.$itemSettingsDialog.modal('hide');
       });
     });
 
@@ -113,20 +107,20 @@ export class PlominoWorkflowComponent {
           this.buildWFTree();
         }
       })
+  }
 
-    // const $macros = $(this.itemSettingsDialog.querySelector('ul.plomino-macros'));
-
+  getDBLink() {
+    return `${ 
+      window.location.pathname
+      .replace('++resource++Products.CMFPlomino/ide/', '')
+      .replace('/index.html', '')
+    }`;
   }
 
   ngOnInit() {
 
     try {
-      const dbLink = `${ 
-        window.location.pathname
-        .replace('++resource++Products.CMFPlomino/ide/', '')
-        .replace('/index.html', '')
-      }`;
-  
+      const dbLink = this.getDBLink();
       const fd = new FakeFormData(<any> $(`form[action*="${ dbLink }"]`).get(0));
       this.tree = JSON.parse(fd.get('form.widgets.IBasic.description'));
 
@@ -146,7 +140,7 @@ export class PlominoWorkflowComponent {
 
     $(document).keydown((eventData) => {
       if (this.selectedItemRef && (eventData.keyCode === 8 || eventData.keyCode === 46)
-        && !this.itemSettingsDialog.open
+        && !(this.$itemSettingsDialog.data('bs.modal') || {}).isShown
       ) {
         /* delete the node */
         const workWithItemRecursive = (item: PlominoWorkflowItem) => {
@@ -716,8 +710,93 @@ export class PlominoWorkflowComponent {
           inputGroup.style.display = 'block';
         }
       });
+
+    if (item.type === WF_ITEM_TYPE.PROCESS) {
+      this.loadFormMacro(item);
+    }
+    else {
+      this.clearFormMacro();
+    }
     
-    this.itemSettingsDialog.showModal();
+    this.$itemSettingsDialog.modal({
+      show: true, backdrop: false
+    });
+  }
+
+  clearFormMacro(): void {
+    this.$itemSettingsDialog.find('#wf-item-settings-dialog__wd').html('');
+  }
+
+  loadFormMacro(item: PlominoWorkflowItem): void {
+    /* step 1: get form url ontop */
+    const $wd = this.$itemSettingsDialog.find('#wf-item-settings-dialog__wd');
+    this.tmpOnTopFormItem = null;
+    this.findWFFormItemOnTop(item.id);
+    if (!this.tmpOnTopFormItem || !this.tmpOnTopFormItem.form) {
+      $wd.html('');
+      return;
+    }
+    /* step 2: run loading */
+    let htmlBuffer = '';
+    $wd.html(`
+      <div id="p2" class="mdl-progress mdl-js-progress 
+        mdl-progress__indeterminate"></div>
+      <div>&nbsp;</div>
+    `);
+    componentHandler.upgradeDom();
+
+    /* step 3: load form settings */
+
+    const formURL = `${ this.getDBLink() }/${ this.tmpOnTopFormItem.form }`;
+    this.objService.getFormSettings(formURL).subscribe((htmlFS) => {
+      /* step 4: cut <ul class="plomino-macros" ...</ul> and read it in data */
+      try {
+        htmlBuffer = $(htmlFS).find('ul.plomino-macros').get(0).outerHTML;
+      }
+      catch(e) {
+        $wd.html('');
+        return;
+      }
+
+      window['MacroWidgetPromise'].then((MacroWidget: any) => {
+        /* step 5: clear html of dialog, put data in html of dialog */
+        $wd.html(htmlBuffer);
+  
+        /* step 6: loading finished: inject macrowidget */
+        const $widget = $wd.find('ul.plomino-macros');
+        if ($widget.length) {
+          this.zone.runOutsideAngular(() => {
+            $widget.find('input').prop('disabled', true);
+            new MacroWidget($widget);
+          });
+        }
+  
+        /* step 7: put radios */
+        $wd.find('.plomino-macros-rule:last').remove();
+        $wd.find('.plomino-macros-rule').each((i, e) => {
+          if (!item.macroId) {
+            item.macroId = 1;
+          }
+          const $r = $(`<input type="radio" name="macro-radio" style="margin-right: 6pt;
+            margin-left: 6pt; position: relative; top: 3pt; float: left;"
+            ${ item.macroId === i + 1 ? 'checked' : '' }
+            value="${ i + 1 }">`);
+          const text = $(e).find('.plomino_edit_macro')
+            .toArray().map((_e: HTMLElement) => _e.innerText).join(', ');
+          if (!item.macroText) {
+            item.macroText = text;
+            this.buildWFTree();
+          }
+          $r.click(() => {
+            item.macroId = i + 1;
+            item.macroText = text;
+            this.buildWFTree();
+          });
+          $(e).prepend($r);
+          $(e).find('.select2-container').css('width', '95%');
+        });
+      });
+    });
   }
 
   onWFItemDblClicked($event: JQueryEventObject, $i: JQuery, item: PlominoWorkflowItem) {
