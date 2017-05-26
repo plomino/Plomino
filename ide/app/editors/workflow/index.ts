@@ -647,6 +647,9 @@ export class PlominoWorkflowComponent {
       this.dragInsertPreview($wfItemClosest, { title: '', type: creatingType });
       this.onDrop();
     }
+    else if (itm.type === WF_ITEM_TYPE.GOTO && itm.goto) {
+      $('.workflow-node[data-node-id="' + itm.goto +'"]').get(0).scrollIntoView(false);
+    }
 
     return true;
   }

@@ -221,10 +221,14 @@ export const treeBuilder = {
                     ${ autoBR(item.title) }</div>` : '' }` : ''
                 }<!--
                 -->${ item.type === WF_ITEM_TYPE.PROCESS ? 
-                  `<div class="workflow-node__text workflow-node__text--macro">
+                  `<div id="workflow-node__text--macro-${ item.id }" 
+                    class="workflow-node__text workflow-node__text--macro">
                       Macro: <a href onclick="return false">${ 
-                        item.macroText || 'add rules' 
-                      }</a>
+                        cutString(item.macroText) || 'add rules' 
+                      }</a>${ item.macroText && item.macroText.length > allowedLength 
+                        ? `<div class="mdl-tooltip mdl-tooltip--top" 
+                        data-mdl-for="workflow-node__text--macro-${ item.id }">
+                        ${ autoBR(item.macroText) }</div>` : '' }
                   </div>` : ''
                 }<!--
                 -->${ item.type === WF_ITEM_TYPE.CONDITION ? 
