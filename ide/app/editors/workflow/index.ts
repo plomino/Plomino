@@ -478,10 +478,12 @@ export class PlominoWorkflowComponent {
     }
     else if (!onRoot && isProcOrCondDrag) {
       /** @todo: allowed drag related to bottom children element */
-      allowedDrag = onForm && !belowIsProcOrCond;
+      // allowedDrag = onForm && !belowIsProcOrCond;
+      allowedDrag = true;
     }
     else if (!onRoot && isTaskDrag) {
-      allowedDrag = !onTask && !belowIsTask;
+      // allowedDrag = !onTask && !belowIsTask;
+      allowedDrag = true;
     }
     if (allowedDrag && isGotoDrag) {
       allowedDrag = !Boolean($('[data-node-level="' + (lvl + 1) + '"]').length);

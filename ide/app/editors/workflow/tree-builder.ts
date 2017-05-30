@@ -269,7 +269,9 @@ export const treeBuilder = {
               ? 'mdl-menu--top-left' : 'mdl-menu--bottom-left' } mdl-js-menu 
                 mdl-js-ripple-effect"
                 for="wf-vrt-btn-${ item.id }">
-              ${ !this.eventTypeIsTask(item.type)
+              ${ 
+                // !this.eventTypeIsTask(item.type)
+                true
                 ? `<li class="mdl-menu__item" 
                 data-target="${ item.id }"
                 data-create="${ WF_ITEM_TYPE.FORM_TASK }">
