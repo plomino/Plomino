@@ -211,7 +211,8 @@ export const treeBuilder = {
                 }${ item.type === WF_ITEM_TYPE.PROCESS ? 
                   `<div id="workflow-node__text--branch-${ item.id }" 
                     class="workflow-node__text workflow-node__text--branch">
-                      Branch: <a href onclick="return false">${ 
+                      Branch: <a href onclick="return false"
+                        class="workflow-node__text-modal-link">${ 
                         item.title || 'unnamed' 
                       }</a>
                   </div>` : ''
