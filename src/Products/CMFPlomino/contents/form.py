@@ -2054,6 +2054,8 @@ class PlominoForm(Container):
                         if (fieldtype in ("SELECTION", "DOCLINK", "BOOLEAN")):
                             doc.removeItem(fieldName)
 
+        if doc.getItem('nhs_chc_considered_result') is not None:
+            print doc.getItem('nhs_chc_considered_result')
     security.declareProtected(READ_PERMISSION, 'searchDocuments')
 
     def searchDocuments(self, REQUEST):
@@ -2171,13 +2173,13 @@ class PlominoForm(Container):
                 self,
                 REQUEST,
                 doc,
-                validation_mode=True).__of__(db)
+                validation_mode=False).__of__(db)
 
         fields = self.getFormFields(
             includesubforms=True,
             doc=tmp,
             applyhidewhen=True,
-            validation_mode=True,
+            validation_mode=False,
             request=REQUEST)
 
         hidden_fields,_ = self._get_hidden_fields(REQUEST, doc)
