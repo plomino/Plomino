@@ -814,8 +814,7 @@ export class PlominoWorkflowComponent {
             inputGroup.style.display = 'none';
           }
         });
-      // this.loadFormMacro(item);
-      // const $wd = this.$itemSettingsDialog.find('#wf-item-settings-dialog__wd');
+      this.loadFormMacro(item);
     }
     else {
       this.clearFormMacro();
@@ -861,8 +860,7 @@ export class PlominoWorkflowComponent {
         };
         htmlBuffer = $htmlFS.find('ul.plomino-macros').get(0).outerHTML;
         htmlBuffer = `<label style="margin-bottom: 15px; margin-top: 10px">
-          Optionally select the code builder rule 
-          which implements this process</label>${ htmlBuffer }`;
+          Implementation</label>${ htmlBuffer }`;
       }
       catch(e) {
         $wd.html('');
