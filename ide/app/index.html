@@ -329,6 +329,7 @@
         <button type="button" class="close" data-dismiss="modal" 
           aria-label="Close"><span aria-hidden="true">&times;</span></button>
         <h4 class="modal-title" data-typefor="workflowFormTask">Form Task</h4>
+        <h4 class="modal-title" data-typefor="processModal">Next Action</h4>
         <h4 class="modal-title" data-typefor="workflowViewTask">View Task</h4>
         <h4 class="modal-title" data-typefor="workflowExternalTask">External Task</h4>
         <h4 class="modal-title" data-typefor="workflowProcess">Process</h4>
@@ -341,8 +342,9 @@
         <label for="wf-item-settings-dialog__title" data-typefor="workflowProcess">Title</label>
         <label for="wf-item-settings-dialog__title" 
           data-typefor="workflowFormTask workflowViewTask workflowExternalTask">
-          Task: description of input task e.g. 
-          <br>Who the user is and what they are expected to do
+          Task <br>
+          <small style="color: dimgray;">description of input task e.g. 
+            who the user is and what they are expected to do</small>
         </label>
         <input type="text" id="wf-item-settings-dialog__title" data-key="title">
       </div>
@@ -363,7 +365,10 @@
         <input type="text" id="wf-item-settings-dialog__condition" data-key="condition">
       </div>
       <div data-typefor="processModal" class="mdl-dialog__content-form-group">
-        <label for="wf-item-settings-dialog__process">Process information</label>
+        <label for="wf-item-settings-dialog__process">
+          Description <br>
+          <small style="color: dimgray;">what the system does when processing this form or view</small>
+        </label>
         <input type="text" id="wf-item-settings-dialog__process" data-key="process">
       </div>
       <div id="wf-item-settings-dialog__wd"></div>

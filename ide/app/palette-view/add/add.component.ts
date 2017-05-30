@@ -134,7 +134,7 @@ export class AddComponent implements OnInit, AfterViewInit {
         //   type: WF_ITEM_TYPE.PROCESS
         // },
         {
-          title: 'Branches',
+          title: 'Branch',
           type: WF_ITEM_TYPE.CONDITION
         },
         {

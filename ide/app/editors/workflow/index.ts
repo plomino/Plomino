@@ -246,7 +246,7 @@ export class PlominoWorkflowComponent {
     const $_: PlominoWorkflowItem[] = 
       (<any>Object).values($.extend({}, targetItem.children));
     result.children.splice(resultIndex, 1);
-    result.children.concat($_);
+    result.children = result.children.concat($_);
 
     if (result.type === WF_ITEM_TYPE.CONDITION && !result.children.length) {
       this.deleteWFItem($e, $item, result);
@@ -708,7 +708,14 @@ export class PlominoWorkflowComponent {
       return this.onHoverPlusClicked($e, $i, itm);
     }
     else if (!r && $e.target.classList.contains('workflow-node__text-modal-link')) {
-      if ($e.target.parentElement.classList.contains('workflow-node__text--process')) {
+      if ($e.target.parentElement
+        .classList.contains('workflow-node__text--form')
+        || $e.target.parentElement
+        .classList.contains('workflow-node__text--view')) {
+        this.openResourceTab(itm);
+      }
+      else if ($e.target.parentElement
+        .classList.contains('workflow-node__text--process')) {
         /* process modal */
         this.showModal(itm, true);
       }
