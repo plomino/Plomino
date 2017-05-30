@@ -101,6 +101,9 @@ require([
             var select = $(el);
             select.select2('data', rule);
 
+            /* if its a workflow modal then create radio near using event */
+            $(document).trigger('macros_selector_refresh');
+
             if ($(el).prop('disabled')) {
               select.enable(false);
               self.disabled = true;

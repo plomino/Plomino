@@ -7,6 +7,10 @@ $border-width: 2px;
 $line-color: #3f51b5;
 $highlight-color: rgb(63,81,181);
 $selected-color: #4a148c;
+$default-task-color: #00695C;
+$default-task-color-hover: #004D40;
+$default-view-task-color: #00838F;
+$default-view-task-color-hover: #006064;
 $line-height: 3em;
 $bg-color: #fafafa;
 
@@ -104,7 +108,10 @@ $wfpad-right-left: 7px;
     &:last-child::before{
       border-right: $border-width solid $line-color;
       border-radius: 0 5px 0 0;
-      left: 2px;
+      left: 0;
+    }
+    &:last-child:not(:only-of-type) .workflow-node::before {
+      left: -1px !important;
     }
     &:first-child::after{
       border-radius: 5px 0 0 0;
@@ -239,12 +246,41 @@ $wfpad-right-left: 7px;
         background: white;
       }
 
+      &__bubble-delete {
+        opacity: 0;
+        transition: all 100ms ease-in-out;
+        color: white !important;
+        position: absolute;
+        right: 5px;
+        top: 5px;
+
+        &:hover button i {
+          color: white !important;
+        }
+      }
+
+      &--branch {
+        .workflow-node__inner {
+          padding: 15px;
+          min-width: 200px;
+          min-height: inherit;
+          text-align: left;
+        }
+      }
+
       &--task {
         color: white;
+        background-color: $default-task-color;
+
+        &:hover {
+          background-color: $default-task-color-hover !important;
+        }
 
         .workflow-node__inner {
-          padding-top: 15px;
-          text-align: center;
+          padding: 15px;
+          min-width: 200px;
+          min-height: inherit;
+          text-align: left;
         }
 
         .workflow-node__shape-outside {
@@ -264,105 +300,155 @@ $wfpad-right-left: 7px;
         }
       }
 
-      &--form-task {
-        background: transparent;
-        border-radius: 0;
+      &--form-task, &--ext-task {
+        // background: transparent;
+        // border-radius: 0;
 
         .workflow-node__shape-outside {
-          border-radius: 0;
-          clip-path: polygon(0 11%, 100% 0, 100% 100%, 0% 100%);
+          min-width: inherit;
+          min-height: inherit;
+          // border-radius: 0;
+          // clip-path: polygon(0 11%, 100% 0, 100% 100%, 0% 100%);
         }
-        .workflow-node__shape-inside {
-          clip-path: polygon(0 11%, 100% 0, 100% 100%, 0% 100%);
+        // .workflow-node__shape-inside {
+        //   clip-path: polygon(0 11%, 100% 0, 100% 100%, 0% 100%);
+        // }
+      }
+
+      &--ext-task {
+        background-color: #E65100;
+        border-color: #E65100;
+
+        &:hover {
+          background-color: #BF360C !important;
+          border-color: #E65100 !important;
         }
       }
 
       &--view-task {
-        background: transparent;
-        border-radius: 0;
-        border-left: solid 1px transparent;
+        background-color: $default-view-task-color;
+
+        &:hover {
+          background-color: $default-view-task-color-hover !important;
+        }
 
         .workflow-node__shape-outside {
-          border-radius: 0;
-          background: #C51162;
-          clip-path: polygon(20% 0%, 80% 0%, 100% 0, 100% 100%, 74% 89%, 25% 89%, 0 76%, 0 0)
+          min-width: inherit;
+          min-height: inherit;
         }
+        // background: transparent;
+        // border-radius: 0;
+        // border-left: solid 1px transparent;
 
-        .workflow-node__shape-inside {
-          background: #C51162;
-          clip-path: polygon(20% 0%, 80% 0%, 100% 0, 100% 100%, 74% 89%, 25% 89%, 0 76%, 0 0)
-        }
+        // .workflow-node__shape-outside {
+        //   border-radius: 0;
+        //   background: #C51162;
+        //   clip-path: polygon(20% 0%, 80% 0%, 100% 0, 100% 100%, 74% 89%, 25% 89%, 0 76%, 0 0)
+        // }
 
-        .workflow-node__round-1 {
-          display: block;
-          border-radius: 100%;
-          width: 100px;
-          height: 50px;
-          background: #C51162;
-          position: absolute;
-          left: 1px;
-          bottom: -7px;
-        }
+        // .workflow-node__shape-inside {
+        //   background: #C51162;
+        //   clip-path: polygon(20% 0%, 80% 0%, 100% 0, 100% 100%, 74% 89%, 25% 89%, 0 76%, 0 0)
+        // }
 
-        .workflow-node__round-2 {
-          display: block;
-          border-radius: 100%;
-          width: 93px;
-          height: 50px;
-          background: #fafafa;
-          position: absolute;
-          right: -8px;
-          bottom: -25px;
-          z-index: 10;
-        }
+        // .workflow-node__round-1 {
+        //   display: block;
+        //   border-radius: 100%;
+        //   width: 100px;
+        //   height: 50px;
+        //   background: #C51162;
+        //   position: absolute;
+        //   left: 1px;
+        //   bottom: -7px;
+        // }
 
-        .workflow-node__shadow-shape-1 {
-          background: #FF4081;
-          display: block;
-          position: absolute;
-          height: 74px;
-          width: $wfw;
-          right: -11px;
-          top: -11px;
-          clip-path: polygon(100% 0, 100% 100%, 89% 78%, 0 100%, 0 0);
-        }
+        // .workflow-node__round-2 {
+        //   display: block;
+        //   border-radius: 100%;
+        //   width: 93px;
+        //   height: 50px;
+        //   background: #fafafa;
+        //   position: absolute;
+        //   right: -8px;
+        //   bottom: -25px;
+        //   z-index: 10;
+        // }
 
-        .workflow-node__shadow-shape-2 {    
-          background: #F50057;
-          display: block;
-          position: absolute;
-          height: 72px;
-          width: $wfw;
-          right: -6px;
-          top: -6px;
-          clip-path: polygon(100% 0, 100% 100%, 89% 78%, 0 100%, 0 0);
-        }
+        // .workflow-node__shadow-shape-1 {
+        //   background: #FF4081;
+        //   display: block;
+        //   position: absolute;
+        //   height: 74px;
+        //   width: $wfw;
+        //   right: -11px;
+        //   top: -11px;
+        //   clip-path: polygon(100% 0, 100% 100%, 89% 78%, 0 100%, 0 0);
+        // }
+
+        // .workflow-node__shadow-shape-2 {    
+        //   background: #F50057;
+        //   display: block;
+        //   position: absolute;
+        //   height: 72px;
+        //   width: $wfw;
+        //   right: -6px;
+        //   top: -6px;
+        //   clip-path: polygon(100% 0, 100% 100%, 89% 78%, 0 100%, 0 0);
+        // }
       }
 
       &--condition {
         background: transparent;
+        cursor: pointer;
+        transition: all 100ms ease-in-out;
+        // background-color: $line-color;
+
+        &:hover .workflow-node__text--condition {
+          color: white !important;
+        }
 
         .workflow-node__inner {
-          padding-top: 15px;
+          min-width: 50px;
+          padding: 0;
+          min-height: 50px;
+          display: flex;
+          height: auto;
+          justify-content: center;
+          align-items: center;
+          align-content: center;
+          // background-color: $line-color;
         }
 
         .workflow-node__text--condition {
-          padding-top: 15px;
           text-align: center;
-          color: black;
+          color: white;
+          padding-top: 5px;
+          padding-left: 1px;
+          cursor: pointer;
         }
 
         .workflow-node__shape-outside {
           display: block;
-          min-width: $wfw;
-          // left: -30px;
+          min-width: 100%;
           left: 1px;
           clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
+          min-height: inherit;
+          background-color: $line-color;
         }
 
         .workflow-node__shape-inside {
           display: block;
           clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
+          background-color: $line-color;
+        }
+
+        .workflow-node__bubble-delete {
+          transition: all 100ms ease-in-out;
+          right: -40px;
+          
+          button i {
+            color: black !important;
+          }
         }
       }
 
@@ -475,6 +561,16 @@ $wfpad-right-left: 7px;
         background: $highlight-color;
         color: #fff;
         border: $border-width solid $highlight-color;
+      }
+
+      &:hover {
+        .workflow-node__bubble-delete {
+          opacity: 1;
+
+          button:focus {
+            outline: none !important;
+          }
+        }
       }
 
       &--virtual {

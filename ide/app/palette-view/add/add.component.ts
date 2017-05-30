@@ -1,3 +1,4 @@
+import { WF_ITEM_TYPE } from './../../editors/workflow/tree-builder';
 import { Subscription, Observable, Subject } from 'rxjs/Rx';
 import { PlominoActiveEditorService } from './../../services/active-editor.service';
 import { PlominoViewsAPIService } from './../../editors/view-editor/views-api.service';
@@ -114,35 +115,26 @@ export class AddComponent implements OnInit, AfterViewInit {
         this.changeDetector.markForCheck();
         this.changeDetector.detectChanges();
       });
-
-      const WF_ITEM_TYPE = {
-        FORM_TASK: 'workflowFormTask',
-        VIEW_TASK: 'workflowViewTask',
-        EXT_TASK: 'workflowExternalTask',
-        PROCESS: 'workflowProcess',
-        CONDITION: 'workflowCondition',
-        GOTO: 'workflowGoto',
-      };
       
       this.workflowComponents = [
         {
-          title: 'Form',
+          title: 'Form Task',
           type: WF_ITEM_TYPE.FORM_TASK
         },
         {
-          title: 'View',
+          title: 'View Task',
           type: WF_ITEM_TYPE.VIEW_TASK
         },
         {
           title: 'External Task',
           type: WF_ITEM_TYPE.EXT_TASK
         },
+        // {
+        //   title: 'Process',
+        //   type: WF_ITEM_TYPE.PROCESS
+        // },
         {
-          title: 'Process',
-          type: WF_ITEM_TYPE.PROCESS
-        },
-        {
-          title: 'Branch',
+          title: 'Branches',
           type: WF_ITEM_TYPE.CONDITION
         },
         {

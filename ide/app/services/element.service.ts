@@ -121,6 +121,19 @@ export class ElementService {
     .map((res: Response) => res.json());
   }
 
+  updateDBSettings(updateObject: any) {
+    const url = this.getDBLink();
+    return this.http.patch(url, updateObject, 'saving workflow');
+  }
+
+  getDBLink() {
+    return `${ 
+      window.location.pathname
+      .replace('++resource++Products.CMFPlomino/ide/', '')
+      .replace('/index.html', '')
+    }`;
+  }
+
   patchElement(id: string, element: any) {
     return this.http.patch(id, element, 'element.service.ts patchElement');
   }

@@ -123,8 +123,8 @@ export const treeBuilder = {
     item: PlominoWorkflowItem, parent: PlominoWorkflowItem = null, level = 0
   ): JQuery {
 
-    const allowedLength = 16;
-    const allowedLengthWide = 38;
+    const allowedLength = 18;
+    const allowedLengthWide = 128;
 
     const cutString = ((str: string, l = allowedLength) => {
       if (str && str.length > l) {
@@ -146,6 +146,7 @@ export const treeBuilder = {
            --><div class="workflow-node
             ${ item.root ? ' workflow-node--root' : ''}
             ${ item.dropping ? ' workflow-node--dropping' : '' }
+            ${ item.type === WF_ITEM_TYPE.PROCESS ? ' workflow-node--branch' : '' }
             ${ item.type === WF_ITEM_TYPE.CONDITION ? 
               ' workflow-node--as-a-shape workflow-node--condition' : '' }
             ${ item.type === WF_ITEM_TYPE.GOTO ? 
@@ -157,19 +158,14 @@ export const treeBuilder = {
             ${ spec && spec === 'shadow-view' ? 
               ' workflow-node--shadow-view-task' : '' }
             ${ item.type === WF_ITEM_TYPE.EXT_TASK ? 
-              ' workflow-node--as-a-shape workflow-node--ext-task' : '' }
+              ' workflow-node--ext-task' : '' }
             ${ this.eventTypeIsTask(item.type) ? 
-              ' workflow-node--as-a-shape workflow-node--task' : '' }"
+              ' workflow-node--task' : '' }"
             ${ level ? ` data-node-level="${ level }"` : '' }
             ${ item.id ? ` data-node-id="${ item.id }"` : '' }><!--
-              -->${ item.type === WF_ITEM_TYPE.CONDITION 
-              ? `<div class="workflow-node__hover-plus-btn"><!--
-              --><button class="mdl-button mdl-js-button mdl-js-ripple-effect
-              mdl-button--fab mdl-button--mini-fab mdl-button--colored 
-              mdl-color--blue-900"><i class="material-icons">add</i>
-              </button></div>` : '' }${ 
+              -->${ 
                   item.root ? '<div class="workflow-node__start-text">START</div>' : ''
-                }<div class="workflow-node__inner">${ item.type === WF_ITEM_TYPE.VIEW_TASK 
+                }<div class="workflow-node__inner">${ false 
                   ? `<div class="workflow-node__shadow-shape-1"></div><!--
                   --><div class="workflow-node__shadow-shape-2"></div><!--
                   --><div class="workflow-node__round-1"></div><!--
@@ -181,11 +177,11 @@ export const treeBuilder = {
                 -->${ this.eventTypeIsTask(item.type) ? 
                   `<div class="workflow-node__text workflow-node__text--task"
                     id="workflow-node__text--task-${ item.id }">
-                      <a href onclick="return false"
+                      Task: <a href onclick="return false"
                         class="workflow-node__text-modal-link"
                       >${ hashId } ${ cutString(item.title, 
                         item.type !== WF_ITEM_TYPE.VIEW_TASK 
-                        ? allowedLengthWide : allowedLength) || '...' }</a>
+                        ? allowedLengthWide : allowedLength) || '......' }</a>
                   </div>${ item.title && item.title.length > allowedLength 
                     ? `<div class="mdl-tooltip mdl-tooltip--top" 
                     data-mdl-for="workflow-node__text--task-${ item.id }">
@@ -194,7 +190,9 @@ export const treeBuilder = {
                 -->${ item.type === WF_ITEM_TYPE.FORM_TASK ? 
                   `<div class="workflow-node__text workflow-node__text--form"
                     id="workflow-node__text--form-${ item.id }">
-                      Form: ${ cutString(item.form) || 'not selected' }
+                      Form: <a href onclick="return false"
+                        class="workflow-node__text-modal-link"
+                      >${ cutString(item.form) || '......' }</a>
                   </div>${ item.form && item.form.length > allowedLength 
                     ? `<div class="mdl-tooltip mdl-tooltip--top" 
                     data-mdl-for="workflow-node__text--form-${ item.id }">
@@ -203,40 +201,35 @@ export const treeBuilder = {
                 -->${ item.type === WF_ITEM_TYPE.VIEW_TASK ? 
                   `<div class="workflow-node__text workflow-node__text--view"
                     id="workflow-node__text--view-${ item.id }">
-                    View: ${ cutString(item.view) || 'not selected' }
+                    View: <a href onclick="return false"
+                        class="workflow-node__text-modal-link"
+                      >${ cutString(item.view) || '......' }</a>
                   </div>${ item.view && item.view.length > allowedLength 
                     ? `<div class="mdl-tooltip mdl-tooltip--top" 
                     data-mdl-for="workflow-node__text--view-${ item.id }">
                     ${ autoBR(item.view) }</div>` : '' }` : ''
-                }<!--
-                -->${ item.type === WF_ITEM_TYPE.PROCESS ? 
+                }${ item.type === WF_ITEM_TYPE.PROCESS ? 
+                  `<div id="workflow-node__text--branch-${ item.id }" 
+                    class="workflow-node__text workflow-node__text--branch">
+                      Branch: <a href onclick="return false">${ 
+                        item.title || 'unnamed' 
+                      }</a>
+                  </div>` : ''
+                }${ item.type === WF_ITEM_TYPE.FORM_TASK
+                    || item.type === WF_ITEM_TYPE.VIEW_TASK
+                    || item.type === WF_ITEM_TYPE.PROCESS ? 
                   `<div class="workflow-node__text workflow-node__text--process"
                     id="workflow-node__text--process-${ item.id }">
-                      <a href onclick="return false"
+                      Next Action: <a href onclick="return false"
                         class="workflow-node__text-modal-link"
-                      >${ hashId } ${ cutString(item.title, allowedLengthWide) || '...' }</a>
-                  </div>${ item.title && item.title.length > allowedLengthWide 
+                      >${ cutString(item.process, allowedLengthWide) || '......' }</a>
+                  </div>${ item.process && item.process.length > allowedLengthWide 
                     ? `<div class="mdl-tooltip mdl-tooltip--top" 
                     data-mdl-for="workflow-node__text--process-${ item.id }">
-                    ${ autoBR(item.title) }</div>` : '' }` : ''
-                }<!--
-                -->${ item.type === WF_ITEM_TYPE.PROCESS ? 
-                  `<div id="workflow-node__text--macro-${ item.id }" 
-                    class="workflow-node__text workflow-node__text--macro">
-                      Macro: <a href onclick="return false">${ 
-                        cutString(item.macroText) || 'add rules' 
-                      }</a>${ item.macroText && item.macroText.length > allowedLength 
-                        ? `<div class="mdl-tooltip mdl-tooltip--top" 
-                        data-mdl-for="workflow-node__text--macro-${ item.id }">
-                        ${ autoBR(item.macroText) }</div>` : '' }
-                  </div>` : ''
-                }<!--
-                -->${ item.type === WF_ITEM_TYPE.CONDITION ? 
+                    ${ autoBR(item.process) }</div>` : '' }` : ''
+                }${ item.type === WF_ITEM_TYPE.CONDITION ? 
                   `<div class="workflow-node__text workflow-node__text--condition">
-                      <a href onclick="return false"
-                        id="workflow-node__text--condition-${ item.id }"
-                        class="workflow-node__text-modal-link"
-                      >${ hashId } ${ cutString(item.condition) || '...' }</a>
+                      <i class="material-icons">add</i>
                   </div>${ item.condition && item.condition.length > allowedLength 
                     ? `<div class="mdl-tooltip mdl-tooltip--top" 
                     data-mdl-for="workflow-node__text--condition-${ item.id }">
@@ -254,6 +247,11 @@ export const treeBuilder = {
                     ${ autoBR(item.goto) }</div>` : '' }` : ''
                 }<!--
               --></div><!--
+              ${ !item.root ? `--><div class="workflow-node__bubble-delete">
+                <button class="mdl-button mdl-js-button mdl-button--icon">
+                  <i class="material-icons">delete</i>
+                </button>
+              </div><!--` : '' }
           --></div><!--
           ${ !spec && this.nodeIsLast(item) 
               && item.type !== WF_ITEM_TYPE.GOTO && item.type !== WF_ITEM_TYPE.CONDITION 
@@ -290,13 +288,8 @@ export const treeBuilder = {
               </li>` : '' }
               ${ parent ? `<li class="mdl-menu__item"
                 data-target="${ item.id }"
-                data-create="${ WF_ITEM_TYPE.PROCESS }">
-                Process
-              </li>
-              <li class="mdl-menu__item"
-                data-target="${ item.id }"
                 data-create="${ WF_ITEM_TYPE.CONDITION }">
-                Condition
+                Branches
               </li>
               <li class="mdl-menu__item"
                 data-target="${ item.id }"
