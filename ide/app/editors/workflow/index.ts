@@ -26,7 +26,7 @@ export class PlominoWorkflowComponent {
   tree: PlominoWorkflowItem = { id: 1, root: true, children: [] };
   latestTree: PlominoWorkflowItem = null;
   tmpOnTopFormItem: PlominoWorkflowItem = null;
-  selectedItemRef: any;
+  selectedItemRef: PlominoWorkflowItem;
   lastId: number = 4;
   itemSettingsDialog: HTMLDialogElement;
   $itemSettingsDialog: JQuery;
@@ -758,7 +758,7 @@ export class PlominoWorkflowComponent {
         .querySelector('#wf-item-settings-dialog__node')
         .innerHTML = nodesList.filter((n: any) => item.id !== n.id && n.id > 1)
           .map((n: any) => 
-            `<option value="${ n.id }">#${ n.id } ${ n.title }</option>`
+            `<option value="${ n.id }:::${ n.title }">#${ n.id } ${ n.title }</option>`
           )
           .join('');
     }
@@ -935,6 +935,12 @@ export class PlominoWorkflowComponent {
           || (item.type === WF_ITEM_TYPE.PROCESS && input.dataset.key === 'process')
         ) {
           item[input.dataset.key] = $(input).val();
+
+          if (input.dataset.key === 'goto') {
+            const _data = item.goto.split(':::');
+            item.goto = _data[0];
+            item.gotoLabel = _data[1];
+          }
         }
       });
     

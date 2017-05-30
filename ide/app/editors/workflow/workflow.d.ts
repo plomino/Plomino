@@ -7,6 +7,7 @@ interface PlominoWorkflowItem {
   condition?: string;
   view?: string;
   goto?: string;
+  gotoLabel?: string;
   type?: string;
   selected?: boolean;
   macroId?: number;

@@ -241,11 +241,9 @@ export const treeBuilder = {
                       <a href onclick="return false"
                         id="workflow-node__text--goto-${ item.id }"
                         class="workflow-node__text-modal-link"
-                      >Goto: ${ '#' + cutString(item.goto, allowedLengthWide) || '...' }</a>
-                  </div>${ item.goto && item.goto.length > allowedLengthWide 
-                    ? `<div class="mdl-tooltip mdl-tooltip--top" 
-                    data-mdl-for="workflow-node__text--goto-${ item.id }">
-                    ${ autoBR(item.goto) }</div>` : '' }` : ''
+                      >Goto: ${ item.goto 
+                        ? '#' + item.goto + ' ' + item.gotoLabel : '...' }</a>
+                  </div>` : ''
                 }<!--
               --></div><!--
               ${ !item.root ? `--><div class="workflow-node__bubble-delete">
