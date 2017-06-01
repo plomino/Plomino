@@ -122,7 +122,6 @@ export class PlominoSaveManagerService {
       const $form = $('form[action="' + viewURL + '/@@edit"]');
       
       if (!$form.length) {
-        debugger;
         return null;
       }
 

@@ -151,11 +151,15 @@ $wfpad-right-left: 7px;
         color: whitesmoke;
       }
 
-      &.workflow-node--condition a {
-        color: black;
+      &.workflow-node--condition {
+        cursor: pointer;
+        
+        a {
+          color: black;
 
-        &:hover {
-          color: white;
+          &:hover {
+            color: white;
+          }
         }
       }
 
