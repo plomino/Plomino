@@ -11,7 +11,8 @@ $default-task-color: #00695C;
 $default-task-color-hover: #004D40;
 $default-view-task-color: #00838F;
 $default-view-task-color-hover: #006064;
-$line-height: 3em;
+$line-height: 4em;
+$line-height-condtion: 3em;
 $bg-color: #fafafa;
 
 $wfh: 80px;
@@ -56,12 +57,12 @@ $wfpad-right-left: 7px;
       left: 50%;
       border-left: $border-width solid $line-color;
       width: 0; 
-      height: calc(3em + 1px);
+      height: calc(#{$line-height} + 1px);
       z-index: 1;
     }
   }
 
-  &__branch {
+  li.plomino-workflow-editor__branch {
     display: inline-block; // need white-space fix
     vertical-align: top;
     text-align: center;
@@ -69,9 +70,33 @@ $wfpad-right-left: 7px;
     position: relative;
     padding: $line-height .5em 0 .5em;
     cursor: pointer;
-    draggable: true;
 
-    &-plus-btn {
+    div.plomino-workflow-editor__branch-add-below-bubble-btn {
+      display: block;
+      cursor: pointer;
+      transition: all 100ms ease-in-out;
+      opacity: 0;
+      background: transparent;
+      position: absolute;
+      top: 15px;
+      left: 50%;
+      margin-left: -12.5px;
+      z-index: 1;
+
+      &>button {
+        width: 26px;
+        min-width: 26px;
+        height: 26px;
+        padding: 0 8px !important;
+        outline: 0 !important;
+      }
+
+      &:hover {
+        opacity: 1;
+      }
+    }
+
+    .plomino-workflow-editor__branch-plus-btn {
       position: absolute;
       right: 50px;
       outline: none !important;
@@ -94,26 +119,26 @@ $wfpad-right-left: 7px;
       left: 50%;
       border-left: $border-width solid $line-color;
     }
-    &:only-child::after,
-    &:only-child::before {
+    &:only-of-type::after,
+    &:only-of-type::before {
       display: none;
     }
-    &:only-child {
+    &:only-of-type {
       padding-top: 0;
     }
-    &:first-child::before,
-    &:last-child::after {
+    &:first-of-type::before,
+    &:last-of-type::after {
       border: 0 none;
     }
-    &:last-child::before{
+    &:last-of-type::before{
       border-right: $border-width solid $line-color;
       border-radius: 0 5px 0 0;
       left: 0;
     }
-    &:last-child:not(:only-of-type) .workflow-node::before {
+    &:last-of-type:not(:only-of-type) .workflow-node::before {
       left: -1px !important;
     }
-    &:first-child::after{
+    &:first-of-type::after{
       border-radius: 5px 0 0 0;
     }
 
@@ -153,7 +178,7 @@ $wfpad-right-left: 7px;
 
       &.workflow-node--condition {
         cursor: pointer;
-        
+
         a {
           color: black;
 
@@ -407,8 +432,13 @@ $wfpad-right-left: 7px;
         transition: all 100ms ease-in-out;
         // background-color: $line-color;
 
-        &:hover .workflow-node__text--condition {
-          color: white !important;
+        &:hover {
+          .workflow-node__text--condition {
+            color: white !important;
+          }
+          .workflow-node__shape-inside {
+            background-color: #4A148E !important;
+          }
         }
 
         .workflow-node__inner {

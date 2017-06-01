@@ -36,6 +36,53 @@ export const treeBuilder = {
       
       if (item.children.length) {
         const $childrenTree = $(`<ul class="plomino-workflow-editor__branches"></ul>`);
+        const $bbtn = $(
+          `<div class="plomino-workflow-editor__branch-add-below-bubble-btn">
+            <button class="mdl-button mdl-js-button mdl-color--grey-700
+              mdl-button--fab mdl-button--mini-fab mdl-button--colored"
+              id="wf-vrt2-btn-${ item.id }">
+              <i class="material-icons">add</i>
+            </button>
+          </div><!--
+            --><ul class="mdl-menu mdl-menu--bottom-right mdl-js-menu 
+                mdl-js-ripple-effect"
+                for="wf-vrt2-btn-${ item.id }">
+              ${ 
+                // !this.eventTypeIsTask(item.type)
+                true
+                ? `<li class="mdl-menu__item" 
+                data-target="${ item.id }"
+                data-create="${ WF_ITEM_TYPE.FORM_TASK }">
+                Form task
+              </li>
+              <li class="mdl-menu__item"
+                data-target="${ item.id }"
+                data-create="${ WF_ITEM_TYPE.VIEW_TASK }">
+                View task
+              </li>
+              <li class="mdl-menu__item${ 
+                parent ? ' mdl-menu__item--full-bleed-divider' : '' }"
+                data-target="${ item.id }"
+                data-create="${ WF_ITEM_TYPE.EXT_TASK }">
+                Ext. task
+              </li>` : '' }
+              ${ parent ? `<li class="mdl-menu__item"
+                data-target="${ item.id }"
+                data-create="${ WF_ITEM_TYPE.CONDITION }">
+                Branches
+              </li>
+              <li class="mdl-menu__item"
+                data-target="${ item.id }"
+                data-create="${ WF_ITEM_TYPE.GOTO }">
+                Goto
+              </li>` : '' }
+            </ul>`);
+        if (item.type !== WF_ITEM_TYPE.CONDITION) {
+          $childrenTree.append($bbtn);
+        }
+        else {
+          $childrenTree.addClass('plomino-workflow-editor__branches--condition');
+        }
         for (let child of item.children) {
           if (!child) { 
             console.error('child missed');
@@ -66,10 +113,6 @@ export const treeBuilder = {
           wfNode.ondragend = (eventData: DragEvent) => {
             return configuration.onDragEnd(eventData, wfNode, item);
           };
-
-          // wfNode.ondragleave = (eventData: DragEvent) => {
-          //   return configuration.onDragLeave(eventData, wfNode, item);
-          // };
 
           wfNode.ondragover = (eventData: DragEvent) => {
             eventData.preventDefault();

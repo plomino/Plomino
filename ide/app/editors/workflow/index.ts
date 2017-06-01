@@ -507,34 +507,29 @@ export class PlominoWorkflowComponent {
       });
   }
 
-  targetIsHoverPlus(eventTarget: Element) {
+  checkTarget(eventTarget: Element, className: string) {
     return eventTarget.parentElement.parentElement.parentElement
-        .classList.contains('workflow-node--condition')
-      || eventTarget
-        .classList.contains('workflow-node--condition')
-      || eventTarget.parentElement
-        .classList.contains('workflow-node--condition')
-      || eventTarget.parentElement.parentElement
-        .classList.contains('workflow-node--condition');
+        .classList.contains(className)
+      || eventTarget.classList.contains(className)
+      || eventTarget.parentElement.classList.contains(className)
+      || eventTarget.parentElement.parentElement.classList.contains(className);
+  }
+
+  targetIsHoverPlus(eventTarget: Element) {
+    return this.checkTarget(eventTarget, 'workflow-node--condition');
   }
 
   targetIsDeleteBtn(eventTarget: Element) {
-    return eventTarget.parentElement.parentElement
-        .classList.contains('workflow-node__bubble-delete')
-      || eventTarget
-        .classList.contains('workflow-node__bubble-delete')
-      || eventTarget.parentElement
-        .classList.contains('workflow-node__bubble-delete');
+    return this.checkTarget(eventTarget, 'workflow-node__bubble-delete');
+  }
+
+  targetIsHoverAddBelowBtn(eventTarget: Element) {
+    return this.checkTarget(eventTarget, 
+      'plomino-workflow-editor__branch-add-below-bubble-btn');
   }
 
   targetIsVirtual(eventTarget: Element) {
-    return eventTarget.classList.contains('workflow-node--virtual')
-      || eventTarget.parentElement.parentElement.parentElement
-        .classList.contains('workflow-node--virtual')
-      || eventTarget.parentElement.parentElement
-        .classList.contains('workflow-node--virtual')
-      || eventTarget.parentElement
-        .classList.contains('workflow-node--virtual');
+    return this.checkTarget(eventTarget, 'workflow-node--virtual');
   }
 
   onWFItemClicked($e: JQueryEventObject, $i: JQuery, itm: PlominoWorkflowItem, r = false) {
@@ -543,8 +538,9 @@ export class PlominoWorkflowComponent {
     const isDelBtn = this.targetIsDeleteBtn($e.target);
     const isCreate = (<HTMLElement> $e.target).dataset.create;
     const isVirtual = this.targetIsVirtual($e.target);
+    const isAddBelow = this.targetIsHoverAddBelowBtn($e.target);
 
-    if (!r && !itm.selected && !isDelBtn && !isCreate && !isVirtual) {
+    if (!r && !itm.selected && !isDelBtn && !isCreate && !isVirtual && !isAddBelow) {
       this.unselectAllWFItems();
       itm.selected = true;
       this.selectedItemRef = itm;
