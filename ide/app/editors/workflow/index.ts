@@ -698,9 +698,15 @@ export class PlominoWorkflowComponent {
   loadFormMacro(item: PlominoWorkflowItem): void {
     /* step 1: get form url ontop */
     const $wd = this.$itemSettingsDialog.find('#wf-item-settings-dialog__wd');
-    this.tmpOnTopFormItem = null;
-    this.findWFFormItemOnTop(item.id);
-    if (!this.tmpOnTopFormItem || !this.tmpOnTopFormItem.form) {
+    if (item.form || item.view) {
+      this.tmpOnTopFormItem = item;
+    }
+    else {
+      this.tmpOnTopFormItem = null;
+      this.findWFFormItemOnTop(item.id);
+    }
+    if (!this.tmpOnTopFormItem 
+      || !(this.tmpOnTopFormItem.form || this.tmpOnTopFormItem.view)) {
       $wd.html('');
       return;
     }
@@ -715,7 +721,8 @@ export class PlominoWorkflowComponent {
 
     /* step 3: load form settings */
 
-    const formURL = `${ this.getDBLink() }/${ this.tmpOnTopFormItem.form }`;
+    const formURL = `${ this.getDBLink() }/${ 
+      this.tmpOnTopFormItem.form || this.tmpOnTopFormItem.view }`;
     this.objService.getFormSettings(formURL).subscribe((htmlFS) => {
       /* step 4: cut <ul class="plomino-macros" ...</ul> and read it in data */
       try {
@@ -836,14 +843,13 @@ export class PlominoWorkflowComponent {
     }
   }
 
-  /** @todo: change algorythm */
-  findWFFormItemOnTop(itemId: number, tree = this.tree.getRawTree()): PlominoWorkflowItem {
+  findWFFormItemOnTop(itemId: number, tree = this.tree.getRawTree()): any {
     if (tree.id === itemId) {
       return tree;
     }
     if (tree.children) {
       for (let subTree of tree.children) {
-        if (subTree.form) {
+        if (subTree.form || subTree.view) {
           this.tmpOnTopFormItem = subTree;
         }
         let result = this.findWFFormItemOnTop(itemId, subTree);
@@ -866,8 +872,13 @@ export class PlominoWorkflowComponent {
   }
 
   editMacro(item: PlominoWorkflowItem) {
-    this.tmpOnTopFormItem = null;
-    this.findWFFormItemOnTop(item.id);
+    if (item.form || item.view) {
+      this.tmpOnTopFormItem = item;
+    }
+    else {
+      this.tmpOnTopFormItem = null;
+      this.findWFFormItemOnTop(item.id);
+    }
 
     if (this.tmpOnTopFormItem) {
       this.openResourceTab(this.tmpOnTopFormItem);
