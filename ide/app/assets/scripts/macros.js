@@ -204,7 +204,7 @@ require([
             window['macrojs_edit_macro_hold_' + uniqueId] = true;
             setTimeout(function() {
               delete window['macrojs_edit_macro_hold_' + uniqueId];
-            }, 300);
+            }, 1800);
           }
             var self = this.widget;
 
