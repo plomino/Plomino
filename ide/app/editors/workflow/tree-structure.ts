@@ -77,6 +77,39 @@ export class TreeStructure {
           }
         }
       }
+      else if (item.type === WF_ITEM_TYPE.CONDITION && parentItem.children.length) {
+        /* hardcode */
+        const itemBelow = parentItem.children[0];
+
+        const belowIndex = this.mapOfIndex.get(itemBelow.id);
+        belowIndex.indx.parent = item.children[0];
+        belowIndex.indx.parentIndex = 0;
+
+        item.children[0].children = [itemBelow]; // clear children
+        parentItem.children = [item];
+
+        this.indexOfNodes.push({
+          id: item.id, item, parent: parentItem, 
+          parentIndex: parentItem.children.length - 1
+        });
+
+        const i = this.indexOfNodes.length - 1;
+        this.mapOfIndex.set(item.id, { indx: this.indexOfNodes[i], i });
+
+        this.indexOfNodes.push({
+          id: item.children[0].id, item: item.children[0], parent: item, parentIndex: 0
+        });
+
+        this.mapOfIndex.set(
+          item.children[0].id, { indx: this.indexOfNodes[i + 1], i: i + 1 });
+
+        this.indexOfNodes.push({
+          id: item.children[1].id, item: item.children[1], parent: item, parentIndex: 1
+        });
+
+        this.mapOfIndex.set(
+          item.children[1].id, { indx: this.indexOfNodes[i + 2], i: i + 2 });
+      }
       else {
         /* find first children of this item and make it as our item children */
         const itemBelow = parentItem.children[0];
