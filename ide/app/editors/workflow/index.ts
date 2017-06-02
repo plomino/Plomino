@@ -763,25 +763,25 @@ export class PlominoWorkflowComponent {
         //   .off('macros_selector_refresh')
         //   .on('macros_selector_refresh', () => {
           $wd.find('.plomino-macros-rule').each((i, e) => {
-            if (!item.macroId) {
-              item.macroId = 1;
+            if (!item.macroText) {
+              item.macroText = '';
             }
+            const text = $(e).find('.plomino_edit_macro')
+              .toArray().map((_e: HTMLElement) => _e.innerText).join(', ');
             const $r = $(`<input type="radio" name="macro-radio" 
               style="margin-right: 6pt;
               margin-left: 6pt; position: relative; top: 3pt; float: left;"
-              ${ item.macroId === i + 1 ? 'checked' : '' }
+              ${ item.macroText === text ? 'checked' : '' }
               value="${ i + 1 }">`);
-            const text = $(e).find('.plomino_edit_macro')
-              .toArray().map((_e: HTMLElement) => _e.innerText).join(', ');
-            if (!item.macroText) {
-              item.macroText = text;
-              this.buildWFTree();
-            }
-            $r.click(() => {
-              item.macroId = i + 1;
-              item.macroText = text;
-              this.buildWFTree();
-            });
+            // if (!item.macroText) {
+            //   item.macroText = text;
+            //   this.buildWFTree();
+            // }
+            // $r.click(() => {
+            //   item.macroId = i + 1;
+            //   item.macroText = text;
+            //   this.buildWFTree();
+            // });
             $(e).prepend($r);
             $(e).find('.select2-container').css('width', '95%');
           });
@@ -798,6 +798,15 @@ export class PlominoWorkflowComponent {
   apply2selected() {
     const item = this.selectedItemRef;
 
+    /* save process for form task or branch */
+    const $e = $('li.plomino-macros-rule:visible:has(input[type="radio"]:checked)');
+
+    if ($e.length) {
+      const text = $e.find('.plomino_edit_macro')
+        .toArray().map((_e: HTMLElement) => _e.innerText).join(', ');
+      item.macroText = text;
+    }
+
     Array.from(this.itemSettingsDialog
       .querySelectorAll('[data-key]'))
       .forEach((input: HTMLInputElement) => {
@@ -807,6 +816,7 @@ export class PlominoWorkflowComponent {
           || (this.eventTypeIsTask(item.type) && input.dataset.key === 'process')
           || (item.type === WF_ITEM_TYPE.PROCESS && input.dataset.key === 'process')
         ) {
+          this.log.info('using', input.dataset.key, 'for', item.title, item.id);
           item[input.dataset.key] = $(input).val();
 
           if (input.dataset.key === 'goto') {
