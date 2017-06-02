@@ -210,7 +210,14 @@ export class TabsService {
       }
     });
 
-    tabs.splice(tabIndex, 1);
+    if (tabs.length === 2 && tabs[tabIndex + 1].url === 'workflow') {
+      setTimeout(() => {
+        tabs.splice(tabIndex, 1);
+      }, 100);
+    }
+    else {
+      tabs.splice(tabIndex, 1);
+    }
     
     if (tabs.length === 0) {
       this.activeTab$.next(null);
