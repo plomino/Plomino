@@ -138,6 +138,18 @@ require([
             self.$el.find('.select2-container').each(function(index, el) {
                 var select = $(el);
                 var values = select.select2('data');
+
+                try {
+                  // console.log('yo', values.map(function (v) {
+                  //     return JSON.parse(v.id)._macro_id_
+                  //   }).join('+'));
+                  $(el).attr('data-macro-values', 
+                    values.map(function (v) {
+                      return JSON.parse(v.id)._macro_id_
+                    }).join('+')
+                  );
+                } catch (e) {}
+
                 if (values.length == 0 && index < count-1) {
                     $(el).closest('li').remove();
                 }
@@ -238,6 +250,11 @@ require([
                 i++;
             }
             data['_macro_id_'] = macroid;
+            // try {
+            //   console.log('demo', values.map(function (v) {
+            //     return JSON.parse(v.id)._macro_id_
+            //   }).join('+'));
+            // } catch (e) {}
             self.ids[macroid] = true;
 
             //Special case. Urls that start with # have no popup
@@ -291,9 +308,21 @@ require([
                                 if (formdata.title == undefined) {
                                     formdata['title'] = text;
                                 }
+                                var i = 1;
+                                var macroid = undefined;
+                                while (macroid == undefined || self.ids[macroid]) {
+                                    macroid = formdata['Form'] + '_' + i;
+                                    i++;
+                                }
+                                formdata['_macro_id_'] = macroid;
+                                self.ids[macroid] = true;
                                 values[index] = {id:JSON.stringify(formdata),text:''}
                                 macro_select.select2('data',values);
 
+                                // console.log('after save', values.map(function (v) {
+                                //   return JSON.parse(v.id)._macro_id_
+                                // }).join('+'));
+                                // console.log('cleanup_inputs called after save');
                                 self.cleanup_inputs.bind({widget:self})();
 
                                 return false;

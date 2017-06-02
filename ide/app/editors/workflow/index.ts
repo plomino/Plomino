@@ -770,8 +770,11 @@ export class PlominoWorkflowComponent {
               if (!item.macroText) {
                 item.macroText = '';
               }
-              const text = $(e).find('.plomino_edit_macro')
-                .toArray().map((_e: HTMLElement) => _e.innerText).join(', ');
+              const $macroValues = $(e).find('[data-macro-values]');
+              const text = $macroValues.length 
+                ? $macroValues.attr('data-macro-values')
+                : $(e).find('.plomino_edit_macro')
+                  .toArray().map((_e: HTMLElement) => _e.innerText).join(', ');
               const $r = $(`<input type="radio" name="macro-radio" 
                 style="margin-right: 6pt;
                 margin-left: 6pt; position: relative; top: 3pt; float: left;"
@@ -808,8 +811,11 @@ export class PlominoWorkflowComponent {
     const $e = $('li.plomino-macros-rule:visible:has(input[type="radio"]:checked)');
 
     if ($e.length) {
-      const text = $e.find('.plomino_edit_macro')
-        .toArray().map((_e: HTMLElement) => _e.innerText).join(', ');
+      const $macroValues = $e.find('[data-macro-values]');
+      const text = $macroValues.length 
+        ? $macroValues.attr('data-macro-values')
+        : $e.find('.plomino_edit_macro')
+          .toArray().map((_e: HTMLElement) => _e.innerText).join(', ');
       item.macroText = text;
     }
 
@@ -836,7 +842,7 @@ export class PlominoWorkflowComponent {
     this.buildWFTree();
 
     /* if it is a process - take fields rules and save */
-    if (item.type === WF_ITEM_TYPE.PROCESS && this.latestUsingForm.action) {
+    if (item.macroText && this.latestUsingForm.action) {
       const fd = new FormData();
 
       this.latestUsingForm.$form.find('input,textarea,select')
