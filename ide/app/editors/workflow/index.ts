@@ -397,6 +397,7 @@ export class PlominoWorkflowComponent {
     const closestExists = Boolean($wfItemClosest.length);
     const onGoto = closestExists && $wfItemClosest.hasClass('workflow-node--goto');
     const onCond = closestExists && $wfItemClosest.hasClass('workflow-node--condition');
+    const onBranch = closestExists && $wfItemClosest.hasClass('workflow-node--process');
     const onRoot = closestExists && $wfItemClosest.hasClass('workflow-node--root');
     // const pathIsForm = '>.workflow-node__inner>.workflow-node__text--form';
     // const onForm = closestExists && $wfItemClosest.find(pathIsForm).length;
@@ -441,12 +442,53 @@ export class PlominoWorkflowComponent {
     return allowedDrag;
   }
 
+  isSwapAllowed(itemA: PlominoWorkflowItem, itemB: PlominoWorkflowItem): Boolean {
+    const isBranch = (item: PlominoWorkflowItem) => 
+      item.type === WF_ITEM_TYPE.PROCESS;
+    const isCondition = (item: PlominoWorkflowItem) => 
+      item.type === WF_ITEM_TYPE.CONDITION;
+    const isGoto = (item: PlominoWorkflowItem) => 
+      item.type === WF_ITEM_TYPE.GOTO;
+    const isLowestElementInBranch = (item: PlominoWorkflowItem) => 
+      !item.children.length;
+
+    const bothItems = (query: (item: PlominoWorkflowItem) => Boolean) => 
+      query(itemA) && query(itemB);
+    const oneOfItems = (query: (item: PlominoWorkflowItem) => Boolean) => 
+      query(itemA) || query(itemB);
+    
+    if (bothItems(isBranch)) {
+      return true;
+    }
+    else if (oneOfItems(isBranch)) {
+      /* probably there should be put, not drag */
+      return false;
+    }
+    else if (oneOfItems(isCondition)) {
+      return false;
+    }
+    else if (bothItems(isGoto)) {
+      return true;
+    }
+    else if (oneOfItems(isGoto)) {
+      return isGoto(itemA) 
+        ? isLowestElementInBranch(itemB) 
+        : isLowestElementInBranch(itemA);
+    }
+    return true;
+  }
+
   onDrop(data: ReceiverEvent = null) {
     if (data && data.dragServiceType === DS_TYPE.EXISTING_WORKFLOW_ITEM) {
       /* swap items */
-      this.log.info('items swapped', this.selectedItemRef.id, data.item.id);
-      this.tree.swapNodesByIds(this.selectedItemRef.id, data.item.id);
-      this.buildWFTree();
+      if (this.isSwapAllowed(this.selectedItemRef, data.item)) {
+        this.log.info('items swapped', this.selectedItemRef.id, data.item.id);
+        this.tree.swapNodesByIds(this.selectedItemRef.id, data.item.id);
+        this.buildWFTree();
+      }
+      else {
+        this.buildWFTree(this.tree, false);
+      }
     }
     else {
       const sandboxTree = this.latestTree;

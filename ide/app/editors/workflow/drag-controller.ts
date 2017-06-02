@@ -39,8 +39,15 @@ export class WFDragControllerService {
 
   constructor() {
     const leave = new Subject<ReceiverEvent>();
+    const start$ = this.receiver$.filter((data) => data.eventName === 'start');
     const drop$ = this.receiver$.filter((data) => data.eventName === 'drop');
     const end$ = this.receiver$.filter((data) => data.eventName === 'end');
+
+    start$.subscribe((data) => {
+      if (data.dragServiceType === DS_TYPE.EXISTING_WORKFLOW_ITEM) {
+        data.wfNode.classList.add('workflow-node--dragging');
+      }
+    });
 
     /* workflow mouse out */
     this.receiver$.subscribe((data) => {
@@ -123,6 +130,8 @@ export class WFDragControllerService {
 
         $('.workflow-node--dropping')
           .removeClass('workflow-node--dropping');
+        $('.workflow-node--dragging')
+          .removeClass('workflow-node--dragging');
 
         $('.plomino-workflow-editor__branches--virtual')
           .removeAttr('style');
