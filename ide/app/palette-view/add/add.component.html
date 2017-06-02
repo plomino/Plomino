@@ -23,6 +23,7 @@
                 dnd-draggable=""
                 [dragData]="comp"
                 [dragEnabled]="true"
+                (click)="runWfAdd(comp.type)"
                 (onDragStart)="wfStartDrag($event, comp.type)"
                 (onDragEnd)="wfStopDrag()"
                 [title]="comp.title">

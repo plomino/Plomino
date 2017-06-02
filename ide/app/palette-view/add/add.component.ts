@@ -1,3 +1,4 @@
+import { PlominoWorkflowChangesNotifyService } from './../../editors/workflow/workflow.changes.notify.service';
 import { WF_ITEM_TYPE } from './../../editors/workflow/tree-builder';
 import { Subscription, Observable, Subject } from 'rxjs/Rx';
 import { PlominoActiveEditorService } from './../../services/active-editor.service';
@@ -77,6 +78,7 @@ export class AddComponent implements OnInit, AfterViewInit {
                 private elementRef: ElementRef,
                 private activeEditorService: PlominoActiveEditorService,
                 private changeDetector: ChangeDetectorRef,
+                private wfChange: PlominoWorkflowChangesNotifyService,
                 private templatesService: TemplatesService,
                 private widgetService: WidgetService) { 
       this.tClickFlow$.debounceTime(200).subscribe((t: TemplateClickEvent) => {
@@ -509,6 +511,10 @@ export class AddComponent implements OnInit, AfterViewInit {
     runAddTemplate(eventData: MouseEvent, target: any, templateId: string) {
       this.activeEditorService.turnActiveEditorToLoadingState();
       this.tClickSubject.next({eventData, target, templateId});
+    }
+
+    runWfAdd(comp: string) {
+      this.wfChange.runAdd.next(comp);
     }
 
     runAdd(comp: string) {

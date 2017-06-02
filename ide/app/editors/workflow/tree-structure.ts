@@ -14,6 +14,10 @@ export class TreeStructure {
     return this.tree;
   }
 
+  public getLatestId(): number {
+    return this.latestIdNumber;
+  }
+
   public getCountOfNodes(): number {
     return this.indexOfNodes.length;
   }

@@ -112,7 +112,25 @@ export class PlominoWorkflowComponent {
             ] = data.newId.split('/').pop();
           this.buildWFTree();
         }
-      })
+      });
+
+    this.workflowChanges.runAdd$
+      .subscribe((wfType) => {
+        let correctId = this.tree.getLatestId();
+        const dragData = { title: '', type: wfType };
+        let $item = $('.workflow-node[data-node-id="' + correctId +'"]');
+        
+        while (!$item.length || !this.isDragAllowed($item, wfType)) {
+          if (correctId <= 1) { return; }
+          correctId = correctId - 1;
+          $item = $('.workflow-node[data-node-id="' + correctId +'"]');
+        }
+
+        this.dragService.followDNDType('wf-menu-dnd-callback');
+        this.dragInsertPreview(
+          $('.workflow-node[data-node-id="' + correctId +'"]'), dragData);
+        this.onDrop();
+      });
   }
 
   getDBLink() {
@@ -271,6 +289,10 @@ export class PlominoWorkflowComponent {
     /* current preview way is just a way to temporary change the tree */
     const nodeId = +$parentItem.attr('data-node-id');
     let parentItem = sandboxTree.getItemById(nodeId);
+
+    if (!parentItem) {
+      debugger;
+    }
 
     if (this.dragService.dndType !== DS_TYPE.EXISTING_WORKFLOW_ITEM) {
       
@@ -468,10 +490,6 @@ export class PlominoWorkflowComponent {
     // }
     if (allowedDrag && isGotoDrag) {
       allowedDrag = !Boolean($('[data-node-level="' + (lvl + 1) + '"]').length);
-    }
-
-    if (!allowedDrag) {
-      console.log('NOT ALLOWED');
     }
 
     return allowedDrag;

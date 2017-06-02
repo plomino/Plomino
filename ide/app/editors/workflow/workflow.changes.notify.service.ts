@@ -6,5 +6,7 @@ import { Subject } from 'rxjs/Subject';
 export class PlominoWorkflowChangesNotifyService {
   changesDetector: Subject<KVChangeEvent> = new Subject<KVChangeEvent>();
   onChangesDetect$: Observable<KVChangeEvent> = this.changesDetector.asObservable();
+  runAdd: Subject<string> = new Subject<string>();
+  runAdd$: Observable<string> = this.runAdd.asObservable();
   constructor() { }
 }
