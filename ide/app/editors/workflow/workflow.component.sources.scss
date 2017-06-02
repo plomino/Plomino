@@ -243,7 +243,7 @@ $wfpad-right-left: 7px;
           hyphens: auto;
           width: $wfw - $wfpad-right-left * 2;
           height: auto;
-          max-height: 40px;
+          max-height: inherit;
           overflow-wrap: break-word;
         }
       }
@@ -490,19 +490,27 @@ $wfpad-right-left: 7px;
         background: transparent;
 
         .workflow-node__inner {
-          padding-top: 6px;
+          width: 100%;
+          display: flex;
+          padding: 0;
+          align-items: center;
+          justify-content: center;
+          align-content: center;
         }
 
         .workflow-node__text--goto {
-          padding-top: 25px;
+          // padding-top: 25px;
           text-align: center;
+          display: block;
+          padding: 0;
         }
 
         .workflow-node__shape-outside {
           display: block;
-          min-width: $wfw;
+          min-width: 100%;
+          height: 100% !important;
+          min-height: inherit !important;
           background-color: #607D8B;
-          // min-height: 50px !important;
           left: 1px;
           clip-path: polygon(100% 0, 100% 80%, 50% 100%, 50% 100%, 0% 80%, 0 0);
         }
