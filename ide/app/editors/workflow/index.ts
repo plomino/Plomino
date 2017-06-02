@@ -759,34 +759,40 @@ export class PlominoWorkflowComponent {
   
         /* step 7: put radios */
         // $wd.find('.plomino-macros-rule:last').remove();
-        // $(document)
-        //   .off('macros_selector_refresh')
-        //   .on('macros_selector_refresh', () => {
-          $wd.find('.plomino-macros-rule').each((i, e) => {
-            if (!item.macroText) {
-              item.macroText = '';
-            }
-            const text = $(e).find('.plomino_edit_macro')
-              .toArray().map((_e: HTMLElement) => _e.innerText).join(', ');
-            const $r = $(`<input type="radio" name="macro-radio" 
-              style="margin-right: 6pt;
-              margin-left: 6pt; position: relative; top: 3pt; float: left;"
-              ${ item.macroText === text ? 'checked' : '' }
-              value="${ i + 1 }">`);
-            // if (!item.macroText) {
-            //   item.macroText = text;
-            //   this.buildWFTree();
-            // }
-            // $r.click(() => {
-            //   item.macroId = i + 1;
-            //   item.macroText = text;
-            //   this.buildWFTree();
-            // });
-            $(e).prepend($r);
-            $(e).find('.select2-container').css('width', '95%');
+        if (!window['macrosSelectorRefreshEvent']) {
+          window['macrosSelectorRefreshEvent'] = {};
+        }
+        $(window['macrosSelectorRefreshEvent'])
+          .unbind('macros_selector_refresh')
+          .bind('macros_selector_refresh', () => {
+            $wd.find('input[type="radio"]').remove();
+            $wd.find('.plomino-macros-rule').each((i, e) => {
+              if (!item.macroText) {
+                item.macroText = '';
+              }
+              const text = $(e).find('.plomino_edit_macro')
+                .toArray().map((_e: HTMLElement) => _e.innerText).join(', ');
+              const $r = $(`<input type="radio" name="macro-radio" 
+                style="margin-right: 6pt;
+                margin-left: 6pt; position: relative; top: 3pt; float: left;"
+                ${ item.macroText === text ? 'checked' : '' }
+                value="${ i + 1 }">`);
+              // if (!item.macroText) {
+              //   item.macroText = text;
+              //   this.buildWFTree();
+              // }
+              // $r.click(() => {
+              //   item.macroId = i + 1;
+              //   item.macroText = text;
+              //   this.buildWFTree();
+              // });
+              $(e).prepend($r);
+              $(e).find('.select2-container').css('width', '95%');
+            });
           });
-        });
-      // });
+
+        $(window['macrosSelectorRefreshEvent']).trigger('macros_selector_refresh');
+      });
     });
   }
 
