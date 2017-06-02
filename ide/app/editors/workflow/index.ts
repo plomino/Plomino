@@ -803,6 +803,7 @@ export class PlominoWorkflowComponent {
       .forEach((input: HTMLInputElement) => {
         if (item.hasOwnProperty(input.dataset.key)
           || (this.eventTypeIsTask(item.type) && input.dataset.key === 'title')
+          || (this.eventTypeIsTask(item.type) && input.dataset.key === 'notes')
           || (this.eventTypeIsTask(item.type) && input.dataset.key === 'process')
           || (item.type === WF_ITEM_TYPE.PROCESS && input.dataset.key === 'process')
         ) {
