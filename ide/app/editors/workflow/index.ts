@@ -195,13 +195,48 @@ export class PlominoWorkflowComponent {
   }
 
   deleteWFItem($e: any, $item: JQuery, targetItem: PlominoWorkflowItem) {
-    if (targetItem.type === WF_ITEM_TYPE.CONDITION) {
-      this.elementService.awaitForConfirm('This action will remove the branches below')
-      .then(() => {
-        this.tree.deleteBranchByTopItemId(targetItem.id);
-        this.buildWFTree();
-      })
-      .catch(() => {});
+    if (targetItem.type === WF_ITEM_TYPE.CONDITION 
+      || targetItem.type === WF_ITEM_TYPE.PROCESS
+    ) {
+      /* if 1 branch -> assume to remove only it, not whole */
+      const aloneBranch = targetItem.type === WF_ITEM_TYPE.PROCESS
+        && this.tree.getItemParentById(targetItem.id).children.length === 1;
+      const aloneCondition = targetItem.type === WF_ITEM_TYPE.CONDITION
+        && targetItem.children.length === 1;
+      if (aloneBranch || aloneCondition) {
+        this.elementService.awaitForConfirm('One branch. Remove just division?')
+        .then(() => {
+          const idParent = this.tree.getItemParentById(targetItem.id).id;
+          const idChildren = targetItem.children[0].id;
+          const idItem = targetItem.id;
+          this.tree.deleteNodeById(aloneBranch ? idParent : idChildren);
+          this.tree.deleteNodeById(idItem);
+          this.buildWFTree();
+        })
+        .catch(() => {
+          this.elementService.awaitForConfirm(
+            targetItem.type === WF_ITEM_TYPE.CONDITION 
+              ? 'This action will remove the branches below'
+              : 'This action will remove the branch below')
+          .then(() => {
+            this.tree.deleteBranchByTopItemId(targetItem.id);
+            this.buildWFTree();
+          })
+          .catch(() => {});
+        });
+      }
+      else {
+        /* else */
+        this.elementService.awaitForConfirm(
+          targetItem.type === WF_ITEM_TYPE.CONDITION 
+            ? 'This action will remove the branches below'
+            : 'This action will remove the branch below')
+        .then(() => {
+          this.tree.deleteBranchByTopItemId(targetItem.id);
+          this.buildWFTree();
+        })
+        .catch(() => {});
+      }
     }
     else {
       this.tree.deleteNodeById(targetItem.id);
