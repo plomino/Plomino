@@ -698,13 +698,8 @@ export class PlominoWorkflowComponent {
   loadFormMacro(item: PlominoWorkflowItem): void {
     /* step 1: get form url ontop */
     const $wd = this.$itemSettingsDialog.find('#wf-item-settings-dialog__wd');
-    if (item.form || item.view) {
-      this.tmpOnTopFormItem = item;
-    }
-    else {
-      this.tmpOnTopFormItem = null;
-      this.findWFFormItemOnTop(item.id);
-    }
+    this.tmpOnTopFormItem = (item.form || item.view) 
+      ? item : (this.findWFFormItemOnTop(item.id) || null);
     if (!this.tmpOnTopFormItem 
       || !(this.tmpOnTopFormItem.form || this.tmpOnTopFormItem.view)) {
       $wd.html('');
@@ -866,22 +861,13 @@ export class PlominoWorkflowComponent {
     }
   }
 
-  findWFFormItemOnTop(itemId: number, tree = this.tree.getRawTree()): any {
-    if (tree.id === itemId) {
-      return tree;
-    }
-    if (tree.children) {
-      for (let subTree of tree.children) {
-        if (subTree.form || subTree.view) {
-          this.tmpOnTopFormItem = subTree;
-        }
-        let result = this.findWFFormItemOnTop(itemId, subTree);
-        if (result) {
-          return result;
-        }
-      }
-    }
-    return null;
+  findWFFormItemOnTop(itemId: number, tree = this.tree): false|PlominoWorkflowItem {
+    const result = tree.searchParentItemOfItemByCondition(
+      tree.getItemById(itemId), 
+      (item: PlominoWorkflowItem): Boolean => 
+        Boolean(item.form) || Boolean(item.view)
+      );
+    return result;
   }
 
   openResourceTab(item: PlominoWorkflowItem) {
@@ -895,13 +881,8 @@ export class PlominoWorkflowComponent {
   }
 
   editMacro(item: PlominoWorkflowItem) {
-    if (item.form || item.view) {
-      this.tmpOnTopFormItem = item;
-    }
-    else {
-      this.tmpOnTopFormItem = null;
-      this.findWFFormItemOnTop(item.id);
-    }
+    this.tmpOnTopFormItem = (item.form || item.view) 
+      ? item : (this.findWFFormItemOnTop(item.id) || null);
 
     if (this.tmpOnTopFormItem) {
       this.openResourceTab(this.tmpOnTopFormItem);

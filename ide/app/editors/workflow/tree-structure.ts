@@ -114,6 +114,20 @@ export class TreeStructure {
       ? this.mapOfIndex.get(id).indx.parent : null;
   }
 
+  public searchParentItemOfItemByCondition(
+    item: PlominoWorkflowItem,
+    condition: (currentItem: PlominoWorkflowItem) => Boolean
+  ): PlominoWorkflowItem|false {
+    let currentItem = item;
+    while (this.mapOfIndex.get(currentItem.id).indx.parent.id !== 1) {
+      currentItem = this.mapOfIndex.get(currentItem.id).indx.parent;
+      if (condition(currentItem)) {
+        return currentItem;
+      }
+    }
+    return false;
+  }
+
   public deleteNodeById(id: number): Boolean {
     if (this.mapOfIndex.has(id)) {
       /* 1. get index writing */
