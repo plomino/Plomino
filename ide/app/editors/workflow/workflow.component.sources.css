@@ -86,3 +86,7 @@ body { font-family: sans-serif; font-size: 15px; }
 .plomino-workflow-editor li.plomino-workflow-editor__branch .workflow-node--virtual button:focus { outline: none !important; }
 .plomino-workflow-editor li.plomino-workflow-editor__branch > .plomino-workflow-editor__branches--virtual { opacity: 0; -webkit-transition: all 100ms ease-in-out; transition: all 100ms ease-in-out; }
 .plomino-workflow-editor li.plomino-workflow-editor__branch:hover > .plomino-workflow-editor__branches--virtual { opacity: 1; }
+
+.plomino-workflow-editor__branches--condition { padding: 1em 0; }
+
+.plomino-workflow-editor__branches .plomino-workflow-editor__branches--condition::before { height: calc(1em + 1px) !important; }

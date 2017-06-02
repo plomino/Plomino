@@ -12,7 +12,7 @@ $default-task-color-hover: #004D40;
 $default-view-task-color: #00838F;
 $default-view-task-color-hover: #006064;
 $line-height: 4em;
-$line-height-condtion: 3em;
+$line-height-condtion: 1em;
 $bg-color: #fafafa;
 
 $wfh: 80px;
@@ -639,4 +639,12 @@ $wfpad-right-left: 7px;
       opacity: 1;
     }
   }
+}
+
+.plomino-workflow-editor__branches--condition {
+  padding: $line-height-condtion 0;
+}
+
+.plomino-workflow-editor__branches .plomino-workflow-editor__branches--condition::before {
+  height: calc(#{$line-height-condtion} + 1px) !important;
 }
