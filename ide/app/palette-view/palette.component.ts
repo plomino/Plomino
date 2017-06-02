@@ -119,9 +119,14 @@ export class PaletteComponent implements OnInit {
             this.changeDetector.markForCheck();
         });
 
+        let j = 0;
+
         this.formsService.paletteTabChange$.subscribe((tabIndex:number) => {
+          j++;
           let activeChanged = false;
+          let x: any = [];
           this.tabs.forEach((tab, index) => {
+            x.push([tabIndex, index, tab.active]);
             const isActive = (index === tabIndex);
             if (tab.active && isActive) {
               return false;
@@ -132,6 +137,15 @@ export class PaletteComponent implements OnInit {
             }
           });
           if (activeChanged) {
+            if (j > 1 && tabIndex === 3) {
+              /* open wf */
+              this.tabsService.openTab({
+                url: 'workflow',
+                label: 'Workflow',
+                editor: 'workflow',
+                path: []
+              }, true);
+            }
             this.resizeInnerScrollingContainers();
             this.changeDetector.markForCheck();
           }

@@ -128,7 +128,7 @@ export class PlominoWorkflowComponent {
 
     try {
       const dbLink = this.getDBLink();
-      const fd = new FakeFormData(<any> $(`form[action*="${ dbLink }"]`).get(0));
+      const fd = new FakeFormData(<any> $(`form[action*="${ dbLink }/@@edit"]`).get(0));
       tree = JSON.parse(fd.get('form.widgets.IBasic.description'));
 
       if (!fd.get('form.widgets.IBasic.description')) {
