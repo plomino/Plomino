@@ -685,9 +685,8 @@ export class PlominoWorkflowComponent {
   }
 
   showModal(item: PlominoWorkflowItem, processModal = false) {
-    if (!this.selectedItemRef) {
-      this.log.error('nothing selected');
-      return false;
+    if (!this.selectedItemRef || typeof this.selectedItemRef === 'undefined') {
+      this.selectedItemRef = item;
     }
     this.itemSettingsDialog
       .querySelector('#wf-item-settings-dialog__form')
@@ -880,7 +879,7 @@ export class PlominoWorkflowComponent {
               //   this.buildWFTree();
               // });
               $(e).prepend($r);
-              $(e).find('.select2-container').css('width', '95%');
+              $(e).find('.select2-container').css('width', '94%');
             });
           });
 
@@ -918,7 +917,7 @@ export class PlominoWorkflowComponent {
           || (this.eventTypeIsTask(item.type) && input.dataset.key === 'process')
           || (item.type === WF_ITEM_TYPE.PROCESS && input.dataset.key === 'process')
         ) {
-          this.log.info('using', input.dataset.key, 'for', item.title, item.id);
+          // this.log.info('using', input.dataset.key, 'for', item.title, item.id);
           item[input.dataset.key] = $(input).val();
 
           if (input.dataset.key === 'goto') {
@@ -932,7 +931,10 @@ export class PlominoWorkflowComponent {
     this.buildWFTree();
 
     /* if it is a process - take fields rules and save */
-    if (item.macroText && this.latestUsingForm.action) {
+    if (item.macroText !== null 
+      && typeof item.macroText !== 'undefined' 
+      && this.latestUsingForm.action
+    ) {
       const fd = new FormData();
 
       this.latestUsingForm.$form.find('input,textarea,select')
