@@ -565,7 +565,7 @@ export class PlominoWorkflowComponent {
   onItemDragLeave(data: ReceiverEvent) {
     if (data.dragServiceType !== DS_TYPE.EXISTING_WORKFLOW_ITEM) {
       this.enteredItemId = null;
-      this.buildWFTree(this.tree, false, false);
+      this.buildWFTree(this.tree, false, true);
     }
   }
 
@@ -1028,10 +1028,7 @@ export class PlominoWorkflowComponent {
   }
 
   buildWFTree(tree = this.tree, autosave = true, upgrade = false) {
-    let k = Math.floor(Math.random() * 10000 + 10000);
-    this.log.startTimer('buildWFTree ' + k);
     this.latestTree = tree;
-
     const wfTree: HTMLElement = this.workflowEditorNode.nativeElement;
     wfTree.innerHTML = treeBuilder.getBuildedTree(tree.getRawTree());
     const $wfTree: JQuery = $(wfTree);
@@ -1058,7 +1055,7 @@ export class PlominoWorkflowComponent {
     });
 
     if (upgrade) {
-      componentHandler.upgradeElements(wfTree);
+      setTimeout(() => componentHandler.upgradeElements(wfTree), 200);
     }
 
     if (autosave) {
@@ -1074,11 +1071,10 @@ export class PlominoWorkflowComponent {
         .replace('/index.html', '')
       }`;
   
-      const fd = new FakeFormData(<any> $(`form[action*="${ dbLink }"]`).get(0));
+      const fd = new FakeFormData(<any> $(`form[action*="${ dbLink }/@@edit"]`).get(0));
       fd.set('form.widgets.IBasic.description', jsonTree);
     }
 
-    this.log.stopTimer('buildWFTree ' + k);
     return true;
   }
 }
