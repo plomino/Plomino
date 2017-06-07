@@ -15,3 +15,4 @@ export { PlominoApplicationLoaderService } from './application-loader.service';
 export { URLManagerService } from './url-manager.service';
 export { PlominoActiveEditorService } from './active-editor.service';
 export { PlominoSaveManagerService } from './save-manager';
+export { PlominoDBService } from './db.service';

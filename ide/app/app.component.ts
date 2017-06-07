@@ -60,6 +60,7 @@ import {
   URLManagerService,
   PlominoActiveEditorService,
   PlominoSaveManagerService,
+  PlominoDBService,
 } from './services';
 
 // Pipes 
@@ -119,24 +120,9 @@ import { LoadingComponent } from "./editors/loading/loading.component";
     PlominoActiveEditorService,
     PlominoSaveManagerService,
     PlominoPaletteManagerService,
+    PlominoDBService,
   ],
   pipes: [ExtractNamePipe],
-  // animations: [
-  //   trigger('dropZoneState', [
-  //     state('*', style({
-  //       opacity: 1
-  //     })),
-  //     transition('void => *', [
-  //       style({
-  //           opacity: 0
-  //       }),
-  //       animate(300)
-  //     ]),
-  //     transition('* => void', animate(300, style({
-  //       opacity: 0
-  //     })))
-  //   ])
-  // ]
 })
 export class AppComponent implements OnInit, AfterViewInit {
 
@@ -173,6 +159,7 @@ export class AppComponent implements OnInit, AfterViewInit {
     private zone: NgZone,
     private paletteManager: PlominoPaletteManagerService,
     private saveManager: PlominoSaveManagerService,
+    private dbService: PlominoDBService,
     private changeDetector: ChangeDetectorRef) {
       window['jQuery'] = jQuery;
 
@@ -203,10 +190,7 @@ export class AppComponent implements OnInit, AfterViewInit {
     }
 
   collapseTreeElements(data:any, oldData:any) {
-    // this.log.info('calling collapseTreeElements with data', data, 'and oldData', oldData);
     if (!Array.isArray(data) || Array.isArray(oldData)) {
-      // this.log.info('!Array.isArray(data)', !Array.isArray(data), 
-      //   'or', 'Array.isArray(oldData)', Array.isArray(oldData));
       return data;
     }
 
@@ -234,13 +218,6 @@ export class AppComponent implements OnInit, AfterViewInit {
       evt.preventDefault();
       return false;
     });
-
-    // setTimeout(() => {
-    //   this.treeService.updateTree2()
-    //   .subscribe((response) => {
-    //     console.log('RESPONSE RECEIVED', response);
-    //   });
-    // }, 2000);
 
     this.log.info('waiting designtree event from treeService...');
     this.treeService
@@ -630,16 +607,8 @@ export class AppComponent implements OnInit, AfterViewInit {
   }
 
   private getPloneLink() {
-    const dbLink = this.getDBLink();
+    const dbLink = this.dbService.getDBLink();
     return dbLink.split('/').slice(0, -1).join('/')
-  }
-
-  private getDBLink() {
-    return `${ 
-      window.location.pathname
-      .replace('++resource++Products.CMFPlomino/ide/', '')
-      .replace('/index.html', '')
-    }`;
   }
 
   private resolveData(data: any, resolver: Function): void {
