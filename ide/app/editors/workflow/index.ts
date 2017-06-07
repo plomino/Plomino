@@ -305,11 +305,11 @@ export class PlominoWorkflowComponent {
     const sandboxTree = this.tree.createSandbox();
 
     /* current preview way is just a way to temporary change the tree */
-    const nodeId = +$parentItem.attr('data-node-id');
+    const nodeId = +$parentItem.attr('data-node-id') || 1;
     let parentItem = sandboxTree.getItemById(nodeId);
 
     if (!parentItem) {
-      debugger;
+      return;
     }
 
     if (this.dragService.dndType !== DS_TYPE.EXISTING_WORKFLOW_ITEM) {
