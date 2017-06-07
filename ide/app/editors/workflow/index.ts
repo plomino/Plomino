@@ -680,8 +680,7 @@ export class PlominoWorkflowComponent {
     if (!item && !isCreate) { return true; }
 
     if (isCreate) {
-      const $wfItemClosest = $(wfNode.parentElement.parentElement
-        .parentElement.firstElementChild);
+      const $wfItemClosest = $(wfNode.parentElement.firstElementChild);
       this.dragService.followDNDType('wf-menu-dnd-callback');
       this.dragInsertPreview($wfItemClosest, { title: '', type: isCreate });
       return this.onDrop();
