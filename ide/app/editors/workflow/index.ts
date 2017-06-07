@@ -521,10 +521,6 @@ export class PlominoWorkflowComponent {
     if (bothItems(isBranch)) {
       return true;
     }
-    else if (oneOfItems(isBranch)) {
-      /* probably there should be put, not drag */
-      return false;
-    }
     else if (oneOfItems(isCondition)) {
       return false;
     }
@@ -536,6 +532,13 @@ export class PlominoWorkflowComponent {
         ? isLowestElementInBranch(itemB) 
         : isLowestElementInBranch(itemA);
     }
+    else if (isBranch(itemA)) {
+      return false;
+    }
+    else if (isBranch(itemB)) {
+      return true;
+    }
+
     return true;
   }
 
@@ -543,8 +546,15 @@ export class PlominoWorkflowComponent {
     if (data && data.dragServiceType === DS_TYPE.EXISTING_WORKFLOW_ITEM) {
       /* swap items */
       if (this.isSwapAllowed(this.selectedItemRef, data.item)) {
-        this.log.info('items swapped', this.selectedItemRef.id, data.item.id);
-        this.tree.swapNodesByIds(this.selectedItemRef.id, data.item.id);
+        if (data.item.type === WF.PROCESS) {
+          this.log.info('item moved', this.selectedItemRef.id, data.item.id);
+          this.tree.moveNodeToAnotherParentById(this.selectedItemRef.id, data.item.id);
+        }
+        else {
+          this.log.info('items swapped', this.selectedItemRef.id, data.item.id);
+          this.tree.swapNodesByIds(this.selectedItemRef.id, data.item.id);
+        }
+
         this.buildWFTree(this.tree, true, true);
       }
       else {

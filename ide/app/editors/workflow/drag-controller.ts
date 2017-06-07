@@ -95,6 +95,8 @@ export class WFDragControllerService {
       })
       .map((data) => {
         if (data.dragServiceType === DS_TYPE.EXISTING_WORKFLOW_ITEM) {
+          $('.workflow-node--dropping')
+            .removeClass('workflow-node--dropping');
           data.wfNode.classList.add('workflow-node--dropping');
         }
 
@@ -132,7 +134,9 @@ export class WFDragControllerService {
         this.hoveredId = null;
       
         if (data.dragServiceType === DS_TYPE.EXISTING_WORKFLOW_ITEM) {
-          data.wfNode.classList.remove('workflow-node--dropping');
+          // data.wfNode.classList.remove('workflow-node--dropping');
+          $('.workflow-node--dropping')
+            .removeClass('workflow-node--dropping');
         }
   
         return data;

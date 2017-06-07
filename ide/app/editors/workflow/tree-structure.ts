@@ -220,6 +220,17 @@ export class TreeStructure {
     return false;
   }
 
+  public moveNodeToAnotherParentById(itemId: number, newParentId: number): Boolean {
+    if (this.mapOfIndex.has(itemId) && this.mapOfIndex.has(newParentId)) {
+      const itemCopy = $.extend({}, this.getItemById(itemId));
+      itemCopy.children = [];
+      this.deleteNodeById(itemId);
+      return this.pushNewItemToParentById(itemCopy, newParentId);
+    }
+
+    return false;
+  }
+
   public swapNodesByIds(idA: number, idB: number): Boolean {
     if (this.mapOfIndex.has(idA) && this.mapOfIndex.has(idB)) {
       const a = this.mapOfIndex.get(idA);
