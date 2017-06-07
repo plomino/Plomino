@@ -290,5 +290,13 @@ export const treeBuilder = {
           </li>` : '' }
         </ul><!--
       --></li></ul>` : '-->' }</li>`;
+  },
+
+  checkTarget(eventTarget: Element, className: string) {
+    return eventTarget.parentElement.parentElement.parentElement
+        .classList.contains(className)
+      || eventTarget.classList.contains(className)
+      || eventTarget.parentElement.classList.contains(className)
+      || eventTarget.parentElement.parentElement.classList.contains(className);
   }
 };

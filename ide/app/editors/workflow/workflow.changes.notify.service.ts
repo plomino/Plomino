@@ -8,5 +8,7 @@ export class PlominoWorkflowChangesNotifyService {
   onChangesDetect$: Observable<KVChangeEvent> = this.changesDetector.asObservable();
   runAdd: Subject<string> = new Subject<string>();
   runAdd$: Observable<string> = this.runAdd.asObservable();
+  needSave: Subject<any> = new Subject<any>();
+  needSave$: Observable<any> = this.needSave.asObservable();
   constructor() { }
 }
