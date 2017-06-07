@@ -236,7 +236,17 @@ export class PlominoWorkflowItemEditorService {
     const tmpOnTopFormItem = (item.form || item.view) 
       ? item : (this.getTopItemWithForm(item.id, this.registeredTree) || null);
     if (!tmpOnTopFormItem || !(tmpOnTopFormItem.form || tmpOnTopFormItem.view)) {
-      $wd.html('');
+      if (item.type === WF.FORM_TASK || item.type === WF.VIEW_TASK 
+        || item.type === WF.PROCESS
+      ) {
+        $wd.html(`<label style="margin-bottom: 15px; margin-top: 10px">
+          Implementation<br>
+          <small style="color: dimgray;">There is no form or view related - 
+          you can\'t select the macros</small></label>`);
+      }
+      else {
+        $wd.html('');
+      }
       return;
     }
     /* step 2: run loading */
