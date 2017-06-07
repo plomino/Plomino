@@ -103,8 +103,19 @@ export class PlominoWorkflowComponent {
       });
     });
 
+    this.formsService.formRemoved$
+      .subscribe((formId) => {
+        const item = this.findWFItemByFormOrViewId(formId.split('/').pop());
+        if (item !== null) {
+          item[
+            item.type === WF.FORM_TASK ? 'form' : 'view'
+            ] = '';
+          this.buildWFTree(this.tree, true, true);
+        }
+      });
+
     this.formsService.formIdChanged$
-      .subscribe((data) => {
+      .subscribe((data: { oldId: string, newId: string }) => {
         const item = this.findWFItemByFormOrViewId(data.oldId.split('/').pop());
         if (item !== null) {
           item[
