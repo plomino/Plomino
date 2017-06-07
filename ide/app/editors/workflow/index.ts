@@ -579,14 +579,22 @@ export class PlominoWorkflowComponent {
      * is the root item clicked
      */
     const isRoot = wfNode.classList.contains('workflow-node--root');
+    const isRootBranch = wfNode.classList
+      .contains('plomino-workflow-editor__branches--root');
 
     /**
      * clicked workflow item object using founded workflow node NodeElement
      */
     const item = this.tree.getItemById(+wfNode.dataset.nodeId);
 
+    if ((!isCreate && !isVirtual && !isAddBelow) || isRootBranch) {
+      $('.mdl-menu__container').removeClass('is-visible');
+    }
+
     /* if no closest item to click event and no submenu event - go away */
-    if (!item && !isCreate) { return true; }
+    if (!item && !isCreate) {
+      return true;
+    }
 
     if (isCreate) {
       const $wfItemClosest = $(isVirtual 
@@ -624,7 +632,12 @@ export class PlominoWorkflowComponent {
       if (eventTarget.parentElement.classList.contains('workflow-node__text--form')
         || eventTarget.parentElement.classList.contains('workflow-node__text--view')
       ) {
-        this.itemEditor.openResourceTab(item);
+        if (item.form || item.view) {
+          this.itemEditor.openResourceTab(item);
+        }
+        else {
+          this.itemEditor.showModal(item);
+        }
       }
       else if (item.type === WF.PROCESS 
         || eventTarget.parentElement.classList.contains('workflow-node__text--process')
