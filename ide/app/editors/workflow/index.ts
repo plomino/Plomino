@@ -8,7 +8,7 @@ import { PlominoHTTPAPIService } from './../../services/http-api.service';
 import { Component, ElementRef, ViewChild, ViewEncapsulation, NgZone } from '@angular/core';
 import { PlominoBlockPreloaderComponent } from '../../utility';
 import { DND_DIRECTIVES } from 'ng2-dnd';
-import { treeBuilder, WF_ITEM_TYPE } from './tree-builder';
+import { treeBuilder, WF_ITEM_TYPE as WF } from './tree-builder';
 import { PlominoWorkflowNodeSettingsComponent } from "../../palette-view";
 import { PlominoWorkflowChangesNotifyService } from './workflow.changes.notify.service';
 import { PlominoFormsListService, LogService, 
@@ -89,14 +89,14 @@ export class PlominoWorkflowComponent {
           this.saveManager.createNewForm((url, label) => {
             this.selectedItemRef.title = label;
             this.selectedItemRef.form = url.split('/').pop();
-            this.buildWFTree();
+            this.buildWFTree(this.tree, true, true);
           });
         }
         else if (btn.classList.contains('wf-item-settings-dialog__create-btn--view')) {
           this.saveManager.createNewView((url, label) => {
             this.selectedItemRef.title = label;
             this.selectedItemRef.view = url.split('/').pop();
-            this.buildWFTree();
+            this.buildWFTree(this.tree, true, true);
           });
         }
         this.$itemSettingsDialog.modal('hide');
@@ -108,9 +108,9 @@ export class PlominoWorkflowComponent {
         const item = this.findWFItemByFormOrViewId(data.oldId.split('/').pop());
         if (item !== null) {
           item[
-            item.type === WF_ITEM_TYPE.FORM_TASK ? 'form' : 'view'
+            item.type === WF.FORM_TASK ? 'form' : 'view'
             ] = data.newId.split('/').pop();
-          this.buildWFTree();
+          this.buildWFTree(this.tree, true, true);
         }
       });
 
@@ -162,12 +162,26 @@ export class PlominoWorkflowComponent {
     }
 
     this.tree = new TreeStructure(tree);
-    this.buildWFTree(this.tree, false);
+    this.buildWFTree(this.tree, false, false);
+
+    // let timer: any;
+    // const e = this.workflowEditorNode.nativeElement;
+    // const $tab = $(this.workflowEditorNode.nativeElement).closest('tab');
+    // $tab.off('scroll').on('scroll', function() {
+    //   clearTimeout(timer);
+    //   if(!e.classList.contains('disable-hover')) {
+    //     e.classList.add('disable-hover');
+    //   }
+      
+    //   timer = setTimeout(function(){
+    //     e.classList.remove('disable-hover');
+    //   }, 500);
+    // });
 
     this.editorOffset = $(this.workflowEditorNode.nativeElement).offset();
     this.dragController.registerWorkflowOffset(this.editorOffset);
     this.dragController.rebuildWorkflow$.subscribe(() => {
-      this.buildWFTree(this.tree, false);
+      this.buildWFTree(this.tree, false, true);
     });
 
     this.dragController.enter$
@@ -212,14 +226,12 @@ export class PlominoWorkflowComponent {
     return result;
   }
 
-  deleteWFItem($e: any, $item: JQuery, targetItem: PlominoWorkflowItem) {
-    if (targetItem.type === WF_ITEM_TYPE.CONDITION 
-      || targetItem.type === WF_ITEM_TYPE.PROCESS
-    ) {
+  deleteWFItem(wfNode: HTMLElement, targetItem: PlominoWorkflowItem) {
+    if (targetItem.type === WF.CONDITION || targetItem.type === WF.PROCESS) {
       /* if 1 branch -> assume to remove only it, not whole */
-      const aloneBranch = targetItem.type === WF_ITEM_TYPE.PROCESS
+      const aloneBranch = targetItem.type === WF.PROCESS
         && this.tree.getItemParentById(targetItem.id).children.length === 1;
-      const aloneCondition = targetItem.type === WF_ITEM_TYPE.CONDITION
+      const aloneCondition = targetItem.type === WF.CONDITION
         && targetItem.children.length === 1;
       if (aloneBranch || aloneCondition) {
         this.elementService.awaitForConfirm('One branch. Remove just division?')
@@ -229,16 +241,16 @@ export class PlominoWorkflowComponent {
           const idItem = targetItem.id;
           this.tree.deleteNodeById(aloneBranch ? idParent : idChildren);
           this.tree.deleteNodeById(idItem);
-          this.buildWFTree();
+          this.buildWFTree(this.tree, true, true);
         })
         .catch(() => {
           this.elementService.awaitForConfirm(
-            targetItem.type === WF_ITEM_TYPE.CONDITION 
+            targetItem.type === WF.CONDITION 
               ? 'This action will remove the branches below'
               : 'This action will remove the branch below')
           .then(() => {
             this.tree.deleteBranchByTopItemId(targetItem.id);
-            this.buildWFTree();
+            this.buildWFTree(this.tree, true, true);
           })
           .catch(() => {});
         });
@@ -246,25 +258,20 @@ export class PlominoWorkflowComponent {
       else {
         /* else */
         this.elementService.awaitForConfirm(
-          targetItem.type === WF_ITEM_TYPE.CONDITION 
+          targetItem.type === WF.CONDITION 
             ? 'This action will remove the branches below'
             : 'This action will remove the branch below')
         .then(() => {
           this.tree.deleteBranchByTopItemId(targetItem.id);
-          this.buildWFTree();
+          this.buildWFTree(this.tree, true, true);
         })
         .catch(() => {});
       }
     }
     else {
       this.tree.deleteNodeById(targetItem.id);
-
-      const $wfItemClosest = $(
-        `.workflow-node[data-node-id="${ targetItem.id }"]`
-      );
-      $wfItemClosest.fadeOut(100, () => {
-        this.buildWFTree();
-      });
+      const $wfItemClosest = $(wfNode);
+      $wfItemClosest.fadeOut(100, () => this.buildWFTree(this.tree, true, true));
     }
   }
 
@@ -299,23 +306,23 @@ export class PlominoWorkflowComponent {
       if (this.eventTypeIsTask(dragData.type)) {
         previewItem.title = '';
   
-        if (dragData.type === WF_ITEM_TYPE.FORM_TASK) {
+        if (dragData.type === WF.FORM_TASK) {
           previewItem.form = '';
         }
-        else if (dragData.type === WF_ITEM_TYPE.VIEW_TASK) {
+        else if (dragData.type === WF.VIEW_TASK) {
           previewItem.view = '';
         }
       }
-      else if (dragData.type === WF_ITEM_TYPE.PROCESS) {
+      else if (dragData.type === WF.PROCESS) {
         previewItem.title = '';
       }
-      else if (dragData.type === WF_ITEM_TYPE.GOTO) {
+      else if (dragData.type === WF.GOTO) {
         previewItem.goto = '';
       }
-      else if (dragData.type === WF_ITEM_TYPE.CONDITION) {
+      else if (dragData.type === WF.CONDITION) {
 
-        if (parentItem.type === WF_ITEM_TYPE.CONDITION) {
-          previewItem.type = WF_ITEM_TYPE.PROCESS;
+        if (parentItem.type === WF.CONDITION) {
+          previewItem.type = WF.PROCESS;
           previewItem.title = '';
         }
         else {
@@ -325,7 +332,7 @@ export class PlominoWorkflowComponent {
             id: -2,
             title: '',
             dropping: true,
-            type: WF_ITEM_TYPE.PROCESS,
+            type: WF.PROCESS,
             children: []
           };
     
@@ -333,7 +340,7 @@ export class PlominoWorkflowComponent {
             id: -3,
             title: '',
             dropping: true,
-            type: WF_ITEM_TYPE.PROCESS,
+            type: WF.PROCESS,
             children: []
           };
     
@@ -347,7 +354,7 @@ export class PlominoWorkflowComponent {
         const dragFormData = this.dragService.dndType.slice(18).split('::');
         dragFormData.pop();
         previewItem.title = dragFormData.pop();
-        previewItem[previewItem.type === WF_ITEM_TYPE.FORM_TASK 
+        previewItem[previewItem.type === WF.FORM_TASK 
           ? 'form' : 'view'] = dragFormData.pop().split('/').pop();
       }
     }
@@ -366,18 +373,8 @@ export class PlominoWorkflowComponent {
         }
       }
       
-      this.buildWFTree(sandboxTree, false);
+      this.buildWFTree(sandboxTree, false, false);
     }
-  }
-
-  onDragLeave(dragEvent: WFDragEvent) {
-    // console.log('onDragLeave', dragEvent.target);
-    // const event: DragEvent = dragEvent.mouseEvent;
-    // const $offset = $(this.workflowEditorNode.nativeElement).offset();
-
-    // if (event.clientX - 5 < $offset.left || event.clientY < $offset.top) {
-    //   this.buildWFTree(this.tree, false);
-    // }
   }
 
   getClosestWFItemToDragEvent(dragEvent: WFDragEvent): JQuery {
@@ -435,7 +432,7 @@ export class PlominoWorkflowComponent {
 
   eventTypeIsTask(eventType: string) {
     return [
-      WF_ITEM_TYPE.FORM_TASK, WF_ITEM_TYPE.VIEW_TASK, WF_ITEM_TYPE.EXT_TASK
+      WF.FORM_TASK, WF.VIEW_TASK, WF.EXT_TASK
     ].indexOf(eventType) !== -1;
   }
 
@@ -445,7 +442,7 @@ export class PlominoWorkflowComponent {
    */
   eTypeIsProcCond(eventType: string) {
     return [
-      WF_ITEM_TYPE.PROCESS, WF_ITEM_TYPE.CONDITION
+      WF.PROCESS, WF.CONDITION
     ].indexOf(eventType) !== -1;
   }
 
@@ -469,8 +466,8 @@ export class PlominoWorkflowComponent {
     // const belowIsCond = belowIsThere && $childNode.hasClass('workflow-node--condition');
     // const belowIsProcOrCond = belowIsProc || belowIsCond;
     const isProcOrCondDrag = this.eTypeIsProcCond(dType);
-    const isBranchDrag = dType === WF_ITEM_TYPE.CONDITION;
-    const isGotoDrag = dType === WF_ITEM_TYPE.GOTO;
+    const isBranchDrag = dType === WF.CONDITION;
+    const isGotoDrag = dType === WF.GOTO;
     // const isTaskDrag = this.eventTypeIsTask(dType);
     const lvl = closestExists ? +$wfItemClosest.attr('data-node-level') : 0;
 
@@ -497,11 +494,11 @@ export class PlominoWorkflowComponent {
 
   isSwapAllowed(itemA: PlominoWorkflowItem, itemB: PlominoWorkflowItem): Boolean {
     const isBranch = (item: PlominoWorkflowItem) => 
-      item.type === WF_ITEM_TYPE.PROCESS;
+      item.type === WF.PROCESS;
     const isCondition = (item: PlominoWorkflowItem) => 
-      item.type === WF_ITEM_TYPE.CONDITION;
+      item.type === WF.CONDITION;
     const isGoto = (item: PlominoWorkflowItem) => 
-      item.type === WF_ITEM_TYPE.GOTO;
+      item.type === WF.GOTO;
     const isLowestElementInBranch = (item: PlominoWorkflowItem) => 
       !item.children.length;
 
@@ -537,10 +534,10 @@ export class PlominoWorkflowComponent {
       if (this.isSwapAllowed(this.selectedItemRef, data.item)) {
         this.log.info('items swapped', this.selectedItemRef.id, data.item.id);
         this.tree.swapNodesByIds(this.selectedItemRef.id, data.item.id);
-        this.buildWFTree();
+        this.buildWFTree(this.tree, true, true);
       }
       else {
-        this.buildWFTree(this.tree, false);
+        this.buildWFTree(this.tree, false, true);
       }
     }
     else {
@@ -551,7 +548,7 @@ export class PlominoWorkflowComponent {
       if (temporaryItem) {
         sandboxTree.makeItemReal(temporaryItem);
     
-        if (temporaryItem.type === WF_ITEM_TYPE.CONDITION) {
+        if (temporaryItem.type === WF.CONDITION) {
           const temporaryTrueProcessItem = sandboxTree.getItemById(-2);
           sandboxTree.makeItemReal(temporaryTrueProcessItem);
     
@@ -560,7 +557,7 @@ export class PlominoWorkflowComponent {
         }
     
         this.tree = sandboxTree;
-        this.buildWFTree();
+        this.buildWFTree(this.tree, true, true);
       }
     }
   }
@@ -568,7 +565,7 @@ export class PlominoWorkflowComponent {
   onItemDragLeave(data: ReceiverEvent) {
     if (data.dragServiceType !== DS_TYPE.EXISTING_WORKFLOW_ITEM) {
       this.enteredItemId = null;
-      this.buildWFTree(this.tree, false);
+      this.buildWFTree(this.tree, false, false);
     }
   }
 
@@ -580,7 +577,7 @@ export class PlominoWorkflowComponent {
           title: '',
           type: data.dragServiceType.slice(0, 16) === DS_TYPE.EXISTING_TREE_ITEM 
             ? (data.dragServiceType.slice(18).split('::').pop() === 'Views' 
-            ? WF_ITEM_TYPE.VIEW_TASK : WF_ITEM_TYPE.FORM_TASK) : data.dragServiceType
+            ? WF.VIEW_TASK : WF.FORM_TASK) : data.dragServiceType
         },
         mouseEvent: data.dragEvent,
       };
@@ -610,75 +607,106 @@ export class PlominoWorkflowComponent {
       || eventTarget.parentElement.parentElement.classList.contains(className);
   }
 
-  targetIsHoverPlus(eventTarget: Element) {
-    return this.checkTarget(eventTarget, 'workflow-node--condition');
-  }
+  // targetIsHoverPlus(eventTarget: Element) {
+  //   return this.checkTarget(eventTarget, 'workflow-node--condition');
+  // }
 
-  targetIsDeleteBtn(eventTarget: Element) {
-    return this.checkTarget(eventTarget, 'workflow-node__bubble-delete');
-  }
+  // targetIsDeleteBtn(eventTarget: Element) {
+  //   return this.checkTarget(eventTarget, 'workflow-node__bubble-delete');
+  // }
 
-  targetIsHoverAddBelowBtn(eventTarget: Element) {
-    return this.checkTarget(eventTarget, 
-      'plomino-workflow-editor__branch-add-below-bubble-btn');
-  }
+  // targetIsHoverAddBelowBtn(eventTarget: Element) {
+  //   return this.checkTarget(eventTarget, 
+  //     'plomino-workflow-editor__branch-add-below-bubble-btn');
+  // }
 
-  targetIsVirtual(eventTarget: Element) {
-    return this.checkTarget(eventTarget, 'workflow-node--virtual');
-  }
+  // targetIsVirtual(eventTarget: Element) {
+  //   return this.checkTarget(eventTarget, 'workflow-node--virtual');
+  // }
 
-  onWFItemClicked($e: JQueryEventObject, $i: JQuery, itm: PlominoWorkflowItem, r = false) {
-    this.log.info($e, $i, itm, r);
-    $e.stopImmediatePropagation();
-    const isDelBtn = this.targetIsDeleteBtn($e.target);
-    const isCreate = (<HTMLElement> $e.target).dataset.create;
-    const isVirtual = this.targetIsVirtual($e.target);
-    const isAddBelow = this.targetIsHoverAddBelowBtn($e.target);
+  onClickReceive(clickEvent: MouseEvent) {
+    this.log.info(clickEvent.target);
+    clickEvent.stopImmediatePropagation();
+    
+    const eventTarget = <HTMLElement> clickEvent.target;
+    let $tmp = $(eventTarget).closest('.workflow-node');
+    
+    let wfNode = $tmp.length ? $tmp.get(0) 
+      : ($(eventTarget).hasClass('workflow-node') ? eventTarget : null);
 
-    if (!r && !itm.selected && !isDelBtn && !isCreate && !isVirtual && !isAddBelow) {
-      this.unselectAllWFItems();
-      itm.selected = true;
-      this.selectedItemRef = itm;
-      $i.find('.workflow-node:first')
-        .addClass('workflow-node--selected');
-    }
-
-    if (!r && isDelBtn) {
-      return this.deleteWFItem($e, $i, itm);
-    }
-    else if (!r && this.targetIsHoverPlus($e.target)) {
-      return this.onHoverPlusClicked($e, $i, itm);
-    }
-    else if (!r && $e.target.classList.contains('workflow-node__text-modal-link')) {
-      if ($e.target.parentElement
-        .classList.contains('workflow-node__text--form')
-        || $e.target.parentElement
-        .classList.contains('workflow-node__text--view')) {
-        this.openResourceTab(itm);
+    if (wfNode === null) {
+      $tmp = $(eventTarget)
+        .closest('.plomino-workflow-editor__branch')
+        .find('.workflow-node');
+      if ($tmp.length) {
+        wfNode = $tmp.get(0);
       }
-      else if (itm.type === WF_ITEM_TYPE.PROCESS || $e.target.parentElement
-        .classList.contains('workflow-node__text--process')) {
+      else {
+        return false;
+      }
+    }
+    
+    const isDelBtn = this.checkTarget(eventTarget, 'workflow-node__bubble-delete');
+    const isAddBelow = this.checkTarget(eventTarget, 
+      'plomino-workflow-editor__branch-add-below-bubble-btn');
+    
+    const isCreate = eventTarget.dataset.create;
+
+    const isVirtual = wfNode.classList.contains('workflow-node--virtual');
+    const isRoot = wfNode.classList.contains('workflow-node--root');
+    const item = this.tree.getItemById(+wfNode.dataset.nodeId);
+
+    if (!item && !isCreate) { return true; }
+
+    if (isCreate) {
+      const $wfItemClosest = $(wfNode.parentElement.parentElement
+        .parentElement.firstElementChild);
+      this.dragService.followDNDType('wf-menu-dnd-callback');
+      this.dragInsertPreview($wfItemClosest, { title: '', type: isCreate });
+      return this.onDrop();
+    }
+
+    if (!isRoot && !item.selected && !isDelBtn && !isCreate && !isVirtual && !isAddBelow) {
+      this.unselectAllWFItems();
+      item.selected = true;
+      this.selectedItemRef = item;
+      wfNode.classList.add('workflow-node--selected');
+    }
+
+    if (!isRoot && isDelBtn) {
+      return this.deleteWFItem(wfNode, item);
+    }
+    else if (!isRoot && wfNode.classList.contains('workflow-node--condition')) {
+      const newLogicItem: PlominoWorkflowItem = {
+        id: null,
+        dropping: false,
+        title: '',
+        type: WF.PROCESS,
+        children: []
+      };
+  
+      this.tree.pushNewItemToParentById(newLogicItem, item.id);
+      return this.buildWFTree(this.tree, true, true);
+    }
+    else if (!isRoot && eventTarget.classList.contains('workflow-node__text-modal-link')) {
+      if (eventTarget.parentElement.classList.contains('workflow-node__text--form')
+        || eventTarget.parentElement.classList.contains('workflow-node__text--view')
+      ) {
+        this.openResourceTab(item);
+      }
+      else if (item.type === WF.PROCESS 
+        || eventTarget.parentElement.classList.contains('workflow-node__text--process')
+      ) {
         /* process modal */
-        this.showModal(itm, true);
+        this.showModal(item, true);
       }
       else {
         /* just modal */
-        this.showModal(itm);
+        this.showModal(item);
       }
     }
-    else if (isCreate) {
-      this.log.info('go create from menu');
-      const _target = (<HTMLElement> $e.target);
-      const creatingType = _target.dataset.create;
-      const $wfItemClosest = $(
-        `.workflow-node[data-node-id="${ _target.dataset.target }"]`
-      );
-      this.dragService.followDNDType('wf-menu-dnd-callback');
-      this.dragInsertPreview($wfItemClosest, { title: '', type: creatingType });
-      this.onDrop();
-    }
-    else if (itm.type === WF_ITEM_TYPE.GOTO && itm.goto) {
-      $('.workflow-node[data-node-id="' + itm.goto +'"]').get(0).scrollIntoView(false);
+    else if (item && item.type === WF.GOTO && item.goto) {
+      $('.workflow-node[data-node-id="' + item.goto +'"]').get(0).scrollIntoView(false);
     }
 
     return true;
@@ -700,7 +728,7 @@ export class PlominoWorkflowComponent {
         .map((f: any) => `<option>${ f.url.split('/').pop() }</option>`)
         .join('');
 
-    if (item.type === WF_ITEM_TYPE.GOTO) {
+    if (item.type === WF.GOTO) {
       const nodesList = this.tree.getNodesList();
       this.itemSettingsDialog
         .querySelector('#wf-item-settings-dialog__node')
@@ -722,8 +750,8 @@ export class PlominoWorkflowComponent {
           $(input).val(item.goto + ':::' + item.gotoLabel);
         }
 
-        if ((input.dataset.key === 'form' && item.type === WF_ITEM_TYPE.FORM_TASK) 
-          || (input.dataset.key === 'view' && item.type === WF_ITEM_TYPE.VIEW_TASK)
+        if ((input.dataset.key === 'form' && item.type === WF.FORM_TASK) 
+          || (input.dataset.key === 'view' && item.type === WF.VIEW_TASK)
         ) {
           $('.wf-item-settings-dialog__create-btn')
             .css('visibility', Boolean(item[input.dataset.key]) ? 'hidden' : 'visible');
@@ -760,7 +788,7 @@ export class PlominoWorkflowComponent {
         .querySelectorAll('[data-typefor]')
         .forEach((inputGroup: HTMLElement) => {
           if (!(new RegExp('processModal', 'g')).test(inputGroup.dataset.typefor)) {
-            if (item.type === WF_ITEM_TYPE.PROCESS 
+            if (item.type === WF.PROCESS 
               && (new RegExp(item.type, 'g')).test(inputGroup.dataset.typefor)
               && !inputGroup.classList.contains('modal-title')
             ) {
@@ -869,15 +897,7 @@ export class PlominoWorkflowComponent {
                 margin-left: 6pt; position: relative; top: 3pt; float: left;"
                 ${ item.macroText === text ? 'checked' : '' }
                 value="${ i + 1 }">`);
-              // if (!item.macroText) {
-              //   item.macroText = text;
-              //   this.buildWFTree();
-              // }
-              // $r.click(() => {
-              //   item.macroId = i + 1;
-              //   item.macroText = text;
-              //   this.buildWFTree();
-              // });
+              
               $(e).prepend($r);
               $(e).find('.select2-container').css('width', '94%');
             });
@@ -886,11 +906,6 @@ export class PlominoWorkflowComponent {
         $(window['macrosSelectorRefreshEvent']).trigger('macros_selector_refresh');
       });
     });
-  }
-
-  onWFItemDblClicked($event: JQueryEventObject, $i: JQuery, item: PlominoWorkflowItem) {
-    $event.stopImmediatePropagation();
-    return this.onWFItemClicked($event, $i, item);
   }
 
   apply2selected() {
@@ -915,7 +930,7 @@ export class PlominoWorkflowComponent {
           || (this.eventTypeIsTask(item.type) && input.dataset.key === 'title')
           || (this.eventTypeIsTask(item.type) && input.dataset.key === 'notes')
           || (this.eventTypeIsTask(item.type) && input.dataset.key === 'process')
-          || (item.type === WF_ITEM_TYPE.PROCESS && input.dataset.key === 'process')
+          || (item.type === WF.PROCESS && input.dataset.key === 'process')
         ) {
           // this.log.info('using', input.dataset.key, 'for', item.title, item.id);
           item[input.dataset.key] = $(input).val();
@@ -928,7 +943,7 @@ export class PlominoWorkflowComponent {
         }
       });
     
-    this.buildWFTree();
+    this.buildWFTree(this.tree, true, true);
 
     /* if it is a process - take fields rules and save */
     if (item.macroText !== null 
@@ -968,7 +983,7 @@ export class PlominoWorkflowComponent {
   }
 
   openResourceTab(item: PlominoWorkflowItem) {
-    const key = item.type === WF_ITEM_TYPE.VIEW_TASK ? 'view' : 'form';
+    const key = item.type === WF.VIEW_TASK ? 'view' : 'form';
     const $resource = 
       $(`.tree-node--name:contains("${ item[key] }")`)
         .filter((i, node: HTMLElement) => 
@@ -998,21 +1013,6 @@ export class PlominoWorkflowComponent {
     return false;
   }
 
-  onHoverPlusClicked($e: JQueryEventObject, $i: JQuery, item: PlominoWorkflowItem) {
-    $e.stopImmediatePropagation();
-
-    const newLogicItem: PlominoWorkflowItem = {
-      id: null,
-      dropping: false,
-      title: '',
-      type: WF_ITEM_TYPE.PROCESS,
-      children: []
-    };
-
-    this.tree.pushNewItemToParentById(newLogicItem, item.id);
-    this.buildWFTree();
-  }
-
   onItemDragStart(eventData: DragEvent, wfNode: HTMLElement, item: PlominoWorkflowItem) {
     this.dragService.followDNDType(DS_TYPE.EXISTING_WORKFLOW_ITEM);
     this.selectedItemRef = item;
@@ -1027,24 +1027,39 @@ export class PlominoWorkflowComponent {
     );
   }
 
-  buildWFTree(tree = this.tree, autosave = true) {
+  buildWFTree(tree = this.tree, autosave = true, upgrade = false) {
+    let k = Math.floor(Math.random() * 10000 + 10000);
+    this.log.startTimer('buildWFTree ' + k);
     this.latestTree = tree;
 
     const wfTree: HTMLElement = this.workflowEditorNode.nativeElement;
-    
-    wfTree.innerHTML = '';
-    $(wfTree).append(
-      treeBuilder.getBuildedTree({
-        workingTree: tree.getRawTree(), 
-        onItemClick: this.onWFItemClicked.bind(this),
-        onItemDblClick: this.onWFItemDblClicked.bind(this),
-        onMacroClick: this.onWFItemMacroClicked.bind(this),
-        onDragStart: this.onItemDragStart.bind(this),
-        onDragEnd: this.onItemDragEnd.bind(this),
-      })
-    );
+    wfTree.innerHTML = treeBuilder.getBuildedTree(tree.getRawTree());
+    const $wfTree: JQuery = $(wfTree);
 
-    componentHandler.upgradeDom();
+    $wfTree.find('.workflow-node').each((i, wfNode: HTMLElement) => {
+      const item = tree.getItemById(+wfNode.dataset.nodeId);
+
+      if (!item || item.root) { return true; }
+      if (item.type !== WF.CONDITION) {
+        wfNode.ondragstart = (eventData: DragEvent) => {
+          eventData.dataTransfer.setData('text', 'q:' + item.id.toString());
+          return this.onItemDragStart(eventData, wfNode, item);
+        };
+      }
+
+      wfNode.ondragend = (eventData: DragEvent) => {
+        return this.onItemDragEnd(eventData, wfNode, item);
+      };
+
+      wfNode.ondragover = (eventData: DragEvent) => {
+        eventData.preventDefault();
+        eventData.stopImmediatePropagation();
+      };
+    });
+
+    if (upgrade) {
+      componentHandler.upgradeElements(wfTree);
+    }
 
     if (autosave) {
       const jsonTree = this.tree.toJSON();
@@ -1063,6 +1078,7 @@ export class PlominoWorkflowComponent {
       fd.set('form.widgets.IBasic.description', jsonTree);
     }
 
+    this.log.stopTimer('buildWFTree ' + k);
     return true;
   }
 }
