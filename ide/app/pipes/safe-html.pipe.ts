@@ -13,7 +13,15 @@ export class PloneHtmlPipe {
         if (html) {
             var start = html.indexOf('<div class="outer-wrapper">');
             var end = html.indexOf('<!--/outer-wrapper -->');
-            html = html.slice(start, end)
+
+            if (start === -1) {
+              /** @todo: update to latest plone support */
+              // <article id="portal-column-content">...</article>
+              start = html.indexOf('<article id="portal-column-content">');
+              end = html.lastIndexOf('</article>');
+            }
+            
+            html = html.slice(start, end);
         }
         return this.sanitizer.bypassSecurityTrustHtml(html);
     }
