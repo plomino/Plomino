@@ -189,7 +189,7 @@
     }
 
     .mdl-dialog__left-button {
-      position: absolute !important; left: 39px !important; bottom: 22px !important; 
+      position: absolute !important;
     }
   </style>
 </head>
@@ -361,6 +361,41 @@
         <label for="wf-item-settings-dialog__view">Associated view</label>
         <select id="wf-item-settings-dialog__view" data-key="view"></select>
       </div>
+      <div data-typefor="workflowFormTask workflowViewTask" 
+        style="min-height: 50px">
+        <button type="button"
+          data-typefor="workflowFormTask"
+          class="mdl-button mdl-button--raised mdl-button--accent 
+          mdl-dialog__left-button
+          wf-item-settings-dialog__create-btn--form
+          wf-item-settings-dialog__create-btn mdl-color--grey-700">
+          Create new form
+        </button>
+        <button type="button"
+          data-typefor="workflowFormTask"
+          class="mdl-button mdl-button--raised mdl-button--accent 
+          mdl-dialog__left-button
+          wf-item-settings-dialog__edit-btn--form
+          wf-item-settings-dialog__edit-btn mdl-color--grey-700">
+          View the form
+        </button>
+        <button type="button"
+          data-typefor="workflowViewTask"
+          class="mdl-button mdl-button--raised mdl-button--accent 
+          mdl-dialog__left-button
+          wf-item-settings-dialog__create-btn--view
+          wf-item-settings-dialog__create-btn mdl-color--grey-700">
+          Create new view
+        </button>
+        <button type="button"
+          data-typefor="workflowViewTask"
+          class="mdl-button mdl-button--raised mdl-button--accent 
+          mdl-dialog__left-button
+          wf-item-settings-dialog__edit-btn--view
+          wf-item-settings-dialog__edit-btn mdl-color--grey-700">
+          Edit the view
+        </button>
+      </div>
       <div data-typefor="workflowGoto" class="mdl-dialog__content-form-group">
         <label for="wf-item-settings-dialog__node">Next Task
           <br><small style="color: dimgray;">Where to flow to next</small></label>
@@ -392,38 +427,6 @@
         class="mdl-button mdl-button--raised mdl-button--accent 
         wf-item-settings-dialog__apply-btn mdl-color--green-500">
         Apply
-      </button>
-      <button type="button"
-        data-typefor="workflowFormTask"
-        class="mdl-button mdl-button--raised mdl-button--accent 
-        mdl-dialog__left-button
-        wf-item-settings-dialog__create-btn--form
-        wf-item-settings-dialog__create-btn mdl-color--grey-700">
-        Create new form
-      </button>
-      <button type="button"
-        data-typefor="workflowFormTask processModal"
-        class="mdl-button mdl-button--raised mdl-button--accent 
-        mdl-dialog__left-button
-        wf-item-settings-dialog__edit-btn--form
-        wf-item-settings-dialog__edit-btn mdl-color--grey-700">
-        View the form
-      </button>
-      <button type="button"
-        data-typefor="workflowViewTask"
-        class="mdl-button mdl-button--raised mdl-button--accent 
-        mdl-dialog__left-button
-        wf-item-settings-dialog__create-btn--view
-        wf-item-settings-dialog__create-btn mdl-color--grey-700">
-        Create new view
-      </button>
-      <button type="button"
-        data-typefor="workflowViewTask"
-        class="mdl-button mdl-button--raised mdl-button--accent 
-        mdl-dialog__left-button
-        wf-item-settings-dialog__edit-btn--view
-        wf-item-settings-dialog__edit-btn mdl-color--grey-700">
-        Edit the view
       </button>
     </div>
     </div><!-- /.modal-content -->

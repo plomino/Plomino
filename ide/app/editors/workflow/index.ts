@@ -89,6 +89,8 @@ export class PlominoWorkflowComponent {
           $('.workflow-node[data-node-id="' + correctId +'"]'), dragData);
         this.onDrop();
       });
+
+    this.itemEditor.init();
   }
 
   ngOnInit() {

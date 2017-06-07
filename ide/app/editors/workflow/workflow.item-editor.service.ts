@@ -24,7 +24,9 @@ export class PlominoWorkflowItemEditorService {
     private dbService: PlominoDBService,
     private objService: ObjService,
     private zone: NgZone,
-  ) {
+  ) {}
+
+  init() {
     this.itemSettingsDialog = <HTMLDialogElement> 
       document.querySelector('#wf-item-settings-dialog');
 
@@ -45,7 +47,7 @@ export class PlominoWorkflowItemEditorService {
 
     Array.from(
       this.itemSettingsDialog
-        .querySelectorAll('.mdl-dialog__actions button')
+        .querySelectorAll('button')
     )
     .forEach((btn: HTMLElement) => {
       btn.addEventListener('click', (evt) => {
