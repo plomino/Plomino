@@ -1,3 +1,4 @@
+import { PlominoDBService } from './../../services/db.service';
 import { DraggingService } from './../../services/dragging.service';
 import { PlominoBlockPreloaderComponent } from './../../utility/block-preloader';
 import { FieldsService } from './../../services/fields.service';
@@ -6,7 +7,7 @@ import { DomSanitizationService, SafeHtml } from '@angular/platform-browser';
 import { LogService } from './../../services/log.service';
 import { Component, Input, ViewEncapsulation, OnInit, NgZone, ChangeDetectorRef } from '@angular/core';
 import { PlominoViewsAPIService } from './views-api.service';
-import {DND_DIRECTIVES} from 'ng2-dnd';
+import { DND_DIRECTIVES } from 'ng2-dnd';
 
 @Component({
   selector: 'plomino-view-editor',
@@ -33,6 +34,7 @@ export class PlominoViewEditorComponent implements OnInit {
     private dragService: DraggingService,
     private changeDetector: ChangeDetectorRef,
     protected sanitizer: DomSanitizationService,
+    private dbService: PlominoDBService,
   ) { }
 
   ngOnInit() {
@@ -280,7 +282,7 @@ export class PlominoViewEditorComponent implements OnInit {
               }
 
               if (columnIndex === 0) {
-                const href = `${ this.getDBLink() }/document/${ writeId }`;
+                const href = `${ this.dbService.getDBLink() }/document/${ writeId }`;
                 cellData = `<a href="${ href }" target="_blank">${ cellData }</a>`;
               }
 
@@ -684,7 +686,7 @@ export class PlominoViewEditorComponent implements OnInit {
     this.tabsService.selectField({
       id: `${ this.item.url.split('/').pop() }/${ actionElement.id }`,
       type: 'PlominoAction',
-      parent: this.getDBLink()
+      parent: this.dbService.getDBLink()
     })
   }
 
@@ -705,15 +707,7 @@ export class PlominoViewEditorComponent implements OnInit {
     this.tabsService.selectField({
       id: `${ this.item.url.split('/').pop() }/${ columnElement.dataset.column }`,
       type: 'PlominoColumn',
-      parent: this.getDBLink()
+      parent: this.dbService.getDBLink()
     })
-  }
-
-  private getDBLink() {
-    return `${ 
-      window.location.pathname
-      .replace('++resource++Products.CMFPlomino/ide/', '')
-      .replace('/index.html', '')
-    }`;
   }
 }
