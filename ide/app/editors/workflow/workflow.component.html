@@ -4,5 +4,6 @@
     (dragenter)="dragController.receive($event, 'enter', dragService.dndType)"
     (dragleave)="dragController.receive($event, 'leave', dragService.dndType)"
     (drop)="dragController.receive($event, 'drop', dragService.dndType)"
+    (click)="onClickReceive($event)"
     style="max-width: 800px"
     ></div>

@@ -292,6 +292,7 @@ export class FormSettingsComponent implements OnInit {
               this.activeEditorService.editorURL = null;
             }
             this.labelsRegistry.removeForm(tabData.url);
+            this.formsService.removeForm(tabData.url);
             this.changeDetector.detectChanges();
             this.treeService.updateTree();
             this.changeDetector.markForCheck();

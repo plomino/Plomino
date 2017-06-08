@@ -12,6 +12,7 @@ export class FormsService {
       = new Subject<{oldId: any, newId: any}>();
     private getFormContentBeforeSaveSource: Subject<any> = new Subject();
     private onFormContentBeforeSaveSource: Subject<any> = new Subject();
+    private formRemovedEventSource: Subject<string> = new Subject();
 
     private FORM_SETTINGS_TAB_INDEX:number = 2;
 
@@ -19,6 +20,7 @@ export class FormsService {
     formSettingsSave$: Observable<any> = this.formSettingsSaveEventSource.asObservable();
     formContentSave$: Observable<any> = this.formContentSaveEventSource.asObservable();
     formIdChanged$: Observable<{oldId: any, newId: any}> = this.formIdChangedEventSource.asObservable();
+    formRemoved$: Observable<string> = this.formRemovedEventSource.asObservable();
     getFormContentBeforeSave$: Observable<any> = this.getFormContentBeforeSaveSource.asObservable();
     onFormContentBeforeSave$: Observable<any> = this.onFormContentBeforeSaveSource.asObservable();
 
@@ -84,6 +86,10 @@ export class FormsService {
 
     changeFormId(data: {oldId: string, newId: string}) {
         this.formIdChangedEventSource.next(data);
+    }
+
+    removeForm(formId: string) {
+      this.formRemovedEventSource.next(formId);
     }
 
     getIdFromUrl(url: any) {

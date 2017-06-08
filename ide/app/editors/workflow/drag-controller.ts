@@ -39,9 +39,11 @@ export class WFDragControllerService {
 
   constructor() {
     const leave = new Subject<ReceiverEvent>();
-    const start$ = this.receiver$.filter((data) => data.eventName === 'start');
-    const drop$ = this.receiver$.filter((data) => data.eventName === 'drop');
-    const end$ = this.receiver$.filter((data) => data.eventName === 'end');
+    const receiver$ = this.receiver$;
+
+    const start$ = receiver$.filter((data) => data.eventName === 'start');
+    const drop$ = receiver$.filter((data) => data.eventName === 'drop');
+    const end$ = receiver$.filter((data) => data.eventName === 'end');
 
     start$.subscribe((data) => {
       if (data.dragServiceType === DS_TYPE.EXISTING_WORKFLOW_ITEM) {
@@ -49,23 +51,28 @@ export class WFDragControllerService {
       }
     });
 
-    /* workflow mouse out */
-    this.receiver$.subscribe((data) => {
-      if (data.eventName === 'leave' 
-        && data.dragServiceType !== DS_TYPE.EXISTING_WORKFLOW_ITEM
-        && data.dragEvent.clientX < this.wfEditorOffset.left 
-        || data.dragEvent.clientY < this.wfEditorOffset.top
-      ) {
-        this.rebuildWorkflow.next(true);
-      }
-      else if (data.eventName === 'start') {
-        $('.plomino-workflow-editor__branches--virtual')
-          .css('display', 'none');
-      }
-    });
+    /**
+     * remember enter mouse position
+     * 
+     * if leave mouse position === +/- 3px (enter pos) -> filter
+     */
 
-    this.receiver$
+    const enterPosition = { x: 0, y: 0 };
+
+    const enter$ = receiver$
       .filter((data) => data.eventName === 'enter')
+      .filter((data) => {
+        const xDiff = Math.abs(data.dragEvent.screenX - enterPosition.x);
+        const yDiff = Math.abs(data.dragEvent.screenY - enterPosition.y);
+
+        enterPosition.x = data.dragEvent.screenX;
+        enterPosition.y = data.dragEvent.screenY;
+
+        let $node = $(data.dragEvent.target).closest('.workflow-node');
+        $node = $node.length ? $node : $(data.dragEvent.target);
+
+        return $node.hasClass('workflow-node--root') || (xDiff > 12 || yDiff > 12);
+      })
       .filter((data: ReceiverEvent) => {
         const $node = $(data.dragEvent.target).closest('.workflow-node');
         const hoveredId = $node.length ? +$node.attr('data-node-id') : 0;
@@ -88,12 +95,31 @@ export class WFDragControllerService {
       })
       .map((data) => {
         if (data.dragServiceType === DS_TYPE.EXISTING_WORKFLOW_ITEM) {
+          $('.workflow-node--dropping')
+            .removeClass('workflow-node--dropping');
           data.wfNode.classList.add('workflow-node--dropping');
         }
 
         return data;
-      })
-      .subscribe(this.onItemEnter.bind(this));
+      });
+      
+    enter$.subscribe(this.onItemEnter.bind(this));
+
+    /* workflow mouse out */
+    receiver$.subscribe((data) => {
+      if (data.eventName === 'leave' 
+        && data.dragServiceType !== DS_TYPE.EXISTING_WORKFLOW_ITEM
+        && data.dragEvent.clientX < this.wfEditorOffset.left 
+        || data.dragEvent.clientY < this.wfEditorOffset.top
+      ) {
+        // enter$
+        this.rebuildWorkflow.next(true);
+      }
+      else if (data.eventName === 'start') {
+        $('.plomino-workflow-editor__branches--virtual')
+          .css('display', 'none');
+      }
+    });
 
     leave.asObservable()
       .map((data) => {
@@ -108,7 +134,9 @@ export class WFDragControllerService {
         this.hoveredId = null;
       
         if (data.dragServiceType === DS_TYPE.EXISTING_WORKFLOW_ITEM) {
-          data.wfNode.classList.remove('workflow-node--dropping');
+          // data.wfNode.classList.remove('workflow-node--dropping');
+          $('.workflow-node--dropping')
+            .removeClass('workflow-node--dropping');
         }
   
         return data;

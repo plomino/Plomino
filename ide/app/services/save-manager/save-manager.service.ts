@@ -1,3 +1,4 @@
+import { PlominoDBService } from './../db.service';
 import { TabsService } from './../tabs.service';
 import { TreeService } from './../tree.service';
 import { PlominoViewSaveProcess } from './view-save-process';
@@ -27,6 +28,7 @@ export class PlominoSaveManagerService {
     private tabsService: TabsService,
     private labelsRegistry: LabelsRegistryService,
     private activeEditorService: PlominoActiveEditorService,
+    private dbService: PlominoDBService,
   ) {
     Observable
       .interval(500)
@@ -65,7 +67,7 @@ export class PlominoSaveManagerService {
         '@type': 'PlominoForm',
         'title': 'New Form'
     };
-    this.elementService.postElement(this.getDBLink(), formElement)
+    this.elementService.postElement(this.dbService.getDBLink(), formElement)
     .subscribe((response: AddFieldResponse) => {
       this.treeService.updateTree().then(() => {
         this.tabsService.openTab({
@@ -93,7 +95,7 @@ export class PlominoSaveManagerService {
       '@type': 'PlominoView',
       'title': 'New View'
     };
-    this.elementService.postElement(this.getDBLink(), viewElement)
+    this.elementService.postElement(this.dbService.getDBLink(), viewElement)
     .subscribe((response: AddFieldResponse) => {
       this.treeService.updateTree().then(() => {
         this.tabsService.openTab({
@@ -184,14 +186,6 @@ export class PlominoSaveManagerService {
     this.cleanOutsideArea();
   }
 
-  private getDBLink() {
-    return `${ 
-      window.location.pathname
-      .replace('++resource++Products.CMFPlomino/ide/', '')
-      .replace('/index.html', '')
-    }`;
-  }
-
   private listenDocumentClicks() {
     $('body').delegate('*', 'mousedown', ($event) => {
       const isFormClick = Boolean($($event.currentTarget)
@@ -204,7 +198,8 @@ export class PlominoSaveManagerService {
   }
 
   private listenFormInnerChangeProcesses() {
-    $('body').delegate('form[id!="plomino_form"]', 'keydown input change paste', ($event) => {
+    $('body').delegate('form[id!="plomino_form"]', 
+    'keydown input change paste', ($event) => {
       const isFormInnerEvent = $($event.currentTarget)
         .is('form:visible[data-pat-autotoc]');
       $event.stopPropagation();
