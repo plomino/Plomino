@@ -408,6 +408,23 @@ export class DBSettingsComponent {
               return Promise.resolve();
             })()
             .then(() => {
+              /* post started */
+              this.importExportDialog.close();
+              $(document.body).prepend(`
+                <div id="application-loader">
+                  <div class="sk-cube-grid">
+                    <div class="sk-cube sk-cube1"></div>
+                    <div class="sk-cube sk-cube2"></div>
+                    <div class="sk-cube sk-cube3"></div>
+                    <div class="sk-cube sk-cube4"></div>
+                    <div class="sk-cube sk-cube5"></div>
+                    <div class="sk-cube sk-cube6"></div>
+                    <div class="sk-cube sk-cube7"></div>
+                    <div class="sk-cube sk-cube8"></div>
+                    <div class="sk-cube sk-cube9"></div>
+                  </div>
+                </div>
+              `);
               this.http.postWithOptions(
                 form.action.replace('++resource++Products.CMFPlomino/ide/', ''),
                 formData.build(), new RequestOptions({
@@ -415,6 +432,7 @@ export class DBSettingsComponent {
                 })
               )
               .subscribe((response: Response) => {
+                $('#application-loader').remove();
                 let result = response.text();
                 if (targetFiletype !== null) {
                   window.URL = window.URL || (<any> window).webkitURL;
@@ -426,6 +444,7 @@ export class DBSettingsComponent {
                   link.click();
                 }
                 else {
+                  /** @todo: new plone support */
                   let start = result.indexOf('<div class="outer-wrapper">');
                   let end = result.indexOf('<!--/outer-wrapper -->');
                   result = result.slice(start, end);
