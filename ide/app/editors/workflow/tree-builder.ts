@@ -112,7 +112,7 @@ export const treeBuilder = {
    * @param {number} level
    */
   parse(item: PlominoWorkflowItem, parent: PlominoWorkflowItem = null, level = 0) {
-    const allowedLength = 18;
+    const allowedLength = 36;
     const allowedLengthWide = 128;
 
     const cutString = ((str: string, l = allowedLength) => {
@@ -166,9 +166,7 @@ export const treeBuilder = {
                 id="workflow-node__text--task-${ item.id }">
                   Task: <a href onclick="return false"
                     class="workflow-node__text-modal-link"
-                  >${ hashId } ${ cutString(item.title, 
-                    item.type !== WF_ITEM_TYPE.VIEW_TASK 
-                    ? allowedLengthWide : allowedLength) || '......' }</a>
+                  >${ hashId } ${ cutString(item.title, allowedLength) || '......' }</a>
               </div>${ item.title && item.title.length > allowedLength 
                 ? `<div class="mdl-tooltip mdl-tooltip--top" 
                 data-mdl-for="workflow-node__text--task-${ item.id }">
@@ -228,9 +226,14 @@ export const treeBuilder = {
                   <a href onclick="return false"
                     id="workflow-node__text--goto-${ item.id }"
                     class="workflow-node__text-modal-link"
-                  >Goto: ${ item.goto 
-                    ? '#' + item.goto + ' ' + item.gotoLabel : '...' }</a>
-              </div>` : ''
+                  >Goto: ${ cutString(item.goto 
+                    ? '#' + item.goto + ' ' + item.gotoLabel 
+                    : '......', allowedLength) || '......' }</a>
+              </div>${ item.goto 
+                && ('#' + item.goto + ' ' + item.gotoLabel).length > allowedLength 
+                ? `<div class="mdl-tooltip mdl-tooltip--top" 
+                data-mdl-for="workflow-node__text--goto-${ item.id }">
+                ${ autoBR('#' + item.goto + ' ' + item.gotoLabel) }</div>` : '' }` : ''
             }<!--
           --></div><!--
           ${ !item.root ? `--><div
