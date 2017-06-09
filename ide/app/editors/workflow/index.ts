@@ -2,7 +2,7 @@ import { PlominoWorkflowItemEditorService } from './workflow.item-editor.service
 import { WFDragControllerService, DS_TYPE, DS_FROM_PALETTE } from './drag-controller';
 import { TreeStructure } from './tree-structure';
 import { FakeFormData } from './../../utility/fd-helper/fd-helper';
-import { Component, ElementRef, ViewChild, ViewEncapsulation } from '@angular/core';
+import { Component, ElementRef, ViewChild, ViewEncapsulation, OnInit } from '@angular/core';
 import { PlominoBlockPreloaderComponent } from '../../utility';
 import { DND_DIRECTIVES } from 'ng2-dnd';
 import { treeBuilder, WF_ITEM_TYPE as WF } from './tree-builder';
@@ -24,7 +24,7 @@ const AUTOUPGRADE = true;
   providers: [PlominoWorkflowItemEditorService, WFDragControllerService],
   encapsulation: ViewEncapsulation.None,
 })
-export class PlominoWorkflowComponent {
+export class PlominoWorkflowComponent implements OnInit {
   @ViewChild('workflowEditorNode') workflowEditorNode: ElementRef;
   tree: TreeStructure;
   latestTree: TreeStructure = null;
@@ -94,6 +94,17 @@ export class PlominoWorkflowComponent {
   }
 
   ngOnInit() {
+    /* lazy loading for firefox */
+    window['materialPromise'].then(() => {
+      setTimeout(() => this.initialize(), 100);
+    });
+    /* fill outside space with correct color */
+    setTimeout(() => {
+      $('tabset tab.active.tab-pane').css('background', '#fafafa')
+    }, 1);
+  }
+
+  initialize() {
     let tree;
 
     try {
@@ -114,7 +125,7 @@ export class PlominoWorkflowComponent {
     }
 
     this.tree = new TreeStructure(tree);
-    this.buildWFTree(this.tree, NO_AUTOSAVE, NO_AUTOUPGRADE);
+    this.buildWFTree(this.tree, NO_AUTOSAVE, AUTOUPGRADE);
     this.itemEditor.registerTree(this.tree);
 
     this.editorOffset = $(this.workflowEditorNode.nativeElement).offset();
@@ -154,9 +165,6 @@ export class PlominoWorkflowComponent {
         return data;
       })
       .subscribe(this.onItemDragLeave.bind(this));
-
-    /* fill outside space with correct color */
-    setTimeout(() => $('tabset tab.active.tab-pane').css('background', '#fafafa'), 1);
   }
 
   /**

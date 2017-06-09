@@ -182,7 +182,7 @@ export class TreeStructure {
         y.indx.parentIndex = x.indx.parentIndex;
       }
       else if (x.indx.parent.children.length === 1) {
-        x.indx.parent.children = [];
+        x.indx.parent.children.splice(0, 1);
       }
       else {
         x.indx.parent.children.splice(x.indx.parentIndex, 1);
