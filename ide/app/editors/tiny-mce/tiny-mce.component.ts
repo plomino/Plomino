@@ -397,13 +397,56 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
           }
         });
 
-        editor.on('KeyUp', (e: any) => {
+        editor.on('KeyDown', (e: KeyboardEvent) => {
+          if (e.keyCode === 8) { // BACKSPACE PRESSED
+            const editor = tinymce.get(this.id);
+            if (!editor) { return; }
+            const rng = editor.selection.getRng();
+            if (!(rng && rng.startContainer)) { return; }
+            const container: HTMLElement = rng.startContainer;
+            const prev = <HTMLElement> container.previousElementSibling;
+
+            /* deleting hidewhen by backspace with cursor at right */
+            if (prev && prev.classList.contains('plominoHidewhenClass')) {
+              $(editor.getBody())
+                .find('[data-plominoid="' + prev.dataset.plominoid + '"]')
+                .remove();
+            }
+          }
+          else if (e.keyCode === 46) { // DELETE PRESSED
+            const editor = tinymce.get(this.id);
+            if (!editor) { return; }
+            const rng = editor.selection.getRng();
+            if (!(rng && rng.startContainer)) { return; }
+            const container: HTMLElement = rng.startContainer;
+            const next = <HTMLElement> container.nextElementSibling;
+
+            /* deleting hidewhen by backspace with cursor at right */
+            if (next && next.classList.contains('plominoHidewhenClass')) {
+              $(editor.getBody())
+                .find('[data-plominoid="' + next.dataset.plominoid + '"]')
+                .remove();
+            }
+          }
+        });
+
+        editor.on('KeyUp', (e: KeyboardEvent) => {
           /* check current selected element is there */
           const $selected = this.adapter.getSelected();
           const editor = tinymce.get(this.id);
           if (!editor) { return; }
 
-          if (!$(editor.getBody()).has(<any> $selected).length) {
+          const $edBody = $(editor.getBody());
+
+          if (!$edBody.has(<any> $selected).length) { // BACKSPACE/DELETE ON SELECTED
+
+            /** element was deleted */
+            if ($selected.hasClass('plominoHidewhenClass')) {
+              $edBody
+                .find('[data-plominoid="' + $selected.attr('data-plominoid') + '"]')
+                .remove();
+            }
+
             this.tabsService.selectField('none');
             this.adapter.select(null);
           }
