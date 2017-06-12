@@ -418,8 +418,13 @@ export class FormSettingsComponent implements OnInit {
 
           this.updateMacroses();
           this.loading = false;
-          this.changeDetector.markForCheck();
-          this.changeDetector.detectChanges();
+          try {
+            this.changeDetector.markForCheck();
+            this.changeDetector.detectChanges();
+          }
+          catch (e) {
+            
+          }
           window['materialPromise'].then(() => {
             componentHandler.upgradeDom();
             this.paletteManager.resizeInnerScrollingContainers();

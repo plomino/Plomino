@@ -438,7 +438,7 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
 
           const $edBody = $(editor.getBody());
 
-          if (!$edBody.has(<any> $selected).length) { // BACKSPACE/DELETE ON SELECTED
+          if ($selected && !$edBody.has(<any> $selected).length) { // BACKSPACE/DELETE ON SELECTED
 
             /** element was deleted */
             if ($selected.hasClass('plominoHidewhenClass')) {

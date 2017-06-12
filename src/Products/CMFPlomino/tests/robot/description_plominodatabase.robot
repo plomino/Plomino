@@ -102,10 +102,13 @@ I go to the plominodatabase view
 
 
 I add a form by click
-   wait until page contains  Form
-   Click Element  jquery=[href="#palette-tab-0-panel"]
-#  Click Element  css=button[title="Form"]
-   Click Element  xpath=//div[@class="palette-wrapper"]//*[@title="Form"]
+  Click Element  jquery=#add-new-form-tab
+  wait until page contains element  jquery=#modal-tab-plus[open]
+  Click Element  jquery=#modal-tab-plus button[data-create="form"]
+   # wait until page contains  Form
+   # Click Element  jquery=[href="#palette-tab-0-panel"]
+   # Click Element  css=button[title="Form"]
+   # Click Element  xpath=//div[@class="palette-wrapper"]//*[@title="Form"]
   wait until page contains  new-form
   wait until page contains element  css=div.mce-tinymce
 
