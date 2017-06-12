@@ -700,15 +700,27 @@ export class PlominoWorkflowComponent implements OnInit {
 
     if (autosave) {
       const jsonTree = this.tree.toJSON();
-
-      this.elementService.updateDBSettings({
-        'description': jsonTree
-      }).subscribe((response) => {});
-
       const dbLink = this.dbService.getDBLink();
+      const raw = this.tree.getRawTree();
+      const firstExists = raw.children.length > 0;
+      const firstChildIsForm = firstExists && raw.children[0].type === WF.FORM_TASK;
   
       const fd = new FakeFormData(<any> $(`form[action*="${ dbLink }/@@edit"]`).get(0));
       fd.set('form.widgets.IBasic.description', jsonTree);
+
+      const updatingData = {
+        'description': jsonTree
+      };
+
+      if (firstExists) {
+        const startPage = raw.children[0][firstChildIsForm ? 'form' : 'view'];
+        fd.set('form.widgets.start_page', startPage);
+        updatingData['start_page'] = startPage;
+      }
+
+      this.elementService
+        .updateDBSettings(updatingData)
+        .subscribe((response) => {});
     }
 
     return true;
