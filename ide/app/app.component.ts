@@ -296,6 +296,7 @@ export class AppComponent implements OnInit, AfterViewInit {
 
       window['Modal'] = require('mockup-patterns-modal');
       window['TineMCE'] = require('mockup-patterns-tinymce');
+      // window['LinkModal'] = require('mockup-patterns-tinymce-links');
 
       require('./assets/scripts/macros.js');
       require('./assets/scripts/dynamic.js');
@@ -487,9 +488,10 @@ export class AppComponent implements OnInit, AfterViewInit {
           ) {
             // const $tinyTextarea = $iframe.closest('form').find('>textarea');
             try {
-              tinymce.EditorManager.execCommand('mceRemoveEditor', true, url);
-              tinymce.EditorManager.execCommand('mceAddEditor', true, url);
-              tinymce.EditorManager.execCommand('mceAddEditor', true, url);
+              const _url = url.split('/').pop();
+              tinymce.EditorManager.execCommand('mceRemoveEditor', true, _url);
+              tinymce.EditorManager.execCommand('mceAddEditor', true, _url);
+              tinymce.EditorManager.execCommand('mceAddEditor', true, _url);
   
               /* reset content hooks */
               setTimeout(() => {
@@ -549,8 +551,8 @@ export class AppComponent implements OnInit, AfterViewInit {
     tabz.isdirty = dirty;
 
     if (!dirty) {
-      if (tinymce.get(tabz.url)) {
-        tinymce.get(tabz.url).setDirty(false);
+      if (this.getEditor(tabz.url)) {
+        this.getEditor(tabz.url).setDirty(false);
         this.activeEditorService.turnActiveEditorToSavedState();
       }
     }
@@ -581,5 +583,10 @@ export class AppComponent implements OnInit, AfterViewInit {
 
   private resolveData(data: any, resolver: Function): void {
     resolver(null, data);
+  }
+
+  private getEditor(id: string) {
+    const edId = id ? id.split('/').pop() : null;
+    return tinymce.get(edId);
   }
 }

@@ -240,90 +240,6 @@ export class ObjService {
         'obj.service.ts updateFieldSettings'
       )
       .map((data: Response) => {
-        // newFormUrl = data.url.split('/').slice(0, -2).join('/');
-  
-        // if (layout) {
-        //   this.activeEditorService.setActive(newFormUrl);
-  
-        //   this.log.info('T2 obj.service.ts', this.tabsService.ping());
-  
-        //   if (tinymce.get(formUrl)) {
-        //     tinymce.get(formUrl).setDirty(false);
-        //     this.tabsService.setActiveTabDirty(false);
-        //     // this.log.info('i am going to set dirty false', formUrl);
-        //   }
-  
-        //   if (tinymce.get(newFormUrl)) {
-        //     tinymce.get(newFormUrl).setDirty(false);
-        //     this.tabsService.setActiveTabDirty(false);
-        //     // this.log.info('i am going to set dirty false', newFormUrl);
-        //   }
-  
-        //   this.changeDetector.detectChanges();
-  
-        //   setTimeout(() => {
-        //     if (tinymce.get(formUrl)) {
-        //       tinymce.get(formUrl).setDirty(false);
-        //       this.tabsService.setActiveTabDirty(false);
-        //       // this.log.info('i am going to set dirty false', formUrl);
-        //     }
-  
-        //     if (tinymce.get(newFormUrl)) {
-        //       tinymce.get(newFormUrl).setDirty(false);
-        //       this.tabsService.setActiveTabDirty(false);
-        //       // this.log.info('i am going to set dirty false', newFormUrl);
-        //     }
-  
-        //     $('span[id="tab_' + newFormUrl + '"]')
-        //       .find('span:contains("* ")').remove();
-  
-        //     this.changeDetector.detectChanges();
-        //   }, 400);
-  
-        //   // tinymce.editors.map(editor => [editor.id, editor.isDirty()])
-        //   tinymce.editors.forEach((editor: TinyMceEditor) => {
-        //     const formId = newFormUrl.split('/').pop();
-  
-        //     /**
-        //      * update all subforms while parent form changed
-        //      */
-        //     $(editor.getBody()).find(
-        //       `.plominoSubformClass[data-plominoid="${ formId }"]`
-        //     ).each((i, subformElement) => {
-        //       const $founded = $(subformElement);
-        //       let url = editor.id;
-        //       url += '/@@tinyform/example_widget?widget_type=subform&id=';
-        //       url += workingId;
-  
-        //       this.http.get(url, 'obj.service.ts refresh subforms')
-        //         .subscribe((response: Response) => {
-        //           this.widgetService.getGroupLayout(
-        //             editor.id,
-        //             { id: workingId, layout: response.json() }
-        //           )
-        //           .subscribe((result: string) => {
-        //             try {
-        //               const $result = $(result);
-        //               $result.find('input,textarea,button')
-        //                 .removeAttr('name').removeAttr('id');
-        //               $result.find('span')
-        //                 .removeAttr('data-plominoid').removeAttr('data-mce-resize');
-        //               $result.removeAttr('data-groupid');
-        //               $result.find('div').removeAttr('data-groupid');
-        //               const subformHTML = $($result.html()).html();
-        //               $founded.html(subformHTML);
-        //               editor.setDirty(true);
-        //             }
-        //             catch (e) {
-        //             }
-    
-        //             this.changeDetector.detectChanges();
-        //           });
-        //         });
-        //     })
-        //   });
-        // }
-        
         return this.extractTextAndUrl(data);
       });
     });
@@ -362,11 +278,12 @@ export class ObjService {
     }
 
     extractTextAndUrl(response: Response): {html: string, url: string} {
-      return {
+      const result = {
         html: response.text(),
         url: response.url.indexOf('@') !== -1 
           ? response.url.slice(0, response.url.indexOf('@') - 1)
           : response.url
-      }
+      };
+      return result;
     }
 }

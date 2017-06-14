@@ -4,8 +4,9 @@
     class="tiny-editor">
     <plomino-block-preloader [id]="'preloader_' + id"
         [loading]="true" [palette]="false"></plomino-block-preloader>
-    <textarea class="tinymce-wrap" 
-            [id]="id">
+    <textarea class="pat-tinymce tinymce-wrap" 
+            data-pat-tinymce='{ "loadingBaseUrl": "http://localhost:8080/Plone/++plone++static/components/tinymce-builded/js/tinymce", "relatedItems": {"sort_order": "ascending", "vocabularyUrl": "http://localhost:8080/Plone/@@getVocabulary?name=plone.app.vocabularies.Catalog", "sort_on": "sortable_title", "folderTypes": ["Folder", "Large Plone Folder", "Plone Site"], "rootPath": "/Plone/"}, "prependToScalePart": "/@@images/image/", "linkAttribute": "UID", "prependToUrl": "/Plone/resolveuid/", "imageTypes": ["Image"], "inline": false, "tiny": { "height": 780, "resize": false, "forced_root_block": "", "cleanup": false, "content_css": [ "PLONEURL/++plone++static/components/tinymce-builded/js/tinymce/skins/lightgray/content.min.css", "theme/barceloneta-compiled.css", "theme/++plone++static/plone-compiled.css", "theme/tinymce.css" ], "plugins": ["plonelink", "ploneimage", "importcss", "advlist", "fullscreen", "hr", "lists", "media", "nonbreaking", "noneditable", "pagebreak", "paste", "preview", "print", "searchreplace", "tabfocus", "table", "visualchars", "wordcount", "code"], "toolbar": "ltr rtl | undo redo | styleselect | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | unlink plonelink ploneimage | plominofield plominolabel plominoaction plominosubform plominohidewhen plominocache plominopagebreak", "menubar": ["edit", "table", "format", "toolsview", "insert"] }}'
+            [id]="id.split('/').pop()">
     </textarea>
 </form>
 <div *ngIf="isDragged" 

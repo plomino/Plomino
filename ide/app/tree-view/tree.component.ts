@@ -1,3 +1,4 @@
+import { PlominoDBService } from './../services/db.service';
 import { PlominoActiveEditorService } from './../services/active-editor.service';
 import { 
     Component, 
@@ -54,7 +55,8 @@ export class TreeComponent implements OnInit {
       private log: LogService,
       private activeEditorService: PlominoActiveEditorService,
       private changeDetector: ChangeDetectorRef,
-      public draggingService: DraggingService
+      public draggingService: DraggingService,
+      private dbService: PlominoDBService,
     ) { }
     
     ngOnInit() {
@@ -132,8 +134,10 @@ export class TreeComponent implements OnInit {
     ) {
       this.log.info('drag subform', selected, mouseEvent, typeLabel, typeNameUrl);
       this.log.extra('tree.component.ts dragSubform');
+      
       if (this.activeEditorService.getActive() && selected && typeLabel === 'Forms' 
-        && typeNameUrl !== this.activeEditorService.getActive().id
+        && typeNameUrl !== `${ this.dbService.getDBLink() }/${ 
+          this.activeEditorService.getActive().id }`
       ) {
         this.draggingService.subformDragEvent.next(mouseEvent);
         this.draggingService.followDNDType('subform');

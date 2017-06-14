@@ -204,6 +204,13 @@ interface TinyMceObservable {
 interface TinyMceEditor extends TinyMceObservable {
   destroy: (automatic: boolean) => void
   remove: () => void
+  onInit: { add: ((func: () => void) => void) }
+  onChange: { add: ((func: (e: any) => void) => void) }
+  onKeyDown: { add: ((func: (e: KeyboardEvent) => void) => void) }
+  onKeyUp: { add: ((func: (e: KeyboardEvent) => void) => void) }
+  onNodeChange: { add: ((func: (nodeChangeEvent: any) => void) => void) }
+  onActivate: { add: ((func: (e: any) => void) => void) }
+  onMouseDown: { add: ((func: (ev: MouseEvent) => void) => void) }
   hide: () => void
   setDirty: (dirty: boolean) => void
   isDirty: () => boolean

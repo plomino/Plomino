@@ -53,6 +53,7 @@ module.exports = merge(require('./webpack.patterns'), {
         { from: 'app/assets/roboto', to: 'theme/roboto' },
         { from: 'app/assets/images', to: 'images' },
         { from: 'app/assets/scripts/dialog-polyfill.js', to: 'theme' },
+        { from: 'app/assets/css/tinymce.css', to: 'theme' },
         { from: 'app/assets/css/dialog-polyfill.css', to: 'theme' },
         { from: 'app/assets/css/barceloneta-compiled.css', to: 'theme' },
         { from: 'app/assets/css/plone-compiled.css', to: 'theme/++plone++static' },

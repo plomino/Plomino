@@ -311,9 +311,11 @@ export class PlominoFormSaveProcess {
     return this.http.postWithOptions(url, this.savingFormData.build(), {})
       .map((data: Response) => {
         this.nextFormURL = data.url.split('/').slice(0, -2).join('/');
-        const dbURL = (this.originalFormURL.replace(this.originalFormID, '').replace(/^(.+?)\/$/, '$1'));
+        const nextFormURLAfterPloneUpdate = data.url.split('/').slice(0, -1).join('/');
+        const dbURL = (this.originalFormURL.replace(this.originalFormID, '')
+          .replace(/^(.+?)\/$/, '$1'));
 
-        if (this.nextFormURL === dbURL) {
+        if (this.nextFormURL === dbURL || nextFormURLAfterPloneUpdate === dbURL) {
           this.nextFormURL = this.originalFormURL;
         }
 

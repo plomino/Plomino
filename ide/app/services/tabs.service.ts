@@ -1,3 +1,4 @@
+import { PlominoDBService } from './db.service';
 import { FormsService } from './forms.service';
 import { Subject, Observable, BehaviorSubject } from 'rxjs/Rx';
 import { PlominoActiveEditorService } from './active-editor.service';
@@ -29,7 +30,8 @@ export class TabsService {
     private urlManager: URLManagerService,
     private formsService: FormsService,
     private activeEditorService: PlominoActiveEditorService,
-    private log: LogService, private zone: NgZone
+    private log: LogService, private zone: NgZone,
+    private dbService: PlominoDBService,
   ) {
     this.treeService.getTree()
       .subscribe((tree) => {
@@ -168,7 +170,8 @@ export class TabsService {
       && tab.path.length && tab.path[0].type === 'Forms';
 
     const isActiveForm = isFormTab && this.activeEditorService.getActive()
-      && this.activeEditorService.getActive().id === tab.url;
+      && `${ this.dbService.getDBLink() }/${ 
+        this.activeEditorService.getActive().id }` === tab.url;
 
     if (isActiveForm) {
       return;

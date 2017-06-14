@@ -1,3 +1,4 @@
+import { PlominoDBService } from './../../services/db.service';
 import { PlominoWorkflowChangesNotifyService } from './../../editors/workflow/workflow.changes.notify.service';
 import { WF_ITEM_TYPE } from './../../editors/workflow/tree-builder';
 import { Subscription, Observable, Subject } from 'rxjs/Rx';
@@ -71,6 +72,7 @@ export class AddComponent implements OnInit, AfterViewInit {
                 private treeService: TreeService,
                 private tabsService: TabsService,
                 private log: LogService,
+                private dbService: PlominoDBService,
                 private viewsAPIService: PlominoViewsAPIService,
                 private labelsRegistry: LabelsRegistryService,
                 private fieldsService: FieldsService,
@@ -397,7 +399,8 @@ export class AddComponent implements OnInit, AfterViewInit {
 
             const getSubformLayout$ = (this.mouseDownTemplateId) 
               ? this.widgetService.getGroupLayout(
-                  this.activeEditorService.getActive().id,
+                  `${ this.dbService.getDBLink() }/${ 
+                    this.activeEditorService.getActive().id }`,
                   {
                     id: this.mouseDownTemplateId,
                     layout: $(this.draggingService.currentDraggingTemplateCode).html()
