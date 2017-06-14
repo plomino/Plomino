@@ -149,7 +149,8 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
       let parent = insertion.parent;
       if (insertion.parent === this.id) {
         if (insertion.target === null) {
-          const $selected = this.adapter.getSelectedPosition() || this.adapter.getSelected();
+          const $selected = 
+            this.adapter.getSelectedPosition() || this.adapter.getSelected();
           insertion.target = $selected && $selected.prop('tagName') !== 'BODY' 
             ? ($selected.prev().length 
             ? $selected.prev().get(0) : $selected.get(0)) : null;
@@ -429,8 +430,9 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
     patObject.tiny.content_css.push('theme/barceloneta-compiled.css');
     patObject.tiny.content_css.push('theme/++plone++static/plone-compiled.css');
     patObject.tiny.content_css.push('theme/tinymce.css');
-    patObject.tiny.plugins = ['code', 'save', 'link', 'noneditable', 
-      'preview', 'ploneimage', 'plonelink'],
+    patObject.tiny.plugins = ['code', 'save', 'importcss', 'noneditable', 
+      'preview', 'ploneimage', 'plonelink', 'hr', 
+      'lists', 'media', 'table'],
     patObject.tiny.toolbar = 
       'undo redo | formatselect | bold italic underline | ' +
       'alignleft aligncenter alignright alignjustify | ' +
@@ -440,10 +442,7 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
     // patObject.tiny.plugins.push('save');
     // const saveTrigger = `window['save_onsavecallback_${ this.id.split('/').pop() }']`;
     // patObject.tiny.save_onsavecallback = `function(){${ saveTrigger }?${ saveTrigger }():null}`;
-    delete patObject.tiny.external_plugins;
-    // patObject.tiny.external_plugins = {
-    //   'plomino': 'http://localhost:8080/Plone/mydb/++resource++Products.CMFPlomino/js/tinymce.js'
-    // }
+    delete patObject.tiny.external_plugins; // does not work good
     return JSON.stringify(patObject);
   }
 
@@ -490,77 +489,6 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
         this.getFormLayout();
       }
     }, 300);
-
-    // tinymce.init({
-    //   imageTypes: ['Image'],
-    //   folderTypes: ['Folder', 'Plone Site'],
-    //   plugins: ['code', 'save', 'link', 'noneditable', 
-    //     'preview', /*'ploneimage', 'plonelink'*/],
-    //   toolbar: 'save | undo redo | formatselect | bold italic underline' +
-    //   ' | alignleft aligncenter alignright alignjustify | ' +
-    //   'bullist numlist | outdent indent',
-    //   // 'plonelink unlink ploneimage',
-
-    //   save_onsavecallback: () => {
-    //     this.log.info('T-200 tiny-mce.component.ts', this.tabsService.ping());
-    //     // this.loading = true;
-    //     this.fallLoading();
-    //     this.log.info('fallLoading from save_onsavecallback');
-    //     this.saveTheForm();
-    //   },
-
-    //   setup : (editor: TinyMceEditor) => {
-    //     /* when loading a long form, should be scrolled to the top.
-    //       seems in the middle now */
-    //     const edExists = Boolean(this.editorInstance);
-
-    //     if (this.editorInstance) {
-    //       this.editorInstance.remove();
-    //     } else {
-    //       // this.getFormLayout();
-    //     }
-
-    //     editor.addMenuItem('PreviewButton', {
-    //       text: 'Open form in new tab',
-    //       context: 'view',
-    //       onclick: () => {
-    //         // this.formsService.saveForm(this.item.formUniqueId, false);
-    //         // this.changeDetector.markForCheck();
-    //         // setTimeout(() => {
-    //           window.open(`${ this.item.url }/OpenForm`);
-    //         // }, 200);
-    //         return;
-    //       }
-    //     });
-
-    //     this.editorInstance = editor;
-
-    //     setTimeout(() => {
-    //       this.editorInstance.show();
-    //       this.bitDirtyStateAfterSave();
-    //     });
-
-    //     if (editor) {
-    //       editor.setDirty(false);
-    //       const $edContainer = $(editor.getContainer());
-    //       if ($edContainer.length) {
-    //         const $saveDiv = $edContainer
-    //           .find('.mce-toolbar-grp div.mce-widget.mce-btn:contains("Save")');
-    //         $saveDiv.attr('aria-disabled', 'true');
-    //         $saveDiv.addClass('mce-disabled');
-    //       }
-    //     }
-    //   },
-    //   content_css: [
-    //     'theme/barceloneta-compiled.css', 'theme/++plone++static/plone-compiled.css'
-    //   ],
-    //   content_style: require('./tinymce.css'),
-    //   menubar: "edit insert view format table tools",
-    //   height : "780",
-    //   resize: false
-    // });
-
-    
   }
 
   /**
