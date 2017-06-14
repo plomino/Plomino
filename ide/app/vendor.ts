@@ -23,9 +23,9 @@ import 'ace-editor-builds/src-min-noconflict/ext-language_tools';
 import 'ace-editor-builds/src-min-noconflict/snippets/snippets';
 
 // -- TinyMCE --
-import 'tinymce';
-import 'tinymce/themes/modern/theme';
-import 'tinymce/plugins/code/plugin';
-import 'tinymce/plugins/save/plugin';
-import 'tinymce/plugins/link/plugin';
-import 'tinymce/plugins/paste/plugin';
+// import 'tinymce';
+// import 'tinymce/themes/modern/theme';
+// import 'tinymce/plugins/code/plugin';
+// import 'tinymce/plugins/save/plugin';
+// import 'tinymce/plugins/link/plugin';
+// import 'tinymce/plugins/paste/plugin';

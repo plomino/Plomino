@@ -13,7 +13,11 @@ export function updateRelatedSubformsAfterFormSave(saveProcess: any) {
         `.plominoSubformClass[data-plominoid="${ saveProcess.originalFormID }"]`
       ).each((i, subformElement) => {
         const $founded = $(subformElement);
-        let updatedSubformURL = editor.id;
+        let updatedSubformURL = `${ 
+          window.location.pathname
+          .replace('++resource++Products.CMFPlomino/ide/', '')
+          .replace('/index.html', '')
+        }/${ editor.id }`;
         updatedSubformURL += '/@@tinyform/example_widget?widget_type=subform&id=';
         updatedSubformURL += saveProcess.nextFormID;
         

@@ -1,3 +1,4 @@
+import { LogService } from './../log.service';
 import { PlominoDBService } from './../db.service';
 import { TabsService } from './../tabs.service';
 import { TreeService } from './../tree.service';
@@ -29,6 +30,7 @@ export class PlominoSaveManagerService {
     private labelsRegistry: LabelsRegistryService,
     private activeEditorService: PlominoActiveEditorService,
     private dbService: PlominoDBService,
+    private log: LogService,
   ) {
     Observable
       .interval(500)
@@ -174,7 +176,11 @@ export class PlominoSaveManagerService {
 
   enqueueNewFormSaveProcess(formURL: string) {
     const process = this.createFormSaveProcess(formURL);
-    this.saveStack.unshift(process.start());
+    if (process === null) {
+      this.log.error('cannot create save process for formURL', formURL);
+    } else {
+      this.saveStack.unshift(process.start());
+    }
   }
 
   detectNewIFrameInnerClick(ev: MouseEvent) {
@@ -202,12 +208,15 @@ export class PlominoSaveManagerService {
     'keydown input change paste', ($event) => {
       const isFormInnerEvent = $($event.currentTarget)
         .is('form:visible[data-pat-autotoc]');
+      const isFieldTypeChange = $event.target.id === 'form-widgets-field_type';
       $event.stopPropagation();
-      if (isFormInnerEvent && !($event.type === 'keydown' && $event.keyCode === 9)) {
-        if (!this.currentFormIsUnsaved) {
-          this.currentFormIsUnsaved = true;
-          this.hackOutsideArea();
-        }
+      if (
+        !isFieldTypeChange && isFormInnerEvent 
+        && !($event.type === 'keydown' && $event.keyCode === 9)
+        && !this.currentFormIsUnsaved
+      ) {
+        this.currentFormIsUnsaved = true;
+        this.hackOutsideArea();
       }
     });
   }
