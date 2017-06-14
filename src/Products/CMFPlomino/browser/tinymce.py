@@ -532,6 +532,13 @@ class RequestWidget(TextWidget):
     def name(self, value):
         pass
 
+    @property
+    def value(self):
+        return self.request.get(self.fixed_name, '')
+
+    @value.setter
+    def value(self, value):
+        pass
 
 
 @provider(IFormFieldProvider)
