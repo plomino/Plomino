@@ -256,8 +256,11 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
     this.formsService.tinyMCEPatternData$
       .subscribe((data) => {
         if (this.id.split('/').pop() === data.formId) {
-          this.tinyMCEPatData = this.modifyDataPatParams(data.data);
-          this.ngAfterViewInit();
+          const tinyMCEPatData = this.modifyDataPatParams(data.data);
+          if (tinyMCEPatData !== this.tinyMCEPatData) {
+            this.tinyMCEPatData = tinyMCEPatData;
+            this.ngAfterViewInit();
+          }
         }
       });
 
@@ -303,6 +306,112 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
     window['registryPromise'].then((registry: any) => {
       this.registry = registry;
       this.initialize();
+
+      this.getFormLayout();
+
+      this.draggingService
+      .onPaletteCustomDragEvent()
+      .subscribe((eventData: MouseEvent) => {
+        this.dragData = this.draggingService.currentDraggingData 
+          ? this.draggingService.currentDraggingData 
+          : this.draggingService.previousDraggingData;
+        
+        this.contentManager.selectAndRemoveElementById(this.id, 'drag-autopreview');
+        this.dropped({ mouseEvent: eventData });
+      });
+  
+      this.tabsService.getActiveTab()
+        .subscribe((tab) => {
+          if (this.item && typeof this.item.formUniqueId === 'undefined') {
+            this.item = tab;
+            this.changeDetector.markForCheck();
+            this.changeDetector.detectChanges();
+          }
+        });
+  
+      this.labelMarkupEvent.asObservable()
+      .subscribe(($element: JQuery) => {
+        /**
+         * when markup changed on any plominoLabelClass element
+         */
+        const a = $element.text().replace(/\s+/g, ' ').trim();
+        const b = $element.html()
+          .replace(/&nbsp;/g, ' ')
+          .replace(/^(.+?)?<br>$/, '$1')
+          .replace(/\s+/g, ' ').trim();
+        const hasMarkup = a !== b;
+        const dataAdvanced = Boolean($element.attr('data-advanced'));
+        this.log.info('a,b', a, b, 'hasMarkup', hasMarkup, 'dataAdvanced', dataAdvanced);
+  
+        if (hasMarkup || (dataAdvanced && !hasMarkup)) {
+          this.log.info('label markup inserted', $element);
+          this.log.extra('tiny-mce.component.ts');
+          
+          if (hasMarkup) {
+            $element.attr('data-advanced', '1');
+          }
+          else {
+            const selectedId = $element.attr('data-plominoid');
+      
+            this.labelsRegistry.update(
+              `${ this.id }/${ selectedId }`, b, 'temporary_title'
+            );
+          }
+        }
+        else if (!hasMarkup && !dataAdvanced && b.length === 0) {
+          this.log.info('reselected $element');
+          this.adapter.select($element);
+  
+          const selectedId = $element.attr('data-plominoid');
+      
+          if (selectedId) {
+            this.labelsRegistry.update(
+              `${ this.id }/${ selectedId }`, b, 'temporary_title'
+            );
+          }
+        }
+      });
+  
+      this.activeEditorService.onLoadingPush()
+      .subscribe((state: boolean) => {
+        this.log.info('onLoadingPush i am', this.id, 
+          'this msg to', this.activeEditorService.editorURL);
+        if (this.activeEditorService.editorURL === this.id) {
+          this.fallLoading(state);
+          this.log.info('fallLoading from onLoadingPush with state', state);
+        }
+        else if (this.activeEditorService.getActive() === null && this.id) {
+          tinymce.editors.forEach((editor: any) => {
+            if (editor.targetElm && editor.targetElm.id 
+              && editor.targetElm.id === (this.id ? this.id.split('/').pop() : null)
+            ) {
+              this.fallLoading(state);
+              this.log.info('RESTORED fallLoading from onLoadingPush with state', state);
+            }
+          });
+        }
+      });
+  
+      this.activeEditorService.onSavedPush()
+      .subscribe((state: boolean) => {
+        if (this.activeEditorService.editorURL === this.id) {
+          const editor = this.getEditor();
+          if (!editor) { return; }
+          const isDirty = editor.isDirty();
+  
+          if (!isDirty) {
+            const $edContainer = $(editor.getContainer());
+            if ($edContainer.length) {
+              const $saveDiv = $edContainer
+                .find('.mce-toolbar-grp div.mce-widget.mce-btn:contains("Save")');
+              $saveDiv.attr('aria-disabled', 'true');
+              $saveDiv.addClass('mce-disabled');
+              $(`span[data-url="${ this.id }"] > span:contains("* ")`).remove();
+              $(`span[data-url="${ this.id }"] > .tabunsaved`).removeClass('tabunsaved');
+            }
+          }
+        }
+      });
     });
   }
 
@@ -370,53 +479,6 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
     });
 
     // tinymce.init({
-    //   cleanup : false,
-    //   selector:'.tinymce-wrap',
-    //   mode : 'textareas',
-    //   forced_root_block: '',
-    //   linkModal: null,
-    //   addLinkClicked: function () {
-    //     tiny.zone.runOutsideAngular(() => {
-    //       var self = <any>this;
-    //       if (self.linkModal === null || typeof self.linkModal === 'undefined') {
-    //         var $el = $('<div/>').insertAfter(self.$el);
-    //         self.options = {
-    //           anchorSelector: 'h1,h2,h3',
-    //           linkTypes: ['internal', 'upload', 'external', 'email', 'anchor'],
-    //           initialLinkType: 'internal',
-    //           text: {
-    //             insertHeading: 'Insert Link'
-    //           }
-    //         };
-    //         if (!self.options.hasOwnProperty('upload')) {
-    //           self.options.linkTypes.splice(1, 1);
-    //         }
-    //         self.linkModal = new LinkModal($el,
-    //           $.extend(true, {}, self.options, {
-    //             tinypattern: self
-    //           })
-    //         );
-    //         self.linkModal.show();
-    //       } else {
-    //         self.linkModal.reinitialize();
-    //         self.linkModal.show();
-    //       }
-    //     });
-    //   },
-    //   linkAttribute: 'path',
-    //   prependToScalePart: '/imagescale/',
-    //   appendToScalePart: '',
-    //   appendToOriginalScalePart: '',
-    //   defaultScale: 'large',
-    //   scales: 'Listing (16x16):listing,Icon (32x32):icon,Tile (64x64):tile,' +
-    //           'Thumb (128x128):thumb,Mini (200x200):mini,Preview (400x400):preview,' +
-    //           'Large (768x768):large',
-    //   targetList: [
-    //     { text: 'Open in this window / frame', value: '' },
-    //     { text: 'Open in new window', value: '_blank' },
-    //     { text: 'Open in parent window / frame', value: '_parent' },
-    //     { text: 'Open in top frame (replaces all frames)', value: '_top' }
-    //   ],
     //   imageTypes: ['Image'],
     //   folderTypes: ['Folder', 'Plone Site'],
     //   plugins: ['code', 'save', 'link', 'noneditable', 
@@ -465,28 +527,6 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
     //       this.bitDirtyStateAfterSave();
     //     });
 
-    //     editor.on('change', (e: any) => {
-    //       
-    //     });
-
-    //     editor.on('KeyDown', (e: KeyboardEvent) => {
-    //       
-    //     });
-
-    //     editor.on('KeyUp', (e: KeyboardEvent) => {
-    //       
-    //     })
-
-    //     editor.on('NodeChange', (nodeChangeEvent: any) => {
-    //       
-    //     });
-
-    //     // editor.on('activate', (e: any) => {
-    //     //   
-    //     // });
-
-        // editor.on('mousedown', () => {});
-
     //     if (editor) {
     //       editor.setDirty(false);
     //       const $edContainer = $(editor.getContainer());
@@ -507,111 +547,7 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
     //   resize: false
     // });
 
-    this.getFormLayout();
-
-    this.draggingService
-    .onPaletteCustomDragEvent()
-    .subscribe((eventData: MouseEvent) => {
-      this.dragData = this.draggingService.currentDraggingData 
-        ? this.draggingService.currentDraggingData 
-        : this.draggingService.previousDraggingData;
-      
-      this.contentManager.selectAndRemoveElementById(this.id, 'drag-autopreview');
-      this.dropped({ mouseEvent: eventData });
-    });
-
-    this.tabsService.getActiveTab()
-      .subscribe((tab) => {
-        if (this.item && typeof this.item.formUniqueId === 'undefined') {
-          this.item = tab;
-          this.changeDetector.markForCheck();
-          this.changeDetector.detectChanges();
-        }
-      });
-
-    this.labelMarkupEvent.asObservable()
-    .subscribe(($element: JQuery) => {
-      /**
-       * when markup changed on any plominoLabelClass element
-       */
-      const a = $element.text().replace(/\s+/g, ' ').trim();
-      const b = $element.html()
-        .replace(/&nbsp;/g, ' ')
-        .replace(/^(.+?)?<br>$/, '$1')
-        .replace(/\s+/g, ' ').trim();
-      const hasMarkup = a !== b;
-      const dataAdvanced = Boolean($element.attr('data-advanced'));
-      this.log.info('a,b', a, b, 'hasMarkup', hasMarkup, 'dataAdvanced', dataAdvanced);
-
-      if (hasMarkup || (dataAdvanced && !hasMarkup)) {
-        this.log.info('label markup inserted', $element);
-        this.log.extra('tiny-mce.component.ts');
-        
-        if (hasMarkup) {
-          $element.attr('data-advanced', '1');
-        }
-        else {
-          const selectedId = $element.attr('data-plominoid');
     
-          this.labelsRegistry.update(
-            `${ this.id }/${ selectedId }`, b, 'temporary_title'
-          );
-        }
-      }
-      else if (!hasMarkup && !dataAdvanced && b.length === 0) {
-        this.log.info('reselected $element');
-        this.adapter.select($element);
-
-        const selectedId = $element.attr('data-plominoid');
-    
-        if (selectedId) {
-          this.labelsRegistry.update(
-            `${ this.id }/${ selectedId }`, b, 'temporary_title'
-          );
-        }
-      }
-    });
-
-    this.activeEditorService.onLoadingPush()
-    .subscribe((state: boolean) => {
-      this.log.info('onLoadingPush i am', this.id, 
-        'this msg to', this.activeEditorService.editorURL);
-      if (this.activeEditorService.editorURL === this.id) {
-        this.fallLoading(state);
-        this.log.info('fallLoading from onLoadingPush with state', state);
-      }
-      else if (this.activeEditorService.getActive() === null && this.id) {
-        tinymce.editors.forEach((editor: any) => {
-          if (editor.targetElm && editor.targetElm.id 
-            && editor.targetElm.id === (this.id ? this.id.split('/').pop() : null)
-          ) {
-            this.fallLoading(state);
-            this.log.info('RESTORED fallLoading from onLoadingPush with state', state);
-          }
-        });
-      }
-    });
-
-    this.activeEditorService.onSavedPush()
-    .subscribe((state: boolean) => {
-      if (this.activeEditorService.editorURL === this.id) {
-        const editor = this.getEditor();
-        if (!editor) { return; }
-        const isDirty = editor.isDirty();
-
-        if (!isDirty) {
-          const $edContainer = $(editor.getContainer());
-          if ($edContainer.length) {
-            const $saveDiv = $edContainer
-              .find('.mce-toolbar-grp div.mce-widget.mce-btn:contains("Save")');
-            $saveDiv.attr('aria-disabled', 'true');
-            $saveDiv.addClass('mce-disabled');
-            $(`span[data-url="${ this.id }"] > span:contains("* ")`).remove();
-            $(`span[data-url="${ this.id }"] > .tabunsaved`).removeClass('tabunsaved');
-          }
-        }
-      }
-    });
   }
 
   /**
@@ -631,19 +567,23 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
     else if (this.id && this.activeEditorService.getActive() === null) {
       /* id is present but no editor here, lets try to find it */
       tinymce.editors.forEach((editor: any) => {
+        const id = this.id.split('/').pop();
         if (editor.targetElm && editor.targetElm.id 
-          && editor.targetElm.id === (this.id ? this.id.split('/').pop() : null)
+          && editor.targetElm.id === id
         ) {
           /* remove tinymce editor and add it again */
           const preloader = editor.getContainer()
             .parentElement.querySelector('plomino-block-preloader');
           (<HTMLElement> preloader.querySelector('.plomino-block-preloader'))
             .style.display = state ? 'flex' : 'none';
-          // editor.remove();
-          // tinymce.EditorManager.execCommand('mceAddEditor', true, this.id);
-          // tinymce.EditorManager.execCommand('mceAddEditor', true, this.id);
 
-          this.initialize();
+          editor.id = id;
+          editor.settings.id = id;
+          editor.getContainer().firstElementChild
+            .children[2].firstElementChild.id = id + '_ifr';
+          editor.render();
+
+          this.ngAfterViewInit();
         }
       });
     }
