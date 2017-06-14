@@ -303,11 +303,10 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
   }
 
   ngAfterViewInit(): void {
+    window['$'] = jQuery;
     window['registryPromise'].then((registry: any) => {
       this.registry = registry;
       this.initialize();
-
-      this.getFormLayout();
 
       this.draggingService
       .onPaletteCustomDragEvent()
@@ -430,11 +429,21 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
     patObject.tiny.content_css.push('theme/barceloneta-compiled.css');
     patObject.tiny.content_css.push('theme/++plone++static/plone-compiled.css');
     patObject.tiny.content_css.push('theme/tinymce.css');
+    patObject.tiny.plugins = ['code', 'save', 'link', 'noneditable', 
+      'preview', 'ploneimage', 'plonelink'],
+    patObject.tiny.toolbar = 
+      'undo redo | formatselect | bold italic underline | ' +
+      'alignleft aligncenter alignright alignjustify | ' +
+      'bullist numlist | outdent indent' +
+      'plonelink unlink ploneimage';
     // patObject.tiny.toolbar = 'save | ' + patObject.tiny.toolbar;
     // patObject.tiny.plugins.push('save');
     // const saveTrigger = `window['save_onsavecallback_${ this.id.split('/').pop() }']`;
     // patObject.tiny.save_onsavecallback = `function(){${ saveTrigger }?${ saveTrigger }():null}`;
     delete patObject.tiny.external_plugins;
+    // patObject.tiny.external_plugins = {
+    //   'plomino': 'http://localhost:8080/Plone/mydb/++resource++Products.CMFPlomino/js/tinymce.js'
+    // }
     return JSON.stringify(patObject);
   }
 
@@ -449,7 +458,9 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
     const edId = this.id.split('/').pop();
     const $el = $('#' + edId);
     $el.attr('data-pat-tinymce', this.tinyMCEPatData);
-    this.registry.scan($el);
+    this.zone.runOutsideAngular(() => {
+      this.registry.scan($el);
+    });
 
     window['save_onsavecallback_' 
       + this.id.split('/').pop()] = this.onSaveCallback.bind(this);
@@ -475,8 +486,10 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
           $saveDiv.attr('aria-disabled', 'true');
           $saveDiv.addClass('mce-disabled');
         }
+
+        this.getFormLayout();
       }
-    });
+    }, 300);
 
     // tinymce.init({
     //   imageTypes: ['Image'],
