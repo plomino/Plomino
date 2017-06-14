@@ -400,6 +400,17 @@ export class FormSettingsComponent implements OnInit {
 
             return this.objService
               .getFormSettings(tab.url)
+              .map((settingsHTML: string) => {
+                /** get data pattern and store it to window */
+                if (settingsHTML && settingsHTML.indexOf('data-pat-tinymce') !== -1) {
+                  const data = settingsHTML
+                    .match(/data-pat-tinymce="(.+?)"/)[1]
+                    .replace(/&quot;/g, '"')
+                  const formId = this.tab.url.split('/').pop();
+                  this.formsService.newTinyMCEPatternData({ formId, data });
+                }
+                return settingsHTML;
+              })
               .map(this.parseTabs);
           } else {
             return Observable.of('');

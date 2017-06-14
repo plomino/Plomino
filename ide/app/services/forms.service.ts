@@ -12,6 +12,8 @@ export class FormsService {
       = new Subject<{oldId: any, newId: any}>();
     private getFormContentBeforeSaveSource: Subject<any> = new Subject();
     private onFormContentBeforeSaveSource: Subject<any> = new Subject();
+    private formRemovedEventSource: Subject<string> = new Subject();
+    private tinyMCEPatternData: Subject<{formId: string, data: string}> = new Subject();
 
     private FORM_SETTINGS_TAB_INDEX:number = 2;
 
@@ -19,6 +21,8 @@ export class FormsService {
     formSettingsSave$: Observable<any> = this.formSettingsSaveEventSource.asObservable();
     formContentSave$: Observable<any> = this.formContentSaveEventSource.asObservable();
     formIdChanged$: Observable<{oldId: any, newId: any}> = this.formIdChangedEventSource.asObservable();
+    formRemoved$: Observable<string> = this.formRemovedEventSource.asObservable();
+    tinyMCEPatternData$ = this.tinyMCEPatternData.asObservable();
     getFormContentBeforeSave$: Observable<any> = this.getFormContentBeforeSaveSource.asObservable();
     onFormContentBeforeSave$: Observable<any> = this.onFormContentBeforeSaveSource.asObservable();
 
@@ -41,6 +45,10 @@ export class FormsService {
         id: data.id,
         content: data.content
       });
+    }
+
+    newTinyMCEPatternData(data: { formId: string, data: string }) {
+      this.tinyMCEPatternData.next(data);
     }
 
     changePaletteTab(tabIndex: number) {
