@@ -1,3 +1,4 @@
+import { PlominoDBService } from './../../services/db.service';
 import { Subscription, Observable, Subject } from 'rxjs/Rx';
 import { PlominoActiveEditorService } from './../../services/active-editor.service';
 import { PlominoViewsAPIService } from './../../editors/view-editor/views-api.service';
@@ -66,6 +67,7 @@ export class AddComponent implements OnInit, AfterViewInit {
                 private treeService: TreeService,
                 private tabsService: TabsService,
                 private log: LogService,
+                private dbService: PlominoDBService,
                 private viewsAPIService: PlominoViewsAPIService,
                 private labelsRegistry: LabelsRegistryService,
                 private fieldsService: FieldsService,
@@ -340,7 +342,8 @@ export class AddComponent implements OnInit, AfterViewInit {
 
             const getSubformLayout$ = (this.mouseDownTemplateId) 
               ? this.widgetService.getGroupLayout(
-                  this.activeEditorService.getActive().id,
+                  `${ this.dbService.getDBLink() }/${ 
+                    this.activeEditorService.getActive().id }`,
                   {
                     id: this.mouseDownTemplateId,
                     layout: $(this.draggingService.currentDraggingTemplateCode).html()

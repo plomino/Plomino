@@ -409,6 +409,7 @@ define([
 //         self.options.anchorSelector = self.tinypattern.options.anchorSelector;
 //       }
 //       self.tiny = self.tinypattern.tiny;
+//       debugger;
 //       self.dom = self.tiny.dom;
 //       self.linkType = self.options.initialLinkType;
 //       self.linkTypes = {};
@@ -741,6 +742,8 @@ define([
 //       this.modal.options.html = this.generateModalHtml();
 //     }
 //   });
+
+//   window.LinkModal = LinkModal;
 //   return LinkModal;
 
 // });

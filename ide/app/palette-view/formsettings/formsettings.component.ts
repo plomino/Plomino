@@ -181,7 +181,6 @@ export class FormSettingsComponent implements OnInit {
               });
               
               this.loading = false;
-              // debugger;
               this.changeDetector.markForCheck();
               this.changeDetector.detectChanges();
             }, 400);
@@ -272,7 +271,7 @@ export class FormSettingsComponent implements OnInit {
       const tab = this.tab;
       this.elementService.awaitForConfirm()
       .then(() => {
-        const editor = tinymce.get(tabData.url);
+        const editor = tinymce.get(tabData.url.split('/').pop());
         if (editor && editor.selection) {
           editor.selection.collapse();
         }

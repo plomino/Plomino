@@ -25,7 +25,8 @@ export class PlominoActiveEditorService {
       });
 
       if (editorURL !== null) {
-        $(`plomino-tiny-mce:has(textarea[id="${ editorURL }"])`)
+        const edId = editorURL.split('/').pop();
+        $(`plomino-tiny-mce:has(textarea[id="${ edId }"])`)
           .removeAttr('style');
       }
     }
@@ -48,6 +49,6 @@ export class PlominoActiveEditorService {
   }
 
   getActive(): TinyMceEditor {
-    return tinymce.get(this.editorURL);
+    return tinymce.get(this.editorURL ? this.editorURL.split('/').pop() : null);
   }
 }
