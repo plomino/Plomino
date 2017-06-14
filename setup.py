@@ -49,7 +49,7 @@ setup(
         'pyquery',
         'plone.rest>=1.0a8',
         'plone.restapi>=1.0a11',
-        'Products.CMFPlone >= 5.0.7', #for tinymce 4.4.3 (mockup >= 2.4.0)
+        'Products.CMFPlone > 5.0.8', #for tinymce 4.4.3 (mockup >= 2.4.0). and need branch=5.0.x-include-ajax-haed
     ],
     extras_require={
         'test': [
