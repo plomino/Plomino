@@ -92,6 +92,8 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
 
   theFormIsSavingNow: boolean = false;
   loadedFirstTime: boolean = null;
+  registry: any;
+  tinyMCEPatData: string = null;
 
   /**
    * display block preloader
@@ -251,6 +253,14 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
       });
     });
 
+    this.formsService.tinyMCEPatternData$
+      .subscribe((data) => {
+        if (this.id.split('/').pop() === data.formId) {
+          this.tinyMCEPatData = this.modifyDataPatParams(data.data);
+          this.ngAfterViewInit();
+        }
+      });
+
     this.saveManager.onBackgroundSaveProcessComplete()
       .subscribe((formURL: string) => {
         if (formURL === this.id) {
@@ -291,17 +301,49 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
 
   ngAfterViewInit(): void {
     window['registryPromise'].then((registry: any) => {
-      this.initialize(registry);
+      this.registry = registry;
+      this.initialize();
     });
   }
 
-  initialize(registry: any): void {
-    // let tiny = this;
+  /**
+   * @param dataPat data-pat-tinymce
+   */
+  modifyDataPatParams(dataPat: string): string {
+    const patObject = JSON.parse(dataPat);
+    patObject.inline = false;
+    patObject.tiny.height = 780;
+    patObject.tiny.resize = false;
+    patObject.tiny.forced_root_block = '';
+    patObject.tiny.cleanup = false;
+    patObject.tiny.content_css = patObject.tiny.content_css.split(',');
+    patObject.tiny.content_css = [patObject.tiny.content_css[2]];
+    patObject.tiny.content_css.push('theme/barceloneta-compiled.css');
+    patObject.tiny.content_css.push('theme/++plone++static/plone-compiled.css');
+    patObject.tiny.content_css.push('theme/tinymce.css');
+    // patObject.tiny.toolbar = 'save | ' + patObject.tiny.toolbar;
+    // patObject.tiny.plugins.push('save');
+    // const saveTrigger = `window['save_onsavecallback_${ this.id.split('/').pop() }']`;
+    // patObject.tiny.save_onsavecallback = `function(){${ saveTrigger }?${ saveTrigger }():null}`;
+    delete patObject.tiny.external_plugins;
+    return JSON.stringify(patObject);
+  }
 
-    // const LinkModal = window['LinkModal'];
+  onSaveCallback() {
+    this.fallLoading();
+    this.log.info('fallLoading from save_onsavecallback');
+    this.saveTheForm();
+  }
 
+  initialize(): void {
+    if (!this.tinyMCEPatData) { return; }
     const edId = this.id.split('/').pop();
-    registry.scan($('.tinymce-wrap[id="' + edId + '"]'));
+    const $el = $('#' + edId);
+    $el.attr('data-pat-tinymce', this.tinyMCEPatData);
+    this.registry.scan($el);
+
+    window['save_onsavecallback_' 
+      + this.id.split('/').pop()] = this.onSaveCallback.bind(this);
 
     setTimeout(() => {
       const editor = tinymce.get(edId);
@@ -580,7 +622,7 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
       this.loadedFirstTime = this.loadedFirstTime === null;
     }
     const editor = this.getEditor();
-    if (editor) {
+    if (editor && editor.getContainer() !== null) {
       const preloader = editor.getContainer()
         .parentElement.querySelector('plomino-block-preloader');
       (<HTMLElement> preloader.querySelector('.plomino-block-preloader'))
@@ -601,7 +643,7 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
           // tinymce.EditorManager.execCommand('mceAddEditor', true, this.id);
           // tinymce.EditorManager.execCommand('mceAddEditor', true, this.id);
 
-          this.ngAfterViewInit();
+          this.initialize();
         }
       });
     }
@@ -926,7 +968,7 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
       this.theFormIsSavingNow = false;
       this.log.info('tiny-mce loading', false, this.id);
       this.fallLoading(false);
-      this.ngAfterViewInit();
+      this.initialize();
     }
   }
 
