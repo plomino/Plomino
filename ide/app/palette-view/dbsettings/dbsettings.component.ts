@@ -1,3 +1,5 @@
+import { PlominoTabsManagerService } from './../../services/tabs-manager/index';
+import { TabsService } from './../../services/tabs.service';
 import { PlominoSaveManagerService } from './../../services/save-manager/save-manager.service';
 import { FakeFormData } from './../../utility/fd-helper/fd-helper';
 import { LogService } from './../../services/log.service';
@@ -55,6 +57,8 @@ export class DBSettingsComponent {
       private saveManager: PlominoSaveManagerService,
       private changeDetector: ChangeDetectorRef,
       private http: PlominoHTTPAPIService,
+      private tabsService: TabsService,
+      private tabsManagerService: PlominoTabsManagerService,
       private log: LogService,
     ) {
       this.importExportDialog = <HTMLDialogElement> 

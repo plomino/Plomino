@@ -1,3 +1,4 @@
+import { IField } from './../interfaces/field.interface';
 import { LogService } from './log.service';
 import { PlominoHTTPAPIService } from './http-api.service';
 import { Response } from '@angular/http';
@@ -64,7 +65,7 @@ export class FieldsService {
   }
 
   updateField(
-    fieldData: PlominoFieldRepresentationObject,
+    fieldData: IField,
     newFieldData: PlominoFieldSettingsFormDataObject,
     id: string
   ) {

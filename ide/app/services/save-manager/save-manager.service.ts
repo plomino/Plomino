@@ -1,3 +1,4 @@
+import { PlominoTabsManagerService } from './../tabs-manager/index';
 import { LogService } from './../log.service';
 import { PlominoDBService } from './../db.service';
 import { TabsService } from './../tabs.service';
@@ -25,11 +26,12 @@ export class PlominoSaveManagerService {
     private http: PlominoHTTPAPIService,
     private elementService: ElementService,
     private widgetService: WidgetService,
+    private tabsService: TabsService,
+    private tabsManagerService: PlominoTabsManagerService,
     private labelsRegistry: LabelsRegistryService,
     private activeEditorService: PlominoActiveEditorService,
     private dbService: PlominoDBService,
     private treeService: TreeService,
-    private tabsService: TabsService,
     private log: LogService,
   ) {
     Observable
@@ -72,15 +74,16 @@ export class PlominoSaveManagerService {
     this.elementService.postElement(this.dbService.getDBLink(), formElement)
     .subscribe((response: AddFieldResponse) => {
       this.treeService.updateTree().then(() => {
-        this.tabsService.openTab({
-          formUniqueId: undefined,
+        this.tabsManagerService.openTab({
+          // formUniqueId: undefined,
           editor: 'layout',
           label: response.title,
+          id: response.id,
           url: response.parent['@id'] + '/' + response.id,
-          path: [{
-              name: response.title,
-              type: 'Forms'
-          }]
+          // path: [{
+          //     name: response.title,
+          //     type: 'Forms'
+          // }]
         });
   
         if (callback !== null) {
@@ -100,14 +103,15 @@ export class PlominoSaveManagerService {
     this.elementService.postElement(this.dbService.getDBLink(), viewElement)
     .subscribe((response: AddFieldResponse) => {
       this.treeService.updateTree().then(() => {
-        this.tabsService.openTab({
+        this.tabsManagerService.openTab({
           editor: 'view',
           label: response.title,
           url: response.parent['@id'] + '/' + response.id,
-          path: [{
-              name: response.title,
-              type: 'Views'
-          }]
+          id: response.id,
+          // path: [{
+          //     name: response.title,
+          //     type: 'Views'
+          // }]
         });
 
         if (callback !== null) {
@@ -222,6 +226,7 @@ export class PlominoSaveManagerService {
     });
   }
 
+  /** @todo: fix hackOutsideArea */
   private hackOutsideArea() {
     /* ngx-bootstrap tab switch */
     const $tabset = $('div.main-app.panel > tabset');

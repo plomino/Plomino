@@ -6,7 +6,7 @@ export class URLManagerService {
 
   constructor(private log: LogService) { }
 
-  rebuildURL(openedTabs: PlominoTab[]): void {
+  rebuildURL(openedTabs: PlominoTabUnit[]): void {
     const url = openedTabs.map((tab) => tab.url.split('/').pop()).join(',');
     this.setURL(url);
   }

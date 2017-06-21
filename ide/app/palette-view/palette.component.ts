@@ -1,3 +1,5 @@
+import { PlominoDBService } from './../services/db.service';
+import { PlominoTabsManagerService } from './../services/tabs-manager/index';
 import { LogService } from './../services/log.service';
 import { 
     Component, 
@@ -29,6 +31,7 @@ import {
     ElementService,
     TabsService,
     TemplatesService,
+    PlominoFormFieldsSelectionService,
 } from '../services';
 
 import {FormsService} from "../services/forms.service";
@@ -50,7 +53,7 @@ import {FormsService} from "../services/forms.service";
     providers: [ElementService]
 })
 export class PaletteComponent implements OnInit {
-    selectedTab: PlominoTab = null;    
+    selectedTab: any = null;    
     selectedField: any = null;
 
     tabs: Array<any> = [
@@ -62,17 +65,32 @@ export class PaletteComponent implements OnInit {
 
     constructor(private changeDetector: ChangeDetectorRef,
                 private tabsService: TabsService,
+                private dbService: PlominoDBService,
+                private tabsManagerService: PlominoTabsManagerService,
+                private formFieldsSelection: PlominoFormFieldsSelectionService,
                 private formsService: FormsService,
                 private log: LogService,
                 private templatesService: TemplatesService) { }
 
     ngOnInit() {
-        this.tabsService.getActiveTab().subscribe((activeTab) => {
+        this.tabsManagerService.getActiveTab()
+        .subscribe((tabUnit) => {
+
+          const dbURL = this.dbService.getDBLink();
+          const tabElementPath = tabUnit ? tabUnit.url.replace(dbURL, '') : '';
+
+          const activeTab = tabUnit ? {
+            label: tabUnit.label || tabUnit.id,
+            url: tabUnit.url,
+            editor: tabUnit.editor,
+            isField: tabElementPath.split('/').length === 3
+          } : null;
+
           this.log.info('activeTab', activeTab);
           this.log.extra('palette.component.ts ngOnInit');
 
           if (activeTab) {
-            this.tabs = this.updateTabs(activeTab.showAdd, this.tabs, activeTab.type);
+            this.tabs = this.updateTabs(true, this.tabs, activeTab.editor);
           }
           
           if (activeTab && this.selectedTab 
@@ -94,14 +112,23 @@ export class PaletteComponent implements OnInit {
             this.formsService.changePaletteTab(activeTab.isField ? 1 : 2);
             this.changeDetector.markForCheck();
           }
+          else {
+            this.formsService.changePaletteTab(0);
+            try {
+              $('a[href="#palette-tab-0-panel"]')
+                .get(0).dispatchEvent(new Event('click'));
+              this.changeDetector.markForCheck();
+              this.changeDetector.detectChanges();
+            } catch (e) {}
+          }
         });
 
-        this.tabsService.getActiveField().subscribe((activeField) => {
+        this.formFieldsSelection.getActiveField().subscribe((activeField) => {
             this.selectedField = activeField;
             // console.warn('ACTIVE', activeField);
             if (activeField) {
                 this.updateTabs(false, this.tabs, 
-                this.selectedTab && this.selectedTab.type, activeField.type);
+                this.selectedTab && this.selectedTab.editor, activeField.type);
             }
             this.changeDetector.markForCheck();
         });
@@ -153,7 +180,7 @@ export class PaletteComponent implements OnInit {
           group.title = 'View Settings';
         }
         else {
-          group.title = !activeTabType || activeTabType === 'PlominoForm' 
+          group.title = !activeTabType || activeTabType === 'layout' 
             ? 'Form Settings' : 'View Settings';
         }
 

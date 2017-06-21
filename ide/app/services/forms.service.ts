@@ -48,6 +48,7 @@ export class FormsService {
     }
 
     newTinyMCEPatternData(data: { formId: string, data: string }) {
+      this.log.info('newTinyMCEPatternData');
       this.tinyMCEPatternData.next(data);
     }
 

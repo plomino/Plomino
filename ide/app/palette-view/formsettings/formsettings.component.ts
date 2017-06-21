@@ -1,3 +1,4 @@
+import { PlominoTabsManagerService } from './../../services/tabs-manager/index';
 import { PlominoPaletteManagerService } from './../../services/palette-manager/palette-manager';
 import { PlominoHTTPAPIService } from './../../services/http-api.service';
 import { PlominoFormSaveProcess } from './../../services/save-manager/form-save-process';
@@ -26,7 +27,8 @@ import {
     TreeService,
     LogService,
     FormsService,
-    PlominoElementAdapterService
+    PlominoElementAdapterService,
+    PlominoFormFieldsSelectionService
 } from '../../services';
 import { PloneHtmlPipe } from '../../pipes';
 import {ElementService} from "../../services/element.service";
@@ -46,7 +48,7 @@ import { PlominoBlockPreloaderComponent } from "../../utility";
 export class FormSettingsComponent implements OnInit {
     @ViewChild('formElem') formElem: ElementRef;
 
-    tab: PlominoTab;
+    tab: any;
     macrosWidgetTimer: number = null;
 
     // This needs to handle both views and forms
@@ -65,6 +67,8 @@ export class FormSettingsComponent implements OnInit {
       private log: LogService,
       private changeDetector: ChangeDetectorRef,
       private tabsService: TabsService,
+      private tabsManagerService: PlominoTabsManagerService,
+      private formFieldsSelection: PlominoFormFieldsSelectionService,
       private treeService: TreeService,
       private adapter: PlominoElementAdapterService,
       private labelsRegistry: LabelsRegistryService,
@@ -75,7 +79,16 @@ export class FormSettingsComponent implements OnInit {
       private widgetService: WidgetService,
       private formsService: FormsService,
       private paletteManager: PlominoPaletteManagerService,
-    ) {}
+    ) {
+      this.tabsManagerService.getAfterUpdateIdOfTab()
+        .subscribe((data) => {
+          if (this.tab && this.tab.url.split('/').pop() === data.prevId) {
+            const prevExp = new RegExp(`^(.+?/)${ data.prevId }$`);
+            this.tab.url = this.tab.url
+              .replace(prevExp, `$1${ data.nextId }`);
+          }
+        });
+    }
 
     ngOnInit() {
         this.getSettings();
@@ -83,15 +96,14 @@ export class FormSettingsComponent implements OnInit {
         let onSaveFinishCb: any = null;
 
         this.formsService.formSettingsSave$.subscribe((data) => {
-          this.log.info('T-5 formsettings.component.ts', this.tab.url === data.url);
-
           if (this.tab.url !== data.url) {
               return;
           }
 
           onSaveFinishCb = data.cb;
 
-          if (this.tab.url === data.url && this.tab.typeLabel === 'Views') {
+          if (this.tab.url === data.url && (this.tab.editor === 'view'
+            || this.tab.editor === 'code')) {
             this.saveFormSettings(onSaveFinishCb);
           }
           else {
@@ -101,7 +113,6 @@ export class FormSettingsComponent implements OnInit {
 
         this.formsService.onFormContentBeforeSave$
           .subscribe((data:{id:any, content:any}) => {
-            this.log.info('T-3 formsettings.component.ts', data.id, this.tabsService.ping());
             
             if (this.tab.url !== data.id)
                 return;
@@ -117,8 +128,7 @@ export class FormSettingsComponent implements OnInit {
     }
 
     saveFormSettings(cb: any) {
-      const isViewURL = this.tab.typeLabel === 'Views';
-      this.log.info('T-1 formsettings.component.ts', this.tabsService.ping());
+      const isViewURL = this.tab.editor === 'view';
       this.log.startTimer('save_' + isViewURL ? 'view' : 'form' + '_hold');
     
       const flatMapCallback = ((responseData: {html: string, url: string}) => {
@@ -136,7 +146,8 @@ export class FormSettingsComponent implements OnInit {
                     oldId: oldUrl
                 });
                 
-                this.tabsService.updateTabId(this.tab, $formId);
+                this.tabsManagerService.updateTabId(
+                  oldUrl.split('/').pop(), $formId);
                 this.changeDetector.markForCheck();
             }
 
@@ -199,14 +210,12 @@ export class FormSettingsComponent implements OnInit {
     }
 
     submitForm() {
-      this.log.info('T-200-b formsettings.compmonent.ts', this.tabsService.ping());
       this.formsService.saveForm(this.tab.url);
       this.changeDetector.markForCheck();
       this.saveManager.detectNewFormSave();
     }
 
     saveForm(data:{content:any,cb:any}) {
-      this.log.info('T-2 formsettings.component.ts', this.tabsService.ping());
       this.log.info('saveForm CALLED!');
       // let $form: any = $(this.formElem.nativeElement);
       // let form: HTMLFormElement = $form.find('form').get(0);
@@ -232,9 +241,14 @@ export class FormSettingsComponent implements OnInit {
           url: tab.url
       };
       this.log.info('this.tabsService.openTab #frs0001 with showAdd');
-      this.tabsService.selectField('none');
+      this.formFieldsSelection.selectField('none');
       this.adapter.select(null);
-      this.tabsService.openTab(eventData, true);
+      this.tabsManagerService.openTab({
+        id: eventData.url.split('/').pop(),
+        url: eventData.url,
+        label: eventData.label,
+        editor: 'code',
+      });
     }
 
     openFormPreview(formUrl: string, tabType: string): void {
@@ -278,7 +292,12 @@ export class FormSettingsComponent implements OnInit {
         this.elementService
           .deleteElement(tabData.url)
           .subscribe(() => {
-            this.tabsService.closeTab(tab);
+            this.tabsManagerService.closeTab({
+              id: tab.url.split('/').pop(),
+              url: tab.url,
+              editor: tab.editor,
+              label: tab.label
+            });
             this.tab = null;
             this.formSettings = '';
             this.formLayout = '';
@@ -379,8 +398,15 @@ export class FormSettingsComponent implements OnInit {
 
     private getSettings() {
       this.log.extra('formsettings.component.ts');
-      this.tabsService.getActiveTab()
-        .do((tab) => {
+      this.tabsManagerService.getActiveTab()
+        .map((tabUnit) => {
+
+          const tab = tabUnit ? {
+            label: tabUnit.label || tabUnit.id,
+            url: tabUnit.url,
+            editor: tabUnit.editor
+          } : null;
+
           if (!(this.tab && tab && !tab.url)) {
             this.tab = tab;
             this.log.info('formsettings -> set tab allowed to', tab);
@@ -388,8 +414,10 @@ export class FormSettingsComponent implements OnInit {
           else {
             this.log.info('formsettings -> set tab prohibited to', tab);
           }
+
+          return tab;
         })
-        .flatMap((tab: any) => {
+        .flatMap((tab) => {
           // this.log.info('tab', tab, tab && tab.url ? tab.url : null);
           // this.log.extra('formsettings.component.ts getSettings -> flatMap');
           
@@ -405,7 +433,10 @@ export class FormSettingsComponent implements OnInit {
                 if (settingsHTML && settingsHTML.indexOf('data-pat-tinymce') !== -1) {
                   const data = settingsHTML
                     .match(/data-pat-tinymce="(.+?)"/)[1]
-                    .replace(/&quot;/g, '"')
+                    .replace(/&quot;/g, '"');
+                  if (this.tab === null) {
+                    this.tab = tab;
+                  }
                   const formId = this.tab.url.split('/').pop();
                   this.formsService.newTinyMCEPatternData({ formId, data });
                 }

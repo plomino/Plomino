@@ -4,6 +4,7 @@ export { PlominoElementAdapterService } from './element-adapter.service';
 export { ElementService } from './element.service';
 export { ObjService } from './obj.service';
 export { TreeService } from './tree.service';
+export { PlominoFormFieldsSelectionService } from './form-fields-selection';
 export { TabsService } from './tabs.service';
 export { FieldsService } from './fields.service';
 export { DraggingService } from './dragging.service';
