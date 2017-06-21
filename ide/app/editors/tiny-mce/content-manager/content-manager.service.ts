@@ -1,8 +1,8 @@
+import { PlominoFormFieldsSelectionService } from './../../../services/form-fields-selection/index';
 import { PlominoActiveEditorService } from './../../../services/active-editor.service';
 import { PlominoElementAdapterService } from './../../../services/element-adapter.service';
 import { LogService } from './../../../services/log.service';
 import { Observable, Subject } from 'rxjs/Rx';
-import { TabsService } from './../../../services/tabs.service';
 import { DraggingService } from './../../../services/dragging.service';
 import { Injectable, ChangeDetectorRef } from '@angular/core';
 
@@ -34,7 +34,7 @@ export class TinyMCEFormContentManagerService {
   private logService: LogService,
   private adapter: PlominoElementAdapterService,
   private activeEditorService: PlominoActiveEditorService,
-  private tabsService: TabsService) {
+  private formFieldsSelection: PlominoFormFieldsSelectionService) {
     interface OneInTimeObservable<PlominoIFrameMouseMove> 
       extends Observable<PlominoIFrameMouseMove> {
       oneInTime: (delay: any) => Observable<PlominoIFrameMouseMove>;
@@ -499,7 +499,7 @@ export class TinyMCEFormContentManagerService {
       
       if ($label.length) {
         this.adapter.select($label);
-        this.tabsService.selectField(
+        this.formFieldsSelection.selectField(
           { id: 'defaultLabel', parent: editorId, type: 'label' }
         );
   

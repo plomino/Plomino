@@ -64,7 +64,6 @@ export class ObjService {
   updateFieldSettings(
     formUrl: string, formData: FakeFormData
   ): Observable<{html: string, url: string}> {
-    this.log.info('T0 obj.service.ts', this.tabsService.ping());
     const addNew = formUrl.indexOf('++add++PlominoColumn') !== -1;
     // let layout = formData.get('form.widgets.form_layout');
     const workingId = formData.get('form.widgets.IShortName.id');
@@ -233,7 +232,6 @@ export class ObjService {
       // console.warn(formData.get('form.widgets.form_layout'));
     })
     .flatMap(() => {
-      this.log.info('T1 obj.service.ts', this.tabsService.ping());
       
       return this.http.postWithOptions(
         `${formUrl}/${ addNew ? '' : '@@edit' }`, formData.build(), {},

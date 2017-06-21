@@ -1,3 +1,4 @@
+import { PlominoTabsManagerService } from './../../services/tabs-manager/index';
 import { TabsService } from './../../services/tabs.service';
 import { PlominoSaveManagerService } from './../../services/save-manager/save-manager.service';
 import { FakeFormData } from './../../utility/fd-helper/fd-helper';
@@ -57,6 +58,7 @@ export class DBSettingsComponent {
       private changeDetector: ChangeDetectorRef,
       private http: PlominoHTTPAPIService,
       private tabsService: TabsService,
+      private tabsManagerService: PlominoTabsManagerService,
       private log: LogService,
     ) {
       this.importExportDialog = <HTMLDialogElement> 
@@ -240,12 +242,12 @@ export class DBSettingsComponent {
     }
 
     private designWorkflow() {
-      this.tabsService.openTab({
+      this.tabsManagerService.openTab({
+        id: 'workflow',
         url: 'workflow',
         label: 'Workflow',
         editor: 'workflow',
-        path: []
-      }, true);
+      });
     }
 
     private showImportExport() {

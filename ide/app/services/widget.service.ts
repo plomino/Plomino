@@ -61,7 +61,7 @@ export class WidgetService {
      */
     let $groupLayout = $(
       `<div id="tmp-group-layout-id${input.id}" role="group"
-        style="visibility: hidden; position: absolute"
+        style="visibility: hidden; position: absolute;top:0;left:0"
         >${input.layout}</div>`
     );
 

@@ -1,3 +1,4 @@
+import { PlominoTabsManagerService } from './../../services/tabs-manager/index';
 import { PlominoDBService } from './../../services/db.service';
 import { PlominoPaletteManagerService } from './../../services/palette-manager/palette-manager';
 import { PlominoSaveManagerService } from './../../services/save-manager/save-manager.service';
@@ -34,7 +35,8 @@ import {
   WidgetService,
   PlominoFormsListService,
   ElementService,
-  FormsService
+  FormsService,
+  PlominoFormFieldsSelectionService
 } from '../../services';
 
 import { PloneHtmlPipe } from '../../pipes';
@@ -54,7 +56,7 @@ import { PlominoBlockPreloaderComponent } from "../../utility";
 export class FieldSettingsComponent implements OnInit {
     @ViewChild('fieldForm') fieldForm: ElementRef;
     
-    field: PlominoFieldRepresentationObject;
+    field: IField;
     formTemplate: string = '';
 
     formSaving: boolean = false;
@@ -74,6 +76,8 @@ export class FieldSettingsComponent implements OnInit {
     constructor(private objService: ObjService,
       private log: LogService,
       private tabsService: TabsService,
+      private tabsManagerService: PlominoTabsManagerService,
+      private formFieldsSelection: PlominoFormFieldsSelectionService,
       private contentManager: TinyMCEFormContentManagerService,
       private labelsRegistry: LabelsRegistryService,
       private adapter: PlominoElementAdapterService,
@@ -92,7 +96,31 @@ export class FieldSettingsComponent implements OnInit {
       private dbService: PlominoDBService,
       private treeService: TreeService,
       private saveManager: PlominoSaveManagerService,
-    ) {}
+    ) {
+      this.tabsManagerService.getActiveTab()
+        .subscribe(() => {
+          this.field = null;
+          this.formTemplate = '';
+          try {
+            this.changeDetector.markForCheck();
+            this.changeDetector.detectChanges();
+          } catch (e) {}
+        });
+
+      this.tabsManagerService.getAfterUpdateIdOfTab()
+        .subscribe((data) => {
+          if (!this.field) { return; }
+          const fURL = this.field.url.split('/');
+          const fieldId = fURL.pop();
+          const formId = fURL.pop();
+          if (formId === data.prevId) {
+            const prevExp = new RegExp(
+              `^(.+?/)${ data.prevId }/${ fieldId }$`);
+            this.field.url = this.field.url
+              .replace(prevExp, `$1${ data.nextId }/${ fieldId }`);
+          }
+        });
+    }
 
     ngOnInit() {
       this.loadSettings();
@@ -180,7 +208,7 @@ export class FieldSettingsComponent implements OnInit {
       .subscribe((responseHtml: string) => {
         this.formTemplate = responseHtml;
 
-        this.tabsService.refreshCodeTab.next(this.field.url);
+        this.tabsManagerService.refreshCodeTab.next(this.field.url);
 
         setTimeout(() => {
           const $fieldType = $('.field-settings-wrapper form #form-widgets-field_type');
@@ -379,7 +407,12 @@ export class FieldSettingsComponent implements OnInit {
             url: this.field.url
         };
         this.log.info('this.tabsService.openTab #fs0001');
-        this.tabsService.openTab(eventData, true);
+        this.tabsManagerService.openTab({
+          id: eventData.url.split('/').pop(),
+          url: eventData.url,
+          editor: 'code',
+          label: eventData.label
+        });
         // this.field = null;
         // this.formTemplate = null;
         // this.changeDetector.detectChanges();
@@ -400,15 +433,16 @@ export class FieldSettingsComponent implements OnInit {
       this.elementService.getElementFormLayout(this.getDBOptionsLink(formId))
       .subscribe((formData) => {
         this.log.info('this.tabsService.openTab #fs0002');
-        this.tabsService.openTab({
+        this.tabsManagerService.openTab({
           // formUniqueId: response.formUniqueId,
           editor: 'layout',
           label: formData.title,
           url: formData['@id'],
-          path: [{
-              name: formData.title,
-              type: 'Forms'
-          }]
+          id: formData['@id'].split('/').pop()
+          // path: [{
+          //     name: formData.title,
+          //     type: 'Forms'
+          // }]
         });
 
         this.formsService.changePaletteTab(0);
@@ -543,7 +577,7 @@ export class FieldSettingsComponent implements OnInit {
       this.changeDetector.detectChanges();
     }
 
-    private updateFieldTitle(field: PlominoFieldRepresentationObject) {
+    private updateFieldTitle(field: IField) {
       if (!this.field) {
         return;
       }
@@ -761,8 +795,8 @@ export class FieldSettingsComponent implements OnInit {
     }
 
     private loadSettings() {
-      this.tabsService.getActiveField()
-        .do((field: PlominoFieldRepresentationObject) => {
+      this.formFieldsSelection.getActiveField()
+        .do((field: IField) => {
             if (field === null) {
               this.field = null;
               this.formTemplate = null;
@@ -772,7 +806,7 @@ export class FieldSettingsComponent implements OnInit {
 
             this.field = field;
         })
-        .flatMap((field: PlominoFieldRepresentationObject): Observable<any> => {
+        .flatMap((field: IField): Observable<any> => {
 
           this.loading = true;
           this.$selectedElement = this.adapter.getSelected();

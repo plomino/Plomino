@@ -1,7 +1,6 @@
 import 'babel-polyfill';
 import 'jquery/dist/jquery';
 // import 'lodash';
-import * as _ from 'underscore';
 // import 'es6-shim/es6-shim';
 import 'reflect-metadata';
 import 'zone.js/dist/zone';
@@ -31,8 +30,3 @@ import 'ace-editor-builds/src-min-noconflict/snippets/snippets';
 // import 'tinymce/plugins/link/plugin';
 // import 'tinymce/plugins/paste/plugin';
 
-window['_'] = _;
-const templateFunction = _.template.bind(_);
-(<any>_)['template'] = (template: string, options: any = null) => {
-  return options ? templateFunction(template)(options) : templateFunction(template);
-};

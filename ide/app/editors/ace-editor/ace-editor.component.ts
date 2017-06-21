@@ -1,3 +1,4 @@
+import { PlominoTabsManagerService } from './../../services/tabs-manager/index';
 import { Component, OnInit, AfterViewInit, 
   Input, Output, EventEmitter } from '@angular/core';
 import { PopoverComponent } from '../popover';
@@ -49,15 +50,15 @@ export class ACEEditorComponent {
 
     constructor(
       private _elementService: ElementService,
-      private tabsService: TabsService,
+      private tabsManagerService: PlominoTabsManagerService,
       private dbService: PlominoDBService,
     ) {
-      this.tabsService.onRefreshCodeTab$
+      this.tabsManagerService.onRefreshCodeTab$
         .subscribe((fieldURL: string) => {
           if (this.url === fieldURL) {
             this.ngOnInit();
             this.ngAfterViewInit();
-            this.tabsService.setActiveTabDirty(false);
+            this.tabsManagerService.setActiveTabDirty(false);
           }
         });
     }

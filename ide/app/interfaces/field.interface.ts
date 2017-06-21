@@ -1,4 +1,7 @@
 export interface IField {
   id: string;
-  url: string;
+  formUniqueId?: string|number;
+  type?: string;
+  url?: string;
+  parent?: string;
 }

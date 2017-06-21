@@ -1,3 +1,5 @@
+import { PlominoTabsComponent } from './utility/tabs/plomino-tabs.component';
+import { PlominoTabComponent } from './utility/tabs/tab/plomino-tab.component';
 import 'babel-polyfill';
 import { enableProdMode } from '@angular/core';
 import { HTTP_PROVIDERS } from '@angular/http';
@@ -8,6 +10,15 @@ import { PlominoBlockPreloaderComponent } from "./utility";
 // import { BrowserModule } from "@angular/platform-browser";
 import { bootstrap } from '@angular/platform-browser-dynamic';
 import { disableDeprecatedForms, provideForms } from "@angular/forms";
+import * as _ from 'underscore';
+
+
+window['_'] = _;
+const templateFunction = _.template.bind(_);
+(<any>_)['template'] = (template: string, options: any = null) => {
+  return options ? templateFunction(template)(options) 
+    : templateFunction(template);
+};
 
 window['MacroWidgetPromise'] = <Promise<any>> new Promise(
     (resolve, reject) => {

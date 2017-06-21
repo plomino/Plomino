@@ -1,3 +1,6 @@
+import { PlominoTabsManagerService } from './services/tabs-manager/index';
+import { PlominoTabComponent } from './utility/tabs/tab/plomino-tab.component';
+import { PlominoTabsComponent } from './utility/tabs/plomino-tabs.component';
 import { PlominoWorkflowChangesNotifyService } from './editors/workflow/workflow.changes.notify.service';
 import { PlominoPaletteManagerService } from './services/palette-manager/palette-manager';
 import { LabelsRegistryService } from './editors/tiny-mce/services/labels-registry.service';
@@ -50,6 +53,7 @@ import {
   TreeService,
   ElementService,
   ObjService,
+  PlominoFormFieldsSelectionService,
   TabsService,
   FieldsService,
   DraggingService,
@@ -84,10 +88,10 @@ import { LoadingComponent } from "./editors/loading/loading.component";
   directives: [
     TreeComponent,
     PaletteComponent,
-    TAB_DIRECTIVES,
+    // TAB_DIRECTIVES,
     DND_DIRECTIVES,
-    TinyMCEComponent,
-    ACEEditorComponent,
+    // TinyMCEComponent,
+    // ACEEditorComponent,
     // PlominoModalComponent,
     FormsSettingsComponent,
     FieldsSettingsComponent,
@@ -99,12 +103,15 @@ import { LoadingComponent } from "./editors/loading/loading.component";
     LoadingComponent,
     ResizeDividerComponent,
     PlominoBlockPreloaderComponent,
-    PlominoWorkflowComponent,
+    // PlominoWorkflowComponent,
     PlominoWorkflowNodeSettingsComponent,
-    PlominoViewEditorComponent,
+    // PlominoViewEditorComponent,
+    PlominoTabComponent,
+    PlominoTabsComponent,
   ],
   providers: [
     LogService,
+    PlominoFormFieldsSelectionService,
     PlominoHTTPAPIService,
     TreeService, 
     ElementService, 
@@ -126,23 +133,18 @@ import { LoadingComponent } from "./editors/loading/loading.component";
     PlominoSaveManagerService,
     PlominoPaletteManagerService,
     PlominoDBService,
+    PlominoTabsManagerService,
   ],
   pipes: [ExtractNamePipe],
 })
-export class AppComponent implements OnInit, AfterViewInit {
+export class AppComponent implements OnInit {
 
   data: any;
-  selectedField: IField;
-  selected: any;
-  tabs: Array<any> = [];
-
   isModalOpen: boolean = false;
   modalData: any;
 
   isDragging: boolean = false;
   dragData: any = null;
-
-  aceNumber: number = 0;
 
   DIRECTION_DOWN = 'down';
   DIRECTION_UP = 'up';
@@ -155,6 +157,7 @@ export class AppComponent implements OnInit, AfterViewInit {
     private elementService: ElementService, 
     private objService: ObjService,
     private tabsService: TabsService,
+    private formFieldsSelection: PlominoFormFieldsSelectionService,
     private log: LogService,
     private contentManager: TinyMCEFormContentManagerService,
     private draggingService: DraggingService,
@@ -208,16 +211,16 @@ export class AppComponent implements OnInit, AfterViewInit {
   }
 
   ngOnInit() {
-    $('#add-new-form-tab').remove();
-    const addNewFormBtn = `<li class="add-new-form-tab" id="add-new-form-tab">
-      <a href class="nav-link"><span class="icon material-icons">add</span></a>
-      <div class="mdl-tooltip mdl-tooltip--large" for="add-new-form-tab">
-      Click to add a new form or view
-      </div>
-    </li>`;
+    // $('#add-new-form-tab').remove();
+    // const addNewFormBtn = `<li class="add-new-form-tab" id="add-new-form-tab">
+    //   <a href class="nav-link"><span class="icon material-icons">add</span></a>
+    //   <div class="mdl-tooltip mdl-tooltip--large" for="add-new-form-tab">
+    //   Click to add a new form or view
+    //   </div>
+    // </li>`;
 
-    $('div.main-app.panel > tabset > ul').append(addNewFormBtn);
-    $('#add-new-form-tab').click((evt) => {
+    // $('div.main-app.panel > tabset > ul').append(addNewFormBtn);
+    $('body').delegate('#add-new-form-tab', 'click', (evt) => {
       $('#add-new-form-tab .mdl-tooltip').removeClass('is-active');
       this.addDialog.showModal();
       evt.preventDefault();
@@ -268,18 +271,6 @@ export class AppComponent implements OnInit, AfterViewInit {
         $(`[data-mdl-for="tab_${ x.url }"]`).html(x.label);
       });
     });
-    
-    this.tabsService
-    .getTabs()
-    .subscribe((tabs: any) => {
-      this.tabs = tabs;
-
-      tabs.forEach((tab: any) => {
-        if (tab.active && this.tabsService.closing) {
-          this.tabsService.closing = false;
-        }
-      });
-    });
 
     this.draggingService
     .getDragging()
@@ -302,17 +293,6 @@ export class AppComponent implements OnInit, AfterViewInit {
       require('./assets/scripts/dynamic.js');
       require('./assets/scripts/links.js');
     });
-  }
-
-  ngAfterViewInit() {
-    this.tabsService.getActiveTab().subscribe(() => {});
-  }
-
-  getTabTypeImage(editor: any) {
-    return {
-      'layout': 'images/ic_featured_play_list_black_18px.svg',
-      'code': 'images/ic_code_black_18px.svg',
-    }[editor] || 'images/ic_code_black_18px.svg';
   }
 
   onAdd(event: any) {
@@ -437,79 +417,74 @@ export class AppComponent implements OnInit, AfterViewInit {
     this.resolveData(this.dragData, this.dragData.resolver);
   }
 
-  openTab(tab: any) {
-    this.log.info('this.tabsService.openTab #app0001 with showAdd');
-    this.tabsService.openTab(tab, true);
-  }
-
-  closeTab(event: any, tab: any) {
-    // const tabUnsaved = this.saveManager.isEditorUnsaved(tab.url);
+  // closeTab(event: any, tab: any) {
+  //   // const tabUnsaved = this.saveManager.isEditorUnsaved(tab.url);
     
-    // ((): Promise<any> => {
-    //   if (tabUnsaved) {
-    //     /**
-    //      * warn the user of any unsaved changes
-    //      */
-    //     return this.elementService.awaitForConfirm(
-    //       'Do you which to save?'
-    //     );
-    //   } else {
-    //     return Promise.resolve();
-    //   }
-    // })()/
-    this.activeEditorService.setActive(null);
-    this.tabsService.closing = true;
-    this.tabsService.closeTab(tab);
+  //   // ((): Promise<any> => {
+  //   //   if (tabUnsaved) {
+  //   //     /**
+  //   //      * warn the user of any unsaved changes
+  //   //      */
+  //   //     return this.elementService.awaitForConfirm(
+  //   //       'Do you which to save?'
+  //   //     );
+  //   //   } else {
+  //   //     return Promise.resolve();
+  //   //   }
+  //   // })()/
+  //   this.activeEditorService.setActive(null);
+  //   this.tabsService.closing = true;
+  //   this.tabsService.closeTab(tab);
 
-    setTimeout(() => {
-      /* detect wrong case */
-      const $activeTrigger = $('.tab-trigger[data-active="true"]');
-      if ($activeTrigger.length) {
-        const url = $activeTrigger.attr('data-url');
-        const editor = $activeTrigger.attr('data-editor');
+  //   setTimeout(() => {
+  //     /* detect wrong case */
+  //     const $activeTrigger = $('.tab-trigger[data-active="true"]');
+  //     if ($activeTrigger.length) {
+  //       const url = $activeTrigger.attr('data-url');
+  //       const editor = $activeTrigger.attr('data-editor');
 
-        if (editor === 'layout') {
-          this.log.info('set active url', url);
-          this.log.extra('app.component.ts');
-          this.activeEditorService.setActive(url);
-        }
+  //       if (editor === 'layout') {
+  //         this.log.info('set active url', url);
+  //         this.log.extra('app.component.ts');
+  //         this.activeEditorService.setActive(url);
+  //       }
         
-        // check that tinymce is broken after 100ms
-        if (this.activeEditorService.getActive()) {
-          const $iframe = $(this.activeEditorService.getActive()
-              .getContainer().querySelector('iframe'));
-          let x = $iframe.contents().find('body').html();
-          if (
-            /* x === '' in case when <p> are missing, why? */
-            typeof x === 'undefined' || !x.length
-            // typeof x === 'undefined' || (!x.length 
-            //   && !$iframe.contents().find('body').length
-            // )
-          ) {
-            // const $tinyTextarea = $iframe.closest('form').find('>textarea');
-            try {
-              const _url = url.split('/').pop();
-              tinymce.EditorManager.execCommand('mceRemoveEditor', true, _url);
-              tinymce.EditorManager.execCommand('mceAddEditor', true, _url);
-              tinymce.EditorManager.execCommand('mceAddEditor', true, _url);
+  //       // check that tinymce is broken after 100ms
+  //       if (this.activeEditorService.getActive()) {
+  //         const $iframe = $(this.activeEditorService.getActive()
+  //             .getContainer().querySelector('iframe'));
+  //         let x = $iframe.contents().find('body').html();
+  //         if (
+  //           /* x === '' in case when <p> are missing, why? */
+  //           typeof x === 'undefined' || !x.length
+  //           // typeof x === 'undefined' || (!x.length 
+  //           //   && !$iframe.contents().find('body').length
+  //           // )
+  //         ) {
+  //           // const $tinyTextarea = $iframe.closest('form').find('>textarea');
+  //           try {
+  //             const _url = url.split('/').pop();
+  //             tinymce.EditorManager.execCommand('mceRemoveEditor', true, _url);
+  //             tinymce.EditorManager.execCommand('mceAddEditor', true, _url);
+  //             tinymce.EditorManager.execCommand('mceAddEditor', true, _url);
   
-              /* reset content hooks */
-              setTimeout(() => {
-                const x = this.contentManager.getContent(
-                  this.activeEditorService.editorURL
-                );
-                this.contentManager.setContent(
-                  this.activeEditorService.editorURL, x,
-                  this.draggingService
-                );
-              }, 100);
-            }
-            catch (e) {}
-          }
-        }
-      }
-    }, 100);
-  }
+  //             /* reset content hooks */
+  //             setTimeout(() => {
+  //               const x = this.contentManager.getContent(
+  //                 this.activeEditorService.editorURL
+  //               );
+  //               this.contentManager.setContent(
+  //                 this.activeEditorService.editorURL, x,
+  //                 this.draggingService
+  //               );
+  //             }, 100);
+  //           }
+  //           catch (e) {}
+  //         }
+  //       }
+  //     }
+  //   }, 100);
+  // }
 
   onModalClose(event: any) {
     this.isModalOpen = false;
@@ -529,42 +504,38 @@ export class AppComponent implements OnInit, AfterViewInit {
     .subscribe(data => this.treeService.updateTree());
   }
 
-  onTabSelect(tab: any) {
-    this.log.info('onTabSelect', tab);
-    this.activeEditorService.setActive(
-      tab.path.length && tab.path[0].type === 'Forms' ? tab.url : null
-    );
-    this.activeEditorService.turnActiveEditorToLoadingState(false);
-    this.log.info('onTabSelect setActive', 
-      tab.path.length && tab.path[0].type === 'Forms' ? tab.url : null);
-    this.log.info('onTabSelect getActive', 
-      this.activeEditorService.editorURL, this.activeEditorService.getActive());
-    this.tabsService.setActiveTab(tab, true);
-  }
+  // onTabSelect(tab: any) {
+  //   this.log.info('onTabSelect', tab);
+  //   this.activeEditorService.setActive(
+  //     tab.path.length && tab.path[0].type === 'Forms' ? tab.url : null
+  //   );
+  //   this.activeEditorService.turnActiveEditorToLoadingState(false);
+  //   this.log.info('onTabSelect setActive', 
+  //     tab.path.length && tab.path[0].type === 'Forms' ? tab.url : null);
+  //   this.log.info('onTabSelect getActive', 
+  //     this.activeEditorService.editorURL, this.activeEditorService.getActive());
+  //   this.tabsService.setActiveTab(tab, true);
+  // }
 
-  fieldSelected(fieldData: any): void {
-    this.tabsService.selectField(fieldData);
-  }
+  // setTabzAsDirty(tabz: any, dirty: boolean) {
+  //   this.log.info('setTabzAsDirty', tabz, tabz.url, dirty);
+  //   tabz.isdirty = dirty;
 
-  setTabzAsDirty(tabz: any, dirty: boolean) {
-    this.log.info('setTabzAsDirty', tabz, tabz.url, dirty);
-    tabz.isdirty = dirty;
+  //   if (!dirty) {
+  //     if (this.getEditor(tabz.url)) {
+  //       this.getEditor(tabz.url).setDirty(false);
+  //       this.activeEditorService.turnActiveEditorToSavedState();
+  //     }
+  //   }
 
-    if (!dirty) {
-      if (this.getEditor(tabz.url)) {
-        this.getEditor(tabz.url).setDirty(false);
-        this.activeEditorService.turnActiveEditorToSavedState();
-      }
-    }
-
-    $(window)
-    .unbind('beforeunload')
-    .bind('beforeunload', (eventObject: any) => {
-      if (tabz.isdirty && !window['reloadAccepted']) {
-        return confirm('Do you want to close window. The form is unsaved.');
-      }
-    });
-  }
+  //   $(window)
+  //   .unbind('beforeunload')
+  //   .bind('beforeunload', (eventObject: any) => {
+  //     if (tabz.isdirty && !window['reloadAccepted']) {
+  //       return confirm('Do you want to close window. The form is unsaved.');
+  //     }
+  //   });
+  // }
 
   private addNewView(event: MouseEvent) {
     event.preventDefault();
