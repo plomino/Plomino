@@ -223,7 +223,7 @@ export class AddComponent implements OnInit, AfterViewInit {
           this.changeDetector.detectChanges();
 
           this.workflowMode = false;
-          if (tab && (tab.editor === 'workflow' || tab.editor === 'view')) {
+          if (tab && tab.editor !== 'layout') {
             this.loading = false;
             if (tab.editor === 'workflow') {
               this.workflowMode = true;
