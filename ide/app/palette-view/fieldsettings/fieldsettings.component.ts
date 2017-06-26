@@ -794,232 +794,244 @@ export class FieldSettingsComponent implements OnInit {
       }
     }
 
-    private loadSettings() {
-      this.formFieldsSelection.getActiveField()
-        .do((field: IField) => {
-            if (field === null) {
-              this.field = null;
-              this.formTemplate = null;
-              this.changeDetector.detectChanges();
-              this.clickAddLink();
-            }
+    loadSettingsPrepareCallback(field: IField): Observable<any> {
+      if (field === null) {
+        this.field = null;
+        this.formTemplate = null;
+        this.changeDetector.detectChanges();
+        this.clickAddLink();
+      }
+      else {
+        this.field = jQuery.extend(true, {}, field);
+      }
 
-            this.field = field;
-        })
-        .flatMap((field: IField): Observable<any> => {
+      this.loading = true;
+      this.$selectedElement = this.adapter.getSelected();
+      this.groupPrefix = null;
 
-          this.loading = true;
-          this.$selectedElement = this.adapter.getSelected();
-          this.groupPrefix = null;
-
-          if (field && field.type === 'subform') {
-            setTimeout(() => {
-              const $select = $('#form-widgets-subform-id');
-              if ($select.length) {
-                const $select2 = (<any>$select).select2('destroy').select2({
-                  placeholder: 'Select the form'
-                });
-  
-                $select.off('change.sfevents');
-                $select2.val('').trigger('change');
-                this.log.info(this.field);
-  
-                if (this.field.id && this.field.id !== 'Subform') {
-                  $select2.val(this.field.id).trigger('change');
-                }
-
-                this.loading = false;
-                this.changeDetector.detectChanges();
-                
-                $select.on('change.sfevents', (event) => {
-                  /**
-                   * receipt:
-                   * 1. value of select2 - [ok]
-                   * 2. reference to subform element - [ok]
-                   * 3. current form url - [this.activeEditorService.getActive().id]
-                   */
-                  let $founded = $(this.activeEditorService.getActive().getBody())
-                    .find('[data-mce-selected="1"]');
-                  if (!$founded.hasClass('plominoSubformClass')) {
-                    $founded = $founded.closest('.plominoSubformClass');
-                  }
-                  
-                  $founded.attr('data-plominoid', $select2.val());
-  
-                  if ($select2.val() && this.activeEditorService.getActive().id) {
-                    const activeURL = `${ this.dbService.getDBLink() }/${ 
-                      this.activeEditorService.getActive().id }`;
-                    let url = activeURL;
-                    url += '/@@tinyform/example_widget?widget_type=subform&id=';
-                    url += $select2.val();
-  
-                    this.http.get(url, 'fieldsettings.component.ts loadSettings')
-                    .subscribe((response: any) => {
-                      this.widgetService.getGroupLayout(
-                        activeURL, { id: this.field.id, layout: response.json() }
-                      )
-                      .subscribe((result: string) => {
-                        try {
-                          const $result = $(result);
-                          $result.find('input,textarea,button').removeAttr('name').removeAttr('id');
-                          $result.find('span').removeAttr('data-plominoid').removeAttr('data-mce-resize');
-                          $result.removeAttr('data-groupid');
-                          $result.find('div').removeAttr('data-groupid');
-                          const subformHTML = $($result.html()).html();
-                          $founded.html(subformHTML);
-                          this.activeEditorService.getActive().setDirty(true);
-                        }
-                        catch (e) {
-                          $select2.val('').trigger('change');
-                          if (this.field.id && this.field.id !== 'Subform') {
-                            $select2.val(this.field.id).trigger('change');
-                          }
-                        }
-
-                        this.changeDetector.detectChanges();
-                      });
-                    })
-                  }
-                });
-              }
-            }, 100);
-            return Observable.of(false);
-          }
-          else if (field && field.type === 'label' && this.$selectedElement) {
-            this.log.info('field', field, 'labelsRegistry', 
-              this.labelsRegistry.getRegistry());
-            this.log.extra('fieldsettings.component.ts label');
-
-            this.labelAdvanced = Boolean(this.$selectedElement.attr('data-advanced'));
-            this.updateFieldTitle(field);
-
-            setTimeout(() => {
-              const $select = $('#form-widgets-label-relation');
-              if ($select.length) {
-                const $select2 = (<any>$select).select2('destroy').select2({
-                  placeholder: ''
-                });
-    
-                $select.off('change.lsevents');
-                $select2.val('').trigger('change');
-                this.log.info('this.field', this.field);
-                this.log.extra('fieldsettings.component.ts ngOnInit');
-    
-                if (this.field.id) {
-                  $select2.val(this.field.id).trigger('change');
-                }
-
-                this.loading = false;
-
-                $select.on('change.lsevents', ($event) => {
-                  this.labelRelationSelected($event);
-                });
-              }
-            }, 100);
-
-            // this.loading = false;
-
-            this.labelsRegistry.onUpdated()
-            .subscribe(() => {
-              if (this.$selectedElement) {
-                this.labelAdvanced = Boolean(this.$selectedElement.attr('data-advanced'));
-                this.updateFieldTitle(field);
-              }
+      if (field && field.type === 'subform') {
+        setTimeout(() => {
+          const $select = $('#form-widgets-subform-id');
+          if ($select.length) {
+            const $select2 = (<any>$select).select2('destroy').select2({
+              placeholder: 'Select the form'
             });
 
-            return Observable.of(false);
-          }
-          else if (field && field.type === 'group') {
-            this.log.info('group', field);
-            this.log.extra('fieldsettings.component.ts group');
-            this.groupPrefix = field.id;
-            const $scrollingItem = $('.fieldsettings--control-buttons');
-            if ($scrollingItem.length) {
-              $scrollingItem.get(0).scrollIntoView();
+            $select.off('change.sfevents');
+            $select2.val('').trigger('change');
+            this.log.info(this.field);
+
+            if (this.field.id && this.field.id !== 'Subform') {
+              $select2.val(this.field.id).trigger('change');
             }
+
             this.loading = false;
-            return Observable.of(false);
-          }
-          else if (field && field.id) {
-            this.formTemplate = 
-              `<p><div class="mdl-spinner mdl-js-spinner is-active"></div></p>`;
-            componentHandler.upgradeDom();
+            this.changeDetector.detectChanges();
+            
+            $select.on('change.sfevents', (event) => {
+              /**
+               * receipt:
+               * 1. value of select2 - [ok]
+               * 2. reference to subform element - [ok]
+               * 3. current form url - [this.activeEditorService.getActive().id]
+               */
+              let $founded = $(this.activeEditorService.getActive().getBody())
+                .find('[data-mce-selected="1"]');
+              if (!$founded.hasClass('plominoSubformClass')) {
+                $founded = $founded.closest('.plominoSubformClass');
+              }
+              
+              $founded.attr('data-plominoid', $select2.val());
 
-            return this.objService
-              .getFieldSettings(field.url)
-              .map(this.parseTabs);
+              if ($select2.val() && this.activeEditorService.getActive().id) {
+                const activeURL = `${ this.dbService.getDBLink() }/${ 
+                  this.activeEditorService.getActive().id }`;
+                let url = activeURL;
+                url += '/@@tinyform/example_widget?widget_type=subform&id=';
+                url += $select2.val();
+
+                this.http.get(url, 'fieldsettings.component.ts loadSettings')
+                .subscribe((response: any) => {
+                  this.widgetService.getGroupLayout(
+                    activeURL, { id: this.field.id, layout: response.json() }
+                  )
+                  .subscribe((result: string) => {
+                    try {
+                      const $result = $(result);
+                      $result.find('input,textarea,button').removeAttr('name').removeAttr('id');
+                      $result.find('span').removeAttr('data-plominoid').removeAttr('data-mce-resize');
+                      $result.removeAttr('data-groupid');
+                      $result.find('div').removeAttr('data-groupid');
+                      const subformHTML = $($result.html()).html();
+                      $founded.html(subformHTML);
+                      this.activeEditorService.getActive().setDirty(true);
+                    }
+                    catch (e) {
+                      $select2.val('').trigger('change');
+                      if (this.field.id && this.field.id !== 'Subform') {
+                        $select2.val(this.field.id).trigger('change');
+                      }
+                    }
+
+                    this.changeDetector.detectChanges();
+                  });
+                })
+              }
+            });
           }
-          else {
+        }, 100);
+        return Observable.of([field, false]);
+      }
+      else if (field && field.type === 'label' && this.$selectedElement) {
+        this.log.info('field', field, 'labelsRegistry', 
+          this.labelsRegistry.getRegistry());
+        this.log.extra('fieldsettings.component.ts label');
+
+        this.labelAdvanced = Boolean(this.$selectedElement.attr('data-advanced'));
+        this.updateFieldTitle(field);
+
+        setTimeout(() => {
+          const $select = $('#form-widgets-label-relation');
+          if ($select.length) {
+            const $select2 = (<any>$select).select2('destroy').select2({
+              placeholder: ''
+            });
+
+            $select.off('change.lsevents');
+            $select2.val('').trigger('change');
+            this.log.info('this.field', this.field);
+            this.log.extra('fieldsettings.component.ts ngOnInit');
+
+            if (this.field.id) {
+              $select2.val(this.field.id).trigger('change');
+            }
+
             this.loading = false;
-            return Observable.of('');
+
+            $select.on('change.lsevents', ($event) => {
+              this.labelRelationSelected($event);
+            });
           }
-        })
-        .subscribe((template: any) => {
-          const $scrollingContainer = $('.scrolling-container:visible');
-          if ($scrollingContainer.length && !this.groupPrefix) {
-            $scrollingContainer.get(0).scrollIntoView();
+        }, 100);
+
+        // this.loading = false;
+
+        this.labelsRegistry.onUpdated()
+        .subscribe(() => {
+          if (this.$selectedElement) {
+            this.labelAdvanced = Boolean(this.$selectedElement.attr('data-advanced'));
+            this.updateFieldTitle(field);
           }
-          
-          if (!template) {
-            setTimeout(() => {
-              this.changeDetector.detectChanges();
-              this.changeDetector.markForCheck();
-              window['materialPromise'].then(() => {
-                componentHandler.upgradeDom();
-              });
-            }, 200);
-            return;
-          }
+        });
 
-          /**
-           * patch field settings
-           */
-          const temporaryTitle = this.labelsRegistry.get(this.field.url);
-          
-          if (temporaryTitle) {
-            const $template = $(`<div>${template}</div>`);
-            $template.find('#form-widgets-IBasic-title').attr('value', temporaryTitle);
-            template = $template.html();
-          }
+        return Observable.of([field, false]);
+      }
+      else if (field && field.type === 'group') {
+        this.log.info('group', field);
+        this.log.extra('fieldsettings.component.ts group');
+        this.groupPrefix = field.id;
+        const $scrollingItem = $('.fieldsettings--control-buttons');
+        if ($scrollingItem.length) {
+          $scrollingItem.get(0).scrollIntoView();
+        }
+        this.loading = false;
+        return Observable.of([field, false]);
+      }
+      else if (field && field.id) {
+        this.log.info('got an field', field);
+        this.log.extra('fieldsettings.component.ts group');
+        this.formTemplate = 
+          `<p><div class="mdl-spinner mdl-js-spinner is-active"></div></p>`;
+        componentHandler.upgradeDom();
 
-          this.formTemplate = template;
-
-          setTimeout(() => {
-            const $fieldType = $('.field-settings-wrapper form #form-widgets-field_type');
-
-            if (!$fieldType.length) {
-              this.log.warn('didnt find the field type field');
-            }
-            else {
-              $fieldType.change(() => {           
-                this.submitForm(true);
-              });
-            }
-  
-            const $fieldSettingsForm = $('.field-settings-wrapper form');
-  
-            if (!$fieldSettingsForm.length) {
-              this.log.warn('didnt find the field settings form');
-            }
-            else {
-              $fieldSettingsForm.submit((submitEvent) => {
-                submitEvent.preventDefault();
-                this.submitForm();
-                return false;
-              });
-            }
-          }, 400);
-          
-          this.updateMacroses();
-          this.loading = false;
-          this.changeDetector.detectChanges();
-
-          componentHandler.upgradeDom();
-          this.paletteManager.resizeInnerScrollingContainers();
-        }); 
+        return this.objService
+          .getFieldSettings(field.url)
+          .map(this.parseTabs)
+          .map((r) => [field, r]);
+      }
+      else {
+        this.loading = false;
+        return Observable.of([field, '']);
+      }
     }
 
-    private formAsObject(form: any): any {
+    loadSettingsAfterCallback(data: any[]) {
+      let template = data[1];
+      let field = data[0];
+      const $scrollingContainer = $('.scrolling-container:visible');
+      if ($scrollingContainer.length && !this.groupPrefix) {
+        $scrollingContainer.get(0).scrollIntoView();
+      }
+      
+      if (!template) {
+        setTimeout(() => {
+          this.changeDetector.detectChanges();
+          this.changeDetector.markForCheck();
+          window['materialPromise'].then(() => {
+            componentHandler.upgradeDom();
+          });
+        }, 200);
+        return;
+      }
+
+      /**
+       * patch field settings
+       */
+      if (!this.field && field) {
+        this.field = field;
+      }
+      const temporaryTitle = this.labelsRegistry.get(this.field.url);
+      
+      if (temporaryTitle) {
+        const $template = $(`<div>${template}</div>`);
+        $template.find('#form-widgets-IBasic-title').attr('value', temporaryTitle);
+        template = $template.html();
+      }
+
+      this.formTemplate = template;
+
+      setTimeout(() => {
+        const $fieldType = $('.field-settings-wrapper form #form-widgets-field_type');
+
+        if (!$fieldType.length) {
+          this.log.warn('didnt find the field type field');
+        }
+        else {
+          $fieldType.change(() => {           
+            this.submitForm(true);
+          });
+        }
+
+        const $fieldSettingsForm = $('.field-settings-wrapper form');
+
+        if (!$fieldSettingsForm.length) {
+          this.log.warn('didnt find the field settings form');
+        }
+        else {
+          $fieldSettingsForm.submit((submitEvent) => {
+            submitEvent.preventDefault();
+            this.submitForm();
+            return false;
+          });
+        }
+      }, 400);
+      
+      this.updateMacroses();
+      this.loading = false;
+      this.changeDetector.detectChanges();
+
+      componentHandler.upgradeDom();
+      this.paletteManager.resizeInnerScrollingContainers();
+      this.formsService.changePaletteTab(1);
+    }
+
+    loadSettings() {
+      this.formFieldsSelection.getActiveField()
+        .flatMap(this.loadSettingsPrepareCallback.bind(this))
+        .subscribe(this.loadSettingsAfterCallback.bind(this)); 
+    }
+
+    formAsObject(form: any): any {
         let result = {};
         let serialized = form.find('form').serializeArray();
         serialized.forEach((formItem: any) => {
