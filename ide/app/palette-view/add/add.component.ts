@@ -165,7 +165,7 @@ export class AddComponent implements OnInit, AfterViewInit {
           this.changeDetector.markForCheck();
           this.changeDetector.detectChanges();
 
-          if (tab && tab.editor === 'view') {
+          if (tab && tab.editor !== 'layout') {
             this.loading = false;
             this.changeDetector.markForCheck();
             this.changeDetector.detectChanges();
