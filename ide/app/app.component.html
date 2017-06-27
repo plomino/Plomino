@@ -5,7 +5,7 @@
       <div class="mdl-layout-spacer"></div>
       <nav class="mdl-navigation mdl-layout--large-screen-only">
         <a class="mdl-navigation__link" [href]="getPloneLink()">Close IDE</a>
-        <a class="mdl-navigation__link" href="/Plone/logout">Logout</a>
+        <a class="mdl-navigation__link" [href]="getPloneLink() + '/logout'">Logout</a>
       </nav>
     </div>
   </header>

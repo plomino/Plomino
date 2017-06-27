@@ -1,3 +1,4 @@
+import { PlominoDBService } from './../../services/db.service';
 import { Subject } from 'rxjs/Subject';
 import { ElementService } from './../../services/element.service';
 import { Observable } from 'rxjs/Rx';
@@ -11,6 +12,7 @@ export class PlominoViewsAPIService {
   constructor(
     private http: PlominoHTTPAPIService,
     private elementService: ElementService,
+    private dbService: PlominoDBService,
   ) { }
 
   fetchViewTableHTML(url: string): Observable<string> {
@@ -29,7 +31,8 @@ export class PlominoViewsAPIService {
   }
 
   fetchViewTableColumnsJSON(url: string): Observable<PlominoVocabularyViewData> {
-    let reqURL = '/Plone/@@getVocabulary?name=plone.app.vocabularies.Catalog';
+    let reqURL = this.getPloneLink() 
+      + '/@@getVocabulary?name=plone.app.vocabularies.Catalog';
     reqURL += '&query={%22criteria%22:[{%22i%22:%22path%22,%22o%22:%22';
     reqURL += 'plone.app.querystring.operation.string.path%22,%22v%22:%22/';
     reqURL += url.split('/').slice(-2).join('/');
@@ -112,5 +115,10 @@ export class PlominoViewsAPIService {
     const token = script.getAttribute('data-token');
 
     return token;
+  }
+
+  getPloneLink() {
+    const dbLink = this.dbService.getDBLink();
+    return dbLink.split('/').slice(0, -1).join('/')
   }
 }
