@@ -226,10 +226,9 @@ export class PlominoSaveManagerService {
     });
   }
 
-  /** @todo: fix hackOutsideArea */
   private hackOutsideArea() {
     /* ngx-bootstrap tab switch */
-    const $tabset = $('div.main-app.panel > tabset');
+    const $tabset = $('div.main-app.panel > plomino-tabs');
     const $tsb = $('<div id="tab-switch-block"></div>');
 
     $tsb.css({

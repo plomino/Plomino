@@ -189,7 +189,23 @@ export class AppComponent implements OnInit {
           }
           this.addDialog.close();
         });
-      })
+      });
+
+      $(window).bind('beforeunload', (eventObject: any) => {
+        if (
+          tinymce.editors.length
+          && tinymce.editors
+            .some((editor) => 
+            this.saveManager.isEditorUnsaved(
+              this.dbService.getDBLink() + '/' + editor.id
+            ))
+        ) {
+          return 'Do you want to close window. The form is unsaved.';
+        }
+        else {
+          return void 0;
+        }
+      });
     }
 
   collapseTreeElements(data:any, oldData:any) {

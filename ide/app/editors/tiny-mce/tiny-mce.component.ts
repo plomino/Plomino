@@ -600,7 +600,8 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
 
   onTinyMCEEditorChange() {
     if (this.activeEditorService.editorURL === this.id 
-      && !this.theFormIsSavingNow) {
+      && !this.theFormIsSavingNow
+      && this.saveManager.isEditorUnsaved(this.id)) {
       this.isDirty.emit(true);
     }
   }
