@@ -152,6 +152,12 @@ body {
 .plomino-workflow-editor li.plomino-workflow-editor__branch .workflow-node a {
   color: whitesmoke;
 }
+.plomino-workflow-editor li.plomino-workflow-editor__branch .workflow-node a.workflow-node__text-modal-link {
+  text-decoration: underline !important;
+}
+.plomino-workflow-editor li.plomino-workflow-editor__branch .workflow-node a.workflow-node__text-modal-link:hover {
+  color: hsla(0, 0%, 100%, 0.8) !important;
+}
 .plomino-workflow-editor li.plomino-workflow-editor__branch .workflow-node.workflow-node--condition {
   cursor: pointer;
 }

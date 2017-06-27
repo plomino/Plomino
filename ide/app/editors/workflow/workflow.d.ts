@@ -21,10 +21,12 @@ interface PlominoWorkflowItem {
   view?: string;
   goto?: string;
   gotoLabel?: string;
+  notes?: string;
   type?: string;
   selected?: boolean;
   macroId?: number;
   macroText?: string;
+  macroDesc?: string;
 
   /**
    * root means that this item is top element

@@ -176,6 +176,14 @@ $wfpad-right-left: 7px;
 
       a {
         color: whitesmoke;
+
+        &.workflow-node__text-modal-link {
+          text-decoration: underline !important;
+
+          &:hover {
+            color: hsla(0, 0%, 100%, 0.8) !important;
+          }
+        }
       }
 
       &.workflow-node--condition {

@@ -217,6 +217,23 @@ export class PlominoWorkflowItemEditorService {
             inputGroup.style.display = 'block';
           }
         });
+
+      if (item.type === WF.FORM_TASK 
+        || item.type === WF.VIEW_TASK || item.type === WF.PROCESS) {
+        this.itemSettingsDialog
+          .querySelectorAll('.mdl-dialog__content-form-group [data-typefor]')
+          .forEach((inputGroup: HTMLElement) => {
+            if (!(new RegExp(item.type === WF.PROCESS 
+              ? 'inlineProcess' 
+              : item.type, 'g'))
+              .test(inputGroup.dataset.typefor)) {
+              inputGroup.style.display = 'none';
+            }
+            else {
+              inputGroup.style.display = 'inline-block';
+            }
+          });
+      }
       this.loadFormMacro(item);
     }
     else {
@@ -308,6 +325,7 @@ export class PlominoWorkflowItemEditorService {
             $wd.find('.plomino-macros-rule').each((i, e) => {
               if (!item.macroText) {
                 item.macroText = '';
+                item.macroDesc = '';
               }
               const $macroValues = $(e).find('[data-macro-values]');
               const text = $macroValues.length 
@@ -343,6 +361,8 @@ export class PlominoWorkflowItemEditorService {
         : $e.find('.plomino_edit_macro')
           .toArray().map((_e: HTMLElement) => _e.innerText).join(', ');
       item.macroText = text;
+      item.macroDesc = $e.find('.plomino_edit_macro')
+        .toArray().map((_e: HTMLElement) => _e.innerText).join(', ');
     }
 
     Array.from(this.itemSettingsDialog

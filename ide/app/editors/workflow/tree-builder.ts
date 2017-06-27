@@ -59,15 +59,21 @@ export const treeBuilder = {
                 View task
               </li>
               <li class="mdl-menu__item${ 
-                parent ? ' mdl-menu__item--full-bleed-divider' : '' }"
+                parent && parent.type !== WF_ITEM_TYPE.CONDITION
+                && !(item.children.length 
+                  && item.children[0].type === WF_ITEM_TYPE.CONDITION)
+                ? ' mdl-menu__item--full-bleed-divider' : '' }"
                 data-target="${ item.id }"
                 data-create="${ WF_ITEM_TYPE.EXT_TASK }">
                 Ext. task
               </li>
-              ${ parent ? `<li class="mdl-menu__item"
+              ${ parent && parent.type !== WF_ITEM_TYPE.CONDITION 
+                && !(item.children.length 
+                  && item.children[0].type === WF_ITEM_TYPE.CONDITION)
+                ? `<li class="mdl-menu__item"
                 data-target="${ item.id }"
                 data-create="${ WF_ITEM_TYPE.CONDITION }">
-                Branches
+                Branch
               </li>
               <li class="mdl-menu__item"
                 data-target="${ item.id }"
@@ -167,10 +173,10 @@ export const treeBuilder = {
                   Task: <a href onclick="return false"
                     class="workflow-node__text-modal-link"
                   >${ hashId } ${ cutString(item.title, allowedLength) || '......' }</a>
-              </div>${ item.title && item.title.length > allowedLength 
+              </div>${ item.notes 
                 ? `<div class="mdl-tooltip mdl-tooltip--top" 
                 data-mdl-for="workflow-node__text--task-${ item.id }">
-                ${ autoBR(item.title) }</div>` : '' }` : ''
+                ${ autoBR(item.notes) }</div>` : '' }` : ''
             }<!--
             -->${ item.type === WF_ITEM_TYPE.FORM_TASK ? 
               `<div class="workflow-node__text workflow-node__text--form"
@@ -209,10 +215,10 @@ export const treeBuilder = {
                   Next Action: <a href onclick="return false"
                     class="workflow-node__text-modal-link"
                   >${ cutString(item.process, allowedLengthWide) || '......' }</a>
-              </div>${ item.process && item.process.length > allowedLengthWide 
+              </div>${ item.macroDesc 
                 ? `<div class="mdl-tooltip mdl-tooltip--top" 
                 data-mdl-for="workflow-node__text--process-${ item.id }">
-                ${ autoBR(item.process) }</div>` : '' }` : ''
+                ${ autoBR(item.macroDesc) }</div>` : '' }` : ''
             }${ item.type === WF_ITEM_TYPE.CONDITION ? 
               `<div class="workflow-node__text workflow-node__text--condition">
                   <i class="material-icons">add</i>
@@ -276,15 +282,17 @@ export const treeBuilder = {
             View task
           </li>
           <li class="mdl-menu__item${ 
-            parent ? ' mdl-menu__item--full-bleed-divider' : '' }"
+            parent && parent.type !== WF_ITEM_TYPE.CONDITION
+            ? ' mdl-menu__item--full-bleed-divider' : '' }"
             data-target="${ item.id }"
             data-create="${ WF_ITEM_TYPE.EXT_TASK }">
             Ext. task
           </li>` : '' }
-          ${ parent ? `<li class="mdl-menu__item"
+          ${ parent && parent.type !== WF_ITEM_TYPE.CONDITION
+            ? `<li class="mdl-menu__item"
             data-target="${ item.id }"
             data-create="${ WF_ITEM_TYPE.CONDITION }">
-            Branches
+            Branch
           </li>
           <li class="mdl-menu__item"
             data-target="${ item.id }"

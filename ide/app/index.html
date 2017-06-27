@@ -26,7 +26,8 @@
       padding: 15px;
     }
 
-    article div.container span.label {
+    article div.container span.label,
+    article #content-core .label {
       color: black;
     }
 
@@ -581,6 +582,10 @@
         </label>
         <input type="text" id="wf-item-settings-dialog__title" data-key="title">
       </div>
+      <div data-typefor="workflowFormTask workflowViewTask workflowExternalTask" class="mdl-dialog__content-form-group">
+        <label for="wf-item-settings-dialog__notes">Notes</label>
+        <textarea type="text" id="wf-item-settings-dialog__notes" data-key="notes"></textarea>
+      </div>
       <div data-typefor="workflowFormTask" class="mdl-dialog__content-form-group">
         <label for="wf-item-settings-dialog__form">Associated form</label>
         <select id="wf-item-settings-dialog__form" data-key="form"></select>
@@ -633,14 +638,13 @@
         <label for="wf-item-settings-dialog__condition">Branch</label>
         <input type="text" id="wf-item-settings-dialog__condition" data-key="condition">
       </div>
-      <div data-typefor="workflowFormTask workflowViewTask workflowExternalTask" class="mdl-dialog__content-form-group">
-        <label for="wf-item-settings-dialog__notes">Notes</label>
-        <textarea type="text" id="wf-item-settings-dialog__notes" data-key="notes"></textarea>
-      </div>
       <div data-typefor="processModal" class="mdl-dialog__content-form-group">
         <label for="wf-item-settings-dialog__process">
-          Description <br>
-          <small style="color: dimgray;">what the system does when processing this form or view</small>
+          Next Action <br>
+          <small style="color: dimgray;">what the system does when processing this </small>
+          <small data-typefor="workflowFormTask" style="color: dimgray;">form</small>
+          <small data-typefor="workflowViewTask" style="color: dimgray;">view</small>
+          <small data-typefor="inlineProcess" style="color: dimgray;">form or view</small>
         </label>
         <input type="text" id="wf-item-settings-dialog__process" data-key="process">
       </div>

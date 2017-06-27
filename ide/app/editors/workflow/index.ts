@@ -355,6 +355,7 @@ export class PlominoWorkflowComponent implements OnInit {
     const closestExists = Boolean($wfItemClosest.length);
     const onGoto = closestExists && $wfItemClosest.hasClass('workflow-node--goto');
     const onCond = closestExists && $wfItemClosest.hasClass('workflow-node--condition');
+    const onProc = closestExists && $wfItemClosest.hasClass('workflow-node--branch');
     const onRoot = closestExists && $wfItemClosest.hasClass('workflow-node--root');
     const isProcOrCondDrag = [WF.PROCESS, WF.CONDITION].indexOf(dType) !== -1;
     const isBranchDrag = dType === WF.CONDITION;
@@ -363,6 +364,7 @@ export class PlominoWorkflowComponent implements OnInit {
 
     if ((onCond && !isBranchDrag) || onGoto 
       || (onRoot && (isProcOrCondDrag || isGotoDrag))
+      || (onProc && isProcOrCondDrag)
     ) {
       allowedDrag = false;
     }
