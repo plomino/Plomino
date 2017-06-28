@@ -23,6 +23,7 @@ export class PlominoTabsComponent implements OnInit {
     private elementService: ElementService,
     private tabsManagerService: PlominoTabsManagerService,
     private urlManager: URLManagerService,
+    private changeDetector: ChangeDetectorRef,
   ) {
     this.tabsManagerService.getOpeningTab()
       .subscribe((tab) => {
@@ -148,6 +149,14 @@ export class PlominoTabsComponent implements OnInit {
       && this.saveManager.isEditorUnsaved(this.activeTab.url)
     ) {
       this.saveManager.enqueueNewFormSaveProcess(this.activeTab.url);
+      this.saveManager.nextEditorSavedState(this.activeTab.url);
+      this.activeTab.isDirty = false;
+      this.tabsCollection.forEach((tab, index) => {
+        if (tab.id === this.activeTab.id) {
+          this.tabsCollection[index].isDirty = false;
+          this.changeDetector.detectChanges();
+        }
+      });
     }
     this.activeTab = tab;
     this.tabsManagerService.setActive(tab);
