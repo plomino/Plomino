@@ -367,10 +367,14 @@ export class PlominoWorkflowComponent implements OnInit {
     const isBranchDrag = dType === WF.CONDITION;
     const isGotoDrag = dType === WF.GOTO;
     const lvl = closestExists ? +$wfItemClosest.attr('data-node-level') : 0;
+    const isOnTopOfCondDrag = closestExists && $wfItemClosest
+      .parent().find('>.plomino-workflow-editor__branches>'
+      + '.plomino-workflow-editor__branch>.workflow-node--condition').length;
 
     if ((onCond && !isBranchDrag) || onGoto 
       || (onRoot && (isProcOrCondDrag || isGotoDrag))
       || (onProc && isProcOrCondDrag)
+      || (isOnTopOfCondDrag && isProcOrCondDrag)
     ) {
       allowedDrag = false;
     }
@@ -686,7 +690,7 @@ export class PlominoWorkflowComponent implements OnInit {
       scrollTop = (<HTMLElement> wfTree.firstChild).scrollTop;
       scrollLeft = (<HTMLElement> wfTree.firstChild).scrollLeft;
     }
-    
+
     wfTree.innerHTML = treeBuilder.getBuildedTree(tree.getRawTree());
     const $wfTree: JQuery = $(wfTree);
 
