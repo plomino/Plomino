@@ -678,8 +678,21 @@ export class PlominoWorkflowComponent implements OnInit {
   buildWFTree(tree = this.tree, autosave = AUTOSAVE, upgrade = NO_AUTOUPGRADE) {
     this.latestTree = tree;
     const wfTree: HTMLElement = this.workflowEditorNode.nativeElement;
+
+    let scrollTop = 0;
+    let scrollLeft = 0;
+    
+    if (wfTree.firstChild) {
+      scrollTop = (<HTMLElement> wfTree.firstChild).scrollTop;
+      scrollLeft = (<HTMLElement> wfTree.firstChild).scrollLeft;
+    }
+    
     wfTree.innerHTML = treeBuilder.getBuildedTree(tree.getRawTree());
     const $wfTree: JQuery = $(wfTree);
+
+    $('#workflow > div > ul')
+      .scrollTop(scrollTop)
+      .scrollLeft(scrollLeft);
 
     $wfTree.find('.workflow-node').each((i, wfNode: HTMLElement) => {
       const item = tree.getItemById(+wfNode.dataset.nodeId);
