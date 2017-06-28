@@ -52,9 +52,14 @@
           <span class="icon material-icons">security</span>
           ACL
       </button>
+      <div class="mdl-tooltip mdl-tooltip--large"
+        data-mdl-for="ide-dbsettings__acl-button">
+        Access control lists management
+      </div>
       <button class="mdl-button mdl-js-button
         mdl-button--raised mdl-js-ripple-effect
         mdl-color--green-900"
+        id="ide-dbsettings__wf-button"
         style="white-space: normal"
         [disabled]="!hasAuthPermissions()"
         (click)="designWorkflow()">
@@ -62,8 +67,8 @@
         Workflow
       </button>
       <div class="mdl-tooltip mdl-tooltip--large"
-        data-mdl-for="ide-dbsettings__acl-button">
-        Access control lists management
+        data-mdl-for="ide-dbsettings__wf-button">
+        Workflow editor
       </div>
   </div>
   <div class="scrolling-container scrolling-container--66" #dbform [innerHTML]="dbForm | safePloneHtml"></div>
