@@ -573,7 +573,10 @@
     <div class="modal-body">
       <div data-typefor="workflowFormTask workflowViewTask workflowExternalTask workflowProcess" 
         class="mdl-dialog__content-form-group">
-        <label for="wf-item-settings-dialog__title" data-typefor="workflowProcess">Condition</label>
+        <label for="wf-item-settings-dialog__title" data-typefor="workflowProcess processModal">
+          Condition
+          <small style="color: dimgray;">when this branch applies</small>
+        </label>
         <label for="wf-item-settings-dialog__title" 
           data-typefor="workflowFormTask workflowViewTask workflowExternalTask">
           Task <br>
@@ -641,10 +644,10 @@
       <div data-typefor="processModal" class="mdl-dialog__content-form-group">
         <label for="wf-item-settings-dialog__process">
           Next Action <br>
-          <small style="color: dimgray;">what the system does when processing this </small>
-          <small data-typefor="workflowFormTask" style="color: dimgray;">form</small>
-          <small data-typefor="workflowViewTask" style="color: dimgray;">view</small>
-          <small data-typefor="inlineProcess" style="color: dimgray;">form or view</small>
+          <small style="color: dimgray;">what the system does when </small>
+          <small data-typefor="workflowFormTask" style="color: dimgray;">processing this form</small>
+          <small data-typefor="workflowViewTask" style="color: dimgray;">processing this view</small>
+          <small data-typefor="inlineProcess" style="color: dimgray;">condition applies</small>
         </label>
         <input type="text" id="wf-item-settings-dialog__process" data-key="process">
       </div>

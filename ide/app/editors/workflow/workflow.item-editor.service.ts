@@ -221,7 +221,8 @@ export class PlominoWorkflowItemEditorService {
       if (item.type === WF.FORM_TASK 
         || item.type === WF.VIEW_TASK || item.type === WF.PROCESS) {
         this.itemSettingsDialog
-          .querySelectorAll('.mdl-dialog__content-form-group [data-typefor]')
+          .querySelectorAll(
+            'label[for="wf-item-settings-dialog__process"] [data-typefor]')
           .forEach((inputGroup: HTMLElement) => {
             if (!(new RegExp(item.type === WF.PROCESS 
               ? 'inlineProcess' 
@@ -260,8 +261,8 @@ export class PlominoWorkflowItemEditorService {
       ) {
         $wd.html(`<label style="margin-bottom: 15px; margin-top: 10px">
           Implementation<br>
-          <small style="color: dimgray;">There is no form or view related - 
-          you can\'t select the macros</small></label>`);
+          <small style="color: dimgray;">Please select a form/view in the 
+          previous task so a rule can be selected.</small></label>`);
       }
       else {
         $wd.html('');
@@ -291,7 +292,13 @@ export class PlominoWorkflowItemEditorService {
         };
         htmlBuffer = $htmlFS.find('ul.plomino-macros').get(0).outerHTML;
         htmlBuffer = `<label style="margin-bottom: 15px; margin-top: 10px">
-          Implementation</label>${ htmlBuffer }`;
+          Implementation<br>
+          <small style="color: dimgray;">add or select a rule from 
+          <b>${ tmpOnTopFormItem.form || tmpOnTopFormItem.view }</b> ${
+            tmpOnTopFormItem.type === WF.FORM_TASK ? 'form' : 'view'
+          } 
+          <br>which implements the condition and action above</small>
+          </label>${ htmlBuffer }`;
       }
       catch(e) {
         $wd.html('');
