@@ -29,6 +29,9 @@ export class PlominoTabsComponent implements OnInit {
         const index = this.findTabIndex(tab);
         if (index === -1) {
           this.tabsCollection.push(tab);
+          if (tab.editor === 'layout') {
+            this.saveManager.nextEditorSavedState(tab.url);
+          }
         }
         this.setTabActive(tab);
       });
@@ -139,6 +142,13 @@ export class PlominoTabsComponent implements OnInit {
   }
 
   setTabActive(tab: PlominoTabUnit) {
+    if (
+      this.activeTab 
+      && this.activeTab.editor === 'layout' 
+      && this.saveManager.isEditorUnsaved(this.activeTab.url)
+    ) {
+      this.saveManager.enqueueNewFormSaveProcess(this.activeTab.url);
+    }
     this.activeTab = tab;
     this.tabsManagerService.setActive(tab);
     this.urlManager.rebuildURL(this.tabsCollection);
