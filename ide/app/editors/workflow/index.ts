@@ -201,9 +201,15 @@ export class PlominoWorkflowComponent implements OnInit {
         this.elementService.awaitForConfirm('One branch. Remove just division?')
         .then(() => {
           const idParent = this.tree.getItemParentById(targetItem.id).id;
-          const idChildren = targetItem.children[0].id;
+          const idChildren = targetItem.children.length 
+            ? targetItem.children[0].id : null;
           const idItem = targetItem.id;
-          this.tree.deleteNodeById(aloneBranch ? idParent : idChildren);
+          if (aloneBranch) {
+            this.tree.deleteNodeById(idParent);
+          }
+          else if (idChildren !== null) {
+            this.tree.deleteNodeById(idChildren);
+          }
           this.tree.deleteNodeById(idItem);
           this.buildWFTree(this.tree, AUTOSAVE, AUTOUPGRADE);
         })
