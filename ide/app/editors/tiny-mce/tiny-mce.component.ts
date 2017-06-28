@@ -496,11 +496,12 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
     patObject.tiny.content_css.push('theme/barceloneta-compiled.css');
     patObject.tiny.content_css.push('theme/++plone++static/plone-compiled.css');
     patObject.tiny.content_css.push('theme/tinymce.css');
+    patObject.tiny.content_css.push('../../../++plone++static/tinymce-styles.css');
     patObject.tiny.plugins = ['code', 'save', 'importcss', 'noneditable', 
       'preview', 'ploneimage', 'plonelink', 'hr', 
       'lists', 'media', 'table'],
     patObject.tiny.toolbar = 
-      'undo redo | formatselect | bold italic underline | ' +
+      'undo redo | styleselect | bold italic underline | ' +
       'alignleft aligncenter alignright alignjustify | ' +
       'bullist numlist | outdent indent' +
       'plonelink unlink ploneimage';
