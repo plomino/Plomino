@@ -219,7 +219,7 @@ export class TinyMCEFormContentManagerService {
       // editor = tinymce.EditorManager.editors[editorId];
     }
 
-    contentHTML = contentHTML.replace(/(<p>&nbsp;<\/p>(\s+)?)+?$/i, '');
+    contentHTML = contentHTML.replace(/(<p>(?:&nbsp;|\s)<\/p>(\s+)?)+?$/i, '');
     contentHTML = contentHTML
       .replace(/plominoGroupClass mceNonEditable plominoSubformClass/gi,
         'mceNonEditable plominoSubformClass');
@@ -296,7 +296,7 @@ export class TinyMCEFormContentManagerService {
       }
     }
     const content = editor.getContent();
-    return content.replace(/(<p>&nbsp;<\/p>(\s+)?)+?$/i, '');
+    return content.replace(/(<p>(?:&nbsp;|\s)<\/p>(\s+)?)+?$/i, '');
   }
 
   selectAndRemoveElementById(editorId: any, elementId: string): void {

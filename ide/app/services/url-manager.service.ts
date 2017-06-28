@@ -41,9 +41,17 @@ export class URLManagerService {
           });
       }
       else {
-        const $resource = $(`.tree-node--name:contains("${ urlItem }")`)
-          .filter((i, node: HTMLElement) => $(node).text().trim() === urlItem);
-        $resource.click();
+        window['materialPromise']
+          .then(() => {
+            const $resource = $(`.tree-node--name:contains("${ urlItem }")`)
+              .filter((i, node: HTMLElement) => $(node).text().trim() === urlItem);
+            $resource.click();
+            setTimeout(() => {
+              const $resource = $(`.tree-node--name:contains("${ urlItem }")`)
+                .filter((i, node: HTMLElement) => $(node).text().trim() === urlItem);
+              $resource.click();
+            }, 100);
+          });
       }
     }
   }
