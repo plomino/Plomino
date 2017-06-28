@@ -81,26 +81,18 @@ export class PlominoTabsComponent implements OnInit {
     event.preventDefault();
     event.stopImmediatePropagation();
 
-    this.tabsManagerService.closeTab(tab);
-
-    // ((): Promise<any> => {
-    //   if (tab.editor === 'layout' 
-    //     && this.saveManager.isEditorUnsaved(tab.url)
-    //   ) {
-    //     /**
-    //      * warn the user of any unsaved changes
-    //      */
-    //     return this.elementService.awaitForConfirm(
-    //       'Continue without saving?'
-    //     );
-    //   } else {
-    //     return Promise.resolve();
-    //   }
-    // })()
-    // .then(() => {
-    //   this.tabsManagerService.closeTab(tab);
-    // })
-    // .catch(() => {});
+    if (tab.editor === 'layout' 
+      && this.saveManager.isEditorUnsaved(tab.url)
+    ) {
+      this.elementService.awaitForConfirm('Continue without saving?')
+      .then(() => {
+        this.tabsManagerService.closeTab(tab);
+      })
+      .catch(() => {});
+    }
+    else {
+      this.tabsManagerService.closeTab(tab);
+    }
   }
 
   findTabIndex(tab: PlominoTabUnit) {
