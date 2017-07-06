@@ -627,18 +627,21 @@ export class PlominoWorkflowComponent implements OnInit {
       this.dragInsertPreview($wfItemClosest, { title: '', type: isCreate });
       return this.onDrop();
     }
+    
+    if (isRoot)
+      return true;
 
-    if (!isRoot && !item.selected && !isDelBtn && !isCreate && !isVirtual && !isAddBelow) {
+    if (!item.selected && !isDelBtn && !isCreate && !isVirtual && !isAddBelow) {
       this.unselectAllWFItems();
       item.selected = true;
       this.itemEditor.setSelectedItem(item);
       wfNode.classList.add('workflow-node--selected');
     }
 
-    if (!isRoot && isDelBtn) {
+    if (isDelBtn) {
       return this.deleteWFItem(wfNode, item);
     }
-    else if (!isRoot && wfNode.classList.contains('workflow-node--condition')) {
+    else if (wfNode.classList.contains('workflow-node--condition')) {
       const newLogicItem: PlominoWorkflowItem = {
         id: null,
         dropping: false,
@@ -650,32 +653,28 @@ export class PlominoWorkflowComponent implements OnInit {
       this.tree.pushNewItemToParentById(newLogicItem, item.id);
       return this.buildWFTree(this.tree, AUTOSAVE, AUTOUPGRADE);
     }
-    else if (!isRoot && eventTarget.classList.contains('workflow-node__text-modal-link')) {
-      if (eventTarget.parentElement.classList.contains('workflow-node__text--form')
-        || eventTarget.parentElement.classList.contains('workflow-node__text--view')
-      ) {
-        if (item.form || item.view) {
-          this.itemEditor.openResourceTab(item);
-        }
-        else {
+    else {
+      if (item.type === WF.FORM_TASK || item.type === WF.VIEW_TASK || item.type === WF.EXT_TASK) {
+        if ((eventTarget.parentElement.classList.contains('workflow-node__text--form') && item.form)
+        || (eventTarget.parentElement.classList.contains('workflow-node__text--view') && item.view)
+        ) {
+            this.itemEditor.openResourceTab(item);
+          }
+          else if (eventTarget.parentElement.classList.contains('workflow-node__text')){
+            this.itemEditor.showModal(item);
+          }
+      } else if (item.type === WF.PROCESS) {
+        if (eventTarget.parentElement.classList.contains('workflow-node__text')){
+            this.itemEditor.showModal(item, true);
+          }
+      } else if (item.type === WF.GOTO) {
+        if (eventTarget.classList.contains('workflow-node__text-modal-link')) {
           this.itemEditor.showModal(item);
+        } else if (item &&  item.goto) {
+          $('.workflow-node[data-node-id="' + item.goto +'"]').get(0).scrollIntoView(false);
         }
       }
-      else if (item.type === WF.PROCESS 
-        || eventTarget.parentElement.classList.contains('workflow-node__text--process')
-      ) {
-        /* process modal */
-        this.itemEditor.showModal(item, true);
-      }
-      else {
-        /* just modal */
-        this.itemEditor.showModal(item);
-      }
     }
-    else if (item && item.type === WF.GOTO && item.goto) {
-      $('.workflow-node[data-node-id="' + item.goto +'"]').get(0).scrollIntoView(false);
-    }
-
     return true;
   }
 
