@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="node_modules/ace-editor-builds/demo/kitchen-sink/docs"/>
+	<classpathentry kind="lib" path="node_modules/tinymce/tests/js/jsrobot/JSRobot.jar"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>

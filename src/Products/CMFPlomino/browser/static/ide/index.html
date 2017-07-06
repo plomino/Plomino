@@ -8,21 +8,26 @@
   <link href="bootstrap/css/bootstrap.min.css" rel="stylesheet">
   <link async href="theme/select2.css" rel="stylesheet">
   <link async rel="stylesheet" href="theme/barceloneta-compiled.css">
+  <link async rel="stylesheet" href="../../../++plone++static/components/tinymce-builded/js/tinymce/skins/lightgray/skin.min.css">
   <link async rel="stylesheet" href="theme/++plone++static/plone-compiled.css">
-  <link async rel="stylesheet"
-    href="https://cdnjs.cloudflare.com/ajax/libs/dialog-polyfill/0.4.2/dialog-polyfill.min.css">
+  <link async rel="stylesheet" href="theme/dialog-polyfill.css">
   <style>
     /* Plone Form styles */    
     div.outer-wrapper div.container {
       width: auto;
     }
     /* If you display the formControls, the save button will save the DB */
-    div.outer-wrapper .formControls,
-    div.outer-wrapper .documentFirstHeading {
+    article .formControls,
+    article .documentFirstHeading {
       display: none;
     }
 
-    .outer-wrapper div.container span.label {
+    #portal-column-content {
+      padding: 15px;
+    }
+
+    article div.container span.label,
+    article #content-core .label {
       color: black;
     }
 
@@ -53,6 +58,11 @@
         100% {
           transform: rotate(360deg);
         }
+    }
+
+    .disable-hover,
+    .disable-hover * {
+      pointer-events: none !important;
     }
 
     #application-loader {
@@ -145,6 +155,19 @@
       text-decoration: none;
     }
 
+    .tab-name:focus, .tab-trigger:focus {
+      outline: none;
+      user-select: none;
+    }
+
+    plomino-tiny-mce .plomino-block-preloader {
+      opacity: 0.85;
+    }
+
+    .plone-modal-body .plominoFieldGroup p {
+      margin: 0 0 5px !important;
+    }
+
     .mdl-button, .mdl-button:hover,
     .mdl-button:focus, .mdl-button:active, .mdl-button:visited {
       text-decoration: none;
@@ -157,12 +180,252 @@
       margin-left: 0;
       padding-left: 0;
     }
+
+    .mdl-layout__drawer-button {
+      display: none !important;
+    }
+
+    .mdl-dialog__content-form-group {
+      margin-bottom: 15px;
+    }
+
+    .mdl-dialog__content-form-group select {
+      width: 100% !important;
+      display: block !important;
+    }
+
+    .mdl-dialog__left-button {
+      position: absolute !important;
+    }
+
+    .pattern-relateditems-dropdown {
+      z-index: 10002;
+    }
+    .pattern-relateditems-dropdown .select2-results .select2-highlighted {
+      color: #000;
+      background: #d8d8d8;
+    }
+    .pattern-relateditems-dropdown .select2-results .select2-selected {
+      display: list-item;
+    }
+    .pattern-relateditems-active {
+      padding: 5px;
+      background-color: #DDD;
+    }
+    .pattern-relateditems-container {
+      display: inline-block;
+      position: relative;
+    }
+    .pattern-relateditems-path {
+      display: block;
+      line-height: 20px;
+      background-color: #f1f1f1;
+      font-size: 12px;
+      border: 1px solid #aaa;
+      border-bottom-style: none;
+      z-index: 9999;
+      position: relative;
+      padding: 0 6px;
+      color: #333;
+    }
+    .pattern-relateditems-path a {
+      padding: 0 6px;
+    }
+    .pattern-relateditems-path em {
+      color: #666;
+    }
+    .pattern-relateditems-buttons {
+      position: absolute;
+      display: inline-block;
+      text-align: right;
+      font-size: 18px;
+      right: 0;
+      top: 50%;
+      margin-top: -16px;
+    }
+    .pattern-relateditems-buttons a {
+      position: relative;
+      top: 1px;
+      display: inline-block;
+      font-family: 'Glyphicons Halflings';
+      font-style: normal;
+      font-weight: 400;
+      line-height: 1;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+    .pattern-relateditems-buttons a:before {
+      content: "\e080";
+    }
+    .pattern-relateditems-result {
+      padding-right: 30px;
+      position: relative;
+    }
+    .pattern-relateditems-result a:hover {
+      text-decoration: none;
+    }
+    .pattern-relateditems-result .pattern-relateditems-result-select {
+      display: block;
+      line-height: 15px;
+      padding-top: 5px;
+    }
+    .pattern-relateditems-result .pattern-relateditems-result-path {
+      display: block;
+      color: #444;
+      font-size: 11px;
+    }
+    .pattern-relateditems-item .pattern-relateditems-item-path {
+      font-size: 11px;
+      color: #444;
+      display: block;
+    }
+    /* tree parts */
+    .pattern-relateditems-tree .tree-container {
+      box-shadow: 0px 0px 8px 0px #DDD;
+      position: absolute;
+      background-color: white;
+      min-width: 200px;
+      padding: 0px;
+      left: -1px;
+      top: -11px;
+      border: 1px solid #5897fb;
+      display: none;
+      z-index: 10000;
+      min-width: 350px;
+      margin-top: 10px;
+    }
+    .pattern-relateditems-tree .tree-container .pat-tree {
+      max-height: 400px;
+      overflow-y: scroll;
+      overflow-x: hidden;
+      border-top: 1px solid #DDD;
+      border-bottom: 1px solid #DDD;
+      padding: 2px 0;
+    }
+    .pattern-relateditems-tree .tree-container .select-folder-label {
+      font-weight: bold;
+    }
+    .pattern-relateditems-tree .tree-container .tree-node-empty {
+      font-size: 75%;
+    }
+    .pattern-relateditems-tree .tree-container .title-container {
+      background-color: #f1f1f1;
+    }
+    .pattern-relateditems-tree .tree-container .jqtree-tree {
+      background-image: -webkit-gradient(linear, 0% 0%, 0% 100%, color-stop(1%, #eeeeee), color-stop(5%, #ffffff));
+      background-image: -webkit-linear-gradient(top, #eeeeee 1%, #ffffff 5%);
+      background-image: -moz-linear-gradient(top, #eeeeee 1%, #ffffff 5%);
+      background-image: linear-gradient(to bottom, #eeeeee 1%, #ffffff 5%);
+    }
+    .pattern-relateditems-tree .tree-container .jqtree-tree .pattern-relateditems-buttons {
+      margin-top: -22px;
+      top: inherit;
+    }
+    .pattern-relateditems-tree .tree-container .jqtree-tree .jqtree_common {
+      padding-left: 2px;
+    }
+    .pattern-relateditems-tree .tree-container .jqtree-tree .jqtree_common.jqtree-selected .jqtree_common.jqtree-element {
+      background: #f1f1f1;
+      text-shadow: none;
+    }
+    .pattern-relateditems-tree .tree-container .jqtree-tree .jqtree-toggler {
+      top: 20%;
+    }
+    .pattern-relateditems-tree .tree-container .jqtree-tree li.jqtree_common .jqtree-element {
+      padding: 0;
+    }
+    .pattern-relateditems-tree .tree-container .jqtree-tree li.jqtree_common .jqtree_common.jqtree-element:hover {
+      background: #f1f1f1;
+    }
+    .pattern-relateditems-tree .tree-container .jqtree-tree li.jqtree_common.jqtree-folder {
+      margin-left: 18px;
+    }
+    .pattern-relateditems-tree .tree-container .jqtree-tree li.jqtree_common.jqtree-folder ul.jqtree_common {
+      margin-left: 0;
+      padding-left: 0;
+    }
+
+    .upload-container .upload-area {
+      border: 3px dashed #ccc;
+      padding: 30px;
+      border-radius: 5px;
+      margin: 0 auto 15px auto;
+      max-width: 600px;
+    }
+    .upload-container .upload-area:hover {
+      background: rgba(0, 0, 0, 0.025);
+      cursor: pointer;
+    }
+    .upload-container .upload-area button.browse,
+    .upload-container .upload-area .controls button,
+    .upload-container .upload-area input {
+      width: 100%;
+    }
+    .upload-container .upload-queue .input-sm {
+      line-height: 1em;
+      font-size: 0.8em;
+      height: 24px;
+      margin-bottom: 1px;
+    }
+    .upload-container .upload-queue .controls {
+      margin-top: 10px;
+      padding-top: 10px;
+    }
+    .upload-container .upload-queue .previews {
+      margin-top: 4em;
+    }
+    .upload-container .upload-queue .previews .item {
+      padding: 5px 0;
+      clear: both;
+    }
+    .upload-container .upload-queue .previews .title {
+      padding-left: 3px;
+    }
+    .upload-container .upload-queue .previews .info img {
+      width: 32px;
+      height: 32px;
+      margin-top: -26px;
+      float: right;
+    }
+    .upload-container #fakeUploadFile {
+      height: 35px;
+    }
+    .upload-container .pattern-relateditems-container,
+    .upload-container .pattern-relateditems-container > * {
+      width: 100% !important;
+    }
+    .upload-container .align-right {
+      text-align: right;
+    }
+    .upload-container .controls {
+      display: none;
+    }
+    .upload-container .actions {
+      margin-top: 0.5em;
+    }
+    .upload-container .progress {
+      height: 34px;
+      margin-bottom: 0;
+    }
+    .upload-container .dz-drag-hover {
+      -webkit-box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.75), 0 0 0 1000px rgba(255, 255, 255, 0.85);
+      -moz-box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.75), 0 0 0 1000px rgba(255, 255, 255, 0.85);
+      box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.75), 0 0 0 1000px rgba(0, 0, 0, 0.85);
+      z-index: 99999;
+      position: relative;
+    }
+    .upload-container .upload .dz-preview .dz-details .dz-size,
+    .upload-container .upload-previews .dz-preview .dz-details .dz-size {
+      font-size: 11px;
+    }
+
+
   </style>
 </head>
 
 <!-- Display the application -->
 
-<body class="template-edit portaltype-plominoform">
+<body class="template-edit portaltype-plominoform noscroll">
 
   <div id="application-loader">
     <div class="sk-cube-grid">
@@ -284,9 +547,131 @@
     </div>
   </dialog>
 
-  <script defer src="https://code.getmdl.io/1.3.0/material.min.js"
+  <dialog class="mdl-dialog" id="modal-tab-plus">
+      <!--<h4 class="mdl-dialog__title">What you want to add?</h4>-->
+      <div class="mdl-dialog__actions mdl-dialog__actions--full-width">
+          <button type="button" class="mdl-button" data-create="form">Add new form</button>
+          <button type="button" class="mdl-button" data-create="view">Add new view</button>
+          <button type="button" class="mdl-button">Cancel</button>
+      </div>
+  </dialog>
+
+  <div id="wf-item-settings-dialog" class="modal fade" tabindex="-1" role="dialog" style="z-index: 1005">
+    <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" 
+          aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" data-typefor="workflowFormTask">Form Task</h4>
+        <h4 class="modal-title" data-typefor="processModal">Next Action</h4>
+        <h4 class="modal-title" data-typefor="workflowViewTask">View Task</h4>
+        <h4 class="modal-title" data-typefor="workflowExternalTask">External Task</h4>
+        <h4 class="modal-title" data-typefor="workflowProcess">Branch</h4>
+        <h4 class="modal-title" data-typefor="workflowCondition">Condition</h4>
+        <h4 class="modal-title" data-typefor="workflowGoto">Goto</h4>
+      </div>
+    <div class="modal-body">
+      <div data-typefor="workflowFormTask workflowViewTask workflowExternalTask workflowProcess" 
+        class="mdl-dialog__content-form-group">
+        <label for="wf-item-settings-dialog__title" data-typefor="workflowProcess processModal">
+          Condition
+          <small style="color: dimgray;">when this branch applies</small>
+        </label>
+        <label for="wf-item-settings-dialog__title" 
+          data-typefor="workflowFormTask workflowViewTask workflowExternalTask">
+          Task <br>
+          <small style="color: dimgray;">description of input task e.g. 
+            who the user is and what they are expected to do</small>
+        </label>
+        <input type="text" id="wf-item-settings-dialog__title" data-key="title">
+      </div>
+      <div data-typefor="workflowFormTask workflowViewTask workflowExternalTask" class="mdl-dialog__content-form-group">
+        <label for="wf-item-settings-dialog__notes">Notes</label>
+        <textarea type="text" id="wf-item-settings-dialog__notes" data-key="notes"></textarea>
+      </div>
+      <div data-typefor="workflowFormTask" class="mdl-dialog__content-form-group">
+        <label for="wf-item-settings-dialog__form">Associated form</label>
+        <select id="wf-item-settings-dialog__form" data-key="form"></select>
+      </div>
+      <div data-typefor="workflowViewTask" class="mdl-dialog__content-form-group">
+        <label for="wf-item-settings-dialog__view">Associated view</label>
+        <select id="wf-item-settings-dialog__view" data-key="view"></select>
+      </div>
+      <div data-typefor="workflowFormTask workflowViewTask" 
+        style="min-height: 50px">
+        <button type="button"
+          data-typefor="workflowFormTask"
+          class="mdl-button mdl-button--raised mdl-button--accent 
+          mdl-dialog__left-button
+          wf-item-settings-dialog__create-btn--form
+          wf-item-settings-dialog__create-btn mdl-color--grey-700">
+          Create new form
+        </button>
+        <button type="button"
+          data-typefor="workflowFormTask"
+          class="mdl-button mdl-button--raised mdl-button--accent 
+          mdl-dialog__left-button
+          wf-item-settings-dialog__edit-btn--form
+          wf-item-settings-dialog__edit-btn mdl-color--grey-700">
+          View the form
+        </button>
+        <button type="button"
+          data-typefor="workflowViewTask"
+          class="mdl-button mdl-button--raised mdl-button--accent 
+          mdl-dialog__left-button
+          wf-item-settings-dialog__create-btn--view
+          wf-item-settings-dialog__create-btn mdl-color--grey-700">
+          Create new view
+        </button>
+        <button type="button"
+          data-typefor="workflowViewTask"
+          class="mdl-button mdl-button--raised mdl-button--accent 
+          mdl-dialog__left-button
+          wf-item-settings-dialog__edit-btn--view
+          wf-item-settings-dialog__edit-btn mdl-color--grey-700">
+          Edit the view
+        </button>
+      </div>
+      <div data-typefor="workflowGoto" class="mdl-dialog__content-form-group">
+        <label for="wf-item-settings-dialog__node">Next Task
+          <br><small style="color: dimgray;">Where to flow to next</small></label>
+        <select id="wf-item-settings-dialog__node" data-key="goto"></select>
+      </div>
+      <div data-typefor="workflowCondition" class="mdl-dialog__content-form-group">
+        <label for="wf-item-settings-dialog__condition">Branch</label>
+        <input type="text" id="wf-item-settings-dialog__condition" data-key="condition">
+      </div>
+      <div data-typefor="processModal" class="mdl-dialog__content-form-group">
+        <label for="wf-item-settings-dialog__process">
+          Next Action <br>
+          <small style="color: dimgray;">what the system does when </small>
+          <small data-typefor="workflowFormTask" style="color: dimgray;">processing this form</small>
+          <small data-typefor="workflowViewTask" style="color: dimgray;">processing this view</small>
+          <small data-typefor="inlineProcess" style="color: dimgray;">condition applies</small>
+        </label>
+        <input type="text" id="wf-item-settings-dialog__process" data-key="process">
+      </div>
+      <div id="wf-item-settings-dialog__wd"></div>
+    </div>
+    <div class="mdl-dialog__actions">
+      <button type="button"
+        class="mdl-button mdl-button--raised mdl-button--accent">
+        Cancel
+      </button>
+      <button type="button"
+        class="mdl-button mdl-button--raised mdl-button--accent 
+        wf-item-settings-dialog__apply-btn mdl-color--green-500">
+        Apply
+      </button>
+    </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+  </div><!-- /.modal -->
+
+  <script defer src="theme/dialog-polyfill.js"></script>
+  <script defer src="theme/material.min.js"
     onload="window.materialPromiseResolve()"
     onerror="window.materialPromiseReject()"></script>
-<script type="text/javascript" src="vendor.js"></script><script type="text/javascript" src="main.js"></script></body>
+<script type="text/javascript" src="vendor.js?75d309aa55386c1c305e"></script><script type="text/javascript" src="main.js?75d309aa55386c1c305e"></script></body>
 
 </html>

@@ -221,7 +221,7 @@ export const treeBuilder = {
                 ${ autoBR(item.macroDesc) }</div>` : '' }` : ''
             }${ item.type === WF_ITEM_TYPE.CONDITION ? 
               `<div class="workflow-node__text workflow-node__text--condition">
-                  <i class="material-icons">add</i>
+                  <!--<i class="material-icons">add</i> -->
               </div>${ item.condition && item.condition.length > allowedLength 
                 ? `<div class="mdl-tooltip mdl-tooltip--top" 
                 data-mdl-for="workflow-node__text--condition-${ item.id }">
