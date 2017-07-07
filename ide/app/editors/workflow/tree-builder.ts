@@ -170,7 +170,7 @@ export const treeBuilder = {
             -->${ this.eventTypeIsTask(item.type) ? 
               `<div class="workflow-node__text workflow-node__text--task"
                 id="workflow-node__text--task-${ item.id }">
-                  Task: <a href onclick="return false"
+                  <span>Task:</span> <a href onclick="return false"
                     class="workflow-node__text-modal-link"
                   >${ hashId } ${ cutString(item.title, allowedLength) || '......' }</a>
               </div>${ item.notes 
@@ -181,7 +181,7 @@ export const treeBuilder = {
             -->${ item.type === WF_ITEM_TYPE.FORM_TASK ? 
               `<div class="workflow-node__text workflow-node__text--form"
                 id="workflow-node__text--form-${ item.id }">
-                  Form: <a href onclick="return false"
+                  <span>Form:</span> <a href onclick="return false"
                     class="workflow-node__text-modal-link"
                   >${ cutString(item.form) || '......' }</a>
               </div>${ item.form && item.form.length > allowedLength 
@@ -192,7 +192,7 @@ export const treeBuilder = {
             -->${ item.type === WF_ITEM_TYPE.VIEW_TASK ? 
               `<div class="workflow-node__text workflow-node__text--view"
                 id="workflow-node__text--view-${ item.id }">
-                View: <a href onclick="return false"
+                <span>View:</span> <a href onclick="return false"
                     class="workflow-node__text-modal-link"
                   >${ cutString(item.view) || '......' }</a>
               </div>${ item.view && item.view.length > allowedLength 
@@ -202,7 +202,7 @@ export const treeBuilder = {
             }${ item.type === WF_ITEM_TYPE.PROCESS ? 
               `<div id="workflow-node__text--branch-${ item.id }" 
                 class="workflow-node__text workflow-node__text--branch">
-                  Branch: <a href onclick="return false"
+                  <span>Branch:</span> <a href onclick="return false"
                     class="workflow-node__text-modal-link">${ 
                     item.title || 'unnamed' 
                   }</a>
@@ -212,7 +212,7 @@ export const treeBuilder = {
                 || item.type === WF_ITEM_TYPE.PROCESS ? 
               `<div class="workflow-node__text workflow-node__text--process"
                 id="workflow-node__text--process-${ item.id }">
-                  Next Action: <a href onclick="return false"
+                  <span>Next Action:</span> <a href onclick="return false"
                     class="workflow-node__text-modal-link"
                   >${ cutString(item.process, allowedLengthWide) || '......' }</a>
               </div>${ item.macroDesc 
@@ -221,7 +221,7 @@ export const treeBuilder = {
                 ${ autoBR(item.macroDesc) }</div>` : '' }` : ''
             }${ item.type === WF_ITEM_TYPE.CONDITION ? 
               `<div class="workflow-node__text workflow-node__text--condition">
-                  <i class="material-icons">add</i>
+                  <!--<i class="material-icons">add</i> -->
               </div>${ item.condition && item.condition.length > allowedLength 
                 ? `<div class="mdl-tooltip mdl-tooltip--top" 
                 data-mdl-for="workflow-node__text--condition-${ item.id }">

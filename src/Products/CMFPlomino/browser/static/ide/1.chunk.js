@@ -1,104 +1,24 @@
-webpackJsonp([1,2],{/***/
-1008:/***/
-function(module,exports,__webpack_require__){var __WEBPACK_AMD_DEFINE_ARRAY__,__WEBPACK_AMD_DEFINE_RESULT__;__WEBPACK_AMD_DEFINE_ARRAY__=[__webpack_require__(383),__webpack_require__(919),__webpack_require__(1009),__webpack_require__(920)],__WEBPACK_AMD_DEFINE_RESULT__=function($,Registry,mockupParser,logger){"use strict";var log=logger.getLogger("Patternslib Base"),initBasePattern=function($el,options,trigger){var name=this.prototype.name,log=logger.getLogger("pat."+name),pattern=$el.data("pattern-"+name);if(void 0===pattern&&Registry.patterns[name]){try{options="mockup"===this.prototype.parser?mockupParser.getOptions($el,name,options):options,pattern=new Registry.patterns[name]($el,options,trigger)}catch(e){log.error("Failed while initializing '"+name+"' pattern.",e)}$el.data("pattern-"+name,pattern)}return pattern},Base=function($el,options,trigger){this.$el=$el,this.options=$.extend(!0,{},this.defaults||{},options||{}),this.init($el,options,trigger),this.emit("init")};return Base.prototype={constructor:Base,on:function(eventName,eventCallback){this.$el.on(eventName+"."+this.name+".patterns",eventCallback)},emit:function(eventName,args){
-// args should be a list
-void 0===args&&(args=[]),this.$el.trigger(eventName+"."+this.name+".patterns",args)}},Base.extend=function(patternProps){/* Helper function to correctly set up the prototype chain for new patterns.
-	        */
-var child,parent=this;
-// Check that the required configuration properties are given.
-if(!patternProps)throw new Error("Pattern configuration properties required when calling Base.extend");
-// The constructor function for the new subclass is either defined by you
-// (the "constructor" property in your `extend` definition), or defaulted
-// by us to simply call the parent's constructor.
-child=patternProps.hasOwnProperty("constructor")?patternProps.constructor:function(){parent.apply(this,arguments)},
-// Allow patterns to be extended indefinitely
-child.extend=Base.extend,
-// Static properties required by the Patternslib registry 
-child.init=initBasePattern,child.jquery_plugin=!0,child.trigger=patternProps.trigger;
-// Set the prototype chain to inherit from `parent`, without calling
-// `parent`'s constructor function.
-var Surrogate=function(){this.constructor=child};
-// Add pattern's configuration properties (instance properties) to the subclass,
-// Set a convenience property in case the parent's prototype is needed
-// later.
-// Register the pattern in the Patternslib registry.
-return Surrogate.prototype=parent.prototype,child.prototype=new Surrogate,$.extend(!0,child.prototype,patternProps),child.__super__=parent.prototype,patternProps.name?patternProps.trigger?Registry.register(child,patternProps.name):log.warn("The pattern '"+patternProps.name+"' does not have a trigger attribute, it will not be registered."):log.warn("This pattern without a name attribute will not be registered!"),child},Base}.apply(exports,__WEBPACK_AMD_DEFINE_ARRAY__),/**
-	 * A Base pattern for creating scoped patterns. It's similar to Backbone's
-	 * Model class. The advantage of this approach is that each instance of a
-	 * pattern has its own local scope (closure).
-	 *
-	 * A new instance is created for each DOM element on which a pattern applies.
-	 *
-	 * You can assign values, such as $el, to `this` for an instance and they
-	 * will remain unique to that instance.
-	 *
-	 * Older Patternslib patterns on the other hand have a single global scope for
-	 * all DOM elements.
-	 */
-!(void 0!==__WEBPACK_AMD_DEFINE_RESULT__&&(module.exports=__WEBPACK_AMD_DEFINE_RESULT__))},/***/
-1009:/***/
-function(module,exports,__webpack_require__){var __WEBPACK_AMD_DEFINE_ARRAY__,__WEBPACK_AMD_DEFINE_RESULT__;__WEBPACK_AMD_DEFINE_ARRAY__=[__webpack_require__(383)],__WEBPACK_AMD_DEFINE_RESULT__=function($){"use strict";var parser={getOptions:function getOptions($el,patternName,options){/* This is the Mockup parser. An alternative parser for Patternslib
-	             * patterns.
-	             *
-	             * NOTE: Use of the Mockup parser is discouraged and is added here for
-	             * legacy support for the Plone Mockup project.
-	             *
-	             * It parses a DOM element for pattern configuration options.
-	             */
-options=options||{},
-// get options from parent element first, stop if element tag name is 'body'
-0===$el.length||$.nodeName($el[0],"body")||(options=getOptions($el.parent(),patternName,options));
-// collect all options from element
-var elOptions={};if(0!==$el.length&&(elOptions=$el.data("pat-"+patternName),elOptions&&"string"==typeof elOptions)){var tmpOptions={};$.each(elOptions.split(";"),function(i,item){item=item.split(":"),item.reverse();var key=item.pop();key=key.replace(/^\s+|\s+$/g,""),// trim
-item.reverse();var value=item.join(":");value=value.replace(/^\s+|\s+$/g,""),// trim
-tmpOptions[key]=value}),elOptions=tmpOptions}return $.extend(!0,{},options,elOptions)}};return parser}.apply(exports,__WEBPACK_AMD_DEFINE_ARRAY__),!(void 0!==__WEBPACK_AMD_DEFINE_RESULT__&&(module.exports=__WEBPACK_AMD_DEFINE_RESULT__))},/***/
-1010:/***/
-function(module,exports,__webpack_require__){var __WEBPACK_AMD_DEFINE_ARRAY__,__WEBPACK_AMD_DEFINE_RESULT__;__WEBPACK_AMD_DEFINE_ARRAY__=[__webpack_require__(383),__webpack_require__(918),__webpack_require__(940),__webpack_require__(941)],__WEBPACK_AMD_DEFINE_RESULT__=function($,Base,drag,drop){"use strict";var SortablePattern=Base.extend({name:"sortable",trigger:".pat-sortable",defaults:{selector:"li",dragClass:"item-dragging",cloneClass:"dragging",createDragItem:function(pattern,$el){return $el.clone().addClass(pattern.options.cloneClass).css({opacity:.75,position:"absolute"}).appendTo(document.body)},drop:null},init:function(){var self=this,start=0;self.$el.find(self.options.selector).drag("start",function(e,dd){var dragged=this,$el=$(this);return $(dragged).addClass(self.options.dragClass),drop({tolerance:function(event,proxy,target){if(0!==$(target.elem).closest(self.$el).length){var test=event.pageY>target.top+target.height/2;return $.data(target.elem,"drop+reorder",test?"insertAfter":"insertBefore"),this.contains(target,[event.pageX,event.pageY])}}}),start=$el.index(),self.options.createDragItem(self,$el)}).drag(function(e,dd){/*jshint eqeqeq:false */
-$(dd.proxy).css({top:dd.offsetY,left:dd.offsetX});var drop=dd.drop[0],method=$.data(drop||{},"drop+reorder");/* XXX Cannot use triple equals here */
-method&&drop&&(drop!=dd.current||method!=dd.method)&&($(this)[method](drop),dd.current=drop,dd.method=method,dd.update())}).drag("end",function(e,dd){var $el=$(this);$el.removeClass(self.options.dragClass),$(dd.proxy).remove(),self.options.drop&&self.options.drop($el,$el.index()-start)}).drop("init",function(e,dd){/*jshint eqeqeq:false */
-/* XXX Cannot use triple equals here */
-return this!=dd.drag})}});return SortablePattern}.apply(exports,__WEBPACK_AMD_DEFINE_ARRAY__),/* Sortable pattern.
-	 *
-	 * Options:
-	 *    selector(string): Selector to use to draggable items in pattern ('li')
-	 *    dragClass(string): Class to apply to original item that is being dragged. ('item-dragging')
-	 *    cloneClass(string): Class to apply to cloned item that is dragged. ('dragging')
-	 *    drop(function): callback function for when item is dropped (null)
-	 *
-	 * Documentation:
-	 *    # Default
-	 *
-	 *    {{ example-1 }}
-	 *
-	 *    # Table
-	 *
-	 *    {{ example-2 }}
-	 *
-	 * Example: example-1
-	 *    <ul class="pat-sortable">
-	 *      <li>One</li>
-	 *      <li>Two</li>
-	 *      <li>Three</li>
-	 *    </ul>
-	 *
-	 * Example: example-2
-	 *    <table class="table table-stripped pat-sortable"
-	 *           data-pat-sortable="selector:tr;">
-	 *      <tbody>
-	 *        <tr>
-	 *          <td>One One</td>
-	 *          <td>One Two</td>
-	 *        </tr>
-	 *        <tr>
-	 *          <td>Two One</td>
-	 *          <td>Two Two</td>
-	 *        </tr>
-	 *        <tr>
-	 *          <td>Three One</td>
-	 *          <td>Three Two</td>
-	 *        </tr>
-	 *      </tbody>
-	 *    </table>
-	 *
-	 */
-!(void 0!==__WEBPACK_AMD_DEFINE_RESULT__&&(module.exports=__WEBPACK_AMD_DEFINE_RESULT__))}});
+webpackJsonp([1,2],{
+
+/***/ 1380:
+/***/ (function(module, exports, __webpack_require__) {
+
+	eval("var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/**\n * A Base pattern for creating scoped patterns. It's similar to Backbone's\n * Model class. The advantage of this approach is that each instance of a\n * pattern has its own local scope (closure).\n *\n * A new instance is created for each DOM element on which a pattern applies.\n *\n * You can assign values, such as $el, to `this` for an instance and they\n * will remain unique to that instance.\n *\n * Older Patternslib patterns on the other hand have a single global scope for\n * all DOM elements.\n */\n\n!(__WEBPACK_AMD_DEFINE_ARRAY__ = [\n  __webpack_require__(550),\n  __webpack_require__(1291),\n  __webpack_require__(1381),\n  __webpack_require__(1292)\n], __WEBPACK_AMD_DEFINE_RESULT__ = function($, Registry, mockupParser, logger) {\n    \"use strict\";\n    var log = logger.getLogger(\"Patternslib Base\");\n\n    var initBasePattern = function initBasePattern($el, options, trigger) {\n        var name = this.prototype.name;\n        var log = logger.getLogger(\"pat.\" + name);\n        var pattern = $el.data(\"pattern-\" + name);\n        if (pattern === undefined && Registry.patterns[name]) {\n            try {\n                options = this.prototype.parser  === \"mockup\" ? mockupParser.getOptions($el, name, options) : options;\n                pattern = new Registry.patterns[name]($el, options, trigger);\n            } catch (e) {\n                log.error(\"Failed while initializing '\" + name + \"' pattern.\", e);\n            }\n            $el.data(\"pattern-\" + name, pattern);\n        }\n        return pattern;\n    };\n\n    var Base = function($el, options, trigger) {\n        this.$el = $el;\n        this.options = $.extend(true, {}, this.defaults || {}, options || {});\n        this.init($el, options, trigger);\n        this.emit(\"init\");\n    };\n\n    Base.prototype = {\n        constructor: Base,\n        on: function(eventName, eventCallback) {\n            this.$el.on(eventName + \".\" + this.name + \".patterns\", eventCallback);\n        },\n        emit: function(eventName, args) {\n            // args should be a list\n            if (args === undefined) {\n                args = [];\n            }\n            this.$el.trigger(eventName + \".\" + this.name + \".patterns\", args);\n        }\n    };\n\n    Base.extend = function(patternProps) {\n        /* Helper function to correctly set up the prototype chain for new patterns.\n        */\n        var parent = this;\n        var child;\n\n        // Check that the required configuration properties are given.\n        if (!patternProps) {\n            throw new Error(\"Pattern configuration properties required when calling Base.extend\");\n        }\n\n        // The constructor function for the new subclass is either defined by you\n        // (the \"constructor\" property in your `extend` definition), or defaulted\n        // by us to simply call the parent's constructor.\n        if (patternProps.hasOwnProperty(\"constructor\")) {\n            child = patternProps.constructor;\n        } else {\n            child = function() { parent.apply(this, arguments); };\n        }\n\n        // Allow patterns to be extended indefinitely\n        child.extend = Base.extend;\n\n        // Static properties required by the Patternslib registry \n        child.init = initBasePattern;\n        child.jquery_plugin = true;\n        child.trigger = patternProps.trigger;\n\n        // Set the prototype chain to inherit from `parent`, without calling\n        // `parent`'s constructor function.\n        var Surrogate = function() { this.constructor = child; };\n        Surrogate.prototype = parent.prototype;\n        child.prototype = new Surrogate();\n\n        // Add pattern's configuration properties (instance properties) to the subclass,\n        $.extend(true, child.prototype, patternProps);\n\n        // Set a convenience property in case the parent's prototype is needed\n        // later.\n        child.__super__ = parent.prototype;\n\n        // Register the pattern in the Patternslib registry.\n        if (!patternProps.name) {\n            log.warn(\"This pattern without a name attribute will not be registered!\");\n        } else if (!patternProps.trigger) {\n            log.warn(\"The pattern '\"+patternProps.name+\"' does not \" +\n                     \"have a trigger attribute, it will not be registered.\");\n        } else {\n            Registry.register(child, patternProps.name);\n        }\n        return child;\n    };\n    return Base;\n}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));\n\n\n//////////////////\n// WEBPACK FOOTER\n// ./~/patternslib/src/core/base.js\n// module id = 1380\n// module chunks = 1 2\n//# sourceURL=webpack:///./~/patternslib/src/core/base.js?");
+
+/***/ }),
+
+/***/ 1381:
+/***/ (function(module, exports, __webpack_require__) {
+
+	eval("var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [\n    __webpack_require__(550)\n], __WEBPACK_AMD_DEFINE_RESULT__ = function($) {\n    'use strict';\n\n    var parser = {\n        getOptions: function getOptions($el, patternName, options) {\n            /* This is the Mockup parser. An alternative parser for Patternslib\n             * patterns.\n             *\n             * NOTE: Use of the Mockup parser is discouraged and is added here for\n             * legacy support for the Plone Mockup project.\n             *\n             * It parses a DOM element for pattern configuration options.\n             */\n            options = options || {};\n            // get options from parent element first, stop if element tag name is 'body'\n            if ($el.length !== 0 && !$.nodeName($el[0], 'body')) {\n                options = getOptions($el.parent(), patternName, options);\n            }\n            // collect all options from element\n            var elOptions = {};\n            if ($el.length !== 0) {\n                elOptions = $el.data('pat-' + patternName);\n                if (elOptions) {\n                    // parse options if string\n                    if (typeof(elOptions) === 'string') {\n                        var tmpOptions = {};\n                        $.each(elOptions.split(';'),\n                            function(i, item) {\n                                item = item.split(':');\n                                item.reverse();\n                                var key = item.pop();\n                                key = key.replace(/^\\s+|\\s+$/g, '');    // trim\n                                item.reverse();\n                                var value = item.join(':');\n                                value = value.replace(/^\\s+|\\s+$/g, '');    // trim\n                                tmpOptions[key] = value;\n                            }\n                        );\n                        elOptions = tmpOptions;\n                    }\n                }\n            }\n            return $.extend(true, {}, options, elOptions);\n        }\n    };\n    return parser;\n}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));\n\n\n//////////////////\n// WEBPACK FOOTER\n// ./~/patternslib/src/core/mockup-parser.js\n// module id = 1381\n// module chunks = 1 2\n//# sourceURL=webpack:///./~/patternslib/src/core/mockup-parser.js?");
+
+/***/ }),
+
+/***/ 1382:
+/***/ (function(module, exports, __webpack_require__) {
+
+	eval("var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/* Sortable pattern.\n *\n * Options:\n *    selector(string): Selector to use to draggable items in pattern ('li')\n *    dragClass(string): Class to apply to original item that is being dragged. ('item-dragging')\n *    cloneClass(string): Class to apply to cloned item that is dragged. ('dragging')\n *    drop(function): callback function for when item is dropped (null)\n *\n * Documentation:\n *    # Default\n *\n *    {{ example-1 }}\n *\n *    # Table\n *\n *    {{ example-2 }}\n *\n * Example: example-1\n *    <ul class=\"pat-sortable\">\n *      <li>One</li>\n *      <li>Two</li>\n *      <li>Three</li>\n *    </ul>\n *\n * Example: example-2\n *    <table class=\"table table-stripped pat-sortable\"\n *           data-pat-sortable=\"selector:tr;\">\n *      <tbody>\n *        <tr>\n *          <td>One One</td>\n *          <td>One Two</td>\n *        </tr>\n *        <tr>\n *          <td>Two One</td>\n *          <td>Two Two</td>\n *        </tr>\n *        <tr>\n *          <td>Three One</td>\n *          <td>Three Two</td>\n *        </tr>\n *      </tbody>\n *    </table>\n *\n */\n\n\n!(__WEBPACK_AMD_DEFINE_ARRAY__ = [\n  __webpack_require__(550),\n  __webpack_require__(1290),\n  __webpack_require__(1312),\n  __webpack_require__(1313)\n], __WEBPACK_AMD_DEFINE_RESULT__ = function($, Base, drag, drop) {\n  'use strict';\n\n  var SortablePattern = Base.extend({\n    name: 'sortable',\n    trigger: '.pat-sortable',\n    defaults: {\n      selector: 'li',\n      dragClass: 'item-dragging',\n      cloneClass: 'dragging',\n      createDragItem: function(pattern, $el){\n        return $el.clone().\n          addClass(pattern.options.cloneClass).\n          css({opacity: 0.75, position: 'absolute'}).appendTo(document.body);\n      },\n      drop: null // function to handle drop event\n    },\n    init: function() {\n      var self = this;\n      var start = 0;\n\n      self.$el.find(self.options.selector).drag('start', function(e, dd) {\n        var dragged = this;\n        var $el = $(this);\n        $(dragged).addClass(self.options.dragClass);\n        drop({\n          tolerance: function(event, proxy, target) {\n            if ($(target.elem).closest(self.$el).length === 0) {\n              /* prevent dragging conflict over another drag area */\n              return;\n            }\n            var test = event.pageY > (target.top + target.height / 2);\n            $.data(target.elem, 'drop+reorder', test ? 'insertAfter' : 'insertBefore' );\n            return this.contains(target, [event.pageX, event.pageY]);\n          }\n        });\n        start = $el.index();\n        return self.options.createDragItem(self, $el);\n      })\n      .drag(function(e, dd) {\n        /*jshint eqeqeq:false */\n        $( dd.proxy ).css({\n          top: dd.offsetY,\n          left: dd.offsetX\n        });\n        var drop = dd.drop[0],\n            method = $.data(drop || {}, 'drop+reorder');\n        /* XXX Cannot use triple equals here */\n        if (method && drop && (drop != dd.current || method != dd.method)) {\n          $(this)[method](drop);\n          dd.current = drop;\n          dd.method = method;\n          dd.update();\n        }\n      })\n      .drag('end', function(e, dd) {\n        var $el = $(this);\n        $el.removeClass(self.options.dragClass);\n        $(dd.proxy).remove();\n        if (self.options.drop) {\n          self.options.drop($el, $el.index() - start);\n        }\n      })\n      .drop('init', function(e, dd ) {\n        /*jshint eqeqeq:false */\n        /* XXX Cannot use triple equals here */\n        return (this == dd.drag) ? false: true;\n      });\n\n    }\n  });\n\n  return SortablePattern;\n\n}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));\n\n\n\n\n//////////////////\n// WEBPACK FOOTER\n// ./~/mockup/mockup/patterns/sortable/pattern.js\n// module id = 1382\n// module chunks = 1\n//# sourceURL=webpack:///./~/mockup/mockup/patterns/sortable/pattern.js?");
+
+/***/ })
+
+});
