@@ -69,7 +69,9 @@ export class PlominoWorkflowComponent implements OnInit {
 
     /* listen to external save trigger */
     this.workflowChanges.needSave$
-      .subscribe(() => this.buildWFTree(this.tree, AUTOSAVE, AUTOUPGRADE));
+      .subscribe(() => {
+        this.parseTreeFromSettings();
+      });
 
     /* listen to external add trigger */
     this.workflowChanges.runAdd$
@@ -104,7 +106,7 @@ export class PlominoWorkflowComponent implements OnInit {
     }, 1);
   }
 
-  initialize() {
+  parseTreeFromSettings() {
     let tree;
 
     try {
@@ -127,6 +129,10 @@ export class PlominoWorkflowComponent implements OnInit {
     this.tree = new TreeStructure(tree);
     this.buildWFTree(this.tree, NO_AUTOSAVE, AUTOUPGRADE);
     this.itemEditor.registerTree(this.tree);
+  }
+
+  initialize() {
+    this.parseTreeFromSettings();
 
     this.editorOffset = $(this.workflowEditorNode.nativeElement).offset();
     this.dragController.registerWorkflowOffset(this.editorOffset);
@@ -636,6 +642,7 @@ export class PlominoWorkflowComponent implements OnInit {
     }
 
     if (!isRoot && isDelBtn) {
+      this.itemEditor.setSelectedItem(null);
       return this.deleteWFItem(wfNode, item);
     }
     else if (!isRoot && wfNode.classList.contains('workflow-node--condition')) {

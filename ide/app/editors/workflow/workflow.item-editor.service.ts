@@ -24,7 +24,9 @@ export class PlominoWorkflowItemEditorService {
     private dbService: PlominoDBService,
     private objService: ObjService,
     private zone: NgZone,
-  ) {}
+  ) {
+    this.setSelectedItem(null);
+  }
 
   init() {
     this.itemSettingsDialog = <HTMLDialogElement> 
@@ -51,6 +53,29 @@ export class PlominoWorkflowItemEditorService {
     )
     .forEach((btn: HTMLElement) => {
       btn.addEventListener('click', (evt) => {
+        evt.stopImmediatePropagation();
+        
+        if (this.registeredTree && this.selectedItemIsNothing()) {
+          /* get selected item using id information */
+          const item = this.registeredTree
+            .getItemById(
+              +(<HTMLElement> this.itemSettingsDialog).dataset.itemId
+            );
+
+          if (item) {
+            this.selectedItemRef = item;
+          }
+        }
+
+        const updateDBSettings = (formOrView: string) => 
+          (url: string, label: string) => {
+            if (this.selectedItemRef && this.registeredTree) {
+              this.selectedItemRef.title = label;
+              this.selectedItemRef[formOrView] = url.split('/').pop();
+              this.workflowChanges.needSave.next(true);
+            }
+          };
+
         if (btn.classList.contains('wf-item-settings-dialog__apply-btn')) {
           this.applyDialog();
         }
@@ -62,18 +87,10 @@ export class PlominoWorkflowItemEditorService {
           this.editMacro(this.selectedItemRef);
         }
         else if (btn.classList.contains('wf-item-settings-dialog__create-btn--form')) {
-          this.saveManager.createNewForm((url, label) => {
-            this.selectedItemRef.title = label;
-            this.selectedItemRef.form = url.split('/').pop();
-            this.workflowChanges.needSave.next(true);
-          });
+          this.saveManager.createNewForm(updateDBSettings('form').bind(this));
         }
         else if (btn.classList.contains('wf-item-settings-dialog__create-btn--view')) {
-          this.saveManager.createNewView((url, label) => {
-            this.selectedItemRef.title = label;
-            this.selectedItemRef.view = url.split('/').pop();
-            this.workflowChanges.needSave.next(true);
-          });
+          this.saveManager.createNewView(updateDBSettings('view').bind(this));
         }
         this.$itemSettingsDialog.modal('hide');
       });
@@ -131,6 +148,7 @@ export class PlominoWorkflowItemEditorService {
     if (this.selectedItemIsNothing()) {
       this.setSelectedItem(item);
     }
+    (<HTMLElement> this.itemSettingsDialog).dataset.itemId = item.id.toString();
     this.itemSettingsDialog
       .querySelector('#wf-item-settings-dialog__form')
       .innerHTML = '<option value=""></option>' + this.formsList.getFiltered()
