@@ -36,7 +36,9 @@ Resource  description_plominodatabase.robot
 Library  Remote  ${PLONE_URL}/RobotRemote
 Library           ${CURDIR}/../../../../robotframework-selenium2library-extensions/src/Selenium2LibraryExtensions    WITH NAME    Selenium2LibraryExtensions
 
-Test Setup   Open test browser
+Test Setup  description_plominodatabase.Plone Test Setup
+
+#Open test browser
 Test Teardown  description_plominodatabase.Plone Test Teardown
 
 

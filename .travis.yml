@@ -4,8 +4,10 @@ language:
 sudo: required
 dist: trusty
 cache:
+  pip: true
   directories:
     - buildout-cache
+    - $HOME/buildout-cache
 python:
   - 2.7
 node_js:
