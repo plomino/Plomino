@@ -1,3 +1,5 @@
+import { PlominoTabsManagerService } from './../services/tabs-manager/index';
+import { PlominoDBService } from './../services/db.service';
 import { PlominoActiveEditorService } from './../services/active-editor.service';
 import { 
     Component, 
@@ -7,7 +9,8 @@ import {
     ViewChildren,
     OnInit,
     OnChanges, 
-    ContentChild 
+    ContentChild, 
+    ChangeDetectorRef
 } from '@angular/core';
 
 import { CollapseDirective } from 'ng2-bootstrap/ng2-bootstrap';
@@ -18,7 +21,8 @@ import {
     TabsService,
     FormsService,
     DraggingService,
-    LogService
+    LogService,
+    PlominoFormFieldsSelectionService
 } from '../services';
 
 import { ExtractNamePipe } from '../pipes';
@@ -34,7 +38,6 @@ import { Observable, Subscription } from "rxjs/Rx";
 })
 export class TreeComponent implements OnInit {
     @Input() data: any;
-    @Output() openTab = new EventEmitter();
     @Output() add = new EventEmitter();
     @ViewChildren('selectable') element: any;
     
@@ -48,15 +51,26 @@ export class TreeComponent implements OnInit {
     constructor(
       private _elementService: ElementService,
       private tabsService: TabsService,
+      private formFieldsSelection: PlominoFormFieldsSelectionService,
       private formsService: FormsService,
       private log: LogService,
       private activeEditorService: PlominoActiveEditorService,
-      public draggingService: DraggingService
+      private changeDetector: ChangeDetectorRef,
+      public draggingService: DraggingService,
+      private dbService: PlominoDBService,
+      private tabsManagerService: PlominoTabsManagerService,
     ) { }
     
     ngOnInit() {
-      this.tabsService.getActiveTab()
-        .subscribe((activeTab) => {
+      this.tabsManagerService.getActiveTab()
+        .subscribe((tabUnit) => {
+
+          const activeTab = tabUnit ? {
+            label: tabUnit.label || tabUnit.id,
+            url: tabUnit.url,
+            editor: tabUnit.editor
+          } : null;
+
           this.log.info('activeTab', activeTab);
           this.log.extra('tree.component.ts ngOnInit');
           this.selected = activeTab;
@@ -122,8 +136,11 @@ export class TreeComponent implements OnInit {
     ) {
       this.log.info('drag subform', selected, mouseEvent, typeLabel, typeNameUrl);
       this.log.extra('tree.component.ts dragSubform');
+      
       if (this.activeEditorService.getActive() && selected && typeLabel === 'Forms' 
-        && typeNameUrl !== this.activeEditorService.getActive().id) {
+        && typeNameUrl !== `${ this.dbService.getDBLink() }/${ 
+          this.activeEditorService.getActive().id }`
+      ) {
         this.draggingService.subformDragEvent.next(mouseEvent);
       }
     }
@@ -146,7 +163,12 @@ export class TreeComponent implements OnInit {
     }
 
     onEdit(event: any) {
-      this.openTab.emit(event);
+      this.tabsManagerService.openTab({
+        id: event.url.split('/').pop(),
+        url: event.url,
+        editor: event.editor,
+        label: event.label
+      });
     }
     
     onAdd(event: any) {
@@ -188,21 +210,28 @@ export class TreeComponent implements OnInit {
       let id = fieldData.name.slice(fieldData.name.lastIndexOf('/') + 1);
       if ((this.selected && this.selected.url) !== fieldData.parent) {
         let tabLabel = fieldData.parent.slice(fieldData.parent.lastIndexOf('/') + 1);
-        this.log.info('this.tabsService.openTab #t0001');
-        this.tabsService.openTab({
-          formUniqueId: this.selected.formUniqueId,
-          editor: 'layout',
-          label: tabLabel,
+        
+        this.tabsManagerService.openTab({
+          id: fieldData.parent.split('/').pop(),
           url: fieldData.parent,
-          path: [
-              {    
-                  name: tabLabel,
-                  type: 'Forms'
-              }
-          ],
-        }, false);
+          editor: 'layout',
+          label: tabLabel
+        });
+
+        // this.tabsService.openTab({
+        //   formUniqueId: this.selected.formUniqueId,
+        //   editor: 'layout',
+        //   label: tabLabel,
+        //   url: fieldData.parent,
+        //   path: [
+        //       {    
+        //           name: tabLabel,
+        //           type: 'Forms'
+        //       }
+        //   ],
+        // }, false);
       }  
-      this.tabsService.selectField({
+      this.formFieldsSelection.selectField({
         id: id, type: fieldData.type, parent: fieldData.parent
       });
     }

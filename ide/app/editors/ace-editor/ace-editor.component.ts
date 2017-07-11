@@ -1,7 +1,9 @@
-import {Component, OnInit, AfterViewInit, Input, Output, EventEmitter} from '@angular/core';
-import {PopoverComponent} from '../popover';
-import {ElementService, TabsService} from '../../services';
-import {DROPDOWN_DIRECTIVES} from 'ng2-bootstrap/ng2-bootstrap';
+import { PlominoTabsManagerService } from './../../services/tabs-manager/index';
+import { Component, OnInit, AfterViewInit, 
+  Input, Output, EventEmitter } from '@angular/core';
+import { PopoverComponent } from '../popover';
+import { ElementService, TabsService, PlominoDBService } from '../../services';
+import { DROPDOWN_DIRECTIVES } from 'ng2-bootstrap/ng2-bootstrap';
 
 declare var ace: any;
 
@@ -48,14 +50,15 @@ export class ACEEditorComponent {
 
     constructor(
       private _elementService: ElementService,
-      private tabsService: TabsService
+      private tabsManagerService: PlominoTabsManagerService,
+      private dbService: PlominoDBService,
     ) {
-      this.tabsService.onRefreshCodeTab$
+      this.tabsManagerService.onRefreshCodeTab$
         .subscribe((fieldURL: string) => {
           if (this.url === fieldURL) {
             this.ngOnInit();
             this.ngAfterViewInit();
-            this.tabsService.setActiveTabDirty(false);
+            this.tabsManagerService.setActiveTabDirty(false);
           }
         });
     }
@@ -81,7 +84,7 @@ export class ACEEditorComponent {
             this.name = this.url.replace(window.location.href
                 .replace("++resource++Products.CMFPlomino/ide/index.html",""), "");
 
-            const dbLink = this.getDBLink();
+            const dbLink = this.dbService.getDBLink();
             this.name = this.name.replace(dbLink + '/', '')
               .replace(window.location.protocol + '//' + window.location.host, '');
                 
@@ -133,14 +136,6 @@ export class ACEEditorComponent {
                 this.save();
             }
         });
-    }
-
-    getDBLink() {
-      return `${ 
-        window.location.pathname
-        .replace('++resource++Products.CMFPlomino/ide/', '')
-        .replace('/index.html', '')
-      }`;
     }
 
     addMethod(id: string) {

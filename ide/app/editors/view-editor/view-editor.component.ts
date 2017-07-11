@@ -1,12 +1,13 @@
+import { PlominoDBService } from './../../services/db.service';
 import { DraggingService } from './../../services/dragging.service';
 import { PlominoBlockPreloaderComponent } from './../../utility/block-preloader';
 import { FieldsService } from './../../services/fields.service';
-import { TabsService } from './../../services/tabs.service';
 import { DomSanitizationService, SafeHtml } from '@angular/platform-browser';
 import { LogService } from './../../services/log.service';
 import { Component, Input, ViewEncapsulation, OnInit, NgZone, ChangeDetectorRef } from '@angular/core';
 import { PlominoViewsAPIService } from './views-api.service';
-import {DND_DIRECTIVES} from 'ng2-dnd';
+import { DND_DIRECTIVES } from 'ng2-dnd';
+import { PlominoFormFieldsSelectionService } from "../../services";
 
 @Component({
   selector: 'plomino-view-editor',
@@ -28,11 +29,12 @@ export class PlominoViewEditorComponent implements OnInit {
     private api: PlominoViewsAPIService,
     private log: LogService,
     private fieldsService: FieldsService,
-    private tabsService: TabsService,
+    private formFieldsSelection: PlominoFormFieldsSelectionService,
     private zone: NgZone,
     private dragService: DraggingService,
     private changeDetector: ChangeDetectorRef,
     protected sanitizer: DomSanitizationService,
+    private dbService: PlominoDBService,
   ) { }
 
   ngOnInit() {
@@ -280,7 +282,7 @@ export class PlominoViewEditorComponent implements OnInit {
               }
 
               if (columnIndex === 0) {
-                const href = `${ this.getDBLink() }/document/${ writeId }`;
+                const href = `${ this.dbService.getDBLink() }/document/${ writeId }`;
                 cellData = `<a href="${ href }" target="_blank">${ cellData }</a>`;
               }
 
@@ -356,7 +358,7 @@ export class PlominoViewEditorComponent implements OnInit {
   onDragEnter(dropData: {dragData: { type: string }, mouseEvent: DragEvent}) {
     if (dropData.dragData.type && dropData.dragData.type === 'column') {
       $('.view-editor__column-header--virtual').remove();
-      this.tabsService.selectField(null);
+      this.formFieldsSelection.selectField(null);
 
       const $tr = $(`[data-url="${ this.item.url }"] table thead tr`);
       $tr.append(
@@ -368,7 +370,7 @@ export class PlominoViewEditorComponent implements OnInit {
     }
     else if (dropData.dragData.type && dropData.dragData.type === 'action') {
       $('.view-editor__action--drop-preview').remove();
-      this.tabsService.selectField(null);
+      this.formFieldsSelection.selectField(null);
 
       const $x = $(`[data-url="${ this.item.url }"] .view-editor__actions .actionButtons`);
       $x.append(
@@ -401,7 +403,7 @@ export class PlominoViewEditorComponent implements OnInit {
         $(`[data-url="${ this.item.url }"] [data-column="++add++PlominoColumn"]`);
       if ($_.length) {
         $_.remove(); // todo remove tdis
-        this.tabsService.selectField(null);
+        this.formFieldsSelection.selectField(null);
       }
 
       const droppedColumn = $('.view-editor__column-header--drop-preview').get(0);
@@ -573,7 +575,7 @@ export class PlominoViewEditorComponent implements OnInit {
                 $(`[data-url="${ this.item.url }"] [data-column="++add++PlominoColumn"]`);
               if ($_.length) {
                 $_.remove(); // todo remove tdis
-                this.tabsService.selectField(null);
+                this.formFieldsSelection.selectField(null);
               }
 
               /* insert column and do some math */
@@ -681,10 +683,10 @@ export class PlominoViewEditorComponent implements OnInit {
       .removeClass('view-editor__action--selected');
     actionElement.classList.add('view-editor__action--selected');
     this.log.info('view action selected', actionElement);
-    this.tabsService.selectField({
+    this.formFieldsSelection.selectField({
       id: `${ this.item.url.split('/').pop() }/${ actionElement.id }`,
       type: 'PlominoAction',
-      parent: this.getDBLink()
+      parent: this.dbService.getDBLink()
     })
   }
 
@@ -702,18 +704,10 @@ export class PlominoViewEditorComponent implements OnInit {
     
     columnElement.classList.add('view-editor__column-header--selected');
     this.log.info('view column selected', columnElement);
-    this.tabsService.selectField({
+    this.formFieldsSelection.selectField({
       id: `${ this.item.url.split('/').pop() }/${ columnElement.dataset.column }`,
       type: 'PlominoColumn',
-      parent: this.getDBLink()
+      parent: this.dbService.getDBLink()
     })
-  }
-
-  private getDBLink() {
-    return `${ 
-      window.location.pathname
-      .replace('++resource++Products.CMFPlomino/ide/', '')
-      .replace('/index.html', '')
-    }`;
   }
 }

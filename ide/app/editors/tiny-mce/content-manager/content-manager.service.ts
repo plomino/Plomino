@@ -1,8 +1,8 @@
+import { PlominoFormFieldsSelectionService } from './../../../services/form-fields-selection/index';
 import { PlominoActiveEditorService } from './../../../services/active-editor.service';
 import { PlominoElementAdapterService } from './../../../services/element-adapter.service';
 import { LogService } from './../../../services/log.service';
 import { Observable, Subject } from 'rxjs/Rx';
-import { TabsService } from './../../../services/tabs.service';
 import { DraggingService } from './../../../services/dragging.service';
 import { Injectable, ChangeDetectorRef } from '@angular/core';
 
@@ -34,7 +34,7 @@ export class TinyMCEFormContentManagerService {
   private logService: LogService,
   private adapter: PlominoElementAdapterService,
   private activeEditorService: PlominoActiveEditorService,
-  private tabsService: TabsService) {
+  private formFieldsSelection: PlominoFormFieldsSelectionService) {
     interface OneInTimeObservable<PlominoIFrameMouseMove> 
       extends Observable<PlominoIFrameMouseMove> {
       oneInTime: (delay: any) => Observable<PlominoIFrameMouseMove>;
@@ -208,7 +208,7 @@ export class TinyMCEFormContentManagerService {
 
   setContent(editorId: any, contentHTML: string, dragging?: any): void {
     // console.warn('setContent called', editorId);
-    let editor = tinymce.get(editorId);
+    let editor = this.getEditor(editorId);
     
     if (!editor) {
       this.logService.warn('setContent', 'error: editor not found', editorId);
@@ -280,7 +280,7 @@ export class TinyMCEFormContentManagerService {
   }
 
   getContent(editorId: any): string {
-    let editor = tinymce.get(editorId);
+    let editor = this.getEditor(editorId);
 
     if (!editor) {
       const $iframe = this.activeEditorService.getActive()
@@ -295,7 +295,7 @@ export class TinyMCEFormContentManagerService {
   }
 
   selectAndRemoveElementById(editorId: any, elementId: string): void {
-    const editor = tinymce.get(editorId);
+    const editor = this.getEditor(editorId);
     if (editor) {
       editor.focus(); //give the editor focus
       editor.selection.select(editor.dom.select(`#${ elementId }`)[0]);
@@ -307,7 +307,7 @@ export class TinyMCEFormContentManagerService {
   }
 
   insertRawHTML(editorId: any, contentHTML: string): void {
-    const editor = tinymce.get(editorId);
+    const editor = this.getEditor(editorId);
     editor.execCommand('mceInsertRawHTML', false, contentHTML);
     this.log('insertRawHTML contentHTML', contentHTML);
   }
@@ -320,7 +320,7 @@ export class TinyMCEFormContentManagerService {
   insertContent(editorId: any, dragging: DraggingService, contentHTML: string, options?: any): void {
     $(this.activeEditorService.getActive().getBody())
       .find('.drag-autopreview').remove(); // just in case
-    let editor = tinymce.get(editorId);
+    let editor = this.getEditor(editorId);
 
     const INSERT_EVENT_UNIQUE = Math.random().toString();
 
@@ -494,7 +494,7 @@ export class TinyMCEFormContentManagerService {
       
       if ($label.length) {
         this.adapter.select($label);
-        this.tabsService.selectField(
+        this.formFieldsSelection.selectField(
           { id: 'defaultLabel', parent: editorId, type: 'label' }
         );
   
@@ -504,7 +504,7 @@ export class TinyMCEFormContentManagerService {
   }
 
   selectDOM(editorId: any, selector: string): HTMLElement[] {
-    const editor = tinymce.get(editorId);
+    const editor = this.getEditor(editorId);
     try {
       return editor.dom.select(selector);
     } catch (e) {
@@ -514,7 +514,7 @@ export class TinyMCEFormContentManagerService {
   }
 
   selectContent(editorId: any, contentHTML: any): any {
-    const editor = tinymce.get(editorId);
+    const editor = this.getEditor(editorId);
     try {
       return editor.selection.select(contentHTML);
     } catch (e) {
@@ -524,7 +524,7 @@ export class TinyMCEFormContentManagerService {
   }
 
   setSelectionContent(editorId: any, contentHTML: any): any {
-    const editor = tinymce.get(editorId);
+    const editor = this.getEditor(editorId);
     try {
       return editor.selection.setContent(contentHTML);
     } catch (e) {
@@ -534,7 +534,7 @@ export class TinyMCEFormContentManagerService {
   }
 
   replaceContent(editorId: any, contentHTML: string): void {
-    const editor = tinymce.get(editorId);
+    const editor = this.getEditor(editorId);
     try {
       editor.execCommand('mceReplaceContent', false, contentHTML);
       this.log('replaceContent contentHTML', contentHTML);
@@ -544,7 +544,7 @@ export class TinyMCEFormContentManagerService {
   }
 
   getCaretRangeFromMouseEvent(editorId: any, eventData: MouseEvent): Range {
-    const editor = tinymce.get(editorId);
+    const editor = this.getEditor(editorId);
 
     const x = eventData.clientX;
     const y = eventData.clientY;
@@ -557,7 +557,12 @@ export class TinyMCEFormContentManagerService {
   }
 
   setRange(editorId: any, range: any) {
-    const editor = tinymce.get(editorId);
+    const editor = this.getEditor(editorId);
     editor.selection.setRng(range);
+  }
+
+  private getEditor(id: string) {
+    const edId = id ? id.split('/').pop() : null;
+    return tinymce.get(edId);
   }
 }

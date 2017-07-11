@@ -61,7 +61,7 @@ export class WidgetService {
      */
     let $groupLayout = $(
       `<div id="tmp-group-layout-id${input.id}" role="group"
-        style="visibility: hidden; position: absolute"
+        style="visibility: hidden; position: absolute;top:0;left:0"
         >${input.layout}</div>`
     );
 
@@ -489,11 +489,15 @@ export class WidgetService {
     let $type = $class.slice(7, -5).toLowerCase();
 
     const $idData = this.findId(ids, element.text());
-    let $id = $idData.id;
+    let $id: any;
     let template: PlominoFormGroupContent = null;
 
     if ($idData && $idData.layout) {
       template = $idData;
+      $id = $idData.id
+    }
+    else {
+      $id = null;
     }
   
     return (template 
@@ -654,10 +658,13 @@ export class WidgetService {
 
     if (ids.length) {
       const $idData = this.findId(ids, tmpId);
-      $id = $idData.id;
 
       if ($idData && $idData.layout) {
         template = $idData;
+        $id = $idData.id;
+      }
+      else {
+        $id = null;
       }
     } else {
       $id = tmpId;
@@ -667,7 +674,7 @@ export class WidgetService {
     //   labelsRegistry ? labelsRegistry.get(`${ base }/${ $id }`) : null, template);
     // this.log.extra('widget.service.ts convertLabel');
 
-    if (!template && labelsRegistry && labelsRegistry.has(`${ base }/${ $id }`)) {
+    if (!template && $id && labelsRegistry && labelsRegistry.has(`${ base }/${ $id }`)) {
       template = { id: $id, title: labelsRegistry.get(`${ base }/${ $id }`)['title'] };
       // labelsRegistry.delete(`${ base }/${ $id }`); // just in case
     }

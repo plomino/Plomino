@@ -1,3 +1,5 @@
+import { PlominoTabsManagerService } from './../../services/tabs-manager/index';
+import { PlominoDBService } from './../../services/db.service';
 import { PlominoPaletteManagerService } from './../../services/palette-manager/palette-manager';
 import { PlominoSaveManagerService } from './../../services/save-manager/save-manager.service';
 import { FakeFormData } from './../../utility/fd-helper/fd-helper';
@@ -33,7 +35,8 @@ import {
   WidgetService,
   PlominoFormsListService,
   ElementService,
-  FormsService
+  FormsService,
+  PlominoFormFieldsSelectionService
 } from '../../services';
 
 import { PloneHtmlPipe } from '../../pipes';
@@ -53,7 +56,7 @@ import { PlominoBlockPreloaderComponent } from "../../utility";
 export class FieldSettingsComponent implements OnInit {
     @ViewChild('fieldForm') fieldForm: ElementRef;
     
-    field: PlominoFieldRepresentationObject;
+    field: IField;
     formTemplate: string = '';
 
     formSaving: boolean = false;
@@ -73,6 +76,8 @@ export class FieldSettingsComponent implements OnInit {
     constructor(private objService: ObjService,
       private log: LogService,
       private tabsService: TabsService,
+      private tabsManagerService: PlominoTabsManagerService,
+      private formFieldsSelection: PlominoFormFieldsSelectionService,
       private contentManager: TinyMCEFormContentManagerService,
       private labelsRegistry: LabelsRegistryService,
       private adapter: PlominoElementAdapterService,
@@ -88,9 +93,34 @@ export class FieldSettingsComponent implements OnInit {
       private formsList: PlominoFormsListService,
       private fieldsService: FieldsService,
       private changeDetector: ChangeDetectorRef,
+      private dbService: PlominoDBService,
       private treeService: TreeService,
       private saveManager: PlominoSaveManagerService,
-    ) {}
+    ) {
+      this.tabsManagerService.getActiveTab()
+        .subscribe(() => {
+          this.field = null;
+          this.formTemplate = '';
+          try {
+            this.changeDetector.markForCheck();
+            this.changeDetector.detectChanges();
+          } catch (e) {}
+        });
+
+      this.tabsManagerService.getAfterUpdateIdOfTab()
+        .subscribe((data) => {
+          if (!this.field) { return; }
+          const fURL = this.field.url.split('/');
+          const fieldId = fURL.pop();
+          const formId = fURL.pop();
+          if (formId === data.prevId) {
+            const prevExp = new RegExp(
+              `^(.+?/)${ data.prevId }/${ fieldId }$`);
+            this.field.url = this.field.url
+              .replace(prevExp, `$1${ data.nextId }/${ fieldId }`);
+          }
+        });
+    }
 
     ngOnInit() {
       this.loadSettings();
@@ -121,6 +151,7 @@ export class FieldSettingsComponent implements OnInit {
       }
       else {
         formData.set('update.field.type', '1');
+        /** @todo: turn off unchanged save */
       }
 
       this.formSaving = true;
@@ -135,7 +166,7 @@ export class FieldSettingsComponent implements OnInit {
         if (
           (extractedTextAndURL.html.indexOf('ajax_success') === -1
           && extractedTextAndURL.html.indexOf('There were some errors') !== -1)
-          || extractedTextAndURL.html.indexOf('Edit PlominoField') !== -1
+          // || extractedTextAndURL.html.indexOf('Edit PlominoField') !== -1
         ) {
           setTimeout(() => {
             componentHandler.upgradeDom();
@@ -177,7 +208,7 @@ export class FieldSettingsComponent implements OnInit {
       .subscribe((responseHtml: string) => {
         this.formTemplate = responseHtml;
 
-        this.tabsService.refreshCodeTab.next(this.field.url);
+        this.tabsManagerService.refreshCodeTab.next(this.field.url);
 
         setTimeout(() => {
           const $fieldType = $('.field-settings-wrapper form #form-widgets-field_type');
@@ -319,10 +350,12 @@ export class FieldSettingsComponent implements OnInit {
           }
 
           if (this.activeEditorService.getActive()) {
+            const activeURL = `${ this.dbService.getDBLink() }/${ 
+              this.activeEditorService.getActive().id }`;
             /* fix tinymce selection plugin */
             this.contentManager.setContent(
-              this.activeEditorService.getActive().id, 
-              this.contentManager.getContent(this.activeEditorService.getActive().id), 
+              activeURL, 
+              this.contentManager.getContent(activeURL), 
               this.draggingService
             );
           }
@@ -374,7 +407,12 @@ export class FieldSettingsComponent implements OnInit {
             url: this.field.url
         };
         this.log.info('this.tabsService.openTab #fs0001');
-        this.tabsService.openTab(eventData, true);
+        this.tabsManagerService.openTab({
+          id: eventData.url.split('/').pop(),
+          url: eventData.url,
+          editor: 'code',
+          label: eventData.label
+        });
         // this.field = null;
         // this.formTemplate = null;
         // this.changeDetector.detectChanges();
@@ -395,15 +433,16 @@ export class FieldSettingsComponent implements OnInit {
       this.elementService.getElementFormLayout(this.getDBOptionsLink(formId))
       .subscribe((formData) => {
         this.log.info('this.tabsService.openTab #fs0002');
-        this.tabsService.openTab({
+        this.tabsManagerService.openTab({
           // formUniqueId: response.formUniqueId,
           editor: 'layout',
           label: formData.title,
           url: formData['@id'],
-          path: [{
-              name: formData.title,
-              type: 'Forms'
-          }]
+          id: formData['@id'].split('/').pop()
+          // path: [{
+          //     name: formData.title,
+          //     type: 'Forms'
+          // }]
         });
 
         this.formsService.changePaletteTab(0);
@@ -416,8 +455,9 @@ export class FieldSettingsComponent implements OnInit {
         const selectedId = $('#form-widgets-label-relation').val();
         const temporaryTitle = $('#form-widgets-label-fieldtitle').val();
         this.log.info('updateTemporaryTitle...', selectedId, temporaryTitle);
-        this.labelsRegistry.update(
-          `${this.activeEditorService.getActive().id}/${selectedId}`, 
+        const activeURL = `${ this.dbService.getDBLink() }/${ 
+            this.activeEditorService.getActive().id }`;
+        this.labelsRegistry.update(`${ activeURL }/${selectedId}`, 
           temporaryTitle, 'temporary_title', true
         );
         if (!this.labelAdvanced) {
@@ -468,8 +508,10 @@ export class FieldSettingsComponent implements OnInit {
         const selectedId = $('#form-widgets-label-relation').val();
         if (selectedId) {
           this.labelSaving = true;
+          const activeURL = `${ this.dbService.getDBLink() }/${ 
+            this.activeEditorService.getActive().id }`;
           this.elementService.patchElement(
-            `${this.activeEditorService.getActive().id}/${selectedId}`, { title }
+            `${ activeURL }/${selectedId}`, { title }
           );
           
           setTimeout(() => {
@@ -488,22 +530,26 @@ export class FieldSettingsComponent implements OnInit {
 
       const selectedId = $(eventData.target).val();
       this.$selectedElement.attr('data-plominoid', selectedId);
+
+      const activeURL = `${ this.dbService.getDBLink() }/${ 
+        this.activeEditorService.getActive().id }`;
       
       if (!this.labelAdvanced) {
         this.fieldTitle = this.labelsRegistry.get(
-          `${this.activeEditorService.getActive().id}/${selectedId}`
+          `${ activeURL }/${ selectedId }`
         );
 
         if (this.fieldTitle === null) {
+          const link = `${ activeURL }/${ selectedId }`;
           this.elementService
-            .getElement(`${this.activeEditorService.getActive().id}/${selectedId}`)
+            .getElement(link)
             .catch((error: any) => {
               return Observable.of(null);
             })
             .subscribe((fieldData: PlominoFieldDataAPIResponse) => {
               if (fieldData) {
                 this.labelsRegistry.update(
-                  `${this.activeEditorService.getActive().id}/${selectedId}`, 
+                  `${ activeURL }/${ selectedId }`, 
                   fieldData.title
                 );
                 this.fieldTitle = fieldData.title;
@@ -531,7 +577,7 @@ export class FieldSettingsComponent implements OnInit {
       this.changeDetector.detectChanges();
     }
 
-    private updateFieldTitle(field: PlominoFieldRepresentationObject) {
+    private updateFieldTitle(field: IField) {
       if (!this.field) {
         return;
       }
@@ -619,7 +665,7 @@ export class FieldSettingsComponent implements OnInit {
         if ($subElements.length) {
           const idsUnique: any = new Set($subElements.toArray().map((e) => e.dataset.plominoid));
           const groupContents: string[] = <string[]> Array.from(idsUnique);
-          // debugger;
+          /** @todo: rename of group */
           // this.elementService.renameGroup(formURL, this.field.id, this.groupPrefix, groupContents)
           //   .subscribe((result: any) => {
           //     $group.attr('data-groupid', this.groupPrefix);
@@ -738,17 +784,19 @@ export class FieldSettingsComponent implements OnInit {
 
     private getCurrentRegistryKeys() {
       if (this.activeEditorService.getActive()) {
-        return Array.from(this.labelsRegistry.getRegistry().keys())
+        const result = Array.from(this.labelsRegistry.getRegistry().keys())
           .filter((key: string) => {
-            const id = this.activeEditorService.getActive().id;
-            return key.indexOf(`${ id }/`) !== -1;
+            const activeURL = `${ this.dbService.getDBLink() }/${ 
+              this.activeEditorService.getActive().id }`;
+            return key.indexOf(`${ activeURL }/`) !== -1;
           });
+        return result;
       }
     }
 
     private loadSettings() {
-      this.tabsService.getActiveField()
-        .do((field: PlominoFieldRepresentationObject) => {
+      this.formFieldsSelection.getActiveField()
+        .do((field: IField) => {
             if (field === null) {
               this.field = null;
               this.formTemplate = null;
@@ -758,7 +806,7 @@ export class FieldSettingsComponent implements OnInit {
 
             this.field = field;
         })
-        .flatMap((field: PlominoFieldRepresentationObject): Observable<any> => {
+        .flatMap((field: IField): Observable<any> => {
 
           this.loading = true;
           this.$selectedElement = this.adapter.getSelected();
@@ -799,15 +847,16 @@ export class FieldSettingsComponent implements OnInit {
                   $founded.attr('data-plominoid', $select2.val());
   
                   if ($select2.val() && this.activeEditorService.getActive().id) {
-                    let url = this.activeEditorService.getActive().id;
+                    const activeURL = `${ this.dbService.getDBLink() }/${ 
+                      this.activeEditorService.getActive().id }`;
+                    let url = activeURL;
                     url += '/@@tinyform/example_widget?widget_type=subform&id=';
                     url += $select2.val();
   
                     this.http.get(url, 'fieldsettings.component.ts loadSettings')
                     .subscribe((response: any) => {
                       this.widgetService.getGroupLayout(
-                        this.activeEditorService.getActive().id,
-                        { id: this.field.id, layout: response.json() }
+                        activeURL, { id: this.field.id, layout: response.json() }
                       )
                       .subscribe((result: string) => {
                         try {

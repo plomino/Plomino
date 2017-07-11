@@ -1,0 +1,86 @@
+Fast Plomino Code Guide
+
+how to install -> README
+
+Structure:
+
+app - base folder
+config - folder of webpack configurations
+custom_types/typings - common folders for typescript
+
+main files:
+
+app/app.component.ts - code entry point file and controller
+app/app.component.html - central entry html file with tabs for editors
+app/editors/tiny-mce/tiny-mce.component.ts - code for layout editors
+app/editors/tiny-mce/services/labels-registry.service.ts - collection of cached labels titles for opened forms
+app/editors/tiny-mce/content-manager/content-manager.service.ts - controller for get tinymce content or set tinymce content
+app/editors/view-editor/view-editor.component.ts - view editor code
+app/editors/workflow/index.ts - code of workflow editor
+app/editors/workflow/workflow.component.sources.scss - source file for CSS style of wf, at this moment doesn't compile with webpack
+
+app/palette-view/add/add.component.ts - left palette add tab
+app/palette-view/dbsettings/dbsettings.component.ts - left palette dbsettings tab
+app/palette-view/fieldsettings/fieldsettings.component.ts - left palette fieldsettings tab
+app/palette-view/formsettings/formsettings.component.ts - left palette formsettings tab
+app/pipes/safe-html.pipe.ts - pipe for parsing html forms from plone like dbsettings
+
+app/services/active-editor.service.ts - allows to receive current layout editor tinymce instance
+app/services/dragging.service.ts - code for drag and drop to layout editor from palette
+app/services/http-api.service.ts - proxy service for angular http service with logging
+app/services/save-manager/save-manager.service.ts - allows to save the form or view, working async with stack
+app/services/db.service.ts - allows to get a current database url
+app/services/tabs.service.ts - tabs code
+app/services/forms-list.service.ts - allows to receive the list of forms/views
+app/services/forms.service.ts - common service to working with forms
+app/services/tree.service.ts - common service to working with tree
+app/services/log.service.ts - logging
+app/services/application-loader.service.ts - main application loader controller
+app/services/element-adapter.service.ts - service for work with selected elements inside the layout editor
+app/services/element.service.ts - common service for working with REST data of forms/views/elements
+app/services/fields.service.ts - common service for working with fields (in most of views)
+app/services/obj.service.ts - old service for saving forms/etc, get field settings/form settings
+app/services/widget.service.ts - common service to working with layout widgets (build the html)
+
+app/utility/fd-helper/fd-helper.ts - contains FakeFormData class, same as FormData but hackable
+app/tree-view/tree.component.ts - left bottom tree
+app/editors/ace-editor/ace-editor.component.ts - code editor
+app/assets - common scripts/images/etc, images copies to ./images folder while build, other files controlling by webpack configuration
+app/assets/scripts/macros.js - code builder
+
+form save processes difference:
+1. total - save of form settings, when save the form layout, when update all including tree
+2. simple - just doing POST to save the form layout with save-manager
+
+tiny-mce.component.ts - very big and complex file
+
+this.loading - lever for turn off/on the loading spinner, but better to use the method
+    this.fallLoading(true/false)
+
+constructor:
+    - insertionSubscription - when user drags fields, hidewhens, actions, etc from palette
+    - templatesSubscription - form components like text/long text/etc from palette
+    - draggingSubscription - using to receive the drag data (most for palette)
+    - this.tabsService.getActiveField().subscribe - behaviour on field selection outside
+    - ...
+    - this.formsService.formContentSave$.subscribe - behaviour for total form save process
+    - ...
+    - this.saveManager.onBackgroundSaveProcessComplete() - behaviour on background save complete
+
+bitDirtyStateAfterSave - turn off dirty state (state when form looks like unsaved)
+saveTheForm - call background save process of layout content
+ngAfterViewInit - complex function, contains tinymce.init, where:
+    save_onsavecallback - callback when user clicks save button
+    setup - contains important tinymce callbacks, started with editor.on like
+        editor.on('change', ... - any changes in layout content are received
+        editor.on('KeyDown', ... - allows to control backspace and delete for example
+        editor.on('KeyUp', ... - happens after keydown, can be used for control of delete consequences
+        ...
+        editor.on('mousedown', ... - editor's clicks control function
+            this.fieldSelected.emit - allows you to select specific field and open the editor for it inside field settings tab
+...
+getFormLayout - calling REST-API and receiving form data for current layout
+...
+dropped - happens when something is dropped from palette
+updateField - calling after fieldsettings.component.ts calling submitForm() (using for element updating after its settings changed)
+

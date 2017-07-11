@@ -1,3 +1,8 @@
+import { PlominoTabsManagerService } from './../tabs-manager/index';
+import { LogService } from './../log.service';
+import { PlominoDBService } from './../db.service';
+import { TabsService } from './../tabs.service';
+import { TreeService } from './../tree.service';
 import { PlominoViewSaveProcess } from './view-save-process';
 import { FakeFormData } from './../../utility/fd-helper/fd-helper';
 import { Observable, Subject } from 'rxjs/Rx';
@@ -21,8 +26,13 @@ export class PlominoSaveManagerService {
     private http: PlominoHTTPAPIService,
     private elementService: ElementService,
     private widgetService: WidgetService,
+    private tabsService: TabsService,
+    private tabsManagerService: PlominoTabsManagerService,
     private labelsRegistry: LabelsRegistryService,
     private activeEditorService: PlominoActiveEditorService,
+    private dbService: PlominoDBService,
+    private treeService: TreeService,
+    private log: LogService,
   ) {
     Observable
       .interval(500)
@@ -54,6 +64,63 @@ export class PlominoSaveManagerService {
     else {
       return true;
     }
+  }
+
+  createNewForm(callback: (url: string, label: string) => void = null) {
+    let formElement: InsertFieldEvent = {
+        '@type': 'PlominoForm',
+        'title': 'New Form'
+    };
+    this.elementService.postElement(this.dbService.getDBLink(), formElement)
+    .subscribe((response: AddFieldResponse) => {
+      this.treeService.updateTree().then(() => {
+        this.tabsManagerService.openTab({
+          // formUniqueId: undefined,
+          editor: 'layout',
+          label: response.title,
+          id: response.id,
+          url: response.parent['@id'] + '/' + response.id,
+          // path: [{
+          //     name: response.title,
+          //     type: 'Forms'
+          // }]
+        });
+  
+        if (callback !== null) {
+          setTimeout(() => callback(
+            response.parent['@id'] + '/' + response.id, response.title
+          ), 100);
+        }
+      });
+    });
+  }
+
+  createNewView(callback: (url: string, label: string) => void = null) {
+    let viewElement: InsertFieldEvent = {
+      '@type': 'PlominoView',
+      'title': 'New View'
+    };
+    this.elementService.postElement(this.dbService.getDBLink(), viewElement)
+    .subscribe((response: AddFieldResponse) => {
+      this.treeService.updateTree().then(() => {
+        this.tabsManagerService.openTab({
+          editor: 'view',
+          label: response.title,
+          url: response.parent['@id'] + '/' + response.id,
+          id: response.id,
+          // path: [{
+          //     name: response.title,
+          //     type: 'Views'
+          // }]
+        });
+
+        if (callback !== null) {
+          setTimeout(() => callback(
+            response.parent['@id'] + '/' + response.id, response.title
+          ), 100);
+        }
+      });
+    });
   }
 
   createViewSaveProcess(viewURL: string, formData: FakeFormData = null) {
@@ -114,7 +181,11 @@ export class PlominoSaveManagerService {
 
   enqueueNewFormSaveProcess(formURL: string) {
     const process = this.createFormSaveProcess(formURL);
-    this.saveStack.unshift(process.start());
+    if (process === null) {
+      this.log.error('cannot create save process for formURL', formURL);
+    } else {
+      this.saveStack.unshift(process.start());
+    }
   }
 
   detectNewIFrameInnerClick(ev: MouseEvent) {
@@ -138,19 +209,24 @@ export class PlominoSaveManagerService {
   }
 
   private listenFormInnerChangeProcesses() {
-    $('body').delegate('form[id!="plomino_form"]', 'keydown input change paste', ($event) => {
+    $('body').delegate('form[id!="plomino_form"]', 
+    'keydown input change paste', ($event) => {
       const isFormInnerEvent = $($event.currentTarget)
         .is('form:visible[data-pat-autotoc]');
+      const isFieldTypeChange = $event.target.id === 'form-widgets-field_type';
       $event.stopPropagation();
-      if (isFormInnerEvent && !($event.type === 'keydown' && $event.keyCode === 9)) {
-        if (!this.currentFormIsUnsaved) {
-          this.currentFormIsUnsaved = true;
-          this.hackOutsideArea();
-        }
+      if (
+        !isFieldTypeChange && isFormInnerEvent 
+        && !($event.type === 'keydown' && $event.keyCode === 9)
+        && !this.currentFormIsUnsaved
+      ) {
+        this.currentFormIsUnsaved = true;
+        this.hackOutsideArea();
       }
     });
   }
 
+  /** @todo: fix hackOutsideArea */
   private hackOutsideArea() {
     /* ngx-bootstrap tab switch */
     const $tabset = $('div.main-app.panel > tabset');

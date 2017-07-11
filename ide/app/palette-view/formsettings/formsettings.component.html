@@ -22,7 +22,7 @@
       </a>
       <div class="mdl-tooltip mdl-tooltip--large"
         data-mdl-for="ide-formsettings__save-button">
-        Save current {{ tab.type.replace('Plomino', '') }}
+        Save current {{ tab ? tab.editor.replace('Plomino', '') : '' }}
       </div>
       <a class="mdl-button mdl-js-button mdl-button--raised
         mdl-js-ripple-effect mdl-button--colored mdl-color--grey-300"
@@ -46,7 +46,7 @@
       </a>
       <div class="mdl-tooltip mdl-tooltip--large"
         data-mdl-for="ide-formsettings__preview-button">
-        Preview the {{ tab.type.replace('Plomino', '') }} in a new tab
+        Preview the {{ tab ? tab.editor.replace('Plomino', '') : '' }} in a new tab
       </div>
       <a class="mdl-button mdl-js-button mdl-button--raised
         mdl-js-ripple-effect mdl-button--colored mdl-color--blue-700"
@@ -58,7 +58,7 @@
       </a>
       <div class="mdl-tooltip mdl-tooltip--large"
         data-mdl-for="ide-formsettings__code-button">
-        Show code of this {{ tab.type.replace('Plomino', '') }}
+        Show code of this {{ tab ? tab.editor.replace('Plomino', '') : '' }}
       </div>
       <a class="mdl-button mdl-js-button mdl-button--raised
         mdl-js-ripple-effect mdl-button--colored mdl-color--pink-500"
@@ -70,7 +70,7 @@
       </a>
       <div class="mdl-tooltip mdl-tooltip--large"
         data-mdl-for="ide-formsettings__delete-button">
-        Delete the {{ tab.type.replace('Plomino', '') }}
+        Delete the {{ tab ? tab.editor.replace('Plomino', '') : '' }}
       </div>
     </div>
     <div class="mdl-card mdl-shadow--2dp settings-alert-no-object"

@@ -1,3 +1,5 @@
+import { PlominoTabsManagerService } from './../../services/tabs-manager/index';
+import { PlominoDBService } from './../../services/db.service';
 import { Subscription, Observable, Subject } from 'rxjs/Rx';
 import { PlominoActiveEditorService } from './../../services/active-editor.service';
 import { PlominoViewsAPIService } from './../../editors/view-editor/views-api.service';
@@ -46,7 +48,7 @@ interface TemplateClickEvent {
 })
 
 export class AddComponent implements OnInit, AfterViewInit {
-    activeTab: PlominoTab;
+    activeTab: any;
     templates: PlominoFormGroupTemplate[] = [];
     addableComponents: Array<any> = [];
     mouseDownTemplateId: string;
@@ -65,7 +67,9 @@ export class AddComponent implements OnInit, AfterViewInit {
     constructor(private elementService: ElementService,
                 private treeService: TreeService,
                 private tabsService: TabsService,
+                private tabsManagerService: PlominoTabsManagerService,
                 private log: LogService,
+                private dbService: PlominoDBService,
                 private viewsAPIService: PlominoViewsAPIService,
                 private labelsRegistry: LabelsRegistryService,
                 private fieldsService: FieldsService,
@@ -102,7 +106,7 @@ export class AddComponent implements OnInit, AfterViewInit {
                 ],
                 hidden: (tab: any) => {
                     if (!tab) return true;
-                    return tab.type !== 'PlominoForm';
+                    return tab.editor !== 'layout';
                 }
             },
             {
@@ -125,7 +129,7 @@ export class AddComponent implements OnInit, AfterViewInit {
                 ],
                 hidden: (tab: any) => {
                     if (!tab) return true;
-                    return tab.type === 'PlominoForm';
+                    return tab.editor === 'layout';
                 }
             },
             {
@@ -141,8 +145,16 @@ export class AddComponent implements OnInit, AfterViewInit {
 
         ];
 
-        this.tabsService.getActiveTab()
-        .subscribe((tab) => {
+        // this.tabsService.getActiveTab()
+        // .subscribe((tab) => {
+        this.tabsManagerService.getActiveTab()
+        .subscribe((tabUnit) => {
+
+          const tab = tabUnit ? {
+            label: tabUnit.label || tabUnit.id,
+            url: tabUnit.url,
+            editor: tabUnit.editor
+          } : null;
 
           this.log.info('tab', tab);
           this.log.extra('add.component.ts this.tabsService.getActiveTab()');
@@ -153,7 +165,7 @@ export class AddComponent implements OnInit, AfterViewInit {
           this.changeDetector.markForCheck();
           this.changeDetector.detectChanges();
 
-          if (tab && tab.type === 'PlominoView') {
+          if (tab && tab.editor === 'view') {
             this.loading = false;
             this.changeDetector.markForCheck();
             this.changeDetector.detectChanges();
@@ -171,7 +183,7 @@ export class AddComponent implements OnInit, AfterViewInit {
                   url: `${tab.url.slice(0, tab.url.lastIndexOf('/'))}/${template.id}`,
                   hidewhen: (tab: any) => {
                     if (!tab) return true;
-                    return tab.type !== 'PlominoForm';        
+                    return tab.editor !== 'layout';        
                   }
                 })
               });
@@ -241,20 +253,22 @@ export class AddComponent implements OnInit, AfterViewInit {
                   'title': 'New Form'
               };
               this.log.startTimer('create_new_form_hold');
-              this.elementService.postElement(this.getDBOptionsLink(''), formElement)
+              this.elementService.postElement(
+                this.getDBOptionsLink(''), formElement)
               .subscribe((response: AddFieldResponse) => {
                 this.treeService.updateTree().then(() => {
                   this.log.info('this.tabsService.openTab #a001');
                   // this.treeService.latestId++;
-                  this.tabsService.openTab({
-                    formUniqueId: undefined,
+                  this.tabsManagerService.openTab({
+                    // formUniqueId: undefined,
                     editor: 'layout',
                     label: response.title,
                     url: response.parent['@id'] + '/' + response.id,
-                    path: [{
-                        name: response.title,
-                        type: 'Forms'
-                    }]
+                    id: response.id,
+                    // path: [{
+                    //     name: response.title,
+                    //     type: 'Forms'
+                    // }]
                   });
                   this.log.stopTimer('create_new_form_hold');
                 });
@@ -266,19 +280,21 @@ export class AddComponent implements OnInit, AfterViewInit {
                 '@type': 'PlominoView',
                 'title': 'New View'
               };
-              this.elementService.postElement(this.getDBOptionsLink(''), viewElement)
+              this.elementService.postElement(
+                this.getDBOptionsLink(''), viewElement)
               .subscribe((response: AddFieldResponse) => {
                 this.log.info('this.tabsService.openTab #a002');
                 
                 this.treeService.updateTree().then(() => {
-                  this.tabsService.openTab({
+                  this.tabsManagerService.openTab({
                     editor: 'view',
                     label: response.title,
                     url: response.parent['@id'] + '/' + response.id,
-                    path: [{
-                        name: response.title,
-                        type: 'Views'
-                    }]
+                    id: response.id,
+                    // path: [{
+                    //     name: response.title,
+                    //     type: 'Views'
+                    // }]
                   });
 
                   this.log.stopTimer('create_new_view_hold');
@@ -340,7 +356,8 @@ export class AddComponent implements OnInit, AfterViewInit {
 
             const getSubformLayout$ = (this.mouseDownTemplateId) 
               ? this.widgetService.getGroupLayout(
-                  this.activeEditorService.getActive().id,
+                  `${ this.dbService.getDBLink() }/${ 
+                    this.activeEditorService.getActive().id }`,
                   {
                     id: this.mouseDownTemplateId,
                     layout: $(this.draggingService.currentDraggingTemplateCode).html()

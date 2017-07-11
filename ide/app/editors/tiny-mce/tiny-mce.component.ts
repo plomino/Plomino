@@ -1,3 +1,4 @@
+import { PlominoTabsManagerService } from './../../services/tabs-manager/index';
 import { PlominoHTTPAPIService } from './../../services/http-api.service';
 import { PlominoActiveEditorService } from './../../services/active-editor.service';
 import { TinyMCEFormContentManagerService } from './content-manager';
@@ -41,7 +42,8 @@ import {
   WidgetService,
   TabsService,
   FormsService,
-  PlominoSaveManagerService
+  PlominoSaveManagerService,
+  PlominoFormFieldsSelectionService,
 } from '../../services';
 
 import { UpdateFieldService, LabelsRegistryService } from './services';
@@ -71,7 +73,6 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
   @Input() item: any;
   @Output() isDirty: EventEmitter<any> = new EventEmitter();
   @Output() isLoading: EventEmitter<any> = new EventEmitter();
-  @Output() fieldSelected: EventEmitter<any> = new EventEmitter();
 
   labelMarkupEvent: EventEmitter<any> = new EventEmitter();
 
@@ -86,12 +87,15 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
   draggingSubscription: Subscription;
   insertionSubscription: Subscription;
   templatesSubscription: Subscription;
+  subscriptions: Subscription[] = [];
 
   autoSaveTimer: any = null;
   autoSavedContent: string = null;
 
   theFormIsSavingNow: boolean = false;
   loadedFirstTime: boolean = null;
+  registry: any;
+  tinyMCEPatData: string = null;
 
   /**
    * display block preloader
@@ -109,12 +113,16 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
     private labelsRegistry: LabelsRegistryService,
     private changeDetector: ChangeDetectorRef,
     private tabsService: TabsService,
+    private formFieldsSelection: PlominoFormFieldsSelectionService,
     private activeEditorService: PlominoActiveEditorService,
     private updateFieldService: UpdateFieldService,
     private contentManager: TinyMCEFormContentManagerService,
     private saveManager: PlominoSaveManagerService,
+    private tabsManagerService: PlominoTabsManagerService,
     private http: PlominoHTTPAPIService,
-    private zone: NgZone) {
+    private zone: NgZone
+  ) {
+    this.log.info(this.item, 'tinymce constructed');
     
     /**
      * fields, hidewhens, actions, etc
@@ -147,7 +155,8 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
       let parent = insertion.parent;
       if (insertion.parent === this.id) {
         if (insertion.target === null) {
-          const $selected = this.adapter.getSelectedPosition() || this.adapter.getSelected();
+          const $selected = 
+            this.adapter.getSelectedPosition() || this.adapter.getSelected();
           insertion.target = $selected && $selected.prop('tagName') !== 'BODY' 
             ? ($selected.prev().length 
             ? $selected.prev().get(0) : $selected.get(0)) : null;
@@ -169,13 +178,13 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
       this.changeDetector.markForCheck();
     });
 
-    this.tabsService.getActiveField()
+    const activeFieldSubscribtion = this.formFieldsSelection.getActiveField()
     .subscribe((fieldData: any) => {
       if (fieldData && fieldData.type === 'PlominoField'
         && fieldData.id && fieldData.url.replace(`/${ fieldData.id }`, '') === this.id
       ) {
-        if (tinymce.get(this.id)) {
-          const $body = $(tinymce.get(this.id).getBody());
+        if (this.getEditor()) {
+          const $body = $(this.getEditor().getBody());
           let $element = $body
             .find(`.plominoFieldClass[data-plominoid="${ fieldData.id }"]`);
           if ($element.length) {
@@ -204,10 +213,12 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
       }
     });
 
-    this.fieldsService.listenToUpdates()
-    .subscribe((updateData) => { this.updateField(updateData); });
+    this.subscriptions.push(activeFieldSubscribtion);
 
-    this.formsService.formIdChanged$.subscribe((data) => {
+    this.subscriptions.push(this.fieldsService.listenToUpdates()
+    .subscribe((updateData) => { this.updateField(updateData); }));
+
+    const idChangeSub = this.formsService.formIdChanged$.subscribe((data) => {
       this.idChanges = Object.assign({}, data);
       if (this.activeEditorService.editorURL === data.oldId) {
         this.log.info('set active url', data.newId);
@@ -216,7 +227,10 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
       }
     });
 
-    this.formsService.formContentSave$.subscribe((data) => {
+    this.subscriptions.push(idChangeSub);
+
+    const contSaveSub = this.formsService
+      .formContentSave$.subscribe((data) => {
       try {
         this.changeDetector.detectChanges();
       }
@@ -229,17 +243,18 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
 
       this.isLoading.emit(true);
 
-      let editor = tinymce.get(this.id) || 
-        tinymce.get(this.idChanges && this.idChanges.oldId);
+      let editor = this.getEditor() || 
+        this.getEditor(this.idChanges && this.idChanges.oldId);
 
       editor.setDirty(false);
       this.log.info('i am', this.id, 'and I doing call saveFormLayout');
       this.saveFormLayout(data.cb);
     } );
 
-    this.formsService.getFormContentBeforeSave$.subscribe((data:{id:any}) => {
-      this.log.info('T-4 tiny-mce.component.ts', this.id, this.tabsService.ping());
-      
+    this.subscriptions.push(contSaveSub);
+
+    const formBeforeSaveSub = this.formsService
+      .getFormContentBeforeSave$.subscribe((data:{id:any}) => {
       if (data.id !== this.item.url)
         return;
 
@@ -253,26 +268,70 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
       });
     });
 
-    this.saveManager.onBackgroundSaveProcessComplete()
+    this.subscriptions.push(formBeforeSaveSub);
+
+    const mcePatternSub = this.formsService.tinyMCEPatternData$
+      .subscribe((data) => {
+        if (this.id.split('/').pop() === data.formId) {
+          const tinyMCEPatData = this.modifyDataPatParams(data.data);
+          if (tinyMCEPatData !== this.tinyMCEPatData) {
+            this.tinyMCEPatData = tinyMCEPatData;
+            this.ngAfterViewInit();
+          }
+        }
+      });
+
+    this.subscriptions.push(mcePatternSub);
+
+    const bgProcSub = this.saveManager.onBackgroundSaveProcessComplete()
       .subscribe((formURL: string) => {
         if (formURL === this.id) {
           this.bitDirtyStateAfterSave();
         }
       });
+
+    this.subscriptions.push(bgProcSub);
   }
 
   ngOnDestroy() {
+    const edId = this.id.split('/').pop();
+    this.log.info(this.item.url, 'tinymce destroyed');
+    if (this.activeEditorService.editorURL === this.item.url) {
+      this.activeEditorService.setActive(null);
+    }
     this.draggingSubscription.unsubscribe();
     this.insertionSubscription.unsubscribe();
     this.templatesSubscription.unsubscribe();
-    tinymce.EditorManager.execCommand('mceRemoveEditor', true, this.id);
+    for (let sub of this.subscriptions) {
+      sub.unsubscribe();
+    }
+    this.subscriptions = [];
+    try {
+      tinymce.EditorManager
+        .execCommand('mceRemoveEditor', true, edId);
+    }
+    catch (e) {
+      tinymce.editors.forEach((editor, index) => {
+        if (editor.id === edId) {
+          tinymce.editors.splice(index, 1);
+          return false;
+        }
+      });
+
+      Object.keys(tinymce.editors).forEach((key) => {
+        if (key === edId) {
+          delete tinymce.editors[key];
+          return false;
+        }
+      });
+    }
   }
 
   bitDirtyStateAfterSave() {
     this.theFormIsSavingNow = false;
-    tinymce.get(this.id).setDirty(false);
+    this.getEditor().setDirty(false);
     this.isDirty.emit(false);
-    this.tabsService.setActiveTabDirty(false);
+    this.tabsManagerService.setActiveTabDirty(false);
     this.saveManager.nextEditorSavedState(this.id);
     this.changeDetector.markForCheck();
   }
@@ -292,411 +351,212 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
   }
 
   ngAfterViewInit(): void {
-    let tiny = this;
+    this.activeEditorService.setActive(this.item.url);
+    this.log.info(this.item.url, 'tinymce view initialized');
+    window['$'] = jQuery;
+    window['registryPromise'].then((registry: any) => {
+      this.registry = registry;
+      this.initialize();
 
-    const LinkModal = window['LinkModal'];
-
-    tinymce.init({
-      cleanup : false,
-      selector:'.tinymce-wrap',
-      mode : 'textareas',
-      forced_root_block: '',
-      linkModal: null,
-      addLinkClicked: function () {
-        tiny.zone.runOutsideAngular(() => {
-          var self = <any>this;
-          if (self.linkModal === null) {
-            var $el = $('<div/>').insertAfter(self.$el);
-            var linkTypes = ['internal', 'upload', 'external', 'email', 'anchor'];
-            if (!self.options.upload) {
-              linkTypes.splice(1, 1);
-            }
-            self.linkModal = new LinkModal($el,
-              $.extend(true, {}, self.options, {
-                tinypattern: self,
-                linkTypes: linkTypes
-              })
-            );
-            self.linkModal.show();
-          } else {
-            self.linkModal.reinitialize();
-            self.linkModal.show();
-          }
-        });
-      },
-      linkAttribute: 'path',
-      prependToScalePart: '/imagescale/',
-      appendToScalePart: '',
-      appendToOriginalScalePart: '',
-      defaultScale: 'large',
-      scales: 'Listing (16x16):listing,Icon (32x32):icon,Tile (64x64):tile,' +
-              'Thumb (128x128):thumb,Mini (200x200):mini,Preview (400x400):preview,' +
-              'Large (768x768):large',
-      targetList: [
-        { text: 'Open in this window / frame', value: '' },
-        { text: 'Open in new window', value: '_blank' },
-        { text: 'Open in parent window / frame', value: '_parent' },
-        { text: 'Open in top frame (replaces all frames)', value: '_top' }
-      ],
-      imageTypes: ['Image'],
-      folderTypes: ['Folder', 'Plone Site'],
-      plugins: ['code', 'save', 'link', 'noneditable', 
-        'preview'/*, 'ploneimage', 'plonelink'*/],
-      toolbar: 'save | undo redo | formatselect | bold italic underline' +
-      ' | alignleft aligncenter alignright alignjustify | ' +
-      'bullist numlist | outdent indent',
-      // 'plonelink unlink ploneimage',
-
-      save_onsavecallback: () => {
-        this.log.info('T-200 tiny-mce.component.ts', this.tabsService.ping());
-        // this.loading = true;
-        this.fallLoading();
-        this.log.info('fallLoading from save_onsavecallback');
-        this.saveTheForm();
-      },
-
-      setup : (editor: TinyMceEditor) => {
-        /* when loading a long form, should be scrolled to the top.
-          seems in the middle now */
-        const edExists = Boolean(this.editorInstance);
-
-        if (this.editorInstance) {
-          this.editorInstance.remove();
-        } else {
-          // this.getFormLayout();
-        }
-
-        editor.addMenuItem('PreviewButton', {
-          text: 'Open form in new tab',
-          context: 'view',
-          onclick: () => {
-            // this.formsService.saveForm(this.item.formUniqueId, false);
-            // this.changeDetector.markForCheck();
-            // setTimeout(() => {
-              window.open(`${ this.item.url }/OpenForm`);
-            // }, 200);
-            return;
-          }
-        });
-
-        this.editorInstance = editor;
-
-        setTimeout(() => {
-          this.editorInstance.show();
-          this.bitDirtyStateAfterSave();
-        });
-
-        editor.on('change', (e: any) => {
-          this.log.info('change event received', e, 
-            this.activeEditorService.editorURL, this.id);
-          if (this.activeEditorService.editorURL === this.id 
-            && !this.theFormIsSavingNow) {
-            /* TinyMCE BUG: change one editor throws other */
-            this.log.info('onchange dirty', this.formsService.formSaving, this.id);
-            tiny.isDirty.emit(true);
-          }
-        });
-
-        editor.on('KeyUp', (e: any) => {
-          /* check current selected element is there */
-          const $selected = this.adapter.getSelected();
-          const editor = tinymce.get(this.id);
-          if (!editor) { return; }
-
-          if (!$(editor.getBody()).has(<any> $selected).length) {
-            this.tabsService.selectField('none');
-            this.adapter.select(null);
-          }
-        })
-
-        editor.on('NodeChange', (nodeChangeEvent: any) => {
-          if (nodeChangeEvent.selectionChange === true) {
-            const $label = $(nodeChangeEvent.element).closest('.plominoLabelClass');
-
-            if ($label.length) {
-              this.labelMarkupEvent.next($label);
-            }
-          }
-        });
-
-        // editor.on('activate', (e: any) => {
-        //   let $editorFrame = $(this.editorElement.nativeElement)
-        //     .find('iframe[id*=mce_]');
-        // });
-
-        editor.on('mousedown', (ev: MouseEvent) => {
-          const eventCustomCheck = this.saveManager.detectNewIFrameInnerClick(ev);
-
-          eventCustomCheck
-          .then(() => {
-            /* #region: custom check */
-            let $element = $(ev.target);
-            this.adapter.selectPosition($element);
-  
-            this.zone.run(() => {
-              let $element =  $(ev.target);
-              let eventTarget = <any> ev.target;
-  
-              if (eventTarget.control ||
-                (['radio', 'select-one'].indexOf(eventTarget.type) !== -1)) {
-                $element = $element.parent();
-              }
-              else if (eventTarget.tagName === 'OPTION' ||
-                eventTarget.nodeName === 'OPTION') {
-                $element = $element.parent().parent();
-              }
-              
-              let $parent = $element.parent();
-              let $grandParent = $parent.parent();
-              let $grandGrandParent = $grandParent.parent();
-              let $closest = $element.closest('[data-mce-selected]');
-              let $elementIsGroup = $element.hasClass('plominoGroupClass');
-              let elementIsLabel = $element.hasClass('plominoLabelClass');
-              let elementIsSubform = $element.hasClass('plominoSubformClass');
-              let parentIsSubform = $parent.hasClass('plominoSubformClass')
-                || $grandParent.hasClass('plominoSubformClass')
-                || $grandGrandParent.hasClass('plominoSubformClass');
-              let closestIsSubform = $closest.hasClass('plominoSubformClass')
-                || ($parent.hasClass('plominoFieldGroup') && 
-                $parent.closest('[data-mce-selected]').hasClass('plominoSubformClass'));
-              let parentIsLabel = $parent.hasClass('plominoLabelClass');
-  
-              let $elementId = $element.attr('data-plominoid');
-              let $parentId = $parent.attr('data-plominoid');
-              let $closestLabel = $element.closest('.plominoLabelClass');
-  
-              this.log.info($element, $parent, $grandParent, $grandGrandParent, $closest);
-              this.log.extra('tiny-mce.component.ts editor.on(\'mousedown\', ...)');
-  
-              const $s = $closestLabel.length ? $closestLabel : $element;
-              if ($s.is(this.adapter.getSelected())) {
-                return;
-              }
-              this.adapter.select($s);
-  
-              if (!elementIsSubform && (parentIsSubform || closestIsSubform)) {
-                elementIsSubform = true;
-              }
-  
-              if (!elementIsSubform && $elementIsGroup) {
-                this.fieldSelected.emit({
-                  id: $element.attr('data-groupid'),
-                  type: 'group',
-                  parent: this.id
-                });
-              }
-              else if (!elementIsSubform && (elementIsLabel || parentIsLabel || $closestLabel.length)) {
-                if (!$elementId) {
-                  $elementId = $closestLabel.attr('data-plominoid');
-                }
-                this.log.info('field selected #-d', $elementId, $element.get(0), $closestLabel.get(0));
-                this.fieldSelected.emit({
-                  id: $elementId,
-                  type: 'label',
-                  parent: this.id
-                });
-              } 
-              else if (elementIsSubform) {
-                /**
-                 * subform clicked
-                 */
-                let id = $elementId || $parentId;
-                if (!id) {
-                  $element = $element.closest('.plominoSubformClass');
-                  id = $element.attr('data-plominoid');
-                }
-                this.log.info('field selected #d');
-                this.fieldSelected.emit({ id: id, type: 'subform', parent: this.id });
-              }
-              else if ($elementId || $parentId) {
-                let id = $elementId || $parentId;
-                    
-                let $elementType = $element.data('plominoid')
-                  ? this.extractClass($element.attr('class')) : null;
-  
-                let $parentType = $parent.data('plominoid') 
-                  ? this.extractClass($parent.attr('class')) : null;
-  
-                let type = $elementType || $parentType;
-  
-                this.log.info('field selected #e');
-                this.fieldSelected.emit({ id: id, type: type, parent: this.id });
-              } else if ($element.children().length
-                && $element.children().first().hasClass('plominoLabelClass')
-              ) {
-                $element = $element.children().first();
-                $elementId = $element.attr('data-plominoid');
-                this.log.info('field selected #e2', $elementId, $element.get(0));
-                this.fieldSelected.emit({
-                  id: $elementId,
-                  type: 'label',
-                  parent: this.id
-                });
-              } else if ($element.closest('.plominoGroupClass').length) {
-                $element = $element.closest('.plominoGroupClass');
-                $elementId = $element.attr('data-groupid');
-                this.log.info('field selected #e2', $elementId, $element.get(0));
-                this.fieldSelected.emit({
-                  id: $elementId,
-                  type: 'group',
-                  parent: this.id
-                });
-              }
-              else if ($element.closest('.plominoSubformClass').length) {
-                $element = $element.closest('.plominoSubformClass');
-                $elementId = $element.attr('data-plominoid');
-                this.log.info('field selected #-f2', $elementId, $element.get(0));
-                this.fieldSelected.emit({
-                  id: $elementId,
-                  type: 'subform',
-                  parent: this.id
-                });
-              } else {
-                this.log.info('field selected #f');
-                this.fieldSelected.emit(null);
-              }
-            });
-            /* #endregion */
-          })
-          .catch(() => {
-            ev.preventDefault();
-            this.log.warn('prevented');
-          });
-        });
-
-        if (editor) {
-          editor.setDirty(false);
-          const $edContainer = $(editor.getContainer());
-          if ($edContainer.length) {
-            const $saveDiv = $edContainer
-              .find('.mce-toolbar-grp div.mce-widget.mce-btn:contains("Save")');
-            $saveDiv.attr('aria-disabled', 'true');
-            $saveDiv.addClass('mce-disabled');
-          }
-        }
-      },
-      content_css: [
-        'theme/barceloneta-compiled.css', 'theme/++plone++static/plone-compiled.css'
-      ],
-      content_style: require('./tinymce.css'),
-      menubar: "edit insert view format table tools",
-      height : "780",
-      resize: false
-    });
-
-    this.getFormLayout();
-
-    this.draggingService
-    .onPaletteCustomDragEvent()
-    .subscribe((eventData: MouseEvent) => {
-      this.dragData = this.draggingService.currentDraggingData 
-        ? this.draggingService.currentDraggingData 
-        : this.draggingService.previousDraggingData;
-      
-      this.contentManager.selectAndRemoveElementById(this.id, 'drag-autopreview');
-      this.dropped({ mouseEvent: eventData });
-    });
-
-    this.tabsService.getActiveTab()
-      .subscribe((tab) => {
-        if (this.item && typeof this.item.formUniqueId === 'undefined') {
-          this.item = tab;
-          this.changeDetector.markForCheck();
-          this.changeDetector.detectChanges();
-        }
+      this.draggingService
+      .onPaletteCustomDragEvent()
+      .subscribe((eventData: MouseEvent) => {
+        this.dragData = this.draggingService.currentDraggingData 
+          ? this.draggingService.currentDraggingData 
+          : this.draggingService.previousDraggingData;
+        
+        this.contentManager.selectAndRemoveElementById(this.id, 'drag-autopreview');
+        this.dropped({ mouseEvent: eventData });
       });
 
-    this.labelMarkupEvent.asObservable()
-    .subscribe(($element: JQuery) => {
-      /**
-       * when markup changed on any plominoLabelClass element
-       */
-      const a = $element.text().replace(/\s+/g, ' ').trim();
-      const b = $element.html()
-        .replace(/&nbsp;/g, ' ')
-        .replace(/^(.+?)?<br>$/, '$1')
-        .replace(/\s+/g, ' ').trim();
-      const hasMarkup = a !== b;
-      const dataAdvanced = Boolean($element.attr('data-advanced'));
-      this.log.info('a,b', a, b, 'hasMarkup', hasMarkup, 'dataAdvanced', dataAdvanced);
-
-      if (hasMarkup || (dataAdvanced && !hasMarkup)) {
-        this.log.info('label markup inserted', $element);
-        this.log.extra('tiny-mce.component.ts');
-        
-        if (hasMarkup) {
-          $element.attr('data-advanced', '1');
-        }
-        else {
-          const selectedId = $element.attr('data-plominoid');
-    
-          this.labelsRegistry.update(
-            `${ this.id }/${ selectedId }`, b, 'temporary_title'
-          );
-        }
-      }
-      else if (!hasMarkup && !dataAdvanced && b.length === 0) {
-        this.log.info('reselected $element');
-        this.adapter.select($element);
-
-        const selectedId = $element.attr('data-plominoid');
-    
-        if (selectedId) {
-          this.labelsRegistry.update(
-            `${ this.id }/${ selectedId }`, b, 'temporary_title'
-          );
-        }
-      }
-    });
-
-    this.activeEditorService.onLoadingPush()
-    .subscribe((state: boolean) => {
-      // debugger;
-      this.log.info('onLoadingPush i am', this.id, 
-        'this msg to', this.activeEditorService.editorURL);
-      if (this.activeEditorService.editorURL === this.id) {
-        this.fallLoading(state);
-        this.log.info('fallLoading from onLoadingPush with state', state);
-        // this.loading = state;
-        // try {
-        //   this.changeDetector.markForCheck();
-        //   this.changeDetector.detectChanges();
-        // }
-        // catch (e) {
-        //   this.log.error(e);
-        // }
-      }
-      else if (this.activeEditorService.getActive() === null && this.id) {
-        tinymce.editors.forEach((editor: any) => {
-          if (editor.targetElm && editor.targetElm.id 
-            && editor.targetElm.id === this.id
-          ) {
-            this.fallLoading(state);
-            this.log.info('RESTORED fallLoading from onLoadingPush with state', state);
+      this.tabsManagerService.getActiveTab()
+        .filter((tab) => tab !== null)
+        .subscribe((tab) => {
+          if (this.item && typeof this.item.formUniqueId === 'undefined') {
+            this.item = {
+              label: tab.label || tab.id,
+              url: tab.url,
+              editor: tab.editor
+            };
+            try {
+              this.changeDetector.markForCheck();
+              this.changeDetector.detectChanges();
+            }
+            catch (e) {}
           }
         });
-      }
-    });
-
-    this.activeEditorService.onSavedPush()
-    .subscribe((state: boolean) => {
-      if (this.activeEditorService.editorURL === this.id) {
-        const editor = tinymce.get(this.id);
-        const isDirty = editor.isDirty();
-
-        if (!isDirty) {
-          const $edContainer = $(editor.getContainer());
-          if ($edContainer.length) {
-            const $saveDiv = $edContainer
-              .find('.mce-toolbar-grp div.mce-widget.mce-btn:contains("Save")');
-            $saveDiv.attr('aria-disabled', 'true');
-            $saveDiv.addClass('mce-disabled');
-            $(`span[data-url="${ this.id }"] > span:contains("* ")`).remove();
-            $(`span[data-url="${ this.id }"] > .tabunsaved`).removeClass('tabunsaved');
+  
+      // this.tabsService.getActiveTab()
+      //   .subscribe((tab) => {
+      //     if (this.item && typeof this.item.formUniqueId === 'undefined') {
+      //       this.item = tab;
+      //       this.changeDetector.markForCheck();
+      //       this.changeDetector.detectChanges();
+      //     }
+      //   });
+  
+      this.labelMarkupEvent.asObservable()
+      .subscribe(($element: JQuery) => {
+        /**
+         * when markup changed on any plominoLabelClass element
+         */
+        const a = $element.text().replace(/\s+/g, ' ').trim();
+        const b = $element.html()
+          .replace(/&nbsp;/g, ' ')
+          .replace(/^(.+?)?<br>$/, '$1')
+          .replace(/\s+/g, ' ').trim();
+        const hasMarkup = a !== b;
+        const dataAdvanced = Boolean($element.attr('data-advanced'));
+        this.log.info('a,b', a, b, 'hasMarkup', hasMarkup, 'dataAdvanced', dataAdvanced);
+  
+        if (hasMarkup || (dataAdvanced && !hasMarkup)) {
+          this.log.info('label markup inserted', $element);
+          this.log.extra('tiny-mce.component.ts');
+          
+          if (hasMarkup) {
+            $element.attr('data-advanced', '1');
+          }
+          else {
+            const selectedId = $element.attr('data-plominoid');
+      
+            this.labelsRegistry.update(
+              `${ this.id }/${ selectedId }`, b, 'temporary_title'
+            );
           }
         }
-      }
+        else if (!hasMarkup && !dataAdvanced && b.length === 0) {
+          this.log.info('reselected $element');
+          this.adapter.select($element);
+  
+          const selectedId = $element.attr('data-plominoid');
+      
+          if (selectedId) {
+            this.labelsRegistry.update(
+              `${ this.id }/${ selectedId }`, b, 'temporary_title'
+            );
+          }
+        }
+      });
+  
+      this.activeEditorService.onLoadingPush()
+      .subscribe((state: boolean) => {
+        this.log.info('onLoadingPush i am', this.id, 
+          'this msg to', this.activeEditorService.editorURL);
+        if (this.activeEditorService.editorURL === this.id) {
+          this.fallLoading(state);
+          this.log.info('fallLoading from onLoadingPush with state', state);
+        }
+        else if (this.activeEditorService.getActive() === null && this.id) {
+          tinymce.editors.forEach((editor: any) => {
+            if (editor.targetElm && editor.targetElm.id 
+              && editor.targetElm.id === (this.id ? this.id.split('/').pop() : null)
+            ) {
+              this.fallLoading(state);
+              this.log.info('RESTORED fallLoading from onLoadingPush with state', state);
+            }
+          });
+        }
+      });
+  
+      this.activeEditorService.onSavedPush()
+      .subscribe((state: boolean) => {
+        if (this.activeEditorService.editorURL === this.id) {
+          const editor = this.getEditor();
+          if (!editor) { return; }
+          const isDirty = editor.isDirty();
+  
+          if (!isDirty) {
+            const $edContainer = $(editor.getContainer());
+            if ($edContainer.length) {
+              const $saveDiv = $edContainer
+                .find('.mce-toolbar-grp div.mce-widget.mce-btn:contains("Save")');
+              $saveDiv.attr('aria-disabled', 'true');
+              $saveDiv.addClass('mce-disabled');
+              $(`span[data-url="${ this.id }"] > span:contains("* ")`).remove();
+              $(`span[data-url="${ this.id }"] > .tabunsaved`).removeClass('tabunsaved');
+            }
+          }
+        }
+      });
     });
+  }
+
+  /**
+   * @param dataPat data-pat-tinymce
+   */
+  modifyDataPatParams(dataPat: string): string {
+    const patObject = JSON.parse(dataPat);
+    patObject.inline = false;
+    patObject.tiny.height = 780;
+    patObject.tiny.resize = false;
+    patObject.tiny.forced_root_block = '';
+    patObject.tiny.cleanup = false;
+    patObject.tiny.content_css = patObject.tiny.content_css.split(',');
+    patObject.tiny.content_css = [patObject.tiny.content_css[2]];
+    patObject.tiny.content_css.push('theme/barceloneta-compiled.css');
+    patObject.tiny.content_css.push('theme/++plone++static/plone-compiled.css');
+    patObject.tiny.content_css.push('theme/tinymce.css');
+    patObject.tiny.plugins = ['code', 'save', 'importcss', 'noneditable', 
+      'preview', 'ploneimage', 'plonelink', 'hr', 
+      'lists', 'media', 'table'],
+    patObject.tiny.toolbar = 
+      'undo redo | formatselect | bold italic underline | ' +
+      'alignleft aligncenter alignright alignjustify | ' +
+      'bullist numlist | outdent indent' +
+      'plonelink unlink ploneimage';
+    // patObject.tiny.toolbar = 'save | ' + patObject.tiny.toolbar;
+    // patObject.tiny.plugins.push('save');
+    // const saveTrigger = `window['save_onsavecallback_${ this.id.split('/').pop() }']`;
+    // patObject.tiny.save_onsavecallback = `function(){${ saveTrigger }?${ saveTrigger }():null}`;
+    delete patObject.tiny.external_plugins; // does not work good
+    return JSON.stringify(patObject);
+  }
+
+  onSaveCallback() {
+    this.fallLoading();
+    this.log.info('fallLoading from save_onsavecallback');
+    this.saveTheForm();
+  }
+
+  initialize(): void {
+    if (!this.tinyMCEPatData) { return; }
+    const edId = this.id.split('/').pop();
+    const $el = $('textarea#' + edId);
+    $el.attr('data-pat-tinymce', this.tinyMCEPatData);
+    this.zone.runOutsideAngular(() => {
+      this.registry.scan($el);
+    });
+
+    window['save_onsavecallback_' 
+      + this.id.split('/').pop()] = this.onSaveCallback.bind(this);
+
+    setTimeout(() => {
+      const editor = tinymce.get(edId);
+      editor.onChange.add(this.onTinyMCEEditorChange.bind(this));
+      editor.onKeyDown.add(this.onTinyMCEEditorKeyDown.bind(this));
+      editor.onKeyUp.add(this.onTinyMCEEditorKeyUp.bind(this));
+      editor.onNodeChange.add(this.onTinyMCEEditorNodeChange.bind(this));
+      // editor.onActivate.add(this.onTinyMCEEditorChange.bind(this));
+      editor.onMouseDown.add(this.onTinyMCEEditorMouseDown.bind(this));
+      this.editorInstance = editor;
+      this.editorInstance.show();
+      this.bitDirtyStateAfterSave();
+
+      if (editor) {
+        // editor.setDirty(false);
+        const $edContainer = $(editor.getContainer());
+        if ($edContainer.length) {
+          const $saveDiv = $edContainer
+            .find('.mce-toolbar-grp div.mce-widget.mce-btn:contains("Save")');
+          $saveDiv.attr('aria-disabled', 'true');
+          $saveDiv.addClass('mce-disabled');
+
+          $edContainer.find('iframe').css('height', 'calc(100vh - 226px)');
+        }
+
+        this.getFormLayout();
+      }
+    }, 300);
   }
 
   /**
@@ -706,8 +566,8 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
     if (state === false) {
       this.loadedFirstTime = this.loadedFirstTime === null;
     }
-    const editor = tinymce.get(this.id);
-    if (editor) {
+    const editor = this.getEditor();
+    if (editor && editor.getContainer() !== null) {
       const preloader = editor.getContainer()
         .parentElement.querySelector('plomino-block-preloader');
       (<HTMLElement> preloader.querySelector('.plomino-block-preloader'))
@@ -716,17 +576,21 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
     else if (this.id && this.activeEditorService.getActive() === null) {
       /* id is present but no editor here, lets try to find it */
       tinymce.editors.forEach((editor: any) => {
+        const id = this.id.split('/').pop();
         if (editor.targetElm && editor.targetElm.id 
-          && editor.targetElm.id === this.id
+          && editor.targetElm.id === id
         ) {
           /* remove tinymce editor and add it again */
           const preloader = editor.getContainer()
             .parentElement.querySelector('plomino-block-preloader');
           (<HTMLElement> preloader.querySelector('.plomino-block-preloader'))
             .style.display = state ? 'flex' : 'none';
-          // editor.remove();
-          // tinymce.EditorManager.execCommand('mceAddEditor', true, this.id);
-          // tinymce.EditorManager.execCommand('mceAddEditor', true, this.id);
+
+          editor.id = id;
+          editor.settings.id = id;
+          editor.getContainer().firstElementChild
+            .children[2].firstElementChild.id = id + '_ifr';
+          editor.render();
 
           this.ngAfterViewInit();
         }
@@ -734,8 +598,218 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
     }
   }
 
+  onTinyMCEEditorChange() {
+    if (this.activeEditorService.editorURL === this.id 
+      && !this.theFormIsSavingNow) {
+      this.isDirty.emit(true);
+    }
+  }
+
+  onTinyMCEEditorNodeChange(editor: TinyMceEditor, nodeChangeEvent: any) {
+    if (nodeChangeEvent.selectionChange === true) {
+      const $label = $(nodeChangeEvent.element).closest('.plominoLabelClass');
+
+      if ($label.length) {
+        this.labelMarkupEvent.next($label);
+      }
+    }
+  }
+
+  onTinyMCEEditorKeyDown(editor: TinyMceEditor, e: KeyboardEvent) {
+    if (e.keyCode === 8) { // BACKSPACE PRESSED
+      const editor = this.getEditor();
+      if (!editor) { return; }
+      const rng = editor.selection.getRng();
+      if (!(rng && rng.startContainer)) { return; }
+      const container: HTMLElement = rng.startContainer;
+      const prev = <HTMLElement> container.previousElementSibling;
+
+      /* deleting hidewhen by backspace with cursor at right */
+      if (prev && prev.classList.contains('plominoHidewhenClass')) {
+        $(editor.getBody())
+          .find('[data-plominoid="' + prev.dataset.plominoid + '"]')
+          .remove();
+      }
+    }
+    else if (e.keyCode === 46) { // DELETE PRESSED
+      const editor = this.getEditor();
+      if (!editor) { return; }
+      const rng = editor.selection.getRng();
+      if (!(rng && rng.startContainer)) { return; }
+      const container: HTMLElement = rng.startContainer;
+      const next = <HTMLElement> container.nextElementSibling;
+
+      /* deleting hidewhen by backspace with cursor at right */
+      if (next && next.classList.contains('plominoHidewhenClass')) {
+        $(editor.getBody())
+          .find('[data-plominoid="' + next.dataset.plominoid + '"]')
+          .remove();
+      }
+    }
+  }
+
+  onTinyMCEEditorKeyUp(editor: TinyMceEditor, ev: KeyboardEvent) {
+    /* check current selected element is there */
+    const $selected = this.adapter.getSelected();
+    editor = this.getEditor();
+    if (!editor) { return; }
+
+    const $edBody = $(editor.getBody());
+
+    if ($selected && !$edBody.has(<any> $selected).length) { // BACKSPACE/DEL
+
+      /** element was deleted */
+      if ($selected.hasClass('plominoHidewhenClass')) {
+        $edBody
+          .find('[data-plominoid="' + $selected.attr('data-plominoid') + '"]')
+          .remove();
+      }
+
+      this.formFieldsSelection.selectField('none');
+      this.adapter.select(null);
+    }
+  }
+
+  onTinyMCEEditorMouseDown(editor: TinyMceEditor, ev: MouseEvent) {
+    // setTimeout(() => {
+    //   $('body > plomino-app > div > div > main').get(0).scrollTop = 0;
+    // }, 1);
+    const eventCustomCheck = this.saveManager.detectNewIFrameInnerClick(ev);
+
+    eventCustomCheck
+    .then(() => {
+      /* #region: custom check */
+      let $element = $(ev.target);
+      this.adapter.selectPosition($element);
+
+      this.zone.run(() => {
+        let eventTarget = <any> ev.target;
+
+        if (eventTarget.control ||
+          (['radio', 'select-one'].indexOf(eventTarget.type) !== -1)) {
+          $element = $element.parent();
+        }
+        else if (eventTarget.tagName === 'OPTION' ||
+          eventTarget.nodeName === 'OPTION') {
+          $element = $element.parent().parent();
+        }
+        
+        let $parent = $element.parent();
+        let $grandParent = $parent.parent();
+        let $grandGrandParent = $grandParent.parent();
+        let $closest = $element.closest('[data-mce-selected]');
+        let $elementIsGroup = $element.hasClass('plominoGroupClass');
+        let elementIsLabel = $element.hasClass('plominoLabelClass');
+        let elementIsSubform = $element.hasClass('plominoSubformClass');
+        let parentIsSubform = $parent.hasClass('plominoSubformClass')
+          || $grandParent.hasClass('plominoSubformClass')
+          || $grandGrandParent.hasClass('plominoSubformClass');
+        let closestIsSubform = $closest.hasClass('plominoSubformClass')
+          || ($parent.hasClass('plominoFieldGroup') && 
+          $parent.closest('[data-mce-selected]').hasClass('plominoSubformClass'));
+        let parentIsLabel = $parent.hasClass('plominoLabelClass');
+
+        let $elementId = $element.attr('data-plominoid');
+        let $parentId = $parent.attr('data-plominoid');
+        let $closestLabel = $element.closest('.plominoLabelClass');
+
+        this.log.info($element, $parent, $grandParent, $grandGrandParent, $closest);
+        this.log.extra('tiny-mce.component.ts editor.on(\'mousedown\', ...)');
+
+        const $s = $closestLabel.length ? $closestLabel : $element;
+        if ($s.is(this.adapter.getSelected())) {
+          return;
+        }
+        this.adapter.select($s);
+
+        if (!elementIsSubform && (parentIsSubform || closestIsSubform)) {
+          elementIsSubform = true;
+        }
+
+        if (!elementIsSubform && $elementIsGroup) {
+          this.formFieldsSelection.selectField({
+            id: $element.attr('data-groupid'),
+            type: 'group',
+            parent: this.id
+          });
+        }
+        else if (!elementIsSubform && (elementIsLabel 
+          || parentIsLabel || $closestLabel.length)) {
+          if (!$elementId) {
+            $elementId = $closestLabel.attr('data-plominoid');
+          }
+          this.formFieldsSelection.selectField({
+            id: $elementId,
+            type: 'label',
+            parent: this.id
+          });
+        } 
+        else if (elementIsSubform) {
+          /**
+           * subform clicked
+           */
+          let id = $elementId || $parentId;
+          if (!id) {
+            $element = $element.closest('.plominoSubformClass');
+            id = $element.attr('data-plominoid');
+          }
+          this.formFieldsSelection.selectField({
+            id: id, type: 'subform', parent: this.id });
+        }
+        else if ($elementId || $parentId) {
+          let id = $elementId || $parentId;
+              
+          let $elementType = $element.data('plominoid')
+            ? this.extractClass($element.attr('class')) : null;
+
+          let $parentType = $parent.data('plominoid') 
+            ? this.extractClass($parent.attr('class')) : null;
+
+          let type = $elementType || $parentType;
+
+          this.formFieldsSelection.selectField({ 
+            id: id, type: type, parent: this.id });
+        } else if ($element.children().length
+          && $element.children().first().hasClass('plominoLabelClass')
+        ) {
+          $element = $element.children().first();
+          $elementId = $element.attr('data-plominoid');
+          this.formFieldsSelection.selectField({
+            id: $elementId,
+            type: 'label',
+            parent: this.id
+          });
+        } else if ($element.closest('.plominoGroupClass').length) {
+          $element = $element.closest('.plominoGroupClass');
+          $elementId = $element.attr('data-groupid');
+          this.formFieldsSelection.selectField({
+            id: $elementId,
+            type: 'group',
+            parent: this.id
+          });
+        }
+        else if ($element.closest('.plominoSubformClass').length) {
+          $element = $element.closest('.plominoSubformClass');
+          $elementId = $element.attr('data-plominoid');
+          this.formFieldsSelection.selectField({
+            id: $elementId,
+            type: 'subform',
+            parent: this.id
+          });
+        } else {
+          this.formFieldsSelection.selectField(null);
+        }
+      });
+      /* #endregion */
+    })
+    .catch(() => {
+      ev.preventDefault();
+      this.log.warn('prevented');
+    });
+  }
+
   isLoadingNow(): boolean {
-    const editor = tinymce.get(this.id);
+    const editor = this.getEditor();
     if (editor) {
       const preloader = editor.getContainer()
         .parentElement.querySelector('plomino-block-preloader');
@@ -794,7 +868,8 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
           );
           
           this.fallLoading(false);
-          const editor = tinymce.get(this.id);
+          const editor = this.getEditor();
+          if (!editor) { return; }
           const isDirty = editor.isDirty();
 
           if (editor && this.loadedFirstTime) {
@@ -836,7 +911,7 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
   saveFormLayout(cb:any) {
     this.log.info('calling saveFormLayout', cb.toString(), this.id);
     let tiny = this;
-    let editor = tinymce.get(this.id) || tinymce.get(this.idChanges.oldId);
+    let editor = this.getEditor() || this.getEditor(this.idChanges.oldId);
 
     if (editor !== null) {
       tiny.isLoading.emit(false);
@@ -844,18 +919,10 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
       this.log.info('onchange not dirty', this.id);
       tiny.isDirty.emit(false);
       editor.setDirty(false);
-      // this.loading = false;
       this.theFormIsSavingNow = false;
       this.log.info('tiny-mce loading', false, this.id);
       this.fallLoading(false);
-      // try {
-      //   this.changeDetector.markForCheck();
-      //   this.changeDetector.detectChanges();
-      // }
-      // catch (e) {
-      //   this.log.error(e);
-      // }
-      this.ngAfterViewInit();
+      this.initialize();
     }
   }
 
@@ -919,7 +986,7 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
     this.log.info('tinymce -> updateField callback', updateData);
 
     let originalTitle = this.labelsRegistry.get(updateData.fieldData.url);
-    const editor = tinymce.get(this.id);
+    const editor = this.getEditor();
     if (!editor) {
       this.log.error('editor did not appear', this.id);
       return;
@@ -1053,7 +1120,7 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
         break;
 
       case 'PlominoPagebreak':
-        $(tinymce.get(this.id).getBody())
+        $(this.getEditor().getBody())
           .find('.drag-autopreview').remove(); // just in case
         this.contentManager.insertContent(
           this.id, this.draggingService,
@@ -1077,7 +1144,7 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
   private insertElement(
     target: any, baseUrl: string, type: string, value: string, option?: string
   ) {
-    let ed: any = tinymce.get(this.id);
+    let ed = this.getEditor();
     let selection: any = ed.selection.getNode();
     let title: string;
     let plominoClass: string;
@@ -1158,7 +1225,7 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
 
         this.saveManager.enqueueNewFormSaveProcess(this.item.url);
 
-        this.tabsService.selectField({
+        this.formFieldsSelection.selectField({
           id: value,
           type: `Plomino${type}`,
           parent: this.id
@@ -1226,7 +1293,7 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
 
       this.saveManager.enqueueNewFormSaveProcess(this.item.url);
       
-      this.tabsService.selectField({
+      this.formFieldsSelection.selectField({
         id: value,
         type: `Plomino${type}`,
         parent: this.id
@@ -1248,5 +1315,10 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
     if (!classString) return null;
     let type = classString.split(' ')[0].slice(0, -5);
     return type.indexOf('plomino') > -1 ? type : null;
+  }
+
+  private getEditor(id = this.id) {
+    const edId = id ? id.split('/').pop() : null;
+    return tinymce.get(edId);
   }
 }

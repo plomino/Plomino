@@ -1,3 +1,4 @@
+import { PlominoDBService } from './db.service';
 import { LabelsRegistryService } from './../editors/tiny-mce/services/labels-registry.service';
 import { LogService } from './log.service';
 import { Injectable } from '@angular/core';
@@ -17,6 +18,7 @@ export class PlominoElementAdapterService {
     private log: LogService, 
     private labelsRegistry: LabelsRegistryService,
     private activeEditorService: PlominoActiveEditorService,
+    private dbService: PlominoDBService,
   ) {}
 
   endPoint(type: string, source: string) {
@@ -158,8 +160,10 @@ export class PlominoElementAdapterService {
               $element.html().replace(/&nbsp;/g, ' ')
                 .replace(/^(.+?)?<br>$/, '$1')
                 .replace(/\s+/g, ' ').trim();
+            const activeURL = `${ this.dbService.getDBLink() }/${ 
+              this.activeEditorService.getActive().id }`;
             this.labelsRegistry.update(
-              `${ this.activeEditorService.getActive().id }/${ selectedId }`,
+              `${ activeURL }/${ selectedId }`,
               temporaryTitle, 'temporary_title'
             );
   
@@ -173,18 +177,6 @@ export class PlominoElementAdapterService {
         }, 1);
       });
     }
-
-    /**
-     * if it was the label before - turn field title to unsaved state
-     */
-    // const $before = this.$previousSelectedElement;
-    // if ($before && $before.hasClass('plominoLabelClass')
-    //   && !Boolean($before.attr('data-advanced'))
-    // ) {
-    //   const fieldId = `${ this.activeEditorService.getActive().id }/${ $before.attr('data-plominoid') }`;
-    //   const fieldTitle = this.labelsRegistry.get(fieldId) || 'Untitled';
-    //   $before.html(fieldTitle);
-    // }
   }
 
   getSelectedBefore() {

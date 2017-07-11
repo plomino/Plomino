@@ -4,8 +4,10 @@
     class="tiny-editor">
     <plomino-block-preloader [id]="'preloader_' + id"
         [loading]="true" [palette]="false"></plomino-block-preloader>
-    <textarea class="tinymce-wrap" 
-            [id]="id">
+    <textarea class="pat-tinymce tinymce-wrap" 
+            [attr.data-pat-tinymce]="dataPatTinyMCE"
+            data-pat-plone-modal='{"actionOptions": {"displayInModal": false}}'
+            [id]="id.split('/').pop()">
     </textarea>
 </form>
 <div *ngIf="isDragged" 
