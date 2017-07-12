@@ -2,12 +2,17 @@
 
 
 # ============================================================================
-# DEXTERITY ROBOT TESTS
+# PLOMINO ROBOT TESTS
 # ============================================================================
 #
 # Run this robot test stand-alone:
 #
 #  $ bin/test -s Products.CMFPlomino -t test_plominodatabase.robot --all
+#
+# To run this test with a HEADLESS chrome (requires right drivers)
+#
+#  $ CHROMEHEADLESS="headless" && bin/test -s Products.CMFPlomino -t test_plominodatabase.robot --all
+#
 #
 # Run this robot test with robot server (which is faster):
 #

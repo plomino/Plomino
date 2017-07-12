@@ -1,16 +1,20 @@
 *** Keywords *****************************************************************
 
 Plone Test Setup
+  ${headless}=  Evaluate  os.environ.get("CHROMEHEADLESS", "")  modules=os
   ${options}=  Evaluate  sys.modules['selenium.webdriver'].ChromeOptions()  sys, selenium.webdriver
-  Call Method  ${options}  add_argument  headless
+  run keyword if  "${headless}" != ""  Call Method  ${options}  add_argument  ${headless}
   Call Method  ${options}  add_argument  disable-extensions
   Call Method  ${options}  add_argument  start-maximized
+  Call Method  ${options}  add_argument  no-sandbox
+  Call Method  ${options}  add_argument  disable-gpu
   Create WebDriver  Chrome  chrome_options=${options}
+  Open test browser
 
 
 Plone Test Teardown
     Run Keyword If Test Failed  ${SELENIUM_RUN_ON_FAILURE}
-    Report test status
+#    Report test status
     Close all browsers
 
 
