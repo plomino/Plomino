@@ -5,6 +5,7 @@ sudo: required
 dist: trusty
 cache:
   pip: true
+  bundler: true
   directories:
     - buildout-cache
     - $HOME/buildout-cache
@@ -21,8 +22,8 @@ env:
     - ROBOT_DESIRED_CAPABILITIES=tunnel-identifier:$TRAVIS_JOB_ID
     - CXX=g++-4.8
 addons:
-  sauce_connect: true
-  firefox: "50.0"
+#  sauce_connect: true
+#  firefox: "50.0"
   apt:
     sources:
       - ubuntu-toolchain-r-test
@@ -77,7 +78,8 @@ before_script:
   - mkdir -p ~/chromedriver
   - wget https://github.com/davidthornton/chromedriver-2.31/blob/master/chromedriver\?raw\=true -O ~/chromedriver/chromedriver
   - chmod a+x ~/chromedriver/chromedriver
-  - export PATH="$HOME/chromedriver:$PATH"
+#  - export PATH="$HOME/chromedriver:$PATH"
+  - sudo mv ~/chromedriver /usr/local/bin
   - export CHROMEHEADLESS="headless"
 
 script:
