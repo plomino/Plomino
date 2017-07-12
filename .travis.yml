@@ -79,7 +79,7 @@ before_script:
   - wget https://github.com/davidthornton/chromedriver-2.31/blob/master/chromedriver\?raw\=true -O ~/chromedriver/chromedriver
   - chmod a+x ~/chromedriver/chromedriver
 #  - export PATH="$HOME/chromedriver:$PATH"
-  - sudo mv ~/chromedriver /usr/local/bin
+  - sudo mv ~/chromedriver/chromedriver /usr/local/bin
   - export CHROMEHEADLESS="headless"
 
 script:
