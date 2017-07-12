@@ -660,16 +660,19 @@ export class PlominoWorkflowComponent implements OnInit {
       this.tree.pushNewItemToParentById(newLogicItem, item.id);
       return this.buildWFTree(this.tree, AUTOSAVE, AUTOUPGRADE);
     }
-    else {
+   /* else {
       if (item.type === WF.FORM_TASK || item.type === WF.VIEW_TASK || item.type === WF.EXT_TASK) {
         if ((eventTarget.parentElement.classList.contains('workflow-node__text--form') && item.form)
         || (eventTarget.parentElement.classList.contains('workflow-node__text--view') && item.view)
         ) {
             this.itemEditor.openResourceTab(item);
           }
-          else if (eventTarget.parentElement.classList.contains('workflow-node__text')){
+          else if (eventTarget.parentElement.classList.contains('workflow-node__text--task')){
             this.itemEditor.showModal(item);
           }
+        else if (eventTarget.parentElement.classList.contains('workflow-node__text--process')) {
+          this.itemEditor.showModal(item, true);
+        }
       } else if (item.type === WF.PROCESS) {
         if (eventTarget.parentElement.classList.contains('workflow-node__text')){
             this.itemEditor.showModal(item, true);
@@ -681,6 +684,31 @@ export class PlominoWorkflowComponent implements OnInit {
           $('.workflow-node[data-node-id="' + item.goto +'"]').get(0).scrollIntoView(false);
         }
       }
+    }*/
+     else if (!isRoot && eventTarget.classList.contains('workflow-node__text-modal-link')) {
+      if (eventTarget.parentElement.classList.contains('workflow-node__text--form')
+        || eventTarget.parentElement.classList.contains('workflow-node__text--view')
+      ) {
+        if (item.form || item.view) {
+          this.itemEditor.openResourceTab(item);
+        }
+        else {
+          this.itemEditor.showModal(item);
+        }
+      }
+      else if (item.type === WF.PROCESS 
+        || eventTarget.parentElement.classList.contains('workflow-node__text--process')
+      ) {
+        /* process modal */
+        this.itemEditor.showModal(item, true);
+      }
+      else {
+        /* just modal */
+        this.itemEditor.showModal(item);
+      }
+    }
+    else if (item && item.type === WF.GOTO && item.goto) {
+      $('.workflow-node[data-node-id="' + item.goto +'"]').get(0).scrollIntoView(false);
     }
     return true;
   }
