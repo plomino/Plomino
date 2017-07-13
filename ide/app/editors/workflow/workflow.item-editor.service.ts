@@ -53,10 +53,10 @@ export class PlominoWorkflowItemEditorService {
     )
     .forEach((btn: HTMLElement) => {
       btn.addEventListener('click', (evt) => {
-        evt.stopImmediatePropagation();
+     //   evt.stopImmediatePropagation();
         
         if (this.registeredTree && this.selectedItemIsNothing()) {
-          /* get selected item using id information */
+          // get selected item using id information 
           const item = this.registeredTree
             .getItemById(
               +(<HTMLElement> this.itemSettingsDialog).dataset.itemId
