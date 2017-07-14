@@ -53,8 +53,7 @@ export class PlominoWorkflowItemEditorService {
         .querySelectorAll('button')
     )
     .forEach((btn: HTMLElement) => {
-      btn.addEventListener('click', (evt) => {
-        evt.stopImmediatePropagation();
+      $(btn).unbind('click.wf').bind('click.wf', (evt) => {
         
         if (this.treeService.getActiveTree() && this.selectedItemIsNothing()) {
           // get selected item using id information 
@@ -93,6 +92,7 @@ export class PlominoWorkflowItemEditorService {
         else if (btn.classList.contains('wf-item-settings-dialog__create-btn--view')) {
           this.saveManager.createNewView(updateDBSettings('view').bind(this), true);
         }
+        
         this.$itemSettingsDialog.modal('hide');
       });
     });
