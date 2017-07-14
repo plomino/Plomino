@@ -10,6 +10,7 @@ import { PlominoWorkflowNodeSettingsComponent } from "../../palette-view";
 import { PlominoWorkflowChangesNotifyService } from './workflow.changes.notify.service';
 import { PlominoDBService, ElementService, LogService, 
   FormsService, DraggingService } from '../../services';
+import { PlominoWorkflowTreeService } from './workflow-tree.service';
 
 const NO_AUTOSAVE = false;
 const AUTOSAVE = true;
@@ -26,7 +27,6 @@ const AUTOUPGRADE = true;
 })
 export class PlominoWorkflowComponent implements OnInit {
   @ViewChild('workflowEditorNode') workflowEditorNode: ElementRef;
-  tree: TreeStructure;
   latestTree: TreeStructure = null;
   editorOffset: { top: number, left: number };
 
@@ -39,6 +39,7 @@ export class PlominoWorkflowComponent implements OnInit {
     private dragController: WFDragControllerService,
     private itemEditor: PlominoWorkflowItemEditorService,
     private dbService: PlominoDBService,
+    private treeService: PlominoWorkflowTreeService,
   ) {
     /* mark current dragging item as nothing */
     if (!this.dragService.dndType) {
@@ -51,7 +52,7 @@ export class PlominoWorkflowComponent implements OnInit {
         const item = this.findWFItemByFormOrViewId(formId.split('/').pop());
         if (item !== null) {
           item[item.type === WF.FORM_TASK ? 'form' : 'view'] = '';
-          this.buildWFTree(this.tree, AUTOSAVE, AUTOUPGRADE);
+          this.buildWFTree(this.treeService.getActiveTree(), AUTOSAVE, AUTOUPGRADE);
         }
       });
 
@@ -63,20 +64,21 @@ export class PlominoWorkflowComponent implements OnInit {
           item[
             item.type === WF.FORM_TASK ? 'form' : 'view'
           ] = data.newId.split('/').pop();
-          this.buildWFTree(this.tree, AUTOSAVE, AUTOUPGRADE);
+          this.buildWFTree(this.treeService.getActiveTree(), AUTOSAVE, AUTOUPGRADE);
         }
       });
 
     /* listen to external save trigger */
     this.workflowChanges.needSave$
       .subscribe(() => {
-        this.parseTreeFromSettings();
+        const tree = this.treeService.getActiveTree();
+        this.buildWFTree(tree, AUTOSAVE, AUTOUPGRADE);
       });
 
     /* listen to external add trigger */
     this.workflowChanges.runAdd$
       .subscribe((wfType) => {
-        let correctId = this.tree.getLatestId();
+        let correctId = this.treeService.getActiveTree().getLatestId();
         const dragData = { title: '', type: wfType };
         let $item = $('.workflow-node[data-node-id="' + correctId +'"]');
         
@@ -126,9 +128,10 @@ export class PlominoWorkflowComponent implements OnInit {
       tree.id = 1;
     }
 
-    this.tree = new TreeStructure(tree);
-    this.buildWFTree(this.tree, NO_AUTOSAVE, AUTOUPGRADE);
-    this.itemEditor.registerTree(this.tree);
+    const treeStructure = new TreeStructure(tree);
+    this.treeService.setActiveTree(treeStructure);
+    this.buildWFTree(treeStructure, NO_AUTOSAVE, AUTOUPGRADE);
+    // this.itemEditor.registerTree(this.tree);
   }
 
   initialize() {
@@ -139,14 +142,15 @@ export class PlominoWorkflowComponent implements OnInit {
 
     /* listen to dragController save trigger */
     this.dragController.rebuildWorkflow$.subscribe(() => {
-      this.buildWFTree(this.tree, NO_AUTOSAVE, AUTOUPGRADE);
+      this.buildWFTree(this.treeService.getActiveTree(), NO_AUTOSAVE, AUTOUPGRADE);
     });
 
     /* listen to DRAG ENTER event */
     this.dragController.enter$
       .map((data: ReceiverEvent) => {
         if (!data.item) {
-          data.item = this.tree.getItemById(this.dragController.getHoveredId());
+          data.item = this.treeService.getActiveTree()
+            .getItemById(this.dragController.getHoveredId());
         }
         return data;
       })
@@ -156,7 +160,7 @@ export class PlominoWorkflowComponent implements OnInit {
     this.dragController.drop$
       .map((data: ReceiverEvent) => {
         if (data.item && data.item.type === 'fake') {
-          data.item = this.tree.getItemById(data.item.id);
+          data.item = this.treeService.getActiveTree().getItemById(data.item.id);
         }
         return data;
       })
@@ -166,7 +170,7 @@ export class PlominoWorkflowComponent implements OnInit {
     this.dragController.leave$
       .map((data: ReceiverEvent) => {
         if (data.item && data.item.type === 'fake') {
-          data.item = this.tree.getItemById(data.item.id);
+          data.item = this.treeService.getActiveTree().getItemById(data.item.id);
         }
         return data;
       })
@@ -179,10 +183,12 @@ export class PlominoWorkflowComponent implements OnInit {
    * @param {TreeStructure} tree
    * @return {PlominoWorkflowItem|null} found item or null
    */
-  findWFItemByFormOrViewId(fvId: string, tree = this.tree): PlominoWorkflowItem {
+  findWFItemByFormOrViewId(
+    fvId: string, tree = this.treeService.getActiveTree()
+  ): PlominoWorkflowItem {
     let result: PlominoWorkflowItem = null;
 
-    this.tree.iterate((item) => {
+    tree.iterate((item) => {
       if (item.form === fvId || item.view === fvId) {
         result = item;
       }
@@ -197,27 +203,28 @@ export class PlominoWorkflowComponent implements OnInit {
    * @param targetItem 
    */
   deleteWFItem(wfNode: HTMLElement, targetItem: PlominoWorkflowItem) {
+    const tree = this.treeService.getActiveTree();
     if (targetItem.type === WF.CONDITION || targetItem.type === WF.PROCESS) {
       /* if 1 branch -> assume to remove only it, not whole */
       const aloneBranch = targetItem.type === WF.PROCESS
-        && this.tree.getItemParentById(targetItem.id).children.length === 1;
+        && tree.getItemParentById(targetItem.id).children.length === 1;
       const aloneCondition = targetItem.type === WF.CONDITION
         && targetItem.children.length === 1;
       if (aloneBranch || aloneCondition) {
         this.elementService.awaitForConfirm('One branch. Remove just division?')
         .then(() => {
-          const idParent = this.tree.getItemParentById(targetItem.id).id;
+          const idParent = tree.getItemParentById(targetItem.id).id;
           const idChildren = targetItem.children.length 
             ? targetItem.children[0].id : null;
           const idItem = targetItem.id;
           if (aloneBranch) {
-            this.tree.deleteNodeById(idParent);
+            tree.deleteNodeById(idParent);
           }
           else if (idChildren !== null) {
-            this.tree.deleteNodeById(idChildren);
+            tree.deleteNodeById(idChildren);
           }
-          this.tree.deleteNodeById(idItem);
-          this.buildWFTree(this.tree, AUTOSAVE, AUTOUPGRADE);
+          tree.deleteNodeById(idItem);
+          this.buildWFTree(tree, AUTOSAVE, AUTOUPGRADE);
         })
         .catch(() => {
           this.elementService.awaitForConfirm(
@@ -225,8 +232,8 @@ export class PlominoWorkflowComponent implements OnInit {
               ? 'This action will remove the branches below'
               : 'This action will remove the branch below')
           .then(() => {
-            this.tree.deleteBranchByTopItemId(targetItem.id);
-            this.buildWFTree(this.tree, AUTOSAVE, AUTOUPGRADE);
+            tree.deleteBranchByTopItemId(targetItem.id);
+            this.buildWFTree(tree, AUTOSAVE, AUTOUPGRADE);
           })
           .catch(() => {});
         });
@@ -238,17 +245,17 @@ export class PlominoWorkflowComponent implements OnInit {
             ? 'This action will remove the branches below'
             : 'This action will remove the branch below')
         .then(() => {
-          this.tree.deleteBranchByTopItemId(targetItem.id);
-          this.buildWFTree(this.tree, AUTOSAVE, AUTOUPGRADE);
+          tree.deleteBranchByTopItemId(targetItem.id);
+          this.buildWFTree(tree, AUTOSAVE, AUTOUPGRADE);
         })
         .catch(() => {});
       }
     }
     else {
-      this.tree.deleteNodeById(targetItem.id);
+      tree.deleteNodeById(targetItem.id);
       const $wfItemClosest = $(wfNode);
       $wfItemClosest.fadeOut(100, () => 
-        this.buildWFTree(this.tree, AUTOSAVE, AUTOUPGRADE));
+        this.buildWFTree(tree, AUTOSAVE, AUTOUPGRADE));
     }
   }
 
@@ -271,7 +278,7 @@ export class PlominoWorkflowComponent implements OnInit {
     };
 
     /* copy original tree to temporary sandbox-tree */
-    const sandboxTree = this.tree.createSandbox();
+    const sandboxTree = this.treeService.getActiveTree().createSandbox();
 
     /* current preview way is just a way to temporary change the tree */
     const nodeId = +$parentItem.attr('data-node-id') || 1;
@@ -442,19 +449,20 @@ export class PlominoWorkflowComponent implements OnInit {
    * @param {ReceiverEvent} data object which contains all information for drop
    */
   onDrop(data: ReceiverEvent = null) {
+    let tree = this.treeService.getActiveTree();
     if (data && data.dragServiceType === DS_TYPE.EXISTING_WORKFLOW_ITEM) {
       /* swap items */
       const selected = this.itemEditor.getSelectedItem();
       if (this.isSwapAllowed(selected, data.item)) {
         if (data.item.type === WF.PROCESS && selected.type !== WF.PROCESS) {
-          this.tree.moveNodeToAnotherParentById(selected.id, data.item.id);
+          tree.moveNodeToAnotherParentById(selected.id, data.item.id);
         }
         else {
-          this.tree.swapNodesByIds(selected.id, data.item.id);
+          tree.swapNodesByIds(selected.id, data.item.id);
         }
       }
 
-      this.buildWFTree(this.tree, AUTOSAVE, AUTOUPGRADE);
+      this.buildWFTree(tree, AUTOSAVE, AUTOUPGRADE);
     }
     else {
       const sandboxTree = this.latestTree;
@@ -471,9 +479,10 @@ export class PlominoWorkflowComponent implements OnInit {
           sandboxTree.makeItemReal(temporaryFalseProcessItem);
         }
     
-        this.tree = sandboxTree;
-        this.itemEditor.registerTree(this.tree);
-        this.buildWFTree(this.tree, AUTOSAVE, AUTOUPGRADE);
+        tree = sandboxTree;
+        this.treeService.setActiveTree(tree);
+        // this.itemEditor.registerTree(tree);
+        this.buildWFTree(tree, AUTOSAVE, AUTOUPGRADE);
       }
     }
   }
@@ -484,7 +493,7 @@ export class PlominoWorkflowComponent implements OnInit {
    */
   onItemDragLeave(data: ReceiverEvent) {
     if (data.dragServiceType !== DS_TYPE.EXISTING_WORKFLOW_ITEM) {
-      this.buildWFTree(this.tree, NO_AUTOSAVE, AUTOUPGRADE);
+      this.buildWFTree(this.treeService.getActiveTree(), NO_AUTOSAVE, AUTOUPGRADE);
     }
   }
 
@@ -540,7 +549,7 @@ export class PlominoWorkflowComponent implements OnInit {
    * make all workflow items not selected
    */
   unselectAllWFItems() {
-    this.tree.iterate((wfItem) => {
+    this.treeService.getActiveTree().iterate((wfItem) => {
       wfItem.selected = false;
     });
 
@@ -585,7 +594,8 @@ export class PlominoWorkflowComponent implements OnInit {
     /**
      * is workflow item delete button clicked
      */
-    const isDelBtn = treeBuilder.checkTarget(eventTarget, 'workflow-node__bubble-delete');
+    const isDelBtn = treeBuilder
+      .checkTarget(eventTarget, 'workflow-node__bubble-delete');
     
     /**
      * is the small plus button between two workflow items clicked
@@ -594,7 +604,8 @@ export class PlominoWorkflowComponent implements OnInit {
       'plomino-workflow-editor__branch-add-below-bubble-btn');
     
     /**
-     * is the submenu item of bubble creation menu clicked (at bottom or at between items)
+     * is the submenu item of bubble creation 
+     * menu clicked (at bottom or at between items)
      */
     const isCreate = eventTarget.dataset.create;
 
@@ -613,7 +624,7 @@ export class PlominoWorkflowComponent implements OnInit {
     /**
      * clicked workflow item object using founded workflow node NodeElement
      */
-    const item = this.tree.getItemById(+wfNode.dataset.nodeId);
+    const item = this.treeService.getActiveTree().getItemById(+wfNode.dataset.nodeId);
 
     if ((!isCreate && !isVirtual && !isAddBelow) || isRootBranch) {
       $('.mdl-menu__container').removeClass('is-visible');
@@ -657,19 +668,31 @@ export class PlominoWorkflowComponent implements OnInit {
         children: []
       };
   
-      this.tree.pushNewItemToParentById(newLogicItem, item.id);
-      return this.buildWFTree(this.tree, AUTOSAVE, AUTOUPGRADE);
+      this.treeService.getActiveTree().pushNewItemToParentById(newLogicItem, item.id);
+      return this.buildWFTree(this.treeService.getActiveTree(), AUTOSAVE, AUTOUPGRADE);
     }
     else {
-      if (item.type === WF.FORM_TASK || item.type === WF.VIEW_TASK || item.type === WF.EXT_TASK) {
-        if ((eventTarget.parentElement.classList.contains('workflow-node__text--form') && item.form)
-        || (eventTarget.parentElement.classList.contains('workflow-node__text--view') && item.view)
-        ) {
-            this.itemEditor.openResourceTab(item);
-          }
-          else if (eventTarget.parentElement.classList.contains('workflow-node__text--task')){
-            this.itemEditor.showModal(item);
-          }
+      if (item.type === WF.FORM_TASK || item.type === WF.VIEW_TASK 
+          || item.type === WF.EXT_TASK) {
+        if ((eventTarget.parentElement.classList.contains('workflow-node__text--form') 
+            && item.form)
+          || (eventTarget.parentElement.classList.contains('workflow-node__text--view') 
+            && item.view)
+        ) 
+        {
+          this.itemEditor.openResourceTab(item);
+        }
+        else if (
+          (eventTarget.parentElement
+            .classList.contains('workflow-node__text--form') && !item.form)
+          || (eventTarget.parentElement
+            .classList.contains('workflow-node__text--view') && !item.view)
+          || eventTarget.parentElement
+            .classList.contains('workflow-node__text--task')
+        ) 
+        {
+          this.itemEditor.showModal(item);
+        }
         else if (eventTarget.parentElement.classList.contains('workflow-node__text--process')) {
           this.itemEditor.showModal(item, true);
         }
@@ -688,7 +711,10 @@ export class PlominoWorkflowComponent implements OnInit {
     return true;
   }
 
-  buildWFTree(tree = this.tree, autosave = AUTOSAVE, upgrade = NO_AUTOUPGRADE) {
+  buildWFTree(
+    tree = this.treeService.getActiveTree(), 
+    autosave = AUTOSAVE, upgrade = NO_AUTOUPGRADE
+  ) {
     this.latestTree = tree;
     const wfTree: HTMLElement = this.workflowEditorNode.nativeElement;
 
@@ -733,9 +759,9 @@ export class PlominoWorkflowComponent implements OnInit {
     }
 
     if (autosave) {
-      const jsonTree = this.tree.toJSON();
+      const jsonTree = tree.toJSON();
       const dbLink = this.dbService.getDBLink();
-      const raw = this.tree.getRawTree();
+      const raw = tree.getRawTree();
       const firstExists = raw.children.length > 0;
       const firstChildIsForm = firstExists && raw.children[0].type === WF.FORM_TASK;
   

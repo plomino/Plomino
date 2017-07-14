@@ -1,3 +1,4 @@
+import { PlominoWorkflowTreeService } from './editors/workflow/workflow-tree.service';
 import { PlominoTabsManagerService } from './services/tabs-manager/index';
 import { PlominoTabComponent } from './utility/tabs/tab/plomino-tab.component';
 import { PlominoTabsComponent } from './utility/tabs/plomino-tabs.component';
@@ -134,6 +135,7 @@ import { LoadingComponent } from "./editors/loading/loading.component";
     PlominoPaletteManagerService,
     PlominoDBService,
     PlominoTabsManagerService,
+    PlominoWorkflowTreeService,
   ],
   pipes: [ExtractNamePipe],
 })

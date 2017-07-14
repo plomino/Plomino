@@ -5,6 +5,7 @@ import { WF_ITEM_TYPE as WF } from './tree-builder';
 import { PlominoFormsListService, LogService, ObjService, PlominoDBService,
   FormsService, DraggingService, PlominoSaveManagerService, PlominoHTTPAPIService
 } from '../../services';
+import { PlominoWorkflowTreeService } from './workflow-tree.service';
 
 @Injectable()
 export class PlominoWorkflowItemEditorService {
@@ -12,7 +13,6 @@ export class PlominoWorkflowItemEditorService {
   private selectedItemRef: PlominoWorkflowItem;
   private itemSettingsDialog: HTMLDialogElement;
   private $itemSettingsDialog: JQuery;
-  private registeredTree: TreeStructure;
   private latestUsingForm: any;
 
   constructor(
@@ -24,6 +24,7 @@ export class PlominoWorkflowItemEditorService {
     private dbService: PlominoDBService,
     private objService: ObjService,
     private zone: NgZone,
+    private treeService: PlominoWorkflowTreeService,
   ) {
     this.setSelectedItem(null);
   }
@@ -53,11 +54,11 @@ export class PlominoWorkflowItemEditorService {
     )
     .forEach((btn: HTMLElement) => {
       btn.addEventListener('click', (evt) => {
-     //   evt.stopImmediatePropagation();
+        evt.stopImmediatePropagation();
         
-        if (this.registeredTree && this.selectedItemIsNothing()) {
+        if (this.treeService.getActiveTree() && this.selectedItemIsNothing()) {
           // get selected item using id information 
-          const item = this.registeredTree
+          const item = this.treeService.getActiveTree()
             .getItemById(
               +(<HTMLElement> this.itemSettingsDialog).dataset.itemId
             );
@@ -69,7 +70,7 @@ export class PlominoWorkflowItemEditorService {
 
         const updateDBSettings = (formOrView: string) => 
           (url: string, label: string) => {
-            if (this.selectedItemRef && this.registeredTree) {
+            if (this.selectedItemRef && this.treeService.getActiveTree()) {
               this.selectedItemRef.title = label;
               this.selectedItemRef[formOrView] = url.split('/').pop();
               this.workflowChanges.needSave.next(true);
@@ -87,18 +88,14 @@ export class PlominoWorkflowItemEditorService {
           this.editMacro(this.selectedItemRef);
         }
         else if (btn.classList.contains('wf-item-settings-dialog__create-btn--form')) {
-          this.saveManager.createNewForm(updateDBSettings('form').bind(this));
+          this.saveManager.createNewForm(updateDBSettings('form').bind(this), true);
         }
         else if (btn.classList.contains('wf-item-settings-dialog__create-btn--view')) {
-          this.saveManager.createNewView(updateDBSettings('view').bind(this));
+          this.saveManager.createNewView(updateDBSettings('view').bind(this), true);
         }
         this.$itemSettingsDialog.modal('hide');
       });
     });
-  }
-
-  registerTree(tree: TreeStructure) {
-    this.registeredTree = tree;
   }
 
   getTopItemWithForm(itemId: number, tree: TreeStructure): false|PlominoWorkflowItem {
@@ -112,7 +109,8 @@ export class PlominoWorkflowItemEditorService {
 
   editMacro(item: PlominoWorkflowItem) {
     const tmpOnTopFormItem = (item.form || item.view) 
-      ? item : (this.getTopItemWithForm(item.id, this.registeredTree) || null);
+      ? item : (this.getTopItemWithForm(item.id, 
+        this.treeService.getActiveTree()) || null);
 
     if (tmpOnTopFormItem) {
       this.openResourceTab(tmpOnTopFormItem);
@@ -162,7 +160,7 @@ export class PlominoWorkflowItemEditorService {
         .join('');
 
     if (item.type === WF.GOTO) {
-      const nodesList = this.registeredTree.getNodesList();
+      const nodesList = this.treeService.getActiveTree().getNodesList();
       this.itemSettingsDialog
         .querySelector('#wf-item-settings-dialog__node')
         .innerHTML = '<option value=""></option>' + 
@@ -272,7 +270,8 @@ export class PlominoWorkflowItemEditorService {
     /* step 1: get form url ontop */
     const $wd = this.$itemSettingsDialog.find('#wf-item-settings-dialog__wd');
     const tmpOnTopFormItem = (item.form || item.view) 
-      ? item : (this.getTopItemWithForm(item.id, this.registeredTree) || null);
+      ? item : (this.getTopItemWithForm(item.id, 
+        this.treeService.getActiveTree()) || null);
     if (!tmpOnTopFormItem || !(tmpOnTopFormItem.form || tmpOnTopFormItem.view)) {
       if (item.type === WF.FORM_TASK || item.type === WF.VIEW_TASK 
         || item.type === WF.PROCESS
