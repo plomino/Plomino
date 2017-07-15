@@ -54,6 +54,12 @@ export class LabelsRegistryService {
     return this.labelsRegistry.has(id) ? this.labelsRegistry.get(id)[key] : null;
   }
 
+  getAllForFormID(fId: string) {
+    return Array.from(this.labelsRegistry.keys()).map((key) => {
+      return (key.indexOf(fId) !== -1) ? key : null;
+    }).filter((key) => key !== null);
+  }
+
   replace(oldId: string, newId: string, title: string) {
     this.labelsRegistry.delete(oldId);
     this.labelsRegistry.set(newId, { title });

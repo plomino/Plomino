@@ -125,18 +125,43 @@ export class TreeComponent implements OnInit {
     }
 
     treeFormItemClick(
-      selected: boolean, mouseEvent: MouseEvent, 
+      selected: any, mouseEvent: MouseEvent, 
       typeLabel: string, typeNameUrl: string,
       typeNameLabel: string, formUniqueId: string
     ) {
+      if (['PlominoField', 'PlominoHidewhen', 'PlominoAction']
+          .indexOf(typeLabel) !== -1) {
+        mouseEvent.stopImmediatePropagation();
+      }
       this.click2DragDelay = Observable.timer(500, 1000).subscribe((t: number) => {
-        if (typeLabel !== 'Views') {
+        if (typeLabel === 'Forms') {
           this.dragSubform(selected, mouseEvent, typeLabel, typeNameUrl);
+        }
+        if (['PlominoField', 'PlominoHidewhen', 'PlominoAction']
+            .indexOf(typeLabel) !== -1) {
+          this.dragField(selected, mouseEvent, typeLabel, typeNameUrl);
         }
         this.click2DragDelay.unsubscribe();
       });
       
       return true;
+    }
+
+    dragField(selected: any, mouseEvent: MouseEvent, 
+      typeLabel: string, typeNameUrl: string
+    ) {
+      this.log.info('drag field', selected, mouseEvent, typeLabel, typeNameUrl);
+      this.log.extra('tree.component.ts dragField');
+      
+      if (this.activeEditorService.getActive() && selected 
+        && (['PlominoField', 'PlominoHidewhen', 'PlominoAction']
+          .indexOf(typeLabel) !== -1)
+        && typeNameUrl.split('/').slice(0, -1).join('/') === selected.url
+      ) {
+        this.draggingService.treeFieldDragEvent
+          .next({ mouseEvent, fieldType: typeLabel });
+        this.draggingService.followDNDType('tree-field');
+      }
     }
 
     dragSubform(selected: boolean, mouseEvent: MouseEvent, 
@@ -185,7 +210,10 @@ export class TreeComponent implements OnInit {
     }
 
     startDrag(data: any): void {
-        this.draggingService.setDragging(data);
+      if (data.type === 'PlominoField' || data.type === 'PlominoHidewhen') {
+        this.draggingService.followDNDType(data.type);
+      }
+      this.draggingService.setDragging(data);
     }
 
     endDrag(): void {

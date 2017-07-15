@@ -77,21 +77,15 @@
                     <li *ngFor="let childName of typeName.children">
 
                         <span #selectable 
-                            [class.selected]="isItSelected(childName)" 
-                            dnd-draggable 
-                            [dragEnabled]="true" 
-                            (onDragEnd)="endDrag()"
+                            class="tree-node__child--name click-cursor"
+                            [class.selected]="isItSelected(childName)"
+                            (mouseup)="click2DragDelay ? click2DragDelay.unsubscribe() : true"
+                            (mousedown)="treeFormItemClick(selected, $event, childName.type, childName.url, typeName.url)"
                             (click)="onTreeFieldClick({
                                 name: childName.url, 
                                 type: childName.type, 
                                 parent: childName.typeNameUrl,
                                 resolved: true
-                            })" 
-                            (onDragStart)="startDrag({ 
-                                name: childName.url, 
-                                type: childName.type, 
-                                parent: childName.typeNameUrl,
-                                resolved: true 
                             })">
                         
                             <span class="tree-node__child-type-image">

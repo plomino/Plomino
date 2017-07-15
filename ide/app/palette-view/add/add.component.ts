@@ -269,6 +269,12 @@ export class AddComponent implements OnInit, AfterViewInit {
                 this.simulateDrag(mouseEvent, 'PlominoSubform');
               });
 
+              this.draggingService.treeFieldDragEvent$
+              .subscribe((e: { mouseEvent: MouseEvent, fieldType: string }) => {
+                $('#drag-data-cursor').remove();
+                this.simulateDrag(e.mouseEvent, e.fieldType);
+              });
+
               this.loading = false;
               this.changeDetector.markForCheck();
               this.changeDetector.detectChanges();
@@ -307,6 +313,10 @@ export class AddComponent implements OnInit, AfterViewInit {
       // something that the main app/tree subscribes to so it refreshes automatically?
       let randomId: number = Math.round((Math.random() * 999 - 0));
       let field: InsertFieldEvent;
+
+      const existingId = this.draggingService
+        .currentDraggingData.existingElementId || null;
+
       switch (type) {
           case 'PlominoForm':
               let formElement: InsertFieldEvent = {
@@ -377,7 +387,8 @@ export class AddComponent implements OnInit, AfterViewInit {
               this.log.stopTimer('create_new_label_hold');
               break;
           case 'PlominoField':
-            this.log.startTimer('create_new_field_hold');
+            if (!existingId) {
+              this.log.startTimer('create_new_field_hold');
               field = {
                   title: 'defaultField',
                   '@type': 'PlominoField',
@@ -397,8 +408,18 @@ export class AddComponent implements OnInit, AfterViewInit {
                 this.log.stopTimer('create_new_field_hold');
 
                 this.treeService.updateTree().then(() => {});
-              })
-              break;
+              });
+            }
+            else {
+              let url = `${this.activeTab.url}/${existingId}`;
+              this.fieldsService.insertField({
+                title: this.labelsRegistry.get(url),
+                '@type': 'PlominoField',
+                name: url,
+                target
+              });
+            }
+            break;
           case 'PlominoPagebreak':
               field = {
                 name: `${this.activeTab.url}/defaultPagebreak`,
@@ -456,6 +477,7 @@ export class AddComponent implements OnInit, AfterViewInit {
             });
             break;
           case 'PlominoHidewhen':
+            if (!existingId) {
               field = {
                   title: 'defaultHidewhen',
                   '@type': 'PlominoHidewhen',
@@ -476,8 +498,19 @@ export class AddComponent implements OnInit, AfterViewInit {
 
                 this.treeService.updateTree().then(() => {});
               });
-              break;
+            }
+            else {
+              let url = `${this.activeTab.url}/${existingId}`;
+              this.fieldsService.insertField({
+                title: this.labelsRegistry.get(url),
+                '@type': 'PlominoHidewhen',
+                name: url,
+                target
+              });
+            }
+            break;
           case 'PlominoAction':
+            if (!existingId) {
               field = {
                   title: 'defaultAction',
                   action_type: 'OPENFORM',
@@ -492,7 +525,17 @@ export class AddComponent implements OnInit, AfterViewInit {
                 this.fieldsService.insertField(extendedField);
                 this.treeService.updateTree().then(() => {});
                 })
-              break;
+            }
+            else {
+              let url = `${this.activeTab.url}/${existingId}`;
+              this.fieldsService.insertField({
+                title: this.labelsRegistry.get(url),
+                '@type': 'PlominoAction',
+                name: url,
+                target
+              });
+            }
+            break;
           case 'column':
               this.fieldsService.viewColumnInserted.next(this.activeTab.url);
               break;
@@ -622,14 +665,22 @@ export class AddComponent implements OnInit, AfterViewInit {
 
         let treeSubform = false;
         if (!template && eventData.target) {
-          const $target = (<HTMLElement> eventData.target).classList
-            .contains('tree-node--name') 
+          const eventTarget = <HTMLElement> eventData.target;
+          const $target = eventTarget.classList.contains('tree-node--name') 
               ? $(eventData.target) 
               : $(eventData.target).find('.tree-node--name');
-          const text = $target.text().trim();
+          let text = $target.text().trim();
           if (text) {
             this.mouseDownTemplateId = text;
             treeSubform = true;
+          }
+          else if (eventTarget.classList.contains('tree-node__child--name')) {
+            text = $target.prevObject.text().trim();
+            if (text) {
+              this.mouseDownTemplateId = text;
+              draggingData.existingElementId = text;
+              treeSubform = true;
+            }
           }
         }
 
@@ -646,10 +697,9 @@ export class AddComponent implements OnInit, AfterViewInit {
         }
 
         this.draggingService.currentDraggingData = draggingData;
-        
         this.draggingService.setDragging(draggingData);
 
-        if (draggingData['@type']) {
+        if (draggingData['@type'] && !draggingData.existingElementId) {
           this.draggingService.followDNDType(draggingData['@type']);
         }
     }
