@@ -632,6 +632,13 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
 
       const container: HTMLElement = rng.startContainer;
       const parent = <HTMLElement> container.parentElement;
+      const contPrev = <HTMLElement> container.previousElementSibling;
+
+      if (contPrev && contPrev.classList.contains('plominoHidewhenClass')) {
+        $(editor.getBody())
+          .find('[data-plominoid="' + contPrev.dataset.plominoid + '"]')
+          .remove();
+      }
       
       if (!(
         parent && parent.tagName === 'P' 
