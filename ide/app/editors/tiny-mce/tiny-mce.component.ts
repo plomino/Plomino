@@ -551,8 +551,13 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
             .find('.mce-toolbar-grp div.mce-widget.mce-btn:contains("Save")');
           $saveDiv.attr('aria-disabled', 'true');
           $saveDiv.addClass('mce-disabled');
-
-          $edContainer.find('iframe').css('height', 'calc(100vh - 226px)');
+          const $iframe = $edContainer.find('iframe');
+          const iframeDocument = (<HTMLIFrameElement> $iframe.get(0))
+            .contentWindow.document;
+          iframeDocument.addEventListener('keydown', (e) => {
+            return this.beforeTinyMCEEditorKeyDown(editor, e);
+          }, true);
+          $iframe.css('height', 'calc(100vh - 226px)');
         }
 
         this.getFormLayout();
@@ -613,6 +618,47 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
 
       if ($label.length) {
         this.labelMarkupEvent.next($label);
+      }
+    }
+  }
+
+  beforeTinyMCEEditorKeyDown(editor: TinyMceEditor, e: KeyboardEvent) {
+    if (e.keyCode === 8) { // BACKSPACE PRESSED
+      const editor = this.getEditor();
+      if (!editor) { return true; }
+
+      const rng = editor.selection.getRng();
+      if (!(rng && rng.startContainer)) { return true; }
+
+      const container: HTMLElement = rng.startContainer;
+      const parent = <HTMLElement> container.parentElement;
+      
+      if (!(
+        parent && parent.tagName === 'P' 
+        && !(parent.innerText.trim()).length
+      )) {
+        return true;
+      }
+
+      const prev = <HTMLElement> parent.previousElementSibling;
+      const next = <HTMLElement> parent.nextElementSibling;
+      if (!prev || !next) { return true; }
+
+      /**
+       * @see https://trello.com/c/89jSvQ7A/242-deleting-p-between-non-editable-elements
+       */
+      if (prev.tagName === 'DIV' 
+        && !(next.tagName === 'P' && next.innerHTML === '&nbsp;')
+      ) {
+        /* prevent default and remove parent */
+        $(parent).remove();
+
+        /** start do nothing */
+        e.preventDefault();
+        e.stopPropagation();
+        e.stopImmediatePropagation();
+        return false;
+        /** end do nothing */
       }
     }
   }
