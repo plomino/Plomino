@@ -833,6 +833,7 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
     .subscribe((form: PlominoFormDataAPIResponse) => {
       for (let item of form.items) {
         this.labelsRegistry.update(item['@id'], item.title, 'title');
+        this.labelsRegistry.update(item['@id'], item['@type'], '@type');
       }
       const data = form.form_layout;
       let newData = '';

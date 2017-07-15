@@ -134,6 +134,7 @@ interface PlominoIFrameMouseLeave {
 
 interface PlominoDraggingData {
   'templateId'?: string;
+  'existingElementId'?: string;
   'template'?: PlominoFormGroupTemplate;
   'resolver': (data?: any) => void;
   '@type': string;

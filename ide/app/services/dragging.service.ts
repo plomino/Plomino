@@ -1,3 +1,4 @@
+import { WidgetService } from './widget.service';
 import { PlominoActiveEditorService } from './active-editor.service';
 import { LogService } from './log.service';
 import { FieldsService } from './fields.service';
@@ -23,13 +24,18 @@ export class DraggingService {
 
   subformDragEvent: Subject<MouseEvent> = new Subject<MouseEvent>();
   subformDragEvent$: Observable<MouseEvent> = this.subformDragEvent.asObservable();
+  treeFieldDragEvent: Subject<{ mouseEvent: MouseEvent, fieldType: string }> 
+    = new Subject<{ mouseEvent: MouseEvent, fieldType: string }>();
+  treeFieldDragEvent$: Observable<{ mouseEvent: MouseEvent, fieldType: string }> 
+    = this.treeFieldDragEvent.asObservable();
   dndType: any;
 
   constructor(
     private templateService: TemplatesService, 
     private log: LogService,
     private activeEditorService: PlominoActiveEditorService,
-    private fieldsService: FieldsService
+    private fieldsService: FieldsService,
+    private widgetService: WidgetService,
   ) {}
 
   followDNDType(dndType: any) {
@@ -173,8 +179,15 @@ export class DraggingService {
         && !this.currentDraggingData.resolved) {
         this.log.info('action/label/field this.currentDraggingData', this.currentDraggingData);
 
-        this.fieldsService
-        .getTemplate(parent, data['@type'].replace('Plomino', '').toLowerCase())
+        (this.currentDraggingData.existingElementId 
+          ? this.widgetService.getWidget(
+              parent, data['@type'].replace('Plomino', '').toLowerCase(), 
+              this.currentDraggingData.existingElementId
+            )
+          : this.fieldsService.getTemplate(
+            parent, data['@type'].replace('Plomino', '').toLowerCase()
+          )
+        )
         .subscribe((widgetCode: string) => {
           this.currentDraggingTemplateCode = widgetCode;
   

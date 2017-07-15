@@ -209,6 +209,7 @@ export class WidgetService {
     let promiseList: any[] = [];
 
     const widgetQueryData: { widget_type: string, id: string }[] = [];
+    const widgetQuerySet: Set<string> = new Set();
 
     const $widgets = $edIFrame.find(
       '.plominoFieldClass, .plominoHidewhenClass, ' +
@@ -226,6 +227,25 @@ export class WidgetService {
         .replace('plomino', '').replace('Class', '').toLowerCase();
 
       widgetQueryData.push({ widget_type, id });
+      widgetQuerySet.add(id);
+    });
+
+    /**
+     * insert additionally all elements for current form
+     */
+    const formItems = this.labelsRegistry.getAllForFormID(baseUrl);
+    formItems.forEach((itemURL) => {
+      /* if item is not in widgetQueryData then */
+      const itemId = itemURL.replace(baseUrl + '/', '');
+      if (!widgetQuerySet.has(itemId)) {
+        const itemWidgetTypeFull = this.labelsRegistry.get(itemURL, '@type');
+        if (itemWidgetTypeFull) {
+          const itemWidgetType = itemWidgetTypeFull
+            .replace('Plomino', '').toLowerCase();
+          widgetQueryData.push({ widget_type: itemWidgetType, id: itemId });
+          widgetQuerySet.add(itemId);
+        }
+      }
     });
 
     const widgetsFromServer = new Subject<any>();
@@ -754,6 +774,9 @@ export class WidgetService {
     if (cachedResult) {
       return Observable.of(cachedResult);
     }
+    // else if (!cachedResult && type === 'hidewhen') {
+    //   return this.convertFormHidewhens();
+    // }
 
     return this.http.get(
       `${baseUrl}/@@tinyform/example_widget?widget_type=${type}${ id ? `&id=${id}` : '' }`,
