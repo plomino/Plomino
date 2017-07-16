@@ -31,7 +31,7 @@ body {
 .plomino-workflow-editor__branches--root {
   padding-top: 2em;
   max-height: calc(100vh - 50px);
-  min-height: 530px;
+  min-height: 550px;
   overflow-y: scroll;
 }
 .plomino-workflow-editor__branches::after {
