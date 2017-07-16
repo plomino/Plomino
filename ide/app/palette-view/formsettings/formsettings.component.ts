@@ -421,7 +421,18 @@ export class FormSettingsComponent implements OnInit {
           // this.log.info('tab', tab, tab && tab.url ? tab.url : null);
           // this.log.extra('formsettings.component.ts getSettings -> flatMap');
           
-          if (tab && tab.url) {
+          if (tab && tab.editor === 'code') {
+            this.formSettings = '';
+            try {
+              this.changeDetector.markForCheck();
+              this.changeDetector.detectChanges();
+            }
+            catch (e) {
+              
+            }
+            return Observable.of('');
+          }
+          else if (tab && tab.url) {
             this.formSettings = 
               `<p><div class="mdl-spinner mdl-js-spinner is-active"></div></p>`;
             componentHandler.upgradeDom();
