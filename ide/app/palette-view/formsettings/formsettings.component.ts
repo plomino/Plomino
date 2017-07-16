@@ -423,7 +423,7 @@ export class FormSettingsComponent implements OnInit {
           // this.log.info('tab', tab, tab && tab.url ? tab.url : null);
           // this.log.extra('formsettings.component.ts getSettings -> flatMap');
           
-          if (tab && tab.editor === 'workflow') {
+          if (tab && tab.editor === 'workflow' || tab.editor === 'code') {
             this.formSettings = '';
             try {
               this.changeDetector.markForCheck();

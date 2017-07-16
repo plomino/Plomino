@@ -209,7 +209,8 @@ export class PaletteComponent implements OnInit {
           group.title = 'View Settings';
         }
         else {
-          group.title = !activeTabType || activeTabType === 'layout' 
+          group.title = !activeTabType || activeTabType === 'layout'
+             || activeTabType === 'code' 
             ? 'Form Settings' : 'View Settings';
         }
 
