@@ -74,12 +74,12 @@ export const treeBuilder = {
                 data-target="${ item.id }"
                 data-create="${ WF_ITEM_TYPE.CONDITION }">
                 Branch
-              </li>
+              </li>${ item.children.length ? '' : `
               <li class="mdl-menu__item"
                 data-target="${ item.id }"
                 data-create="${ WF_ITEM_TYPE.GOTO }">
                 Goto
-              </li>` : '' }
+              </li>`}` : '' }
             </ul>`;
           childrenTree = childrenTree.splice(-5, 0, bbtn);
         }
@@ -289,16 +289,18 @@ export const treeBuilder = {
             Ext. task
           </li>` : '' }
           ${ parent && parent.type !== WF_ITEM_TYPE.CONDITION
+            && !(item.children.length 
+                  && item.children[0].type === WF_ITEM_TYPE.CONDITION)
             ? `<li class="mdl-menu__item"
             data-target="${ item.id }"
             data-create="${ WF_ITEM_TYPE.CONDITION }">
             Branch
-          </li>
+          </li>${ item.children.length ? '' : `
           <li class="mdl-menu__item"
             data-target="${ item.id }"
             data-create="${ WF_ITEM_TYPE.GOTO }">
             Goto
-          </li>` : '' }
+          </li>`}` : '' }
         </ul><!--
       --></li></ul>` : '-->' }</li>`;
   },
