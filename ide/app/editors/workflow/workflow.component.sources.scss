@@ -43,6 +43,7 @@ $wfpad-right-left: 7px;
     &--root {
       padding-top: 2em;
       max-height: calc(100vh - 50px);
+      min-height: 400px;
       overflow-y: scroll;
     }
 
