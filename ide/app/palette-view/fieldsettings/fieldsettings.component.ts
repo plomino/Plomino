@@ -369,11 +369,10 @@ export class FieldSettingsComponent implements OnInit {
 
           /* form save automatically */
           if (this.activeEditorService.getActive()) {
-            this.activeEditorService.getActive().setDirty(true);
-            try {
-              this.activeEditorService.getActive()
-                .getDoc().querySelector('#mceu_0 button').click();
-            } catch (e) {}
+            this.saveManager
+            .enqueueNewFormSaveProcess(
+              this.activeEditorService.editorURL
+            );
           }
         }, 100);
         
@@ -771,11 +770,10 @@ export class FieldSettingsComponent implements OnInit {
           this.treeService.updateTree().then(() => {});
           /* form save automatically */
           if (this.activeEditorService.getActive()) {
-            this.activeEditorService.getActive().setDirty(true);
-            try {
-              this.activeEditorService.getActive()
-                .getDoc().querySelector('#mceu_0 button').click();
-            } catch (e) {}
+            this.saveManager
+            .enqueueNewFormSaveProcess(
+              this.activeEditorService.editorURL
+            );
           }
         });
       })
