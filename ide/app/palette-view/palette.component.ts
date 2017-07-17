@@ -1,3 +1,4 @@
+import { URLManagerService } from './../services/url-manager.service';
 import { PlominoDBService } from './../services/db.service';
 import { PlominoTabsManagerService } from './../services/tabs-manager/index';
 import { PlominoWorkflowNodeSettingsComponent } from './workflow-node-settings/index';
@@ -74,7 +75,9 @@ export class PaletteComponent implements OnInit {
                 private formFieldsSelection: PlominoFormFieldsSelectionService,
                 private formsService: FormsService,
                 private log: LogService,
-                private templatesService: TemplatesService) { }
+                private templatesService: TemplatesService,
+                private urlManager: URLManagerService,
+              ) { }
 
     ngOnInit() {
       this.tabsManagerService.workflowModeChanged$
@@ -166,14 +169,18 @@ export class PaletteComponent implements OnInit {
           });
           if (activeChanged) {
             if (j > 1 && tabIndex === 3) {
-              /* open wf */
-              this.tabsManagerService.openTab({
-                id: 'workflow',
-                url: 'workflow',
-                label: 'Workflow',
-                editor: 'workflow',
-                // path: []
-              });
+              /* if any other editors are opened - do nothing */
+              const tabs = this.urlManager.parseURLString();
+              if (!tabs.length) {
+                /* open wf */
+                this.tabsManagerService.openTab({
+                  id: 'workflow',
+                  url: 'workflow',
+                  label: 'Workflow',
+                  editor: 'workflow',
+                  // path: []
+                });
+              }
             }
             this.resizeInnerScrollingContainers();
             this.changeDetector.markForCheck();
