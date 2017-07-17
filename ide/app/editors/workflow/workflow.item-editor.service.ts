@@ -345,7 +345,10 @@ export class PlominoWorkflowItemEditorService {
         $(window['macrosSelectorRefreshEvent'])
           .unbind('macros_selector_refresh')
           .bind('macros_selector_refresh', () => {
-            $wd.find('input[type="radio"]').remove();
+            const $radiosBefore = $wd.find('input[type="radio"]');
+            const radiosBeforeLength = $radiosBefore.length;
+            $radiosBefore.remove();
+
             $wd.find('.plomino-macros-rule').each((i, e) => {
               if (!item.macroText) {
                 item.macroText = '';
@@ -365,6 +368,15 @@ export class PlominoWorkflowItemEditorService {
               $(e).prepend($r);
               $(e).find('.select2-container').css('width', '94%');
             });
+            
+            const $radiosNow = $wd.find('input[type="radio"]');
+            const radiosNowLength = $radiosNow.length;
+            const newMacroRuleAdded = radiosBeforeLength < radiosNowLength;
+
+            if (newMacroRuleAdded && $radiosNow.length > 1) {
+              /** mark the new macro rule as selected */
+              $radiosNow[$radiosNow.length - 2].click();
+            }
           });
 
         $(window['macrosSelectorRefreshEvent']).trigger('macros_selector_refresh');
