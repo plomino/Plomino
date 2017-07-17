@@ -295,12 +295,12 @@ export const treeBuilder = {
             data-target="${ item.id }"
             data-create="${ WF_ITEM_TYPE.CONDITION }">
             Branch
-          </li>${ item.children.length ? '' : `
+          </li>` : '' }${ parent && !item.children.length ? `
           <li class="mdl-menu__item"
             data-target="${ item.id }"
             data-create="${ WF_ITEM_TYPE.GOTO }">
             Goto
-          </li>`}` : '' }
+          </li>` : '' }
         </ul><!--
       --></li></ul>` : '-->' }</li>`;
   },
