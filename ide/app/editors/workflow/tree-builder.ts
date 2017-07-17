@@ -290,7 +290,7 @@ export const treeBuilder = {
           </li>` : '' }
           ${ parent && parent.type !== WF_ITEM_TYPE.CONDITION
             && !(item.children.length 
-                  && item.children[0].type === WF_ITEM_TYPE.CONDITION)
+            && item.children[0].type === WF_ITEM_TYPE.CONDITION)
             ? `<li class="mdl-menu__item"
             data-target="${ item.id }"
             data-create="${ WF_ITEM_TYPE.CONDITION }">
