@@ -1,3 +1,4 @@
+import { URLManagerService } from './../services/url-manager.service';
 import { PlominoDBService } from './../services/db.service';
 import { PlominoTabsManagerService } from './../services/tabs-manager/index';
 import { LogService } from './../services/log.service';
@@ -70,7 +71,9 @@ export class PaletteComponent implements OnInit {
                 private formFieldsSelection: PlominoFormFieldsSelectionService,
                 private formsService: FormsService,
                 private log: LogService,
-                private templatesService: TemplatesService) { }
+                private templatesService: TemplatesService,
+                private urlManager: URLManagerService,
+              ) { }
 
     ngOnInit() {
         this.tabsManagerService.getActiveTab()
