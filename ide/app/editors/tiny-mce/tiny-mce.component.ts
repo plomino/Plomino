@@ -668,6 +668,45 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
         /** end do nothing */
       }
     }
+    else if (e.keyCode === 46) { // DELETE PRESSED
+      const editor = this.getEditor();
+      if (!editor) { return true; }
+
+      const rng = editor.selection.getRng();
+      if (!(rng && rng.startContainer)) { return true; }
+
+      const container: HTMLElement = rng.startContainer;
+      const parent = <HTMLElement> container.parentElement;
+      const contNext = <HTMLElement> container.nextElementSibling;
+
+      if (!(
+        parent && parent.tagName === 'P' 
+        && !(parent.innerText.trim()).length
+      )) {
+        return true;
+      }
+
+      const prev = <HTMLElement> parent.previousElementSibling;
+      const next = <HTMLElement> parent.nextElementSibling;
+      if (!prev || !next) { return true; }
+
+      /**
+       * @see https://trello.com/c/89jSvQ7A/242-deleting-p-between-non-editable-elements
+       */
+      if (next.tagName === 'DIV' 
+        && !(prev.tagName === 'P' && prev.innerHTML === '&nbsp;')
+      ) {
+        /* prevent default and remove parent */
+        $(parent).remove();
+
+        /** start do nothing */
+        e.preventDefault();
+        e.stopPropagation();
+        e.stopImmediatePropagation();
+        return false;
+        /** end do nothing */
+      }
+    }
   }
 
   onTinyMCEEditorKeyDown(editor: TinyMceEditor, e: KeyboardEvent) {
