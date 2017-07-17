@@ -254,7 +254,8 @@ export class AddComponent implements OnInit, AfterViewInit {
       let field: InsertFieldEvent;
 
       const existingId = this.draggingService
-        .currentDraggingData.existingElementId || null;
+        .currentDraggingData ? this.draggingService
+        .currentDraggingData.existingElementId || null : null;
 
       switch (type) {
           case 'PlominoForm':
