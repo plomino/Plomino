@@ -225,6 +225,25 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
         this.log.extra('tiny-mce.component.ts');
         this.activeEditorService.setActive(data.newId);
       }
+      
+      if (this.id === data.oldId) {
+        this.id = data.newId;
+        /* id is present but no editor here, lets try to find it */
+        tinymce.editors.forEach((editor: any) => {
+          const id = this.id.split('/').pop();
+          if (editor.targetElm && editor.targetElm.id 
+            && editor.targetElm.id === data.oldId.split('/').pop()
+          ) {
+            editor.id = id;
+            editor.settings.id = id;
+            editor.getContainer().firstElementChild
+              .children[2].firstElementChild.id = id + '_ifr';
+            editor.render();
+  
+            // this.ngAfterViewInit();
+          }
+        });
+      }
     });
 
     this.subscriptions.push(idChangeSub);
