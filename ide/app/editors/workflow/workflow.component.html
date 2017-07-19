@@ -6,4 +6,5 @@
     (drop)="dragController.receive($event, 'drop', dragService.dndType)"
     (click)="onClickReceive($event)"
     style="max-width: 100%"
-    ></div>
+    ><plomino-block-preloader [id]="'preloader_workflow'"
+        [loading]="true" [palette]="false"></plomino-block-preloader></div>

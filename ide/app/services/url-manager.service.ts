@@ -34,17 +34,23 @@ export class URLManagerService {
         });
     }
     else {
+      this.tabsManagerService.setOpenedTabActive = false;
+      let i = 0;
+
       for (let urlItem of urlItems) {
+        if (++i === urlItems.length) {
+          this.tabsManagerService.setOpenedTabActive = true;
+        }
+
         if (urlItem === 'workflow') {
-  
-          try { $('a.mdl-tabs__tab:contains("Service")').get(0).click(); }
-          catch (e) {}
           window['materialPromise']
             .then(() => {
-              setTimeout(() => {
-                $('a.mdl-tabs__tab:contains("Service")').get(0).click();
-                $('button:contains("Workflow")').get(0).click();
-              }, 100);
+              this.tabsManagerService.openTab({
+                id: 'workflow',
+                url: 'workflow',
+                label: 'Workflow',
+                editor: 'workflow',
+              });
             });
         }
         else {
@@ -52,12 +58,22 @@ export class URLManagerService {
             .then(() => {
               const $resource = $(`.tree-node--name:contains("${ urlItem }")`)
                 .filter((i, node: HTMLElement) => $(node).text().trim() === urlItem);
-              $resource.click();
-              setTimeout(() => {
-                const $resource = $(`.tree-node--name:contains("${ urlItem }")`)
-                  .filter((i, node: HTMLElement) => $(node).text().trim() === urlItem);
-                $resource.click();
-              }, 100);
+
+              if (!$resource.length) {
+                return;
+              }
+
+              const tabData = {
+                editor: {
+                    'PlominoForm': 'layout', 
+                    'PlominoView': 'view'
+                  }[$resource.attr('data-type')],
+                label: $resource.next().text().trim(),
+                url: $resource.attr('id').replace('tree_', ''),
+                id: urlItem
+              }
+
+              this.tabsManagerService.openTab(tabData);
             });
         }
       }

@@ -462,7 +462,6 @@ export class FormSettingsComponent implements OnInit {
         })
         .subscribe((template) => {
           if (this.tab && template.indexOf(`action="${ this.tab.url }/@@edit"`) === -1) {
-            this.log.warn('form settings apply cancelled (bug prevented)');
             return;
           }
 

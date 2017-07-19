@@ -108,12 +108,13 @@ export class PlominoWorkflowComponent implements OnInit {
     }, 1);
   }
 
-  parseTreeFromSettings(sure = false) {
+  parseTreeFromSettings(attempts = 0) {
 
     let tree;
+    const maxAttempts = 5;
 
-    if (sure) {
-      this.log.warn('something was going wrong with loading but fixed');
+    if (attempts > 0) {
+      this.log.warn('attempt to load workflow');
     }
 
     try {
@@ -122,8 +123,8 @@ export class PlominoWorkflowComponent implements OnInit {
       tree = JSON.parse(fd.get('form.widgets.IBasic.description'));
 
       if (!fd.get('form.widgets.IBasic.description')) {
-        if (!sure) {
-          setTimeout(() => { this.parseTreeFromSettings(true); }, 1e3);
+        if (attempts < maxAttempts) {
+          setTimeout(() => { this.parseTreeFromSettings(++attempts); }, 1e3);
           return;
         }
         else {
@@ -132,8 +133,8 @@ export class PlominoWorkflowComponent implements OnInit {
       }
     }
     catch(e) {
-      if (!sure) {
-        setTimeout(() => { this.parseTreeFromSettings(true); }, 1e3);
+      if (attempts < maxAttempts) {
+        setTimeout(() => { this.parseTreeFromSettings(++attempts); }, 1e3);
         return;
       }
       else {
@@ -148,7 +149,6 @@ export class PlominoWorkflowComponent implements OnInit {
     const treeStructure = new TreeStructure(tree);
     this.treeService.setActiveTree(treeStructure);
     this.buildWFTree(treeStructure, NO_AUTOSAVE, AUTOUPGRADE);
-    // this.itemEditor.registerTree(this.tree);
   }
 
   initialize() {

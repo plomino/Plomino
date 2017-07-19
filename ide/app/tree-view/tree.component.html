@@ -56,6 +56,7 @@
                 <span class="tree-node--name click-cursor"
                     #selectable
                     [attr.id]="'tree_' + typeName.url"
+                    [attr.data-type]="typeName.type"
                     [class.selected]="selected && (typeName.url === selected.url)"
                     [attr.draggable]="workflowMode ? 'true' : null"
                     (dragstart)="workflowMode ? dragSubformToWorkflow($event, typeName.url, typeName.label, typeName.typeLabel) : null"

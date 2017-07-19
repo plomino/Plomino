@@ -371,6 +371,9 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
 
   ngAfterViewInit(): void {
     this.activeEditorService.setActive(this.item.url);
+    if (this.item.url === 'workflow') {
+      return;
+    }
     this.log.info(this.item.url, 'tinymce view initialized');
     window['$'] = jQuery;
     window['registryPromise'].then((registry: any) => {
@@ -552,18 +555,22 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
 
     setTimeout(() => {
       const editor = tinymce.get(edId);
-      editor.onChange.add(this.onTinyMCEEditorChange.bind(this));
-      editor.onKeyDown.add(this.onTinyMCEEditorKeyDown.bind(this));
-      editor.onKeyUp.add(this.onTinyMCEEditorKeyUp.bind(this));
-      editor.onNodeChange.add(this.onTinyMCEEditorNodeChange.bind(this));
-      // editor.onActivate.add(this.onTinyMCEEditorChange.bind(this));
-      editor.onMouseDown.add(this.onTinyMCEEditorMouseDown.bind(this));
-      this.editorInstance = editor;
-      this.editorInstance.show();
-      this.bitDirtyStateAfterSave();
+      
+      if (editor === null) {
+        this.log.warn('null editor', edId, tinymce.editors);
+      }
 
       if (editor) {
-        // editor.setDirty(false);
+        editor.onChange.add(this.onTinyMCEEditorChange.bind(this));
+        editor.onKeyDown.add(this.onTinyMCEEditorKeyDown.bind(this));
+        editor.onKeyUp.add(this.onTinyMCEEditorKeyUp.bind(this));
+        editor.onNodeChange.add(this.onTinyMCEEditorNodeChange.bind(this));
+        // editor.onActivate.add(this.onTinyMCEEditorChange.bind(this));
+        editor.onMouseDown.add(this.onTinyMCEEditorMouseDown.bind(this));
+        this.editorInstance = editor;
+        this.editorInstance.show();
+        this.bitDirtyStateAfterSave();
+
         const $edContainer = $(editor.getContainer());
         if ($edContainer.length) {
           const $saveDiv = $edContainer

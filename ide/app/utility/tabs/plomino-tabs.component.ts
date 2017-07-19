@@ -30,11 +30,13 @@ export class PlominoTabsComponent implements OnInit {
         const index = this.findTabIndex(tab);
         if (index === -1) {
           this.tabsCollection.push(tab);
-          if (tab.editor === 'layout') {
+          if (tab.editor === 'layout' && this.tabsManagerService.setOpenedTabActive) {
             this.saveManager.nextEditorSavedState(tab.url);
           }
         }
-        this.setTabActive(tab);
+        if (this.tabsManagerService.setOpenedTabActive) {
+          this.setTabActive(tab);
+        }
       });
 
     this.tabsManagerService.getClosingTab()
