@@ -138,10 +138,6 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
       this.log.info('insertionSubscription', dataToInsert);
       if (insertionParent === this.id) {
         this.addElement(dataToInsert);
-        
-        /* form save automatically */
-        // this.formsService.saveForm(this.item.formUniqueId, false);
-        // this.saveManager.enqueueNewFormSaveProcess(this.item.url);
       }
     });
 
@@ -167,7 +163,7 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
 
         /* form save automatically */
         // this.saveTheForm(); // was before
-        this.saveManager.enqueueNewFormSaveProcess(this.item.url); // now async
+        this.saveManager.enqueueNewFormSaveProcess(this.id); // now async
       }
     });
     
@@ -257,7 +253,7 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
         this.log.error(e);
       }
 
-      if (data.url !== this.item.url)
+      if (data.url !== this.id)
         return;
 
       this.isLoading.emit(true);
@@ -274,7 +270,7 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
 
     const formBeforeSaveSub = this.formsService
       .getFormContentBeforeSave$.subscribe((data:{id:any}) => {
-      if (data.id !== this.item.url)
+      if (data.id !== this.id)
         return;
 
       this.theFormIsSavingNow = true;
@@ -314,8 +310,8 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
 
   ngOnDestroy() {
     const edId = this.id.split('/').pop();
-    this.log.info(this.item.url, 'tinymce destroyed');
-    if (this.activeEditorService.editorURL === this.item.url) {
+    this.log.info(this.id, 'tinymce destroyed');
+    if (this.activeEditorService.editorURL === this.id) {
       this.activeEditorService.setActive(null);
     }
     this.draggingSubscription.unsubscribe();
@@ -361,7 +357,7 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
     this.theFormIsSavingNow = true;
 
     this.saveManager
-      .createFormSaveProcess(this.item.url)
+      .createFormSaveProcess(this.id)
       .start()
       .subscribe(() => {
         this.fallLoading(false);
@@ -370,11 +366,11 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
   }
 
   ngAfterViewInit(): void {
-    this.activeEditorService.setActive(this.item.url);
-    if (this.item.url === 'workflow') {
+    this.activeEditorService.setActive(this.id);
+    if (this.id === 'workflow') {
       return;
     }
-    this.log.info(this.item.url, 'tinymce view initialized');
+    this.log.info(this.id, 'tinymce ngAfterViewInit');
     window['$'] = jQuery;
     window['registryPromise'].then((registry: any) => {
       this.registry = registry;
@@ -542,7 +538,15 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
   }
 
   initialize(): void {
-    if (!this.tinyMCEPatData) { return; }
+    if (!this.tinyMCEPatData) {
+      this.log.warn(
+        'you have initialized the tiny-mce before you '
+        + 'have initialized this.tinyMCEPatData'
+      );
+      return;
+    }
+
+    this.log.info('tinymce initialization started');
     const edId = this.id.split('/').pop();
     const $el = $('textarea#' + edId);
     $el.attr('data-pat-tinymce', this.tinyMCEPatData);
@@ -1248,7 +1252,7 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
           '<hr class="plominoPagebreakClass">',
           { target: element.target }
         );
-        this.saveManager.enqueueNewFormSaveProcess(this.item.url);
+        this.saveManager.enqueueNewFormSaveProcess(this.id);
         return;
 
       default: return;
@@ -1297,7 +1301,7 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
           this.id, this.draggingService,
           `${widgetTemplate}`, { skip_undo: 1, target }
         );
-        this.saveManager.enqueueNewFormSaveProcess(this.item.url);
+        this.saveManager.enqueueNewFormSaveProcess(this.id);
       });
     }
     else if (type == 'subform') {
@@ -1316,7 +1320,7 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
           ${ (value !== 'defaultSubform') ? ` data-plominoid="${ value }"` : '' }
           >${widgetTemplate}</div>`, { skip_undo: 1, target }
         );
-        this.saveManager.enqueueNewFormSaveProcess(this.item.url);
+        this.saveManager.enqueueNewFormSaveProcess(this.id);
       });
     }
     else if (plominoClass !== undefined) {
@@ -1344,7 +1348,7 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
           this.id, this.draggingService, content, { skip_undo: 1, target }
         );
 
-        this.saveManager.enqueueNewFormSaveProcess(this.item.url);
+        this.saveManager.enqueueNewFormSaveProcess(this.id);
 
         this.formFieldsSelection.selectField({
           id: value,
@@ -1412,7 +1416,7 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
         );
 			}
 
-      this.saveManager.enqueueNewFormSaveProcess(this.item.url);
+      this.saveManager.enqueueNewFormSaveProcess(this.id);
       
       this.formFieldsSelection.selectField({
         id: value,

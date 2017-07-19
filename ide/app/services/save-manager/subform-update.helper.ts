@@ -12,7 +12,16 @@ export function updateRelatedSubformsAfterFormSave(saveProcess: any) {
       if (editor === null) {
         return true;
       }
-      $(editor.getBody()).find(
+      
+      let edBody: any;
+
+      try {
+        edBody = editor.getBody();
+      }
+      catch (e) {
+        return true;
+      }
+      $(edBody).find(
         `.plominoSubformClass[data-plominoid="${ saveProcess.originalFormID }"]`
       ).each((i, subformElement) => {
         const $founded = $(subformElement);

@@ -130,13 +130,14 @@ export class FormSettingsComponent implements OnInit {
     saveFormSettings(cb: any) {
       const isViewURL = this.tab.editor === 'view';
       this.log.startTimer('save_' + isViewURL ? 'view' : 'form' + '_hold');
+      let newUrl: string;
     
       const flatMapCallback = ((responseData: {html: string, url: string}) => {
         if (responseData.html !== "<div id='ajax_success'/>") {
             return Observable.of(responseData.html);
         } else {
             const $formId = responseData.url.slice(responseData.url.lastIndexOf('/') + 1);
-            const newUrl = this.tab.url
+            newUrl = this.tab.url
               .slice(0, this.tab.url.lastIndexOf('/') + 1) + $formId;
             const oldUrl = this.tab.url;
 
@@ -167,6 +168,19 @@ export class FormSettingsComponent implements OnInit {
       process.start()
         .flatMap((responseData: {html: string, url: string}) => 
           flatMapCallback(responseData))
+        .map((settingsHTML: string) => {
+          /** get data pattern and store it to window */
+          if (settingsHTML && settingsHTML.indexOf('data-pat-tinymce') !== -1) {
+            const data = settingsHTML
+              .match(/data-pat-tinymce="(.+?)"/)[1]
+              .replace(/&quot;/g, '"');
+            const formId = newUrl.split('/').pop();
+            this.formsService.newTinyMCEPatternData({ formId, data });
+          } else {
+            this.log.info('there is no any settingsHTML');
+          }
+          return settingsHTML;
+        })
         .map(this.parseTabs)
         .subscribe((responseHtml: string) => {
           this.log.info('saveFormSettings');
@@ -397,6 +411,7 @@ export class FormSettingsComponent implements OnInit {
     }
 
     private getSettings() {
+      this.log.warn('getSettings');
       this.log.extra('formsettings.component.ts');
       this.tabsManagerService.getActiveTab()
         .map((tabUnit) => {
@@ -450,6 +465,8 @@ export class FormSettingsComponent implements OnInit {
                   }
                   const formId = this.tab.url.split('/').pop();
                   this.formsService.newTinyMCEPatternData({ formId, data });
+                } else {
+                  this.log.info('there is no any settingsHTML');
                 }
                 return settingsHTML;
               })
