@@ -202,6 +202,19 @@ export class AddComponent implements OnInit, AfterViewInit {
 
         ];
 
+
+        this.tabsManagerService
+          .getAfterUpdateIdOfTab()
+          .subscribe((updateData) => {
+            if (this.activeTab && this.activeTab.url 
+              && this.activeTab.url.split('/').pop() === updateData.prevId
+            ) {
+              const split = this.activeTab.url.split('/');
+              split[split.length - 1] = updateData.nextId;
+              this.activeTab.url = split.join('/');
+            }
+          });
+
         // this.tabsService.getActiveTab()
         // .subscribe((tab) => {
         this.tabsManagerService.getActiveTab()
