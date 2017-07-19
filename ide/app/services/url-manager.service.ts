@@ -20,17 +20,34 @@ export class URLManagerService {
     const urlItems = this.parseURLString();
 
     if (urlItems.length) {
+      this.tabsManagerService.setOpenedTabActive = false;
+      let i = 0;
+
       for (let urlItem of urlItems) {
+        if (++i === urlItems.length) {
+          this.tabsManagerService.setOpenedTabActive = true;
+        }
+
         window['materialPromise']
           .then(() => {
             const $resource = $(`.tree-node--name:contains("${ urlItem }")`)
               .filter((i, node: HTMLElement) => $(node).text().trim() === urlItem);
-            $resource.click();
-            setTimeout(() => {
-              const $resource = $(`.tree-node--name:contains("${ urlItem }")`)
-                .filter((i, node: HTMLElement) => $(node).text().trim() === urlItem);
-              $resource.click();
-            }, 100);
+
+            if (!$resource.length) {
+              return;
+            }
+
+            const tabData = {
+              editor: {
+                  'PlominoForm': 'layout', 
+                  'PlominoView': 'view'
+                }[$resource.attr('data-type')],
+              label: $resource.next().text().trim(),
+              url: $resource.attr('id').replace('tree_', ''),
+              id: urlItem
+            }
+
+            this.tabsManagerService.openTab(tabData);
           });
       }
     }

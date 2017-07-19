@@ -211,8 +211,10 @@ export class PlominoViewEditorComponent implements OnInit {
         this.viewSourceTable = this.sanitizer
           .bypassSecurityTrustHtml($html.html());
 
-        this.changeDetector.markForCheck();
-        this.changeDetector.detectChanges();
+        try {
+          this.changeDetector.markForCheck();
+          this.changeDetector.detectChanges();
+        } catch (e) {}
         
         setTimeout(() => {
 
@@ -220,7 +222,7 @@ export class PlominoViewEditorComponent implements OnInit {
 
           /* attach indexes */
           columns.results.forEach((result, index) => {
-            (() => {
+            const element: HTMLElement = (() => {
               if (result.Type === 'PlominoColumn') {
                 return $(
                   `[data-url="${ this.item.url }"] th[data-column="${ result.id }"]`
@@ -232,7 +234,11 @@ export class PlominoViewEditorComponent implements OnInit {
                 );
               }
             })()
-            .get(0).dataset.index = (index + 1).toString();
+            .get(0);
+            
+            if (element) {
+              element.dataset.index = (index + 1).toString();
+            }
           });
 
           const $thead = $(`[data-url="${ this.item.url }"] table thead`);
@@ -651,7 +657,8 @@ export class PlominoViewEditorComponent implements OnInit {
             }
             $('.view-editor__column-header--drop-target')
               .removeClass('view-editor__column-header--drop-target');
-            columnElement.classList.add('view-editor__column-header--drop-target');
+            columnElement.classList
+              .add('view-editor__column-header--drop-target');
             return true;
           };
 
@@ -665,7 +672,8 @@ export class PlominoViewEditorComponent implements OnInit {
               const $td = $(ev.target);
               $td.next().remove();
             }
-            columnElement.classList.remove('view-editor__column-header--drop-target');
+            columnElement.classList
+              .remove('view-editor__column-header--drop-target');
             return true;
           };
         }

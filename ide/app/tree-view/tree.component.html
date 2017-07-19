@@ -56,7 +56,8 @@
                 <span class="tree-node--name click-cursor"
                     #selectable
                     [attr.id]="'tree_' + typeName.url"
-                    [class.selected]="selected && (typeName.url === selected.url)" 
+                    [attr.data-type]="typeName.type"
+                    [class.selected]="selected && (typeName.url === selected.url)"
                     (click)="treeArrowClick($event, typeName)">
                     
                     <span class="tree-node__child-type-image">
