@@ -437,8 +437,11 @@ export class PlominoWorkflowItemEditorService {
       this.latestUsingForm.$form.find('input,textarea,select')
         .each((i: number, element: HTMLInputElement) => {
           if (['form.widgets.IHelpers.helpers:list', 
-            'form.buttons.save', 'form.buttons.cancel'].indexOf(element.name) === -1) {
-            fd.append(element.name, $(element).val());
+            'form.buttons.save', 'form.buttons.cancel'].indexOf(element.name) === -1
+          ) {
+            const value = element.type === 'checkbox' 
+              ? $(element).is(':checked') : $(element).val();
+            fd.append(element.name, value);
           }
         });
 

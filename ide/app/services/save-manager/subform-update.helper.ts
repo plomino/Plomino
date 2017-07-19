@@ -9,6 +9,9 @@ export function updateRelatedSubformsAfterFormSave(saveProcess: any) {
       /**
        * update all subforms while parent form changed
        */
+      if (editor === null) {
+        return true;
+      }
       $(editor.getBody()).find(
         `.plominoSubformClass[data-plominoid="${ saveProcess.originalFormID }"]`
       ).each((i, subformElement) => {
