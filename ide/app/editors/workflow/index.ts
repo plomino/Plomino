@@ -108,8 +108,13 @@ export class PlominoWorkflowComponent implements OnInit {
     }, 1);
   }
 
-  parseTreeFromSettings() {
+  parseTreeFromSettings(sure = false) {
+
     let tree;
+
+    if (sure) {
+      this.log.warn('something was going wrong with loading but fixed');
+    }
 
     try {
       const dbLink = this.dbService.getDBLink();
@@ -117,11 +122,23 @@ export class PlominoWorkflowComponent implements OnInit {
       tree = JSON.parse(fd.get('form.widgets.IBasic.description'));
 
       if (!fd.get('form.widgets.IBasic.description')) {
-        tree = { id: 1, root: true, children: [] };
+        if (!sure) {
+          setTimeout(() => { this.parseTreeFromSettings(true); }, 1e3);
+          return;
+        }
+        else {
+          tree = { id: 1, root: true, children: [] };
+        }
       }
     }
     catch(e) {
-      tree = { id: 1, root: true, children: [] };
+      if (!sure) {
+        setTimeout(() => { this.parseTreeFromSettings(true); }, 1e3);
+        return;
+      }
+      else {
+        tree = { id: 1, root: true, children: [] };
+      }
     }
 
     if (!tree.children.length) {
