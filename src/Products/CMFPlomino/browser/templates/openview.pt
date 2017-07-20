@@ -14,7 +14,8 @@
         define="plomino_view python:here;
                 hideCheckboxes python:False;">
 
-    <form tal:attributes="name python:plomino_view.id" class="plominoviewform">
+    <form id="plomino-view" tal:attributes="name python:plomino_view.id"
+          class="plominoviewform">
 
     <h1 class="documentFirstHeading" tal:content="context/Title">Title</h1>
 

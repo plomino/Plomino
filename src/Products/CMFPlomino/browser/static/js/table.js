@@ -48,13 +48,13 @@ require([
         },
         init_search: function() {
             var self = this;
-            var search = $('<form id="plomino-search"><input type="text" placeholder="Search"/></form>');
+            var search = $('<input type="text" placeholder="Search"/>');
             self.$el.before(search);
             search.on('submit', function() {return false;});
             var wait;
             var filtered = false;
             search.on('keyup', function() {
-                var query = $('#plomino-search input').val();
+                var query = $('#plomino-view input[type="text"]').val();
                 if(query.length < 3 && !filtered) {
                     return;
                 } 
