@@ -59,7 +59,10 @@
             <tr class="header-row count">
                 <td>
                     <tal:static tal:condition="context/static_rendering">
-                        <tal:block tal:content="count" /> documents
+                        <tal:block
+                            tal:define="listdocuments python:context.getAllDocuments(getObject=False);
+                                        count python:len(listdocuments);"
+                            tal:content="count" /> documents
                     </tal:static>
                 </td>
             </tr>
