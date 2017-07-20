@@ -92,9 +92,7 @@ I save the fieldsettings
   wait until page does not contain element  jquery=.plomino-block-preloader:visible
 
 I save the form
-  Wait until page contains element  jquery=#mceu_0 button:contains("Save")
-  wait until page does not contain element  jquery=.plomino-block-preloader:visible
-  Click Element  jquery=#mceu_0 button:contains("Save")
+  I enter "the-form-is-saved" in "Id" in "Form Settings"
 
 I go to the plominodatabase view
   Go To  ${PLONE_URL}/my-plominodatabase
@@ -102,6 +100,7 @@ I go to the plominodatabase view
 
 
 I add a form by click
+  wait until page does not contain element  jquery=.plomino-block-preloader:visible
   Click Element  jquery=#add-new-form-tab
   wait until page contains element  jquery=#modal-tab-plus[open]
   Click Element  jquery=#modal-tab-plus button[data-create="form"]
@@ -120,7 +119,7 @@ I add a hidewhen by click
 I add a "${field}" field
   Click Element  xpath=//div[@class="palette-wrapper"]//*[@title="${field}"]
   wait until page contains element  jquery=.plomino-block-preloader:visible
-  sleep  0.3s
+  sleep  0.5s
   wait until page does not contain element  jquery=.plomino-block-preloader:visible
 
 I add a "${field}" field by dnd
@@ -133,6 +132,7 @@ I add a "${field}" field by dnd
   sleep  0.3s
 
 I create a view
+  Click Link  Add
   wait until page contains element  jquery=#PlominoView
   wait until page contains element  jquery=div.main-app.panel
   Click Element  xpath=//div[@class="palette-wrapper"]//*[@title="View"]
@@ -255,7 +255,7 @@ I add a column "${myfield}"
   wait until page does not contain element  jquery=.plomino-block-preloader:visible
   Input Text  jquery=#form-widgets-IShortName-id  ${myfield}
   Input Text  jquery=#form-widgets-IBasic-title  ${myfield}
-  Select From List By Value  jquery=#form-widgets-displayed_field  frm_test/${myfield}
+  Select From List By Value  jquery=#form-widgets-displayed_field  the-form-is-saved/${myfield}
   sleep  2s
   Wait until page contains element  jquery=.fieldsettings--control-buttons a:contains("Save")
   Click Element  jquery=.fieldsettings--control-buttons a:contains("Save")
@@ -270,7 +270,7 @@ I preview "${formid}"
   # Run keyword if  page contains element  jquery=.mdl-button.agree:visible
   #   Click Element  jquery=.mdl-button.agree:visible
   Sleep  2s
-  select window  url=${PLONE_URL}/mydb/${formid}/OpenForm
+  select window  url=${PLONE_URL}/mydb/${formid}/view
 
 # --- THEN -------------------------------------------------------------------
 
@@ -326,6 +326,7 @@ I see "${value}" in "${field}" in "${tab}"
   # capture page screenshot
   Click Link  ${tab}
   wait until page does not contain element  jquery=.plomino-block-preloader:visible
+  sleep  0.3s
   ${text} =  get value  xpath=//input[@id=//label[normalize-space(text())="${field}"]/@for]
   should be equal  ${text}  ${value}
 
