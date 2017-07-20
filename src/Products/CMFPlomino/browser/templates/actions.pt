@@ -111,10 +111,6 @@
 <script>
 function selected_documents()
 {
-if (typeof(oDynamicTable)!="undefined") {
-    /* not used, it should be removed. */
-	return dynamicview_selecteddocuments();
-} else {
 	var array_value = [];
 	$(".plominoviewform input[name='sdoc']:checked").each(function() {
 		array_value.push($(this).val());
@@ -122,8 +118,6 @@ if (typeof(oDynamicTable)!="undefined") {
 
 	return array_value.join('@');
 }
-}
-
 </script>
     <tal:defaultactions tal:condition="python:not(context.hide_default_actions)">
         <input type="button" class="context plominoDelete" value="Delete" name="plomino_deletedocuments"
