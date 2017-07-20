@@ -9,6 +9,8 @@
 
 <metal:content fill-slot="main">
 
+    <!-- TODO(ivanteoh): do we need 'hasReadPermission' in 2.x -->
+
     <h1 class="documentFirstHeading" tal:content="context/Title">Title</h1>
 
     <div id="content-core">
@@ -17,6 +19,7 @@
                 display view actions
             </span>
         </tal:actions>
+        <!-- this is 'basic_widget' (BASIC) -->
         <table
             tal:define="columns python:context.getColumns()"
             tal:attributes="class python:(context.static_rendering and 'listing') or 'listing plomino-table';
@@ -28,6 +31,8 @@
                         tal:content="column/title">title</th>
                 </tal:headers>
             </tr>
+            <!-- TODO(ivanteoh): do we need 'Categorized' (is_categorized) in 2.x -->
+            <!-- this is 'Regular view' (not_categorized) -->
             <tal:static tal:condition="context/static_rendering">
                 <tal:rows
                     tal:define="listdocuments python:context.getAllDocuments(getObject=False);
@@ -67,6 +72,8 @@
                 </td>
             </tr>
         </table>
+
+        <!-- TODO(ivanteoh): do we need 'dynamic_widget' (DYNAMICTABLE) in 2.x -->
     </div>
 </metal:content>
 </body>
