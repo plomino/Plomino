@@ -21,10 +21,12 @@
         </tal:actions>
         <!-- this is 'basic_widget' (BASIC) -->
         <table
-            tal:define="columns python:context.getColumns()"
+            tal:define="columns python:context.getColumns();
+                        hideCheckboxes python:False;"
             tal:attributes="class python:(context.static_rendering and 'listing') or 'listing plomino-table';
             data-pat-plominotable string:source:${context/absolute_url}/tojson;">
             <tr class="header-row">
+                <th></th>
                 <tal:headers tal:repeat="column columns">
                     <th tal:condition="not: column/hidden_column|nothing"
                         tal:attributes="data-column column/id;"
@@ -49,6 +51,13 @@
                     <tr tal:repeat="brain python:listdocuments[start-1:start-1+limit]">
                         <tal:row
                             tal:define="docurl python:baseurl+'/document/'+brain.id">
+                            <td>
+                                <input
+                                    tal:condition="python:not(hideCheckboxes)"
+                                    type="checkbox"
+                                    name="sdoc"
+                                    tal:attributes="value python:brain.getPath().split('/')[-1]" />
+                            </td>
                             <tal:columns tal:repeat="column columns">
                                 <td tal:condition="not: column/hidden_column|nothing"
                                     ><a tal:attributes="href string:${docurl}"
@@ -62,7 +71,7 @@
                 </tal:rows>
             </tal:static>
             <tr class="header-row count">
-                <td>
+                <td tal:attributes="colspan python:len(columns)+1">
                     <tal:static tal:condition="context/static_rendering">
                         <tal:block
                             tal:define="listdocuments python:context.getAllDocuments(getObject=False);
