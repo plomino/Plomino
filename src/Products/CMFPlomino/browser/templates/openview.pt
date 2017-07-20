@@ -10,6 +10,11 @@
 <metal:content fill-slot="main">
 
     <!-- TODO(ivanteoh): do we need 'hasReadPermission' in 2.x -->
+    <tal:view_parameters
+        define="plomino_view python:here;
+                hideCheckboxes python:False;">
+
+    <form tal:attributes="name python:plomino_view.id" class="plominoviewform">
 
     <h1 class="documentFirstHeading" tal:content="context/Title">Title</h1>
 
@@ -21,8 +26,7 @@
         </tal:actions>
         <!-- this is 'basic_widget' (BASIC) -->
         <table
-            tal:define="columns python:context.getColumns();
-                        hideCheckboxes python:False;"
+            tal:define="columns python:context.getColumns();"
             tal:attributes="class python:(context.static_rendering and 'listing') or 'listing plomino-table';
             data-pat-plominotable string:source:${context/absolute_url}/tojson;">
             <tr class="header-row">
@@ -84,6 +88,9 @@
 
         <!-- TODO(ivanteoh): do we need 'dynamic_widget' (DYNAMICTABLE) in 2.x -->
     </div>
+
+    </form>
+    </tal:view_parameters>
 </metal:content>
 </body>
 </html>
