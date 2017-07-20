@@ -39,11 +39,12 @@ export const treeBuilder = {
         }"></ul>`;
         
         if (item.type !== WF_ITEM_TYPE.CONDITION) {
-          const bbtn = `<div class="plomino-workflow-editor__branch-add-below-bubble-btn">
+          const bbtn = `<div class="plomino-workflow-editor__branch-add-below-bubble-btn" dnd-droppable>
             <button class="mdl-button mdl-js-button mdl-color--grey-700
               mdl-button--fab mdl-button--mini-fab mdl-button--colored"
               id="wf-vrt2-btn-${ item.id }">
-              <i class="material-icons">add</i>
+              <i class="material-icons" (onDragLeave)="onDragLeave($event)"
+        dnd-droppable (onDragEnter)="onDragEnter($event)">add</i>
             </button>
             </div><ul class="mdl-menu mdl-menu--bottom-right mdl-js-menu 
                 mdl-js-ripple-effect"
