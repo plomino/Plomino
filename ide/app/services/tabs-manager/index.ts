@@ -8,6 +8,7 @@ export class PlominoTabsManagerService {
   public onRefreshCodeTab$ = this.refreshCodeTab.asObservable();
 
   public setOpenedTabActive = true;
+  public saveClosingTab = true;
 
   private tabOpenEvents: Subject<PlominoTabUnit> = new Subject();
   private tabIdUpdateEvents: Subject<{prevId: string, nextId: string}> 
