@@ -367,9 +367,6 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
 
   ngAfterViewInit(): void {
     this.activeEditorService.setActive(this.id);
-    if (this.id === 'workflow') {
-      return;
-    }
     this.log.info(this.id, 'tinymce ngAfterViewInit');
     window['$'] = jQuery;
     window['registryPromise'].then((registry: any) => {
