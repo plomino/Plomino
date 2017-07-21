@@ -205,11 +205,13 @@ export class PlominoWorkflowComponent implements OnInit {
   ): PlominoWorkflowItem {
     let result: PlominoWorkflowItem = null;
 
-    tree.iterate((item) => {
-      if (item.form === fvId || item.view === fvId) {
-        result = item;
-      }
-    });
+    if (tree) {
+      tree.iterate((item) => {
+        if (item.form === fvId || item.view === fvId) {
+          result = item;
+        }
+      });
+    }
 
     return result;
   }
