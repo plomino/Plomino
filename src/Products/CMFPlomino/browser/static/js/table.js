@@ -32,7 +32,7 @@ require([
                                 row[0] +
                                 '" />';
                         }
-                        html += '<td>';
+                        html += '</td>';
                         html += '<td><a href="' +
                             self.options.source +
                             '/../document/' + row[0] +
