@@ -20,7 +20,7 @@ require([
             self.form_url = self.$el.attr('data-form-url');
             self.render();
         },
-        setValue(value) {
+        setValue: function(value) {
             var self = this;
             self.input.val(value);
             self.input.change();
