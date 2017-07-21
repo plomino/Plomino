@@ -10,9 +10,6 @@
 <metal:content fill-slot="main">
 
     <!-- TODO(ivanteoh): do we need 'hasReadPermission' in 2.x -->
-    <tal:view_parameters
-        define="hideCheckboxes context/hide_checkboxes|nothing;">
-
     <form id="plomino-view" tal:attributes="name python:context.id"
           class="plominoviewform">
 
@@ -59,7 +56,7 @@
                             tal:define="docurl python:baseurl+'/document/'+brain.id">
                             <td>
                                 <input
-                                    tal:condition="python:not(hideCheckboxes)"
+                                    tal:condition="python:not context.hide_checkboxes"
                                     type="checkbox"
                                     name="sdoc"
                                     tal:attributes="value python:brain.getPath().split('/')[-1]" />
@@ -92,7 +89,6 @@
     </div>
 
     </form>
-    </tal:view_parameters>
 </metal:content>
 </body>
 </html>
