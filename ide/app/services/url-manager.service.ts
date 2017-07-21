@@ -35,10 +35,6 @@ export class URLManagerService {
         this.log.info('opening view...', urlItem);
       }
       else {
-<<<<<<< HEAD
-        $resource.click();
-        this.log.info('opening form...', urlItem);
-=======
         window['materialPromise']
           .then(() => {
             const $resource = $(`.tree-node--name:contains("${ urlItem }")`)
@@ -50,7 +46,6 @@ export class URLManagerService {
               $resource.click();
             }, 100);
           });
->>>>>>> c024c19... fixed save problem
       }
     }
   }
