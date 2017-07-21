@@ -66,7 +66,10 @@ export class PlominoSaveManagerService {
     }
   }
 
-  createNewForm(callback: (url: string, label: string) => void = null) {
+  createNewForm(
+    callback: (url: string, label: string) => void = null,
+    callbackBeforeOpeningTab: boolean = false
+  ) {
     let formElement: InsertFieldEvent = {
         '@type': 'PlominoForm',
         'title': 'New Form'
@@ -74,28 +77,37 @@ export class PlominoSaveManagerService {
     this.elementService.postElement(this.dbService.getDBLink(), formElement)
     .subscribe((response: AddFieldResponse) => {
       this.treeService.updateTree().then(() => {
+
+        const callCallback = () => {
+          if (callback !== null) {
+            callback(
+              response.parent['@id'] + '/' + response.id, response.title
+            );
+          }
+        };
+
+        if (callbackBeforeOpeningTab) {
+          callCallback();
+        }
+
         this.tabsManagerService.openTab({
-          // formUniqueId: undefined,
           editor: 'layout',
           label: response.title,
           id: response.id,
           url: response.parent['@id'] + '/' + response.id,
-          // path: [{
-          //     name: response.title,
-          //     type: 'Forms'
-          // }]
         });
   
-        if (callback !== null) {
-          setTimeout(() => callback(
-            response.parent['@id'] + '/' + response.id, response.title
-          ), 100);
+        if (!callbackBeforeOpeningTab) {
+          setTimeout(() => callCallback(), 100);
         }
       });
     });
   }
 
-  createNewView(callback: (url: string, label: string) => void = null) {
+  createNewView(
+    callback: (url: string, label: string) => void = null,
+    callbackBeforeOpeningTab: boolean = false
+  ) {
     let viewElement: InsertFieldEvent = {
       '@type': 'PlominoView',
       'title': 'New View'
@@ -103,21 +115,24 @@ export class PlominoSaveManagerService {
     this.elementService.postElement(this.dbService.getDBLink(), viewElement)
     .subscribe((response: AddFieldResponse) => {
       this.treeService.updateTree().then(() => {
+
+        const callCallback = () => {
+          if (callback !== null) {
+            callback(
+              response.parent['@id'] + '/' + response.id, response.title
+            );
+          }
+        };
+
         this.tabsManagerService.openTab({
           editor: 'view',
           label: response.title,
           url: response.parent['@id'] + '/' + response.id,
           id: response.id,
-          // path: [{
-          //     name: response.title,
-          //     type: 'Views'
-          // }]
         });
 
-        if (callback !== null) {
-          setTimeout(() => callback(
-            response.parent['@id'] + '/' + response.id, response.title
-          ), 100);
+        if (!callbackBeforeOpeningTab) {
+          setTimeout(() => callCallback(), 100);
         }
       });
     });
