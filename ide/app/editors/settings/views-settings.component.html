@@ -42,6 +42,12 @@
   </div>
   <div class="checkbox">
     <label>
+      <input #hideCheckboxes formControlName="form.controls.hideCheckboxes" type="checkbox" [checked]="data?.hide_checkboxes"> Hide checkboxes
+    </label>
+    <p class="help-block">The first column with checkboxes will not be displayed</p>
+  </div>
+  <div class="checkbox">
+    <label>
       <input #staticRendering formControlName="form.controls.staticRendering" type="checkbox" [checked]="data?.static_rendering"> Static rendering
     </label>
     <p class="help-block">Use inline HTML, without AJAX.</p>

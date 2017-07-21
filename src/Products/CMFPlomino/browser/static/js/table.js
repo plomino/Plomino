@@ -26,11 +26,13 @@ require([
                     for(var i=0; i<data.rows.length; i++) {
                         var row = data.rows[i];
                         html += '<tr>';
-                        html += '<td>' +
-                            '<input type="checkbox" name="sdoc" value="' +
-                            row[0] +
-                            '" />' +
-                            '</td>';
+                        html += '<td>';
+                        if (self.options.hideCheckboxes !== 'True') {
+                            html += '<input type="checkbox" name="sdoc" value="' +
+                                row[0] +
+                                '" />';
+                        }
+                        html += '<td>';
                         html += '<td><a href="' +
                             self.options.source +
                             '/../document/' + row[0] +

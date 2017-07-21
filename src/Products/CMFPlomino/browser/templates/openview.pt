@@ -11,10 +11,9 @@
 
     <!-- TODO(ivanteoh): do we need 'hasReadPermission' in 2.x -->
     <tal:view_parameters
-        define="plomino_view python:here;
-                hideCheckboxes python:False;">
+        define="hideCheckboxes context/hide_checkboxes|nothing;">
 
-    <form id="plomino-view" tal:attributes="name python:plomino_view.id"
+    <form id="plomino-view" tal:attributes="name python:context.id"
           class="plominoviewform">
 
     <h1 class="documentFirstHeading" tal:content="context/Title">Title</h1>
@@ -29,7 +28,9 @@
         <table
             tal:define="columns python:context.getColumns();"
             tal:attributes="class python:(context.static_rendering and 'listing') or 'listing plomino-table';
-            data-pat-plominotable string:source:${context/absolute_url}/tojson;">
+            data-pat-plominotable
+                string:source:${context/absolute_url}/tojson;;
+                hideCheckboxes:${context/hide_checkboxes};">
             <tr class="header-row">
                 <th></th>
                 <tal:headers tal:repeat="column columns">
