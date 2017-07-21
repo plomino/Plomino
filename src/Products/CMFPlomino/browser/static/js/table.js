@@ -25,11 +25,17 @@ require([
                     var html = '';
                     for(var i=0; i<data.rows.length; i++) {
                         var row = data.rows[i];
-                        html += '<tr><td><a href="'
-                            + self.options.source
-                            + '/../document/' + row[0]
-                            + '">' + row[1]
-                            + '</a></td>';
+                        html += '<tr>';
+                        html += '<td>' +
+                            '<input type="checkbox" name="sdoc" value="' +
+                            row[0] +
+                            '" />' +
+                            '</td>';
+                        html += '<td><a href="' +
+                            self.options.source +
+                            '/../document/' + row[0] +
+                            '">' + row[1] +
+                            '</a></td>';
                         if(row.length > 2) {
                             for(var j=2; j<row.length; j++) {
                                 html += '<td>' + row[j] + '</td>';
