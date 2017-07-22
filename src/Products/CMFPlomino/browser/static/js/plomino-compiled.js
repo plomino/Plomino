@@ -60,11 +60,19 @@ require([
                     var html = '';
                     for(var i=0; i<data.rows.length; i++) {
                         var row = data.rows[i];
-                        html += '<tr><td><a href="'
-                            + self.options.source
-                            + '/../document/' + row[0]
-                            + '">' + row[1]
-                            + '</a></td>';
+                        html += '<tr>';
+                        html += '<td>';
+                        if (self.options.hideCheckboxes !== 'True') {
+                            html += '<input type="checkbox" name="sdoc" value="' +
+                                row[0] +
+                                '" />';
+                        }
+                        html += '</td>';
+                        html += '<td><a href="' +
+                            self.options.source +
+                            '/../document/' + row[0] +
+                            '">' + row[1] +
+                            '</a></td>';
                         if(row.length > 2) {
                             for(var j=2; j<row.length; j++) {
                                 html += '<td>' + row[j] + '</td>';
@@ -83,13 +91,13 @@ require([
         },
         init_search: function() {
             var self = this;
-            var search = $('<form id="plomino-search"><input type="text" placeholder="Search"/></form>');
+            var search = $('<input type="text" placeholder="Search"/>');
             self.$el.before(search);
             search.on('submit', function() {return false;});
             var wait;
             var filtered = false;
             search.on('keyup', function() {
-                var query = $('#plomino-search input').val();
+                var query = $('#plomino-view input[type="text"]').val();
                 if(query.length < 3 && !filtered) {
                     return;
                 } 
@@ -239,7 +247,7 @@ require([
             self.form_url = self.$el.attr('data-form-url');
             self.render();
         },
-        setValue(value) {
+        setValue: function(value) {
             var self = this;
             self.input.val(value);
             self.input.change();
