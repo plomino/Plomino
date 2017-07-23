@@ -70,7 +70,9 @@ export class PlominoWorkflowItemEditorService {
         const updateDBSettings = (formOrView: string) => 
           (url: string, label: string) => {
             if (this.selectedItemRef && this.treeService.getActiveTree()) {
-              this.selectedItemRef.title = label;
+              if (!this.selectedItemRef.title) {
+                this.selectedItemRef.title = label;
+              }
               this.selectedItemRef[formOrView] = url.split('/').pop();
               this.workflowChanges.needSave.next(true);
             }
@@ -87,9 +89,11 @@ export class PlominoWorkflowItemEditorService {
           this.editMacro(this.selectedItemRef);
         }
         else if (btn.classList.contains('wf-item-settings-dialog__create-btn--form')) {
+          this.applyDialog();
           this.saveManager.createNewForm(updateDBSettings('form').bind(this), true);
         }
         else if (btn.classList.contains('wf-item-settings-dialog__create-btn--view')) {
+          this.applyDialog();
           this.saveManager.createNewView(updateDBSettings('view').bind(this), true);
         }
         
