@@ -593,6 +593,19 @@ export class PlominoWorkflowComponent implements OnInit {
      */
     const eventTarget = <HTMLElement> clickEvent.target;
 
+    /* if a material js popup menu has opened and 
+     * a click target is not on .mdl-menu__item and 
+     * not on .material-icons - close it */
+    if (
+      !eventTarget.classList.contains('mdl-menu__item') 
+      && !eventTarget.classList.contains('material-icons')
+    ) {
+      const $mdlMenuPopupOpened = $('.mdl-menu__container.is-visible');
+      if ($mdlMenuPopupOpened.length) {
+        $mdlMenuPopupOpened.removeClass('is-visible');
+      }
+    }
+
     /* searching target workflow node */
     let $tmp = $(eventTarget).closest('.workflow-node');
     let wfNode = $tmp.length ? $tmp.get(0) 
