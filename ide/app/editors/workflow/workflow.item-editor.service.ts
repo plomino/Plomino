@@ -276,6 +276,16 @@ export class PlominoWorkflowItemEditorService {
     const tmpOnTopFormItem = (item.form || item.view) 
       ? item : (this.getTopItemWithForm(item.id, 
         this.treeService.getActiveTree()) || null);
+    if (
+      (item.type === WF.FORM_TASK || item.type === WF.VIEW_TASK) 
+      && !(item.form || item.view)
+    ) {
+      $wd.html(`<label style="margin-bottom: 15px; margin-top: 10px">
+        Implementation<br>
+        <small style="color: dimgray;">Please select a form/view in the 
+        task so a rule can be selected.</small></label>`);
+      return;
+    }
     if (!tmpOnTopFormItem || !(tmpOnTopFormItem.form || tmpOnTopFormItem.view)) {
       if (item.type === WF.FORM_TASK || item.type === WF.VIEW_TASK 
         || item.type === WF.PROCESS
