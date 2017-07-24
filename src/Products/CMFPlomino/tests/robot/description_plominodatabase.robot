@@ -272,6 +272,11 @@ I preview "${formid}"
   Sleep  2s
   select window  url=${PLONE_URL}/mydb/${formid}/view
 
+I open service tab "${tabId}"
+  Click Link    Service
+  wait until page contains  ${tabId}
+  Click Element  jquery=.mdl-button:visible:contains(${tabId})
+
 # --- THEN -------------------------------------------------------------------
 
 a plominodatabase with the title '${title}' has been created
@@ -335,3 +340,13 @@ I will see the validation error "${error}" for field "${field}"
 
 I will see the preview form saved
   page should contain button  Close
+
+
+I can see element Start in the workflow editor
+  Wait until page contains  Insert
+  wait until page contains element  jquery=.mce-edit-area iframe:visible
+  select frame  jquery=.mce-edit-area iframe:visible
+  Wait until page contains element  css=.plominoFieldClass.mceNonEditable  #TODO change for test based on spinner
+  Page should contain element  css=.plominoFieldClass.mceNonEditable
+  Page should contain element  xpath=//*[contains(@class,"plominoFieldClass")][@data-plominoid="${fieldid}"]
+  unselect frame
