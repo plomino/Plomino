@@ -39,7 +39,7 @@
                     overlimit python:count>limit;
                     nextstart python:start+limit;
                     previousstart python:max(0,start-limit);
-                    baseurl python:context.getParentDatabase().absolute_url();
+                    baseurl python:context.absolute_url();
                 ">
                     <tr tal:repeat="brain python:listdocuments[start-1:start-1+limit]">
                         <tal:row
