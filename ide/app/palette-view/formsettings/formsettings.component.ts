@@ -130,13 +130,14 @@ export class FormSettingsComponent implements OnInit {
     saveFormSettings(cb: any) {
       const isViewURL = this.tab.editor === 'view';
       this.log.startTimer('save_' + isViewURL ? 'view' : 'form' + '_hold');
+      let newUrl: string;
     
       const flatMapCallback = ((responseData: {html: string, url: string}) => {
         if (responseData.html !== "<div id='ajax_success'/>") {
             return Observable.of(responseData.html);
         } else {
             const $formId = responseData.url.slice(responseData.url.lastIndexOf('/') + 1);
-            const newUrl = this.tab.url
+            newUrl = this.tab.url
               .slice(0, this.tab.url.lastIndexOf('/') + 1) + $formId;
             const oldUrl = this.tab.url;
 
@@ -167,6 +168,19 @@ export class FormSettingsComponent implements OnInit {
       process.start()
         .flatMap((responseData: {html: string, url: string}) => 
           flatMapCallback(responseData))
+        .map((settingsHTML: string) => {
+          /** get data pattern and store it to window */
+          if (settingsHTML && settingsHTML.indexOf('data-pat-tinymce') !== -1) {
+            const data = settingsHTML
+              .match(/data-pat-tinymce="(.+?)"/)[1]
+              .replace(/&quot;/g, '"');
+            const formId = newUrl.split('/').pop();
+            this.formsService.newTinyMCEPatternData({ formId, data });
+          } else {
+            this.log.info('there is no any settingsHTML');
+          }
+          return settingsHTML;
+        })
         .map(this.parseTabs)
         .subscribe((responseHtml: string) => {
           this.log.info('saveFormSettings');
@@ -397,6 +411,7 @@ export class FormSettingsComponent implements OnInit {
     }
 
     private getSettings() {
+      this.log.warn('getSettings');
       this.log.extra('formsettings.component.ts');
       this.tabsManagerService.getActiveTab()
         .map((tabUnit) => {
@@ -421,7 +436,18 @@ export class FormSettingsComponent implements OnInit {
           // this.log.info('tab', tab, tab && tab.url ? tab.url : null);
           // this.log.extra('formsettings.component.ts getSettings -> flatMap');
           
-          if (tab && tab.url) {
+          if (tab && tab.editor === 'code') {
+            this.formSettings = '';
+            try {
+              this.changeDetector.markForCheck();
+              this.changeDetector.detectChanges();
+            }
+            catch (e) {
+              
+            }
+            return Observable.of('');
+          }
+          else if (tab && tab.url) {
             this.formSettings = 
               `<p><div class="mdl-spinner mdl-js-spinner is-active"></div></p>`;
             componentHandler.upgradeDom();
@@ -439,6 +465,8 @@ export class FormSettingsComponent implements OnInit {
                   }
                   const formId = this.tab.url.split('/').pop();
                   this.formsService.newTinyMCEPatternData({ formId, data });
+                } else {
+                  this.log.info('there is no any settingsHTML');
                 }
                 return settingsHTML;
               })
@@ -449,7 +477,6 @@ export class FormSettingsComponent implements OnInit {
         })
         .subscribe((template) => {
           if (this.tab && template.indexOf(`action="${ this.tab.url }/@@edit"`) === -1) {
-            this.log.warn('form settings apply cancelled (bug prevented)');
             return;
           }
 

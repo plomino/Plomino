@@ -29,10 +29,22 @@ export class ElementService {
       document.querySelector('#confirm-dialog');
   }
 
-  awaitForConfirm(text = 'Do you agree to delete this object?'): Promise<boolean> {
+  awaitForConfirm(
+    text = 'Do you agree to delete this object?',
+    cancelBtnText = 'Disagree',
+    confirmBtnText = 'Agree',
+    dialogWidth = '280px'
+  ): Promise<boolean> {
     this.confirmDialog
       .querySelector('.mdl-dialog__content')
       .innerHTML = text;
+    this.confirmDialog
+      .querySelector('button.close')
+      .innerHTML = cancelBtnText;
+    this.confirmDialog
+      .querySelector('button.agree')
+      .innerHTML = confirmBtnText;
+    this.confirmDialog.style.width = dialogWidth;
     this.confirmDialog.showModal();
     return new Promise((resolve, reject) => {
       $(this.confirmDialog)

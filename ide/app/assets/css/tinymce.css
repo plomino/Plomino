@@ -6,6 +6,9 @@ span.plominoSubformClass{
     position:relative;
     display: inline-block;
 }
+span.drag-autopreview {
+  display: inline-block;
+}
 div.plominoFieldClass,
 div.plominoLabelClass,
 div.plominoHidewhenClass,

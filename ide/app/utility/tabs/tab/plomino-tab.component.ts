@@ -1,3 +1,4 @@
+import { PlominoSaveManagerService } from './../../../services/save-manager/save-manager.service';
 import { PlominoTabsManagerService } from './../../../services/tabs-manager/index';
 import { ACEEditorComponent } from './../../../editors/ace-editor/ace-editor.component';
 import { PlominoViewEditorComponent } from './../../../editors/view-editor/view-editor.component';

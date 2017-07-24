@@ -8,10 +8,16 @@
   <link href="bootstrap/css/bootstrap.min.css" rel="stylesheet">
   <link async href="theme/select2.css" rel="stylesheet">
   <link async rel="stylesheet" href="theme/barceloneta-compiled.css">
-  <link async rel="stylesheet" href="/Plone/++plone++static/components/tinymce-builded/js/tinymce/skins/lightgray/skin.min.css">
+  <link async rel="stylesheet" href="../../../++plone++static/components/tinymce-builded/js/tinymce/skins/lightgray/skin.min.css">
   <link async rel="stylesheet" href="theme/++plone++static/plone-compiled.css">
   <link async rel="stylesheet" href="theme/dialog-polyfill.css">
   <style>
+    .mdl-tabs__tab-bar {
+      user-select: none;
+      -moz-user-select: none;
+      -webkit-user-select: none;
+      -ms-user-select: none;
+    }
     /* Plone Form styles */    
     div.outer-wrapper div.container {
       width: auto;
@@ -22,7 +28,12 @@
       display: none;
     }
 
-    .outer-wrapper div.container span.label {
+    #portal-column-content {
+      padding: 15px;
+    }
+
+    article div.container span.label,
+    article #content-core .label {
       color: black;
     }
 
@@ -494,12 +505,12 @@
     </div>
     <div class="mdl-dialog__actions">
       <button type="button"
-        class="mdl-button close">
-        Disagree
-      </button>
-      <button type="button"
         class="mdl-button agree">
         Agree
+      </button>
+      <button type="button"
+        class="mdl-button close">
+        Disagree
       </button>
     </div>
   </dialog>

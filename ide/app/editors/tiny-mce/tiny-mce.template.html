@@ -10,11 +10,11 @@
             [id]="id.split('/').pop()">
     </textarea>
 </form>
-<div *ngIf="isDragged" 
+  <div *ngIf="isDragged" 
     dnd-droppable 
     class="drop-zone"
     [style.height]="theEditor.offsetHeight+'px'" 
     [style.margin-top]="'-'+theEditor.offsetHeight+'px'" 
     [allowDrop]="allowDrop()"  
     (onDropSuccess)="dropped($event)">
-</div>
+</div>  

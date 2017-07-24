@@ -15,8 +15,6 @@ export class PloneHtmlPipe {
             var end = html.indexOf('<!--/outer-wrapper -->');
 
             if (start === -1) {
-              /** @todo: update to latest plone support */
-              // <article id="portal-column-content">...</article>
               start = html.indexOf('<article id="portal-column-content">');
               end = html.lastIndexOf('</article>');
             }

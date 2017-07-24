@@ -23,14 +23,20 @@ export class PlominoTabsComponent implements OnInit {
     private elementService: ElementService,
     private tabsManagerService: PlominoTabsManagerService,
     private urlManager: URLManagerService,
+    private changeDetector: ChangeDetectorRef,
   ) {
     this.tabsManagerService.getOpeningTab()
       .subscribe((tab) => {
         const index = this.findTabIndex(tab);
         if (index === -1) {
           this.tabsCollection.push(tab);
+          if (tab.editor === 'layout' && this.tabsManagerService.setOpenedTabActive) {
+            this.saveManager.nextEditorSavedState(tab.url);
+          }
         }
-        this.setTabActive(tab);
+        if (this.tabsManagerService.setOpenedTabActive) {
+          this.setTabActive(tab);
+        }
       });
 
     this.tabsManagerService.getClosingTab()
@@ -81,26 +87,26 @@ export class PlominoTabsComponent implements OnInit {
     event.preventDefault();
     event.stopImmediatePropagation();
 
-    this.tabsManagerService.closeTab(tab);
-
-    // ((): Promise<any> => {
-    //   if (tab.editor === 'layout' 
-    //     && this.saveManager.isEditorUnsaved(tab.url)
-    //   ) {
-    //     /**
-    //      * warn the user of any unsaved changes
-    //      */
-    //     return this.elementService.awaitForConfirm(
-    //       'Continue without saving?'
-    //     );
-    //   } else {
-    //     return Promise.resolve();
-    //   }
-    // })()
-    // .then(() => {
-    //   this.tabsManagerService.closeTab(tab);
-    // })
-    // .catch(() => {});
+    if (tab.editor === 'layout' 
+      && this.saveManager.isEditorUnsaved(tab.url)
+    ) {
+      this.elementService.awaitForConfirm(
+        'You have unsaved changes. Would you like to save your changes?',
+        'Cancel/Discard Changes',
+        'Save',
+        '400px'
+      )
+      .then(() => {
+        this.tabsManagerService.closeTab(tab);
+      })
+      .catch(() => {
+        this.tabsManagerService.saveClosingTab = false;
+        this.tabsManagerService.closeTab(tab);
+      });
+    }
+    else {
+      this.tabsManagerService.closeTab(tab);
+    }
   }
 
   findTabIndex(tab: PlominoTabUnit) {
@@ -147,6 +153,23 @@ export class PlominoTabsComponent implements OnInit {
   }
 
   setTabActive(tab: PlominoTabUnit) {
+    if (
+      this.activeTab 
+      && this.activeTab.editor === 'layout' 
+      && this.saveManager.isEditorUnsaved(this.activeTab.url)
+      && this.tabsManagerService.saveClosingTab
+    ) {
+      this.saveManager.enqueueNewFormSaveProcess(this.activeTab.url);
+      this.saveManager.nextEditorSavedState(this.activeTab.url);
+      this.activeTab.isDirty = false;
+      this.tabsCollection.forEach((tab, index) => {
+        if (tab.id === this.activeTab.id) {
+          this.tabsCollection[index].isDirty = false;
+          this.changeDetector.detectChanges();
+        }
+      });
+    }
+    this.tabsManagerService.saveClosingTab = true;
     this.activeTab = tab;
     this.tabsManagerService.setActive(tab);
     this.urlManager.rebuildURL(this.tabsCollection);

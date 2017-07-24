@@ -30,7 +30,6 @@
     "jquery-form": "^3.50.0",
     "jquery.browser": "^0.1.0",
     "jquery.cookie": "^1.4.1",
-    "lodash": "^4.17.2",
     "logging": "git+https://github.com/Patternslib/logging.git#1.0.2",
     "material-design-lite": "^1.3.0",
     "mockup": "git+https://github.com/plone/mockup.git#v2.0.8",
@@ -43,7 +42,7 @@
     "reflect-metadata": "0.1.2",
     "rxjs": "^5.0.0-beta.6",
     "select2": "^3.5.1",
-    "tinymce": "git+https://github.com/artursmirnov/tinymce_builded.git#4.4.3",
+    "tinymce": "git+https://github.com/artursmirnov/tinymce_builded.git#4.3.12",
     "underscore": "1.8.3",
     "zone.js": "0.6.12"
   },
@@ -68,7 +67,7 @@
     "ts-loader": "^0.8.2",
     "typescript": "2.3.2",
     "typings": "2.1.1",
-    "webpack": "^1.14.0",
-    "webpack-merge": "^0.12.0"
+    "webpack": "^1.15.0",
+    "webpack-merge": "^0.15.0"
   }
 }

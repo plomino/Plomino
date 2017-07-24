@@ -138,10 +138,6 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
       this.log.info('insertionSubscription', dataToInsert);
       if (insertionParent === this.id) {
         this.addElement(dataToInsert);
-        
-        /* form save automatically */
-        // this.formsService.saveForm(this.item.formUniqueId, false);
-        // this.saveManager.enqueueNewFormSaveProcess(this.item.url);
       }
     });
 
@@ -167,7 +163,7 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
 
         /* form save automatically */
         // this.saveTheForm(); // was before
-        this.saveManager.enqueueNewFormSaveProcess(this.item.url); // now async
+        this.saveManager.enqueueNewFormSaveProcess(this.id); // now async
       }
     });
     
@@ -225,6 +221,25 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
         this.log.extra('tiny-mce.component.ts');
         this.activeEditorService.setActive(data.newId);
       }
+      
+      if (this.id === data.oldId) {
+        this.id = data.newId;
+        /* id is present but no editor here, lets try to find it */
+        tinymce.editors.forEach((editor: any) => {
+          const id = this.id.split('/').pop();
+          if (editor.targetElm && editor.targetElm.id 
+            && editor.targetElm.id === data.oldId.split('/').pop()
+          ) {
+            editor.id = id;
+            editor.settings.id = id;
+            editor.getContainer().firstElementChild
+              .children[2].firstElementChild.id = id + '_ifr';
+            editor.render();
+  
+            // this.ngAfterViewInit();
+          }
+        });
+      }
     });
 
     this.subscriptions.push(idChangeSub);
@@ -238,7 +253,7 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
         this.log.error(e);
       }
 
-      if (data.url !== this.item.url)
+      if (data.url !== this.id)
         return;
 
       this.isLoading.emit(true);
@@ -255,7 +270,7 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
 
     const formBeforeSaveSub = this.formsService
       .getFormContentBeforeSave$.subscribe((data:{id:any}) => {
-      if (data.id !== this.item.url)
+      if (data.id !== this.id)
         return;
 
       this.theFormIsSavingNow = true;
@@ -295,8 +310,8 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
 
   ngOnDestroy() {
     const edId = this.id.split('/').pop();
-    this.log.info(this.item.url, 'tinymce destroyed');
-    if (this.activeEditorService.editorURL === this.item.url) {
+    this.log.info(this.id, 'tinymce destroyed');
+    if (this.activeEditorService.editorURL === this.id) {
       this.activeEditorService.setActive(null);
     }
     this.draggingSubscription.unsubscribe();
@@ -342,7 +357,7 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
     this.theFormIsSavingNow = true;
 
     this.saveManager
-      .createFormSaveProcess(this.item.url)
+      .createFormSaveProcess(this.id)
       .start()
       .subscribe(() => {
         this.fallLoading(false);
@@ -351,8 +366,8 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
   }
 
   ngAfterViewInit(): void {
-    this.activeEditorService.setActive(this.item.url);
-    this.log.info(this.item.url, 'tinymce view initialized');
+    this.activeEditorService.setActive(this.id);
+    this.log.info(this.id, 'tinymce ngAfterViewInit');
     window['$'] = jQuery;
     window['registryPromise'].then((registry: any) => {
       this.registry = registry;
@@ -496,11 +511,12 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
     patObject.tiny.content_css.push('theme/barceloneta-compiled.css');
     patObject.tiny.content_css.push('theme/++plone++static/plone-compiled.css');
     patObject.tiny.content_css.push('theme/tinymce.css');
+    patObject.tiny.content_css.push('../../../++plone++static/tinymce-styles.css');
     patObject.tiny.plugins = ['code', 'save', 'importcss', 'noneditable', 
       'preview', 'ploneimage', 'plonelink', 'hr', 
       'lists', 'media', 'table'],
     patObject.tiny.toolbar = 
-      'undo redo | formatselect | bold italic underline | ' +
+      'undo redo | styleselect | bold italic underline | ' +
       'alignleft aligncenter alignright alignjustify | ' +
       'bullist numlist | outdent indent' +
       'plonelink unlink ploneimage';
@@ -519,7 +535,15 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
   }
 
   initialize(): void {
-    if (!this.tinyMCEPatData) { return; }
+    if (!this.tinyMCEPatData) {
+      this.log.warn(
+        'you have initialized the tiny-mce before you '
+        + 'have initialized this.tinyMCEPatData'
+      );
+      return;
+    }
+
+    this.log.info('tinymce initialization started');
     const edId = this.id.split('/').pop();
     const $el = $('textarea#' + edId);
     $el.attr('data-pat-tinymce', this.tinyMCEPatData);
@@ -532,26 +556,35 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
 
     setTimeout(() => {
       const editor = tinymce.get(edId);
-      editor.onChange.add(this.onTinyMCEEditorChange.bind(this));
-      editor.onKeyDown.add(this.onTinyMCEEditorKeyDown.bind(this));
-      editor.onKeyUp.add(this.onTinyMCEEditorKeyUp.bind(this));
-      editor.onNodeChange.add(this.onTinyMCEEditorNodeChange.bind(this));
-      // editor.onActivate.add(this.onTinyMCEEditorChange.bind(this));
-      editor.onMouseDown.add(this.onTinyMCEEditorMouseDown.bind(this));
-      this.editorInstance = editor;
-      this.editorInstance.show();
-      this.bitDirtyStateAfterSave();
+      
+      if (editor === null) {
+        this.log.warn('null editor', edId, tinymce.editors);
+      }
 
       if (editor) {
-        // editor.setDirty(false);
+        editor.onChange.add(this.onTinyMCEEditorChange.bind(this));
+        editor.onKeyDown.add(this.onTinyMCEEditorKeyDown.bind(this));
+        editor.onKeyUp.add(this.onTinyMCEEditorKeyUp.bind(this));
+        editor.onNodeChange.add(this.onTinyMCEEditorNodeChange.bind(this));
+        // editor.onActivate.add(this.onTinyMCEEditorChange.bind(this));
+        editor.onMouseDown.add(this.onTinyMCEEditorMouseDown.bind(this));
+        this.editorInstance = editor;
+        this.editorInstance.show();
+        this.bitDirtyStateAfterSave();
+
         const $edContainer = $(editor.getContainer());
         if ($edContainer.length) {
           const $saveDiv = $edContainer
             .find('.mce-toolbar-grp div.mce-widget.mce-btn:contains("Save")');
           $saveDiv.attr('aria-disabled', 'true');
           $saveDiv.addClass('mce-disabled');
-
-          $edContainer.find('iframe').css('height', 'calc(100vh - 226px)');
+          const $iframe = $edContainer.find('iframe');
+          const iframeDocument = (<HTMLIFrameElement> $iframe.get(0))
+            .contentWindow.document;
+          iframeDocument.addEventListener('keydown', (e) => {
+            return this.beforeTinyMCEEditorKeyDown(editor, e);
+          }, true);
+          $iframe.css('height', 'calc(100vh - 226px)');
         }
 
         this.getFormLayout();
@@ -600,7 +633,8 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
 
   onTinyMCEEditorChange() {
     if (this.activeEditorService.editorURL === this.id 
-      && !this.theFormIsSavingNow) {
+      && !this.theFormIsSavingNow
+      && this.saveManager.isEditorUnsaved(this.id)) {
       this.isDirty.emit(true);
     }
   }
@@ -611,6 +645,93 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
 
       if ($label.length) {
         this.labelMarkupEvent.next($label);
+      }
+    }
+  }
+
+  beforeTinyMCEEditorKeyDown(editor: TinyMceEditor, e: KeyboardEvent) {
+    if (e.keyCode === 8) { // BACKSPACE PRESSED
+      const editor = this.getEditor();
+      if (!editor) { return true; }
+
+      const rng = editor.selection.getRng();
+      if (!(rng && rng.startContainer)) { return true; }
+
+      const container: HTMLElement = rng.startContainer;
+      const parent = <HTMLElement> container.parentElement;
+      const contPrev = <HTMLElement> container.previousElementSibling;
+
+      if (contPrev && contPrev.classList.contains('plominoHidewhenClass')) {
+        $(editor.getBody())
+          .find('[data-plominoid="' + contPrev.dataset.plominoid + '"]')
+          .remove();
+      }
+      
+      if (!(
+        parent && parent.tagName === 'P' 
+        && !(parent.innerText.trim()).length
+      )) {
+        return true;
+      }
+
+      const prev = <HTMLElement> parent.previousElementSibling;
+      const next = <HTMLElement> parent.nextElementSibling;
+      if (!prev || !next) { return true; }
+
+      /**
+       * @see https://trello.com/c/89jSvQ7A/242-deleting-p-between-non-editable-elements
+       */
+      if (prev.tagName === 'DIV' 
+        && !(next.tagName === 'P' && next.innerHTML === '&nbsp;')
+      ) {
+        /* prevent default and remove parent */
+        $(parent).remove();
+
+        /** start do nothing */
+        e.preventDefault();
+        e.stopPropagation();
+        e.stopImmediatePropagation();
+        return false;
+        /** end do nothing */
+      }
+    }
+    else if (e.keyCode === 46) { // DELETE PRESSED
+      const editor = this.getEditor();
+      if (!editor) { return true; }
+
+      const rng = editor.selection.getRng();
+      if (!(rng && rng.startContainer)) { return true; }
+
+      const container: HTMLElement = rng.startContainer;
+      const parent = <HTMLElement> container.parentElement;
+      const contNext = <HTMLElement> container.nextElementSibling;
+
+      if (!(
+        parent && parent.tagName === 'P' 
+        && !(parent.innerText.trim()).length
+      )) {
+        return true;
+      }
+
+      const prev = <HTMLElement> parent.previousElementSibling;
+      const next = <HTMLElement> parent.nextElementSibling;
+      if (!prev || !next) { return true; }
+
+      /**
+       * @see https://trello.com/c/89jSvQ7A/242-deleting-p-between-non-editable-elements
+       */
+      if (next.tagName === 'DIV' 
+        && !(prev.tagName === 'P' && prev.innerHTML === '&nbsp;')
+      ) {
+        /* prevent default and remove parent */
+        $(parent).remove();
+
+        /** start do nothing */
+        e.preventDefault();
+        e.stopPropagation();
+        e.stopImmediatePropagation();
+        return false;
+        /** end do nothing */
       }
     }
   }
@@ -831,6 +952,7 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
     .subscribe((form: PlominoFormDataAPIResponse) => {
       for (let item of form.items) {
         this.labelsRegistry.update(item['@id'], item.title, 'title');
+        this.labelsRegistry.update(item['@id'], item['@type'], '@type');
       }
       const data = form.form_layout;
       let newData = '';
@@ -1127,7 +1249,7 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
           '<hr class="plominoPagebreakClass">',
           { target: element.target }
         );
-        this.saveManager.enqueueNewFormSaveProcess(this.item.url);
+        this.saveManager.enqueueNewFormSaveProcess(this.id);
         return;
 
       default: return;
@@ -1176,7 +1298,7 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
           this.id, this.draggingService,
           `${widgetTemplate}`, { skip_undo: 1, target }
         );
-        this.saveManager.enqueueNewFormSaveProcess(this.item.url);
+        this.saveManager.enqueueNewFormSaveProcess(this.id);
       });
     }
     else if (type == 'subform') {
@@ -1195,7 +1317,7 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
           ${ (value !== 'defaultSubform') ? ` data-plominoid="${ value }"` : '' }
           >${widgetTemplate}</div>`, { skip_undo: 1, target }
         );
-        this.saveManager.enqueueNewFormSaveProcess(this.item.url);
+        this.saveManager.enqueueNewFormSaveProcess(this.id);
       });
     }
     else if (plominoClass !== undefined) {
@@ -1223,7 +1345,7 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
           this.id, this.draggingService, content, { skip_undo: 1, target }
         );
 
-        this.saveManager.enqueueNewFormSaveProcess(this.item.url);
+        this.saveManager.enqueueNewFormSaveProcess(this.id);
 
         this.formFieldsSelection.selectField({
           id: value,
@@ -1291,7 +1413,7 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
         );
 			}
 
-      this.saveManager.enqueueNewFormSaveProcess(this.item.url);
+      this.saveManager.enqueueNewFormSaveProcess(this.id);
       
       this.formFieldsSelection.selectField({
         id: value,
