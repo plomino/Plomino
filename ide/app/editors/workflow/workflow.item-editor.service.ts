@@ -70,7 +70,9 @@ export class PlominoWorkflowItemEditorService {
         const updateDBSettings = (formOrView: string) => 
           (url: string, label: string) => {
             if (this.selectedItemRef && this.treeService.getActiveTree()) {
-              this.selectedItemRef.title = label;
+              if (!this.selectedItemRef.title) {
+                this.selectedItemRef.title = label;
+              }
               this.selectedItemRef[formOrView] = url.split('/').pop();
               this.workflowChanges.needSave.next(true);
             }
@@ -87,9 +89,11 @@ export class PlominoWorkflowItemEditorService {
           this.editMacro(this.selectedItemRef);
         }
         else if (btn.classList.contains('wf-item-settings-dialog__create-btn--form')) {
+          this.applyDialog();
           this.saveManager.createNewForm(updateDBSettings('form').bind(this), true);
         }
         else if (btn.classList.contains('wf-item-settings-dialog__create-btn--view')) {
+          this.applyDialog();
           this.saveManager.createNewView(updateDBSettings('view').bind(this), true);
         }
         
@@ -273,6 +277,16 @@ export class PlominoWorkflowItemEditorService {
     const tmpOnTopFormItem = (item.form || item.view) 
       ? item : (this.getTopItemWithForm(item.id, 
         this.treeService.getActiveTree()) || null);
+    if (
+      (item.type === WF.FORM_TASK || item.type === WF.VIEW_TASK) 
+      && !(item.form || item.view)
+    ) {
+      $wd.html(`<label style="margin-bottom: 15px; margin-top: 10px">
+        Implementation<br>
+        <small style="color: dimgray;">Please select a form/view in the 
+        task so a rule can be selected.</small></label>`);
+      return;
+    }
     if (!tmpOnTopFormItem || !(tmpOnTopFormItem.form || tmpOnTopFormItem.view)) {
       if (item.type === WF.FORM_TASK || item.type === WF.VIEW_TASK 
         || item.type === WF.PROCESS

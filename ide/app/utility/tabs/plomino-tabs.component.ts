@@ -90,11 +90,19 @@ export class PlominoTabsComponent implements OnInit {
     if (tab.editor === 'layout' 
       && this.saveManager.isEditorUnsaved(tab.url)
     ) {
-      this.elementService.awaitForConfirm('Continue without saving?')
+      this.elementService.awaitForConfirm(
+        'You have unsaved changes. Would you like to save your changes?',
+        'Cancel/Discard Changes',
+        'Save',
+        '400px'
+      )
       .then(() => {
         this.tabsManagerService.closeTab(tab);
       })
-      .catch(() => {});
+      .catch(() => {
+        this.tabsManagerService.saveClosingTab = false;
+        this.tabsManagerService.closeTab(tab);
+      });
     }
     else {
       this.tabsManagerService.closeTab(tab);
@@ -149,6 +157,7 @@ export class PlominoTabsComponent implements OnInit {
       this.activeTab 
       && this.activeTab.editor === 'layout' 
       && this.saveManager.isEditorUnsaved(this.activeTab.url)
+      && this.tabsManagerService.saveClosingTab
     ) {
       this.saveManager.enqueueNewFormSaveProcess(this.activeTab.url);
       this.saveManager.nextEditorSavedState(this.activeTab.url);
@@ -160,6 +169,7 @@ export class PlominoTabsComponent implements OnInit {
         }
       });
     }
+    this.tabsManagerService.saveClosingTab = true;
     this.activeTab = tab;
     this.tabsManagerService.setActive(tab);
     this.urlManager.rebuildURL(this.tabsCollection);
