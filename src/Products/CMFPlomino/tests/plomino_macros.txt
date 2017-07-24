@@ -1,0 +1,67 @@
+Plomino basic maco tests
+=========================
+
+    >>> import zope.event
+    >>> from zope.lifecycleevent import ObjectModifiedEvent
+
+
+A form may consist of multiple subforms. Set up some simple forms::
+
+    >>> portal = layer['portal']
+    >>> id = portal.invokeFactory('PlominoDatabase', id='advdb')
+    >>> db = portal.advdb
+    >>> id = db.invokeFactory('PlominoForm', id='frm1', title='Form 1')
+
+
+    >>> id = db.frm1.invokeFactory('PlominoField', id='field1',
+    ...         title='Field 1',
+    ...         mandatory=False,
+    ...         field_type="TEXT",
+    ...         field_mode="EDITABLE")
+    >>> db.frm1.form_layout = '<span class="plominoFieldClass">field1</span>'
+
+Range condition
+
+    >>> range = {"more_field_value":1,
+    ...    "more_field_name":"field1",
+    ...    "less_field_name":"field1",
+    ...    "and_or":"or",
+    ...    "less_field_value":10,
+    ...    "Form":"macro_condition_number_range_in",
+    ...    "_macro_id_":"macro_condition_number_range_in_2"}
+    >>> invalid = {"invalid_message":"Not in range",
+    ...    "Form":"macro_field_validate_invalid",
+    ...    "_macro_id_":"macro_field_validate_invalid_2"}
+
+    >>> db.frm1.field1.helpers = [[range,invalid]]
+    >>> zope.event.notify(ObjectModifiedEvent(db.frm1.field1, []))
+
+Test if the macro fires::
+
+    >>> db.frm1.validateInputs({'field1':'2'})
+    [{'field': 'field1', 'error': 'Not in range'}]
+
+We can reverse the order of the statements in a rule
+
+    >>> db.frm1.field1.helpers = [[invalid, range]]
+    >>> zope.event.notify(ObjectModifiedEvent(db.frm1.field1, []))
+    >>> db.frm1.validateInputs({'field1':'2'})
+    [{'field': 'field1', 'error': 'Not in range'}]
+
+Update the parameters of a "do"
+
+    >>> invalid = {"invalid_message":"Invalid",
+    ...    "Form":"macro_field_validate_invalid",
+    ...    "_macro_id_":"macro_field_validate_invalid_2"}
+    >>> db.frm1.field1.helpers = [[invalid, range]]
+    >>> zope.event.notify(ObjectModifiedEvent(db.frm1.field1, []))
+    >>> db.frm1.validateInputs({'field1':'2'})
+    [{'field': 'field1', 'error': 'Invalid'}]
+
+Update the parameters of a "if"
+
+    >>> range["more_field_value"] = 2
+    >>> db.frm1.field1.helpers = [[invalid, range]]
+    >>> zope.event.notify(ObjectModifiedEvent(db.frm1.field1, []))
+    >>> db.frm1.validateInputs({'field1':'10'})
+    [{'field': 'field1', 'error': 'Invalid'}]
