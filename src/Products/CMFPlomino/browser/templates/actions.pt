@@ -108,6 +108,17 @@
 
 <div class="formControls" metal:define-macro="ViewActionBar">
 <span class="actionButtons">
+<script>
+function selected_documents()
+{
+	var array_value = [];
+	$(".plominoviewform input[name='sdoc']:checked").each(function() {
+		array_value.push($(this).val());
+	});
+
+	return array_value.join('@');
+}
+</script>
     <tal:defaultactions tal:condition="python:not(context.hide_default_actions)">
         <input type="button" class="context plominoDelete" value="Delete" name="plomino_deletedocuments"
             i18n:domain="Products.CMFPlomino" i18n:attributes="value"
