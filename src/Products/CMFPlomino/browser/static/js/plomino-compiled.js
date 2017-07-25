@@ -62,7 +62,7 @@ require([
                         var row = data.rows[i];
                         html += '<tr><td><a href="'
                             + self.options.source
-                            + '/../../document/' + row[0]
+                            + '/../document/' + row[0]
                             + '">' + row[1]
                             + '</a></td>';
                         if(row.length > 2) {
