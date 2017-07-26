@@ -751,12 +751,14 @@ export class WidgetService {
     // this.log.extra('widget.service.ts getWidget');
     if (content && type === 'label') {
       const splitTitle = content.title.split(':');
-      if (splitTitle.length >= 2 && splitTitle[1]) {
+      const advancedTitleExists = splitTitle.length >= 2 
+        && splitTitle[1] && splitTitle[0] === id;
+      if (advancedTitleExists) {
         content.title = splitTitle.slice(1).join(':');
       }
       return Observable.of(
         `<span class="plominoLabelClass mceNonEditable"
-          ${ splitTitle.length >= 2 && splitTitle[1] ? ` data-advanced="1"` : '' }
+          ${ advancedTitleExists ? ` data-advanced="1"` : '' }
           ${ id ? ` data-plominoid="${ id }"` : '' }>${ content.title }</span>`
       );
     }
