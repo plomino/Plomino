@@ -999,10 +999,13 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
 
           if (editor && this.loadedFirstTime) {
             setTimeout(() => {
-              $(editor.getBody())
-              .animate(
-                { scrollTop: 0 },
-                { duration: 'medium', easing: 'swing' }
+              $(editor.getBody()).animate(
+                { scrollTop: 0 }, 'medium', 'swing', () => {
+                  try {
+                    editor.selection.setCursorLocation();
+                  }
+                  catch (e) {}
+                }
               );
             }, 100);
           }
