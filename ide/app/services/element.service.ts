@@ -5,7 +5,8 @@ import { Injectable } from '@angular/core';
 
 import { 
     Headers, 
-    Response
+    Response,
+    RequestOptions
 } from '@angular/http';
 
 import { Observable } from 'rxjs/Rx';
@@ -28,10 +29,22 @@ export class ElementService {
       document.querySelector('#confirm-dialog');
   }
 
-  awaitForConfirm(): Promise<boolean> {
+  awaitForConfirm(
+    text = 'Do you agree to delete this object?',
+    cancelBtnText = 'Disagree',
+    confirmBtnText = 'Agree',
+    dialogWidth = '280px'
+  ): Promise<boolean> {
     this.confirmDialog
       .querySelector('.mdl-dialog__content')
-      .innerHTML = 'Do you agree to delete this object?';
+      .innerHTML = text;
+    this.confirmDialog
+      .querySelector('button.close')
+      .innerHTML = cancelBtnText;
+    this.confirmDialog
+      .querySelector('button.agree')
+      .innerHTML = confirmBtnText;
+    this.confirmDialog.style.width = dialogWidth;
     this.confirmDialog.showModal();
     return new Promise((resolve, reject) => {
       $(this.confirmDialog)
@@ -47,40 +60,66 @@ export class ElementService {
           this.confirmDialog.close();
         });
       });
-    }
+  }
 
   getElement(id: string): Observable<PlominoFieldDataAPIResponse> {
+    if (!id) {
+      return Observable.of(null);
+    }
+    // console.warn(console.trace());
     if (id.split('/').pop() === 'defaultLabel') {
       return Observable.of(null);
     }
     return this.http.getWithOptions(
       id, { headers: this.headers },
       'element.service.ts getElement'
-    ).map((res: Response) => res.json());
+    )
+    .map((res: Response) => res.json())
+    .catch((err: any) => {
+      return Observable.of(null);
+    });
   }
 
   // Had some issues with TinyMCEComponent, had to do this instead of using getElement() method
   // XXX: This should really call the getForm_layout method on the Form object?
   getElementFormLayout(formUrl: string): Observable<PlominoFormDataAPIResponse> {
-    if (this.http.recentlyChangedFormURL !== null
-      && this.http.recentlyChangedFormURL[0] === formUrl
-      && $('.tab-name').toArray().map((e) => e.innerText)
-      .indexOf(formUrl.split('/').pop()) === -1
-    ) {
-      formUrl = this.http.recentlyChangedFormURL[1];
-      this.log.info('patched formUrl!', this.http.recentlyChangedFormURL);
-      this.log.extra('element.service.ts getElementFormLayout');
-    }
+    // if (this.http.recentlyChangedFormURL !== null
+    //   && this.http.recentlyChangedFormURL[0] === formUrl
+    //   && $('.tab-name').toArray().map((e) => e.innerText)
+    //   .indexOf(formUrl.split('/').pop()) === -1
+    // ) {
+    //   formUrl = this.http.recentlyChangedFormURL[1];
+    //   this.log.info('patched formUrl!', this.http.recentlyChangedFormURL);
+    //   this.log.extra('element.service.ts getElementFormLayout');
+    // }
     return this.http.getWithOptions(
       formUrl, { headers: this.headers },
       'element.service.ts getElementFormLayout'
-    ).map((res: Response) => res.json());
+    )
+    .map((res: Response) => {
+      this.log.info('response from getElementFormLayout received');
+      return res.json();
+    });
   }
 
   getElementCode(url: string) {
     return this.http.get(
       url, 'element.service.ts getElementCode'
     ).map((res: Response) => res.text());
+  }
+
+  renameGroup(formURL: string, id: string, newId: string, groupContents: string[]) {
+    const f = new FormData();
+    f.append('id', id);
+    f.append('newid', newId);
+    f.append('group_contents', JSON.stringify(groupContents));
+    
+    return this.http.postWithOptions(
+      `${ formURL }/rename-group`, f,
+      new RequestOptions({}),
+      'element.service.ts renameGroup'
+    )
+    .map((res: Response) => res.json());
   }
 
   postElementCode(url: string, type: string, id: string, code: string) {

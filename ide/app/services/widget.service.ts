@@ -54,14 +54,14 @@ export class WidgetService {
   getGroupLayout(
     baseUrl: string, input: PlominoFormGroupTemplate, templateMode?: boolean
   ): Observable<string> {
-    // this.log.info('input', JSON.stringify(input));
+    // this.log.info('getGroupLayout');
     // this.log.extra('widget.service.ts getGroupLayout');
     /**
      * decided to use the DOM
      */
     let $groupLayout = $(
       `<div id="tmp-group-layout-id${input.id}" role="group"
-        style="visibility: hidden; position: absolute"
+        style="visibility: hidden; position: absolute;top:0;left:0"
         >${input.layout}</div>`
     );
 
@@ -195,9 +195,9 @@ export class WidgetService {
     return this.getGroupLayout(baseUrl, template, true);
   }
 
-  getFormLayout(baseUrl: string) {
+  getFormLayout(baseUrl: string, $edIFrame: JQuery) {
     // this.log.info('getFormLayout called', baseUrl);
-    const $edIFrame = $(`iframe[id="${ baseUrl }_ifr"]`).contents();
+    // const $edIFrame = $(`iframe[id="${ baseUrl }_ifr"]`).contents();
     $edIFrame.css('opacity', 0);
     let $elements = $edIFrame.find('.plominoGroupClass, .plominoSubformClass, ' +
       '.plominoFieldClass:not(.plominoGroupClass .plominoFieldClass), ' +
@@ -209,6 +209,7 @@ export class WidgetService {
     let promiseList: any[] = [];
 
     const widgetQueryData: { widget_type: string, id: string }[] = [];
+    const widgetQuerySet: Set<string> = new Set();
 
     const $widgets = $edIFrame.find(
       '.plominoFieldClass, .plominoHidewhenClass, ' +
@@ -226,6 +227,25 @@ export class WidgetService {
         .replace('plomino', '').replace('Class', '').toLowerCase();
 
       widgetQueryData.push({ widget_type, id });
+      widgetQuerySet.add(id);
+    });
+
+    /**
+     * insert additionally all elements for current form
+     */
+    const formItems = this.labelsRegistry.getAllForFormID(baseUrl);
+    formItems.forEach((itemURL) => {
+      /* if item is not in widgetQueryData then */
+      const itemId = itemURL.replace(baseUrl + '/', '');
+      if (!widgetQuerySet.has(itemId)) {
+        const itemWidgetTypeFull = this.labelsRegistry.get(itemURL, '@type');
+        if (itemWidgetTypeFull) {
+          const itemWidgetType = itemWidgetTypeFull
+            .replace('Plomino', '').toLowerCase();
+          widgetQueryData.push({ widget_type: itemWidgetType, id: itemId });
+          widgetQuerySet.add(itemId);
+        }
+      }
     });
 
     const widgetsFromServer = new Subject<any>();
@@ -326,6 +346,7 @@ export class WidgetService {
   private convertFormGroups(
     base: string, element: any, groupId: any, labelsRegistry?: Map<string, Object>
   ): Observable<any> {
+    // this.log.info('convertFormGroups');
     let $groupId = element.attr('data-groupid');
     let fields$: any[] = [];
 
@@ -482,15 +503,21 @@ export class WidgetService {
   private convertGroupFields(
     ids: PlominoFormGroupContent[], base: string, element: JQuery
   ): Observable<string> {
-    let $class = element.attr('class');
+    // this.log.info('convertGroupFields', ids);
+    const classList = element.get(0).classList;
+    let $class = classList.length ? classList[0] : '';
     let $type = $class.slice(7, -5).toLowerCase();
 
     const $idData = this.findId(ids, element.text());
-    let $id = $idData.id;
+    let $id: any;
     let template: PlominoFormGroupContent = null;
 
     if ($idData && $idData.layout) {
       template = $idData;
+      $id = $idData.id
+    }
+    else {
+      $id = null;
     }
   
     return (template 
@@ -501,13 +528,13 @@ export class WidgetService {
       let container = 'span';
       let content = '';
 
-      if ($response.find("div,table,p").length) {
-        container = "div";
-      }
+      if ($response.is('div,table,p') || $response.find('div,table,p').length) {
+          container = 'div';
+        }
       
       if (response !== undefined) {
         content = `<${container} data-present-method="convertGroupFields_1"
-                  class="${$class} mceNonEditable" data-mce-resize="false"
+                  class="${$class}" data-mce-resize="false"
                   data-plominoid="${$id}">
                       ${response}
                    </${container}>`;
@@ -522,7 +549,8 @@ export class WidgetService {
   private convertGroupHidewhens(
     ids: PlominoFormGroupContent[], base: string, element: JQuery,
     template?: PlominoFormGroupTemplate): Observable<string> {
-    let $class = element.attr('class');
+    const classList = element.get(0).classList;
+    let $class = classList.length ? classList[0] : '';
     let $type = $class.slice(7, -5).toLowerCase();
     let $position = element.text().split(':')[0];
     let $id = element.text().split(':')[1];
@@ -539,43 +567,51 @@ export class WidgetService {
     return Observable.of(this.wrapIntoEditable(content));
   }
 
-  private convertFormFields(base: string, element: any): Observable<string> {
-    let $class = element.attr('class');
-    let $type = $class.slice(7, -5).toLowerCase();
-    let $id = element.text();
-    let template: PlominoFormGroupContent = null;
+  private convertFormFields(base: string, $element: JQuery): Observable<string> {
+    // this.log.info('convertFormFields');
+    const classList = $element.get(0).classList;
+    let fieldClass = classList.length ? classList[0] : '';
+    const fieldType = fieldClass.slice(7, -5).toLowerCase();
+    const fieldId = $element.text();
+    const template: PlominoFormGroupContent = null;
 
     return (template 
-      ? this.getWidget(base, $type, $id, template) 
-      : this.getWidget(base, $type, $id)
+      ? this.getWidget(base, fieldType, fieldId, template) 
+      : this.getWidget(base, fieldType, fieldId)
       ).map((response) => {
-      let $response = $(response);
-      let container = 'span';
-      let content = '';
-      let $newId: any;
-
-      if ($response.find("div,table,p").length) {
-        container = "div";
-      }
-      
-      if (response != undefined) {
-        content = `<${container} data-present-method="convertFormFields_1" 
-                    class="${$class} mceNonEditable" data-mce-resize="false"
-                    contenteditable="false"
-                    data-plominoid="${$id}">
-                      ${response}
-                   </${container}>`;
-      } else {
-        content = `<span data-present-method="convertFormFields_2" class="${$class}">${$id}</span>`;
-      }
-
-      return content;
-    });
+        const $response = $(response);
+        let container = 'span';
+        let content = '';
+  
+        if ($response.is('div,table,p') || $response.find('div,table,p').length) {
+          container = 'div';
+        }
+        
+        if (response != undefined) {
+          const isInnerGroup = 
+            Boolean($element.closest('.plominoGroupClass').length)
+            || Boolean($element.closest('div[role="group"]').length);
+          if (!isInnerGroup) {
+            fieldClass += ' mceNonEditable';
+          }
+          content = `<${ container } data-present-method="convertFormFields_1" 
+                      class="${ fieldClass }" data-mce-resize="false"
+                      data-plominoid="${ fieldId }">
+                        ${response}
+                     </${ container }>`;
+        } else {
+          content = `<span data-present-method="convertFormFields_2"
+            class="${ fieldClass }">${ fieldId }</span>`;
+        }
+  
+        return content;
+      });
   }
 
   private convertFormHidewhens(base: string, element: any,
   template?: PlominoFormGroupTemplate): Observable<string> {
-    let $class = element.attr('class');
+    const classList = element.get(0).classList;
+    let $class = classList.length ? classList[0] : '';
     let $position = element.text().split(':')[0];
     let $id = element.text().split(':')[1];
   
@@ -592,8 +628,9 @@ export class WidgetService {
   }
 
   private convertFormSubform(base: string, element: JQuery): Observable<string> {
-    let $class = element.attr('class');
-    let $id = element.text();
+    const classList = element.get(0).classList;
+    let $class = classList.length ? classList[0] : '';
+    let $id = element.text().trim();
 
     return this.getWidget(
       base, 'subform',
@@ -604,8 +641,11 @@ export class WidgetService {
       if ($response.length > 1) {
         $response = $(`<div>${response}</div>`);
       }
-      return $response.addClass('mceNonEditable')
-        .addClass($class).attr('data-plominoid', $id).get(0).outerHTML;
+      const result = $response.addClass('mceNonEditable')
+        .addClass($class).attr('data-plominoid', $id).get(0);
+      return result ? result.outerHTML 
+        : '<div class="mceNonEditable" data-plominoid="' + $id 
+          + '"><h2>Subform</h2><input value="..."/></div>';
     });
   }
 
@@ -614,11 +654,16 @@ export class WidgetService {
     type: 'form' | 'group', ids: PlominoFormGroupContent[] = [],
     labelsRegistry?: Map<string, Object>
   ): Observable<string> {
-    let $class = element.attr('class').split(' ')[0];
+    const classList = element.get(0).classList;
+    let $class = classList.length ? classList[0] : '';
     let $type = $class.slice(7, -5).toLowerCase();
 
-    if (element.parent().attr('contenteditable') !== 'false') {
-      element.parent().attr('contenteditable', 'false');
+    // if (element.parent().attr('contenteditable') !== 'false') {
+    //   element.parent().attr('contenteditable', 'false');
+    // }
+
+    if (element.parent().attr('contenteditable') === 'false') {
+      element.parent().removeAttr('contenteditable');
     }
 
     let $id: string = null;
@@ -633,10 +678,13 @@ export class WidgetService {
 
     if (ids.length) {
       const $idData = this.findId(ids, tmpId);
-      $id = $idData.id;
 
       if ($idData && $idData.layout) {
         template = $idData;
+        $id = $idData.id;
+      }
+      else {
+        $id = null;
       }
     } else {
       $id = tmpId;
@@ -646,7 +694,7 @@ export class WidgetService {
     //   labelsRegistry ? labelsRegistry.get(`${ base }/${ $id }`) : null, template);
     // this.log.extra('widget.service.ts convertLabel');
 
-    if (!template && labelsRegistry && labelsRegistry.has(`${ base }/${ $id }`)) {
+    if (!template && $id && labelsRegistry && labelsRegistry.has(`${ base }/${ $id }`)) {
       template = { id: $id, title: labelsRegistry.get(`${ base }/${ $id }`)['title'] };
       // labelsRegistry.delete(`${ base }/${ $id }`); // just in case
     }
@@ -661,7 +709,8 @@ export class WidgetService {
     ).map((response) => {
       const $response = $(response);
       const result = (type === 'group') ? $response.get(0).outerHTML : `${response}`;
-      return this.adapter.endPoint('label', result);
+      const endPoint = this.adapter.endPoint('label', result);
+      return endPoint;
     });
   }
 
@@ -725,6 +774,9 @@ export class WidgetService {
     if (cachedResult) {
       return Observable.of(cachedResult);
     }
+    // else if (!cachedResult && type === 'hidewhen') {
+    //   return this.convertFormHidewhens();
+    // }
 
     return this.http.get(
       `${baseUrl}/@@tinyform/example_widget?widget_type=${type}${ id ? `&id=${id}` : '' }`,

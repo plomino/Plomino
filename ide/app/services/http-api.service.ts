@@ -16,7 +16,9 @@ export class PlominoHTTPAPIService {
         document.querySelector('#ok-dialog');
 
     if (!this.okDialog.showModal) {
-      dialogPolyfill.registerDialog(this.okDialog);
+      window['materialPromise'].then(() => {
+        dialogPolyfill.registerDialog(this.okDialog);
+      });
     }
 
     this.okDialog.querySelector('.mdl-dialog__actions button')
@@ -76,20 +78,44 @@ export class PlominoHTTPAPIService {
   getErrors(response: Response) {
     if (response.status === 500 || response.status === 404) {
       const tmp = response.json();
-      throw tmp.error_type || tmp.toString();
+      throw tmp.error_type || tmp.message || tmp.toString();
     }
     else if (response.status === 401) {
       const tmp = response.json();
       throw tmp.message || tmp.toString();
     }
+    else if (response.status === 0) {
+      throw 'The server does not respond';
+    }
+    else if (response.url.indexOf('/require_login') !== -1) {
+      setTimeout(() => {
+        let redirectURL = response.url.replace(/(came_from=).+?$/, '$1');
+        window.location.href = `${ redirectURL }${ encodeURIComponent(window.location.href) }`;
+      }, 2000);
+      throw 'You are not authenticated';
+    }
     else {
       return response;
     }
   }
-
+  
   throwError(error: any): any {
+    if (typeof error === 'object' && error instanceof Response) {
+      error = error.json();
+      if (
+        error.type && error.type === 'error' 
+        && error.total === 0 && error.target 
+        && error.target.status === 0
+      ) {
+        error = 'The server does not respond';
+      }
+      else {
+        error = error.error_type || error.message || error.toString();
+      }
+    }
     if (typeof error !== 'object' 
       && error.indexOf('404 Not Found') === -1
+      && error.indexOf('not found') === -1
       && error.indexOf('NotFound') === -1
     ) {
       const okDialog = <HTMLDialogElement> document.querySelector('#ok-dialog');

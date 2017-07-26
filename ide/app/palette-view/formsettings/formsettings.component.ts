@@ -1,3 +1,10 @@
+import { PlominoTabsManagerService } from './../../services/tabs-manager/index';
+import { PlominoPaletteManagerService } from './../../services/palette-manager/palette-manager';
+import { PlominoHTTPAPIService } from './../../services/http-api.service';
+import { PlominoFormSaveProcess } from './../../services/save-manager/form-save-process';
+import { PlominoSaveManagerService } from './../../services/save-manager/save-manager.service';
+import { LabelsRegistryService } from './../../editors/tiny-mce/services/labels-registry.service';
+import { PlominoActiveEditorService } from './../../services/active-editor.service';
 import {
     Component,
     Input,
@@ -19,7 +26,9 @@ import {
     TabsService,
     TreeService,
     LogService,
-    FormsService
+    FormsService,
+    PlominoElementAdapterService,
+    PlominoFormFieldsSelectionService
 } from '../../services';
 import { PloneHtmlPipe } from '../../pipes';
 import {ElementService} from "../../services/element.service";
@@ -39,8 +48,7 @@ import { PlominoBlockPreloaderComponent } from "../../utility";
 export class FormSettingsComponent implements OnInit {
     @ViewChild('formElem') formElem: ElementRef;
 
-    tab: PlominoTab;
-    formSaving: boolean = false;
+    tab: any;
     macrosWidgetTimer: number = null;
 
     // This needs to handle both views and forms
@@ -54,15 +62,33 @@ export class FormSettingsComponent implements OnInit {
     
     private formLayout: string = '';
 
-    constructor(private objService: ObjService,
-                private log: LogService,
-                private changeDetector: ChangeDetectorRef,
-                private tabsService: TabsService,
-                private treeService: TreeService,
-                private zone: NgZone,
-                private elementService: ElementService,
-                private widgetService: WidgetService,
-                private formsService: FormsService) {}
+    constructor(
+      private objService: ObjService,
+      private log: LogService,
+      private changeDetector: ChangeDetectorRef,
+      private tabsService: TabsService,
+      private tabsManagerService: PlominoTabsManagerService,
+      private formFieldsSelection: PlominoFormFieldsSelectionService,
+      private treeService: TreeService,
+      private adapter: PlominoElementAdapterService,
+      private labelsRegistry: LabelsRegistryService,
+      private activeEditorService: PlominoActiveEditorService,
+      private saveManager: PlominoSaveManagerService,
+      private zone: NgZone,
+      private elementService: ElementService,
+      private widgetService: WidgetService,
+      private formsService: FormsService,
+      private paletteManager: PlominoPaletteManagerService,
+    ) {
+      this.tabsManagerService.getAfterUpdateIdOfTab()
+        .subscribe((data) => {
+          if (this.tab && this.tab.url.split('/').pop() === data.prevId) {
+            const prevExp = new RegExp(`^(.+?/)${ data.prevId }$`);
+            this.tab.url = this.tab.url
+              .replace(prevExp, `$1${ data.nextId }`);
+          }
+        });
+    }
 
     ngOnInit() {
         this.getSettings();
@@ -70,27 +96,28 @@ export class FormSettingsComponent implements OnInit {
         let onSaveFinishCb: any = null;
 
         this.formsService.formSettingsSave$.subscribe((data) => {
-            if (typeof data.formUniqueId === 'undefined') {
-                data.formUniqueId = this.tab.formUniqueId;
-            }
-            
-            if (this.tab.formUniqueId !== data.formUniqueId)
-                return;
+          if (this.tab.url !== data.url) {
+              return;
+          }
 
-            onSaveFinishCb = data.cb;
+          onSaveFinishCb = data.cb;
 
-            this.formsService.getFormContentBeforeSave(data.formUniqueId);
+          if (this.tab.url === data.url && (this.tab.editor === 'view'
+            || this.tab.editor === 'code')) {
+            this.saveFormSettings(onSaveFinishCb);
+          }
+          else {
+            this.formsService.getFormContentBeforeSave(data.url);
+          }
         });
 
         this.formsService.onFormContentBeforeSave$
           .subscribe((data:{id:any, content:any}) => {
-            if (this.tab.formUniqueId !== data.id)
+            
+            if (this.tab.url !== data.id)
                 return;
 
-            this.saveForm({
-                cb: onSaveFinishCb,
-                content: data.content
-            });
+            this.saveFormSettings(onSaveFinishCb);
         });
     }
 
@@ -100,22 +127,19 @@ export class FormSettingsComponent implements OnInit {
       ) !== -1);
     }
 
-    saveFormSettings(formData: FormData, formLayout: any, cb: any) {
-      // debugger;
-      this.formSaving = true;
-      let $formId: any = '';
-    
-      formData.set('form.widgets.form_layout', formLayout);
+    saveFormSettings(cb: any) {
+      const isViewURL = this.tab.editor === 'view';
+      this.log.startTimer('save_' + isViewURL ? 'view' : 'form' + '_hold');
+      let newUrl: string;
     
       const flatMapCallback = ((responseData: {html: string, url: string}) => {
-        // debugger;
-        if (responseData.html.indexOf('dl.error') > -1) {
+        if (responseData.html !== "<div id='ajax_success'/>") {
             return Observable.of(responseData.html);
         } else {
-            $formId = responseData.url.slice(responseData.url.lastIndexOf('/') + 1);
-            let newUrl = this.tab.url
+            const $formId = responseData.url.slice(responseData.url.lastIndexOf('/') + 1);
+            newUrl = this.tab.url
               .slice(0, this.tab.url.lastIndexOf('/') + 1) + $formId;
-            let oldUrl = this.tab.url;
+            const oldUrl = this.tab.url;
 
             if (newUrl && oldUrl && newUrl !== oldUrl) {
                 this.formsService.changeFormId({
@@ -123,7 +147,8 @@ export class FormSettingsComponent implements OnInit {
                     oldId: oldUrl
                 });
                 
-                this.tabsService.updateTabId(this.tab, $formId);
+                this.tabsManagerService.updateTabId(
+                  oldUrl.split('/').pop(), $formId);
                 this.changeDetector.markForCheck();
             }
 
@@ -133,39 +158,65 @@ export class FormSettingsComponent implements OnInit {
         }
       }).bind(this);
 
-      this.objService.updateFormSettings(this.tab.url, formData)
+
+      const process = isViewURL 
+        ? this.saveManager.createViewSaveProcess(this.tab.url) 
+        : this.saveManager.createFormSaveProcess(this.tab.url);
+      
+      this.loading = true;
+      
+      process.start()
         .flatMap((responseData: {html: string, url: string}) => 
           flatMapCallback(responseData))
+        .map((settingsHTML: string) => {
+          /** get data pattern and store it to window */
+          if (settingsHTML && settingsHTML.indexOf('data-pat-tinymce') !== -1) {
+            const data = settingsHTML
+              .match(/data-pat-tinymce="(.+?)"/)[1]
+              .replace(/&quot;/g, '"');
+            const formId = newUrl.split('/').pop();
+            this.formsService.newTinyMCEPatternData({ formId, data });
+          } else {
+            this.log.info('there is no any settingsHTML');
+          }
+          return settingsHTML;
+        })
         .map(this.parseTabs)
         .subscribe((responseHtml: string) => {
+          this.log.info('saveFormSettings');
+          this.log.extra('formsettings.component.ts');
+
+          this.formSettings = responseHtml;
+          this.updateMacroses();
+          this.loading = false;
+          this.log.stopTimer('save_' + isViewURL ? 'view' : 'form' + '_hold');
+          this.activeEditorService.turnActiveEditorToLoadingState(false);
+          this.changeDetector.markForCheck();
+          
+          window['materialPromise'].then(() => {
+            componentHandler.upgradeDom();
+
+            setTimeout(() => {
+              componentHandler.upgradeDom();
+
+              $('.form-settings-wrapper form').submit((submitEvent) => {
+                submitEvent.preventDefault();
+                this.submitForm();
+                return false;
+              });
+              
+              this.loading = false;
+              this.changeDetector.markForCheck();
+              this.changeDetector.detectChanges();
+            }, 400);
+          });
+
+          if (cb) {
+            cb();
+          }
 
           this.treeService.updateTree().then(() => {
-              this.formSaving = false;
-              this.formSettings = responseHtml;
-              this.updateMacroses();
-              this.changeDetector.markForCheck();
-              
-              window['materialPromise'].then(() => {
-                componentHandler.upgradeDom();
-    
-                setTimeout(() => {
-                  componentHandler.upgradeDom();
-                }, 400);
-              });
-
-              if (cb) {
-                cb();
-              }
-              else {
-                /* reinitialize tinymce */
-                Object.keys(tinymce.EditorManager.editors)
-                .forEach((key: string) => {
-                  if (isNaN(parseInt(key, 10))) {
-                    tinymce.EditorManager.execCommand('mceRemoveEditor', true, key);
-                    tinymce.EditorManager.execCommand('mceAddEditor', true, key);
-                  }
-                });
-              }
+            this.log.info('updateTree() figured out');
           });
         }, err => {
             console.error(err)
@@ -173,21 +224,22 @@ export class FormSettingsComponent implements OnInit {
     }
 
     submitForm() {
-        this.formsService.saveForm(this.tab.formUniqueId);
-        this.changeDetector.markForCheck();
+      this.formsService.saveForm(this.tab.url);
+      this.changeDetector.markForCheck();
+      this.saveManager.detectNewFormSave();
     }
 
     saveForm(data:{content:any,cb:any}) {
       this.log.info('saveForm CALLED!');
-        let $form: any = $(this.formElem.nativeElement);
-        let form: HTMLFormElement = $form.find('form').get(0);
-        let formData: any = new FormData(form);
+      // let $form: any = $(this.formElem.nativeElement);
+      // let form: HTMLFormElement = $form.find('form').get(0);
+      // let formData: any = new FormData(form);
 
-        // this.treeService.updateTree();
+      // this.treeService.updateTree();
 
-        formData.append('form.buttons.save', 'Save');
+      // formData.append('form.buttons.save', 'Save');
 
-        this.saveFormSettings(formData, data.content, data.cb);
+      this.saveFormSettings(data.cb);
     }
 
     cancelForm() {
@@ -195,31 +247,82 @@ export class FormSettingsComponent implements OnInit {
     }
 
     openFormCode(tab: any): void {
-        const eventData = {
-            formUniqueId: tab.formUniqueId,
-            editor: 'code',
-            label: tab.label,
-            path: [{ name: tab.label, type: 'Forms' }],
-            url: tab.url
-        };
-        this.log.info('this.tabsService.openTab #frs0001 with showAdd');
-        this.tabsService.openTab(eventData, true);
+      const eventData = {
+          formUniqueId: tab.formUniqueId,
+          editor: 'code',
+          label: tab.label,
+          path: [{ name: tab.label, type: 'Forms' }],
+          url: tab.url
+      };
+      this.log.info('this.tabsService.openTab #frs0001 with showAdd');
+      this.formFieldsSelection.selectField('none');
+      this.adapter.select(null);
+      this.tabsManagerService.openTab({
+        id: eventData.url.split('/').pop(),
+        url: eventData.url,
+        label: eventData.label,
+        editor: 'code',
+      });
     }
 
-    openFormPreview(formUrl: string): void {
-        window.open(`${formUrl}/OpenForm`);
+    openFormPreview(formUrl: string, tabType: string): void {
+      if (tabType === 'PlominoForm') {
+        
+        ((): Promise<any> => {
+          // const anyChanges = tinymce.get(formUrl).isDirty();
+          const anyChanges = this.saveManager.isEditorUnsaved(formUrl);
+
+          /* TODO: control sum to check the change is real */
+
+          if (anyChanges) {
+            /**
+             * warn the user of any unsaved changes
+             */
+            return this.elementService.awaitForConfirm(
+              'The Form has unsaved changes, do you want to show preview anyway?'
+            );
+          }
+
+          return Promise.resolve();
+        })()
+        .then(() => {
+            window.open(`${formUrl}/OpenForm`);
+          })
+        .catch(() => null);
+      }
+      else {
+        window.open(`${formUrl}/view`);
+      }
     }
 
     private deleteForm(tabData: PlominoTab) {
+      const tab = this.tab;
       this.elementService.awaitForConfirm()
       .then(() => {
+        const editor = tinymce.get(tabData.url.split('/').pop());
+        if (editor && editor.selection) {
+          editor.selection.collapse();
+        }
         this.elementService
           .deleteElement(tabData.url)
           .subscribe(() => {
-            this.tabsService.closeTab(this.tab);
+            this.tabsManagerService.closeTab({
+              id: tab.url.split('/').pop(),
+              url: tab.url,
+              editor: tab.editor,
+              label: tab.label
+            });
             this.tab = null;
             this.formSettings = '';
             this.formLayout = '';
+            /* remove all cache */
+            if (
+              this.activeEditorService.editorURL
+              && this.activeEditorService.editorURL === tabData.url
+            ) {
+              this.activeEditorService.editorURL = null;
+            }
+            this.labelsRegistry.removeForm(tabData.url);
             this.changeDetector.detectChanges();
             this.treeService.updateTree();
             this.changeDetector.markForCheck();
@@ -235,13 +338,22 @@ export class FormSettingsComponent implements OnInit {
             clearTimeout(this.macrosWidgetTimer);
           }
 
-          this.log.info('!! select2', $('.field-settings-wrapper .select2-choices').length);
-          
-          this.macrosWidgetTimer = setTimeout(() => { // for exclude bugs
+          this.macrosWidgetTimer = <any> setTimeout(() => { // for exclude bugs
             let $el = $('.form-settings-wrapper ' + 
             '#formfield-form-widgets-IHelpers-helpers > ul.plomino-macros');
             if ($el.length) {
-              this.zone.runOutsideAngular(() => { new MacroWidget($el); });
+              this.zone.runOutsideAngular(() => {
+                try {
+                  new MacroWidget($el);
+                }
+                catch (e) {
+                  setTimeout(() => {
+                    let $el = $('.form-settings-wrapper ' + 
+                      '#formfield-form-widgets-IHelpers-helpers > ul.plomino-macros');
+                    new MacroWidget($el);
+                  }, 100);
+                }
+              });
             }
           }, 200);
         });
@@ -299,38 +411,98 @@ export class FormSettingsComponent implements OnInit {
     }
 
     private getSettings() {
-      this.tabsService.getActiveTab()
-        .do((tab) => {
-          this.log.info('tab', tab);
-          this.log.extra('formsettings.component.ts getSettings -> do');
-          this.tab = tab;
+      this.log.warn('getSettings');
+      this.log.extra('formsettings.component.ts');
+      this.tabsManagerService.getActiveTab()
+        .map((tabUnit) => {
+
+          const tab = tabUnit ? {
+            label: tabUnit.label || tabUnit.id,
+            url: tabUnit.url,
+            editor: tabUnit.editor
+          } : null;
+
+          if (!(this.tab && tab && !tab.url)) {
+            this.tab = tab;
+            this.log.info('formsettings -> set tab allowed to', tab);
+          }
+          else {
+            this.log.info('formsettings -> set tab prohibited to', tab);
+          }
+
+          return tab;
         })
-        .flatMap((tab: any) => {
-          this.log.info('tab', tab, tab && tab.url ? tab.url : null);
-          this.log.extra('formsettings.component.ts getSettings -> flatMap');
+        .flatMap((tab) => {
+          // this.log.info('tab', tab, tab && tab.url ? tab.url : null);
+          // this.log.extra('formsettings.component.ts getSettings -> flatMap');
           
-          if (tab && tab.url) {
+          if (tab && tab.editor === 'code') {
+            this.formSettings = '';
+            try {
+              this.changeDetector.markForCheck();
+              this.changeDetector.detectChanges();
+            }
+            catch (e) {
+              
+            }
+            return Observable.of('');
+          }
+          else if (tab && tab.url) {
             this.formSettings = 
               `<p><div class="mdl-spinner mdl-js-spinner is-active"></div></p>`;
             componentHandler.upgradeDom();
 
             return this.objService
               .getFormSettings(tab.url)
+              .map((settingsHTML: string) => {
+                /** get data pattern and store it to window */
+                if (settingsHTML && settingsHTML.indexOf('data-pat-tinymce') !== -1) {
+                  const data = settingsHTML
+                    .match(/data-pat-tinymce="(.+?)"/)[1]
+                    .replace(/&quot;/g, '"');
+                  if (this.tab === null) {
+                    this.tab = tab;
+                  }
+                  const formId = this.tab.url.split('/').pop();
+                  this.formsService.newTinyMCEPatternData({ formId, data });
+                } else {
+                  this.log.info('there is no any settingsHTML');
+                }
+                return settingsHTML;
+              })
               .map(this.parseTabs);
           } else {
             return Observable.of('');
           }
         })
         .subscribe((template) => {
+          if (this.tab && template.indexOf(`action="${ this.tab.url }/@@edit"`) === -1) {
+            return;
+          }
+
           this.formSettings = template;
 
           this.updateMacroses();
-          this.changeDetector.markForCheck();
+          this.loading = false;
+          try {
+            this.changeDetector.markForCheck();
+            this.changeDetector.detectChanges();
+          }
+          catch (e) {
+            
+          }
           window['materialPromise'].then(() => {
             componentHandler.upgradeDom();
+            this.paletteManager.resizeInnerScrollingContainers();
 
             setTimeout(() => {
               componentHandler.upgradeDom();
+
+              $('.form-settings-wrapper form').submit((submitEvent) => {
+                submitEvent.preventDefault();
+                this.submitForm();
+                return false;
+              });
             }, 400);
           });
         });

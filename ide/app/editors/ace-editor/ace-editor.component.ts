@@ -1,7 +1,9 @@
-import {Component, OnInit, AfterViewInit, Input, Output, EventEmitter} from '@angular/core';
-import {PopoverComponent} from '../popover';
-import {ElementService} from '../../services';
-import {DROPDOWN_DIRECTIVES} from 'ng2-bootstrap/ng2-bootstrap';
+import { PlominoTabsManagerService } from './../../services/tabs-manager/index';
+import { Component, OnInit, AfterViewInit, 
+  Input, Output, EventEmitter } from '@angular/core';
+import { PopoverComponent } from '../popover';
+import { ElementService, TabsService, PlominoDBService } from '../../services';
+import { DROPDOWN_DIRECTIVES } from 'ng2-bootstrap/ng2-bootstrap';
 
 declare var ace: any;
 
@@ -46,10 +48,34 @@ export class ACEEditorComponent {
     editor: any;
     id: string;
 
-    constructor(private _elementService: ElementService) { }
+    constructor(
+      private _elementService: ElementService,
+      private tabsManagerService: PlominoTabsManagerService,
+      private dbService: PlominoDBService,
+    ) {
+      this.tabsManagerService.onRefreshCodeTab$
+        .subscribe((fieldURL: string) => {
+          if (this.url === fieldURL) {
+            this.ngOnInit();
+            this.ngAfterViewInit();
+            this.tabsManagerService.setActiveTabDirty(false);
+          }
+        });
+    }
+
+    private generateHash(str: string): number {
+      var hash = 0, i, chr;
+      if (str.length === 0) return hash;
+      for (i = 0; i < str.length; i++) {
+        chr   = str.charCodeAt(i);
+        hash  = ((hash << 5) - hash) + chr;
+        hash |= 0; // Convert to 32bit integer
+      }
+      return hash;
+    }
 
     ngOnInit() {
-        this.id = 'editor' + this.aceNumber;
+        this.id = 'editor' + this.generateHash(this.url);
         this._elementService.getElement(this.url).subscribe((data) => {
             this.type = data['@type'];
             this.fullType = data.parent['@type']
@@ -57,22 +83,28 @@ export class ACEEditorComponent {
                 .replace('Database', '') + this.type.replace('Plomino', '');
             this.name = this.url.replace(window.location.href
                 .replace("++resource++Products.CMFPlomino/ide/index.html",""), "");
-            this._elementService.getElementCode("../../code?" + this.fullType + "=" + this.name)
-                .subscribe((code: string) => {
-                    let parsed = JSON.parse(code);
-                    this.editor.setValue(parsed.code, -1);
-                    this.methodList = parsed.methods;
-                    this.editor.getSession().on('change', () => {
-                        this.isDirty.emit(true);
-                    });
-                    this.addMethodInfos();
-                    this.editor.getSession().setUndoManager(new ace.UndoManager());
+
+            const dbLink = this.dbService.getDBLink();
+            this.name = this.name.replace(dbLink + '/', '')
+              .replace(window.location.protocol + '//' + window.location.host, '');
+                
+            this._elementService
+              .getElementCode(`${ dbLink }/code?${ this.fullType }=${ this.name }`)
+              .subscribe((code: string) => {
+                let parsed = JSON.parse(code);
+                this.editor.setValue(parsed.code, -1);
+                this.methodList = parsed.methods;
+                this.editor.getSession().on('change', () => {
+                    this.isDirty.emit(true);
                 });
+                this.addMethodInfos();
+                this.editor.getSession().setUndoManager(new ace.UndoManager());
+              });
         })
     }
 
     ngAfterViewInit() {
-        this.editor = ace.edit(this.id);
+        this.editor = ace.edit('editor' + this.generateHash(this.url));
         this.editor.setTheme("ace/theme/xcode");
         this.editor.getSession().setMode("ace/mode/python");
         this.editor.setOptions({

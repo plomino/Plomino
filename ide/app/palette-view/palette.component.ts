@@ -1,4 +1,6 @@
-import { PlominoWorkflowNodeSettingsComponent } from './workflow-node-settings/index';
+import { URLManagerService } from './../services/url-manager.service';
+import { PlominoDBService } from './../services/db.service';
+import { PlominoTabsManagerService } from './../services/tabs-manager/index';
 import { LogService } from './../services/log.service';
 import { 
     Component, 
@@ -30,6 +32,7 @@ import {
     ElementService,
     TabsService,
     TemplatesService,
+    PlominoFormFieldsSelectionService,
 } from '../services';
 
 import {FormsService} from "../services/forms.service";
@@ -52,7 +55,7 @@ import {FormsService} from "../services/forms.service";
     providers: [ElementService]
 })
 export class PaletteComponent implements OnInit {
-    selectedTab: PlominoTab = null;    
+    selectedTab: any = null;    
     selectedField: any = null;
     workflowMode: boolean = false;
 
@@ -60,17 +63,27 @@ export class PaletteComponent implements OnInit {
         { title: 'Add', id: 'add', active: true },
         { title: 'Field Settings', id: 'item' },
         { title: 'Form Settings', id: 'group' },
+<<<<<<< HEAD
         { title: 'DB Settings', id: 'db' },
         { title: 'Workflow Node', id: 'wfnode', hidden: true },
+=======
+        { title: 'Service', id: 'db' },
+>>>>>>> upstream/advanced_ide
     ];
 
     constructor(private changeDetector: ChangeDetectorRef,
                 private tabsService: TabsService,
+                private dbService: PlominoDBService,
+                private tabsManagerService: PlominoTabsManagerService,
+                private formFieldsSelection: PlominoFormFieldsSelectionService,
                 private formsService: FormsService,
                 private log: LogService,
-                private templatesService: TemplatesService) { }
+                private templatesService: TemplatesService,
+                private urlManager: URLManagerService,
+              ) { }
 
     ngOnInit() {
+<<<<<<< HEAD
       this.tabsService.workflowModeChanged$
       .subscribe((value: boolean) => {
         if (this.workflowMode !== value) {
@@ -85,25 +98,67 @@ export class PaletteComponent implements OnInit {
       });
 
         this.tabsService.getActiveTab().subscribe((activeTab) => {
+=======
+        this.tabsManagerService.getActiveTab()
+        .subscribe((tabUnit) => {
+
+          const dbURL = this.dbService.getDBLink();
+          const tabElementPath = tabUnit ? tabUnit.url.replace(dbURL, '') : '';
+
+          const activeTab = tabUnit ? {
+            label: tabUnit.label || tabUnit.id,
+            url: tabUnit.url,
+            editor: tabUnit.editor,
+            isField: tabElementPath.split('/').length === 3
+          } : null;
+
+>>>>>>> upstream/advanced_ide
           this.log.info('activeTab', activeTab);
           this.log.extra('palette.component.ts ngOnInit');
+
+          if (activeTab) {
+            this.tabs = this.updateTabs(true, this.tabs, activeTab.editor);
+          }
           
           if (activeTab && this.selectedTab 
-            && activeTab.formUniqueId !== this.selectedTab.formUniqueId) {
+            && activeTab.url !== this.selectedTab.url) {
             this.selectedTab = activeTab;
             
             this.formsService.changePaletteTab(0);
             $('.drop-zone').remove();
+<<<<<<< HEAD
+=======
+
+            // don't track tiny-mce tab change event
+            // remove when be sure
+            // if (activeTab) {
+            //     this.tabs = this.updateTabs(activeTab.showAdd, this.tabs, activeTab.type);
+            // }
+>>>>>>> upstream/advanced_ide
             this.changeDetector.markForCheck();
+          }
+
+          if (activeTab && activeTab.editor === 'code') {
+            this.formsService.changePaletteTab(activeTab.isField ? 1 : 2);
+            this.changeDetector.markForCheck();
+          }
+          else {
+            this.formsService.changePaletteTab(0);
+            try {
+              $('a[href="#palette-tab-0-panel"]')
+                .get(0).dispatchEvent(new Event('click'));
+              this.changeDetector.markForCheck();
+              this.changeDetector.detectChanges();
+            } catch (e) {}
           }
         });
 
-        this.tabsService.getActiveField().subscribe((activeField) => {
+        this.formFieldsSelection.getActiveField().subscribe((activeField) => {
             this.selectedField = activeField;
             // console.warn('ACTIVE', activeField);
             if (activeField) {
                 this.updateTabs(false, this.tabs, 
-                this.selectedTab && this.selectedTab.type, activeField.type);
+                this.selectedTab && this.selectedTab.editor, activeField.type);
             }
             this.changeDetector.markForCheck();
         });
@@ -139,8 +194,8 @@ export class PaletteComponent implements OnInit {
       $containers0.css('height', `${ height }px`);
     }
 
-    setActiveTab(tabIndex: number):void {
-        this.formsService.changePaletteTab(tabIndex);
+    setActiveTab(ev: MouseEvent, tabIndex: number) {
+      this.formsService.changePaletteTab(tabIndex);
     };
 
     private updateTabs(showAddTab: boolean, tabs: any[], activeTabType: string, activeFieldType?: string): any[] {
@@ -148,9 +203,17 @@ export class PaletteComponent implements OnInit {
         let group = _.find(clonnedTabs, { id: 'group' });
         let field = _.find(clonnedTabs, { id: 'item' });
 
-        // console.warn('activeTabType', activeTabType, 'activeFieldType', activeFieldType);
-        group.title = !activeTabType || activeTabType === 'PlominoForm' 
-          ? 'Form Settings' : 'View Settings';
+        if (!activeTabType && group.title === 'View Settings' 
+          && (activeFieldType === 'PlominoColumn'
+          || activeFieldType === 'PlominoAction')
+        ) {
+          group.title = 'View Settings';
+        }
+        else {
+          group.title = !activeTabType || activeTabType === 'layout'
+             || activeTabType === 'code' 
+            ? 'Form Settings' : 'View Settings';
+        }
 
         if (activeFieldType) {
           let title: string;
@@ -186,6 +249,7 @@ export class PaletteComponent implements OnInit {
                 clonnedTabs[0].active = true;
             }
         }
+
         return clonnedTabs;
     }
 }

@@ -1,5 +1,9 @@
+import { PlominoTabsManagerService } from './../../services/tabs-manager/index';
+import { PlominoDBService } from './../../services/db.service';
+import { Subscription, Observable, Subject } from 'rxjs/Rx';
+import { PlominoActiveEditorService } from './../../services/active-editor.service';
+import { PlominoViewsAPIService } from './../../editors/view-editor/views-api.service';
 import { PlominoBlockPreloaderComponent } from './../../utility/block-preloader';
-import { Observable } from 'rxjs/Rx';
 import {
   LabelsRegistryService
 } from './../../editors/tiny-mce/services/labels-registry.service';
@@ -28,22 +32,33 @@ import {
     WidgetService
 } from '../../services';
 
+interface TemplateClickEvent {
+  eventData: MouseEvent;
+  target: any;
+  templateId: string;
+}
+
 @Component({
     selector: 'plomino-palette-add',
     template: require('./add.component.html'),
     styles: [require('./add.component.css')],
     directives: [DND_DIRECTIVES, PlominoBlockPreloaderComponent],
-    providers: [ElementService],
+    providers: [ElementService, PlominoViewsAPIService],
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 
 export class AddComponent implements OnInit, AfterViewInit {
-    activeTab: PlominoTab;
+    activeTab: any;
     templates: PlominoFormGroupTemplate[] = [];
     addableComponents: Array<any> = [];
     workflowComponents: Array<any> = [];
     mouseDownTemplateId: string;
     mouseDownTime: number;
+
+    private tClickSubject: Subject<TemplateClickEvent> = new Subject<TemplateClickEvent>();
+    public tClickFlow$: Observable<TemplateClickEvent> = this.tClickSubject.asObservable();
+    private aClickSubject: Subject<string> = new Subject<string>();
+    public aClickFlow$: Observable<string> = this.aClickSubject.asObservable();
 
     /**
      * display block preloader
@@ -55,15 +70,24 @@ export class AddComponent implements OnInit, AfterViewInit {
     constructor(private elementService: ElementService,
                 private treeService: TreeService,
                 private tabsService: TabsService,
+                private tabsManagerService: PlominoTabsManagerService,
                 private log: LogService,
+                private dbService: PlominoDBService,
+                private viewsAPIService: PlominoViewsAPIService,
                 private labelsRegistry: LabelsRegistryService,
                 private fieldsService: FieldsService,
                 private draggingService: DraggingService,
                 private elementRef: ElementRef,
+                private activeEditorService: PlominoActiveEditorService,
                 private changeDetector: ChangeDetectorRef,
                 private templatesService: TemplatesService,
                 private widgetService: WidgetService) { 
-
+      this.tClickFlow$.debounceTime(200).subscribe((t: TemplateClickEvent) => {
+        this.addTemplate(t.eventData, t.target, t.templateId);
+      });
+      this.aClickFlow$.debounceTime(200).subscribe((x: string) => {
+        this.add(x, true);
+      });
     }
 
     ngAfterViewInit() {
@@ -121,18 +145,30 @@ export class AddComponent implements OnInit, AfterViewInit {
                 ],
                 hidden: (tab: any) => {
                     if (!tab) return true;
-                    return tab.type !== 'PlominoForm';
+                    return tab.editor !== 'layout';
                 }
             },
             {
                 title: 'View', 
                 components: [
-                    { title: 'Column', icon: 'stats', type: 'column', addable: true },
-                    { title: 'Action', icon: 'cog', type: 'action', addable: true },
+                    { 
+                      title: 'Column', 
+                      icon: 'stats', 
+                      type: 'column', 
+                      addable: true, 
+                      dragData: { type: 'column' } 
+                    },
+                    { 
+                      title: 'Action', 
+                      icon: 'cog', 
+                      type: 'action', 
+                      addable: true, 
+                      dragData: { type: 'action' } 
+                    },
                 ],
                 hidden: (tab: any) => {
                     if (!tab) return true;
-                    return tab.type === 'PlominoForm';
+                    return tab.editor === 'layout';
                 }
             },
             {
@@ -148,8 +184,29 @@ export class AddComponent implements OnInit, AfterViewInit {
 
         ];
 
-        this.tabsService.getActiveTab()
-        .subscribe((tab) => {
+
+        this.tabsManagerService
+          .getAfterUpdateIdOfTab()
+          .subscribe((updateData) => {
+            if (this.activeTab && this.activeTab.url 
+              && this.activeTab.url.split('/').pop() === updateData.prevId
+            ) {
+              const split = this.activeTab.url.split('/');
+              split[split.length - 1] = updateData.nextId;
+              this.activeTab.url = split.join('/');
+            }
+          });
+
+        // this.tabsService.getActiveTab()
+        // .subscribe((tab) => {
+        this.tabsManagerService.getActiveTab()
+        .subscribe((tabUnit) => {
+
+          const tab = tabUnit ? {
+            label: tabUnit.label || tabUnit.id,
+            url: tabUnit.url,
+            editor: tabUnit.editor
+          } : null;
 
           this.log.info('tab', tab);
           this.log.extra('add.component.ts this.tabsService.getActiveTab()');
@@ -160,7 +217,12 @@ export class AddComponent implements OnInit, AfterViewInit {
           this.changeDetector.markForCheck();
           this.changeDetector.detectChanges();
 
-          if (tab && tab.url) {
+          if (tab && tab.editor !== 'layout') {
+            this.loading = false;
+            this.changeDetector.markForCheck();
+            this.changeDetector.detectChanges();
+          }
+          else if (tab && tab.url) {
             this.log.info('tab && tab.url', tab, tab.url);
             this.templatesService.getTemplates(tab.url)
             .subscribe((templates: PlominoFormGroupTemplate[]) => {
@@ -173,7 +235,7 @@ export class AddComponent implements OnInit, AfterViewInit {
                   url: `${tab.url.slice(0, tab.url.lastIndexOf('/'))}/${template.id}`,
                   hidewhen: (tab: any) => {
                     if (!tab) return true;
-                    return tab.type !== 'PlominoForm';        
+                    return tab.editor !== 'layout';        
                   }
                 })
               });
@@ -194,7 +256,14 @@ export class AddComponent implements OnInit, AfterViewInit {
 
               this.draggingService.subformDragEvent$
               .subscribe((mouseEvent) => {
+                $('#drag-data-cursor').remove();
                 this.simulateDrag(mouseEvent, 'PlominoSubform');
+              });
+
+              this.draggingService.treeFieldDragEvent$
+              .subscribe((e: { mouseEvent: MouseEvent, fieldType: string }) => {
+                $('#drag-data-cursor').remove();
+                this.simulateDrag(e.mouseEvent, e.fieldType);
               });
 
               this.loading = false;
@@ -209,25 +278,7 @@ export class AddComponent implements OnInit, AfterViewInit {
         });
     }
 
-    // When a Form or View is selected, adjust the addable state of the
-    // relevant buttons. How do we do this? Do we need a service that stores
-    // the currently selected object?
-
-    // XXX: temp. For toggling state of Form/View buttons until hooked up to
-    // event that handles currently selected item in main view
-    // toggle(type: string) {
-    //     if (type == 'form') {
-    //         for (let component of this.addableComponents[0]['components']) {
-    //             component.addable = !component.addable;
-    //         }
-    //     } else if (type == 'view') {
-    //         for (let component of this.addableComponents[1]['components']) {
-    //             component.addable = !component.addable;
-    //         }
-    //     }
-    // }
-
-    add(type: string, target?: HTMLElement, treeSubform?: boolean) {
+    add(type: string, target?: HTMLElement|true, treeSubform?: boolean) {
       const clickTime = (new Date).getTime();
 
       //todo: detect click
@@ -253,47 +304,63 @@ export class AddComponent implements OnInit, AfterViewInit {
       // something that the main app/tree subscribes to so it refreshes automatically?
       let randomId: number = Math.round((Math.random() * 999 - 0));
       let field: InsertFieldEvent;
+
+      const existingId = this.draggingService
+        .currentDraggingData ? this.draggingService
+        .currentDraggingData.existingElementId || null : null;
+
       switch (type) {
           case 'PlominoForm':
               let formElement: InsertFieldEvent = {
                   '@type': 'PlominoForm',
                   'title': 'New Form'
               };
-              this.elementService.postElement(this.getDBOptionsLink(''), formElement)
+              this.log.startTimer('create_new_form_hold');
+              this.elementService.postElement(
+                this.getDBOptionsLink(''), formElement)
               .subscribe((response: AddFieldResponse) => {
                 this.treeService.updateTree().then(() => {
                   this.log.info('this.tabsService.openTab #a001');
-                  this.tabsService.openTab({
-                    formUniqueId: response.formUniqueId,
+                  // this.treeService.latestId++;
+                  this.tabsManagerService.openTab({
+                    // formUniqueId: undefined,
                     editor: 'layout',
                     label: response.title,
-                    url: response['@id'] + response.id,
-                    path: [{
-                        name: response.title,
-                        type: 'Forms'
-                    }]
+                    url: response.parent['@id'] + '/' + response.id,
+                    id: response.id,
+                    // path: [{
+                    //     name: response.title,
+                    //     type: 'Forms'
+                    // }]
                   });
+                  this.log.stopTimer('create_new_form_hold');
                 });
               });
               break;
           case 'PlominoView':
+            this.log.startTimer('create_new_view_hold');
               let viewElement: InsertFieldEvent = {
                 '@type': 'PlominoView',
                 'title': 'New View'
               };
-              this.elementService.postElement(this.getDBOptionsLink(''), viewElement)
+              this.elementService.postElement(
+                this.getDBOptionsLink(''), viewElement)
               .subscribe((response: AddFieldResponse) => {
+                this.log.info('this.tabsService.openTab #a002');
+                
                 this.treeService.updateTree().then(() => {
-                  this.log.info('this.tabsService.openTab #a002');
-                  this.tabsService.openTab({
-                    editor: 'code',
+                  this.tabsManagerService.openTab({
+                    editor: 'view',
                     label: response.title,
-                    url: response['@id'] + response.id,
-                    path: [{
-                        name: response.title,
-                        type: 'Views'
-                    }]
+                    url: response.parent['@id'] + '/' + response.id,
+                    id: response.id,
+                    // path: [{
+                    //     name: response.title,
+                    //     type: 'Views'
+                    // }]
                   });
+
+                  this.log.stopTimer('create_new_view_hold');
                 });
               });
               // Get the ID of the new element back in the response.
@@ -301,6 +368,7 @@ export class AddComponent implements OnInit, AfterViewInit {
               // Open the View in the editor
               break;
           case 'PlominoLabel':
+            this.log.startTimer('create_new_label_hold');
               let field: InsertFieldEvent = {
                 '@type': 'PlominoLabel',
                 title: 'defaultLabel',
@@ -308,8 +376,11 @@ export class AddComponent implements OnInit, AfterViewInit {
                 target
               };
               this.fieldsService.insertField(field);
+              this.log.stopTimer('create_new_label_hold');
               break;
           case 'PlominoField':
+            if (!existingId) {
+              this.log.startTimer('create_new_field_hold');
               field = {
                   title: 'defaultField',
                   '@type': 'PlominoField',
@@ -325,12 +396,22 @@ export class AddComponent implements OnInit, AfterViewInit {
                   `${ this.activeTab.url }/${ response.created }`, field.title, 'title'
                 );
 
-                this.treeService.updateTree()
-                .then(() => {
-                  this.fieldsService.insertField(extendedField);
-                });
-              })
-              break;
+                this.fieldsService.insertField(extendedField);
+                this.log.stopTimer('create_new_field_hold');
+
+                this.treeService.updateTree().then(() => {});
+              });
+            }
+            else {
+              let url = `${this.activeTab.url}/${existingId}`;
+              this.fieldsService.insertField({
+                title: this.labelsRegistry.get(url),
+                '@type': 'PlominoField',
+                name: url,
+                target
+              });
+            }
+            break;
           case 'PlominoPagebreak':
               field = {
                 name: `${this.activeTab.url}/defaultPagebreak`,
@@ -349,7 +430,8 @@ export class AddComponent implements OnInit, AfterViewInit {
 
             const getSubformLayout$ = (this.mouseDownTemplateId) 
               ? this.widgetService.getGroupLayout(
-                  tinymce.activeEditor.id,
+                  `${ this.dbService.getDBLink() }/${ 
+                    this.activeEditorService.getActive().id }`,
                   {
                     id: this.mouseDownTemplateId,
                     layout: $(this.draggingService.currentDraggingTemplateCode).html()
@@ -387,6 +469,7 @@ export class AddComponent implements OnInit, AfterViewInit {
             });
             break;
           case 'PlominoHidewhen':
+            if (!existingId) {
               field = {
                   title: 'defaultHidewhen',
                   '@type': 'PlominoHidewhen',
@@ -402,14 +485,24 @@ export class AddComponent implements OnInit, AfterViewInit {
                   target
                 });
 
-                this.treeService.updateTree()
-                .then(() => {
-                  this.log.info('extendedField', extendedField);
-                  this.fieldsService.insertField(extendedField);
-                });
+                this.log.info('extendedField', extendedField);
+                this.fieldsService.insertField(extendedField);
+
+                this.treeService.updateTree().then(() => {});
               });
-              break;
+            }
+            else {
+              let url = `${this.activeTab.url}/${existingId}`;
+              this.fieldsService.insertField({
+                title: this.labelsRegistry.get(url),
+                '@type': 'PlominoHidewhen',
+                name: url,
+                target
+              });
+            }
+            break;
           case 'PlominoAction':
+            if (!existingId) {
               field = {
                   title: 'defaultAction',
                   action_type: 'OPENFORM',
@@ -421,23 +514,69 @@ export class AddComponent implements OnInit, AfterViewInit {
                 let extendedField = Object.assign({}, field, {
                     name: response['@id']
                 });
-                this.treeService.updateTree()
-                  .then(() => {
-                      this.fieldsService.insertField(extendedField);
-                  });
+                this.fieldsService.insertField(extendedField);
+                this.treeService.updateTree().then(() => {});
                 })
-              break;
+            }
+            else {
+              let url = `${this.activeTab.url}/${existingId}`;
+              this.fieldsService.insertField({
+                title: this.labelsRegistry.get(url),
+                '@type': 'PlominoAction',
+                name: url,
+                target
+              });
+            }
+            break;
           case 'column':
-              // Add the action to the view. Update the tree etc.
-              console.log('Adding a column');
+              this.fieldsService.viewColumnInserted.next(this.activeTab.url);
+              break;
+          case 'action':
+              field = {
+                  title: 'default-action',
+                  action_type: 'OPENFORM',
+                  '@type': 'PlominoAction',
+              }
+              this.viewsAPIService.addNewAction(this.activeTab.url)
+              .subscribe((response: AddFieldResponse) => {
+                this.fieldsService.viewActionInserted.next(this.activeTab.url);
+                let extendedField = Object.assign({}, field, {
+                    name: response['@id']
+                });
+                 
+                const url = this.activeTab.url;
+                const newAction = `<input class="context mdl-button
+                  mdl-js-button mdl-button--primary mdl-button--raised"
+                  type="button" id="${ response.id }" name="${ response.id }"
+                  value="${ response.title }">`;
+                $(`[data-url="${ url }"] .actionButtons`)
+                  .append(newAction);
+
+                componentHandler.upgradeDom();
+                $(`[data-url="${ url }"] .actionButtons #${ response.id }`).click();
+
+                this.fieldsService.insertField(extendedField);
+                this.treeService.updateTree().then(() => {});
+              })
               break;
           default:
               console.log(type + ' not handled yet')
       }
     }
 
+    runAddTemplate(eventData: MouseEvent, target: any, templateId: string) {
+      this.activeEditorService.turnActiveEditorToLoadingState();
+      this.tClickSubject.next({eventData, target, templateId});
+    }
+
+    runAdd(comp: string) {
+      this.activeEditorService.turnActiveEditorToLoadingState();
+      this.aClickSubject.next(comp);
+    }
 
     addTemplate(eventData: MouseEvent, target: any, templateId: string) {
+
+      this.log.startTimer('create_new_template_hold');
 
       const a = $(eventData.currentTarget).data('templateId');
       const b = templateId;
@@ -455,21 +594,24 @@ export class AddComponent implements OnInit, AfterViewInit {
       }
       
       this.templatesService.addTemplate(this.activeTab.url, templateId)
-      .subscribe((response: PlominoFormGroupTemplate) => {
-        response = this.templatesService.fixCustomTemplate(response);
-        this.widgetService.getGroupLayout(this.activeTab.url, response)
-        .subscribe((layout: string) => {
-          layout = this.templatesService.fixBuildedTemplate(layout);
-          this.treeService.updateTree().then(() => {
+        .subscribe((response: PlominoFormGroupTemplate) => {
+          response = this.templatesService.fixCustomTemplate(response);
+          this.widgetService.getGroupLayout(this.activeTab.url, response)
+          .subscribe((layout: string) => {
+            layout = this.templatesService.fixBuildedTemplate(layout);
+  
             this.templatesService.insertTemplate(
               <InsertTemplateEvent> Object.assign({}, response, {
               parent: this.activeTab.url,
               target: target,
               group: layout
             }));
-          });
-        });    
-      });
+  
+            this.log.stopTimer('create_new_template_hold');
+            this.activeEditorService.turnActiveEditorToLoadingState(false);
+            this.treeService.updateTree().then(() => {});
+          });    
+        });
     }
 
     simulateDrag(eventData: MouseEvent, type: any, template?: PlominoFormGroupTemplate) {
@@ -487,7 +629,10 @@ export class AddComponent implements OnInit, AfterViewInit {
     }
 
     // Refactor this code, put switch into separated fn
-    startDrag(eventData: MouseEvent, type: any, template?: PlominoFormGroupTemplate) {
+    startDrag(
+      eventData: MouseEvent, type: any, 
+      template?: PlominoFormGroupTemplate
+    ) {
         const draggingData: PlominoDraggingData = {
           '@type': type === 'template' ? 'PlominoTemplate' : type,
           resolver: () => {},
@@ -508,14 +653,22 @@ export class AddComponent implements OnInit, AfterViewInit {
 
         let treeSubform = false;
         if (!template && eventData.target) {
-          const $target = (<HTMLElement> eventData.target).classList
-            .contains('tree-node--name') 
+          const eventTarget = <HTMLElement> eventData.target;
+          const $target = eventTarget.classList.contains('tree-node--name') 
               ? $(eventData.target) 
               : $(eventData.target).find('.tree-node--name');
-          const text = $target.text().trim();
+          let text = $target.text().trim();
           if (text) {
             this.mouseDownTemplateId = text;
             treeSubform = true;
+          }
+          else if (eventTarget.classList.contains('tree-node__child--name')) {
+            text = $target.prevObject.text().trim();
+            if (text) {
+              this.mouseDownTemplateId = text;
+              draggingData.existingElementId = text;
+              treeSubform = true;
+            }
           }
         }
 
@@ -532,8 +685,11 @@ export class AddComponent implements OnInit, AfterViewInit {
         }
 
         this.draggingService.currentDraggingData = draggingData;
-        
         this.draggingService.setDragging(draggingData);
+
+        if (draggingData['@type'] && !draggingData.existingElementId) {
+          this.draggingService.followDNDType(draggingData['@type']);
+        }
     }
 
     endDrag(): void {

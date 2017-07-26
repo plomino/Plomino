@@ -1,10 +1,16 @@
 from AccessControl import Unauthorized
 from jsonutil import jsonutil as json
+from plone.behavior.interfaces import IBehaviorAssignable
+from plone.dexterity.interfaces import IDexterityFTI
+from zope import component
+from zope.schema import getFieldsInOrder
+from Products.CMFPlomino.utils import PlominoTranslate
 import re
 from Products.Five import BrowserView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from zope.interface import alsoProvides
 import plone.protect.interfaces
+from zope.lifecycleevent import modified
 
 from ..config import READ_PERMISSION
 
@@ -57,9 +63,10 @@ class DatabaseView(BrowserView):
                 return json.dumps({"code" : element.content, "methods" : []})
 
             if type == "FormHidewhen":
+                #TODO: Not sure this is a good idea. Bad UX to be inconsistent
                 return json.dumps({"code" : element.formula, "methods" : []})
 
-            methods = self.getMethods(type)
+            methods = self.getMethods(element=element)
             code = ""
 
             for method in self.getMethodsId(type):
@@ -95,7 +102,8 @@ class DatabaseView(BrowserView):
                     "type": "OK"
                 })
 
-            methodList = self.getMethodsId(type)
+            element = self.getElementByType(type,id)
+            methodList = self.getMethodsId(element=element)
 
             content = ""
             contents = []
@@ -146,13 +154,15 @@ class DatabaseView(BrowserView):
                         "line": lineNumber+1
                     })
 
-            element = self.getElementByType(type,id)
 
             for formula in methodList:
-                setattr(element,formula,'')
+                setattr(element,formula,u'')
 
             for formula in contents:
                 setattr(element,formula['name'],formula['code'].rstrip())
+
+            # have to ensure pythons scripts get cleared
+            modified(element)
 
             return json.dumps({
                 "type": "OK"
@@ -191,117 +201,45 @@ class DatabaseView(BrowserView):
         return
 
 
-    def getMethodsId(self,type):
+    def getMethodsId(self,type=None, element=None):
         methodList = []
-        for method in self.getMethods(type):
+        for method in self.getMethods(type=type,element=element):
             methodList.append(method['id'])
         return methodList
 
-    def getMethods(self,type):
-        return {
-            'Form': [{
-                "id": "document_title",
-                "name": "Document title formula",
-                "desc": "Compute the document title"
-            },{
-                "id": "document_id",
-                "name": "Document id formula",
-                "desc": "Compute the document id at creation."
-            },{
-                "id": "search_formula",
-                "name": "Search formula",
-                "desc": "Leave blank to use default ZCatalog search"
-            },{
-                "id": "onCreateDocument",
-                "name": "On create document",
-                "desc": "Action to take when the document is created"
-            },{
-                "id": "onOpenDocument",
-                "name": "On open document",
-                "desc": "Action to take when the document is opened"
-            },{
-                "id": "beforeSaveDocument",
-                "name": "Before save document",
-                "desc": "Action to take before submitted values are saved into the document (submitted values are in context.REQUEST)"
-            },{
-                "id": "onSaveDocument",
-                "name": "On save document",
-                "desc": "Action to take when saving the document"
-            },{
-                "id": "onDeleteDocument",
-                "name": "On delete document",
-                "desc": "Action to take before deleting the document"
-            },{
-                "id": "onSearch",
-                "name": "On submission of search form",
-                "desc": "Action to take when submitting a search"
-            },{
-                "id": "beforeCreateDocument",
-                "name": "Before document creation",
-                "desc": "Action to take when opening a blank form"
-            }],
-            'FormField': [{
-                "id": "formula",
-                "name": "Formula",
-                "desc": "How to calculate field content"
-            },{
-                "id": "validation_formula",
-                "name": "Validation formula",
-                "desc": "Evaluate the input validation"
-            },{
-                "id": "html_attributes_formula",
-                "name": "HTML attributes formula",
-                "desc": "Inject DOM attributes in the field tag"
-            },{
-                "id": "selectionlistformula",
-                "name": "Selection List Formula",
-                "desc": "Formula to compute the selection list elements"
-            },{
-                "id": "documentslistformula",
-                "name": "Documents list formula",
-                "desc": "Formula to compute the linkable documents list (must return a list of 'label|docid_or_path')"
-            },{
-                "id": "jssettings",
-                "name": "Javascript settings",
-                "desc": "Google Vizualization code"
-            }],
-            'FormAction': [{
-                "id": "content",
-                "name": "Parameter or code",
-                "desc": "Code or parameter depending on the action type"
-            },{
-                "id": "hidewhen",
-                "name": "Hide when",
-                "desc": "Action is hidden if formula returns True"
-            }],
-            'View': [{
-                "id": "selection_formula",
-                "name": "Selection formula",
-                "desc": "The view selection formula is a line of Python code which should return True or False. The formula will be evaluated for each document in the database to decide if the document must be displayed in the view or not. 'plominoDocument' is a reserved name in formulae: it returns the current Plomino document."
-            },{
-                "id": "form_formula",
-                "name": "Form formula",
-                "desc": "Documents open from the view will use the form defined by the following formula (they use their own form if empty)"
-            },{
-                "id": "onOpenView",
-                "name": "On open view",
-                "desc": "Action to take when the view is opened. If a string is returned, it is considered an error message, and the opening is not allowed."
-            }],
-            'ViewAction': [{
-                "id": "content",
-                "name": "Parameter or code",
-                "desc": "Code or parameter depending on the action type"
-            },{
-                "id": "hidewhen",
-                "name": "Hide when",
-                "desc": "Action is hidden if formula returns True"
-            }],
-            'ViewColumn': [{
-                "id": "formula",
-                "name": "Formula",
-                "desc": "Python code returning the column value."
-            }]
-        }[type]
+    def getMethods(self,type=None, element=None):
+        """ type comes in the form of ViewAction, FormAction etc
+        """
+
+        db = self.context.getParentDatabase()
+        i18n_domain = db.i18n
+
+        if type is not None:
+            if type != 'Form' and type != 'View':
+                type = type.replace('Form','').replace('View','')
+            schema = component.getUtility(IDexterityFTI, name='Plomino'+type).lookupSchema()
+            schemas = [schema]
+        else:
+            schema = element.getTypeInfo().lookupSchema()
+            assignable = IBehaviorAssignable(element)
+            schemas = [schema] + [behaviour.interface for behaviour in assignable.enumerateBehaviors()]
+        methods = []
+        for schema in schemas:
+            widgets = schema.queryTaggedValue(u'plone.autoform.widgets', {})
+            for name,field in getFieldsInOrder(schema):
+                #field = schema.get(name)
+                widget = widgets.get(name, None)
+                if widget is None:
+                    continue
+                # bit of a HACK
+                if widget.params.get('klass') == 'plomino-formula':
+                    methods.append(dict(
+                        id=name,
+                        name=PlominoTranslate(field.title, db, domain=i18n_domain),
+                        desc=PlominoTranslate(field.description, db, domain=i18n_domain),
+                    ))
+        return methods
+
 
     def tree(self):
         database = self.context.getParentDatabase()

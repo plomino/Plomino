@@ -1,10 +1,11 @@
+import { PlominoActiveEditorService } from './active-editor.service';
 import { Injectable } from '@angular/core';
 
 @Injectable()
 export class PlominoFormsListService {
   forms: any[];
 
-  constructor() { }
+  constructor(private activeEditorService: PlominoActiveEditorService) { }
 
   setForms(forms: any[]) {
     this.forms = forms.filter((form) => form.type === 'PlominoForm');
@@ -15,6 +16,7 @@ export class PlominoFormsListService {
   }
 
   getFiltered() {
-    return this.getForms().filter((form) => tinymce.activeEditor.id !== form.url);
+    return this.getForms().filter((form) => 
+      this.activeEditorService.getActive().id !== form.url);
   }
 }

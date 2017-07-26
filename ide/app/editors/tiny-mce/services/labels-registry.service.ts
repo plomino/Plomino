@@ -27,6 +27,14 @@ export class LabelsRegistryService {
     this.labelsRegistry.delete(id);
   }
 
+  removeForm(url: string) {
+    this.labelsRegistry.forEach((value, key) => {
+      if (key.indexOf(url) !== -1) {
+        this.labelsRegistry.delete(key);
+      }
+    })
+  }
+
   onUpdated() {
     return this.updated.asObservable();
   }
@@ -44,6 +52,12 @@ export class LabelsRegistryService {
       this.update(id, this.labelsRegistry.get(id)['title'], 'temporary_title');
     }
     return this.labelsRegistry.has(id) ? this.labelsRegistry.get(id)[key] : null;
+  }
+
+  getAllForFormID(fId: string) {
+    return Array.from(this.labelsRegistry.keys()).map((key) => {
+      return (key.indexOf(fId) !== -1) ? key : null;
+    }).filter((key) => key !== null);
   }
 
   replace(oldId: string, newId: string, title: string) {

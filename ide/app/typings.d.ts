@@ -1,3 +1,15 @@
+declare function require(arg:string): any;
+
+interface PlominoFormSaveProcessOptions {
+  immediately: boolean;
+  formURL: string;
+  formData: any;
+  labelsRegistryLink: any;
+  httpServiceLink: any;
+  activeEditorServiceLink: any;
+  widgetServiceLink: any;
+}
+
 interface PlominoTab {
   url: string;
   folder?: boolean;
@@ -8,9 +20,10 @@ interface PlominoTab {
   showAdd?: boolean;
   active?: boolean;
   editor?: any;
+  path?: any[];
   typeLabel?: string;
   typeNameUrl?: string;
-  path?: any;
+  isField?: boolean;
 }
 
 interface HTMLDialogElement extends HTMLElement {
@@ -121,6 +134,7 @@ interface PlominoIFrameMouseLeave {
 
 interface PlominoDraggingData {
   'templateId'?: string;
+  'existingElementId'?: string;
   'template'?: PlominoFormGroupTemplate;
   'resolver': (data?: any) => void;
   '@type': string;
@@ -157,8 +171,9 @@ interface InsertFieldEvent {
   title: string;
   name?: string;
   action_type?: string;
+  displayed_field?: string;
   form_layout?: string;
-  target?: HTMLElement;
+  target?: HTMLElement | true;
   subformHTML?: string;
 }
 
@@ -168,6 +183,7 @@ interface AddFieldResponse {
   '@id'?: string;
   id?: string;
   formUniqueId?: string;
+  parent?: { '@id': string }
 }
 
 interface PlominoIteratingLayoutElement {
@@ -189,14 +205,24 @@ interface TinyMceObservable {
 interface TinyMceEditor extends TinyMceObservable {
   destroy: (automatic: boolean) => void
   remove: () => void
+  onInit: { add: ((func: () => void) => void) }
+  onChange: { add: ((func: (e: any) => void) => void) }
+  onKeyDown: { add: ((func: (e: KeyboardEvent) => void) => void) }
+  onKeyUp: { add: ((func: (e: KeyboardEvent) => void) => void) }
+  onNodeChange: { add: ((func: (nodeChangeEvent: any) => void) => void) }
+  onActivate: { add: ((func: (e: any) => void) => void) }
+  onMouseDown: { add: ((func: (ev: MouseEvent) => void) => void) }
   hide: () => void
   setDirty: (dirty: boolean) => void
   isDirty: () => boolean
   show: () => void
   getContent: (args?: Object) => string
+  getContainer: (args?: Object) => HTMLElement
   getBody: () => string
   getDoc: () => any
   setContent: (content: string, args?: Object) => string
+  onSaveContent: any
+  addMenuItem: any
   focus: (skip_focus?: boolean) => void
   undoManager: TinyMceUndoManager
   settings: Object
@@ -226,7 +252,7 @@ interface TinyMceStatic extends TinyMceObservable {
    */
   execCommand: (command: string, user_interface: boolean, value: string) => boolean;
   activeEditor: TinyMceEditor;
-  get: (id: string) => TinyMceEditor;
+  get: (id: string|number) => TinyMceEditor;
   editors: TinyMceEditor[];
   EditorManager: any;
   DOM: any;

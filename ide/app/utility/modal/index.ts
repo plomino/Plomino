@@ -1,1 +1,1 @@
-export { PlominoModalComponent } from './modal.component';
+// export { PlominoModalComponent } from './modal.component';

@@ -19,10 +19,6 @@ def test_suite():
         'plomino.txt',
         'plomino_accesscontrol.txt',
         'plomino_advanced.txt',
-        # 'samples.txt',
-        # 'plomino_usage.txt',
-        # 'form-resources.txt',
-        # 'searchableview.txt',
         globs={
             'TEST_USER_ID': TEST_USER_ID,
             'Browser': Browser,

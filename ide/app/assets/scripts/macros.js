@@ -180,6 +180,16 @@ require([
                 '<i class="icon-pencil"></i></span>';
         },
         edit_macro: function(macro_select, formid, text, data, index) {
+          var uniqueId = data._macro_id_;
+          if (window['macrojs_edit_macro_hold_' + uniqueId]) {
+            return;
+          }
+          else {
+            window['macrojs_edit_macro_hold_' + uniqueId] = true;
+            setTimeout(function() {
+              delete window['macrojs_edit_macro_hold_' + uniqueId];
+            }, 300);
+          }
             var self = this.widget;
 
             // find the url for formid
@@ -273,10 +283,45 @@ require([
                                 return false;
 
                             },
-                            onError: function() {
-                                // TODO: render errors in the form
-                                window.alert(response.responseJSON.errors.join('\n'));
-                                return false;
+                            onError: function(response) {
+
+                              var removeFormErrors = function removeFormErrors() {
+                                document.querySelectorAll(
+                                  '.plone-modal-body .plominoFieldGroup.error'
+                                ).forEach(function (htmlGroupElement) {
+                                  htmlGroupElement.classList.remove('field');
+                                  htmlGroupElement.classList.remove('error');
+                                  var fieldErrorBox = htmlGroupElement
+                                    .querySelector('.fieldErrorBox');
+                                  fieldErrorBox.parentNode.removeChild(fieldErrorBox);
+                                });
+                              }
+
+                              var errorOnField = function errorOnField(fieldId, msg) {
+                                var field = document.querySelector(
+                                  '.plone-modal-body .plominoFieldGroup #' + fieldId
+                                );
+                                var fieldParagraph = field.parentElement.parentElement;
+                                var fieldErrorBox = document.createElement('div');
+                                fieldErrorBox.classList.add('fieldErrorBox');
+                                var fieldErrorBoxError = document.createElement('div');
+                                fieldErrorBoxError.classList.add('error');
+                                fieldErrorBoxError.innerHTML = msg;
+                                fieldErrorBox.appendChild(fieldErrorBoxError);
+                                fieldParagraph.parentNode
+                                  .insertBefore(fieldErrorBox, fieldParagraph);
+                                fieldParagraph.parentNode.classList.add('field');
+                                fieldParagraph.parentNode.classList.add('error');
+                              }
+
+                              if (response.responseJSON.errors) {
+                                removeFormErrors();
+                                response.responseJSON.errors
+                                  .forEach(function (errorObject) {
+                                    errorOnField(errorObject.field, errorObject.error);
+                                  });
+                              }
+                              return false;
                             }
                         }
     //                    'input.plominoCancel': {

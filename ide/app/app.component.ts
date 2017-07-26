@@ -1,4 +1,7 @@
-import { PlominoWorkflowChangesNotifyService } from './editors/workflow/workflow.changes.notify.service';
+import { PlominoTabsManagerService } from './services/tabs-manager/index';
+import { PlominoTabComponent } from './utility/tabs/tab/plomino-tab.component';
+import { PlominoTabsComponent } from './utility/tabs/plomino-tabs.component';
+import { PlominoPaletteManagerService } from './services/palette-manager/palette-manager';
 import { LabelsRegistryService } from './editors/tiny-mce/services/labels-registry.service';
 import { 
   TinyMCEFormContentManagerService
@@ -38,7 +41,11 @@ import {
   ViewsSettingsComponent,
   ColumnsSettingsComponent,
   AgentsSettingsComponent,
+<<<<<<< HEAD
   PlominoWorkflowComponent,
+=======
+  PlominoViewEditorComponent
+>>>>>>> upstream/advanced_ide
 } from './editors';
 
 // Services
@@ -48,6 +55,7 @@ import {
   TreeService,
   ElementService,
   ObjService,
+  PlominoFormFieldsSelectionService,
   TabsService,
   FieldsService,
   DraggingService,
@@ -57,6 +65,10 @@ import {
   FormsService,
   PlominoFormsListService,
   PlominoApplicationLoaderService,
+  URLManagerService,
+  PlominoActiveEditorService,
+  PlominoSaveManagerService,
+  PlominoDBService,
 } from './services';
 
 // Pipes 
@@ -67,7 +79,7 @@ import { IField } from './interfaces';
 
 // Utility Components
 import {
-  PlominoModalComponent, ResizeDividerComponent, PlominoBlockPreloaderComponent
+  ResizeDividerComponent, PlominoBlockPreloaderComponent
 } from './utility';
 import { LoadingComponent } from "./editors/loading/loading.component";
 
@@ -78,11 +90,11 @@ import { LoadingComponent } from "./editors/loading/loading.component";
   directives: [
     TreeComponent,
     PaletteComponent,
-    TAB_DIRECTIVES,
+    // TAB_DIRECTIVES,
     DND_DIRECTIVES,
-    TinyMCEComponent,
-    ACEEditorComponent,
-    PlominoModalComponent,
+    // TinyMCEComponent,
+    // ACEEditorComponent,
+    // PlominoModalComponent,
     FormsSettingsComponent,
     FieldsSettingsComponent,
     ActionsSettingsComponent,
@@ -93,11 +105,18 @@ import { LoadingComponent } from "./editors/loading/loading.component";
     LoadingComponent,
     ResizeDividerComponent,
     PlominoBlockPreloaderComponent,
+<<<<<<< HEAD
     PlominoWorkflowComponent,
     PlominoWorkflowNodeSettingsComponent,
+=======
+    // PlominoViewEditorComponent,
+    PlominoTabComponent,
+    PlominoTabsComponent,
+>>>>>>> upstream/advanced_ide
   ],
   providers: [
     LogService,
+    PlominoFormFieldsSelectionService,
     PlominoHTTPAPIService,
     TreeService, 
     ElementService, 
@@ -113,63 +132,99 @@ import { LoadingComponent } from "./editors/loading/loading.component";
     PlominoElementAdapterService,
     LabelsRegistryService,
     PlominoApplicationLoaderService,
+<<<<<<< HEAD
     PlominoWorkflowChangesNotifyService,
+=======
+    URLManagerService,
+    PlominoActiveEditorService,
+    PlominoSaveManagerService,
+    PlominoPaletteManagerService,
+    PlominoDBService,
+    PlominoTabsManagerService,
+>>>>>>> upstream/advanced_ide
   ],
   pipes: [ExtractNamePipe],
-  animations: [
-    trigger('dropZoneState', [
-      state('*', style({
-        opacity: 1
-      })),
-      transition('void => *', [
-        style({
-            opacity: 0
-        }),
-        animate(300)
-      ]),
-      transition('* => void', animate(300, style({
-        opacity: 0
-      })))
-    ])
-  ]
 })
-export class AppComponent implements OnInit, AfterViewInit {
+export class AppComponent implements OnInit {
 
   data: any;
-  selectedField: IField;
-  selected: any;
-  tabs: Array<any> = [];
-
   isModalOpen: boolean = false;
   modalData: any;
 
   isDragging: boolean = false;
   dragData: any = null;
 
-  aceNumber: number = 0;
-
   DIRECTION_DOWN = 'down';
   DIRECTION_UP = 'up';
   DIRECTION_LEFT = 'left';
   DIRECTION_RIGHT = 'right';
   wrapperWidth: number = 464;
+  addDialog: HTMLDialogElement;
 
   constructor(private treeService: TreeService,     
     private elementService: ElementService, 
     private objService: ObjService,
     private tabsService: TabsService,
+    private formFieldsSelection: PlominoFormFieldsSelectionService,
     private log: LogService,
+    private contentManager: TinyMCEFormContentManagerService,
     private draggingService: DraggingService,
     private formsList: PlominoFormsListService,
     private appLoader: PlominoApplicationLoaderService,
+    private activeEditorService: PlominoActiveEditorService,
     private zone: NgZone,
+    private paletteManager: PlominoPaletteManagerService,
+    private saveManager: PlominoSaveManagerService,
+    private dbService: PlominoDBService,
     private changeDetector: ChangeDetectorRef) {
       window['jQuery'] = jQuery;
+
+      this.addDialog = <HTMLDialogElement> 
+        document.querySelector('#modal-tab-plus');
+
+      if (!this.addDialog.showModal) {
+        window['materialPromise'].then(() => {
+          dialogPolyfill.registerDialog(this.addDialog);
+        });
+      }
+
+      Array.from(
+        this.addDialog
+          .querySelectorAll('.mdl-dialog__actions button')
+      )
+      .forEach((btn: HTMLElement) => {
+        btn.addEventListener('click', (evt) => {
+          if (btn.dataset.create === 'form') {
+            this.addNewForm(evt);
+          }
+          else if (btn.dataset.create === 'view') {
+            this.addNewView(evt);
+          }
+          this.addDialog.close();
+        });
+      });
+
+      $(window).bind('beforeunload', (eventObject: any) => {
+        if (
+          tinymce.editors.length
+          && tinymce.editors
+            .some((editor) => 
+            this.saveManager.isEditorUnsaved(
+              this.dbService.getDBLink() + '/' + editor.id
+            ))
+        ) {
+          return 'Do you want to close window. The form is unsaved.';
+        }
+        else {
+          return void 0;
+        }
+      });
     }
 
   collapseTreeElements(data:any, oldData:any) {
-    if(!Array.isArray(data) || Array.isArray(oldData))
+    if (!Array.isArray(data) || Array.isArray(oldData)) {
       return data;
+    }
 
     data.forEach((item: any) => {
       item.collapsed = !(item.label === 'Forms' && item.type === 'PlominoForm');
@@ -180,11 +235,32 @@ export class AppComponent implements OnInit, AfterViewInit {
   }
 
   ngOnInit() {
+    // $('#add-new-form-tab').remove();
+    // const addNewFormBtn = `<li class="add-new-form-tab" id="add-new-form-tab">
+    //   <a href class="nav-link"><span class="icon material-icons">add</span></a>
+    //   <div class="mdl-tooltip mdl-tooltip--large" for="add-new-form-tab">
+    //   Click to add a new form or view
+    //   </div>
+    // </li>`;
+
+    // $('div.main-app.panel > tabset > ul').append(addNewFormBtn);
+    $('body').delegate('#add-new-form-tab', 'click', (evt) => {
+      $('#add-new-form-tab .mdl-tooltip').removeClass('is-active');
+      this.addDialog.showModal();
+      evt.preventDefault();
+      return false;
+    });
+
+    this.log.info('waiting designtree event from treeService...');
     this.treeService
     .getTree()
     .subscribe((tree) => {
+      this.log.info('designtree event received:', tree);
       let data = this.collapseTreeElements(tree, this.data);
-      if (!data) { return; }
+      if (!data) {
+        this.log.warn('NO DATA', data);
+        return;
+      }
 
       /* little callback hell */
       data = data.filter((dataItem: any) => dataItem.type !== 'PlominoAgent');
@@ -213,21 +289,10 @@ export class AppComponent implements OnInit, AfterViewInit {
       this.data = topFormsViewsList;
       this.formsList.setForms(topFormsViewsList);
       this.appLoader.markLoaded('app.component');
-    });
-    
-    this.tabsService
-    .getTabs()
-    .subscribe((tabs: any) => {
-      this.tabs = tabs;
-
-      tabs.forEach((tab: any) => {
-        if (tab.active && this.tabsService.closing) {
-          setTimeout(() => {
-            tinymce.EditorManager.execCommand('mceRemoveEditor', true, tab.url);
-            tinymce.EditorManager.execCommand('mceAddEditor', true, tab.url);
-          });
-          this.tabsService.closing = false;
-        }
+      
+      /* fix the tooltips */
+      topFormsViewsList.forEach((x: any) => {
+        $(`[data-mdl-for="tab_${ x.url }"]`).html(x.label);
       });
     });
 
@@ -242,26 +307,16 @@ export class AppComponent implements OnInit, AfterViewInit {
       $('.palette-wrapper .mdl-tabs__panel')
       .css('height', `${ window.innerHeight / 2 }px`);
 
-      this.resizeInnerScrollingContainers();
+      this.paletteManager.resizeInnerScrollingContainers();
 
       window['Modal'] = require('mockup-patterns-modal');
       window['TineMCE'] = require('mockup-patterns-tinymce');
+      // window['LinkModal'] = require('mockup-patterns-tinymce-links');
 
       require('./assets/scripts/macros.js');
       require('./assets/scripts/dynamic.js');
       require('./assets/scripts/links.js');
     });
-  }
-
-  ngAfterViewInit() {
-    this.tabsService.getActiveTab().subscribe(() => {});
-  }
-
-  getTabTypeImage(editor: any) {
-    return {
-      'layout': 'images/ic_featured_play_list_black_18px.svg',
-      'code': 'images/ic_code_black_18px.svg',
-    }[editor] || 'images/ic_code_black_18px.svg';
   }
 
   onAdd(event: any) {
@@ -295,17 +350,6 @@ export class AppComponent implements OnInit, AfterViewInit {
     $wrapper.css(attribute, `${ width }px`);
   }
 
-  resizeInnerScrollingContainers() {
-    const $wrapper = $('.palette-wrapper .mdl-tabs__panel');
-    const $containers76 = $('.scrolling-container--76');
-    const $containers66 = $('.scrolling-container--66');
-    const $containers0 = $('.scrolling-container--0');
-    const height = parseInt($wrapper.css('height').replace('px', ''), 10);
-    $containers76.css('height', `${ height - 76 }px`);
-    $containers66.css('height', `${ height - 66 }px`);
-    $containers0.css('height', `${ height }px`);
-  }
-
   resizeTree(event: { directions: string[], difference: {x: number, y: number} }) {
     const directions = event.directions;
     const difference = event.difference;
@@ -327,7 +371,7 @@ export class AppComponent implements OnInit, AfterViewInit {
     }
 
     $wrapper.css('height', `${ height }px`);
-    this.resizeInnerScrollingContainers();
+    this.paletteManager.resizeInnerScrollingContainers();
   }
 
   indexOf(type: any) {
@@ -397,15 +441,74 @@ export class AppComponent implements OnInit, AfterViewInit {
     this.resolveData(this.dragData, this.dragData.resolver);
   }
 
-  openTab(tab: any) {
-    this.log.info('this.tabsService.openTab #app0001 with showAdd');
-    this.tabsService.openTab(tab, true);
-  }
+  // closeTab(event: any, tab: any) {
+  //   // const tabUnsaved = this.saveManager.isEditorUnsaved(tab.url);
+    
+  //   // ((): Promise<any> => {
+  //   //   if (tabUnsaved) {
+  //   //     /**
+  //   //      * warn the user of any unsaved changes
+  //   //      */
+  //   //     return this.elementService.awaitForConfirm(
+  //   //       'Do you which to save?'
+  //   //     );
+  //   //   } else {
+  //   //     return Promise.resolve();
+  //   //   }
+  //   // })()/
+  //   this.activeEditorService.setActive(null);
+  //   this.tabsService.closing = true;
+  //   this.tabsService.closeTab(tab);
 
-  closeTab(tab: any) {
-    this.tabsService.closing = true;
-    this.tabsService.closeTab(tab);
-  }
+  //   setTimeout(() => {
+  //     /* detect wrong case */
+  //     const $activeTrigger = $('.tab-trigger[data-active="true"]');
+  //     if ($activeTrigger.length) {
+  //       const url = $activeTrigger.attr('data-url');
+  //       const editor = $activeTrigger.attr('data-editor');
+
+  //       if (editor === 'layout') {
+  //         this.log.info('set active url', url);
+  //         this.log.extra('app.component.ts');
+  //         this.activeEditorService.setActive(url);
+  //       }
+        
+  //       // check that tinymce is broken after 100ms
+  //       if (this.activeEditorService.getActive()) {
+  //         const $iframe = $(this.activeEditorService.getActive()
+  //             .getContainer().querySelector('iframe'));
+  //         let x = $iframe.contents().find('body').html();
+  //         if (
+  //           /* x === '' in case when <p> are missing, why? */
+  //           typeof x === 'undefined' || !x.length
+  //           // typeof x === 'undefined' || (!x.length 
+  //           //   && !$iframe.contents().find('body').length
+  //           // )
+  //         ) {
+  //           // const $tinyTextarea = $iframe.closest('form').find('>textarea');
+  //           try {
+  //             const _url = url.split('/').pop();
+  //             tinymce.EditorManager.execCommand('mceRemoveEditor', true, _url);
+  //             tinymce.EditorManager.execCommand('mceAddEditor', true, _url);
+  //             tinymce.EditorManager.execCommand('mceAddEditor', true, _url);
+  
+  //             /* reset content hooks */
+  //             setTimeout(() => {
+  //               const x = this.contentManager.getContent(
+  //                 this.activeEditorService.editorURL
+  //               );
+  //               this.contentManager.setContent(
+  //                 this.activeEditorService.editorURL, x,
+  //                 this.draggingService
+  //               );
+  //             }, 100);
+  //           }
+  //           catch (e) {}
+  //         }
+  //       }
+  //     }
+  //   }, 100);
+  // }
 
   onModalClose(event: any) {
     this.isModalOpen = false;
@@ -425,6 +528,7 @@ export class AppComponent implements OnInit, AfterViewInit {
     .subscribe(data => this.treeService.updateTree());
   }
 
+<<<<<<< HEAD
   onTabSelect(tab: any) {
     this.tabsService.setActiveTab(tab, true);
 
@@ -439,33 +543,62 @@ export class AppComponent implements OnInit, AfterViewInit {
     //     tinymce.EditorManager.execCommand('mceAddEditor', true, tab.url);
     //   }
     // }, 100);
+=======
+  // onTabSelect(tab: any) {
+  //   this.log.info('onTabSelect', tab);
+  //   this.activeEditorService.setActive(
+  //     tab.path.length && tab.path[0].type === 'Forms' ? tab.url : null
+  //   );
+  //   this.activeEditorService.turnActiveEditorToLoadingState(false);
+  //   this.log.info('onTabSelect setActive', 
+  //     tab.path.length && tab.path[0].type === 'Forms' ? tab.url : null);
+  //   this.log.info('onTabSelect getActive', 
+  //     this.activeEditorService.editorURL, this.activeEditorService.getActive());
+  //   this.tabsService.setActiveTab(tab, true);
+  // }
+
+  // setTabzAsDirty(tabz: any, dirty: boolean) {
+  //   this.log.info('setTabzAsDirty', tabz, tabz.url, dirty);
+  //   tabz.isdirty = dirty;
+
+  //   if (!dirty) {
+  //     if (this.getEditor(tabz.url)) {
+  //       this.getEditor(tabz.url).setDirty(false);
+  //       this.activeEditorService.turnActiveEditorToSavedState();
+  //     }
+  //   }
+
+  //   $(window)
+  //   .unbind('beforeunload')
+  //   .bind('beforeunload', (eventObject: any) => {
+  //     if (tabz.isdirty && !window['reloadAccepted']) {
+  //       return confirm('Do you want to close window. The form is unsaved.');
+  //     }
+  //   });
+  // }
+
+  private addNewView(event: MouseEvent) {
+    event.preventDefault();
+    this.saveManager.createNewView();
+>>>>>>> upstream/advanced_ide
   }
 
-  fieldSelected(fieldData: any): void {
-    this.tabsService.selectField(fieldData);
+  private addNewForm(event: MouseEvent) {
+    event.preventDefault();
+    this.saveManager.createNewForm();
   }
 
-  setTabzAsDirty(tabz: any, dirty: boolean) {
-    tabz.isdirty = dirty;
-
-    $(window)
-    .unbind('beforeunload')
-    .bind('beforeunload', (eventObject: any) => {
-      if (tabz.isdirty && !window['reloadAccepted']) {
-        return confirm('Do you want to close window. The form is unsaved.');
-      }
-    });
-  }
-
-  private getDBLink() {
-    return `${ 
-      window.location.pathname
-      .replace('++resource++Products.CMFPlomino/ide/', '')
-      .replace('/index.html', '')
-    }`;
+  private getPloneLink() {
+    const dbLink = this.dbService.getDBLink();
+    return dbLink.split('/').slice(0, -1).join('/')
   }
 
   private resolveData(data: any, resolver: Function): void {
     resolver(null, data);
+  }
+
+  private getEditor(id: string) {
+    const edId = id ? id.split('/').pop() : null;
+    return tinymce.get(edId);
   }
 }

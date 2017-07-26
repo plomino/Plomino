@@ -1,4 +1,7 @@
+import { PlominoTabsManagerService } from './../../services/tabs-manager/index';
 import { TabsService } from './../../services/tabs.service';
+import { PlominoSaveManagerService } from './../../services/save-manager/save-manager.service';
+import { FakeFormData } from './../../utility/fd-helper/fd-helper';
 import { LogService } from './../../services/log.service';
 import { PlominoHTTPAPIService } from './../../services/http-api.service';
 import { 
@@ -51,9 +54,11 @@ export class DBSettingsComponent {
     loading: boolean = false;
 
     constructor(private objService: ObjService,
+      private saveManager: PlominoSaveManagerService,
       private changeDetector: ChangeDetectorRef,
       private http: PlominoHTTPAPIService,
       private tabsService: TabsService,
+      private tabsManagerService: PlominoTabsManagerService,
       private log: LogService,
     ) {
       this.importExportDialog = <HTMLDialogElement> 
@@ -66,15 +71,21 @@ export class DBSettingsComponent {
         document.querySelector('#confirm-dialog');
 
       if (!this.importExportDialog.showModal) {
-        dialogPolyfill.registerDialog(this.importExportDialog);
+        window['materialPromise'].then(() => {
+          dialogPolyfill.registerDialog(this.importExportDialog);
+        });
       }
 
       if (!this.aclDialog.showModal) {
-        dialogPolyfill.registerDialog(this.aclDialog);
+        window['materialPromise'].then(() => {
+          dialogPolyfill.registerDialog(this.aclDialog);
+        });
       }
 
       if (!this.confirmDialog.showModal) {
-        dialogPolyfill.registerDialog(this.confirmDialog);
+        window['materialPromise'].then(() => {
+          dialogPolyfill.registerDialog(this.confirmDialog);
+        });
       }
 
       this.importExportDialog.querySelector('.mdl-dialog__actions button')
@@ -98,6 +109,8 @@ export class DBSettingsComponent {
         let formData: FormData = new FormData(form);
         
         formData.append('form.buttons.save', 'Save');
+        this.loading = true;
+        this.saveManager.detectNewFormSave();
         
         this.objService.submitDB(formData)
             .flatMap((responseHtml: string) => {
@@ -109,6 +122,17 @@ export class DBSettingsComponent {
             })
             .subscribe(responseHtml => {
                 this.dbForm = responseHtml;
+
+                setTimeout(() => {
+                  $('.db-settings-wrapper form').submit((submitEvent) => {
+                    submitEvent.preventDefault();
+                    this.submitForm();
+                    return false;
+                  });
+        
+                  this.loading = false;
+                  this.changeDetector.markForCheck();
+                }, 300);
                 this.changeDetector.markForCheck();
             }, err => { 
                 console.error(err) 
@@ -280,7 +304,7 @@ export class DBSettingsComponent {
           submitEvent.stopPropagation();
 
           const form = <HTMLFormElement> submitEvent.currentTarget;
-          const formData = new FormData(form);
+          const formData = new FakeFormData(form);
 
           if (/^.+?manage_importation$/.test(form.action)) {
             formData.set('actionType', 'import');
@@ -288,7 +312,7 @@ export class DBSettingsComponent {
 
           this.http.postWithOptions(
             form.action.replace('++resource++Products.CMFPlomino/ide/', ''),
-            formData, new RequestOptions({
+            formData.build(), new RequestOptions({
               headers: new Headers({})
             })
           )
@@ -351,9 +375,15 @@ export class DBSettingsComponent {
             '#design-manage form, #design-import-export form'
           ).submit((submitEvent: Event) => {
             const form = <HTMLFormElement> submitEvent.currentTarget;
-            const formData = new FormData(form);
+            const formData = new FakeFormData(form);
             let targetFiletype: string = null;
             let targetFiletypeMime: string = null;
+
+            // this.log.warn('!!!', form.innerHTML); // submit_import Import
+
+            if (form.innerHTML.indexOf('value="Import" name="submit_import">') !== -1) {
+              formData.set('submit_import', 'Import');
+            }
 
             const importDesignFormSubmitted = form.name === 'ImportDesign';
             
@@ -391,13 +421,31 @@ export class DBSettingsComponent {
               return Promise.resolve();
             })()
             .then(() => {
+              /* post started */
+              this.importExportDialog.close();
+              $(document.body).prepend(`
+                <div id="application-loader">
+                  <div class="sk-cube-grid">
+                    <div class="sk-cube sk-cube1"></div>
+                    <div class="sk-cube sk-cube2"></div>
+                    <div class="sk-cube sk-cube3"></div>
+                    <div class="sk-cube sk-cube4"></div>
+                    <div class="sk-cube sk-cube5"></div>
+                    <div class="sk-cube sk-cube6"></div>
+                    <div class="sk-cube sk-cube7"></div>
+                    <div class="sk-cube sk-cube8"></div>
+                    <div class="sk-cube sk-cube9"></div>
+                  </div>
+                </div>
+              `);
               this.http.postWithOptions(
                 form.action.replace('++resource++Products.CMFPlomino/ide/', ''),
-                formData, new RequestOptions({
+                formData.build(), new RequestOptions({
                   headers: new Headers({})
                 })
               )
               .subscribe((response: Response) => {
+                $('#application-loader').remove();
                 let result = response.text();
                 if (targetFiletype !== null) {
                   window.URL = window.URL || (<any> window).webkitURL;
@@ -409,6 +457,7 @@ export class DBSettingsComponent {
                   link.click();
                 }
                 else {
+                  /** @todo: new plone support */
                   let start = result.indexOf('<div class="outer-wrapper">');
                   let end = result.indexOf('<!--/outer-wrapper -->');
                   result = result.slice(start, end);
@@ -461,8 +510,20 @@ export class DBSettingsComponent {
     }
 
     private getDbSettings() {
+      this.loading = true;
       this.objService.getDB().subscribe((html) => { 
         this.dbForm = html;
+
+        setTimeout(() => {
+          $('.db-settings-wrapper form').submit((submitEvent) => {
+            submitEvent.preventDefault();
+            this.submitForm();
+            return false;
+          });
+
+          this.loading = false;
+          this.changeDetector.markForCheck();
+        }, 300);
         this.changeDetector.markForCheck();
       }, (err) => { 
         console.error(err);
@@ -470,5 +531,3 @@ export class DBSettingsComponent {
     }
 
 }
-
-

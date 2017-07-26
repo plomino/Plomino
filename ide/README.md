@@ -5,6 +5,9 @@
 ```
 $ cd ./ide
 $ npm install
+$ npm i -g typescript@2.3.2
+$ npm i -g typings@2.1.1
+$ typings install
 $ npm run build
 ```
 
@@ -40,6 +43,16 @@ $ bin/instance fg
 7. Click IDE. (also can go to: /path/to/plomino/database/++resource++Products.CMFPlomino/ide/index.html)
 
 Further npm rebuilds don't require a plone restart so you can use ```npm run watch``` during development
+
+# Build from the latest code
+
+If you are not at 'ide' folder
+$ cd ./ide
+
+
+$ git pull origin advanced_ide
+$ typings install
+$ npm run build
 
 # Release
 

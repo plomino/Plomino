@@ -37,7 +37,7 @@
                                         </tal:fieldsforms>
                                         </ul>
                                     </li>
-                                    <li><span i18n:translate="">Hide when</span> 
+                                    <li><span i18n:translate="">Hide when</span>
                                         <ul>
                                         <tal:hidewhens tal:repeat="h python:form.getHidewhenFormulas()">
                                             <li>
@@ -124,7 +124,7 @@
                     <li><a class="standalone" href="./plomino_documents/manage_main" i18n:translate="">Documents folder</a></li>
                 </ul>
                 <ul>
-                    <li><form name="Refresh" action="manage_refreshDB" method="POST">
+                    <li><form name="Refresh" action="doRefreshDB" method="POST">
                         <input type="submit" name="submit_refresh" class="context" value="Refresh database" i18n:attributes="value"/></form>
                         <span i18n:translate="">(clean scripts, re-index documents, and check Plomino version migration)</span></li>
                     <li><form name="Recompute" action="recomputeAllDocuments" method="POST">
@@ -134,6 +134,9 @@
                         <input type="submit" name="submit_refreshcatalog" class="context" value="Re-index documents in portal catalog" i18n:attributes="value"/></form>
                         <span i18n:translate="">(if the database allows portal catalog indexing, documents are re-indexed, else they are removed from the catalog)</span>
                     </li>
+                    <li><form name="Refresh" action="refreshMacros" method="POST">
+                        <input type="submit" name="submit_refresh_macros" class="context" value="Refresh macros" i18n:attributes="value"/></form>
+                        <span i18n:translate="">(walks the database and resaves content with updated macros)</span></li>
                 </ul>
             </fieldset>
 
@@ -284,8 +287,8 @@
                                     <option tal:attributes="value a/id;"
                                         tal:content="python:a.id+' (Agent)'">value</option>
                                 </tal:block>
-                                <tal:block tal:define="resources python:['resources/'+i for i in here.resources.objectIds()];                         
-                                dummy python:resources.sort()" 
+                                <tal:block tal:define="resources python:['resources/'+i for i in here.resources.objectIds()];
+                                dummy python:resources.sort()"
                                 tal:repeat="v python:resources">
                                     <option tal:attributes="value v;"
                                         tal:content="python:v+' (Resource)'">value</option>

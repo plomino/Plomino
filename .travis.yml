@@ -4,16 +4,26 @@ language:
 sudo: required
 dist: trusty
 cache:
+  pip: true
+  bundler: true
   directories:
     - buildout-cache
+    - $HOME/buildout-cache
 python:
   - 2.7
 node_js:
   - "6.1"
 env:
-  - CXX=g++-4.8
+  global:
+#    - secure: ORM7W1gV9PWYLRgWvMK8R6sBKNTmQj7VFE7F5kw4bEslztvbIQY1a+SgPB0TtILV9qPumTq16fQhVuv5+5eYdXqqgkyP4P7N7q1X5R8bz8sQu8iMCWf1YznirT19wGAVm7B8xJwcuffc8R4XZgIi8EBvcruAzMcBphvh9NUj/pA=
+#    - secure: HPvtfxZKN4ZWsaKdP+5WdBGte1x96ksR9+Go1z7kpJeYo70XV/LAWYc6ORD8r7lP3tkrTBEoXu1wiX2aUHaYU7EBWkPsMv4+fMwEdy92koH1orw2ldYyTxm+tcOPFAMwPou9tGEJkLG/TOEELpoX+Nr1o/t86ZNkgMkScZhRib4=
+    - ROBOT_BUILD_NUMBER=travis-$TRAVIS_BUILD_NUMBER
+#    - ROBOT_REMOTE_URL=http://$SAUCE_USERNAME:$SAUCE_ACCESS_KEY@ondemand.saucelabs.com:80/wd/hub
+    - ROBOT_DESIRED_CAPABILITIES=tunnel-identifier:$TRAVIS_JOB_ID
+    - CXX=g++-4.8
 addons:
-  firefox: "50.0"
+#  sauce_connect: true
+#  firefox: "50.0"
   apt:
     sources:
       - ubuntu-toolchain-r-test
@@ -33,15 +43,16 @@ before_install:
   - npm --version
   - node --version
   - tsc --version
-  - wget 'https://download.mozilla.org/?product=firefox-nightly-latest&lang=en-US&os=linux64' -O firefox-nightly.tar.bz2
-  - tar xvf firefox-nightly.tar.bz2
-  - export PATH=\"$PWD/firefox/\":$PATH
-  - wget https://github.com/mozilla/geckodriver/releases/download/v0.14.0/geckodriver-v0.14.0-linux64.tar.gz
-  - mkdir geckodriver
-  - tar -xzf geckodriver-v0.14.0-linux64.tar.gz -C geckodriver
-  - export PATH=$PATH:$PWD/geckodriver
-  - sudo apt-get install chromium-chromedriver
-  - export PATH=$PATH:/usr/lib/chromium-browser/
+#  - wget 'https://download.mozilla.org/?product=firefox-nightly-latest&lang=en-US&os=linux64' -O firefox-nightly.tar.bz2
+#  - tar xvf firefox-nightly.tar.bz2
+#  - export PATH=\"$PWD/firefox/\":$PATH
+#  - wget https://github.com/mozilla/geckodriver/releases/download/v0.14.0/geckodriver-v0.14.0-linux64.tar.gz
+#  - mkdir geckodriver
+#  - tar -xzf geckodriver-v0.14.0-linux64.tar.gz -C geckodriver
+#  - export PATH=$PATH:$PWD/geckodriver
+#  - sudo apt-get install chromium-chromedriver
+#  - export PATH=$PATH:/usr/lib/chromium-browser/
+
 install:
   - npm --version
   - node --version
@@ -56,9 +67,21 @@ install:
   - npm update -g
   - cd ide && npm install && npm run build && cd ..
 before_script:
-  - "export DISPLAY=:99.0"
-  - "sh -e /etc/init.d/xvfb start"
-  - sleep 3 # give xvfb some time to start
+#  - "export DISPLAY=:99.0"
+#  - "sh -e /etc/init.d/xvfb start"
+#  - sleep 3 # give xvfb some time to start
+
+#  - wget "http://chromedriver.storage.googleapis.com/2.30/chromedriver_linux64.zip"
+#  - unzip chromedriver_linux64.zip
+#  - sudo mv chromedriver /usr/local/bin
+# need 2.31 for sendKey bug
+  - mkdir -p ~/chromedriver
+  - wget https://github.com/davidthornton/chromedriver-2.31/blob/master/chromedriver\?raw\=true -O ~/chromedriver/chromedriver
+  - chmod a+x ~/chromedriver/chromedriver
+#  - export PATH="$HOME/chromedriver:$PATH"
+  - sudo mv ~/chromedriver/chromedriver /usr/local/bin
+  - export CHROMEHEADLESS="headless"
+
 script:
   - bin/test -s Products.CMFPlomino  --all
 after_script:

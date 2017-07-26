@@ -4,6 +4,8 @@ import { Injectable } from '@angular/core';
 @Injectable()
 export class LogService {
   debugMode: boolean = false;
+  ieMode: boolean = '-ms-scroll-limit' in document.documentElement.style 
+        && '-ms-ime-align' in document.documentElement.style;
 
   constructor() {
     this.debugMode = true; // todo: auto-detect debug using angular environment
@@ -11,19 +13,31 @@ export class LogService {
 
   info(...args: any[]) {
     if (!this.debugMode) { return; }
-    args.unshift('color: blue');
-    args.unshift(`%c${(new Date()).toLocaleTimeString()} debug info:`);
+    if (!this.ieMode) { args.unshift('color: blue'); }
+    args.unshift(`${ this.ieMode || '%c' }${(new Date()).toLocaleTimeString()} debug info:`);
+    (<any>console).info(...args);
+  }
+
+  warn(...args: any[]) {
+    if (!this.debugMode) { return; }
+    if (!this.ieMode) { args.unshift('color: navy;font-weight: bold'); }
+    args.unshift(`${ this.ieMode || '%c' }${(new Date()).toLocaleTimeString()} debug warn:`);
     (<any>console).info(...args);
   }
 
   extra(info: string) {
     if (!this.debugMode) { return; }
-    (<any>console).info(`%c---------------------> ${info}`, 'color: darkgreen');
+    if (!this.ieMode) {
+      (<any>console).info(`%c---------------------> ${info}`, 'color: darkgreen');
+    }
+    else {
+      (<any> console).info(info);
+    }
   }
 
   error(...args: any[]) {
-    args.unshift('color: red');
-    args.unshift(`%c${(new Date()).toLocaleTimeString()} error:`);
+    if (!this.ieMode) { args.unshift('color: red'); }
+    args.unshift(`${ this.ieMode || '%c' }${(new Date()).toLocaleTimeString()} error:`);
     (<any>console).info(...args);
   }
 

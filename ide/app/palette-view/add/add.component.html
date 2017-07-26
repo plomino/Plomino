@@ -8,7 +8,7 @@
             (mousedown)="simulateDrag($event, 'template', template)"
             [title]="template.title"
             [attr.data-template-id]="template.id"
-            (mouseup)="addTemplate($event, null, template.id)">
+            (mouseup)="runAddTemplate($event, null, template.id)">
             <span class="small-left-margin">{{template.title}}</span>
         </button>
     </div>
@@ -44,10 +44,11 @@
                 id="{{comp.type}}"
                 dnd-draggable=""
                 [dragEnabled]="true"
+                [dragData]="comp.dragData"
                 (onDragStart)="startDrag($event, comp.type)"
                 (onDragEnd)="endDrag()"
                 [title]="comp.title"
-                (click)="add(comp.type, true)">
+                (click)="runAdd(comp.type)">
                 <span class="small-left-margin">{{comp.title}}</span>
             </div>
         </div>

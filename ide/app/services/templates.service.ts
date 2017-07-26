@@ -62,7 +62,8 @@ export class TemplatesService {
       const $pLabel = $(pLabel);
       const $pLabelParent = $pLabel.parent();
 
-      $pLabelParent.attr('contenteditable', 'false');
+      // $pLabelParent.attr('contenteditable', 'false');
+      $pLabelParent.removeAttr('contenteditable');
 
       if ($pLabelParent.hasClass('mceEditable') && $pLabel.next().length
       && $pLabel.next().prop('tagName') === 'BR'
@@ -139,15 +140,15 @@ export class TemplatesService {
   }
 
   getTemplates(formUrl: string): Observable<any> {
-    if (this.http.recentlyChangedFormURL !== null
-      && this.http.recentlyChangedFormURL[0] === formUrl
-      && $('.tab-name').toArray().map((e) => e.innerText)
-        .indexOf(formUrl.split('/').pop()) === -1
-    ) {
-      formUrl = this.http.recentlyChangedFormURL[1];
-      this.log.info('patched formUrl!', this.http.recentlyChangedFormURL);
-      this.log.extra('templates.service.ts getTemplates');
-    }
+    // if (this.http.recentlyChangedFormURL !== null
+    //   && this.http.recentlyChangedFormURL[0] === formUrl
+    //   && $('.tab-name').toArray().map((e) => e.innerText)
+    //     .indexOf(formUrl.split('/').pop()) === -1
+    // ) {
+    //   formUrl = this.http.recentlyChangedFormURL[1];
+    //   this.log.info('patched formUrl!', this.http.recentlyChangedFormURL);
+    //   this.log.extra('templates.service.ts getTemplates');
+    // }
     return this.http.get(
       `${formUrl}/@@list-templates`,
       'templates.service.ts getTemplates'

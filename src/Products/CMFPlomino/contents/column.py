@@ -4,6 +4,7 @@ from plone.autoform import directives
 from plone.dexterity.content import Item
 from plone.supermodel import model
 from plone.supermodel import directives as supermodel_directives
+from z3c.form.interfaces import NOT_CHANGED
 from zope import schema
 from zope.interface import implements, invariant, Invalid
 
@@ -15,6 +16,11 @@ from .field import get_fields
 class IPlominoColumn(model.Schema):
     """ Plomino view schema
     """
+
+    hidden_column = schema.Bool(
+        title=_('CMFPlomino_label_HiddenColumn', default="Hidden column"),
+        default=False,
+    )
 
     displayed_field = schema.Choice(
         source=get_fields,
@@ -31,21 +37,19 @@ class IPlominoColumn(model.Schema):
         description=_('CMFPlomino_help_ColumnFormula', default='Python code '
             'returning the column value.'),
         required=False,
-    )
-
-    hidden_column = schema.Bool(
-        title=_('CMFPlomino_label_HiddenColumn', default="Hidden column"),
-        default=False,
+        missing_value=NOT_CHANGED, # So settings won't nuke formulas in IDE
+        default=u'',
     )
 
     # ADVANCED
-    supermodel_directives.fieldset(
-        'advanced',
-        label=_(u'Advanced'),
-        fields=(
-            'formula',
-        ),
-    )
+    # TODO: for now the invariant below doesn't work across groups so we won't have advanced. Need to fix
+    # supermodel_directives.fieldset(
+    #     'advanced',
+    #     label=_(u'Advanced'),
+    #     fields=(
+    #         'formula',
+    #     ),
+    # )
 
     @invariant
     def formulaInvariant(data):

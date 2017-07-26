@@ -1,3 +1,6 @@
+import { PlominoTabsManagerService } from './../services/tabs-manager/index';
+import { PlominoDBService } from './../services/db.service';
+import { PlominoActiveEditorService } from './../services/active-editor.service';
 import { 
     Component, 
     Input, 
@@ -6,7 +9,8 @@ import {
     ViewChildren,
     OnInit,
     OnChanges, 
-    ContentChild 
+    ContentChild, 
+    ChangeDetectorRef
 } from '@angular/core';
 
 import { CollapseDirective } from 'ng2-bootstrap/ng2-bootstrap';
@@ -17,10 +21,12 @@ import {
     TabsService,
     FormsService,
     DraggingService,
-    LogService
+    LogService,
+    PlominoFormFieldsSelectionService
 } from '../services';
 
 import { ExtractNamePipe } from '../pipes';
+import { Observable, Subscription } from "rxjs/Rx";
 
 @Component({
     selector: 'plomino-tree',
@@ -32,28 +38,54 @@ import { ExtractNamePipe } from '../pipes';
 })
 export class TreeComponent implements OnInit {
     @Input() data: any;
-    @Output() openTab = new EventEmitter();
     @Output() add = new EventEmitter();
     @ViewChildren('selectable') element: any;
     
-    selected: any;
+    @Input() selected: any;
     searchResults: any;
     filtered: boolean = false;
     previousSelected: any;
 
-    constructor(private _elementService: ElementService,
-                private tabsService: TabsService,
-                private formsService: FormsService,
-                private log: LogService,
-                public draggingService: DraggingService) { }
+    private click2DragDelay: Subscription;
+
+    constructor(
+      private _elementService: ElementService,
+      private tabsService: TabsService,
+      private formFieldsSelection: PlominoFormFieldsSelectionService,
+      private formsService: FormsService,
+      private log: LogService,
+      private activeEditorService: PlominoActiveEditorService,
+      private changeDetector: ChangeDetectorRef,
+      public draggingService: DraggingService,
+      private dbService: PlominoDBService,
+      private tabsManagerService: PlominoTabsManagerService,
+    ) { }
     
     ngOnInit() {
-      this.tabsService.getActiveTab()
-        .subscribe((activeTab) => {
+      this.tabsManagerService.getActiveTab()
+        .subscribe((tabUnit) => {
+
+          const activeTab = tabUnit ? {
+            label: tabUnit.label || tabUnit.id,
+            url: tabUnit.url,
+            editor: tabUnit.editor
+          } : null;
+
           this.log.info('activeTab', activeTab);
           this.log.extra('tree.component.ts ngOnInit');
           this.selected = activeTab;
         });
+    }
+
+    treeArrowClick(ev: MouseEvent, typeName: any) {
+      typeName.collapsed = !this.getCollapseState(
+        typeName.collapsed, this.selected && (typeName.url === this.selected.url)
+      );
+      
+      if (ev.screenX && ev.screenX <= 45 && ev.screenX > 31) {
+        ev.preventDefault();
+        ev.stopPropagation();
+      }
     }
 
     getCollapseState(collapseVar: any, selected: boolean) {
@@ -76,12 +108,56 @@ export class TreeComponent implements OnInit {
       this.formsService.changePaletteTab(3);
     }
 
+    treeFormItemClick(
+      selected: any, mouseEvent: MouseEvent, 
+      typeLabel: string, typeNameUrl: string,
+      typeNameLabel: string, formUniqueId: string
+    ) {
+      if (['PlominoField', 'PlominoHidewhen', 'PlominoAction']
+          .indexOf(typeLabel) !== -1) {
+        mouseEvent.stopImmediatePropagation();
+      }
+      this.click2DragDelay = Observable.timer(500, 1000).subscribe((t: number) => {
+        if (typeLabel === 'Forms') {
+          this.dragSubform(selected, mouseEvent, typeLabel, typeNameUrl);
+        }
+        if (['PlominoField', 'PlominoHidewhen', 'PlominoAction']
+            .indexOf(typeLabel) !== -1) {
+          this.dragField(selected, mouseEvent, typeLabel, typeNameUrl);
+        }
+        this.click2DragDelay.unsubscribe();
+      });
+      
+      return true;
+    }
+
+    dragField(selected: any, mouseEvent: MouseEvent, 
+      typeLabel: string, typeNameUrl: string
+    ) {
+      this.log.info('drag field', selected, mouseEvent, typeLabel, typeNameUrl);
+      this.log.extra('tree.component.ts dragField');
+      
+      if (this.activeEditorService.getActive() && selected 
+        && (['PlominoField', 'PlominoHidewhen', 'PlominoAction']
+          .indexOf(typeLabel) !== -1)
+        && typeNameUrl.split('/').slice(0, -1).join('/') === selected.url
+      ) {
+        this.draggingService.treeFieldDragEvent
+          .next({ mouseEvent, fieldType: typeLabel });
+        this.draggingService.followDNDType('tree-field');
+      }
+    }
+
     dragSubform(selected: boolean, mouseEvent: MouseEvent, 
-    typeLabel: string, typeNameUrl: string) {
-      this.log.info(selected, mouseEvent, typeLabel, typeNameUrl);
+      typeLabel: string, typeNameUrl: string
+    ) {
+      this.log.info('drag subform', selected, mouseEvent, typeLabel, typeNameUrl);
       this.log.extra('tree.component.ts dragSubform');
-      if (tinymce.activeEditor && selected && typeLabel === 'Forms' 
-        && typeNameUrl !== tinymce.activeEditor.id) {
+      
+      if (this.activeEditorService.getActive() && selected && typeLabel === 'Forms' 
+        && typeNameUrl !== `${ this.dbService.getDBLink() }/${ 
+          this.activeEditorService.getActive().id }`
+      ) {
         this.draggingService.subformDragEvent.next(mouseEvent);
       }
     }
@@ -104,15 +180,23 @@ export class TreeComponent implements OnInit {
     }
 
     onEdit(event: any) {
-        this.openTab.emit(event);
+      this.tabsManagerService.openTab({
+        id: event.url.split('/').pop(),
+        url: event.url,
+        editor: event.editor,
+        label: event.label
+      });
     }
     
     onAdd(event: any) {
-        this.add.emit(event);
+      this.add.emit(event);
     }
 
     startDrag(data: any): void {
-        this.draggingService.setDragging(data);
+      if (data.type === 'PlominoField' || data.type === 'PlominoHidewhen') {
+        this.draggingService.followDNDType(data.type);
+      }
+      this.draggingService.setDragging(data);
     }
 
     endDrag(): void {
@@ -125,17 +209,20 @@ export class TreeComponent implements OnInit {
     }
 
     selectFirstOccurenceInCurrentEditor(fieldData: PlominoFieldTreeObject) {
-      const $body = $(tinymce.activeEditor.getBody());
-      $body.find('[data-mce-selected]').removeAttr('data-mce-selected');
-      
-      const $results = $body
-        .find(
-          `.plominoFieldClass[data-plominoid="${ fieldData.name.split('/').pop() }"]`
-        );
-
-      if ($results.length) {
-        const $first = $results.first();
-        $first.attr('data-mce-selected', '1');
+      const editor = this.activeEditorService.getActive();
+      if (editor) {
+        const $body = $(this.activeEditorService.getActive().getBody());
+        $body.find('[data-mce-selected]').removeAttr('data-mce-selected');
+        
+        const $results = $body
+          .find(
+            `.plominoFieldClass[data-plominoid="${ fieldData.name.split('/').pop() }"]`
+          );
+  
+        if ($results.length) {
+          const $first = $results.first();
+          $first.attr('data-mce-selected', '1');
+        }
       }
     }
 
@@ -143,21 +230,28 @@ export class TreeComponent implements OnInit {
       let id = fieldData.name.slice(fieldData.name.lastIndexOf('/') + 1);
       if ((this.selected && this.selected.url) !== fieldData.parent) {
         let tabLabel = fieldData.parent.slice(fieldData.parent.lastIndexOf('/') + 1);
-        this.log.info('this.tabsService.openTab #t0001');
-        this.tabsService.openTab({
-          formUniqueId: this.selected.formUniqueId,
-          editor: 'layout',
-          label: tabLabel,
+        
+        this.tabsManagerService.openTab({
+          id: fieldData.parent.split('/').pop(),
           url: fieldData.parent,
-          path: [
-              {    
-                  name: tabLabel,
-                  type: 'Forms'
-              }
-          ],
-        }, false);
+          editor: 'layout',
+          label: tabLabel
+        });
+
+        // this.tabsService.openTab({
+        //   formUniqueId: this.selected.formUniqueId,
+        //   editor: 'layout',
+        //   label: tabLabel,
+        //   url: fieldData.parent,
+        //   path: [
+        //       {    
+        //           name: tabLabel,
+        //           type: 'Forms'
+        //       }
+        //   ],
+        // }, false);
       }  
-      this.tabsService.selectField({
+      this.formFieldsSelection.selectField({
         id: id, type: fieldData.type, parent: fieldData.parent
       });
     }

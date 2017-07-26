@@ -29,14 +29,14 @@ export class ViewsSettingsComponent {
     }
 
     getElement() {
-        this._elementService.getElement(this.id)
-            .subscribe(
-                data => {
-                    this.data = data;
-                    this.isDirty.emit(false);
-                },
-                err => console.error(err)
-            );
+        // this._elementService.getElement(this.id)
+        //     .subscribe(
+        //         data => {
+        //             this.data = data;
+        //             this.isDirty.emit(false);
+        //         },
+        //         err => console.error(err)
+        //     );
     }
 
     onSubmit(id: string,

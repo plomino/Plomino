@@ -73,6 +73,19 @@
   user-select: none;
 }
 
+/deep/.add-new-form-tab > a {
+  padding: 6px !important;
+  position: relative !important;
+  color: black !important;
+  border: solid 1px #dddddd !important;
+  border-radius: 5px !important;
+  display: flex !important;
+}
+
+/*/deep/.add-new-form-tab > a:hover {
+  background: white !important;
+}*/
+
 /deep/.plominoHidewhenClass[data-plomino-position] {
     background-image: url('++resource++Products.CMFPlomino/img/PlominoHideWhen.png');
     position: relative !important;
@@ -80,6 +93,7 @@
 }
 /deep/#drag-data-cursor {
   z-index: 10000;
+  transform: translate3d(0, 0, 0);
 }
 /deep/#drag-data-cursor input[type="text"],
 /deep/#drag-data-cursor input[type="email"],
@@ -190,7 +204,7 @@
 
 .palette-wrapper /deep/ .mdl-tabs__panel:not(.default) {
   overflow-y: auto;
-  height: 300px;
+  min-height: 300px;
 }
 
 .palette-wrapper /deep/ .mdl-tabs__tab fieldset {

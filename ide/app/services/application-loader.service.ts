@@ -1,36 +1,39 @@
+import { LogService } from './log.service';
+import { URLManagerService } from './url-manager.service';
 import { Injectable } from '@angular/core';
 
 @Injectable()
 export class PlominoApplicationLoaderService {
 
   private shouldBeLoaded: string[] = ['app.component', 'material'];
+  private isLoaded: boolean = false;
 
-  constructor() {
+  constructor(
+    private urlManager: URLManagerService,
+    private log: LogService,
+  ) {
     window['materialPromise'].then(() => {
       this.markLoaded('material');
+      this.log.info('material design received on the page');
     });
   }
 
   markLoaded(key: string) {
-    this.shouldBeLoaded = this.shouldBeLoaded.filter((e) => e !== key);
-
-    if (!this.shouldBeLoaded.length) {
-      this.onLoad();
+    this.log.info(key, 'is loaded');
+    if (!this.isLoaded) {
+      this.shouldBeLoaded = this.shouldBeLoaded.filter((e) => e !== key);
+  
+      if (!this.shouldBeLoaded.length) {
+        this.onLoad();
+      }
     }
   }
 
   private onLoad() {
+    this.isLoaded = true;
     setTimeout(() => {
       $('#application-loader').remove();
-
-      const splitHash = window.location.hash.split('form=');
-      const formLink = splitHash.pop().trim();
-      
-      if (splitHash.length && formLink && formLink !== 'form=') {
-        $(`.tree-node--name:contains("${ formLink }")`)
-          .filter((i, node: HTMLElement) => $(node).text().trim() === formLink)
-          .click();
-      }
+      this.urlManager.restoreTabsFromURL();
     }, 300);
   }
 }

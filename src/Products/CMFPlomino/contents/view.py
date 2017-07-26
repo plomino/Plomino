@@ -8,6 +8,7 @@ from plone.supermodel import model
 from plone.supermodel import directives as supermodel_directives
 from Products.PluginIndexes.DateIndex.DateIndex import DateIndex
 from zipfile import ZipFile, ZIP_DEFLATED
+from z3c.form.interfaces import NOT_CHANGED
 from zope import schema
 from zope.interface import implements, directlyProvides
 from zope.schema.interfaces import IContextSourceBinder
@@ -62,6 +63,8 @@ class IPlominoView(model.Schema):
             """'plominoDocument' is a reserved name in formulae: it returns """
             """the current Plomino document."""),
         required=False,
+        missing_value=NOT_CHANGED, # So settings won't nuke formulas in IDE
+        default=u'',
     )
 
     directives.widget('form_formula', klass='plomino-formula')
@@ -70,7 +73,9 @@ class IPlominoView(model.Schema):
         description=_('CMFPlomino_help_FormFormula',
             default='Documents open from the view will use the form defined '
             'by the following formula(they use their own form if empty)'),
-        required=False
+        required=False,
+        missing_value=NOT_CHANGED, # So settings won't nuke formulas in IDE
+        default=u'',
     )
 
     hide_default_actions = schema.Bool(
@@ -90,6 +95,8 @@ class IPlominoView(model.Schema):
             "returned, it is considered an error message, and the opening is "
             "not allowed."),
         required=False,
+        missing_value=NOT_CHANGED, # So settings won't nuke formulas in IDE
+        default=u'',
     )
 
     sort_column = schema.TextLine(
@@ -119,6 +126,14 @@ class IPlominoView(model.Schema):
         title=_('CMFPlomino_label_ReverseSorting', default="Reverse sorting"),
         description=_('CMFPlomino_help_ReverseSorting',
             default="Reverse the sort ordering"),
+        default=False,
+    )
+
+    hide_checkboxes = schema.Bool(
+        title=_('CMFPlomino_label_hide_checkboxes',
+                default="Hide checkboxes"),
+        description=_('CMFPlomino_help_hide_checkboxes',
+                      default='The first column with checkboxes will not be displayed'),
         default=False,
     )
 

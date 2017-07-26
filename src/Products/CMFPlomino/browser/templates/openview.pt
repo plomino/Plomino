@@ -9,62 +9,90 @@
 
 <metal:content fill-slot="main">
 
-    <h1 class="documentFirstHeading" tal:content="context/Title">Title</h1>
+    <!-- TODO(ivanteoh): do we need 'hasReadPermission' in 2.x -->
+    <form id="plomino-view" tal:attributes="name python:context.id"
+          class="plominoviewform">
 
-    <div id="content-core">
-        <tal:actions>
-            <span metal:use-macro="context/plomino_actions/macros/ViewActionBar" >
-                display view actions
-            </span>
-        </tal:actions>
-        <table
-            tal:define="columns python:context.getColumns()"
-            tal:attributes="class python:(context.static_rendering and 'listing') or 'listing plomino-table';
-            data-pat-plominotable string:source:${context/absolute_url}/tojson;">
-            <tr class="header-row">
-                <tal:headers tal:repeat="column columns">
-                    <th tal:condition="not: column/hidden_column|nothing"
-                        tal:attributes="data-column column/id;"
-                        tal:content="column/title">title</th>
-                </tal:headers>
-            </tr>
-            <tal:static tal:condition="context/static_rendering">
-                <tal:rows
-                    tal:define="listdocuments python:context.getAllDocuments(getObject=False);
-                    count python:len(listdocuments);
-                    paramstart request/start|python:'1';
-                    paramlimit request/limit|python:'100';
-                    start python:int(paramstart);
-                    limit python:int(paramlimit);
-                    overlimit python:count>limit;
-                    nextstart python:start+limit;
-                    previousstart python:max(0,start-limit);
-                    baseurl python:context.getParentDatabase().absolute_url();
-                ">
-                    <tr tal:repeat="brain python:listdocuments[start-1:start-1+limit]">
-                        <tal:row
-                            tal:define="docurl python:baseurl+'/document/'+brain.id">
-                            <tal:columns tal:repeat="column columns">
-                                <td tal:condition="not: column/hidden_column|nothing"
-                                    ><a tal:attributes="href string:${docurl}"
-                                    tal:define="column_name column/id;
-                                    column_value python:getattr(brain, context.getIndexKey(column_name), '');"
-                                    ><span tal:content="structure python:column.getColumnRender(column_value)"
-                                    ></span></a></td>
-                            </tal:columns>
-                        </tal:row>
-                    </tr>
-                </tal:rows>
-            </tal:static>
-            <tr class="header-row count">
-                <td>
-                    <tal:static tal:condition="context/static_rendering">
-                        <tal:block tal:content="count" /> documents
-                    </tal:static>
-                </td>
-            </tr>
-        </table>
-    </div>
+        <h1 class="documentFirstHeading" tal:content="context/Title">Title</h1>
+
+        <div id="content-core">
+            <tal:actions>
+                <span metal:use-macro="context/plomino_actions/macros/ViewActionBar" >
+                    display view actions
+                </span>
+            </tal:actions>
+            <!-- this is 'basic_widget' (BASIC) -->
+            <table
+                tal:define="columns python:context.getColumns();"
+                tal:attributes="class python:(context.static_rendering and 'listing') or 'listing plomino-table';
+                data-pat-plominotable
+                    string:source:${context/absolute_url}/tojson;;
+                    hideCheckboxes:${context/hide_checkboxes};">
+                <tr class="header-row">
+                    <th></th>
+                    <tal:headers tal:repeat="column columns">
+                        <th tal:condition="not: column/hidden_column|nothing"
+                            tal:attributes="data-column column/id;"
+                            tal:content="column/title">title</th>
+                    </tal:headers>
+                </tr>
+                <!-- TODO(ivanteoh): do we need 'Categorized' (is_categorized) in 2.x -->
+                <!-- this is 'Regular view' (not_categorized) -->
+                <tal:static tal:condition="context/static_rendering">
+                    <tal:rows
+                        tal:define="listdocuments python:context.getAllDocuments(getObject=False);
+                        count python:len(listdocuments);
+                        paramstart request/start|python:'1';
+                        paramlimit request/limit|python:'100';
+                        start python:int(paramstart);
+                        limit python:int(paramlimit);
+                        overlimit python:count>limit;
+                        nextstart python:start+limit;
+                        previousstart python:max(0,start-limit);
+                        baseurl python:context.absolute_url();
+                    ">
+                        <tr tal:repeat="brain python:listdocuments[start-1:start-1+limit]">
+                            <tal:row
+                                tal:define="docurl python:baseurl+'/document/'+brain.id">
+                                <td>
+                                    <input
+                                        tal:condition="python:not context.hide_checkboxes"
+                                        type="checkbox"
+                                        name="sdoc"
+                                        tal:attributes="value python:brain.getPath().split('/')[-1]" />
+                                </td>
+                                <tal:columns tal:repeat="column columns">
+                                    <td tal:condition="not: column/hidden_column|nothing"
+                                        ><a tal:attributes="href string:${docurl}"
+                                        tal:define="column_name column/id;
+                                        column_value python:getattr(brain, context.getIndexKey(column_name), '');"
+                                        ><span tal:content="structure python:column.getColumnRender(column_value)"
+                                        ></span></a></td>
+                                </tal:columns>
+                                <tal:nocol tal:condition="not: columns">
+                                    <td><a tal:attributes="href string:${docurl}">
+                                        <span>undefined</span></a>
+                                    </td>
+                                </tal:nocol>
+                            </tal:row>
+                        </tr>
+                    </tal:rows>
+                </tal:static>
+                <tr class="header-row count">
+                    <td tal:attributes="colspan python:len(columns)+1">
+                        <tal:static tal:condition="context/static_rendering">
+                            <tal:block
+                                tal:define="listdocuments python:context.getAllDocuments(getObject=False);
+                                            count python:len(listdocuments);"
+                                tal:content="count" /> documents
+                        </tal:static>
+                    </td>
+                </tr>
+            </table>
+
+        </div>
+
+    </form>
 </metal:content>
 </body>
 </html>

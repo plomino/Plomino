@@ -1,3 +1,5 @@
+import { WidgetService } from './widget.service';
+import { PlominoActiveEditorService } from './active-editor.service';
 import { LogService } from './log.service';
 import { FieldsService } from './fields.service';
 import { TemplatesService } from './templates.service';
@@ -22,10 +24,23 @@ export class DraggingService {
 
   subformDragEvent: Subject<MouseEvent> = new Subject<MouseEvent>();
   subformDragEvent$: Observable<MouseEvent> = this.subformDragEvent.asObservable();
+  treeFieldDragEvent: Subject<{ mouseEvent: MouseEvent, fieldType: string }> 
+    = new Subject<{ mouseEvent: MouseEvent, fieldType: string }>();
+  treeFieldDragEvent$: Observable<{ mouseEvent: MouseEvent, fieldType: string }> 
+    = this.treeFieldDragEvent.asObservable();
+  dndType: any;
 
-  constructor(private templateService: TemplatesService, 
-  private log: LogService,
-  private fieldsService: FieldsService) {}
+  constructor(
+    private templateService: TemplatesService, 
+    private log: LogService,
+    private activeEditorService: PlominoActiveEditorService,
+    private fieldsService: FieldsService,
+    private widgetService: WidgetService,
+  ) {}
+
+  followDNDType(dndType: any) {
+    this.dndType = dndType;
+  }
   
   setDragging(data?: any): void {
     this.log.info('setDragging', data);
@@ -164,8 +179,15 @@ export class DraggingService {
         && !this.currentDraggingData.resolved) {
         this.log.info('action/label/field this.currentDraggingData', this.currentDraggingData);
 
-        this.fieldsService
-        .getTemplate(parent, data['@type'].replace('Plomino', '').toLowerCase())
+        (this.currentDraggingData.existingElementId 
+          ? this.widgetService.getWidget(
+              parent, data['@type'].replace('Plomino', '').toLowerCase(), 
+              this.currentDraggingData.existingElementId
+            )
+          : this.fieldsService.getTemplate(
+            parent, data['@type'].replace('Plomino', '').toLowerCase()
+          )
+        )
         .subscribe((widgetCode: string) => {
           this.currentDraggingTemplateCode = widgetCode;
   
@@ -245,16 +267,37 @@ export class DraggingService {
     .on('mousemove.drgs', this.drag.bind(this))
     .on('mouseup.drgs', this.stopDragging.bind(this));
 
-    $('iframe:visible').contents()
+    $(this.activeEditorService.getActive().getBody())
     .on('mousemove.drgs', ((e: any) => this.drag(e, true)).bind(this))
     .on('mouseup.drgs', ((e: any) => this.stopDragging(e, true)).bind(this));
+
+    $(document)
+    .on('keydown.drgs', (se: any) => {
+      if (se.keyCode === 27) {
+        this.stopDragging(e);
+      }
+    });
 
     this.drag(e);
   }
 
   private drag(e: MouseEvent, iframe?: boolean) {
+
+    const activeEditor = this.activeEditorService.getActive();
+
+    if (!activeEditor) {
+      this.stopDragging(e);
+      return;
+    }
+
+    const $iframe = $(activeEditor.getContainer().querySelector('iframe'));
     const pos = this.getMousePos(e);
-    const offset = $('iframe:visible').offset();
+    const offset = $iframe.offset();
+
+    if (this.currentDraggingData === null) {
+      this.stopDragging(e);
+      return;
+    }
   
     if (pos === null) {
         this.stopDragging(e);
@@ -262,7 +305,7 @@ export class DraggingService {
     }
 
     $('.drop-zone').remove();
-    $('iframe:visible').contents()
+    $iframe
       .find('body,html')
       .css('pointer-events', 'none !important');
 
@@ -286,7 +329,7 @@ export class DraggingService {
         this.moveMouseEventInIFrameCallback(e);
       }
       else {
-        $('iframe:visible').contents().find('.drag-autopreview').remove();
+        $iframe.find('.drag-autopreview').remove();
         this.moveMouseEventOutIFrameCallback(e);
       }
     }
@@ -301,17 +344,26 @@ export class DraggingService {
   }
 
   private stopDragging(eventData: MouseEvent, iframe?: boolean) {
+    const activeEditor = this.activeEditorService.getActive();
+
+    if (!activeEditor) {
+      $(document).off('.drgs');
+      $('#drag-data-cursor').remove();
+      this.currentDraggingData = null;
+      this.customPaletteDragEventCancel$.next(eventData);
+      return;
+    }
+
+    const $iframe = $(activeEditor.getContainer().querySelector('iframe'));
     $(document).off('.drgs');
-    // $(document).off('.drgs').off('.cme');
-    // $('iframe:visible').contents().off('.drgs').off('.cme').off('.cmb');
-    $('iframe:visible').contents().off('.drgs');
-    // $('iframe:visible').contents().find('.plominoGroupClass').off('.cme');
+    $iframe.contents().off('.drgs');
+    $(activeEditor.getBody()).off('.drgs');
     $('#drag-data-cursor').remove();
 
     this.log.info('stopDragging');
 
     const pos = this.getMousePos(eventData);
-    const offset = $('iframe:visible').offset();
+    const offset = $iframe.offset();
     const inIFrame = pos.x >= offset.left && pos.y >= offset.top;
 
     if (iframe || inIFrame) {

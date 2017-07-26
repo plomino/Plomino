@@ -1,4 +1,4 @@
-export { PlominoModalComponent } from './modal';
+// export { PlominoModalComponent } from './modal';
 export { ResizeDividerComponent } from './resize-divider';
 export { PlominoBlockPreloaderComponent } from './block-preloader';
 export { DIRECTION_RIGHT, DIRECTION_DOWN,

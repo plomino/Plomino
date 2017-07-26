@@ -34,6 +34,7 @@ from webdav.Lockable import wl_isLocked
 from zipfile import ZipFile, ZIP_DEFLATED
 from zope import component
 from zope.interface import alsoProvides
+from zope.lifecycleevent import modified
 from zope.schema import getFieldsInOrder
 from ZPublisher.HTTPRequest import FileUpload
 from ZPublisher.HTTPRequest import HTTPRequest
@@ -72,10 +73,10 @@ class DesignManager:
 
     security = ClassSecurityInfo()
 
-    security.declarePublic('manage_refreshDB')
+    security.declareProtected(DESIGN_PERMISSION, 'doRefreshDB')
 
     @postonly
-    def manage_refreshDB(self, REQUEST):
+    def doRefreshDB(self, REQUEST):
         """ Launch refreshDB
         """
         report = self.refreshDB()
@@ -292,6 +293,38 @@ class DesignManager:
             "%d errors(s)" % (total, errors))
         logger.info(msg)
         self.setStatus("Ready")
+        if REQUEST:
+            self.writeMessageOnPage(msg, REQUEST, False)
+            REQUEST.RESPONSE.redirect(self.absolute_url() + "/DatabaseDesign")
+
+    security.declareProtected(DESIGN_PERMISSION, 'refreshMacros')
+
+    @postonly
+    def refreshMacros(self, REQUEST=None):
+        macros=0
+        forms = self.getForms()
+        views = self.getViews()
+        for form in forms + views:
+            items = form.objectValues()
+
+            #TODO: more things than fields have macros on them
+            #TODO: modified events might have other consequences?
+            for item in list(items) + [form]:
+                helpers = getattr(item, 'helpers', []) #TODO should use a DM
+
+                changed = False
+                for helper in helpers:
+                    for subhelper in helper:
+                        #TODO: is subhelper['Form'].modified > item.modified?
+                        changed = True
+
+                        #if self.getForm(subhelper['Form']).modified > :
+                        macros += 1
+                if changed:
+                    logger.debug('updated macro template on field: %s' % item.id)
+                    modified(item)
+
+        msg = '%i macros updated' % macros
         if REQUEST:
             self.writeMessageOnPage(msg, REQUEST, False)
             REQUEST.RESPONSE.redirect(self.absolute_url() + "/DatabaseDesign")
