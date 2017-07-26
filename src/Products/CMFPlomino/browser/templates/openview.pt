@@ -18,11 +18,9 @@
             </span>
         </tal:actions>
         <table
-            tal:define="columns python:context.getColumns();
-                req_static request/static_rendering|nothing;
-                static python:req_static or context.static_rendering"
-            tal:attributes="class python:(static and 'listing') or 'listing plomino-table';
-            data-pat-plominotable string:source:${context/absolute_url}/tojson;">
+            tal:define="columns python:context.getColumns();"
+                tal:attributes="class python:(context.static_rendering and 'listing') or 'listing plomino-table';
+                data-pat-plominotable string:source:${context/absolute_url}/tojson;">
             <tr class="header-row">
                 <tal:headers tal:repeat="column columns">
                     <th tal:condition="not: column/hidden_column|nothing"
@@ -30,7 +28,7 @@
                         tal:content="column/title">title</th>
                 </tal:headers>
             </tr>
-            <tal:static tal:condition="static">
+            <tal:static tal:condition="context/static_rendering">
                 <tal:rows
                     tal:define="listdocuments python:context.getAllDocuments(getObject=False);
                     count python:len(listdocuments);
@@ -61,15 +59,17 @@
                             </tal:nocol>
                         </tal:row>
                     </tr>
-                    <tr class="header-row count">
-                        <td>
-                            <tal:block tal:content="count" /> documents
-                        </td>
-                    </tr>
                 </tal:rows>
             </tal:static>
-            <tr class="header-row count" tal:condition="not:static">
-                <td></td>
+            <tr class="header-row count">
+                <td>
+                    <tal:static tal:condition="context/static_rendering">
+                        <tal:block
+                            tal:define="listdocuments python:context.getAllDocuments(getObject=False);
+                                        count python:len(listdocuments);"
+                            tal:content="count" /> documents
+                    </tal:static>
+                </td>
             </tr>
         </table>
     </div>
