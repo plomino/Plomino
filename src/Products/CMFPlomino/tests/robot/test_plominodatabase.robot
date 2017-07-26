@@ -123,6 +123,15 @@ Scenario: I can change the label and title at the same time
     and I select the field "text"
     and I see "My text question" in "Title" in "Field Settings"
 
+Scenario: I can add the colon to the label
+  # Set Selenium Speed  1 seconds
+  Given I have a form open
+   When I add a "Text" field
+    and I edit the label "text" to "My text question:"
+   Then I see "My text question:" in "Field title" in "Label Settings"
+    and I select the field "text"
+    and I see "My text question:" in "Title" in "Field Settings"
+
 Scenario: I can preview
   Given I have a form open
    When I preview "frm_test"
