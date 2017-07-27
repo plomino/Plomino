@@ -9,6 +9,8 @@ export class PlominoViewSaveProcess extends PlominoFormSaveProcess {
     this.http = options.httpServiceLink;
     this.activeEditorService = options.activeEditorServiceLink;
     this.widgetService = options.widgetServiceLink;
+    this.objService = options.objServiceLink;
+    this.tabsManagerService = options.tabsManagerServiceLink;
     
     this.nextFormID = this.savingFormData.get('form.widgets.IShortName.id');
     this.originalFormID = this.originalFormURL.split('/').pop();

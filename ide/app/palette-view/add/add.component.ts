@@ -246,7 +246,7 @@ export class AddComponent implements OnInit, AfterViewInit {
           }
           else if (tab && tab.url) {
             this.log.info('tab && tab.url', tab, tab.url);
-            this.templatesService.getTemplates(tab.url)
+            this.templatesService.getTemplates(tab.url, tab.editor)
             .subscribe((templates: PlominoFormGroupTemplate[]) => {
               componentHandler.upgradeDom();
               this.templates = templates.map((template) => {

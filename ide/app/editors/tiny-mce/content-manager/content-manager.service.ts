@@ -302,12 +302,15 @@ export class TinyMCEFormContentManagerService {
   selectAndRemoveElementById(editorId: any, elementId: string): void {
     const editor = this.getEditor(editorId);
     if (editor) {
-      editor.focus(); //give the editor focus
-      editor.selection.select(editor.dom.select(`#${ elementId }`)[0]);
-      editor.selection.collapse(0);
-      editor.dom.remove(elementId);
-  
-      this.log('selectAndRemoveElementById elementId', elementId, 2);
+      try {
+        editor.focus(); //give the editor focus
+        editor.selection.select(editor.dom.select(`#${ elementId }`)[0]);
+        editor.selection.collapse(0);
+        editor.dom.remove(elementId);
+    
+        this.log('selectAndRemoveElementById elementId', elementId, 2);
+      }
+      catch (e) {}
     }
   }
 

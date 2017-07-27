@@ -1,3 +1,4 @@
+import { ObjService } from './../obj.service';
 import { PlominoTabsManagerService } from './../tabs-manager/index';
 import { LogService } from './../log.service';
 import { PlominoDBService } from './../db.service';
@@ -24,6 +25,7 @@ export class PlominoSaveManagerService {
   constructor(
     private contentManager: TinyMCEFormContentManagerService,
     private http: PlominoHTTPAPIService,
+    private objService: ObjService,
     private elementService: ElementService,
     private treeService: TreeService,
     private widgetService: WidgetService,
@@ -162,7 +164,9 @@ export class PlominoSaveManagerService {
       labelsRegistryLink: this.labelsRegistry,
       httpServiceLink: this.http,
       activeEditorServiceLink: this.activeEditorService,
-      widgetServiceLink: this.widgetService
+      widgetServiceLink: this.widgetService,
+      objServiceLink: this.objService,
+      tabsManagerServiceLink: this.tabsManagerService
     });
 
     return process;
@@ -190,7 +194,9 @@ export class PlominoSaveManagerService {
       labelsRegistryLink: this.labelsRegistry,
       httpServiceLink: this.http,
       activeEditorServiceLink: this.activeEditorService,
-      widgetServiceLink: this.widgetService
+      widgetServiceLink: this.widgetService,
+      objServiceLink: this.objService,
+      tabsManagerServiceLink: this.tabsManagerService
     });
 
     return process;

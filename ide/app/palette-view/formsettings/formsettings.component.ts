@@ -155,7 +155,7 @@ export class FormSettingsComponent implements OnInit {
 
             this.formsService.formSaving = false;
             this.changeDetector.markForCheck();
-            return this.objService.getFormSettings(newUrl);
+            return this.objService.getFormSettings(newUrl, true);
         }
       }).bind(this);
 
@@ -425,6 +425,11 @@ export class FormSettingsComponent implements OnInit {
           } : null;
 
           if (!(this.tab && tab && !tab.url)) {
+            /**
+             * save previous form settings cache
+             */
+            this.objService.updateFormSettingsCache();
+
             this.tab = tab;
             this.log.info('formsettings -> set tab allowed to', tab);
           }
