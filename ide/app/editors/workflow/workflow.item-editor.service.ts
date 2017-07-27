@@ -317,9 +317,11 @@ export class PlominoWorkflowItemEditorService {
       /* step 4: cut <ul class="plomino-macros" ...</ul> and read it in data */
       try {
         const $htmlFS = $(htmlFS);
+        const $htmlFSForm = $htmlFS.find('form[data-pat-autotoc]');
         this.latestUsingForm = {
-          action: $htmlFS.find('form[data-pat-autotoc]').attr('action'),
-          $form: $htmlFS.find('form[data-pat-autotoc]')
+          id: $htmlFSForm.attr('action').split('/').slice(-2, -1),
+          action: $htmlFSForm.attr('action'),
+          $form: $htmlFSForm
         };
         htmlBuffer = $htmlFS.find('ul.plomino-macros').get(0).outerHTML;
         htmlBuffer = `<label style="margin-bottom: 15px; margin-top: 10px">
@@ -450,14 +452,19 @@ export class PlominoWorkflowItemEditorService {
 
       this.latestUsingForm.$form.find('input,textarea,select')
         .each((i: number, element: HTMLInputElement) => {
-          if (['form.widgets.IHelpers.helpers:list', 
-            'form.buttons.save', 'form.buttons.cancel'].indexOf(element.name) === -1
+          if (['form.buttons.save', 'form.buttons.cancel']
+              .indexOf(element.name) === -1
+            && element.name.indexOf(':list') === -1
           ) {
             const value = element.type === 'checkbox' 
               ? $(element).is(':checked') : $(element).val();
-            fd.append(element.name, value);
+            if (value !== 'true' && value !== 'false') {
+              fd.append(element.name, value);
+            }
           }
         });
+
+      fd.append('form.widgets.form_method:list', 'Auto');
 
       this.itemSettingsDialog
         .querySelectorAll('input[name="form.widgets.IHelpers.helpers:list"]')
@@ -467,6 +474,9 @@ export class PlominoWorkflowItemEditorService {
 
       fd.append('form.buttons.save', 'Save');
       
+      /** flush cache of this form */
+      this.objService.flushFormSettingsCache(this.latestUsingForm.id);
+
       this.api.postWithOptions(this.latestUsingForm.action, fd, {})
         .subscribe((data: Response) => {});
     }
