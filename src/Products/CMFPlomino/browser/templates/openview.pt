@@ -23,7 +23,9 @@
             </tal:actions>
             <!-- this is 'basic_widget' (BASIC) -->
             <table
-                tal:define="columns python:context.getColumns();"
+                tal:define="columns python:context.getColumns();
+                    req_static request/static_rendering|nothing;
+                    static python:req_static or context.static_rendering"
                 tal:attributes="class python:(context.static_rendering and 'listing') or 'listing plomino-table';
                 data-pat-plominotable
                     string:source:${context/absolute_url}/tojson;;
@@ -38,7 +40,7 @@
                 </tr>
                 <!-- TODO(ivanteoh): do we need 'Categorized' (is_categorized) in 2.x -->
                 <!-- this is 'Regular view' (not_categorized) -->
-                <tal:static tal:condition="context/static_rendering">
+                <tal:static tal:condition="static">
                     <tal:rows
                         tal:define="listdocuments python:context.getAllDocuments(getObject=False);
                         count python:len(listdocuments);
@@ -80,7 +82,7 @@
                 </tal:static>
                 <tr class="header-row count">
                     <td tal:attributes="colspan python:len(columns)+1">
-                        <tal:static tal:condition="context/static_rendering">
+                        <tal:static tal:condition="static">
                             <tal:block
                                 tal:define="listdocuments python:context.getAllDocuments(getObject=False);
                                             count python:len(listdocuments);"
