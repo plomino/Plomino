@@ -129,6 +129,14 @@ class IPlominoView(model.Schema):
         default=False,
     )
 
+    hide_checkboxes = schema.Bool(
+        title=_('CMFPlomino_label_hide_checkboxes',
+                default="Hide checkboxes"),
+        description=_('CMFPlomino_help_hide_checkboxes',
+                      default='The first column with checkboxes will not be displayed'),
+        default=False,
+    )
+
     static_rendering = schema.Bool(
         title=_('CMFPlomino_label_static_rendering',
             default="Static rendering"),
