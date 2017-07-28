@@ -1,5 +1,5 @@
 import { PlominoTabsManagerService } from './../../services/tabs-manager/index';
-import { Component, OnInit, AfterViewInit, 
+import { Component, OnInit, OnDestroy, AfterViewInit, 
   Input, Output, EventEmitter } from '@angular/core';
 import { PopoverComponent } from '../popover';
 import { ElementService, TabsService, PlominoDBService } from '../../services';
@@ -34,7 +34,7 @@ declare var ace: any;
     directives: [DROPDOWN_DIRECTIVES, PopoverComponent],
     providers: [ElementService]
 })
-export class ACEEditorComponent {
+export class ACEEditorComponent implements OnDestroy, OnInit {
     @Input() aceNumber: number;
     @Input() url: string;
     @Input() path: any;
@@ -56,6 +56,7 @@ export class ACEEditorComponent {
       this.tabsManagerService.onRefreshCodeTab$
         .subscribe((fieldURL: string) => {
           if (this.url === fieldURL) {
+            this.tabsManagerService.flushTabContentState(this.getCurrentTabId());
             this.ngOnInit();
             this.ngAfterViewInit();
             this.tabsManagerService.setActiveTabDirty(false);
@@ -76,6 +77,8 @@ export class ACEEditorComponent {
 
     ngOnInit() {
         this.id = 'editor' + this.generateHash(this.url);
+        const codeId = this.getCurrentTabId();
+        const stateData = this.tabsManagerService.getTabSavedContentState(codeId);
         this._elementService.getElement(this.url).subscribe((data) => {
             this.type = data['@type'];
             this.fullType = data.parent['@type']
@@ -92,7 +95,7 @@ export class ACEEditorComponent {
               .getElementCode(`${ dbLink }/code?${ this.fullType }=${ this.name }`)
               .subscribe((code: string) => {
                 let parsed = JSON.parse(code);
-                this.editor.setValue(parsed.code, -1);
+                this.editor.setValue(stateData ? stateData.content : parsed.code, -1);
                 this.methodList = parsed.methods;
                 this.editor.getSession().on('change', () => {
                     this.isDirty.emit(true);
@@ -101,6 +104,21 @@ export class ACEEditorComponent {
                 this.editor.getSession().setUndoManager(new ace.UndoManager());
               });
         })
+    }
+
+    ngOnDestroy() {
+      const codeId = this.getCurrentTabId();
+      /**
+       * save current state on tab close
+       */
+      const prevStateContent = this.editor.getSession().getValue();
+      this.tabsManagerService.saveTabContentState(codeId, {
+        content: prevStateContent,
+      });
+    }
+
+    getCurrentTabId() {
+      return this.id;
     }
 
     ngAfterViewInit() {
