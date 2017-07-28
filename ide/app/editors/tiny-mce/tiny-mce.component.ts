@@ -542,8 +542,8 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
     const patObject = JSON.parse(dataPat);
     patObject.inline = false;
     patObject.tiny.height = 780;
+    patObject.tiny.forced_root_block = false;
     patObject.tiny.resize = false;
-    patObject.tiny.forced_root_block = '';
     patObject.tiny.cleanup = false;
     patObject.tiny.content_css = patObject.tiny.content_css.split(',');
     patObject.tiny.content_css = [patObject.tiny.content_css[2]];
