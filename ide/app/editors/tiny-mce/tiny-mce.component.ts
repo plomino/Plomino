@@ -1059,6 +1059,7 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
           const editor = this.getEditor();
           if (!editor) { return; }
           const isDirty = editor.isDirty();
+          editor.undoManager.clear();
   
           if (editor && this.loadedFirstTime) {
             setTimeout(() => {
@@ -1067,6 +1068,7 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
                   try {
                     editor.selection.setCursorLocation();
                     this.log.info('cursor located at 0,0');
+                    editor.undoManager.clear();
                   }
                   catch (e) {}
                 }
@@ -1092,6 +1094,10 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
         );
         this.autoSavedContent = newData;
         this.fallLoading(false);
+        const editor = this.getEditor();
+        if (editor) {
+          editor.undoManager.clear();
+        }
       }
     }
     
@@ -1113,6 +1119,7 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
               try {
                 editor.selection.setCursorLocation();
                 this.log.info('cursor relocated at 0,0');
+                editor.undoManager.clear();
               }
               catch (e) {}
             }
