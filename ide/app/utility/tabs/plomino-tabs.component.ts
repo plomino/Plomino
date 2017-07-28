@@ -159,15 +159,16 @@ export class PlominoTabsComponent implements OnInit {
       && this.saveManager.isEditorUnsaved(this.activeTab.url)
       && this.tabsManagerService.saveClosingTab
     ) {
-      this.saveManager.enqueueNewFormSaveProcess(this.activeTab.url);
-      this.saveManager.nextEditorSavedState(this.activeTab.url);
-      this.activeTab.isDirty = false;
-      this.tabsCollection.forEach((tab, index) => {
-        if (tab.id === this.activeTab.id) {
-          this.tabsCollection[index].isDirty = false;
-          this.changeDetector.detectChanges();
-        }
-      });
+      // this.saveManager.enqueueNewFormSaveProcess(this.activeTab.url);
+      // this.saveManager.nextEditorSavedState(this.activeTab.url);
+      // this.activeTab.isDirty = false;
+      // this.tabsCollection.forEach((tab, index) => {
+      //   if (tab.id === this.activeTab.id) {
+      //     console.warn(this.tabsCollection[index].id, 'isDirty', false);
+      //     this.tabsCollection[index].isDirty = false;
+      //     this.changeDetector.detectChanges();
+      //   }
+      // });
     }
     this.tabsManagerService.saveClosingTab = true;
     this.activeTab = tab;

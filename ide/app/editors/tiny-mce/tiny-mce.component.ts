@@ -632,7 +632,7 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
         editor.onMouseDown.add(this.onTinyMCEEditorMouseDown.bind(this));
         this.editorInstance = editor;
         this.editorInstance.show();
-        this.bitDirtyStateAfterSave();
+        // this.bitDirtyStateAfterSave();
 
         const $edContainer = $(editor.getContainer());
         if ($edContainer.length) {
