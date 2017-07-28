@@ -165,11 +165,15 @@ export class FormSettingsComponent implements OnInit {
         : this.saveManager.createFormSaveProcess(this.tab.url);
       
       this.loading = true;
+      this.formsService.latestTinyMCEPatternData = null;
+      this.log.info('fst pattern flushed');
       
+      this.log.info(this.tab.url, 'loading fst process started...');
       process.start()
         .flatMap((responseData: {html: string, url: string}) => 
           flatMapCallback(responseData))
         .map((settingsHTML: string) => {
+          this.log.info(this.tab.url, 'fst response received...');
           /** get data pattern and store it to window */
           if (settingsHTML && settingsHTML.indexOf('data-pat-tinymce') !== -1) {
             const data = settingsHTML
@@ -177,6 +181,8 @@ export class FormSettingsComponent implements OnInit {
               .replace(/&quot;/g, '"');
             const formId = newUrl.split('/').pop();
             this.formsService.newTinyMCEPatternData({ formId, data });
+            this.formsService.latestTinyMCEPatternData = { formId, data };
+            this.log.info(formId, 'fst pattern loaded');
           } else {
             this.log.info('there is no any settingsHTML');
           }
@@ -459,6 +465,11 @@ export class FormSettingsComponent implements OnInit {
               `<p><div class="mdl-spinner mdl-js-spinner is-active"></div></p>`;
             componentHandler.upgradeDom();
 
+            this.formsService.latestTinyMCEPatternData = null;
+            this.log.info('fst pattern flushed');
+            
+            this.log.info(this.tab.url, 'loading fst process started...');
+
             return this.objService
               .getFormSettings(tab.url)
               .map((settingsHTML: string) => {
@@ -472,6 +483,8 @@ export class FormSettingsComponent implements OnInit {
                   }
                   const formId = this.tab.url.split('/').pop();
                   this.formsService.newTinyMCEPatternData({ formId, data });
+                  this.formsService.latestTinyMCEPatternData = { formId, data };
+                  this.log.info(formId, 'fst pattern loaded');
                 } else {
                   this.log.info('there is no any settingsHTML');
                 }

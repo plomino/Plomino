@@ -293,7 +293,7 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
 
     const mcePatternSub = this.formsService.tinyMCEPatternData$
       .subscribe((data) => {
-        if (this.id.split('/').pop() === data.formId) {
+        if (this.getCurrentTabId() === data.formId) {
           const tinyMCEPatData = this.modifyDataPatParams(data.data);
           if (tinyMCEPatData !== this.tinyMCEPatData) {
             this.tinyMCEPatData = tinyMCEPatData;
@@ -582,9 +582,24 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
         this.fallLoading(false);
         this.log.info('pattern restored');
       }
+      else if (!stateData && this.formsService.latestTinyMCEPatternData) {
+        const data = this.formsService.latestTinyMCEPatternData;
+        if (data.formId === this.getCurrentTabId()) {
+          const tinyMCEPatData = this.modifyDataPatParams(data.data);
+          this.tinyMCEPatData = tinyMCEPatData;
+          this.log.warn(data.formId, 'has loaded very fast')
+        }
+        else {
+          this.log.warn(
+            '2: you have initialized the tiny-mce before you '
+            + 'have initialized this.tinyMCEPatData'
+          );
+          return;
+        }
+      }
       else {
         this.log.warn(
-          'you have initialized the tiny-mce before you '
+          '1: you have initialized the tiny-mce before you '
           + 'have initialized this.tinyMCEPatData'
         );
         return;

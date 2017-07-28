@@ -230,6 +230,8 @@ export class WidgetService {
       widgetQuerySet.add(id);
     });
 
+    this.log.info('widgetQuerySet original', Array.from(widgetQuerySet.values()));
+
     /**
      * insert additionally all elements for current form
      */

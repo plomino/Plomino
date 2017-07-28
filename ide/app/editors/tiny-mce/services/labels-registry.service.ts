@@ -56,7 +56,7 @@ export class LabelsRegistryService {
 
   getAllForFormID(fId: string) {
     return Array.from(this.labelsRegistry.keys()).map((key) => {
-      return (key.indexOf(fId) !== -1) ? key : null;
+      return (key.indexOf('/' + fId + '/') !== -1) ? key : null;
     }).filter((key) => key !== null);
   }
 
