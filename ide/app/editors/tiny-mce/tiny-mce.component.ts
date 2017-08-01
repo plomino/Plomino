@@ -1092,6 +1092,7 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
         this.contentManager.setContent(
           this.id, newData, this.draggingService
         );
+        this.saveManager.nextEditorSavedState(this.id, '');
         this.autoSavedContent = newData;
         this.fallLoading(false);
         const editor = this.getEditor();
